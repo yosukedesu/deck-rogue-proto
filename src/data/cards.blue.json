@@ -1,0 +1,246 @@
+[
+  {
+    "id": "blue_strike",
+    "name": "水撃",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_guard",
+    "name": "氷盾",
+    "cost": 1,
+    "category": "defend",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_current_lash",
+    "name": "渦流の鞭",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "blue_ice_wall",
+    "name": "氷壁",
+    "cost": 2,
+    "category": "defend",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "blue_glacier",
+    "name": "大氷河",
+    "cost": 3,
+    "category": "defend",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 13
+      }
+    ]
+  },
+  {
+    "id": "blue_ponder",
+    "name": "思案",
+    "cost": 1,
+    "category": "draw",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_churn",
+    "name": "記憶の渦",
+    "cost": 1,
+    "category": "draw",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_mana_convert",
+    "name": "魔力変換",
+    "cost": 1,
+    "category": "ramp",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_storm_lash",
+    "name": "奔流の連撃",
+    "cost": 3,
+    "category": "finisher",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "blue_tsunami",
+    "name": "大津波",
+    "cost": 5,
+    "category": "finisher",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 10
+      }
+    ]
+  },
+  {
+    "id": "blue_counterspell",
+    "name": "対抗呪文",
+    "cost": 2,
+    "category": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negate"
+      }
+    ]
+  },
+  {
+    "id": "blue_mana_leak",
+    "name": "マナ漏出",
+    "cost": 1,
+    "category": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "condition": {
+          "maxActionValue": 12
+        },
+        "effect": "negate"
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_veil",
+    "name": "霜の帳",
+    "cost": 1,
+    "category": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainIceBlock",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "blue_cold_reading",
+    "name": "冷徹な観察",
+    "cost": 1,
+    "category": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_sage_spring",
+    "name": "賢者の泉",
+    "cost": 2,
+    "category": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_armor",
+    "name": "霜の鎧",
+    "cost": 2,
+    "category": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainIceBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_archive",
+    "name": "水鏡の書庫",
+    "cost": 2,
+    "category": "draw",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  }
+]

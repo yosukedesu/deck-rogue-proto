@@ -24,6 +24,18 @@ export function nextInt(rng: RngState, min: number, max: number): readonly [numb
   return [min + Math.floor(v * (max - min + 1)), nextState]
 }
 
+/** 重み配列からインデックスを1つ抽選 (敵の行動テーブル用)。重み合計は正であること */
+export function weightedIndex(rng: RngState, weights: readonly number[]): readonly [number, RngState] {
+  const total = weights.reduce((a, b) => a + b, 0)
+  const [v, nextState] = next(rng)
+  let roll = v * total
+  for (let i = 0; i < weights.length; i++) {
+    roll -= weights[i]
+    if (roll < 0) return [i, nextState]
+  }
+  return [weights.length - 1, nextState]
+}
+
 /** 配列をシャッフル (Fisher–Yates)。デッキシャッフル用 */
 export function shuffle<T>(rng: RngState, items: readonly T[]): readonly [readonly T[], RngState] {
   const result = [...items]

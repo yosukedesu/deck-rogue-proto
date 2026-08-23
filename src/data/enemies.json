@@ -1,7 +1,71 @@
 [
-  { "id": "enemy_wide_power", "name": "うねる獣", "archetype": "wide-power", "maxHp": 45 },
-  { "id": "enemy_probe", "name": "探り屋", "archetype": "probe", "maxHp": 38 },
-  { "id": "enemy_set_wary", "name": "用心深い影", "archetype": "set-wary", "maxHp": 40 },
-  { "id": "enemy_set_breaker", "name": "罠壊し", "archetype": "set-breaker", "maxHp": 42 },
-  { "id": "enemy_brute", "name": "脳筋オーガ", "archetype": "brute", "maxHp": 55 }
+  {
+    "id": "enemy_wide_power",
+    "name": "うねる獣",
+    "archetype": "wide-power",
+    "maxHp": 110,
+    "moves": [
+      { "id": "surge", "kind": "attack", "min": 9, "max": 17, "weight": 3 },
+      { "id": "coil", "kind": "defend", "min": 5, "max": 9, "weight": 1 }
+    ]
+  },
+  {
+    "id": "enemy_probe",
+    "name": "探り屋",
+    "archetype": "probe",
+    "maxHp": 90,
+    "moves": [
+      { "id": "poke", "kind": "attack", "min": 5, "max": 7, "weight": 1 },
+      { "id": "lunge", "kind": "attack", "min": 16, "max": 22, "weight": 1 }
+    ],
+    "sequence": ["poke", "poke", "lunge"]
+  },
+  {
+    "id": "enemy_set_wary",
+    "name": "用心深い影",
+    "archetype": "set-wary",
+    "maxHp": 100,
+    "moves": [
+      { "id": "slash", "kind": "attack", "min": 11, "max": 15, "weight": 1 }
+    ],
+    "movesVsSet": [
+      { "id": "hide", "kind": "defend", "min": 6, "max": 9, "weight": 2 },
+      { "id": "careful_slash", "kind": "attack", "min": 5, "max": 7, "weight": 1 }
+    ]
+  },
+  {
+    "id": "enemy_set_breaker",
+    "name": "罠壊し",
+    "archetype": "set-breaker",
+    "maxHp": 105,
+    "moves": [
+      { "id": "smash", "kind": "attack", "min": 11, "max": 15, "weight": 1 }
+    ],
+    "movesVsSet": [
+      { "id": "break_trap", "kind": "destroy-set", "weight": 2 },
+      { "id": "smash", "kind": "attack", "min": 11, "max": 15, "weight": 1 }
+    ]
+  },
+  {
+    "id": "enemy_brute",
+    "name": "脳筋オーガ",
+    "archetype": "brute",
+    "maxHp": 130,
+    "moves": [
+      { "id": "warcry", "kind": "buff", "min": 2, "max": 4, "weight": 1 },
+      { "id": "club", "kind": "attack", "min": 9, "max": 13, "weight": 1 }
+    ],
+    "sequence": ["warcry", "club", "club"]
+  },
+  {
+    "id": "enemy_turtle",
+    "name": "眠たがりの大亀",
+    "archetype": "charger",
+    "maxHp": 140,
+    "moves": [
+      { "id": "shell", "kind": "defend", "min": 12, "max": 16, "weight": 1 },
+      { "id": "crush", "kind": "attack", "min": 24, "max": 32, "weight": 1 }
+    ],
+    "sequence": ["shell", "shell", "crush"]
+  }
 ]

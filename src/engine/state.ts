@@ -1,47 +1,32 @@
 // engine/state.ts — 状態遷移の入口
 // GameState はイミュータブル。applyCommand(state, command) => newState の純関数のみで遷移する。
-// TODO(実装フェーズ): 戦闘ループ・イベントパイプライン・ReactionSystem 3実装。
-//   現時点は開発環境セットアップの骨格 (StartCombat のみ動く)。
+// 方式固有コマンドは ReactionSystem に委譲し、割り込み中断中だった場合は敵フェーズを再開する。
 
-import type { Command, GameState, ReactionMode } from './types.ts'
-import { createRng } from './rng.ts'
+import { continueAfterWindow, createInitialState, endTurn, playCard, startCombat } from './combat.ts'
+import { getReactionSystem } from './reactions/index.ts'
+import type { Command, GameState } from './types.ts'
 
-export function createInitialState(seed: number, reactionMode: ReactionMode): GameState {
-  return {
-    rng: createRng(seed),
-    reactionMode,
-    phase: 'player-turn',
-    turn: 0,
-    player: {
-      hp: 70,
-      maxHp: 70,
-      block: 0,
-      energy: 3,
-      energyMax: 3,
-      hand: [],
-      drawPile: [],
-      discardPile: [],
-      setCards: [],
-      growth: 0,
-    },
-    enemies: [],
-    eventLog: [],
-  }
-}
+export { createInitialState }
 
 export function applyCommand(state: GameState, command: Command): GameState {
   switch (command.type) {
     case 'StartCombat':
-      return {
-        ...createInitialState(command.seed, state.reactionMode),
-        turn: 1,
-        eventLog: [{ type: 'CombatStarted' }, { type: 'TurnStarted', turn: 1 }],
-      }
+      return startCombat(command.seed, state.reactionMode, command.enemyId, command.deckId)
     case 'PlayCard':
+      return playCard(state, command.cardUid, command.modeIndex, command.discardUids)
+    case 'EndTurn':
+      return endTurn(state)
     case 'SetCard':
     case 'ReactManual':
-    case 'ConfirmReaction':
-    case 'EndTurn':
-      throw new Error(`未実装コマンド: ${command.type} (実装フェーズで対応)`)
+    case 'ConfirmReaction': {
+      const system = getReactionSystem(state.reactionMode)
+      if (!system.canHandle(state, command)) {
+        throw new Error(`${state.reactionMode} では受け付けないコマンド: ${command.type}`)
+      }
+      const wasAwaiting = state.phase === 'awaiting-reaction'
+      const next = system.handleCommand(state, command)
+      // 割り込み中断中のコマンドだったなら、敵フェーズの続きを解決する
+      return wasAwaiting ? continueAfterWindow(next) : next
+    }
   }
 }

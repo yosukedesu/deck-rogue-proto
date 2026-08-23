@@ -1,0 +1,418 @@
+[
+  {
+    "id": "starter",
+    "name": "スターター",
+    "description": "基本15種×各1枚。ルール検証用の万能構成",
+    "cards": [
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_deep_roots",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sunlight",
+        "count": 1
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_double_lash",
+        "count": 1
+      },
+      {
+        "cardId": "green_fang",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 1
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_finisher_wrath",
+        "count": 1
+      },
+      {
+        "cardId": "green_finisher_stomp",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_root_weave",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_big_mana",
+    "name": "ビッグマナ理想形",
+    "description": "ランプ連打からエナジー上限を伸ばし、森の大爆発と巨獣の踏みつけを連発する",
+    "cards": [
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 2
+      },
+      {
+        "cardId": "green_ramp_deep_roots",
+        "count": 3
+      },
+      {
+        "cardId": "green_ramp_sunlight",
+        "count": 2
+      },
+      {
+        "cardId": "green_sig_canopy",
+        "count": 2
+      },
+      {
+        "cardId": "green_sig_overgrowth",
+        "count": 2
+      },
+      {
+        "cardId": "green_finisher_stomp",
+        "count": 2
+      },
+      {
+        "cardId": "green_finisher_wrath",
+        "count": 1
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_root_weave",
+        "count": 1
+      },
+      {
+        "cardId": "green_ritual_surge",
+        "count": 2
+      },
+      {
+        "cardId": "green_flash_insight",
+        "count": 2
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_growth",
+    "name": "成長スタック理想形",
+    "description": "年輪と開花の儀で成長を爆伸ばしし、多段ヒットの全打点に乗せて轢き殺す",
+    "cards": [
+      {
+        "cardId": "green_growth_ring",
+        "count": 4
+      },
+      {
+        "cardId": "green_sig_rite_of_bloom",
+        "count": 2
+      },
+      {
+        "cardId": "green_double_lash",
+        "count": 4
+      },
+      {
+        "cardId": "green_sig_vine_dance",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_growth_tree",
+        "count": 1
+      },
+      {
+        "cardId": "green_serpent_gulp",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_trample",
+    "name": "トランプル理想形",
+    "description": "突進で勢いを積み、貫通の巨象の突進で締める。攻撃を叩き込むほど加速する群れの暴走",
+    "cards": [
+      {
+        "cardId": "green_trample_charge",
+        "count": 3
+      },
+      {
+        "cardId": "green_sig_trample",
+        "count": 3
+      },
+      {
+        "cardId": "green_sig_stampede",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_herd_chief",
+        "count": 2
+      },
+      {
+        "cardId": "green_ritual_surge",
+        "count": 2
+      },
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 2
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "run_basic",
+    "name": "ラン基本デッキ",
+    "description": "ドラフト連戦の出発点。StS風の基本10枚（打撃×5・防御×4・茨の返し×1）",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 5
+      },
+      {
+        "cardId": "green_guard",
+        "count": 4
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "starter_blue",
+    "name": "青スターター",
+    "color": "blue",
+    "description": "青の全カード各1枚。青のルール検証用の万能構成",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 1
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "blue_current_lash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 1
+      },
+      {
+        "cardId": "blue_glacier",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 1
+      },
+      {
+        "cardId": "blue_churn",
+        "count": 1
+      },
+      {
+        "cardId": "blue_mana_convert",
+        "count": 1
+      },
+      {
+        "cardId": "blue_storm_lash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_tsunami",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "blue_mana_leak",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "blue_cold_reading",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_armor",
+        "count": 1
+      },
+      {
+        "cardId": "blue_archive",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_storm",
+    "name": "ストーム理想形",
+    "color": "blue",
+    "description": "ドローと軽量カードを1ターンに叩き込み、奔流の連撃・大津波の枚数参照ダメージで爆発する",
+    "cards": [
+      {
+        "cardId": "blue_ponder",
+        "count": 3
+      },
+      {
+        "cardId": "blue_churn",
+        "count": 2
+      },
+      {
+        "cardId": "blue_mana_convert",
+        "count": 3
+      },
+      {
+        "cardId": "blue_strike",
+        "count": 3
+      },
+      {
+        "cardId": "blue_storm_lash",
+        "count": 3
+      },
+      {
+        "cardId": "blue_tsunami",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_permission",
+    "name": "パーミッション理想形",
+    "color": "blue",
+    "description": "対抗呪文とマナ漏出で敵の行動を握りつぶし、氷壁を積み上げて完封する",
+    "cards": [
+      {
+        "cardId": "blue_counterspell",
+        "count": 3
+      },
+      {
+        "cardId": "blue_mana_leak",
+        "count": 3
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 2
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 3
+      },
+      {
+        "cardId": "blue_glacier",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_armor",
+        "count": 2
+      },
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "blue_current_lash",
+        "count": 2
+      },
+      {
+        "cardId": "blue_cold_reading",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "run_basic_blue",
+    "name": "ラン基本デッキ(青)",
+    "color": "blue",
+    "description": "青ドラフト連戦の出発点。水撃×5・氷盾×4・対抗呪文×1",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 5
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 4
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      }
+    ]
+  }
+]
