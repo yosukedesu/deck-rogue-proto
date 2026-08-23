@@ -13,7 +13,7 @@
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
 import { allDecks, allEnemies, getCardDef } from '../engine/content.ts'
-import { isPlayableFromHand } from '../engine/effects.ts'
+import { effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -104,7 +104,7 @@ function chooseCommand(s: GameState): Command {
       (c) =>
         c.def.category === category &&
         isPlayableFromHand(c) &&
-        c.def.cost <= budget &&
+        effectiveCost(s, c) <= budget &&
         isWorthPlaying(s, c),
     )
     // 勢い生成付きの攻撃 (突進の助走など) を同ターンの他の攻撃・フィニッシャーより先に打つ
@@ -113,7 +113,7 @@ function chooseCommand(s: GameState): Command {
         (c) =>
           (c.def.category === 'attack' || c.def.category === 'finisher') &&
           c.def.effects.some((e) => e.effect === 'addMomentum') &&
-          c.def.cost <= spendable,
+          effectiveCost(s, c) <= spendable,
       )
       if (momentumFirst.length > 0) candidates = momentumFirst
     }

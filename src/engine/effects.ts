@@ -6,6 +6,15 @@ import { emit } from './events.ts'
 import { shuffle } from './rng.ts'
 import type { CardInstance, DeclarativeEffect, EnemyActionKind, GameState } from './types.ts'
 
+/**
+ * 実効コスト: マナ軽減トークン (nextCardDiscount) を適用したプレイコスト。
+ * 素のコスト0のカードは割引を消費しない (対象外)。
+ */
+export function effectiveCost(state: GameState, card: CardInstance): number {
+  if (card.def.cost === 0) return 0
+  return Math.max(0, card.def.cost - state.player.nextCardDiscount)
+}
+
 /** 自ターンにプレイ可能なカードか。リアクション専用カードは false。置物・選択式は常にプレイ可能 */
 export function isPlayableFromHand(card: CardInstance): boolean {
   return (
@@ -171,6 +180,15 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const next = { ...state, player: { ...state.player, aether: state.player.aether + amount } }
       return emit(next, { type: 'AetherGained', amount })
+    }
+    case 'discountNext': {
+      // マナ軽減トークン: 次にプレイする1枚のコスト-X (消費は combat.ts の playCard 側)
+      const amount = effect.amount ?? 0
+      const next = {
+        ...state,
+        player: { ...state.player, nextCardDiscount: state.player.nextCardDiscount + amount },
+      }
+      return emit(next, { type: 'DiscountGained', amount })
     }
     case 'dischargeAether': {
       // 霊気放出 (青): 霊気×amount のダメージを与え、霊気を全消費

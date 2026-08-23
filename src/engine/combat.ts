@@ -5,7 +5,13 @@
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
 import { buildDeck, getEnemyDef } from './content.ts'
-import { drawCards, isPlayableFromHand, resolveEffect, resolveOnPlayEffects } from './effects.ts'
+import {
+  drawCards,
+  effectiveCost,
+  isPlayableFromHand,
+  resolveEffect,
+  resolveOnPlayEffects,
+} from './effects.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
@@ -39,6 +45,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       iceBlock: 0, // 氷壁は戦闘内で持ち越し
       cardsPlayedThisTurn: 0,
       aether: 0, // 霊気は戦闘内持続
+      nextCardDiscount: 0,
     },
     enemies: [],
     pendingWindow: null,
@@ -207,7 +214,10 @@ export function playCard(
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (!isPlayableFromHand(card)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
-  if (card.def.cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
+  const cost = effectiveCost(state, card)
+  const consumesDiscount = card.def.cost > 0 && state.player.nextCardDiscount > 0
+  if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
 
   // 選択式カードの検証
   const modes = card.def.modes ?? []
@@ -243,7 +253,8 @@ export function playCard(
     ...state,
     player: {
       ...state.player,
-      energy: state.player.energy - card.def.cost,
+      energy: state.player.energy - cost,
+      nextCardDiscount: consumesDiscount ? 0 : state.player.nextCardDiscount,
       hand: state.player.hand.filter((c) => !removed.has(c.uid)),
       discardPile: [
         ...state.player.discardPile,

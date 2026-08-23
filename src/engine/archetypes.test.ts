@@ -286,3 +286,13 @@ describe('敵特性 (StS参考)', () => {
     expect(intent.shownMax).toBe(32)
   })
 })
+
+describe('0マナ消滅 (緑)', () => {
+  it('野生の萌芽: 0マナで成長+1、消滅する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_wild_sprout'])
+    s = { ...s, player: { ...s.player, energy: 0 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_wild_sprout' })
+    expect(s.player.growth).toBe(1)
+    expect(s.player.exhaustPile).toHaveLength(1)
+  })
+})

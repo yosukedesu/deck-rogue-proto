@@ -299,5 +299,51 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "blue_flash",
+    "name": "ひらめき",
+    "cost": 0,
+    "category": "draw",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_spark",
+    "name": "魔力の火花",
+    "cost": 0,
+    "category": "ramp",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "discountNext",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_focus",
+    "name": "集中",
+    "cost": 1,
+    "category": "draw",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ]
   }
 ]

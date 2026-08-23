@@ -67,6 +67,11 @@ export interface PlayerState extends CombatantState {
   readonly cardsPlayedThisTurn: number
   /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
   readonly aether: number
+  /**
+   * マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。
+   * 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し
+   */
+  readonly nextCardDiscount: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -191,6 +196,7 @@ export type GameEvent =
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
   | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
+  | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
   | { readonly type: 'MomentumAdded'; readonly amount: number }
@@ -258,6 +264,7 @@ export interface DeclarativeEffect {
     | 'drawCardsPerCardPlayed' // ストームドロー: 詠唱数 × amount 枚ドロー (青)
     | 'addAether' // 霊気+X: 妨害・リアクション成功の蓄積 (青)
     | 'dischargeAether' // 霊気放出: 霊気×amount のダメージを与え、霊気を全消費 (青)
+    | 'discountNext' // マナ軽減: 次にプレイするカードのコスト-X
     | 'gainEnergy' // 一時マナ: ターン終了までエナジー+X (energyMax は増えない)
     | 'gainEnergyMax'
     | 'addGrowth'

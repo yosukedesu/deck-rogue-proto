@@ -167,6 +167,10 @@
       {
         "cardId": "green_serpent_gulp",
         "count": 1
+      },
+      {
+        "cardId": "green_wild_sprout",
+        "count": 1
       }
     ],
     "color": "green"
@@ -320,6 +324,18 @@
       {
         "cardId": "blue_chain_thought",
         "count": 1
+      },
+      {
+        "cardId": "blue_flash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_spark",
+        "count": 1
+      },
+      {
+        "cardId": "blue_focus",
+        "count": 1
       }
     ]
   },
@@ -342,7 +358,15 @@
         "count": 2
       },
       {
-        "cardId": "blue_churn",
+        "cardId": "blue_focus",
+        "count": 2
+      },
+      {
+        "cardId": "blue_flash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_spark",
         "count": 1
       },
       {
@@ -367,7 +391,7 @@
       },
       {
         "cardId": "blue_guard",
-        "count": 2
+        "count": 1
       }
     ]
   },

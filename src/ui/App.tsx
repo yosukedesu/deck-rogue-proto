@@ -2,7 +2,7 @@
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
 import { useState } from 'react'
 import { allDecks, allEnemies, deckSize, getCardDef, getDeckDef, getEnemyDef } from '../engine/content.ts'
-import { isPlayableFromHand } from '../engine/effects.ts'
+import { effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
@@ -173,6 +173,8 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
         : `${trigger}詠唱数×${e.amount}枚ドロー`
     case 'addAether':
       return `${trigger}霊気+${e.amount}`
+    case 'discountNext':
+      return `${trigger}次にプレイするカードのコスト-${e.amount}`
     case 'dischargeAether':
       return ctx
         ? `${trigger}霊気×${e.amount}ダメージを与え、霊気を全て放出する [現在${(e.amount ?? 0) * ctx.aether + atkBonus}]`
@@ -316,6 +318,8 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `霊気+${e.amount}`, cls: 'log-good' }
     case 'AetherDischarged':
       return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
+    case 'DiscountGained':
+      return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
     case 'EnergyGained':
       return { text: `エナジー+${e.amount}（このターン）`, cls: 'log-line' }
     case 'MomentumAdded':
@@ -376,16 +380,22 @@ function CardFrame({
   actions,
   hint,
   ctx,
+  displayCost,
 }: {
   card: CardInstance
   dim: boolean
   actions: React.ReactNode
   hint?: string
   ctx?: EffectCtx
+  /** マナ軽減適用後の実効コスト (素のコストと違う時だけ渡す) */
+  displayCost?: number
 }) {
+  const discounted = displayCost !== undefined && displayCost !== card.def.cost
   return (
     <div className={`card${dim ? ' card-dim' : ''}`}>
-      <div className="card-cost">{card.def.cost}</div>
+      <div className={`card-cost${discounted ? ' card-cost-discounted' : ''}`}>
+        {displayCost ?? card.def.cost}
+      </div>
       <div className="card-name">{card.def.name}</div>
       <div className={`card-category cat-${card.def.category}`}>{CATEGORY_LABEL[card.def.category]}</div>
       <div className="card-text">
@@ -736,6 +746,9 @@ function BattleScreen({
             {player.aether > 0 && (
               <span className="chip chip-aether">⚡ {kw('霊気')} {player.aether}</span>
             )}
+            {player.nextCardDiscount > 0 && (
+              <span className="chip chip-aether">🔥 次のカード-{player.nextCardDiscount}</span>
+            )}
           </div>
           <div className="pile-info">
             山札 {player.drawPile.length} 枚
@@ -768,9 +781,10 @@ function BattleScreen({
               player.hand.map((c) => {
                 const modes = c.def.modes ?? []
                 const discardCost = c.def.discardCost ?? 0
+                const effCost = effectiveCost(s, c)
                 const canPlay =
                   isPlayableFromHand(c) &&
-                  c.def.cost <= player.energy &&
+                  effCost <= player.energy &&
                   player.hand.length - 1 >= discardCost
                 const canSet = isSetMode && system.canHandle(s, { type: 'SetCard', cardUid: c.uid })
                 const heldReaction = !isSetMode && c.def.category === 'reaction'
@@ -814,6 +828,7 @@ function BattleScreen({
                     key={c.uid}
                     card={c}
                     ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
+                    displayCost={effCost}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={heldReaction ? '敵ターンに手札から発動' : undefined}
                     actions={

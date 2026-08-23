@@ -188,3 +188,42 @@ describe('ストームの3系統', () => {
     expect(s.player.hand.length).toBe(handBefore - 1 + 2)
   })
 })
+
+describe('0マナスペルとマナ軽減', () => {
+  it('魔力の火花: 0マナで「次のカード-2」を得て消滅する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_spark',
+      'blue_storm_lash',
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_spark' })
+    expect(s.player.nextCardDiscount).toBe(2)
+    expect(s.player.exhaustPile).toHaveLength(1) // 火花は消滅
+    expect(s.player.energy).toBe(3) // 0マナ
+    // 連撃 (コスト2) が0で撃てて、割引は消費される
+    s = { ...s, player: { ...s.player, energy: 0 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_storm_lash' })
+    expect(s.player.energy).toBe(0)
+    expect(s.player.nextCardDiscount).toBe(0)
+  })
+
+  it('素のコスト0のカードは割引を消費しない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_spark',
+      'blue_flash',
+      'blue_current_lash',
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_spark' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_flash' }) // 0マナ消滅ドロー
+    expect(s.player.nextCardDiscount).toBe(2) // 割引は温存されている
+    expect(s.player.exhaustPile).toHaveLength(2) // ひらめきも消滅
+  })
+
+  it('集中: 1ドローと「次のカード-1」。割引は未使用ならターンを跨いで持ち越す', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), ['blue_focus'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_focus' })
+    expect(s.player.nextCardDiscount).toBe(1)
+    s = withIntent(s, defendIntent(3))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.nextCardDiscount).toBe(1) // 持ち越し
+  })
+})

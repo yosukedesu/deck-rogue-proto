@@ -286,6 +286,8 @@ button:disabled { cursor: default; }
   justify-content: center;
   border: 2px solid #a8871f;
 }
+/* マナ軽減適用中の実効コスト表示 */
+.card-cost-discounted { background: #7fd8e8; border-color: #3d7a8a; }
 .card-name { font-weight: bold; font-size: 14px; margin: 4px 0 2px 18px; }
 .card-category {
   font-size: 10px;

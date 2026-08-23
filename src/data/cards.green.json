@@ -499,5 +499,19 @@
         "amount": 24
       }
     ]
+  },
+  {
+    "id": "green_wild_sprout",
+    "name": "野生の萌芽",
+    "cost": 0,
+    "category": "growth",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
   }
 ]
