@@ -1,0 +1,30 @@
+[
+  {
+    "id": "green_ramp_basic",
+    "name": "芽吹き",
+    "cost": 1,
+    "category": "ramp",
+    "effects": [{ "trigger": "onPlay", "effect": "gainEnergyMax", "amount": 1 }]
+  },
+  {
+    "id": "green_strike",
+    "name": "打撃",
+    "cost": 1,
+    "category": "attack",
+    "effects": [{ "trigger": "onPlay", "effect": "dealDamage", "amount": 6 }]
+  },
+  {
+    "id": "green_guard",
+    "name": "防御",
+    "cost": 1,
+    "category": "defend",
+    "effects": [{ "trigger": "onPlay", "effect": "gainBlock", "amount": 5 }]
+  },
+  {
+    "id": "green_trick_thorns",
+    "name": "茨の返し",
+    "cost": 1,
+    "category": "reaction",
+    "effects": [{ "trigger": "onAttacked", "effect": "counter", "amount": 8 }]
+  }
+]

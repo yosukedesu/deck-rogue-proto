@@ -1,0 +1,7 @@
+[
+  { "id": "enemy_wide_power", "name": "うねる獣", "archetype": "wide-power", "maxHp": 45 },
+  { "id": "enemy_probe", "name": "探り屋", "archetype": "probe", "maxHp": 38 },
+  { "id": "enemy_set_wary", "name": "用心深い影", "archetype": "set-wary", "maxHp": 40 },
+  { "id": "enemy_set_breaker", "name": "罠壊し", "archetype": "set-breaker", "maxHp": 42 },
+  { "id": "enemy_brute", "name": "脳筋オーガ", "archetype": "brute", "maxHp": 55 }
+]
