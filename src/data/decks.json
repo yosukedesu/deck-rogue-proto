@@ -308,6 +308,18 @@
       {
         "cardId": "blue_archive",
         "count": 1
+      },
+      {
+        "cardId": "blue_aether_burst",
+        "count": 1
+      },
+      {
+        "cardId": "blue_storm_barrier",
+        "count": 1
+      },
+      {
+        "cardId": "blue_chain_thought",
+        "count": 1
       }
     ]
   },
@@ -318,16 +330,20 @@
     "description": "ドローと軽量カードを1ターンに叩き込み、奔流の連撃・大津波の枚数参照ダメージで爆発する",
     "cards": [
       {
-        "cardId": "blue_ponder",
+        "cardId": "blue_mana_convert",
         "count": 3
       },
       {
-        "cardId": "blue_churn",
+        "cardId": "blue_ponder",
         "count": 2
       },
       {
-        "cardId": "blue_mana_convert",
-        "count": 3
+        "cardId": "blue_chain_thought",
+        "count": 2
+      },
+      {
+        "cardId": "blue_churn",
+        "count": 1
       },
       {
         "cardId": "blue_strike",
@@ -342,12 +358,16 @@
         "count": 1
       },
       {
-        "cardId": "blue_sage_spring",
+        "cardId": "blue_storm_barrier",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_armor",
         "count": 2
       },
       {
         "cardId": "blue_guard",
-        "count": 1
+        "count": 2
       }
     ]
   },
@@ -355,7 +375,7 @@
     "id": "deck_permission",
     "name": "パーミッション理想形",
     "color": "blue",
-    "description": "対抗呪文とマナ漏出で敵の行動を握りつぶし、氷壁を積み上げて完封する",
+    "description": "対抗呪文とマナ漏出で妨害しながら霊気を溜め、霊気放出で一気に叩きつける",
     "cards": [
       {
         "cardId": "blue_counterspell",
@@ -370,12 +390,16 @@
         "count": 2
       },
       {
-        "cardId": "blue_ice_wall",
+        "cardId": "blue_cold_reading",
+        "count": 2
+      },
+      {
+        "cardId": "blue_aether_burst",
         "count": 3
       },
       {
-        "cardId": "blue_glacier",
-        "count": 1
+        "cardId": "blue_ice_wall",
+        "count": 3
       },
       {
         "cardId": "blue_frost_armor",
@@ -383,14 +407,6 @@
       },
       {
         "cardId": "blue_strike",
-        "count": 2
-      },
-      {
-        "cardId": "blue_current_lash",
-        "count": 2
-      },
-      {
-        "cardId": "blue_cold_reading",
         "count": 2
       }
     ]

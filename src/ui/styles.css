@@ -84,6 +84,7 @@ button:disabled { cursor: default; }
 .chip-growth { border-color: var(--accent); color: var(--accent); }
 .chip-strength { border-color: var(--danger); color: var(--danger); }
 .chip-momentum { border-color: #d8a05f; color: #d8a05f; }
+.chip-aether { border-color: #7fd8e8; color: #7fd8e8; }
 .chip-mode { border-color: var(--border-strong); color: var(--muted); }
 
 .orb {

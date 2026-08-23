@@ -65,6 +65,8 @@ export interface PlayerState extends CombatantState {
   readonly iceBlock: number
   /** 詠唱数 (青のストーム): このターンにプレイしたカード数。ターン開始でリセット */
   readonly cardsPlayedThisTurn: number
+  /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
+  readonly aether: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -187,6 +189,8 @@ export type GameEvent =
     }
   | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number }
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
+  | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
+  | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
   | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
   | { readonly type: 'MomentumAdded'; readonly amount: number }
@@ -249,7 +253,11 @@ export interface DeclarativeEffect {
     | 'dealDamage'
     | 'gainBlock'
     | 'gainIceBlock' // 氷壁: ターン開始で消えず持ち越されるブロック (青)
-    | 'dealDamagePerCardPlayed' // ストーム: このターンにプレイした他のカード数 × amount のダメージ (青)
+    | 'dealDamagePerCardPlayed' // ストーム攻撃: 詠唱数 × amount のダメージ (青)
+    | 'gainIceBlockPerCardPlayed' // ストーム防御: 詠唱数 × amount の氷壁 (青)
+    | 'drawCardsPerCardPlayed' // ストームドロー: 詠唱数 × amount 枚ドロー (青)
+    | 'addAether' // 霊気+X: 妨害・リアクション成功の蓄積 (青)
+    | 'dischargeAether' // 霊気放出: 霊気×amount のダメージを与え、霊気を全消費 (青)
     | 'gainEnergy' // 一時マナ: ターン終了までエナジー+X (energyMax は増えない)
     | 'gainEnergyMax'
     | 'addGrowth'

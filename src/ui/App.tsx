@@ -81,6 +81,7 @@ const KEYWORD_HELP: Record<string, string> = {
   伏せ破壊: '伏せているカードを破壊して捨て札に送る',
   氷壁: 'このブロックはターン開始で消えず持ち越される。通常ブロックを使い切った後に消費される',
   詠唱数: 'このターンにプレイしたカードの枚数（そのカード自身は数えない）。ターン開始でリセット',
+  霊気: '妨害やリアクションの成功で溜まるエネルギー（戦闘中持続）。霊気放出で一気に叩きつける',
 }
 
 const KW_PATTERN = new RegExp(
@@ -112,6 +113,7 @@ interface EffectCtx {
   momentum: number
   energyMax: number
   cardsPlayed: number
+  aether: number
 }
 
 const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
@@ -161,6 +163,20 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return ctx
         ? `${trigger}詠唱数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.cardsPlayed + atkBonus}]`
         : `${trigger}詠唱数×${e.amount}ダメージ${pierce}`
+    case 'gainIceBlockPerCardPlayed':
+      return ctx
+        ? `${trigger}詠唱数×${e.amount}の氷壁 [現在${(e.amount ?? 0) * ctx.cardsPlayed}]`
+        : `${trigger}詠唱数×${e.amount}の氷壁`
+    case 'drawCardsPerCardPlayed':
+      return ctx
+        ? `${trigger}詠唱数×${e.amount}枚ドロー [現在${(e.amount ?? 0) * ctx.cardsPlayed}]`
+        : `${trigger}詠唱数×${e.amount}枚ドロー`
+    case 'addAether':
+      return `${trigger}霊気+${e.amount}`
+    case 'dischargeAether':
+      return ctx
+        ? `${trigger}霊気×${e.amount}ダメージを与え、霊気を全て放出する [現在${(e.amount ?? 0) * ctx.aether + atkBonus}]`
+        : `${trigger}霊気×${e.amount}ダメージを与え、霊気を全て放出する`
     case 'gainEnergy':
       return `${trigger}このターン、エナジー+${e.amount}`
     case 'gainEnergyMax':
@@ -296,6 +312,10 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
     case 'IceBlockGained':
       return { text: `氷壁+${e.amount}（持ち越しブロック）`, cls: 'log-line' }
+    case 'AetherGained':
+      return { text: `霊気+${e.amount}`, cls: 'log-good' }
+    case 'AetherDischarged':
+      return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
     case 'EnergyGained':
       return { text: `エナジー+${e.amount}（このターン）`, cls: 'log-line' }
     case 'MomentumAdded':
@@ -606,7 +626,7 @@ function BattleScreen({
                   <b>{c.def.name}</b>
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
                   />
                 </div>
               ))}
@@ -629,6 +649,7 @@ function BattleScreen({
                         momentum: player.momentum,
                         energyMax: player.energyMax,
                         cardsPlayed: player.cardsPlayedThisTurn,
+                        aether: player.aether,
                       }),
                     )}
                     ）を——
@@ -656,7 +677,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({c.def.cost}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether })}
                     </button>
                   ))}
                   <button
@@ -712,6 +733,9 @@ function BattleScreen({
             {s.phase === 'player-turn' && player.cardsPlayedThisTurn > 0 && (
               <span className="chip">🌀 {kw('詠唱数')} {player.cardsPlayedThisTurn}</span>
             )}
+            {player.aether > 0 && (
+              <span className="chip chip-aether">⚡ {kw('霊気')} {player.aether}</span>
+            )}
           </div>
           <div className="pile-info">
             山札 {player.drawPile.length} 枚
@@ -757,7 +781,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -789,7 +813,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={heldReaction ? '敵ターンに手札から発動' : undefined}
                     actions={

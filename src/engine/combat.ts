@@ -38,6 +38,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       momentum: 0, // 勢いは自ターン終了時リセット
       iceBlock: 0, // 氷壁は戦闘内で持ち越し
       cardsPlayedThisTurn: 0,
+      aether: 0, // 霊気は戦闘内持続
     },
     enemies: [],
     pendingWindow: null,

@@ -44,7 +44,7 @@ describe('氷壁 (持ち越しブロック)', () => {
 })
 
 describe('ストーム (詠唱数参照)', () => {
-  it('奔流の連撃はこのターンにプレイした他のカード×6 (自身は数えない)', () => {
+  it('奔流の連撃はこのターンにプレイした他のカード×10 (自身は数えない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_guard',
       'blue_current_lash',
@@ -54,8 +54,8 @@ describe('ストーム (詠唱数参照)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (8ダメージ)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×6 = 12
-    expect(s.enemies[0].hp).toBe(hpBefore - 8 - 12)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×10 = 20
+    expect(s.enemies[0].hp).toBe(hpBefore - 8 - 20)
     // ターンをまたぐとリセット
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)
@@ -125,5 +125,66 @@ describe('青のラン', () => {
       expect(cardId.startsWith('blue_')).toBe(true)
       expect(['blue_strike', 'blue_guard']).not.toContain(cardId)
     }
+  })
+})
+
+describe('霊気 (妨害→フィニッシュ変換)', () => {
+  it('対抗呪文: 打ち消しと同時に霊気+2が溜まる', () => {
+    let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_counterspell'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_counterspell' })
+    s = withIntent(s, attackIntent(15))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(types(s.eventLog)).toContain('ActionNegated')
+    expect(s.player.aether).toBe(2)
+  })
+
+  it('霊気放出: 霊気×7ダメージを与えて霊気を全消費する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_aether_burst',
+    ])
+    s = { ...s, player: { ...s.player, aether: 4 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_aether_burst' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 4 * 7)
+    expect(s.player.aether).toBe(0)
+    expect(types(s.eventLog)).toContain('AetherDischarged')
+  })
+
+  it('霊気0の放出は不発 (何も起きない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_aether_burst',
+    ])
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_aether_burst' })
+    expect(s.enemies[0].hp).toBe(hpBefore)
+  })
+})
+
+describe('ストームの3系統', () => {
+  it('渦の障壁: 詠唱数×4の氷壁を得る', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_guard',
+      'blue_ponder',
+      'blue_storm_barrier',
+    ])
+    s = { ...s, player: { ...s.player, energy: 5 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_barrier' }) // 詠唱数2 ×5 = 10
+    expect(s.player.iceBlock).toBe(10)
+  })
+
+  it('連鎖する思考: 詠唱数×1枚ドロー', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_guard',
+      'blue_mana_convert',
+      'blue_chain_thought',
+    ])
+    s = { ...s, player: { ...s.player, energy: 5 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_mana_convert' }) // +1枚ドロー
+    const handBefore = s.player.hand.length
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_chain_thought' }) // 詠唱数2 → 2枚
+    expect(s.player.hand.length).toBe(handBefore - 1 + 2)
   })
 })

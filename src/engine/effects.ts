@@ -149,13 +149,37 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return emit(next, { type: 'IceBlockGained', amount })
     }
     case 'dealDamagePerCardPlayed':
-      // ストーム (青): このターンにプレイした他のカード数 × amount のダメージ
+      // ストーム攻撃 (青): 詠唱数 × amount のダメージ
       return dealDamageToEnemy(
         state,
         enemyIndex,
         (effect.amount ?? 0) * state.player.cardsPlayedThisTurn,
         effect.pierce,
       )
+    case 'gainIceBlockPerCardPlayed': {
+      // ストーム防御 (青): 詠唱数 × amount の氷壁
+      const amount = (effect.amount ?? 0) * state.player.cardsPlayedThisTurn
+      if (amount === 0) return state
+      const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
+      return emit(next, { type: 'IceBlockGained', amount })
+    }
+    case 'drawCardsPerCardPlayed':
+      // ストームドロー (青): 詠唱数 × amount 枚ドロー
+      return drawCards(state, (effect.amount ?? 0) * state.player.cardsPlayedThisTurn)
+    case 'addAether': {
+      // 霊気 (青): 妨害・リアクション成功の蓄積
+      const amount = effect.amount ?? 0
+      const next = { ...state, player: { ...state.player, aether: state.player.aether + amount } }
+      return emit(next, { type: 'AetherGained', amount })
+    }
+    case 'dischargeAether': {
+      // 霊気放出 (青): 霊気×amount のダメージを与え、霊気を全消費
+      const spent = state.player.aether
+      if (spent === 0) return state
+      let s: GameState = { ...state, player: { ...state.player, aether: 0 } }
+      s = emit(s, { type: 'AetherDischarged', spent })
+      return dealDamageToEnemy(s, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
+    }
     case 'gainEnergyMax': {
       // 緑の柱①ランプ: 上限のみ増える。恩恵は次の自ターンから
       // (即時利用は 2026-08-23 に廃止。プレイしたターンのテンポ損がランプの対価)

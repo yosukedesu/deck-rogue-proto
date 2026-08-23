@@ -8,7 +8,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 7
       },
       {
         "trigger": "onPlay",
@@ -106,38 +106,33 @@
         "trigger": "onPlay",
         "effect": "gainEnergy",
         "amount": 2
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "drawCards",
-        "amount": 1
       }
     ]
   },
   {
     "id": "blue_storm_lash",
     "name": "奔流の連撃",
-    "cost": 3,
+    "cost": 2,
     "category": "finisher",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 6
+        "amount": 10
       }
     ]
   },
   {
     "id": "blue_tsunami",
     "name": "大津波",
-    "cost": 5,
+    "cost": 4,
     "category": "finisher",
     "exhaust": true,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 10
+        "amount": 12
       }
     ]
   },
@@ -150,6 +145,11 @@
       {
         "trigger": "onEnemyAction",
         "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addAether",
+        "amount": 2
       }
     ]
   },
@@ -165,6 +165,14 @@
           "maxActionValue": 12
         },
         "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "condition": {
+          "maxActionValue": 12
+        },
+        "effect": "addAether",
+        "amount": 2
       }
     ]
   },
@@ -178,6 +186,11 @@
         "trigger": "onAttackIncoming",
         "effect": "gainIceBlock",
         "amount": 8
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addAether",
+        "amount": 1
       }
     ]
   },
@@ -195,6 +208,11 @@
       {
         "trigger": "onAttacked",
         "effect": "gainEnergy",
+        "amount": 1
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "addAether",
         "amount": 1
       }
     ]
@@ -221,7 +239,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 5
       }
     ]
   },
@@ -239,6 +257,45 @@
       {
         "trigger": "onPlay",
         "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_burst",
+    "name": "霊気放出",
+    "cost": 2,
+    "category": "finisher",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAether",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "blue_storm_barrier",
+    "name": "渦の障壁",
+    "cost": 2,
+    "category": "defend",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerCardPlayed",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_chain_thought",
+    "name": "連鎖する思考",
+    "cost": 1,
+    "category": "draw",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCardsPerCardPlayed",
         "amount": 1
       }
     ]

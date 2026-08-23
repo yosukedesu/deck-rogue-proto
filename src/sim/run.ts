@@ -33,11 +33,16 @@ const TURN_LIMIT = 50 // 無限戦闘の保険。超えたら敗北扱い
 /** 成長0での doubleGrowth など、プレイしても無意味・不可能なカードを弾く */
 function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'doubleGrowth')) return state.player.growth > 0
-  // ストーム: 詠唱数0で撃っても無意味
+  // ストーム系: 詠唱数0で撃っても無意味
+  const stormEffects = ['dealDamagePerCardPlayed', 'gainIceBlockPerCardPlayed', 'drawCardsPerCardPlayed']
   if (
-    card.def.effects.some((e) => e.effect === 'dealDamagePerCardPlayed') &&
+    card.def.effects.some((e) => stormEffects.includes(e.effect)) &&
     state.player.cardsPlayedThisTurn === 0
   ) {
+    return false
+  }
+  // 霊気放出: 霊気3未満で撃つのはもったいない (単純ボットの閾値)
+  if (card.def.effects.some((e) => e.effect === 'dischargeAether') && state.player.aether < 3) {
     return false
   }
   const discardCost = card.def.discardCost ?? 0
@@ -84,14 +89,22 @@ function chooseCommand(s: GameState): Command {
     .map((c) => c.def.cost)
   const reserve =
     s.reactionMode === 'hold-manual' && reactionCosts.length > 0 ? Math.min(...reactionCosts) : 0
+  // ストームのペイオフ (詠唱数参照フィニッシャー) が手札にあるなら、その分のエナジーを温存する
+  // (ドローで詠唱数だけ稼いでエナジー切れで撃てない、を防ぐ)
+  const stormCosts = s.player.hand
+    .filter((c) => c.def.effects.some((e) => e.effect === 'dealDamagePerCardPlayed'))
+    .map((c) => c.def.cost)
+  const stormReserve = stormCosts.length > 0 ? Math.min(...stormCosts) : 0
   const spendable = s.player.energy - reserve
 
   for (const category of PLAY_PRIORITY) {
+    // フィニッシャー自身は温存分を使ってよい
+    const budget = category === 'finisher' ? spendable : spendable - stormReserve
     let candidates = s.player.hand.filter(
       (c) =>
         c.def.category === category &&
         isPlayableFromHand(c) &&
-        c.def.cost <= spendable &&
+        c.def.cost <= budget &&
         isWorthPlaying(s, c),
     )
     // 勢い生成付きの攻撃 (突進の助走など) を同ターンの他の攻撃・フィニッシャーより先に打つ
@@ -121,8 +134,10 @@ interface BattleResult {
 
 function runBattle(mode: ReactionMode, deckId: string, enemyId: string, seed: number): BattleResult {
   let s = applyCommand(createInitialState(seed, mode), { type: 'StartCombat', seed, enemyId, deckId })
+  let actions = 0
   while (s.phase !== 'won' && s.phase !== 'lost') {
     if (s.turn > TURN_LIMIT) break // 膠着 → 敗北扱い
+    if (++actions > 3000) break // 1戦闘の行動数セーフガード (無限コンボの検知)
     s = applyCommand(s, chooseCommand(s))
   }
   return {
@@ -169,7 +184,9 @@ function simulateRuns(count: number, baseSeed: number): void {
     for (let i = 0; i < count; i++) {
       let run = createRun((baseSeed + i) >>> 0, 'set-confirm', color)
       let aborted = false
+      let actions = 0
       while (run.phase === 'combat' || run.phase === 'reward') {
+        if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
         if (run.phase === 'reward') {
           run = applyRunCommand(run, { type: 'PickReward', index: chooseReward(run) })
           continue
