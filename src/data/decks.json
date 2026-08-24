@@ -718,5 +718,185 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "starter_white",
+    "name": "白スターター",
+    "color": "white",
+    "description": "防御・回復・従者・威圧の白基本セット",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_flash_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_mass_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_menace",
+        "count": 1
+      },
+      {
+        "cardId": "white_decree",
+        "count": 1
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 1
+      },
+      {
+        "cardId": "white_fortress",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_choir",
+        "count": 1
+      },
+      {
+        "cardId": "white_rally",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_retribution",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_horde",
+    "name": "従者ホード",
+    "color": "white",
+    "description": "従者を並べて「集結」で刈り取る横並びの理想形",
+    "cards": [
+      {
+        "cardId": "white_perm_squire",
+        "count": 3
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 2
+      },
+      {
+        "cardId": "white_perm_choir",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_banneret",
+        "count": 2
+      },
+      {
+        "cardId": "white_rally",
+        "count": 3
+      },
+      {
+        "cardId": "white_grand_charge",
+        "count": 1
+      },
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_fortress",
+    "name": "白亜の要塞",
+    "color": "white",
+    "description": "ブロックを積み上げ城壁砕きで叩きつける要塞の理想形",
+    "cards": [
+      {
+        "cardId": "white_fortress",
+        "count": 3
+      },
+      {
+        "cardId": "white_guard",
+        "count": 3
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 3
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 2
+      },
+      {
+        "cardId": "white_menace",
+        "count": 2
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_white",
+    "name": "白の初期デッキ",
+    "color": "white",
+    "description": "打撃3・防御3・リアクション2・種2 (従者+癒し)",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 3
+      },
+      {
+        "cardId": "white_guard",
+        "count": 3
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_retribution",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      }
+    ]
   }
 ]

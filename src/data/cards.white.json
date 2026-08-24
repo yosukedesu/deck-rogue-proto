@@ -1,0 +1,289 @@
+[
+  {
+    "id": "white_strike",
+    "name": "聖光の一撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "white_guard",
+    "name": "白盾",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "white_heal",
+    "name": "癒しの光",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "white_flash_heal",
+    "name": "祈りの残光",
+    "cost": 0,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "white_mass_heal",
+    "name": "大いなる癒し",
+    "cost": 3,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 14
+      }
+    ]
+  },
+  {
+    "id": "white_menace",
+    "name": "威圧の聖印",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "white_decree",
+    "name": "勅令",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "white_bodyslam",
+    "name": "城壁砕き",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "white_fortress",
+    "name": "大城壁",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "white_perm_squire",
+    "name": "従者の少年",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_shieldmaiden",
+    "name": "盾の乙女",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_choir",
+    "name": "聖歌隊",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_banneret",
+    "name": "旗手",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_rally",
+    "name": "集結",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "white_grand_charge",
+    "name": "大行進",
+    "cost": 4,
+    "type": "physical",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "white_reaction_ward",
+    "name": "護りの聖印",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 14
+      }
+    ]
+  },
+  {
+    "id": "white_reaction_retribution",
+    "name": "報復の光",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 8
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "gainHp",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "white_reaction_sanctuary",
+    "name": "聖域",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 20,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainHp",
+        "amount": 5,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "white_judgment",
+    "name": "裁きの光",
+    "cost": 4,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 2
+      }
+    ]
+  }
+]

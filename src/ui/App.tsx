@@ -83,7 +83,7 @@ const TYPE_LABEL: Record<CardType, string> = {
   permanent: '置物',
 }
 
-const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 青', red: '🔥 赤' }
+const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 青', red: '🔥 赤', white: '⚪ 白', black: '⚫ 黒' }
 
 // ---- キーワード能力のツールチップ ----
 
@@ -97,6 +97,7 @@ const KEYWORD_HELP: Record<string, string> = {
   激昂: '敵フェーズ終了時に自動で強化が増える。長引くほど攻撃が痛くなる',
   混乱: '混乱した敵の攻撃は、プレイヤーでなく他の生存敵（いなければ自分自身）に向かう。攻撃1回ごとに1減る',
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
+  威圧: '敵の強化を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
   応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
@@ -181,6 +182,10 @@ function conditionLabel(e: DeclarativeEffect): string {
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
+function ctx2Block(e: DeclarativeEffect, _ctx: EffectCtx | undefined, trigger: string, pierce: string): string {
+  return `${trigger}⚔️ ブロック×${e.amount}ダメージ${pierce}`
+}
+
 /** 効果1つを1行のテキストに変換する */
 function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
   // 攻撃ダメージには成長+勢い、返しには成長のみ (勢いは自ターン終了でリセットされるため)
@@ -230,6 +235,16 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}敵1体に混乱+${e.amount}（攻撃が仲間に向かう）`
     case 'exposeEnemy':
       return `${trigger}${aoe}急所+${e.amount}（次に受けるダメージ${e.amount}回が+50%）`
+    case 'gainHp':
+      return `${trigger}💚 HP${e.amount}回復`
+    case 'weakenEnemy':
+      return `${trigger}${aoe}威圧${e.amount}（敵の強化-${e.amount}）`
+    case 'dealDamagePerBlock':
+      return ctx2Block(e, ctx, trigger, pierce)
+    case 'dealDamagePerPermanent':
+      return ctx
+        ? `${trigger}⚔️ 置物の数×${e.amount}ダメージ${pierce}`
+        : `${trigger}⚔️ 置物の数×${e.amount}ダメージ${pierce}`
     case 'dischargeGrowth':
       return ctx && ctx.growth > 0
         ? `${trigger}⚔️ 成長×${e.amount}ダメージを与え、成長を全て失う [現在${ctx.growth * (e.amount ?? 0) + ctx.growth}]`
@@ -474,6 +489,10 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `敵に急所+${e.amount}（次のダメージ${e.amount}回が+50%）`, cls: 'log-good' }
     case 'GrowthDischarged':
       return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
+    case 'HpHealed':
+      return { text: `HP+${e.amount}回復`, cls: 'log-good' }
+    case 'EnemyWeakened':
+      return { text: `敵を威圧（強化-${e.amount}）`, cls: 'log-good' }
     case 'ConfusedAttack':
       return {
         text:

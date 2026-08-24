@@ -244,6 +244,8 @@ export type GameEvent =
   | { readonly type: 'EnergyMaxGained'; readonly amount: number }
   | { readonly type: 'GrowthAdded'; readonly amount: number }
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
+  | { readonly type: 'HpHealed'; readonly amount: number } // 回復 (白)
+  | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
   | { readonly type: 'ReactionWhiffed'; readonly cardId: string } // 空振り (伏せは無期限持続が現ルール)
@@ -259,7 +261,7 @@ export type GameEvent =
 // ============================================================
 
 /** カードの色 (MTGカラーパイ準拠)。data/*.json のファイル単位で決まり、読込時に付与される */
-export type CardColor = 'green' | 'blue' | 'red'
+export type CardColor = 'green' | 'blue' | 'red' | 'white' | 'black'
 
 /**
  * カードタイプ (MTGのカードタイプ相当。機械的な挙動で切る):
@@ -324,6 +326,10 @@ export interface DeclarativeEffect {
     | 'negate'
     | 'confuse' // 混乱+X: 敵の攻撃が他の生存敵 (いなければ自分) に向かう (青の精神攻撃)
     | 'exposeEnemy' // 急所+X: その敵が次に受けるプレイヤーダメージX回が+50% (敵版脆弱)
+    | 'gainHp' // 回復 (白の専売): 最大HPまで回復
+    | 'weakenEnemy' // 威圧 (白): 敵の強化を-X (攻撃は最低1クランプの既存則)
+    | 'dealDamagePerBlock' // 要塞型ペイオフ: 現在のブロック×Xダメージ (ボディスラム型)
+    | 'dealDamagePerPermanent' // 集結 (白): 置物の数×Xダメージ (従者の横並び参照)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'

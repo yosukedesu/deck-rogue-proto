@@ -27,6 +27,8 @@ const REWARD_EXCLUDED = new Set([
   'blue_guard',
   'red_strike',
   'red_guard',
+  'white_strike',
+  'white_guard',
 ])
 /** 焚き火: この戦闘 (0-based) をクリアした後に回復 */
 const CAMPFIRE_AFTER = new Set([2, 5, 8])

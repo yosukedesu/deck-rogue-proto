@@ -83,5 +83,26 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "leader_white",
+    "name": "ひなた",
+    "colors": [
+      "white"
+    ],
+    "maxHp": 72,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_white",
+    "sprite": "☀️",
+    "description": "光耀の聖歌士。マラソンを癒しで走り切る。毎ターン開始時にHP1回復",
+    "passive": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 1
+      }
+    ]
   }
 ]

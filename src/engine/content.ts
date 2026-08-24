@@ -4,6 +4,7 @@
 import cardsGreenJson from '../data/cards.green.json' with { type: 'json' }
 import cardsBlueJson from '../data/cards.blue.json' with { type: 'json' }
 import cardsRedJson from '../data/cards.red.json' with { type: 'json' }
+import cardsWhiteJson from '../data/cards.white.json' with { type: 'json' }
 import decksJson from '../data/decks.json' with { type: 'json' }
 import encountersJson from '../data/encounters.json' with { type: 'json' }
 import enemiesJson from '../data/enemies.json' with { type: 'json' }
@@ -29,6 +30,7 @@ export const allCards: readonly CardDef[] = [
   ...withColor(cardsGreenJson, 'green'),
   ...withColor(cardsBlueJson, 'blue'),
   ...withColor(cardsRedJson, 'red'),
+  ...withColor(cardsWhiteJson, 'white'),
 ]
 export const allEnemies = enemiesJson as readonly EnemyDef[]
 export const allEncounters = encountersJson as readonly EncounterDef[]

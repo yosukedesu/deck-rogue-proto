@@ -35,6 +35,8 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dischargeAether',
     'dischargeGrowth',
     'dealDamageCleave',
+    'dealDamagePerBlock',
+    'dealDamagePerPermanent',
     'counter',
   ].includes(effect.effect)
 }
@@ -52,6 +54,9 @@ const ENEMY_TARGETED = new Set([
   'exposeEnemy',
   'dischargeGrowth',
   'dealDamageCleave',
+  'weakenEnemy',
+  'dealDamagePerBlock',
+  'dealDamagePerPermanent',
 ])
 
 /**
@@ -281,6 +286,39 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
       return emit({ ...state, enemies }, { type: 'EnemyConfused', enemyIndex, amount })
     }
+    case 'gainHp': {
+      // 回復 (白の専売。確定済みルール表「回復」)
+      const amount = Math.min(effect.amount ?? 0, state.player.maxHp - state.player.hp)
+      if (amount <= 0) return state
+      const next = { ...state, player: { ...state.player, hp: state.player.hp + amount } }
+      return emit(next, { type: 'HpHealed', amount })
+    }
+    case 'weakenEnemy': {
+      // 威圧 (白): 敵の強化を下げる (確定済みルール表「威圧（白）」)
+      const amount = effect.amount ?? 0
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0) return state
+      const enemies = state.enemies.map((e, i) =>
+        i === enemyIndex ? { ...e, strength: e.strength - amount } : e,
+      )
+      return emit({ ...state, enemies }, { type: 'EnemyWeakened', enemyIndex, amount })
+    }
+    case 'dealDamagePerBlock':
+      // 要塞型ペイオフ: 現在のブロック×X (確定済みルール表「ブロック変換」)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.block,
+        effect.pierce,
+      )
+    case 'dealDamagePerPermanent':
+      // 集結 (白): 置物の数×X (確定済みルール表「従者（置物数参照）」)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.permanents.length,
+        effect.pierce,
+      )
     case 'exposeEnemy': {
       // 急所 (敵版脆弱): 次に受けるプレイヤーダメージN回が+50% (確定済みルール表「急所」)
       const amount = effect.amount ?? 0

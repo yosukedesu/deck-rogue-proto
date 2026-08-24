@@ -36,7 +36,7 @@ function botRole(def: CardDef): BotRole {
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
   if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed')) return 'draw'
-  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed')) return 'defend'
+  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }
 
@@ -56,6 +56,18 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'doubleGrowth')) return state.player.growth > 0
   // 成長放出は成長2以上でないと損 (エンジンを空撃ちしない)
   if (card.def.effects.some((e) => e.effect === 'dischargeGrowth')) return state.player.growth >= 2
+  // ブロック変換はブロック4以上、集結は置物1体以上でないと空撃ち
+  if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) return state.player.block >= 4
+  if (card.def.effects.some((e) => e.effect === 'dealDamagePerPermanent')) {
+    return state.player.permanents.length >= 1
+  }
+  // 回復はHPが減っていなければ無意味
+  if (
+    card.def.effects.every((e) => e.effect === 'gainHp') &&
+    state.player.hp >= state.player.maxHp
+  ) {
+    return false
+  }
   // ストーム系: 詠唱数0で撃っても無意味
   const stormEffects = ['dealDamagePerCardPlayed', 'gainIceBlockPerCardPlayed', 'drawCardsPerCardPlayed']
   if (
