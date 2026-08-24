@@ -8,6 +8,7 @@ import decksJson from '../data/decks.json' with { type: 'json' }
 import encountersJson from '../data/encounters.json' with { type: 'json' }
 import enemiesJson from '../data/enemies.json' with { type: 'json' }
 import leadersJson from '../data/leaders.json' with { type: 'json' }
+import relicsJson from '../data/relics.json' with { type: 'json' }
 import type {
   CardColor,
   CardDef,
@@ -17,6 +18,7 @@ import type {
   EncounterMember,
   EnemyDef,
   LeaderDef,
+  RelicDef,
 } from './types.ts'
 
 // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
@@ -50,6 +52,28 @@ export function encounterName(id: string): string {
 }
 export const allDecks = decksJson as readonly DeckDef[]
 export const allLeaders = leadersJson as readonly LeaderDef[]
+export const allRelics = relicsJson as readonly RelicDef[]
+
+export function getRelicDef(id: string): RelicDef {
+  const def = allRelics.find((r) => r.id === id)
+  if (!def) throw new Error(`未定義レリック: ${id}`)
+  return def
+}
+
+/** A型レリックを「戦闘開始時から場にある不可視の置物」として実体化する (リーダーパッシブと同型) */
+export function buildRelicPermanent(relic: RelicDef): CardInstance {
+  return {
+    uid: `relic_${relic.id}`,
+    def: {
+      id: `${relic.id}_passive`,
+      name: relic.name,
+      cost: 0,
+      type: 'permanent',
+      color: 'green',
+      effects: relic.effects ?? [],
+    },
+  }
+}
 
 export function getLeaderDef(id: string): LeaderDef {
   const def = allLeaders.find((l) => l.id === id)

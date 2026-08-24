@@ -6,6 +6,11 @@ import type { RunState } from './run.ts'
 import { defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
+/** offerフェーズなら通常戦闘を選んで進める */
+function declineOffer(run: RunState): RunState {
+  return run.phase === 'offer' ? applyRunCommand(run, { type: 'ChooseElite', elite: false }) : run
+}
+
 /** 現在の戦闘を外科的に「全滅寸前」にして薙ぎ払い (全体攻撃) で勝つ (プレイヤーHPは維持される) */
 function forceWin(run: RunState): RunState {
   const c = run.combat!
@@ -54,27 +59,27 @@ describe('ラン構造', () => {
     expect(JSON.stringify(a.combat)).toBe(JSON.stringify(b.combat))
   })
 
-  it('初期デッキは run_basic の10枚 (打撃5/防御4/茨1)、HPは全快スタート', () => {
+  it('初期デッキは run_basic の10枚 (エンジンの種入り構成)、HPは全快スタート', () => {
     const run = createRun(1, 'set-confirm')
     expect(run.deck).toHaveLength(10)
     expect(run.hp).toBe(run.maxHp)
     expect(run.combat!.player.hand.length + run.combat!.player.drawPile.length).toBe(10)
   })
 
-  it('深度スケーリング: 序盤は「若い個体」(弱体) で、ボスに向かって強くなる', () => {
-    expect(depthStrength(0)).toBe(-4)
-    expect(depthStrength(6)).toBe(-3)
-    expect(depthStrength(9)).toBe(-1)
-    expect(depthHpScale(0)).toBeCloseTo(0.4)
-    expect(depthHpScale(9)).toBeCloseTo(0.67)
-    // 初戦の敵は弱体状態で登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
+  it('深度スケーリング: 若い個体補正は撤廃 (人間基準化)。強化はボスのみ+1、HPは緩ランプ', () => {
+    expect(depthStrength(0)).toBe(0)
+    expect(depthStrength(6)).toBe(0)
+    expect(depthStrength(9)).toBe(1)
+    expect(depthHpScale(0)).toBeCloseTo(0.75)
+    expect(depthHpScale(9)).toBeCloseTo(1.0)
+    // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
     const run = createRun(5, 'set-confirm')
     const members = resolveEncounter(run.enemyIds[0])
     const def = getEnemyDef(members[0].enemyId)
     expect(run.combat!.enemies[0].maxHp).toBe(
-      Math.round(def.maxHp * 0.4 * (members[0].hpScale ?? 1)),
+      Math.round(def.maxHp * 0.75 * (members[0].hpScale ?? 1)),
     )
-    expect(run.combat!.enemies[0].strength).toBe(-4 + (members[0].strength ?? 0))
+    expect(run.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })
 })
 
@@ -89,6 +94,9 @@ describe('報酬ピック', () => {
     expect(run.rewardOptions).not.toContain('green_guard')
     const picked = run.rewardOptions![0]
     run = applyRunCommand(run, { type: 'PickReward', index: 0 })
+    // 2戦目はエリートオファー対象 → 避ければ通常戦闘へ
+    expect(run.phase).toBe('offer')
+    run = applyRunCommand(run, { type: 'ChooseElite', elite: false })
     expect(run.phase).toBe('combat')
     expect(run.battleIndex).toBe(1)
     expect(run.deck).toHaveLength(11)
@@ -119,25 +127,25 @@ describe('報酬ピック', () => {
 })
 
 describe('HP持ち越しと焚き火', () => {
-  it('戦闘で受けたダメージは持ち越される (勝利ごとの小休止+10のみ回復)', () => {
+  it('戦闘で受けたダメージは持ち越される (勝利ごとの自動回復なし = StS踏襲)', () => {
     let run = createRun(13, 'set-confirm')
     // 被弾した状態を作ってから勝つ
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 27 } } }
     run = forceWin(run)
-    run = applyRunCommand(run, { type: 'SkipReward' })
-    expect(run.combat!.player.hp).toBe(27 + 10)
+    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
+    expect(run.combat!.player.hp).toBe(27)
   })
 
-  it('3戦目クリア後は小休止+10に加え焚き火で最大HPの30%回復 (上限あり)', () => {
+  it('3戦目クリア後は焚き火で最大HPの30%回復 (上限あり)', () => {
     let run = createRun(17, 'set-confirm')
     run = forceWin(run)
-    run = applyRunCommand(run, { type: 'SkipReward' })
+    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
     run = forceWin(run)
     run = applyRunCommand(run, { type: 'SkipReward' })
-    // 3戦目 (battleIndex 2): HP20で勝つ → 小休止+10 + 焚き火+15 (50の30%)
+    // 3戦目 (battleIndex 2): HP20で勝つ → 焚き火のみ (最大HP78の30% = 23)
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
     run = forceWin(run)
-    expect(run.hp).toBe(20 + 10 + 16) // 焚き火は最大HP55の30% (緑リーダー)
+    expect(run.hp).toBe(20 + Math.floor(78 * 0.3))
   })
 
   it('敗北でランは終了する', () => {
@@ -153,17 +161,18 @@ describe('HP持ち越しと焚き火', () => {
 })
 
 describe('ラン走破', () => {
-  it('10戦すべて勝つとラン勝利。ボス戦の敵は強化+3', () => {
+  it('10戦すべて勝つとラン勝利。ボス戦の敵は強化+1・HP等倍', () => {
     let run = createRun(23, 'set-confirm')
     for (let i = 0; i < RUN_BATTLES; i++) {
       if (i === RUN_BATTLES - 1) {
         // ボス戦開始時の深度スケーリングを確認
-        expect(run.combat!.enemies[0].strength).toBe(-1)
+        expect(run.combat!.enemies[0].strength).toBe(1)
         const def = getEnemyDef(run.enemyIds[9])
-        expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * 0.67))
+        expect(run.combat!.enemies[0].maxHp).toBe(def.maxHp)
       }
       run = forceWin(run)
       if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
+      run = declineOffer(run)
     }
     expect(run.phase).toBe('won')
   })

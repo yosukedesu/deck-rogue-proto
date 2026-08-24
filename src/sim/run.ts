@@ -219,8 +219,25 @@ function simulateRuns(count: number, baseSeed: number): void {
       let run = createRun((baseSeed + i) >>> 0, 'set-confirm', leader.id)
       let aborted = false
       let actions = 0
-      while (run.phase === 'combat' || run.phase === 'reward') {
+      while (
+        run.phase === 'combat' ||
+        run.phase === 'reward' ||
+        run.phase === 'offer' ||
+        run.phase === 'relic-reward'
+      ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
+        if (run.phase === 'offer') {
+          // エリート挑戦ポリシー: HP60%以上なら挑む (docs/relics-design.md)
+          run = applyRunCommand(run, {
+            type: 'ChooseElite',
+            elite: run.hp >= run.maxHp * 0.6,
+          })
+          continue
+        }
+        if (run.phase === 'relic-reward') {
+          run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
+          continue
+        }
         if (run.phase === 'reward') {
           run = applyRunCommand(run, { type: 'PickReward', index: chooseReward(run) })
           continue

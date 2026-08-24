@@ -226,14 +226,26 @@
     "cards": [
       {
         "cardId": "green_strike",
-        "count": 5
+        "count": 3
       },
       {
         "cardId": "green_guard",
-        "count": 4
+        "count": 3
       },
       {
         "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sprout",
         "count": 1
       }
     ],
@@ -443,14 +455,26 @@
     "cards": [
       {
         "cardId": "blue_strike",
-        "count": 5
+        "count": 3
       },
       {
         "cardId": "blue_guard",
-        "count": 4
+        "count": 3
       },
       {
         "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
         "count": 1
       }
     ]
@@ -635,14 +659,26 @@
     "cards": [
       {
         "cardId": "red_strike",
-        "count": 5
+        "count": 3
       },
       {
         "cardId": "red_guard",
-        "count": 4
+        "count": 3
       },
       {
         "cardId": "red_reaction_flareback",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_eruption",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_impulse",
         "count": 1
       }
     ]
@@ -655,7 +691,7 @@
     "cards": [
       {
         "cardId": "blue_strike",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "red_strike",
@@ -667,10 +703,18 @@
       },
       {
         "cardId": "red_guard",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
         "count": 1
       }
     ]

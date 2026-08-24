@@ -5,7 +5,7 @@
     "colors": [
       "green"
     ],
-    "maxHp": 55,
+    "maxHp": 78,
     "drawPerTurn": 5,
     "energyMax": 3,
     "rewardChoices": 3,
@@ -26,7 +26,7 @@
     "colors": [
       "blue"
     ],
-    "maxHp": 45,
+    "maxHp": 66,
     "drawPerTurn": 6,
     "energyMax": 3,
     "rewardChoices": 3,
@@ -47,7 +47,7 @@
     "colors": [
       "red"
     ],
-    "maxHp": 52,
+    "maxHp": 75,
     "drawPerTurn": 5,
     "energyMax": 3,
     "rewardChoices": 3,
@@ -69,7 +69,7 @@
       "blue",
       "red"
     ],
-    "maxHp": 38,
+    "maxHp": 60,
     "drawPerTurn": 4,
     "energyMax": 3,
     "rewardChoices": 4,

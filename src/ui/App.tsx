@@ -13,6 +13,7 @@ import {
   getDeckDef,
   getEnemyDef,
   getLeaderDef,
+  getRelicDef,
 } from '../engine/content.ts'
 import {
   cardNeedsTarget,
@@ -162,6 +163,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onEnemyBuffed: '敵強化時: ',
   onEnemyDefended: '敵防御時: ',
   onTurnStart: '毎ターン開始時: ',
+  onCombatStart: '戦闘開始時: ',
   onAttackPlayed: '攻撃プレイ後: ',
 }
 
@@ -1218,8 +1220,92 @@ function RunScreen({
 }) {
   const battleNo = Math.min(run.battleIndex + 1, RUN_BATTLES)
   const isBoss = run.battleIndex === RUN_BATTLES - 1
-  const progressChip = `${isBoss ? '👑 ボス戦' : `戦闘 ${battleNo}/${RUN_BATTLES}`}・デッキ${run.deck.length}枚`
+  const progressChip = `${isBoss ? '👑 ボス戦' : run.currentElite ? `⚔️👑 強個体戦 ${battleNo}/${RUN_BATTLES}` : `戦闘 ${battleNo}/${RUN_BATTLES}`}・デッキ${run.deck.length}枚`
   const ctx = undefined
+  // 所持レリックの表示行 (ホバーで効果説明)
+  const relicChips =
+    run.relics.length > 0 ? (
+      <div style={{ marginTop: 6 }}>
+        {run.relics.map((id) => {
+          const r = getRelicDef(id)
+          return (
+            <span key={id} className="chip">
+              <span className="kw">
+                {r.sprite} {r.name}
+                <span className="kw-tip">{r.description}</span>
+              </span>
+            </span>
+          )
+        })}
+      </div>
+    ) : null
+
+  if (run.phase === 'offer') {
+    const nextName = encounterName(run.enemyIds[run.battleIndex])
+    return (
+      <div className="app setup">
+        <h1>⚔️ 強個体の気配…</h1>
+        <div className="panel">
+          <div className="choice-title">
+            この先にいる「{nextName}」は強個体だ（強化+2・HP+35%）
+          </div>
+          <div className="choice-desc" style={{ marginTop: 6 }}>
+            挑んで勝てば、通常報酬に加えて<b>レリック</b>（ラン中ずっと効く宝物）を1つ選べる。
+            負ければ当然、ランは終わる。
+          </div>
+          <div style={{ marginTop: 6 }}>
+            <span className="chip">HP {run.hp}/{run.maxHp}</span>
+            <span className="chip">レリック {run.relics.length}/3</span>
+          </div>
+          {relicChips}
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <button
+            className="btn btn-primary"
+            onClick={() => dispatch({ type: 'ChooseElite', elite: true })}
+          >
+            👑 挑む（勝てばレリック）
+          </button>{' '}
+          <button className="btn" onClick={() => dispatch({ type: 'ChooseElite', elite: false })}>
+            避けて通常の相手と戦う
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (run.phase === 'relic-reward') {
+    return (
+      <div className="app setup">
+        <h1>🏆 強個体撃破！ レリックを選べ</h1>
+        <div className="choice-row" style={{ marginTop: 12 }}>
+          {(run.relicOptions ?? []).map((id, i) => {
+            const r = getRelicDef(id)
+            return (
+              <button
+                key={id}
+                className="choice"
+                onClick={() => dispatch({ type: 'PickRelic', index: i })}
+              >
+                <div className="choice-title">
+                  <span className="choice-sprite">{r.sprite}</span>
+                  {r.name}
+                </div>
+                <div className="choice-desc">{r.description}</div>
+              </button>
+            )
+          })}
+        </div>
+        <button
+          className="btn"
+          style={{ marginTop: 12 }}
+          onClick={() => dispatch({ type: 'SkipRelic' })}
+        >
+          見送る
+        </button>
+      </div>
+    )
+  }
 
   if (run.phase === 'combat' && run.combat) {
     return (
@@ -1250,6 +1336,7 @@ function RunScreen({
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
           <span className="chip">デッキ {run.deck.length}枚</span>
           <span className="chip">次: {encounterName(run.enemyIds[run.battleIndex + 1])}</span>
+          {relicChips}
         </div>
         <div className="setup-section-title">1枚選んでデッキに加える（スキップ可）</div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>

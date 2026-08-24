@@ -28,7 +28,7 @@ import type {
   StatusInflict,
 } from './types.ts'
 
-export const PLAYER_MAX_HP = 50
+export const PLAYER_MAX_HP = 75 // StSスケール (2026-08-25 人間基準化)
 const BASE_ENERGY = 3
 const DRAW_PER_TURN = 5
 
@@ -82,6 +82,8 @@ export interface CombatOptions {
   readonly enemyHpScale?: number
   /** 敵の初期強化 (攻撃の実値・幅表示に加算される) */
   readonly enemyStrength?: number
+  /** A型レリックの置物 (buildRelicPermanent で生成。リーダーパッシブと同様に注入される) */
+  readonly relicPermanents?: readonly CardInstance[]
 }
 
 /** 戦闘開始の実体: デッキシャッフル・敵配置をして第1ターンを開始する */
@@ -134,11 +136,16 @@ export function startCombatWithOptions(
       ...state.player,
       drawPile: deck,
       hp: Math.min(options.playerHp ?? state.player.maxHp, state.player.maxHp),
+      // A型レリックはリーダーパッシブと同じ「戦闘開始時から場にある置物」(確定済みルール表「レリック」)
+      permanents: [...state.player.permanents, ...(options.relicPermanents ?? [])],
     },
     enemies,
   }
   state = emit(state, { type: 'CombatStarted', enemyId })
-  return startPlayerTurn(state, 1)
+  let s = startPlayerTurn(state, 1)
+  // onCombatStart: 第1ターンのセットアップ (エナジー・ドロー・意図宣言) の後に1回だけ発火
+  s = runPermanentTriggers(s, 'onCombatStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  return s
 }
 
 /** StartCombat: プリセットデッキ ID から戦闘を開始する (単発戦闘用) */

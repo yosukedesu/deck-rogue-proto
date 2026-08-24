@@ -289,6 +289,7 @@ export interface DeclarativeEffect {
     | 'onEnemyBuffed'
     | 'onEnemyDefended'
     | 'onTurnStart'
+    | 'onCombatStart' // 戦闘開始時に1回 (レリック用。第1ターンのドロー・意図宣言の後に発火)
     | 'onAttackPlayed'
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
@@ -440,6 +441,28 @@ export interface EncounterDef {
   readonly id: string
   readonly name: string
   readonly members: readonly EncounterMember[]
+}
+
+// ---- レリック (エリート挑戦の報酬。docs/relics-design.md) ----
+
+/**
+ * レリック定義。A型=フック効果 (effects。リーダーパッシブと同じ置物注入機構) /
+ * B型=ラン定数 (bonus。取得時に RunState を書き換える)
+ */
+export interface RelicDef {
+  readonly id: string
+  readonly name: string
+  readonly sprite: string
+  readonly description: string
+  /** A型: 戦闘開始時に不可視の置物として注入される宣言的効果 */
+  readonly effects?: readonly DeclarativeEffect[]
+  /** B型: ラン定数の恒久変更 */
+  readonly bonus?: {
+    readonly maxHp?: number
+    readonly victoryHeal?: number
+    readonly rewardChoices?: number
+    readonly campfireRatio?: number
+  }
 }
 
 // ---- リーダー (カラーパイの個性。色アイデンティティ=使える色) ----
