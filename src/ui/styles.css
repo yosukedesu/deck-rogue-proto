@@ -133,6 +133,8 @@ button:disabled { cursor: default; }
     'hand   hand';
   gap: 12px;
 }
+/* grid item の min-width:auto を殺す (手札の横スクロール帯が列幅を押し広げるのを防ぐ) */
+.battle > * { min-width: 0; }
 .area-topbar { grid-area: topbar; display: flex; justify-content: space-between; align-items: center; }
 .area-enemy { grid-area: enemy; }
 .area-field { grid-area: field; }
@@ -232,6 +234,13 @@ button:disabled { cursor: default; }
 }
 .player-hp { flex: 1; min-width: 200px; }
 .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+/* 直前の敵フェーズの被害サマリー (ログを見なくても被ダメが分かる) */
+.phase-summary {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.phase-summary-bad { color: var(--danger); font-weight: bold; }
 .pile-info { font-size: 12px; color: var(--muted); }
 
 /* キーワード能力の吹き出し (ホバーで表示。動く演出は使わない) */
@@ -294,6 +303,9 @@ button:disabled { cursor: default; }
   flex-direction: column;
 }
 .card-dim { opacity: 0.45; }
+/* 役割アクセント (UI導出): 攻撃系=赤帯 / 防御系=青帯。ひと目で攻守を判別する */
+.card-role-attack { border-left: 4px solid var(--danger); }
+.card-role-defend { border-left: 4px solid var(--block); }
 .card-cost {
   position: absolute;
   top: -8px;
@@ -389,10 +401,10 @@ button:disabled { cursor: default; }
 .log-good { color: var(--accent); }
 .log-bad { color: var(--danger); }
 
-/* ---------- スマホ閲覧用の簡易レイアウト (本格的なモバイル対応はやらない方針のまま) ---------- */
+/* ---------- スマホ縦画面 (プレイテスト用: スクロール最小化。手札は横スクロール帯) ---------- */
 
 @media (max-width: 700px) {
-  .app { padding: 8px; }
+  .app { padding: 6px; }
   .battle {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -402,17 +414,70 @@ button:disabled { cursor: default; }
       'player'
       'hand'
       'log';
-    gap: 8px;
+    gap: 6px;
   }
-  .enemy-zone { gap: 10px; padding: 8px; }
-  .enemy-sprite { width: 64px; height: 64px; font-size: 40px; }
+  .panel { padding: 8px; }
+  .topbar-title .chip { margin-bottom: 2px; }
+  body { overflow-x: hidden; }
+  /* 敵: コンパクト行 (複数体でも縦に伸びすぎない)。flex-basis 100% で1体=1行に固定 */
+  .enemy-zone { gap: 4px; padding: 2px; }
+  .enemy-card { flex: 0 0 100%; width: 100%; min-width: 0; padding: 2px 4px; gap: 8px; }
+  .enemy-sprite { width: 44px; height: 44px; font-size: 28px; flex-shrink: 0; }
   .enemy-info { min-width: 0; flex: 1; }
-  .card { width: 46%; min-height: 150px; }
-  .card-back, .set-slot-empty { width: 84px; min-height: 108px; }
-  .log { max-height: 200px; }
-  .btn-endturn { width: 100%; padding: 12px; }
+  .enemy-name { font-size: 14px; margin-bottom: 0; }
+  .intent { margin-top: 4px; padding: 2px 8px; font-size: 13px; }
+  .chip { font-size: 11px; padding: 1px 6px; margin-right: 4px; }
+  .bar { height: 14px; }
+  .bar-label { font-size: 10px; }
+  /* 伏せ場・置物はスリムに */
+  .field { min-height: 0; gap: 10px; }
+  .card-back, .set-slot-empty { width: 64px; min-height: 84px; font-size: 20px; }
+  .set-slot-label { font-size: 10px; }
+  /* 手札: 横スクロール帯 (StSモバイル式)。縦積みをやめて画面高を節約 */
   .hand-row { flex-direction: column; }
+  .hand-cards {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .card { width: 142px; min-width: 142px; min-height: 150px; }
+  .card-name { font-size: 13px; }
+  .card-text { font-size: 11px; }
+  .log { max-height: 140px; }
+  .btn-endturn { width: 100%; padding: 12px; }
   .kw-tip { width: 170px; }
+}
+
+/* ---------- スマホ横画面 (高さが低い環境): 2カラム維持のまま全体を圧縮 ---------- */
+
+@media (max-height: 560px) {
+  body { overflow-x: hidden; }
+  .app { padding: 6px; max-width: none; }
+  .battle { gap: 6px; grid-template-columns: 1fr 230px; }
+  .panel { padding: 6px; }
+  .enemy-zone { gap: 6px; padding: 2px; }
+  .enemy-card { flex: 1 1 180px; min-width: 0; padding: 2px 4px; gap: 8px; }
+  .enemy-sprite { width: 40px; height: 40px; font-size: 26px; flex-shrink: 0; }
+  .enemy-info { min-width: 0; flex: 1; }
+  .enemy-name { font-size: 13px; margin-bottom: 0; }
+  .enemy-archetype { display: none; }
+  .intent { margin-top: 2px; padding: 2px 8px; font-size: 12px; }
+  .chip { font-size: 10px; padding: 1px 5px; }
+  .bar { height: 13px; }
+  .field { min-height: 0; }
+  .card-back, .set-slot-empty { width: 60px; min-height: 76px; font-size: 18px; }
+  .hand-cards {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .card { width: 140px; min-width: 140px; min-height: 132px; }
+  .card-name { font-size: 12px; }
+  .card-text { font-size: 11px; margin-top: 4px; }
+  .log { max-height: 120px; }
+  .btn-endturn { padding: 8px 12px; font-size: 14px; }
 }
 
 /* ---------- セットアップ画面 ---------- */

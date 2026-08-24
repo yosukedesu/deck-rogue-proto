@@ -18,6 +18,7 @@ import {
   cardNeedsTarget,
   effectiveCost,
   intimidatedActionValue,
+  isDamageEffect,
   isPlayableFromHand,
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
@@ -179,24 +180,27 @@ function conditionLabel(e: DeclarativeEffect): string {
 function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
   // 攻撃ダメージには成長+勢い、返しには成長のみ (勢いは自ターン終了でリセットされるため)
   const atkBonus = ctx ? ctx.growth + ctx.momentum : 0
-  const atkSuffix = atkBonus > 0 ? `+${atkBonus}` : ''
-  const counterSuffix = ctx && ctx.growth > 0 ? `+${ctx.growth}` : ''
   const trigger = TRIGGER_LABEL[e.trigger] + conditionLabel(e)
   const pierce = e.pierce ? '(貫通)' : ''
   const aoe = e.target === 'all' ? '敵全体に' : ''
+  // トータル先頭表記: 補正込みの実ダメージを先に出し、内訳を括弧で添える
+  const atkBreak = atkBonus > 0 ? `（${'基礎'}${e.amount}+補正${atkBonus}）` : ''
   switch (e.effect) {
     case 'dealDamage':
-      return `${trigger}${aoe}${e.amount}${atkSuffix}ダメージ${pierce}`
+      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${atkBreak}`
     case 'dealDamagePerEnergyMax':
       return ctx
         ? `${trigger}エナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
         : `${trigger}エナジー上限×${e.amount}ダメージ${pierce}`
-    case 'counter':
-      return `${trigger}返し${e.amount}${counterSuffix}ダメージ${pierce}`
+    case 'counter': {
+      const cBonus = ctx ? ctx.growth : 0
+      const cBreak = cBonus > 0 ? `（基礎${e.amount}+成長${cBonus}）` : ''
+      return `${trigger}↩️ 返し${(e.amount ?? 0) + cBonus}ダメージ${pierce}${cBreak}`
+    }
     case 'gainBlock':
-      return `${trigger}ブロック+${e.amount}`
+      return `${trigger}🛡 ブロック+${e.amount}`
     case 'gainIceBlock':
-      return `${trigger}氷壁+${e.amount}`
+      return `${trigger}🧊 氷壁+${e.amount}`
     case 'dealDamagePerCardPlayed':
       return ctx
         ? `${trigger}詠唱数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.cardsPlayed + atkBonus}]`
@@ -220,7 +224,7 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
     case 'confuse':
       return `${trigger}敵1体に混乱+${e.amount}（攻撃が仲間に向かう）`
     case 'dealDamageRandom':
-      return `${trigger}${e.amount}〜${e.amountMax}ダメージ(ランダム)${pierce}`
+      return `${trigger}⚔️ ${(e.amount ?? 0) + atkBonus}〜${(e.amountMax ?? 0) + atkBonus}ダメージ(ランダム)${pierce}${atkBonus > 0 ? `（補正+${atkBonus}込み）` : ''}`
     case 'impulseDraw':
       return `${trigger}衝動${e.amount}枚（山札の上から。このターン限り）`
     case 'loseHp':
@@ -313,7 +317,8 @@ function intentText(intent: EnemyIntent | null, burn = 0): string {
       const min = intimidatedActionValue('attack', intent.shownMin, burn)
       const max = intimidatedActionValue('attack', intent.shownMax, burn)
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      const mark = max < intent.shownMax ? '（威嚇中）' : ''
+      const reduction = intent.shownMax - max
+      const mark = reduction > 0 ? `（威嚇で-${reduction}）` : ''
       return `⚔️ 攻撃 ${min}〜${max}${hits}${mark}${inflictSuffix(intent)}`
     }
     case 'defend':
@@ -336,7 +341,8 @@ function confirmedIntentText(intent: EnemyIntent | null, burn = 0): string {
     case 'attack': {
       const actual = intimidatedActionValue('attack', intent.actual, burn)
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      const mark = actual < intent.actual ? '・威嚇適用済' : ''
+      const reduction = intent.actual - actual
+      const mark = reduction > 0 ? `・威嚇で-${reduction}適用済` : ''
       return `⚔️ 攻撃 ${actual}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${mark}）${inflictSuffix(intent)}`
     }
     case 'defend':
@@ -359,6 +365,43 @@ function cardName(cardId: string): string {
 interface LogLine {
   text: string
   cls: string
+}
+
+/**
+ * 直前の敵フェーズの被害サマリー (ログを見なくても被ダメが分かるように盤面へ常設表示)。
+ * 前回の TurnEnded 〜 最新の TurnStarted の間のイベントを集計する
+ */
+function lastEnemyPhaseSummary(
+  log: readonly GameEvent[],
+): { dealt: number; hpLoss: number; statuses: string[] } | null {
+  let started = -1
+  for (let i = log.length - 1; i >= 0; i--) {
+    if (log[i].type === 'TurnStarted') {
+      started = i
+      break
+    }
+  }
+  if (started <= 0) return null
+  let ended = -1
+  for (let i = started - 1; i >= 0; i--) {
+    if (log[i].type === 'TurnEnded') {
+      ended = i
+      break
+    }
+  }
+  if (ended < 0) return null
+  let dealt = 0
+  let hpLoss = 0
+  const statuses: string[] = []
+  for (let i = ended; i < started; i++) {
+    const e = log[i]
+    if (e.type === 'DamageDealt' && e.source === 'enemy') {
+      dealt += e.amount
+      hpLoss += e.hpLoss
+    }
+    if (e.type === 'StatusInflicted') statuses.push(`${STATUS_LABEL[e.status]}${e.amount}`)
+  }
+  return { dealt, hpLoss, statuses }
 }
 
 function logLine(e: GameEvent): LogLine | null {
@@ -482,6 +525,22 @@ function EnergyOrbs({ energy, energyMax }: { energy: number; energyMax: number }
   )
 }
 
+/**
+ * カードの視覚アクセント用の役割 (UI専用の導出。タイプ体系には影響しない)。
+ * 攻撃系=赤の左帯 / 防御系=青の左帯。両用 (絡み蔦等) は攻撃色を優先
+ */
+function uiCardRole(def: CardDef): 'attack' | 'defend' | 'other' {
+  const all = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+  const hasAtk = all.some(
+    (e) => isDamageEffect(e) || e.effect === 'applyBurn' || e.effect === 'confuse',
+  )
+  if (hasAtk) return 'attack'
+  const hasDef = all.some((e) =>
+    ['gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed'].includes(e.effect),
+  )
+  return hasDef ? 'defend' : 'other'
+}
+
 function CardFrame({
   card,
   dim,
@@ -500,7 +559,7 @@ function CardFrame({
 }) {
   const discounted = displayCost !== undefined && displayCost !== card.def.cost
   return (
-    <div className={`card${dim ? ' card-dim' : ''}`}>
+    <div className={`card card-role-${uiCardRole(card.def)}${dim ? ' card-dim' : ''}`}>
       <div className={`card-cost${discounted ? ' card-cost-discounted' : ''}`}>
         {displayCost ?? card.def.cost}
       </div>
@@ -960,6 +1019,18 @@ function BattleScreen({
           <div className="player-hp">
             <div className="stat-label">プレイヤー HP</div>
             <Bar value={Math.max(0, player.hp)} max={player.maxHp} green />
+            {(() => {
+              const sum = lastEnemyPhaseSummary(s.eventLog)
+              if (!sum) return null
+              const st = sum.statuses.length > 0 ? `・${sum.statuses.join('・')}` : ''
+              return (
+                <div className={`phase-summary${sum.hpLoss > 0 ? ' phase-summary-bad' : ''}`}>
+                  {sum.dealt > 0
+                    ? `🩸 前の敵ターン: HP-${sum.hpLoss}（被弾${sum.dealt}・軽減${sum.dealt - sum.hpLoss}）${st}`
+                    : `✅ 前の敵ターン: 被弾なし${st}`}
+                </div>
+              )
+            })()}
           </div>
           <div>
             <div className="stat-label">エナジー</div>
