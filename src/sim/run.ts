@@ -12,7 +12,7 @@
 //   - 割り込み: set-confirm は常に「発動」、hold-manual は発動可能な先頭カードを常に発動
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
-import { allDecks, allEnemies, getCardDef } from '../engine/content.ts'
+import { allDecks, allEnemies, allLeaders, getCardDef } from '../engine/content.ts'
 import { effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
@@ -174,15 +174,15 @@ function chooseReward(run: { rewardOptions: readonly string[] | null }): number 
 }
 
 function simulateRuns(count: number, baseSeed: number): void {
-  console.error(`# ドラフト連戦 sim: ${count}ラン × 3色, baseSeed=${baseSeed} (ピックはカテゴリ優先の単純方針)`)
-  console.log('color,runs,cleared,clearRate,avgBattlesCleared,avgFinalDeckSize')
-  for (const color of ['green', 'blue', 'red'] as const) {
+  console.error(`# ドラフト連戦 sim: ${count}ラン × ${allLeaders.length}リーダー, baseSeed=${baseSeed} (ピックはカテゴリ優先の単純方針)`)
+  console.log('leader,runs,cleared,clearRate,avgBattlesCleared,avgFinalDeckSize')
+  for (const leader of allLeaders) {
     const deathsByBattle = new Array<number>(RUN_BATTLES).fill(0)
     let cleared = 0
     let totalBattlesCleared = 0
     let totalDeckSize = 0
     for (let i = 0; i < count; i++) {
-      let run = createRun((baseSeed + i) >>> 0, 'set-confirm', color)
+      let run = createRun((baseSeed + i) >>> 0, 'set-confirm', leader.id)
       let aborted = false
       let actions = 0
       while (run.phase === 'combat' || run.phase === 'reward') {
@@ -205,7 +205,7 @@ function simulateRuns(count: number, baseSeed: number): void {
     }
     console.log(
       [
-        color,
+        leader.id,
         count,
         cleared,
         (cleared / count).toFixed(3),
@@ -214,7 +214,7 @@ function simulateRuns(count: number, baseSeed: number): void {
       ].join(','),
     )
     console.error(
-      `# ${color} 敗北した戦闘の分布: ` +
+      `# ${leader.id} 敗北した戦闘の分布: ` +
         deathsByBattle.map((d, i) => (d > 0 ? `${i + 1}戦目:${d}` : null)).filter(Boolean).join(' '),
     )
   }

@@ -18,8 +18,8 @@ describe('赤のカラーパイ', () => {
   })
 
   it('赤ランは赤の基本デッキで始まり、色が保持される', () => {
-    const run = createRun(7, 'set-confirm', 'red')
-    expect(run.color).toBe('red')
+    const run = createRun(7, 'set-confirm', 'leader_red')
+    expect(run.colors).toEqual(['red'])
     expect(run.deck.every((c) => c.def.color === 'red')).toBe(true)
   })
 })

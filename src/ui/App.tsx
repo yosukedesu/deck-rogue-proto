@@ -1,7 +1,17 @@
 // ui/ は状態を読んでコマンドを投げるだけの薄い層。ゲームロジックを書かない (CLAUDE.md)。
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
 import { useState } from 'react'
-import { allDecks, allEnemies, deckSize, getCardDef, getDeckDef, getEnemyDef } from '../engine/content.ts'
+import {
+  allDecks,
+  allEnemies,
+  allLeaders,
+  deckAllowedForLeader,
+  deckSize,
+  getCardDef,
+  getDeckDef,
+  getEnemyDef,
+  getLeaderDef,
+} from '../engine/content.ts'
 import { effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
@@ -441,6 +451,7 @@ interface Config {
   mode: ReactionMode
   enemyId: string
   deckId: string
+  leaderId?: string
   seed: number
 }
 
@@ -456,14 +467,18 @@ function SetupScreen({
   onStartRun,
 }: {
   onStart: (cfg: Config) => void
-  onStartRun: (seed: number, color: CardColor) => void
+  onStartRun: (seed: number, leaderId: string) => void
 }) {
   const [enemyId, setEnemyId] = useState(allEnemies[0].id)
-  const [deckId, setDeckId] = useState(allDecks[0].id)
-  const [runColor, setRunColor] = useState<CardColor>('green')
+  const [leaderId, setLeaderId] = useState(allLeaders[0].id)
+  const leader = getLeaderDef(leaderId)
+  const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
+  const [deckId, setDeckId] = useState(allowedDecks[0].id)
   const [seedInput, setSeedInput] = useState('')
   const parseSeed = () =>
     /^\d+$/.test(seedInput) ? Number(seedInput) >>> 0 : Date.now() % 2 ** 32
+  // リーダー変更で使用可能デッキ外を選んでいたら先頭に戻す
+  const effectiveDeckId = allowedDecks.some((d) => d.id === deckId) ? deckId : allowedDecks[0].id
   return (
     <div className="app setup">
       <h1>deck-rogue-proto</h1>
@@ -473,36 +488,49 @@ function SetupScreen({
           リアクションはコスト事前払いで伏せる。敵の行動が確定したら（実値公開後）、発動するか温存するかを選ぶ。
         </div>
       </div>
+
+      <div className="setup-section-title">リーダー（色アイデンティティ＝使える色。統率者方式）</div>
+      <div className="choice-row">
+        {allLeaders.map((l) => (
+          <button
+            key={l.id}
+            className={`choice${leaderId === l.id ? ' choice-selected' : ''}`}
+            onClick={() => setLeaderId(l.id)}
+          >
+            <div className="choice-title">
+              <span className="choice-sprite">{l.sprite}</span>
+              {l.name}（{l.colors.map((c) => COLOR_LABEL[c]).join('')}）
+            </div>
+            <div className="choice-desc">
+              HP {l.maxHp} / ドロー{l.drawPerTurn}枚 / ピック候補{l.rewardChoices}枚
+            </div>
+            <div className="choice-desc">{l.description}</div>
+          </button>
+        ))}
+      </div>
+
       <div className="panel" style={{ marginTop: 16 }}>
         <div className="choice-title">🏕 ドラフト連戦（{RUN_BATTLES}戦ラン）</div>
         <div className="choice-desc">
-          色別の基本10枚から出発し、勝利ごとにその色の3枚から1枚ピックして構築。
-          敵は段階制でだんだん強くなり、HPは持ち越し（勝利+10、3戦ごとに焚き火30%）。
+          {leader.name}の基本10枚から出発し、勝利ごとに{leader.colors.map((c) => COLOR_LABEL[c]).join('')}
+          の{leader.rewardChoices}枚から1枚ピックして構築。敵は段階制でだんだん強くなり、HPは持ち越し。
         </div>
-        <div style={{ margin: '8px 0' }}>
-          {(['green', 'blue', 'red'] as const).map((c) => (
-            <button
-              key={c}
-              className={`btn${runColor === c ? ' btn-primary' : ''}`}
-              style={{ marginRight: 6 }}
-              onClick={() => setRunColor(c)}
-            >
-              {COLOR_LABEL[c]}
-            </button>
-          ))}
-        </div>
-        <button className="btn btn-primary" onClick={() => onStartRun(parseSeed(), runColor)}>
-          ランを開始
+        <button
+          className="btn btn-primary"
+          style={{ marginTop: 8 }}
+          onClick={() => onStartRun(parseSeed(), leaderId)}
+        >
+          {leader.sprite} {leader.name}でランを開始
         </button>
       </div>
 
       <div className="setup-section-title">── 以下は単発戦闘（デッキ・敵を指定して1戦） ──</div>
-      <div className="setup-section-title">デッキ（アーキタイプ理想形の検証用）</div>
+      <div className="setup-section-title">デッキ（リーダーの色で使えるもののみ）</div>
       <div className="choice-row">
-        {allDecks.map((d) => (
+        {allowedDecks.map((d) => (
           <button
             key={d.id}
-            className={`choice${deckId === d.id ? ' choice-selected' : ''}`}
+            className={`choice${effectiveDeckId === d.id ? ' choice-selected' : ''}`}
             onClick={() => setDeckId(d.id)}
           >
             <div className="choice-title">
@@ -542,7 +570,7 @@ function SetupScreen({
       <div style={{ marginTop: 20 }}>
         <button
           className="btn btn-primary btn-endturn"
-          onClick={() => onStart({ mode: ADOPTED_MODE, enemyId, deckId, seed: parseSeed() })}
+          onClick={() => onStart({ mode: ADOPTED_MODE, enemyId, deckId: effectiveDeckId, leaderId, seed: parseSeed() })}
         >
           ⚔️ 戦闘開始
         </button>
@@ -596,6 +624,11 @@ function BattleScreen({
       <div className="area-topbar">
         <span className="topbar-title">
           <span className="chip chip-mode">{s.reactionMode}</span>
+          {config.leaderId && (
+            <span className="chip">
+              {getLeaderDef(config.leaderId).sprite} {getLeaderDef(config.leaderId).name}
+            </span>
+          )}
           {extraChip ? (
             <span className="chip">{extraChip}</span>
           ) : (
@@ -947,6 +980,7 @@ function RunScreen({
           mode: run.mode,
           enemyId: run.enemyIds[run.battleIndex],
           deckId: 'run_basic',
+          leaderId: run.leaderId,
           seed: run.seed,
         }}
         dispatch={(command) => dispatch({ type: 'Combat', command })}
@@ -1043,6 +1077,7 @@ export default function App() {
         seed: cfg.seed,
         enemyId: cfg.enemyId,
         deckId: cfg.deckId,
+        leaderId: cfg.leaderId,
       }),
     )
   }
@@ -1078,12 +1113,12 @@ export default function App() {
         run={run}
         dispatch={dispatchRun}
         onExit={() => setRun(null)}
-        onRestart={(seed) => setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.color ?? 'green'))}
+        onRestart={(seed) => setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green'))}
       />
     )
   }
   if (state === null || config === null) {
-    return <SetupScreen onStart={start} onStartRun={(seed, color) => setRun(createRun(seed, ADOPTED_MODE, color))} />
+    return <SetupScreen onStart={start} onStartRun={(seed, leaderId) => setRun(createRun(seed, ADOPTED_MODE, leaderId))} />
   }
   return (
     <BattleScreen

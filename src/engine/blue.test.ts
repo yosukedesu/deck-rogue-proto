@@ -108,8 +108,8 @@ describe('青の置物', () => {
 
 describe('青のラン', () => {
   it('青ランは青の基本デッキで始まり、報酬は青のカードのみ (基本札除外)', () => {
-    let run = createRun(31, 'set-confirm', 'blue')
-    expect(run.color).toBe('blue')
+    let run = createRun(31, 'set-confirm', 'leader_blue')
+    expect(run.colors).toEqual(['blue'])
     expect(run.deck).toHaveLength(10)
     expect(run.deck.every((c) => c.def.color === 'blue')).toBe(true)
     // 外科的に勝利して報酬を確認

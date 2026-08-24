@@ -11,7 +11,7 @@ export { createInitialState }
 export function applyCommand(state: GameState, command: Command): GameState {
   switch (command.type) {
     case 'StartCombat':
-      return startCombat(command.seed, state.reactionMode, command.enemyId, command.deckId)
+      return startCombat(command.seed, state.reactionMode, command.enemyId, command.deckId, command.leaderId)
     case 'PlayCard':
       return playCard(state, command.cardUid, command.modeIndex, command.discardUids)
     case 'EndTurn':

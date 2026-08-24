@@ -646,5 +646,33 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "run_basic_izzet",
+    "name": "ラン基本デッキ(イゼット)",
+    "color": "blue",
+    "description": "青赤ドラフト連戦の出発点。水撃×3・火弾×2・氷盾×2・灰の盾×2・対抗呪文×1",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 3
+      },
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      }
+    ]
   }
 ]

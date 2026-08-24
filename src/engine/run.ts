@@ -4,20 +4,13 @@
 // HPは持ち越し、3・6・9戦目クリア後に焚き火 (最大HPの30%回復)。
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
-import { PLAYER_MAX_HP, startCombatWithOptions } from './combat.ts'
-import { allCards, buildDeck, getCardDef } from './content.ts'
+import { startCombatWithOptions } from './combat.ts'
+import { allCards, buildDeck, getCardDef, getLeaderDef } from './content.ts'
 import { createRng, nextInt, shuffle } from './rng.ts'
 import { applyCommand } from './state.ts'
 import type { CardColor, CardInstance, Command, GameState, RngState, ReactionMode } from './types.ts'
 
 export const RUN_BATTLES = 10
-/** 色ごとのラン初期デッキ */
-const RUN_STARTER_DECK: Record<CardColor, string> = {
-  green: 'run_basic',
-  blue: 'run_basic_blue',
-  red: 'run_basic_red',
-}
-const REWARD_CHOICES = 3
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 const REWARD_EXCLUDED = new Set([
   'green_strike',
@@ -70,8 +63,10 @@ export type RunPhase = 'combat' | 'reward' | 'won' | 'lost'
 export interface RunState {
   readonly seed: number
   readonly mode: ReactionMode
-  /** ランの色 (初期デッキと報酬プールを決める) */
-  readonly color: CardColor
+  /** リーダー (色アイデンティティ・初期デッキ・報酬プール・ピック候補数を決める) */
+  readonly leaderId: string
+  /** リーダーの色アイデンティティ (leaderId から導出してキャッシュ) */
+  readonly colors: readonly CardColor[]
   /** ラン専用RNG (敵並び・報酬・戦闘シードの決定に使う) */
   readonly rng: RngState
   /** 現在のデッキ (ピックで増える) */
@@ -102,6 +97,7 @@ function startBattle(run: RunState): RunState {
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
   const combat = startCombatWithOptions(combatSeed, run.mode, run.enemyIds[run.battleIndex], {
     deck: run.deck,
+    leaderId: run.leaderId,
     playerHp: run.hp,
     enemyHpScale: depthHpScale(run.battleIndex),
     enemyStrength: depthStrength(run.battleIndex),
@@ -109,7 +105,8 @@ function startBattle(run: RunState): RunState {
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null }
 }
 
-export function createRun(seed: number, mode: ReactionMode, color: CardColor = 'green'): RunState {
+export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_green'): RunState {
+  const leader = getLeaderDef(leaderId)
   let rng = createRng(seed)
   const enemyIds: string[] = []
   for (let i = 0; i < RUN_BATTLES; i++) {
@@ -121,11 +118,12 @@ export function createRun(seed: number, mode: ReactionMode, color: CardColor = '
   const run: RunState = {
     seed,
     mode,
-    color,
+    leaderId,
+    colors: leader.colors,
     rng,
-    deck: buildDeck(RUN_STARTER_DECK[color]),
-    hp: PLAYER_MAX_HP,
-    maxHp: PLAYER_MAX_HP,
+    deck: buildDeck(leader.runDeckId),
+    hp: leader.maxHp,
+    maxHp: leader.maxHp,
     battleIndex: 0,
     enemyIds,
     phase: 'combat',
@@ -136,13 +134,14 @@ export function createRun(seed: number, mode: ReactionMode, color: CardColor = '
   return startBattle(run)
 }
 
-/** 報酬3枚を抽選 (ランの色のカードのみ・基本札除外・重複なし) */
+/** 報酬を抽選 (リーダーの色アイデンティティのカードのみ・基本札除外・重複なし)。候補数はリーダー個性 */
 function rollRewards(run: RunState): RunState {
+  const leader = getLeaderDef(run.leaderId)
   const pool = allCards
-    .filter((c) => c.color === run.color && !REWARD_EXCLUDED.has(c.id))
+    .filter((c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id))
     .map((c) => c.id)
   const [shuffled, rng] = shuffle(run.rng, pool)
-  return { ...run, rng, rewardOptions: shuffled.slice(0, REWARD_CHOICES), phase: 'reward' }
+  return { ...run, rng, rewardOptions: shuffled.slice(0, leader.rewardChoices), phase: 'reward' }
 }
 
 /** 戦闘勝利後の処理: HP持ち越し・焚き火・報酬 or ラン勝利 */
@@ -160,7 +159,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
 export function applyRunCommand(run: RunState, command: RunCommand): RunState {
   switch (command.type) {
     case 'StartRun':
-      return createRun(command.seed, run.mode, run.color)
+      return createRun(command.seed, run.mode, run.leaderId)
     case 'Combat': {
       if (run.phase !== 'combat' || run.combat === null) throw new Error('戦闘中ではない')
       if (command.command.type === 'StartCombat') throw new Error('ラン中の戦闘開始はランが管理する')

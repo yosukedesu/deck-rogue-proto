@@ -48,6 +48,8 @@ export interface CombatantState {
 export interface PlayerState extends CombatantState {
   readonly energy: number
   readonly energyMax: number // 緑の柱①: ランプで戦闘中のみ増える (戦闘ごとにリセット)
+  /** 毎ターンのドロー枚数 (リーダーの個性で変わる) */
+  readonly drawPerTurn: number
   readonly hand: readonly CardInstance[]
   readonly drawPile: readonly CardInstance[]
   readonly discardPile: readonly CardInstance[]
@@ -154,6 +156,8 @@ export type Command =
       readonly enemyId: string
       /** 使用デッキ (data/decks.json の id)。省略時は 'starter' */
       readonly deckId?: string
+      /** リーダー (data/leaders.json の id)。省略時はリーダーなしの素のルール */
+      readonly leaderId?: string
     }
   | {
       readonly type: 'PlayCard'
@@ -355,6 +359,27 @@ export interface EnemyDef {
   readonly sequence?: readonly string[]
   /** プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型)。省略時は通常行動 */
   readonly movesVsSet?: readonly EnemyMove[]
+}
+
+// ---- リーダー (カラーパイの個性。色アイデンティティ=使える色) ----
+
+export interface LeaderDef {
+  readonly id: string
+  readonly name: string
+  /** 色アイデンティティ。デッキ・ランの報酬で使える色 (統率者方式)。ギルドは2色 */
+  readonly colors: readonly CardColor[]
+  readonly maxHp: number
+  /** 毎ターンのドロー枚数 (リソース個性) */
+  readonly drawPerTurn: number
+  readonly energyMax: number
+  /** ランの報酬ピックの候補数 (リソース個性) */
+  readonly rewardChoices: number
+  /** ランの初期デッキ */
+  readonly runDeckId: string
+  readonly sprite: string
+  readonly description: string
+  /** パッシブ能力。戦闘開始時から場にあるリーダー置物として解決される */
+  readonly passive: readonly DeclarativeEffect[]
 }
 
 // ---- デッキ (アーキタイプ理想形の検証用プリセット) ----

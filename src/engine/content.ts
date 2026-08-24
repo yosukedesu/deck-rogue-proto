@@ -6,7 +6,8 @@ import cardsBlueJson from '../data/cards.blue.json' with { type: 'json' }
 import cardsRedJson from '../data/cards.red.json' with { type: 'json' }
 import decksJson from '../data/decks.json' with { type: 'json' }
 import enemiesJson from '../data/enemies.json' with { type: 'json' }
-import type { CardColor, CardDef, CardInstance, DeckDef, EnemyDef } from './types.ts'
+import leadersJson from '../data/leaders.json' with { type: 'json' }
+import type { CardColor, CardDef, CardInstance, DeckDef, EnemyDef, LeaderDef } from './types.ts'
 
 // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
 const withColor = (cards: readonly unknown[], color: CardColor): readonly CardDef[] =>
@@ -19,6 +20,33 @@ export const allCards: readonly CardDef[] = [
 ]
 export const allEnemies = enemiesJson as readonly EnemyDef[]
 export const allDecks = decksJson as readonly DeckDef[]
+export const allLeaders = leadersJson as readonly LeaderDef[]
+
+export function getLeaderDef(id: string): LeaderDef {
+  const def = allLeaders.find((l) => l.id === id)
+  if (!def) throw new Error(`未定義リーダー: ${id}`)
+  return def
+}
+
+/** リーダーの色アイデンティティで使えるデッキか (統率者方式) */
+export function deckAllowedForLeader(leader: LeaderDef, deck: DeckDef): boolean {
+  return leader.colors.includes(deck.color)
+}
+
+/** リーダーのパッシブを「戦闘開始時から場にある置物」として実体化する */
+export function buildLeaderPassive(leader: LeaderDef): CardInstance {
+  return {
+    uid: `leader_${leader.id}`,
+    def: {
+      id: `${leader.id}_passive`,
+      name: `${leader.name}の能力`,
+      cost: 0,
+      category: 'permanent',
+      color: leader.colors[0],
+      effects: leader.passive,
+    },
+  }
+}
 
 export function getCardDef(id: string): CardDef {
   const def = allCards.find((c) => c.id === id)

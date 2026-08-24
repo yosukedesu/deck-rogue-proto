@@ -12,6 +12,7 @@ import {
   resolveEffect,
   resolveOnPlayEffects,
 } from './effects.ts'
+import { buildLeaderPassive, getLeaderDef } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
@@ -34,6 +35,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       block: 0,
       energy: BASE_ENERGY,
       energyMax: BASE_ENERGY, // ランプは戦闘ごとにリセット (確定済みルール)
+      drawPerTurn: DRAW_PER_TURN,
       hand: [],
       drawPile: [],
       discardPile: [],
@@ -60,6 +62,8 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
 export interface CombatOptions {
   /** 使用するデッキの実カード列 */
   readonly deck: readonly CardInstance[]
+  /** リーダー (パッシブ置物・最大HP・ドロー枚数・エナジー上限の個性を適用) */
+  readonly leaderId?: string
   /** 開始時HP (持ち越し用)。省略時は全快 */
   readonly playerHp?: number
   /** 敵HPの倍率 (ランの深度スケーリング用) */
@@ -77,6 +81,22 @@ export function startCombatWithOptions(
 ): GameState {
   const enemyDef = getEnemyDef(enemyId)
   let state = createInitialState(seed, reactionMode)
+  // リーダーの個性: 最大HP・ドロー枚数・エナジー上限・パッシブ置物
+  const leader = options.leaderId ? getLeaderDef(options.leaderId) : null
+  if (leader) {
+    state = {
+      ...state,
+      player: {
+        ...state.player,
+        maxHp: leader.maxHp,
+        hp: leader.maxHp,
+        drawPerTurn: leader.drawPerTurn,
+        energy: leader.energyMax,
+        energyMax: leader.energyMax,
+        permanents: [buildLeaderPassive(leader)],
+      },
+    }
+  }
   const [deck, rng] = shuffle(state.rng, options.deck)
   const enemyMaxHp = Math.round(enemyDef.maxHp * (options.enemyHpScale ?? 1))
   state = {
@@ -110,8 +130,9 @@ export function startCombat(
   reactionMode: ReactionMode,
   enemyId: string,
   deckId = 'starter',
+  leaderId?: string,
 ): GameState {
-  return startCombatWithOptions(seed, reactionMode, enemyId, { deck: buildDeck(deckId) })
+  return startCombatWithOptions(seed, reactionMode, enemyId, { deck: buildDeck(deckId), leaderId })
 }
 
 /** 敵の行動テーブル選択: プレイヤーに伏せがあれば movesVsSet を優先 (伏せ警戒型・伏せ破壊型) */
@@ -184,7 +205,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   }
   s = emit(s, { type: 'TurnStarted', turn })
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
-  s = drawCards(s, DRAW_PER_TURN)
+  s = drawCards(s, s.player.drawPerTurn)
   return declareIntents(s)
 }
 

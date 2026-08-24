@@ -118,7 +118,7 @@ describe('HP持ち越しと焚き火', () => {
     // 3戦目 (battleIndex 2): HP20で勝つ → 小休止+10 + 焚き火+15 (50の30%)
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
     run = forceWin(run)
-    expect(run.hp).toBe(20 + 10 + 15)
+    expect(run.hp).toBe(20 + 10 + 16) // 焚き火は最大HP55の30% (緑リーダー)
   })
 
   it('敗北でランは終了する', () => {
