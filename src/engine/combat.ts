@@ -31,6 +31,8 @@ import type {
 export const PLAYER_MAX_HP = 75 // StSスケール (2026-08-25 人間基準化)
 const BASE_ENERGY = 3
 const DRAW_PER_TURN = 5
+/** 激昂による強化の累積上限 (確定済みルール表「激昂」) */
+const ENRAGE_CAP = 6
 
 /** 戦闘前の空状態 (UI/sim が方式を保持するための器)。戦闘は StartCombat で開始する */
 export function createInitialState(seed: number, reactionMode: ReactionMode): GameState {
@@ -694,8 +696,9 @@ function finishEnemyPhase(state: GameState): GameState {
         s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount })
       }
     }
-    if (def.enrage !== undefined) {
-      const amount = def.enrage
+    if (def.enrage !== undefined && e.strength < ENRAGE_CAP) {
+      // 激昂の累積上限: タイマーは残すが無限強化はしない (2026-08-25 バランス測定で低速デッキ全滅の原因と判明)
+      const amount = Math.min(def.enrage, ENRAGE_CAP - e.strength)
       s = {
         ...s,
         enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),

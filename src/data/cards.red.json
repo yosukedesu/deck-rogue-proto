@@ -8,7 +8,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 7
+        "amount": 6
       }
     ]
   },
@@ -75,7 +75,7 @@
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 10
+        "amount": 8
       }
     ]
   },

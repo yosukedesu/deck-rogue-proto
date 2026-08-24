@@ -61,7 +61,7 @@ describe('墓地 (セルフミル + 捨て札参照)', () => {
     expect(s.player.exhaustPile.length).toBe(4)
   })
 
-  it('亡霊の槍: 消滅した枚数×1のダメージ', () => {
+  it('亡霊の槍: 3+消滅した枚数×1のダメージ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_grave_bolt',
     ])
@@ -77,7 +77,8 @@ describe('墓地 (セルフミル + 捨て札参照)', () => {
     }
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_grave_bolt' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 8)
+    expect(s.enemies[0].hp).toBe(enemyHp - 3 - 8) // 基礎3 + 消滅8×1
+
   })
 })
 

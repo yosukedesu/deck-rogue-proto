@@ -21,7 +21,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 4
+        "amount": 5
       }
     ]
   },
@@ -117,6 +117,11 @@
     "cost": 1,
     "type": "spell",
     "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerExhaust",

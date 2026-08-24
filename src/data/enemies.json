@@ -219,23 +219,23 @@
       {
         "id": "flurry",
         "kind": "attack",
-        "min": 6,
-        "max": 8,
+        "min": 5,
+        "max": 7,
         "weight": 1,
         "hits": 3
       },
       {
         "id": "howl",
         "kind": "buff",
-        "min": 2,
-        "max": 3,
+        "min": 1,
+        "max": 2,
         "weight": 1
       },
       {
         "id": "rend",
         "kind": "attack",
-        "min": 5,
-        "max": 7,
+        "min": 4,
+        "max": 6,
         "weight": 1,
         "hits": 4
       }
@@ -339,7 +339,7 @@
     "name": "刻限の門番",
     "archetype": "enrager",
     "flavor": "鐘が鳴るたび強くなる。長居は死。",
-    "maxHp": 170,
+    "maxHp": 155,
     "enrage": 2,
     "moves": [
       {

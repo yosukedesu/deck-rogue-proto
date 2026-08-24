@@ -29,7 +29,7 @@ describe('自己誘発リアクション', () => {
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_ambush_trap' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 7 - 5) // 火弾7 + 追い打ち5
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 5) // 火弾6 + 追い打ち5
     expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
     expect(s.player.discardPile.some((c) => c.def.id === 'red_ambush_trap')).toBe(true)
   })
