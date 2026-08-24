@@ -1249,7 +1249,7 @@ function RunScreen({
           <span className="chip">戦闘 {battleNo}/{RUN_BATTLES} クリア</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
           <span className="chip">デッキ {run.deck.length}枚</span>
-          <span className="chip">次: {getEnemyDef(run.enemyIds[run.battleIndex + 1]).name}</span>
+          <span className="chip">次: {encounterName(run.enemyIds[run.battleIndex + 1])}</span>
         </div>
         <div className="setup-section-title">1枚選んでデッキに加える（スキップ可）</div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
