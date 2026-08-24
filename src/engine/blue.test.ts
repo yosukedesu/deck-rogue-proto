@@ -114,11 +114,16 @@ describe('青のラン', () => {
     expect(run.deck.every((c) => c.def.color === 'blue')).toBe(true)
     // 外科的に勝利して報酬を確認
     const c = run.combat!
-    let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
+    let surgical: GameState = {
+      ...c,
+      // 先頭だけ残して全滅寸前に (編成戦でも単体攻撃1発で勝てる状態を作る)
+      enemies: c.enemies.map((e, i) => ({ ...e, hp: i === 0 ? 1 : 0, block: 0 })),
+    }
     surgical = withIntent(withHand(surgical, ['blue_current_lash']), defendIntent(0))
     run = applyRunCommand(
       { ...run, combat: surgical },
-      { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_blue_current_lash' } },
+      // 複数体編成の可能性があるため対象を明示 (StS式ターゲティング)
+      { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_blue_current_lash', targetIndex: 0 } },
     )
     expect(run.phase).toBe('reward')
     for (const cardId of run.rewardOptions!) {

@@ -6,15 +6,16 @@
 
 import { buildDeck, getEnemyDef } from './content.ts'
 import {
+  cardNeedsTarget,
   drawCards,
   effectiveCost,
   intimidatedActionValue,
   isDamageEffect,
   isPlayableFromHand,
-  resolveEffect,
+  resolveEffectTargeted,
   resolveOnPlayEffects,
 } from './effects.ts'
-import { buildLeaderPassive, getLeaderDef, WOUND_DEF } from './content.ts'
+import { buildLeaderPassive, getLeaderDef, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
@@ -90,7 +91,8 @@ export function startCombatWithOptions(
   enemyId: string,
   options: CombatOptions,
 ): GameState {
-  const enemyDef = getEnemyDef(enemyId)
+  // 敵ID or 編成ID を編成メンバー列に解決 (確定済みルール表「戦闘形式」)
+  const members = resolveEncounter(enemyId)
   let state = createInitialState(seed, reactionMode)
   // リーダーの個性: 最大HP・ドロー枚数・エナジー上限・パッシブ置物
   const leader = options.leaderId ? getLeaderDef(options.leaderId) : null
@@ -109,7 +111,22 @@ export function startCombatWithOptions(
     }
   }
   const [deck, rng] = shuffle(state.rng, options.deck)
-  const enemyMaxHp = Math.round(enemyDef.maxHp * (options.enemyHpScale ?? 1))
+  // 群れ補正 (member.hpScale/strength) とランの深度スケーリングは乗算/加算で重なる
+  const enemies = members.map((m) => {
+    const def = getEnemyDef(m.enemyId)
+    const maxHp = Math.round(def.maxHp * (options.enemyHpScale ?? 1) * (m.hpScale ?? 1))
+    return {
+      enemyId: m.enemyId,
+      hp: maxHp,
+      maxHp,
+      block: 0,
+      intent: null,
+      strength: (options.enemyStrength ?? 0) + (m.strength ?? 0),
+      burn: 0,
+      confusion: 0,
+      patternIndex: m.patternOffset ?? 0,
+    }
+  })
   state = {
     ...state,
     rng,
@@ -118,18 +135,7 @@ export function startCombatWithOptions(
       drawPile: deck,
       hp: Math.min(options.playerHp ?? state.player.maxHp, state.player.maxHp),
     },
-    enemies: [
-      {
-        enemyId,
-        hp: enemyMaxHp,
-        maxHp: enemyMaxHp,
-        block: 0,
-        intent: null,
-        strength: options.enemyStrength ?? 0,
-        burn: 0,
-        patternIndex: 0,
-      },
-    ],
+    enemies,
   }
   state = emit(state, { type: 'CombatStarted', enemyId })
   return startPlayerTurn(state, 1)
@@ -252,6 +258,7 @@ export function playCard(
   cardUid: string,
   modeIndex?: number,
   discardUids?: readonly string[],
+  targetIndex?: number,
 ): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
@@ -287,7 +294,17 @@ export function playCard(
     }
   }
 
-  const enemyIndex = state.enemies.findIndex((e) => e.hp > 0)
+  // StS式ターゲティング (確定済みルール表「ターゲティング」):
+  // 生存2体以上で単体対象カードは targetIndex 必須。生存1体なら自動。対象不要カードは無視
+  const aliveCount = state.enemies.filter((e) => e.hp > 0).length
+  if (targetIndex !== undefined) {
+    const target = state.enemies[targetIndex]
+    if (!target || target.hp <= 0) throw new Error(`不正な対象: ${targetIndex}`)
+  }
+  if (targetIndex === undefined && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
+    throw new Error(`${card.def.name} は対象の指定 (targetIndex) が必要`)
+  }
+  const enemyIndex = targetIndex ?? state.enemies.findIndex((e) => e.hp > 0)
   const isPermanent = card.def.type === 'permanent'
   const isExhaust = card.def.exhaust === true
   const removed = new Set([cardUid, ...discards])
@@ -316,7 +333,7 @@ export function playCard(
   if (isExhaust) s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
   if (chosenMode) {
     for (const effect of chosenMode.effects) {
-      s = resolveEffect(s, effect, enemyIndex)
+      s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   } else {
     s = resolveOnPlayEffects(s, card, enemyIndex)
@@ -485,6 +502,37 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   })
   switch (intent.kind) {
     case 'attack': {
+      // 混乱 (仲間割れ): 攻撃が他のランダム生存敵 (いなければ自分) に向かう (確定済みルール表「混乱」)。
+      // プレイヤーへの攻撃ではないため post窓 (onAttacked) は開かない (打ち消し同様 lastAction を残さない)
+      if (enemy.confusion > 0) {
+        const others = state.enemies
+          .map((e, i) => ({ e, i }))
+          .filter(({ e, i }) => e.hp > 0 && i !== enemyIndex)
+          .map(({ i }) => i)
+        let s = state
+        let targetIdx = enemyIndex // 他に生存敵がいなければ自分
+        if (others.length === 1) {
+          targetIdx = others[0]
+        } else if (others.length > 1) {
+          const [pick, rng] = nextInt(state.rng, 0, others.length - 1)
+          targetIdx = others[pick]
+          s = { ...s, rng }
+        }
+        const total = intent.actual * (intent.hits ?? 1)
+        const target = s.enemies[targetIdx]
+        const blocked = Math.min(target.block, total)
+        const hpLoss = total - blocked
+        s = {
+          ...s,
+          enemies: s.enemies.map((e, i) => {
+            let x = e
+            if (i === targetIdx) x = { ...x, block: x.block - blocked, hp: x.hp - hpLoss }
+            if (i === enemyIndex) x = { ...x, confusion: x.confusion - 1 }
+            return x
+          }),
+        }
+        return emit(s, { type: 'ConfusedAttack', enemyIndex, targetIndex: targetIdx, amount: total })
+      }
       // 連撃 (hits>1) は1発ずつ解決する (確定済みルール表「連撃」)。
       // 各ヒットに 威嚇→脆弱 の順で補正し、通常ブロック→氷壁の順で消費する
       const hits = intent.hits ?? 1
@@ -538,6 +586,19 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         emit({ ...state, enemies }, { type: 'StrengthGained', enemyIndex, amount: intent.actual }),
         0,
       )
+    }
+    case 'rally': {
+      // 応援: 生存する味方全体の強化 (確定済みルール表「応援（ラリー）」)
+      const enemies = state.enemies.map((e) =>
+        e.hp > 0 ? { ...e, strength: e.strength + intent.actual } : e,
+      )
+      let s: GameState = { ...state, enemies }
+      for (let i = 0; i < s.enemies.length; i++) {
+        if (s.enemies[i].hp > 0) {
+          s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: intent.actual })
+        }
+      }
+      return markResolved(s, 0)
     }
     case 'destroy-set': {
       if (state.player.setCards.length === 0) return markResolved(state, 0)

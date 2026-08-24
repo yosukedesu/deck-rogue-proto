@@ -27,11 +27,12 @@ const CAMPFIRE_HEAL_RATIO = 0.3
 const VICTORY_HEAL = 10
 
 /** 段階制の敵プール。battleIndex (0-based) → 抽選プール */
+// 敵ID (ソロ) と編成ID (複数体。data/encounters.json) の混合プール
 const ENEMY_TIERS: readonly (readonly string[])[] = [
-  ['enemy_probe', 'enemy_wide_power'], // 1〜3戦目
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker'], // 4〜6戦目
-  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker'], // 7〜9戦目 (大亀はボス専用)
-  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 10戦目 (ボス)
+  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 1〜3戦目
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 4〜6戦目
+  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 7〜9戦目 (大亀はボス専用)
+  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 10戦目 (ボスは単体)
 ]
 
 function tierForBattle(battleIndex: number): readonly string[] {

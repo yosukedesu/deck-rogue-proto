@@ -340,5 +340,18 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "blue_confuse",
+    "name": "幻惑の囁き",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "confuse",
+        "amount": 1
+      }
+    ]
   }
 ]

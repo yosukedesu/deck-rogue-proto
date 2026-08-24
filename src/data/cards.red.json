@@ -260,5 +260,33 @@
         "amount": 3
       }
     ]
+  },
+  {
+    "id": "red_flame_wave",
+    "name": "炎の波",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_fire_rain",
+    "name": "火の粉の雨",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
   }
 ]

@@ -5,9 +5,19 @@ import cardsGreenJson from '../data/cards.green.json' with { type: 'json' }
 import cardsBlueJson from '../data/cards.blue.json' with { type: 'json' }
 import cardsRedJson from '../data/cards.red.json' with { type: 'json' }
 import decksJson from '../data/decks.json' with { type: 'json' }
+import encountersJson from '../data/encounters.json' with { type: 'json' }
 import enemiesJson from '../data/enemies.json' with { type: 'json' }
 import leadersJson from '../data/leaders.json' with { type: 'json' }
-import type { CardColor, CardDef, CardInstance, DeckDef, EnemyDef, LeaderDef } from './types.ts'
+import type {
+  CardColor,
+  CardDef,
+  CardInstance,
+  DeckDef,
+  EncounterDef,
+  EncounterMember,
+  EnemyDef,
+  LeaderDef,
+} from './types.ts'
 
 // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
 const withColor = (cards: readonly unknown[], color: CardColor): readonly CardDef[] =>
@@ -19,6 +29,25 @@ export const allCards: readonly CardDef[] = [
   ...withColor(cardsRedJson, 'red'),
 ]
 export const allEnemies = enemiesJson as readonly EnemyDef[]
+export const allEncounters = encountersJson as readonly EncounterDef[]
+
+/**
+ * 敵ID or 編成ID を編成メンバー列に解決する (確定済みルール表「戦闘形式」)。
+ * 編成IDが優先。どちらでもなければエラー。敵ID直指定はソロ編成 (後方互換)
+ */
+export function resolveEncounter(id: string): readonly EncounterMember[] {
+  const enc = allEncounters.find((e) => e.id === id)
+  if (enc) return enc.members
+  if (allEnemies.some((e) => e.id === id)) return [{ enemyId: id }]
+  throw new Error(`未定義の敵/編成: ${id}`)
+}
+
+/** 表示名 (編成名 or 敵名) */
+export function encounterName(id: string): string {
+  const enc = allEncounters.find((e) => e.id === id)
+  if (enc) return enc.name
+  return getEnemyDef(id).name
+}
 export const allDecks = decksJson as readonly DeckDef[]
 export const allLeaders = leadersJson as readonly LeaderDef[]
 

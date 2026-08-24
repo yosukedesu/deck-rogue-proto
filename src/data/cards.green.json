@@ -518,5 +518,19 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "green_sweep",
+    "name": "薙ぎ払い",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "target": "all"
+      }
+    ]
   }
 ]

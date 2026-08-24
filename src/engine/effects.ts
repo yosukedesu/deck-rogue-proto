@@ -37,6 +37,45 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
   ].includes(effect.effect)
 }
 
+/** 敵1体を対象に取る効果 (target:'all' を除く)。StS式ターゲティングの要否判定に使う */
+const ENEMY_TARGETED = new Set([
+  'dealDamage',
+  'dealDamageRandom',
+  'dealDamagePerCardPlayed',
+  'dealDamagePerEnergyMax',
+  'dischargeAether',
+  'applyBurn',
+  'shatterBlock',
+  'confuse',
+])
+
+/**
+ * このカードのプレイに対象指定 (targetIndex) が要るか。
+ * 生存敵が2体以上いる時、単体対象効果を含むカードは対象必須 (確定済みルール表「ターゲティング」)
+ */
+export function cardNeedsTarget(card: CardInstance, modeIndex?: number): boolean {
+  const modes = card.def.modes ?? []
+  const effects =
+    modes.length > 0 && modeIndex !== undefined && modes[modeIndex]
+      ? modes[modeIndex].effects
+      : card.def.effects.filter((e) => e.trigger === 'onPlay')
+  return effects.some((e) => ENEMY_TARGETED.has(e.effect) && e.target !== 'all')
+}
+
+/** 効果1つを対象規則に従って解決する。target:'all' は生存する敵全体に順に解決 (確定済みルール表「全体攻撃」) */
+export function resolveEffectTargeted(
+  state: GameState,
+  effect: DeclarativeEffect,
+  enemyIndex: number,
+): GameState {
+  if (effect.target !== 'all') return resolveEffect(state, effect, enemyIndex)
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) {
+    if (s.enemies[i].hp > 0) s = resolveEffect(s, effect, i)
+  }
+  return s
+}
+
 /**
  * リアクションの誘発窓。
  * pre = 敵の行動の確定時・実行前 (打ち消し onEnemyAction / 軽減 onAttackIncoming)
@@ -53,7 +92,7 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
       win.stage === 'pre'
         ? e.trigger === 'onEnemyAction' || (e.trigger === 'onAttackIncoming' && win.kind === 'attack')
         : (e.trigger === 'onAttacked' && win.kind === 'attack') ||
-          (e.trigger === 'onEnemyBuffed' && win.kind === 'buff') ||
+          (e.trigger === 'onEnemyBuffed' && (win.kind === 'buff' || win.kind === 'rally')) ||
           (e.trigger === 'onEnemyDefended' && win.kind === 'defend')
     if (!triggerMatches) return false
     const c = e.condition
@@ -222,6 +261,16 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
       return emit({ ...state, enemies }, { type: 'BurnApplied', enemyIndex, amount })
     }
+    case 'confuse': {
+      // 混乱 (青): 敵の攻撃が他の生存敵 (いなければ自分) に向かう (確定済みルール表「混乱」)
+      const amount = effect.amount ?? 0
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0) return state
+      const enemies = state.enemies.map((e, i) =>
+        i === enemyIndex ? { ...e, confusion: e.confusion + amount } : e,
+      )
+      return emit({ ...state, enemies }, { type: 'EnemyConfused', enemyIndex, amount })
+    }
     case 'shatterBlock': {
       // 粉砕 (赤): 敵のブロックを全て破壊する
       const enemy = state.enemies[enemyIndex]
@@ -304,11 +353,11 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
   }
 }
 
-/** カードの onPlay 効果を順に解決 */
+/** カードの onPlay 効果を順に解決 (target:'all' は全体解決) */
 export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemyIndex: number): GameState {
   let s = state
   for (const effect of card.def.effects) {
-    if (effect.trigger === 'onPlay') s = resolveEffect(s, effect, enemyIndex)
+    if (effect.trigger === 'onPlay') s = resolveEffectTargeted(s, effect, enemyIndex)
   }
   return s
 }

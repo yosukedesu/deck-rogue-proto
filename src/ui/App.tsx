@@ -3,16 +3,23 @@
 import { useState } from 'react'
 import {
   allDecks,
+  allEncounters,
   allEnemies,
   allLeaders,
   deckAllowedForLeader,
   deckSize,
+  encounterName,
   getCardDef,
   getDeckDef,
   getEnemyDef,
   getLeaderDef,
 } from '../engine/content.ts'
-import { effectiveCost, intimidatedActionValue, isPlayableFromHand } from '../engine/effects.ts'
+import {
+  cardNeedsTarget,
+  effectiveCost,
+  intimidatedActionValue,
+  isPlayableFromHand,
+} from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
@@ -49,6 +56,7 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   regenerator: '再生型（HP半分で豹変）',
   taunter: '挑発型（伏せ無しに大振り）',
   enrager: '激昂型（毎ターン強化）',
+  support: '応援型（味方全体強化）',
 }
 const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   'wide-power': '🐍',
@@ -62,6 +70,7 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   regenerator: '🦥',
   taunter: '🤡',
   enrager: '🗿',
+  support: '🥁',
 }
 
 // カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
@@ -84,6 +93,8 @@ const KEYWORD_HELP: Record<string, string> = {
   負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
   再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
   激昂: '敵フェーズ終了時に自動で強化が増える。長引くほど攻撃が痛くなる',
+  混乱: '混乱した敵の攻撃は、プレイヤーでなく他の生存敵（いなければ自分自身）に向かう。攻撃1回ごとに1減る',
+  応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
   成長: 'この戦闘の間、与えるダメージすべてに加算される（戦闘ごとにリセット）',
@@ -172,9 +183,10 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
   const counterSuffix = ctx && ctx.growth > 0 ? `+${ctx.growth}` : ''
   const trigger = TRIGGER_LABEL[e.trigger] + conditionLabel(e)
   const pierce = e.pierce ? '(貫通)' : ''
+  const aoe = e.target === 'all' ? '敵全体に' : ''
   switch (e.effect) {
     case 'dealDamage':
-      return `${trigger}${e.amount}${atkSuffix}ダメージ${pierce}`
+      return `${trigger}${aoe}${e.amount}${atkSuffix}ダメージ${pierce}`
     case 'dealDamagePerEnergyMax':
       return ctx
         ? `${trigger}エナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
@@ -202,9 +214,11 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
     case 'discountNext':
       return `${trigger}次にプレイするカードのコスト-${e.amount}`
     case 'applyBurn':
-      return `${trigger}延焼+${e.amount}`
+      return `${trigger}${aoe}延焼+${e.amount}`
     case 'shatterBlock':
-      return `${trigger}敵のブロックを全て粉砕する`
+      return `${trigger}${aoe || '敵の'}ブロックを全て粉砕する`
+    case 'confuse':
+      return `${trigger}敵1体に混乱+${e.amount}（攻撃が仲間に向かう）`
     case 'dealDamageRandom':
       return `${trigger}${e.amount}〜${e.amountMax}ダメージ(ランダム)${pierce}`
     case 'impulseDraw':
@@ -308,6 +322,8 @@ function intentText(intent: EnemyIntent | null, burn = 0): string {
       return '💥 伏せ破壊'
     case 'buff':
       return `💪 強化 +${intent.shownMin}〜${intent.shownMax}`
+    case 'rally':
+      return `📣 応援 +${intent.shownMin}〜${intent.shownMax}（味方全体）`
     case 'hex':
       return `🧿 呪い${inflictSuffix(intent)}`
   }
@@ -329,6 +345,8 @@ function confirmedIntentText(intent: EnemyIntent | null, burn = 0): string {
       return '💥 伏せ破壊'
     case 'buff':
       return `💪 強化 +${intent.actual}（宣言 +${intent.shownMin}〜+${intent.shownMax}）`
+    case 'rally':
+      return `📣 応援 +${intent.actual}（味方全体。宣言 +${intent.shownMin}〜+${intent.shownMax}）`
     case 'hex':
       return `🧿 呪い${inflictSuffix(intent)}`
   }
@@ -346,7 +364,7 @@ interface LogLine {
 function logLine(e: GameEvent): LogLine | null {
   switch (e.type) {
     case 'CombatStarted':
-      return { text: `戦闘開始: ${getEnemyDef(e.enemyId).name}`, cls: 'log-turn' }
+      return { text: `戦闘開始: ${encounterName(e.enemyId)}`, cls: 'log-turn' }
     case 'TurnStarted':
       return { text: `─── ターン ${e.turn} ───`, cls: 'log-turn' }
     case 'TurnEnded':
@@ -394,6 +412,16 @@ function logLine(e: GameEvent): LogLine | null {
       }
     case 'RegenTicked':
       return { text: `敵は再生でHP+${e.amount}`, cls: 'log-bad' }
+    case 'EnemyConfused':
+      return { text: `敵に混乱+${e.amount}（攻撃が仲間に向かう）`, cls: 'log-good' }
+    case 'ConfusedAttack':
+      return {
+        text:
+          e.enemyIndex === e.targetIndex
+            ? `混乱した敵は自分自身に${e.amount}ダメージ！`
+            : `仲間割れ！ 混乱した敵が味方に${e.amount}ダメージ`,
+        cls: 'log-good',
+      }
     case 'BlockShattered':
       return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
     case 'ImpulseDrawn':
@@ -612,6 +640,26 @@ function SetupScreen({
           </button>
         ))}
       </div>
+      <div className="setup-section-title">編成（複数体戦闘）</div>
+      <div className="choice-row">
+        {allEncounters.map((enc) => (
+          <button
+            key={enc.id}
+            className={`choice${enemyId === enc.id ? ' choice-selected' : ''}`}
+            onClick={() => setEnemyId(enc.id)}
+          >
+            <div className="choice-title">
+              <span className="choice-sprite">
+                {enc.members.map((m) => ARCHETYPE_SPRITE[getEnemyDef(m.enemyId).archetype]).join('')}
+              </span>
+              {enc.name}
+            </div>
+            <div className="choice-desc">
+              {enc.members.map((m) => getEnemyDef(m.enemyId).name).join(' + ')}
+            </div>
+          </button>
+        ))}
+      </div>
       <div className="setup-section-title">シード（空欄なら時刻から生成。同じシード=同じ展開）</div>
       <input
         className="seed-input"
@@ -652,11 +700,12 @@ function BattleScreen({
   backLabel?: string
 }) {
   const player = s.player
-  const enemy = s.enemies[0]
-  const enemyDef = getEnemyDef(enemy.enemyId)
   const system = getReactionSystem(s.reactionMode)
   const isSetMode = s.reactionMode !== 'hold-manual'
   const ended = s.phase === 'won' || s.phase === 'lost'
+  const aliveCount = s.enemies.filter((e) => e.hp > 0).length
+  // 誘発確認ウィンドウの対象敵 (pendingWindow の enemyIndex)
+  const windowEnemy = s.pendingWindow ? s.enemies[s.pendingWindow.enemyIndex] : s.enemies[0]
   // 手札捨てコストの選択中状態 (UIローカル。対象カードが手札を離れたら自動で無効化)
   const [pendingDiscard, setPendingDiscard] = useState<{
     cardUid: string
@@ -668,6 +717,27 @@ function BattleScreen({
     player.hand.some((c) => c.uid === pendingDiscard.cardUid)
       ? pendingDiscard
       : null
+  // StS式ターゲティング: 単体対象カードのプレイ時、敵タップ待ちの状態
+  const [pendingTarget, setPendingTarget] = useState<{
+    cardUid: string
+    modeIndex?: number
+    discardUids?: string[]
+  } | null>(null)
+  const activeTarget =
+    pendingTarget &&
+    s.phase === 'player-turn' &&
+    player.hand.some((c) => c.uid === pendingTarget.cardUid)
+      ? pendingTarget
+      : null
+  // 対象が要るカードなら敵タップ待ちへ、不要なら即プレイ
+  const playOrTarget = (cardUid: string, modeIndex?: number, discardUids?: string[]) => {
+    const card = player.hand.find((c) => c.uid === cardUid)
+    if (card && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
+      setPendingTarget({ cardUid, modeIndex, discardUids })
+    } else {
+      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids })
+    }
+  }
   const lines = s.eventLog.map(logLine).filter((l): l is LogLine => l !== null)
   const setCard = player.setCards[0]
 
@@ -695,41 +765,80 @@ function BattleScreen({
         </button>
       </div>
 
-      {/* 敵ゾーン */}
+      {/* 敵ゾーン (1〜3体)。ターゲット選択中は敵をタップして対象決定 */}
       <div className="panel area-enemy">
-        <div className="enemy-zone">
-          <div className="enemy-sprite">{ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
-          <div className="enemy-info">
-            <div className="enemy-name">{enemyDef.name}</div>
-            <div className="enemy-archetype">
-              {ARCHETYPE_LABEL[enemyDef.archetype]}
-              {enemyDef.flavor && <> — {enemyDef.flavor}</>}
-            </div>
-            <Bar value={Math.max(0, enemy.hp)} max={enemy.maxHp} />
-            <div style={{ marginTop: 6 }}>
-              {enemy.block > 0 && <span className="chip chip-block">🛡 ブロック {enemy.block}</span>}
-              {enemy.strength > 0 && (
-                <span className="chip chip-strength">💪 {kw('強化')} +{enemy.strength}</span>
-              )}
-              {enemy.burn > 0 && (
-                <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>
-              )}
-              {enemyDef.regen !== undefined && enemy.hp > enemy.maxHp * 0.5 && (
-                <span className="chip chip-strength">♻️ {kw('再生')} +{enemyDef.regen}</span>
-              )}
-              {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
-                enemy.hp <= enemy.maxHp * 0.5 &&
-                enemy.hp > 0 && <span className="chip chip-strength">😾 牙をむいている</span>}
-              {enemyDef.enrage !== undefined && (
-                <span className="chip chip-strength">😡 {kw('激昂')} +{enemyDef.enrage}/T</span>
-              )}
-            </div>
-            {!ended && (
-              <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
-                {kw(intentText(enemy.intent, enemy.burn))}
-              </div>
-            )}
+        {activeTarget && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeTarget.cardUid)?.def.name}
+            」の対象を選んでください（敵をタップ）{' '}
+            <button className="btn" onClick={() => setPendingTarget(null)}>
+              キャンセル
+            </button>
           </div>
+        )}
+        <div className="enemy-zone">
+          {s.enemies.map((enemy, i) => {
+            const enemyDef = getEnemyDef(enemy.enemyId)
+            const dead = enemy.hp <= 0
+            const targetable = activeTarget !== null && !dead
+            return (
+              <div
+                key={i}
+                className={`enemy-card${targetable ? ' enemy-targetable' : ''}${dead ? ' enemy-dead' : ''}`}
+                onClick={() => {
+                  if (!targetable || !activeTarget) return
+                  dispatch({
+                    type: 'PlayCard',
+                    cardUid: activeTarget.cardUid,
+                    modeIndex: activeTarget.modeIndex,
+                    discardUids: activeTarget.discardUids,
+                    targetIndex: i,
+                  })
+                  setPendingTarget(null)
+                }}
+              >
+                <div className="enemy-sprite">{dead ? '💀' : ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
+                <div className="enemy-info">
+                  <div className="enemy-name">{enemyDef.name}</div>
+                  {s.enemies.length === 1 && (
+                    <div className="enemy-archetype">
+                      {ARCHETYPE_LABEL[enemyDef.archetype]}
+                      {enemyDef.flavor && <> — {enemyDef.flavor}</>}
+                    </div>
+                  )}
+                  <Bar value={Math.max(0, enemy.hp)} max={enemy.maxHp} />
+                  <div style={{ marginTop: 6 }}>
+                    {enemy.block > 0 && (
+                      <span className="chip chip-block">🛡 ブロック {enemy.block}</span>
+                    )}
+                    {enemy.strength > 0 && (
+                      <span className="chip chip-strength">💪 {kw('強化')} +{enemy.strength}</span>
+                    )}
+                    {enemy.burn > 0 && (
+                      <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>
+                    )}
+                    {enemy.confusion > 0 && (
+                      <span className="chip chip-aether">😵‍💫 {kw('混乱')} {enemy.confusion}</span>
+                    )}
+                    {enemyDef.regen !== undefined && enemy.hp > enemy.maxHp * 0.5 && !dead && (
+                      <span className="chip chip-strength">♻️ {kw('再生')} +{enemyDef.regen}</span>
+                    )}
+                    {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
+                      enemy.hp <= enemy.maxHp * 0.5 &&
+                      !dead && <span className="chip chip-strength">😾 牙をむいている</span>}
+                    {enemyDef.enrage !== undefined && !dead && (
+                      <span className="chip chip-strength">😡 {kw('激昂')} +{enemyDef.enrage}/T</span>
+                    )}
+                  </div>
+                  {!ended && !dead && (
+                    <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
+                      {kw(intentText(enemy.intent, enemy.burn))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -771,7 +880,10 @@ function BattleScreen({
             <div className="window-panel">
               <div className="window-title">
                 {s.pendingWindow?.stage === 'post' ? '敵の行動（解決済み）: ' : '敵の行動（確定）: '}
-                {kw(confirmedIntentText(enemy.intent, enemy.burn))}
+                {s.enemies.length > 1 && windowEnemy && (
+                  <>{getEnemyDef(windowEnemy.enemyId).name}の </>
+                )}
+                {kw(confirmedIntentText(windowEnemy?.intent ?? null, windowEnemy?.burn ?? 0))}
               </div>
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
@@ -933,12 +1045,7 @@ function BattleScreen({
                           <button
                             className="btn"
                             onClick={() => {
-                              dispatch({
-                                type: 'PlayCard',
-                                cardUid: activeDiscard.cardUid,
-                                modeIndex: activeDiscard.modeIndex,
-                                discardUids: [c.uid],
-                              })
+                              playOrTarget(activeDiscard.cardUid, activeDiscard.modeIndex, [c.uid])
                               setPendingDiscard(null)
                             }}
                           >
@@ -951,7 +1058,7 @@ function BattleScreen({
                 }
                 const play = (modeIndex?: number) => {
                   if (discardCost > 0) setPendingDiscard({ cardUid: c.uid, modeIndex })
-                  else dispatch({ type: 'PlayCard', cardUid: c.uid, modeIndex })
+                  else playOrTarget(c.uid, modeIndex)
                 }
                 return (
                   <CardFrame

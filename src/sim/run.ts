@@ -33,6 +33,8 @@ function botRole(def: CardDef): BotRole {
   if (has('gainEnergyMax', 'gainEnergy', 'discountNext')) return 'ramp'
   if (has('addGrowth', 'doubleGrowth')) return 'growth'
   if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
+  // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
+  if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed')) return 'draw'
   if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed')) return 'defend'
   return 'other'
@@ -80,7 +82,17 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
           .slice(-discardCost)
           .map((c) => c.uid)
       : undefined
-  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids }
+  // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)
+  let targetIndex: number | undefined
+  let bestHp = Infinity
+  for (let i = 0; i < state.enemies.length; i++) {
+    const e = state.enemies[i]
+    if (e.hp > 0 && e.hp < bestHp) {
+      bestHp = e.hp
+      targetIndex = i
+    }
+  }
+  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, targetIndex }
 }
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */

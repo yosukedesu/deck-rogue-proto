@@ -312,6 +312,29 @@
     ]
   },
   {
+    "id": "enemy_drummer",
+    "name": "鼓吹きコボルト",
+    "archetype": "support",
+    "flavor": "太鼓が鳴るたび、みんな元気になる。最初に黙らせたい。",
+    "maxHp": 55,
+    "moves": [
+      {
+        "id": "war_drum",
+        "kind": "rally",
+        "min": 1,
+        "max": 2,
+        "weight": 2
+      },
+      {
+        "id": "thump",
+        "kind": "attack",
+        "min": 4,
+        "max": 6,
+        "weight": 1
+      }
+    ]
+  },
+  {
     "id": "enemy_warden",
     "name": "刻限の門番",
     "archetype": "enrager",

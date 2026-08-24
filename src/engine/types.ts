@@ -89,6 +89,8 @@ export interface EnemyState extends CombatantState {
   readonly strength: number
   /** 延焼 (赤のバーン)。毎敵フェーズ開始時にこの値のダメージ (ブロック無視) を受けて1減る */
   readonly burn: number
+  /** 混乱 (青の精神攻撃)。攻撃が他の生存敵 (いなければ自分) に向かい、攻撃1回ごとに1減る */
+  readonly confusion: number
   /** 行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用 */
   readonly patternIndex: number
 }
@@ -161,6 +163,7 @@ export type Command =
   | {
       readonly type: 'StartCombat'
       readonly seed: number
+      /** 敵ID (ソロ編成) または encounters.json の編成ID。編成IDが優先 */
       readonly enemyId: string
       /** 使用デッキ (data/decks.json の id)。省略時は 'starter' */
       readonly deckId?: string
@@ -174,6 +177,8 @@ export type Command =
       readonly modeIndex?: number
       /** 手札捨てコスト (discardCost) 用: 追加コストとして捨てる手札の uid。discardCost 枚数ぶん必須 */
       readonly discardUids?: readonly string[]
+      /** 単体対象カード用: 対象の敵 index。生存敵が2体以上いる場合は必須 (StS式ターゲティング) */
+      readonly targetIndex?: number
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
@@ -202,6 +207,14 @@ export type GameEvent =
       readonly hpLoss: number
     }
   | { readonly type: 'ActionNegated'; readonly enemyIndex: number }
+  | { readonly type: 'EnemyConfused'; readonly enemyIndex: number; readonly amount: number } // 混乱付与
+  | {
+      // 混乱による仲間割れ: enemyIndex の攻撃が targetIndex の敵 (自分自身もありうる) に命中
+      readonly type: 'ConfusedAttack'
+      readonly enemyIndex: number
+      readonly targetIndex: number
+      readonly amount: number
+    }
   | {
       readonly type: 'DamageDealt'
       readonly source: 'player' | 'enemy'
@@ -302,6 +315,7 @@ export interface DeclarativeEffect {
     | 'dealDamagePerEnergyMax' // ビッグマナのシグネチャー: エナジー上限 × amount のダメージ
     | 'counter'
     | 'negate'
+    | 'confuse' // 混乱+X: 敵の攻撃が他の生存敵 (いなければ自分) に向かう (青の精神攻撃)
     | 'drawCards'
     | 'script'
   readonly amount?: number
@@ -309,6 +323,8 @@ export interface DeclarativeEffect {
   readonly amountMax?: number
   /** 貫通 (トランプル): このダメージは敵ブロックを無視する。dealDamage 系のみ有効 */
   readonly pierce?: boolean
+  /** 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体 */
+  readonly target?: 'all'
   readonly scriptId?: string
 }
 
@@ -353,9 +369,10 @@ export type EnemyArchetype =
   | 'regenerator'
   | 'taunter'
   | 'enrager'
+  | 'support'
 
-/** buff = 強化 (StSの筋力上昇)。hex = 状態異常の付与のみ (数値なし・inflict必須) */
-export type EnemyActionKind = 'attack' | 'defend' | 'destroy-set' | 'buff' | 'hex'
+/** buff = 強化 (自分のみ)。rally = 応援 (味方全体の強化)。hex = 状態異常の付与のみ (数値なし・inflict必須) */
+export type EnemyActionKind = 'attack' | 'defend' | 'destroy-set' | 'buff' | 'rally' | 'hex'
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
 export type PlayerStatus = 'weak' | 'vulnerable' | 'wound'
@@ -404,6 +421,25 @@ export interface EnemyDef {
   readonly regen?: number
   /** 激昂: 敵フェーズ終了時に強化+N (確定済みルール表「激昂」) */
   readonly enrage?: number
+}
+
+// ---- エンカウンター (1〜3体の編成。data/encounters.json) ----
+
+/** 編成メンバー。hpScale/strength は「群れ補正」(頭数=行動回数が増えるぶん個体を弱める) */
+export interface EncounterMember {
+  readonly enemyId: string
+  /** 個体HP倍率 (省略時1)。ランの深度スケーリングとは乗算で重なる */
+  readonly hpScale?: number
+  /** 個体の初期強化補正 (省略時0)。ランの深度補正とは加算で重なる */
+  readonly strength?: number
+  /** ローテーション開始位置のズラし。同型2体の大技同期 (同時lunge等) を防ぐ */
+  readonly patternOffset?: number
+}
+
+export interface EncounterDef {
+  readonly id: string
+  readonly name: string
+  readonly members: readonly EncounterMember[]
 }
 
 // ---- リーダー (カラーパイの個性。色アイデンティティ=使える色) ----

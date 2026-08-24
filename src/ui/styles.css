@@ -142,13 +142,36 @@ button:disabled { cursor: default; }
 
 .topbar-title { font-size: 15px; font-weight: bold; color: var(--muted); }
 
-/* 敵ゾーン */
+/* 敵ゾーン (1〜3体) */
 .enemy-zone {
   display: flex;
-  gap: 16px;
-  align-items: center;
+  gap: 10px;
+  align-items: stretch;
   justify-content: center;
-  padding: 16px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+.enemy-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 1;
+  min-width: 240px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+/* ターゲット選択中: タップ可能な敵を強調 */
+.enemy-targetable {
+  border-color: var(--energy);
+  background: rgba(240, 195, 60, 0.08);
+  cursor: pointer;
+}
+.enemy-targetable:hover {
+  background: rgba(240, 195, 60, 0.18);
+}
+.enemy-dead {
+  opacity: 0.35;
 }
 .enemy-sprite {
   font-size: 64px;

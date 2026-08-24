@@ -1,19 +1,20 @@
 // ドラフト連戦モードのテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
-import { getEnemyDef } from './content.ts'
+import { getEnemyDef, resolveEncounter } from './content.ts'
 import { applyRunCommand, createRun, depthHpScale, depthStrength, RUN_BATTLES } from './run.ts'
 import type { RunState } from './run.ts'
 import { defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
-/** 現在の戦闘を外科的に「あと一撃」にして打撃で勝つ (プレイヤーHPは維持される) */
+/** 現在の戦闘を外科的に「全滅寸前」にして薙ぎ払い (全体攻撃) で勝つ (プレイヤーHPは維持される) */
 function forceWin(run: RunState): RunState {
   const c = run.combat!
   let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
-  surgical = withIntent(withHand(surgical, ['green_strike']), defendIntent(0))
+  surgical = withIntent(withHand(surgical, ['green_sweep']), defendIntent(0))
+  surgical = { ...surgical, player: { ...surgical.player, energy: 9 } }
   return applyRunCommand(
     { ...run, combat: surgical },
-    { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_strike' } },
+    { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } },
   )
 }
 
@@ -21,9 +22,24 @@ describe('ラン構造', () => {
   it('10戦・段階制の敵並び (序盤/中盤/終盤/ボス) がシードで確定する', () => {
     const run = createRun(42, 'set-confirm')
     expect(run.enemyIds).toHaveLength(RUN_BATTLES)
-    const tier1 = ['enemy_probe', 'enemy_wide_power']
-    const tier2 = ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker']
-    const tier3 = ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker']
+    const tier1 = ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair']
+    const tier2 = [
+      'enemy_set_wary',
+      'enemy_set_breaker',
+      'enemy_hexer',
+      'enemy_joker',
+      'enc_probe_trio',
+      'enc_joker_drummer',
+    ]
+    const tier3 = [
+      'enemy_brute',
+      'enemy_wolf',
+      'enemy_moss',
+      'enemy_set_breaker',
+      'enc_wolf_drummer',
+      'enc_hexer_shadow',
+      'enc_breaker_hexer',
+    ]
     const boss = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
     run.enemyIds.forEach((id, i) => {
       const pool = i < 3 ? tier1 : i < 6 ? tier2 : i < 9 ? tier3 : boss
@@ -51,11 +67,14 @@ describe('ラン構造', () => {
     expect(depthStrength(9)).toBe(-1)
     expect(depthHpScale(0)).toBeCloseTo(0.4)
     expect(depthHpScale(9)).toBeCloseTo(0.67)
-    // 初戦の敵は弱体状態で登場
+    // 初戦の敵は弱体状態で登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
     const run = createRun(5, 'set-confirm')
-    const def = getEnemyDef(run.enemyIds[0])
-    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * 0.4))
-    expect(run.combat!.enemies[0].strength).toBe(-4)
+    const members = resolveEncounter(run.enemyIds[0])
+    const def = getEnemyDef(members[0].enemyId)
+    expect(run.combat!.enemies[0].maxHp).toBe(
+      Math.round(def.maxHp * 0.4 * (members[0].hpScale ?? 1)),
+    )
+    expect(run.combat!.enemies[0].strength).toBe(-4 + (members[0].strength ?? 0))
   })
 })
 

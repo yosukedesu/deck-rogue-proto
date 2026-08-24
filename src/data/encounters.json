@@ -1,0 +1,104 @@
+[
+  {
+    "id": "enc_probe_pair",
+    "name": "探り屋の二人組",
+    "members": [
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.45,
+        "strength": -6
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.45,
+        "strength": -6,
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_probe_trio",
+    "name": "探り屋の三人組",
+    "members": [
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.3,
+        "strength": -8
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.3,
+        "strength": -8,
+        "patternOffset": 1
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.3,
+        "strength": -8,
+        "patternOffset": 2
+      }
+    ]
+  },
+  {
+    "id": "enc_hexer_shadow",
+    "name": "妖術師と用心棒",
+    "members": [
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_set_wary",
+        "hpScale": 0.55,
+        "strength": -3
+      }
+    ]
+  },
+  {
+    "id": "enc_joker_drummer",
+    "name": "道化と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_joker",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_wolf_drummer",
+    "name": "狼と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_wolf",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_breaker_hexer",
+    "name": "罠壊しと妖術師",
+    "members": [
+      {
+        "enemyId": "enemy_set_breaker",
+        "hpScale": 0.6,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.55,
+        "strength": -2
+      }
+    ]
+  }
+]
