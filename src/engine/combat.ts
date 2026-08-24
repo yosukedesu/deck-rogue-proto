@@ -8,6 +8,7 @@ import { buildDeck, getEnemyDef } from './content.ts'
 import {
   drawCards,
   effectiveCost,
+  intimidatedActionValue,
   isDamageEffect,
   isPlayableFromHand,
   resolveEffect,
@@ -431,9 +432,11 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   })
   switch (intent.kind) {
     case 'attack': {
+      // 威嚇 (延焼の怯み): 実行時の延焼値で攻撃実値を下げる (確定済みルール表「威嚇」)
+      const attackValue = intimidatedActionValue('attack', intent.actual, enemy.burn)
       // 通常ブロックを先に消費し、残りを氷壁 (持ち越しブロック) で受ける
-      const blocked = Math.min(state.player.block, intent.actual)
-      const remaining = intent.actual - blocked
+      const blocked = Math.min(state.player.block, attackValue)
+      const remaining = attackValue - blocked
       const iceBlocked = Math.min(state.player.iceBlock, remaining)
       const hpLoss = remaining - iceBlocked
       const s: GameState = {
@@ -446,7 +449,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         },
       }
       return markResolved(
-        emit(s, { type: 'DamageDealt', source: 'enemy', amount: intent.actual, hpLoss }),
+        emit(s, { type: 'DamageDealt', source: 'enemy', amount: attackValue, hpLoss }),
         hpLoss,
       )
     }

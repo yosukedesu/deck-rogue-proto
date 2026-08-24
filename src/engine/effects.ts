@@ -71,13 +71,29 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
   })
 }
 
+/**
+ * 威嚇 (延焼の怯み): 延焼を持つ敵の攻撃は延焼2につき実値-1 (軽減上限-4・下限1)。
+ * 赤の防御代替 (確定済みルール表「威嚇」)。実行時・窓を開いた時点の延焼値で計算する。
+ * 上限-4は延焼特化による攻撃無力化 (sim全勝) を防ぐキャップ。攻撃以外の行動値には作用しない。
+ */
+export function intimidatedActionValue(kind: EnemyActionKind, actual: number, burn: number): number {
+  if (kind !== 'attack') return actual
+  const reduction = Math.min(4, Math.floor(burn / 2))
+  return Math.max(1, actual - reduction)
+}
+
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
 export function windowFromPending(state: GameState): ReactionWindow | null {
   const pending = state.pendingWindow
   if (!pending) return null
-  const intent = state.enemies[pending.enemyIndex]?.intent
+  const enemy = state.enemies[pending.enemyIndex]
+  const intent = enemy?.intent
   if (!intent) return null
-  if (pending.stage === 'pre') return { stage: 'pre', kind: intent.kind, actual: intent.actual }
+  if (pending.stage === 'pre') {
+    // 実値公開・行動値条件は威嚇後の値を使う (確定済みルール表「威嚇」)
+    const actual = intimidatedActionValue(intent.kind, intent.actual, enemy.burn)
+    return { stage: 'pre', kind: intent.kind, actual }
+  }
   return { stage: 'post', kind: intent.kind, hpLoss: state.lastAction?.hpLoss ?? 0 }
 }
 

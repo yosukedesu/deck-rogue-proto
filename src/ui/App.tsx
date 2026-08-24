@@ -12,7 +12,7 @@ import {
   getEnemyDef,
   getLeaderDef,
 } from '../engine/content.ts'
-import { effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
+import { effectiveCost, intimidatedActionValue, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
@@ -68,6 +68,7 @@ const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 
 
 /** キーワード能力の用語解説 (カーソルを当てると吹き出しで表示) */
 const KEYWORD_HELP: Record<string, string> = {
+  威嚇: '延焼を持つ敵の攻撃は、延焼2につき実値-1（下限1）。表示中の攻撃値は威嚇適用後の数字',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
   成長: 'この戦闘の間、与えるダメージすべてに加算される（戦闘ごとにリセット）',
@@ -265,11 +266,16 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
   )
 }
 
-function intentText(intent: EnemyIntent | null): string {
+/** 敵の意図表示。burn を渡すと攻撃の幅に威嚇 (延焼の怯み) を反映する */
+function intentText(intent: EnemyIntent | null, burn = 0): string {
   if (!intent) return '---'
   switch (intent.kind) {
-    case 'attack':
-      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}`
+    case 'attack': {
+      const min = intimidatedActionValue('attack', intent.shownMin, burn)
+      const max = intimidatedActionValue('attack', intent.shownMax, burn)
+      const mark = max < intent.shownMax ? '（威嚇中）' : ''
+      return `⚔️ 攻撃 ${min}〜${max}${mark}`
+    }
     case 'defend':
       return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
     case 'destroy-set':
@@ -280,11 +286,14 @@ function intentText(intent: EnemyIntent | null): string {
 }
 
 /** 誘発確認ウィンドウ用: 敵の行動は確定済みなので実値を公開する (確定済みルール「誘発確認時の情報」) */
-function confirmedIntentText(intent: EnemyIntent | null): string {
+function confirmedIntentText(intent: EnemyIntent | null, burn = 0): string {
   if (!intent) return '---'
   switch (intent.kind) {
-    case 'attack':
-      return `⚔️ 攻撃 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
+    case 'attack': {
+      const actual = intimidatedActionValue('attack', intent.actual, burn)
+      const mark = actual < intent.actual ? '・威嚇適用済' : ''
+      return `⚔️ 攻撃 ${actual}（宣言 ${intent.shownMin}〜${intent.shownMax}${mark}）`
+    }
     case 'defend':
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
     case 'destroy-set':
@@ -658,7 +667,7 @@ function BattleScreen({
             </div>
             {!ended && (
               <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
-                {kw(intentText(enemy.intent))}
+                {kw(intentText(enemy.intent, enemy.burn))}
               </div>
             )}
           </div>
@@ -703,7 +712,7 @@ function BattleScreen({
             <div className="window-panel">
               <div className="window-title">
                 {s.pendingWindow?.stage === 'post' ? '敵の行動（解決済み）: ' : '敵の行動（確定）: '}
-                {kw(confirmedIntentText(enemy.intent))}
+                {kw(confirmedIntentText(enemy.intent, enemy.burn))}
               </div>
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
