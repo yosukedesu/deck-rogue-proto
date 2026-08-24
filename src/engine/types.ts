@@ -245,6 +245,7 @@ export type GameEvent =
   | { readonly type: 'GrowthAdded'; readonly amount: number }
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
   | { readonly type: 'HpHealed'; readonly amount: number } // 回復 (白)
+  | { readonly type: 'CardsMilled'; readonly count: number } // 忘却=山札からの消滅 (黒)
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
@@ -330,6 +331,9 @@ export interface DeclarativeEffect {
     | 'weakenEnemy' // 威圧 (白): 敵の強化を-X (攻撃は最低1クランプの既存則)
     | 'dealDamagePerBlock' // 要塞型ペイオフ: 現在のブロック×Xダメージ (ボディスラム型)
     | 'dealDamagePerPermanent' // 集結 (白): 置物の数×Xダメージ (従者の横並び参照)
+    | 'dealDamageDrain' // ドレイン (黒の専売): Xダメージを与え、floor(X/2)回復
+    | 'exhaustFromDeck' // 忘却 (黒): 山札の上X枚を消滅させる (捨て札はリシャッフルで空になるため消滅を墓地とする)
+    | 'dealDamagePerExhaust' // 墓地参照 (黒): 消滅した枚数×Xダメージ (単調増加。衝動失効・消滅札とも共鳴)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'

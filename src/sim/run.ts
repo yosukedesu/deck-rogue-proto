@@ -35,7 +35,7 @@ function botRole(def: CardDef): BotRole {
   if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
   if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
-  if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed')) return 'draw'
+  if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'exhaustFromDeck')) return 'draw'
   if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }
@@ -56,6 +56,18 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'doubleGrowth')) return state.player.growth > 0
   // 成長放出は成長2以上でないと損 (エンジンを空撃ちしない)
   if (card.def.effects.some((e) => e.effect === 'dischargeGrowth')) return state.player.growth >= 2
+  // 自傷カードはHPに余裕がないと自殺 (loseHp合計+5のマージン)
+  const selfHarm = card.def.effects
+    .filter((e) => e.effect === 'loseHp')
+    .reduce((a, e) => a + (e.amount ?? 0), 0)
+  if (selfHarm > 0 && state.player.hp <= selfHarm + 5) return false
+  // 墓地参照は消滅3枚以上でないと空撃ち
+  if (
+    card.def.effects.some((e) => e.effect === 'dealDamagePerExhaust') &&
+    state.player.exhaustPile.length < 3
+  ) {
+    return false
+  }
   // ブロック変換はブロック4以上、集結は置物1体以上でないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) return state.player.block >= 4
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerPermanent')) {
@@ -134,20 +146,33 @@ function chooseCommand(s: GameState): Command {
     .map((c) => c.def.cost)
   const reserve =
     s.reactionMode === 'hold-manual' && reactionCosts.length > 0 ? Math.min(...reactionCosts) : 0
-  // ストームのペイオフ (詠唱数参照フィニッシャー) が手札にあるなら、その分のエナジーを温存する
-  // (ドローで詠唱数だけ稼いでエナジー切れで撃てない、を防ぐ)
-  const stormCosts = s.player.hand
-    .filter((c) => c.def.effects.some((e) => e.effect === 'dealDamagePerCardPlayed'))
+  // 攻撃札が手札にあるなら最安攻撃分のエナジーを温存する
+  // (ドロー・ミル系エンジンがエナジーを食い尽くして攻撃が一度も飛ばない病の防止。
+  //  ストーム温存の一般化: 墓地型で顕在化した 2026-08-25)
+  // 蓄積型ペイオフ (詠唱数/消滅数参照) があればその最安コストを、なければ最安攻撃札のコストを温存
+  const burstCosts = s.player.hand
+    .filter((c) =>
+      c.def.effects.some((e) =>
+        ['dealDamagePerCardPlayed', 'dealDamagePerExhaust'].includes(e.effect),
+      ),
+    )
     .map((c) => c.def.cost)
-  const stormReserve = stormCosts.length > 0 ? Math.min(...stormCosts) : 0
+  const attackCosts = s.player.hand
+    .filter((c) => isPlayableFromHand(c) && c.def.effects.some(isDamageEffect))
+    .map((c) => c.def.cost)
+  const payoffReserve =
+    burstCosts.length > 0
+      ? Math.min(...burstCosts)
+      : attackCosts.length > 0
+        ? Math.min(...attackCosts)
+        : 0
   const spendable = s.player.energy - reserve
 
-  // ストームのペイオフ自身は温存分を使ってよい
-  const isStormPayoff = (c: CardInstance) =>
-    c.def.effects.some((e) => e.effect === 'dealDamagePerCardPlayed')
+  // ダメージ札自身は温存分を使ってよい
+  const isPayoff = (c: CardInstance) => c.def.effects.some(isDamageEffect)
   for (const role of PLAY_PRIORITY) {
     let candidates = s.player.hand.filter((c) => {
-      const budget = role === 'bighit' || isStormPayoff(c) ? spendable : spendable - stormReserve
+      const budget = role === 'bighit' || isPayoff(c) ? spendable : spendable - payoffReserve
       return (
         botRole(c.def) === role &&
         isPlayableFromHand(c) &&

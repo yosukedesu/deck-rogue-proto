@@ -155,6 +155,7 @@ interface EffectCtx {
   energyMax: number
   cardsPlayed: number
   aether: number
+  exhausted: number
 }
 
 const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
@@ -237,6 +238,14 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}${aoe}急所+${e.amount}（次に受けるダメージ${e.amount}回が+50%）`
     case 'gainHp':
       return `${trigger}💚 HP${e.amount}回復`
+    case 'dealDamageDrain':
+      return `${trigger}🩸 ${aoe}${(e.amount ?? 0) + atkBonus}ダメージを与え、HP${Math.floor((e.amount ?? 0) / 2)}回復${atkBreak}`
+    case 'exhaustFromDeck':
+      return `${trigger}🕳 山札の上${e.amount}枚を消滅させる`
+    case 'dealDamagePerExhaust':
+      return ctx
+        ? `${trigger}⚔️ 消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
+        : `${trigger}⚔️ 消滅した枚数×${e.amount}ダメージ${pierce}`
     case 'weakenEnemy':
       return `${trigger}${aoe}威圧${e.amount}（敵の強化-${e.amount}）`
     case 'dealDamagePerBlock':
@@ -491,6 +500,8 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
     case 'HpHealed':
       return { text: `HP+${e.amount}回復`, cls: 'log-good' }
+    case 'CardsMilled':
+      return { text: `山札の上${e.count}枚が忘却された（消滅）`, cls: 'log-line' }
     case 'EnemyWeakened':
       return { text: `敵を威圧（強化-${e.amount}）`, cls: 'log-good' }
     case 'ConfusedAttack':
@@ -967,7 +978,7 @@ function BattleScreen({
                   <b>{c.def.name}</b>
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length }}
                   />
                 </div>
               ))}
@@ -992,6 +1003,7 @@ function BattleScreen({
                         growth: player.growth,
                         momentum: player.momentum,
                         energyMax: player.energyMax,
+                        exhausted: player.exhaustPile.length,
                         cardsPlayed: player.cardsPlayedThisTurn,
                         aether: player.aether,
                       }),
@@ -1021,7 +1033,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({c.def.cost}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length })}
                     </button>
                   ))}
                   <button
@@ -1147,7 +1159,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -1174,7 +1186,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length }}
                     displayCost={effCost}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={

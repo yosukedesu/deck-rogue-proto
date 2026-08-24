@@ -37,6 +37,8 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamageCleave',
     'dealDamagePerBlock',
     'dealDamagePerPermanent',
+    'dealDamageDrain',
+    'dealDamagePerExhaust',
     'counter',
   ].includes(effect.effect)
 }
@@ -57,6 +59,8 @@ const ENEMY_TARGETED = new Set([
   'weakenEnemy',
   'dealDamagePerBlock',
   'dealDamagePerPermanent',
+  'dealDamageDrain',
+  'dealDamagePerExhaust',
 ])
 
 /**
@@ -317,6 +321,41 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         state,
         enemyIndex,
         (effect.amount ?? 0) * state.player.permanents.length,
+        effect.pierce,
+      )
+    case 'dealDamageDrain': {
+      // ドレイン (黒の専売): Xダメージ + floor(X/2)回復 (確定済みルール表「黒の柱」)
+      const amount = effect.amount ?? 0
+      let s = dealDamageToEnemy(state, enemyIndex, amount, effect.pierce)
+      const heal = Math.min(Math.floor(amount / 2), s.player.maxHp - s.player.hp)
+      if (heal > 0) {
+        s = { ...s, player: { ...s.player, hp: s.player.hp + heal } }
+        s = emit(s, { type: 'HpHealed', amount: heal })
+      }
+      return s
+    }
+    case 'exhaustFromDeck': {
+      // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、
+      // 墓地=消滅置き場とする (単調増加。デッキを永久燃料にする緊張感。戦闘内限定)
+      const n = Math.min(effect.amount ?? 0, state.player.drawPile.length)
+      if (n <= 0) return state
+      const milled = state.player.drawPile.slice(0, n)
+      const s: GameState = {
+        ...state,
+        player: {
+          ...state.player,
+          drawPile: state.player.drawPile.slice(n),
+          exhaustPile: [...state.player.exhaustPile, ...milled],
+        },
+      }
+      return emit(s, { type: 'CardsMilled', count: n })
+    }
+    case 'dealDamagePerExhaust':
+      // 墓地参照 (黒): 消滅した枚数×X (確定済みルール表「黒の柱」)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.exhaustPile.length,
         effect.pierce,
       )
     case 'exposeEnemy': {

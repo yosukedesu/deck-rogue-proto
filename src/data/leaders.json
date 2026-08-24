@@ -104,5 +104,26 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "leader_black",
+    "name": "とばり",
+    "colors": [
+      "black"
+    ],
+    "maxHp": 70,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_black",
+    "sprite": "🌑",
+    "description": "宵闇の死霊術師。攻撃のたびに命を啜る。攻撃カードをプレイするたびHP1回復",
+    "passive": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainHp",
+        "amount": 1
+      }
+    ]
   }
 ]

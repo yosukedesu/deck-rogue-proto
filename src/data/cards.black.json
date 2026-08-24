@@ -1,0 +1,287 @@
+[
+  {
+    "id": "black_strike",
+    "name": "影の一撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "black_guard",
+    "name": "骨の盾",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_drain",
+    "name": "生命吸収",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "black_big_drain",
+    "name": "貪り喰らう",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "black_pain",
+    "name": "痛みの対価",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "black_blood_rite",
+    "name": "血の儀式",
+    "cost": 0,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_mill",
+    "name": "忘却の霧",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_grave_bolt",
+    "name": "亡霊の槍",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_grave_burst",
+    "name": "死者の行進",
+    "cost": 3,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_corpse_explosion",
+    "name": "死体爆発",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_perm_leech",
+    "name": "蛭の王",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamageDrain",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_altar",
+    "name": "冒涜の祭壇",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "exhaustFromDeck",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_tithe",
+    "name": "生き血の税",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamageDrain",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_hand_ripper",
+    "name": "冒涜の取引",
+    "cost": 1,
+    "type": "spell",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_dark_pact",
+    "name": "闇の契約",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_reaction_curse",
+    "name": "呪詛返し",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamageDrain",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "black_reaction_grudge",
+    "name": "怨嗟",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamageDrain",
+        "amount": 14,
+        "condition": {
+          "minDamageTaken": 8
+        }
+      }
+    ]
+  },
+  {
+    "id": "black_scythe",
+    "name": "死神の鎌",
+    "cost": 4,
+    "type": "physical",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 22
+      }
+    ]
+  },
+  {
+    "id": "black_despair",
+    "name": "絶望の重み",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 1
+      }
+    ]
+  }
+]

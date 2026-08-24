@@ -898,5 +898,185 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "starter_black",
+    "name": "黒スターター",
+    "color": "black",
+    "description": "ドレイン・墓地・自傷の黒基本セット",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_big_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_pain",
+        "count": 1
+      },
+      {
+        "cardId": "black_blood_rite",
+        "count": 1
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      },
+      {
+        "cardId": "black_grave_bolt",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_leech",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_altar",
+        "count": 1
+      },
+      {
+        "cardId": "black_hand_ripper",
+        "count": 1
+      },
+      {
+        "cardId": "black_dark_pact",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_grudge",
+        "count": 1
+      },
+      {
+        "cardId": "black_corpse_explosion",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_drain",
+    "name": "吸血の宴",
+    "color": "black",
+    "description": "削って吸って粘るドレインの理想形",
+    "cards": [
+      {
+        "cardId": "black_drain",
+        "count": 3
+      },
+      {
+        "cardId": "black_big_drain",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_leech",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_tithe",
+        "count": 2
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 2
+      },
+      {
+        "cardId": "black_scythe",
+        "count": 1
+      },
+      {
+        "cardId": "black_pain",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_graveyard",
+    "name": "亡者の凱旋",
+    "color": "black",
+    "description": "山札を削って捨て札の数で爆発する墓地の理想形",
+    "cards": [
+      {
+        "cardId": "black_mill",
+        "count": 3
+      },
+      {
+        "cardId": "black_perm_altar",
+        "count": 1
+      },
+      {
+        "cardId": "black_grave_bolt",
+        "count": 3
+      },
+      {
+        "cardId": "black_despair",
+        "count": 2
+      },
+      {
+        "cardId": "black_grave_burst",
+        "count": 1
+      },
+      {
+        "cardId": "black_dark_pact",
+        "count": 2
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_black",
+    "name": "黒の初期デッキ",
+    "color": "black",
+    "description": "打撃3・防御3・リアクション2・種2 (吸収+霧)",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 3
+      },
+      {
+        "cardId": "black_guard",
+        "count": 3
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_grudge",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      }
+    ]
   }
 ]
