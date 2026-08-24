@@ -532,5 +532,64 @@
         "target": "all"
       }
     ]
+  },
+  {
+    "id": "green_decoy_needle",
+    "name": "毒針の囮",
+    "cost": 0,
+    "type": "reaction",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_bloom_lash",
+    "name": "開花の蔦",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "green_weak_point",
+    "name": "急所突き",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "exposeEnemy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_thorn_burst",
+    "name": "茨の爆ぜ",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 5,
+        "target": "all"
+      }
+    ]
   }
 ]

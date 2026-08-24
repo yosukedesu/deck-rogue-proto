@@ -96,6 +96,7 @@ const KEYWORD_HELP: Record<string, string> = {
   再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
   激昂: '敵フェーズ終了時に自動で強化が増える。長引くほど攻撃が痛くなる',
   混乱: '混乱した敵の攻撃は、プレイヤーでなく他の生存敵（いなければ自分自身）に向かう。攻撃1回ごとに1減る',
+  急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
   応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
@@ -165,6 +166,8 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onTurnStart: '毎ターン開始時: ',
   onCombatStart: '戦闘開始時: ',
   onAttackPlayed: '攻撃プレイ後: ',
+  onSpellPlayed: '呪文をプレイした時: ',
+  onSetDestroyed: 'この伏せが破壊された時: ',
 }
 
 /** 誘発の追加条件の表示 */
@@ -225,6 +228,14 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}${aoe || '敵の'}ブロックを全て粉砕する`
     case 'confuse':
       return `${trigger}敵1体に混乱+${e.amount}（攻撃が仲間に向かう）`
+    case 'exposeEnemy':
+      return `${trigger}${aoe}急所+${e.amount}（次に受けるダメージ${e.amount}回が+50%）`
+    case 'dischargeGrowth':
+      return ctx && ctx.growth > 0
+        ? `${trigger}⚔️ 成長×${e.amount}ダメージを与え、成長を全て失う [現在${ctx.growth * (e.amount ?? 0) + ctx.growth}]`
+        : `${trigger}⚔️ 成長×${e.amount}ダメージを与え、成長を全て失う`
+    case 'dealDamageCleave':
+      return `${trigger}⚔️ ${(e.amount ?? 0) + atkBonus}ダメージ${atkBreak}。倒したら別の敵にも同値`
     case 'dealDamageRandom':
       return `${trigger}⚔️ ${(e.amount ?? 0) + atkBonus}〜${(e.amountMax ?? 0) + atkBonus}ダメージ(ランダム)${pierce}${atkBonus > 0 ? `（補正+${atkBonus}込み）` : ''}`
     case 'impulseDraw':
@@ -459,6 +470,10 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `敵は再生でHP+${e.amount}`, cls: 'log-bad' }
     case 'EnemyConfused':
       return { text: `敵に混乱+${e.amount}（攻撃が仲間に向かう）`, cls: 'log-good' }
+    case 'ExposedApplied':
+      return { text: `敵に急所+${e.amount}（次のダメージ${e.amount}回が+50%）`, cls: 'log-good' }
+    case 'GrowthDischarged':
+      return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
     case 'ConfusedAttack':
       return {
         text:
@@ -880,6 +895,9 @@ function BattleScreen({
                     )}
                     {enemy.confusion > 0 && (
                       <span className="chip chip-aether">😵‍💫 {kw('混乱')} {enemy.confusion}</span>
+                    )}
+                    {enemy.exposed > 0 && (
+                      <span className="chip chip-growth">🎯 {kw('急所')} {enemy.exposed}</span>
                     )}
                     {enemyDef.regen !== undefined && enemy.hp > enemy.maxHp * 0.5 && !dead && (
                       <span className="chip chip-strength">♻️ {kw('再生')} +{enemyDef.regen}</span>

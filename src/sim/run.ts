@@ -54,6 +54,8 @@ const TURN_LIMIT = 50 // 無限戦闘の保険。超えたら敗北扱い
 /** 成長0での doubleGrowth など、プレイしても無意味・不可能なカードを弾く */
 function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'doubleGrowth')) return state.player.growth > 0
+  // 成長放出は成長2以上でないと損 (エンジンを空撃ちしない)
+  if (card.def.effects.some((e) => e.effect === 'dischargeGrowth')) return state.player.growth >= 2
   // ストーム系: 詠唱数0で撃っても無意味
   const stormEffects = ['dealDamagePerCardPlayed', 'gainIceBlockPerCardPlayed', 'drawCardsPerCardPlayed']
   if (

@@ -126,6 +126,7 @@ export function startCombatWithOptions(
       strength: (options.enemyStrength ?? 0) + (m.strength ?? 0),
       burn: 0,
       confusion: 0,
+      exposed: 0,
       patternIndex: m.patternOffset ?? 0,
     }
   })
@@ -347,7 +348,14 @@ export function playCard(
   }
   // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
   const resolvedEffects = chosenMode ? chosenMode.effects : card.def.effects.filter((e) => e.trigger === 'onPlay')
-  if (resolvedEffects.some(isDamageEffect)) s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
+  if (resolvedEffects.some(isDamageEffect)) {
+    s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
+    s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
+  }
+  // 自己誘発: 呪文プレイ時 (物理/呪文分割の機構的活用。確定済みルール表「自己誘発リアクション」)
+  if (card.def.type === 'spell') {
+    s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
+  }
   // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない
   s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
   return checkCombatEnd(s)
@@ -458,6 +466,36 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     if (s.phase === 'awaiting-reaction' || isOver(s)) return s
   }
   return finishEnemyPhase(s)
+}
+
+/**
+ * 自己誘発リアクション: 伏せ札が自分の行動 (攻撃/呪文プレイ) で起爆する
+ * (確定済みルール表「自己誘発リアクション」)。確認ウィンドウは挟まず自動発動し、捨て札へ。
+ */
+function fireSelfSetTriggers(
+  state: GameState,
+  trigger: 'onAttackPlayed' | 'onSpellPlayed',
+  enemyIndex: number,
+): GameState {
+  const firing = state.player.setCards.filter((c) =>
+    c.def.effects.some((e) => e.trigger === trigger),
+  )
+  if (firing.length === 0) return state
+  let s: GameState = {
+    ...state,
+    player: {
+      ...state.player,
+      setCards: state.player.setCards.filter((c) => !firing.includes(c)),
+      discardPile: [...state.player.discardPile, ...firing],
+    },
+  }
+  for (const card of firing) {
+    s = emit(s, { type: 'ReactionTriggered', cardId: card.def.id, mode: s.reactionMode })
+    for (const effect of card.def.effects) {
+      if (effect.trigger === trigger) s = resolveEffectTargeted(s, effect, enemyIndex)
+    }
+  }
+  return checkCombatEnd(s)
 }
 
 /** 負傷 (死に札) の1戦闘上限。ハメ防止 (確定済みルール表「状態異常」) */
@@ -609,18 +647,27 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
     }
     case 'destroy-set': {
       if (state.player.setCards.length === 0) return markResolved(state, 0)
-      let s: GameState = {
-        ...state,
+      let s: GameState = state
+      // 伏せ破壊への罰: onSetDestroyed 効果を破壊した敵に向けて発火 (確定済みルール表「伏せ破壊への罰」)
+      for (const card of state.player.setCards) {
+        for (const effect of card.def.effects) {
+          if (effect.trigger === 'onSetDestroyed') {
+            s = resolveEffectTargeted(s, effect, enemyIndex)
+          }
+        }
+      }
+      s = {
+        ...s,
         player: {
-          ...state.player,
+          ...s.player,
           setCards: [],
-          discardPile: [...state.player.discardPile, ...state.player.setCards],
+          discardPile: [...s.player.discardPile, ...state.player.setCards],
         },
       }
       for (const card of state.player.setCards) {
         s = emit(s, { type: 'SetCardDestroyed', cardId: card.def.id })
       }
-      return markResolved(s, 0)
+      return markResolved(checkCombatEnd(s), 0)
     }
   }
 }

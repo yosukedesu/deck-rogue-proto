@@ -392,5 +392,39 @@
         "amount": 3
       }
     ]
+  },
+  {
+    "id": "blue_whisper_trap",
+    "name": "囁きの罠",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "confuse",
+        "amount": 1,
+        "condition": {
+          "maxActionValue": 10
+        }
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_seal",
+    "name": "反響の符",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "drawCards",
+        "amount": 1
+      },
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
   }
 ]

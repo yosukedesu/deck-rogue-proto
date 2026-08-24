@@ -91,6 +91,8 @@ export interface EnemyState extends CombatantState {
   readonly burn: number
   /** 混乱 (青の精神攻撃)。攻撃が他の生存敵 (いなければ自分) に向かい、攻撃1回ごとに1減る */
   readonly confusion: number
+  /** 急所 (敵版脆弱)。次に受けるプレイヤーダメージN回が+50%。1ヒットごとに1減る */
+  readonly exposed: number
   /** 行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用 */
   readonly patternIndex: number
 }
@@ -241,6 +243,8 @@ export type GameEvent =
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
   | { readonly type: 'EnergyMaxGained'; readonly amount: number }
   | { readonly type: 'GrowthAdded'; readonly amount: number }
+  | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
+  | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
   | { readonly type: 'ReactionWhiffed'; readonly cardId: string } // 空振り (伏せは無期限持続が現ルール)
   | { readonly type: 'SetCardDestroyed'; readonly cardId: string } // 伏せ破壊型の仕事
@@ -290,7 +294,9 @@ export interface DeclarativeEffect {
     | 'onEnemyDefended'
     | 'onTurnStart'
     | 'onCombatStart' // 戦闘開始時に1回 (レリック用。第1ターンのドロー・意図宣言の後に発火)
-    | 'onAttackPlayed'
+    | 'onAttackPlayed' // 攻撃カードをプレイした時 (置物、および伏せ札の自己誘発)
+    | 'onSpellPlayed' // 呪文カードをプレイした時 (伏せ札の自己誘発。物理/呪文分割の機構的活用)
+    | 'onSetDestroyed' // この伏せ札が敵に破壊された時 (罠仕掛けの火薬)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -317,6 +323,9 @@ export interface DeclarativeEffect {
     | 'counter'
     | 'negate'
     | 'confuse' // 混乱+X: 敵の攻撃が他の生存敵 (いなければ自分) に向かう (青の精神攻撃)
+    | 'exposeEnemy' // 急所+X: その敵が次に受けるプレイヤーダメージX回が+50% (敵版脆弱)
+    | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
+    | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
     | 'script'
   readonly amount?: number

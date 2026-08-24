@@ -288,5 +288,63 @@
         "target": "all"
       }
     ]
+  },
+  {
+    "id": "red_trap_powder",
+    "name": "罠仕掛けの火薬",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 3
+      },
+      {
+        "trigger": "onSetDestroyed",
+        "effect": "dealDamage",
+        "amount": 12,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_flinch_fire",
+    "name": "怯え火",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_billiard",
+    "name": "玉突き",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageCleave",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "red_ambush_trap",
+    "name": "追い打ちの罠",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
   }
 ]

@@ -33,6 +33,8 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerCardPlayed',
     'dealDamagePerEnergyMax',
     'dischargeAether',
+    'dischargeGrowth',
+    'dealDamageCleave',
     'counter',
   ].includes(effect.effect)
 }
@@ -47,6 +49,9 @@ const ENEMY_TARGETED = new Set([
   'applyBurn',
   'shatterBlock',
   'confuse',
+  'exposeEnemy',
+  'dischargeGrowth',
+  'dealDamageCleave',
 ])
 
 /**
@@ -152,10 +157,15 @@ export function dealDamageToEnemy(
   if (state.player.weak > 0) amount = Math.floor(amount * 0.75)
   const enemy = state.enemies[enemyIndex]
   if (!enemy || enemy.hp <= 0) return state
+  // 急所 (敵版脆弱): 次に受けるダメージN回が+50% (1ヒットごとに1減。確定済みルール表「急所」)
+  const exposed = enemy.exposed > 0
+  if (exposed) amount = Math.floor(amount * 1.5)
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
   const hpLoss = amount - blocked
   const enemies = state.enemies.map((e, i) =>
-    i === enemyIndex ? { ...e, block: e.block - blocked, hp: e.hp - hpLoss } : e,
+    i === enemyIndex
+      ? { ...e, block: e.block - blocked, hp: e.hp - hpLoss, exposed: exposed ? e.exposed - 1 : e.exposed }
+      : e,
   )
   return emit({ ...state, enemies }, { type: 'DamageDealt', source: 'player', amount, hpLoss })
 }
@@ -271,6 +281,32 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
       return emit({ ...state, enemies }, { type: 'EnemyConfused', enemyIndex, amount })
     }
+    case 'exposeEnemy': {
+      // 急所 (敵版脆弱): 次に受けるプレイヤーダメージN回が+50% (確定済みルール表「急所」)
+      const amount = effect.amount ?? 0
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0) return state
+      const enemies = state.enemies.map((e, i) =>
+        i === enemyIndex ? { ...e, exposed: e.exposed + amount } : e,
+      )
+      return emit({ ...state, enemies }, { type: 'ExposedApplied', enemyIndex, amount })
+    }
+    case 'dischargeGrowth': {
+      // 成長放出 (緑): 成長×amount のダメージを与え、成長を全て失う (確定済みルール表「成長放出」)
+      const spent = state.player.growth
+      let s = dealDamageToEnemy(state, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
+      s = { ...s, player: { ...s.player, growth: 0 } }
+      return emit(s, { type: 'GrowthDischarged', spent })
+    }
+    case 'dealDamageCleave': {
+      // キル連鎖: 対象にXダメージ。倒れたら別の生存敵に同値 (確定済みルール表「キル連鎖」)
+      let s = dealDamageToEnemy(state, enemyIndex, effect.amount ?? 0, effect.pierce)
+      if (s.enemies[enemyIndex] && s.enemies[enemyIndex].hp <= 0) {
+        const nextIdx = s.enemies.findIndex((e, i) => i !== enemyIndex && e.hp > 0)
+        if (nextIdx >= 0) s = dealDamageToEnemy(s, nextIdx, effect.amount ?? 0, effect.pierce)
+      }
+      return s
+    }
     case 'shatterBlock': {
       // 粉砕 (赤): 敵のブロックを全て破壊する
       const enemy = state.enemies[enemyIndex]
@@ -379,7 +415,8 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   let s = emit(state, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
   for (const effect of card.def.effects) {
     if (REACTION_TRIGGERS.has(effect.trigger)) {
-      s = resolveEffect(s, effect, enemyIndex)
+      // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
+      s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   }
   return s
