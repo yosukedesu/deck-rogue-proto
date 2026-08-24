@@ -297,13 +297,11 @@ button:disabled { cursor: default; }
   margin-left: 18px;
   color: #fff;
 }
-.cat-ramp { background: #2e7d32; }
-.cat-attack { background: #a03c3c; }
-.cat-defend { background: #3b6ab2; }
-.cat-finisher { background: #7b3fa0; }
-.cat-reaction { background: #b08d22; }
-.cat-growth { background: #2f8a6d; }
-.cat-permanent { background: #3d7a8a; }
+/* カードタイプ (物理/呪文/リアクション/置物) の4色 */
+.type-physical { background: #a05a2c; }
+.type-spell { background: #6b4fa0; }
+.type-reaction { background: #b08d22; }
+.type-permanent { background: #3d7a8a; }
 
 /* 置物ゾーン (場に残るカード) */
 .permanents { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }

@@ -15,13 +15,26 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
   return Math.max(0, card.def.cost - state.player.nextCardDiscount)
 }
 
-/** 自ターンにプレイ可能なカードか。リアクション専用カードは false。置物・選択式は常にプレイ可能 */
+/** 自ターンにプレイ可能なカードか。リアクションタイプは false。置物・選択式は常にプレイ可能 */
 export function isPlayableFromHand(card: CardInstance): boolean {
+  if (card.def.type === 'reaction') return false
   return (
-    card.def.category === 'permanent' ||
+    card.def.type === 'permanent' ||
     (card.def.modes?.length ?? 0) > 0 ||
     card.def.effects.some((e) => e.trigger === 'onPlay')
   )
+}
+
+/** ダメージを与える効果か (「攻撃プレイ後」誘発の判定に使う) */
+export function isDamageEffect(effect: DeclarativeEffect): boolean {
+  return [
+    'dealDamage',
+    'dealDamageRandom',
+    'dealDamagePerCardPlayed',
+    'dealDamagePerEnergyMax',
+    'dischargeAether',
+    'counter',
+  ].includes(effect.effect)
 }
 
 /**

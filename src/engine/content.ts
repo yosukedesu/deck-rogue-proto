@@ -41,7 +41,7 @@ export function buildLeaderPassive(leader: LeaderDef): CardInstance {
       id: `${leader.id}_passive`,
       name: `${leader.name}の能力`,
       cost: 0,
-      category: 'permanent',
+      type: 'permanent',
       color: leader.colors[0],
       effects: leader.passive,
     },

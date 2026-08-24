@@ -19,8 +19,8 @@ import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type {
-  CardCategory,
   CardColor,
+  CardType,
   CardDef,
   CardInstance,
   Command,
@@ -54,15 +54,12 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   charger: '🐢',
 }
 
-const CATEGORY_LABEL: Record<CardCategory, string> = {
-  ramp: 'ランプ',
-  draw: 'ドロー',
-  attack: '攻撃',
-  defend: '防御',
-  finisher: 'フィニッシャー',
-  reaction: 'リアクション',
-  growth: '成長',
-  permanent: '置物',
+// カードタイプの世界観ラベル (未来感・幾何学モチーフ。1行で差し替え可能)
+const TYPE_LABEL: Record<CardType, string> = {
+  physical: 'アームズ', // 物理: 実体の武装
+  spell: 'コード', // 呪文: 術式プログラム
+  reaction: 'トリガー', // リアクション: 誘発条件
+  permanent: 'モジュール', // 置物: 常駐機構
 }
 
 const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 青', red: '🔥 赤' }
@@ -430,7 +427,7 @@ function CardFrame({
         {displayCost ?? card.def.cost}
       </div>
       <div className="card-name">{card.def.name}</div>
-      <div className={`card-category cat-${card.def.category}`}>{CATEGORY_LABEL[card.def.category]}</div>
+      <div className={`card-category type-${card.def.type}`}>{TYPE_LABEL[card.def.type]}</div>
       <div className="card-text">
         <EffectLines def={card.def} ctx={ctx} />
         {hint && (
@@ -846,7 +843,7 @@ function BattleScreen({
                   effCost <= player.energy &&
                   player.hand.length - 1 >= discardCost
                 const canSet = isSetMode && system.canHandle(s, { type: 'SetCard', cardUid: c.uid })
-                const heldReaction = !isSetMode && c.def.category === 'reaction'
+                const heldReaction = !isSetMode && c.def.type === 'reaction'
                 // 捨てコスト選択中: 手札は「捨てる」対象として振る舞う
                 if (activeDiscard) {
                   const isSource = c.uid === activeDiscard.cardUid
@@ -911,7 +908,7 @@ function BattleScreen({
                             </button>
                           )
                         )}
-                        {isSetMode && c.def.category === 'reaction' && (
+                        {isSetMode && c.def.type === 'reaction' && (
                           <button
                             className="btn"
                             disabled={!canSet}

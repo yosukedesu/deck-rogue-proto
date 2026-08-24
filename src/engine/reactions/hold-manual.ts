@@ -16,7 +16,7 @@ export function playableReactions(state: GameState): readonly CardInstance[] {
   if (!win) return []
   return state.player.hand.filter(
     (c) =>
-      c.def.category === 'reaction' &&
+      c.def.type === 'reaction' &&
       reactionMatches(state, c, win) &&
       c.def.cost <= state.player.energy,
   )
@@ -26,7 +26,7 @@ export function playableReactions(state: GameState): readonly CardInstance[] {
 function anyPlayable(state: GameState, win: ReactionWindow): boolean {
   return state.player.hand.some(
     (c) =>
-      c.def.category === 'reaction' &&
+      c.def.type === 'reaction' &&
       reactionMatches(state, c, win) &&
       c.def.cost <= state.player.energy,
   )
@@ -105,7 +105,7 @@ export const holdManualSystem: ReactionSystem = {
         // 空振り計上: 敵ターンを終えて使われず捨てられていくリアクションカード
         let s = state
         for (const card of state.player.hand) {
-          if (card.def.category === 'reaction') {
+          if (card.def.type === 'reaction') {
             s = emit(s, { type: 'ReactionWhiffed', cardId: card.def.id })
           }
         }

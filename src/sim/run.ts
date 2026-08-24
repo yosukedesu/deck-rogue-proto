@@ -13,18 +13,37 @@
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
 import { allDecks, allEnemies, allLeaders, getCardDef } from '../engine/content.ts'
-import { effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
+import { effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
-import type { CardCategory, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
+import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
 
-const PLAY_PRIORITY: readonly CardCategory[] = [
+/**
+ * ボット用の役割分類。カードタイプ廃止後は効果から導出する
+ * (タイプは物理/呪文/リアクション/置物の機械的区分になったため)
+ */
+type BotRole = 'ramp' | 'draw' | 'permanent' | 'growth' | 'bighit' | 'attack' | 'defend' | 'reaction' | 'other'
+
+function botRole(def: CardDef): BotRole {
+  if (def.type === 'reaction') return 'reaction'
+  if (def.type === 'permanent') return 'permanent'
+  const effects = def.modes?.length ? def.modes[0].effects : def.effects
+  const has = (...ids: string[]) => effects.some((e) => ids.includes(e.effect))
+  if (has('gainEnergyMax', 'gainEnergy', 'discountNext')) return 'ramp'
+  if (has('addGrowth', 'doubleGrowth')) return 'growth'
+  if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
+  if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed')) return 'draw'
+  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed')) return 'defend'
+  return 'other'
+}
+
+const PLAY_PRIORITY: readonly BotRole[] = [
   'ramp',
   'draw', // ドローは先に (ストームの詠唱数も稼げる)
   'permanent', // 置物はエンジンなので早置き
   'growth',
-  'finisher',
+  'bighit', // 旧フィニッシャー枠 (コスト3以上のダメージ札)
   'attack',
   'defend',
 ]
@@ -78,14 +97,14 @@ function chooseCommand(s: GameState): Command {
   // set系: まずリアクションを伏せる (伏せ場が空いていて払えるなら常に)
   if (s.reactionMode !== 'hold-manual' && s.player.setCards.length === 0) {
     const reaction = s.player.hand.find(
-      (c) => c.def.category === 'reaction' && c.def.cost <= s.player.energy,
+      (c) => c.def.type === 'reaction' && c.def.cost <= s.player.energy,
     )
     if (reaction) return { type: 'SetCard', cardUid: reaction.uid }
   }
 
   // hold-manual: 敵ターンにリアクションを切るため、最安リアクション分のエナジーを温存する
   const reactionCosts = s.player.hand
-    .filter((c) => c.def.category === 'reaction')
+    .filter((c) => c.def.type === 'reaction')
     .map((c) => c.def.cost)
   const reserve =
     s.reactionMode === 'hold-manual' && reactionCosts.length > 0 ? Math.min(...reactionCosts) : 0
@@ -97,22 +116,25 @@ function chooseCommand(s: GameState): Command {
   const stormReserve = stormCosts.length > 0 ? Math.min(...stormCosts) : 0
   const spendable = s.player.energy - reserve
 
-  for (const category of PLAY_PRIORITY) {
-    // フィニッシャー自身は温存分を使ってよい
-    const budget = category === 'finisher' ? spendable : spendable - stormReserve
-    let candidates = s.player.hand.filter(
-      (c) =>
-        c.def.category === category &&
+  // ストームのペイオフ自身は温存分を使ってよい
+  const isStormPayoff = (c: CardInstance) =>
+    c.def.effects.some((e) => e.effect === 'dealDamagePerCardPlayed')
+  for (const role of PLAY_PRIORITY) {
+    let candidates = s.player.hand.filter((c) => {
+      const budget = role === 'bighit' || isStormPayoff(c) ? spendable : spendable - stormReserve
+      return (
+        botRole(c.def) === role &&
         isPlayableFromHand(c) &&
         effectiveCost(s, c) <= budget &&
-        isWorthPlaying(s, c),
-    )
-    // 勢い生成付きの攻撃 (突進の助走など) を同ターンの他の攻撃・フィニッシャーより先に打つ
-    if (category === 'finisher' || category === 'attack') {
+        isWorthPlaying(s, c)
+      )
+    })
+    // 勢い生成付きの攻撃 (突進の助走など) を同ターンの他の攻撃・大技より先に打つ
+    if (role === 'bighit' || role === 'attack') {
       const momentumFirst = s.player.hand.filter(
         (c) =>
-          (c.def.category === 'attack' || c.def.category === 'finisher') &&
           c.def.effects.some((e) => e.effect === 'addMomentum') &&
+          c.def.effects.some(isDamageEffect) &&
           effectiveCost(s, c) <= spendable,
       )
       if (momentumFirst.length > 0) candidates = momentumFirst
@@ -153,12 +175,12 @@ function runBattle(mode: ReactionMode, deckId: string, enemyId: string, seed: nu
 // ============================================================
 
 /** ボットの報酬ピック: 攻撃系優先の単純方針 (カテゴリ優先順で最初に合致した提示を取る) */
-const PICK_PRIORITY: readonly CardCategory[] = [
+const PICK_PRIORITY: readonly BotRole[] = [
   'permanent', // 置物は長いランで最も価値が高い (茨の茂み・賢者の泉など)
   'growth',
   'draw',
   'attack',
-  'finisher',
+  'bighit',
   'defend',
   'ramp',
   'reaction',
@@ -166,8 +188,8 @@ const PICK_PRIORITY: readonly CardCategory[] = [
 
 function chooseReward(run: { rewardOptions: readonly string[] | null }): number {
   const options = run.rewardOptions ?? []
-  for (const category of PICK_PRIORITY) {
-    const idx = options.findIndex((id) => getCardDef(id).category === category)
+  for (const role of PICK_PRIORITY) {
+    const idx = options.findIndex((id) => botRole(getCardDef(id)) === role)
     if (idx >= 0) return idx
   }
   return 0

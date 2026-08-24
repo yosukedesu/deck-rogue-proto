@@ -8,6 +8,7 @@ import { buildDeck, getEnemyDef } from './content.ts'
 import {
   drawCards,
   effectiveCost,
+  isDamageEffect,
   isPlayableFromHand,
   resolveEffect,
   resolveOnPlayEffects,
@@ -268,7 +269,7 @@ export function playCard(
   }
 
   const enemyIndex = state.enemies.findIndex((e) => e.hp > 0)
-  const isPermanent = card.def.category === 'permanent'
+  const isPermanent = card.def.type === 'permanent'
   const isExhaust = card.def.exhaust === true
   const removed = new Set([cardUid, ...discards])
   const discardedCards = state.player.hand.filter((c) => discards.includes(c.uid))
@@ -301,7 +302,9 @@ export function playCard(
   } else {
     s = resolveOnPlayEffects(s, card, enemyIndex)
   }
-  if (card.def.category === 'attack') s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
+  // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
+  const resolvedEffects = chosenMode ? chosenMode.effects : card.def.effects.filter((e) => e.trigger === 'onPlay')
+  if (resolvedEffects.some(isDamageEffect)) s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
   // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない
   s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
   return checkCombatEnd(s)

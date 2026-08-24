@@ -3,7 +3,7 @@
     "id": "red_strike",
     "name": "火弾",
     "cost": 1,
-    "category": "attack",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -16,7 +16,7 @@
     "id": "red_guard",
     "name": "灰の盾",
     "cost": 1,
-    "category": "defend",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -29,7 +29,7 @@
     "id": "red_ignite",
     "name": "着火",
     "cost": 1,
-    "category": "attack",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -47,7 +47,7 @@
     "id": "red_spreading_fire",
     "name": "延焼弾",
     "cost": 2,
-    "category": "attack",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -65,7 +65,7 @@
     "id": "red_inferno",
     "name": "業火",
     "cost": 4,
-    "category": "finisher",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -83,7 +83,7 @@
     "id": "red_perm_brazier",
     "name": "火鉢",
     "cost": 2,
-    "category": "permanent",
+    "type": "permanent",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -96,7 +96,7 @@
     "id": "red_perm_ember",
     "name": "残り火",
     "cost": 2,
-    "category": "permanent",
+    "type": "permanent",
     "effects": [
       {
         "trigger": "onAttackPlayed",
@@ -109,7 +109,7 @@
     "id": "red_ritual",
     "name": "猛火の儀式",
     "cost": 0,
-    "category": "ramp",
+    "type": "spell",
     "exhaust": true,
     "effects": [
       {
@@ -123,7 +123,7 @@
     "id": "red_impulse",
     "name": "火中の取り出し",
     "cost": 1,
-    "category": "draw",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -136,7 +136,7 @@
     "id": "red_big_impulse",
     "name": "燃え上がる着想",
     "cost": 2,
-    "category": "draw",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -154,7 +154,7 @@
     "id": "red_shatter",
     "name": "粉砕",
     "cost": 1,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -171,7 +171,7 @@
     "id": "red_smash",
     "name": "叩き割り",
     "cost": 2,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -188,7 +188,7 @@
     "id": "red_gamble",
     "name": "火運の賭け",
     "cost": 1,
-    "category": "attack",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -202,7 +202,7 @@
     "id": "red_chaos_bolt",
     "name": "大博打",
     "cost": 3,
-    "category": "finisher",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -216,7 +216,7 @@
     "id": "red_reckless",
     "name": "捨て身の一撃",
     "cost": 1,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -234,7 +234,7 @@
     "id": "red_reaction_flareback",
     "name": "逆燃",
     "cost": 1,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -247,7 +247,7 @@
     "id": "red_reaction_eruption",
     "name": "爆発反応",
     "cost": 2,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onEnemyAction",

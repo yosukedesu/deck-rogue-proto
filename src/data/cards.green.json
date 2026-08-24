@@ -3,7 +3,7 @@
     "id": "green_ramp_sprout",
     "name": "芽吹き",
     "cost": 1,
-    "category": "ramp",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -17,7 +17,7 @@
     "id": "green_ramp_deep_roots",
     "name": "深根",
     "cost": 2,
-    "category": "ramp",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -31,7 +31,7 @@
     "id": "green_ramp_sunlight",
     "name": "陽光の恵み",
     "cost": 2,
-    "category": "ramp",
+    "type": "spell",
     "effects": [],
     "modes": [
       {
@@ -65,7 +65,7 @@
     "id": "green_strike",
     "name": "打撃",
     "cost": 1,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -78,7 +78,7 @@
     "id": "green_double_lash",
     "name": "二連の蔦打ち",
     "cost": 1,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -96,7 +96,7 @@
     "id": "green_fang",
     "name": "牙の一撃",
     "cost": 2,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -109,7 +109,7 @@
     "id": "green_guard",
     "name": "防御",
     "cost": 1,
-    "category": "defend",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -122,7 +122,7 @@
     "id": "green_bark_armor",
     "name": "樹皮の鎧",
     "cost": 2,
-    "category": "defend",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -135,7 +135,7 @@
     "id": "green_entangle",
     "name": "絡み蔦",
     "cost": 1,
-    "category": "defend",
+    "type": "physical",
     "effects": [],
     "modes": [
       {
@@ -164,7 +164,7 @@
     "id": "green_finisher_wrath",
     "name": "大樹の怒り",
     "cost": 4,
-    "category": "finisher",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -177,7 +177,7 @@
     "id": "green_finisher_stomp",
     "name": "巨獣の踏みつけ",
     "cost": 6,
-    "category": "finisher",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -190,7 +190,7 @@
     "id": "green_reaction_thorns",
     "name": "茨の返し",
     "cost": 1,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -203,7 +203,7 @@
     "id": "green_reaction_vine",
     "name": "守りの蔓",
     "cost": 1,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onAttackIncoming",
@@ -216,7 +216,7 @@
     "id": "green_reaction_root_weave",
     "name": "根の紡ぎ",
     "cost": 3,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onEnemyAction",
@@ -228,7 +228,7 @@
     "id": "green_growth_ring",
     "name": "年輪",
     "cost": 1,
-    "category": "growth",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -241,7 +241,7 @@
     "id": "green_sig_canopy",
     "name": "天蓋の実り",
     "cost": 3,
-    "category": "ramp",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -260,7 +260,7 @@
     "id": "green_sig_overgrowth",
     "name": "森の大爆発",
     "cost": 5,
-    "category": "finisher",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -274,7 +274,7 @@
     "id": "green_sig_rite_of_bloom",
     "name": "開花の儀",
     "cost": 1,
-    "category": "growth",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -286,7 +286,7 @@
     "id": "green_sig_vine_dance",
     "name": "蔦の乱舞",
     "cost": 3,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -319,7 +319,7 @@
     "id": "green_sig_trample",
     "name": "踏み荒らし",
     "cost": 2,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -338,7 +338,7 @@
     "id": "green_sig_stampede",
     "name": "巨象の突進",
     "cost": 4,
-    "category": "finisher",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -352,7 +352,7 @@
     "id": "green_trample_charge",
     "name": "突進の助走",
     "cost": 1,
-    "category": "attack",
+    "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
@@ -370,7 +370,7 @@
     "id": "green_ritual_surge",
     "name": "自然の奔流",
     "cost": 1,
-    "category": "ramp",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -383,7 +383,7 @@
     "id": "green_perm_growth_tree",
     "name": "年輪の大樹",
     "cost": 2,
-    "category": "permanent",
+    "type": "permanent",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -396,7 +396,7 @@
     "id": "green_perm_thorn_thicket",
     "name": "茨の茂み",
     "cost": 2,
-    "category": "permanent",
+    "type": "permanent",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -409,7 +409,7 @@
     "id": "green_perm_herd_chief",
     "name": "大角の群長",
     "cost": 2,
-    "category": "permanent",
+    "type": "permanent",
     "effects": [
       {
         "trigger": "onAttackPlayed",
@@ -422,7 +422,7 @@
     "id": "green_flash_insight",
     "name": "緑の閃き",
     "cost": 1,
-    "category": "ramp",
+    "type": "spell",
     "discardCost": 1,
     "effects": [
       {
@@ -436,7 +436,7 @@
     "id": "green_serpent_gulp",
     "name": "大蛇の丸呑み",
     "cost": 2,
-    "category": "attack",
+    "type": "physical",
     "discardCost": 1,
     "effects": [
       {
@@ -450,7 +450,7 @@
     "id": "green_reaction_cornered",
     "name": "窮鼠の大牙",
     "cost": 1,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -466,7 +466,7 @@
     "id": "green_reaction_resonance",
     "name": "共鳴する茨",
     "cost": 1,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onEnemyBuffed",
@@ -479,7 +479,7 @@
     "id": "green_reaction_root_pierce",
     "name": "根穿ち",
     "cost": 1,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onEnemyDefended",
@@ -493,7 +493,7 @@
     "id": "green_reaction_backlash",
     "name": "逆襲の蔦",
     "cost": 2,
-    "category": "reaction",
+    "type": "reaction",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -509,7 +509,7 @@
     "id": "green_wild_sprout",
     "name": "野生の萌芽",
     "cost": 0,
-    "category": "growth",
+    "type": "spell",
     "exhaust": true,
     "effects": [
       {

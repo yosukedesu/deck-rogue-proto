@@ -234,15 +234,16 @@ export type GameEvent =
 /** カードの色 (MTGカラーパイ準拠)。data/*.json のファイル単位で決まり、読込時に付与される */
 export type CardColor = 'green' | 'blue' | 'red'
 
-export type CardCategory =
-  | 'ramp'
-  | 'draw' // 青のドロー・ルーティング
-  | 'attack'
-  | 'defend'
-  | 'finisher'
-  | 'reaction'
-  | 'growth'
-  | 'permanent'
+/**
+ * カードタイプ (MTGのカードタイプ相当。機械的な挙動で切る):
+ * - physical: 物理。通常プレイの使い切り (肉体・武器・自然の力)
+ * - spell: 呪文。通常プレイの使い切り (魔法・術式)。物理との分割は
+ *   「物理耐性の敵」「呪文数参照」などの将来の設計余地のため
+ * - reaction: リアクション。伏せて敵の行動に誘発 (MTGのインスタント相当)
+ * - permanent: 置物。場に残り戦闘中持続 (エンチャント相当)
+ * 表示名 (世界観ラベル) は UI 側のラベルマップで差し替える
+ */
+export type CardType = 'physical' | 'spell' | 'reaction' | 'permanent'
 
 /**
  * 宣言的効果。表現できないものだけ scriptId で名前付きスクリプト効果に逃がす。
@@ -311,7 +312,7 @@ export interface CardDef {
   readonly id: string
   readonly name: string
   readonly cost: number
-  readonly category: CardCategory
+  readonly type: CardType
   /** 色。JSONには書かず、content.ts が読込時にファイル単位で付与する */
   readonly color: CardColor
   /** 通常効果。modes を持つカードでは空配列にする */

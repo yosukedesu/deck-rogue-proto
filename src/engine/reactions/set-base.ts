@@ -11,7 +11,7 @@ export function canSetCard(state: GameState, cardUid: string): boolean {
   if (state.player.setCards.length >= 1) return false // 伏せ枚数は同時1枚 (確定済みルール)
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) return false
-  if (card.def.category !== 'reaction') return false // 伏せ対象は reaction カテゴリのみ
+  if (card.def.type !== 'reaction') return false // 伏せ対象は reaction タイプのみ
   return card.def.cost <= state.player.energy
 }
 
@@ -21,7 +21,7 @@ export function setCard(state: GameState, cardUid: string): GameState {
   if (state.player.setCards.length >= 1) throw new Error('伏せは同時1枚まで')
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
-  if (card.def.category !== 'reaction') throw new Error(`${card.def.name} は伏せられない (reactionのみ)`)
+  if (card.def.type !== 'reaction') throw new Error(`${card.def.name} は伏せられない (リアクションタイプのみ)`)
   if (card.def.cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const s: GameState = {
     ...state,
