@@ -353,5 +353,44 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "blue_ripple_blade",
+    "name": "さざなみの刃",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_foam_armor",
+    "name": "泡沫の鎧",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerCardPlayed",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_storm_echo",
+    "name": "嵐の残響",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 3
+      }
+    ]
   }
 ]

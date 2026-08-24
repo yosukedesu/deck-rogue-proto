@@ -60,6 +60,27 @@ describe('ストーム (詠唱数参照)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)
   })
+
+  it('嵐の残響: 詠唱数は敵フェーズ中も生きており、伏せた残響が詠唱数×3で返す (ストーム×伏せの橋)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_ponder',
+      'blue_guard',
+      'blue_storm_echo',
+    ])
+    s = { ...s, player: { ...s.player, energy: 6 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ponder' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_guard' })
+    // 伏せはプレイではないので詠唱数に数えない
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't2_blue_storm_echo' })
+    expect(s.player.cardsPlayedThisTurn).toBe(2)
+    s = withIntent(s, attackIntent(5))
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    // set-confirm: 被攻撃後の確認ウィンドウ → 発動
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
+    expect(s.enemies[0].hp).toBe(enemyHp - 6) // 詠唱数2 ×3
+  })
 })
 
 describe('青の打ち消し (本家)', () => {
