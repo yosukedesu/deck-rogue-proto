@@ -34,7 +34,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4
+        "amount": 3
       },
       {
         "trigger": "onPlay",
@@ -163,7 +163,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 5
       }
     ]
   },
@@ -180,7 +180,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 12
+        "amount": 11
       }
     ]
   },
@@ -193,8 +193,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageRandom",
-        "amount": 3,
-        "amountMax": 25
+        "amount": 2,
+        "amountMax": 16
       }
     ]
   },
@@ -207,8 +207,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageRandom",
-        "amount": 12,
-        "amountMax": 44
+        "amount": 8,
+        "amountMax": 32
       }
     ]
   },
@@ -221,7 +221,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 18
+        "amount": 14
       },
       {
         "trigger": "onPlay",

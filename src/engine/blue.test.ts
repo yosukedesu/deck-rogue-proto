@@ -32,14 +32,14 @@ describe('氷壁 (持ち越しブロック)', () => {
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_guard' })
-    expect(s.player.iceBlock).toBe(8)
+    expect(s.player.iceBlock).toBe(10)
     expect(s.player.block).toBe(5)
     // 攻撃10: 通常ブロック5を先に消費し、残り5を氷壁で受ける
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(s.player.maxHp)
     expect(s.player.block).toBe(0) // 次ターン開始でリセット
-    expect(s.player.iceBlock).toBe(3) // 8 - 5 が持ち越されている
+    expect(s.player.iceBlock).toBe(5) // 10 - 5 が持ち越されている
   })
 })
 
@@ -53,9 +53,9 @@ describe('ストーム (詠唱数参照)', () => {
     s = { ...s, player: { ...s.player, energy: 6 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (8ダメージ)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (6ダメージ)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×10 = 20
-    expect(s.enemies[0].hp).toBe(hpBefore - 8 - 20)
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 20)
     // ターンをまたぐとリセット
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)
@@ -129,13 +129,13 @@ describe('青のラン', () => {
 })
 
 describe('霊気 (妨害→フィニッシュ変換)', () => {
-  it('対抗呪文: 打ち消しと同時に霊気+2が溜まる', () => {
+  it('対抗呪文: 打ち消しと同時に霊気+1が溜まる', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_counterspell'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_counterspell' })
     s = withIntent(s, attackIntent(15))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')
-    expect(s.player.aether).toBe(2)
+    expect(s.player.aether).toBe(1)
   })
 
   it('霊気放出: 霊気×7ダメージを与えて霊気を全消費する', () => {

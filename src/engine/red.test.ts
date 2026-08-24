@@ -32,7 +32,7 @@ describe('延焼 (バーン)', () => {
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ignite' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_ignite' })
-    expect(s.enemies[0].burn).toBe(8) // 4+4
+    expect(s.enemies[0].burn).toBe(8) // 4+4 (着火の延焼は4のまま)
     const hpAfterHits = s.enemies[0].hp
     s = withIntent(s, defendIntent(10)) // 敵はブロックを得るが延焼はブロック無視
     s = applyCommand(s, { type: 'EndTurn' })
@@ -60,7 +60,7 @@ describe('粉砕とランダム火力', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_smash' })
     expect(types(s.eventLog)).toContain('BlockShattered')
     expect(s.enemies[0].block).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 割った後は素通し
+    expect(s.enemies[0].hp).toBe(hpBefore - 11) // 割った後は素通し
   })
 
   it('ランダム火力: 範囲内のダメージで、同じシードなら同じ結果', () => {
@@ -71,8 +71,8 @@ describe('粉砕とランダム火力', () => {
       return hpBefore - s.enemies[0].hp
     }
     const dmg = play()
-    expect(dmg).toBeGreaterThanOrEqual(3)
-    expect(dmg).toBeLessThanOrEqual(25)
+    expect(dmg).toBeGreaterThanOrEqual(2)
+    expect(dmg).toBeLessThanOrEqual(16)
     expect(play()).toBe(dmg) // 決定論
   })
 })
@@ -101,11 +101,11 @@ describe('刹那のリソース (儀式・衝動・自傷)', () => {
     expect(s.player.impulseUids).toHaveLength(0)
   })
 
-  it('捨て身の一撃: 18ダメージと引き換えにHP-3', () => {
+  it('捨て身の一撃: 14ダメージと引き換えにHP-3', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), ['red_reckless'])
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_reckless' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 18)
+    expect(s.enemies[0].hp).toBe(hpBefore - 14)
     expect(s.player.hp).toBe(s.player.maxHp - 3)
     expect(types(s.eventLog)).toContain('HpLost')
   })

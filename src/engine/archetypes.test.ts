@@ -174,14 +174,15 @@ describe('消滅 (exhaust)', () => {
 })
 
 describe('選択式カード (modes)', () => {
-  it('陽光の恵み: モード0=上限+1、モード1=2枚ドロー を選べる', () => {
+  it('陽光の恵み: モード0=上限+1、モード1=1ドロー+成長1 を選べる', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_ramp_sunlight'])
     const s0 = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sunlight', modeIndex: 0 })
     expect(s0.player.energyMax).toBe(4)
     const handBefore = s.player.hand.length
     const s1 = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sunlight', modeIndex: 1 })
     expect(s1.player.energyMax).toBe(3)
-    expect(s1.player.hand.length).toBe(handBefore - 1 + 2) // 本体を出して2枚引く
+    expect(s1.player.hand.length).toBe(handBefore - 1 + 1) // 本体を出して1枚引く
+    expect(s1.player.growth).toBe(1)
   })
 
   it('選択式カードは modeIndex なしでは拒否される', () => {

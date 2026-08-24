@@ -8,7 +8,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 7
+        "amount": 5
       },
       {
         "trigger": "onPlay",
@@ -39,7 +39,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 8
+        "amount": 6
       }
     ]
   },
@@ -52,7 +52,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 8
+        "amount": 10
       }
     ]
   },
@@ -65,7 +65,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 13
+        "amount": 15
       }
     ]
   },
@@ -149,7 +149,7 @@
       {
         "trigger": "onEnemyAction",
         "effect": "addAether",
-        "amount": 2
+        "amount": 1
       }
     ]
   },
@@ -207,11 +207,6 @@
       },
       {
         "trigger": "onAttacked",
-        "effect": "gainEnergy",
-        "amount": 1
-      },
-      {
-        "trigger": "onAttacked",
         "effect": "addAether",
         "amount": 1
       }
@@ -239,7 +234,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "gainIceBlock",
-        "amount": 5
+        "amount": 4
       }
     ]
   },
