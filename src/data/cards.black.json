@@ -288,5 +288,293 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "black_shadow_blade",
+    "name": "影の刃",
+    "cost": 0,
+    "type": "physical",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "black_blood_price",
+    "name": "血の代償",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 24
+      }
+    ]
+  },
+  {
+    "id": "black_death_wind",
+    "name": "死の風",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 10,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_feast",
+    "name": "貪欲の宴",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 4,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_grave_digger",
+    "name": "墓暴き",
+    "cost": 0,
+    "type": "spell",
+    "exhaust": true,
+    "exhaustCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_deep_mill",
+    "name": "深き忘却",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_offering",
+    "name": "供物の火",
+    "cost": 1,
+    "type": "spell",
+    "exhaustCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 11
+      }
+    ]
+  },
+  {
+    "id": "black_underworld_path",
+    "name": "冥府への道",
+    "cost": 1,
+    "type": "spell",
+    "exhaustCost": 2,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_wraith_feast",
+    "name": "死霊の饗宴",
+    "cost": 3,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrainPerExhaust",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_raise_dead",
+    "name": "死者再生",
+    "cost": 2,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "playFromExhaust"
+      }
+    ]
+  },
+  {
+    "id": "black_corpse_collect",
+    "name": "屍集め",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "retrieveFromExhaust",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_harvest_sin",
+    "name": "背徳の収穫",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerSelfHpLost",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_blade",
+    "name": "血染めの刃",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "dealDamageDrain",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_moon",
+    "name": "血の月",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_pain_core",
+    "name": "苦痛の芯",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onHpLost",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_chorus",
+    "name": "亡者の合唱",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_perm_ledger",
+    "name": "闇市の帳簿",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onCostExhausted",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_reaction_last_stand",
+    "name": "死中の活",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamageDrain",
+        "amount": 20,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "black_reaction_awakening",
+    "name": "血の目覚め",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "exhaustFromDeck",
+        "amount": 2
+      },
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "dealDamagePerExhaust",
+        "amount": 1
+      }
+    ]
   }
 ]

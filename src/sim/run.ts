@@ -36,6 +36,8 @@ function botRole(def: CardDef): BotRole {
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
   if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'exhaustFromDeck')) return 'draw'
+  // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
+  if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
   if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }
@@ -61,13 +63,31 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
     .filter((e) => e.effect === 'loseHp')
     .reduce((a, e) => a + (e.amount ?? 0), 0)
   if (selfHarm > 0 && state.player.hp <= selfHarm + 5) return false
-  // 墓地参照は消滅3枚以上でないと空撃ち
+  // 墓地参照は消滅3枚以上でないと空撃ち (ドレイン版も同じ)
   if (
-    card.def.effects.some((e) => e.effect === 'dealDamagePerExhaust') &&
+    card.def.effects.some(
+      (e) => e.effect === 'dealDamagePerExhaust' || e.effect === 'dealDamageDrainPerExhaust',
+    ) &&
     state.player.exhaustPile.length < 3
   ) {
     return false
   }
+  // 自傷の換金 (背徳の収穫) は失ったHP5以上でないと空撃ち
+  if (
+    card.def.effects.some((e) => e.effect === 'dealDamagePerSelfHpLost') &&
+    state.player.selfHpLost < 5
+  ) {
+    return false
+  }
+  // 屍集め: 消滅置き場が空なら無意味。死者再生: 直接プレイできるコスト2以上のカードがないと損
+  if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust')) {
+    return state.player.exhaustPile.length > 0
+  }
+  if (card.def.effects.some((e) => e.effect === 'playFromExhaust')) {
+    return pickDirectPlayTarget(state) !== null
+  }
+  const exhaustCostN = card.def.exhaustCost ?? 0
+  if (exhaustCostN > 0 && state.player.hand.length - 1 < exhaustCostN) return false
   // ブロック変換はブロック4以上、集結は置物1体以上でないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) return state.player.block >= 4
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerPermanent')) {
@@ -97,6 +117,18 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   return true
 }
 
+/** 死者再生の直接プレイ対象: 制約 (リアクション・選択式・再利用カード以外) を満たす最高コスト。2E未満しかなければ損なので null */
+function pickDirectPlayTarget(state: GameState): CardInstance | null {
+  let best: CardInstance | null = null
+  for (const c of state.player.exhaustPile) {
+    if (c.def.type === 'reaction') continue
+    if ((c.def.modes?.length ?? 0) > 0) continue
+    if (c.def.effects.some((e) => e.effect === 'playFromExhaust' || e.effect === 'retrieveFromExhaust')) continue
+    if (best === null || c.def.cost > best.def.cost) best = c
+  }
+  return best !== null && best.def.cost >= 2 ? best : null
+}
+
 /** PlayCard コマンドを組み立てる (選択式は先頭モード、捨てコストは手札の末尾から充当する単純方針) */
 function buildPlayCommand(state: GameState, card: CardInstance): Command {
   const modeIndex = (card.def.modes?.length ?? 0) > 0 ? 0 : undefined
@@ -108,6 +140,23 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
           .slice(-discardCost)
           .map((c) => c.uid)
       : undefined
+  const exhaustCostN = card.def.exhaustCost ?? 0
+  const exhaustUids =
+    exhaustCostN > 0
+      ? state.player.hand
+          .filter((c) => c.uid !== card.uid)
+          .slice(-exhaustCostN)
+          .map((c) => c.uid)
+      : undefined
+  // コスト再利用 (黒): 屍集めは最高コスト、死者再生は制約を満たす最高コストを選ぶ
+  let retrieveUid: string | undefined
+  if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust')) {
+    const best = [...state.player.exhaustPile].sort((a, b) => b.def.cost - a.def.cost)[0]
+    retrieveUid = best?.uid
+  }
+  if (card.def.effects.some((e) => e.effect === 'playFromExhaust')) {
+    retrieveUid = pickDirectPlayTarget(state)?.uid
+  }
   // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)
   let targetIndex: number | undefined
   let bestHp = Infinity
@@ -118,7 +167,7 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
       targetIndex = i
     }
   }
-  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, targetIndex }
+  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, targetIndex }
 }
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */
@@ -153,7 +202,12 @@ function chooseCommand(s: GameState): Command {
   const burstCosts = s.player.hand
     .filter((c) =>
       c.def.effects.some((e) =>
-        ['dealDamagePerCardPlayed', 'dealDamagePerExhaust'].includes(e.effect),
+        [
+          'dealDamagePerCardPlayed',
+          'dealDamagePerExhaust',
+          'dealDamageDrainPerExhaust',
+          'dealDamagePerSelfHpLost',
+        ].includes(e.effect),
       ),
     )
     .map((c) => c.def.cost)

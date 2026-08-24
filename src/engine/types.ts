@@ -80,6 +80,8 @@ export interface PlayerState extends CombatantState {
   readonly weak: number
   /** 脆弱: 残りNフェーズの間、敵の攻撃ダメージ50%増 (切り捨て・威嚇適用後)。敵フェーズ終了時に1減る */
   readonly vulnerable: number
+  /** この戦闘でカード効果 (loseHp) により失ったHPの累計 (黒: 背徳の収穫の参照値。敵からの被弾は含まない) */
+  readonly selfHpLost: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -181,6 +183,10 @@ export type Command =
       readonly discardUids?: readonly string[]
       /** 単体対象カード用: 対象の敵 index。生存敵が2体以上いる場合は必須 (StS式ターゲティング) */
       readonly targetIndex?: number
+      /** 消滅コスト (exhaustCost) 用: 追加コストとして消滅させる手札の uid。exhaustCost 枚数ぶん必須 */
+      readonly exhaustUids?: readonly string[]
+      /** retrieveFromExhaust / playFromExhaust 用: 消滅置き場から選ぶカードの uid */
+      readonly retrieveUid?: string
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
@@ -240,6 +246,8 @@ export type GameEvent =
   | { readonly type: 'MomentumAdded'; readonly amount: number }
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
+  | { readonly type: 'CardRetrieved'; readonly cardId: string } // 屍集め: 消滅置き場から手札へ
+  | { readonly type: 'CardPlayedFromExhaust'; readonly cardId: string } // 死者再生: 消滅置き場から直接プレイ
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
   | { readonly type: 'EnergyMaxGained'; readonly amount: number }
   | { readonly type: 'GrowthAdded'; readonly amount: number }
@@ -300,6 +308,10 @@ export interface DeclarativeEffect {
     | 'onAttackPlayed' // 攻撃カードをプレイした時 (置物、および伏せ札の自己誘発)
     | 'onSpellPlayed' // 呪文カードをプレイした時 (伏せ札の自己誘発。物理/呪文分割の機構的活用)
     | 'onSetDestroyed' // この伏せ札が敵に破壊された時 (罠仕掛けの火薬)
+    | 'onHealed' // 実回復 (>0) が発生した時 (置物。黒: 血の月。ドレイン・リーダーパッシブでも誘発)
+    | 'onHpLost' // カード効果で自分のHPを失った時 (置物。黒: 苦痛の芯。敵からの被弾では誘発しない=StSルプチャー式)
+    | 'onCardExhausted' // カードが消滅するたび (置物。黒: 亡者の合唱。忘却・消滅コスト・消滅札・衝動失効すべて)
+    | 'onCostExhausted' // 消滅コスト (exhaustCost) を支払った時のみ (置物。黒: 闇市の帳簿)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -334,6 +346,10 @@ export interface DeclarativeEffect {
     | 'dealDamageDrain' // ドレイン (黒の専売): Xダメージを与え、floor(X/2)回復
     | 'exhaustFromDeck' // 忘却 (黒): 山札の上X枚を消滅させる (捨て札はリシャッフルで空になるため消滅を墓地とする)
     | 'dealDamagePerExhaust' // 墓地参照 (黒): 消滅した枚数×Xダメージ (単調増加。衝動失効・消滅札とも共鳴)
+    | 'dealDamageDrainPerExhaust' // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
+    | 'dealDamagePerSelfHpLost' // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×Xダメージ (背徳の収穫)
+    | 'retrieveFromExhaust' // コスト再利用 (黒): 消滅置き場から1枚選んで手札に戻す (屍集め。combat.ts が retrieveUid で解決)
+    | 'playFromExhaust' // コスト再利用 (黒): 消滅置き場のリアクション以外1枚をコストを支払わず直接プレイ (死者再生)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
@@ -369,6 +385,8 @@ export interface CardDef {
   readonly exhaust?: boolean
   /** 追加コスト: 手札を N 枚捨てる */
   readonly discardCost?: number
+  /** 追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる) */
+  readonly exhaustCost?: number
 }
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */

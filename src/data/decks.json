@@ -1014,20 +1014,36 @@
     "description": "山札を削って捨て札の数で爆発する墓地の理想形",
     "cards": [
       {
-        "cardId": "black_mill",
-        "count": 3
+        "cardId": "black_perm_chorus",
+        "count": 1
       },
       {
-        "cardId": "black_perm_altar",
+        "cardId": "black_perm_ledger",
+        "count": 1
+      },
+      {
+        "cardId": "black_grave_digger",
+        "count": 2
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      },
+      {
+        "cardId": "black_deep_mill",
+        "count": 1
+      },
+      {
+        "cardId": "black_offering",
         "count": 1
       },
       {
         "cardId": "black_grave_bolt",
-        "count": 3
+        "count": 2
       },
       {
-        "cardId": "black_despair",
-        "count": 2
+        "cardId": "black_wraith_feast",
+        "count": 1
       },
       {
         "cardId": "black_grave_burst",
@@ -1035,15 +1051,15 @@
       },
       {
         "cardId": "black_dark_pact",
-        "count": 2
+        "count": 1
       },
       {
-        "cardId": "black_reaction_curse",
-        "count": 2
+        "cardId": "black_reaction_awakening",
+        "count": 1
       },
       {
         "cardId": "black_guard",
-        "count": 1
+        "count": 2
       }
     ]
   },
@@ -1076,6 +1092,54 @@
       {
         "cardId": "black_mill",
         "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_recycle",
+    "name": "冥府の取引",
+    "color": "black",
+    "description": "払ったコストを取り戻す黒のハック。自傷を背徳の収穫で換金し、血の儀式を死者再生で買い戻す",
+    "cards": [
+      {
+        "cardId": "black_blood_rite",
+        "count": 2
+      },
+      {
+        "cardId": "black_raise_dead",
+        "count": 2
+      },
+      {
+        "cardId": "black_corpse_collect",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_price",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_pain_core",
+        "count": 1
+      },
+      {
+        "cardId": "black_harvest_sin",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
       }
     ]
   }

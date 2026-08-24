@@ -9,6 +9,7 @@ import {
   cardNeedsTarget,
   drawCards,
   effectiveCost,
+  fireExhaustTriggers,
   intimidatedActionValue,
   isDamageEffect,
   isPlayableFromHand,
@@ -63,6 +64,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       impulseUids: [],
       weak: 0,
       vulnerable: 0,
+      selfHpLost: 0, // カード効果で失ったHPの累計 (背徳の収穫の参照値。戦闘内のみ)
     },
     enemies: [],
     pendingWindow: null,
@@ -269,6 +271,8 @@ export function playCard(
   modeIndex?: number,
   discardUids?: readonly string[],
   targetIndex?: number,
+  exhaustUids?: readonly string[],
+  retrieveUid?: string,
 ): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
@@ -304,6 +308,53 @@ export function playCard(
     }
   }
 
+  // 消滅コストの検証 (黒。捨てより重い代わりに墓地燃料になる)
+  const exhaustCost = card.def.exhaustCost ?? 0
+  const exhausts = exhaustUids ?? []
+  if (exhaustCost > 0) {
+    if (exhausts.length !== exhaustCost) {
+      throw new Error(`${card.def.name} は追加コストとして手札${exhaustCost}枚の消滅指定が必要`)
+    }
+    if (
+      new Set(exhausts).size !== exhausts.length ||
+      exhausts.includes(cardUid) ||
+      exhausts.some((uid) => discards.includes(uid))
+    ) {
+      throw new Error('消滅させるカードの指定が不正 (重複・自分自身・捨てコストとの重複)')
+    }
+    for (const uid of exhausts) {
+      if (!state.player.hand.some((c) => c.uid === uid)) throw new Error(`手札にないカード: ${uid}`)
+    }
+  }
+
+  // 消滅置き場からの選択 (屍集め=手札へ / 死者再生=直接プレイ) の検証
+  const isRetrieve = card.def.effects.some((e) => e.effect === 'retrieveFromExhaust')
+  const isPlayFromExhaust = card.def.effects.some((e) => e.effect === 'playFromExhaust')
+  let chosenFromExhaust: CardInstance | null = null
+  if (isRetrieve || isPlayFromExhaust) {
+    if (retrieveUid === undefined) {
+      throw new Error(`${card.def.name} は消滅置き場のカード (retrieveUid) の指定が必要`)
+    }
+    chosenFromExhaust = state.player.exhaustPile.find((c) => c.uid === retrieveUid) ?? null
+    if (!chosenFromExhaust) throw new Error(`消滅置き場にないカード: ${retrieveUid}`)
+    if (isPlayFromExhaust) {
+      // 直接プレイの制約: リアクションは窓の外では解決できず、選択式はモード選択を挟めない
+      if (chosenFromExhaust.def.type === 'reaction') {
+        throw new Error('リアクションは直接プレイできない')
+      }
+      if ((chosenFromExhaust.def.modes?.length ?? 0) > 0) {
+        throw new Error('選択式カードは直接プレイできない')
+      }
+      if (
+        chosenFromExhaust.def.effects.some(
+          (e) => e.effect === 'playFromExhaust' || e.effect === 'retrieveFromExhaust',
+        )
+      ) {
+        throw new Error('コスト再利用カード自身は直接プレイできない (再帰の禁止)')
+      }
+    }
+  }
+
   // StS式ターゲティング (確定済みルール表「ターゲティング」):
   // 生存2体以上で単体対象カードは targetIndex 必須。生存1体なら自動。対象不要カードは無視
   const aliveCount = state.enemies.filter((e) => e.hp > 0).length
@@ -317,8 +368,9 @@ export function playCard(
   const enemyIndex = targetIndex ?? state.enemies.findIndex((e) => e.hp > 0)
   const isPermanent = card.def.type === 'permanent'
   const isExhaust = card.def.exhaust === true
-  const removed = new Set([cardUid, ...discards])
+  const removed = new Set([cardUid, ...discards, ...exhausts])
   const discardedCards = state.player.hand.filter((c) => discards.includes(c.uid))
+  const exhaustedCards = state.player.hand.filter((c) => exhausts.includes(c.uid))
   let s: GameState = {
     ...state,
     player: {
@@ -332,7 +384,11 @@ export function playCard(
         ...(isPermanent || isExhaust ? [] : [card]),
       ],
       permanents: isPermanent ? [...state.player.permanents, card] : state.player.permanents,
-      exhaustPile: isExhaust ? [...state.player.exhaustPile, card] : state.player.exhaustPile,
+      exhaustPile: [
+        ...state.player.exhaustPile,
+        ...exhaustedCards,
+        ...(isExhaust ? [card] : []),
+      ],
     },
   }
   if (discardedCards.length > 0) {
@@ -340,7 +396,16 @@ export function playCard(
   }
   s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
   if (isPermanent) s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
-  if (isExhaust) s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+  // 消滅コストの支払い: 支払い専用誘発 (闇市の帳簿) → 消滅誘発 (亡者の合唱) の順で1枚ごとに発火
+  for (const paid of exhaustedCards) {
+    s = emit(s, { type: 'CardExhausted', cardId: paid.def.id })
+    s = runPermanentTriggers(s, 'onCostExhausted', enemyIndex)
+  }
+  s = fireExhaustTriggers(s, exhaustedCards.length, enemyIndex)
+  if (isExhaust) {
+    s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+    s = fireExhaustTriggers(s, 1, enemyIndex)
+  }
   if (chosenMode) {
     for (const effect of chosenMode.effects) {
       s = resolveEffectTargeted(s, effect, enemyIndex)
@@ -358,8 +423,54 @@ export function playCard(
   if (card.def.type === 'spell') {
     s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
   }
-  // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない
+  // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない。
+  // 直接プレイ (死者再生) より先に加算する = 直接プレイされるカードから見て再生自身は「先にプレイされた1枚」
   s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
+  // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)
+  if (isRetrieve && retrieveUid !== undefined) {
+    const chosen = s.player.exhaustPile.find((c) => c.uid === retrieveUid)
+    if (chosen) {
+      s = {
+        ...s,
+        player: {
+          ...s.player,
+          exhaustPile: s.player.exhaustPile.filter((c) => c.uid !== retrieveUid),
+          hand: [...s.player.hand, chosen],
+        },
+      }
+      s = emit(s, { type: 'CardRetrieved', cardId: chosen.def.id })
+    }
+  }
+  // 死者再生: 消滅置き場のカードをコストを支払わず直接プレイする。
+  // 置物は場に出る。それ以外は消滅置き場に残る = 墓地燃料は減らない
+  if (isPlayFromExhaust && retrieveUid !== undefined) {
+    const chosen = s.player.exhaustPile.find((c) => c.uid === retrieveUid)
+    if (chosen) {
+      s = emit(s, { type: 'CardPlayedFromExhaust', cardId: chosen.def.id })
+      if (chosen.def.type === 'permanent') {
+        s = {
+          ...s,
+          player: {
+            ...s.player,
+            exhaustPile: s.player.exhaustPile.filter((c) => c.uid !== retrieveUid),
+            permanents: [...s.player.permanents, chosen],
+          },
+        }
+        s = emit(s, { type: 'PermanentPlayed', cardId: chosen.def.id })
+      }
+      s = emit(s, { type: 'CardPlayed', cardId: chosen.def.id })
+      s = resolveOnPlayEffects(s, chosen, enemyIndex)
+      if (chosen.def.effects.filter((e) => e.trigger === 'onPlay').some(isDamageEffect)) {
+        s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
+        s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
+      }
+      if (chosen.def.type === 'spell') {
+        s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
+      }
+      // 直接プレイも「プレイ」として詠唱数に数える (数えないのはそのカード自身のみ、の既存則)
+      s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
+    }
+  }
   return checkCombatEnd(s)
 }
 
@@ -386,6 +497,8 @@ export function endTurn(state: GameState): GameState {
     for (const card of expired) {
       s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     }
+    // 衝動失効も消滅 = 亡者の合唱が誘発する (確定済みルール表「消滅の誘発」)
+    s = fireExhaustTriggers(s, expired.length, Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   }
   // 敵ブロックはこのタイミングで失効 (前の敵ターンの防御は自ターンの攻撃を受け止めたら役目を終える)
   s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }

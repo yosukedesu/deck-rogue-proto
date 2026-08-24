@@ -39,6 +39,8 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerPermanent',
     'dealDamageDrain',
     'dealDamagePerExhaust',
+    'dealDamageDrainPerExhaust',
+    'dealDamagePerSelfHpLost',
     'counter',
   ].includes(effect.effect)
 }
@@ -61,6 +63,10 @@ const ENEMY_TARGETED = new Set([
   'dealDamagePerPermanent',
   'dealDamageDrain',
   'dealDamagePerExhaust',
+  'dealDamageDrainPerExhaust',
+  'dealDamagePerSelfHpLost',
+  // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
+  'playFromExhaust',
 ])
 
 /**
@@ -74,6 +80,68 @@ export function cardNeedsTarget(card: CardInstance, modeIndex?: number): boolean
       ? modes[modeIndex].effects
       : card.def.effects.filter((e) => e.trigger === 'onPlay')
   return effects.some((e) => ENEMY_TARGETED.has(e.effect) && e.target !== 'all')
+}
+
+/**
+ * 置物の指定トリガー効果をすべて解決する。
+ * 置物は判断を挟まず自動で発火する (発動/温存の確認があるのは伏せカードのみ)。
+ * hooks.ts から移設: 回復・HP損失・消滅の誘発 (黒の接着剤置物) を効果解決の内側から発火させるため。
+ */
+export function runPermanentTriggers(
+  state: GameState,
+  trigger: DeclarativeEffect['trigger'],
+  enemyIndex: number,
+): GameState {
+  // 対象の敵が倒れていたら先頭の生存敵に読み替える (誘発ダメージの空撃ち防止)
+  const alive =
+    state.enemies[enemyIndex] && state.enemies[enemyIndex].hp > 0
+      ? enemyIndex
+      : state.enemies.findIndex((e) => e.hp > 0)
+  let s = state
+  for (const permanent of state.player.permanents) {
+    for (const effect of permanent.def.effects) {
+      if (effect.trigger === trigger) {
+        s = resolveEffect(s, effect, alive)
+      }
+    }
+  }
+  return s
+}
+
+/**
+ * 実回復 (>0) を適用し、HpHealed を発行して onHealed 置物 (血の月) を誘発する。
+ * 誘発側の効果は回復を含まない前提 = 再帰しない (回復する onHealed 置物は設計禁止)。
+ */
+export function healPlayer(state: GameState, amount: number, enemyIndex: number): GameState {
+  const healed = Math.min(amount, state.player.maxHp - state.player.hp)
+  if (healed <= 0) return state
+  let s: GameState = { ...state, player: { ...state.player, hp: state.player.hp + healed } }
+  s = emit(s, { type: 'HpHealed', amount: healed })
+  return runPermanentTriggers(s, 'onHealed', enemyIndex)
+}
+
+/** カード効果によるHP損失。selfHpLost に累積し onHpLost 置物 (苦痛の芯) を誘発する (敵からの被弾は通らない) */
+export function losePlayerHp(state: GameState, amount: number, enemyIndex: number): GameState {
+  if (amount <= 0) return state
+  let s: GameState = {
+    ...state,
+    player: {
+      ...state.player,
+      hp: state.player.hp - amount,
+      selfHpLost: state.player.selfHpLost + amount,
+    },
+  }
+  s = emit(s, { type: 'HpLost', amount })
+  return runPermanentTriggers(s, 'onHpLost', enemyIndex)
+}
+
+/** 消滅の誘発 (亡者の合唱): カードが消滅する「たび」= 1枚につき1回発火する */
+export function fireExhaustTriggers(state: GameState, count: number, enemyIndex: number): GameState {
+  let s = state
+  for (let i = 0; i < count; i++) {
+    s = runPermanentTriggers(s, 'onCardExhausted', enemyIndex)
+  }
+  return s
 }
 
 /** 効果1つを対象規則に従って解決する。target:'all' は生存する敵全体に順に解決 (確定済みルール表「全体攻撃」) */
@@ -290,13 +358,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
       return emit({ ...state, enemies }, { type: 'EnemyConfused', enemyIndex, amount })
     }
-    case 'gainHp': {
-      // 回復 (白の専売。確定済みルール表「回復」)
-      const amount = Math.min(effect.amount ?? 0, state.player.maxHp - state.player.hp)
-      if (amount <= 0) return state
-      const next = { ...state, player: { ...state.player, hp: state.player.hp + amount } }
-      return emit(next, { type: 'HpHealed', amount })
-    }
+    case 'gainHp':
+      // 回復 (白の専売。確定済みルール表「回復」)。実回復>0 なら onHealed 置物が誘発する
+      return healPlayer(state, effect.amount ?? 0, enemyIndex)
     case 'weakenEnemy': {
       // 威圧 (白): 敵の強化を下げる (確定済みルール表「威圧（白）」)
       const amount = effect.amount ?? 0
@@ -326,21 +390,34 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'dealDamageDrain': {
       // ドレイン (黒の専売): Xダメージ + floor(X/2)回復 (確定済みルール表「黒の柱」)
       const amount = effect.amount ?? 0
-      let s = dealDamageToEnemy(state, enemyIndex, amount, effect.pierce)
-      const heal = Math.min(Math.floor(amount / 2), s.player.maxHp - s.player.hp)
-      if (heal > 0) {
-        s = { ...s, player: { ...s.player, hp: s.player.hp + heal } }
-        s = emit(s, { type: 'HpHealed', amount: heal })
-      }
-      return s
+      const s = dealDamageToEnemy(state, enemyIndex, amount, effect.pierce)
+      return healPlayer(s, Math.floor(amount / 2), enemyIndex)
     }
+    case 'dealDamageDrainPerExhaust': {
+      // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
+      const amount = (effect.amount ?? 0) * state.player.exhaustPile.length
+      const s = dealDamageToEnemy(state, enemyIndex, amount, effect.pierce)
+      return healPlayer(s, Math.floor(amount / 2), enemyIndex)
+    }
+    case 'dealDamagePerSelfHpLost':
+      // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×X (背徳の収穫。払ったコストの再利用)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.selfHpLost,
+        effect.pierce,
+      )
+    case 'retrieveFromExhaust':
+    case 'playFromExhaust':
+      // コスト再利用 (黒): 消滅置き場からの選択は combat.ts の playCard が retrieveUid で解決する
+      return state
     case 'exhaustFromDeck': {
       // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、
       // 墓地=消滅置き場とする (単調増加。デッキを永久燃料にする緊張感。戦闘内限定)
       const n = Math.min(effect.amount ?? 0, state.player.drawPile.length)
       if (n <= 0) return state
       const milled = state.player.drawPile.slice(0, n)
-      const s: GameState = {
+      let s: GameState = {
         ...state,
         player: {
           ...state.player,
@@ -348,7 +425,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
           exhaustPile: [...state.player.exhaustPile, ...milled],
         },
       }
-      return emit(s, { type: 'CardsMilled', count: n })
+      s = emit(s, { type: 'CardsMilled', count: n })
+      return fireExhaustTriggers(s, n, enemyIndex)
     }
     case 'dealDamagePerExhaust':
       // 墓地参照 (黒): 消滅した枚数×X (確定済みルール表「黒の柱」)
@@ -411,12 +489,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       }
       return emit(s, { type: 'ImpulseDrawn', count: drawnUids.length })
     }
-    case 'loseHp': {
-      // 自傷 (赤): ブロックを無視して自分のHPを失う
-      const amount = effect.amount ?? 0
-      const next = { ...state, player: { ...state.player, hp: state.player.hp - amount } }
-      return emit(next, { type: 'HpLost', amount })
-    }
+    case 'loseHp':
+      // 自傷 (赤・黒): ブロックを無視して自分のHPを失う。selfHpLost に累積し onHpLost 置物が誘発する
+      return losePlayerHp(state, effect.amount ?? 0, enemyIndex)
     case 'discountNext': {
       // マナ軽減トークン: 次にプレイする1枚のコスト-X (消費は combat.ts の playCard 側)
       const amount = effect.amount ?? 0

@@ -102,7 +102,11 @@ const KEYWORD_HELP: Record<string, string> = {
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
   成長: 'この戦闘の間、与えるダメージすべてに加算される（戦闘ごとにリセット）',
-  消滅: '使用後、この戦闘から取り除かれる（再シャッフルされない）',
+  消滅: '使用後、この戦闘から取り除かれる（再シャッフルされない）。消滅置き場は黒の墓地参照・回収の燃料になる',
+  消滅コスト: 'プレイするために手札をN枚消滅させる。捨てより重いが、消滅置き場の燃料が増える',
+  墓地: '消滅置き場のこと。忘却・消滅コスト・消滅札・衝動の失効で増え、戦闘中は減らない（回収を除く）',
+  ドレイン: 'ダメージを与え、その半分（切り捨て）だけHPが回復する（黒の専売）',
+  直接プレイ: '消滅置き場のカードをコストを支払わずプレイする。プレイ後もカードは消滅置き場に残る（置物は場に出る）',
   置物: 'プレイすると場に残り、戦闘中ずっと効果を発揮する（破壊されない）',
   打ち消す: '敵の行動1回を完全に無効化する（攻撃・防御・伏せ破壊・強化すべて対象）',
   返し: '攻撃してきた敵にダメージを与える（敵の攻撃自体は受ける）',
@@ -156,6 +160,7 @@ interface EffectCtx {
   cardsPlayed: number
   aether: number
   exhausted: number
+  selfHpLost: number
 }
 
 const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
@@ -170,6 +175,10 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onAttackPlayed: '攻撃プレイ後: ',
   onSpellPlayed: '呪文をプレイした時: ',
   onSetDestroyed: 'この伏せが破壊された時: ',
+  onHealed: 'HPが回復するたび: ',
+  onHpLost: 'カード効果でHPを失うたび: ',
+  onCardExhausted: 'カードが消滅するたび: ',
+  onCostExhausted: '消滅コストを支払うたび: ',
 }
 
 /** 誘発の追加条件の表示 */
@@ -246,6 +255,18 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return ctx
         ? `${trigger}⚔️ 消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
         : `${trigger}⚔️ 消滅した枚数×${e.amount}ダメージ${pierce}`
+    case 'dealDamageDrainPerExhaust':
+      return ctx
+        ? `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復 [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
+        : `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復`
+    case 'dealDamagePerSelfHpLost':
+      return ctx
+        ? `${trigger}⚔️ この戦闘でカード効果により失ったHP×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.selfHpLost + atkBonus}]`
+        : `${trigger}⚔️ この戦闘でカード効果により失ったHP×${e.amount}ダメージ${pierce}`
+    case 'retrieveFromExhaust':
+      return `${trigger}⚰️ 消滅置き場からカード${e.amount ?? 1}枚を選んで手札に戻す`
+    case 'playFromExhaust':
+      return `${trigger}⚰️ 消滅置き場のカード1枚（リアクション以外）をコストを支払わず直接プレイ（そのカードは消滅置き場に残る）`
     case 'weakenEnemy':
       return `${trigger}${aoe}威圧${e.amount}（敵の強化-${e.amount}）`
     case 'dealDamagePerBlock':
@@ -313,6 +334,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.id === 'status_wound') return ['使えない（ターン終了時に捨てられる）']
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
+  if ((def.exhaustCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.exhaustCost}枚を消滅させる`)
   if (def.modes && def.modes.length > 0) {
     def.modes.forEach((m, i) => lines.push(`選択${i + 1}: ${effectItems(m.effects, ctx).join('、')}`))
   } else {
@@ -526,6 +548,10 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `置物を設置: ${cardName(e.cardId)}`, cls: 'log-good' }
     case 'CardExhausted':
       return { text: `消滅: ${cardName(e.cardId)}（この戦闘から除外）`, cls: 'log-line' }
+    case 'CardRetrieved':
+      return { text: `回収: ${cardName(e.cardId)}（消滅置き場から手札へ）`, cls: 'log-line' }
+    case 'CardPlayedFromExhaust':
+      return { text: `直接プレイ: ${cardName(e.cardId)}（消滅置き場から）`, cls: 'log-line' }
     case 'CardsDiscarded':
       return { text: `コストとして捨てた: ${e.cardIds.map(cardName).join('、')}`, cls: 'log-line' }
     case 'EnergyMaxGained':
@@ -823,11 +849,37 @@ function BattleScreen({
     player.hand.some((c) => c.uid === pendingDiscard.cardUid)
       ? pendingDiscard
       : null
+  // 消滅コストの選択中状態 (複数枚対応: chosen に選択済み uid を貯める)
+  const [pendingExhaust, setPendingExhaust] = useState<{
+    cardUid: string
+    modeIndex?: number
+    chosen: string[]
+  } | null>(null)
+  const activeExhaust =
+    pendingExhaust &&
+    s.phase === 'player-turn' &&
+    player.hand.some((c) => c.uid === pendingExhaust.cardUid)
+      ? pendingExhaust
+      : null
+  // 消滅置き場ピッカー (屍集め・死者再生 の retrieveUid 選択中)
+  const [pendingRetrieve, setPendingRetrieve] = useState<{
+    cardUid: string
+    modeIndex?: number
+    exhaustUids?: string[]
+  } | null>(null)
+  const activeRetrieve =
+    pendingRetrieve &&
+    s.phase === 'player-turn' &&
+    player.hand.some((c) => c.uid === pendingRetrieve.cardUid)
+      ? pendingRetrieve
+      : null
   // StS式ターゲティング: 単体対象カードのプレイ時、敵タップ待ちの状態
   const [pendingTarget, setPendingTarget] = useState<{
     cardUid: string
     modeIndex?: number
     discardUids?: string[]
+    exhaustUids?: string[]
+    retrieveUid?: string
   } | null>(null)
   const activeTarget =
     pendingTarget &&
@@ -836,13 +888,38 @@ function BattleScreen({
       ? pendingTarget
       : null
   // 対象が要るカードなら敵タップ待ちへ、不要なら即プレイ
-  const playOrTarget = (cardUid: string, modeIndex?: number, discardUids?: string[]) => {
+  const playOrTarget = (
+    cardUid: string,
+    modeIndex?: number,
+    discardUids?: string[],
+    exhaustUids?: string[],
+    retrieveUid?: string,
+  ) => {
     const card = player.hand.find((c) => c.uid === cardUid)
     if (card && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
-      setPendingTarget({ cardUid, modeIndex, discardUids })
+      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid })
     } else {
-      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids })
+      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid })
     }
+  }
+  // 追加コスト・消滅置き場選択を済ませてからプレイに進む多段フロー:
+  // 消滅コスト → 消滅置き場ピッカー → 対象選択 の順
+  const startPlay = (cardUid: string, modeIndex?: number) => {
+    const card = player.hand.find((c) => c.uid === cardUid)
+    if (!card) return
+    if ((card.def.discardCost ?? 0) > 0) {
+      setPendingDiscard({ cardUid, modeIndex })
+      return
+    }
+    if ((card.def.exhaustCost ?? 0) > 0) {
+      setPendingExhaust({ cardUid, modeIndex, chosen: [] })
+      return
+    }
+    if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')) {
+      setPendingRetrieve({ cardUid, modeIndex })
+      return
+    }
+    playOrTarget(cardUid, modeIndex)
   }
   const lines = s.eventLog.map(logLine).filter((l): l is LogLine => l !== null)
   const setCard = player.setCards[0]
@@ -898,6 +975,8 @@ function BattleScreen({
                     cardUid: activeTarget.cardUid,
                     modeIndex: activeTarget.modeIndex,
                     discardUids: activeTarget.discardUids,
+                    exhaustUids: activeTarget.exhaustUids,
+                    retrieveUid: activeTarget.retrieveUid,
                     targetIndex: i,
                   })
                   setPendingTarget(null)
@@ -978,7 +1057,7 @@ function BattleScreen({
                   <b>{c.def.name}</b>
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost }}
                   />
                 </div>
               ))}
@@ -1004,6 +1083,7 @@ function BattleScreen({
                         momentum: player.momentum,
                         energyMax: player.energyMax,
                         exhausted: player.exhaustPile.length,
+                        selfHpLost: player.selfHpLost,
                         cardsPlayed: player.cardsPlayedThisTurn,
                         aether: player.aether,
                       }),
@@ -1033,7 +1113,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({c.def.cost}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost })}
                     </button>
                   ))}
                   <button
@@ -1130,6 +1210,72 @@ function BattleScreen({
 
       {/* 手札 */}
       <div className="panel area-hand">
+        {activeExhaust && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeExhaust.cardUid)?.def.name}」の追加コスト:
+            消滅させるカードを選んでください（
+            {(player.hand.find((c) => c.uid === activeExhaust.cardUid)?.def.exhaustCost ?? 0) - activeExhaust.chosen.length}
+            枚）{' '}
+            <button className="btn" onClick={() => setPendingExhaust(null)}>
+              キャンセル
+            </button>
+          </div>
+        )}
+        {activeRetrieve && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeRetrieve.cardUid)?.def.name}」:
+            消滅置き場からカードを選んでください{' '}
+            <button className="btn" onClick={() => setPendingRetrieve(null)}>
+              キャンセル
+            </button>
+          </div>
+        )}
+        {activeRetrieve && (
+          <div className="hand-row">
+            <div className="hand-cards">
+              {player.exhaustPile.map((c) => {
+                const src = player.hand.find((h) => h.uid === activeRetrieve.cardUid)
+                const directPlay = src?.def.effects.some((e) => e.effect === 'playFromExhaust') ?? false
+                // 直接プレイの制約 (combat.ts と同じ): リアクション・選択式・コスト再利用カードは選べない
+                const eligible =
+                  !directPlay ||
+                  (c.def.type !== 'reaction' &&
+                    (c.def.modes?.length ?? 0) === 0 &&
+                    !c.def.effects.some(
+                      (e) => e.effect === 'playFromExhaust' || e.effect === 'retrieveFromExhaust',
+                    ))
+                return (
+                  <CardFrame
+                    key={c.uid}
+                    card={c}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost }}
+                    dim={!eligible}
+                    hint={eligible ? undefined : directPlay ? '直接プレイ不可' : undefined}
+                    actions={
+                      eligible && (
+                        <button
+                          className="btn"
+                          onClick={() => {
+                            setPendingRetrieve(null)
+                            playOrTarget(
+                              activeRetrieve.cardUid,
+                              activeRetrieve.modeIndex,
+                              undefined,
+                              activeRetrieve.exhaustUids,
+                              c.uid,
+                            )
+                          }}
+                        >
+                          {directPlay ? '直接プレイ' : '手札に戻す'}
+                        </button>
+                      )
+                    }
+                  />
+                )
+              })}
+            </div>
+          </div>
+        )}
         {activeDiscard && (
           <div className="discard-banner">
             「{player.hand.find((c) => c.uid === activeDiscard.cardUid)?.def.name}」の追加コスト:
@@ -1145,13 +1291,77 @@ function BattleScreen({
               player.hand.map((c) => {
                 const modes = c.def.modes ?? []
                 const discardCost = c.def.discardCost ?? 0
+                const exhaustCostN = c.def.exhaustCost ?? 0
                 const effCost = effectiveCost(s, c)
+                // 消滅置き場を参照するカード: 選べるカードがなければプレイ不可
+                const needsPile = c.def.effects.some(
+                  (e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust',
+                )
+                const isDirectPlay = c.def.effects.some((e) => e.effect === 'playFromExhaust')
+                const pileOk =
+                  !needsPile ||
+                  player.exhaustPile.some(
+                    (p) =>
+                      !isDirectPlay ||
+                      (p.def.type !== 'reaction' &&
+                        (p.def.modes?.length ?? 0) === 0 &&
+                        !p.def.effects.some(
+                          (e) => e.effect === 'playFromExhaust' || e.effect === 'retrieveFromExhaust',
+                        )),
+                  )
                 const canPlay =
                   isPlayableFromHand(c) &&
                   effCost <= player.energy &&
-                  player.hand.length - 1 >= discardCost
+                  player.hand.length - 1 >= discardCost &&
+                  player.hand.length - 1 >= exhaustCostN &&
+                  pileOk
                 const canSet = isSetMode && system.canHandle(s, { type: 'SetCard', cardUid: c.uid })
                 const heldReaction = !isSetMode && c.def.type === 'reaction'
+                // 消滅コスト選択中: 手札は「消滅させる」対象として振る舞う (複数枚は順に選ぶ)
+                if (activeExhaust) {
+                  const src = player.hand.find((h) => h.uid === activeExhaust.cardUid)
+                  const need = src?.def.exhaustCost ?? 0
+                  const isSource = c.uid === activeExhaust.cardUid
+                  const isChosen = activeExhaust.chosen.includes(c.uid)
+                  return (
+                    <CardFrame
+                      key={c.uid}
+                      card={c}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost }}
+                      dim={isSource || isChosen}
+                      hint={isSource ? 'プレイするカード' : isChosen ? '消滅予定' : undefined}
+                      actions={
+                        !isSource &&
+                        !isChosen && (
+                          <button
+                            className="btn"
+                            onClick={() => {
+                              const chosen = [...activeExhaust.chosen, c.uid]
+                              if (chosen.length >= need) {
+                                const srcCard = player.hand.find((h) => h.uid === activeExhaust.cardUid)
+                                setPendingExhaust(null)
+                                // 消滅コストの次に消滅置き場ピッカーが要るカードは現状ないが、順序は保険で維持
+                                if (
+                                  srcCard?.def.effects.some(
+                                    (e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust',
+                                  )
+                                ) {
+                                  setPendingRetrieve({ cardUid: activeExhaust.cardUid, modeIndex: activeExhaust.modeIndex, exhaustUids: chosen })
+                                } else {
+                                  playOrTarget(activeExhaust.cardUid, activeExhaust.modeIndex, undefined, chosen)
+                                }
+                              } else {
+                                setPendingExhaust({ ...activeExhaust, chosen })
+                              }
+                            }}
+                          >
+                            これを消滅
+                          </button>
+                        )
+                      }
+                    />
+                  )
+                }
                 // 捨てコスト選択中: 手札は「捨てる」対象として振る舞う
                 if (activeDiscard) {
                   const isSource = c.uid === activeDiscard.cardUid
@@ -1159,7 +1369,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -1178,15 +1388,12 @@ function BattleScreen({
                     />
                   )
                 }
-                const play = (modeIndex?: number) => {
-                  if (discardCost > 0) setPendingDiscard({ cardUid: c.uid, modeIndex })
-                  else playOrTarget(c.uid, modeIndex)
-                }
+                const play = (modeIndex?: number) => startPlay(c.uid, modeIndex)
                 return (
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost }}
                     displayCost={effCost}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={

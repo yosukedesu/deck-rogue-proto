@@ -3,29 +3,13 @@
 // 現在のフック: ①置物 (permanent) ②リアクション方式。
 // レリック・敵パッシブなどは将来ここに追加する (CLAUDE.md「イベントフックの口だけは最初から開けておく」)。
 
-import { resolveEffect } from './effects.ts'
+import { runPermanentTriggers } from './effects.ts'
 import { getReactionSystem } from './reactions/index.ts'
-import type { DeclarativeEffect, GameEvent, GameState } from './types.ts'
+import type { GameEvent, GameState } from './types.ts'
 
-/**
- * 置物の指定トリガー効果をすべて解決する。
- * 置物は判断を挟まず自動で発火する (発動/温存の確認があるのは伏せカードのみ)。
- */
-export function runPermanentTriggers(
-  state: GameState,
-  trigger: DeclarativeEffect['trigger'],
-  enemyIndex: number,
-): GameState {
-  let s = state
-  for (const permanent of state.player.permanents) {
-    for (const effect of permanent.def.effects) {
-      if (effect.trigger === trigger) {
-        s = resolveEffect(s, effect, enemyIndex)
-      }
-    }
-  }
-  return s
-}
+// 置物トリガーの実行本体は effects.ts へ移設 (回復・HP損失・消滅の誘発を効果解決の内側から発火させるため)。
+// combat.ts などの既存の参照は従来どおりここから import できる
+export { runPermanentTriggers }
 
 export function dispatchHooks(state: GameState, event: GameEvent): GameState {
   let s = state
