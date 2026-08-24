@@ -602,6 +602,12 @@ function SetupScreen({
             </div>
             <div className="choice-desc">
               {ARCHETYPE_LABEL[e.archetype]} / HP {e.maxHp}
+              {e.flavor && (
+                <>
+                  <br />
+                  {e.flavor}
+                </>
+              )}
             </div>
           </button>
         ))}
@@ -695,7 +701,10 @@ function BattleScreen({
           <div className="enemy-sprite">{ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
           <div className="enemy-info">
             <div className="enemy-name">{enemyDef.name}</div>
-            <div className="enemy-archetype">{ARCHETYPE_LABEL[enemyDef.archetype]}</div>
+            <div className="enemy-archetype">
+              {ARCHETYPE_LABEL[enemyDef.archetype]}
+              {enemyDef.flavor && <> — {enemyDef.flavor}</>}
+            </div>
             <Bar value={Math.max(0, enemy.hp)} max={enemy.maxHp} />
             <div style={{ marginTop: 6 }}>
               {enemy.block > 0 && <span className="chip chip-block">🛡 ブロック {enemy.block}</span>}

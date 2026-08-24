@@ -3,6 +3,7 @@
     "id": "enemy_wide_power",
     "name": "うねる獣",
     "archetype": "wide-power",
+    "flavor": "機嫌で振れ幅が変わる。今日の機嫌は誰も知らない。",
     "maxHp": 110,
     "moves": [
       {
@@ -25,6 +26,7 @@
     "id": "enemy_probe",
     "name": "探り屋",
     "archetype": "probe",
+    "flavor": "ちくちくは挨拶。三度目が本気。",
     "maxHp": 90,
     "moves": [
       {
@@ -52,6 +54,7 @@
     "id": "enemy_set_wary",
     "name": "用心深い影",
     "archetype": "set-wary",
+    "flavor": "伏せ札が怖い。怖いから、様子を見る。",
     "maxHp": 100,
     "moves": [
       {
@@ -83,6 +86,7 @@
     "id": "enemy_set_breaker",
     "name": "罠壊し",
     "archetype": "set-breaker",
+    "flavor": "仕掛けを見ると壊したくなる性分。",
     "maxHp": 105,
     "moves": [
       {
@@ -112,6 +116,7 @@
     "id": "enemy_brute",
     "name": "脳筋オーガ",
     "archetype": "brute",
+    "flavor": "雄叫びのあとの二発が本気。数えていれば読める。",
     "maxHp": 130,
     "moves": [
       {
@@ -139,6 +144,7 @@
     "id": "enemy_turtle",
     "name": "眠たがりの大亀",
     "archetype": "charger",
+    "flavor": "二度眠り、三度目に薙ぐ。",
     "maxHp": 140,
     "moves": [
       {
@@ -166,6 +172,7 @@
     "id": "enemy_hexer",
     "name": "泥投げの妖術師",
     "archetype": "hexer",
+    "flavor": "泥と呪いを投げてくる。手が汚いのは職業柄。",
     "maxHp": 95,
     "moves": [
       {
@@ -206,6 +213,7 @@
     "id": "enemy_wolf",
     "name": "牙嵐の狼",
     "archetype": "flurry",
+    "flavor": "群れはいない。牙の数だけで群れの働きをする。",
     "maxHp": 105,
     "moves": [
       {
@@ -242,6 +250,7 @@
     "id": "enemy_moss",
     "name": "苔まといの主",
     "archetype": "regenerator",
+    "flavor": "苔が癒やす、半分までは。剥がれたら、走れ。",
     "maxHp": 150,
     "regen": 5,
     "moves": [
@@ -274,6 +283,7 @@
     "id": "enemy_joker",
     "name": "嘲る道化",
     "archetype": "taunter",
+    "flavor": "手ぶらの相手にだけ強気。何か伏せて見せてやれ。",
     "maxHp": 100,
     "moves": [
       {
@@ -305,6 +315,7 @@
     "id": "enemy_warden",
     "name": "刻限の門番",
     "archetype": "enrager",
+    "flavor": "鐘が鳴るたび強くなる。長居は死。",
     "maxHp": 170,
     "enrage": 2,
     "moves": [

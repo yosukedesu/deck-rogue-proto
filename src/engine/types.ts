@@ -384,6 +384,8 @@ export interface EnemyDef {
   readonly id: string
   readonly name: string
   readonly archetype: EnemyArchetype
+  /** 1行フレーバー (顔付け)。行動の読み方のヒントを兼ねる。UI表示専用 */
+  readonly flavor?: string
   readonly maxHp: number
   /** 行動定義。sequence がある場合は id 参照用の辞書を兼ねる */
   readonly moves: readonly EnemyMove[]
