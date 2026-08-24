@@ -433,14 +433,19 @@ button:disabled { cursor: default; }
   .field { min-height: 0; gap: 10px; }
   .card-back, .set-slot-empty { width: 64px; min-height: 84px; font-size: 20px; }
   .set-slot-label { font-size: 10px; }
-  /* 手札: 横スクロール帯 (StSモバイル式)。縦積みをやめて画面高を節約 */
-  .hand-row { flex-direction: column; }
+  /* 手札: 横スクロール帯 (StSモバイル式)。縦積みをやめて画面高を節約。
+     column+wrap だと子が親幅にストレッチされないため nowrap 必須 */
+  .hand-row { flex-direction: column; flex-wrap: nowrap; }
   .hand-cards {
+    width: 100%;
+    min-width: 0;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 6px;
   }
+  .area-topbar { flex-wrap: wrap; gap: 4px; }
+  .area-topbar .btn { padding: 4px 10px; font-size: 12px; white-space: nowrap; }
   .card { width: 142px; min-width: 142px; min-height: 150px; }
   .card-name { font-size: 13px; }
   .card-text { font-size: 11px; }
@@ -468,12 +473,14 @@ button:disabled { cursor: default; }
   .field { min-height: 0; }
   .card-back, .set-slot-empty { width: 60px; min-height: 76px; font-size: 18px; }
   .hand-cards {
+    min-width: 0;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
   }
   .card { width: 140px; min-width: 140px; min-height: 132px; }
+  .area-topbar .btn { padding: 4px 10px; font-size: 12px; white-space: nowrap; }
   .card-name { font-size: 12px; }
   .card-text { font-size: 11px; margin-top: 4px; }
   .log { max-height: 120px; }
