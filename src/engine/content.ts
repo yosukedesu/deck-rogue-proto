@@ -48,7 +48,22 @@ export function buildLeaderPassive(leader: LeaderDef): CardInstance {
   }
 }
 
+/**
+ * 負傷 (状態異常カード): 敵が捨て札に混入させる使用不可の死に札。
+ * onPlay 効果を持たないため isPlayableFromHand が自然に false になる。
+ * 報酬プール (allCards) には含めない。色は便宜上 red (無色概念は未導入)
+ */
+export const WOUND_DEF: CardDef = {
+  id: 'status_wound',
+  name: '負傷',
+  cost: 0,
+  type: 'spell',
+  color: 'red',
+  effects: [],
+}
+
 export function getCardDef(id: string): CardDef {
+  if (id === WOUND_DEF.id) return WOUND_DEF
   const def = allCards.find((c) => c.id === id)
   if (!def) throw new Error(`未定義カード: ${id}`)
   return def

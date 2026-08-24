@@ -5,8 +5,20 @@
     "archetype": "wide-power",
     "maxHp": 110,
     "moves": [
-      { "id": "surge", "kind": "attack", "min": 9, "max": 17, "weight": 3 },
-      { "id": "coil", "kind": "defend", "min": 5, "max": 9, "weight": 1 }
+      {
+        "id": "surge",
+        "kind": "attack",
+        "min": 9,
+        "max": 17,
+        "weight": 3
+      },
+      {
+        "id": "coil",
+        "kind": "defend",
+        "min": 5,
+        "max": 9,
+        "weight": 1
+      }
     ]
   },
   {
@@ -15,10 +27,26 @@
     "archetype": "probe",
     "maxHp": 90,
     "moves": [
-      { "id": "poke", "kind": "attack", "min": 5, "max": 7, "weight": 1 },
-      { "id": "lunge", "kind": "attack", "min": 16, "max": 22, "weight": 1 }
+      {
+        "id": "poke",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1
+      },
+      {
+        "id": "lunge",
+        "kind": "attack",
+        "min": 16,
+        "max": 22,
+        "weight": 1
+      }
     ],
-    "sequence": ["poke", "poke", "lunge"]
+    "sequence": [
+      "poke",
+      "poke",
+      "lunge"
+    ]
   },
   {
     "id": "enemy_set_wary",
@@ -26,11 +54,29 @@
     "archetype": "set-wary",
     "maxHp": 100,
     "moves": [
-      { "id": "slash", "kind": "attack", "min": 11, "max": 15, "weight": 1 }
+      {
+        "id": "slash",
+        "kind": "attack",
+        "min": 11,
+        "max": 15,
+        "weight": 1
+      }
     ],
     "movesVsSet": [
-      { "id": "hide", "kind": "defend", "min": 6, "max": 9, "weight": 2 },
-      { "id": "careful_slash", "kind": "attack", "min": 5, "max": 7, "weight": 1 }
+      {
+        "id": "hide",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 2
+      },
+      {
+        "id": "careful_slash",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1
+      }
     ]
   },
   {
@@ -39,11 +85,27 @@
     "archetype": "set-breaker",
     "maxHp": 105,
     "moves": [
-      { "id": "smash", "kind": "attack", "min": 11, "max": 15, "weight": 1 }
+      {
+        "id": "smash",
+        "kind": "attack",
+        "min": 11,
+        "max": 15,
+        "weight": 1
+      }
     ],
     "movesVsSet": [
-      { "id": "break_trap", "kind": "destroy-set", "weight": 2 },
-      { "id": "smash", "kind": "attack", "min": 11, "max": 15, "weight": 1 }
+      {
+        "id": "break_trap",
+        "kind": "destroy-set",
+        "weight": 2
+      },
+      {
+        "id": "smash",
+        "kind": "attack",
+        "min": 11,
+        "max": 15,
+        "weight": 1
+      }
     ]
   },
   {
@@ -52,10 +114,26 @@
     "archetype": "brute",
     "maxHp": 130,
     "moves": [
-      { "id": "warcry", "kind": "buff", "min": 2, "max": 4, "weight": 1 },
-      { "id": "club", "kind": "attack", "min": 9, "max": 13, "weight": 1 }
+      {
+        "id": "warcry",
+        "kind": "buff",
+        "min": 2,
+        "max": 4,
+        "weight": 1
+      },
+      {
+        "id": "club",
+        "kind": "attack",
+        "min": 9,
+        "max": 13,
+        "weight": 1
+      }
     ],
-    "sequence": ["warcry", "club", "club"]
+    "sequence": [
+      "warcry",
+      "club",
+      "club"
+    ]
   },
   {
     "id": "enemy_turtle",
@@ -63,9 +141,192 @@
     "archetype": "charger",
     "maxHp": 140,
     "moves": [
-      { "id": "shell", "kind": "defend", "min": 12, "max": 16, "weight": 1 },
-      { "id": "crush", "kind": "attack", "min": 24, "max": 32, "weight": 1 }
+      {
+        "id": "shell",
+        "kind": "defend",
+        "min": 12,
+        "max": 16,
+        "weight": 1
+      },
+      {
+        "id": "crush",
+        "kind": "attack",
+        "min": 24,
+        "max": 32,
+        "weight": 1
+      }
     ],
-    "sequence": ["shell", "shell", "crush"]
+    "sequence": [
+      "shell",
+      "shell",
+      "crush"
+    ]
+  },
+  {
+    "id": "enemy_hexer",
+    "name": "泥投げの妖術師",
+    "archetype": "hexer",
+    "maxHp": 95,
+    "moves": [
+      {
+        "id": "mud",
+        "kind": "attack",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "inflict": {
+          "status": "weak",
+          "amount": 2
+        }
+      },
+      {
+        "id": "curse",
+        "kind": "hex",
+        "weight": 1,
+        "inflict": {
+          "status": "wound",
+          "amount": 2
+        }
+      },
+      {
+        "id": "slap",
+        "kind": "attack",
+        "min": 10,
+        "max": 14,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "mud",
+      "curse",
+      "slap"
+    ]
+  },
+  {
+    "id": "enemy_wolf",
+    "name": "牙嵐の狼",
+    "archetype": "flurry",
+    "maxHp": 105,
+    "moves": [
+      {
+        "id": "flurry",
+        "kind": "attack",
+        "min": 6,
+        "max": 8,
+        "weight": 1,
+        "hits": 3
+      },
+      {
+        "id": "howl",
+        "kind": "buff",
+        "min": 2,
+        "max": 3,
+        "weight": 1
+      },
+      {
+        "id": "rend",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1,
+        "hits": 4
+      }
+    ],
+    "sequence": [
+      "flurry",
+      "howl",
+      "rend"
+    ]
+  },
+  {
+    "id": "enemy_moss",
+    "name": "苔まといの主",
+    "archetype": "regenerator",
+    "maxHp": 150,
+    "regen": 5,
+    "moves": [
+      {
+        "id": "slam",
+        "kind": "attack",
+        "min": 10,
+        "max": 14,
+        "weight": 2
+      },
+      {
+        "id": "moss_shell",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1
+      }
+    ],
+    "movesBelowHalf": [
+      {
+        "id": "bite",
+        "kind": "attack",
+        "min": 15,
+        "max": 19,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_joker",
+    "name": "嘲る道化",
+    "archetype": "taunter",
+    "maxHp": 100,
+    "moves": [
+      {
+        "id": "wild_swing",
+        "kind": "attack",
+        "min": 15,
+        "max": 19,
+        "weight": 1
+      }
+    ],
+    "movesVsSet": [
+      {
+        "id": "cautious_jab",
+        "kind": "attack",
+        "min": 7,
+        "max": 10,
+        "weight": 2
+      },
+      {
+        "id": "mock",
+        "kind": "defend",
+        "min": 5,
+        "max": 8,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_warden",
+    "name": "刻限の門番",
+    "archetype": "enrager",
+    "maxHp": 170,
+    "enrage": 2,
+    "moves": [
+      {
+        "id": "bell_strike",
+        "kind": "attack",
+        "min": 13,
+        "max": 17,
+        "weight": 1
+      },
+      {
+        "id": "gate_guard",
+        "kind": "defend",
+        "min": 12,
+        "max": 16,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "bell_strike",
+      "bell_strike",
+      "gate_guard"
+    ]
   }
 ]

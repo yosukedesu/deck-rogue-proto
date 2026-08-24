@@ -29,9 +29,9 @@ const VICTORY_HEAL = 10
 /** 段階制の敵プール。battleIndex (0-based) → 抽選プール */
 const ENEMY_TIERS: readonly (readonly string[])[] = [
   ['enemy_probe', 'enemy_wide_power'], // 1〜3戦目
-  ['enemy_set_wary', 'enemy_set_breaker'], // 4〜6戦目
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_brute'], // 7〜9戦目 (大亀はボス専用)
-  ['enemy_brute', 'enemy_turtle'], // 10戦目 (ボス)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker'], // 4〜6戦目
+  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker'], // 7〜9戦目 (大亀はボス専用)
+  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 10戦目 (ボス)
 ]
 
 function tierForBattle(battleIndex: number): readonly string[] {

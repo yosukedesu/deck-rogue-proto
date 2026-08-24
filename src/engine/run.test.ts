@@ -22,9 +22,9 @@ describe('ラン構造', () => {
     const run = createRun(42, 'set-confirm')
     expect(run.enemyIds).toHaveLength(RUN_BATTLES)
     const tier1 = ['enemy_probe', 'enemy_wide_power']
-    const tier2 = ['enemy_set_wary', 'enemy_set_breaker']
-    const tier3 = [...tier2, 'enemy_brute', 'enemy_turtle']
-    const boss = ['enemy_brute', 'enemy_turtle']
+    const tier2 = ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker']
+    const tier3 = ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker']
+    const boss = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
     run.enemyIds.forEach((id, i) => {
       const pool = i < 3 ? tier1 : i < 6 ? tier2 : i < 9 ? tier3 : boss
       expect(pool).toContain(id)

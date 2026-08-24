@@ -69,13 +69,13 @@
       "blue",
       "red"
     ],
-    "maxHp": 44,
-    "drawPerTurn": 5,
+    "maxHp": 38,
+    "drawPerTurn": 4,
     "energyMax": 3,
     "rewardChoices": 4,
     "runDeckId": "run_basic_izzet",
     "sprite": "⚡",
-    "description": "霹靂の魔道士。青赤の複合（イゼット）。毎ターン次のカード-1、報酬ピックの候補が4枚",
+    "description": "霹靂の魔道士。青赤の複合（イゼット）。紙耐久で手札4枚。毎ターン次のカード-1、報酬ピックの候補が4枚",
     "passive": [
       {
         "trigger": "onTurnStart",

@@ -76,6 +76,10 @@ export interface PlayerState extends CombatantState {
   readonly nextCardDiscount: number
   /** 衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する */
   readonly impulseUids: readonly string[]
+  /** 弱体: 残りNターンの間、与ダメージ25%減 (切り捨て)。自ターン終了時に1減る */
+  readonly weak: number
+  /** 脆弱: 残りNフェーズの間、敵の攻撃ダメージ50%増 (切り捨て・威嚇適用後)。敵フェーズ終了時に1減る */
+  readonly vulnerable: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -94,8 +98,12 @@ export interface EnemyIntent {
   readonly kind: EnemyActionKind
   readonly shownMin: number
   readonly shownMax: number
-  /** 実際の値。UI には見せない */
+  /** 実際の値。UI には見せない。連撃 (hits>1) では1ヒット分の値 */
   readonly actual: number
+  /** 連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」 */
+  readonly hits?: number
+  /** 状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」) */
+  readonly inflict?: StatusInflict
 }
 
 /**
@@ -207,6 +215,8 @@ export type GameEvent =
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
+  | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number } // 状態異常付与
+  | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
   | { readonly type: 'HpLost'; readonly amount: number } // 自傷
@@ -331,12 +341,32 @@ export interface CardInstance {
   readonly def: CardDef
 }
 
-export type EnemyArchetype = 'wide-power' | 'probe' | 'set-wary' | 'set-breaker' | 'brute' | 'charger'
+export type EnemyArchetype =
+  | 'wide-power'
+  | 'probe'
+  | 'set-wary'
+  | 'set-breaker'
+  | 'brute'
+  | 'charger'
+  | 'hexer'
+  | 'flurry'
+  | 'regenerator'
+  | 'taunter'
+  | 'enrager'
 
-/** buff = 強化 (StSの筋力上昇)。以降の攻撃の実値・幅表示に加算される */
-export type EnemyActionKind = 'attack' | 'defend' | 'destroy-set' | 'buff'
+/** buff = 強化 (StSの筋力上昇)。hex = 状態異常の付与のみ (数値なし・inflict必須) */
+export type EnemyActionKind = 'attack' | 'defend' | 'destroy-set' | 'buff' | 'hex'
 
-/** 敵の1行動。attack/defend/buff は [min, max] を宣言時にロール。destroy-set は数値なし */
+/** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
+export type PlayerStatus = 'weak' | 'vulnerable' | 'wound'
+
+/** 状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚) */
+export interface StatusInflict {
+  readonly status: PlayerStatus
+  readonly amount: number
+}
+
+/** 敵の1行動。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし */
 export interface EnemyMove {
   readonly id: string
   readonly kind: EnemyActionKind
@@ -344,6 +374,10 @@ export interface EnemyMove {
   readonly max?: number
   /** 重み抽選 (同テーブル内の相対値)。sequence を持つ敵では使われない */
   readonly weight: number
+  /** 連撃: 攻撃をN回のヒットに分割 (確定済みルール表「連撃」) */
+  readonly hits?: number
+  /** この行動が付与する状態異常 (attackの追撃・hexの本体) */
+  readonly inflict?: StatusInflict
 }
 
 export interface EnemyDef {
@@ -358,8 +392,16 @@ export interface EnemyDef {
    * 指定時は重み抽選しない。movesVsSet の割り込みではローテーションは進まない
    */
   readonly sequence?: readonly string[]
-  /** プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型)。省略時は通常行動 */
+  /** プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型・挑発型)。省略時は通常行動 */
   readonly movesVsSet?: readonly EnemyMove[]
+  /** HP50%以下で切り替わる行動テーブル (フェーズ変化)。優先度: 半分以下 > 伏せ反応 > 通常 */
+  readonly movesBelowHalf?: readonly EnemyMove[]
+  /** HP50%以下のローテーション (movesBelowHalf の id を参照) */
+  readonly sequenceBelowHalf?: readonly string[]
+  /** 再生: 敵フェーズ終了時にHP回復。HP50%以下では停止 (確定済みルール表「再生」) */
+  readonly regen?: number
+  /** 激昂: 敵フェーズ終了時に強化+N (確定済みルール表「激昂」) */
+  readonly enrage?: number
 }
 
 // ---- リーダー (カラーパイの個性。色アイデンティティ=使える色) ----

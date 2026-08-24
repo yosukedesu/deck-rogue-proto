@@ -44,6 +44,11 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   'set-breaker': '伏せ破壊型',
   brute: '脳筋型（強化ループ）',
   charger: 'チャージ型（大技予告）',
+  hexer: '妖術師型（状態異常）',
+  flurry: '連撃型',
+  regenerator: '再生型（HP半分で豹変）',
+  taunter: '挑発型（伏せ無しに大振り）',
+  enrager: '激昂型（毎ターン強化）',
 }
 const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   'wide-power': '🐍',
@@ -52,6 +57,11 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   'set-breaker': '🔨',
   brute: '👹',
   charger: '🐢',
+  hexer: '🧙',
+  flurry: '🐺',
+  regenerator: '🦥',
+  taunter: '🤡',
+  enrager: '🗿',
 }
 
 // カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
@@ -68,7 +78,12 @@ const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 
 
 /** キーワード能力の用語解説 (カーソルを当てると吹き出しで表示) */
 const KEYWORD_HELP: Record<string, string> = {
-  威嚇: '延焼を持つ敵の攻撃は、延焼2につき実値-1（下限1）。表示中の攻撃値は威嚇適用後の数字',
+  威嚇: '延焼を持つ敵の攻撃は、延焼2につき実値-1（軽減上限-4・下限1）。表示中の攻撃値は威嚇適用後の数字',
+  弱体: '与えるダメージが25%減る（切り捨て）。自分のターン終了時に1減る',
+  脆弱: '敵の攻撃で受けるダメージが50%増える（切り捨て）。敵の行動フェーズ終了時に1減る',
+  負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
+  再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
+  激昂: '敵フェーズ終了時に自動で強化が増える。長引くほど攻撃が痛くなる',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
   成長: 'この戦闘の間、与えるダメージすべてに加算される（戦闘ごとにリセット）',
@@ -239,6 +254,8 @@ function effectItems(effects: readonly DeclarativeEffect[], ctx?: EffectCtx): st
 
 /** カード全体を行の配列に変換 (カード枠は1行ずつ改行表示する) */
 function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
+  // 負傷 (状態異常カード): 効果を持たない死に札
+  if (def.id === 'status_wound') return ['使えない（ターン終了時に捨てられる）']
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
   if (def.modes && def.modes.length > 0) {
@@ -266,6 +283,14 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
   )
 }
 
+const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', wound: '負傷' }
+
+/** 状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」) */
+function inflictSuffix(intent: EnemyIntent): string {
+  if (!intent.inflict) return ''
+  return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}`
+}
+
 /** 敵の意図表示。burn を渡すと攻撃の幅に威嚇 (延焼の怯み) を反映する */
 function intentText(intent: EnemyIntent | null, burn = 0): string {
   if (!intent) return '---'
@@ -273,8 +298,9 @@ function intentText(intent: EnemyIntent | null, burn = 0): string {
     case 'attack': {
       const min = intimidatedActionValue('attack', intent.shownMin, burn)
       const max = intimidatedActionValue('attack', intent.shownMax, burn)
+      const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
       const mark = max < intent.shownMax ? '（威嚇中）' : ''
-      return `⚔️ 攻撃 ${min}〜${max}${mark}`
+      return `⚔️ 攻撃 ${min}〜${max}${hits}${mark}${inflictSuffix(intent)}`
     }
     case 'defend':
       return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
@@ -282,6 +308,8 @@ function intentText(intent: EnemyIntent | null, burn = 0): string {
       return '💥 伏せ破壊'
     case 'buff':
       return `💪 強化 +${intent.shownMin}〜${intent.shownMax}`
+    case 'hex':
+      return `🧿 呪い${inflictSuffix(intent)}`
   }
 }
 
@@ -291,8 +319,9 @@ function confirmedIntentText(intent: EnemyIntent | null, burn = 0): string {
   switch (intent.kind) {
     case 'attack': {
       const actual = intimidatedActionValue('attack', intent.actual, burn)
+      const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
       const mark = actual < intent.actual ? '・威嚇適用済' : ''
-      return `⚔️ 攻撃 ${actual}（宣言 ${intent.shownMin}〜${intent.shownMax}${mark}）`
+      return `⚔️ 攻撃 ${actual}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${mark}）${inflictSuffix(intent)}`
     }
     case 'defend':
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
@@ -300,6 +329,8 @@ function confirmedIntentText(intent: EnemyIntent | null, burn = 0): string {
       return '💥 伏せ破壊'
     case 'buff':
       return `💪 強化 +${intent.actual}（宣言 +${intent.shownMin}〜+${intent.shownMax}）`
+    case 'hex':
+      return `🧿 呪い${inflictSuffix(intent)}`
   }
 }
 
@@ -353,6 +384,16 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
     case 'BurnTick':
       return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
+    case 'StatusInflicted':
+      return {
+        text:
+          e.status === 'wound'
+            ? `負傷${e.amount}枚が捨て札に混入した`
+            : `${STATUS_LABEL[e.status]}${e.amount}を付与された`,
+        cls: 'log-bad',
+      }
+    case 'RegenTicked':
+      return { text: `敵は再生でHP+${e.amount}`, cls: 'log-bad' }
     case 'BlockShattered':
       return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
     case 'ImpulseDrawn':
@@ -664,6 +705,15 @@ function BattleScreen({
               {enemy.burn > 0 && (
                 <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>
               )}
+              {enemyDef.regen !== undefined && enemy.hp > enemy.maxHp * 0.5 && (
+                <span className="chip chip-strength">♻️ {kw('再生')} +{enemyDef.regen}</span>
+              )}
+              {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
+                enemy.hp <= enemy.maxHp * 0.5 &&
+                enemy.hp > 0 && <span className="chip chip-strength">😾 牙をむいている</span>}
+              {enemyDef.enrage !== undefined && (
+                <span className="chip chip-strength">😡 {kw('激昂')} +{enemyDef.enrage}/T</span>
+              )}
             </div>
             {!ended && (
               <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
@@ -813,6 +863,12 @@ function BattleScreen({
             )}
             {player.nextCardDiscount > 0 && (
               <span className="chip chip-aether">🔥 次のカード-{player.nextCardDiscount}</span>
+            )}
+            {player.weak > 0 && (
+              <span className="chip chip-strength">😵 {kw('弱体')} {player.weak}</span>
+            )}
+            {player.vulnerable > 0 && (
+              <span className="chip chip-strength">💔 {kw('脆弱')} {player.vulnerable}</span>
             )}
           </div>
           <div className="pile-info">

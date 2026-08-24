@@ -14,11 +14,18 @@ import {
   resolveEffect,
   resolveOnPlayEffects,
 } from './effects.ts'
-import { buildLeaderPassive, getLeaderDef } from './content.ts'
+import { buildLeaderPassive, getLeaderDef, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
-import type { CardInstance, EnemyDef, EnemyMove, GameState, ReactionMode } from './types.ts'
+import type {
+  CardInstance,
+  EnemyDef,
+  EnemyMove,
+  GameState,
+  ReactionMode,
+  StatusInflict,
+} from './types.ts'
 
 export const PLAYER_MAX_HP = 50
 const BASE_ENERGY = 3
@@ -51,6 +58,8 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       aether: 0, // 霊気は戦闘内持続
       nextCardDiscount: 0,
       impulseUids: [],
+      weak: 0,
+      vulnerable: 0,
     },
     enemies: [],
     pendingWindow: null,
@@ -156,15 +165,22 @@ function declareIntents(state: GameState): GameState {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0) continue
     const def = getEnemyDef(enemy.enemyId)
-    const table = selectMoveTable(def, s.player.setCards.length > 0)
-    const usingVsSet = table !== def.moves
+    // フェーズ変化: HP50%以下の行動テーブルが最優先 (確定済みルール表「敵フェーズ変化」)
+    const belowHalf =
+      enemy.hp <= enemy.maxHp * 0.5 &&
+      (def.movesBelowHalf !== undefined || def.sequenceBelowHalf !== undefined)
+    const table = belowHalf
+      ? (def.movesBelowHalf ?? def.moves)
+      : selectMoveTable(def, s.player.setCards.length > 0)
+    const usingVsSet = !belowHalf && table !== def.moves
+    const sequence = belowHalf ? def.sequenceBelowHalf : def.sequence
 
     let move
     let rng1 = s.rng
     let nextPatternIndex = enemy.patternIndex
-    if (!usingVsSet && def.sequence && def.sequence.length > 0) {
-      const moveId = def.sequence[enemy.patternIndex % def.sequence.length]
-      move = def.moves.find((m) => m.id === moveId)
+    if (!usingVsSet && sequence && sequence.length > 0) {
+      const moveId = sequence[enemy.patternIndex % sequence.length]
+      move = table.find((m) => m.id === moveId)
       if (!move) throw new Error(`敵 ${def.id} の sequence が未定義の行動を参照: ${moveId}`)
       nextPatternIndex = enemy.patternIndex + 1
     } else {
@@ -187,6 +203,8 @@ function declareIntents(state: GameState): GameState {
       shownMin: clamp((move.min ?? 0) + bonus),
       shownMax: clamp((move.max ?? 0) + bonus),
       actual: clamp(actual + bonus),
+      hits: move.hits,
+      inflict: move.inflict,
     }
     const enemies = s.enemies.map((e, j) =>
       j === i ? { ...e, intent, patternIndex: nextPatternIndex } : e,
@@ -315,8 +333,9 @@ export function playCard(
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
   let s = emit(state, { type: 'TurnEnded', turn: state.turn })
-  // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)
-  s = { ...s, player: { ...s.player, momentum: 0 } }
+  // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
+  // 弱体もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
+  s = { ...s, player: { ...s.player, momentum: 0, weak: Math.max(0, s.player.weak - 1) } }
   // 衝動 (このターン限りの手札) は未使用なら消滅する
   if (s.player.impulseUids.length > 0) {
     const impulse = new Set(s.player.impulseUids)
@@ -417,6 +436,40 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
   return finishEnemyPhase(s)
 }
 
+/** 負傷 (死に札) の1戦闘上限。ハメ防止 (確定済みルール表「状態異常」) */
+const WOUND_CAP = 5
+
+/** 状態異常をプレイヤーに付与する。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 */
+function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameState {
+  const { status, amount } = inflict
+  if (status === 'weak' || status === 'vulnerable') {
+    const player =
+      status === 'weak'
+        ? { ...state.player, weak: state.player.weak + amount }
+        : { ...state.player, vulnerable: state.player.vulnerable + amount }
+    return emit({ ...state, player }, { type: 'StatusInflicted', status, amount })
+  }
+  // wound: 全ゾーンの既存枚数を数えて上限までしか増えない
+  const existing = [
+    ...state.player.hand,
+    ...state.player.drawPile,
+    ...state.player.discardPile,
+    ...state.player.exhaustPile,
+    ...state.player.setCards,
+  ].filter((c) => c.def.id === WOUND_DEF.id).length
+  const add = Math.min(amount, WOUND_CAP - existing)
+  if (add <= 0) return state
+  const wounds = Array.from({ length: add }, (_, i) => ({
+    uid: `${WOUND_DEF.id}#${existing + i}_t${state.turn}`,
+    def: WOUND_DEF,
+  }))
+  const s: GameState = {
+    ...state,
+    player: { ...state.player, discardPile: [...state.player.discardPile, ...wounds] },
+  }
+  return emit(s, { type: 'StatusInflicted', status: 'wound', amount: add })
+}
+
 /** 敵1体の宣言済み行動を実行する (打ち消しフラグが立っていれば無効化) */
 function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   const enemy = state.enemies[enemyIndex]
@@ -432,26 +485,40 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   })
   switch (intent.kind) {
     case 'attack': {
-      // 威嚇 (延焼の怯み): 実行時の延焼値で攻撃実値を下げる (確定済みルール表「威嚇」)
-      const attackValue = intimidatedActionValue('attack', intent.actual, enemy.burn)
-      // 通常ブロックを先に消費し、残りを氷壁 (持ち越しブロック) で受ける
-      const blocked = Math.min(state.player.block, attackValue)
-      const remaining = attackValue - blocked
-      const iceBlocked = Math.min(state.player.iceBlock, remaining)
-      const hpLoss = remaining - iceBlocked
-      const s: GameState = {
-        ...state,
-        player: {
-          ...state.player,
-          block: state.player.block - blocked,
-          iceBlock: state.player.iceBlock - iceBlocked,
-          hp: state.player.hp - hpLoss,
-        },
+      // 連撃 (hits>1) は1発ずつ解決する (確定済みルール表「連撃」)。
+      // 各ヒットに 威嚇→脆弱 の順で補正し、通常ブロック→氷壁の順で消費する
+      const hits = intent.hits ?? 1
+      let block = state.player.block
+      let iceBlock = state.player.iceBlock
+      let dealtTotal = 0
+      let hpLoss = 0
+      for (let h = 0; h < hits; h++) {
+        // 威嚇 (延焼の怯み): 実行時の延焼値で1発ごとに下げる (確定済みルール表「威嚇」)
+        let v = intimidatedActionValue('attack', intent.actual, enemy.burn)
+        // 脆弱: 敵の攻撃ダメージ50%増 (切り捨て。威嚇適用後)
+        if (state.player.vulnerable > 0) v = Math.floor(v * 1.5)
+        dealtTotal += v
+        const blocked = Math.min(block, v)
+        block -= blocked
+        const remaining = v - blocked
+        const iceBlocked = Math.min(iceBlock, remaining)
+        iceBlock -= iceBlocked
+        hpLoss += remaining - iceBlocked
       }
-      return markResolved(
-        emit(s, { type: 'DamageDealt', source: 'enemy', amount: attackValue, hpLoss }),
-        hpLoss,
-      )
+      let s: GameState = {
+        ...state,
+        player: { ...state.player, block, iceBlock, hp: state.player.hp - hpLoss },
+      }
+      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss })
+      // 攻撃に付与された状態異常はダメージ後に適用 (確定済みルール表「状態異常」)
+      if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
+      return markResolved(s, hpLoss)
+    }
+    case 'hex': {
+      // 状態異常の付与のみの行動 (妖術師の呪い)
+      let s = state
+      if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
+      return markResolved(s, 0)
     }
     case 'defend': {
       const enemies = state.enemies.map((e, i) =>
@@ -495,6 +562,32 @@ function finishEnemyPhase(state: GameState): GameState {
   const ended = { type: 'EnemyPhaseEnded', turn: state.turn } as const
   let s = emit(state, ended)
   s = dispatchHooks(s, ended) // 空振り (ReactionWhiffed) の計上は方式固有
+  // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る (確定済みルール表「状態異常」)
+  s = { ...s, player: { ...s.player, vulnerable: Math.max(0, s.player.vulnerable - 1) } }
+  // 再生 (HP50%超のみ) と激昂 (確定済みルール表「再生」「激昂」)
+  for (let i = 0; i < s.enemies.length; i++) {
+    const e = s.enemies[i]
+    if (e.hp <= 0) continue
+    const def = getEnemyDef(e.enemyId)
+    if (def.regen !== undefined && e.hp > e.maxHp * 0.5) {
+      const amount = Math.min(def.regen, e.maxHp - e.hp)
+      if (amount > 0) {
+        s = {
+          ...s,
+          enemies: s.enemies.map((x, j) => (j === i ? { ...x, hp: x.hp + amount } : x)),
+        }
+        s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount })
+      }
+    }
+    if (def.enrage !== undefined) {
+      const amount = def.enrage
+      s = {
+        ...s,
+        enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),
+      }
+      s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount })
+    }
+  }
   s = {
     ...s,
     player: {

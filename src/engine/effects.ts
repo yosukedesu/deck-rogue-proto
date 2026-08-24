@@ -108,7 +108,9 @@ export function dealDamageToEnemy(
   baseAmount: number,
   pierce = false,
 ): GameState {
-  const amount = baseAmount + state.player.growth + state.player.momentum
+  let amount = baseAmount + state.player.growth + state.player.momentum
+  // 弱体: プレイヤーの与ダメージ25%減 (切り捨て。確定済みルール表「状態異常」)
+  if (state.player.weak > 0) amount = Math.floor(amount * 0.75)
   const enemy = state.enemies[enemyIndex]
   if (!enemy || enemy.hp <= 0) return state
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
