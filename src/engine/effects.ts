@@ -3,7 +3,7 @@
 // 表現できない効果だけ scriptId で名前付きスクリプトに逃がす (現状は未登録)。
 
 import { emit } from './events.ts'
-import { shuffle } from './rng.ts'
+import { nextInt, shuffle } from './rng.ts'
 import type { CardInstance, DeclarativeEffect, EnemyActionKind, GameState } from './types.ts'
 
 /**
@@ -180,6 +180,49 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const next = { ...state, player: { ...state.player, aether: state.player.aether + amount } }
       return emit(next, { type: 'AetherGained', amount })
+    }
+    case 'applyBurn': {
+      // 延焼 (赤): 敵に蓄積する継続ダメージ
+      const amount = effect.amount ?? 0
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0) return state
+      const enemies = state.enemies.map((e, i) =>
+        i === enemyIndex ? { ...e, burn: e.burn + amount } : e,
+      )
+      return emit({ ...state, enemies }, { type: 'BurnApplied', enemyIndex, amount })
+    }
+    case 'shatterBlock': {
+      // 粉砕 (赤): 敵のブロックを全て破壊する
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.block === 0) return state
+      const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, block: 0 } : e))
+      return emit(
+        { ...state, enemies },
+        { type: 'BlockShattered', enemyIndex, amount: enemy.block },
+      )
+    }
+    case 'dealDamageRandom': {
+      // ランダム火力 (赤): amount〜amountMax のロール (シードRNG)
+      const [roll, rng] = nextInt(state.rng, effect.amount ?? 0, effect.amountMax ?? effect.amount ?? 0)
+      return dealDamageToEnemy({ ...state, rng }, enemyIndex, roll, effect.pierce)
+    }
+    case 'impulseDraw': {
+      // 衝動 (赤): 山札の上からX枚を「このターン限り」の手札に加える
+      const before = new Set(state.player.hand.map((c) => c.uid))
+      let s = drawCards(state, effect.amount ?? 0)
+      const drawnUids = s.player.hand.filter((c) => !before.has(c.uid)).map((c) => c.uid)
+      if (drawnUids.length === 0) return s
+      s = {
+        ...s,
+        player: { ...s.player, impulseUids: [...s.player.impulseUids, ...drawnUids] },
+      }
+      return emit(s, { type: 'ImpulseDrawn', count: drawnUids.length })
+    }
+    case 'loseHp': {
+      // 自傷 (赤): ブロックを無視して自分のHPを失う
+      const amount = effect.amount ?? 0
+      const next = { ...state, player: { ...state.player, hp: state.player.hp - amount } }
+      return emit(next, { type: 'HpLost', amount })
     }
     case 'discountNext': {
       // マナ軽減トークン: 次にプレイする1枚のコスト-X (消費は combat.ts の playCard 側)

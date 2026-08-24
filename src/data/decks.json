@@ -454,5 +454,197 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "starter_red",
+    "name": "赤スターター",
+    "color": "red",
+    "description": "赤の全カード各1枚。赤のルール検証用の万能構成",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_spreading_fire",
+        "count": 1
+      },
+      {
+        "cardId": "red_inferno",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_brazier",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_ember",
+        "count": 1
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 1
+      },
+      {
+        "cardId": "red_impulse",
+        "count": 1
+      },
+      {
+        "cardId": "red_big_impulse",
+        "count": 1
+      },
+      {
+        "cardId": "red_shatter",
+        "count": 1
+      },
+      {
+        "cardId": "red_smash",
+        "count": 1
+      },
+      {
+        "cardId": "red_gamble",
+        "count": 1
+      },
+      {
+        "cardId": "red_chaos_bolt",
+        "count": 1
+      },
+      {
+        "cardId": "red_reckless",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_eruption",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_burn",
+    "name": "バーン理想形",
+    "color": "red",
+    "description": "着火と火鉢で延焼を積み上げ、敵が動く前に焼き切る。防御は薄いが火が守ってくれる",
+    "cards": [
+      {
+        "cardId": "red_ignite",
+        "count": 3
+      },
+      {
+        "cardId": "red_spreading_fire",
+        "count": 3
+      },
+      {
+        "cardId": "red_inferno",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_brazier",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_ember",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 2
+      },
+      {
+        "cardId": "red_reaction_eruption",
+        "count": 1
+      },
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_chaos",
+    "name": "衝動バクチ理想形",
+    "color": "red",
+    "description": "衝動で刹那の手札を捲り、儀式マナで叩きつける。賭けと粉砕と捨て身——考えるな、燃やせ",
+    "cards": [
+      {
+        "cardId": "red_impulse",
+        "count": 2
+      },
+      {
+        "cardId": "red_big_impulse",
+        "count": 2
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_gamble",
+        "count": 3
+      },
+      {
+        "cardId": "red_chaos_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "red_shatter",
+        "count": 2
+      },
+      {
+        "cardId": "red_smash",
+        "count": 2
+      },
+      {
+        "cardId": "red_reckless",
+        "count": 2
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 2
+      },
+      {
+        "cardId": "red_reaction_eruption",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_red",
+    "name": "ラン基本デッキ(赤)",
+    "color": "red",
+    "description": "赤ドラフト連戦の出発点。火弾×5・灰の盾×4・逆燃×1",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 5
+      },
+      {
+        "cardId": "red_guard",
+        "count": 4
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 1
+      }
+    ]
   }
 ]

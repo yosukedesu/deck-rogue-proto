@@ -72,6 +72,8 @@ export interface PlayerState extends CombatantState {
    * 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し
    */
   readonly nextCardDiscount: number
+  /** 衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する */
+  readonly impulseUids: readonly string[]
 }
 
 export interface EnemyState extends CombatantState {
@@ -79,6 +81,8 @@ export interface EnemyState extends CombatantState {
   readonly intent: EnemyIntent | null
   /** 強化 (StSの筋力)。攻撃の実値と幅表示の両方に加算される */
   readonly strength: number
+  /** 延焼 (赤のバーン)。毎敵フェーズ開始時にこの値のダメージ (ブロック無視) を受けて1減る */
+  readonly burn: number
   /** 行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用 */
   readonly patternIndex: number
 }
@@ -197,6 +201,11 @@ export type GameEvent =
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
   | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
+  | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
+  | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
+  | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
+  | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
+  | { readonly type: 'HpLost'; readonly amount: number } // 自傷
   | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
   | { readonly type: 'MomentumAdded'; readonly amount: number }
@@ -219,7 +228,7 @@ export type GameEvent =
 // ============================================================
 
 /** カードの色 (MTGカラーパイ準拠)。data/*.json のファイル単位で決まり、読込時に付与される */
-export type CardColor = 'green' | 'blue'
+export type CardColor = 'green' | 'blue' | 'red'
 
 export type CardCategory =
   | 'ramp'
@@ -265,6 +274,11 @@ export interface DeclarativeEffect {
     | 'addAether' // 霊気+X: 妨害・リアクション成功の蓄積 (青)
     | 'dischargeAether' // 霊気放出: 霊気×amount のダメージを与え、霊気を全消費 (青)
     | 'discountNext' // マナ軽減: 次にプレイするカードのコスト-X
+    | 'applyBurn' // 延焼+X: 敵への継続ダメージ (赤)
+    | 'shatterBlock' // 粉砕: 敵のブロックを全て破壊する (赤)
+    | 'dealDamageRandom' // ランダム火力: amount〜amountMax のロールでダメージ (赤)
+    | 'impulseDraw' // 衝動: 山札の上からX枚を「このターン限り」の手札に加える (赤)
+    | 'loseHp' // 自傷: 自分のHPを失う (赤のコスト)
     | 'gainEnergy' // 一時マナ: ターン終了までエナジー+X (energyMax は増えない)
     | 'gainEnergyMax'
     | 'addGrowth'
@@ -276,6 +290,8 @@ export interface DeclarativeEffect {
     | 'drawCards'
     | 'script'
   readonly amount?: number
+  /** dealDamageRandom 用: ロールの上限 (下限は amount) */
+  readonly amountMax?: number
   /** 貫通 (トランプル): このダメージは敵ブロックを無視する。dealDamage 系のみ有効 */
   readonly pierce?: boolean
   readonly scriptId?: string

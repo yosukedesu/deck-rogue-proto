@@ -174,9 +174,9 @@ function chooseReward(run: { rewardOptions: readonly string[] | null }): number 
 }
 
 function simulateRuns(count: number, baseSeed: number): void {
-  console.error(`# ドラフト連戦 sim: ${count}ラン × 2色, baseSeed=${baseSeed} (ピックはカテゴリ優先の単純方針)`)
+  console.error(`# ドラフト連戦 sim: ${count}ラン × 3色, baseSeed=${baseSeed} (ピックはカテゴリ優先の単純方針)`)
   console.log('color,runs,cleared,clearRate,avgBattlesCleared,avgFinalDeckSize')
-  for (const color of ['green', 'blue'] as const) {
+  for (const color of ['green', 'blue', 'red'] as const) {
     const deathsByBattle = new Array<number>(RUN_BATTLES).fill(0)
     let cleared = 0
     let totalBattlesCleared = 0

@@ -55,7 +55,7 @@ const CATEGORY_LABEL: Record<CardCategory, string> = {
   permanent: '置物',
 }
 
-const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 青' }
+const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 青', red: '🔥 赤' }
 
 // ---- キーワード能力のツールチップ ----
 
@@ -82,6 +82,9 @@ const KEYWORD_HELP: Record<string, string> = {
   氷壁: 'このブロックはターン開始で消えず持ち越される。通常ブロックを使い切った後に消費される',
   詠唱数: 'このターンにプレイしたカードの枚数（そのカード自身は数えない）。ターン開始でリセット',
   霊気: '妨害やリアクションの成功で溜まるエネルギー（戦闘中持続）。霊気放出で一気に叩きつける',
+  延焼: '敵に蓄積する継続ダメージ。毎敵ターン開始時に延焼値ぶんのダメージ（ブロック無視）を与えて1減る',
+  衝動: '山札の上からめくった「このターン限り」の手札。使わずにターンを終えると消滅する',
+  粉砕: '敵のブロックを全て破壊する（無視ではなく叩き割る）',
 }
 
 const KW_PATTERN = new RegExp(
@@ -175,6 +178,16 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}霊気+${e.amount}`
     case 'discountNext':
       return `${trigger}次にプレイするカードのコスト-${e.amount}`
+    case 'applyBurn':
+      return `${trigger}延焼+${e.amount}`
+    case 'shatterBlock':
+      return `${trigger}敵のブロックを全て粉砕する`
+    case 'dealDamageRandom':
+      return `${trigger}${e.amount}〜${e.amountMax}ダメージ(ランダム)${pierce}`
+    case 'impulseDraw':
+      return `${trigger}衝動${e.amount}枚（山札の上から。このターン限り）`
+    case 'loseHp':
+      return `${trigger}HPを${e.amount}失う`
     case 'dischargeAether':
       return ctx
         ? `${trigger}霊気×${e.amount}ダメージを与え、霊気を全て放出する [現在${(e.amount ?? 0) * ctx.aether + atkBonus}]`
@@ -320,6 +333,16 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
     case 'DiscountGained':
       return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
+    case 'BurnApplied':
+      return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
+    case 'BurnTick':
+      return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
+    case 'BlockShattered':
+      return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
+    case 'ImpulseDrawn':
+      return { text: `衝動${e.count}枚（このターン限り）`, cls: 'log-line' }
+    case 'HpLost':
+      return { text: `自傷でHP-${e.amount}`, cls: 'log-bad' }
     case 'EnergyGained':
       return { text: `エナジー+${e.amount}（このターン）`, cls: 'log-line' }
     case 'MomentumAdded':
@@ -457,7 +480,7 @@ function SetupScreen({
           敵は段階制でだんだん強くなり、HPは持ち越し（勝利+10、3戦ごとに焚き火30%）。
         </div>
         <div style={{ margin: '8px 0' }}>
-          {(['green', 'blue'] as const).map((c) => (
+          {(['green', 'blue', 'red'] as const).map((c) => (
             <button
               key={c}
               className={`btn${runColor === c ? ' btn-primary' : ''}`}
@@ -598,6 +621,9 @@ function BattleScreen({
               {enemy.block > 0 && <span className="chip chip-block">🛡 ブロック {enemy.block}</span>}
               {enemy.strength > 0 && (
                 <span className="chip chip-strength">💪 {kw('強化')} +{enemy.strength}</span>
+              )}
+              {enemy.burn > 0 && (
+                <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>
               )}
             </div>
             {!ended && (
@@ -830,7 +856,13 @@ function BattleScreen({
                     ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether }}
                     displayCost={effCost}
                     dim={!canPlay && !canSet && !heldReaction}
-                    hint={heldReaction ? '敵ターンに手札から発動' : undefined}
+                    hint={
+                      player.impulseUids.includes(c.uid)
+                        ? '⏳ 衝動: このターン限り（未使用なら消滅）'
+                        : heldReaction
+                          ? '敵ターンに手札から発動'
+                          : undefined
+                    }
                     actions={
                       <>
                         {modes.length > 0 ? (

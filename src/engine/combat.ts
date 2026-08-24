@@ -46,6 +46,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       cardsPlayedThisTurn: 0,
       aether: 0, // 霊気は戦闘内持続
       nextCardDiscount: 0,
+      impulseUids: [],
     },
     enemies: [],
     pendingWindow: null,
@@ -94,6 +95,7 @@ export function startCombatWithOptions(
         block: 0,
         intent: null,
         strength: options.enemyStrength ?? 0,
+        burn: 0,
         patternIndex: 0,
       },
     ],
@@ -284,14 +286,46 @@ export function playCard(
   return checkCombatEnd(s)
 }
 
-/** EndTurn: 勢いをリセットし、敵フェーズを解決する (割り込みがあれば中断して戻る) */
+/** EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する */
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
   let s = emit(state, { type: 'TurnEnded', turn: state.turn })
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)
   s = { ...s, player: { ...s.player, momentum: 0 } }
+  // 衝動 (このターン限りの手札) は未使用なら消滅する
+  if (s.player.impulseUids.length > 0) {
+    const impulse = new Set(s.player.impulseUids)
+    const expired = s.player.hand.filter((c) => impulse.has(c.uid))
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        hand: s.player.hand.filter((c) => !impulse.has(c.uid)),
+        exhaustPile: [...s.player.exhaustPile, ...expired],
+        impulseUids: [],
+      },
+    }
+    for (const card of expired) {
+      s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+    }
+  }
   // 敵ブロックはこのタイミングで失効 (前の敵ターンの防御は自ターンの攻撃を受け止めたら役目を終える)
   s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }
+  // 延焼: 敵フェーズ開始時にダメージ (ブロック無視) を受けて1減る
+  for (let i = 0; i < s.enemies.length; i++) {
+    const enemy = s.enemies[i]
+    if (enemy.hp <= 0 || enemy.burn <= 0) continue
+    const amount = enemy.burn
+    s = {
+      ...s,
+      enemies: s.enemies.map((e, j) =>
+        j === i ? { ...e, hp: e.hp - amount, burn: e.burn - 1 } : e,
+      ),
+    }
+    s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
+  }
+  s = checkCombatEnd(s) // 行動前に焼き切れば敵は動けない
+  if (isOver(s)) return s
   return processEnemyActions(s, 0)
 }
 

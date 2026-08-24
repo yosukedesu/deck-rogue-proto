@@ -1,0 +1,264 @@
+[
+  {
+    "id": "red_strike",
+    "name": "火弾",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "red_guard",
+    "name": "灰の盾",
+    "cost": 1,
+    "category": "defend",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_ignite",
+    "name": "着火",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_spreading_fire",
+    "name": "延焼弾",
+    "cost": 2,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_inferno",
+    "name": "業火",
+    "cost": 4,
+    "category": "finisher",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 10
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 10
+      }
+    ]
+  },
+  {
+    "id": "red_perm_brazier",
+    "name": "火鉢",
+    "cost": 2,
+    "category": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_perm_ember",
+    "name": "残り火",
+    "cost": 2,
+    "category": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "applyBurn",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_ritual",
+    "name": "猛火の儀式",
+    "cost": 0,
+    "category": "ramp",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_impulse",
+    "name": "火中の取り出し",
+    "cost": 1,
+    "category": "draw",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_big_impulse",
+    "name": "燃え上がる着想",
+    "cost": 2,
+    "category": "draw",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_shatter",
+    "name": "粉砕",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlock"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "red_smash",
+    "name": "叩き割り",
+    "cost": 2,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlock"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "red_gamble",
+    "name": "火運の賭け",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 3,
+        "amountMax": 25
+      }
+    ]
+  },
+  {
+    "id": "red_chaos_bolt",
+    "name": "大博打",
+    "cost": 3,
+    "category": "finisher",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 12,
+        "amountMax": 44
+      }
+    ]
+  },
+  {
+    "id": "red_reckless",
+    "name": "捨て身の一撃",
+    "cost": 1,
+    "category": "attack",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 18
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_flareback",
+    "name": "逆燃",
+    "cost": 1,
+    "category": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_eruption",
+    "name": "爆発反応",
+    "cost": 2,
+    "category": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "counter",
+        "amount": 8
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "applyBurn",
+        "amount": 3
+      }
+    ]
+  }
+]

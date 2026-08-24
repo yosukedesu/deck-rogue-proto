@@ -15,10 +15,18 @@ export const RUN_BATTLES = 10
 const RUN_STARTER_DECK: Record<CardColor, string> = {
   green: 'run_basic',
   blue: 'run_basic_blue',
+  red: 'run_basic_red',
 }
 const REWARD_CHOICES = 3
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
-const REWARD_EXCLUDED = new Set(['green_strike', 'green_guard', 'blue_strike', 'blue_guard'])
+const REWARD_EXCLUDED = new Set([
+  'green_strike',
+  'green_guard',
+  'blue_strike',
+  'blue_guard',
+  'red_strike',
+  'red_guard',
+])
 /** 焚き火: この戦闘 (0-based) をクリアした後に回復 */
 const CAMPFIRE_AFTER = new Set([2, 5, 8])
 const CAMPFIRE_HEAL_RATIO = 0.3
