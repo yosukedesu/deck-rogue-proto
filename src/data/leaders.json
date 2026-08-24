@@ -1,7 +1,7 @@
 [
   {
     "id": "leader_green",
-    "name": "大樹の巫女",
+    "name": "このは",
     "colors": [
       "green"
     ],
@@ -11,7 +11,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic",
     "sprite": "🌳",
-    "description": "タフで、時間とともに育つ。毎ターン開始時に成長+1",
+    "description": "大樹の巫女。タフで、時間とともに育つ。毎ターン開始時に成長+1",
     "passive": [
       {
         "trigger": "onTurnStart",
@@ -22,7 +22,7 @@
   },
   {
     "id": "leader_blue",
-    "name": "潮読みの導師",
+    "name": "みぞれ",
     "colors": [
       "blue"
     ],
@@ -32,7 +32,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_blue",
     "sprite": "🌊",
-    "description": "紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
+    "description": "潮読みの導師。紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
     "passive": [
       {
         "trigger": "onTurnStart",
@@ -43,7 +43,7 @@
   },
   {
     "id": "leader_red",
-    "name": "燼の闘士",
+    "name": "ひばな",
     "colors": [
       "red"
     ],
@@ -53,7 +53,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_red",
     "sprite": "🌋",
-    "description": "意外と頑丈な体で殴るほど燃え広がる。攻撃カードをプレイするたび敵に延焼+1",
+    "description": "燼の闘士。意外と頑丈な体で殴るほど燃え広がる。攻撃カードをプレイするたび敵に延焼+1",
     "passive": [
       {
         "trigger": "onAttackPlayed",
@@ -64,7 +64,7 @@
   },
   {
     "id": "leader_izzet",
-    "name": "霹靂の魔道士",
+    "name": "らいこ",
     "colors": [
       "blue",
       "red"
@@ -75,7 +75,7 @@
     "rewardChoices": 4,
     "runDeckId": "run_basic_izzet",
     "sprite": "⚡",
-    "description": "青赤の複合（イゼット）。毎ターン次のカード-1、報酬ピックの候補が4枚",
+    "description": "霹靂の魔道士。青赤の複合（イゼット）。毎ターン次のカード-1、報酬ピックの候補が4枚",
     "passive": [
       {
         "trigger": "onTurnStart",

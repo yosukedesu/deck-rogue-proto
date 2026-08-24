@@ -54,12 +54,12 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   charger: '🐢',
 }
 
-// カードタイプの世界観ラベル (未来感・幾何学モチーフ。1行で差し替え可能)
+// カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
 const TYPE_LABEL: Record<CardType, string> = {
-  physical: 'アームズ', // 物理: 実体の武装
-  spell: 'コード', // 呪文: 術式プログラム
-  reaction: 'トリガー', // リアクション: 誘発条件
-  permanent: 'モジュール', // 置物: 常駐機構
+  physical: '物理',
+  spell: '呪文',
+  reaction: 'リアクション',
+  permanent: '置物',
 }
 
 const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 青', red: '🔥 赤' }
