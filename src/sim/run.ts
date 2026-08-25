@@ -40,7 +40,7 @@ function botRole(def: CardDef): BotRole {
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
-  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainHp', 'weakenEnemy')) return 'defend'
+  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainBlockPerEnergyMax', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }
 

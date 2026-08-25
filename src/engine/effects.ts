@@ -423,7 +423,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const def = getCardDef(effect.summonId ?? '')
       let s = state
       for (let i = 0; i < (effect.amount ?? 1); i++) {
-        const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${def.id}`, def }
+        // token: true = 敵の「トークン破壊」の対象になる (確定済みルール表「トークン破壊」)
+        const token: CardInstance = {
+          uid: `summon_p${s.player.permanents.length}_${def.id}`,
+          def,
+          token: true,
+        }
         s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
         s = emit(s, { type: 'PermanentPlayed', cardId: def.id })
         s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
@@ -484,6 +489,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'gainBlockPerPermanent': {
       // 隊列の盾 (白): 置物の数×X ブロック
       const amount = (effect.amount ?? 0) * state.player.permanents.length
+      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
+      return emit(next, { type: 'BlockGained', target: 'player', amount })
+    }
+    case 'gainBlockPerEnergyMax': {
+      // 巨木の盾 (緑): エナジー上限×X ブロック (ランプの投資が守りにも変換される)
+      const amount = (effect.amount ?? 0) * state.player.energyMax
       const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
       return emit(next, { type: 'BlockGained', target: 'player', amount })
     }

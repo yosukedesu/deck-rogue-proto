@@ -100,6 +100,8 @@ const KEYWORD_HELP: Record<string, string> = {
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
   威圧: '敵の強化を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
   応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
+  トークン破壊: '敵が召喚トークン1体をランダムに破壊する。手張りの置物・リーダーの能力・レリックは対象外',
+  延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
   勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
   成長: 'この戦闘の間、与えるダメージすべてに加算される（戦闘ごとにリセット）',
@@ -298,6 +300,10 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
         : `${trigger}⚔️ 直前の敵フェーズで受けたダメージ×${e.amount}ダメージ`
     case 'dealDamagePerNegStrength':
       return `${trigger}⚔️ 対象の下げられた強化×${e.amount}の追加ダメージ（威圧の換金）`
+    case 'gainBlockPerEnergyMax':
+      return ctx
+        ? `${trigger}🛡 エナジー上限×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.energyMax}]`
+        : `${trigger}🛡 エナジー上限×${e.amount}ブロック`
     case 'gainBlockPerPermanent':
       return ctx
         ? `${trigger}🛡 置物の数×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.permanents}]`
@@ -415,6 +421,8 @@ function intentText(intent: EnemyIntent | null): string {
       return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
     case 'destroy-set':
       return '💥 伏せ破壊'
+    case 'destroy-token':
+      return '🪓 トークン破壊'
     case 'buff':
       return `💪 強化 +${intent.shownMin}〜${intent.shownMax}`
     case 'rally':
@@ -436,6 +444,8 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
     case 'destroy-set':
       return '💥 伏せ破壊'
+    case 'destroy-token':
+      return '🪓 トークン破壊'
     case 'buff':
       return `💪 強化 +${intent.actual}（宣言 +${intent.shownMin}〜+${intent.shownMax}）`
     case 'rally':
@@ -578,6 +588,8 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `消滅: ${cardName(e.cardId)}（この戦闘から除外）`, cls: 'log-line' }
     case 'BurnDischarged':
       return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
+    case 'TokenDestroyed':
+      return { text: `トークン破壊: ${cardName(e.cardId)}が倒された`, cls: 'log-line' }
     case 'CardRetrieved':
       return { text: `回収: ${cardName(e.cardId)}（消滅置き場から手札へ）`, cls: 'log-line' }
     case 'CardPlayedFromExhaust':
@@ -1040,6 +1052,9 @@ function BattleScreen({
                     )}
                     {enemyDef.regen !== undefined && enemy.hp > enemy.maxHp * 0.5 && !dead && (
                       <span className="chip chip-strength">♻️ {kw('再生')} +{enemyDef.regen}</span>
+                    )}
+                    {enemyDef.burnResist !== undefined && !dead && (
+                      <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}
                     {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
                       enemy.hp <= enemy.maxHp * 0.5 &&

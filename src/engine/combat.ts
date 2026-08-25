@@ -164,9 +164,17 @@ export function startCombat(
   return startCombatWithOptions(seed, reactionMode, enemyId, { deck: buildDeck(deckId), leaderId })
 }
 
-/** 敵の行動テーブル選択: プレイヤーに伏せがあれば movesVsSet を優先 (伏せ警戒型・伏せ破壊型) */
-export function selectMoveTable(def: EnemyDef, playerHasSetCards: boolean): readonly EnemyMove[] {
+/**
+ * 敵の行動テーブル選択: 伏せがあれば movesVsSet、召喚トークンがいれば movesVsTokens を優先
+ * (優先度: 伏せ反応 > トークン反応 > 通常。確定済みルール表「トークン破壊」)
+ */
+export function selectMoveTable(
+  def: EnemyDef,
+  playerHasSetCards: boolean,
+  playerHasTokens = false,
+): readonly EnemyMove[] {
   if (playerHasSetCards && def.movesVsSet && def.movesVsSet.length > 0) return def.movesVsSet
+  if (playerHasTokens && def.movesVsTokens && def.movesVsTokens.length > 0) return def.movesVsTokens
   return def.moves
 }
 
@@ -189,7 +197,11 @@ function declareIntents(state: GameState): GameState {
       (def.movesBelowHalf !== undefined || def.sequenceBelowHalf !== undefined)
     const table = belowHalf
       ? (def.movesBelowHalf ?? def.moves)
-      : selectMoveTable(def, s.player.setCards.length > 0)
+      : selectMoveTable(
+          def,
+          s.player.setCards.length > 0,
+          s.player.permanents.some((p) => p.token === true),
+        )
     const usingVsSet = !belowHalf && table !== def.moves
     const sequence = belowHalf ? def.sequenceBelowHalf : def.sequence
 
@@ -515,15 +527,17 @@ export function endTurn(state: GameState): GameState {
   s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }
   // 憤怒 (逆上) の参照値はフェーズ単位: 敵フェーズ開始時にリセットして受け直す
   s = { ...s, player: { ...s.player, damageTakenLastEnemyPhase: 0 } }
-  // 延焼: 敵フェーズ開始時にダメージ (ブロック無視) を受けて1減る
+  // 延焼: 敵フェーズ開始時にダメージ (ブロック無視) を受けて1減る。
+  // 延焼耐性 (burnResist): 追加でN減る (確定済みルール表「敵の耐性」)
   for (let i = 0; i < s.enemies.length; i++) {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0 || enemy.burn <= 0) continue
     const amount = enemy.burn
+    const decay = 1 + (getEnemyDef(enemy.enemyId).burnResist ?? 0)
     s = {
       ...s,
       enemies: s.enemies.map((e, j) =>
-        j === i ? { ...e, hp: e.hp - amount, burn: e.burn - 1 } : e,
+        j === i ? { ...e, hp: e.hp - amount, burn: Math.max(0, e.burn - decay) } : e,
       ),
     }
     s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
@@ -778,6 +792,23 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: intent.actual })
         }
       }
+      return markResolved(s, 0)
+    }
+    case 'destroy-token': {
+      // トークン破壊: 召喚トークン1体をランダムに破壊 (手張り置物・リーダー・レリックは対象外)
+      const tokens = state.player.permanents.filter((p) => p.token === true)
+      if (tokens.length === 0) return markResolved(state, 0)
+      const [idx, rng] = nextInt(state.rng, 0, tokens.length - 1)
+      const target = tokens[idx]
+      let s: GameState = {
+        ...state,
+        rng,
+        player: {
+          ...state.player,
+          permanents: state.player.permanents.filter((p) => p.uid !== target.uid),
+        },
+      }
+      s = emit(s, { type: 'TokenDestroyed', cardId: target.def.id })
       return markResolved(s, 0)
     }
     case 'destroy-set': {

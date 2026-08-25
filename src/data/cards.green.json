@@ -182,7 +182,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 30
+        "amount": 34
       }
     ]
   },
@@ -233,7 +233,7 @@
       {
         "trigger": "onPlay",
         "effect": "addGrowth",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
@@ -251,7 +251,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 1
+        "amount": 2
       }
     ],
     "exhaust": true
@@ -265,7 +265,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerEnergyMax",
-        "amount": 3
+        "amount": 4
       }
     ],
     "exhaust": true
@@ -273,14 +273,15 @@
   {
     "id": "green_sig_rite_of_bloom",
     "name": "開花の儀",
-    "cost": 1,
+    "cost": 2,
     "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "doubleGrowth"
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "green_sig_vine_dance",
@@ -589,6 +590,19 @@
         "effect": "counter",
         "amount": 5,
         "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "green_giant_bark",
+    "name": "巨木の盾",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerEnergyMax",
+        "amount": 2
       }
     ]
   }

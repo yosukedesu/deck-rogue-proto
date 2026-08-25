@@ -102,10 +102,10 @@ describe('カードプレイ', () => {
   it('成長カウンター: 与ダメージ全てに加算 (確定済みルール)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_growth_ring', 'green_strike'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_growth_ring' })
-    expect(s.player.growth).toBe(3)
+    expect(s.player.growth).toBe(2)
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 9) // 6 + 成長3
+    expect(s.enemies[0].hp).toBe(hpBefore - 8) // 6 + 成長2
   })
 
   it('多段ヒットは1ヒットごとに成長が乗る', () => {
@@ -113,7 +113,7 @@ describe('カードプレイ', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_growth_ring' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_double_lash' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (3 + 3) * 2)
+    expect(s.enemies[0].hp).toBe(hpBefore - (3 + 2) * 2) // (基礎3+成長2)×2ヒット
   })
 
   it('エナジー不足・手札にないカード・リアクション専用カードのプレイは拒否', () => {

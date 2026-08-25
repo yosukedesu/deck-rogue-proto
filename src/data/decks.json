@@ -119,6 +119,10 @@
       {
         "cardId": "green_flash_insight",
         "count": 2
+      },
+      {
+        "cardId": "green_giant_bark",
+        "count": 2
       }
     ],
     "color": "green"
@@ -274,15 +278,11 @@
         "count": 1
       },
       {
-        "cardId": "blue_glacier",
-        "count": 1
-      },
-      {
         "cardId": "blue_ponder",
         "count": 1
       },
       {
-        "cardId": "blue_churn",
+        "cardId": "blue_focus",
         "count": 1
       },
       {
@@ -291,10 +291,6 @@
       },
       {
         "cardId": "blue_storm_lash",
-        "count": 1
-      },
-      {
-        "cardId": "blue_tsunami",
         "count": 1
       },
       {
@@ -322,31 +318,7 @@
         "count": 1
       },
       {
-        "cardId": "blue_archive",
-        "count": 1
-      },
-      {
         "cardId": "blue_aether_burst",
-        "count": 1
-      },
-      {
-        "cardId": "blue_storm_barrier",
-        "count": 1
-      },
-      {
-        "cardId": "blue_chain_thought",
-        "count": 1
-      },
-      {
-        "cardId": "blue_flash",
-        "count": 1
-      },
-      {
-        "cardId": "blue_spark",
-        "count": 1
-      },
-      {
-        "cardId": "blue_focus",
         "count": 1
       }
     ]
@@ -966,15 +938,7 @@
         "count": 1
       },
       {
-        "cardId": "black_grave_bolt",
-        "count": 1
-      },
-      {
         "cardId": "black_perm_leech",
-        "count": 1
-      },
-      {
-        "cardId": "black_perm_altar",
         "count": 1
       },
       {
@@ -994,7 +958,15 @@
         "count": 1
       },
       {
-        "cardId": "black_corpse_explosion",
+        "cardId": "black_shadow_blade",
+        "count": 1
+      },
+      {
+        "cardId": "black_blood_price",
+        "count": 1
+      },
+      {
+        "cardId": "black_feast",
         "count": 1
       }
     ]
@@ -1066,19 +1038,31 @@
         "count": 1
       },
       {
+        "cardId": "black_reaction_awakening",
+        "count": 1
+      },
+      {
         "cardId": "black_grave_digger",
         "count": 2
       },
       {
         "cardId": "black_mill",
-        "count": 1
+        "count": 2
       },
       {
         "cardId": "black_deep_mill",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_altar",
         "count": 1
       },
       {
         "cardId": "black_offering",
+        "count": 2
+      },
+      {
+        "cardId": "black_underworld_path",
         "count": 1
       },
       {
@@ -1086,7 +1070,7 @@
         "count": 2
       },
       {
-        "cardId": "black_wraith_feast",
+        "cardId": "black_corpse_explosion",
         "count": 1
       },
       {
@@ -1094,11 +1078,15 @@
         "count": 1
       },
       {
-        "cardId": "black_dark_pact",
+        "cardId": "black_wraith_feast",
         "count": 1
       },
       {
-        "cardId": "black_reaction_awakening",
+        "cardId": "black_raise_dead",
+        "count": 1
+      },
+      {
+        "cardId": "black_dark_pact",
         "count": 1
       },
       {

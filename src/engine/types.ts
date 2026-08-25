@@ -249,6 +249,7 @@ export type GameEvent =
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
+  | { readonly type: 'TokenDestroyed'; readonly cardId: string } // トークン破壊 (敵メカニクス)
   | { readonly type: 'CardRetrieved'; readonly cardId: string } // 屍集め: 消滅置き場から手札へ
   | { readonly type: 'CardPlayedFromExhaust'; readonly cardId: string } // 死者再生: 消滅置き場から直接プレイ
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
@@ -366,6 +367,7 @@ export interface DeclarativeEffect {
     | 'dischargeAetherDraw' // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出の第二の出口)
     | 'dealDamagePerNegStrength' // 威圧の換金 (白): 対象の強化がマイナスなら その絶対値×X の追加ダメージ (断罪の槌)
     | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
+    | 'gainBlockPerEnergyMax' // 巨木の盾 (緑): エナジー上限×X ブロック (ランプ中の無防備を受けるスケーリング防御)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
@@ -411,6 +413,8 @@ export interface CardDef {
 export interface CardInstance {
   readonly uid: string
   readonly def: CardDef
+  /** 召喚トークン: 敵の「トークン破壊」の対象になる (手張り置物・リーダー・レリックは対象外) */
+  readonly token?: boolean
 }
 
 export type EnemyArchetype =
@@ -428,7 +432,14 @@ export type EnemyArchetype =
   | 'support'
 
 /** buff = 強化 (自分のみ)。rally = 応援 (味方全体の強化)。hex = 状態異常の付与のみ (数値なし・inflict必須) */
-export type EnemyActionKind = 'attack' | 'defend' | 'destroy-set' | 'buff' | 'rally' | 'hex'
+export type EnemyActionKind =
+  | 'attack'
+  | 'defend'
+  | 'destroy-set'
+  | 'destroy-token' // 召喚トークン1体をランダムに破壊 (確定済みルール表「トークン破壊」)
+  | 'buff'
+  | 'rally'
+  | 'hex'
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
 export type PlayerStatus = 'weak' | 'vulnerable' | 'wound'
@@ -469,6 +480,10 @@ export interface EnemyDef {
   readonly sequence?: readonly string[]
   /** プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型・挑発型)。省略時は通常行動 */
   readonly movesVsSet?: readonly EnemyMove[]
+  /** プレイヤーに召喚トークンがいる時の行動テーブル (優先度: HP半分以下 > 伏せ反応 > トークン反応 > 通常) */
+  readonly movesVsTokens?: readonly EnemyMove[]
+  /** 延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」) */
+  readonly burnResist?: number
   /** HP50%以下で切り替わる行動テーブル (フェーズ変化)。優先度: 半分以下 > 伏せ反応 > 通常 */
   readonly movesBelowHalf?: readonly EnemyMove[]
   /** HP50%以下のローテーション (movesBelowHalf の id を参照) */

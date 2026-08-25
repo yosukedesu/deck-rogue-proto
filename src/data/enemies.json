@@ -110,6 +110,20 @@
         "max": 15,
         "weight": 1
       }
+    ],
+    "movesVsTokens": [
+      {
+        "id": "break_token",
+        "kind": "destroy-token",
+        "weight": 2
+      },
+      {
+        "id": "smash",
+        "kind": "attack",
+        "min": 11,
+        "max": 15,
+        "weight": 1
+      }
     ]
   },
   {
@@ -277,7 +291,8 @@
         "max": 19,
         "weight": 1
       }
-    ]
+    ],
+    "burnResist": 2
   },
   {
     "id": "enemy_joker",

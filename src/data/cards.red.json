@@ -57,7 +57,7 @@
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 5
+        "amount": 4
       }
     ]
   },
@@ -466,7 +466,7 @@
       {
         "trigger": "onImpulsePlayed",
         "effect": "applyBurn",
-        "amount": 1
+        "amount": 2
       }
     ]
   },
@@ -479,7 +479,7 @@
       {
         "trigger": "onPlay",
         "effect": "impulseDraw",
-        "amount": 2
+        "amount": 3
       },
       {
         "trigger": "onPlay",

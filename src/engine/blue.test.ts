@@ -28,10 +28,10 @@ describe('氷壁 (持ち越しブロック)', () => {
   it('氷壁はターン開始で消えず、通常ブロックの後に消費される', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_ice_wall',
-      'blue_guard',
+      'green_guard', // 通常ブロック役 (氷盾は2026-08-25に氷壁化したため緑の防御を借りる)
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_guard' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_guard' })
     expect(s.player.iceBlock).toBe(10)
     expect(s.player.block).toBe(5)
     // 攻撃10: 通常ブロック5を先に消費し、残り5を氷壁で受ける
@@ -197,7 +197,7 @@ describe('ストームの3系統', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_barrier' }) // 詠唱数2 ×5 = 10
-    expect(s.player.iceBlock).toBe(10)
+    expect(s.player.iceBlock).toBe(10 + 5) // 障壁10 + 氷盾5 (氷壁化済み)
   })
 
   it('連鎖する思考: 詠唱数×1枚ドロー', () => {
