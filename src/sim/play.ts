@@ -88,7 +88,7 @@ function intentLine(s: GameState, i: number): string {
   const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? `${hits}(値は1発あたり)` : ''}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `強化+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
   }
@@ -160,7 +160,18 @@ function renderBattle(s: GameState, logFrom: number): string {
       const playable = isPlayableFromHand(c) && cost <= p.energy
       const canSet = c.def.type === 'reaction' && p.setCards.length < p.setSlots && c.def.cost <= p.energy
       const marks = [
-        playable ? 'プレイ可' : c.def.type === 'reaction' ? '' : 'エナジー不足',
+        c.def.id === 'status_wound'
+          ? '使用不可(死に札。ターン終了時に捨てられる)'
+          : playable
+            ? 'プレイ可'
+            : c.def.type === 'reaction'
+              ? ''
+              : 'エナジー不足',
+        c.def.exhaustCost ? '要exhaustUids' : '',
+        c.def.discardCost ? '要discardUids' : '',
+        c.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')
+          ? '要retrieveUid'
+          : '',
         canSet ? '伏せ可' : '',
         cardNeedsTarget(c) && s.enemies.filter((e) => e.hp > 0).length > 1 ? '要targetIndex' : '',
         p.impulseUids.includes(c.uid) ? '衝動(このターン限り)' : '',
@@ -248,7 +259,13 @@ if (mode === 'new-run') {
 } else if (mode === 'show') {
   const [file] = args
   const sf = load(file)
-  console.log(sf.kind === 'run' ? renderRun(sf.run!, 0) : renderBattle(sf.battle!, 0))
+  // 直近10件のログだけ出す (全ログだと確認ウィンドウが画面外に流れてしまう)
+  const tail = (g: GameState | undefined) => Math.max(0, (g?.eventLog.length ?? 0) - 10)
+  console.log(
+    sf.kind === 'run'
+      ? renderRun(sf.run!, tail(sf.run!.combat ?? undefined))
+      : renderBattle(sf.battle!, tail(sf.battle)),
+  )
 } else {
   console.log('usage: play.ts new-run <leaderId> <seed> <file> | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file>')
 }

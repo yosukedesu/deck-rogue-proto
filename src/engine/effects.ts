@@ -225,15 +225,23 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
  * (確定済みルール表「成長カウンター」「勢い」。勢いは自ターン終了時リセットのため実質攻撃のみに乗る)。
  * 敵ブロックで軽減。pierce (貫通/トランプル) は敵ブロックを無視する (確定済みルール表「貫通」)。
  */
+/**
+ * プレイヤー側の与ダメージ補正 (成長・勢い・弱体) を適用した値。
+ * ドレインの回復量など「与えたダメージを参照する効果」はこの値を基準にする
+ * (2026-08-25 プレイテスト発見: 弱体で13ダメに減ったのに回復は素の18基準のままだった)
+ */
+export function playerDamageAfterModifiers(state: GameState, baseAmount: number): number {
+  const amount = baseAmount + state.player.growth + state.player.momentum
+  return state.player.weak > 0 ? Math.floor(amount * 0.75) : amount
+}
+
 export function dealDamageToEnemy(
   state: GameState,
   enemyIndex: number,
   baseAmount: number,
   pierce = false,
 ): GameState {
-  let amount = baseAmount + state.player.growth + state.player.momentum
-  // 弱体: プレイヤーの与ダメージ25%減 (切り捨て。確定済みルール表「状態異常」)
-  if (state.player.weak > 0) amount = Math.floor(amount * 0.75)
+  let amount = playerDamageAfterModifiers(state, baseAmount)
   const enemy = state.enemies[enemyIndex]
   if (!enemy || enemy.hp <= 0) return state
   // 急所 (敵版脆弱): 次に受けるダメージN回が+50% (1ヒットごとに1減。確定済みルール表「急所」)
@@ -404,14 +412,16 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'dealDamageDrain': {
       // ドレイン (黒の専売): Xダメージ + floor(X/2)回復 (確定済みルール表「黒の柱」)
       const amount = effect.amount ?? 0
+      const dealt = playerDamageAfterModifiers(state, amount)
       const s = dealDamageToEnemy(state, enemyIndex, amount, effect.pierce)
-      return healPlayer(s, Math.floor(amount / 2), enemyIndex)
+      return healPlayer(s, Math.floor(dealt / 2), enemyIndex)
     }
     case 'dealDamageDrainPerExhaust': {
       // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
       const amount = (effect.amount ?? 0) * state.player.exhaustPile.length
+      const dealt = playerDamageAfterModifiers(state, amount)
       const s = dealDamageToEnemy(state, enemyIndex, amount, effect.pierce)
-      return healPlayer(s, Math.floor(amount / 2), enemyIndex)
+      return healPlayer(s, Math.floor(dealt / 2), enemyIndex)
     }
     case 'dealDamagePerSelfHpLost':
       // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×X (背徳の収穫。払ったコストの再利用)

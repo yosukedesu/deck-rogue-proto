@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import { getCardDef, getEnemyDef } from './content.ts'
 import { applyCommand } from './state.ts'
-import { freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('トークン破壊 (敵メカニクス第1号)', () => {
   it('罠壊しは召喚トークンがいるとトークン反応テーブルに切り替わる', () => {
@@ -87,7 +87,8 @@ describe('ターン開始誘発での全滅 (プレイテスト発見バグ)', (
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 2 })) } // 従者2ダメで死ぬHPに細工
-    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    // 防御意図だと敵ブロックが従者の攻撃を吸ってしまうため攻撃意図で検証する
+    s = withIntent(s, attackIntent(3))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('won') // 次ターン開始時の従者攻撃で即勝利
   })

@@ -216,3 +216,17 @@ describe('黒の新リアクション', () => {
     expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
   })
 })
+
+describe('ドレインの回復基準 (プレイテスト発見の不整合)', () => {
+  it('弱体で与ダメが減ったら回復量も同じ基準で減る', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_big_drain',
+    ])
+    s = { ...s, player: { ...s.player, hp: 30, weak: 2, energy: 9 } }
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_big_drain' })
+    // 貪り喰らう14 → 弱体で floor(14*0.75)=10 ダメージ、回復も 10/2=5 (旧実装は素の14基準で7だった)
+    expect(s.enemies[0].hp).toBe(enemyHp - 10)
+    expect(s.player.hp).toBe(35)
+  })
+})
