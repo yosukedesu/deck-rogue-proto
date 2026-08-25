@@ -188,8 +188,9 @@ function renderBattle(s: GameState, logFrom: number): string {
   }
   if (s.phase === 'awaiting-reaction' && s.pendingWindow) {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]
-    const it = enemy?.intent
-    L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の実値=${it?.actual}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
+    // 条件付き意図の解決後の分岐を表示する (素の intent を出すと実値が幅表示と食い違う)
+    const it = effectiveIntent(s, s.pendingWindow.enemyIndex)
+    L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it) : '---'}」実値=${it?.actual}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
     const win = windowFromPending(s)
     const cands = win ? p.setCards.filter((c) => reactionMatches(s, c, win)) : []
     L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}`).join(' / ') || 'なし'}`)
