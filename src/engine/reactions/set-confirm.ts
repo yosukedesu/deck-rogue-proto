@@ -3,7 +3,7 @@
 // pre窓 (行動確定時・実行前: 打ち消し・軽減) と post窓 (行動解決後: 返し系) の両方で確認が入る。
 // 温存した伏せは場に残り続ける → 伏せ警戒型へのブラフが意図的に打てる。
 
-import { reactionMatches, windowFromPending } from '../effects.ts'
+import { effectiveIntent, reactionMatches, windowFromPending } from '../effects.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
 import { canSetCard, emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
 
@@ -51,7 +51,7 @@ export const setConfirmSystem: ReactionSystem = {
     switch (event.type) {
       case 'EnemyActionExecuting': {
         if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
-        const actual = state.enemies[event.enemyIndex]?.intent?.actual ?? 0
+        const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
         const win = { stage: 'pre', kind: event.kind, actual } as const
         if (state.player.setCards.some((c) => reactionMatches(state, c, win))) {
           return {

@@ -912,6 +912,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       for (const card of state.player.setCards) {
         s = emit(s, { type: 'SetCardDestroyed', cardId: card.def.id })
       }
+      // 伏せ破壊にも状態異常の付与が乗る (罠壊しの「がらくた」= 壊した残骸を投げつける)
+      if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
       return markResolved(checkCombatEnd(s), 0)
     }
   }

@@ -2,7 +2,7 @@
 // コスト事前払いで伏せる。条件成立で自動発動 (プレイヤーの判断は挟まらない)。
 // pre窓 (行動実行前: 打ち消し・軽減) と post窓 (行動解決後: 返し系) の両方で自動発動する。
 
-import { reactionMatches } from '../effects.ts'
+import { effectiveIntent, reactionMatches } from '../effects.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
 import { canSetCard, emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
 
@@ -22,7 +22,7 @@ export const setAutoSystem: ReactionSystem = {
     switch (event.type) {
       case 'EnemyActionExecuting': {
         if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
-        const actual = state.enemies[event.enemyIndex]?.intent?.actual ?? 0
+        const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
         const win = { stage: 'pre', kind: event.kind, actual } as const
         const card = state.player.setCards.find((c) => reactionMatches(state, c, win))
         if (card) {

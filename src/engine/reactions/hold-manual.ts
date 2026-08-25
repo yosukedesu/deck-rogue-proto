@@ -4,7 +4,12 @@
 // コストは発動時に支払う。余剰エナジーは敵ターンに持ち越し
 // (エンジンはターン終了時にエナジーを消さないので、この方式では自然に残額が使える)。
 
-import { reactionMatches, resolveReactionEffects, windowFromPending } from '../effects.ts'
+import {
+  effectiveIntent,
+  reactionMatches,
+  resolveReactionEffects,
+  windowFromPending,
+} from '../effects.ts'
 import { emit } from '../events.ts'
 import type { CardInstance, Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
 import type { ReactionWindow } from '../effects.ts'
@@ -83,7 +88,7 @@ export const holdManualSystem: ReactionSystem = {
     switch (event.type) {
       case 'EnemyActionExecuting': {
         if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
-        const actual = state.enemies[event.enemyIndex]?.intent?.actual ?? 0
+        const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
         if (anyPlayable(state, { stage: 'pre', kind: event.kind, actual })) {
           return {
             ...state,
