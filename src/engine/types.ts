@@ -312,6 +312,7 @@ export interface DeclarativeEffect {
     | 'onHpLost' // カード効果で自分のHPを失った時 (置物。黒: 苦痛の芯。敵からの被弾では誘発しない=StSルプチャー式)
     | 'onCardExhausted' // カードが消滅するたび (置物。黒: 亡者の合唱。忘却・消滅コスト・消滅札・衝動失効すべて)
     | 'onCostExhausted' // 消滅コスト (exhaustCost) を支払った時のみ (置物。黒: 闇市の帳簿)
+    | 'onPermanentEntered' // 置物が場に出るたび (白の接着剤。プレイ・召喚・直接プレイすべて。自身の登場にも誘発。戦闘開始時から場にあるもの=リーダー/レリックは「登場」しない)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -350,6 +351,9 @@ export interface DeclarativeEffect {
     | 'dealDamagePerSelfHpLost' // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×Xダメージ (背徳の収穫)
     | 'retrieveFromExhaust' // コスト再利用 (黒): 消滅置き場から1枚選んで手札に戻す (屍集め。combat.ts が retrieveUid で解決)
     | 'playFromExhaust' // コスト再利用 (黒): 消滅置き場のリアクション以外1枚をコストを支払わず直接プレイ (死者再生)
+    | 'summonPermanent' // 召喚 (白): summonId の置物トークンを amount 体場に出す (従者の横並び=トークン再現)
+    | 'dealDamagePerNegStrength' // 威圧の換金 (白): 対象の強化がマイナスなら その絶対値×X の追加ダメージ (断罪の槌)
+    | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
@@ -361,6 +365,8 @@ export interface DeclarativeEffect {
   readonly pierce?: boolean
   /** 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体 */
   readonly target?: 'all'
+  /** summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire) */
+  readonly summonId?: string
   readonly scriptId?: string
 }
 

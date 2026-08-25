@@ -395,7 +395,11 @@ export function playCard(
     s = emit(s, { type: 'CardsDiscarded', cardIds: discardedCards.map((c) => c.def.id) })
   }
   s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
-  if (isPermanent) s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
+  if (isPermanent) {
+    s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
+    // 置物登場の誘発 (白の接着剤)。自身の登場にも誘発する (確定済みルール表「消滅の誘発」系)
+    s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+  }
   // 消滅コストの支払い: 支払い専用誘発 (闇市の帳簿) → 消滅誘発 (亡者の合唱) の順で1枚ごとに発火
   for (const paid of exhaustedCards) {
     s = emit(s, { type: 'CardExhausted', cardId: paid.def.id })
@@ -457,6 +461,7 @@ export function playCard(
           },
         }
         s = emit(s, { type: 'PermanentPlayed', cardId: chosen.def.id })
+        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
       }
       s = emit(s, { type: 'CardPlayed', cardId: chosen.def.id })
       s = resolveOnPlayEffects(s, chosen, enemyIndex)

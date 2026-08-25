@@ -1142,5 +1142,57 @@
         "count": 2
       }
     ]
+  },
+  {
+    "id": "deck_legion",
+    "name": "白銀の大隊",
+    "color": "white",
+    "description": "従者を並べて軍旗と軍楽隊で加速し、聖騎士団の突撃で轢き潰す横並びの理想形",
+    "cards": [
+      {
+        "cardId": "white_perm_band",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_banner",
+        "count": 1
+      },
+      {
+        "cardId": "white_muster",
+        "count": 2
+      },
+      {
+        "cardId": "white_shield_call",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_hound",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 1
+      },
+      {
+        "cardId": "white_rally",
+        "count": 2
+      },
+      {
+        "cardId": "white_knight_charge",
+        "count": 1
+      },
+      {
+        "cardId": "white_rank_shield",
+        "count": 2
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      }
+    ]
   }
 ]

@@ -31,6 +31,8 @@ function botRole(def: CardDef): BotRole {
   const effects = def.modes?.length ? def.modes[0].effects : def.effects
   const has = (...ids: string[]) => effects.some((e) => ids.includes(e.effect))
   if (has('gainEnergyMax', 'gainEnergy', 'discountNext')) return 'ramp'
+  // 召喚 (白): トークンを場に出すカードは置物枠で早置き
+  if (has('summonPermanent')) return 'permanent'
   if (has('addGrowth', 'doubleGrowth')) return 'growth'
   if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
@@ -88,9 +90,13 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   }
   const exhaustCostN = card.def.exhaustCost ?? 0
   if (exhaustCostN > 0 && state.player.hand.length - 1 < exhaustCostN) return false
-  // ブロック変換はブロック4以上、集結は置物1体以上でないと空撃ち
+  // ブロック変換はブロック4以上、集結・隊列は置物1体以上でないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) return state.player.block >= 4
-  if (card.def.effects.some((e) => e.effect === 'dealDamagePerPermanent')) {
+  if (
+    card.def.effects.some(
+      (e) => e.effect === 'dealDamagePerPermanent' || e.effect === 'gainBlockPerPermanent',
+    )
+  ) {
     return state.player.permanents.length >= 1
   }
   // 回復はHPが減っていなければ無意味

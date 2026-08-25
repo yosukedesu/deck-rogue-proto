@@ -2,6 +2,7 @@
 // カード効果は data/*.json の宣言的記述をここで状態遷移に変換する。
 // 表現できない効果だけ scriptId で名前付きスクリプトに逃がす (現状は未登録)。
 
+import { getCardDef } from './content.ts'
 import { emit } from './events.ts'
 import { nextInt, shuffle } from './rng.ts'
 import type { CardInstance, DeclarativeEffect, EnemyActionKind, GameState } from './types.ts'
@@ -41,6 +42,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerExhaust',
     'dealDamageDrainPerExhaust',
     'dealDamagePerSelfHpLost',
+    'dealDamagePerNegStrength',
     'counter',
   ].includes(effect.effect)
 }
@@ -65,6 +67,7 @@ const ENEMY_TARGETED = new Set([
   'dealDamagePerExhaust',
   'dealDamageDrainPerExhaust',
   'dealDamagePerSelfHpLost',
+  'dealDamagePerNegStrength',
   // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
   'playFromExhaust',
 ])
@@ -101,7 +104,8 @@ export function runPermanentTriggers(
   for (const permanent of state.player.permanents) {
     for (const effect of permanent.def.effects) {
       if (effect.trigger === trigger) {
-        s = resolveEffect(s, effect, alive)
+        // target:'all' の置物効果 (白銀の軍旗など) も全体解決する
+        s = resolveEffectTargeted(s, effect, alive)
       }
     }
   }
@@ -411,6 +415,31 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'playFromExhaust':
       // コスト再利用 (黒): 消滅置き場からの選択は combat.ts の playCard が retrieveUid で解決する
       return state
+    case 'summonPermanent': {
+      // 召喚 (白): summonId の置物トークンを amount 体場に出す (確定済みルール表「召喚」)。
+      // uid は置物数ベース (置物は場を離れないため単調増加 = 衝突しない)
+      const def = getCardDef(effect.summonId ?? '')
+      let s = state
+      for (let i = 0; i < (effect.amount ?? 1); i++) {
+        const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${def.id}`, def }
+        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
+        s = emit(s, { type: 'PermanentPlayed', cardId: def.id })
+        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+      }
+      return s
+    }
+    case 'dealDamagePerNegStrength': {
+      // 威圧の換金 (白): 対象の強化がマイナスなら絶対値×X の追加ダメージ (断罪の槌)
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.strength >= 0) return state
+      return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * -enemy.strength, effect.pierce)
+    }
+    case 'gainBlockPerPermanent': {
+      // 隊列の盾 (白): 置物の数×X ブロック
+      const amount = (effect.amount ?? 0) * state.player.permanents.length
+      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
+      return emit(next, { type: 'BlockGained', target: 'player', amount })
+    }
     case 'exhaustFromDeck': {
       // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、
       // 墓地=消滅置き場とする (単調増加。デッキを永久燃料にする緊張感。戦闘内限定)
