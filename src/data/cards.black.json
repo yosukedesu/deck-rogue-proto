@@ -582,5 +582,18 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "black_dead_wall",
+    "name": "亡者の壁",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerExhaust",
+        "amount": 1
+      }
+    ]
   }
 ]

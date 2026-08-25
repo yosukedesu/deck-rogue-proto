@@ -110,7 +110,7 @@
       },
       {
         "cardId": "green_reaction_root_weave",
-        "count": 1
+        "count": 2
       },
       {
         "cardId": "green_ritual_surge",
@@ -123,6 +123,10 @@
       {
         "cardId": "green_giant_bark",
         "count": 2
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
       }
     ],
     "color": "green"
@@ -942,7 +946,7 @@
         "count": 1
       },
       {
-        "cardId": "black_hand_ripper",
+        "cardId": "black_reaction_last_stand",
         "count": 1
       },
       {
@@ -1091,6 +1095,10 @@
       },
       {
         "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "black_dead_wall",
         "count": 2
       }
     ]

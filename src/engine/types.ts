@@ -368,6 +368,7 @@ export interface DeclarativeEffect {
     | 'dealDamagePerNegStrength' // 威圧の換金 (白): 対象の強化がマイナスなら その絶対値×X の追加ダメージ (断罪の槌)
     | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
     | 'gainBlockPerEnergyMax' // 巨木の盾 (緑): エナジー上限×X ブロック (ランプ中の無防備を受けるスケーリング防御)
+    | 'gainBlockPerExhaust' // 亡者の壁 (黒): 消滅した枚数×X ブロック (墓地型のタイマー耐性)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
@@ -407,6 +408,8 @@ export interface CardDef {
   readonly discardCost?: number
   /** 追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる) */
   readonly exhaustCost?: number
+  /** 従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」) */
+  readonly retainer?: boolean
 }
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */

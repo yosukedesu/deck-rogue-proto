@@ -20,15 +20,26 @@ describe('トークン破壊 (敵メカニクス第1号)', () => {
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(true)
   })
 
-  it('手張り置物とリーダーパッシブはトークン破壊の対象外', () => {
+  it('手張りの従者 (生き物) も従者狩りの対象になる (2026-08-25拡張)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter_white'), [
       'white_perm_squire',
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
     s = withIntent(s, { kind: 'destroy-token', shownMin: 0, shownMax: 0, actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
-    // 手張りの従者は token ではないので破壊されない
-    expect(s.player.permanents).toHaveLength(1)
+    expect(s.player.permanents).toHaveLength(0)
+    expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(true)
+  })
+
+  it('道具・オーラ系の置物 (白銀の軍旗) は従者狩りの対象外', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter_white'), [
+      'white_perm_banner',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_banner' })
+    s = withIntent(s, { kind: 'destroy-token', shownMin: 0, shownMax: 0, actual: 0 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.permanents).toHaveLength(1) // 旗は物なので狩られない
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(false)
   })
 })

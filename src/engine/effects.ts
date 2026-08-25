@@ -498,6 +498,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
       return emit(next, { type: 'BlockGained', target: 'player', amount })
     }
+    case 'gainBlockPerExhaust': {
+      // 亡者の壁 (黒): 消滅した枚数×X ブロック (墓地エンジンがそのまま守りになるタイマー耐性)
+      const amount = (effect.amount ?? 0) * state.player.exhaustPile.length
+      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
+      return emit(next, { type: 'BlockGained', target: 'player', amount })
+    }
     case 'exhaustFromDeck': {
       // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、
       // 墓地=消滅置き場とする (単調増加。デッキを永久燃料にする緊張感。戦闘内限定)

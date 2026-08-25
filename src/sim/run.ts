@@ -40,7 +40,7 @@ function botRole(def: CardDef): BotRole {
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
-  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainBlockPerEnergyMax', 'gainHp', 'weakenEnemy')) return 'defend'
+  if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainBlockPerEnergyMax', 'gainBlockPerExhaust', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }
 
@@ -93,6 +93,10 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   }
   if (card.def.effects.some((e) => e.effect === 'shatterBlockConvert')) {
     return state.enemies.some((e) => e.hp > 0 && e.block >= 3)
+  }
+  // 亡者の壁は消滅4枚以上でないと薄い
+  if (card.def.effects.some((e) => e.effect === 'gainBlockPerExhaust')) {
+    return state.player.exhaustPile.length >= 4
   }
   // 氷の槍は氷壁4以上、霊気の奔流は霊気2以上でないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerIceBlock')) {

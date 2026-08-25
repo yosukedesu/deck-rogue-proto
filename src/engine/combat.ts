@@ -200,7 +200,7 @@ function declareIntents(state: GameState): GameState {
       : selectMoveTable(
           def,
           s.player.setCards.length > 0,
-          s.player.permanents.some((p) => p.token === true),
+          s.player.permanents.some((p) => p.token === true || p.def.retainer === true),
         )
     const usingVsSet = !belowHalf && table !== def.moves
     const sequence = belowHalf ? def.sequenceBelowHalf : def.sequence
@@ -795,8 +795,9 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       return markResolved(s, 0)
     }
     case 'destroy-token': {
-      // トークン破壊: 召喚トークン1体をランダムに破壊 (手張り置物・リーダー・レリックは対象外)
-      const tokens = state.player.permanents.filter((p) => p.token === true)
+      // 従者狩り: 召喚トークンまたは従者 (生き物の置物) 1体をランダムに破壊。
+      // 道具・オーラ系の手張り置物・リーダー・レリックは対象外 (確定済みルール表「トークン破壊」)
+      const tokens = state.player.permanents.filter((p) => p.token === true || p.def.retainer === true)
       if (tokens.length === 0) return markResolved(state, 0)
       const [idx, rng] = nextInt(state.rng, 0, tokens.length - 1)
       const target = tokens[idx]
