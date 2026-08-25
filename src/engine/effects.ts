@@ -5,7 +5,13 @@
 import { getCardDef } from './content.ts'
 import { emit } from './events.ts'
 import { nextInt, shuffle } from './rng.ts'
-import type { CardInstance, DeclarativeEffect, EnemyActionKind, GameState } from './types.ts'
+import type {
+  CardInstance,
+  DeclarativeEffect,
+  EnemyActionKind,
+  EnemyIntent,
+  GameState,
+} from './types.ts'
 
 /**
  * 実効コスト: マナ軽減トークン (nextCardDiscount) を適用したプレイコスト。
@@ -206,13 +212,29 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
   })
 }
 
+/**
+ * 条件付き意図の解決 (確定済みルール表「条件付き意図」)。
+ * 反応テーブルを持つ敵は宣言時に両分岐を確定しており、**実行時の盤面**でどちらになるかが決まる。
+ * これによりプレイヤーは自ターン中に「伏せて弱腰にさせる / 出さずに殴らせる」を選べる。
+ */
+export function effectiveIntent(state: GameState, enemyIndex: number): EnemyIntent | null {
+  const intent = state.enemies[enemyIndex]?.intent
+  if (!intent) return null
+  if (!intent.conditionalOn || !intent.alt) return intent
+  const met =
+    intent.conditionalOn === 'set'
+      ? state.player.setCards.length > 0
+      : state.player.permanents.some((p) => p.token === true || p.def.retainer === true)
+  if (!met) return intent
+  return { ...intent.alt, conditionalOn: intent.conditionalOn, alt: intent.alt }
+}
+
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
 // 威嚇 (延焼による攻撃弱体) は 2026-08-25 に撤去: 延焼は純DoTに戻し、赤の受けは憤怒 (被弾の換金) が担う
 export function windowFromPending(state: GameState): ReactionWindow | null {
   const pending = state.pendingWindow
   if (!pending) return null
-  const enemy = state.enemies[pending.enemyIndex]
-  const intent = enemy?.intent
+  const intent = effectiveIntent(state, pending.enemyIndex)
   if (!intent) return null
   if (pending.stage === 'pre') {
     return { stage: 'pre', kind: intent.kind, actual: intent.actual }
@@ -232,7 +254,10 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
  */
 export function playerDamageAfterModifiers(state: GameState, baseAmount: number): number {
   const amount = baseAmount + state.player.growth + state.player.momentum
-  return state.player.weak > 0 ? Math.floor(amount * 0.75) : amount
+  if (state.player.weak <= 0 || amount <= 0) return amount
+  // 弱体は25%減 (切り捨て)。ただし1以上の攻撃が0にはならない
+  // (2026-08-25 プレイテストで発見: 1ダメのリーダーパッシブが弱体1つで完全に消えていた)
+  return Math.max(1, Math.floor(amount * 0.75))
 }
 
 export function dealDamageToEnemy(
@@ -649,7 +674,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return { ...state, negateNextAction: true }
     case 'negateConvertIce': {
       // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る (大技を奪うほど壁になる)
-      const actual = state.enemies[enemyIndex]?.intent?.actual ?? 0
+      const actual = effectiveIntent(state, enemyIndex)?.actual ?? 0
       let s: GameState = { ...state, negateNextAction: true }
       if (actual > 0) {
         s = { ...s, player: { ...s.player, iceBlock: s.player.iceBlock + actual } }

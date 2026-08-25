@@ -15,7 +15,14 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
-import { effectiveCost, isPlayableFromHand, cardNeedsTarget, reactionMatches, windowFromPending } from '../engine/effects.ts'
+import {
+  cardNeedsTarget,
+  effectiveCost,
+  effectiveIntent,
+  isPlayableFromHand,
+  reactionMatches,
+  windowFromPending,
+} from '../engine/effects.ts'
 import { applyRunCommand, createRun } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
@@ -81,9 +88,30 @@ function cardLine(def: CardDef): string {
   return `${def.name}(${def.cost}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
+function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; inflict?: { status: string; amount: number } }): string {
+  const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
+  const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
+  const kinds: Record<string, string> = {
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}`,
+    defend: `防御${it.shownMin}〜${it.shownMax}`,
+    'destroy-set': '伏せ破壊',
+    'destroy-token': '従者狩り',
+    buff: `強化+${it.shownMin}〜${it.shownMax}`,
+    rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`,
+    hex: '呪い',
+  }
+  return `${kinds[it.kind] ?? it.kind}${inflict}`
+}
+
 function intentLine(s: GameState, i: number): string {
   const e = s.enemies[i]
   if (!e.intent) return '---'
+  // 条件付き意図: 両分岐を予告する (プレイヤーが自ターン中にどちらを選ばせるか決められる)
+  if (e.intent.conditionalOn && e.intent.alt) {
+    const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
+    const now = effectiveIntent(s, i)!
+    return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」`
+  }
   const it = e.intent
   const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
@@ -127,6 +155,20 @@ function renderBattle(s: GameState, logFrom: number): string {
     `山札${p.drawPile.length}/捨て札${p.discardPile.length}`,
   ].filter(Boolean).join(' | ')
   L.push(`自分: ${st}`)
+  // 予測被ダメ (最悪値): 複数体の同時攻撃を暗算しなくて済むように総量を出す
+  let worst = 0
+  s.enemies.forEach((e, i) => {
+    if (e.hp <= 0) return
+    const it = effectiveIntent(s, i)
+    if (it?.kind === 'attack') worst += it.shownMax * (it.hits ?? 1)
+  })
+  if (worst > 0) {
+    const defense = p.block + p.iceBlock
+    const through = Math.max(0, worst - defense)
+    L.push(
+      `⚠️ 今フェーズの最悪被ダメ予測: ${worst}（現在の防御 ${defense} → 貫通 ${through} / HP ${p.hp}）`,
+    )
+  }
   s.enemies.forEach((e, i) => {
     if (e.hp <= 0) { L.push(`敵${i}: ${getEnemyDef(e.enemyId).name} 💀撃破済み`); return }
     const def = getEnemyDef(e.enemyId)

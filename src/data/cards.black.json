@@ -97,7 +97,7 @@
       {
         "trigger": "onPlay",
         "effect": "exhaustFromDeck",
-        "amount": 5
+        "amount": 4
       },
       {
         "trigger": "onPlay",

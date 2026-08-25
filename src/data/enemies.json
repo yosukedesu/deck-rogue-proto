@@ -86,7 +86,7 @@
     "id": "enemy_set_breaker",
     "name": "罠壊し",
     "archetype": "set-breaker",
-    "flavor": "仕掛けを見ると壊したくなる性分。",
+    "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。",
     "maxHp": 105,
     "moves": [
       {
@@ -94,14 +94,29 @@
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 1
+        "weight": 2
+      },
+      {
+        "id": "toss_junk",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1,
+        "inflict": {
+          "status": "junk",
+          "amount": 1
+        }
       }
     ],
     "movesVsSet": [
       {
         "id": "break_trap",
         "kind": "destroy-set",
-        "weight": 2
+        "weight": 2,
+        "inflict": {
+          "status": "junk",
+          "amount": 1
+        }
       },
       {
         "id": "smash",

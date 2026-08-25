@@ -114,6 +114,24 @@ export interface EnemyIntent {
   readonly hits?: number
   /** 状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」) */
   readonly inflict?: StatusInflict
+  /**
+   * 条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の
+   * 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。
+   * 'set' = 伏せ札がある / 'tokens' = 従者・トークンが場にいる
+   */
+  readonly conditionalOn?: 'set' | 'tokens'
+  /** conditionalOn を満たす時に実行される分岐 */
+  readonly alt?: EnemyIntentBranch
+}
+
+/** 条件付き意図の分岐 (alt を再帰させないための素の形) */
+export interface EnemyIntentBranch {
+  readonly kind: EnemyActionKind
+  readonly shownMin: number
+  readonly shownMax: number
+  readonly actual: number
+  readonly hits?: number
+  readonly inflict?: StatusInflict
 }
 
 /**
@@ -459,7 +477,7 @@ export type EnemyActionKind =
   | 'hex'
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
-export type PlayerStatus = 'weak' | 'vulnerable' | 'wound'
+export type PlayerStatus = 'weak' | 'vulnerable' | 'wound' | 'junk'
 
 /** 状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚) */
 export interface StatusInflict {

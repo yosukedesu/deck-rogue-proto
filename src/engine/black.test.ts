@@ -50,15 +50,15 @@ describe('ドレイン (黒の専売)', () => {
 })
 
 describe('墓地 (セルフミル + 捨て札参照)', () => {
-  it('忘却の霧: 山札の上5枚が消滅し、1枚引く (墓地=消滅置き場)', () => {
+  it('忘却の霧: 山札の上4枚が消滅し、1枚引く (墓地=消滅置き場)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_mill',
     ])
     const drawBefore = s.player.drawPile.length
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_mill' })
-    // 忘却5 (消滅) + ドロー1 で山札は6枚減る。消滅は再シャッフルで戻らない=単調増加
-    expect(s.player.drawPile.length).toBe(drawBefore - 6)
-    expect(s.player.exhaustPile.length).toBe(5)
+    // 忘却4 (消滅) + ドロー1 で山札は5枚減る。消滅は再シャッフルで戻らない=単調増加
+    expect(s.player.drawPile.length).toBe(drawBefore - 5)
+    expect(s.player.exhaustPile.length).toBe(4)
   })
 
   it('亡霊の槍: 忘却の刻 (消滅7枚以上) で6→12に強化される', () => {

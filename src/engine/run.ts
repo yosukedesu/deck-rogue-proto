@@ -201,8 +201,16 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
 /** 報酬を抽選 (リーダーの色アイデンティティのカードのみ・基本札除外・重複なし)。候補数はリーダー個性+収集家の鞄 */
 function rollRewards(run: RunState): RunState {
   const leader = getLeaderDef(run.leaderId)
+  // 報酬プールはリーダーのエナジー上限を考慮する (2026-08-25 プレイテストで発見:
+  // 白は上限3固定なのに4Eの大行進が提示され、ラン中ずっと死に札だった)。
+  // 緑はランプで上限を伸ばせるので +2 まで許容する
+  const canRamp = run.colors.includes('green')
+  const costCap = leader.energyMax + (canRamp ? 2 : 0)
   const pool = allCards
-    .filter((c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id))
+    .filter(
+      (c) =>
+        run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+    )
     .map((c) => c.id)
   const [shuffled, rng] = shuffle(run.rng, pool)
   return {

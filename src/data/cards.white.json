@@ -206,14 +206,14 @@
   {
     "id": "white_grand_charge",
     "name": "大行進",
-    "cost": 4,
+    "cost": 3,
     "type": "physical",
     "exhaust": true,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerPermanent",
-        "amount": 8
+        "amount": 6
       }
     ]
   },

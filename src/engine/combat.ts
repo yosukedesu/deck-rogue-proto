@@ -9,13 +9,14 @@ import {
   cardNeedsTarget,
   drawCards,
   effectiveCost,
+  effectiveIntent,
   fireExhaustTriggers,
   isDamageEffect,
   isPlayableFromHand,
   resolveEffectTargeted,
   resolveOnPlayEffects,
 } from './effects.ts'
-import { buildLeaderPassive, getLeaderDef, resolveEncounter, WOUND_DEF } from './content.ts'
+import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
@@ -33,6 +34,8 @@ const BASE_ENERGY = 3
 const DRAW_PER_TURN = 5
 /** 激昂による強化の累積上限 (確定済みルール表「激昂」) */
 const ENRAGE_CAP = 6
+/** がらくた (罠壊し) の1戦闘あたり上限 */
+const JUNK_CAP = 4
 
 /** 戦闘前の空状態 (UI/sim が方式を保持するための器)。戦闘は StartCombat で開始する */
 export function createInitialState(seed: number, reactionMode: ReactionMode): GameState {
@@ -199,53 +202,87 @@ function declareIntents(state: GameState): GameState {
     const belowHalf =
       enemy.hp <= enemy.maxHp * 0.5 &&
       (def.movesBelowHalf !== undefined || def.sequenceBelowHalf !== undefined)
-    const table = belowHalf
-      ? (def.movesBelowHalf ?? def.moves)
-      : selectMoveTable(
-          def,
-          s.player.setCards.length > 0,
-          s.player.permanents.some((p) => p.token === true || p.def.retainer === true),
-        )
-    const usingVsSet = !belowHalf && table !== def.moves
     const sequence = belowHalf ? def.sequenceBelowHalf : def.sequence
+    // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する
+    // (確定済みルール表「条件付き意図」。実行時の盤面で分岐 = プレイヤーが自ターン中に選べる)
+    const reactTable = belowHalf ? undefined : (def.movesVsSet ?? def.movesVsTokens)
+    const conditionalOn: 'set' | 'tokens' | undefined = !reactTable
+      ? undefined
+      : def.movesVsSet
+        ? 'set'
+        : 'tokens'
+    const baseTable = belowHalf ? (def.movesBelowHalf ?? def.moves) : def.moves
 
-    let move
-    let rng1 = s.rng
+    let rng = s.rng
     let nextPatternIndex = enemy.patternIndex
-    if (!usingVsSet && sequence && sequence.length > 0) {
+    // 通常分岐: sequence を持つ敵は固定ローテーション
+    let move: EnemyMove
+    if (sequence && sequence.length > 0) {
       const moveId = sequence[enemy.patternIndex % sequence.length]
-      move = table.find((m) => m.id === moveId)
-      if (!move) throw new Error(`敵 ${def.id} の sequence が未定義の行動を参照: ${moveId}`)
+      const found = baseTable.find((m) => m.id === moveId)
+      if (!found) throw new Error(`敵 ${def.id} の sequence が未定義の行動を参照: ${moveId}`)
+      move = found
       nextPatternIndex = enemy.patternIndex + 1
     } else {
-      const [moveIdx, rngAfter] = weightedIndex(s.rng, table.map((m) => m.weight))
-      move = table[moveIdx]
-      rng1 = rngAfter
+      const [moveIdx, rngAfter] = weightedIndex(rng, baseTable.map((m) => m.weight))
+      move = baseTable[moveIdx]
+      rng = rngAfter
+    }
+    const [intent, rngA] = buildIntent(rng, move, enemy.strength)
+    rng = rngA
+
+    let alt: ReturnType<typeof buildIntent>[0] | undefined
+    if (reactTable && reactTable.length > 0) {
+      const [altIdx, rngB] = weightedIndex(rng, reactTable.map((m) => m.weight))
+      rng = rngB
+      const [altIntent, rngC] = buildIntent(rng, reactTable[altIdx], enemy.strength)
+      rng = rngC
+      alt = altIntent
     }
 
-    let actual = 0
-    let rng2 = rng1
-    if (move.min !== undefined && move.max !== undefined) {
-      ;[actual, rng2] = nextInt(rng1, move.min, move.max)
-    }
-    // 強化は攻撃にのみ乗る (幅表示にも反映して意図表示の誠実さを保つ)。
-    // 強化はマイナス値も取れる (ランの序盤に出る「若い個体」)。攻撃は最低1にクランプ
-    const bonus = move.kind === 'attack' ? enemy.strength : 0
-    const clamp = (v: number) => (move.kind === 'attack' ? Math.max(1, v) : v)
-    const intent = {
+    const declared = conditionalOn && alt ? { ...intent, conditionalOn, alt } : intent
+    const enemies = s.enemies.map((e, j) =>
+      j === i ? { ...e, intent: declared, patternIndex: nextPatternIndex } : e,
+    )
+    s = emit({ ...s, rng, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: declared })
+  }
+  return s
+}
+
+/** 行動1つから意図 (幅表示 + 非公開の実値) を組み立てる。強化は攻撃にのみ乗り、攻撃は最低1にクランプ */
+function buildIntent(
+  rng: GameState['rng'],
+  move: EnemyMove,
+  strength: number,
+): readonly [
+  {
+    kind: EnemyMove['kind']
+    shownMin: number
+    shownMax: number
+    actual: number
+    hits?: number
+    inflict?: StatusInflict
+  },
+  GameState['rng'],
+] {
+  let actual = 0
+  let next = rng
+  if (move.min !== undefined && move.max !== undefined) {
+    ;[actual, next] = nextInt(rng, move.min, move.max)
+  }
+  const bonus = move.kind === 'attack' ? strength : 0
+  const clamp = (v: number) => (move.kind === 'attack' ? Math.max(1, v) : v)
+  return [
+    {
       kind: move.kind,
       shownMin: clamp((move.min ?? 0) + bonus),
       shownMax: clamp((move.max ?? 0) + bonus),
       actual: clamp(actual + bonus),
       hits: move.hits,
       inflict: move.inflict,
-    }
-    const enemies = s.enemies.map((e, j) =>
-      j === i ? { ...e, intent, patternIndex: nextPatternIndex } : e,
-    )
-    s = emit({ ...s, rng: rng2, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent })
-  }
-  return s
+    },
+    next,
+  ]
 }
 
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
@@ -586,10 +623,12 @@ export function continueAfterWindow(state: GameState): GameState {
   if (pending.stage === 'pre') {
     // pre窓の続き: 行動を実行し、解決後の post窓も通す
     s = executeEnemyAction(s, pending.enemyIndex)
+    if (s.enemies.every((e) => e.hp <= 0)) return checkCombatEnd(s)
+    // プレイヤーの致死は post窓の解決後に判定する (確定済みルール表「致死時の誘発」)
+    s = postActionStage(s, pending.enemyIndex)
+    if (s.phase === 'awaiting-reaction') return s
     s = checkCombatEnd(s)
     if (isOver(s)) return s
-    s = postActionStage(s, pending.enemyIndex)
-    if (s.phase === 'awaiting-reaction' || isOver(s)) return s
   }
   // stage 'post' はこの行動について残る処理なし
   return processEnemyActions(s, pending.enemyIndex + 1)
@@ -601,20 +640,27 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
   for (let i = fromIndex; i < s.enemies.length; i++) {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0 || enemy.intent === null) continue
+    const acting = effectiveIntent(s, i)!
     // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
     s = { ...s, lastAction: null, reactionUsedThisAction: false }
     // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
-    const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: enemy.intent.kind } as const
+    const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: acting.kind } as const
     s = emit(s, executing)
     s = dispatchHooks(s, executing)
     if (s.phase === 'awaiting-reaction') return s // pre窓の割り込み → コマンド待ち
     s = checkCombatEnd(s)
     if (isOver(s)) return s
     s = executeEnemyAction(s, i)
+    // 敵が倒れたらここで終了。プレイヤーの致死は post窓 (返し系) の解決後に判定する
+    // (確定済みルール表「致死時の誘発」: 回復付きの返し札で生き延びる余地を作る)
+    if (s.enemies.every((e) => e.hp <= 0)) {
+      s = checkCombatEnd(s)
+      return s
+    }
+    s = postActionStage(s, i)
+    if (s.phase === 'awaiting-reaction') return s
     s = checkCombatEnd(s)
     if (isOver(s)) return s
-    s = postActionStage(s, i)
-    if (s.phase === 'awaiting-reaction' || isOver(s)) return s
   }
   return finishEnemyPhase(s)
 }
@@ -662,6 +708,29 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
         : { ...state.player, vulnerable: state.player.vulnerable + amount }
     return emit({ ...state, player }, { type: 'StatusInflicted', status, amount })
   }
+  if (status === 'junk') {
+    // がらくた: 山札のランダムな位置に混ぜ込む (負傷と違い、すぐ引かされる)
+    const existingJunk = [
+      ...state.player.hand,
+      ...state.player.drawPile,
+      ...state.player.discardPile,
+    ].filter((c) => c.def.id === JUNK_DEF.id).length
+    const addJunk = Math.min(amount, JUNK_CAP - existingJunk)
+    if (addJunk <= 0) return state
+    let drawPile = [...state.player.drawPile]
+    let rng = state.rng
+    for (let i = 0; i < addJunk; i++) {
+      const [pos, nextRng] = nextInt(rng, 0, drawPile.length)
+      rng = nextRng
+      drawPile = [
+        ...drawPile.slice(0, pos),
+        { uid: `${JUNK_DEF.id}#${existingJunk + i}_t${state.turn}`, def: JUNK_DEF },
+        ...drawPile.slice(pos),
+      ]
+    }
+    const s2: GameState = { ...state, rng, player: { ...state.player, drawPile } }
+    return emit(s2, { type: 'StatusInflicted', status: 'junk', amount: addJunk })
+  }
   // wound: 全ゾーンの既存枚数を数えて上限までしか増えない
   const existing = [
     ...state.player.hand,
@@ -690,7 +759,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   if (state.negateNextAction) {
     return emit({ ...state, negateNextAction: false }, { type: 'ActionNegated', enemyIndex })
   }
-  const intent = enemy.intent
+  const intent = effectiveIntent(state, enemyIndex)!
   // 解決した行動を記録する (post窓の誘発判定に使う)
   const markResolved = (s: GameState, hpLoss: number): GameState => ({
     ...s,

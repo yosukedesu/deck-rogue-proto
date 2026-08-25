@@ -119,8 +119,22 @@ export const WOUND_DEF: CardDef = {
   effects: [],
 }
 
+/**
+ * がらくた (状態異常カード): 罠壊しが山札に混ぜ込む使用不可の死に札。
+ * 負傷 (捨て札に混入) と違い山札へ直接混ざるため、すぐ引かされる = 手札事故を即座に作る。
+ */
+export const JUNK_DEF: CardDef = {
+  id: 'status_junk',
+  name: 'がらくた',
+  cost: 0,
+  type: 'physical',
+  color: 'red',
+  effects: [],
+}
+
 export function getCardDef(id: string): CardDef {
   if (id === WOUND_DEF.id) return WOUND_DEF
+  if (id === JUNK_DEF.id) return JUNK_DEF
   const def = allCards.find((c) => c.id === id)
   if (!def) throw new Error(`未定義カード: ${id}`)
   return def

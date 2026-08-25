@@ -17,6 +17,7 @@ import {
 } from '../engine/content.ts'
 import {
   cardNeedsTarget,
+  effectiveIntent,
   reactionMatches,
   windowFromPending,
   effectiveCost,
@@ -425,6 +426,17 @@ const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆�
 function inflictSuffix(intent: EnemyIntent): string {
   if (!intent.inflict) return ''
   return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}`
+}
+
+/** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
+function conditionalIntentText(s: GameState, i: number): string {
+  const intent = s.enemies[i]?.intent
+  if (!intent) return '---'
+  if (!intent.conditionalOn || !intent.alt) return intentText(intent)
+  const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
+  const active = effectiveIntent(s, i)!
+  const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
+  return `【${cond}】${intentText({ ...intent.alt })}${isAlt ? '◀今これ' : ''} ／【なし】${intentText({ ...intent, conditionalOn: undefined, alt: undefined })}${isAlt ? '' : '◀今これ'}`
 }
 
 /** 敵の意図表示 (威嚇は撤去済み: 幅は宣言値をそのまま出す) */
@@ -1083,7 +1095,7 @@ function BattleScreen({
                   </div>
                   {!ended && !dead && (
                     <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
-                      {kw(intentText(enemy.intent))}
+                      {kw(conditionalIntentText(s, i))}
                     </div>
                   )}
                 </div>
@@ -1135,7 +1147,7 @@ function BattleScreen({
                 {s.enemies.length > 1 && windowEnemy && (
                   <>{getEnemyDef(windowEnemy.enemyId).name}の </>
                 )}
-                {kw(confirmedIntentText(windowEnemy?.intent ?? null))}
+                {kw(confirmedIntentText(s.pendingWindow ? effectiveIntent(s, s.pendingWindow.enemyIndex) : (windowEnemy?.intent ?? null)))}
               </div>
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
@@ -1221,6 +1233,25 @@ function BattleScreen({
       </div>
 
       {/* プレイヤーステータス */}
+      {/* 今フェーズの最悪被ダメ予測 (複数体の暗算を不要にする。2026-08-25 プレイテスト対応) */}
+      {s.phase === 'player-turn' &&
+        (() => {
+          let worst = 0
+          s.enemies.forEach((e, i) => {
+            if (e.hp <= 0) return
+            const it = effectiveIntent(s, i)
+            if (it?.kind === 'attack') worst += it.shownMax * (it.hits ?? 1)
+          })
+          if (worst <= 0) return null
+          const defense = player.block + player.iceBlock
+          const through = Math.max(0, worst - defense)
+          return (
+            <div className={`panel forecast${through >= player.hp ? ' forecast-danger' : ''}`}>
+              ⚠️ 最悪被ダメ {worst} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
+            </div>
+          )
+        })()}
+
       <div className="panel area-player">
         <div className="player-row">
           <div className="player-hp">

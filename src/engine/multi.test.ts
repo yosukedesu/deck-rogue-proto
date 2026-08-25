@@ -31,7 +31,7 @@ describe('エンカウンター編成', () => {
   it('編成IDで複数体が出現し、群れ補正 (hpScale/strength/patternOffset) が個体に効く', () => {
     const s = freshCombat('set-confirm', 'enc_probe_pair', 42)
     expect(s.enemies).toHaveLength(2)
-    const pairHp = Math.round(90 * 0.45) // 探り屋 maxHp × 群れ補正
+    const pairHp = Math.round(90 * 0.5) // 探り屋 maxHp × 群れ補正 (2026-08-25 調整: 0.45→0.5)
     expect(s.enemies[0].maxHp).toBe(pairHp)
     expect(s.enemies[1].maxHp).toBe(pairHp)
     expect(s.enemies.every((e) => e.intent !== null)).toBe(true)

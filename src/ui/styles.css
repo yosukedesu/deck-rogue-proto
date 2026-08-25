@@ -517,3 +517,15 @@ button:disabled { cursor: default; }
   padding: 6px 10px;
   font-family: monospace;
 }
+
+/* 最悪被ダメ予測 (複数体戦の暗算を減らす) */
+.forecast {
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--text-dim, #9aa);
+  text-align: center;
+}
+.forecast-danger {
+  color: #ff8080;
+  font-weight: bold;
+}

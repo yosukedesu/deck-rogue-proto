@@ -51,7 +51,7 @@ describe('ギルドパッシブ', () => {
     const run = createRun(3, 'set-confirm', 'leader_golgari')
     let s = withHand(run.combat!, ['black_mill'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_mill' })
-    expect(s.player.growth).toBe(5) // 忘却の霧=5枚消滅
+    expect(s.player.growth).toBe(4) // 忘却の霧=4枚消滅
   })
 
   it('あさひ (ボロス): 戦闘開始時に従者の少年トークン1体を召喚', () => {

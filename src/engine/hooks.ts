@@ -23,9 +23,12 @@ export function dispatchHooks(state: GameState, event: GameEvent): GameState {
     s = runPermanentTriggers(s, 'onAttacked', event.enemyIndex)
   }
   if (event.type === 'EnemyActionExecuting' || event.type === 'EnemyActionResolved') {
-    // 置物の返しで敵が倒れた・自分が倒れた場合、リアクション確認はもう不要
+    // 置物の返しで敵が倒れたらリアクション確認はもう不要。
+    // プレイヤーのHPが0以下でも post窓は開く — 回復付きの返し札 (怨嗟・死中の活) で
+    // 生き延びる「土壇場の一手」を成立させるため (確定済みルール表「致死時の誘発」)
     const enemy = s.enemies[event.enemyIndex]
-    if ((enemy && enemy.hp <= 0) || s.player.hp <= 0) return s
+    if (enemy && enemy.hp <= 0) return s
+    if (s.player.hp <= 0 && event.type === 'EnemyActionExecuting') return s
   }
   // 2. リアクション方式フック (方式は state.reactionMode から解決)
   s = getReactionSystem(s.reactionMode).onEvent(s, event)

@@ -5,13 +5,13 @@
     "members": [
       {
         "enemyId": "enemy_probe",
-        "hpScale": 0.45,
-        "strength": -6
+        "hpScale": 0.5,
+        "strength": -2
       },
       {
         "enemyId": "enemy_probe",
-        "hpScale": 0.45,
-        "strength": -6,
+        "hpScale": 0.5,
+        "strength": -2,
         "patternOffset": 1
       }
     ]
@@ -22,19 +22,19 @@
     "members": [
       {
         "enemyId": "enemy_probe",
-        "hpScale": 0.3,
-        "strength": -8
+        "hpScale": 0.38,
+        "strength": -3
       },
       {
         "enemyId": "enemy_probe",
-        "hpScale": 0.3,
-        "strength": -8,
+        "hpScale": 0.38,
+        "strength": -3,
         "patternOffset": 1
       },
       {
         "enemyId": "enemy_probe",
-        "hpScale": 0.3,
-        "strength": -8,
+        "hpScale": 0.38,
+        "strength": -3,
         "patternOffset": 2
       }
     ]
