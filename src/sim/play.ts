@@ -18,7 +18,7 @@ import { getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/co
 import { effectiveCost, isPlayableFromHand, cardNeedsTarget, reactionMatches, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, createRun } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
-import type { CardDef, CardInstance, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
+import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 
 interface SaveFile {
