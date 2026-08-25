@@ -94,6 +94,16 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'shatterBlockConvert')) {
     return state.enemies.some((e) => e.hp > 0 && e.block >= 3)
   }
+  // 氷の槍は氷壁4以上、霊気の奔流は霊気2以上でないと空撃ち
+  if (card.def.effects.some((e) => e.effect === 'dealDamagePerIceBlock')) {
+    return state.player.iceBlock >= 4
+  }
+  if (
+    card.def.effects.some((e) => e.effect === 'dischargeAetherDraw') &&
+    state.player.aether < 2
+  ) {
+    return false
+  }
   // 屍集め: 消滅置き場が空なら無意味。死者再生: 直接プレイできるコスト2以上のカードがないと損
   if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust')) {
     return state.player.exhaustPile.length > 0

@@ -47,6 +47,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'shatterBlockConvert',
     'dealDamageExecute',
     'dealDamagePerDamageTaken',
+    'dealDamagePerIceBlock',
     'counter',
   ].includes(effect.effect)
 }
@@ -76,6 +77,7 @@ const ENEMY_TARGETED = new Set([
   'shatterBlockConvert',
   'dealDamageExecute',
   'dealDamagePerDamageTaken',
+  'dealDamagePerIceBlock',
   // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
   'playFromExhaust',
 ])
@@ -333,10 +335,14 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // ストームドロー (青): 詠唱数 × amount 枚ドロー
       return drawCards(state, (effect.amount ?? 0) * state.player.cardsPlayedThisTurn)
     case 'addAether': {
-      // 霊気 (青): 妨害・リアクション成功の蓄積
+      // 霊気 (青): 妨害・リアクション成功の蓄積。獲得の誘発 (静電の帳) が乗る
       const amount = effect.amount ?? 0
-      const next = { ...state, player: { ...state.player, aether: state.player.aether + amount } }
-      return emit(next, { type: 'AetherGained', amount })
+      let s: GameState = {
+        ...state,
+        player: { ...state.player, aether: state.player.aether + amount },
+      }
+      s = emit(s, { type: 'AetherGained', amount })
+      return runPermanentTriggers(s, 'onAetherGained', enemyIndex)
     }
     case 'applyBurn': {
       // 延焼 (赤): 敵に蓄積する継続ダメージ
@@ -606,6 +612,32 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'negate':
       // 打ち消し: 次の敵行動を無効化する汎用フラグを立てる (対象は任意の行動)
       return { ...state, negateNextAction: true }
+    case 'negateConvertIce': {
+      // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る (大技を奪うほど壁になる)
+      const actual = state.enemies[enemyIndex]?.intent?.actual ?? 0
+      let s: GameState = { ...state, negateNextAction: true }
+      if (actual > 0) {
+        s = { ...s, player: { ...s.player, iceBlock: s.player.iceBlock + actual } }
+        s = emit(s, { type: 'IceBlockGained', amount: actual })
+      }
+      return s
+    }
+    case 'dealDamagePerIceBlock':
+      // 氷の槍 (青): 現在の氷壁×amount (蓄積の換金。氷壁は消費しない)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.iceBlock,
+        effect.pierce,
+      )
+    case 'dischargeAetherDraw': {
+      // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出ダメージと悩む第二の出口)
+      const spent = state.player.aether
+      if (spent === 0) return state
+      let s: GameState = { ...state, player: { ...state.player, aether: 0 } }
+      s = emit(s, { type: 'AetherDischarged', spent })
+      return drawCards(s, spent * (effect.amount ?? 1))
+    }
     case 'script':
       throw new Error(`未登録のスクリプト効果: ${effect.scriptId}`)
   }

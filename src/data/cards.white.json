@@ -41,14 +41,14 @@
   {
     "id": "white_flash_heal",
     "name": "祈りの残光",
-    "cost": 0,
+    "cost": 1,
     "type": "spell",
     "exhaust": true,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "gainHp",
-        "amount": 3
+        "amount": 6
       }
     ]
   },

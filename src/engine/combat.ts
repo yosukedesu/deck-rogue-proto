@@ -423,9 +423,10 @@ export function playCard(
     s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
     s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
   }
-  // 自己誘発: 呪文プレイ時 (物理/呪文分割の機構的活用。確定済みルール表「自己誘発リアクション」)
+  // 呪文プレイの誘発: 伏せ札の自己誘発 + 置物 (青の接着剤: 霧の分身)
   if (card.def.type === 'spell') {
     s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
+    s = runPermanentTriggers(s, 'onSpellPlayed', enemyIndex)
   }
   // 衝動プレイの誘発 (赤の接着剤: 刹那の焔)
   if (state.player.impulseUids.includes(cardUid)) {
@@ -475,6 +476,7 @@ export function playCard(
       }
       if (chosen.def.type === 'spell') {
         s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
+        s = runPermanentTriggers(s, 'onSpellPlayed', enemyIndex)
       }
       // 直接プレイも「プレイ」として詠唱数に数える (数えないのはそのカード自身のみ、の既存則)
       s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }

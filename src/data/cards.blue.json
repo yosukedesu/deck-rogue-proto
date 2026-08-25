@@ -426,5 +426,143 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "blue_perm_static",
+    "name": "静電の帳",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAetherGained",
+        "effect": "dealDamage",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_torrent",
+    "name": "霊気の奔流",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAetherDraw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_spell_steal",
+    "name": "魔力盗み",
+    "cost": 3,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negateConvertIce"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_ice_lance",
+    "name": "氷の槍",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerIceBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_mist_double",
+    "name": "霧の分身",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "gainIceBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_chain",
+    "name": "氷結の連鎖",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_maelstrom",
+    "name": "大漩渦",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 4,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_reaction_mind_eye",
+    "name": "心眼",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyDefended",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onEnemyDefended",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_reaction_surge",
+    "name": "白波の壁",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainIceBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
   }
 ]

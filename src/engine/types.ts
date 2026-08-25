@@ -317,6 +317,7 @@ export interface DeclarativeEffect {
     | 'onCostExhausted' // 消滅コスト (exhaustCost) を支払った時のみ (置物。黒: 闇市の帳簿)
     | 'onPermanentEntered' // 置物が場に出るたび (白の接着剤。プレイ・召喚・直接プレイすべて。自身の登場にも誘発。戦闘開始時から場にあるもの=リーダー/レリックは「登場」しない)
     | 'onImpulsePlayed' // 衝動カードをプレイした時 (赤の接着剤: 刹那の焔)
+    | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -360,6 +361,9 @@ export interface DeclarativeEffect {
     | 'shatterBlockConvert' // 破城槌 (赤): 敵のブロックを全て破壊し、破壊した値と同じダメージを与える
     | 'dealDamageExecute' // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ
     | 'dealDamagePerDamageTaken' // 逆上 (赤): 直前の敵フェーズで受けたダメージ×amount (憤怒=被弾の換金)
+    | 'dealDamagePerIceBlock' // 氷の槍 (青): 現在の氷壁×amount のダメージ (蓄積の換金)
+    | 'negateConvertIce' // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る
+    | 'dischargeAetherDraw' // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出の第二の出口)
     | 'dealDamagePerNegStrength' // 威圧の換金 (白): 対象の強化がマイナスなら その絶対値×X の追加ダメージ (断罪の槌)
     | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
