@@ -486,7 +486,8 @@
         "effect": "gainEnergy",
         "amount": 1
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "red_burn_it_all",

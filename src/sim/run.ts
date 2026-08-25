@@ -200,7 +200,7 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
 }
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */
-function chooseCommand(s: GameState): Command {
+export function chooseCommand(s: GameState): Command {
   if (s.phase === 'awaiting-reaction') {
     if (s.reactionMode === 'set-confirm') return { type: 'ConfirmReaction', fire: true }
     const candidates = playableReactions(s)
@@ -463,12 +463,15 @@ function simulateBattles(battlesPerCell: number, baseSeed: number, compareModes:
 // エントリポイント
 // ============================================================
 
-if (process.argv[2] === 'runs') {
-  simulateRuns(Number(process.argv[3] ?? 100), Number(process.argv[4] ?? 1))
-} else {
-  simulateBattles(
-    Number(process.argv[2] ?? 100),
-    Number(process.argv[3] ?? 1),
-    process.argv.includes('all'),
-  )
+// import しただけでは走らないガード (デバッグ用にボット関数を re-export できるようにする)
+if (process.argv[1]?.endsWith('sim/run.ts')) {
+  if (process.argv[2] === 'runs') {
+    simulateRuns(Number(process.argv[3] ?? 100), Number(process.argv[4] ?? 1))
+  } else {
+    simulateBattles(
+      Number(process.argv[2] ?? 100),
+      Number(process.argv[3] ?? 1),
+      process.argv.includes('all'),
+    )
+  }
 }

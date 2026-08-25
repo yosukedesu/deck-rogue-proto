@@ -394,16 +394,16 @@
         "count": 1
       },
       {
+        "cardId": "blue_maelstrom",
+        "count": 1
+      },
+      {
         "cardId": "blue_storm_barrier",
         "count": 1
       },
       {
         "cardId": "blue_frost_armor",
         "count": 2
-      },
-      {
-        "cardId": "blue_guard",
-        "count": 1
       }
     ]
   },
@@ -422,6 +422,14 @@
         "count": 3
       },
       {
+        "cardId": "blue_spell_steal",
+        "count": 1
+      },
+      {
+        "cardId": "blue_perm_static",
+        "count": 2
+      },
+      {
         "cardId": "blue_frost_veil",
         "count": 2
       },
@@ -434,8 +442,12 @@
         "count": 3
       },
       {
+        "cardId": "blue_aether_torrent",
+        "count": 1
+      },
+      {
         "cardId": "blue_ice_wall",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "blue_frost_armor",
@@ -582,6 +594,14 @@
         "count": 1
       },
       {
+        "cardId": "red_perm_furnace",
+        "count": 1
+      },
+      {
+        "cardId": "red_burst_release",
+        "count": 2
+      },
+      {
         "cardId": "red_reaction_flareback",
         "count": 2
       },
@@ -590,16 +610,12 @@
         "count": 1
       },
       {
-        "cardId": "red_strike",
+        "cardId": "red_ritual",
         "count": 2
       },
       {
         "cardId": "red_guard",
-        "count": 2
-      },
-      {
-        "cardId": "red_ritual",
-        "count": 2
+        "count": 1
       }
     ]
   },
@@ -618,19 +634,27 @@
         "count": 2
       },
       {
+        "cardId": "red_scorching_insight",
+        "count": 2
+      },
+      {
+        "cardId": "red_burn_it_all",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_instant_flame",
+        "count": 2
+      },
+      {
         "cardId": "red_ritual",
         "count": 2
       },
       {
         "cardId": "red_gamble",
-        "count": 3
-      },
-      {
-        "cardId": "red_chaos_bolt",
         "count": 2
       },
       {
-        "cardId": "red_shatter",
+        "cardId": "red_chaos_bolt",
         "count": 2
       },
       {
@@ -643,10 +667,6 @@
       },
       {
         "cardId": "red_reaction_flareback",
-        "count": 2
-      },
-      {
-        "cardId": "red_reaction_eruption",
         "count": 1
       }
     ]
@@ -802,6 +822,14 @@
         "count": 2
       },
       {
+        "cardId": "white_perm_hound",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_banner",
+        "count": 1
+      },
+      {
         "cardId": "white_perm_choir",
         "count": 1
       },
@@ -816,10 +844,6 @@
       {
         "cardId": "white_grand_charge",
         "count": 1
-      },
-      {
-        "cardId": "white_strike",
-        "count": 2
       },
       {
         "cardId": "white_guard",
@@ -842,27 +866,35 @@
         "count": 3
       },
       {
-        "cardId": "white_guard",
+        "cardId": "white_bodyslam",
         "count": 3
       },
       {
-        "cardId": "white_bodyslam",
-        "count": 3
+        "cardId": "white_shield_bash",
+        "count": 1
+      },
+      {
+        "cardId": "white_gate_close",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
       },
       {
         "cardId": "white_perm_shieldmaiden",
         "count": 2
       },
       {
-        "cardId": "white_menace",
-        "count": 2
-      },
-      {
-        "cardId": "white_reaction_ward",
+        "cardId": "white_perm_bell",
         "count": 1
       },
       {
-        "cardId": "white_heal",
+        "cardId": "white_mending",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
         "count": 1
       }
     ]
@@ -982,12 +1014,24 @@
         "count": 2
       },
       {
+        "cardId": "black_perm_moon",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_blade",
+        "count": 1
+      },
+      {
         "cardId": "black_perm_leech",
         "count": 2
       },
       {
         "cardId": "black_perm_tithe",
-        "count": 2
+        "count": 1
+      },
+      {
+        "cardId": "black_feast",
+        "count": 1
       },
       {
         "cardId": "black_reaction_curse",
@@ -999,11 +1043,11 @@
       },
       {
         "cardId": "black_pain",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "black_guard",
-        "count": 2
+        "count": 1
       }
     ]
   },
