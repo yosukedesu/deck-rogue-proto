@@ -25,47 +25,17 @@ describe('赤のカラーパイ', () => {
   })
 })
 
-describe('威嚇 (延焼の怯み)', () => {
-  // 確定済みルール「威嚇」: 延焼を持つ敵の攻撃は実行時の延焼値2につき実値-1 (下限1)。
-  // 延焼は敵フェーズ開始時に tick で1減るため、実行時の値 = セット値-1 で計算される。
-
-  it('延焼2につき攻撃実値-1: 延焼5 (tick後4) の敵の攻撃10は8点になる', () => {
+describe('威嚇の撤去 (2026-08-25: 延焼は純DoT)', () => {
+  it('延焼を持つ敵の攻撃も実値そのまま (威嚇による軽減はない)', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5, hp: 999 })) }
-    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
-    const hpBefore = s.player.hp
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.hp).toBe(hpBefore - 8) // 10 - floor(4/2)
-  })
-
-  it('下限1: 威嚇で攻撃が0以下にはならない', () => {
-    let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 21, hp: 999 })) }
-    s = withIntent(s, { kind: 'attack', shownMin: 3, shownMax: 3, actual: 3 })
-    const hpBefore = s.player.hp
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.hp).toBe(hpBefore - 1) // 3 - 4 (上限キャップ) < 1 → 下限1
-  })
-
-  it('軽減は上限-4: 延焼を積み上げても攻撃を無力化はできない', () => {
-    let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 12, hp: 999 })) }
-    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
-    const hpBefore = s.player.hp
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.hp).toBe(hpBefore - 6) // floor(11/2)=5 だが上限-4
-  })
-
-  it('実行時の延焼値で計算する: 延焼1は tick 後0になり威嚇しない', () => {
-    let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 1, hp: 999 })) }
     s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(hpBefore - 10)
   })
 
-  it('pre窓の実値公開と行動値条件は威嚇後の値を使う', () => {
+  it('pre窓の実値公開は素の実値を使う', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 6 })) }
     s = withIntent(s, { kind: 'attack', shownMin: 13, shownMax: 13, actual: 13 })
@@ -73,7 +43,7 @@ describe('威嚇 (延焼の怯み)', () => {
       ...s,
       pendingWindow: { enemyIndex: 0, stage: 'pre' },
     })
-    expect(win).toEqual({ stage: 'pre', kind: 'attack', actual: 10 }) // 13 - floor(6/2)
+    expect(win).toEqual({ stage: 'pre', kind: 'attack', actual: 13 })
   })
 })
 

@@ -81,6 +81,19 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   ) {
     return false
   }
+  // 爆熱は延焼3以上でないと換金損。逆上は被弾4以上、破城槌は敵ブロックがないと空撃ち
+  if (card.def.effects.some((e) => e.effect === 'dischargeBurn')) {
+    return state.enemies.some((e) => e.hp > 0 && e.burn >= 3)
+  }
+  if (
+    card.def.effects.some((e) => e.effect === 'dealDamagePerDamageTaken') &&
+    state.player.damageTakenLastEnemyPhase < 4
+  ) {
+    return false
+  }
+  if (card.def.effects.some((e) => e.effect === 'shatterBlockConvert')) {
+    return state.enemies.some((e) => e.hp > 0 && e.block >= 3)
+  }
   // 屍集め: 消滅置き場が空なら無意味。死者再生: 直接プレイできるコスト2以上のカードがないと損
   if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust')) {
     return state.player.exhaustPile.length > 0

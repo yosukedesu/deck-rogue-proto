@@ -1194,5 +1194,41 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "deck_rage",
+    "name": "憤怒の闘技場",
+    "color": "red",
+    "description": "守らない赤。被弾を憤怒の仮面と逆上で攻撃に換金し、とどめの一撃で刈り取る",
+    "cards": [
+      {
+        "cardId": "red_perm_rage_mask",
+        "count": 2
+      },
+      {
+        "cardId": "red_payback",
+        "count": 3
+      },
+      {
+        "cardId": "red_reaction_defiance",
+        "count": 2
+      },
+      {
+        "cardId": "red_strike",
+        "count": 3
+      },
+      {
+        "cardId": "red_final_blow",
+        "count": 2
+      },
+      {
+        "cardId": "red_heat_screen",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      }
+    ]
   }
 ]

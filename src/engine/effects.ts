@@ -43,6 +43,10 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamageDrainPerExhaust',
     'dealDamagePerSelfHpLost',
     'dealDamagePerNegStrength',
+    'dischargeBurn',
+    'shatterBlockConvert',
+    'dealDamageExecute',
+    'dealDamagePerDamageTaken',
     'counter',
   ].includes(effect.effect)
 }
@@ -68,6 +72,10 @@ const ENEMY_TARGETED = new Set([
   'dealDamageDrainPerExhaust',
   'dealDamagePerSelfHpLost',
   'dealDamagePerNegStrength',
+  'dischargeBurn',
+  'shatterBlockConvert',
+  'dealDamageExecute',
+  'dealDamagePerDamageTaken',
   // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
   'playFromExhaust',
 ])
@@ -196,18 +204,8 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
   })
 }
 
-/**
- * 威嚇 (延焼の怯み): 延焼を持つ敵の攻撃は延焼2につき実値-1 (軽減上限-4・下限1)。
- * 赤の防御代替 (確定済みルール表「威嚇」)。実行時・窓を開いた時点の延焼値で計算する。
- * 上限-4は延焼特化による攻撃無力化 (sim全勝) を防ぐキャップ。攻撃以外の行動値には作用しない。
- */
-export function intimidatedActionValue(kind: EnemyActionKind, actual: number, burn: number): number {
-  if (kind !== 'attack') return actual
-  const reduction = Math.min(4, Math.floor(burn / 2))
-  return Math.max(1, actual - reduction)
-}
-
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
+// 威嚇 (延焼による攻撃弱体) は 2026-08-25 に撤去: 延焼は純DoTに戻し、赤の受けは憤怒 (被弾の換金) が担う
 export function windowFromPending(state: GameState): ReactionWindow | null {
   const pending = state.pendingWindow
   if (!pending) return null
@@ -215,9 +213,7 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
   const intent = enemy?.intent
   if (!intent) return null
   if (pending.stage === 'pre') {
-    // 実値公開・行動値条件は威嚇後の値を使う (確定済みルール表「威嚇」)
-    const actual = intimidatedActionValue(intent.kind, intent.actual, enemy.burn)
-    return { stage: 'pre', kind: intent.kind, actual }
+    return { stage: 'pre', kind: intent.kind, actual: intent.actual }
   }
   return { stage: 'post', kind: intent.kind, hpLoss: state.lastAction?.hpLoss ?? 0 }
 }
@@ -434,6 +430,51 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       if (!enemy || enemy.hp <= 0 || enemy.strength >= 0) return state
       return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * -enemy.strength, effect.pierce)
     }
+    case 'dischargeBurn': {
+      // 爆熱 (赤): 対象の延焼×amount のダメージを与え、延焼を全て失わせる。
+      // DoT (毎フェーズのダメージ+焼き切り) を手放してバーストに換金する緊張 (確定済みルール表「爆熱」)
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      const burn = enemy.burn
+      let s: GameState = {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, burn: 0 } : e)),
+      }
+      s = emit(s, { type: 'BurnDischarged', enemyIndex, amount: burn })
+      return dealDamageToEnemy(s, enemyIndex, burn * (effect.amount ?? 0), effect.pierce)
+    }
+    case 'shatterBlockConvert': {
+      // 破城槌 (赤): 敵のブロックを全て破壊し、破壊した値と同じダメージを与える (粉砕の換金)
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0) return state
+      const shattered = enemy.block
+      let s: GameState = {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, block: 0 } : e)),
+      }
+      if (shattered > 0) s = emit(s, { type: 'BlockShattered', enemyIndex, amount: shattered })
+      return dealDamageToEnemy(s, enemyIndex, shattered, effect.pierce)
+    }
+    case 'dealDamageExecute': {
+      // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ (とどめの一撃)
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0) return state
+      const execute = enemy.hp <= Math.floor(enemy.maxHp * 0.25)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        execute ? (effect.amountMax ?? effect.amount ?? 0) : (effect.amount ?? 0),
+        effect.pierce,
+      )
+    }
+    case 'dealDamagePerDamageTaken':
+      // 逆上 (赤の憤怒): 直前の敵フェーズで受けたダメージ×amount (被弾の換金)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.damageTakenLastEnemyPhase,
+        effect.pierce,
+      )
     case 'gainBlockPerPermanent': {
       // 隊列の盾 (白): 置物の数×X ブロック
       const amount = (effect.amount ?? 0) * state.player.permanents.length

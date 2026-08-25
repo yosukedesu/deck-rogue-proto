@@ -18,7 +18,6 @@ import {
 import {
   cardNeedsTarget,
   effectiveCost,
-  intimidatedActionValue,
   isDamageEffect,
   isPlayableFromHand,
 } from '../engine/effects.ts'
@@ -89,7 +88,9 @@ const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 
 
 /** キーワード能力の用語解説 (カーソルを当てると吹き出しで表示) */
 const KEYWORD_HELP: Record<string, string> = {
-  威嚇: '延焼を持つ敵の攻撃は、延焼2につき実値-1（軽減上限-4・下限1）。表示中の攻撃値は威嚇適用後の数字',
+  憤怒: '赤の受け: 被弾を次の攻撃の燃料に変える（例: 被攻撃後に勢い+2、受けたダメージ×2で殴り返す）',
+  爆熱: '対象の延焼×Nのダメージを与え、延焼を全て失わせる。継続ダメージと焼き切りを手放してバーストに換金する',
+  処刑: '対象のHPが最大の25%以下なら、ダメージが跳ね上がる',
   弱体: '与えるダメージが25%減る（切り捨て）。自分のターン終了時に1減る',
   脆弱: '敵の攻撃で受けるダメージが50%増える（切り捨て）。敵の行動フェーズ終了時に1減る',
   負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
@@ -162,6 +163,7 @@ interface EffectCtx {
   exhausted: number
   selfHpLost: number
   permanents: number
+  damageTaken: number
 }
 
 const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
@@ -181,6 +183,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onCardExhausted: 'カードが消滅するたび: ',
   onCostExhausted: '消滅コストを支払うたび: ',
   onPermanentEntered: '置物が場に出るたび: ',
+  onImpulsePlayed: '衝動カードをプレイするたび: ',
 }
 
 /** 誘発の追加条件の表示 */
@@ -271,6 +274,16 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}⚰️ 消滅置き場のカード1枚（リアクション以外）をコストを支払わず直接プレイ（そのカードは消滅置き場に残る）`
     case 'summonPermanent':
       return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す`
+    case 'dischargeBurn':
+      return `${trigger}💥 爆熱: 対象の延焼×${e.amount}ダメージを与え、延焼を全て失わせる`
+    case 'shatterBlockConvert':
+      return `${trigger}🔨 敵のブロックを全て破壊し、破壊した値と同じダメージ`
+    case 'dealDamageExecute':
+      return `${trigger}⚔️ ${e.amount}ダメージ（対象HPが25%以下なら${e.amountMax}）`
+    case 'dealDamagePerDamageTaken':
+      return ctx
+        ? `${trigger}⚔️ 直前の敵フェーズで受けたダメージ×${e.amount}ダメージ [現在${(e.amount ?? 0) * ctx.damageTaken + atkBonus}]`
+        : `${trigger}⚔️ 直前の敵フェーズで受けたダメージ×${e.amount}ダメージ`
     case 'dealDamagePerNegStrength':
       return `${trigger}⚔️ 対象の下げられた強化×${e.amount}の追加ダメージ（威圧の換金）`
     case 'gainBlockPerPermanent':
@@ -378,17 +391,13 @@ function inflictSuffix(intent: EnemyIntent): string {
   return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}`
 }
 
-/** 敵の意図表示。burn を渡すと攻撃の幅に威嚇 (延焼の怯み) を反映する */
-function intentText(intent: EnemyIntent | null, burn = 0): string {
+/** 敵の意図表示 (威嚇は撤去済み: 幅は宣言値をそのまま出す) */
+function intentText(intent: EnemyIntent | null): string {
   if (!intent) return '---'
   switch (intent.kind) {
     case 'attack': {
-      const min = intimidatedActionValue('attack', intent.shownMin, burn)
-      const max = intimidatedActionValue('attack', intent.shownMax, burn)
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      const reduction = intent.shownMax - max
-      const mark = reduction > 0 ? `（威嚇で-${reduction}）` : ''
-      return `⚔️ 攻撃 ${min}〜${max}${hits}${mark}${inflictSuffix(intent)}`
+      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${inflictSuffix(intent)}`
     }
     case 'defend':
       return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
@@ -404,15 +413,12 @@ function intentText(intent: EnemyIntent | null, burn = 0): string {
 }
 
 /** 誘発確認ウィンドウ用: 敵の行動は確定済みなので実値を公開する (確定済みルール「誘発確認時の情報」) */
-function confirmedIntentText(intent: EnemyIntent | null, burn = 0): string {
+function confirmedIntentText(intent: EnemyIntent | null): string {
   if (!intent) return '---'
   switch (intent.kind) {
     case 'attack': {
-      const actual = intimidatedActionValue('attack', intent.actual, burn)
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      const reduction = intent.actual - actual
-      const mark = reduction > 0 ? `・威嚇で-${reduction}適用済` : ''
-      return `⚔️ 攻撃 ${actual}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${mark}）${inflictSuffix(intent)}`
+      return `⚔️ 攻撃 ${intent.actual}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}）${inflictSuffix(intent)}`
     }
     case 'defend':
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
@@ -558,6 +564,8 @@ function logLine(e: GameEvent): LogLine | null {
       return { text: `置物を設置: ${cardName(e.cardId)}`, cls: 'log-good' }
     case 'CardExhausted':
       return { text: `消滅: ${cardName(e.cardId)}（この戦闘から除外）`, cls: 'log-line' }
+    case 'BurnDischarged':
+      return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
     case 'CardRetrieved':
       return { text: `回収: ${cardName(e.cardId)}（消滅置き場から手札へ）`, cls: 'log-line' }
     case 'CardPlayedFromExhaust':
@@ -1030,7 +1038,7 @@ function BattleScreen({
                   </div>
                   {!ended && !dead && (
                     <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
-                      {kw(intentText(enemy.intent, enemy.burn))}
+                      {kw(intentText(enemy.intent))}
                     </div>
                   )}
                 </div>
@@ -1067,7 +1075,7 @@ function BattleScreen({
                   <b>{c.def.name}</b>
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase }}
                   />
                 </div>
               ))}
@@ -1081,7 +1089,7 @@ function BattleScreen({
                 {s.enemies.length > 1 && windowEnemy && (
                   <>{getEnemyDef(windowEnemy.enemyId).name}の </>
                 )}
-                {kw(confirmedIntentText(windowEnemy?.intent ?? null, windowEnemy?.burn ?? 0))}
+                {kw(confirmedIntentText(windowEnemy?.intent ?? null))}
               </div>
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
@@ -1095,6 +1103,7 @@ function BattleScreen({
                         exhausted: player.exhaustPile.length,
                         selfHpLost: player.selfHpLost,
                         permanents: player.permanents.length,
+                        damageTaken: player.damageTakenLastEnemyPhase,
                         cardsPlayed: player.cardsPlayedThisTurn,
                         aether: player.aether,
                       }),
@@ -1124,7 +1133,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({c.def.cost}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase })}
                     </button>
                   ))}
                   <button
@@ -1259,7 +1268,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase }}
                     dim={!eligible}
                     hint={eligible ? undefined : directPlay ? '直接プレイ不可' : undefined}
                     actions={
@@ -1338,7 +1347,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase }}
                       dim={isSource || isChosen}
                       hint={isSource ? 'プレイするカード' : isChosen ? '消滅予定' : undefined}
                       actions={
@@ -1380,7 +1389,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -1404,7 +1413,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase }}
                     displayCost={effCost}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={

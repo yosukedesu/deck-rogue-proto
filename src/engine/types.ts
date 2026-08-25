@@ -82,6 +82,8 @@ export interface PlayerState extends CombatantState {
   readonly vulnerable: number
   /** この戦闘でカード効果 (loseHp) により失ったHPの累計 (黒: 背徳の収穫の参照値。敵からの被弾は含まない) */
   readonly selfHpLost: number
+  /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
+  readonly damageTakenLastEnemyPhase: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -246,6 +248,7 @@ export type GameEvent =
   | { readonly type: 'MomentumAdded'; readonly amount: number }
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
+  | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
   | { readonly type: 'CardRetrieved'; readonly cardId: string } // 屍集め: 消滅置き場から手札へ
   | { readonly type: 'CardPlayedFromExhaust'; readonly cardId: string } // 死者再生: 消滅置き場から直接プレイ
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
@@ -313,6 +316,7 @@ export interface DeclarativeEffect {
     | 'onCardExhausted' // カードが消滅するたび (置物。黒: 亡者の合唱。忘却・消滅コスト・消滅札・衝動失効すべて)
     | 'onCostExhausted' // 消滅コスト (exhaustCost) を支払った時のみ (置物。黒: 闇市の帳簿)
     | 'onPermanentEntered' // 置物が場に出るたび (白の接着剤。プレイ・召喚・直接プレイすべて。自身の登場にも誘発。戦闘開始時から場にあるもの=リーダー/レリックは「登場」しない)
+    | 'onImpulsePlayed' // 衝動カードをプレイした時 (赤の接着剤: 刹那の焔)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -352,6 +356,10 @@ export interface DeclarativeEffect {
     | 'retrieveFromExhaust' // コスト再利用 (黒): 消滅置き場から1枚選んで手札に戻す (屍集め。combat.ts が retrieveUid で解決)
     | 'playFromExhaust' // コスト再利用 (黒): 消滅置き場のリアクション以外1枚をコストを支払わず直接プレイ (死者再生)
     | 'summonPermanent' // 召喚 (白): summonId の置物トークンを amount 体場に出す (従者の横並び=トークン再現)
+    | 'dischargeBurn' // 爆熱 (赤): 対象の延焼×amount のダメージを与え、延焼を全て失わせる (DoT+焼き切りを手放す緊張)
+    | 'shatterBlockConvert' // 破城槌 (赤): 敵のブロックを全て破壊し、破壊した値と同じダメージを与える
+    | 'dealDamageExecute' // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ
+    | 'dealDamagePerDamageTaken' // 逆上 (赤): 直前の敵フェーズで受けたダメージ×amount (憤怒=被弾の換金)
     | 'dealDamagePerNegStrength' // 威圧の換金 (白): 対象の強化がマイナスなら その絶対値×X の追加ダメージ (断罪の槌)
     | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)

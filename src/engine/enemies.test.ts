@@ -28,7 +28,7 @@ describe('弱体 (プレイヤーの与ダメ25%減)', () => {
 })
 
 describe('脆弱 (敵の攻撃ダメージ50%増)', () => {
-  it('脆弱中は敵の攻撃が50%増 (切り捨て・威嚇適用後)', () => {
+  it('脆弱中は敵の攻撃が50%増 (切り捨て)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_brute', 42))
     s = { ...s, player: { ...s.player, vulnerable: 1 } }
     s = withIntent(s, attackIntent(10))
@@ -37,14 +37,14 @@ describe('脆弱 (敵の攻撃ダメージ50%増)', () => {
     expect(s.player.hp).toBe(hpBefore - 15) // 10 * 1.5
   })
 
-  it('威嚇→脆弱の順で計算する', () => {
+  it('延焼を持つ敵にも脆弱は素の実値に掛かる (威嚇は撤去済み)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_brute', 42))
     s = { ...s, player: { ...s.player, vulnerable: 1 } }
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5, hp: 999 })) }
     s = withIntent(s, attackIntent(10))
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.hp).toBe(hpBefore - 12) // (10 - floor(4/2)) * 1.5 = 12
+    expect(s.player.hp).toBe(hpBefore - 15) // 10 * 1.5
   })
 
   it('脆弱は敵フェーズ終了時に1減る (そのフェーズは有効)', () => {
@@ -119,13 +119,13 @@ describe('連撃 (multi-hit)', () => {
     expect(s.player.hp).toBe(hpBefore - 8) // 15 - 7
   })
 
-  it('威嚇は1発ごとに適用される (連撃は威嚇に弱い)', () => {
+  it('連撃は1発ずつ素の実値で解決される (威嚇は撤去済み)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_wolf', 42))
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5, hp: 999 })) }
     s = withIntent(s, { kind: 'attack', shownMin: 4, shownMax: 6, actual: 5, hits: 3 })
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.hp).toBe(hpBefore - 9) // (5 - floor(4/2)) × 3
+    expect(s.player.hp).toBe(hpBefore - 15) // 5 × 3
   })
 })
 

@@ -112,20 +112,35 @@ describe('キル連鎖 (玉突き)', () => {
   })
 })
 
-describe('怯え火 (被攻撃前の延焼=フラッシュブロック)', () => {
-  it('pre窓で延焼+4 → 今飛んでくる攻撃が威嚇で-2される', () => {
+describe('先手の炎 (被攻撃前の先制ダメージ)', () => {
+  it('pre窓で8ダメージ。攻撃自体はそのまま受ける (倒せなければ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
       'red_flinch_fire',
     ])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_flinch_fire' })
     s = withIntent(s, attackIntent(10))
     const playerHp = s.player.hp
+    const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    // 延焼4が乗り、威嚇 floor(4/2)=2 で 10→8
-    expect(s.player.hp).toBe(playerHp - 8)
-    expect(s.enemies[0].burn).toBe(4)
+    expect(s.enemies[0].hp).toBe(enemyHp - 8)
+    expect(s.player.hp).toBe(playerHp - 10) // 威嚇は撤去済み: 素の10を受ける
+  })
+
+  it('先手の炎で敵を倒せば、その攻撃は発生しない (焼き切り)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_flinch_fire',
+    ])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_flinch_fire' })
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 5 })) }
+    s = withIntent(s, attackIntent(10))
+    const playerHp = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(0)
+    expect(s.player.hp).toBe(playerHp) // 攻撃は発生しない
   })
 })
 

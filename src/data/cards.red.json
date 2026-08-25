@@ -310,14 +310,14 @@
   },
   {
     "id": "red_flinch_fire",
-    "name": "怯え火",
+    "name": "先手の炎",
     "cost": 1,
     "type": "reaction",
     "effects": [
       {
         "trigger": "onAttackIncoming",
-        "effect": "applyBurn",
-        "amount": 4
+        "effect": "dealDamage",
+        "amount": 8
       }
     ]
   },
@@ -344,6 +344,238 @@
         "trigger": "onAttackPlayed",
         "effect": "dealDamage",
         "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_burst_release",
+    "name": "爆熱の解放",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_perm_furnace",
+    "name": "業火の炉",
+    "cost": 3,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "applyBurn",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_sea_of_fire",
+    "name": "火の海",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_ember",
+    "name": "くすぶる残り火",
+    "cost": 0,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_perm_rage_mask",
+    "name": "憤怒の仮面",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "addMomentum",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_payback",
+    "name": "逆上",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerDamageTaken",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_defiance",
+    "name": "反骨の炎",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 3
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "addMomentum",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_perm_instant_flame",
+    "name": "刹那の焔",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onImpulsePlayed",
+        "effect": "applyBurn",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_scorching_insight",
+    "name": "灼熱の閃き",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_burn_it_all",
+    "name": "全てを燃やせ",
+    "cost": 3,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_battering_ram",
+    "name": "破城槌",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlockConvert"
+      }
+    ]
+  },
+  {
+    "id": "red_final_blow",
+    "name": "とどめの一撃",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageExecute",
+        "amount": 8,
+        "amountMax": 24
+      }
+    ]
+  },
+  {
+    "id": "red_grand_fireworks",
+    "name": "大花火",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 5,
+        "amountMax": 15,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_heat_screen",
+    "name": "熱幕",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 7
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_ignition",
+    "name": "引火",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "applyBurn",
+        "amount": 2
       }
     ]
   }

@@ -10,7 +10,6 @@ import {
   drawCards,
   effectiveCost,
   fireExhaustTriggers,
-  intimidatedActionValue,
   isDamageEffect,
   isPlayableFromHand,
   resolveEffectTargeted,
@@ -65,6 +64,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       weak: 0,
       vulnerable: 0,
       selfHpLost: 0, // カード効果で失ったHPの累計 (背徳の収穫の参照値。戦闘内のみ)
+      damageTakenLastEnemyPhase: 0, // 直前の敵フェーズで受けた攻撃ダメージ (逆上の参照値)
     },
     enemies: [],
     pendingWindow: null,
@@ -427,6 +427,10 @@ export function playCard(
   if (card.def.type === 'spell') {
     s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
   }
+  // 衝動プレイの誘発 (赤の接着剤: 刹那の焔)
+  if (state.player.impulseUids.includes(cardUid)) {
+    s = runPermanentTriggers(s, 'onImpulsePlayed', enemyIndex)
+  }
   // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない。
   // 直接プレイ (死者再生) より先に加算する = 直接プレイされるカードから見て再生自身は「先にプレイされた1枚」
   s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
@@ -507,6 +511,8 @@ export function endTurn(state: GameState): GameState {
   }
   // 敵ブロックはこのタイミングで失効 (前の敵ターンの防御は自ターンの攻撃を受け止めたら役目を終える)
   s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }
+  // 憤怒 (逆上) の参照値はフェーズ単位: 敵フェーズ開始時にリセットして受け直す
+  s = { ...s, player: { ...s.player, damageTakenLastEnemyPhase: 0 } }
   // 延焼: 敵フェーズ開始時にダメージ (ブロック無視) を受けて1減る
   for (let i = 0; i < s.enemies.length; i++) {
     const enemy = s.enemies[i]
@@ -699,16 +705,16 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         return emit(s, { type: 'ConfusedAttack', enemyIndex, targetIndex: targetIdx, amount: total })
       }
       // 連撃 (hits>1) は1発ずつ解決する (確定済みルール表「連撃」)。
-      // 各ヒットに 威嚇→脆弱 の順で補正し、通常ブロック→氷壁の順で消費する
+      // 各ヒットに脆弱を補正し、通常ブロック→氷壁の順で消費する
       const hits = intent.hits ?? 1
       let block = state.player.block
       let iceBlock = state.player.iceBlock
       let dealtTotal = 0
       let hpLoss = 0
       for (let h = 0; h < hits; h++) {
-        // 威嚇 (延焼の怯み): 実行時の延焼値で1発ごとに下げる (確定済みルール表「威嚇」)
-        let v = intimidatedActionValue('attack', intent.actual, enemy.burn)
-        // 脆弱: 敵の攻撃ダメージ50%増 (切り捨て。威嚇適用後)
+        // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
+        let v = intent.actual
+        // 脆弱: 敵の攻撃ダメージ50%増 (切り捨て)
         if (state.player.vulnerable > 0) v = Math.floor(v * 1.5)
         dealtTotal += v
         const blocked = Math.min(block, v)
@@ -720,7 +726,14 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       }
       let s: GameState = {
         ...state,
-        player: { ...state.player, block, iceBlock, hp: state.player.hp - hpLoss },
+        player: {
+          ...state.player,
+          block,
+          iceBlock,
+          hp: state.player.hp - hpLoss,
+          // 憤怒 (逆上) の参照値: このフェーズで受けた攻撃ダメージを累積する
+          damageTakenLastEnemyPhase: state.player.damageTakenLastEnemyPhase + hpLoss,
+        },
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss })
       // 攻撃に付与された状態異常はダメージ後に適用 (確定済みルール表「状態異常」)
