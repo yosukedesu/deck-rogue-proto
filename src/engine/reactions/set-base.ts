@@ -8,7 +8,8 @@ import type { CardInstance, GameState } from '../types.ts'
 /** SetCard の可否判定 (UI のボタン活性にも使う) */
 export function canSetCard(state: GameState, cardUid: string): boolean {
   if (state.phase !== 'player-turn') return false
-  if (state.player.setCards.length >= 1) return false // 伏せ枚数は同時1枚 (確定済みルール)
+  // 伏せ枠は setSlots まで (基本1。かすみ=2。確定済みルール表「伏せ枚数」)
+  if (state.player.setCards.length >= state.player.setSlots) return false
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) return false
   if (card.def.type !== 'reaction') return false // 伏せ対象は reaction タイプのみ
@@ -18,7 +19,9 @@ export function canSetCard(state: GameState, cardUid: string): boolean {
 /** SetCard: コスト事前払いで手札から伏せる */
 export function setCard(state: GameState, cardUid: string): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外は伏せられない')
-  if (state.player.setCards.length >= 1) throw new Error('伏せは同時1枚まで')
+  if (state.player.setCards.length >= state.player.setSlots) {
+    throw new Error(`伏せは同時${state.player.setSlots}枚まで`)
+  }
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (card.def.type !== 'reaction') throw new Error(`${card.def.name} は伏せられない (リアクションタイプのみ)`)
@@ -35,10 +38,12 @@ export function setCard(state: GameState, cardUid: string): GameState {
   return emit(s, { type: 'CardSet', cardId: card.def.id })
 }
 
-/** 伏せカードを発動する: 効果解決→伏せ場から捨て札へ (コストは伏せ時に支払い済み) */
+/** 伏せカードを発動する: 効果解決→伏せ場から捨て札へ (コストは伏せ時に支払い済み)。
+ * 敵の1行動につき1回まで、の消費フラグを立てる (伏せ2枚でも同一行動に2枚は撃てない) */
 export function fireSetCard(state: GameState, card: CardInstance, enemyIndex: number): GameState {
   let s: GameState = {
     ...state,
+    reactionUsedThisAction: true,
     player: {
       ...state.player,
       setCards: state.player.setCards.filter((c) => c.uid !== card.uid),

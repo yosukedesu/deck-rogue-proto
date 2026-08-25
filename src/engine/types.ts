@@ -53,8 +53,10 @@ export interface PlayerState extends CombatantState {
   readonly hand: readonly CardInstance[]
   readonly drawPile: readonly CardInstance[]
   readonly discardPile: readonly CardInstance[]
-  /** 伏せているカード (同時1枚が現ルール。レリック拡張余地) */
+  /** 伏せているカード (基本は同時1枚。setSlots で拡張) */
   readonly setCards: readonly CardInstance[]
+  /** 伏せ枠の数。既定1。かすみ (ディミア) のリーダー個性で2 (確定済みルール表「伏せ枚数」) */
+  readonly setSlots: number
   /** 置物: プレイすると場に残り戦闘中ずっと効果を発揮 (破壊不可・伏せ破壊の対象外) */
   readonly permanents: readonly CardInstance[]
   /** 消滅したカード (この戦闘から除外。再シャッフルされない) */
@@ -151,6 +153,8 @@ export interface GameState {
   readonly pendingWindow: PendingWindow | null
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
   readonly negateNextAction: boolean
+  /** 敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」) */
+  readonly reactionUsedThisAction: boolean
   /** 直前に解決された敵の行動 (行動解決後リアクションの条件判定用。行動開始時にリセット) */
   readonly lastAction: {
     readonly enemyIndex: number
@@ -192,7 +196,12 @@ export type Command =
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
-  | { readonly type: 'ConfirmReaction'; readonly fire: boolean } // set-confirm: 発動/温存。hold-manual: fire=false でパス
+  | {
+      readonly type: 'ConfirmReaction'
+      readonly fire: boolean // set-confirm: 発動/温存。hold-manual: fire=false でパス
+      /** 伏せ2枚 (かすみ) 用: 発動する伏せ札の uid。窓に合致する伏せが複数ある時に指定。省略時は先頭の合致札 */
+      readonly cardUid?: string
+    }
   | { readonly type: 'EndTurn' }
 
 // ============================================================
@@ -562,6 +571,8 @@ export interface LeaderDef {
   readonly description: string
   /** パッシブ能力。戦闘開始時から場にあるリーダー置物として解決される */
   readonly passive: readonly DeclarativeEffect[]
+  /** 伏せ枠 (リソース個性)。省略時1。かすみ (ディミア) =2 (確定済みルール表「伏せ枚数」) */
+  readonly setSlots?: number
 }
 
 // ---- デッキ (アーキタイプ理想形の検証用プリセット) ----

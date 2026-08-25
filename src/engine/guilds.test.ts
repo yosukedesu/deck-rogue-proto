@@ -7,8 +7,8 @@ import { applyCommand } from './state.ts'
 import { withHand } from './test-helpers.ts'
 
 describe('ギルドリーダーのロースター', () => {
-  it('単色6人+ギルド8人=14人。HPは5刻みの方針値', () => {
-    expect(allLeaders.length).toBe(14)
+  it('単色6人+ギルド9人=15人ロースター完成。HPは5刻みの方針値', () => {
+    expect(allLeaders.length).toBe(15)
     const hp = {
       leader_azorius: 70, leader_rakdos: 80, leader_gruul: 80, leader_selesnya: 75,
       leader_orzhov: 75, leader_golgari: 75, leader_boros: 75, leader_simic: 65,

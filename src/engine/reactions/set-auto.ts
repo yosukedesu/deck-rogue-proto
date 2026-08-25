@@ -21,19 +21,20 @@ export const setAutoSystem: ReactionSystem = {
   onEvent(state: GameState, event: GameEvent): GameState {
     switch (event.type) {
       case 'EnemyActionExecuting': {
-        const card = state.player.setCards[0]
+        if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
         const actual = state.enemies[event.enemyIndex]?.intent?.actual ?? 0
-        if (card && reactionMatches(state, card, { stage: 'pre', kind: event.kind, actual })) {
-          return fireSetCard(state, card, event.enemyIndex) // 条件成立 → 即自動発動
+        const win = { stage: 'pre', kind: event.kind, actual } as const
+        const card = state.player.setCards.find((c) => reactionMatches(state, c, win))
+        if (card) {
+          return fireSetCard(state, card, event.enemyIndex) // 条件成立 → 先頭の合致札を即自動発動
         }
         return state
       }
       case 'EnemyActionResolved': {
-        const card = state.player.setCards[0]
-        if (
-          card &&
-          reactionMatches(state, card, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss })
-        ) {
+        if (state.reactionUsedThisAction) return state
+        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss } as const
+        const card = state.player.setCards.find((c) => reactionMatches(state, c, win))
+        if (card) {
           return fireSetCard(state, card, event.enemyIndex)
         }
         return state

@@ -1570,5 +1570,45 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "run_basic_dimir",
+    "name": "かすみの初期デッキ",
+    "color": "blue",
+    "description": "青黒の基本10枚。リアクション4枚入り＝伏せ2枠を初手から使う",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_strike",
+        "count": 1
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "blue_mana_leak",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_grudge",
+        "count": 1
+      }
+    ]
   }
 ]

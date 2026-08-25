@@ -55,9 +55,10 @@ export const holdManualSystem: ReactionSystem = {
         }
         const card = playableReactions(state).find((c) => c.uid === command.cardUid)
         if (!card) throw new Error(`発動できないカード: ${command.cardUid}`)
-        // 発動時にコストを支払い、手札から捨て札へ
+        // 発動時にコストを支払い、手札から捨て札へ。1行動1回の消費フラグも立てる
         let s: GameState = {
           ...state,
+          reactionUsedThisAction: true,
           player: {
             ...state.player,
             energy: state.player.energy - card.def.cost,
@@ -81,6 +82,7 @@ export const holdManualSystem: ReactionSystem = {
   onEvent(state: GameState, event: GameEvent): GameState {
     switch (event.type) {
       case 'EnemyActionExecuting': {
+        if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
         const actual = state.enemies[event.enemyIndex]?.intent?.actual ?? 0
         if (anyPlayable(state, { stage: 'pre', kind: event.kind, actual })) {
           return {
@@ -92,6 +94,7 @@ export const holdManualSystem: ReactionSystem = {
         return state
       }
       case 'EnemyActionResolved': {
+        if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
         if (anyPlayable(state, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss })) {
           return {
             ...state,

@@ -17,6 +17,8 @@ import {
 } from '../engine/content.ts'
 import {
   cardNeedsTarget,
+  reactionMatches,
+  windowFromPending,
   effectiveCost,
   isDamageEffect,
   isPlayableFromHand,
@@ -1096,17 +1098,18 @@ function BattleScreen({
         <div className="field">
           {isSetMode && (
             <div>
-              {setCard ? (
-                <>
+              {player.setCards.map((c) => (
+                <span key={c.uid}>
                   <div className="card card-back">伏</div>
-                  <div className="set-slot-label">{setCard.def.name}</div>
-                </>
-              ) : (
-                <>
+                  <div className="set-slot-label">{c.def.name}</div>
+                </span>
+              ))}
+              {Array.from({ length: Math.max(0, player.setSlots - player.setCards.length) }).map((_, i) => (
+                <span key={`empty${i}`}>
                   <div className="set-slot-empty">伏せ場</div>
                   <div className="set-slot-label">（なし）</div>
-                </>
-              )}
+                </span>
+              ))}
             </div>
           )}
 
@@ -1136,30 +1139,39 @@ function BattleScreen({
               </div>
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
-                  <div style={{ marginBottom: 10 }}>
-                    「{setCard.def.name}」（
-                    {kw(
-                      effectText(setCard.def, {
-                        growth: player.growth,
-                        momentum: player.momentum,
-                        energyMax: player.energyMax,
-                        exhausted: player.exhaustPile.length,
-                        selfHpLost: player.selfHpLost,
-                        permanents: player.permanents.length,
-                        damageTaken: player.damageTakenLastEnemyPhase,
-                        iceBlock: player.iceBlock,
-                        cardsPlayed: player.cardsPlayedThisTurn,
-                        aether: player.aether,
-                      }),
-                    )}
-                    ）を——
-                  </div>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => dispatch({ type: 'ConfirmReaction', fire: true })}
-                  >
-                    発動する
-                  </button>{' '}
+                  {(() => {
+                    // 伏せ2枚 (かすみ): 窓に合致する伏せ札ごとに発動ボタンを出す
+                    const win = windowFromPending(s)
+                    const candidates = win
+                      ? player.setCards.filter((c) => reactionMatches(s, c, win))
+                      : []
+                    return candidates.map((c) => (
+                      <div key={c.uid} style={{ marginBottom: 8 }}>
+                        「{c.def.name}」（
+                        {kw(
+                          effectText(c.def, {
+                            growth: player.growth,
+                            momentum: player.momentum,
+                            energyMax: player.energyMax,
+                            exhausted: player.exhaustPile.length,
+                            selfHpLost: player.selfHpLost,
+                            permanents: player.permanents.length,
+                            damageTaken: player.damageTakenLastEnemyPhase,
+                            iceBlock: player.iceBlock,
+                            cardsPlayed: player.cardsPlayedThisTurn,
+                            aether: player.aether,
+                          }),
+                        )}
+                        ）{' '}
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => dispatch({ type: 'ConfirmReaction', fire: true, cardUid: c.uid })}
+                        >
+                          発動する
+                        </button>
+                      </div>
+                    ))
+                  })()}
                   <button className="btn" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
                     温存する
                   </button>

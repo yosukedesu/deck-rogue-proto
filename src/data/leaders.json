@@ -302,5 +302,22 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "leader_dimir",
+    "name": "かすみ",
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_dimir",
+    "sprite": "🌫️",
+    "description": "霞幕の密偵。青黒の複合（ディミア）。手の内は二重に隠す。伏せ場が2枠ある（発動は敵の1行動につき1枚まで）",
+    "passive": [],
+    "setSlots": 2
   }
 ]

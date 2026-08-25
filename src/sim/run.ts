@@ -221,8 +221,8 @@ export function chooseCommand(s: GameState): Command {
   }
   if (s.phase !== 'player-turn') throw new Error(`ボットが手番でない: ${s.phase}`)
 
-  // set系: まずリアクションを伏せる (伏せ場が空いていて払えるなら常に)
-  if (s.reactionMode !== 'hold-manual' && s.player.setCards.length === 0) {
+  // set系: まずリアクションを伏せる (伏せ枠が空いていて払えるなら常に。かすみは2枠)
+  if (s.reactionMode !== 'hold-manual' && s.player.setCards.length < s.player.setSlots) {
     const reaction = s.player.hand.find(
       (c) => c.def.type === 'reaction' && c.def.cost <= s.player.energy,
     )

@@ -52,6 +52,8 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       drawPile: [],
       discardPile: [],
       setCards: [],
+      setSlots: 1, // 伏せ枠は基本1。リーダー個性 (かすみ=2) で上書き
+
       permanents: [],
       exhaustPile: [],
       growth: 0, // 成長カウンターは戦闘内のみ (確定済みルール)
@@ -69,6 +71,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
     enemies: [],
     pendingWindow: null,
     negateNextAction: false,
+    reactionUsedThisAction: false,
     lastAction: null,
     eventLog: [],
   }
@@ -112,6 +115,7 @@ export function startCombatWithOptions(
         drawPerTurn: leader.drawPerTurn,
         energy: leader.energyMax,
         energyMax: leader.energyMax,
+        setSlots: leader.setSlots ?? 1,
         permanents: [buildLeaderPassive(leader)],
       },
     }
@@ -593,7 +597,8 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
   for (let i = fromIndex; i < s.enemies.length; i++) {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0 || enemy.intent === null) continue
-    s = { ...s, lastAction: null }
+    // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
+    s = { ...s, lastAction: null, reactionUsedThisAction: false }
     // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
     const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: enemy.intent.kind } as const
     s = emit(s, executing)

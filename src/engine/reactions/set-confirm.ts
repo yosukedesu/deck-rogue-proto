@@ -3,7 +3,7 @@
 // pre窓 (行動確定時・実行前: 打ち消し・軽減) と post窓 (行動解決後: 返し系) の両方で確認が入る。
 // 温存した伏せは場に残り続ける → 伏せ警戒型へのブラフが意図的に打てる。
 
-import { reactionMatches } from '../effects.ts'
+import { reactionMatches, windowFromPending } from '../effects.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
 import { canSetCard, emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
 
@@ -30,8 +30,16 @@ export const setConfirmSystem: ReactionSystem = {
           throw new Error('確認待ちではないのに ConfirmReaction が来た')
         }
         if (!command.fire) return state // 温存: 伏せたまま。敵の行動処理はそのまま進む
-        const card = state.player.setCards[0]
-        if (!card) throw new Error('伏せカードがないのに発動確認が来た')
+        // 伏せ2枚 (かすみ): 窓に合致する伏せから発動する1枚を選ぶ。cardUid 省略時は先頭の合致札
+        const win = windowFromPending(state)
+        const candidates = win
+          ? state.player.setCards.filter((c) => reactionMatches(state, c, win))
+          : []
+        const card =
+          command.cardUid !== undefined
+            ? candidates.find((c) => c.uid === command.cardUid)
+            : candidates[0]
+        if (!card) throw new Error('この窓で発動できる伏せカードがない')
         return fireSetCard(state, card, state.pendingWindow.enemyIndex)
       }
       default:
@@ -42,9 +50,10 @@ export const setConfirmSystem: ReactionSystem = {
   onEvent(state: GameState, event: GameEvent): GameState {
     switch (event.type) {
       case 'EnemyActionExecuting': {
-        const card = state.player.setCards[0]
+        if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
         const actual = state.enemies[event.enemyIndex]?.intent?.actual ?? 0
-        if (card && reactionMatches(state, card, { stage: 'pre', kind: event.kind, actual })) {
+        const win = { stage: 'pre', kind: event.kind, actual } as const
+        if (state.player.setCards.some((c) => reactionMatches(state, c, win))) {
           return {
             ...state,
             phase: 'awaiting-reaction',
@@ -54,11 +63,9 @@ export const setConfirmSystem: ReactionSystem = {
         return state
       }
       case 'EnemyActionResolved': {
-        const card = state.player.setCards[0]
-        if (
-          card &&
-          reactionMatches(state, card, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss })
-        ) {
+        if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
+        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss } as const
+        if (state.player.setCards.some((c) => reactionMatches(state, c, win))) {
           return {
             ...state,
             phase: 'awaiting-reaction',
