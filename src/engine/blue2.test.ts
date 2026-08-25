@@ -16,7 +16,7 @@ describe('霊気獲得の誘発 (静電の帳)', () => {
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     // 敵0の攻撃 → 霜の帳が発動 (氷壁8+霊気1) → 静電の帳が全体1ダメ
-    let s2 = {
+    let s2: typeof s = {
       ...s,
       enemies: s.enemies.map((e, i) =>
         i === 0
