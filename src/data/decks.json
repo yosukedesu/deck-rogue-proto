@@ -1250,5 +1250,325 @@
         "count": 2
       }
     ]
+  },
+  {
+    "id": "run_basic_azorius",
+    "name": "なぎの初期デッキ",
+    "color": "white",
+    "description": "白青の基本10枚。護りと氷壁の種入り",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "blue_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 1
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_rakdos",
+    "name": "あかねの初期デッキ",
+    "color": "black",
+    "description": "黒赤の基本10枚。自傷と憤怒の種入り",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_strike",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_defiance",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
+        "count": 1
+      },
+      {
+        "cardId": "red_payback",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_gruul",
+    "name": "いぶきの初期デッキ",
+    "color": "red",
+    "description": "赤緑の基本10枚。勢いと成長の種入り",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 1
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_selesnya",
+    "name": "わかばの初期デッキ",
+    "color": "green",
+    "description": "緑白の基本10枚。従者と成長の種入り",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_orzhov",
+    "name": "あかりの初期デッキ",
+    "color": "white",
+    "description": "白黒の基本10枚。回復とドレインの種入り",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_martyr",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_golgari",
+    "name": "くろはの初期デッキ",
+    "color": "black",
+    "description": "黒緑の基本10枚。忘却と成長の種入り",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_boros",
+    "name": "あさひの初期デッキ",
+    "color": "red",
+    "description": "赤白の基本10枚。従者と延焼の種入り",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_flareback",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_hound",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_simic",
+    "name": "しずくの初期デッキ",
+    "color": "green",
+    "description": "緑青の基本10枚。ランプとドローの種入り",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 1
+      }
+    ]
   }
 ]
