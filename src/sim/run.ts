@@ -65,6 +65,13 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
     .filter((e) => e.effect === 'loseHp')
     .reduce((a, e) => a + (e.amount ?? 0), 0)
   if (selfHarm > 0 && state.player.hp <= selfHarm + 5) return false
+  // 忘却 (ミル): 山札を食い尽くすと手が止まる (山札0+捨て札0=ドロー不能)。残りが薄いならミルしない
+  const millAmount = card.def.effects
+    .filter((e) => e.effect === 'exhaustFromDeck')
+    .reduce((a, e) => a + (e.amount ?? 0), 0)
+  if (millAmount > 0 && card.def.type !== 'reaction' && state.player.drawPile.length < millAmount + 4) {
+    return false
+  }
   // 墓地参照は消滅3枚以上でないと空撃ち (ドレイン版も同じ)
   if (
     card.def.effects.some(

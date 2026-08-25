@@ -108,6 +108,7 @@ const KEYWORD_HELP: Record<string, string> = {
   消滅: '使用後、この戦闘から取り除かれる（再シャッフルされない）。消滅置き場は黒の墓地参照・回収の燃料になる',
   消滅コスト: 'プレイするために手札をN枚消滅させる。捨てより重いが、消滅置き場の燃料が増える',
   墓地: '消滅置き場のこと。忘却・消滅コスト・消滅札・衝動の失効で増え、戦闘中は減らない（回収を除く）',
+  忘却の刻: '消滅置き場が7枚以上のとき、このカードの効果が強化される。屍集めや死者再生で墓地を使うと刻が割れることもある',
   ドレイン: 'ダメージを与え、その半分（切り捨て）だけHPが回復する（黒の専売）',
   直接プレイ: '消滅置き場のカードをコストを支払わずプレイする。プレイ後もカードは消滅置き場に残る（置物は場に出る）',
   置物: 'プレイすると場に残り、戦闘中ずっと効果を発揮する（破壊されない）',
@@ -205,8 +206,19 @@ function ctx2Block(e: DeclarativeEffect, _ctx: EffectCtx | undefined, trigger: s
   return `${trigger}⚔️ ブロック×${e.amount}ダメージ${pierce}`
 }
 
-/** 効果1つを1行のテキストに変換する */
+/** 効果1つを1行のテキストに変換する。忘却の刻 (しきい値) は達成状態を添えて表示する */
 function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
+  const t = e.exhaustThreshold
+  if (t !== undefined) {
+    const met = ctx !== undefined && ctx.exhausted >= t
+    const shown = met ? { ...e, amount: e.amountMax } : e
+    const note = met ? `〔忘却の刻${t}: 発動中⚡〕` : `〔忘却の刻${t}: ${e.amountMax}に強化〕`
+    return `${renderEffectItemCore(shown, ctx)} ${note}`
+  }
+  return renderEffectItemCore(e, ctx)
+}
+
+function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
   // 攻撃ダメージには成長+勢い、返しには成長のみ (勢いは自ターン終了でリセットされるため)
   const atkBonus = ctx ? ctx.growth + ctx.momentum : 0
   const trigger = TRIGGER_LABEL[e.trigger] + conditionLabel(e)

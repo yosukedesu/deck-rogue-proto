@@ -278,6 +278,14 @@ export function drawCards(state: GameState, n: number): GameState {
  * リアクション効果 (counter / negate) もここで解決される。
  */
 export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemyIndex: number): GameState {
+  // 忘却の刻 (黒のしきい値): 消滅置き場が exhaustThreshold 枚以上なら amountMax に切り替わる
+  // (確定済みルール表「忘却の刻」。×N線形参照はデッキサイズ依存のため 2026-08-25 に廃止)
+  if (
+    effect.exhaustThreshold !== undefined &&
+    state.player.exhaustPile.length >= effect.exhaustThreshold
+  ) {
+    effect = { ...effect, amount: effect.amountMax }
+  }
   switch (effect.effect) {
     case 'dealDamage':
       return dealDamageToEnemy(state, enemyIndex, effect.amount ?? 0, effect.pierce)

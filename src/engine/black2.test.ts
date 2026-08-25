@@ -202,7 +202,7 @@ describe('黒の新リアクション', () => {
     expect(s.player.hp).toBe(30 - 6 + 10)
   })
 
-  it('血の目覚め: 呪文プレイで起爆し、2枚消滅+消滅×1ダメージ', () => {
+  it('血の目覚め: 呪文プレイで起爆し、2枚消滅+3ダメージ (刻の前)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_reaction_awakening',
       'black_drain',
@@ -210,8 +210,8 @@ describe('黒の新リアクション', () => {
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_awakening' })
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
-    // 生命吸収5 + 起爆 (忘却2 → 消滅2枚×1 = 2ダメ)
-    expect(s.enemies[0].hp).toBe(enemyHp - 5 - 2)
+    // 生命吸収5 + 起爆 (忘却2 + 基礎3ダメ。消滅2枚では刻に届かない)
+    expect(s.enemies[0].hp).toBe(enemyHp - 5 - 3)
     expect(s.player.exhaustPile).toHaveLength(2)
     expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
   })

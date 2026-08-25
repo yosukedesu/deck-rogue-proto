@@ -61,24 +61,27 @@ describe('墓地 (セルフミル + 捨て札参照)', () => {
     expect(s.player.exhaustPile.length).toBe(5)
   })
 
-  it('亡霊の槍: 3+消滅した枚数×1のダメージ', () => {
+  it('亡霊の槍: 忘却の刻 (消滅7枚以上) で6→12に強化される', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_grave_bolt',
+      'black_grave_bolt',
     ])
-    // 消滅を8枚に細工
-    const pad = s.player.drawPile.slice(0, 8)
+    const enemyHp = s.enemies[0].hp
+    // 刻の前: 基礎6
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_grave_bolt' })
+    expect(s.enemies[0].hp).toBe(enemyHp - 6)
+    // 消滅を7枚に細工 → 刻の後: 12
+    const pad = s.player.drawPile.slice(0, 7)
     s = {
       ...s,
       player: {
         ...s.player,
-        drawPile: s.player.drawPile.slice(8),
+        drawPile: s.player.drawPile.slice(7),
         exhaustPile: [...s.player.exhaustPile, ...pad],
       },
     }
-    const enemyHp = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_grave_bolt' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 3 - 8) // 基礎3 + 消滅8×1
-
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_grave_bolt' })
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 12)
   })
 })
 

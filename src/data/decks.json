@@ -1031,18 +1031,10 @@
     "id": "deck_graveyard",
     "name": "亡者の凱旋",
     "color": "black",
-    "description": "山札を削って捨て札の数で爆発する墓地の理想形",
+    "description": "忘却の刻(消滅7枚)を目指してデッキを食い、しきい値で化けるペイオフを叩きつける",
     "cards": [
       {
         "cardId": "black_perm_chorus",
-        "count": 1
-      },
-      {
-        "cardId": "black_perm_ledger",
-        "count": 1
-      },
-      {
-        "cardId": "black_reaction_awakening",
         "count": 1
       },
       {
@@ -1051,11 +1043,7 @@
       },
       {
         "cardId": "black_mill",
-        "count": 2
-      },
-      {
-        "cardId": "black_deep_mill",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "black_perm_altar",
@@ -1063,10 +1051,6 @@
       },
       {
         "cardId": "black_offering",
-        "count": 2
-      },
-      {
-        "cardId": "black_underworld_path",
         "count": 1
       },
       {
@@ -1086,19 +1070,15 @@
         "count": 1
       },
       {
-        "cardId": "black_raise_dead",
-        "count": 1
+        "cardId": "black_dead_wall",
+        "count": 2
       },
       {
-        "cardId": "black_dark_pact",
+        "cardId": "black_drain",
         "count": 1
       },
       {
         "cardId": "black_guard",
-        "count": 2
-      },
-      {
-        "cardId": "black_dead_wall",
         "count": 2
       }
     ]

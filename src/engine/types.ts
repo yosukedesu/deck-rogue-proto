@@ -382,6 +382,11 @@ export interface DeclarativeEffect {
   readonly target?: 'all'
   /** summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire) */
   readonly summonId?: string
+  /**
+   * 忘却の刻 (黒のしきい値。確定済みルール表「忘却の刻」): 消滅置き場がこの枚数以上なら
+   * amount の代わりに amountMax を使う。dealDamageRandom / dealDamageExecute とは併用しない
+   */
+  readonly exhaustThreshold?: number
   readonly scriptId?: string
 }
 
