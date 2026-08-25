@@ -109,6 +109,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${getCardDef(e.cardId).name}`)
       else if (e.type === 'CardExhausted') L.push(` 消滅:${getCardDef(e.cardId).name}`)
       else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${getCardDef(e.cardId).name}が倒された`)
+      else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${getCardDef(e.cardId).name}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
       else if (e.type === 'HpHealed') L.push(` 回復${e.amount}`)
       else if (e.type === 'HpLost') L.push(` 自傷${e.amount}`)

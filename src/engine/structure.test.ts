@@ -79,3 +79,16 @@ describe('開花の儀の消滅化', () => {
     expect(s.player.discardPile.some((c) => c.def.id === 'green_sig_rite_of_bloom')).toBe(false)
   })
 })
+
+describe('ターン開始誘発での全滅 (プレイテスト発見バグ)', () => {
+  it('従者の自動攻撃で敵が死んだら、その場で勝利が確定する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
+      'white_perm_squire',
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 2 })) } // 従者2ダメで死ぬHPに細工
+    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('won') // 次ターン開始時の従者攻撃で即勝利
+  })
+})

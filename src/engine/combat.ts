@@ -259,6 +259,10 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   }
   s = emit(s, { type: 'TurnStarted', turn })
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  // ターン開始誘発 (従者の自動攻撃など) で敵が全滅したら即座に勝利を確定する
+  // (プレイテストで発見: 判定がないと撃破済みの敵に手札が撃てる状態が残る)
+  s = checkCombatEnd(s)
+  if (s.phase === 'won' || s.phase === 'lost') return s
   s = drawCards(s, s.player.drawPerTurn)
   return declareIntents(s)
 }
