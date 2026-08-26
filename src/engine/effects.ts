@@ -229,6 +229,26 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
   return { ...intent.alt, conditionalOn: intent.conditionalOn, alt: intent.alt }
 }
 
+/**
+ * 致死状態 (HP<=0) で確認窓を開く価値がある札か。
+ * 回復を伴わない札では生き延びられないので、窓を開いても「もう詰んでいるのに聞かれる」だけになる
+ * (2026-08-26 プレイテスト指摘。確定済みルール表「致死時の誘発」)
+ */
+export function canSaveFromLethal(card: CardInstance): boolean {
+  return card.def.effects.some((e) =>
+    ['gainHp', 'dealDamageDrain', 'dealDamageDrainPerExhaust'].includes(e.effect),
+  )
+}
+
+/** その窓で実際に発動できる伏せ札 (致死状態では回復を伴うものだけ) */
+export function usableSetCards(
+  state: GameState,
+  win: ReactionWindow,
+): readonly CardInstance[] {
+  const matched = state.player.setCards.filter((c) => reactionMatches(state, c, win))
+  return state.player.hp <= 0 ? matched.filter(canSaveFromLethal) : matched
+}
+
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
 // 威嚇 (延焼による攻撃弱体) は 2026-08-25 に撤去: 延焼は純DoTに戻し、赤の受けは憤怒 (被弾の換金) が担う
 export function windowFromPending(state: GameState): ReactionWindow | null {

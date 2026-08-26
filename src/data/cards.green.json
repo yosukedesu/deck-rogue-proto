@@ -378,7 +378,8 @@
         "effect": "gainEnergy",
         "amount": 2
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "green_perm_growth_tree",

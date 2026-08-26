@@ -299,8 +299,22 @@ interface BattleResult {
   readonly whiffed: number
 }
 
-function runBattle(mode: ReactionMode, deckId: string, enemyId: string, seed: number): BattleResult {
-  let s = applyCommand(createInitialState(seed, mode), { type: 'StartCombat', seed, enemyId, deckId })
+function runBattle(
+  mode: ReactionMode,
+  deckId: string,
+  enemyId: string,
+  seed: number,
+  leaderId?: string,
+): BattleResult {
+  // leaderId を渡さないとリーダーパッシブが乗らない。天井デッキとドラフトを比較する時は
+  // 必ず同じリーダーで揃えること (2026-08-26: 未指定だと比較が交絡するため引数を追加)
+  let s = applyCommand(createInitialState(seed, mode), {
+    type: 'StartCombat',
+    seed,
+    enemyId,
+    deckId,
+    leaderId,
+  })
   let actions = 0
   while (s.phase !== 'won' && s.phase !== 'lost') {
     if (s.turn > TURN_LIMIT) break // 膠着 → 敗北扱い

@@ -93,3 +93,28 @@ describe('弱体の下限 (チップダメージが消えない)', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - 1)
   })
 })
+
+describe('致死時の窓の絞り込み (2026-08-26)', () => {
+  it('回復を伴わない返し札しかない致死状態では、確認窓を開かず即敗北になる', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
+      'green_reaction_thorns', // 茨の返し: 返し9のみ・回復なし
+    ])
+    s = { ...s, player: { ...s.player, hp: 5 } }
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = withIntent(s, { kind: 'attack', shownMin: 12, shownMax: 12, actual: 12 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    // 「もう詰んでいるのに確認が出る」を防ぐ = 窓を開かず lost へ
+    expect(s.phase).toBe('lost')
+  })
+
+  it('回復を伴う返し札があれば従来どおり窓が開く', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_reaction_curse', // 呪詛返し: ドレイン5 = 回復あり
+    ])
+    s = { ...s, player: { ...s.player, hp: 5 } }
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_curse' })
+    s = withIntent(s, { kind: 'attack', shownMin: 12, shownMax: 12, actual: 12 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+  })
+})

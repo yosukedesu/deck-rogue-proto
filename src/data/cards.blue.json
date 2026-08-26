@@ -107,7 +107,8 @@
         "effect": "gainEnergy",
         "amount": 2
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "blue_storm_lash",

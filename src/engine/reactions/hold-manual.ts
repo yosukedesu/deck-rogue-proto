@@ -5,6 +5,7 @@
 // (エンジンはターン終了時にエナジーを消さないので、この方式では自然に残額が使える)。
 
 import {
+  canSaveFromLethal,
   effectiveIntent,
   reactionMatches,
   resolveReactionEffects,
@@ -23,7 +24,9 @@ export function playableReactions(state: GameState): readonly CardInstance[] {
     (c) =>
       c.def.type === 'reaction' &&
       reactionMatches(state, c, win) &&
-      c.def.cost <= state.player.energy,
+      c.def.cost <= state.player.energy &&
+      // 致死状態では回復を伴う札だけが生存の可能性を持つ
+      (state.player.hp > 0 || canSaveFromLethal(c)),
   )
 }
 
@@ -33,7 +36,8 @@ function anyPlayable(state: GameState, win: ReactionWindow): boolean {
     (c) =>
       c.def.type === 'reaction' &&
       reactionMatches(state, c, win) &&
-      c.def.cost <= state.player.energy,
+      c.def.cost <= state.player.energy &&
+      (state.player.hp > 0 || canSaveFromLethal(c)),
   )
 }
 
