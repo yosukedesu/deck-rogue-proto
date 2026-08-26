@@ -15,7 +15,7 @@
 import { allDecks, allEnemies, allLeaders, getCardDef } from '../engine/content.ts'
 import { effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
+import { applyRunCommand, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
 
@@ -397,15 +397,35 @@ function simulateRuns(count: number, baseSeed: number): void {
           continue
         }
         if (run.phase === 'campfire') {
-          // 焚き火の方針: HPが6割未満なら休む。余裕があれば基本札を1枚抜いてデッキ濃度を上げる
+          // 焚き火の方針: HPが6割未満なら休む。余裕があれば
+          // ①基本札を1枚抜いてデッキ濃度を上げる ②抜けるものが無ければ主力を鍛える
           const lowHp = run.hp < run.maxHp * 0.6
-          const trimIdx = lowHp
-            ? -1
-            : run.deck.findIndex((c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'))
-          run =
-            trimIdx >= 0 && run.deck.length > 5
-              ? applyRunCommand(run, { type: 'CampfireRemove', index: trimIdx })
-              : applyRunCommand(run, { type: 'CampfireRest' })
+          const basics = run.deck.filter(
+            (c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'),
+          ).length
+          // 基本札が3枚以上ある間だけ抜く。それ以降は鍛えるほうが伸びる
+          const trimIdx =
+            lowHp || basics < 3
+              ? -1
+              : run.deck.findIndex((c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'))
+          if (trimIdx >= 0 && run.deck.length > 5) {
+            run = applyRunCommand(run, { type: 'CampfireRemove', index: trimIdx })
+          } else if (!lowHp) {
+            // 鍛える対象は「量の効果が最も大きい未強化札」= 伸びしろが一番大きい1枚
+            let best = -1
+            let bestAmount = 0
+            run.deck.forEach((c, i) => {
+              if (isUpgraded(c)) return
+              const amt = c.def.effects.reduce((a, e) => a + (e.amount ?? 0), 0)
+              if (amt > bestAmount) { bestAmount = amt; best = i }
+            })
+            run =
+              best >= 0
+                ? applyRunCommand(run, { type: 'CampfireUpgrade', index: best })
+                : applyRunCommand(run, { type: 'CampfireRest' })
+          } else {
+            run = applyRunCommand(run, { type: 'CampfireRest' })
+          }
           continue
         }
         if (run.phase === 'relic-reward') {

@@ -16,7 +16,7 @@ import {
 } from './content.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardDef, CardInstance, Command, GameState, RngState, ReactionMode } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, GameState, RngState, ReactionMode } from './types.ts'
 
 export const RUN_BATTLES = 15
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
@@ -45,8 +45,11 @@ const ELITE_OFFER_BATTLES = new Set([1, 4, 7, 10, 13])
 /** エリート補正: 強化+2・HP×1.35 */
 const ELITE_STRENGTH = 2
 const ELITE_HP_SCALE = 1.35
-/** レリックは1ラン最大3個 */
-const RELIC_MAX = 3
+/**
+ * レリックは1ラン最大5個 (2026-08-26。旧3個)。
+ * エリートオファーは5回あるのに3個上限では後半2回が提示すらされず、供給の穴になっていた。
+ */
+const RELIC_MAX = 5
 
 /** 段階制の敵プール。battleIndex (0-based) → 抽選プール */
 // 敵ID (ソロ) と編成ID (複数体。data/encounters.json) の混合プール
@@ -136,6 +139,7 @@ export type RunCommand =
   // 焚き火 (確定済みルール表「焚き火」): 休んで回復するか、デッキから1枚を永久に取り除くか
   | { readonly type: 'CampfireRest' }
   | { readonly type: 'CampfireRemove'; readonly index: number }
+  | { readonly type: 'CampfireUpgrade'; readonly index: number }
 
 /**
  * 次の戦闘へ進む。エリートオファー対象の戦闘 (2/5/8戦目) では先に 'offer' フェーズを挟む
@@ -337,6 +341,55 @@ function campfireOrReward(run: RunState): RunState {
   return rollRewards(run)
 }
 
+/**
+ * 強化の対象になる「量」の効果 (確定済みルール表「焚き火」)。
+ * ドロー・エナジー・上限・成長・勢い・霊気などの「単位」効果と、
+ * 参照スケーリング (×N) は対象外 — engine の倍率に触れないための安全弁。
+ */
+const UPGRADABLE_EFFECTS = new Set([
+  'dealDamage',
+  'gainBlock',
+  'gainIceBlock',
+  'applyBurn',
+  'counter',
+  'gainHp',
+  'dealDamageDrain',
+  'dealDamageRandom',
+  'dealDamageExecute',
+])
+
+/** すでに鍛えられているか (同じカードは1回だけ) */
+export function isUpgraded(card: CardInstance): boolean {
+  return card.def.name.endsWith('+')
+}
+
+/**
+ * カードを鍛える: 量の効果を+50% (切り上げ) して名前に「+」を付ける。
+ * 火弾6→9・防御5→8 は StS の Strike+ / Defend+ と同値。
+ * def を作り直すので engine 側に強化用の分岐は要らない (id は据え置き = 軸判定も不変)。
+ */
+export function upgradeCard(card: CardInstance): CardInstance {
+  const boost = (e: DeclarativeEffect): DeclarativeEffect => {
+    if (!UPGRADABLE_EFFECTS.has(e.effect) || e.amount === undefined) return e
+    return {
+      ...e,
+      amount: Math.ceil(e.amount * 1.5),
+      ...(e.amountMax !== undefined ? { amountMax: Math.ceil(e.amountMax * 1.5) } : {}),
+    }
+  }
+  return {
+    ...card,
+    def: {
+      ...card.def,
+      name: `${card.def.name}+`,
+      effects: card.def.effects.map(boost),
+      ...(card.def.modes !== undefined
+        ? { modes: card.def.modes.map((m) => ({ ...m, effects: m.effects.map(boost) })) }
+        : {}),
+    },
+  }
+}
+
 /** B型レリックの取得時効果を適用する */
 function applyRelicBonus(run: RunState, relicId: string): RunState {
   const def = getRelicDef(relicId)
@@ -403,6 +456,16 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
       const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
       return rollRewards({ ...run, hp })
+    }
+    case 'CampfireUpgrade': {
+      if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      const card = run.deck[command.index]
+      if (card === undefined) throw new Error(`不正な強化指定: ${command.index}`)
+      if (isUpgraded(card)) throw new Error('すでに鍛えられている')
+      return rollRewards({
+        ...run,
+        deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
+      })
     }
     case 'CampfireRemove': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')

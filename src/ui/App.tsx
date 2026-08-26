@@ -37,7 +37,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, createRun, RUN_BATTLES } from '../engine/run.ts'
+import { applyRunCommand, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type {
@@ -1559,7 +1559,7 @@ function RunScreen({
           </button>
         </div>
         <div className="setup-section-title" style={{ marginTop: 20 }}>
-          または、取り除く1枚を選ぶ（デッキ{run.deck.length}枚・最低5枚は残る）
+          または、デッキの1枚を「取り除く」か「鍛える」（デッキ{run.deck.length}枚・最低5枚は残る）
         </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {run.deck.map((c, i) => (
@@ -1569,13 +1569,22 @@ function RunScreen({
               dim={false}
               ctx={ctx}
               actions={
-                <button
-                  className="btn"
-                  disabled={run.deck.length <= 5}
-                  onClick={() => dispatch({ type: 'CampfireRemove', index: i })}
-                >
-                  取り除く
-                </button>
+                <>
+                  <button
+                    className="btn"
+                    disabled={run.deck.length <= 5}
+                    onClick={() => dispatch({ type: 'CampfireRemove', index: i })}
+                  >
+                    取り除く
+                  </button>{' '}
+                  <button
+                    className="btn btn-primary"
+                    disabled={isUpgraded(c)}
+                    onClick={() => dispatch({ type: 'CampfireUpgrade', index: i })}
+                  >
+                    {isUpgraded(c) ? '鍛済' : '鍛える'}
+                  </button>
+                </>
               }
             />
           ))}

@@ -1,7 +1,7 @@
 // ドラフト連戦モードのテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
-import { getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, depthHpScale, depthStrength, RUN_BATTLES } from './run.ts'
+import { getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { applyRunCommand, createRun, depthHpScale, depthStrength, isUpgraded, RUN_BATTLES, upgradeCard } from './run.ts'
 import type { RunState } from './run.ts'
 import { defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -225,5 +225,39 @@ describe('プレイテスト由来の調整 (2026-08-26)', () => {
       if ((run.rewardOptions ?? []).some((id) => !axisIds.includes(id))) sawOffAxis = true
     }
     expect(sawOffAxis).toBe(true)
+  })
+})
+
+describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () => {
+  it('量の効果は+50%(切り上げ)になり、名前に「+」が付く', () => {
+    const strike = { uid: 'u1', def: getCardDef('green_strike') } // 1E・6ダメージ
+    const up = upgradeCard(strike)
+    expect(up.def.name).toBe('打撃+')
+    expect(up.def.effects[0].amount).toBe(9) // StS の Strike+ と同値
+    expect(isUpgraded(up)).toBe(true)
+    const guard = upgradeCard({ uid: 'u2', def: getCardDef('green_guard') }) // 1E・ブロック5
+    expect(guard.def.effects[0].amount).toBe(8) // StS の Defend+ と同値
+  })
+
+  it('「単位」の効果と参照スケーリングは強化しない (engineの倍率に触れない安全弁)', () => {
+    const sprout = upgradeCard({ uid: 'u3', def: getCardDef('green_ramp_sprout') }) // 上限+1
+    expect(sprout.def.effects[0].amount).toBe(1) // gainEnergyMax は据え置き
+    const ring = upgradeCard({ uid: 'u4', def: getCardDef('green_growth_ring') }) // 成長+2
+    expect(ring.def.effects[0].amount).toBe(2) // addGrowth は据え置き
+  })
+
+  it('焚き火で鍛えるとデッキのその1枚だけが強くなる (同じ札は1回だけ)', () => {
+    let run = createRun(17, 'set-confirm')
+    run = forceWin(run)
+    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
+    run = forceWin(run)
+    run = applyRunCommand(run, { type: 'SkipReward' })
+    run = forceWin(run)
+    expect(run.phase).toBe('campfire')
+    const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: idx })
+    expect(run.deck[idx].def.name).toBe('打撃+')
+    expect(run.deck.filter((c) => c.def.name === '打撃+')).toHaveLength(1)
+    expect(run.phase).toBe('reward')
   })
 })

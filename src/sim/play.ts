@@ -12,7 +12,7 @@
 //   {"type":"ConfirmReaction","fire":true,"cardUid":"c3"} / {"type":"ConfirmReaction","fire":false}
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseElite","elite":true} / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
-//            {"type":"CampfireRest"} / {"type":"CampfireRemove","index":0}  ← 焚き火 (3・6・9・12戦目後)
+//            {"type":"CampfireRest"} / {"type":"CampfireRemove","index":0} / {"type":"CampfireUpgrade","index":0}  ← 焚き火
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
@@ -244,9 +244,10 @@ function renderRun(run: RunState, logFrom: number): string {
   } else if (run.phase === 'campfire') {
     L.push('🔥 焚き火: 休むか、デッキから1枚を永久に取り除くか')
     L.push(`  休む → HP+${Math.floor(run.maxHp * run.campfireRatio)} (現在 ${run.hp}/${run.maxHp})`)
-    L.push('  除去 → デッキから1枚を永久に取り除く:')
+    L.push(`  除去 → デッキから1枚を永久に取り除く (+HP${Math.floor(run.maxHp * 0.1)})`)
+    L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
-    L.push('→ {"type":"CampfireRest"} か {"type":"CampfireRemove","index":N}')
+    L.push('→ {"type":"CampfireRest"} / {"type":"CampfireRemove","index":N} / {"type":"CampfireUpgrade","index":N}')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {
@@ -294,7 +295,7 @@ if (mode === 'new-run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
       ['PickReward', 'SkipReward', 'ChooseElite', 'PickRelic', 'SkipRelic', 'StartRun',
-        'CampfireRest', 'CampfireRemove'].includes(cmd.type)
+        'CampfireRest', 'CampfireRemove', 'CampfireUpgrade'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
     sf.run = applyRunCommand(sf.run!, runCmd)
