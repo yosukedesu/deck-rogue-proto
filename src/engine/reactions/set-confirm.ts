@@ -4,6 +4,7 @@
 // 温存した伏せは場に残り続ける → 伏せ警戒型へのブラフが意図的に打てる。
 
 import { effectiveIntent, usableSetCards, windowFromPending } from '../effects.ts'
+import { emit } from '../events.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
 import { canSetCard, emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
 
@@ -29,10 +30,21 @@ export const setConfirmSystem: ReactionSystem = {
         if (state.phase !== 'awaiting-reaction' || !state.pendingWindow) {
           throw new Error('確認待ちではないのに ConfirmReaction が来た')
         }
-        if (!command.fire) return state // 温存: 伏せたまま。敵の行動処理はそのまま進む
         // 伏せ2枚 (かすみ): 窓に合致する伏せから発動する1枚を選ぶ。cardUid 省略時は先頭の合致札
         const win = windowFromPending(state)
         const candidates = win ? usableSetCards(state, win) : []
+        if (!command.fire) {
+          // 温存: 伏せたまま。敵の行動処理はそのまま進む。
+          // 判断そのものが set-confirm の主題なので記録する (2026-08-26)
+          return emit(state, {
+            type: 'ReactionHeld',
+            enemyIndex: state.pendingWindow.enemyIndex,
+            stage: state.pendingWindow.stage,
+            kind: win?.kind ?? 'attack',
+            value: win ? (win.stage === 'pre' ? win.actual : win.hpLoss) : 0,
+            candidateIds: candidates.map((c) => c.def.id),
+          })
+        }
         const card =
           command.cardUid !== undefined
             ? candidates.find((c) => c.uid === command.cardUid)

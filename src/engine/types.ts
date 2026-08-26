@@ -288,6 +288,21 @@ export type GameEvent =
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
+  /**
+   * set-confirm で「温存」を選んだ記録 (2026-08-26)。
+   * 発動/温存の判断こそがこの方式の主題なのに、温存だけが一切ログに残っていなかった。
+   * ReactionWhiffed は敵フェーズ終端の残存枚数なので、意図的な温存とは別物
+   */
+  | {
+      readonly type: 'ReactionHeld'
+      readonly enemyIndex: number
+      readonly stage: 'pre' | 'post'
+      readonly kind: EnemyActionKind
+      /** pre窓は敵行動の実値、post窓は被ったHP減 */
+      readonly value: number
+      /** その窓で発動できた候補 (cardId) */
+      readonly candidateIds: readonly string[]
+    }
   | { readonly type: 'ReactionWhiffed'; readonly cardId: string } // 空振り (伏せは無期限持続が現ルール)
   | { readonly type: 'SetCardDestroyed'; readonly cardId: string } // 伏せ破壊型の仕事
   | { readonly type: 'EnemyPhaseEnded'; readonly turn: number } // 空振り計上などのフック点

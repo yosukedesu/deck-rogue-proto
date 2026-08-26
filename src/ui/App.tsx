@@ -2,6 +2,15 @@
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
 import { useState } from 'react'
 import {
+  cardName,
+  inflictSuffix,
+  intentText,
+  logLine,
+  saveReport,
+  STATUS_LABEL,
+  type LogLine,
+} from './report.ts'
+import {
   allDecks,
   allEncounters,
   allEnemies,
@@ -420,14 +429,6 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
   )
 }
 
-const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', wound: '負傷' }
-
-/** 状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」) */
-function inflictSuffix(intent: EnemyIntent): string {
-  if (!intent.inflict) return ''
-  return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}`
-}
-
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
 function conditionalIntentText(s: GameState, i: number): string {
   const intent = s.enemies[i]?.intent
@@ -437,29 +438,6 @@ function conditionalIntentText(s: GameState, i: number): string {
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
   return `【${cond}】${intentText({ ...intent.alt })}${isAlt ? '◀今これ' : ''} ／【なし】${intentText({ ...intent, conditionalOn: undefined, alt: undefined })}${isAlt ? '' : '◀今これ'}`
-}
-
-/** 敵の意図表示 (威嚇は撤去済み: 幅は宣言値をそのまま出す) */
-function intentText(intent: EnemyIntent | null): string {
-  if (!intent) return '---'
-  switch (intent.kind) {
-    case 'attack': {
-      const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${inflictSuffix(intent)}`
-    }
-    case 'defend':
-      return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
-    case 'destroy-set':
-      return '💥 伏せ破壊'
-    case 'destroy-token':
-      return '🪓 従者狩り'
-    case 'buff':
-      return `💪 強化 +${intent.shownMin}〜${intent.shownMax}`
-    case 'rally':
-      return `📣 応援 +${intent.shownMin}〜${intent.shownMax}（味方全体）`
-    case 'hex':
-      return `🧿 呪い${inflictSuffix(intent)}`
-  }
 }
 
 /** 誘発確認ウィンドウ用: 敵の行動は確定済みなので実値を公開する (確定済みルール「誘発確認時の情報」) */
@@ -483,15 +461,6 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
     case 'hex':
       return `🧿 呪い${inflictSuffix(intent)}`
   }
-}
-
-function cardName(cardId: string): string {
-  return getCardDef(cardId).name
-}
-
-interface LogLine {
-  text: string
-  cls: string
 }
 
 /**
@@ -529,120 +498,6 @@ function lastEnemyPhaseSummary(
     if (e.type === 'StatusInflicted') statuses.push(`${STATUS_LABEL[e.status]}${e.amount}`)
   }
   return { dealt, hpLoss, statuses }
-}
-
-function logLine(e: GameEvent): LogLine | null {
-  switch (e.type) {
-    case 'CombatStarted':
-      return { text: `戦闘開始: ${encounterName(e.enemyId)}`, cls: 'log-turn' }
-    case 'TurnStarted':
-      return { text: `─── ターン ${e.turn} ───`, cls: 'log-turn' }
-    case 'TurnEnded':
-      return { text: 'ターン終了 → 敵の行動', cls: 'log-line' }
-    case 'CardsDrawn':
-      return { text: `${e.count}枚ドロー`, cls: 'log-line' }
-    case 'CardPlayed':
-      return { text: `プレイ: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'CardSet':
-      return { text: `伏せた: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'EnemyIntentDeclared':
-      return { text: `敵の意図: ${intentText(e.intent)}`, cls: 'log-line' }
-    case 'EnemyActionExecuting':
-    case 'EnemyActionResolved':
-      return null
-    case 'ActionNegated':
-      return { text: '敵の行動は打ち消された！', cls: 'log-good' }
-    case 'DamageDealt':
-      return e.source === 'player'
-        ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})`, cls: 'log-line' }
-        : { text: `敵の攻撃${e.amount} → HP減 ${e.hpLoss}`, cls: 'log-bad' }
-    case 'BlockGained':
-      return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
-    case 'StrengthGained':
-      return { text: `敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
-    case 'IceBlockGained':
-      return { text: `氷壁+${e.amount}（持ち越しブロック）`, cls: 'log-line' }
-    case 'AetherGained':
-      return { text: `霊気+${e.amount}`, cls: 'log-good' }
-    case 'AetherDischarged':
-      return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
-    case 'DiscountGained':
-      return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
-    case 'BurnApplied':
-      return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
-    case 'BurnTick':
-      return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
-    case 'StatusInflicted':
-      return {
-        text:
-          e.status === 'wound'
-            ? `負傷${e.amount}枚が捨て札に混入した`
-            : `${STATUS_LABEL[e.status]}${e.amount}を付与された`,
-        cls: 'log-bad',
-      }
-    case 'RegenTicked':
-      return { text: `敵は再生でHP+${e.amount}`, cls: 'log-bad' }
-    case 'EnemyConfused':
-      return { text: `敵に混乱+${e.amount}（攻撃が仲間に向かう）`, cls: 'log-good' }
-    case 'ExposedApplied':
-      return { text: `敵に急所+${e.amount}（次のダメージ${e.amount}回が+50%）`, cls: 'log-good' }
-    case 'GrowthDischarged':
-      return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
-    case 'HpHealed':
-      return { text: `HP+${e.amount}回復`, cls: 'log-good' }
-    case 'CardsMilled':
-      return { text: `山札の上${e.count}枚が忘却された（消滅）`, cls: 'log-line' }
-    case 'EnemyWeakened':
-      return { text: `敵を威圧（強化-${e.amount}）`, cls: 'log-good' }
-    case 'ConfusedAttack':
-      return {
-        text:
-          e.enemyIndex === e.targetIndex
-            ? `混乱した敵は自分自身に${e.amount}ダメージ！`
-            : `仲間割れ！ 混乱した敵が味方に${e.amount}ダメージ`,
-        cls: 'log-good',
-      }
-    case 'BlockShattered':
-      return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
-    case 'ImpulseDrawn':
-      return { text: `衝動${e.count}枚（このターン限り）`, cls: 'log-line' }
-    case 'HpLost':
-      return { text: `自傷でHP-${e.amount}`, cls: 'log-bad' }
-    case 'EnergyGained':
-      return { text: `エナジー+${e.amount}（このターン）`, cls: 'log-line' }
-    case 'MomentumAdded':
-      return { text: `勢い+${e.amount}`, cls: 'log-good' }
-    case 'PermanentPlayed':
-      return { text: `置物を設置: ${cardName(e.cardId)}`, cls: 'log-good' }
-    case 'CardExhausted':
-      return { text: `消滅: ${cardName(e.cardId)}（この戦闘から除外）`, cls: 'log-line' }
-    case 'BurnDischarged':
-      return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
-    case 'TokenDestroyed':
-      return { text: `従者狩り: ${cardName(e.cardId)}が倒された`, cls: 'log-line' }
-    case 'CardRetrieved':
-      return { text: `回収: ${cardName(e.cardId)}（消滅置き場から手札へ）`, cls: 'log-line' }
-    case 'CardPlayedFromExhaust':
-      return { text: `直接プレイ: ${cardName(e.cardId)}（消滅置き場から）`, cls: 'log-line' }
-    case 'CardsDiscarded':
-      return { text: `コストとして捨てた: ${e.cardIds.map(cardName).join('、')}`, cls: 'log-line' }
-    case 'EnergyMaxGained':
-      return { text: `エナジー上限+${e.amount}`, cls: 'log-line' }
-    case 'GrowthAdded':
-      return { text: `成長+${e.amount}`, cls: 'log-good' }
-    case 'ReactionTriggered':
-      return { text: `リアクション発動: ${cardName(e.cardId)}`, cls: 'log-good' }
-    case 'ReactionWhiffed':
-      return { text: `空振り: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'SetCardDestroyed':
-      return { text: `伏せカード破壊: ${cardName(e.cardId)}`, cls: 'log-bad' }
-    case 'EnemyPhaseEnded':
-      return null
-    case 'CombatEnded':
-      return e.result === 'won'
-        ? { text: '=== 勝利 ===', cls: 'log-good' }
-        : { text: '=== 敗北 ===', cls: 'log-bad' }
-  }
 }
 
 // ---- 小物コンポーネント ----
@@ -892,6 +747,7 @@ function BattleScreen({
   dispatch,
   onRestart,
   onBack,
+  onExport,
   extraChip,
   backLabel,
 }: {
@@ -900,6 +756,8 @@ function BattleScreen({
   dispatch: (c: Command) => void
   onRestart: (seed: number) => void
   onBack: () => void
+  /** 状況をファイルに書き出す (プレイテストの事実をAIへ渡すため) */
+  onExport: () => void
   extraChip?: string
   backLabel?: string
 }) {
@@ -1015,9 +873,14 @@ function BattleScreen({
           <span className="chip">ターン {s.turn}</span>
           <span className="chip">seed {config.seed}</span>
         </span>
-        <button className="btn" onClick={onBack}>
-          {backLabel ?? '設定に戻る'}
-        </button>
+        <span>
+          <button className="btn" onClick={onExport}>
+            📄 状況を書き出す
+          </button>{' '}
+          <button className="btn" onClick={onBack}>
+            {backLabel ?? '設定に戻る'}
+          </button>
+        </span>
       </div>
 
       {/* 敵ゾーン (1〜3体)。ターゲット選択中は敵をタップして対象決定 */}
@@ -1673,6 +1536,7 @@ function RunScreen({
   if (run.phase === 'combat' && run.combat) {
     return (
       <BattleScreen
+        onExport={() => saveReport(run, null)}
         state={run.combat}
         config={{
           mode: run.mode,
@@ -1719,6 +1583,9 @@ function RunScreen({
         </div>
         <button className="btn" onClick={() => dispatch({ type: 'SkipReward' })}>
           スキップして次へ
+        </button>{' '}
+        <button className="btn" onClick={() => saveReport(run, null)}>
+          📄 状況を書き出す
         </button>
         {run.picks.length > 0 && (
           <div className="pile-info" style={{ marginTop: 16 }}>
@@ -1821,6 +1688,7 @@ export default function App() {
   }
   return (
     <BattleScreen
+      onExport={() => saveReport(null, state)}
       state={state}
       config={config}
       dispatch={dispatch}
