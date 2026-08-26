@@ -103,6 +103,8 @@ export interface EnemyState extends CombatantState {
   readonly exposed: number
   /** 行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用 */
   readonly patternIndex: number
+  /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
+  readonly noReactTable?: boolean
 }
 
 /** 敵の意図。プレイヤーへは幅あり表示 (例: 攻撃6〜12)。実値は宣言時にロール済みで非公開 */
@@ -574,6 +576,12 @@ export interface EncounterMember {
   readonly strength?: number
   /** ローテーション開始位置のズラし。同型2体の大技同期 (同時lunge等) を防ぐ */
   readonly patternOffset?: number
+  /**
+   * 伏せ/従者への反応テーブル (movesVsSet / movesVsTokens) をこの個体では使わない。
+   * 群れで全員が同時に反応すると、伏せ1枚のリスクが頭数に比例して跳ね上がるため、
+   * 先頭の1体だけが反応するようにする (2026-08-26。確定済みルール表「編成の反応テーブル」)
+   */
+  readonly noReactTable?: boolean
 }
 
 export interface EncounterDef {

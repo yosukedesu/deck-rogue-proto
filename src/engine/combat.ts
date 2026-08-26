@@ -143,6 +143,7 @@ export function startCombatWithOptions(
       confusion: 0,
       exposed: 0,
       patternIndex: m.patternOffset ?? 0,
+      ...(m.noReactTable === true ? { noReactTable: true } : {}),
     }
   })
   state = {
@@ -240,8 +241,10 @@ function declareIntents(state: GameState): GameState {
     // 伏せ反応を既定にして「伏せれば行動が変わる」の予告を残す。
     // 2026-08-26 修正: 旧実装は `def.movesVsSet ?? def.movesVsTokens` で、両テーブルを持つ唯一の敵では
     // movesVsSet が常に勝つため destroy-token が production から到達不能だった。
-    const vsSet = def.movesVsSet?.length ? def.movesVsSet : undefined
-    const vsTokens = def.movesVsTokens?.length ? def.movesVsTokens : undefined
+    // 編成で反応テーブルを無効化された個体は分岐を持たない (群れで全員が同時に反応しない)
+    const vsSet = enemy.noReactTable !== true && def.movesVsSet?.length ? def.movesVsSet : undefined
+    const vsTokens =
+      enemy.noReactTable !== true && def.movesVsTokens?.length ? def.movesVsTokens : undefined
     const preferTokens = s.player.setCards.length === 0 && hasHuntableTokens(s)
     const reactTable = belowHalf
       ? undefined

@@ -36,6 +36,8 @@ const REWARD_EXCLUDED = new Set([
 /** 焚き火 (回復かカード除去の二択) が入る戦闘 (0-based: 3・6・9・12戦目クリア後) */
 const CAMPFIRE_AFTER = new Set([2, 5, 8, 11])
 const CAMPFIRE_HEAL_RATIO = 0.3
+/** 焚き火で除去を選んだ時の回復率。二択が「休む一択」に固定化しないための下駄 (2026-08-26) */
+const CAMPFIRE_TRIM_HEAL_RATIO = 0.1
 /** 勝利ごとの自動回復は廃止 (2026-08-25 StS踏襲。回復は焚き火のみ=マラソン構造) */
 const VICTORY_HEAL = 0
 /** エリート挑戦オファーが出る戦闘 (0-based: 2・5・8・11・14戦目)。確定済みルール表「エリート挑戦オファー」 */
@@ -169,9 +171,14 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
   const enemyIds: string[] = []
   for (let i = 0; i < RUN_BATTLES; i++) {
     const pool = tierForBattle(i)
-    const [idx, next] = nextInt(rng, 0, pool.length - 1)
+    // 直前2戦と同じ敵は避ける (2026-08-26。同型の長期戦が連続すると「同じ戦闘を3回やらされている」
+    // 体感になるとプレイテストで3人が指摘)。プールが小さくて避けられない場合はそのまま
+    const recent = enemyIds.slice(-2)
+    const fresh = pool.filter((id) => !recent.includes(id))
+    const candidates = fresh.length > 0 ? fresh : pool
+    const [idx, next] = nextInt(rng, 0, candidates.length - 1)
     rng = next
-    enemyIds.push(pool[idx])
+    enemyIds.push(candidates[idx])
   }
   // レリック候補列もシードから確定 (リプレイ再現性)
   const [relicQueue, rngAfterRelics] = shuffle(
@@ -291,7 +298,11 @@ function rollRewards(run: RunState): RunState {
   let rng = run.rng
   const want = leader.rewardChoices + run.rewardChoicesBonus
   while (picked.length < want && remaining.length > 0) {
-    const weights = remaining.map((c) => rewardWeight(c, deckAxes))
+    // 最後の1枠だけ重み付けなしの純粋ランダムにする (2026-08-26)。
+    // 重み付けが強いと同じ色の第二の柱に一生触れられない
+    // (赤で15戦通して憤怒の札が1枚も提示されなかった)。3枠が軸を伸ばし、1枠が乗り換えの機会を作る
+    const isFreeSlot = picked.length === want - 1
+    const weights = remaining.map((c) => (isFreeSlot ? 1 : rewardWeight(c, deckAxes)))
     const [idx, next] = weightedIndex(rng, weights)
     rng = next
     picked.push(remaining[idx].id)
@@ -397,8 +408,12 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
       // デッキが痩せすぎないよう最低5枚は残す
       if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
+      // 除去にも少しだけ回復を付ける。付けないとHPが常に危機的な本作では「休む一択」になり
+      // 二択が機能しない (2026-08-26 プレイテストで4人中3人が全回「休む」を選んだ)
+      const trimHp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * CAMPFIRE_TRIM_HEAL_RATIO))
       return rollRewards({
         ...run,
+        hp: trimHp,
         deck: run.deck.filter((_, i) => i !== command.index),
       })
     }

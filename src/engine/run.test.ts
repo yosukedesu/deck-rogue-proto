@@ -153,7 +153,7 @@ describe('HP持ち越しと焚き火', () => {
     expect(run.phase).toBe('reward')
   })
 
-  it('焚き火でカード除去を選ぶとデッキから1枚が永久に消える (回復はしない)', () => {
+  it('焚き火でカード除去を選ぶとデッキから1枚が永久に消え、少しだけ回復する', () => {
     let run = createRun(17, 'set-confirm')
     run = forceWin(run)
     run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
@@ -166,7 +166,9 @@ describe('HP持ち越しと焚き火', () => {
     run = applyRunCommand(run, { type: 'CampfireRemove', index: 0 })
     expect(run.deck).toHaveLength(before - 1)
     expect(run.deck.some((c) => c.uid === removed)).toBe(false)
-    expect(run.hp).toBe(20) // 除去を選んだので回復しない
+    // 除去にも下駄 (最大HPの10%) を履かせる。付けないとHPが常に危機的な本作では
+    // 「休む一択」に固定化して二択が機能しない (2026-08-26 プレイテスト)
+    expect(run.hp).toBe(20 + Math.floor(80 * 0.1))
     expect(run.phase).toBe('reward')
   })
 
@@ -198,5 +200,30 @@ describe('ラン走破', () => {
       run = declineOffer(run)
     }
     expect(run.phase).toBe('won')
+  })
+})
+
+describe('プレイテスト由来の調整 (2026-08-26)', () => {
+  it('敵の並びは直前2戦と同じ敵を避ける (同型の連戦を防ぐ)', () => {
+    // プールが小さくて避けられない場合を除き、3連続の同一敵は出ない
+    for (let seed = 1; seed <= 60; seed++) {
+      const ids = createRun(seed, 'set-confirm').enemyIds
+      for (let i = 2; i < ids.length; i++) {
+        expect(ids[i] === ids[i - 1] && ids[i] === ids[i - 2]).toBe(false)
+      }
+    }
+  })
+
+  it('報酬の最後の1枠は重み付けなし = 軸外の札にも乗り換えの機会が残る', () => {
+    // 緑スターターの軸は成長・ランプ。全ての提示が軸内で埋まるランは存在しないはず
+    let sawOffAxis = false
+    for (let seed = 1; seed <= 40 && !sawOffAxis; seed++) {
+      let run = createRun(seed, 'set-confirm')
+      run = forceWin(run)
+      if (run.phase !== 'reward') continue
+      const axisIds = ['green_growth_ring', 'green_ramp_sprout', 'green_double_lash']
+      if ((run.rewardOptions ?? []).some((id) => !axisIds.includes(id))) sawOffAxis = true
+    }
+    expect(sawOffAxis).toBe(true)
   })
 })

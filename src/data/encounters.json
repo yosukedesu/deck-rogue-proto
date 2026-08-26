@@ -12,7 +12,8 @@
         "enemyId": "enemy_probe",
         "hpScale": 0.5,
         "strength": -2,
-        "patternOffset": 1
+        "patternOffset": 1,
+        "noReactTable": true
       }
     ]
   },
@@ -29,13 +30,15 @@
         "enemyId": "enemy_probe",
         "hpScale": 0.38,
         "strength": -3,
-        "patternOffset": 1
+        "patternOffset": 1,
+        "noReactTable": true
       },
       {
         "enemyId": "enemy_probe",
         "hpScale": 0.38,
         "strength": -3,
-        "patternOffset": 2
+        "patternOffset": 2,
+        "noReactTable": true
       }
     ]
   },
