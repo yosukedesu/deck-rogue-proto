@@ -363,6 +363,7 @@ export interface DeclarativeEffect {
     | 'onCombatStart' // 戦闘開始時に1回 (レリック用。第1ターンのドロー・意図宣言の後に発火)
     | 'onAttackPlayed' // 攻撃カードをプレイした時 (置物、および伏せ札の自己誘発)
     | 'onSpellPlayed' // 呪文カードをプレイした時 (伏せ札の自己誘発。物理/呪文分割の機構的活用)
+    | 'onCardPlayed' // カードを1枚プレイするたび (種類を問わない。赤の「手数」= ひばなのパッシブ)
     | 'onSetDestroyed' // この伏せ札が敵に破壊された時 (罠仕掛けの火薬)
     | 'onHealed' // 実回復 (>0) が発生した時 (置物。黒: 血の月。ドレイン・リーダーパッシブでも誘発)
     | 'onBlockGained' // プレイヤーがブロックを得るたび (置物。白の要塞: 城壁の弩。StS Juggernaut型。氷壁は別経路なので誘発しない)

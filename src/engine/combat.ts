@@ -525,6 +525,8 @@ export function playCard(
     s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
     s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
   }
+  // 「カードをプレイするたび」の誘発 (種類を問わない)。赤の手数を勢いに変える
+  s = runPermanentTriggers(s, 'onCardPlayed', enemyIndex)
   // 呪文プレイの誘発: 伏せ札の自己誘発 + 置物 (青の接着剤: 霧の分身)
   if (card.def.type === 'spell') {
     s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)

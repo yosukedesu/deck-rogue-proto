@@ -188,6 +188,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onPlay: '',
   onAttackIncoming: '被攻撃前: ',
   onAttacked: '被攻撃後: ',
+  onCardPlayed: 'カードをプレイするたび: ',
   onBlockGained: 'ブロックを得るたび: ',
   onActionNegated: '敵の行動を打ち消すたび: ',
   onEnemyAction: '敵行動時: ',

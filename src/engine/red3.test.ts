@@ -2,10 +2,19 @@
 // 人間プレイテストで「赤は緑と同じ攻撃力＋劣る防御＝純粋な下位互換」と判明したのを受け、
 // 確定済みルール表「赤の柱⑤速さで対価を払う / ⑥防御は割高のままだが腐らせない」を固定する。
 import { describe, expect, it } from 'vitest'
-import { getCardDef } from './content.ts'
+import { startCombatWithOptions } from './combat.ts'
+import { buildDeck, getCardDef } from './content.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 import type { GameState } from './types.ts'
+
+/** リーダー付きの戦闘 (freshCombat はリーダーを注入しない) */
+function startCombatWithLeader(deckId: string, leaderId: string): GameState {
+  return startCombatWithOptions(42, 'set-confirm', 'enemy_probe', {
+    deck: buildDeck(deckId),
+    leaderId,
+  })
+}
 
 /** 山札の中身を差し替える (衝動ドローの対象を決定的にするため) */
 function withDrawPile(state: GameState, cardIds: readonly string[]): GameState {
@@ -88,5 +97,29 @@ describe('熾火の一閃 (1マナで火力が低い代わりにキャントリ�
     expect(s.enemies[0].hp).toBe(enemyHp - 4) // 火弾6より2点低い
     expect(s.player.hand.map((c) => c.def.id)).toEqual(['red_strike']) // が、手札は減っていない
     expect(s.player.impulseUids).toHaveLength(0) // 衝動ではない通常のドロー
+  })
+})
+
+describe('ひばなのパッシブ = 手数を勢いに変える (2026-08-27)', () => {
+  // 「守らない色」なのに勝ち筋のバーンが時間を要求する、という思想の自己矛盾への回答。
+  // 主軸を「時間をかけて焼く」から「手数で加速して短期決着する」へ移した。
+  // いぶき(グルール)の「攻撃ごと勢い+1」との差別化は、種類を問わない点と量。
+  it('カードを1枚プレイするたび勢い+2。防御札でも置物でも乗る', () => {
+    let s = startCombatWithLeader('starter_red', 'leader_red')
+    expect(s.player.momentum).toBe(0)
+    s = withHand(s, ['red_guard']) // 防御札 (ブロック4+衝動ドロー1)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_guard' })
+    expect(s.player.momentum).toBe(2) // 攻撃でなくても勢いが乗る = 守りが攻めの準備になる
+  })
+
+  it('手数を重ねるほど後続の攻撃が加速する (0マナ攻撃が加速装置になる)', () => {
+    let s = startCombatWithLeader('starter_red', 'leader_red')
+    s = withHand(s, ['red_spark', 'red_spark', 'red_strike'])
+    const hp0 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_spark' }) // 3ダメ (勢い0で解決→勢い+2)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_spark' }) // 3+2=5ダメ →勢い+2
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_red_strike' }) // 6+4=10ダメ
+    expect(hp0 - s.enemies[0].hp).toBe(3 + 5 + 10)
+    expect(s.player.momentum).toBe(6)
   })
 })

@@ -53,12 +53,12 @@
     "rewardChoices": 4,
     "runDeckId": "run_basic_red",
     "sprite": "🌋",
-    "description": "燼の闘士。意外と頑丈な体で殴るほど燃え広がる。攻撃カードをプレイするたび敵に延焼+1",
+    "description": "燼の闘士。意外と頑丈な体で、手を出すほど加速する。カードを1枚プレイするたび勢い+2",
     "passive": [
       {
-        "trigger": "onAttackPlayed",
-        "effect": "applyBurn",
-        "amount": 1
+        "trigger": "onCardPlayed",
+        "effect": "addMomentum",
+        "amount": 2
       }
     ]
   },
