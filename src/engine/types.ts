@@ -69,6 +69,8 @@ export interface PlayerState extends CombatantState {
   readonly iceBlock: number
   /** 詠唱数 (青のストーム): このターンにプレイしたカード数。ターン開始でリセット */
   readonly cardsPlayedThisTurn: number
+  /** この戦闘でプレイしたカードの累計 (ターンを跨いでリセットされない)。時喰らい型タイマーの参照値 */
+  readonly cardsPlayedTotal: number
   /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
   readonly aether: number
   /**
@@ -553,6 +555,12 @@ export interface EnemyDef {
   readonly regen?: number
   /** 激昂: 敵フェーズ終了時に強化+N (確定済みルール表「激昂」) */
   readonly enrage?: number
+  /**
+   * 時喰らい型タイマー (2026-08-26): プレイヤーの累計詠唱数がこの枚数に達するたび強化+enrage。
+   * 時間ではなくプレイヤーのテンポに紐づくので、低速デッキほど誘発が遅い = 自己調整する。
+   * enrage と併用する場合、こちらが指定されていれば毎フェーズの自動強化は行わない。
+   */
+  readonly enrageEveryCards?: number
 }
 
 // ---- エンカウンター (1〜3体の編成。data/encounters.json) ----

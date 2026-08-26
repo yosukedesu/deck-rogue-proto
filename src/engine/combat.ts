@@ -33,8 +33,9 @@ import type {
 export const PLAYER_MAX_HP = 75 // StSスケール (2026-08-25 人間基準化)
 const BASE_ENERGY = 3
 const DRAW_PER_TURN = 5
-/** 激昂による強化の累積上限 (確定済みルール表「激昂」) */
-const ENRAGE_CAP = 6
+// 激昂の累積上限は撤廃 (2026-08-26。確定済みルール表「激昂」)。
+// 本家StSに上限という概念は無く、①誘発をプレイヤーが握る ②積む敵は短命 ③筋力を剥がす手段が全キャラにある
+// の3点で抑えている。本作もそれに揃えた (門番のHPを下げ、威圧を全色に配った)。
 /** がらくた (罠壊し) の1戦闘あたり上限 */
 const JUNK_CAP = 4
 
@@ -64,6 +65,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       momentum: 0, // 勢いは自ターン終了時リセット
       iceBlock: 0, // 氷壁は戦闘内で持ち越し
       cardsPlayedThisTurn: 0,
+      cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
       nextCardDiscount: 0,
       impulseUids: [],
@@ -184,6 +186,32 @@ export function selectMoveTable(
   if (playerHasSetCards && def.movesVsSet && def.movesVsSet.length > 0) return def.movesVsSet
   if (playerHasTokens && def.movesVsTokens && def.movesVsTokens.length > 0) return def.movesVsTokens
   return def.moves
+}
+
+/**
+ * 時喰らい型タイマー (確定済みルール表「激昂」)。
+ * プレイヤーの累計詠唱数が enrageEveryCards の倍数に達したタイミングで強化する。
+ * 時間ではなくプレイヤーのテンポに紐づくので、低速デッキほど誘発が遅くなる = 自己調整する。
+ */
+function tickCardTimers(state: GameState): GameState {
+  const total = state.player.cardsPlayedTotal
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) {
+    const e = s.enemies[i]
+    if (e.hp <= 0) continue
+    const def = getEnemyDef(e.enemyId)
+    const every = def.enrageEveryCards
+    if (every === undefined || every <= 0) continue
+    if (total === 0 || total % every !== 0) continue
+    const amount = def.enrage ?? 0
+    if (amount <= 0) continue
+    s = {
+      ...s,
+      enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),
+    }
+    s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount })
+  }
+  return s
 }
 
 /**
@@ -504,7 +532,15 @@ export function playCard(
   }
   // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない。
   // 直接プレイ (死者再生) より先に加算する = 直接プレイされるカードから見て再生自身は「先にプレイされた1枚」
-  s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
+  s = {
+    ...s,
+    player: {
+      ...s.player,
+      cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1,
+      cardsPlayedTotal: s.player.cardsPlayedTotal + 1,
+    },
+  }
+  s = tickCardTimers(s)
   // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)
   if (isRetrieve && retrieveUid !== undefined) {
     const chosen = s.player.exhaustPile.find((c) => c.uid === retrieveUid)
@@ -549,7 +585,15 @@ export function playCard(
         s = runPermanentTriggers(s, 'onSpellPlayed', enemyIndex)
       }
       // 直接プレイも「プレイ」として詠唱数に数える (数えないのはそのカード自身のみ、の既存則)
-      s = { ...s, player: { ...s.player, cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1 } }
+      s = {
+    ...s,
+    player: {
+      ...s.player,
+      cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1,
+      cardsPlayedTotal: s.player.cardsPlayedTotal + 1,
+    },
+  }
+  s = tickCardTimers(s)
     }
   }
   return checkCombatEnd(s)
@@ -954,9 +998,10 @@ function finishEnemyPhase(state: GameState): GameState {
         s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount })
       }
     }
-    if (def.enrage !== undefined && e.strength < ENRAGE_CAP) {
-      // 激昂の累積上限: タイマーは残すが無限強化はしない (2026-08-25 バランス測定で低速デッキ全滅の原因と判明)
-      const amount = Math.min(def.enrage, ENRAGE_CAP - e.strength)
+    if (def.enrage !== undefined && def.enrageEveryCards === undefined) {
+      // 上限なし = 本家のソフトタイマー (2026-08-26)。長引かせるほど手が付けられなくなる。
+      // 抑えているのは「積む敵は短命 (門番のHPを下げた)」と「威圧が全色にある」の2点
+      const amount = def.enrage
       s = {
         ...s,
         enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),

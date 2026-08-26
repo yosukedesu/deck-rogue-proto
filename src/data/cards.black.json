@@ -596,5 +596,28 @@
         "exhaustThreshold": 7
       }
     ]
+  },
+  {
+    "id": "black_withering_curse",
+    "name": "衰滅の呪い",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 2
+      }
+    ]
   }
 ]

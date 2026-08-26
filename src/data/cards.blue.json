@@ -575,5 +575,23 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "blue_frost_shackle",
+    "name": "凍てつく枷",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 5
+      }
+    ]
   }
 ]

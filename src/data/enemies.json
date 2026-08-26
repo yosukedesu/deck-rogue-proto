@@ -396,7 +396,7 @@
     "id": "enemy_warden",
     "name": "刻限の門番",
     "archetype": "enrager",
-    "flavor": "鐘が鳴るたび強くなる。長居は死。",
+    "flavor": "鐘は時間ではなく、お前が手を出した回数で鳴る。",
     "maxHp": 155,
     "enrage": 2,
     "moves": [
@@ -419,6 +419,7 @@
       "bell_strike",
       "bell_strike",
       "gate_guard"
-    ]
+    ],
+    "enrageEveryCards": 8
   }
 ]

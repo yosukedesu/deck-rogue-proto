@@ -649,5 +649,23 @@
         "amount": 5
       }
     ]
+  },
+  {
+    "id": "red_fang_breaker",
+    "name": "砕牙",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      }
+    ]
   }
 ]

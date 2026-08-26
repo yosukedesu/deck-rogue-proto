@@ -165,15 +165,32 @@ describe('再生とフェーズ変化 (苔まといの主)', () => {
   })
 })
 
-describe('激昂 (刻限の門番)', () => {
-  it('敵フェーズ終了時に強化が自動で増える', () => {
+describe('激昂 (刻限の門番) = 時喰らい型タイマー', () => {
+  // 2026-08-26: 「毎フェーズ自動+2・累積上限6」から「プレイヤーが8枚プレイするたび+2・上限なし」へ。
+  // 本家StSに上限という概念は無く、時喰らいはプレイヤーのテンポに誘発を紐づけている。
+  // 時間でなく手数で進むので、低速デッキほどタイマーが遅い = 自己調整する。
+  it('時間では強化されない (ターンを回すだけでは強化0のまま)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_warden', 42))
     expect(s.enemies[0].strength).toBe(0)
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
-    const enrage = getEnemyDef('enemy_warden').enrage ?? 0
-    expect(enrage).toBeGreaterThan(0)
-    expect(s.enemies[0].strength).toBe(enrage)
+    expect(s.enemies[0].strength).toBe(0) // 手を出さなければ鐘は鳴らない
+  })
+
+  it('プレイヤーが規定枚数をプレイするたびに強化される (上限なし)', () => {
+    const def = getEnemyDef('enemy_warden')
+    const every = def.enrageEveryCards ?? 0
+    const amount = def.enrage ?? 0
+    expect(every).toBeGreaterThan(0)
+    let s = freshCombat('set-confirm', 'enemy_warden', 42)
+    s = { ...s, player: { ...s.player, energy: 99 } }
+    for (let i = 0; i < every * 2; i++) {
+      s = withHand(s, ['green_strike'])
+      s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+      if (s.phase !== 'player-turn') break
+    }
+    expect(s.player.cardsPlayedTotal).toBe(every * 2)
+    expect(s.enemies[0].strength).toBe(amount * 2) // 2回鳴る = 上限に頭打ちしない
   })
 })
 
