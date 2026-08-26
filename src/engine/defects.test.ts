@@ -7,7 +7,7 @@ import { buildDeck, getCardDef } from './content.ts'
 import { countedPermanents } from './effects.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
-import type { CardInstance, GameState } from './types.ts'
+import type { CardInstance, EnemyIntent, GameState } from './types.ts'
 
 /** 敵フェーズを最後まで進めて次の自ターン (=意図の再宣言後) まで到達させる */
 function toNextPlayerTurn(state: GameState): GameState {
@@ -113,5 +113,39 @@ describe('置物数参照がリーダーパッシブ・レリックを数えて�
       (e) => e.effect === 'dealDamagePerPermanent',
     )
     expect(hpBefore - s.enemies[0].hp).toBe(2 * (rally?.amount ?? 0)) // パッシブ抜きの2体ぶん
+  })
+})
+
+describe('条件付き意図とリアクションの相互作用 (2026-08-26 プレイテスト発見)', () => {
+  // 旧実装は executeEnemyAction で分岐を再計算していたため、pre窓でリアクションを発動して
+  // 伏せ枠が空になると「伏せ札あり」の弱い分岐から「なし」の強い分岐へ化けていた。
+  // 確認ウィンドウが攻撃8と表示したのに16で解決される = 窓が嘘をつく状態だった。
+  it('pre窓でリアクションを発動して伏せ枠が空になっても、分岐は行動開始時のまま固定される', () => {
+    // 「伏せ札あり→攻撃8 / なし→攻撃16」の条件付き意図を直接作る
+    const conditional: EnemyIntent = {
+      kind: 'attack',
+      shownMin: 15,
+      shownMax: 19,
+      actual: 16,
+      conditionalOn: 'set',
+      alt: { kind: 'attack', shownMin: 7, shownMax: 10, actual: 8 },
+    }
+    let s = withHand(freshCombat('set-confirm', 'enemy_joker', 3, 'starter'), [
+      'green_reaction_vine', // 1E・被攻撃前にブロック12 (pre窓)
+    ])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = withIntent(s, conditional)
+    const hpBefore = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction') // 伏せがあるので pre窓が開く
+    s = applyCommand(s, {
+      type: 'ConfirmReaction',
+      fire: true,
+      cardUid: 't0_green_reaction_vine',
+    })
+    expect(s.player.setCards).toHaveLength(0) // 発動して伏せ枠は空になった
+    // ブロック12 は 分岐後の攻撃8 を完封する。
+    // バグがあると「伏せ札なし」の16で解決され、12を引いた4が漏れる
+    expect(hpBefore - s.player.hp).toBe(0)
   })
 })

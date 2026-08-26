@@ -231,7 +231,7 @@ function renderBattle(s: GameState, logFrom: number): string {
 function renderRun(run: RunState, logFrom: number): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
-  L.push(`=== ラン: ${leader.name} | 戦闘${run.battleIndex + 1}/10 | HP持ち越し${run.hp} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 戦闘${run.battleIndex + 1}/${run.enemyIds.length} | HP持ち越し${run.hp} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {

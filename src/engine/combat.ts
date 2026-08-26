@@ -24,6 +24,7 @@ import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
 import type {
   CardInstance,
   EnemyDef,
+  EnemyIntent,
   EnemyMove,
   GameState,
   ReactionMode,
@@ -698,10 +699,27 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0 || enemy.intent === null) continue
     const acting = effectiveIntent(s, i)!
+    // 2026-08-26 修正: 条件付き意図の分岐をここで確定させる。
+    // 旧実装は executeEnemyAction で分岐を再計算していたため、pre窓でリアクションを発動して
+    // 伏せ枠が空になると「伏せ札あり」の弱い分岐から「なし」の強い分岐へ化けていた
+    // (確認ウィンドウが攻撃8と表示したのに実際は16で解決される = 窓が嘘をつく状態だった)。
+    const locked: EnemyIntent = {
+      kind: acting.kind,
+      shownMin: acting.shownMin,
+      shownMax: acting.shownMax,
+      actual: acting.actual,
+      ...(acting.hits !== undefined ? { hits: acting.hits } : {}),
+      ...(acting.inflict !== undefined ? { inflict: acting.inflict } : {}),
+    }
     // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
-    s = { ...s, lastAction: null, reactionUsedThisAction: false }
+    s = {
+      ...s,
+      enemies: s.enemies.map((e, j) => (j === i ? { ...e, intent: locked } : e)),
+      lastAction: null,
+      reactionUsedThisAction: false,
+    }
     // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
-    const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: acting.kind } as const
+    const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: locked.kind } as const
     s = emit(s, executing)
     s = dispatchHooks(s, executing)
     if (s.phase === 'awaiting-reaction') return s // pre窓の割り込み → コマンド待ち
