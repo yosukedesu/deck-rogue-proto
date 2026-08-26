@@ -1546,20 +1546,20 @@ function RunScreen({
       <div className="app setup">
         <h1>🔥 焚き火</h1>
         <p className="hint">
-          休んで回復するか、デッキから1枚を永久に取り除くか。除去はデッキを薄くして軸を濃くする。
+          休息の回復はもう入っている。この上で、デッキの1枚を「鍛える」か「取り除く」か選ぶ。
         </p>
         <div className="choice-row" style={{ marginTop: 12 }}>
           <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>
             <div className="choice-title">
-              <span className="choice-sprite">🛌</span>休む
+              <span className="choice-sprite">🛌</span>何もしない
             </div>
             <div className="choice-desc">
-              HP +{heal}（現在 {run.hp}/{run.maxHp}）
+              休息で HP+{heal} は受け取り済み（現在 {run.hp}/{run.maxHp}）
             </div>
           </button>
         </div>
         <div className="setup-section-title" style={{ marginTop: 20 }}>
-          または、デッキの1枚を「取り除く」か「鍛える」（デッキ{run.deck.length}枚・最低5枚は残る）
+          デッキの1枚を「鍛える」か「取り除く」（デッキ{run.deck.length}枚・最低5枚は残る）
         </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {run.deck.map((c, i) => (

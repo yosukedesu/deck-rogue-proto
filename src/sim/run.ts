@@ -397,34 +397,29 @@ function simulateRuns(count: number, baseSeed: number): void {
           continue
         }
         if (run.phase === 'campfire') {
-          // 焚き火の方針: HPが6割未満なら休む。余裕があれば
-          // ①基本札を1枚抜いてデッキ濃度を上げる ②抜けるものが無ければ主力を鍛える
-          const lowHp = run.hp < run.maxHp * 0.6
+          // 回復は自動なので、常に「鍛える or 除去」を取りに行く (2026-08-26)。
+          // 基本札が3枚以上あるうちは抜いて濃度を上げ、それ以降は伸びしろの大きい札を鍛える
           const basics = run.deck.filter(
             (c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'),
           ).length
-          // 基本札が3枚以上ある間だけ抜く。それ以降は鍛えるほうが伸びる
           const trimIdx =
-            lowHp || basics < 3
-              ? -1
-              : run.deck.findIndex((c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'))
+            basics >= 3
+              ? run.deck.findIndex((c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'))
+              : -1
           if (trimIdx >= 0 && run.deck.length > 5) {
             run = applyRunCommand(run, { type: 'CampfireRemove', index: trimIdx })
-          } else if (!lowHp) {
-            // 鍛える対象は「量の効果が最も大きい未強化札」= 伸びしろが一番大きい1枚
+          } else {
             let best = -1
             let bestAmount = 0
-            run.deck.forEach((c, i) => {
+            run.deck.forEach((c, i2) => {
               if (isUpgraded(c)) return
               const amt = c.def.effects.reduce((a, e) => a + (e.amount ?? 0), 0)
-              if (amt > bestAmount) { bestAmount = amt; best = i }
+              if (amt > bestAmount) { bestAmount = amt; best = i2 }
             })
             run =
               best >= 0
                 ? applyRunCommand(run, { type: 'CampfireUpgrade', index: best })
                 : applyRunCommand(run, { type: 'CampfireRest' })
-          } else {
-            run = applyRunCommand(run, { type: 'CampfireRest' })
           }
           continue
         }

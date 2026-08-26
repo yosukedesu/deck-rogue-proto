@@ -242,12 +242,12 @@ function renderRun(run: RunState, logFrom: number): string {
     L.push('エリート挑戦オファー: 挑めば敵が強化+2/HP×1.35、勝てばレリック3択が付く')
     L.push('→ {"type":"ChooseElite","elite":true} か {"type":"ChooseElite","elite":false}')
   } else if (run.phase === 'campfire') {
-    L.push('🔥 焚き火: 休むか、デッキから1枚を永久に取り除くか')
-    L.push(`  休む → HP+${Math.floor(run.maxHp * run.campfireRatio)} (現在 ${run.hp}/${run.maxHp})`)
-    L.push(`  除去 → デッキから1枚を永久に取り除く (+HP${Math.floor(run.maxHp * 0.1)})`)
+    L.push(`🔥 焚き火: 回復は済んでいる (現在 ${run.hp}/${run.maxHp})。この上で1つ選ぶ`)
     L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
+    L.push('  除去 → デッキから1枚を永久に取り除く')
+    L.push('  何もしない → そのまま次へ')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
-    L.push('→ {"type":"CampfireRest"} / {"type":"CampfireRemove","index":N} / {"type":"CampfireUpgrade","index":N}')
+    L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {

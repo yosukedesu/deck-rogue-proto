@@ -137,7 +137,7 @@ describe('HP持ち越しと焚き火', () => {
     expect(run.combat!.player.hp).toBe(27)
   })
 
-  it('3戦目クリア後は焚き火フェーズに入り、休めば最大HPの30%回復する', () => {
+  it('3戦目クリア後は焚き火フェーズに入り、回復は自動で入る (選択と排他にしない)', () => {
     let run = createRun(17, 'set-confirm')
     run = forceWin(run)
     run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
@@ -147,13 +147,14 @@ describe('HP持ち越しと焚き火', () => {
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
     run = forceWin(run)
     expect(run.phase).toBe('campfire')
-    expect(run.hp).toBe(20) // 休むまでは回復しない
-    run = applyRunCommand(run, { type: 'CampfireRest' })
+    // 2026-08-26: 回復は焚き火に到達した時点で自動。実測で「回復か強化か」の二択にすると
+    // 到達時HPが常に危機的なため全員が回復しか選べず、強化・除去が死に機能になっていた
     expect(run.hp).toBe(20 + Math.floor(80 * 0.3))
+    run = applyRunCommand(run, { type: 'CampfireRest' }) // 「何もしない」
     expect(run.phase).toBe('reward')
   })
 
-  it('焚き火でカード除去を選ぶとデッキから1枚が永久に消え、少しだけ回復する', () => {
+  it('焚き火でカード除去を選んでも回復は受け取れる (HPと排他ではない)', () => {
     let run = createRun(17, 'set-confirm')
     run = forceWin(run)
     run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
@@ -163,12 +164,11 @@ describe('HP持ち越しと焚き火', () => {
     run = forceWin(run)
     const before = run.deck.length
     const removed = run.deck[0].uid
+    const hpAfterHeal = run.hp
     run = applyRunCommand(run, { type: 'CampfireRemove', index: 0 })
     expect(run.deck).toHaveLength(before - 1)
     expect(run.deck.some((c) => c.uid === removed)).toBe(false)
-    // 除去にも下駄 (最大HPの10%) を履かせる。付けないとHPが常に危機的な本作では
-    // 「休む一択」に固定化して二択が機能しない (2026-08-26 プレイテスト)
-    expect(run.hp).toBe(20 + Math.floor(80 * 0.1))
+    expect(run.hp).toBe(hpAfterHeal) // 回復は到達時に済んでいる
     expect(run.phase).toBe('reward')
   })
 

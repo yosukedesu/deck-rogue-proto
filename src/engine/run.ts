@@ -36,8 +36,9 @@ const REWARD_EXCLUDED = new Set([
 /** 焚き火 (回復かカード除去の二択) が入る戦闘 (0-based: 3・6・9・12戦目クリア後) */
 const CAMPFIRE_AFTER = new Set([2, 5, 8, 11])
 const CAMPFIRE_HEAL_RATIO = 0.3
-/** 焚き火で除去を選んだ時の回復率。二択が「休む一択」に固定化しないための下駄 (2026-08-26) */
-const CAMPFIRE_TRIM_HEAL_RATIO = 0.1
+// 2026-08-26 再設計: 回復は焚き火に到達すれば自動で入る。
+// 「回復か強化か」の二択にすると、実測で焚き火到達時HPが常に20〜46%のため全員が回復しか選べず、
+// 強化・除去が一度も使われなかった (供給側の機能が「既に余裕のある者」にしか届かない状態だった)。
 /** 勝利ごとの自動回復は廃止 (2026-08-25 StS踏襲。回復は焚き火のみ=マラソン構造) */
 const VICTORY_HEAL = 0
 /** エリート挑戦オファーが出る戦闘 (0-based: 2・5・8・11・14戦目)。確定済みルール表「エリート挑戦オファー」 */
@@ -336,7 +337,9 @@ function afterVictory(run: RunState, combat: GameState): RunState {
 /** 焚き火の戦闘なら二択を挟み、そうでなければ通常のカード報酬へ (確定済みルール表「焚き火」) */
 function campfireOrReward(run: RunState): RunState {
   if (CAMPFIRE_AFTER.has(run.battleIndex)) {
-    return { ...run, phase: 'campfire', rewardOptions: null }
+    // 回復は自動 (2026-08-26)。焚き火の選択は「鍛える / 取り除く / 何もしない」で、HPと排他にしない
+    const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
+    return { ...run, hp, phase: 'campfire', rewardOptions: null }
   }
   return rollRewards(run)
 }
@@ -453,9 +456,9 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       return campfireOrReward({ ...run, relicOptions: null })
     }
     case 'CampfireRest': {
+      // 「何もしない」= 回復だけ受け取って次へ (回復は campfireOrReward で適用済み)
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
-      const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
-      return rollRewards({ ...run, hp })
+      return rollRewards(run)
     }
     case 'CampfireUpgrade': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
@@ -473,14 +476,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
       // デッキが痩せすぎないよう最低5枚は残す
       if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
-      // 除去にも少しだけ回復を付ける。付けないとHPが常に危機的な本作では「休む一択」になり
-      // 二択が機能しない (2026-08-26 プレイテストで4人中3人が全回「休む」を選んだ)
-      const trimHp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * CAMPFIRE_TRIM_HEAL_RATIO))
-      return rollRewards({
-        ...run,
-        hp: trimHp,
-        deck: run.deck.filter((_, i) => i !== command.index),
-      })
+      return rollRewards({ ...run, deck: run.deck.filter((_, i) => i !== command.index) })
     }
   }
 }
