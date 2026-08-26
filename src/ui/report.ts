@@ -99,6 +99,50 @@ export function logLine(e: GameEvent): LogLine | null {
 
 // ---- ここから下がエクスポート専用 ----
 
+/**
+ * 決着した戦闘の保管記録 (2026-08-26)。
+ * engine の RunState は combat を単一スロットで持ち、次の戦闘開始時に上書きするため、
+ * ラン全体の履歴を残すには UI 側で溜めるしかない
+ * (engine に history を持たせると Unity移植面と不変遷移のコストが増えるので避ける)。
+ */
+export interface BattleArchive {
+  readonly battleNo: number
+  readonly enemyId: string
+  readonly elite: boolean
+  readonly result: 'won' | 'lost'
+  readonly turns: number
+  readonly hpBefore: number
+  readonly hpAfter: number
+  readonly deckSize: number
+  readonly lines: readonly string[]
+}
+
+/** 1戦闘あたりの保管ログ行数の上限 (10戦ぶんでもファイルが読める範囲に収める) */
+const ARCHIVE_LINES_CAP = 300
+
+/** 決着した combat を保管形式に変換する */
+export function archiveBattle(
+  combat: GameState,
+  battleNo: number,
+  enemyId: string,
+  elite: boolean,
+  hpBefore: number,
+  deckSize: number,
+): BattleArchive {
+  const all = combat.eventLog.map(reportLine).filter((x): x is string => x !== null)
+  return {
+    battleNo,
+    enemyId,
+    elite,
+    result: combat.phase === 'won' ? 'won' : 'lost',
+    turns: combat.turn,
+    hpBefore,
+    hpAfter: combat.player.hp,
+    deckSize,
+    lines: all.length > ARCHIVE_LINES_CAP ? all.slice(-ARCHIVE_LINES_CAP) : all,
+  }
+}
+
 /** カードデータの指紋。エクスポートを読む側が「同じビルドか」を判定する */
 function dataFingerprint(): string {
   let h = 5381
@@ -169,7 +213,12 @@ function trimLog(s: GameState): GameState {
   return { ...s, eventLog: [s.eventLog[0], ...s.eventLog.slice(-(SNAPSHOT_LOG_CAP - 1))] }
 }
 
-export function buildReport(run: RunState | null, state: GameState | null, note = ''): string {
+export function buildReport(
+  run: RunState | null,
+  state: GameState | null,
+  history: readonly BattleArchive[] = [],
+  note = '',
+): string {
   const s = run ? run.combat : state
   const L: string[] = []
   L.push(`# プレイ状況レポート`)
@@ -193,6 +242,25 @@ export function buildReport(run: RunState | null, state: GameState | null, note 
     L.push('（戦闘・ランともに未開始）')
   }
   L.push('')
+  if (history.length > 0) {
+    L.push(`## これまでの戦闘（${history.length}戦）`)
+    L.push('')
+    L.push('| # | 敵 | 結果 | ターン | HP |')
+    L.push('|---|---|---|---|---|')
+    for (const h of history) {
+      L.push(
+        `| ${h.battleNo} | ${encounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} |`,
+      )
+    }
+    L.push('')
+    for (const h of history) {
+      L.push(
+        `### ${h.battleNo}戦目 ${encounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚`,
+      )
+      L.push(...h.lines)
+      L.push('')
+    }
+  }
   if (s) {
     L.push(`## 盤面（ターン ${s.turn} / ${s.phase}）`)
     L.push(...renderBoard(s))
@@ -222,8 +290,12 @@ export function buildReport(run: RunState | null, state: GameState | null, note 
  * 書き出し実行。ダウンロードとクリップボードコピーを両方やる
  * (スマホの Safari は a[download] が不安定なため、貼り付けでも渡せるようにする)
  */
-export function saveReport(run: RunState | null, state: GameState | null): void {
-  const text = buildReport(run, state)
+export function saveReport(
+  run: RunState | null,
+  state: GameState | null,
+  history: readonly BattleArchive[] = [],
+): void {
+  const text = buildReport(run, state, history)
   const d = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
   const stamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`

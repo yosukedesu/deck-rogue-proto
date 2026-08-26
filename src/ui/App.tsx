@@ -2,12 +2,14 @@
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
 import { useState } from 'react'
 import {
+  archiveBattle,
   cardName,
   inflictSuffix,
   intentText,
   logLine,
   saveReport,
   STATUS_LABEL,
+  type BattleArchive,
   type LogLine,
 } from './report.ts'
 import {
@@ -1436,11 +1438,14 @@ function BattleScreen({
 function RunScreen({
   run,
   dispatch,
+  history,
   onExit,
   onRestart,
 }: {
   run: RunState
   dispatch: (c: RunCommand) => void
+  /** 決着済みの戦闘の履歴 (書き出しに含める) */
+  history: readonly BattleArchive[]
   onExit: () => void
   onRestart: (seed: number) => void
 }) {
@@ -1536,7 +1541,7 @@ function RunScreen({
   if (run.phase === 'combat' && run.combat) {
     return (
       <BattleScreen
-        onExport={() => saveReport(run, null)}
+        onExport={() => saveReport(run, null, history)}
         state={run.combat}
         config={{
           mode: run.mode,
@@ -1584,7 +1589,7 @@ function RunScreen({
         <button className="btn" onClick={() => dispatch({ type: 'SkipReward' })}>
           スキップして次へ
         </button>{' '}
-        <button className="btn" onClick={() => saveReport(run, null)}>
+        <button className="btn" onClick={() => saveReport(run, null, history)}>
           📄 状況を書き出す
         </button>
         {run.picks.length > 0 && (
@@ -1634,6 +1639,8 @@ export default function App() {
   const [config, setConfig] = useState<Config | null>(null)
   const [state, setState] = useState<GameState | null>(null)
   const [run, setRun] = useState<RunState | null>(null)
+  // ラン全10戦の履歴。engine の RunState は combat を単一スロットで上書きするため UI 側で溜める
+  const [runHistory, setRunHistory] = useState<readonly BattleArchive[]>([])
 
   const start = (cfg: Config) => {
     setConfig(cfg)
@@ -1665,7 +1672,21 @@ export default function App() {
     setRun((prev) => {
       if (!prev) return prev
       try {
-        return applyRunCommand(prev, command)
+        const next = applyRunCommand(prev, command)
+        // 戦闘が決着した瞬間だけ履歴に積む (次戦の開始で combat が上書きされる前に捕まえる)
+        const ended = next.combat?.phase === 'won' || next.combat?.phase === 'lost'
+        if (ended && prev.combat && prev.combat.phase !== next.combat?.phase && next.combat) {
+          const archived = archiveBattle(
+            next.combat,
+            prev.battleIndex + 1,
+            prev.enemyIds[prev.battleIndex],
+            prev.currentElite,
+            prev.hp,
+            prev.deck.length,
+          )
+          setRunHistory((h) => [...h, archived])
+        }
+        return next
       } catch (err) {
         alert(err instanceof Error ? err.message : String(err))
         return prev
@@ -1678,13 +1699,23 @@ export default function App() {
       <RunScreen
         run={run}
         dispatch={dispatchRun}
-        onExit={() => setRun(null)}
-        onRestart={(seed) => setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green'))}
+        history={runHistory}
+        onExit={() => {
+          setRun(null)
+          setRunHistory([])
+        }}
+        onRestart={(seed) => {
+          setRunHistory([])
+          setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green'))
+        }}
       />
     )
   }
   if (state === null || config === null) {
-    return <SetupScreen onStart={start} onStartRun={(seed, leaderId) => setRun(createRun(seed, ADOPTED_MODE, leaderId))} />
+    return <SetupScreen onStart={start} onStartRun={(seed, leaderId) => {
+        setRunHistory([])
+        setRun(createRun(seed, ADOPTED_MODE, leaderId))
+      }} />
   }
   return (
     <BattleScreen
