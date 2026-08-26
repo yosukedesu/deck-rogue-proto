@@ -222,11 +222,27 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
   if (!intent) return null
   if (!intent.conditionalOn || !intent.alt) return intent
   const met =
-    intent.conditionalOn === 'set'
-      ? state.player.setCards.length > 0
-      : state.player.permanents.some((p) => p.token === true || p.def.retainer === true)
+    intent.conditionalOn === 'set' ? state.player.setCards.length > 0 : hasHuntableTokens(state)
   if (!met) return intent
   return { ...intent.alt, conditionalOn: intent.conditionalOn, alt: intent.alt }
+}
+
+/**
+ * 置物数参照 (集結・隊列の盾・大行進・聖騎士団の突撃) が数える置物の数。
+ * リーダーパッシブとレリックは戦闘開始時から場にある = 「登場」していないので数えない
+ * (2026-08-26。onPermanentEntered が誘発しない仕様と揃えた)。
+ */
+export function countedPermanents(state: GameState): number {
+  return state.player.permanents.filter((p) => p.innate !== true).length
+}
+
+/**
+ * 従者狩り (destroy-token) の対象になる置物が場にあるか。
+ * 道具・オーラ系置物とリーダーパッシブ・レリックは対象外 (確定済みルール表「従者狩り」)。
+ * 意図の宣言時 (combat.ts) と実行時の分岐判定 (effectiveIntent) で同じ条件を使う。
+ */
+export function hasHuntableTokens(state: GameState): boolean {
+  return state.player.permanents.some((p) => p.token === true || p.def.retainer === true)
 }
 
 /**
@@ -448,10 +464,11 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
     case 'dealDamagePerPermanent':
       // 集結 (白): 置物の数×X (確定済みルール表「従者（置物数参照）」)
+      // リーダーパッシブ・レリックは「場に出た置物」ではないので数えない (2026-08-26)
       return dealDamageToEnemy(
         state,
         enemyIndex,
-        (effect.amount ?? 0) * state.player.permanents.length,
+        (effect.amount ?? 0) * countedPermanents(state),
         effect.pierce,
       )
     case 'dealDamageDrain': {
@@ -550,8 +567,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         effect.pierce,
       )
     case 'gainBlockPerPermanent': {
-      // 隊列の盾 (白): 置物の数×X ブロック
-      const amount = (effect.amount ?? 0) * state.player.permanents.length
+      // 隊列の盾 (白): 置物の数×X ブロック (リーダーパッシブ・レリックは数えない)
+      const amount = (effect.amount ?? 0) * countedPermanents(state)
       const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
       return emit(next, { type: 'BlockGained', target: 'player', amount })
     }

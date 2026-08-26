@@ -4,12 +4,29 @@ import { describe, expect, it } from 'vitest'
 import { allCards } from './content.ts'
 import type { CardDef } from './types.ts'
 
-/** この札をプレイして正味で増えるエナジー (gainEnergy の合計 − コスト) */
+/**
+ * 札が持ちうる効果すべて (通常効果 + 選択式カードの全モード)。
+ * 2026-08-26追加: 従来は def.effects しか見ておらず、modes の中身が全不変条件の死角だった
+ * (陽光の恵みが確定ルール「上限ランプの消滅」に違反したまま検出されていなかった)。
+ */
+function allEffects(def: CardDef) {
+  return [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+}
+
+/** この札をプレイして正味で増えるエナジー (gainEnergy の合計 − コスト)。モードは最大値を採る */
 function netEnergy(def: CardDef): number {
-  const gain = def.effects
+  const base = def.effects
     .filter((e) => e.effect === 'gainEnergy')
     .reduce((a, e) => a + (e.amount ?? 0), 0)
-  return gain - def.cost
+  const modeMax = (def.modes ?? []).reduce(
+    (max, m) =>
+      Math.max(
+        max,
+        m.effects.filter((e) => e.effect === 'gainEnergy').reduce((a, e) => a + (e.amount ?? 0), 0),
+      ),
+    0,
+  )
+  return base + modeMax - def.cost
 }
 
 /**
@@ -36,7 +53,7 @@ describe('カードデータの不変条件', () => {
       (c) =>
         c.cost === 0 &&
         c.exhaust !== true &&
-        c.effects.some((e) => REFILL_EFFECTS.includes(e.effect)),
+        allEffects(c).some((e) => REFILL_EFFECTS.includes(e.effect)),
     )
     expect(bad.map((c) => c.name)).toEqual([])
   })
@@ -57,7 +74,7 @@ describe('カードデータの不変条件', () => {
 
   it('しきい値カード (忘却の刻) は amountMax を必ず持つ', () => {
     const bad = allCards.filter((c) =>
-      c.effects.some((e) => e.exhaustThreshold !== undefined && e.amountMax === undefined),
+      allEffects(c).some((e) => e.exhaustThreshold !== undefined && e.amountMax === undefined),
     )
     expect(bad.map((c) => c.name)).toEqual([])
   })
@@ -65,11 +82,21 @@ describe('カードデータの不変条件', () => {
   it('召喚カードの summonId は実在する置物を指す', () => {
     const ids = new Set(allCards.map((c) => c.id))
     const bad = allCards.filter((c) =>
-      c.effects.some(
+      allEffects(c).some(
         (e) =>
           e.effect === 'summonPermanent' &&
           (e.summonId === undefined || !ids.has(e.summonId)),
       ),
+    )
+    expect(bad.map((c) => c.name)).toEqual([])
+  })
+
+  it('エナジー上限を上げる札は消滅する (使い回しランプの禁止)', () => {
+    // 例外: 選択式カードでモードの片方だけがランプする札 (陽光の恵み) は対象外。
+    // ランプは2択の一方でしかなく、毎ターン確実に上限を上げ続けることはできないため
+    // (2026-08-26 ユーザー裁定。確定済みルール表「上限ランプの消滅」)。
+    const bad = allCards.filter(
+      (c) => c.effects.some((e) => e.effect === 'gainEnergyMax') && c.exhaust !== true,
     )
     expect(bad.map((c) => c.name)).toEqual([])
   })

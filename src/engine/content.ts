@@ -68,6 +68,7 @@ export function getRelicDef(id: string): RelicDef {
 export function buildRelicPermanent(relic: RelicDef): CardInstance {
   return {
     uid: `relic_${relic.id}`,
+    innate: true, // 戦闘開始時から場にある = 置物数参照で数えない (2026-08-26)
     def: {
       id: `${relic.id}_passive`,
       name: relic.name,
@@ -94,6 +95,7 @@ export function deckAllowedForLeader(leader: LeaderDef, deck: DeckDef): boolean 
 export function buildLeaderPassive(leader: LeaderDef): CardInstance {
   return {
     uid: `leader_${leader.id}`,
+    innate: true, // 戦闘開始時から場にある = 置物数参照で数えない (2026-08-26)
     def: {
       id: `${leader.id}_passive`,
       name: `${leader.name}の能力`,

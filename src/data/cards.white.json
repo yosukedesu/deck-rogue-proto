@@ -226,7 +226,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
-        "amount": 14
+        "amount": 12
       }
     ]
   },
@@ -257,7 +257,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
-        "amount": 20,
+        "amount": 16,
         "condition": {
           "hpAtOrBelowRatio": 0.5
         }
@@ -265,7 +265,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainHp",
-        "amount": 5,
+        "amount": 4,
         "condition": {
           "hpAtOrBelowRatio": 0.5
         }

@@ -465,6 +465,12 @@ export interface CardInstance {
   readonly def: CardDef
   /** 召喚トークン: 敵の「トークン破壊」の対象になる (手張り置物・リーダー・レリックは対象外) */
   readonly token?: boolean
+  /**
+   * 生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。
+   * 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない
+   * (2026-08-26。確定済みルール表「置物数参照」)。パッシブが召喚したトークンは生得ではない。
+   */
+  readonly innate?: boolean
 }
 
 export type EnemyArchetype =

@@ -109,7 +109,7 @@ describe('護りのリアクション', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓 (被攻撃前)
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    // ブロック20で攻撃10を完封し、回復5
-    expect(s.player.hp).toBe(hpBefore + 5)
+    // ブロック16で攻撃10を完封し、回復4 (2026-08-26 pre窓軽減の上限是正)
+    expect(s.player.hp).toBe(hpBefore + 4)
   })
 })

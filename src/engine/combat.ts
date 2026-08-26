@@ -11,6 +11,7 @@ import {
   effectiveCost,
   effectiveIntent,
   fireExhaustTriggers,
+  hasHuntableTokens,
   isDamageEffect,
   isPlayableFromHand,
   resolveEffectTargeted,
@@ -205,10 +206,22 @@ function declareIntents(state: GameState): GameState {
     const sequence = belowHalf ? def.sequenceBelowHalf : def.sequence
     // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する
     // (確定済みルール表「条件付き意図」。実行時の盤面で分岐 = プレイヤーが自ターン中に選べる)
-    const reactTable = belowHalf ? undefined : (def.movesVsSet ?? def.movesVsTokens)
+    // 両テーブルを持つ敵 (罠壊し) は conditionalOn を1つしか持てないので、宣言時の盤面で片方を選ぶ。
+    // 優先度は 伏せ反応 > 従者反応 (確定済みルール表「従者狩り」)。どちらの条件も満たしていない時は
+    // 伏せ反応を既定にして「伏せれば行動が変わる」の予告を残す。
+    // 2026-08-26 修正: 旧実装は `def.movesVsSet ?? def.movesVsTokens` で、両テーブルを持つ唯一の敵では
+    // movesVsSet が常に勝つため destroy-token が production から到達不能だった。
+    const vsSet = def.movesVsSet?.length ? def.movesVsSet : undefined
+    const vsTokens = def.movesVsTokens?.length ? def.movesVsTokens : undefined
+    const preferTokens = s.player.setCards.length === 0 && hasHuntableTokens(s)
+    const reactTable = belowHalf
+      ? undefined
+      : preferTokens
+        ? (vsTokens ?? vsSet)
+        : (vsSet ?? vsTokens)
     const conditionalOn: 'set' | 'tokens' | undefined = !reactTable
       ? undefined
-      : def.movesVsSet
+      : reactTable === vsSet
         ? 'set'
         : 'tokens'
     const baseTable = belowHalf ? (def.movesBelowHalf ?? def.moves) : def.moves

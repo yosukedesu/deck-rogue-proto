@@ -2,7 +2,7 @@
 // (hold-manual は伏せないので使わない)
 
 import { emit } from '../events.ts'
-import { resolveReactionEffects } from '../effects.ts'
+import { fireExhaustTriggers, resolveReactionEffects } from '../effects.ts'
 import type { CardInstance, GameState } from '../types.ts'
 
 /** SetCard の可否判定 (UI のボタン活性にも使う) */
@@ -38,19 +38,28 @@ export function setCard(state: GameState, cardUid: string): GameState {
   return emit(s, { type: 'CardSet', cardId: card.def.id })
 }
 
-/** 伏せカードを発動する: 効果解決→伏せ場から捨て札へ (コストは伏せ時に支払い済み)。
- * 敵の1行動につき1回まで、の消費フラグを立てる (伏せ2枚でも同一行動に2枚は撃てない) */
+/** 伏せカードを発動する: 効果解決→伏せ場から捨て札 (消滅札なら消滅置き場) へ。
+ * コストは伏せ時に支払い済み。敵の1行動につき1回まで、の消費フラグを立てる
+ * (伏せ2枚でも同一行動に2枚は撃てない)。
+ * 2026-08-26 修正: 旧実装は常に捨て札へ送っており、リアクション札の exhaust:true が黙殺されていた
+ * (毒針の囮)。消滅の誘発 (亡者の合唱など) もこの経路では発火していなかった。 */
 export function fireSetCard(state: GameState, card: CardInstance, enemyIndex: number): GameState {
+  const exhausts = card.def.exhaust === true
   let s: GameState = {
     ...state,
     reactionUsedThisAction: true,
     player: {
       ...state.player,
       setCards: state.player.setCards.filter((c) => c.uid !== card.uid),
-      discardPile: [...state.player.discardPile, card],
+      discardPile: exhausts ? state.player.discardPile : [...state.player.discardPile, card],
+      exhaustPile: exhausts ? [...state.player.exhaustPile, card] : state.player.exhaustPile,
     },
   }
   s = resolveReactionEffects(s, card, enemyIndex)
+  if (exhausts) {
+    s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+    s = fireExhaustTriggers(s, 1, enemyIndex)
+  }
   return s
 }
 

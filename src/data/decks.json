@@ -683,7 +683,7 @@
     "id": "run_basic_izzet",
     "name": "ラン基本デッキ(イゼット)",
     "color": "blue",
-    "description": "青赤ドラフト連戦の出発点。水撃×3・火弾×2・氷盾×2・灰の盾×2・対抗呪文×1",
+    "description": "青赤ドラフト連戦の出発点。水撃×3・火弾×2・氷盾×2・灰の盾×2・対抗呪文×1（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
     "cards": [
       {
         "cardId": "blue_strike",
@@ -698,7 +698,7 @@
         "count": 2
       },
       {
-        "cardId": "red_guard",
+        "cardId": "red_spark",
         "count": 1
       },
       {
@@ -1295,7 +1295,7 @@
     "id": "run_basic_rakdos",
     "name": "あかねの初期デッキ",
     "color": "black",
-    "description": "黒赤の基本10枚。自傷と憤怒の種入り",
+    "description": "黒赤の基本10枚。自傷と憤怒の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
     "cards": [
       {
         "cardId": "black_strike",
@@ -1310,7 +1310,7 @@
         "count": 2
       },
       {
-        "cardId": "red_guard",
+        "cardId": "red_spark",
         "count": 1
       },
       {
@@ -1335,7 +1335,7 @@
     "id": "run_basic_gruul",
     "name": "いぶきの初期デッキ",
     "color": "red",
-    "description": "赤緑の基本10枚。勢いと成長の種入り",
+    "description": "赤緑の基本10枚。勢いと成長の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
     "cards": [
       {
         "cardId": "red_strike",
@@ -1350,7 +1350,7 @@
         "count": 2
       },
       {
-        "cardId": "red_guard",
+        "cardId": "red_spark",
         "count": 1
       },
       {
@@ -1495,7 +1495,7 @@
     "id": "run_basic_boros",
     "name": "あさひの初期デッキ",
     "color": "red",
-    "description": "赤白の基本10枚。従者と延焼の種入り",
+    "description": "赤白の基本10枚。従者と延焼の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
     "cards": [
       {
         "cardId": "red_strike",
@@ -1510,7 +1510,7 @@
         "count": 2
       },
       {
-        "cardId": "red_guard",
+        "cardId": "red_spark",
         "count": 1
       },
       {

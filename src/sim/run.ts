@@ -131,7 +131,8 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
       (e) => e.effect === 'dealDamagePerPermanent' || e.effect === 'gainBlockPerPermanent',
     )
   ) {
-    return state.player.permanents.length >= 1
+    // 置物数参照はリーダーパッシブ・レリックを数えないので、ボットの空撃ち判定も揃える
+    return state.player.permanents.filter((c) => c.innate !== true).length >= 1
   }
   // 回復はHPが減っていなければ無意味
   if (
