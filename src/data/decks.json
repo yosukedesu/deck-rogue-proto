@@ -380,6 +380,14 @@
       {
         "cardId": "blue_frost_armor",
         "count": 2
+      },
+      {
+        "cardId": "blue_tide_drop",
+        "count": 2
+      },
+      {
+        "cardId": "blue_aftermath",
+        "count": 1
       }
     ]
   },
@@ -387,11 +395,11 @@
     "id": "deck_permission",
     "name": "パーミッション理想形",
     "color": "blue",
-    "description": "対抗呪文とマナ漏出で妨害しながら霊気を溜め、霊気放出で一気に叩きつける",
+    "description": "パーミッション理想形。打ち消しの本家。還流の水鏡で「打ち消すたび殴る」クロックが付いた",
     "cards": [
       {
         "cardId": "blue_counterspell",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "blue_mana_leak",
@@ -400,6 +408,10 @@
       {
         "cardId": "blue_spell_steal",
         "count": 1
+      },
+      {
+        "cardId": "blue_perm_mirror",
+        "count": 2
       },
       {
         "cardId": "blue_perm_static",
@@ -835,7 +847,7 @@
     "id": "deck_fortress",
     "name": "白亜の要塞",
     "color": "white",
-    "description": "ブロックを積み上げ城壁砕きで叩きつける要塞の理想形",
+    "description": "要塞理想形。ブロックを攻撃に変換する。城壁の弩で「守るたび殴る」時計が回る",
     "cards": [
       {
         "cardId": "white_fortress",
@@ -855,7 +867,11 @@
       },
       {
         "cardId": "white_guard",
-        "count": 2
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_ballista",
+        "count": 1
       },
       {
         "cardId": "white_perm_shieldmaiden",
@@ -1080,6 +1096,10 @@
       {
         "cardId": "black_guard",
         "count": 2
+      },
+      {
+        "cardId": "black_perm_seedbed",
+        "count": 1
       }
     ]
   },
@@ -1219,7 +1239,7 @@
     "id": "deck_rage",
     "name": "憤怒の闘技場",
     "color": "red",
-    "description": "守らない赤。被弾を憤怒の仮面と逆上で攻撃に換金し、とどめの一撃で刈り取る",
+    "description": "憤怒理想形。守らず被弾を換金する。床つきの怒り火とエンジンの篭手で「引けた時だけ勝つ」を解消",
     "cards": [
       {
         "cardId": "red_perm_rage_mask",
@@ -1227,15 +1247,27 @@
       },
       {
         "cardId": "red_payback",
-        "count": 3
-      },
-      {
-        "cardId": "red_reaction_defiance",
         "count": 2
       },
       {
+        "cardId": "red_wrath_flame",
+        "count": 2
+      },
+      {
+        "cardId": "red_reaction_scale",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_gauntlet",
+        "count": 1
+      },
+      {
+        "cardId": "red_reaction_defiance",
+        "count": 1
+      },
+      {
         "cardId": "red_strike",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "red_final_blow",
@@ -1247,7 +1279,7 @@
       },
       {
         "cardId": "red_guard",
-        "count": 2
+        "count": 1
       }
     ]
   },

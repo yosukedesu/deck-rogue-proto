@@ -49,11 +49,12 @@ describe('無限ループ検知', () => {
     }
     // ループ (1ターンの詠唱数の暴走) は一件も許さない
     expect(offenders.filter((o) => o.includes('詠唱数'))).toEqual([])
-    // 膠着 (決着はするが異常に長い) は既知の1件のみ。増えたらここで落ちる。
-    // deck_fortress vs 苔まといの主 = 要塞デッキの火力が再生をわずかに上回るだけの329ターン戦。
-    // ループではないので別枠だが、放置してよい状態でもない (バランスの課題として別途扱う)。
+    // 膠着 (決着はするが異常に長い) は0件であること。
+    // 2026-08-26: 既知だった deck_fortress vs 苔まといの主 (329ターン) は解消した。
+    // 原因はカードではなく ①ボットが attack を defend より先に見るため城壁砕きが壁を積む前に空撃ち
+    // ②城壁砕きの効果順が [ダメージ→ブロック] で自前のブロックが自分に乗らない、の2点だった。
     const stalemates = [...new Set(offenders.filter((o) => o.includes('コマンド数')).map((o) => o.split(' seed')[0]))]
-    expect(stalemates).toEqual(['deck_fortress vs enemy_moss'])
+    expect(stalemates).toEqual([])
     // 上限に余裕があることも確認 (健全な最大は10台のはず)
     expect(worstPlays).toBeLessThanOrEqual(MAX_PLAYS_PER_TURN)
   })

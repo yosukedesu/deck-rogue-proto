@@ -250,6 +250,8 @@ const TRIGGER_AXIS: Record<string, string> = {
   onAetherGained: 'aether',
   onImpulsePlayed: 'impulse',
   onSpellPlayed: 'storm',
+  onBlockGained: 'fortress',
+  onActionNegated: 'permission',
 }
 
 /** この札が属する軸 (効果名・トリガー・フィールドからの自動導出 + JSONの明示宣言) */

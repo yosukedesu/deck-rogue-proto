@@ -56,7 +56,7 @@ describe('威圧 (敵弱体化)', () => {
 })
 
 describe('要塞型 (ブロック変換)', () => {
-  it('城壁砕き: 現在のブロック×1のダメージ', () => {
+  it('城壁砕き: 自前のブロック3を先に得てから、現在のブロック×1のダメージ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_fortress',
       'white_bodyslam',
@@ -65,7 +65,8 @@ describe('要塞型 (ブロック変換)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_fortress' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_bodyslam' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 12) // ブロック12×1
+    // 2026-08-26: 効果順を [ブロック3 → ダメージ] にしたので自前のブロックも自分に乗る
+    expect(s.enemies[0].hp).toBe(hpBefore - 15) // (大城壁12 + 自前3) × 1
   })
 })
 

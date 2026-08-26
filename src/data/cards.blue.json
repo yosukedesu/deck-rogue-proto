@@ -176,7 +176,7 @@
           "maxActionValue": 12
         },
         "effect": "addAether",
-        "amount": 2
+        "amount": 1
       }
     ]
   },
@@ -591,6 +591,48 @@
         "trigger": "onPlay",
         "effect": "gainIceBlock",
         "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_mirror",
+    "name": "還流の水鏡",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onActionNegated",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_tide_drop",
+    "name": "潮の一滴",
+    "cost": 0,
+    "type": "spell",
+    "axis": [
+      "storm"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_aftermath",
+    "name": "余波",
+    "cost": 0,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 1
       }
     ]
   }

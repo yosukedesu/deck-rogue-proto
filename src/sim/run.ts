@@ -23,7 +23,7 @@ import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '..
  * ボット用の役割分類。カードタイプ廃止後は効果から導出する
  * (タイプは物理/呪文/リアクション/置物の機械的区分になったため)
  */
-type BotRole = 'ramp' | 'draw' | 'permanent' | 'growth' | 'bighit' | 'attack' | 'defend' | 'reaction' | 'other'
+type BotRole = 'ramp' | 'draw' | 'permanent' | 'growth' | 'bighit' | 'attack' | 'defend' | 'payoff' | 'reaction' | 'other'
 
 function botRole(def: CardDef): BotRole {
   if (def.type === 'reaction') return 'reaction'
@@ -33,6 +33,8 @@ function botRole(def: CardDef): BotRole {
   if (has('gainEnergyMax', 'gainEnergy', 'discountNext')) return 'ramp'
   // 召喚 (白): トークンを場に出すカードは置物枠で早置き
   if (has('summonPermanent')) return 'permanent'
+  // ブロック参照の換金札は「壁を積んでから」なので最後に回す (2026-08-26)
+  if (has('dealDamagePerBlock')) return 'payoff'
   if (has('addGrowth', 'doubleGrowth')) return 'growth'
   if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
@@ -52,6 +54,10 @@ const PLAY_PRIORITY: readonly BotRole[] = [
   'bighit', // 旧フィニッシャー枠 (コスト3以上のダメージ札)
   'attack',
   'defend',
+  // ブロック参照の換金札は最後 (2026-08-26)。attack が defend より先だったため、
+  // 盾の乙女2体のターン開始ブロック4で城壁砕きがガードを通り、壁を積む前に4ダメで空撃ちしていた
+  // = 要塞型の平均42.9ターンは測定器側の問題が混ざっていた
+  'payoff',
 ]
 const TURN_LIMIT = 50 // 無限戦闘の保険。超えたら敗北扱い
 
@@ -125,7 +131,14 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   const exhaustCostN = card.def.exhaustCost ?? 0
   if (exhaustCostN > 0 && state.player.hand.length - 1 < exhaustCostN) return false
   // ブロック変換はブロック4以上、集結・隊列は置物1体以上でないと空撃ち
-  if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) return state.player.block >= 4
+  if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) {
+    // 自前で積むブロックも算入する。壁を売り払う札 (spendBlock) はより厚い壁を要求する
+    const selfBlock = card.def.effects
+      .filter((e) => e.effect === 'gainBlock')
+      .reduce((a, e) => a + (e.amount ?? 0), 0)
+    const need = card.def.effects.some((e) => e.spendBlock) ? 8 : 4
+    return state.player.block + selfBlock >= need
+  }
   if (
     card.def.effects.some(
       (e) => e.effect === 'dealDamagePerPermanent' || e.effect === 'gainBlockPerPermanent',

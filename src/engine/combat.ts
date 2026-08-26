@@ -835,7 +835,9 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   const enemy = state.enemies[enemyIndex]
   if (enemy.hp <= 0 || enemy.intent === null) return state
   if (state.negateNextAction) {
-    return emit({ ...state, negateNextAction: false }, { type: 'ActionNegated', enemyIndex })
+    // 打ち消しの成功に反応する置物 (青: 還流の水鏡)。negate / negateConvertIce の両方がここを通る
+    const negated = emit({ ...state, negateNextAction: false }, { type: 'ActionNegated', enemyIndex })
+    return runPermanentTriggers(negated, 'onActionNegated', enemyIndex)
   }
   const intent = effectiveIntent(state, enemyIndex)!
   // 解決した行動を記録する (post窓の誘発判定に使う)

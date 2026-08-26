@@ -180,7 +180,9 @@
       {
         "trigger": "onTurnStart",
         "effect": "exhaustFromDeck",
-        "amount": 3
+        "amount": 3,
+        "amountMax": 0,
+        "exhaustThreshold": 7
       }
     ]
   },
@@ -529,7 +531,9 @@
       {
         "trigger": "onCardExhausted",
         "effect": "dealDamage",
-        "amount": 1
+        "amount": 1,
+        "amountMax": 3,
+        "exhaustThreshold": 7
       }
     ]
   },
@@ -617,6 +621,21 @@
         "trigger": "onPlay",
         "effect": "loseHp",
         "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_seedbed",
+    "name": "屍の苗床",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamageDrain",
+        "amount": 2,
+        "amountMax": 5,
+        "exhaustThreshold": 7
       }
     ]
   }

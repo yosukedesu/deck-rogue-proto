@@ -153,6 +153,12 @@ export interface EffectCondition {
   readonly minDamageTaken?: number
   /** 敵の行動の実値がこの値以下なら発動可 (pre窓専用。マナ漏出など条件付き打ち消し) */
   readonly maxActionValue?: number
+  /**
+   * 敵の行動の実値がこの値**以上**なら発動可 (pre窓専用。2026-08-26)。
+   * maxActionValue の裏返しで「大技しか止められない打ち消し」を作れる。
+   * 敵が育つほど条件が成立するので「脅威は指数的・防御は線形」への直接の答えになる
+   */
+  readonly minActionValue?: number
 }
 
 /**
@@ -359,6 +365,8 @@ export interface DeclarativeEffect {
     | 'onSpellPlayed' // 呪文カードをプレイした時 (伏せ札の自己誘発。物理/呪文分割の機構的活用)
     | 'onSetDestroyed' // この伏せ札が敵に破壊された時 (罠仕掛けの火薬)
     | 'onHealed' // 実回復 (>0) が発生した時 (置物。黒: 血の月。ドレイン・リーダーパッシブでも誘発)
+    | 'onBlockGained' // プレイヤーがブロックを得るたび (置物。白の要塞: 城壁の弩。StS Juggernaut型。氷壁は別経路なので誘発しない)
+    | 'onActionNegated' // 敵の行動を打ち消した時 (置物。青のパーミッション: 還流の水鏡。negate / negateConvertIce 共通)
     | 'onHpLost' // カード効果で自分のHPを失った時 (置物。黒: 苦痛の芯。敵からの被弾では誘発しない=StSルプチャー式)
     | 'onCardExhausted' // カードが消滅するたび (置物。黒: 亡者の合唱。忘却・消滅コスト・消滅札・衝動失効すべて)
     | 'onCostExhausted' // 消滅コスト (exhaustCost) を支払った時のみ (置物。黒: 闇市の帳簿)
@@ -424,6 +432,8 @@ export interface DeclarativeEffect {
   readonly amountMax?: number
   /** 貫通 (トランプル): このダメージは敵ブロックを無視する。dealDamage 系のみ有効 */
   readonly pierce?: boolean
+  /** dealDamagePerBlock 用: 解決後にブロックを全て失う (壁を売り払う)。VPの二重計上を消す歯止め */
+  readonly spendBlock?: boolean
   /** 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体 */
   readonly target?: 'all'
   /** summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire) */

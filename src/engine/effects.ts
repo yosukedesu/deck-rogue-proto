@@ -140,6 +140,18 @@ export function healPlayer(state: GameState, amount: number, enemyIndex: number)
   return runPermanentTriggers(s, 'onHealed', enemyIndex)
 }
 
+/**
+ * ブロック獲得を適用し BlockGained を発行して onBlockGained 置物 (城壁の弩) を誘発する。
+ * emit はログ追記だけでフックを回さないので、healPlayer と同型のヘルパーが要る。
+ * 氷壁 (gainIceBlock) は別経路なので誘発しない = 青の柱④を侵さない。
+ */
+export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: number): GameState {
+  if (amount <= 0) return state
+  let s: GameState = { ...state, player: { ...state.player, block: state.player.block + amount } }
+  s = emit(s, { type: 'BlockGained', target: 'player', amount })
+  return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
+}
+
 /** カード効果によるHP損失。selfHpLost に累積し onHpLost 置物 (苦痛の芯) を誘発する (敵からの被弾は通らない) */
 export function losePlayerHp(state: GameState, amount: number, enemyIndex: number): GameState {
   if (amount <= 0) return state
@@ -206,6 +218,9 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
       return false
     }
     if (c.maxActionValue !== undefined && (win.stage !== 'pre' || win.actual > c.maxActionValue)) {
+      return false
+    }
+    if (c.minActionValue !== undefined && (win.stage !== 'pre' || win.actual < c.minActionValue)) {
       return false
     }
     return true
@@ -384,8 +399,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     }
     case 'gainBlock': {
       const amount = effect.amount ?? 0
-      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
-      return emit(next, { type: 'BlockGained', target: 'player', amount })
+      return gainPlayerBlock(state, amount, enemyIndex)
     }
     case 'gainIceBlock': {
       // 氷壁 (青): ターン開始で消えず持ち越されるブロック
@@ -454,14 +468,17 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
       return emit({ ...state, enemies }, { type: 'EnemyWeakened', enemyIndex, amount })
     }
-    case 'dealDamagePerBlock':
+    case 'dealDamagePerBlock': {
       // 要塞型ペイオフ: 現在のブロック×X (確定済みルール表「ブロック変換」)
-      return dealDamageToEnemy(
+      const dealt = dealDamageToEnemy(
         state,
         enemyIndex,
         (effect.amount ?? 0) * state.player.block,
         effect.pierce,
       )
+      // spendBlock: 壁を売り払う (×2以上が乗る札のVP二重計上を消す歯止め)
+      return effect.spendBlock ? { ...dealt, player: { ...dealt.player, block: 0 } } : dealt
+    }
     case 'dealDamagePerPermanent':
       // 集結 (白): 置物の数×X (確定済みルール表「従者（置物数参照）」)
       // リーダーパッシブ・レリックは「場に出た置物」ではないので数えない (2026-08-26)
@@ -569,20 +586,17 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'gainBlockPerPermanent': {
       // 隊列の盾 (白): 置物の数×X ブロック (リーダーパッシブ・レリックは数えない)
       const amount = (effect.amount ?? 0) * countedPermanents(state)
-      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
-      return emit(next, { type: 'BlockGained', target: 'player', amount })
+      return gainPlayerBlock(state, amount, enemyIndex)
     }
     case 'gainBlockPerEnergyMax': {
       // 巨木の盾 (緑): エナジー上限×X ブロック (ランプの投資が守りにも変換される)
       const amount = (effect.amount ?? 0) * state.player.energyMax
-      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
-      return emit(next, { type: 'BlockGained', target: 'player', amount })
+      return gainPlayerBlock(state, amount, enemyIndex)
     }
     case 'gainBlockPerExhaust': {
       // 亡者の壁 (黒): 消滅した枚数×X ブロック (墓地エンジンがそのまま守りになるタイマー耐性)
       const amount = (effect.amount ?? 0) * state.player.exhaustPile.length
-      const next = { ...state, player: { ...state.player, block: state.player.block + amount } }
-      return emit(next, { type: 'BlockGained', target: 'player', amount })
+      return gainPlayerBlock(state, amount, enemyIndex)
     }
     case 'exhaustFromDeck': {
       // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、

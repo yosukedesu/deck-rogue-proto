@@ -378,6 +378,9 @@
         "effect": "dealDamage",
         "amount": 8
       }
+    ],
+    "axis": [
+      "wrath"
     ]
   },
   {
@@ -483,6 +486,9 @@
         "effect": "addMomentum",
         "amount": 2
       }
+    ],
+    "axis": [
+      "wrath"
     ]
   },
   {
@@ -514,6 +520,9 @@
         "effect": "addMomentum",
         "amount": 1
       }
+    ],
+    "axis": [
+      "wrath"
     ]
   },
   {
@@ -665,6 +674,76 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "red_wrath_flame",
+    "name": "怒り火",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerDamageTaken",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_scale",
+    "name": "逆鱗",
+    "cost": 1,
+    "type": "reaction",
+    "axis": [
+      "wrath"
+    ],
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "condition": {
+          "minDamageTaken": 10
+        },
+        "effect": "addMomentum",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "red_perm_gauntlet",
+    "name": "憤怒の篭手",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamagePerDamageTaken",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_wrath_roar",
+    "name": "憤怒の咆哮",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerDamageTaken",
+        "amount": 1,
+        "target": "all"
       }
     ]
   }
