@@ -23,6 +23,9 @@
         "effect": "dealDamage",
         "amount": 3
       }
+    ],
+    "axis": [
+      "impulse"
     ]
   },
   {
@@ -41,6 +44,9 @@
         "effect": "drawCards",
         "amount": 1
       }
+    ],
+    "axis": [
+      "impulse"
     ]
   },
   {
@@ -206,6 +212,9 @@
         "effect": "dealDamage",
         "amount": 5
       }
+    ],
+    "axis": [
+      "shatter"
     ]
   },
   {
@@ -223,6 +232,9 @@
         "effect": "dealDamage",
         "amount": 11
       }
+    ],
+    "axis": [
+      "shatter"
     ]
   },
   {
@@ -237,6 +249,9 @@
         "amount": 2,
         "amountMax": 16
       }
+    ],
+    "axis": [
+      "chaos"
     ]
   },
   {
@@ -251,6 +266,9 @@
         "amount": 8,
         "amountMax": 32
       }
+    ],
+    "axis": [
+      "chaos"
     ]
   },
   {
@@ -559,6 +577,9 @@
         "trigger": "onPlay",
         "effect": "shatterBlockConvert"
       }
+    ],
+    "axis": [
+      "shatter"
     ]
   },
   {
@@ -588,6 +609,9 @@
         "amountMax": 15,
         "target": "all"
       }
+    ],
+    "axis": [
+      "chaos"
     ]
   },
   {

@@ -14,11 +14,11 @@ import {
   getLeaderDef,
   getRelicDef,
 } from './content.ts'
-import { createRng, nextInt, shuffle } from './rng.ts'
+import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardInstance, Command, GameState, RngState, ReactionMode } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, GameState, RngState, ReactionMode } from './types.ts'
 
-export const RUN_BATTLES = 10
+export const RUN_BATTLES = 15
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 const REWARD_EXCLUDED = new Set([
   'green_strike',
@@ -33,12 +33,13 @@ const REWARD_EXCLUDED = new Set([
   'black_guard',
 ])
 /** 焚き火: この戦闘 (0-based) をクリアした後に回復 */
-const CAMPFIRE_AFTER = new Set([2, 5, 8])
+/** 焚き火 (回復かカード除去の二択) が入る戦闘 (0-based: 3・6・9・12戦目クリア後) */
+const CAMPFIRE_AFTER = new Set([2, 5, 8, 11])
 const CAMPFIRE_HEAL_RATIO = 0.3
 /** 勝利ごとの自動回復は廃止 (2026-08-25 StS踏襲。回復は焚き火のみ=マラソン構造) */
 const VICTORY_HEAL = 0
-/** エリート挑戦オファーが出る戦闘 (0-based: 2・5・8戦目)。確定済みルール表「エリート挑戦オファー」 */
-const ELITE_OFFER_BATTLES = new Set([1, 4, 7])
+/** エリート挑戦オファーが出る戦闘 (0-based: 2・5・8・11・14戦目)。確定済みルール表「エリート挑戦オファー」 */
+const ELITE_OFFER_BATTLES = new Set([1, 4, 7, 10, 13])
 /** エリート補正: 強化+2・HP×1.35 */
 const ELITE_STRENGTH = 2
 const ELITE_HP_SCALE = 1.35
@@ -48,16 +49,16 @@ const RELIC_MAX = 3
 /** 段階制の敵プール。battleIndex (0-based) → 抽選プール */
 // 敵ID (ソロ) と編成ID (複数体。data/encounters.json) の混合プール
 const ENEMY_TIERS: readonly (readonly string[])[] = [
-  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 1〜3戦目
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 4〜6戦目
-  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 7〜9戦目 (大亀はボス専用)
-  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 10戦目 (ボスは単体)
+  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 1〜5戦目
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 6〜10戦目
+  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 11〜14戦目 (大亀はボス専用)
+  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 15戦目 (ボスは単体)
 ]
 
 function tierForBattle(battleIndex: number): readonly string[] {
-  if (battleIndex < 3) return ENEMY_TIERS[0]
-  if (battleIndex < 6) return ENEMY_TIERS[1]
-  if (battleIndex < 9) return ENEMY_TIERS[2]
+  if (battleIndex < 5) return ENEMY_TIERS[0]
+  if (battleIndex < 10) return ENEMY_TIERS[1]
+  if (battleIndex < 14) return ENEMY_TIERS[2]
   return ENEMY_TIERS[3]
 }
 
@@ -68,7 +69,7 @@ function tierForBattle(battleIndex: number): readonly string[] {
  */
 export function depthStrength(battleIndex: number): number {
   // 若い個体補正は撤廃 (2026-08-25 人間基準化)。ボスのみ+1
-  return battleIndex >= 9 ? 1 : 0
+  return battleIndex >= 14 ? 1 : 0
 }
 
 /** 深度スケーリング: 敵HP倍率。確定済みルール表「敵の数値基準」の帯に対応する */
@@ -76,13 +77,13 @@ export function depthHpScale(battleIndex: number): number {
   // 2026-08-26 再校正 (旧 0.75/0.85/0.95/1.0)。人間プレイで序盤の敵HPが
   // StS Act1 の約1.6倍と判明し、1〜3戦目 (焚き火前) のHP予算が赤字になっていた。
   // 素のHP90〜110の敵が ×0.55 で 49〜60 = StS Act1 通常敵の帯に入る。
-  if (battleIndex < 3) return 0.55
-  if (battleIndex < 6) return 0.8
-  if (battleIndex < 9) return 0.95
+  if (battleIndex < 5) return 0.55
+  if (battleIndex < 10) return 0.8
+  if (battleIndex < 14) return 0.95
   return 1.0
 }
 
-export type RunPhase = 'combat' | 'offer' | 'relic-reward' | 'reward' | 'won' | 'lost'
+export type RunPhase = 'combat' | 'offer' | 'relic-reward' | 'campfire' | 'reward' | 'won' | 'lost'
 
 export interface RunState {
   readonly seed: number
@@ -130,6 +131,9 @@ export type RunCommand =
   | { readonly type: 'ChooseElite'; readonly elite: boolean } // エリート挑戦オファーへの回答
   | { readonly type: 'PickRelic'; readonly index: number }
   | { readonly type: 'SkipRelic' }
+  // 焚き火 (確定済みルール表「焚き火」): 休んで回復するか、デッキから1枚を永久に取り除くか
+  | { readonly type: 'CampfireRest' }
+  | { readonly type: 'CampfireRemove'; readonly index: number }
 
 /**
  * 次の戦闘へ進む。エリートオファー対象の戦闘 (2/5/8戦目) では先に 'offer' フェーズを挟む
@@ -200,6 +204,70 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
   return startBattle(run)
 }
 
+/**
+ * 効果名 → アーキタイプの軸。確定済みルール表「軸の重み付け」。
+ * 効果に軸が現れない札 (多段ヒットの成長ペイオフ・貫通のトランプル札など) は
+ * CardDef.axis で明示する (JSONで宣言。ここは自動導出ぶんだけ)。
+ */
+const EFFECT_AXIS: Record<string, string> = {
+  addGrowth: 'growth', doubleGrowth: 'growth', dischargeGrowth: 'growth',
+  gainEnergyMax: 'ramp', dealDamagePerEnergyMax: 'ramp', gainBlockPerEnergyMax: 'ramp',
+  addMomentum: 'trample',
+  applyBurn: 'burn', dischargeBurn: 'burn',
+  addAether: 'aether', dischargeAether: 'aether', dischargeAetherDraw: 'aether',
+  gainIceBlock: 'ice', dealDamagePerIceBlock: 'ice', gainIceBlockPerCardPlayed: 'ice',
+  negate: 'permission', negateConvertIce: 'permission',
+  summonPermanent: 'retinue', dealDamagePerPermanent: 'retinue', gainBlockPerPermanent: 'retinue',
+  exhaustFromDeck: 'graveyard', dealDamagePerExhaust: 'graveyard', retrieveFromExhaust: 'graveyard',
+  playFromExhaust: 'graveyard', gainBlockPerExhaust: 'graveyard', dealDamageDrainPerExhaust: 'graveyard',
+  loseHp: 'selfharm', dealDamagePerSelfHpLost: 'selfharm',
+  dealDamagePerCardPlayed: 'storm', drawCardsPerCardPlayed: 'storm',
+  impulseDraw: 'impulse',
+  weakenEnemy: 'oppress', dealDamagePerNegStrength: 'oppress',
+  gainHp: 'heal', dealDamageDrain: 'heal',
+  dealDamagePerDamageTaken: 'wrath',
+  dealDamagePerBlock: 'fortress',
+  shatterBlock: 'shatter', shatterBlockConvert: 'shatter',
+  dealDamageRandom: 'chaos',
+  dealDamageExecute: 'execute', exposeEnemy: 'execute',
+  confuse: 'confuse',
+}
+
+/** 誘発トリガー → 軸。置物の「接着剤」札はここでほぼ自動的に分類される */
+const TRIGGER_AXIS: Record<string, string> = {
+  onPermanentEntered: 'retinue',
+  onCardExhausted: 'graveyard',
+  onCostExhausted: 'graveyard',
+  onHealed: 'heal',
+  onHpLost: 'selfharm',
+  onAetherGained: 'aether',
+  onImpulsePlayed: 'impulse',
+  onSpellPlayed: 'storm',
+}
+
+/** この札が属する軸 (効果名・トリガー・フィールドからの自動導出 + JSONの明示宣言) */
+function axesOf(def: CardDef): readonly string[] {
+  const all = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+  const set = new Set<string>(def.axis ?? [])
+  for (const e of all) {
+    const byEffect = EFFECT_AXIS[e.effect]
+    if (byEffect) set.add(byEffect)
+    const byTrigger = TRIGGER_AXIS[e.trigger]
+    if (byTrigger) set.add(byTrigger)
+    if (e.exhaustThreshold !== undefined) set.add('graveyard') // 忘却の刻の参照札
+    if (e.pierce === true) set.add('trample') // 貫通はトランプルの核
+  }
+  if (def.exhaustCost !== undefined) set.add('graveyard') // 消滅コストは墓地の燃料
+  if (def.retainer === true) set.add('retinue')
+  return [...set]
+}
+
+/** 軸一致による抽選の重み。0一致=1 / 1一致=3 / 2以上=5 */
+function rewardWeight(def: CardDef, deckAxes: ReadonlySet<string>): number {
+  const matches = axesOf(def).filter((a) => deckAxes.has(a)).length
+  return 1 + 2 * Math.min(matches, 2)
+}
+
 /** 報酬を抽選 (リーダーの色アイデンティティのカードのみ・基本札除外・重複なし)。候補数はリーダー個性+収集家の鞄 */
 function rollRewards(run: RunState): RunState {
   const leader = getLeaderDef(run.leaderId)
@@ -213,23 +281,29 @@ function rollRewards(run: RunState): RunState {
       (c) =>
         run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
     )
-    .map((c) => c.id)
-  const [shuffled, rng] = shuffle(run.rng, pool)
-  return {
-    ...run,
-    rng,
-    rewardOptions: shuffled.slice(0, leader.rewardChoices + run.rewardChoicesBonus),
-    phase: 'reward',
+  // デッキに既にある軸を引き寄せる (確定済みルール表「軸の重み付け」)。
+  // 短いラン (15戦・最大14ピック) でもアーキタイプが成立するようにするための補正。
+  const deckAxes = new Set<string>()
+  for (const card of run.deck) for (const a of axesOf(card.def)) deckAxes.add(a)
+
+  const remaining = [...pool]
+  const picked: string[] = []
+  let rng = run.rng
+  const want = leader.rewardChoices + run.rewardChoicesBonus
+  while (picked.length < want && remaining.length > 0) {
+    const weights = remaining.map((c) => rewardWeight(c, deckAxes))
+    const [idx, next] = weightedIndex(rng, weights)
+    rng = next
+    picked.push(remaining[idx].id)
+    remaining.splice(idx, 1)
   }
+  return { ...run, rng, rewardOptions: picked, phase: 'reward' }
 }
 
 /** 戦闘勝利後の処理: HP持ち越し・焚き火 → (エリートならレリック報酬 →) カード報酬 or ラン勝利 */
 function afterVictory(run: RunState, combat: GameState): RunState {
-  // 自動回復は狩人の恵み (victoryHealBonus) のみ。3・6・9戦目クリア後は焚き火
-  let hp = Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
-  if (CAMPFIRE_AFTER.has(run.battleIndex)) {
-    hp = Math.min(run.maxHp, hp + Math.floor(run.maxHp * run.campfireRatio))
-  }
+  // 自動回復は狩人の恵み (victoryHealBonus) のみ。3・6・9・12戦目クリア後は焚き火フェーズ
+  const hp = Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
   const next: RunState = { ...run, combat, hp }
   if (run.battleIndex === RUN_BATTLES - 1) return { ...next, phase: 'won' }
   // エリート戦の勝利: レリック3択 (取得済みを除いた候補列の先頭から)
@@ -239,7 +313,15 @@ function afterVictory(run: RunState, combat: GameState): RunState {
       return { ...next, phase: 'relic-reward', relicOptions: remaining.slice(0, 3) }
     }
   }
-  return rollRewards(next)
+  return campfireOrReward(next)
+}
+
+/** 焚き火の戦闘なら二択を挟み、そうでなければ通常のカード報酬へ (確定済みルール表「焚き火」) */
+function campfireOrReward(run: RunState): RunState {
+  if (CAMPFIRE_AFTER.has(run.battleIndex)) {
+    return { ...run, phase: 'campfire', rewardOptions: null }
+  }
+  return rollRewards(run)
 }
 
 /** B型レリックの取得時効果を適用する */
@@ -298,11 +380,27 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (relicId === undefined) throw new Error(`不正なレリック指定: ${command.index}`)
       let next: RunState = { ...run, relics: [...run.relics, relicId], relicOptions: null }
       next = applyRelicBonus(next, relicId)
-      return rollRewards(next)
+      return campfireOrReward(next)
     }
     case 'SkipRelic': {
       if (run.phase !== 'relic-reward') throw new Error('レリック報酬フェーズではない')
-      return rollRewards({ ...run, relicOptions: null })
+      return campfireOrReward({ ...run, relicOptions: null })
+    }
+    case 'CampfireRest': {
+      if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
+      return rollRewards({ ...run, hp })
+    }
+    case 'CampfireRemove': {
+      if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      const card = run.deck[command.index]
+      if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
+      // デッキが痩せすぎないよう最低5枚は残す
+      if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
+      return rollRewards({
+        ...run,
+        deck: run.deck.filter((_, i) => i !== command.index),
+      })
     }
   }
 }

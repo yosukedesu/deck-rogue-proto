@@ -90,6 +90,9 @@
         "effect": "dealDamage",
         "amount": 3
       }
+    ],
+    "axis": [
+      "growth"
     ]
   },
   {
@@ -190,6 +193,9 @@
         "effect": "dealDamage",
         "amount": 34
       }
+    ],
+    "axis": [
+      "ramp"
     ]
   },
   {
@@ -325,6 +331,9 @@
         "effect": "dealDamage",
         "amount": 2
       }
+    ],
+    "axis": [
+      "growth"
     ]
   },
   {

@@ -439,6 +439,11 @@ export interface CardMode {
 }
 
 export interface CardDef {
+  /**
+   * アーキタイプの軸 (報酬抽選の重み付け用。確定済みルール表「軸の重み付け」)。
+   * 効果名から自動導出できない札 (多段ヒットの成長ペイオフ・貫通のトランプル札など) だけ明示する。
+   */
+  readonly axis?: readonly string[]
   readonly id: string
   readonly name: string
   readonly cost: number

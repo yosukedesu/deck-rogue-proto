@@ -150,6 +150,9 @@
         "effect": "gainBlock",
         "amount": 12
       }
+    ],
+    "axis": [
+      "fortress"
     ]
   },
   {
@@ -546,6 +549,9 @@
         "effect": "gainBlock",
         "amount": 20
       }
+    ],
+    "axis": [
+      "fortress"
     ]
   },
   {

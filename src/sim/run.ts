@@ -371,6 +371,7 @@ function simulateRuns(count: number, baseSeed: number): void {
         run.phase === 'combat' ||
         run.phase === 'reward' ||
         run.phase === 'offer' ||
+        run.phase === 'campfire' ||
         run.phase === 'relic-reward'
       ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
@@ -380,6 +381,18 @@ function simulateRuns(count: number, baseSeed: number): void {
             type: 'ChooseElite',
             elite: run.hp >= run.maxHp * 0.6,
           })
+          continue
+        }
+        if (run.phase === 'campfire') {
+          // 焚き火の方針: HPが6割未満なら休む。余裕があれば基本札を1枚抜いてデッキ濃度を上げる
+          const lowHp = run.hp < run.maxHp * 0.6
+          const trimIdx = lowHp
+            ? -1
+            : run.deck.findIndex((c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'))
+          run =
+            trimIdx >= 0 && run.deck.length > 5
+              ? applyRunCommand(run, { type: 'CampfireRemove', index: trimIdx })
+              : applyRunCommand(run, { type: 'CampfireRest' })
           continue
         }
         if (run.phase === 'relic-reward') {

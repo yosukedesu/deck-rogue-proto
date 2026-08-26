@@ -108,7 +108,10 @@
         "amount": 2
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "axis": [
+      "storm"
+    ]
   },
   {
     "id": "blue_storm_lash",
@@ -322,6 +325,9 @@
         "effect": "discountNext",
         "amount": 2
       }
+    ],
+    "axis": [
+      "storm"
     ]
   },
   {
@@ -341,7 +347,10 @@
         "amount": 2
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "axis": [
+      "storm"
+    ]
   },
   {
     "id": "blue_confuse",

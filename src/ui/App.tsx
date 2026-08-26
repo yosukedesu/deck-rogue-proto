@@ -1538,6 +1538,50 @@ function RunScreen({
     )
   }
 
+  if (run.phase === 'campfire') {
+    const heal = Math.floor(run.maxHp * run.campfireRatio)
+    return (
+      <div className="app setup">
+        <h1>🔥 焚き火</h1>
+        <p className="hint">
+          休んで回復するか、デッキから1枚を永久に取り除くか。除去はデッキを薄くして軸を濃くする。
+        </p>
+        <div className="choice-row" style={{ marginTop: 12 }}>
+          <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>
+            <div className="choice-title">
+              <span className="choice-sprite">🛌</span>休む
+            </div>
+            <div className="choice-desc">
+              HP +{heal}（現在 {run.hp}/{run.maxHp}）
+            </div>
+          </button>
+        </div>
+        <div className="setup-section-title" style={{ marginTop: 20 }}>
+          または、取り除く1枚を選ぶ（デッキ{run.deck.length}枚・最低5枚は残る）
+        </div>
+        <div className="hand-cards" style={{ margin: '12px 0' }}>
+          {run.deck.map((c, i) => (
+            <CardFrame
+              key={c.uid}
+              card={c}
+              dim={false}
+              ctx={ctx}
+              actions={
+                <button
+                  className="btn"
+                  disabled={run.deck.length <= 5}
+                  onClick={() => dispatch({ type: 'CampfireRemove', index: i })}
+                >
+                  取り除く
+                </button>
+              }
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   if (run.phase === 'combat' && run.combat) {
     return (
       <BattleScreen

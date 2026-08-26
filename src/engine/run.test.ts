@@ -24,7 +24,7 @@ function forceWin(run: RunState): RunState {
 }
 
 describe('ラン構造', () => {
-  it('10戦・段階制の敵並び (序盤/中盤/終盤/ボス) がシードで確定する', () => {
+  it('15戦・段階制の敵並び (序盤/中盤/終盤/ボス) がシードで確定する', () => {
     const run = createRun(42, 'set-confirm')
     expect(run.enemyIds).toHaveLength(RUN_BATTLES)
     const tier1 = ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair']
@@ -47,7 +47,7 @@ describe('ラン構造', () => {
     ]
     const boss = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
     run.enemyIds.forEach((id, i) => {
-      const pool = i < 3 ? tier1 : i < 6 ? tier2 : i < 9 ? tier3 : boss
+      const pool = i < 5 ? tier1 : i < 10 ? tier2 : i < 14 ? tier3 : boss
       expect(pool).toContain(id)
     })
   })
@@ -69,9 +69,10 @@ describe('ラン構造', () => {
   it('深度スケーリング: 若い個体補正は撤廃 (人間基準化)。強化はボスのみ+1、HPは緩ランプ', () => {
     expect(depthStrength(0)).toBe(0)
     expect(depthStrength(6)).toBe(0)
-    expect(depthStrength(9)).toBe(1)
+    expect(depthStrength(9)).toBe(0)
+    expect(depthStrength(14)).toBe(1) // ボスのみ (15戦目)
     expect(depthHpScale(0)).toBeCloseTo(0.55) // 2026-08-26 再校正 (StS Act1帯へ)
-    expect(depthHpScale(9)).toBeCloseTo(1.0)
+    expect(depthHpScale(14)).toBeCloseTo(1.0)
     // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
     const run = createRun(5, 'set-confirm')
     const members = resolveEncounter(run.enemyIds[0])
@@ -84,12 +85,12 @@ describe('ラン構造', () => {
 })
 
 describe('報酬ピック', () => {
-  it('勝利で3枚提示 (重複なし・基本札除外)。ピックでデッキが増えて次戦へ', () => {
+  it('勝利で4枚提示 (重複なし・基本札除外)。ピックでデッキが増えて次戦へ', () => {
     let run = createRun(11, 'set-confirm')
     run = forceWin(run)
     expect(run.phase).toBe('reward')
-    expect(run.rewardOptions).toHaveLength(3)
-    expect(new Set(run.rewardOptions!).size).toBe(3)
+    expect(run.rewardOptions).toHaveLength(4) // 2026-08-26: 3→4枚
+    expect(new Set(run.rewardOptions!).size).toBe(4)
     expect(run.rewardOptions).not.toContain('green_strike')
     expect(run.rewardOptions).not.toContain('green_guard')
     const picked = run.rewardOptions![0]
@@ -136,16 +137,37 @@ describe('HP持ち越しと焚き火', () => {
     expect(run.combat!.player.hp).toBe(27)
   })
 
-  it('3戦目クリア後は焚き火で最大HPの30%回復 (上限あり)', () => {
+  it('3戦目クリア後は焚き火フェーズに入り、休めば最大HPの30%回復する', () => {
     let run = createRun(17, 'set-confirm')
     run = forceWin(run)
     run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
     run = forceWin(run)
     run = applyRunCommand(run, { type: 'SkipReward' })
-    // 3戦目 (battleIndex 2): HP20で勝つ → 焚き火のみ (最大HP78の30% = 23)
+    // 3戦目 (battleIndex 2): HP20で勝つ → 焚き火の二択が開く
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
     run = forceWin(run)
+    expect(run.phase).toBe('campfire')
+    expect(run.hp).toBe(20) // 休むまでは回復しない
+    run = applyRunCommand(run, { type: 'CampfireRest' })
     expect(run.hp).toBe(20 + Math.floor(80 * 0.3))
+    expect(run.phase).toBe('reward')
+  })
+
+  it('焚き火でカード除去を選ぶとデッキから1枚が永久に消える (回復はしない)', () => {
+    let run = createRun(17, 'set-confirm')
+    run = forceWin(run)
+    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
+    run = forceWin(run)
+    run = applyRunCommand(run, { type: 'SkipReward' })
+    run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
+    run = forceWin(run)
+    const before = run.deck.length
+    const removed = run.deck[0].uid
+    run = applyRunCommand(run, { type: 'CampfireRemove', index: 0 })
+    expect(run.deck).toHaveLength(before - 1)
+    expect(run.deck.some((c) => c.uid === removed)).toBe(false)
+    expect(run.hp).toBe(20) // 除去を選んだので回復しない
+    expect(run.phase).toBe('reward')
   })
 
   it('敗北でランは終了する', () => {
@@ -161,16 +183,17 @@ describe('HP持ち越しと焚き火', () => {
 })
 
 describe('ラン走破', () => {
-  it('10戦すべて勝つとラン勝利。ボス戦の敵は強化+1・HP等倍', () => {
+  it('15戦すべて勝つとラン勝利。ボス戦の敵は強化+1・HP等倍', () => {
     let run = createRun(23, 'set-confirm')
     for (let i = 0; i < RUN_BATTLES; i++) {
       if (i === RUN_BATTLES - 1) {
         // ボス戦開始時の深度スケーリングを確認
         expect(run.combat!.enemies[0].strength).toBe(1)
-        const def = getEnemyDef(run.enemyIds[9])
+        const def = getEnemyDef(run.enemyIds[RUN_BATTLES - 1])
         expect(run.combat!.enemies[0].maxHp).toBe(def.maxHp)
       }
       run = forceWin(run)
+      if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
       if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
       run = declineOffer(run)
     }
