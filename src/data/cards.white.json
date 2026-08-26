@@ -13,6 +13,24 @@
     ]
   },
   {
+    "id": "white_shield_strike",
+    "name": "聖盾の一撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
     "id": "white_guard",
     "name": "白盾",
     "cost": 1,
@@ -346,7 +364,7 @@
       {
         "trigger": "onPermanentEntered",
         "effect": "dealDamage",
-        "amount": 1,
+        "amount": 2,
         "target": "all"
       }
     ]

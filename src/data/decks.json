@@ -787,7 +787,7 @@
     "id": "deck_horde",
     "name": "従者ホード",
     "color": "white",
-    "description": "従者を並べて「集結」で刈り取る横並びの理想形",
+    "description": "従者を並べて「集結」で刈り取る横並びの理想形（2026-08-26: 前半に攻撃札が皆無だったため白盾×2を聖光の一撃×2へ）",
     "cards": [
       {
         "cardId": "white_perm_squire",
@@ -822,7 +822,7 @@
         "count": 1
       },
       {
-        "cardId": "white_guard",
+        "cardId": "white_strike",
         "count": 2
       },
       {

@@ -47,7 +47,7 @@ describe('置物登場の誘発 (白の接着剤)', () => {
     expect(s.player.hand.length).toBe(handBefore - 1 + 1)
   })
 
-  it('白銀の軍旗 + 一斉召集: トークン2体の登場で敵全体に1ダメ×2', () => {
+  it('白銀の軍旗 + 一斉召集: トークン2体の登場で敵全体に2ダメ×2', () => {
     let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42, 'starter_white'), [
       'white_perm_banner',
       'white_muster',
@@ -57,8 +57,8 @@ describe('置物登場の誘発 (白の接着剤)', () => {
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_muster' })
-    expect(s.enemies[0].hp).toBe(hp0 - 2) // 1ダメ×2回
-    expect(s.enemies[1].hp).toBe(hp1 - 2)
+    expect(s.enemies[0].hp).toBe(hp0 - 4) // 2ダメ×2回 (2026-08-26 軍旗 1→2)
+    expect(s.enemies[1].hp).toBe(hp1 - 4)
   })
 })
 

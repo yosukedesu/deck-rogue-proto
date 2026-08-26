@@ -2,7 +2,7 @@
 // 状態異常 (弱体/脆弱/負傷)・連撃・再生・フェーズ変化・激昂・挑発。
 // 確定済みルール表「敵の設計原則」「状態異常」「連撃」「再生」「敵フェーズ変化」「激昂」を固定する。
 import { describe, expect, it } from 'vitest'
-import { getEnemyDef } from './content.ts'
+import { allEnemies, getEnemyDef } from './content.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -188,8 +188,46 @@ describe('挑発 (嘲る道化)', () => {
   it('伏せがあると用心する (movesVsSet に大振りは無い)', () => {
     const def = getEnemyDef('enemy_joker')
     expect(def.movesVsSet).toBeDefined()
-    const maxAttack = Math.max(...def.movesVsSet!.map((m) => m.max ?? 0))
+    const attacks = def.movesVsSet!.filter((m) => m.kind === 'attack')
+    const maxAttack = Math.max(...attacks.map((m) => m.max ?? 0))
     const wildMin = Math.min(...def.moves.filter((m) => m.kind === 'attack').map((m) => m.min ?? 99))
     expect(maxAttack).toBeLessThan(wildMin) // 用心時の最大値 < 大振りの最小値
+  })
+
+  it('ただし、はったりを見破る手段を持つ (伏せっぱなしで完封できない)', () => {
+    const def = getEnemyDef('enemy_joker')
+    expect(def.movesVsSet!.some((m) => m.kind === 'destroy-set')).toBe(true)
+  })
+})
+
+describe('伏せへの罰 (2026-08-26。無期限温存で敵を弱い分岐に固定できた問題)', () => {
+  // プレイテストで2人が独立に発見: リアクションを伏せたまま一度も発動しないことで
+  // 嘲る道化・用心深い影を弱い行動に固定し続けられた (エリートを無傷で撃破)。
+  // 伏せは発動か破壊まで無期限に持続する仕様なので、敵側に膠着を破る手段が要る。
+  it('伏せに反応する敵は必ず「伏せっぱなしを罰する手段」を持つ', () => {
+    const offenders: string[] = []
+    for (const def of allEnemies) {
+      const vsSet = def.movesVsSet
+      if (!vsSet || vsSet.length === 0) continue
+      const breaksStandoff = vsSet.some((m) => m.kind === 'destroy-set')
+      const normalMin = Math.min(
+        ...def.moves.filter((m) => m.kind === 'attack').map((m) => m.min ?? 99),
+      )
+      const vsSetMax = Math.max(
+        ...vsSet.filter((m) => m.kind === 'attack').map((m) => m.max ?? 0),
+        0,
+      )
+      // 伏せ破壊を持つか、通常時と同等以上に殴れる分岐があること
+      if (!breaksStandoff && vsSetMax < normalMin) offenders.push(def.name)
+    }
+    expect(offenders).toEqual([])
+  })
+
+  it('1〜3戦目のプールにも伏せへの罰がある (かつては皆無だった)', () => {
+    // tier1 = 探り屋 / うねる獣 / 探り屋の二人組
+    const probe = getEnemyDef('enemy_probe')
+    expect(probe.movesVsSet).toBeDefined()
+    const lunge = probe.movesVsSet!.find((m) => m.id === 'lunge')
+    expect(lunge).toBeDefined() // 伏せると探りの猶予 (poke×2) が消える
   })
 })

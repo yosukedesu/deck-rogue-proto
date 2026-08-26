@@ -26,7 +26,7 @@
     "id": "enemy_probe",
     "name": "探り屋",
     "archetype": "probe",
-    "flavor": "ちくちくは挨拶。三度目が本気。",
+    "flavor": "ちくちくは挨拶。三度目が本気。ただし仕掛けを見たら、挨拶の順番は守らない。",
     "maxHp": 90,
     "moves": [
       {
@@ -48,13 +48,29 @@
       "poke",
       "poke",
       "lunge"
+    ],
+    "movesVsSet": [
+      {
+        "id": "lunge",
+        "kind": "attack",
+        "min": 12,
+        "max": 16,
+        "weight": 1
+      },
+      {
+        "id": "poke",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 2
+      }
     ]
   },
   {
     "id": "enemy_set_wary",
     "name": "用心深い影",
     "archetype": "set-wary",
-    "flavor": "伏せ札が怖い。怖いから、様子を見る。",
+    "flavor": "伏せ札が怖い。怖いから様子を見る——が、いつまでも我慢はできない。",
     "maxHp": 100,
     "moves": [
       {
@@ -78,6 +94,13 @@
         "kind": "attack",
         "min": 5,
         "max": 7,
+        "weight": 1
+      },
+      {
+        "id": "slash",
+        "kind": "attack",
+        "min": 11,
+        "max": 15,
         "weight": 1
       }
     ]
@@ -313,7 +336,7 @@
     "id": "enemy_joker",
     "name": "嘲る道化",
     "archetype": "taunter",
-    "flavor": "手ぶらの相手にだけ強気。何か伏せて見せてやれ。",
+    "flavor": "手ぶらの相手にだけ強気。ただし、いつまでも伏せたままなら見破りにくる。",
     "maxHp": 100,
     "moves": [
       {
@@ -337,6 +360,11 @@
         "kind": "defend",
         "min": 5,
         "max": 8,
+        "weight": 1
+      },
+      {
+        "id": "call_bluff",
+        "kind": "destroy-set",
         "weight": 1
       }
     ]
