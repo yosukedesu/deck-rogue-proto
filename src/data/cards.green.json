@@ -101,7 +101,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 10
+        "amount": 12,
+        "pierce": true
       }
     ]
   },
@@ -169,7 +170,12 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 18
+        "amount": 24
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
       }
     ]
   },
@@ -221,6 +227,11 @@
       {
         "trigger": "onEnemyAction",
         "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addGrowth",
+        "amount": 2
       }
     ]
   },

@@ -164,6 +164,11 @@
       {
         "trigger": "onPlay",
         "effect": "impulseDraw",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
         "amount": 2
       }
     ]
@@ -611,8 +616,13 @@
     "effects": [
       {
         "trigger": "onAttackPlayed",
-        "effect": "applyBurn",
+        "effect": "dealDamage",
         "amount": 2
+      },
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "applyBurn",
+        "amount": 5
       }
     ]
   }

@@ -113,8 +113,8 @@ describe('大漩渦 (ストームの全体化)', () => {
   })
 })
 
-describe('心眼 (敵防御窓のドロー)', () => {
-  it('敵が防御した後に2ドロー+霊気1', () => {
+describe('心眼 (敵防御窓の換金)', () => {
+  it('敵が防御した後に氷壁4+霊気3 (敵フェーズのドローは全捨てされるため無価値だった)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_reaction_mind_eye',
     ])
@@ -124,9 +124,11 @@ describe('心眼 (敵防御窓のドロー)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.player.aether).toBe(1)
-    // 手札は敵ターン終了後に全捨てされるため、イベントで確認する
-    expect(s.eventLog.some((e) => e.type === 'CardsDrawn' && e.count === 2)).toBe(true)
+    // 2026-08-26: 旧実装は 2ドロー+霊気1 だったが、手札は敵ターン終了後に全捨てされるため
+    // 敵フェーズに引いた札は一度もプレイできない = ドローの価値が0だった。
+    // 戦闘をまたいで持ち越す資源 (氷壁・霊気) へ置き換えた。
+    expect(s.player.aether).toBe(3)
+    expect(s.player.iceBlock).toBe(4)
     void handBefore
   })
 })

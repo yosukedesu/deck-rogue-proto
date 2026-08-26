@@ -408,7 +408,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 11
+        "amount": 13
       }
     ]
   },
@@ -591,8 +591,8 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 8,
-        "amountMax": 16,
+        "amount": 11,
+        "amountMax": 20,
         "exhaustThreshold": 7
       }
     ]

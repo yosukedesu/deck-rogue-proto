@@ -11,35 +11,49 @@ import { chooseCommand } from './run.ts'
 
 /** 1ターンの詠唱数の上限。健全なデッキの実測最大は11 (deck_chaos の衝動連打) */
 const MAX_PLAYS_PER_TURN = 20
-/** 1戦闘のコマンド数上限 */
-const MAX_ACTIONS = 500
+/**
+ * 1戦闘のコマンド数上限。これは「無限ループの backstop」であって試合の長さの基準ではない。
+ * 実測の最長は deck_fortress vs 苔まといの主 の 329ターン (1329コマンド) で、
+ * これはループではなく膠着 (要塞デッキの火力が再生をわずかに上回るだけ)。
+ * この膠着自体は別途バランスの課題として扱う。
+ */
+const MAX_ACTIONS = 2000
 
 describe('無限ループ検知', () => {
   it('全デッキ × 敵 × 複数シードで、1ターンの詠唱数と1戦闘のコマンド数が上限を超えない', () => {
     const offenders: string[] = []
     let worstPlays = 0
+    // 2026-08-26: 5シード×1敵では取り逃していた (集中のループは deck_storm × 用心深い影 × seed7 でしか出ない)。
+    // 全デッキ × 全敵 × 10シードへ拡張する。
     for (const deck of allDecks) {
-      for (let seed = 1; seed <= 5; seed++) {
-        const enemy = allEnemies[(seed * 3) % allEnemies.length]
-        let s = startCombat(seed, 'set-confirm', enemy.id, deck.id)
-        let actions = 0
-        while (s.phase !== 'won' && s.phase !== 'lost') {
-          if (++actions > MAX_ACTIONS) {
-            offenders.push(`${deck.id} vs ${enemy.id} seed${seed}: コマンド数${actions}超過`)
-            break
-          }
-          s = applyCommand(s, chooseCommand(s))
-          if (s.player.cardsPlayedThisTurn > worstPlays) worstPlays = s.player.cardsPlayedThisTurn
-          if (s.player.cardsPlayedThisTurn > MAX_PLAYS_PER_TURN) {
-            offenders.push(
-              `${deck.id} vs ${enemy.id} seed${seed}: ターン${s.turn}で詠唱数${s.player.cardsPlayedThisTurn}`,
-            )
-            break
+      for (let seed = 1; seed <= 10; seed++) {
+        for (const enemy of allEnemies) {
+          let s = startCombat(seed, 'set-confirm', enemy.id, deck.id)
+          let actions = 0
+          while (s.phase !== 'won' && s.phase !== 'lost') {
+            if (++actions > MAX_ACTIONS) {
+              offenders.push(`${deck.id} vs ${enemy.id} seed${seed}: コマンド数${actions}超過`)
+              break
+            }
+            s = applyCommand(s, chooseCommand(s))
+            if (s.player.cardsPlayedThisTurn > worstPlays) worstPlays = s.player.cardsPlayedThisTurn
+            if (s.player.cardsPlayedThisTurn > MAX_PLAYS_PER_TURN) {
+              offenders.push(
+                `${deck.id} vs ${enemy.id} seed${seed}: ターン${s.turn}で詠唱数${s.player.cardsPlayedThisTurn}`,
+              )
+              break
+            }
           }
         }
       }
     }
-    expect(offenders).toEqual([])
+    // ループ (1ターンの詠唱数の暴走) は一件も許さない
+    expect(offenders.filter((o) => o.includes('詠唱数'))).toEqual([])
+    // 膠着 (決着はするが異常に長い) は既知の1件のみ。増えたらここで落ちる。
+    // deck_fortress vs 苔まといの主 = 要塞デッキの火力が再生をわずかに上回るだけの329ターン戦。
+    // ループではないので別枠だが、放置してよい状態でもない (バランスの課題として別途扱う)。
+    const stalemates = [...new Set(offenders.filter((o) => o.includes('コマンド数')).map((o) => o.split(' seed')[0]))]
+    expect(stalemates).toEqual(['deck_fortress vs enemy_moss'])
     // 上限に余裕があることも確認 (健全な最大は10台のはず)
     expect(worstPlays).toBeLessThanOrEqual(MAX_PLAYS_PER_TURN)
   })

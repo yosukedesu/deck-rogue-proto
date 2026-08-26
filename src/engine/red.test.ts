@@ -112,14 +112,14 @@ describe('刹那のリソース (儀式・衝動・自傷)', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
     s = withHand(s, ['red_impulse'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_impulse' })
-    expect(s.player.impulseUids).toHaveLength(2)
-    expect(s.player.hand).toHaveLength(2) // 衝動2枚が手札に
+    expect(s.player.impulseUids).toHaveLength(3)
+    expect(s.player.hand).toHaveLength(3) // 衝動3枚が手札に
     const impulseCard = s.player.hand.find((c) => s.player.impulseUids.includes(c.uid))!
     const exhaustBefore = s.player.exhaustPile.length
     s = withIntent(s, defendIntent(3))
     s = applyCommand(s, { type: 'EndTurn' })
-    // 未使用の衝動2枚は消滅の山へ
-    expect(s.player.exhaustPile.length).toBe(exhaustBefore + 2)
+    // 未使用の衝動3枚は消滅の山へ
+    expect(s.player.exhaustPile.length).toBe(exhaustBefore + 3)
     expect(s.player.exhaustPile.some((c) => c.uid === impulseCard.uid)).toBe(true)
     expect(s.player.impulseUids).toHaveLength(0)
   })

@@ -6,7 +6,7 @@ import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('消滅コスト (exhaustCost)', () => {
-  it('供物の火: 手札1枚を消滅させて11ダメージ。指定なしはエラー', () => {
+  it('供物の火: 手札1枚を消滅させて13ダメージ。指定なしはエラー', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_offering',
       'black_strike',
@@ -18,7 +18,7 @@ describe('消滅コスト (exhaustCost)', () => {
       cardUid: 't0_black_offering',
       exhaustUids: ['t1_black_strike'],
     })
-    expect(s.enemies[0].hp).toBe(enemyHp - 11)
+    expect(s.enemies[0].hp).toBe(enemyHp - 13)
     expect(s.player.exhaustPile.some((c) => c.def.id === 'black_strike')).toBe(true)
     expect(s.player.hand).toHaveLength(0)
   })

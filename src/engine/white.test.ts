@@ -70,7 +70,7 @@ describe('要塞型 (ブロック変換)', () => {
 })
 
 describe('従者ホード (置物数参照)', () => {
-  it('集結: 置物の数×3のダメージ (リーダーパッシブ・レリックも数える)', () => {
+  it('集結: 場に出た置物の数×4のダメージ (リーダーパッシブ・レリックは数えない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_squire',
       'white_perm_shieldmaiden',
@@ -81,7 +81,7 @@ describe('従者ホード (置物数参照)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_perm_shieldmaiden' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_rally' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6) // 置物2×3
+    expect(s.enemies[0].hp).toBe(hpBefore - 8) // 置物2×4
   })
 
   it('従者の少年: 毎ターン開始時に2ダメージの自動攻撃', () => {

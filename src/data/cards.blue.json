@@ -203,13 +203,13 @@
     "effects": [
       {
         "trigger": "onAttacked",
-        "effect": "drawCards",
-        "amount": 2
+        "effect": "gainIceBlock",
+        "amount": 3
       },
       {
         "trigger": "onAttacked",
         "effect": "addAether",
-        "amount": 1
+        "amount": 2
       }
     ]
   },
@@ -333,14 +333,15 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 1
+        "amount": 2
       },
       {
         "trigger": "onPlay",
         "effect": "discountNext",
-        "amount": 1
+        "amount": 2
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "blue_confuse",
@@ -431,7 +432,7 @@
   {
     "id": "blue_perm_static",
     "name": "静電の帳",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "effects": [
       {
@@ -538,13 +539,13 @@
     "effects": [
       {
         "trigger": "onEnemyDefended",
-        "effect": "drawCards",
-        "amount": 2
+        "effect": "gainIceBlock",
+        "amount": 4
       },
       {
         "trigger": "onEnemyDefended",
         "effect": "addAether",
-        "amount": 1
+        "amount": 3
       }
     ]
   },

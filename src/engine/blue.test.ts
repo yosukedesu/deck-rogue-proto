@@ -244,12 +244,15 @@ describe('0マナスペルとマナ軽減', () => {
     expect(s.player.exhaustPile).toHaveLength(2) // ひらめきも消滅
   })
 
-  it('集中: 1ドローと「次のカード-1」。割引は未使用ならターンを跨いで持ち越す', () => {
+  it('集中: 2ドローと「次のカード-2」。使用後は消滅し、割引はターンを跨いで持ち越す', () => {
+    // 消滅は無限ループ対策 (2026-08-26)。割引で自分自身が実質0マナになり、
+    // 引き直して戻ってくる完全な循環が閉じていた (deck_storm でターン3が終わらなかった)。
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), ['blue_focus'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_focus' })
-    expect(s.player.nextCardDiscount).toBe(1)
+    expect(s.player.nextCardDiscount).toBe(2)
+    expect(s.player.exhaustPile.map((c) => c.def.id)).toContain('blue_focus')
     s = withIntent(s, defendIntent(3))
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.nextCardDiscount).toBe(1) // 持ち越し
+    expect(s.player.nextCardDiscount).toBe(2) // 持ち越し
   })
 })

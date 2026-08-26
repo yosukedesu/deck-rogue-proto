@@ -15,7 +15,7 @@ describe('召喚 (トークン再現)', () => {
     expect(s.player.permanents).toHaveLength(2)
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_rally' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6) // 置物2×3
+    expect(s.enemies[0].hp).toBe(hpBefore - 8) // 置物2×4
   })
 
   it('召喚された従者は毎ターン開始時に自動攻撃する (本体と同じ挙動)', () => {
