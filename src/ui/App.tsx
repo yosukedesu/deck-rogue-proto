@@ -1619,7 +1619,10 @@ function RunScreen({
         </div>
       </div>
       <div style={{ marginTop: 16 }}>
-        <button className="btn btn-primary" onClick={() => onRestart(Date.now() % 2 ** 32)}>
+        <button className="btn btn-primary" onClick={() => saveReport(run, null, history)}>
+          📄 状況を書き出す
+        </button>{' '}
+        <button className="btn" onClick={() => onRestart(Date.now() % 2 ** 32)}>
           新シードで再挑戦
         </button>{' '}
         <button className="btn" onClick={() => onRestart(run.seed)}>
@@ -1669,29 +1672,30 @@ export default function App() {
   }
 
   const dispatchRun = (command: RunCommand) => {
-    setRun((prev) => {
-      if (!prev) return prev
-      try {
-        const next = applyRunCommand(prev, command)
-        // 戦闘が決着した瞬間だけ履歴に積む (次戦の開始で combat が上書きされる前に捕まえる)
-        const ended = next.combat?.phase === 'won' || next.combat?.phase === 'lost'
-        if (ended && prev.combat && prev.combat.phase !== next.combat?.phase && next.combat) {
-          const archived = archiveBattle(
-            next.combat,
-            prev.battleIndex + 1,
-            prev.enemyIds[prev.battleIndex],
-            prev.currentElite,
-            prev.hp,
-            prev.deck.length,
-          )
-          setRunHistory((h) => [...h, archived])
-        }
-        return next
-      } catch (err) {
-        alert(err instanceof Error ? err.message : String(err))
-        return prev
-      }
-    })
+    if (run === null) return
+    let next: RunState
+    try {
+      next = applyRunCommand(run, command)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err))
+      return
+    }
+    // 戦闘が決着した瞬間だけ履歴に積む (次戦の開始で combat が上書きされる前に捕まえる)。
+    // setRun の更新関数の中で setRunHistory を呼ぶと StrictMode の二重実行で重複するため、外で行う
+    const ended = next.combat?.phase === 'won' || next.combat?.phase === 'lost'
+    if (ended && run.combat && run.combat.phase !== next.combat?.phase && next.combat) {
+      const archived = archiveBattle(
+        next.combat,
+        run.battleIndex + 1,
+        run.enemyIds[run.battleIndex],
+        run.currentElite,
+        run.hp,
+        run.deck.length,
+      )
+      // 同じ戦闘を二度積まない (再入や二重実行への保険)
+      setRunHistory((h) => (h.some((a) => a.battleNo === archived.battleNo) ? h : [...h, archived]))
+    }
+    setRun(next)
   }
 
   if (run !== null) {
