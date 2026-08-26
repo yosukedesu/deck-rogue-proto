@@ -50,7 +50,7 @@ describe('エリート挑戦オファー', () => {
     const scale = depthHpScale(1)
     expect(elite.combat!.enemies[0].maxHp).toBeGreaterThan(base.combat!.enemies[0].maxHp)
     expect(elite.combat!.enemies[0].maxHp / base.combat!.enemies[0].maxHp).toBeCloseTo(1.35, 1)
-    expect(scale).toBeCloseTo(0.75)
+    expect(scale).toBeCloseTo(0.55) // depthHpScale(1) と一致 (2026-08-26 再校正)
   })
 
   it('エリートに勝つとレリック3択 → 取得後にカード報酬へ', () => {

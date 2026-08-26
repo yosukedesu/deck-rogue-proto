@@ -71,11 +71,13 @@ export function depthStrength(battleIndex: number): number {
   return battleIndex >= 9 ? 1 : 0
 }
 
-/** 深度スケーリング: 敵HP倍率 (序盤は4割、ボスで7割弱) */
+/** 深度スケーリング: 敵HP倍率。確定済みルール表「敵の数値基準」の帯に対応する */
 export function depthHpScale(battleIndex: number): number {
-  // 緩ランプ (2026-08-25): 序盤からStS初戦相当の手応え
-  if (battleIndex < 3) return 0.75
-  if (battleIndex < 6) return 0.85
+  // 2026-08-26 再校正 (旧 0.75/0.85/0.95/1.0)。人間プレイで序盤の敵HPが
+  // StS Act1 の約1.6倍と判明し、1〜3戦目 (焚き火前) のHP予算が赤字になっていた。
+  // 素のHP90〜110の敵が ×0.55 で 49〜60 = StS Act1 通常敵の帯に入る。
+  if (battleIndex < 3) return 0.55
+  if (battleIndex < 6) return 0.8
   if (battleIndex < 9) return 0.95
   return 1.0
 }

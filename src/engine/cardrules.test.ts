@@ -12,9 +12,32 @@ function netEnergy(def: CardDef): number {
   return gain - def.cost
 }
 
+/**
+ * 手札またはエナジーを補充する効果。0マナ札がこれを持つと
+ * 「撃つ → 補充 → また撃つ」が閉じてリシャッフル込みの無限ループになる。
+ * 逆にこれらを持たない0マナ札は撃つたび手札が1枚減るので必ず停止する。
+ */
+const REFILL_EFFECTS = [
+  'drawCards',
+  'drawCardsPerCardPlayed',
+  'dischargeAetherDraw',
+  'impulseDraw',
+  'retrieveFromExhaust',
+  'playFromExhaust',
+  'gainEnergy',
+  'gainEnergyMax',
+]
+
 describe('カードデータの不変条件', () => {
-  it('コスト0の札は必ず消滅する (リシャッフルと組んだ無限詠唱ループの禁止)', () => {
-    const bad = allCards.filter((c) => c.cost === 0 && c.exhaust !== true)
+  it('コスト0で手札かエナジーを補充する札は必ず消滅する (2026-08-26改定。無限詠唱ループの禁止)', () => {
+    // 旧ルールは「0マナは一律消滅必須」。赤に速さの対価を渡すため、
+    // ループが実際に閉じる条件 (補充を伴うこと) だけに絞った (確定済みルール表「0マナスペル」)。
+    const bad = allCards.filter(
+      (c) =>
+        c.cost === 0 &&
+        c.exhaust !== true &&
+        c.effects.some((e) => REFILL_EFFECTS.includes(e.effect)),
+    )
     expect(bad.map((c) => c.name)).toEqual([])
   })
 

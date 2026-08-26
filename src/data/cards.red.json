@@ -13,6 +13,37 @@
     ]
   },
   {
+    "id": "red_spark",
+    "name": "火花",
+    "cost": 0,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_ember_slash",
+    "name": "熾火の一閃",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
     "id": "red_guard",
     "name": "灰の盾",
     "cost": 1,
@@ -22,6 +53,11 @@
         "trigger": "onPlay",
         "effect": "gainBlock",
         "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
       }
     ]
   },
@@ -558,7 +594,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 7
+        "amount": 9
       },
       {
         "trigger": "onPlay",

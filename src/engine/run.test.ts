@@ -70,14 +70,14 @@ describe('ラン構造', () => {
     expect(depthStrength(0)).toBe(0)
     expect(depthStrength(6)).toBe(0)
     expect(depthStrength(9)).toBe(1)
-    expect(depthHpScale(0)).toBeCloseTo(0.75)
+    expect(depthHpScale(0)).toBeCloseTo(0.55) // 2026-08-26 再校正 (StS Act1帯へ)
     expect(depthHpScale(9)).toBeCloseTo(1.0)
     // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
     const run = createRun(5, 'set-confirm')
     const members = resolveEncounter(run.enemyIds[0])
     const def = getEnemyDef(members[0].enemyId)
     expect(run.combat!.enemies[0].maxHp).toBe(
-      Math.round(def.maxHp * 0.75 * (members[0].hpScale ?? 1)),
+      Math.round(def.maxHp * 0.55 * (members[0].hpScale ?? 1)),
     )
     expect(run.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })

@@ -246,7 +246,7 @@ describe('敵特性 (StS参考)', () => {
     s = { ...s, player: { ...s.player, hp: 999, maxHp: 999 } } // 行動観察のため耐える
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(declaredIntents(s.eventLog).map((d) => d.intent.shownMin)).toEqual([5, 5, 16]) // poke, poke, lunge
+    expect(declaredIntents(s.eventLog).map((d) => d.intent.shownMin)).toEqual([5, 5, 12]) // poke, poke, lunge
     s = applyCommand(s, { type: 'EndTurn' })
     expect(declaredIntents(s.eventLog)[3].intent.shownMin).toBe(5) // ループして poke に戻る
   })

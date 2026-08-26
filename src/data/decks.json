@@ -651,15 +651,19 @@
     "id": "run_basic_red",
     "name": "ラン基本デッキ(赤)",
     "color": "red",
-    "description": "赤ドラフト連戦の出発点。火弾×5・灰の盾×4・逆燃×1",
+    "description": "赤ドラフト連戦の出発点。手数で押す構成: 火弾×3・火花×2(0マナ)・灰の盾×2・リアクション2・着火×1",
     "cards": [
       {
         "cardId": "red_strike",
         "count": 3
       },
       {
+        "cardId": "red_spark",
+        "count": 2
+      },
+      {
         "cardId": "red_guard",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "red_reaction_flareback",
@@ -671,10 +675,6 @@
       },
       {
         "cardId": "red_ignite",
-        "count": 1
-      },
-      {
-        "cardId": "red_impulse",
         "count": 1
       }
     ]
