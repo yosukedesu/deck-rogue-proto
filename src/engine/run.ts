@@ -253,7 +253,7 @@ const TRIGGER_AXIS: Record<string, string> = {
 }
 
 /** この札が属する軸 (効果名・トリガー・フィールドからの自動導出 + JSONの明示宣言) */
-function axesOf(def: CardDef): readonly string[] {
+export function axesOf(def: CardDef): readonly string[] {
   const all = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
   const set = new Set<string>(def.axis ?? [])
   for (const e of all) {
