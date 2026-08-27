@@ -204,8 +204,8 @@ function renderBattle(s: GameState, logFrom: number): string {
       const playable = isPlayableFromHand(c) && cost <= p.energy
       const canSet = c.def.type === 'reaction' && p.setCards.length < p.setSlots && c.def.cost <= p.energy
       const marks = [
-        c.def.id === 'status_wound'
-          ? '使用不可(死に札。ターン終了時に捨てられる)'
+        c.def.id === 'status_wound' || c.def.id === 'status_junk'
+          ? '使用不可(死に札)'
           : playable
             ? 'プレイ可'
             : c.def.type === 'reaction'
