@@ -84,11 +84,15 @@ function wordOf(def: CardDef): string {
   return '樹'
 }
 function suffixOf(effects: readonly DeclarativeEffect[]): string {
-  const dmg = effects.some((e) => e.effect.startsWith('dealDamage') || e.effect === 'counter')
+  const dmgs = effects.filter((e) => e.effect === 'dealDamage')
   const blk = effects.some((e) => e.effect === 'gainBlock' || e.effect === 'gainIceBlock')
-  if (dmg && blk) return '構え'
+  // 特性が名前に出る: 多段=乱撃 / 全体=嵐 / 貫通=穿ち
+  if (dmgs.some((e) => e.target === 'all')) return '嵐'
+  if (dmgs.length >= 2) return '乱撃'
+  if (dmgs.some((e) => e.pierce)) return '穿ち'
+  if (dmgs.length > 0 && blk) return '構え'
   if (blk) return '盾'
-  if (dmg) return '一撃'
+  if (dmgs.length > 0) return '一撃'
   return '祝福'
 }
 
@@ -114,18 +118,45 @@ export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null
 }
 
 /**
- * 計算合成: 効果を結合して同種を合算し、VP からコストを逆算する。
- * - 合成ボーナス ≈ 15%引き (2枚→1枚の投資に報いる)
- * - コストは 1〜3E にクランプ。許容VPの150%を超える場合は「消滅」を自動付与して合法化
- * - 0E+補充・正味エナジーの無限ループ規約もここで機械チェック (消滅付与で解決)
+ * 計算合成: **特性の掛け合わせ** (確定済みルール表「カード合成（工房）」)。
+ * 単なる効果の合算ではなく、片方の特性がもう片方へ伝播する:
+ * - **多段ヒット**: どちらかが多段なら、合計ダメージを最大ヒット数に按分した多段になる
+ *   (成長が全ヒットに乗る = 掛け算の本体)
+ * - **貫通**: どちらかの攻撃が貫通なら、合成後の全ヒットが貫通になる
+ * - **全体**: どちらかの攻撃が全体なら、合成後の攻撃は全体になる
+ * 値付けは VP 表から逆算 (貫通×1.25・全体×2 を織り込む)。帯超過・無限ループ規約は消滅の自動付与で合法化。
  */
 export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
   const recipe = recipeFor(a.def, b.def)
   if (recipe) return recipe
 
-  // 同種効果 (trigger+effect+target+pierce が同じ) は量を合算
+  // --- 攻撃の特性を抽出して掛け合わせる ---
+  const dmgOf = (def: CardDef) => def.effects.filter((e) => e.trigger === 'onPlay' && e.effect === 'dealDamage')
+  const dmgA = dmgOf(a.def)
+  const dmgB = dmgOf(b.def)
+  const totalDmg = [...dmgA, ...dmgB].reduce((acc, e) => acc + (e.amount ?? 0), 0)
+  const hits = Math.min(5, Math.max(dmgA.length, dmgB.length)) // 多段は最大5ヒット
+  const pierce = [...dmgA, ...dmgB].some((e) => e.pierce === true)
+  const allTarget = [...dmgA, ...dmgB].some((e) => e.target === 'all')
+
+  const damageEffects: DeclarativeEffect[] = []
+  if (totalDmg > 0) {
+    const per = Math.ceil(totalDmg / hits)
+    for (let i = 0; i < hits; i++) {
+      damageEffects.push({
+        trigger: 'onPlay',
+        effect: 'dealDamage',
+        amount: per,
+        ...(pierce ? { pierce: true } : {}),
+        ...(allTarget ? { target: 'all' as const } : {}),
+      })
+    }
+  }
+
+  // --- ダメージ以外は同種 (trigger+effect+target+pierce) を合算 ---
   const merged: DeclarativeEffect[] = []
   for (const e of [...a.def.effects, ...b.def.effects]) {
+    if (e.trigger === 'onPlay' && e.effect === 'dealDamage') continue // 上で処理済み
     const twin = merged.find(
       (m) =>
         m.trigger === e.trigger &&
@@ -139,9 +170,10 @@ export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
       merged.push({ ...e })
     }
   }
-  // 合成札は3効果までの派手枠。あふれたらVPの大きい順に残す
+  // 合成札は「ダメージ群を1つと数えて」3効果までの派手枠。あふれたらVPの大きい順に残す
   merged.sort((x, y) => effectVp(y) - effectVp(x))
-  const effects = merged.slice(0, 3)
+  const others = merged.slice(0, damageEffects.length > 0 ? 2 : 3)
+  const effects = [...damageEffects, ...others]
 
   const vp = effects.reduce((acc, e) => acc + effectVp(e), 0)
   const discounted = vp * 0.85 // 合成ボーナス

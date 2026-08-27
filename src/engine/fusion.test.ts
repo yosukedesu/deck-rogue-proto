@@ -80,7 +80,10 @@ describe('計算合成', () => {
         if (!isRecipe) {
           expect(def.cost, def.id).toBeGreaterThanOrEqual(1)
           expect(def.cost, def.id).toBeLessThanOrEqual(3)
-          expect(def.effects.length, def.id).toBeLessThanOrEqual(3) // 派手枠は3効果まで
+          // 派手枠は3効果まで (多段ヒットのダメージ群は1つと数える)
+          const dmgCount = def.effects.filter((e) => e.effect === 'dealDamage').length
+          const conceptual = def.effects.length - dmgCount + (dmgCount > 0 ? 1 : 0)
+          expect(conceptual, def.id).toBeLessThanOrEqual(3)
         }
         // 無限ループ規約: 正味の値段が0以上 + 補充 → 消滅必須
         const net = def.effects
@@ -160,5 +163,40 @@ describe('強化の3段仕様 (2026-08-27 仕様会議)', () => {
     const up = upgradeCard(inst('black_pain')) // 1E・HP-3・16ダメ
     expect(up.def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(24)
     expect(up.def.effects.find((e) => e.effect === 'loseHp')!.amount).toBe(3) // 据え置き
+  })
+})
+
+describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性を掛け合わせたい」)', () => {
+  it('多段×貫通: 二連の蔦打ち(4×2)×荒角の一撃(7貫通) → 貫通の多段ヒット', () => {
+    const def = fuseCards(inst('green_double_lash'), inst('green_horn_strike'))
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
+    expect(dmgs).toHaveLength(2) // 多段が伝播
+    expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
+    expect(dmgs[0].amount).toBe(Math.ceil((4 + 4 + 7) / 2)) // 総火力を按分 (8×2)
+  })
+
+  it('全体×貫通: 薙ぎ払い(全体6)×牙の一撃(14貫通) → 全体・貫通の一撃', () => {
+    const def = fuseCards(inst('green_sweep'), inst('green_fang'))
+    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
+    expect(dmg.target).toBe('all')
+    expect(dmg.pierce).toBe(true)
+    expect(dmg.amount).toBe(20) // 6+14
+    // 薙ぎ払いの成長+1も引き継がれる
+    expect(def.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
+  })
+
+  it('多段×大打点: 蔦の乱舞(2×5)×大蛇の丸呑み(20) → 5ヒットに按分 (成長が5回乗る)', () => {
+    const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
+    expect(dmgs).toHaveLength(5)
+    expect(dmgs[0].amount).toBe(Math.ceil((2 * 5 + 20) / 5)) // 6×5
+    expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
+  })
+
+  it('特性が名前に出る (多段=乱撃・全体=嵐)', () => {
+    const multi = fuseCards(inst('green_double_lash'), inst('green_horn_strike'))
+    expect(multi.name.endsWith('乱撃')).toBe(true)
+    const aoe = fuseCards(inst('green_sweep'), inst('green_fang'))
+    expect(aoe.name.endsWith('嵐')).toBe(true)
   })
 })
