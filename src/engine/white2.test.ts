@@ -109,8 +109,8 @@ describe('回復軸の接着剤 (聖なる鐘)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
     expect(s.player.block).toBe(0)
     s = { ...s, player: { ...s.player, hp: 50 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_heal' })
-    expect(s.player.hp).toBe(55)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_heal' }) // 癒しの光 5→6
+    expect(s.player.hp).toBe(56) // 癒しの光6
     expect(s.player.block).toBe(3)
   })
 })

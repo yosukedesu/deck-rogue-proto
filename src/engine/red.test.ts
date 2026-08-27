@@ -83,7 +83,7 @@ describe('粉砕とランダム火力', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_smash' })
     expect(types(s.eventLog)).toContain('BlockShattered')
     expect(s.enemies[0].block).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - 11) // 割った後は素通し
+    expect(s.enemies[0].hp).toBe(hpBefore - 13) // 割った後は素通し (叩き割り 11→13)
   })
 
   it('ランダム火力: 範囲内のダメージで、同じシードなら同じ結果', () => {

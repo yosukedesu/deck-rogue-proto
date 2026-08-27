@@ -22,18 +22,18 @@ describe('黒のカラーパイ', () => {
 })
 
 describe('ドレイン (黒の専売)', () => {
-  it('生命吸収: 5ダメージを与え、HP2回復 (上限あり)', () => {
+  it('生命吸収: 6ダメージを与え、HP3回復 (上限あり)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_drain',
     ])
     s = { ...s, player: { ...s.player, hp: 50 } }
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 5)
-    expect(s.player.hp).toBe(52)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6)
+    expect(s.player.hp).toBe(53)
   })
 
-  it('呪詛返し: 被攻撃後にドレイン5で返す', () => {
+  it('呪詛返し: 被攻撃後にドレイン6で返す', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_reaction_curse',
     ])
@@ -44,8 +44,8 @@ describe('ドレイン (黒の専売)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].hp).toBe(enemyHp - 5)
-    expect(s.player.hp).toBe(50 - 6 + 2) // 被弾6 → ドレイン回復2
+    expect(s.enemies[0].hp).toBe(enemyHp - 6)
+    expect(s.player.hp).toBe(50 - 6 + 3) // 被弾6 → ドレイン6の回復3
   })
 })
 
@@ -56,8 +56,8 @@ describe('墓地 (セルフミル + 捨て札参照)', () => {
     ])
     const drawBefore = s.player.drawPile.length
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_mill' })
-    // 忘却4 (消滅) + ドロー1 で山札は5枚減る。消滅は再シャッフルで戻らない=単調増加
-    expect(s.player.drawPile.length).toBe(drawBefore - 5)
+    // 忘却4 (消滅)。ドローは2026-08-27の2効果整理でブロック5に置き換わった
+    expect(s.player.drawPile.length).toBe(drawBefore - 4)
     expect(s.player.exhaustPile.length).toBe(4)
   })
 

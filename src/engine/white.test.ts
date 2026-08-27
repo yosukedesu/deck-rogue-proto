@@ -51,7 +51,7 @@ describe('威圧 (敵弱体化)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_menace' })
     expect(s.enemies[0].strength).toBe(-2)
-    expect(s.player.block).toBe(4)
+    expect(s.player.block).toBe(6) // 2026-08-27 4→6
   })
 })
 
@@ -66,7 +66,7 @@ describe('要塞型 (ブロック変換)', () => {
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_bodyslam' })
     // 2026-08-26: 効果順を [ブロック3 → ダメージ] にしたので自前のブロックも自分に乗る
-    expect(s.enemies[0].hp).toBe(hpBefore - 17) // (大城壁14 + 自前3) × 1 (2026-08-27)
+    expect(s.enemies[0].hp).toBe(hpBefore - 19) // (大城壁16 + 自前3) × 1 (2026-08-27)
   })
 })
 

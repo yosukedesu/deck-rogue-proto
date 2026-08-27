@@ -113,7 +113,7 @@ describe('カードプレイ', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_growth_ring' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_double_lash' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (3 + 2) * 2) // (基礎3+成長2)×2ヒット
+    expect(s.enemies[0].hp).toBe(hpBefore - (4 + 2) * 2) // (基礎4+成長2)×2ヒット (二連 4×2)
   })
 
   it('エナジー不足・手札にないカード・リアクション専用カードのプレイは拒否', () => {

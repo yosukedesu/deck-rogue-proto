@@ -87,16 +87,16 @@ describe('灰の盾 (防御に衝動ドローを付けて腐らせない)', () =
 })
 
 describe('熾火の一閃 (火弾の上位互換: 6ダメ+衝動1。2026-08-27 報酬プール底上げ)', () => {
-  it('6ダメージ＋衝動1 (このターン限りのドロー)', () => {
+  it('6ダメージ＋衝動2 (このターン限りのドロー)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_red'), [
       'red_ember_slash',
     ])
-    s = withDrawPile(s, ['red_strike'])
+    s = withDrawPile(s, ['red_strike', 'red_spark'])
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ember_slash' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6) // 火弾と同値+衝動
-    expect(s.player.hand.map((c) => c.def.id)).toEqual(['red_strike'])
-    expect(s.player.impulseUids).toHaveLength(1) // 衝動 = このターン限り (赤のドローは衝動のみ)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6) // 火弾と同値+衝動2
+    expect(s.player.hand).toHaveLength(2)
+    expect(s.player.impulseUids).toHaveLength(2) // 衝動 = このターン限り (赤のドローは衝動のみ)
   })
 })
 

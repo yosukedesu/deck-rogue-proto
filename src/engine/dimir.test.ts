@@ -46,7 +46,7 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
     s = applyCommand(s, { type: 'ConfirmReaction', fire: false }) // 温存
     expect(s.phase).toBe('awaiting-reaction') // post窓 (呪詛返し)
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't1_black_reaction_curse' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 5) // ドレイン5
+    expect(s.enemies[0].hp).toBe(enemyHp - 6) // ドレイン6
     expect(s.player.setCards.map((c) => c.uid)).toEqual(['t0_blue_frost_veil']) // 帳は温存継続
   })
 

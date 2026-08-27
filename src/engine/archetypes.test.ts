@@ -39,7 +39,7 @@ describe('シグネチャー効果', () => {
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_trample' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 10) // ブロック14を無視して素通し
+    expect(s.enemies[0].hp).toBe(hpBefore - 12) // ブロック14を無視して素通し (踏み荒らし 10→12)
     expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
   })
 
@@ -144,7 +144,7 @@ describe('置物 (permanent)', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - 6) // 1発目は素の6
     expect(s.player.momentum).toBe(2)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_double_lash' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - (3 + 2) * 2) // 2発目は各ヒット+2
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - (4 + 2) * 2) // 2発目は各ヒット+2 (二連 4×2)
     expect(s.player.momentum).toBe(4)
   })
 
@@ -205,7 +205,7 @@ describe('選択式カード (modes)', () => {
 })
 
 describe('手札捨てコスト (discardCost)', () => {
-  it('大蛇の丸呑み: 手札1枚を追加コストに捨てて16ダメージ', () => {
+  it('大蛇の丸呑み: 手札1枚を追加コストに捨てて20ダメージ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), [
       'green_serpent_gulp',
       'green_guard',
@@ -216,7 +216,7 @@ describe('手札捨てコスト (discardCost)', () => {
       cardUid: 't0_green_serpent_gulp',
       discardUids: ['t1_green_guard'],
     })
-    expect(s.enemies[0].hp).toBe(hpBefore - 16) // 2026-08-27 報酬プール底上げ
+    expect(s.enemies[0].hp).toBe(hpBefore - 20) // 2026-08-27 StSコモン帯へ
     expect(s.player.hand).toHaveLength(0)
     expect(s.player.discardPile.map((c) => c.uid)).toContain('t1_green_guard')
     expect(types(s.eventLog)).toContain('CardsDiscarded')

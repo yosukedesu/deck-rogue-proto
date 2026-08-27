@@ -102,12 +102,12 @@ describe('回復の誘発 (血の月)', () => {
     const enemyHp = s.enemies[0].hp
     // 満タン: 回復0 → 血の月は誘発しない
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 5)
-    // HPを減らす → 実回復2 → 血の月2ダメ
+    expect(s.enemies[0].hp).toBe(enemyHp - 6) // 生命吸収 5→6
+    // HPを減らす → 実回復 → 血の月2ダメ
     s = { ...s, player: { ...s.player, hp: 50 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 5 - 5 - 2)
-    expect(s.player.hp).toBe(52)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 6 - 2)
+    expect(s.player.hp).toBe(53)
   })
 })
 
@@ -210,8 +210,8 @@ describe('黒の新リアクション', () => {
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_awakening' })
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
-    // 生命吸収5 + 起爆 (忘却2 + 基礎3ダメ。消滅2枚では刻に届かない)
-    expect(s.enemies[0].hp).toBe(enemyHp - 5 - 3)
+    // 生命吸収6 + 起爆 (忘却2 + 基礎3ダメ。消滅2枚では刻に届かない)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 3)
     expect(s.player.exhaustPile).toHaveLength(2)
     expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
   })
@@ -225,8 +225,8 @@ describe('ドレインの回復基準 (プレイテスト発見の不整合)', (
     s = { ...s, player: { ...s.player, hp: 30, weak: 2, energy: 9 } }
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_big_drain' })
-    // 貪り喰らう14 → 弱体で floor(14*0.75)=10 ダメージ、回復も 10/2=5 (旧実装は素の14基準で7だった)
-    expect(s.enemies[0].hp).toBe(enemyHp - 10)
-    expect(s.player.hp).toBe(35)
+    // 貪り喰らう16 → 弱体で floor(16*0.75)=12 ダメージ、回復も 12/2=6 (旧実装は素の値基準だった)
+    expect(s.enemies[0].hp).toBe(enemyHp - 12)
+    expect(s.player.hp).toBe(36)
   })
 })

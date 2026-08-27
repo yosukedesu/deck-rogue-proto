@@ -88,12 +88,12 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3
+        "amount": 4
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3
+        "amount": 4
       }
     ],
     "axis": [
@@ -109,7 +109,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 12,
+        "amount": 14,
         "pierce": true
       }
     ]
@@ -136,7 +136,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 10
+        "amount": 12
       },
       {
         "trigger": "onPlay",
@@ -183,7 +183,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 24
+        "amount": 28
       },
       {
         "trigger": "onPlay",
@@ -201,7 +201,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 34
+        "amount": 40
       }
     ],
     "axis": [
@@ -355,7 +355,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 10,
+        "amount": 12,
         "pierce": true
       },
       {
@@ -374,7 +374,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 22,
+        "amount": 26,
         "pierce": true
       }
     ]
@@ -460,7 +460,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -474,7 +474,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 16
+        "amount": 20
       }
     ]
   },
@@ -560,7 +560,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5,
+        "amount": 6,
         "target": "all"
       },
       {
@@ -600,7 +600,7 @@
   {
     "id": "green_weak_point",
     "name": "急所突き",
-    "cost": 2,
+    "cost": 1,
     "type": "physical",
     "effects": [
       {
@@ -656,7 +656,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 7
+        "amount": 12
       }
     ]
   },
@@ -669,7 +669,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6,
+        "amount": 7,
         "pierce": true
       }
     ]

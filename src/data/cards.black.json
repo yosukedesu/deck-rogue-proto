@@ -34,7 +34,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageDrain",
-        "amount": 5
+        "amount": 6
       }
     ]
   },
@@ -47,7 +47,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageDrain",
-        "amount": 14
+        "amount": 16
       }
     ]
   },
@@ -101,13 +101,8 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "drawCards",
-        "amount": 1
-      },
-      {
-        "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 3
+        "amount": 5
       }
     ]
   },
@@ -209,14 +204,14 @@
     "name": "冒涜の取引",
     "cost": 1,
     "type": "spell",
-    "discardCost": 1,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 3
+        "amount": 4
       }
-    ]
+    ],
+    "exhaustCost": 1
   },
   {
     "id": "black_dark_pact",
@@ -245,7 +240,7 @@
       {
         "trigger": "onAttacked",
         "effect": "dealDamageDrain",
-        "amount": 5
+        "amount": 6
       }
     ]
   },
@@ -350,7 +345,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 10,
+        "amount": 11,
         "target": "all"
       }
     ]
@@ -364,7 +359,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageDrain",
-        "amount": 4,
+        "amount": 5,
         "target": "all"
       }
     ]
@@ -398,12 +393,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 2
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -627,12 +617,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "loseHp",
-        "amount": 2
+        "amount": 8
       }
     ]
   },
@@ -660,7 +645,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 5
+        "amount": 6
       },
       {
         "trigger": "onPlay",

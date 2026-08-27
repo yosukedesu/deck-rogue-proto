@@ -32,19 +32,19 @@ describe('氷壁 (持ち越しブロック)', () => {
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_guard' })
-    expect(s.player.iceBlock).toBe(11) // 2026-08-27 氷壁 10→11
+    expect(s.player.iceBlock).toBe(13) // 2026-08-27 StSコモン帯 (13)
     expect(s.player.block).toBe(5)
     // 攻撃10: 通常ブロック5を先に消費し、残り5を氷壁で受ける
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(s.player.maxHp)
     expect(s.player.block).toBe(0) // 次ターン開始でリセット
-    expect(s.player.iceBlock).toBe(6) // 11 - 5 が持ち越されている
+    expect(s.player.iceBlock).toBe(8) // 13 - 5 が持ち越されている
   })
 })
 
 describe('ストーム (詠唱数参照)', () => {
-  it('奔流の連撃はこのターンにプレイした他のカード×10 (自身は数えない)', () => {
+  it('奔流の連撃はこのターンにプレイした他のカード×7 (自身は数えない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_guard',
       'blue_current_lash',
@@ -54,8 +54,8 @@ describe('ストーム (詠唱数参照)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (6ダメージ)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×10 = 20
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 20)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×7 = 14 (2026-08-27 214%の壊れ是正)
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 14)
     // ターンをまたぐとリセット
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)
@@ -197,7 +197,7 @@ describe('ストームの3系統', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_barrier' }) // 詠唱数2 ×5 = 10
-    expect(s.player.iceBlock).toBe(10 + 5 + 2) // 障壁10 + 氷盾5 + 思案の氷壁2 (2026-08-27)
+    expect(s.player.iceBlock).toBe(10 + 5 + 3) // 障壁10 + 氷盾5 + 思案の氷壁3
   })
 
   it('連鎖する思考: 詠唱数×1枚ドロー', () => {

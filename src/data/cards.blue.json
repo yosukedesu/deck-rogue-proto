@@ -44,7 +44,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -57,7 +57,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 11
+        "amount": 13
       }
     ]
   },
@@ -70,7 +70,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 15
+        "amount": 19
       }
     ]
   },
@@ -88,7 +88,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -132,7 +132,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 10
+        "amount": 7
       }
     ]
   },
@@ -200,7 +200,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainIceBlock",
-        "amount": 8
+        "amount": 7
       },
       {
         "trigger": "onAttackIncoming",
@@ -262,7 +262,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 3
+        "amount": 4
       },
       {
         "trigger": "onPlay",
@@ -366,7 +366,7 @@
   {
     "id": "blue_confuse",
     "name": "幻惑の囁き",
-    "cost": 3,
+    "cost": 2,
     "type": "spell",
     "effects": [
       {
@@ -533,7 +533,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 8
+        "amount": 10
       },
       {
         "trigger": "onPlay",
@@ -606,7 +606,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 5
+        "amount": 9
       }
     ]
   },
@@ -679,7 +679,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 7
+        "amount": 8
       }
     ]
   }

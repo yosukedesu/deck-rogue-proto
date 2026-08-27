@@ -75,13 +75,14 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   const millAmount = card.def.effects
     .filter((e) => e.effect === 'exhaustFromDeck')
     .reduce((a, e) => a + (e.amount ?? 0), 0)
-  // ダメージやブロックを併せ持つミル札 (亡霊の槍・絶望の重み・墓石の盾・忘却の霧) は
-  // 本業が攻防なので温存しない。温存則は純粋なミル専用札 (忘却など) だけに適用する (2026-08-27)
+  // ダメージを併せ持つミル札 (亡霊の槍・絶望の重み) は攻撃札なので温存しない。
+  // ブロック持ち (忘却の霧・墓石の盾) は対象のまま — 一度「ブロック持ちも除外」を試したところ、
+  // ボットが山札を食い尽くして攻撃札まで全消滅させ「殺せない・死なない」526ターンの膠着を作った
+  // (敵HP150/150のまま。2026-08-27 実測)。防御は他の札で足りるが、失った攻撃札は戻らない
   if (
     millAmount > 0 &&
     card.def.type !== 'reaction' &&
     !card.def.effects.some(isDamageEffect) &&
-    !card.def.effects.some((e) => e.effect === 'gainBlock') &&
     state.player.drawPile.length < millAmount + 4
   ) {
     return false

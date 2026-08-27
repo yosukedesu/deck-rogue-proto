@@ -116,7 +116,7 @@ describe('キル連鎖 (玉突き)', () => {
 })
 
 describe('先手の炎 (被攻撃前の先制ダメージ)', () => {
-  it('pre窓で8ダメージ。攻撃自体はそのまま受ける (倒せなければ)', () => {
+  it('pre窓で10ダメージ。攻撃自体はそのまま受ける (倒せなければ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
       'red_flinch_fire',
     ])
@@ -127,7 +127,7 @@ describe('先手の炎 (被攻撃前の先制ダメージ)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].hp).toBe(enemyHp - 8)
+    expect(s.enemies[0].hp).toBe(enemyHp - 10) // 先手の炎 8→10
     expect(s.player.hp).toBe(playerHp - 10) // 威嚇は撤去済み: 素の10を受ける
   })
 
