@@ -196,6 +196,7 @@ describe('ラン走破', () => {
       }
       run = forceWin(run)
       if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
+      if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
       if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
       run = declineOffer(run)
     }

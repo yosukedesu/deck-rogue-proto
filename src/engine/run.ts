@@ -5,6 +5,7 @@
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
 import { startCombatWithOptions } from './combat.ts'
+import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
   allCards,
   allRelics,
@@ -35,6 +36,8 @@ const REWARD_EXCLUDED = new Set([
 /** 焚き火: この戦闘 (0-based) をクリアした後に回復 */
 /** 焚き火 (回復かカード除去の二択) が入る戦闘 (0-based: 3・6・9・12戦目クリア後) */
 const CAMPFIRE_AFTER = new Set([2, 5, 8, 11])
+/** 工房 (カード合成) が入る戦闘 (0-based: 5・10戦目クリア後。焚き火とは重ならない) */
+const WORKSHOP_AFTER = new Set([4, 9])
 const CAMPFIRE_HEAL_RATIO = 0.3
 // 2026-08-26 再設計: 回復は焚き火に到達すれば自動で入る。
 // 「回復か強化か」の二択にすると、実測で焚き火到達時HPが常に20〜46%のため全員が回復しか選べず、
@@ -89,7 +92,7 @@ export function depthHpScale(battleIndex: number): number {
   return 1.0
 }
 
-export type RunPhase = 'combat' | 'offer' | 'relic-reward' | 'campfire' | 'reward' | 'won' | 'lost'
+export type RunPhase = 'combat' | 'offer' | 'relic-reward' | 'campfire' | 'workshop' | 'reward' | 'won' | 'lost'
 
 export interface RunState {
   readonly seed: number
@@ -141,6 +144,9 @@ export type RunCommand =
   | { readonly type: 'CampfireRest' }
   | { readonly type: 'CampfireRemove'; readonly index: number }
   | { readonly type: 'CampfireUpgrade'; readonly index: number }
+  // 工房 (確定済みルール表「カード合成（工房）」): 異なる2枚を選んで合成するか、見送る
+  | { readonly type: 'WorkshopFuse'; readonly indexA: number; readonly indexB: number }
+  | { readonly type: 'WorkshopSkip' }
 
 /**
  * 次の戦闘へ進む。エリートオファー対象の戦闘 (2/5/8戦目) では先に 'offer' フェーズを挟む
@@ -342,13 +348,15 @@ function campfireOrReward(run: RunState): RunState {
     const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
     return { ...run, hp, phase: 'campfire', rewardOptions: null }
   }
+  if (WORKSHOP_AFTER.has(run.battleIndex)) {
+    return { ...run, phase: 'workshop', rewardOptions: null }
+  }
   return rollRewards(run)
 }
 
 /**
  * 強化の対象になる「量」の効果 (確定済みルール表「焚き火」)。
- * ドロー・エナジー・上限・成長・勢い・霊気などの「単位」効果と、
- * 参照スケーリング (×N) は対象外 — engine の倍率に触れないための安全弁。
+ * 単位効果 (ドロー・成長など) はティア③で+1、per-X はティア②のコスト-1で強化される。
  */
 const UPGRADABLE_EFFECTS = new Set([
   'dealDamage',
@@ -362,18 +370,74 @@ const UPGRADABLE_EFFECTS = new Set([
   'dealDamageExecute',
 ])
 
+/** ティア③で+1する「単位」の効果 */
+const UNIT_EFFECTS = new Set([
+  'drawCards',
+  'impulseDraw',
+  'addGrowth',
+  'addMomentum',
+  'addAether',
+  'gainEnergy',
+  'discountNext',
+])
+
+/** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
+const REFILL_FOR_UPGRADE = new Set([
+  'drawCards',
+  'drawCardsPerCardPlayed',
+  'dischargeAetherDraw',
+  'impulseDraw',
+  'retrieveFromExhaust',
+  'playFromExhaust',
+])
+
+function allEffectsOf(def: CardDef): readonly DeclarativeEffect[] {
+  return [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+}
+
+/** コスト-1すると無限ループ規約 (0E+補充=消滅必須 / 正味エナジー) に違反するか */
+function costCutViolates(def: CardDef): boolean {
+  if (def.exhaust === true) return false
+  const newCost = def.cost - 1
+  const eff = allEffectsOf(def)
+  const refill = eff.some((e) => REFILL_FOR_UPGRADE.has(e.effect))
+  if (!refill) return false
+  const net = eff
+    .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
+    .reduce((a, e) => a + (e.amount ?? 0), 0)
+  return net - newCost >= 0
+}
+
+/** どのティアで強化されるか。'none' = 強化不可 (上限ランプ等。ボタン無効) */
+export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'none' {
+  const eff = allEffectsOf(def)
+  // 上限ランプは engine の複利に触れる最後の安全弁として強化不可 (確定済みルール表「焚き火」)
+  if (eff.some((e) => e.effect === 'gainEnergyMax')) return 'none'
+  if (eff.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'amount'
+  if (def.cost >= 1 && !costCutViolates(def)) return 'cost'
+  if (eff.some((e) => UNIT_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'unit'
+  return 'none'
+}
+
 /** すでに鍛えられているか (同じカードは1回だけ) */
 export function isUpgraded(card: CardInstance): boolean {
   return card.def.name.endsWith('+')
 }
 
+/** この札は鍛えられるか (UI のボタン活性判定) */
+export function canUpgradeCard(card: CardInstance): boolean {
+  return !isUpgraded(card) && upgradeTier(card.def) !== 'none'
+}
+
 /**
- * カードを鍛える: 量の効果を+50% (切り上げ) して名前に「+」を付ける。
- * 火弾6→9・防御5→8 は StS の Strike+ / Defend+ と同値。
+ * カードを鍛える (確定済みルール表「焚き火」の3段仕様)。
+ * ①量+50%切り上げ → ②コスト-1 → ③単位+1。名前に「+」が付く。
+ * 自傷 (loseHp) などの対価は据え置き = 非対称強化を仕様として認める (StSのHemokinesis+と同じ)。
  * def を作り直すので engine 側に強化用の分岐は要らない (id は据え置き = 軸判定も不変)。
  */
 export function upgradeCard(card: CardInstance): CardInstance {
-  const boost = (e: DeclarativeEffect): DeclarativeEffect => {
+  const tier = upgradeTier(card.def)
+  const boostAmount = (e: DeclarativeEffect): DeclarativeEffect => {
     if (!UPGRADABLE_EFFECTS.has(e.effect) || e.amount === undefined) return e
     return {
       ...e,
@@ -381,17 +445,25 @@ export function upgradeCard(card: CardInstance): CardInstance {
       ...(e.amountMax !== undefined ? { amountMax: Math.ceil(e.amountMax * 1.5) } : {}),
     }
   }
-  return {
-    ...card,
-    def: {
-      ...card.def,
-      name: `${card.def.name}+`,
-      effects: card.def.effects.map(boost),
-      ...(card.def.modes !== undefined
-        ? { modes: card.def.modes.map((m) => ({ ...m, effects: m.effects.map(boost) })) }
-        : {}),
-    },
+  const boostUnit = (e: DeclarativeEffect): DeclarativeEffect => {
+    if (!UNIT_EFFECTS.has(e.effect) || e.amount === undefined) return e
+    return { ...e, amount: e.amount + 1 }
   }
+  const mapEffects = (fn: (e: DeclarativeEffect) => DeclarativeEffect) => ({
+    effects: card.def.effects.map(fn),
+    ...(card.def.modes !== undefined
+      ? { modes: card.def.modes.map((m) => ({ ...m, effects: m.effects.map(fn) })) }
+      : {}),
+  })
+  const patch =
+    tier === 'amount'
+      ? mapEffects(boostAmount)
+      : tier === 'cost'
+        ? { cost: card.def.cost - 1 }
+        : tier === 'unit'
+          ? mapEffects(boostUnit)
+          : {}
+  return { ...card, def: { ...card.def, name: `${card.def.name}+`, ...patch } }
 }
 
 /** B型レリックの取得時効果を適用する */
@@ -470,6 +542,23 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
       })
+    }
+    case 'WorkshopFuse': {
+      if (run.phase !== 'workshop') throw new Error('工房フェーズではない')
+      const a = run.deck[command.indexA]
+      const b = run.deck[command.indexB]
+      if (a === undefined || b === undefined) throw new Error('不正な合成指定')
+      const reason = fuseBlockReason(a, b)
+      if (reason !== null) throw new Error(`合成できない: ${reason}`)
+      const fusedDef = fuseCards(a, b)
+      const fused: CardInstance = { uid: `fused${run.battleIndex}_${fusedDef.id}`, def: fusedDef }
+      // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる
+      const deck = run.deck.filter((_, i) => i !== command.indexA && i !== command.indexB)
+      return rollRewards({ ...run, deck: [...deck, fused] })
+    }
+    case 'WorkshopSkip': {
+      if (run.phase !== 'workshop') throw new Error('工房フェーズではない')
+      return rollRewards(run)
     }
     case 'CampfireRemove': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')

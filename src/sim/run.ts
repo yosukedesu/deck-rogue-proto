@@ -394,6 +394,7 @@ function simulateRuns(count: number, baseSeed: number): void {
         run.phase === 'reward' ||
         run.phase === 'offer' ||
         run.phase === 'campfire' ||
+        run.phase === 'workshop' ||
         run.phase === 'relic-reward'
       ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
@@ -430,6 +431,10 @@ function simulateRuns(count: number, baseSeed: number): void {
                 ? applyRunCommand(run, { type: 'CampfireUpgrade', index: best })
                 : applyRunCommand(run, { type: 'CampfireRest' })
           }
+          continue
+        }
+        if (run.phase === 'workshop') {
+          run = applyRunCommand(run, { type: 'WorkshopSkip' }) // ボットは合成しない (判断が要るため)
           continue
         }
         if (run.phase === 'relic-reward') {

@@ -38,6 +38,7 @@ import {
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
+import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type {
@@ -1541,6 +1542,10 @@ function RunScreen({
     )
   }
 
+  if (run.phase === 'workshop') {
+    return <WorkshopScreen run={run} dispatch={dispatch} ctx={ctx} />
+  }
+
   if (run.phase === 'campfire') {
     const heal = Math.floor(run.maxHp * run.campfireRatio)
     return (
@@ -1789,5 +1794,73 @@ export default function App() {
         setConfig(null)
       }}
     />
+  )
+}
+
+/** 工房: 異なる2枚を選んで合成する (確定済みルール表「カード合成（工房）」) */
+function WorkshopScreen({
+  run,
+  dispatch,
+  ctx,
+}: {
+  run: RunState
+  dispatch: (c: RunCommand) => void
+  ctx?: EffectCtx
+}) {
+  const [selected, setSelected] = useState<number[]>([])
+  const toggle = (i: number) =>
+    setSelected((prev) =>
+      prev.includes(i) ? prev.filter((x) => x !== i) : prev.length < 2 ? [...prev, i] : prev,
+    )
+  const a = selected.length === 2 ? run.deck[selected[0]] : null
+  const b = selected.length === 2 ? run.deck[selected[1]] : null
+  const reason = a && b ? fuseBlockReason(a, b) : null
+  const preview = a && b && reason === null ? fuseCards(a, b) : null
+  return (
+    <div className="app setup">
+      <h1>🔨 工房</h1>
+      <p className="hint">
+        異なる2枚を選んで合成する。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
+      </p>
+      {preview && (
+        <div className="panel">
+          <span className="chip">
+            合成結果: {preview.name}（{preview.cost}E{preview.exhaust ? '・消滅' : ''}）
+          </span>
+        </div>
+      )}
+      {a && b && reason && (
+        <div className="panel">
+          <span className="chip">⚠ {reason}</span>
+        </div>
+      )}
+      <div className="hand-cards" style={{ margin: '12px 0' }}>
+        {run.deck.map((c, i) => (
+          <CardFrame
+            key={c.uid}
+            card={c}
+            dim={selected.length === 2 && !selected.includes(i)}
+            ctx={ctx}
+            actions={
+              <button className={selected.includes(i) ? 'btn btn-primary' : 'btn'} onClick={() => toggle(i)}>
+                {selected.includes(i) ? '選択中' : '選ぶ'}
+              </button>
+            }
+          />
+        ))}
+      </div>
+      <button
+        className="btn btn-primary"
+        disabled={!preview}
+        onClick={() =>
+          dispatch({ type: 'WorkshopFuse', indexA: selected[0], indexB: selected[1] })
+        }
+      >
+        合成する
+      </button>{' '}
+      <button className="btn" onClick={() => dispatch({ type: 'WorkshopSkip' })}>
+        見送る
+      </button>
+    </div>
   )
 }

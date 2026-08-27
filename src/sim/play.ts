@@ -248,6 +248,11 @@ function renderRun(run: RunState, logFrom: number): string {
     L.push('  何もしない → そのまま次へ')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
+  } else if (run.phase === 'workshop') {
+    L.push('🔨 工房: 異なる2枚を合成して1枚の新カードにできる (素材は消える)。見送りも可')
+    run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
+    L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
+    L.push('   (同名不可・緑同士のみ・リアクションと選択式はレシピのみ。合成結果はコストと効果が自動計算される)')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {
@@ -295,7 +300,7 @@ if (mode === 'new-run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
       ['PickReward', 'SkipReward', 'ChooseElite', 'PickRelic', 'SkipRelic', 'StartRun',
-        'CampfireRest', 'CampfireRemove', 'CampfireUpgrade'].includes(cmd.type)
+        'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
     sf.run = applyRunCommand(sf.run!, runCmd)
