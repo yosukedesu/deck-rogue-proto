@@ -538,6 +538,11 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const card = run.deck[command.index]
       if (card === undefined) throw new Error(`不正な強化指定: ${command.index}`)
       if (isUpgraded(card)) throw new Error('すでに鍛えられている')
+      // 2026-08-28 修正: 強化不可札 (上限ランプ) を受理して「+」だけ付ける事故の再発防止。
+      // 焚き火の選択権 (4回しかない希少資源) を無言で浪費させない
+      if (upgradeTier(card.def) === 'none') {
+        throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
+      }
       return rollRewards({
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),

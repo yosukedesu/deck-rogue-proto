@@ -16,7 +16,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
-import { resolveFusedDef } from '../engine/fusion.ts'
+import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
 function cname(cardId: string): string {
@@ -34,7 +34,7 @@ import {
   reactionMatches,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, createRun } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -256,12 +256,15 @@ function renderRun(run: RunState, logFrom: number): string {
     L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
     L.push('  除去 → デッキから1枚を永久に取り除く')
     L.push('  何もしない → そのまま次へ')
-    run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
+    run.deck.forEach((c, i) =>
+      L.push(`   [${i}] ${cardLine(c.def)}${canUpgradeCard(c) ? '' : ' 【鍛えられない】'}`),
+    )
     L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
   } else if (run.phase === 'workshop') {
     L.push('🔨 工房: 異なる2枚を合成して1枚の新カードにできる (素材は消える)。見送りも可')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
+    L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
     L.push('   (同名不可・緑同士のみ・リアクションと選択式はレシピのみ。合成結果はコストと効果が自動計算される)')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
@@ -306,6 +309,23 @@ if (mode === 'new-run') {
   const sf = load(file)
   const cmd = JSON.parse(json) as Command | RunCommand
   const logFrom = sf.logIndex
+  // 合成プレビュー (ハーネス限定・状態は変更しない): 確定前にコスト・消滅・効果を確認できる
+  if ((cmd as { type: string }).type === 'FusePreview' && sf.kind === 'run') {
+    const c = cmd as unknown as { indexA: number; indexB: number }
+    const a = sf.run!.deck[c.indexA]
+    const b = sf.run!.deck[c.indexB]
+    if (!a || !b) {
+      console.log('不正な添字')
+    } else {
+      const reason = fuseBlockReason(a, b)
+      console.log(
+        reason !== null
+          ? `合成不可: ${reason}`
+          : `プレビュー: ${cardLine(fuseCards(a, b))} (素材は消費されていない)`,
+      )
+    }
+    process.exit(0)
+  }
   if (sf.kind === 'run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
@@ -313,12 +333,23 @@ if (mode === 'new-run') {
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
-    sf.run = applyRunCommand(sf.run!, runCmd)
+    try {
+      sf.run = applyRunCommand(sf.run!, runCmd)
+    } catch (err) {
+      // 不正なコマンドはスタックトレースでなく1行のエラーで返す (状態は保存しない)
+      console.log(`エラー: ${err instanceof Error ? err.message : String(err)}`)
+      process.exit(0)
+    }
     sf.logIndex = currentLogLength(sf)
     save(file, sf)
     console.log(renderRun(sf.run, logFrom))
   } else {
-    sf.battle = applyCommand(sf.battle!, cmd as Command)
+    try {
+      sf.battle = applyCommand(sf.battle!, cmd as Command)
+    } catch (err) {
+      console.log(`エラー: ${err instanceof Error ? err.message : String(err)}`)
+      process.exit(0)
+    }
     sf.logIndex = currentLogLength(sf)
     save(file, sf)
     console.log(renderBattle(sf.battle, logFrom))

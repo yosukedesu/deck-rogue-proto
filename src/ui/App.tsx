@@ -37,7 +37,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -1585,10 +1585,10 @@ function RunScreen({
                   </button>{' '}
                   <button
                     className="btn btn-primary"
-                    disabled={isUpgraded(c)}
+                    disabled={!canUpgradeCard(c)}
                     onClick={() => dispatch({ type: 'CampfireUpgrade', index: i })}
                   >
-                    {isUpgraded(c) ? '鍛済' : '鍛える'}
+                    {isUpgraded(c) ? '鍛済' : canUpgradeCard(c) ? '鍛える' : '鍛不可'}
                   </button>
                 </>
               }

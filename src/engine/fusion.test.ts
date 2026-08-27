@@ -246,3 +246,20 @@ describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LL
     expect(cardName(fusedDef.id)).toBe(fusedDef.name)
   })
 })
+
+describe('強化不可札の拒否 (2026-08-28。テスターが焚き火1回を浪費した事故の再発防止)', () => {
+  it('芽吹き (上限ランプ) を鍛えようとするとコマンドが拒否される', async () => {
+    const { applyRunCommand: apply, createRun: create } = await import('./run.ts')
+    let run = create(17, 'set-confirm')
+    // 3戦目クリアまで進めて焚き火へ
+    for (let i = 0; i < 2; i++) {
+      run = forceWin(run)
+      run = advance(run)
+    }
+    run = forceWin(run)
+    expect(run.phase).toBe('campfire')
+    const idx = run.deck.findIndex((c) => c.def.id === 'green_ramp_sprout')
+    expect(idx).toBeGreaterThanOrEqual(0)
+    expect(() => apply(run, { type: 'CampfireUpgrade', index: idx })).toThrow(/鍛えられない/)
+  })
+})
