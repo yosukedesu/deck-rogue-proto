@@ -80,7 +80,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainHp",
-        "amount": 14
+        "amount": 18
       }
     ]
   },
@@ -117,7 +117,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainHp",
-        "amount": 3
+        "amount": 5
       }
     ]
   },
@@ -148,7 +148,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 12
+        "amount": 14
       }
     ],
     "axis": [
@@ -340,7 +340,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 6
+        "amount": 8
       }
     ]
   },
@@ -610,7 +610,7 @@
       {
         "trigger": "onSpellPlayed",
         "effect": "gainBlock",
-        "amount": 7
+        "amount": 9
       }
     ]
   },

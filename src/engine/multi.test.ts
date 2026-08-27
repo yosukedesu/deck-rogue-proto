@@ -99,8 +99,8 @@ describe('全体攻撃 (target: all)', () => {
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_flame_wave' })
-    expect(s.enemies[0].hp).toBe(hp0 - 6)
-    expect(s.enemies[1].hp).toBe(hp1 - 6)
+    expect(s.enemies[0].hp).toBe(hp0 - 8) // 炎の波 6→8 (2026-08-27)
+    expect(s.enemies[1].hp).toBe(hp1 - 8)
   })
 
   it('成長は対象ごとに乗る', () => {
@@ -110,8 +110,8 @@ describe('全体攻撃 (target: all)', () => {
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_flame_wave' })
-    expect(s.enemies[0].hp).toBe(hp0 - 9)
-    expect(s.enemies[1].hp).toBe(hp1 - 9)
+    expect(s.enemies[0].hp).toBe(hp0 - 11) // 8 + 成長3
+    expect(s.enemies[1].hp).toBe(hp1 - 11)
   })
 })
 

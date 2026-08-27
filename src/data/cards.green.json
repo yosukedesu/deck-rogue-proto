@@ -35,17 +35,22 @@
     "effects": [],
     "modes": [
       {
-        "name": "エナジー上限+1",
+        "name": "陽光",
         "effects": [
           {
             "trigger": "onPlay",
             "effect": "gainEnergyMax",
             "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 1
           }
         ]
       },
       {
-        "name": "1ドロー+成長1",
+        "name": "萌芽",
         "effects": [
           {
             "trigger": "onPlay",
@@ -55,7 +60,7 @@
           {
             "trigger": "onPlay",
             "effect": "addGrowth",
-            "amount": 1
+            "amount": 2
           }
         ]
       }
@@ -132,6 +137,11 @@
         "trigger": "onPlay",
         "effect": "gainBlock",
         "amount": 10
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
       }
     ]
   },
@@ -185,7 +195,7 @@
   {
     "id": "green_finisher_stomp",
     "name": "巨獣の踏みつけ",
-    "cost": 6,
+    "cost": 5,
     "type": "physical",
     "effects": [
       {
@@ -464,7 +474,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 14
+        "amount": 16
       }
     ]
   },
@@ -552,6 +562,11 @@
         "effect": "dealDamage",
         "amount": 5,
         "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
       }
     ]
   },
@@ -623,7 +638,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlockPerEnergyMax",
-        "amount": 2
+        "amount": 3
       }
     ]
   },

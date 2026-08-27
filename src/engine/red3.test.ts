@@ -86,17 +86,17 @@ describe('灰の盾 (防御に衝動ドローを付けて腐らせない)', () =
   })
 })
 
-describe('熾火の一閃 (1マナで火力が低い代わりにキャントリップ)', () => {
-  it('4ダメージ＋1ドローで手札の枚数が減らないため、後続の攻撃に繋がる', () => {
+describe('熾火の一閃 (火弾の上位互換: 6ダメ+衝動1。2026-08-27 報酬プール底上げ)', () => {
+  it('6ダメージ＋衝動1 (このターン限りのドロー)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_red'), [
       'red_ember_slash',
     ])
     s = withDrawPile(s, ['red_strike'])
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ember_slash' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 4) // 火弾6より2点低い
-    expect(s.player.hand.map((c) => c.def.id)).toEqual(['red_strike']) // が、手札は減っていない
-    expect(s.player.impulseUids).toHaveLength(0) // 衝動ではない通常のドロー
+    expect(s.enemies[0].hp).toBe(enemyHp - 6) // 火弾と同値+衝動
+    expect(s.player.hand.map((c) => c.def.id)).toEqual(['red_strike'])
+    expect(s.player.impulseUids).toHaveLength(1) // 衝動 = このターン限り (赤のドローは衝動のみ)
   })
 })
 

@@ -83,7 +83,7 @@ describe('粉砕の換金 (破城槌)', () => {
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_battering_ram' })
     expect(s.enemies[0].block).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - 10) // 破壊値10がそのまま通る
+    expect(s.enemies[0].hp).toBe(hpBefore - 16) // 破壊値10 + 基礎6 (2026-08-27。敵ブロック0でも死に札にならない)
   })
 })
 

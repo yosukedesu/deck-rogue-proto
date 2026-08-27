@@ -65,7 +65,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 14
+        "amount": 16
       }
     ]
   },
@@ -119,6 +119,11 @@
     "effects": [
       {
         "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 6,
         "amountMax": 12,
@@ -136,7 +141,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 15,
+        "amount": 18,
         "amountMax": 30,
         "exhaustThreshold": 7
       }
@@ -209,7 +214,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -227,7 +232,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -287,8 +292,10 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerExhaust",
-        "amount": 1
+        "effect": "dealDamage",
+        "amount": 8,
+        "amountMax": 16,
+        "exhaustThreshold": 7
       }
     ]
   },
@@ -424,7 +431,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 4
+        "amount": 5
       }
     ]
   },
@@ -467,6 +474,11 @@
         "trigger": "onPlay",
         "effect": "retrieveFromExhaust",
         "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 3
       }
     ]
   },

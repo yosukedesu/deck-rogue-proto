@@ -75,7 +75,13 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   const millAmount = card.def.effects
     .filter((e) => e.effect === 'exhaustFromDeck')
     .reduce((a, e) => a + (e.amount ?? 0), 0)
-  if (millAmount > 0 && card.def.type !== 'reaction' && state.player.drawPile.length < millAmount + 4) {
+  // ダメージを併せ持つミル札 (亡霊の槍・絶望の重み) は攻撃札なので温存しない (2026-08-27)
+  if (
+    millAmount > 0 &&
+    card.def.type !== 'reaction' &&
+    !card.def.effects.some(isDamageEffect) &&
+    state.player.drawPile.length < millAmount + 4
+  ) {
     return false
   }
   // 墓地参照は消滅3枚以上でないと空撃ち (ドレイン版も同じ)

@@ -40,6 +40,11 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 2
       }
     ]
   },
@@ -52,7 +57,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 10
+        "amount": 11
       }
     ]
   },
@@ -78,6 +83,11 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
         "amount": 2
       }
     ]
@@ -129,14 +139,15 @@
   {
     "id": "blue_tsunami",
     "name": "大津波",
-    "cost": 4,
+    "cost": 3,
     "type": "spell",
     "exhaust": true,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 12
+        "amount": 8,
+        "target": "all"
       }
     ]
   },
@@ -251,7 +262,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 2
+        "amount": 3
       },
       {
         "trigger": "onPlay",
@@ -362,6 +373,11 @@
         "trigger": "onPlay",
         "effect": "confuse",
         "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addAether",
+        "amount": 2
       }
     ]
   },
@@ -434,7 +450,7 @@
       {
         "trigger": "onSpellPlayed",
         "effect": "addAether",
-        "amount": 1
+        "amount": 2
       }
     ]
   },
@@ -517,7 +533,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 6
+        "amount": 8
       },
       {
         "trigger": "onPlay",

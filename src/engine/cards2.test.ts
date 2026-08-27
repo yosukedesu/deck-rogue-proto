@@ -24,7 +24,7 @@ describe('伏せ破壊への罰 (罠仕掛けの火薬)', () => {
 })
 
 describe('自己誘発リアクション', () => {
-  it('追い打ちの罠: 伏せ中に攻撃カードをプレイすると起爆し、同じ敵に5ダメージ', () => {
+  it('追い打ちの罠: 伏せ中に攻撃カードをプレイすると起爆し、同じ敵に8ダメージ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
       'red_ambush_trap',
       'red_strike',
@@ -32,12 +32,12 @@ describe('自己誘発リアクション', () => {
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_ambush_trap' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 5) // 火弾6 + 追い打ち5
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 8) // 火弾6 + 追い打ち8 (2026-08-27)
     expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
     expect(s.player.discardPile.some((c) => c.def.id === 'red_ambush_trap')).toBe(true)
   })
 
-  it('反響の符: 呪文プレイで起爆し1ドロー+霊気1。物理では起爆しない', () => {
+  it('反響の符: 呪文プレイで起爆し1ドロー+霊気2。物理では起爆しない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_echo_seal',
       'green_strike',
@@ -51,7 +51,7 @@ describe('自己誘発リアクション', () => {
     // 呪文 (思案) で起爆
     const handBefore = s.player.hand.length
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_ponder' })
-    expect(s.player.aether).toBe(1)
+    expect(s.player.aether).toBe(2) // 2026-08-27 霊気1→2
     // 思案の2ドロー + 反響の1ドロー - プレイした思案1枚
     expect(s.player.hand.length).toBe(handBefore + 2 + 1 - 1)
     expect(s.player.setCards).toHaveLength(0)
@@ -102,7 +102,7 @@ describe('キル連鎖 (玉突き)', () => {
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_billiard', targetIndex: 0 })
     expect(s.enemies[0].hp).toBeLessThanOrEqual(0)
-    expect(s.enemies[1].hp).toBe(hp1 - 8) // 跳ねた
+    expect(s.enemies[1].hp).toBe(hp1 - 10) // 跳ねた (玉突き 8→10。2026-08-27)
   })
 
   it('倒せなければ跳ねない', () => {

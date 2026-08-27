@@ -133,14 +133,14 @@ describe('白の新リアクション', () => {
     ).toBe(true)
   })
 
-  it('光盾の詠唱: 呪文プレイで起爆しブロック7', () => {
+  it('光盾の詠唱: 呪文プレイで起爆しブロック9', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_reaction_chant',
       'white_heal',
     ])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_white_reaction_chant' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
-    expect(s.player.block).toBe(7)
+    expect(s.player.block).toBe(9) // 2026-08-27 7→9
     expect(s.player.setCards).toHaveLength(0)
   })
 })

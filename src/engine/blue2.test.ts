@@ -43,8 +43,8 @@ describe('氷壁の換金 (氷の槍)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ice_lance' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 10) // 氷壁10×1
-    expect(s.player.iceBlock).toBe(10)
+    expect(s.enemies[0].hp).toBe(hpBefore - 11) // 氷壁11×1 (2026-08-27)
+    expect(s.player.iceBlock).toBe(11)
   })
 })
 
@@ -89,9 +89,9 @@ describe('置物の呪文プレイ誘発 (霧の分身)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_perm_mist_double' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
-    expect(s.player.iceBlock).toBe(1)
+    expect(s.player.iceBlock).toBe(3) // 分身1 + 思案の氷壁2 (2026-08-27)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_strike' })
-    expect(s.player.iceBlock).toBe(1) // 物理では増えない
+    expect(s.player.iceBlock).toBe(3) // 物理では増えない
   })
 })
 

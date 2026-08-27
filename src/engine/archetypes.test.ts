@@ -174,7 +174,7 @@ describe('消滅 (exhaust)', () => {
 })
 
 describe('選択式カード (modes)', () => {
-  it('陽光の恵み: モード0=上限+1、モード1=1ドロー+成長1 を選べる', () => {
+  it('陽光の恵み: モード0=上限+1&1ドロー、モード1=1ドロー&成長2 を選べる (2026-08-27)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_ramp_sunlight'])
     const s0 = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sunlight', modeIndex: 0 })
     expect(s0.player.energyMax).toBe(4)
@@ -182,7 +182,7 @@ describe('選択式カード (modes)', () => {
     const s1 = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sunlight', modeIndex: 1 })
     expect(s1.player.energyMax).toBe(3)
     expect(s1.player.hand.length).toBe(handBefore - 1 + 1) // 本体を出して1枚引く
-    expect(s1.player.growth).toBe(1)
+    expect(s1.player.growth).toBe(2)
   })
 
   it('選択式カードは modeIndex なしでは拒否される', () => {
@@ -205,7 +205,7 @@ describe('選択式カード (modes)', () => {
 })
 
 describe('手札捨てコスト (discardCost)', () => {
-  it('大蛇の丸呑み: 手札1枚を追加コストに捨てて14ダメージ', () => {
+  it('大蛇の丸呑み: 手札1枚を追加コストに捨てて16ダメージ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), [
       'green_serpent_gulp',
       'green_guard',
@@ -216,7 +216,7 @@ describe('手札捨てコスト (discardCost)', () => {
       cardUid: 't0_green_serpent_gulp',
       discardUids: ['t1_green_guard'],
     })
-    expect(s.enemies[0].hp).toBe(hpBefore - 14)
+    expect(s.enemies[0].hp).toBe(hpBefore - 16) // 2026-08-27 報酬プール底上げ
     expect(s.player.hand).toHaveLength(0)
     expect(s.player.discardPile.map((c) => c.uid)).toContain('t1_green_guard')
     expect(types(s.eventLog)).toContain('CardsDiscarded')

@@ -32,14 +32,14 @@ describe('氷壁 (持ち越しブロック)', () => {
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_guard' })
-    expect(s.player.iceBlock).toBe(10)
+    expect(s.player.iceBlock).toBe(11) // 2026-08-27 氷壁 10→11
     expect(s.player.block).toBe(5)
     // 攻撃10: 通常ブロック5を先に消費し、残り5を氷壁で受ける
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(s.player.maxHp)
     expect(s.player.block).toBe(0) // 次ターン開始でリセット
-    expect(s.player.iceBlock).toBe(5) // 10 - 5 が持ち越されている
+    expect(s.player.iceBlock).toBe(6) // 11 - 5 が持ち越されている
   })
 })
 
@@ -197,7 +197,7 @@ describe('ストームの3系統', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_barrier' }) // 詠唱数2 ×5 = 10
-    expect(s.player.iceBlock).toBe(10 + 5) // 障壁10 + 氷盾5 (氷壁化済み)
+    expect(s.player.iceBlock).toBe(10 + 5 + 2) // 障壁10 + 氷盾5 + 思案の氷壁2 (2026-08-27)
   })
 
   it('連鎖する思考: 詠唱数×1枚ドロー', () => {
