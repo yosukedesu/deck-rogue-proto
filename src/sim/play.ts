@@ -16,6 +16,16 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { resolveFusedDef } from '../engine/fusion.ts'
+
+/** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
+function cname(cardId: string): string {
+  try {
+    return getCardDef(cardId).name
+  } catch {
+    return resolveFusedDef(cardId)?.name ?? cardId
+  }
+}
 import {
   cardNeedsTarget,
   effectiveCost,
@@ -133,12 +143,12 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push('--- 直近の出来事 ---')
     for (const e of events) {
       if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})`)
-      else if (e.type === 'CardPlayed') L.push(` プレイ:${getCardDef(e.cardId).name}`)
-      else if (e.type === 'CardSet') L.push(` 伏せた:${getCardDef(e.cardId).name}`)
-      else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${getCardDef(e.cardId).name}`)
-      else if (e.type === 'CardExhausted') L.push(` 消滅:${getCardDef(e.cardId).name}`)
-      else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${getCardDef(e.cardId).name}が倒された`)
-      else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${getCardDef(e.cardId).name}が壊された`)
+      else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
+      else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
+      else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)
+      else if (e.type === 'CardExhausted') L.push(` 消滅:${cname(e.cardId)}`)
+      else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${cname(e.cardId)}が倒された`)
+      else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${cname(e.cardId)}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
       else if (e.type === 'HpHealed') L.push(` 回復${e.amount}`)
       else if (e.type === 'HpLost') L.push(` 自傷${e.amount}`)

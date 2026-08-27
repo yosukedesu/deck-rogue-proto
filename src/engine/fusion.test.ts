@@ -200,3 +200,49 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     expect(aoe.name.endsWith('嵐')).toBe(true)
   })
 })
+
+describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LLM両テスターが報告)', () => {
+  // イベントログは cardId しか持たず、描画側が静的カード表 (getCardDef) だけを引いていたため
+  // 「未定義カード: fused_*」で UI 全体がクラッシュしていた。resolveFusedDef で復元する。
+  it('resolveFusedDef: 計算合成のIDから同じ定義を復元できる', async () => {
+    const { resolveFusedDef } = await import('./fusion.ts')
+    const def = fuseCards(inst('green_sig_vine_dance'), inst('green_strike'))
+    const resolved = resolveFusedDef(def.id)
+    expect(resolved).not.toBeNull()
+    expect(JSON.stringify(resolved)).toBe(JSON.stringify(def)) // 決定的 = 完全一致
+  })
+
+  it('resolveFusedDef: レシピ産 (fusion_*) もレシピ表から引ける', async () => {
+    const { resolveFusedDef } = await import('./fusion.ts')
+    const resolved = resolveFusedDef('fusion_vine_wheel')
+    expect(resolved?.name).toBe('蔦車輪')
+    expect(resolveFusedDef('fused_no_such__card')).toBeNull() // 不明IDは null (throwしない)
+    expect(resolveFusedDef('unknown_id')).toBeNull()
+  })
+
+  it('合成カードをプレイした後のイベントログが UI/CLI の描画関数でクラッシュしない', async () => {
+    const { logLine, cardName } = await import('../ui/log.ts')
+    const { startCombatWithOptions } = await import('./combat.ts')
+    const { buildDeck } = await import('./content.ts')
+    const { applyCommand } = await import('./state.ts')
+    const fusedDef = fuseCards(inst('green_sig_vine_dance'), inst('green_strike'))
+    let s = startCombatWithOptions(42, 'set-confirm', 'enemy_brute', {
+      deck: buildDeck('starter'),
+    })
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        energy: 9,
+        hand: [{ uid: 'fused_test', def: fusedDef }],
+      },
+    }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 'fused_test' })
+    expect(s.eventLog.some((e) => e.type === 'CardPlayed' && e.cardId === fusedDef.id)).toBe(true)
+    // 全イベントを描画してもthrowしない (旧実装はここで「未定義カード」例外)
+    for (const e of s.eventLog) {
+      expect(() => logLine(e)).not.toThrow()
+    }
+    expect(cardName(fusedDef.id)).toBe(fusedDef.name)
+  })
+})

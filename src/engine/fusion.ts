@@ -3,6 +3,7 @@
 // それ以外は計算合成する。純関数・決定的 = 素材2枚の def だけから結果が決まる
 // (リプレイ / Unity 移植に安全。RNG も時刻も使わない)。
 import fusionsJson from '../data/fusions.json'
+import { getCardDef } from './content.ts'
 import type { CardDef, CardInstance, DeclarativeEffect } from './types.ts'
 
 interface FusionRecipe {
@@ -199,5 +200,26 @@ export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
     ...(a.def.discardCost || b.def.discardCost
       ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) }
       : {}),
+  }
+}
+
+/**
+ * 合成カードの定義をIDから復元する (見つからなければ null)。
+ * 合成IDは決定的 (fused_<素材A>__<素材B>) なので、素材を引いて再合成すれば同じ定義が返る。
+ * レシピ産 (fusion_*) はレシピ表から引く。
+ * イベントログは cardId しか持たないため、描画側はこの解決器で合成カードの名前を引く
+ * (2026-08-28 修正: 静的カード表だけ引いていたため「未定義カード: fused_*」で描画がクラッシュした)。
+ */
+export function resolveFusedDef(id: string): CardDef | null {
+  const recipe = RECIPES.find((r) => r.result.id === id)
+  if (recipe) return recipe.result
+  const m = /^fused_(.+)__(.+)$/.exec(id)
+  if (!m) return null
+  try {
+    const a = getCardDef(m[1])
+    const b = getCardDef(m[2])
+    return fuseCards({ uid: 'resolve_a', def: a }, { uid: 'resolve_b', def: b })
+  } catch {
+    return null
   }
 }
