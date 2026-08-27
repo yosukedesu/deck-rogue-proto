@@ -92,6 +92,12 @@ export interface CombatOptions {
   readonly leaderId?: string
   /** 開始時HP (持ち越し用)。省略時は全快 */
   readonly playerHp?: number
+  /**
+   * 最大HP (ランの恒久ボーナス用。鉄の心臓など)。省略時はリーダーの素の値。
+   * 2026-08-27 修正: これが無かったため、B型レリックが増やした run.maxHp が
+   * 戦闘に一度も届いていなかった (プレイテスターのバグ報告で発覚)
+   */
+  readonly playerMaxHp?: number
   /** 敵HPの倍率 (ランの深度スケーリング用) */
   readonly enemyHpScale?: number
   /** 敵の初期強化 (攻撃の実値・幅表示に加算される) */
@@ -152,7 +158,11 @@ export function startCombatWithOptions(
     player: {
       ...state.player,
       drawPile: deck,
-      hp: Math.min(options.playerHp ?? state.player.maxHp, state.player.maxHp),
+      maxHp: options.playerMaxHp ?? state.player.maxHp,
+      hp: Math.min(
+        options.playerHp ?? options.playerMaxHp ?? state.player.maxHp,
+        options.playerMaxHp ?? state.player.maxHp,
+      ),
       // A型レリックはリーダーパッシブと同じ「戦闘開始時から場にある置物」(確定済みルール表「レリック」)
       permanents: [...state.player.permanents, ...(options.relicPermanents ?? [])],
     },

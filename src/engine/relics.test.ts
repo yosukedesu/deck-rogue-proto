@@ -7,6 +7,10 @@ import type { RunState } from './run.ts'
 import { defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
+function declineOffer(run: RunState): RunState {
+  return run.phase === 'offer' ? applyRunCommand(run, { type: 'ChooseElite', elite: false }) : run
+}
+
 function forceWin(run: RunState): RunState {
   const c = run.combat!
   let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
@@ -137,5 +141,27 @@ describe('レリック効果', () => {
       expect(hasA || hasB).toBe(true)
       expect(getRelicDef(r.id).name.length).toBeGreaterThan(0)
     }
+  })
+})
+
+describe('B型レリックの最大HPが戦闘へ届く (2026-08-27 バグ修正)', () => {
+  // プレイテスターの報告で発覚: launchCombat が run.hp しか渡しておらず、
+  // 鉄の心臓 (取得時maxHp+8) が増やした run.maxHp が戦闘の player.maxHp に反映されていなかった。
+  it('鉄の心臓の+8が次の戦闘の最大HPに乗る', () => {
+    let run = createRun(29, 'set-confirm')
+    const baseMax = run.maxHp
+    // 鉄の心臓を直接付与してボーナスを適用した状態を作る
+    run = { ...run, relics: ['relic_iron_heart'] }
+    run = {
+      ...run,
+      maxHp: baseMax + 8,
+      hp: Math.min(baseMax + 8, run.hp + 8),
+    }
+    // 次の戦闘を開始する (報酬スキップ → 次戦へ)
+    run = forceWin(run)
+    if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
+    if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
+    run = declineOffer(run)
+    expect(run.combat!.player.maxHp).toBe(baseMax + 8)
   })
 })

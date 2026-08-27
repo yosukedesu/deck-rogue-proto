@@ -160,6 +160,7 @@ function launchCombat(run: RunState, elite: boolean): RunState {
     deck: run.deck,
     leaderId: run.leaderId,
     playerHp: run.hp,
+    playerMaxHp: run.maxHp,
     enemyHpScale: depthHpScale(run.battleIndex) * (elite ? ELITE_HP_SCALE : 1),
     enemyStrength: depthStrength(run.battleIndex) + (elite ? ELITE_STRENGTH : 0),
     relicPermanents: run.relics
