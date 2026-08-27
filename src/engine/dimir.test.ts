@@ -59,13 +59,21 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
     expect(() => applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_mana_leak' })).toThrow()
   })
 
-  it('伏せ破壊は伏せている全カードを破壊する (2枠のリスク)', () => {
+  it('伏せ破壊は「1枚だけ逃がして」残り全部を破壊する (2枠のリスクと救出の選択)', () => {
+    // 2026-08-27 伏せ破壊への応答: 窓は開くが、1行動1回制限により逃がせるのは1枚だけ。
+    // かすみの2枠は「どちらを救うか」の選択になる
     const run = createRun(7, 'set-confirm', 'leader_dimir')
     let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
     s = withIntent(s, { kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    // 霜の帳を発動して逃がす → 黒の呪いは残されて破壊される
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_blue_frost_veil' })
     expect(s.player.setCards).toHaveLength(0)
+    expect(s.player.discardPile.some((c) => c.def.id === 'blue_frost_veil')).toBe(true)
+    const destroyed = s.eventLog.filter((e) => e.type === 'SetCardDestroyed')
+    expect(destroyed).toHaveLength(1) // 破壊されたのは逃がさなかった1枚だけ
   })
 })

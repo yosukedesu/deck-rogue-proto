@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { allEnemies, getEnemyDef } from './content.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 const noHand = (s: GameState): GameState => withHand(s, [])
@@ -246,5 +246,74 @@ describe('伏せへの罰 (2026-08-26。無期限温存で敵を弱い分岐に�
     expect(probe.movesVsSet).toBeDefined()
     const lunge = probe.movesVsSet!.find((m) => m.id === 'lunge')
     expect(lunge).toBeDefined() // 伏せると探りの猶予 (poke×2) が消える
+  })
+})
+
+describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏せ破壊への応答」)', () => {
+  // 5色テストで3色が独立に「読み合いでなく一方的な没収」と報告した問題への対処。
+  // destroy-set の実行前に確認ウィンドウが開き、壊される札は誘発の種別を問わず「発動して逃がす」候補になる。
+  it('onAttackIncoming の守りの蔓でも destroy-set に応答でき、発動すれば破壊は空振りする', () => {
+    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
+    s = withHand(s, ['green_reaction_vine'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = withIntent(s, {
+      kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0,
+      inflict: { status: 'junk', amount: 1 },
+    })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction') // 窓が開く (旧実装は開かず没収だった)
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_vine' })
+    // 効果は解決される (EndTurn は敵フェーズを走り切って次の自ターンまで進むので、
+    // ブロックの現在値でなくイベントで確認する)
+    expect(
+      s.eventLog.some((e) => e.type === 'BlockGained' && e.target === 'player' && e.amount >= 12),
+    ).toBe(true)
+    expect(s.player.discardPile.some((c) => c.def.id === 'green_reaction_vine')).toBe(true)
+    expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(false) // 破壊は空振り
+    // がらくたも付与されない (壊す物が無い)
+    const junk = [...s.player.hand, ...s.player.drawPile, ...s.player.discardPile].filter(
+      (c) => c.def.id === 'status_junk',
+    )
+    expect(junk).toHaveLength(0)
+  })
+
+  it('温存すれば従来どおり破壊され、がらくたが付与される', () => {
+    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
+    s = withHand(s, ['green_reaction_vine'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = withIntent(s, {
+      kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0,
+      inflict: { status: 'junk', amount: 1 },
+    })
+    s = applyCommand(s, { type: 'EndTurn' })
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+    expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
+    // がらくたは山札のランダム位置に混ざり、次ターンのドローで手札に来ていることもある
+    const junk = [...s.player.hand, ...s.player.drawPile, ...s.player.discardPile].filter(
+      (c) => c.def.id === 'status_junk',
+    )
+    expect(junk).toHaveLength(1)
+  })
+
+  it('条件を満たさない札は逃がせない (窮鼠の大牙はHP満タンでは応答候補にならない)', () => {
+    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
+    s = withHand(s, ['green_reaction_cornered']) // HP半分以下でのみ発動可
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
+    s = withIntent(s, destroySetIntent())
+    s = applyCommand(s, { type: 'EndTurn' })
+    // 候補ゼロなので窓は開かず、そのまま破壊される
+    expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
+  })
+
+  it('罠仕掛けの火薬を発動で逃がすと counter だけ解決され、onSetDestroyed の12全体は発火しない', () => {
+    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter_red')
+    s = withHand(s, ['red_trap_powder'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_trap_powder' })
+    s = withIntent(s, destroySetIntent())
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_red_trap_powder' })
+    expect(hpBefore - s.enemies[0].hp).toBe(3) // counter3 のみ。破壊されていないので12は出ない
   })
 })

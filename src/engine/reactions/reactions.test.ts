@@ -78,12 +78,17 @@ describe('set-auto (セット式)', () => {
     expect(types(s.eventLog)).not.toContain('SetCardDestroyed')
   })
 
-  it('伏せ破壊は onAttacked 系の伏せに刺さる (茨の返しは反応できず破壊される)', () => {
+  it('伏せ破壊に onAttacked 系も応答できる (set-auto は自動で発動して逃がす)', () => {
+    // 2026-08-27 伏せ破壊への応答: 旧仕様では茨の返しは反応できず没収だったが、
+    // 壊される札は誘発の種別を問わず候補になる。set-auto は判断を挟まないので自動で逃げる
     let s = withHand(freshCombat('set-auto', 'enemy_set_breaker'), ['green_reaction_thorns'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     s = withIntent(s, destroySetIntent())
+    const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(types(s.eventLog)).toContain('SetCardDestroyed')
+    expect(types(s.eventLog)).not.toContain('SetCardDestroyed') // 破壊は空振り
+    expect(types(s.eventLog)).toContain('ReactionTriggered') // 発動して逃げた
+    expect(s.enemies[0].hp).toBe(hpBefore - 9) // 返し9は破壊しに来た敵へ
     expect(s.player.setCards).toHaveLength(0)
     expect(s.player.discardPile.some((c) => c.uid === 't0_green_reaction_thorns')).toBe(true)
   })

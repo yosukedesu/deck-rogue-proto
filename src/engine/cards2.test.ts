@@ -14,6 +14,9 @@ describe('伏せ破壊への罰 (罠仕掛けの火薬)', () => {
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
+    // 2026-08-27: 伏せ破壊への応答の窓が開くようになった。火薬は「壊させたい」札なので温存を選ぶ
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
     expect(s.enemies[0].hp).toBe(hpBefore - 12)
     expect(s.player.setCards).toHaveLength(0)
     expect(s.player.discardPile.some((c) => c.def.id === 'red_trap_powder')).toBe(true)

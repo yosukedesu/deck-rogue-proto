@@ -204,7 +204,11 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
   return card.def.effects.some((e) => {
     const triggerMatches =
       win.stage === 'pre'
-        ? e.trigger === 'onEnemyAction' || (e.trigger === 'onAttackIncoming' && win.kind === 'attack')
+        ? e.trigger === 'onEnemyAction' ||
+          (e.trigger === 'onAttackIncoming' && win.kind === 'attack') ||
+          // 伏せ破壊への応答 (2026-08-27。確定済みルール表): 壊される札は誘発の種別を問わず
+          // 「発動して逃がす」候補になる。onSetDestroyed だけは対象外 (破壊された時にのみ発火する効果)
+          (win.kind === 'destroy-set' && REACTION_TRIGGERS.has(e.trigger))
         : (e.trigger === 'onAttacked' && win.kind === 'attack') ||
           (e.trigger === 'onEnemyBuffed' && (win.kind === 'buff' || win.kind === 'rally')) ||
           (e.trigger === 'onEnemyDefended' && win.kind === 'defend')
