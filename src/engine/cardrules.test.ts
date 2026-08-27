@@ -107,3 +107,48 @@ describe('カードデータの不変条件', () => {
     expect(bad.map((c) => c.name)).toEqual([])
   })
 })
+
+describe('基本札の上位互換サイクル (2026-08-27。確定済みルール表「報酬プールの下限」)', () => {
+  // 基本札 (打撃・防御) は報酬プールから除外されている = 「抜かれるためにある」。
+  // その思想が成立するには、各色の報酬プールに基本札の完全上位互換が最低1枚ずつ要る
+  // (ユーザー指摘: 「完全上位互換を入れないと矛盾している」)。
+  // ここでは各色の後継カードを名指しで固定する。消えたり弱体化したらここで落ちる。
+  const CYCLE: Record<string, { attack: string; guard: string }> = {
+    green: { attack: 'green_horn_strike', guard: 'green_entangle' }, // 6貫通 / モード:ブロック7
+    blue: { attack: 'blue_rapid_strike', guard: 'blue_thick_ice' }, // 6+1ドロー / 氷壁7
+    red: { attack: 'red_ember_slash', guard: 'red_hearth_shield' }, // 6+衝動1 / 4+衝動1+延焼1
+    white: { attack: 'white_shield_strike', guard: 'white_mending' }, // 5+ブロック3 / 6+回復2
+    black: { attack: 'black_grave_bolt', guard: 'black_gravestone' }, // ミル1+6/12 / 5+燃料2
+  }
+
+  it('全色に、基本攻撃・基本防御それぞれの上位互換が1Eで存在する (消滅なし)', () => {
+    for (const [color, pair] of Object.entries(CYCLE)) {
+      for (const id of [pair.attack, pair.guard]) {
+        const def = allCards.find((c) => c.id === id)
+        expect(def, `${color}: ${id} が存在しない`).toBeDefined()
+        expect(def!.cost, `${id} は1Eであること`).toBe(1)
+        expect(def!.exhaust, `${id} は消滅しないこと (基本札の後継=常用札)`).not.toBe(true)
+      }
+    }
+  })
+
+  it('上位互換は基本札の主効果量を下回らない', () => {
+    const amountOf = (id: string, effect: string): number => {
+      const def = allCards.find((c) => c.id === id)!
+      const all = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+      return Math.max(0, ...all.filter((e) => e.effect === effect).map((e) => e.amount ?? 0))
+    }
+    // 攻撃: 基本札のダメージ量以上
+    expect(amountOf('green_horn_strike', 'dealDamage')).toBeGreaterThanOrEqual(6)
+    expect(amountOf('blue_rapid_strike', 'dealDamage')).toBeGreaterThanOrEqual(5)
+    expect(amountOf('red_ember_slash', 'dealDamage')).toBeGreaterThanOrEqual(6)
+    expect(amountOf('white_shield_strike', 'dealDamage')).toBeGreaterThanOrEqual(5)
+    expect(amountOf('black_grave_bolt', 'dealDamage')).toBeGreaterThanOrEqual(6)
+    // 防御: 基本札のブロック量以上 (青は氷壁が基本)
+    expect(amountOf('green_entangle', 'gainBlock')).toBeGreaterThanOrEqual(5)
+    expect(amountOf('blue_thick_ice', 'gainIceBlock')).toBeGreaterThanOrEqual(5)
+    expect(amountOf('red_hearth_shield', 'gainBlock')).toBeGreaterThanOrEqual(4)
+    expect(amountOf('white_mending', 'gainBlock')).toBeGreaterThanOrEqual(5)
+    expect(amountOf('black_gravestone', 'gainBlock')).toBeGreaterThanOrEqual(5)
+  })
+})

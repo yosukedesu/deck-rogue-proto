@@ -659,5 +659,19 @@
         "amount": 7
       }
     ]
+  },
+  {
+    "id": "green_horn_strike",
+    "name": "荒角の一撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "pierce": true
+      }
+    ]
   }
 ]

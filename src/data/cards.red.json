@@ -751,5 +751,28 @@
         "target": "all"
       }
     ]
+  },
+  {
+    "id": "red_hearth_shield",
+    "name": "火床の盾",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 1
+      }
+    ]
   }
 ]

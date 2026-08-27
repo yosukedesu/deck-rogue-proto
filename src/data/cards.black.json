@@ -650,5 +650,23 @@
         "exhaustThreshold": 7
       }
     ]
+  },
+  {
+    "id": "black_gravestone",
+    "name": "墓石の盾",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 2
+      }
+    ]
   }
 ]

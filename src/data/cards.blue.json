@@ -651,5 +651,36 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "blue_rapid_strike",
+    "name": "早瀬の一撃",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_thick_ice",
+    "name": "厚氷の盾",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 7
+      }
+    ]
   }
 ]
