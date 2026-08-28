@@ -381,7 +381,7 @@ export function createRun(
 const EFFECT_AXIS: Record<string, string> = {
   addGrowth: 'growth', doubleGrowth: 'growth', dischargeGrowth: 'growth',
   gainEnergyMax: 'ramp', dealDamagePerEnergyMax: 'ramp', gainBlockPerEnergyMax: 'ramp',
-  addMomentum: 'trample',
+  addMomentum: 'trample', dealDamagePerMomentum: 'trample', doubleMomentum: 'trample',
   applyBurn: 'burn', dischargeBurn: 'burn',
   addAether: 'aether', dischargeAether: 'aether', dischargeAetherDraw: 'aether',
   gainIceBlock: 'ice', dealDamagePerIceBlock: 'ice', gainIceBlockPerCardPlayed: 'ice',

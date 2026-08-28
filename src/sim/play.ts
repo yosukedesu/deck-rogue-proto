@@ -66,6 +66,7 @@ function fx(e: DeclarativeEffect): string {
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `上限×${a}ダメ`, gainBlockPerEnergyMax: `上限×${a}ブロック`,
+    dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
     exhaustFromDeck: `山札の上${a}枚を消滅`, dealDamagePerExhaust: `消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,

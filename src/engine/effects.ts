@@ -39,6 +39,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamageRandom',
     'dealDamagePerCardPlayed',
     'dealDamagePerEnergyMax',
+    'dealDamagePerMomentum',
     'dischargeAether',
     'dischargeGrowth',
     'dealDamageCleave',
@@ -64,6 +65,7 @@ const ENEMY_TARGETED = new Set([
   'dealDamageRandom',
   'dealDamagePerCardPlayed',
   'dealDamagePerEnergyMax',
+  'dealDamagePerMomentum',
   'dischargeAether',
   'applyBurn',
   'shatterBlock',
@@ -401,6 +403,16 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
   switch (effect.effect) {
     case 'dealDamage':
       return dealDamageToEnemy(state, enemyIndex, effect.amount ?? 0, effect.pierce)
+    case 'dealDamagePerMomentum':
+      // トランプルの換金 (2026-08-29): 勢い × amount のダメージ。勢いは消費しない
+      // (勢いはターン終了で消えるので「売り時」の緊張は自然に発生する)。
+      // これ自体も攻撃なので勢いの加算 (playerDamageAfterModifiers) も上乗せで乗る
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.momentum,
+        effect.pierce,
+      )
     case 'dealDamagePerEnergyMax':
       // ビッグマナのシグネチャー: エナジー上限 × amount のダメージ
       return dealDamageToEnemy(
@@ -738,6 +750,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const next = { ...state, player: { ...state.player, growth: state.player.growth + amount } }
       return emit(next, { type: 'GrowthAdded', amount })
+    }
+    case 'doubleMomentum': {
+      // トランプルの倍加 (2026-08-29): 現在の勢いを2倍にする (開花の儀の勢い版。消滅前提)
+      const amount = state.player.momentum
+      if (amount === 0) return state
+      return { ...state, player: { ...state.player, momentum: state.player.momentum * 2 } }
     }
     case 'doubleGrowth': {
       // 成長スタックのシグネチャー: 現在の成長カウンターを2倍にする

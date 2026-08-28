@@ -384,6 +384,8 @@ export interface DeclarativeEffect {
     | 'gainBlock'
     | 'gainIceBlock' // 氷壁: ターン開始で消えず持ち越されるブロック (青)
     | 'dealDamagePerCardPlayed' // ストーム攻撃: 詠唱数 × amount のダメージ (青)
+    | 'dealDamagePerMomentum' // トランプル換金: 勢い × amount のダメージ (緑。勢いは消費しない)
+    | 'doubleMomentum' // トランプルの倍加: 現在の勢いを2倍にする (緑。角笛)
     | 'gainIceBlockPerCardPlayed' // ストーム防御: 詠唱数 × amount の氷壁 (青)
     | 'drawCardsPerCardPlayed' // ストームドロー: 詠唱数 × amount 枚ドロー (青)
     | 'addAether' // 霊気+X: 妨害・リアクション成功の蓄積 (青)

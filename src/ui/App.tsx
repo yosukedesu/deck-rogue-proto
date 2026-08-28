@@ -255,6 +255,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return ctx
         ? `${trigger}エナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
         : `${trigger}エナジー上限×${e.amount}ダメージ${pierce}`
+    case 'dealDamagePerMomentum':
+      return ctx
+        ? `${trigger}勢い×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.momentum + atkBonus}]`
+        : `${trigger}勢い×${e.amount}ダメージ${pierce}`
     case 'counter': {
       const cBonus = ctx ? ctx.growth : 0
       const cBreak = cBonus > 0 ? `（基礎${e.amount}+成長${cBonus}）` : ''
@@ -380,6 +384,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return ctx && ctx.growth > 0
         ? `${trigger}成長を2倍にする [${ctx.growth}→${ctx.growth * 2}]`
         : `${trigger}成長を2倍にする`
+    case 'doubleMomentum':
+      return ctx && ctx.momentum > 0
+        ? `${trigger}勢いを2倍にする [${ctx.momentum}→${ctx.momentum * 2}]`
+        : `${trigger}勢いを2倍にする`
     case 'addMomentum':
       return `${trigger}勢い+${e.amount}`
     case 'drawCards':

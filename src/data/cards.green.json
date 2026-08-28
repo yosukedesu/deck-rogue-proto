@@ -693,5 +693,138 @@
         "pierce": true
       }
     ]
+  },
+  {
+    "id": "green_perm_wild_call",
+    "name": "荒野の呼び声",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_triple_horn",
+    "name": "三連の角",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_surge_thrust",
+    "name": "怒涛の突き上げ",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_horn_flare",
+    "name": "昂ぶる角笛",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "doubleMomentum"
+      }
+    ]
+  },
+  {
+    "id": "green_trunk_blow",
+    "name": "幹撃",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_trunk_stance",
+    "name": "大幹の構え",
+    "cost": 3,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerEnergyMax",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_perm_tree_pulse",
+    "name": "大樹の脈",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_canopy_shade",
+    "name": "木陰の守り",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerEnergyMax",
+        "amount": 2
+      }
+    ]
   }
 ]
