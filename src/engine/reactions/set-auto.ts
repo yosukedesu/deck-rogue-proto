@@ -4,13 +4,14 @@
 
 import { effectiveIntent, usableSetCards } from '../effects.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
-import { canSetCard, emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
+import { emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
 
 export const setAutoSystem: ReactionSystem = {
   mode: 'set-auto',
 
-  canHandle(state: GameState, command: Command): boolean {
-    return command.type === 'SetCard' && canSetCard(state, command.cardUid)
+  canHandle(_state: GameState, command: Command): boolean {
+    // 型で受けて setCard 側の具体的なエラーを出す (set-confirm と同じ裁定。2026-08-29)
+    return command.type === 'SetCard'
   },
 
   handleCommand(state: GameState, command: Command): GameState {

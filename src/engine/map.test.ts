@@ -121,6 +121,14 @@ describe('マップ生成の構造', () => {
     }
   })
 
+  it('緑を含まないランでは工房ノードを生成しない (v1は緑同士のみのため)', () => {
+    for (const seed of SEEDS.slice(0, 10)) {
+      const [m] = generateMap(createRng(seed), EVENT_POOL, 1, false)
+      expect(m.flat().filter((n) => n.type === 'workshop')).toHaveLength(0)
+      expect(m.flat().filter((n) => n.type === 'shop')).toHaveLength(2) // ショップ・?は残る
+    }
+  })
+
   it('戦闘ノードの敵は行の帯のプールから出る (焚き火・工房は敵なし)', () => {
     for (const seed of SEEDS.slice(0, 10)) {
       const map = mapFor(seed)

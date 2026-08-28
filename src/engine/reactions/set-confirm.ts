@@ -6,7 +6,7 @@
 import { effectiveIntent, usableSetCards, windowFromPending } from '../effects.ts'
 import { emit } from '../events.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
-import { canSetCard, emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
+import { emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
 
 export const setConfirmSystem: ReactionSystem = {
   mode: 'set-confirm',
@@ -14,7 +14,10 @@ export const setConfirmSystem: ReactionSystem = {
   canHandle(state: GameState, command: Command): boolean {
     switch (command.type) {
       case 'SetCard':
-        return canSetCard(state, command.cardUid)
+        // 型で受けて setCard 側の具体的なエラー (エナジー不足・枠上限等) を出す。
+        // canSetCard で弾くと「方式が受け付けないコマンド」という誤解を招く汎用文言に化ける
+        // (2026-08-29 白解凍ランで再現。seed301 の未再現エラー報告と同根)
+        return true
       case 'ConfirmReaction':
         return state.phase === 'awaiting-reaction'
       default:

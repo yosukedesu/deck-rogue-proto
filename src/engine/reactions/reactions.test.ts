@@ -186,6 +186,16 @@ describe('hold-manual (構え式)', () => {
   })
 })
 
+describe('SetCard のエラーメッセージ (2026-08-29。汎用文言に化けていた裁定)', () => {
+  it('エナジー不足の伏せは「エナジー不足」と具体的に拒否される', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_reaction_thorns'])
+    s = { ...s, player: { ...s.player, energy: 0 } }
+    expect(() => applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })).toThrow(
+      /エナジー不足/,
+    )
+  })
+})
+
 describe('誘発タイミング: 返しはダメージの後 (2026-08-24 変更)', () => {
   it('返しで敵が倒れても、攻撃は先に受けている', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])

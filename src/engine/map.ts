@@ -71,6 +71,7 @@ export function generateMap(
   rng0: RngState,
   eventPool: readonly string[],
   act = 1,
+  allowWorkshop = true,
 ): readonly [RunMap, RngState] {
   let rng = rng0
   for (let attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++) {
@@ -134,8 +135,12 @@ export function generateMap(
       specialAt.set(`${row}:${c1}`, t1)
       specialAt.set(`${row}:${rest[i2]}`, t2)
     }
-    placeTwo(shopRow, 'workshop', 'shop')
-    placeTwo(eventWithWorkshopRow, 'workshop', 'event')
+    // 工房 (カード合成) は v1 が緑同士のみのため、緑を含まないランでは配置しない
+    // (2026-08-29 白解凍ランで「合成不可のデッドノードを踏まされた」指摘への対処)。
+    // 工房枠は戦闘に置き換わる = 非戦闘予算のDP検証・戦闘数保証はそのまま成立する
+    const ws = allowWorkshop ? 'workshop' : 'battle'
+    placeTwo(shopRow, ws, 'shop')
+    placeTwo(eventWithWorkshopRow, ws, 'event')
     for (const r of [...standaloneShopRows, ...standaloneEventRows, ...eliteRows]) {
       const [c, next] = nextInt(rng, 0, widths[r] - 1)
       rng = next
