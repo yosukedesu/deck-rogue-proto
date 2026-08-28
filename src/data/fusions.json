@@ -9,9 +9,21 @@
       "type": "physical",
       "color": "green",
       "effects": [
-        { "trigger": "onPlay", "effect": "addGrowth", "amount": 2 },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 4 },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 4 }
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 2
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 4
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 4
+        }
       ]
     }
   },
@@ -26,12 +38,35 @@
       "color": "green",
       "exhaust": true,
       "effects": [
-        { "trigger": "onPlay", "effect": "doubleGrowth" },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 3 },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 3 },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 3 },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 3 },
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 3 }
+        {
+          "trigger": "onPlay",
+          "effect": "doubleGrowth"
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        }
       ]
     }
   },
@@ -45,8 +80,16 @@
       "type": "reaction",
       "color": "green",
       "effects": [
-        { "trigger": "onAttackIncoming", "effect": "gainBlock", "amount": 12 },
-        { "trigger": "onAttackIncoming", "effect": "counter", "amount": 6 }
+        {
+          "trigger": "onAttackIncoming",
+          "effect": "gainBlock",
+          "amount": 12
+        },
+        {
+          "trigger": "onAttackIncoming",
+          "effect": "counter",
+          "amount": 6
+        }
       ]
     }
   },
@@ -60,8 +103,16 @@
       "type": "physical",
       "color": "green",
       "effects": [
-        { "trigger": "onPlay", "effect": "gainBlockPerEnergyMax", "amount": 3 },
-        { "trigger": "onPlay", "effect": "addGrowth", "amount": 1 }
+        {
+          "trigger": "onPlay",
+          "effect": "gainBlockPerEnergyMax",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1
+        }
       ]
     }
   },
@@ -75,8 +126,17 @@
       "type": "physical",
       "color": "green",
       "effects": [
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 8, "pierce": true },
-        { "trigger": "onPlay", "effect": "addMomentum", "amount": 3 }
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 8,
+          "pierce": true
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addMomentum",
+          "amount": 3
+        }
       ]
     }
   },
@@ -91,8 +151,62 @@
       "color": "green",
       "exhaust": true,
       "effects": [
-        { "trigger": "onPlay", "effect": "dealDamage", "amount": 32 },
-        { "trigger": "onPlay", "effect": "gainEnergyMax", "amount": 1 }
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 32
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "gainEnergyMax",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_strike",
+    "b": "green_perm_herd_chief",
+    "result": {
+      "id": "fusion_raging_chief",
+      "name": "荒ぶる群長",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "addMomentum",
+          "amount": 2
+        },
+        {
+          "trigger": "onTurnStart",
+          "effect": "dealDamage",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_reaction_vine",
+    "b": "green_perm_thorn_thicket",
+    "result": {
+      "id": "fusion_bramble_hedge",
+      "name": "宿茨の生垣",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onAttackIncoming",
+          "effect": "gainBlock",
+          "amount": 5
+        },
+        {
+          "trigger": "onAttacked",
+          "effect": "counter",
+          "amount": 5
+        }
       ]
     }
   }

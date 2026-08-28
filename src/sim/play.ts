@@ -263,6 +263,9 @@ function renderRun(run: RunState, logFrom: number): string {
     L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
   } else if (run.phase === 'workshop') {
     L.push('🔨 工房: 異なる2枚を合成して1枚の新カードにできる (素材は消える)。見送りも可')
+    L.push(
+      '   タイプ跨ぎも可: 結果は持続する側 (置物＞リアクション＞呪文＞物理)。置物化は量÷3で毎ターン化',
+    )
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')

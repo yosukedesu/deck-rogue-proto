@@ -51,15 +51,18 @@ describe('計算合成', () => {
     expect(rev.id).toBe('fusion_vine_wheel') // 順序を問わない
   })
 
-  it('タイプ違い・異名リアクションは計算合成できない (同名とレシピは例外)', () => {
-    // 2026-08-28: 同名2枚は「真・」化として解禁された (旧仕様では不可だった)
-    expect(fuseBlockReason(inst('green_strike', 'u1'), inst('green_strike', 'u2'))).toBeNull()
-    expect(fuseBlockReason(inst('green_strike'), inst('green_flash_insight'))).not.toBeNull() // 物理×呪文
+  it('タイプ跨ぎ合成は許可される (2026-08-28 支配順位で解禁。旧仕様の同タイプ制限は撤廃)', () => {
+    expect(fuseBlockReason(inst('green_strike', 'u1'), inst('green_strike', 'u2'))).toBeNull() // 同名=真・化
+    expect(fuseBlockReason(inst('green_strike'), inst('green_flash_insight'))).toBeNull() // 物理×呪文
     expect(
       fuseBlockReason(inst('green_reaction_thorns'), inst('green_reaction_cornered')),
-    ).not.toBeNull()
-    // レシピの守りの蔓×茨の返し (リアクション同士) は許可される
-    expect(fuseBlockReason(inst('green_reaction_vine'), inst('green_reaction_thorns'))).toBeNull()
+    ).toBeNull() // 異名リアクション同士も計算合成できる (条件は別効果のまま保持)
+    expect(fuseBlockReason(inst('green_strike'), inst('green_reaction_thorns'))).toBeNull() // 物理×リアクション
+    expect(fuseBlockReason(inst('green_strike'), inst('green_perm_growth_tree'))).toBeNull() // 物理×置物
+  })
+
+  it('選択式 (modes) と機械査定できない効果は引き続き合成不可', () => {
+    expect(fuseBlockReason(inst('green_strike'), inst('green_ramp_sprout'))).not.toBeNull() // gainEnergyMax
   })
 
   it('スモーク: 緑×緑の全組み合わせで不変条件が守られる', () => {
@@ -164,6 +167,108 @@ describe('強化の3段仕様 (2026-08-27 仕様会議)', () => {
     const up = upgradeCard(inst('black_pain')) // 1E・HP-3・16ダメ
     expect(up.def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(24)
     expect(up.def.effects.find((e) => e.effect === 'loseHp')!.amount).toBe(3) // 据え置き
+  })
+})
+
+describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアクション＞呪文＞物理)', () => {
+  it('物理×呪文 → 呪文 (魔力が混ざれば呪文。確定済み定義と整合)', () => {
+    const def = fuseCards(inst('green_strike'), inst('green_growth_ring'))
+    expect(def.type).toBe('spell')
+    expect(def.effects.find((e) => e.effect === 'dealDamage')!.trigger).toBe('onPlay')
+    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(2)
+  })
+
+  it('物理×リアクション → 罠に吸収: 打撃×茨の返し = 被攻撃後6ダメ+返し9 (onPlay効果が残らない)', () => {
+    const def = fuseCards(inst('green_strike'), inst('green_reaction_thorns'))
+    expect(def.type).toBe('reaction')
+    expect(def.name.endsWith('の罠')).toBe(true)
+    // 全効果がリアクション窓 = 伏せて発動する札として合法 (onPlayが残ると設定できない札になる)
+    expect(def.effects.every((e) => e.trigger !== 'onPlay')).toBe(true)
+    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
+    expect(dmg.trigger).toBe('onAttacked') // 支配側 (茨の返し) の主窓に吸収
+    expect(dmg.amount).toBe(6)
+    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(9)
+  })
+
+  it('異名リアクション同士: 条件の異なる同種効果は合算されない (無条件9と HP半分以下20 は別のまま)', () => {
+    const def = fuseCards(inst('green_reaction_thorns'), inst('green_reaction_cornered'))
+    expect(def.type).toBe('reaction')
+    const counters = def.effects.filter((e) => e.effect === 'counter')
+    expect(counters).toHaveLength(2)
+    expect(counters.some((e) => e.amount === 9 && e.condition === undefined)).toBe(true)
+    expect(counters.some((e) => e.amount === 20 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
+  })
+
+  it('置物化: 打撃6×年輪の大樹 → 毎ターン2ダメ (÷3切り上げ) + 成長1。従者の少年のラダーに整合', () => {
+    const def = fuseCards(inst('green_strike'), inst('green_perm_growth_tree'))
+    expect(def.type).toBe('permanent')
+    expect(def.name.endsWith('の大樹')).toBe(true)
+    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
+    expect(dmg.trigger).toBe('onTurnStart')
+    expect(dmg.amount).toBe(2) // ceil(6/3)
+    const growth = def.effects.find((e) => e.effect === 'addGrowth')!
+    expect(growth.trigger).toBe('onTurnStart')
+    expect(growth.amount).toBe(1) // 置物側は既に毎ターン型なので÷3しない
+    expect(def.exhaust).toBeUndefined() // 置物に消滅は付かない
+    expect(def.cost).toBeGreaterThanOrEqual(2) // 寿命込み (×3) の値付けで安売りしない
+  })
+
+  it('置物の値付けは寿命込み: 真・年輪の大樹 (毎ターン成長+2) は3E (一回きり価格の穴を塞いだ)', () => {
+    const def = fuseCards(
+      inst('green_perm_growth_tree', 'u1'),
+      inst('green_perm_growth_tree', 'u2'),
+    )
+    expect(def.name).toBe('真・年輪の大樹')
+    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(2) // 1+1 (÷3の二重割引なし)
+    expect(def.cost).toBe(3) // (4VP×2×寿命3)×0.85 → 3E
+  })
+
+  it('置物化の禁則①: 帯超過は消滅で払えないので合成不可 (巨獣の踏みつけ40×年輪の大樹)', () => {
+    expect(
+      fuseBlockReason(inst('green_finisher_stomp'), inst('green_perm_growth_tree')),
+    ).toContain('置物に収まらない')
+  })
+
+  it('置物化の禁則②: 量を持たない効果 (negate) は毎ターン化できず合成不可 (根の紡ぎ×年輪の大樹)', () => {
+    expect(
+      fuseBlockReason(inst('green_reaction_root_weave'), inst('green_perm_growth_tree')),
+    ).toContain('置物化できない')
+  })
+
+  it('置物化で誘発できない窓は onTurnStart に落ちる (共鳴する茨 onEnemyBuffed は置物で誘発しない)', () => {
+    const def = fuseCards(inst('green_reaction_vine'), inst('green_perm_growth_tree'))
+    // 守りの蔓 (onAttackIncoming ブロック12) → 置物はこの窓で誘発できるので窓を保持し÷3
+    const blk = def.effects.find((e) => e.effect === 'gainBlock')!
+    expect(blk.trigger).toBe('onAttackIncoming')
+    expect(blk.amount).toBe(4) // ceil(12/3)
+    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(1) // 置物側は据え置き
+  })
+
+  it('スモーク: 緑×緑の全組み合わせでタイプ跨ぎの不変条件が守られる', () => {
+    const greens = allCards.filter((c) => c.color === 'green')
+    const RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
+    // 置物にディスパッチされないトリガー = 置物結果が持っていたら死に効果
+    const PERM_DEAD = new Set(['onPlay', 'onEnemyAction', 'onEnemyBuffed', 'onEnemyDefended'])
+    for (let i = 0; i < greens.length; i++) {
+      for (let j = i + 1; j < greens.length; j++) {
+        const a = { uid: `a${i}`, def: greens[i] }
+        const b = { uid: `b${j}`, def: greens[j] }
+        if (fuseBlockReason(a, b) !== null) continue
+        const def = fuseCards(a, b)
+        if (def.id.startsWith('fusion_')) continue // レシピは手書き裁定
+        // 結果タイプ = 支配順位の高い側
+        expect(RANK[def.type], def.id).toBe(Math.max(RANK[greens[i].type], RANK[greens[j].type]))
+        // リアクション結果に onPlay 効果が残らない (伏せ札の合法性)
+        if (def.type === 'reaction') {
+          expect(def.effects.every((e) => e.trigger !== 'onPlay'), def.id).toBe(true)
+        }
+        // 置物結果は死に効果 (置物にディスパッチされないトリガー) と消滅を持たない
+        if (def.type === 'permanent') {
+          expect(def.effects.every((e) => !PERM_DEAD.has(e.trigger)), def.id).toBe(true)
+          expect(def.exhaust, def.id).toBeUndefined()
+        }
+      }
+    }
   })
 })
 

@@ -104,107 +104,151 @@ function recipeFor(a: CardDef, b: CardDef): CardDef | null {
   return hit ? hit.result : null
 }
 
-/** 合成できない理由。null = 合成可 */
-export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null {
-  if (a.uid === b.uid) return '同じカードは選べない'
-  if (recipeFor(a.def, b.def)) return null // レシピは制約を免除 (手書きで裁定済み)
-  const sameName = a.def.id === b.def.id
-  if (a.def.color !== 'green' || b.def.color !== 'green') return '合成は緑カード同士のみ (v1)'
-  if (a.def.modes?.length || b.def.modes?.length) return '選択式カードはレシピでのみ合成できる'
-  if (a.def.type !== b.def.type) return 'タイプの違うカードはレシピでのみ合成できる'
-  // 同名2枚は「真・」化 (2026-08-28 ユーザー指示: 同名は倍率を上げて強いカードにする)。
-  // 同名ならリアクションも安全に合成できる (トリガー・条件が同一のため)
-  if (a.def.type === 'reaction' && !sameName) return 'リアクションは同名同士かレシピでのみ合成できる'
-  const all = [...a.def.effects, ...b.def.effects]
-  if (!all.every(isComputable)) return 'この効果の組み合わせは合成できない'
-  return null
+/** タイプの支配順位 (確定済みルール表「カード合成（工房）」): 置物 > リアクション > 呪文 > 物理 */
+const TYPE_RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
+const REACTION_WINDOWS = new Set([
+  'onAttackIncoming',
+  'onAttacked',
+  'onEnemyAction',
+  'onEnemyBuffed',
+  'onEnemyDefended',
+])
+/** 置物として誘発できる窓 (hooks.ts が置物にディスパッチするのはこの2つだけ) */
+const PERM_WINDOWS = new Set(['onAttackIncoming', 'onAttacked'])
+
+/** 支配側 (結果タイプを与える側) と従属側を決める */
+function dominance(a: CardInstance, b: CardInstance): [CardInstance, CardInstance] {
+  return TYPE_RANK[a.def.type] >= TYPE_RANK[b.def.type] ? [a, b] : [b, a]
 }
 
-/**
- * 計算合成: **特性の掛け合わせ** (確定済みルール表「カード合成（工房）」)。
- * 単なる効果の合算ではなく、片方の特性がもう片方へ伝播する:
- * - **多段ヒット**: どちらかが多段なら、合計ダメージを最大ヒット数に按分した多段になる
- *   (成長が全ヒットに乗る = 掛け算の本体)
- * - **貫通**: どちらかの攻撃が貫通なら、合成後の全ヒットが貫通になる
- * - **全体**: どちらかの攻撃が全体なら、合成後の攻撃は全体になる
- * 値付けは VP 表から逆算 (貫通×1.25・全体×2 を織り込む)。帯超過・無限ループ規約は消滅の自動付与で合法化。
- */
-export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
-  const recipe = recipeFor(a.def, b.def)
-  if (recipe) return recipe
+interface FusionOutcome {
+  readonly def: CardDef
+  readonly overBand: boolean
+}
 
-  // --- 攻撃の特性を抽出して掛け合わせる ---
-  const dmgOf = (def: CardDef) => def.effects.filter((e) => e.trigger === 'onPlay' && e.effect === 'dealDamage')
-  const dmgA = dmgOf(a.def)
-  const dmgB = dmgOf(b.def)
+/** 合成の計算本体。blockReason と fuseCards が共有する (置物の帯超過を事前検査するため) */
+function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
+  const sameName = a.def.id === b.def.id
+  const [domi, sub] = dominance(a, b)
+  const resultType = domi.def.type
+
+  // --- 攻撃の特性を抽出して掛け合わせる (多段・貫通・全体の伝播) ---
+  // 置物カードの dealDamage は既に毎ターン型なので抽出しない (一回きり分だけが変換対象)
+  const dmgOf = (c: CardInstance) =>
+    c.def.type === 'permanent' ? [] : c.def.effects.filter((e) => e.effect === 'dealDamage')
+  const dmgA = dmgOf(a)
+  const dmgB = dmgOf(b)
   const totalDmg = [...dmgA, ...dmgB].reduce((acc, e) => acc + (e.amount ?? 0), 0)
-  const hits = Math.min(5, Math.max(dmgA.length, dmgB.length)) // 多段は最大5ヒット
+  const hits = Math.min(5, Math.max(dmgA.length, dmgB.length))
   const pierce = [...dmgA, ...dmgB].some((e) => e.pierce === true)
   const allTarget = [...dmgA, ...dmgB].some((e) => e.target === 'all')
 
+  // 結果タイプごとのダメージの置き場所:
+  // 置物 → onTurnStart (÷3の毎ターン化) / リアクション → 支配側の主窓 / それ以外 → onPlay
+  const primaryWindow =
+    resultType === 'reaction'
+      ? (domi.def.effects.find((e) => REACTION_WINDOWS.has(e.trigger))?.trigger ?? 'onAttacked')
+      : 'onPlay'
   const damageEffects: DeclarativeEffect[] = []
   if (totalDmg > 0) {
-    const per = Math.ceil(totalDmg / hits)
-    for (let i = 0; i < hits; i++) {
+    if (resultType === 'permanent') {
+      // 置物化: 持続と引き換えに量÷3 (切り上げ)。従者の少年 (1E・毎ターン2ダメ) のラダーに揃う
       damageEffects.push({
-        trigger: 'onPlay',
+        trigger: 'onTurnStart',
         effect: 'dealDamage',
-        amount: per,
+        amount: Math.ceil(totalDmg / 3),
         ...(pierce ? { pierce: true } : {}),
         ...(allTarget ? { target: 'all' as const } : {}),
       })
+    } else {
+      const per = Math.ceil(totalDmg / hits)
+      for (let i = 0; i < hits; i++) {
+        damageEffects.push({
+          trigger: primaryWindow,
+          effect: 'dealDamage',
+          amount: per,
+          ...(pierce ? { pierce: true } : {}),
+          ...(allTarget ? { target: 'all' as const } : {}),
+        } as DeclarativeEffect)
+      }
     }
   }
 
-  // --- ダメージ以外は同種 (trigger+effect+target+pierce) を合算 ---
+  // --- ダメージ以外: 素材カードのタイプに応じてトリガーを結果タイプへ変換 ---
+  // 「支配側か」ではなく「素材がもう持続型か」で判定する。同名置物×置物のような
+  // 「両方すでに毎ターン型」の合成で従属側まで÷3してしまう二重割引を防ぐ。
+  const convert = (e: DeclarativeEffect, srcType: string): DeclarativeEffect | null => {
+    if (e.effect === 'dealDamage' && srcType !== 'permanent') return null // 上のダメージ群で処理済み
+    if (resultType === 'permanent' && srcType !== 'permanent') {
+      // 一回きり → 毎ターン化は量÷3 (切り上げ)。置物が誘発できる窓 (hooks.ts の2窓) だけ残し、
+      // それ以外 (onEnemyAction 等は置物にディスパッチされない) は onTurnStart に落とす
+      // (量を持たない効果 [negate等] は置物化できない — fuseBlockReason で事前検査済み)
+      const trigger = PERM_WINDOWS.has(e.trigger) ? e.trigger : 'onTurnStart'
+      return { ...e, trigger, amount: Math.ceil((e.amount ?? 0) / 3) } as DeclarativeEffect
+    }
+    if (resultType === 'reaction' && srcType !== 'reaction' && !REACTION_WINDOWS.has(e.trigger)) {
+      return { ...e, trigger: primaryWindow } as DeclarativeEffect // onPlay効果が罠に吸収される
+    }
+    return { ...e } // 置物のonTurnStart・リアクションの窓・条件を保持
+  }
   const merged: DeclarativeEffect[] = []
-  for (const e of [...a.def.effects, ...b.def.effects]) {
-    if (e.trigger === 'onPlay' && e.effect === 'dealDamage') continue // 上で処理済み
+  const pushMerged = (raw: DeclarativeEffect | null) => {
+    if (raw === null) return
     const twin = merged.find(
       (m) =>
-        m.trigger === e.trigger &&
-        m.effect === e.effect &&
-        m.target === e.target &&
-        m.pierce === e.pierce,
+        m.trigger === raw.trigger &&
+        m.effect === raw.effect &&
+        m.target === raw.target &&
+        m.pierce === raw.pierce &&
+        // 条件が違う同種効果は合算しない (無条件counterと「HP半分以下」counterが混ざる事故防止)
+        JSON.stringify(m.condition) === JSON.stringify(raw.condition),
     )
-    if (twin && twin.amount !== undefined && e.amount !== undefined) {
-      merged[merged.indexOf(twin)] = { ...twin, amount: twin.amount + e.amount }
-    } else if (twin && twin.amount === undefined && e.amount === undefined) {
+    if (twin && twin.amount !== undefined && raw.amount !== undefined) {
+      merged[merged.indexOf(twin)] = { ...twin, amount: twin.amount + raw.amount }
+    } else if (twin && twin.amount === undefined && raw.amount === undefined) {
       // 量を持たない同種効果 (negate など) は重複させても意味がないので1つに畳む
     } else {
-      merged.push({ ...e })
+      merged.push(raw)
     }
   }
+  for (const e of domi.def.effects) pushMerged(convert(e, domi.def.type))
+  for (const e of sub.def.effects) pushMerged(convert(e, sub.def.type))
   // 合成札は「ダメージ群を1つと数えて」3効果までの派手枠。あふれたらVPの大きい順に残す
   merged.sort((x, y) => effectVp(y) - effectVp(x))
   const others = merged.slice(0, damageEffects.length > 0 ? 2 : 3)
   const effects = [...damageEffects, ...others]
 
-  const vp = effects.reduce((acc, e) => acc + effectVp(e), 0)
-  const discounted = vp * 0.85 // 合成ボーナス
+  // --- 値付け: 置物は寿命込み (×3)。査定エンジンがそのまま値付けエンジンになる ---
+  const lifetime = resultType === 'permanent' ? 3 : 1
+  const vp = effects.reduce((acc, e) => acc + effectVp(e) * lifetime, 0)
+  const discounted = vp * 0.85
   const cost = Math.min(3, Math.max(1, Math.round((discounted - 2) / 6)))
   let exhaust = a.def.exhaust === true || b.def.exhaust === true
-  if (discounted > ALLOW[cost] * 1.5) exhaust = true // 帯超過は消滅で払う
-  // 無限ループ規約 (cardrules と同じ判定): 正味の値段が0以下 + 補充 → 消滅必須
+  let overBand = false
+  if (discounted > ALLOW[cost] * 1.5) {
+    if (resultType === 'permanent') {
+      overBand = true // 置物は消滅で払えない (場に残り続けるため) → 合成不可として扱う
+    } else {
+      exhaust = true // 帯超過は消滅で払う
+    }
+  }
   const net = effects
     .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
     .reduce((acc, e) => acc + (e.amount ?? 0), 0)
   if (net - cost >= 0 && effects.some((e) => REFILL.has(e.effect))) exhaust = true
 
-  // 同名合成は「真・」化 = 2枚ぶんを1枚に圧縮した強化版 (倍率×2相当)
-  const sameName = a.def.id === b.def.id
-  const name = sameName
-    ? `真・${a.def.name}`
-    : `${wordOf(a.def)}${wordOf(b.def)}の${suffixOf(effects)}`
+  const suffix =
+    resultType === 'permanent' ? '大樹' : resultType === 'reaction' ? '罠' : suffixOf(effects)
+  const name = sameName ? `真・${a.def.name}` : `${wordOf(a.def)}${wordOf(b.def)}の${suffix}`
   const ids = [a.def.id, b.def.id].sort()
-  return {
+  const def: CardDef = {
     id: `fused_${ids[0]}__${ids[1]}`,
     name,
     cost,
-    type: a.def.type,
+    type: resultType,
     color: 'green',
     effects,
-    ...(exhaust ? { exhaust: true } : {}),
+    ...(exhaust && resultType !== 'permanent' ? { exhaust: true } : {}),
     ...(a.def.discardCost || b.def.discardCost
       ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) }
       : {}),
@@ -212,6 +256,40 @@ export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
       ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) }
       : {}),
   }
+  return { def, overBand }
+}
+
+/** 合成できない理由。null = 合成可 */
+export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null {
+  if (a.uid === b.uid) return '同じカードは選べない'
+  if (recipeFor(a.def, b.def)) return null // レシピは制約を免除 (手書きで裁定済み)
+  if (a.def.color !== 'green' || b.def.color !== 'green') return '合成は緑カード同士のみ (v1)'
+  if (a.def.modes?.length || b.def.modes?.length) return '選択式カードはレシピでのみ合成できる'
+  const all = [...a.def.effects, ...b.def.effects]
+  if (!all.every(isComputable)) return 'この効果の組み合わせは合成できない'
+  // 置物化する場合、従属側に量を持たない効果 (negate等) があると毎ターン化できない
+  // (毎行動negateのような壊れた自動置物が生成されるのを防ぐ)
+  const [domi, sub] = dominance(a, b)
+  if (domi.def.type === 'permanent' && sub.def.type !== 'permanent') {
+    const flats = sub.def.effects.filter((e) => e.amount === undefined)
+    if (flats.length > 0) return 'この効果は置物化できない (量を持たないため)'
+  }
+  if (computeFusion(a, b).overBand) return '強力すぎて置物に収まらない'
+  return null
+}
+
+/**
+ * 計算合成: **特性の掛け合わせ + タイプの支配順位** (確定済みルール表「カード合成（工房）」)。
+ * 支配順位 = 置物 > リアクション > 呪文 > 物理。結果はより「持続する」側のタイプになる:
+ * - 置物化: 従属側の量÷3で毎ターン化 (打撃6×年輪の大樹 → 毎ターン2ダメ+成長1)
+ * - 罠に吸収: onPlay効果がリアクションの窓に移る (打撃×茨の返し → 被攻撃後6ダメ+返し9)
+ * - 呪文優位: 魔力が混ざれば呪文 (確定済み定義「呪文=魔力の行使」と整合)
+ * 多段・貫通・全体の特性伝播と、VP逆算の値付け (置物は寿命×3) は共通。
+ */
+export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
+  const recipe = recipeFor(a.def, b.def)
+  if (recipe) return recipe
+  return computeFusion(a, b).def
 }
 
 /**
