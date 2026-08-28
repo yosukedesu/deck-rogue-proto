@@ -40,19 +40,20 @@ const ELITE_ROW_CANDIDATES = [2, 3, 4, 6, 7, 8, 9, 11, 12, 13]
 /** 生成リトライの上限 (DP検証で「非戦闘ピック最大2」を満たすまで配置し直す) */
 const MAX_PLACEMENT_TRIES = 5000
 
-/** 段階制の敵プール。行 → 抽選プール (ソロ敵IDと編成IDの混合) */
-const ENEMY_TIERS: readonly (readonly string[])[] = [
-  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 行0〜4 (Act1帯)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 行6〜9 (Act2帯)
-  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 行11〜13 (Act3帯)
-  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 行15 (ボスは単体)
+/** 幕プール制 (確定済みルール表「ランの敵並び」2026-08-29): 幕 → 抽選プール (ソロ敵IDと編成IDの混合) */
+const ACT_POOLS: readonly (readonly string[])[] = [
+  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 1幕 (Act1帯)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 2幕 (Act2帯)
+  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 3幕 (Act3帯)
 ]
+/** 幕ボス (難度順固定。確定済みルール表「マップ」) */
+export const ACT_BOSSES: readonly string[] = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
+export const ACT_COUNT = 3
 
-export function tierForRow(row: number): readonly string[] {
-  if (row < 5) return ENEMY_TIERS[0]
-  if (row < 10) return ENEMY_TIERS[1]
-  if (row < BOSS_ROW) return ENEMY_TIERS[2]
-  return ENEMY_TIERS[3]
+/** 幕とマップ行 → 敵抽選プール。ボス行は幕ボス1体 */
+export function tierFor(act: number, row: number): readonly string[] {
+  if (row >= BOSS_ROW) return [ACT_BOSSES[act - 1]]
+  return ACT_POOLS[act - 1]
 }
 
 /**
@@ -69,6 +70,7 @@ const PHASE2_TRIES = 150
 export function generateMap(
   rng0: RngState,
   eventPool: readonly string[],
+  act = 1,
 ): readonly [RunMap, RngState] {
   let rng = rng0
   for (let attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++) {
@@ -212,7 +214,7 @@ export function generateMap(
         let encounterId: string | null = null
         let eventId: string | null = null
         if (type === 'battle' || type === 'elite' || type === 'boss') {
-          const pool = tierForRow(r)
+          const pool = tierFor(act, r)
           const recent = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
           const fresh = pool.filter((id) => !recent.includes(id))
           const candidates = fresh.length > 0 ? fresh : pool

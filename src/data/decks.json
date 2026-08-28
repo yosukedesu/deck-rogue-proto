@@ -230,15 +230,15 @@
   {
     "id": "run_basic",
     "name": "ラン基本デッキ",
-    "description": "ドラフト連戦の出発点。StS風の基本10枚（打撃×5・防御×4・茨の返し×1）",
+    "description": "ドラフト連戦の出発点。中立10枚（打撃×4・防御×4・茨の返し・守りの蔓）。アーキタイプはドラフトで発見する",
     "cards": [
       {
         "cardId": "green_strike",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "green_guard",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "green_reaction_thorns",
@@ -246,14 +246,6 @@
       },
       {
         "cardId": "green_reaction_vine",
-        "count": 1
-      },
-      {
-        "cardId": "green_growth_ring",
-        "count": 1
-      },
-      {
-        "cardId": "green_ramp_sprout",
         "count": 1
       }
     ],

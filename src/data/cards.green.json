@@ -16,7 +16,8 @@
         "amount": 2
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "rarity": "common"
   },
   {
     "id": "green_ramp_deep_roots",
@@ -35,7 +36,8 @@
         "amount": 2
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "rarity": "common"
   },
   {
     "id": "green_ramp_sunlight",
@@ -74,7 +76,8 @@
           }
         ]
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_strike",
@@ -87,7 +90,8 @@
         "effect": "dealDamage",
         "amount": 6
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_double_lash",
@@ -108,7 +112,8 @@
     ],
     "axis": [
       "growth"
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_fang",
@@ -122,7 +127,8 @@
         "amount": 17,
         "pierce": true
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_guard",
@@ -135,7 +141,8 @@
         "effect": "gainBlock",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_bark_armor",
@@ -153,7 +160,8 @@
         "effect": "addGrowth",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_entangle",
@@ -182,7 +190,8 @@
           }
         ]
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_finisher_wrath",
@@ -200,7 +209,8 @@
         "effect": "addGrowth",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_finisher_stomp",
@@ -216,7 +226,8 @@
     ],
     "axis": [
       "ramp"
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "green_reaction_thorns",
@@ -229,7 +240,8 @@
         "effect": "counter",
         "amount": 10
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_reaction_vine",
@@ -242,7 +254,8 @@
         "effect": "gainBlock",
         "amount": 12
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_reaction_root_weave",
@@ -259,7 +272,8 @@
         "effect": "addGrowth",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_growth_ring",
@@ -272,7 +286,8 @@
         "effect": "addGrowth",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_sig_canopy",
@@ -296,7 +311,8 @@
         "amount": 4
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "rarity": "uncommon"
   },
   {
     "id": "green_sig_overgrowth",
@@ -310,7 +326,8 @@
         "amount": 4
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "rarity": "rare"
   },
   {
     "id": "green_sig_rite_of_bloom",
@@ -323,7 +340,8 @@
         "effect": "doubleGrowth"
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "rarity": "rare"
   },
   {
     "id": "green_sig_vine_dance",
@@ -359,7 +377,8 @@
     ],
     "axis": [
       "growth"
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "green_sig_trample",
@@ -378,7 +397,8 @@
         "effect": "addMomentum",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_sig_stampede",
@@ -392,7 +412,8 @@
         "amount": 32,
         "pierce": true
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_trample_charge",
@@ -410,7 +431,8 @@
         "effect": "addMomentum",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_ritual_surge",
@@ -424,7 +446,8 @@
         "amount": 2
       }
     ],
-    "exhaust": true
+    "exhaust": true,
+    "rarity": "common"
   },
   {
     "id": "green_perm_growth_tree",
@@ -442,7 +465,8 @@
         "effect": "gainBlock",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_perm_thorn_thicket",
@@ -455,7 +479,8 @@
         "effect": "counter",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_perm_herd_chief",
@@ -468,7 +493,8 @@
         "effect": "addMomentum",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_flash_insight",
@@ -482,7 +508,8 @@
         "effect": "drawCards",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_serpent_gulp",
@@ -496,7 +523,8 @@
         "effect": "dealDamage",
         "amount": 34
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_reaction_cornered",
@@ -512,7 +540,8 @@
         "effect": "counter",
         "amount": 20
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_reaction_resonance",
@@ -525,7 +554,8 @@
         "effect": "addGrowth",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_reaction_root_pierce",
@@ -539,7 +569,8 @@
         "amount": 12,
         "pierce": true
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_reaction_backlash",
@@ -555,7 +586,8 @@
         "effect": "counter",
         "amount": 24
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_wild_sprout",
@@ -569,7 +601,8 @@
         "effect": "addGrowth",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_sweep",
@@ -588,7 +621,8 @@
         "effect": "addGrowth",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_decoy_needle",
@@ -602,7 +636,8 @@
         "effect": "counter",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_bloom_lash",
@@ -615,7 +650,8 @@
         "effect": "dischargeGrowth",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_weak_point",
@@ -633,7 +669,8 @@
         "effect": "exposeEnemy",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_thorn_burst",
@@ -647,7 +684,8 @@
         "amount": 8,
         "target": "all"
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_giant_bark",
@@ -660,7 +698,8 @@
         "effect": "gainBlockPerEnergyMax",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_snare_root",
@@ -678,7 +717,8 @@
         "effect": "gainBlock",
         "amount": 12
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_horn_strike",
@@ -692,7 +732,8 @@
         "amount": 8,
         "pierce": true
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_perm_wild_call",
@@ -706,7 +747,8 @@
         "effect": "addMomentum",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "green_triple_horn",
@@ -733,7 +775,8 @@
         "amount": 5,
         "pierce": true
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_surge_thrust",
@@ -747,7 +790,8 @@
         "effect": "dealDamagePerMomentum",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "green_horn_flare",
@@ -766,7 +810,8 @@
         "trigger": "onPlay",
         "effect": "doubleMomentum"
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "green_trunk_blow",
@@ -780,7 +825,8 @@
         "effect": "dealDamagePerEnergyMax",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_trunk_stance",
@@ -799,7 +845,8 @@
         "effect": "gainBlockPerEnergyMax",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "green_perm_tree_pulse",
@@ -816,7 +863,8 @@
         "effect": "discountNext",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "green_canopy_shade",
@@ -830,7 +878,8 @@
         "effect": "gainBlockPerEnergyMax",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "green_horn_stance",
@@ -849,6 +898,7 @@
         "effect": "addMomentum",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "common"
   }
 ]

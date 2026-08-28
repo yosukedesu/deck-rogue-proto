@@ -126,7 +126,7 @@ export function buildReport(
   if (run) {
     const leader = getLeaderDef(run.leaderId)
     L.push(`ラン ${leader.name}（${run.leaderId}） / seed ${run.seed} / mode ${run.mode}`)
-    L.push(`進行: ${run.phase} / 行 ${run.row + 1}/16・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
+    L.push(`進行: ${run.phase} / 幕${run.act}/3 行${run.row + 1}/16・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
     L.push(
       `マップ: ${run.map
         .map((row, r) => {

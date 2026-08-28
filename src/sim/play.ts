@@ -294,12 +294,16 @@ function renderMap(run: RunState): string {
 function renderRun(run: RunState, logFrom: number): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
-  L.push(`=== ラン: ${leader.name} | 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
     L.push('報酬ピック (1枚選ぶ or スキップ):')
-    run.rewardOptions.forEach((id, i) => L.push(` [${i}] ${cardLine(getCardDef(id))}`))
+    const RARITY_TAG: Record<string, string> = { common: '', uncommon: '◆', rare: '★レア ' }
+    run.rewardOptions.forEach((id, i) => {
+      const def = getCardDef(id)
+      L.push(` [${i}] ${RARITY_TAG[def.rarity ?? 'common']}${cardLine(def)}`)
+    })
     L.push('→ {"type":"PickReward","index":N} か {"type":"SkipReward"}')
   } else if (run.phase === 'map') {
     L.push(renderMap(run))

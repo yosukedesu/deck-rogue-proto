@@ -1494,7 +1494,7 @@ function RunScreen({
   onRestart: (seed: number) => void
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
-  const progressChip = `${isBoss ? '👑 ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
+  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
   const ctx = undefined
   // 所持レリックの表示行 (ホバーで効果説明)
   const relicChips =
@@ -1548,7 +1548,7 @@ function RunScreen({
                   : `⚔️ ${encounterId ? encounterName(encounterId) : ''}`
     return (
       <div className="app setup">
-        <h1>🗺 マップ</h1>
+        <h1>🗺 マップ — 第{run.act}幕/3</h1>
         <div className="panel">
           <div className="choice-desc">
             全体もエッジ（各ノードの「→」=次の行の接続先）も最初から見える。薄いノードは現在地から到達できない——接続は前の行でどの列を選んだかで決まる（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=HP30%回復+鍛える/除去。🔨工房=カード合成）

@@ -1,10 +1,10 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
-import { getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
-import { BOSS_ROW, MAP_ROWS, tierForRow } from './map.ts'
+import { allCards, allEvents, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
+import { ACT_COUNT, BOSS_ROW, generateMap, MAP_ROWS, tierFor } from './map.ts'
+import { createRng } from './rng.ts'
 import {
   applyRunCommand,
-  axesOf,
   createRun,
   currentNode,
   depthHpScale,
@@ -77,7 +77,7 @@ describe('ラン構造 (マップ)', () => {
     run.map.forEach((row, r) => {
       for (const node of row) {
         if (node.encounterId !== null) {
-          expect(tierForRow(r), `row ${r}`).toContain(node.encounterId)
+          expect(tierFor(1, r), `row ${r}`).toContain(node.encounterId)
         }
       }
     })
@@ -105,9 +105,10 @@ describe('ラン構造 (マップ)', () => {
     expect(depthStrength(0)).toBe(0)
     expect(depthStrength(9)).toBe(0)
     expect(depthStrength(BOSS_ROW)).toBe(1) // ボスのみ (行15)
-    expect(depthHpScale(0)).toBeCloseTo(0.55)
-    expect(depthHpScale(14)).toBeCloseTo(0.95)
-    expect(depthHpScale(BOSS_ROW)).toBeCloseTo(1.0)
+    expect(depthHpScale(0, 1)).toBeCloseTo(0.55)
+    expect(depthHpScale(14, 1)).toBeCloseTo(0.65) // 幕内後半 (2段スケール)
+    expect(depthHpScale(0, 3)).toBeCloseTo(0.95)
+    expect(depthHpScale(BOSS_ROW, 1)).toBeCloseTo(1.0) // 幕ボスは素のHP
     // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
     const run = intoFirstBattle(createRun(5, 'set-confirm'))
     const members = resolveEncounter(currentNode(run)!.encounterId!)
@@ -231,60 +232,102 @@ describe('HP持ち越しと焚き火', () => {
   })
 })
 
-describe('ラン走破', () => {
-  it('ボス (行15) を倒すとラン勝利。ボス戦の敵は強化+1・HP等倍', () => {
+describe('ラン走破 (3幕構成)', () => {
+  it('1幕ボスを倒すと全回復+レリック3択、次の幕のマップが生成される', () => {
     let run = runTo(createRun(23, 'set-confirm'), 'boss')
     expect(run.phase).toBe('combat')
     expect(currentNode(run)!.type).toBe('boss')
+    expect(currentNode(run)!.encounterId).toBe('enemy_brute') // 1幕ボス=オーガ
     expect(run.combat!.enemies[0].strength).toBe(1)
     const def = getEnemyDef(currentNode(run)!.encounterId!)
     expect(run.combat!.enemies[0].maxHp).toBe(def.maxHp)
+    // 被弾した状態でボスを倒す → 全回復を確認
+    run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 12 } } }
     run = forceWin(run)
+    expect(run.hp).toBe(run.maxHp) // 幕ボス撃破で全回復
+    expect(run.phase).toBe('relic-reward') // 本家のボスレリック相当
+    run = applyRunCommand(run, { type: 'SkipRelic' })
+    expect(run.phase).toBe('reward')
+    run = applyRunCommand(run, { type: 'SkipReward' })
+    expect(run.act).toBe(2) // 次の幕へ
+    expect(run.phase).toBe('map')
+    expect(run.row).toBe(-1)
+    expect(run.map[BOSS_ROW][0].encounterId).toBe('enemy_turtle') // 2幕ボス=大亀
+  })
+
+  it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり11〜13×3', () => {
+    let run = createRun(23, 'set-confirm')
+    for (let act = 1; act <= ACT_COUNT; act++) {
+      expect(run.act).toBe(act)
+      run = runTo(run, 'boss')
+      run = forceWin(run)
+      if (act < ACT_COUNT) {
+        if (run.phase === 'relic-reward') run = applyRunCommand(run, { type: 'SkipRelic' })
+        if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
+      }
+    }
     expect(run.phase).toBe('won')
-    // マップ保証: 走破時の戦闘数はボス込みで11〜13 (通常戦10〜12+ボス)
-    expect(run.battlesWon).toBeGreaterThanOrEqual(11)
-    expect(run.battlesWon).toBeLessThanOrEqual(13)
+    expect(run.battlesWon).toBeGreaterThanOrEqual(33)
+    expect(run.battlesWon).toBeLessThanOrEqual(39)
   })
 })
 
-describe('種の選択制 (2026-08-29。確定済みルール表「ラン初期デッキ」)', () => {
-  it('このはは大樹の道 (既定) と荒角の道を選べる', () => {
-    const basic = createRun(5, 'set-confirm', 'leader_green')
-    expect(basic.deck.some((c) => c.def.id === 'green_growth_ring')).toBe(true)
-    expect(basic.deck.some((c) => c.def.id === 'green_ramp_sprout')).toBe(true)
-    const trample = createRun(5, 'set-confirm', 'leader_green', 'run_trample')
-    expect(trample.deck).toHaveLength(10)
-    expect(trample.deck.some((c) => c.def.id === 'green_trample_charge')).toBe(true)
-    expect(trample.deck.some((c) => c.def.id === 'green_perm_herd_chief')).toBe(true)
-    expect(trample.deck.some((c) => c.def.id === 'green_growth_ring')).toBe(false)
+describe('レアリティ抽選 (2026-08-29。確定済みルール表「レアリティ」)', () => {
+  it('報酬はコモン優勢・レアは希少 (スロット3%)。デッキ内容は抽選に影響しない', () => {
+    const rarityOf = (id: string) => allCards.find((c) => c.id === id)?.rarity ?? 'common'
+    const counts = { common: 0, uncommon: 0, rare: 0 }
+    let screens = 0
+    for (let seed = 1; seed <= 120; seed++) {
+      let run = intoFirstBattle(createRun(seed, 'set-confirm'))
+      run = forceWin(run)
+      if (run.phase !== 'reward') continue
+      screens++
+      for (const id of run.rewardOptions ?? []) counts[rarityOf(id)]++
+    }
+    const total = counts.common + counts.uncommon + counts.rare
+    expect(screens).toBeGreaterThan(100)
+    expect(counts.common / total).toBeGreaterThan(0.45) // 期待60%
+    expect(counts.uncommon / total).toBeGreaterThan(0.25) // 期待37%
+    expect(counts.rare / total).toBeLessThan(0.1) // 期待3%
+    expect(counts.rare).toBeGreaterThan(0) // レアも出る
+  })
+})
+
+describe('中立スターター (2026-08-29 道の選択制を撤回。確定済みルール表「ラン初期デッキ」)', () => {
+  it('スターターは中立10枚 (打撃4・防御4・リアクション2)。エンジンの種は入らない', () => {
+    const run = createRun(5, 'set-confirm', 'leader_green')
+    expect(run.deck).toHaveLength(10)
+    const count = (id: string) => run.deck.filter((c) => c.def.id === id).length
+    expect(count('green_strike')).toBe(4)
+    expect(count('green_guard')).toBe(4)
+    expect(count('green_reaction_thorns')).toBe(1)
+    expect(count('green_reaction_vine')).toBe(1)
   })
 
-  it('リーダーが許可しない初期デッキは拒否される', () => {
-    expect(() => createRun(5, 'set-confirm', 'leader_green', 'starter_red')).toThrow(/選べない初期デッキ/)
-  })
-
-  it('荒角の道はトランプル軸の重み付けを起動する (報酬に勢い/貫通が乗りやすくなる)', () => {
-    const trample = createRun(5, 'set-confirm', 'leader_green', 'run_trample')
-    const axes = new Set(trample.deck.flatMap((c) => [...axesOf(c.def)]))
-    expect(axes.has('trample')).toBe(true)
+  it('リーダーが許可しない初期デッキは拒否される (道は廃止済み)', () => {
+    expect(() => createRun(5, 'set-confirm', 'leader_green', 'run_trample')).toThrow(/選べない初期デッキ/)
   })
 })
 
 describe('プレイテスト由来の調整 (2026-08-26)', () => {
-  it('中盤以降の敵は3行連続で同じにならない (同型の連戦を防ぐ)', () => {
-    // 行0〜4はプールが3種と小さく回避しきれないことがあるため、中盤以降で検証する
+  it('敵の3行連続はプール枯渇時のフォールバックを除きほぼ発生しない (同型の連戦を防ぐ)', () => {
+    // 回避は「直前2行と同じ敵を避ける。プールが小さくて避けられない場合はそのまま」の
+    // ベストエフォート仕様 (確定済みルール表「ランの敵並び」)。幅3の行×プール6種では
+    // ごく稀に枯渇フォールバックが起きるため、発生率1%未満を機械固定する (実測0.3%)
+    let violations = 0
+    let checked = 0
     for (let seed = 1; seed <= 40; seed++) {
-      const map = createRun(seed, 'set-confirm').map
-      for (let r = 8; r < MAP_ROWS; r++) {
+      const [map] = generateMap(createRng(seed), allEvents.map((e) => e.id), 2)
+      for (let r = 2; r < MAP_ROWS; r++) {
         const ids = (row: number) =>
           map[row].map((n) => n.encounterId).filter((x): x is string => x !== null)
         for (const id of ids(r)) {
-          expect(ids(r - 1).includes(id) && ids(r - 2).includes(id), `seed${seed} row${r}`).toBe(
-            false,
-          )
+          checked++
+          if (ids(r - 1).includes(id) && ids(r - 2).includes(id)) violations++
         }
       }
     }
+    expect(violations / checked).toBeLessThan(0.01)
   })
 
   it('報酬の最後の1枠は重み付けなし = 軸外の札にも乗り換えの機会が残る', () => {

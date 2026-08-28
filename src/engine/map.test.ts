@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest'
 import { allEvents } from './content.ts'
 import { createRng } from './rng.ts'
-import { BOSS_ROW, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierForRow } from './map.ts'
+import { ACT_BOSSES, BOSS_ROW, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -113,6 +113,14 @@ describe('マップ生成の構造', () => {
     }
   })
 
+  it('幕ごとにボスが固定される (オーガ→大亀→門番の難度順)', () => {
+    const { createRng: mk } = { createRng }
+    for (let act = 1; act <= 3; act++) {
+      const [m] = generateMap(mk(7), EVENT_POOL, act)
+      expect(m[BOSS_ROW][0].encounterId).toBe(ACT_BOSSES[act - 1])
+    }
+  })
+
   it('戦闘ノードの敵は行の帯のプールから出る (焚き火・工房は敵なし)', () => {
     for (const seed of SEEDS.slice(0, 10)) {
       const map = mapFor(seed)
@@ -120,7 +128,7 @@ describe('マップ生成の構造', () => {
         for (const node of row) {
           if (node.type === 'battle' || node.type === 'elite' || node.type === 'boss') {
             expect(node.encounterId).not.toBeNull()
-            expect(tierForRow(r)).toContain(node.encounterId)
+            expect(tierFor(1, r)).toContain(node.encounterId)
           } else {
             expect(node.encounterId).toBeNull()
           }

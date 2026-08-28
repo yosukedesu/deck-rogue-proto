@@ -6,7 +6,7 @@
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
 import { startCombatWithOptions } from './combat.ts'
-import { BOSS_ROW, generateMap } from './map.ts'
+import { ACT_COUNT, BOSS_ROW, generateMap } from './map.ts'
 import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
@@ -19,7 +19,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from './content.ts'
-import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
+import { createRng, nextInt, shuffle } from './rng.ts'
 import { applyCommand } from './state.ts'
 import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, GameState, RngState, ReactionMode } from './types.ts'
 
@@ -66,19 +66,23 @@ const SHOP_REMOVAL_PRICE = 75
  * ボスでフルスペック近くになる (StSの「敵はだんだん強く」の再現)。
  */
 export function depthStrength(row: number): number {
-  // 若い個体補正は撤廃 (2026-08-25 人間基準化)。ボスのみ+1
+  // 若い個体補正は撤廃 (2026-08-25 人間基準化)。幕ボスのみ+1
   return row >= BOSS_ROW ? 1 : 0
 }
 
 /** 深度スケーリング: 敵HP倍率。確定済みルール表「敵の数値基準」の帯に対応する */
-export function depthHpScale(row: number): number {
-  // 2026-08-26 再校正 (旧 0.75/0.85/0.95/1.0)。人間プレイで序盤の敵HPが
-  // StS Act1 の約1.6倍と判明し、1〜3戦目 (焚き火前) のHP予算が赤字になっていた。
-  // 素のHP90〜110の敵が ×0.55 で 49〜60 = StS Act1 通常敵の帯に入る。
-  if (row < 5) return 0.55
-  if (row < 10) return 0.8
-  if (row < BOSS_ROW) return 0.95
-  return 1.0
+export function depthHpScale(row: number, act = 1): number {
+  // 幕×幕内前後半の2段スケール (確定済みルール表「ランの敵強化」2026-08-29 3幕化)。
+  // 各幕のプールは既にその幕の帯に校正済みなので、幕内の2段が「幕内でもだんだん強く」を再現する
+  if (row >= BOSS_ROW) return 1.0 // 幕ボスは素のHP
+  const late = row >= 8
+  const table: readonly (readonly [number, number])[] = [
+    [0.55, 0.65], // 1幕
+    [0.8, 0.9], // 2幕
+    [0.95, 1.05], // 3幕
+  ]
+  const [early, lateScale] = table[act - 1]
+  return late ? lateScale : early
 }
 
 export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'campfire' | 'workshop' | 'shop' | 'event' | 'reward' | 'won' | 'lost'
@@ -106,7 +110,9 @@ export interface RunState {
   /** 戦闘間で持ち越すHP */
   readonly hp: number
   readonly maxHp: number
-  /** マップ (ラン開始時にシードから確定。全体可視) */
+  /** 現在の幕 (1〜3。確定済みルール表「マップ」3幕構成) */
+  readonly act: number
+  /** 現在の幕のマップ (幕開始時にシードから確定。全体可視) */
   readonly map: RunMap
   /** 現在いる行 (-1 = 開始前。行0のノードを選ぶ) */
   readonly row: number
@@ -183,7 +189,7 @@ function launchCombat(run: RunState, elite: boolean): RunState {
     leaderId: run.leaderId,
     playerHp: run.hp,
     playerMaxHp: run.maxHp,
-    enemyHpScale: depthHpScale(run.row) * (elite ? ELITE_HP_SCALE : 1),
+    enemyHpScale: depthHpScale(run.row, run.act) * (elite ? ELITE_HP_SCALE : 1),
     enemyStrength: depthStrength(run.row) + (elite ? ELITE_STRENGTH : 0),
     relicPermanents: run.relics
       .map(getRelicDef)
@@ -339,7 +345,7 @@ export function createRun(
   }
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  const [map, rngAfterMap] = generateMap(rng0, allEvents.map((e) => e.id))
+  const [map, rngAfterMap] = generateMap(rng0, allEvents.map((e) => e.id), 1)
   const [relicQueue, rngAfterRelics] = shuffle(
     rngAfterMap,
     allRelics.map((r) => r.id),
@@ -353,6 +359,7 @@ export function createRun(
     deck: buildDeck(chosenDeck),
     hp: leader.maxHp,
     maxHp: leader.maxHp,
+    act: 1,
     map,
     row: -1,
     col: 0,
@@ -433,12 +440,6 @@ export function axesOf(def: CardDef): readonly string[] {
   return [...set]
 }
 
-/** 軸一致による抽選の重み。0一致=1 / 1一致=3 / 2以上=5 */
-function rewardWeight(def: CardDef, deckAxes: ReadonlySet<string>): number {
-  const matches = axesOf(def).filter((a) => deckAxes.has(a)).length
-  return 1 + 2 * Math.min(matches, 2)
-}
-
 /** 報酬を抽選 (リーダーの色アイデンティティのカードのみ・基本札除外・重複なし)。候補数はリーダー個性+収集家の鞄 */
 function rollRewards(run: RunState): RunState {
   const leader = getLeaderDef(run.leaderId)
@@ -452,34 +453,47 @@ function rollRewards(run: RunState): RunState {
       (c) =>
         run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
     )
-  // デッキに既にある軸を引き寄せる (確定済みルール表「軸の重み付け」)。
-  // 短いラン (15戦・最大14ピック) でもアーキタイプが成立するようにするための補正。
-  const deckAxes = new Set<string>()
-  for (const card of run.deck) for (const a of axesOf(card.def)) deckAxes.add(a)
-
+  // レアリティ抽選 (確定済みルール表「レアリティ」2026-08-29): スロットごとに
+  // コモン60% / アンコモン37% / レア3% の本家比率でレアリティを決め、その帯から一様に引く。
+  // 軸の重み付けは全廃 — 報酬はデッキを一切見ない (本家準拠。ドラフトの発見性を守る)
   const remaining = [...pool]
   const picked: string[] = []
   let rng = run.rng
   const want = leader.rewardChoices + run.rewardChoicesBonus
+  const rarityOf = (c: CardDef) => c.rarity ?? 'common'
   while (picked.length < want && remaining.length > 0) {
-    // 最後の1枠だけ重み付けなしの純粋ランダムにする (2026-08-26)。
-    // 重み付けが強いと同じ色の第二の柱に一生触れられない
-    // (赤で15戦通して憤怒の札が1枚も提示されなかった)。3枠が軸を伸ばし、1枠が乗り換えの機会を作る
-    const isFreeSlot = picked.length === want - 1
-    const weights = remaining.map((c) => (isFreeSlot ? 1 : rewardWeight(c, deckAxes)))
-    const [idx, next] = weightedIndex(rng, weights)
-    rng = next
-    picked.push(remaining[idx].id)
-    remaining.splice(idx, 1)
+    const [roll, r1] = nextInt(rng, 0, 99)
+    rng = r1
+    const wanted: ('rare' | 'uncommon' | 'common')[] =
+      roll < 3 ? ['rare', 'uncommon', 'common'] : roll < 40 ? ['uncommon', 'common'] : ['common']
+    // 希望レアリティの札が尽きていたら下の帯へフォールバック。それも無ければプール全体
+    let candidates: CardDef[] = []
+    for (const r of wanted) {
+      candidates = remaining.filter((c) => rarityOf(c) === r)
+      if (candidates.length > 0) break
+    }
+    if (candidates.length === 0) candidates = remaining
+    const [idx, r2] = nextInt(rng, 0, candidates.length - 1)
+    rng = r2
+    const chosen = candidates[idx]
+    picked.push(chosen.id)
+    remaining.splice(remaining.indexOf(chosen), 1)
   }
   return { ...run, rng, rewardOptions: picked, phase: 'reward' }
 }
 
 /** 戦闘勝利後の処理: HP持ち越し → (エリートならレリック報酬 →) カード報酬 or ラン勝利 */
 function afterVictory(run: RunState, combat: GameState): RunState {
-  // 自動回復は狩人の恵み (victoryHealBonus) のみ
-  const hp = Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
-  // ゴールド獲得 (通常12〜18G・エリートはさらに+30〜40G。確定済みルール表「ゴールド」)
+  const isBoss = currentNode(run)?.type === 'boss'
+  // 3幕目のボス撃破 = ラン走破
+  if (isBoss && run.act >= ACT_COUNT) {
+    return { ...run, combat, battlesWon: run.battlesWon + 1, phase: 'won' }
+  }
+  // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復 (確定済みルール表「マップ」)
+  const hp = isBoss
+    ? run.maxHp
+    : Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
+  // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G。確定済みルール表「ゴールド」)
   let rng = run.rng
   const [base, r1] = nextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX)
   rng = r1
@@ -487,6 +501,11 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   if (run.currentElite) {
     const [bonus, r2] = nextInt(rng, GOLD_ELITE_BONUS_MIN, GOLD_ELITE_BONUS_MAX)
     rng = r2
+    gained += bonus
+  }
+  if (isBoss) {
+    const [bonus, r3] = nextInt(rng, 40, 50)
+    rng = r3
     gained += bonus
   }
   const next: RunState = {
@@ -497,15 +516,24 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     battlesWon: run.battlesWon + 1,
     gold: run.gold + gained,
   }
-  if (currentNode(run)?.type === 'boss') return { ...next, phase: 'won' }
-  // エリート戦の勝利: レリック3択 (取得済みを除いた候補列の先頭から)
-  if (run.currentElite && run.relics.length < RELIC_MAX) {
+  // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
+  if ((run.currentElite || isBoss) && run.relics.length < RELIC_MAX) {
     const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
     if (remaining.length > 0) {
       return { ...next, phase: 'relic-reward', relicOptions: remaining.slice(0, 3) }
     }
   }
   return rollRewards(next)
+}
+
+/** 幕ボスのカード報酬を受け取った後、次の幕へ進む (新しいマップを生成して行0の選択から) */
+function advanceActIfBossCleared(run: RunState): RunState {
+  if (currentNode(run)?.type !== 'boss' || run.act >= ACT_COUNT) {
+    return { ...run, phase: 'map' }
+  }
+  const nextAct = run.act + 1
+  const [map, rng] = generateMap(run.rng, allEvents.map((e) => e.id), nextAct)
+  return { ...run, rng, act: nextAct, map, row: -1, col: 0, combat: null, phase: 'map' }
 }
 
 /**
@@ -686,17 +714,16 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (cardId === undefined) throw new Error(`不正な報酬指定: ${command.index}`)
       // uid は行番号で一意化 (1行につき1ノードしか訪れないため衝突しない)
       const card: CardInstance = { uid: `pick_r${run.row}_${cardId}`, def: getCardDef(cardId) }
-      return {
+      return advanceActIfBossCleared({
         ...run,
         deck: [...run.deck, card],
         picks: [...run.picks, cardId],
-        phase: 'map',
         rewardOptions: null,
-      }
+      })
     }
     case 'SkipReward': {
       if (run.phase !== 'reward') throw new Error('報酬フェーズではない')
-      return { ...run, phase: 'map', rewardOptions: null }
+      return advanceActIfBossCleared({ ...run, rewardOptions: null })
     }
     case 'ChooseNode': {
       if (run.phase !== 'map') throw new Error('マップフェーズではない')

@@ -402,10 +402,11 @@ describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LL
 
 describe('焚き火の全カード解放 (2026-08-28。旧: 芽吹きは拒否→コスト-1で受理に変更)', () => {
   it('芽吹きを焚き火で鍛えると 0E・上限+1・消滅 になりデッキに反映される', () => {
-    const run = runTo(createRun(17, 'set-confirm'), 'campfire')
+    let run = runTo(createRun(17, 'set-confirm'), 'campfire')
     expect(run.phase).toBe('campfire')
+    // 中立スターター化 (2026-08-29) で芽吹きは初期デッキに無いため、ピック済みの体で注入する
+    run = { ...run, deck: [...run.deck, { uid: 'picked_sprout', def: getCardDef('green_ramp_sprout') }] }
     const idx = run.deck.findIndex((c) => c.def.id === 'green_ramp_sprout')
-    expect(idx).toBeGreaterThanOrEqual(0)
     const after = applyRunCommand(run, { type: 'CampfireUpgrade', index: idx })
     expect(after.deck[idx].def.name).toBe('芽吹き+')
     expect(after.deck[idx].def.cost).toBe(0)
