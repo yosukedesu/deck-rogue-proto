@@ -887,15 +887,15 @@
     "id": "run_basic_white",
     "name": "白の初期デッキ",
     "color": "white",
-    "description": "打撃3・防御3・リアクション2・種2 (従者+癒し)",
+    "description": "白のドラフト連戦の出発点。中立10枚（聖光の一撃×4・白盾×4・リアクション2）。アーキタイプはドラフトで発見する",
     "cards": [
       {
         "cardId": "white_strike",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "white_guard",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "white_reaction_ward",
@@ -903,14 +903,6 @@
       },
       {
         "cardId": "white_reaction_retribution",
-        "count": 1
-      },
-      {
-        "cardId": "white_perm_squire",
-        "count": 1
-      },
-      {
-        "cardId": "white_heal",
         "count": 1
       }
     ]

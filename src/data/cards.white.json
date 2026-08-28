@@ -10,7 +10,8 @@
         "effect": "dealDamage",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_shield_strike",
@@ -28,7 +29,8 @@
         "effect": "gainBlock",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_guard",
@@ -41,7 +43,8 @@
         "effect": "gainBlock",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_heal",
@@ -54,7 +57,8 @@
         "effect": "gainHp",
         "amount": 6
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_flash_heal",
@@ -68,7 +72,8 @@
         "effect": "gainHp",
         "amount": 6
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_mass_heal",
@@ -82,7 +87,8 @@
         "effect": "gainHp",
         "amount": 18
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_menace",
@@ -100,7 +106,8 @@
         "effect": "gainBlock",
         "amount": 6
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_decree",
@@ -119,7 +126,8 @@
         "effect": "gainHp",
         "amount": 5
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_bodyslam",
@@ -137,7 +145,8 @@
         "effect": "dealDamagePerBlock",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_fortress",
@@ -153,7 +162,8 @@
     ],
     "axis": [
       "fortress"
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_perm_squire",
@@ -167,7 +177,8 @@
         "amount": 2
       }
     ],
-    "retainer": true
+    "retainer": true,
+    "rarity": "common"
   },
   {
     "id": "white_perm_shieldmaiden",
@@ -181,7 +192,8 @@
         "amount": 2
       }
     ],
-    "retainer": true
+    "retainer": true,
+    "rarity": "common"
   },
   {
     "id": "white_perm_choir",
@@ -195,7 +207,8 @@
         "amount": 2
       }
     ],
-    "retainer": true
+    "retainer": true,
+    "rarity": "uncommon"
   },
   {
     "id": "white_perm_banneret",
@@ -209,7 +222,8 @@
         "amount": 2
       }
     ],
-    "retainer": true
+    "retainer": true,
+    "rarity": "common"
   },
   {
     "id": "white_rally",
@@ -222,7 +236,8 @@
         "effect": "dealDamagePerPermanent",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_grand_charge",
@@ -236,7 +251,8 @@
         "effect": "dealDamagePerPermanent",
         "amount": 6
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_reaction_ward",
@@ -249,7 +265,8 @@
         "effect": "gainBlock",
         "amount": 12
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_reaction_retribution",
@@ -267,7 +284,8 @@
         "effect": "gainHp",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_reaction_sanctuary",
@@ -291,7 +309,8 @@
           "hpAtOrBelowRatio": 0.5
         }
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_judgment",
@@ -309,7 +328,8 @@
         "effect": "weakenEnemy",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_muster",
@@ -323,7 +343,8 @@
         "summonId": "white_perm_squire",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_shield_call",
@@ -342,7 +363,8 @@
         "effect": "gainBlock",
         "amount": 8
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_perm_band",
@@ -356,7 +378,8 @@
         "amount": 1
       }
     ],
-    "retainer": true
+    "retainer": true,
+    "rarity": "uncommon"
   },
   {
     "id": "white_perm_banner",
@@ -370,7 +393,8 @@
         "amount": 2,
         "target": "all"
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_knight_charge",
@@ -384,7 +408,8 @@
         "amount": 4,
         "target": "all"
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_rank_shield",
@@ -400,7 +425,8 @@
     ],
     "axis": [
       "fortress"
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_perm_hound",
@@ -414,7 +440,8 @@
         "amount": 2
       }
     ],
-    "retainer": true
+    "retainer": true,
+    "rarity": "common"
   },
   {
     "id": "white_perm_bell",
@@ -427,7 +454,8 @@
         "effect": "gainBlock",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_service",
@@ -445,7 +473,8 @@
         "effect": "drawCards",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_reaction_martyr",
@@ -458,7 +487,8 @@
         "effect": "gainHp",
         "amount": 8
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_perm_spring",
@@ -471,7 +501,8 @@
         "effect": "gainHp",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_verdict_hammer",
@@ -489,7 +520,8 @@
         "effect": "dealDamagePerNegStrength",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_cowering_light",
@@ -507,7 +539,8 @@
         "effect": "gainHp",
         "amount": 3
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_reaction_holy_wall",
@@ -525,7 +558,8 @@
         "effect": "gainBlock",
         "amount": 8
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_shield_bash",
@@ -545,7 +579,8 @@
         "amount": 2,
         "spendBlock": true
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_gate_close",
@@ -563,7 +598,8 @@
         "effect": "dealDamagePerBlock",
         "amount": 1
       }
-    ]
+    ],
+    "rarity": "rare"
   },
   {
     "id": "white_mending",
@@ -581,7 +617,8 @@
         "effect": "gainHp",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_reaction_bright_wall",
@@ -599,7 +636,8 @@
         "effect": "gainHp",
         "amount": 4
       }
-    ]
+    ],
+    "rarity": "uncommon"
   },
   {
     "id": "white_reaction_chant",
@@ -612,7 +650,8 @@
         "effect": "gainBlock",
         "amount": 9
       }
-    ]
+    ],
+    "rarity": "common"
   },
   {
     "id": "white_perm_ballista",
@@ -625,6 +664,7 @@
         "effect": "dealDamage",
         "amount": 2
       }
-    ]
+    ],
+    "rarity": "rare"
   }
 ]
