@@ -50,7 +50,7 @@
         "requireGold": 30,
         "gamble": {
           "chance": 0.5,
-          "win": { "gold": 60 },
+          "win": { "gold": 90 },
           "lose": {}
         },
         "gold": -30

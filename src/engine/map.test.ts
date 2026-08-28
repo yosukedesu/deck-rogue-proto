@@ -38,7 +38,7 @@ describe('マップ生成の構造', () => {
       const map = mapFor(seed)
       const all = map.flat()
       expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(2)
-      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(1)
+      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(2)
       const events = all.filter((n) => n.type === 'event')
       expect(events.length, `seed${seed}`).toBeGreaterThanOrEqual(1) // DP不成立の保険で稀に1
       expect(events.length, `seed${seed}`).toBeLessThanOrEqual(2)

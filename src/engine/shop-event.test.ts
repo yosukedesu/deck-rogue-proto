@@ -203,7 +203,7 @@ describe('?マス (イベント)', () => {
     const a = applyRunCommand(eventState(3, 'event_dice_imp'), { type: 'EventChoice', index: 0 })
     const b = applyRunCommand(eventState(3, 'event_dice_imp'), { type: 'EventChoice', index: 0 })
     expect(a.gold).toBe(b.gold) // 同シード同ロール
-    expect([50 - 30, 50 - 30 + 60]).toContain(a.gold) // 外れ20G / 当たり80G
+    expect([50 - 30, 50 - 30 + 90]).toContain(a.gold) // 外れ20G / 当たり110G (フレーバー「3倍にして返す」=掛け金30の3倍90が戻る)
   })
 
   it('流浪の絵師: ランダムな緑カード1枚を獲得', () => {

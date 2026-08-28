@@ -31,10 +31,14 @@ const WORKSHOP_COUNT = 2
 const WORKSHOP_ROW_CANDIDATES = [4, 6, 7, 8, 9, 11, 12]
 const EVENT_COUNT = 2
 const EVENT_ROW_CANDIDATES = [2, 3, 4, 6, 7, 8, 9, 11, 12, 13]
+/** ショップはStS準拠の頻度で2箇所 (2026-08-28。旧1箇所は2/2のプレイテストでルート次第で
+ * 一度も到達できない事態が発生した — 工房と同じ「複数箇所あるので必ず1回は踏める」冗長性に揃えた) */
+const SHOP_COUNT = 2
+const SHOP_ROW_CANDIDATES = [2, 3, 4, 6, 7, 8, 9, 11, 12, 13]
 const ELITE_COUNT = 4
 const ELITE_ROW_CANDIDATES = [2, 3, 4, 6, 7, 8, 9, 11, 12, 13]
 /** 生成リトライの上限 (DP検証で「非戦闘ピック最大2」を満たすまで配置し直す) */
-const MAX_PLACEMENT_TRIES = 300
+const MAX_PLACEMENT_TRIES = 5000
 
 /** 段階制の敵プール。行 → 抽選プール (ソロ敵IDと編成IDの混合) */
 const ENEMY_TIERS: readonly (readonly string[])[] = [
@@ -51,16 +55,25 @@ export function tierForRow(row: number): readonly string[] {
   return ENEMY_TIERS[3]
 }
 
+/**
+ * 生成の制約を段階的に緩和するリトライ。**戦闘数10〜12 (maxNC<=2) は最後まで絶対に緩めない**——
+ * これがマップの中核保証だから。先に緩めるのはエリート非隣接 (2026-08-28追加の副次的な安全策)。
+ * フェーズ①: 全制約 (エリート非隣接・?マス2箇所・maxNC<=2)
+ * フェーズ②: ?マスを1箇所に減らして特別行の需要を下げる (エリート非隣接・maxNC<=2は維持)
+ * フェーズ③ (最終手段): エリート非隣接を諦める (maxNC<=2 だけは維持)
+ */
+const PHASE1_TRIES = 150
+const PHASE2_TRIES = 150
+
 /** シードからマップを決定的に生成する (同じシード = 同じマップ。リプレイ再現性) */
 export function generateMap(
   rng0: RngState,
   eventPool: readonly string[],
 ): readonly [RunMap, RngState] {
   let rng = rng0
-  // 配置リトライ: 「1パスで踏める非戦闘の選択ノードは最大2」を DP で検証し、満たすまで作り直す。
-  // 最終試行では ?単独行を落とす (特別行が2つになり構造的に≤2が保証される保険)
   for (let attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++) {
-    const dropStandaloneEvent = attempt === MAX_PLACEMENT_TRIES
+    const dropStandaloneEvent = attempt >= PHASE1_TRIES
+    const requireEliteNonAdjacent = attempt < PHASE1_TRIES + PHASE2_TRIES
 
     // 1. 特別行の選定 (1行に特別ノードは工房行の同居を除き1つまで)
     const usedRows = new Set<number>()
@@ -82,18 +95,17 @@ export function generateMap(
       return rows
     }
     const workshopRows = pickRows(WORKSHOP_ROW_CANDIDATES, WORKSHOP_COUNT, false)
-    const shopRow = workshopRows[0] // ショップは工房と同じ行に択一 (工房|ショップ|戦闘)
+    const shopRow = workshopRows[0] // ショップ1個目は工房と同じ行に択一 (工房|ショップ|戦闘)
     const eventWithWorkshopRow = workshopRows[1] // 2つ目の工房行に?が同居 (工房|?|戦闘)
+    // ショップ2個目は単独行 (?マスの単独行と同じ扱い)。到達確率を上げるための冗長配置
+    const standaloneShopRows = pickRows(SHOP_ROW_CANDIDATES, SHOP_COUNT - 1, false)
     const standaloneEventRows = dropStandaloneEvent
       ? []
       : pickRows(EVENT_ROW_CANDIDATES, EVENT_COUNT - 1, false)
     // エリート行は隣接させない (連続強制エリートの防止。2026-08-28 プレイテスト指摘)。
-    // 非隣接プールが枯れて4行取れなかったら配置からやり直す (最終試行のみ隣接を許して数を保証)
-    const eliteRows = pickRows(ELITE_ROW_CANDIDATES, ELITE_COUNT, !dropStandaloneEvent)
-    if (eliteRows.length < ELITE_COUNT && !dropStandaloneEvent) continue
-    if (eliteRows.length < ELITE_COUNT) {
-      eliteRows.push(...pickRows(ELITE_ROW_CANDIDATES, ELITE_COUNT - eliteRows.length, false))
-    }
+    // フェーズ③でのみ諦める。非隣接を要求する間にプールが枯れたら作り直す
+    const eliteRows = pickRows(ELITE_ROW_CANDIDATES, ELITE_COUNT, requireEliteNonAdjacent)
+    if (eliteRows.length < ELITE_COUNT) continue
 
     // 2. 行の幅: 同居行=3固定 / 行0=2 / 強制焚き火行・ボス行=1 / それ以外は2〜3
     const widths: number[] = []
@@ -122,10 +134,15 @@ export function generateMap(
     }
     placeTwo(shopRow, 'workshop', 'shop')
     placeTwo(eventWithWorkshopRow, 'workshop', 'event')
-    for (const r of [...standaloneEventRows, ...eliteRows]) {
+    for (const r of [...standaloneShopRows, ...standaloneEventRows, ...eliteRows]) {
       const [c, next] = nextInt(rng, 0, widths[r] - 1)
       rng = next
-      specialAt.set(`${r}:${c}`, standaloneEventRows.includes(r) ? 'event' : 'elite')
+      const t: MapNodeType = standaloneShopRows.includes(r)
+        ? 'shop'
+        : standaloneEventRows.includes(r)
+          ? 'event'
+          : 'elite'
+      specialAt.set(`${r}:${c}`, t)
     }
 
     // 4. エッジ: 連続区間分割 (非交差・全ノード到達保証) + 確率で隣へ1本追加
@@ -164,7 +181,7 @@ export function generateMap(
       }
       maxNC = next
     }
-    if (maxNC[0] > 2 && !dropStandaloneEvent) continue // 作り直し (rngは進んでいるので次は別の配置)
+    if (maxNC[0] > 2) continue // 戦闘数10〜12の保証は最後まで緩めない。作り直す
 
     // 6. ノードの実体化: タイプ・敵 (直前2行と同じ敵は避ける)・イベントID
     const eventIds: string[] = []
