@@ -107,12 +107,14 @@ function recipeFor(a: CardDef, b: CardDef): CardDef | null {
 /** 合成できない理由。null = 合成可 */
 export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null {
   if (a.uid === b.uid) return '同じカードは選べない'
-  if (a.def.id === b.def.id) return '同名カード同士は合成できない'
   if (recipeFor(a.def, b.def)) return null // レシピは制約を免除 (手書きで裁定済み)
+  const sameName = a.def.id === b.def.id
   if (a.def.color !== 'green' || b.def.color !== 'green') return '合成は緑カード同士のみ (v1)'
-  if (a.def.type !== b.def.type) return 'タイプの違うカードはレシピでのみ合成できる'
-  if (a.def.type === 'reaction') return 'リアクションはレシピでのみ合成できる'
   if (a.def.modes?.length || b.def.modes?.length) return '選択式カードはレシピでのみ合成できる'
+  if (a.def.type !== b.def.type) return 'タイプの違うカードはレシピでのみ合成できる'
+  // 同名2枚は「真・」化 (2026-08-28 ユーザー指示: 同名は倍率を上げて強いカードにする)。
+  // 同名ならリアクションも安全に合成できる (トリガー・条件が同一のため)
+  if (a.def.type === 'reaction' && !sameName) return 'リアクションは同名同士かレシピでのみ合成できる'
   const all = [...a.def.effects, ...b.def.effects]
   if (!all.every(isComputable)) return 'この効果の組み合わせは合成できない'
   return null
@@ -167,6 +169,8 @@ export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
     )
     if (twin && twin.amount !== undefined && e.amount !== undefined) {
       merged[merged.indexOf(twin)] = { ...twin, amount: twin.amount + e.amount }
+    } else if (twin && twin.amount === undefined && e.amount === undefined) {
+      // 量を持たない同種効果 (negate など) は重複させても意味がないので1つに畳む
     } else {
       merged.push({ ...e })
     }
@@ -187,7 +191,11 @@ export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
     .reduce((acc, e) => acc + (e.amount ?? 0), 0)
   if (net - cost >= 0 && effects.some((e) => REFILL.has(e.effect))) exhaust = true
 
-  const name = `${wordOf(a.def)}${wordOf(b.def)}の${suffixOf(effects)}`
+  // 同名合成は「真・」化 = 2枚ぶんを1枚に圧縮した強化版 (倍率×2相当)
+  const sameName = a.def.id === b.def.id
+  const name = sameName
+    ? `真・${a.def.name}`
+    : `${wordOf(a.def)}${wordOf(b.def)}の${suffixOf(effects)}`
   const ids = [a.def.id, b.def.id].sort()
   return {
     id: `fused_${ids[0]}__${ids[1]}`,
@@ -199,6 +207,9 @@ export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
     ...(exhaust ? { exhaust: true } : {}),
     ...(a.def.discardCost || b.def.discardCost
       ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) }
+      : {}),
+    ...(a.def.exhaustCost || b.def.exhaustCost
+      ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) }
       : {}),
   }
 }

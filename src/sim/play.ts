@@ -34,7 +34,7 @@ import {
   reactionMatches,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createRun } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, upgradeCard } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -256,16 +256,17 @@ function renderRun(run: RunState, logFrom: number): string {
     L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
     L.push('  除去 → デッキから1枚を永久に取り除く')
     L.push('  何もしない → そのまま次へ')
-    run.deck.forEach((c, i) =>
-      L.push(`   [${i}] ${cardLine(c.def)}${canUpgradeCard(c) ? '' : ' 【鍛えられない】'}`),
-    )
+    run.deck.forEach((c, i) => {
+      const mark = canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
+      L.push(`   [${i}] ${cardLine(c.def)}${mark}`)
+    })
     L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
   } else if (run.phase === 'workshop') {
     L.push('🔨 工房: 異なる2枚を合成して1枚の新カードにできる (素材は消える)。見送りも可')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
-    L.push('   (同名不可・緑同士のみ・リアクションと選択式はレシピのみ。合成結果はコストと効果が自動計算される)')
+    L.push('   (緑同士のみ。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。リアクションは同名同士かレシピのみ)')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {

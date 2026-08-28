@@ -51,8 +51,9 @@ describe('計算合成', () => {
     expect(rev.id).toBe('fusion_vine_wheel') // 順序を問わない
   })
 
-  it('同名2枚・タイプ違い・リアクションは計算合成できない (レシピは例外)', () => {
-    expect(fuseBlockReason(inst('green_strike', 'u1'), inst('green_strike', 'u2'))).not.toBeNull()
+  it('タイプ違い・異名リアクションは計算合成できない (同名とレシピは例外)', () => {
+    // 2026-08-28: 同名2枚は「真・」化として解禁された (旧仕様では不可だった)
+    expect(fuseBlockReason(inst('green_strike', 'u1'), inst('green_strike', 'u2'))).toBeNull()
     expect(fuseBlockReason(inst('green_strike'), inst('green_flash_insight'))).not.toBeNull() // 物理×呪文
     expect(
       fuseBlockReason(inst('green_reaction_thorns'), inst('green_reaction_cornered')),
@@ -261,5 +262,63 @@ describe('強化不可札の拒否 (2026-08-28。テスターが焚き火1回を
     const idx = run.deck.findIndex((c) => c.def.id === 'green_ramp_sprout')
     expect(idx).toBeGreaterThanOrEqual(0)
     expect(() => apply(run, { type: 'CampfireUpgrade', index: idx })).toThrow(/鍛えられない/)
+  })
+})
+
+describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名カードは倍率上げて強いカードが生成されるべき」)', () => {
+  it('打撃×打撃 → 真・打撃 (量が2枚ぶんに圧縮され、コストはVP逆算で1E)', () => {
+    const def = fuseCards(inst('green_strike', 'u1'), inst('green_strike', 'u2'))
+    expect(def.name).toBe('真・打撃')
+    expect(def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(12) // 6+6
+    expect(def.cost).toBe(1) // (12×0.85-2)/6 ≈ 1.4 → 1E
+  })
+
+  it('蔦の乱舞×蔦の乱舞 → 5ヒットのまま量が倍 (4×5)', () => {
+    const def = fuseCards(inst('green_sig_vine_dance', 'u1'), inst('green_sig_vine_dance', 'u2'))
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
+    expect(dmgs).toHaveLength(5)
+    expect(dmgs[0].amount).toBe(4) // (10+10)/5
+  })
+
+  it('同名リアクションも合成できる (茨の返し×2 → 返し18。トリガー・条件が同一なので安全)', () => {
+    const a = inst('green_reaction_thorns', 'u1')
+    const b = inst('green_reaction_thorns', 'u2')
+    expect(fuseBlockReason(a, b)).toBeNull()
+    const def = fuseCards(a, b)
+    expect(def.type).toBe('reaction')
+    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(18)
+    expect(def.name).toBe('真・茨の返し')
+  })
+
+  it('量を持たない同種効果は重複しない (根の紡ぎ×2 → 打ち消しは1つ・成長は合算)', () => {
+    const def = fuseCards(inst('green_reaction_root_weave', 'u1'), inst('green_reaction_root_weave', 'u2'))
+    expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
+    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(4)
+  })
+
+  it('選択式カードは同名でも合成不可 (モード構造を計算合成で作れないため)', () => {
+    expect(fuseBlockReason(inst('green_ramp_sunlight', 'u1'), inst('green_ramp_sunlight', 'u2'))).not.toBeNull()
+  })
+
+  it('スモーク: 緑全カードの同名合成で不変条件が守られる', () => {
+    const greens = allCards.filter((c) => c.color === 'green')
+    for (const g of greens) {
+      const a = { uid: 'sa', def: g }
+      const b = { uid: 'sb', def: g }
+      if (fuseBlockReason(a, b) !== null) continue
+      const def = fuseCards(a, b)
+      expect(def.cost, def.id).toBeGreaterThanOrEqual(1)
+      expect(def.cost, def.id).toBeLessThanOrEqual(3)
+      if (def.effects.some((e) => e.effect === 'gainEnergyMax')) {
+        expect(def.exhaust, def.id).toBe(true)
+      }
+      const net = def.effects
+        .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
+        .reduce((acc, e) => acc + (e.amount ?? 0), 0)
+      const REFILL2 = ['drawCards', 'impulseDraw', 'drawCardsPerCardPlayed']
+      if (net - def.cost >= 0 && def.effects.some((e) => REFILL2.includes(e.effect))) {
+        expect(def.exhaust, def.id).toBe(true)
+      }
+    }
   })
 })

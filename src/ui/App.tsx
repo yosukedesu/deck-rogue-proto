@@ -37,7 +37,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, canUpgradeCard, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, isUpgraded, RUN_BATTLES, upgradeCard } from '../engine/run.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -1576,6 +1576,11 @@ function RunScreen({
               ctx={ctx}
               actions={
                 <>
+                  {canUpgradeCard(c) && (
+                    <div className="choice-desc" style={{ marginBottom: 4 }}>
+                      鍛えると→ {describeUpgrade(c)}
+                    </div>
+                  )}
                   <button
                     className="btn"
                     disabled={run.deck.length <= 5}
@@ -1824,9 +1829,12 @@ function WorkshopScreen({
       </p>
       {preview && (
         <div className="panel">
-          <span className="chip">
-            合成結果: {preview.name}（{preview.cost}E{preview.exhaust ? '・消滅' : ''}）
-          </span>
+          <div className="setup-section-title">
+            合成結果プレビュー{preview.exhaust ? '（消滅つき）' : ''}
+          </div>
+          <div className="hand-cards" style={{ marginTop: 8 }}>
+            <CardFrame card={{ uid: 'fusion_preview', def: preview }} dim={false} ctx={ctx} actions={null} />
+          </div>
         </div>
       )}
       {a && b && reason && (
@@ -1863,4 +1871,13 @@ function WorkshopScreen({
       </button>
     </div>
   )
+}
+
+/** 焚き火プレビュー: 鍛えた後の姿を1行で (コスト変更ならコストを、量/単位なら効果行を出す) */
+function describeUpgrade(card: CardInstance): string {
+  const after = upgradeCard(card)
+  if (after.def.cost !== card.def.cost) {
+    return `コスト ${card.def.cost}E → ${after.def.cost}E（効果は据え置き）`
+  }
+  return effectLineStrings(after.def).join(' / ')
 }
