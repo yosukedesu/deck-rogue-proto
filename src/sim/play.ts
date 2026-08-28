@@ -32,6 +32,7 @@ import {
   effectiveIntent,
   isPlayableFromHand,
   reactionMatches,
+  setBranchFlipRisks,
   windowFromPending,
 } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, upgradeCard } from '../engine/run.ts'
@@ -205,6 +206,11 @@ function renderBattle(s: GameState, logFrom: number): string {
     const win = windowFromPending(s)
     const cands = win ? p.setCards.filter((c) => reactionMatches(s, c, win)) : []
     L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}`).join(' / ') || 'なし'}`)
+    // 後続の敵の条件付き分岐が「伏せなし」側に化ける警告 (2026-08-28)
+    for (const ri of setBranchFlipRisks(s)) {
+      const rEnemy = s.enemies[ri]
+      L.push(`   ⚠ 発動すると伏せ枠が空く: ${getEnemyDef(rEnemy.enemyId).name}の行動が【伏せなし】分岐 (${branchText(rEnemy.intent!)}) に変わる`)
+    }
     L.push(`   → {"type":"ConfirmReaction","fire":true,"cardUid":"..."} か {"type":"ConfirmReaction","fire":false} (温存)`)
   }
   if (s.phase === 'player-turn') {

@@ -31,6 +31,7 @@ import {
   cardNeedsTarget,
   effectiveIntent,
   reactionMatches,
+  setBranchFlipRisks,
   windowFromPending,
   effectiveCost,
   isDamageEffect,
@@ -1056,6 +1057,11 @@ function BattleScreen({
                       </div>
                     ))
                   })()}
+                  {setBranchFlipRisks(s).map((ri) => (
+                    <div key={ri} className="choice-desc" style={{ margin: '6px 0', color: 'var(--warn, #e0a458)' }}>
+                      ⚠ 発動すると伏せ枠が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せなし】分岐（{intentText(s.enemies[ri].intent)}）に変わる
+                    </div>
+                  ))}
                   <button className="btn" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
                     温存する
                   </button>

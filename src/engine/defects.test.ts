@@ -149,3 +149,55 @@ describe('条件付き意図とリアクションの相互作用 (2026-08-26 プ
     expect(hpBefore - s.player.hp).toBe(0)
   })
 })
+
+describe('複数体戦の条件付き意図 (2026-08-28 seed601プレイテストの「窓が嘘をつく」報告の裁定)', () => {
+  // 報告: 「伏せたのに敵が伏せなし分岐(攻撃12)を実行した」→ ログ精査の結果、エンジンは正しかった。
+  // 伏せ札が1体目の行動(post窓)で発動して伏せ枠が空き、2体目の行動開始時に「伏せなし」分岐が
+  // 正規に確定していた。分岐は「その敵の行動開始時」の盤面で確定する仕様どおり。
+  // このテストは発動/温存の両ケースでクロス敵のセマンティクスを固定する。
+  function twoEnemyState(): GameState {
+    let s = freshCombat('set-confirm', 'enc_probe_pair', 42, 'starter')
+    s = withHand(s, ['green_reaction_thorns'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    const conditional: EnemyIntent = {
+      kind: 'attack',
+      shownMin: 8,
+      shownMax: 12,
+      actual: 12,
+      conditionalOn: 'set',
+      alt: { kind: 'defend', shownMin: 6, shownMax: 9, actual: 6 },
+    }
+    s = {
+      ...s,
+      enemies: s.enemies.map((e, i) => ({
+        ...e,
+        hp: 50,
+        maxHp: 50,
+        intent: i === 0 ? attackIntent(6) : conditional,
+      })),
+    }
+    return s
+  }
+
+  it('1体目の攻撃に返し札を「発動」すると、2体目は行動開始時に伏せなし分岐 (攻撃) で確定する', () => {
+    let s = twoEnemyState()
+    const hpBefore = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction') // 1体目の攻撃6の post窓
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_thorns' })
+    // 伏せ枠が空いたので、2体目の行動開始時には「伏せなし」= 攻撃12 が選ばれる
+    expect(s.player.setCards).toHaveLength(0)
+    expect(hpBefore - s.player.hp).toBe(6 + 12)
+  })
+
+  it('温存すれば伏せは残り、2体目は伏せあり分岐 (防御) で確定する', () => {
+    let s = twoEnemyState()
+    const hpBefore = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+    // 温存 → 伏せあり → 2体目は防御分岐。被ダメは1体目の6だけ
+    expect(s.player.setCards).toHaveLength(1)
+    expect(hpBefore - s.player.hp).toBe(6)
+  })
+})

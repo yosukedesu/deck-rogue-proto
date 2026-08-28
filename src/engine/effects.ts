@@ -251,6 +251,23 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
  * リーダーパッシブとレリックは戦闘開始時から場にある = 「登場」していないので数えない
  * (2026-08-26。onPermanentEntered が誘発しない仕様と揃えた)。
  */
+/**
+ * 確認ウィンドウで「発動すると伏せ枠が空き、後続の敵の条件付き分岐が『伏せなし』側に化ける」
+ * 警告を出すべきか (2026-08-28。seed601プレイテストで、1体目に返し札を発動した結果
+ * 2体目が攻撃分岐に確定して死亡→「窓が嘘をつく」と誤認された。仕様は正しいが予告が無かった)。
+ * 該当する後続の敵の index リストを返す (空なら警告不要)。
+ */
+export function setBranchFlipRisks(state: GameState): readonly number[] {
+  const pending = state.pendingWindow
+  if (!pending || state.player.setCards.length !== 1) return []
+  const risks: number[] = []
+  for (let i = pending.enemyIndex + 1; i < state.enemies.length; i++) {
+    const e = state.enemies[i]
+    if (e.hp > 0 && e.intent?.conditionalOn === 'set' && e.intent.alt) risks.push(i)
+  }
+  return risks
+}
+
 export function countedPermanents(state: GameState): number {
   return state.player.permanents.filter((p) => p.innate !== true).length
 }
