@@ -1,10 +1,13 @@
 // engine/run.ts — ドラフト連戦モード (純ロジック。DOM/React依存禁止)
-// 10戦のラン: 戦闘 → 勝利で3枚提示から1枚ピック (スキップ可) → 次の敵。
-// 敵は段階制で並び、深度スケーリング (強化+HP倍率) でだんだん強くなる (StS参考)。
-// HPは持ち越し、3・6・9戦目クリア後に焚き火 (最大HPの30%回復)。
+// マップラン (確定済みルール表「マップ」2026-08-28): StS式DAGを1ノードずつ進む。
+// 戦闘勝利で4枚提示から1枚ピック (スキップ可) → マップで次のノードを選ぶ。
+// 敵は行の帯で深度スケーリング (強化+HP倍率) され、だんだん強くなる (StS参考)。
+// HPは持ち越し、強制焚き火行 (5/10/14) で回復。
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
 import { startCombatWithOptions } from './combat.ts'
+import { BOSS_ROW, generateMap } from './map.ts'
+import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
   allCards,
@@ -19,7 +22,6 @@ import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
 import { applyCommand } from './state.ts'
 import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, GameState, RngState, ReactionMode } from './types.ts'
 
-export const RUN_BATTLES = 15
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 const REWARD_EXCLUDED = new Set([
   'green_strike',
@@ -33,20 +35,13 @@ const REWARD_EXCLUDED = new Set([
   'black_strike',
   'black_guard',
 ])
-/** 焚き火: この戦闘 (0-based) をクリアした後に回復 */
-/** 焚き火 (回復かカード除去の二択) が入る戦闘 (0-based: 3・6・9・12戦目クリア後) */
-const CAMPFIRE_AFTER = new Set([2, 5, 8, 11])
-/** 工房 (カード合成) が入る戦闘 (0-based: 5・10戦目クリア後。焚き火とは重ならない) */
-const WORKSHOP_AFTER = new Set([4, 9])
 const CAMPFIRE_HEAL_RATIO = 0.3
 // 2026-08-26 再設計: 回復は焚き火に到達すれば自動で入る。
 // 「回復か強化か」の二択にすると、実測で焚き火到達時HPが常に20〜46%のため全員が回復しか選べず、
 // 強化・除去が一度も使われなかった (供給側の機能が「既に余裕のある者」にしか届かない状態だった)。
 /** 勝利ごとの自動回復は廃止 (2026-08-25 StS踏襲。回復は焚き火のみ=マラソン構造) */
 const VICTORY_HEAL = 0
-/** エリート挑戦オファーが出る戦闘 (0-based: 2・5・8・11・14戦目)。確定済みルール表「エリート挑戦オファー」 */
-const ELITE_OFFER_BATTLES = new Set([1, 4, 7, 10, 13])
-/** エリート補正: 強化+2・HP×1.35 */
+/** エリート補正: 強化+2・HP×1.35 (エリートはマップの選択ノード。2026-08-28 opt-inオファー廃止) */
 const ELITE_STRENGTH = 2
 const ELITE_HP_SCALE = 1.35
 /**
@@ -55,44 +50,28 @@ const ELITE_HP_SCALE = 1.35
  */
 const RELIC_MAX = 5
 
-/** 段階制の敵プール。battleIndex (0-based) → 抽選プール */
-// 敵ID (ソロ) と編成ID (複数体。data/encounters.json) の混合プール
-const ENEMY_TIERS: readonly (readonly string[])[] = [
-  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 1〜5戦目
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 6〜10戦目
-  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 11〜14戦目 (大亀はボス専用)
-  ['enemy_brute', 'enemy_turtle', 'enemy_warden'], // 15戦目 (ボスは単体)
-]
-
-function tierForBattle(battleIndex: number): readonly string[] {
-  if (battleIndex < 5) return ENEMY_TIERS[0]
-  if (battleIndex < 10) return ENEMY_TIERS[1]
-  if (battleIndex < 14) return ENEMY_TIERS[2]
-  return ENEMY_TIERS[3]
-}
-
 /**
  * 深度スケーリング: 敵の初期強化。
  * 敵データは15枚スターター基準の強さなので、ラン序盤は「若い個体」(マイナス強化) で登場し、
  * ボスでフルスペック近くになる (StSの「敵はだんだん強く」の再現)。
  */
-export function depthStrength(battleIndex: number): number {
+export function depthStrength(row: number): number {
   // 若い個体補正は撤廃 (2026-08-25 人間基準化)。ボスのみ+1
-  return battleIndex >= 14 ? 1 : 0
+  return row >= BOSS_ROW ? 1 : 0
 }
 
 /** 深度スケーリング: 敵HP倍率。確定済みルール表「敵の数値基準」の帯に対応する */
-export function depthHpScale(battleIndex: number): number {
+export function depthHpScale(row: number): number {
   // 2026-08-26 再校正 (旧 0.75/0.85/0.95/1.0)。人間プレイで序盤の敵HPが
   // StS Act1 の約1.6倍と判明し、1〜3戦目 (焚き火前) のHP予算が赤字になっていた。
   // 素のHP90〜110の敵が ×0.55 で 49〜60 = StS Act1 通常敵の帯に入る。
-  if (battleIndex < 5) return 0.55
-  if (battleIndex < 10) return 0.8
-  if (battleIndex < 14) return 0.95
+  if (row < 5) return 0.55
+  if (row < 10) return 0.8
+  if (row < BOSS_ROW) return 0.95
   return 1.0
 }
 
-export type RunPhase = 'combat' | 'offer' | 'relic-reward' | 'campfire' | 'workshop' | 'reward' | 'won' | 'lost'
+export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'campfire' | 'workshop' | 'reward' | 'won' | 'lost'
 
 export interface RunState {
   readonly seed: number
@@ -108,10 +87,14 @@ export interface RunState {
   /** 戦闘間で持ち越すHP */
   readonly hp: number
   readonly maxHp: number
-  /** 現在 (または次) の戦闘番号 0-based */
-  readonly battleIndex: number
-  /** ラン開始時に確定した全戦闘の敵 */
-  readonly enemyIds: readonly string[]
+  /** マップ (ラン開始時にシードから確定。全体可視) */
+  readonly map: RunMap
+  /** 現在いる行 (-1 = 開始前。行0のノードを選ぶ) */
+  readonly row: number
+  /** 現在いる列 */
+  readonly col: number
+  /** クリアした戦闘数 (統計・結果画面用) */
+  readonly battlesWon: number
   readonly phase: RunPhase
   readonly combat: GameState | null
   /** 報酬フェーズの提示カード (cardId) */
@@ -137,7 +120,7 @@ export type RunCommand =
   | { readonly type: 'Combat'; readonly command: Command } // 戦闘中コマンドの委譲
   | { readonly type: 'PickReward'; readonly index: number }
   | { readonly type: 'SkipReward' }
-  | { readonly type: 'ChooseElite'; readonly elite: boolean } // エリート挑戦オファーへの回答
+  | { readonly type: 'ChooseNode'; readonly col: number } // マップで次のノードを選ぶ
   | { readonly type: 'PickRelic'; readonly index: number }
   | { readonly type: 'SkipRelic' }
   // 焚き火 (確定済みルール表「焚き火」): 休んで回復するか、デッキから1枚を永久に取り除くか
@@ -148,27 +131,30 @@ export type RunCommand =
   | { readonly type: 'WorkshopFuse'; readonly indexA: number; readonly indexB: number }
   | { readonly type: 'WorkshopSkip' }
 
-/**
- * 次の戦闘へ進む。エリートオファー対象の戦闘 (2/5/8戦目) では先に 'offer' フェーズを挟む
- * (レリック枠が埋まっている場合はオファーなしで通常戦闘へ)
- */
-function startBattle(run: RunState): RunState {
-  if (ELITE_OFFER_BATTLES.has(run.battleIndex) && run.relics.length < RELIC_MAX) {
-    return { ...run, phase: 'offer', combat: null, rewardOptions: null, currentElite: false }
-  }
-  return launchCombat(run, false)
+/** 現在いるノード (row=-1 の開始前は null) */
+export function currentNode(run: RunState): MapNode | null {
+  return run.row >= 0 ? run.map[run.row][run.col] : null
 }
 
-/** 戦闘を実際に開始する (戦闘シードはラン RNG から決定的に生成)。elite でエリート補正 */
+/** マップで次に進めるノードの列リスト (開始前は行0の全ノード) */
+export function nextChoices(run: RunState): readonly number[] {
+  if (run.row < 0) return run.map[0].map((_, c) => c)
+  if (run.row >= BOSS_ROW) return []
+  return currentNode(run)?.next ?? []
+}
+
+/** 現在ノードの戦闘を開始する (戦闘シードはラン RNG から決定的に生成)。elite でエリート補正 */
 function launchCombat(run: RunState, elite: boolean): RunState {
+  const node = currentNode(run)
+  if (node === null || node.encounterId === null) throw new Error('戦闘ノードではない')
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
-  const combat = startCombatWithOptions(combatSeed, run.mode, run.enemyIds[run.battleIndex], {
+  const combat = startCombatWithOptions(combatSeed, run.mode, node.encounterId, {
     deck: run.deck,
     leaderId: run.leaderId,
     playerHp: run.hp,
     playerMaxHp: run.maxHp,
-    enemyHpScale: depthHpScale(run.battleIndex) * (elite ? ELITE_HP_SCALE : 1),
-    enemyStrength: depthStrength(run.battleIndex) + (elite ? ELITE_STRENGTH : 0),
+    enemyHpScale: depthHpScale(run.row) * (elite ? ELITE_HP_SCALE : 1),
+    enemyStrength: depthStrength(run.row) + (elite ? ELITE_STRENGTH : 0),
     relicPermanents: run.relics
       .map(getRelicDef)
       .filter((r) => (r.effects?.length ?? 0) > 0)
@@ -177,27 +163,36 @@ function launchCombat(run: RunState, elite: boolean): RunState {
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
 }
 
+/** 選んだノードに入る: 戦闘ノードなら戦闘開始、焚き火なら回復、工房ならそのままフェーズへ */
+function enterNode(run: RunState): RunState {
+  const node = currentNode(run)
+  if (node === null) throw new Error('ノードにいない')
+  switch (node.type) {
+    case 'battle':
+    case 'boss':
+      return launchCombat(run, false)
+    case 'elite':
+      return launchCombat(run, true)
+    case 'campfire': {
+      // 回復は自動 (2026-08-26)。焚き火の選択は「鍛える / 取り除く / 何もしない」
+      const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
+      return { ...run, hp, phase: 'campfire', combat: null, rewardOptions: null }
+    }
+    case 'workshop':
+      return { ...run, phase: 'workshop', combat: null, rewardOptions: null }
+  }
+}
+
 export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_green'): RunState {
   const leader = getLeaderDef(leaderId)
-  let rng = createRng(seed)
-  const enemyIds: string[] = []
-  for (let i = 0; i < RUN_BATTLES; i++) {
-    const pool = tierForBattle(i)
-    // 直前2戦と同じ敵は避ける (2026-08-26。同型の長期戦が連続すると「同じ戦闘を3回やらされている」
-    // 体感になるとプレイテストで3人が指摘)。プールが小さくて避けられない場合はそのまま
-    const recent = enemyIds.slice(-2)
-    const fresh = pool.filter((id) => !recent.includes(id))
-    const candidates = fresh.length > 0 ? fresh : pool
-    const [idx, next] = nextInt(rng, 0, candidates.length - 1)
-    rng = next
-    enemyIds.push(candidates[idx])
-  }
-  // レリック候補列もシードから確定 (リプレイ再現性)
+  const rng0 = createRng(seed)
+  // マップもレリック候補列もシードから確定 (リプレイ再現性)
+  const [map, rngAfterMap] = generateMap(rng0)
   const [relicQueue, rngAfterRelics] = shuffle(
-    rng,
+    rngAfterMap,
     allRelics.map((r) => r.id),
   )
-  const run: RunState = {
+  return {
     seed,
     mode,
     leaderId,
@@ -206,9 +201,11 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
     deck: buildDeck(leader.runDeckId),
     hp: leader.maxHp,
     maxHp: leader.maxHp,
-    battleIndex: 0,
-    enemyIds,
-    phase: 'combat',
+    map,
+    row: -1,
+    col: 0,
+    battlesWon: 0,
+    phase: 'map',
     combat: null,
     rewardOptions: null,
     picks: [],
@@ -220,7 +217,6 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
     rewardChoicesBonus: 0,
     campfireRatio: CAMPFIRE_HEAL_RATIO,
   }
-  return startBattle(run)
 }
 
 /**
@@ -325,12 +321,12 @@ function rollRewards(run: RunState): RunState {
   return { ...run, rng, rewardOptions: picked, phase: 'reward' }
 }
 
-/** 戦闘勝利後の処理: HP持ち越し・焚き火 → (エリートならレリック報酬 →) カード報酬 or ラン勝利 */
+/** 戦闘勝利後の処理: HP持ち越し → (エリートならレリック報酬 →) カード報酬 or ラン勝利 */
 function afterVictory(run: RunState, combat: GameState): RunState {
-  // 自動回復は狩人の恵み (victoryHealBonus) のみ。3・6・9・12戦目クリア後は焚き火フェーズ
+  // 自動回復は狩人の恵み (victoryHealBonus) のみ
   const hp = Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
-  const next: RunState = { ...run, combat, hp }
-  if (run.battleIndex === RUN_BATTLES - 1) return { ...next, phase: 'won' }
+  const next: RunState = { ...run, combat, hp, battlesWon: run.battlesWon + 1 }
+  if (currentNode(run)?.type === 'boss') return { ...next, phase: 'won' }
   // エリート戦の勝利: レリック3択 (取得済みを除いた候補列の先頭から)
   if (run.currentElite && run.relics.length < RELIC_MAX) {
     const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
@@ -338,20 +334,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
       return { ...next, phase: 'relic-reward', relicOptions: remaining.slice(0, 3) }
     }
   }
-  return campfireOrReward(next)
-}
-
-/** 焚き火の戦闘なら二択を挟み、そうでなければ通常のカード報酬へ (確定済みルール表「焚き火」) */
-function campfireOrReward(run: RunState): RunState {
-  if (CAMPFIRE_AFTER.has(run.battleIndex)) {
-    // 回復は自動 (2026-08-26)。焚き火の選択は「鍛える / 取り除く / 何もしない」で、HPと排他にしない
-    const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
-    return { ...run, hp, phase: 'campfire', rewardOptions: null }
-  }
-  if (WORKSHOP_AFTER.has(run.battleIndex)) {
-    return { ...run, phase: 'workshop', rewardOptions: null }
-  }
-  return rollRewards(run)
+  return rollRewards(next)
 }
 
 /**
@@ -524,22 +507,25 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (run.phase !== 'reward' || run.rewardOptions === null) throw new Error('報酬フェーズではない')
       const cardId = run.rewardOptions[command.index]
       if (cardId === undefined) throw new Error(`不正な報酬指定: ${command.index}`)
-      const card: CardInstance = { uid: `pick${run.battleIndex}_${cardId}`, def: getCardDef(cardId) }
-      const next: RunState = {
+      // uid は行番号で一意化 (1行につき1ノードしか訪れないため衝突しない)
+      const card: CardInstance = { uid: `pick_r${run.row}_${cardId}`, def: getCardDef(cardId) }
+      return {
         ...run,
         deck: [...run.deck, card],
         picks: [...run.picks, cardId],
-        battleIndex: run.battleIndex + 1,
+        phase: 'map',
+        rewardOptions: null,
       }
-      return startBattle(next)
     }
     case 'SkipReward': {
       if (run.phase !== 'reward') throw new Error('報酬フェーズではない')
-      return startBattle({ ...run, battleIndex: run.battleIndex + 1 })
+      return { ...run, phase: 'map', rewardOptions: null }
     }
-    case 'ChooseElite': {
-      if (run.phase !== 'offer') throw new Error('オファーフェーズではない')
-      return launchCombat(run, command.elite)
+    case 'ChooseNode': {
+      if (run.phase !== 'map') throw new Error('マップフェーズではない')
+      const candidates = nextChoices(run)
+      if (!candidates.includes(command.col)) throw new Error(`進めないノード: ${command.col}`)
+      return enterNode({ ...run, row: run.row + 1, col: command.col })
     }
     case 'PickRelic': {
       if (run.phase !== 'relic-reward' || run.relicOptions === null) {
@@ -549,16 +535,16 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (relicId === undefined) throw new Error(`不正なレリック指定: ${command.index}`)
       let next: RunState = { ...run, relics: [...run.relics, relicId], relicOptions: null }
       next = applyRelicBonus(next, relicId)
-      return campfireOrReward(next)
+      return rollRewards(next)
     }
     case 'SkipRelic': {
       if (run.phase !== 'relic-reward') throw new Error('レリック報酬フェーズではない')
-      return campfireOrReward({ ...run, relicOptions: null })
+      return rollRewards({ ...run, relicOptions: null })
     }
     case 'CampfireRest': {
-      // 「何もしない」= 回復だけ受け取って次へ (回復は campfireOrReward で適用済み)
+      // 「何もしない」= 回復だけ受け取って次へ (回復はノード進入時に適用済み)
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
-      return rollRewards(run)
+      return { ...run, phase: 'map' }
     }
     case 'CampfireUpgrade': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
@@ -570,10 +556,11 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (upgradeTier(card.def) === 'none') {
         throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
       }
-      return rollRewards({
+      return {
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
-      })
+        phase: 'map',
+      }
     }
     case 'WorkshopFuse': {
       if (run.phase !== 'workshop') throw new Error('工房フェーズではない')
@@ -583,14 +570,14 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const reason = fuseBlockReason(a, b)
       if (reason !== null) throw new Error(`合成できない: ${reason}`)
       const fusedDef = fuseCards(a, b)
-      const fused: CardInstance = { uid: `fused${run.battleIndex}_${fusedDef.id}`, def: fusedDef }
+      const fused: CardInstance = { uid: `fused_r${run.row}_${fusedDef.id}`, def: fusedDef }
       // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる
       const deck = run.deck.filter((_, i) => i !== command.indexA && i !== command.indexB)
-      return rollRewards({ ...run, deck: [...deck, fused] })
+      return { ...run, deck: [...deck, fused], phase: 'map' }
     }
     case 'WorkshopSkip': {
       if (run.phase !== 'workshop') throw new Error('工房フェーズではない')
-      return rollRewards(run)
+      return { ...run, phase: 'map' }
     }
     case 'CampfireRemove': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
@@ -598,7 +585,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
       // デッキが痩せすぎないよう最低5枚は残す
       if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
-      return rollRewards({ ...run, deck: run.deck.filter((_, i) => i !== command.index) })
+      return { ...run, deck: run.deck.filter((_, i) => i !== command.index), phase: 'map' }
     }
   }
 }

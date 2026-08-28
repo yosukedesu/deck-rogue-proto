@@ -4,7 +4,7 @@ import { allCards, getCardDef } from './content.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import { applyRunCommand, createRun, upgradeCard, upgradeTier } from './run.ts'
 import type { RunState } from './run.ts'
-import { defendIntent, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { CardInstance, GameState } from './types.ts'
 
 const inst = (id: string, uid = `t_${id}`): CardInstance => ({ uid, def: getCardDef(id) })
@@ -19,13 +19,24 @@ function forceWin(run: RunState): RunState {
     { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } },
   )
 }
-function advance(run: RunState): RunState {
+/** 目的タイプのノードに入るまでラン進行を回す (途中の戦闘は forceWin・報酬等はスキップ) */
+function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
   let r = run
-  if (r.phase === 'campfire') r = applyRunCommand(r, { type: 'CampfireRest' })
-  if (r.phase === 'relic-reward') r = applyRunCommand(r, { type: 'SkipRelic' })
-  if (r.phase === 'reward') r = applyRunCommand(r, { type: 'SkipReward' })
-  if (r.phase === 'offer') r = applyRunCommand(r, { type: 'ChooseElite', elite: false })
-  return r
+  let guard = 0
+  while (guard++ < 80) {
+    if (r.phase === 'map') { r = chooseToward(r, target); continue }
+    if (r.phase === 'campfire') {
+      if (target === 'campfire') return r
+      r = applyRunCommand(r, { type: 'CampfireRest' })
+    } else if (r.phase === 'workshop') {
+      if (target === 'workshop') return r
+      r = applyRunCommand(r, { type: 'WorkshopSkip' })
+    } else if (r.phase === 'combat') r = forceWin(r)
+    else if (r.phase === 'relic-reward') r = applyRunCommand(r, { type: 'SkipRelic' })
+    else if (r.phase === 'reward') r = applyRunCommand(r, { type: 'SkipReward' })
+    else return r
+  }
+  throw new Error('runTo が収束しない')
 }
 
 describe('計算合成', () => {
@@ -106,11 +117,9 @@ describe('計算合成', () => {
   })
 })
 
-describe('工房ノード (5・10戦目クリア後)', () => {
-  it('5戦目クリア後に工房が入り、合成すると素材2枚が消えて1枚増える', () => {
-    let run = createRun(31, 'set-confirm')
-    for (let i = 0; i < 4; i++) run = advance(forceWin(run))
-    run = forceWin(run) // 5戦目 (battleIndex 4) をクリア
+describe('工房ノード (マップの選択ノード)', () => {
+  it('工房ノードに入ると合成でき、素材2枚が消えて1枚増える', () => {
+    let run = runTo(createRun(31, 'set-confirm'), 'workshop')
     expect(run.phase).toBe('workshop')
     const before = run.deck.length
     // 合成可能なペアを探す
@@ -123,18 +132,16 @@ describe('工房ノード (5・10戦目クリア後)', () => {
     expect(pair).not.toBeNull()
     run = applyRunCommand(run, { type: 'WorkshopFuse', indexA: pair![0], indexB: pair![1] })
     expect(run.deck).toHaveLength(before - 1) // 2枚消えて1枚入る
-    expect(run.phase).toBe('reward')
+    expect(run.phase).toBe('map')
   })
 
   it('見送りもできる', () => {
-    let run = createRun(31, 'set-confirm')
-    for (let i = 0; i < 4; i++) run = advance(forceWin(run))
-    run = forceWin(run)
+    let run = runTo(createRun(31, 'set-confirm'), 'workshop')
     expect(run.phase).toBe('workshop')
     const before = run.deck.length
     run = applyRunCommand(run, { type: 'WorkshopSkip' })
     expect(run.deck).toHaveLength(before)
-    expect(run.phase).toBe('reward')
+    expect(run.phase).toBe('map')
   })
 })
 
@@ -389,19 +396,12 @@ describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LL
 })
 
 describe('焚き火の全カード解放 (2026-08-28。旧: 芽吹きは拒否→コスト-1で受理に変更)', () => {
-  it('芽吹きを焚き火で鍛えると 0E・上限+1・消滅 になりデッキに反映される', async () => {
-    const { applyRunCommand: apply, createRun: create } = await import('./run.ts')
-    let run = create(17, 'set-confirm')
-    // 3戦目クリアまで進めて焚き火へ
-    for (let i = 0; i < 2; i++) {
-      run = forceWin(run)
-      run = advance(run)
-    }
-    run = forceWin(run)
+  it('芽吹きを焚き火で鍛えると 0E・上限+1・消滅 になりデッキに反映される', () => {
+    const run = runTo(createRun(17, 'set-confirm'), 'campfire')
     expect(run.phase).toBe('campfire')
     const idx = run.deck.findIndex((c) => c.def.id === 'green_ramp_sprout')
     expect(idx).toBeGreaterThanOrEqual(0)
-    const after = apply(run, { type: 'CampfireUpgrade', index: idx })
+    const after = applyRunCommand(run, { type: 'CampfireUpgrade', index: idx })
     expect(after.deck[idx].def.name).toBe('芽吹き+')
     expect(after.deck[idx].def.cost).toBe(0)
     expect(after.deck[idx].def.effects[0].amount).toBe(1) // 上限量は据え置き

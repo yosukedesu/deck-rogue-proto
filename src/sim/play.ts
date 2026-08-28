@@ -11,11 +11,11 @@
 //   {"type":"SetCard","cardUid":"c3"} / {"type":"EndTurn"}
 //   {"type":"ConfirmReaction","fire":true,"cardUid":"c3"} / {"type":"ConfirmReaction","fire":false}
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
-//            {"type":"ChooseElite","elite":true} / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
+//            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
 //            {"type":"CampfireRest"} / {"type":"CampfireRemove","index":0} / {"type":"CampfireUpgrade","index":0}  ← 焚き火
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { encounterName, getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
@@ -34,7 +34,7 @@ import {
   reactionMatches,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createRun, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, nextChoices, upgradeCard } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -238,19 +238,41 @@ function renderBattle(s: GameState, logFrom: number): string {
   return L.join('\n')
 }
 
+const NODE_ICON: Record<string, string> = {
+  battle: '⚔', elite: '👑', campfire: '🔥', workshop: '🔨', boss: '💀',
+}
+
+/** マップ全体をテキスト描画 (全体可視・現在地と次の選択肢を明示) */
+function renderMap(run: RunState): string {
+  const L: string[] = []
+  const cands = nextChoices(run)
+  L.push('🗺 マップ (下から上へ。全体が最初から見える。エリート👑=強化+2/HP×1.35、勝てばレリック3択)')
+  for (let r = run.map.length - 1; r >= 0; r--) {
+    const cells = run.map[r].map((n, c) => {
+      const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${n.type === 'campfire' ? '焚き火' : n.type === 'workshop' ? '工房' : n.type}`
+      const here = r === run.row && c === run.col ? '【現在地】' : ''
+      const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : ''
+      return `${label}${here}${choice}`
+    })
+    const mark = r === run.row + 1 ? '→' : '  '
+    L.push(` ${mark}行${String(r).padStart(2)}: ${cells.join(' | ')}`)
+  }
+  L.push('→ {"type":"ChooseNode","col":N} で「←選べる」のノードへ進む')
+  return L.join('\n')
+}
+
 function renderRun(run: RunState, logFrom: number): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
-  L.push(`=== ラン: ${leader.name} | 戦闘${run.battleIndex + 1}/${run.enemyIds.length} | HP持ち越し${run.hp} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
     L.push('報酬ピック (1枚選ぶ or スキップ):')
     run.rewardOptions.forEach((id, i) => L.push(` [${i}] ${cardLine(getCardDef(id))}`))
     L.push('→ {"type":"PickReward","index":N} か {"type":"SkipReward"}')
-  } else if (run.phase === 'offer') {
-    L.push('エリート挑戦オファー: 挑めば敵が強化+2/HP×1.35、勝てばレリック3択が付く')
-    L.push('→ {"type":"ChooseElite","elite":true} か {"type":"ChooseElite","elite":false}')
+  } else if (run.phase === 'map') {
+    L.push(renderMap(run))
   } else if (run.phase === 'campfire') {
     L.push(`🔥 焚き火: 回復は済んでいる (現在 ${run.hp}/${run.maxHp})。この上で1つ選ぶ`)
     L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
@@ -333,7 +355,7 @@ if (mode === 'new-run') {
   if (sf.kind === 'run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
-      ['PickReward', 'SkipReward', 'ChooseElite', 'PickRelic', 'SkipRelic', 'StartRun',
+      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun',
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }

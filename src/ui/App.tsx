@@ -37,7 +37,9 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, canUpgradeCard, createRun, isUpgraded, RUN_BATTLES, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, upgradeCard } from '../engine/run.ts'
+import { BOSS_ROW } from '../engine/map.ts'
+import type { MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -650,7 +652,7 @@ function SetupScreen({
       </div>
 
       <div className="panel" style={{ marginTop: 16 }}>
-        <div className="choice-title">🏕 ドラフト連戦（{RUN_BATTLES}戦ラン）</div>
+        <div className="choice-title">🏕 ドラフト連戦（マップラン・ボスまで16行）</div>
         <div className="choice-desc">
           {leader.name}の基本10枚から出発し、勝利ごとに{leader.colors.map((c) => COLOR_LABEL[c]).join('')}
           の{leader.rewardChoices}枚から1枚ピックして構築。敵は段階制でだんだん強くなり、HPは持ち越し。
@@ -1453,9 +1455,8 @@ function RunScreen({
   onExit: () => void
   onRestart: (seed: number) => void
 }) {
-  const battleNo = Math.min(run.battleIndex + 1, RUN_BATTLES)
-  const isBoss = run.battleIndex === RUN_BATTLES - 1
-  const progressChip = `${isBoss ? '👑 ボス戦' : run.currentElite ? `⚔️👑 強個体戦 ${battleNo}/${RUN_BATTLES}` : `戦闘 ${battleNo}/${RUN_BATTLES}`}・デッキ${run.deck.length}枚`
+  const isBoss = currentNode(run)?.type === 'boss'
+  const progressChip = `${isBoss ? '👑 ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
   const ctx = undefined
   // 所持レリックの表示行 (ホバーで効果説明)
   const relicChips =
@@ -1475,35 +1476,67 @@ function RunScreen({
       </div>
     ) : null
 
-  if (run.phase === 'offer') {
-    const nextName = encounterName(run.enemyIds[run.battleIndex])
+  if (run.phase === 'map') {
+    const cands = nextChoices(run)
+    const nodeLabel = (t: MapNodeType, encounterId: string | null) =>
+      t === 'boss'
+        ? `💀 ${encounterId ? encounterName(encounterId) : 'ボス'}`
+        : t === 'elite'
+          ? `👑 ${encounterId ? encounterName(encounterId) : ''}（強個体）`
+          : t === 'campfire'
+            ? '🔥 焚き火'
+            : t === 'workshop'
+              ? '🔨 工房'
+              : `⚔️ ${encounterId ? encounterName(encounterId) : ''}`
     return (
       <div className="app setup">
-        <h1>⚔️ 強個体の気配…</h1>
+        <h1>🗺 マップ</h1>
         <div className="panel">
-          <div className="choice-title">
-            この先にいる「{nextName}」は強個体だ（強化+2・HP+35%）
-          </div>
-          <div className="choice-desc" style={{ marginTop: 6 }}>
-            挑んで勝てば、通常報酬に加えて<b>レリック</b>（ラン中ずっと効く宝物）を1つ選べる。
-            負ければ当然、ランは終わる。
+          <div className="choice-desc">
+            全体が最初から見える。次に進むノードを選ぶ（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=HP30%回復+鍛える/除去。🔨工房=カード合成）
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
-            <span className="chip">レリック {run.relics.length}/3</span>
+            <span className="chip">デッキ {run.deck.length}枚</span>
+            <span className="chip">{run.battlesWon}勝</span>
           </div>
           {relicChips}
         </div>
-        <div style={{ marginTop: 16 }}>
-          <button
-            className="btn btn-primary"
-            onClick={() => dispatch({ type: 'ChooseElite', elite: true })}
-          >
-            👑 挑む（勝てばレリック）
-          </button>{' '}
-          <button className="btn" onClick={() => dispatch({ type: 'ChooseElite', elite: false })}>
-            避けて通常の相手と戦う
-          </button>
+        <div style={{ marginTop: 12 }}>
+          {[...run.map].map((_, idx) => {
+            const r = run.map.length - 1 - idx // ボス (行15) を上に
+            const row = run.map[r]
+            const isNextRow = r === run.row + 1
+            return (
+              <div key={r} style={{ display: 'flex', gap: 8, alignItems: 'center', margin: '4px 0', justifyContent: 'center' }}>
+                <span className="pile-info" style={{ width: 44, textAlign: 'right' }}>{r === BOSS_ROW ? 'ボス' : `行${r + 1}`}</span>
+                {row.map((n, c) => {
+                  const here = r === run.row && c === run.col
+                  const passed = r <= run.row && !here
+                  const clickable = isNextRow && cands.includes(c)
+                  return (
+                    <button
+                      key={c}
+                      className={clickable ? 'btn btn-primary' : 'btn'}
+                      disabled={!clickable}
+                      style={{
+                        opacity: passed ? 0.35 : clickable ? 1 : 0.75,
+                        outline: here ? '2px solid var(--accent, #e6b422)' : undefined,
+                      }}
+                      onClick={() => clickable && dispatch({ type: 'ChooseNode', col: c })}
+                    >
+                      {nodeLabel(n.type, n.encounterId)}
+                      {here ? '（現在地）' : ''}
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <button className="btn" onClick={() => saveReport(run, null, history)}>📄 状況を書き出す</button>{' '}
+          <button className="btn" onClick={onExit}>ランを放棄</button>
         </div>
       </div>
     )
@@ -1611,7 +1644,7 @@ function RunScreen({
         state={run.combat}
         config={{
           mode: run.mode,
-          enemyId: run.enemyIds[run.battleIndex],
+          enemyId: currentNode(run)?.encounterId ?? 'enemy_probe',
           deckId: 'run_basic',
           leaderId: run.leaderId,
           seed: run.seed,
@@ -1630,10 +1663,9 @@ function RunScreen({
       <div className="app setup">
         <h1>🎴 報酬ピック</h1>
         <div className="panel">
-          <span className="chip">戦闘 {battleNo}/{RUN_BATTLES} クリア</span>
+          <span className="chip">戦闘 {run.battlesWon}勝</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
           <span className="chip">デッキ {run.deck.length}枚</span>
-          <span className="chip">次: {encounterName(run.enemyIds[run.battleIndex + 1])}</span>
           {relicChips}
         </div>
         <div className="setup-section-title">1枚選んでデッキに加える（スキップ可）</div>
@@ -1672,11 +1704,11 @@ function RunScreen({
   return (
     <div className="app setup">
       <h1 className={won ? 'result-won' : 'result-lost'}>
-        {won ? '🏆 ラン制覇！' : `💀 ラン終了（${battleNo}戦目で敗北）`}
+        {won ? '🏆 ラン制覇！' : `💀 ラン終了（行${run.row + 1}で敗北）`}
       </h1>
       <div className="panel">
         <div className="choice-desc">
-          到達: {won ? `全${RUN_BATTLES}戦制覇` : `${run.battleIndex}戦クリア`} / seed {run.seed} /
+          到達: {won ? 'ボス撃破' : `${run.battlesWon}戦クリア`} / seed {run.seed} /
           最終デッキ {run.deck.length}枚
         </div>
         <div className="choice-desc" style={{ marginTop: 6 }}>
@@ -1752,8 +1784,8 @@ export default function App() {
     if (ended && run.combat && run.combat.phase !== next.combat?.phase && next.combat) {
       const archived = archiveBattle(
         next.combat,
-        run.battleIndex + 1,
-        run.enemyIds[run.battleIndex],
+        run.battlesWon + 1,
+        currentNode(run)?.encounterId ?? 'unknown',
         run.currentElite,
         run.hp,
         run.deck.length,

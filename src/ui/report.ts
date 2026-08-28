@@ -126,8 +126,20 @@ export function buildReport(
   if (run) {
     const leader = getLeaderDef(run.leaderId)
     L.push(`ラン ${leader.name}（${run.leaderId}） / seed ${run.seed} / mode ${run.mode}`)
-    L.push(`進行: ${run.phase} / 戦闘 ${Math.min(run.battleIndex + 1, run.enemyIds.length)}/${run.enemyIds.length}${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / デッキ${run.deck.length}枚`)
-    L.push(`敵の並び: ${run.enemyIds.map((id, i) => `${i + 1}.${encounterName(id)}${i < run.battleIndex ? '✓' : ''}`).join(' ')}`)
+    L.push(`進行: ${run.phase} / 行 ${run.row + 1}/16・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / デッキ${run.deck.length}枚`)
+    L.push(
+      `マップ: ${run.map
+        .map((row, r) => {
+          const cells = row
+            .map((n, c) => {
+              const label = n.encounterId !== null ? encounterName(n.encounterId) : n.type === 'campfire' ? '焚き火' : '工房'
+              return `${label}${r === run.row && c === run.col ? '●' : ''}`
+            })
+            .join('/')
+          return `行${r}:${cells}`
+        })
+        .join(' ')}`,
+    )
     L.push(`レリック: ${run.relics.length ? run.relics.join('、') : '（なし）'}`)
     L.push(`ピック履歴: ${run.picks.length ? run.picks.map(cardName).join('、') : '（なし）'}`)
     if (run.rewardOptions) L.push(`報酬候補（いま提示中）: ${run.rewardOptions.map(cardName).join(' / ')}`)

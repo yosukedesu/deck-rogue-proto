@@ -15,7 +15,8 @@
 import { allDecks, allEnemies, allLeaders, getCardDef } from '../engine/content.ts'
 import { effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, createRun, isUpgraded, RUN_BATTLES } from '../engine/run.ts'
+import { applyRunCommand, createRun, isUpgraded, nextChoices } from '../engine/run.ts'
+import { BOSS_ROW } from '../engine/map.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
 
@@ -381,7 +382,7 @@ function simulateRuns(count: number, baseSeed: number): void {
   console.error(`# ドラフト連戦 sim: ${count}ラン × ${allLeaders.length}リーダー, baseSeed=${baseSeed} (ピックはカテゴリ優先の単純方針)`)
   console.log('leader,runs,cleared,clearRate,avgBattlesCleared,avgFinalDeckSize')
   for (const leader of allLeaders) {
-    const deathsByBattle = new Array<number>(RUN_BATTLES).fill(0)
+    const deathsByBattle = new Array<number>(BOSS_ROW + 1).fill(0)
     let cleared = 0
     let totalBattlesCleared = 0
     let totalDeckSize = 0
@@ -392,18 +393,24 @@ function simulateRuns(count: number, baseSeed: number): void {
       while (
         run.phase === 'combat' ||
         run.phase === 'reward' ||
-        run.phase === 'offer' ||
+        run.phase === 'map' ||
         run.phase === 'campfire' ||
         run.phase === 'workshop' ||
         run.phase === 'relic-reward'
       ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
-        if (run.phase === 'offer') {
-          // エリート挑戦ポリシー: HP60%以上なら挑む (docs/relics-design.md)
-          run = applyRunCommand(run, {
-            type: 'ChooseElite',
-            elite: run.hp >= run.maxHp * 0.6,
-          })
+        if (run.phase === 'map') {
+          // ルートポリシー: HP60%未満なら焚き火優先 / それ以外はHP60%以上でエリート優先 → 戦闘
+          const cands = nextChoices(run)
+          const typeOf = (c: number) => run.map[run.row + 1][c].type
+          const wantCamp = run.hp < run.maxHp * 0.6
+          const wantElite = run.hp >= run.maxHp * 0.6
+          const pick =
+            (wantCamp ? cands.find((c) => typeOf(c) === 'campfire') : undefined) ??
+            (wantElite ? cands.find((c) => typeOf(c) === 'elite') : undefined) ??
+            cands.find((c) => typeOf(c) === 'battle' || typeOf(c) === 'boss') ??
+            cands[0]
+          run = applyRunCommand(run, { type: 'ChooseNode', col: pick })
           continue
         }
         if (run.phase === 'campfire') {
@@ -451,11 +458,11 @@ function simulateRuns(count: number, baseSeed: number): void {
         }
         run = applyRunCommand(run, { type: 'Combat', command: chooseCommand(run.combat!) })
       }
-      const battlesCleared = run.phase === 'won' ? RUN_BATTLES : run.battleIndex
+      const battlesCleared = run.battlesWon
       totalBattlesCleared += battlesCleared
       totalDeckSize += run.deck.length
       if (run.phase === 'won' && !aborted) cleared += 1
-      else deathsByBattle[Math.min(run.battleIndex, RUN_BATTLES - 1)] += 1
+      else deathsByBattle[Math.min(Math.max(run.row, 0), BOSS_ROW)] += 1
     }
     console.log(
       [

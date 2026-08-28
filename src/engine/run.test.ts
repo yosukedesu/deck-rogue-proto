@@ -1,15 +1,19 @@
-// ドラフト連戦モードのテスト。「確定済みルール」表のラン関連項目をここで固定する。
+// ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, depthHpScale, depthStrength, isUpgraded, RUN_BATTLES, upgradeCard } from './run.ts'
+import { BOSS_ROW, MAP_ROWS, tierForRow } from './map.ts'
+import {
+  applyRunCommand,
+  createRun,
+  currentNode,
+  depthHpScale,
+  depthStrength,
+  isUpgraded,
+  upgradeCard,
+} from './run.ts'
 import type { RunState } from './run.ts'
-import { defendIntent, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
-
-/** offerフェーズなら通常戦闘を選んで進める */
-function declineOffer(run: RunState): RunState {
-  return run.phase === 'offer' ? applyRunCommand(run, { type: 'ChooseElite', elite: false }) : run
-}
 
 /** 現在の戦闘を外科的に「全滅寸前」にして薙ぎ払い (全体攻撃) で勝つ (プレイヤーHPは維持される) */
 function forceWin(run: RunState): RunState {
@@ -23,59 +27,83 @@ function forceWin(run: RunState): RunState {
   )
 }
 
-describe('ラン構造', () => {
-  it('15戦・段階制の敵並び (序盤/中盤/終盤/ボス) がシードで確定する', () => {
+/** 目的タイプのノードに入るまでラン進行を回す (途中の戦闘は forceWin・報酬等はスキップ) */
+function runTo(run: RunState, target: 'campfire' | 'workshop' | 'elite' | 'boss'): RunState {
+  let r = run
+  let guard = 0
+  while (guard++ < 80) {
+    if (r.phase === 'map') {
+      r = chooseToward(r, target)
+      if (r.phase === 'combat' && target === 'elite' && r.currentElite) return r
+      if (r.phase === 'combat' && target === 'boss' && currentNode(r)?.type === 'boss') return r
+      continue
+    }
+    if (r.phase === 'campfire') {
+      if (target === 'campfire') return r
+      r = applyRunCommand(r, { type: 'CampfireRest' })
+    } else if (r.phase === 'workshop') {
+      if (target === 'workshop') return r
+      r = applyRunCommand(r, { type: 'WorkshopSkip' })
+    } else if (r.phase === 'combat') {
+      r = forceWin(r)
+    } else if (r.phase === 'relic-reward') {
+      r = applyRunCommand(r, { type: 'SkipRelic' })
+    } else if (r.phase === 'reward') {
+      r = applyRunCommand(r, { type: 'SkipReward' })
+    } else {
+      return r
+    }
+  }
+  throw new Error('runTo が収束しない')
+}
+
+/** 最初の戦闘に入る */
+function intoFirstBattle(run: RunState): RunState {
+  let r = run
+  while (r.phase === 'map') r = chooseToward(r, 'battle')
+  return r
+}
+
+describe('ラン構造 (マップ)', () => {
+  it('戦闘ノードの敵は行の帯 (Act1/2/3/ボス) のプールから出る', () => {
     const run = createRun(42, 'set-confirm')
-    expect(run.enemyIds).toHaveLength(RUN_BATTLES)
-    const tier1 = ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair']
-    const tier2 = [
-      'enemy_set_wary',
-      'enemy_set_breaker',
-      'enemy_hexer',
-      'enemy_joker',
-      'enc_probe_trio',
-      'enc_joker_drummer',
-    ]
-    const tier3 = [
-      'enemy_brute',
-      'enemy_wolf',
-      'enemy_moss',
-      'enemy_set_breaker',
-      'enc_wolf_drummer',
-      'enc_hexer_shadow',
-      'enc_breaker_hexer',
-    ]
-    const boss = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
-    run.enemyIds.forEach((id, i) => {
-      const pool = i < 5 ? tier1 : i < 10 ? tier2 : i < 14 ? tier3 : boss
-      expect(pool).toContain(id)
+    run.map.forEach((row, r) => {
+      for (const node of row) {
+        if (node.encounterId !== null) {
+          expect(tierForRow(r), `row ${r}`).toContain(node.encounterId)
+        }
+      }
     })
   })
 
-  it('決定論: 同じシードは同じラン (敵並び・初戦の状態が一致)', () => {
+  it('決定論: 同じシードは同じマップ・同じ初戦', () => {
     const a = createRun(7, 'set-confirm')
     const b = createRun(7, 'set-confirm')
-    expect(a.enemyIds).toEqual(b.enemyIds)
-    expect(JSON.stringify(a.combat)).toBe(JSON.stringify(b.combat))
+    expect(JSON.stringify(a.map)).toBe(JSON.stringify(b.map))
+    const a1 = intoFirstBattle(a)
+    const b1 = intoFirstBattle(b)
+    expect(JSON.stringify(a1.combat)).toBe(JSON.stringify(b1.combat))
   })
 
   it('初期デッキは run_basic の10枚 (エンジンの種入り構成)、HPは全快スタート', () => {
     const run = createRun(1, 'set-confirm')
     expect(run.deck).toHaveLength(10)
     expect(run.hp).toBe(run.maxHp)
-    expect(run.combat!.player.hand.length + run.combat!.player.drawPile.length).toBe(10)
+    expect(run.phase).toBe('map') // 開始はマップで行0のノードを選ぶ
+    const r = intoFirstBattle(run)
+    expect(r.combat!.player.hand.length + r.combat!.player.drawPile.length).toBe(10)
   })
 
-  it('深度スケーリング: 若い個体補正は撤廃 (人間基準化)。強化はボスのみ+1、HPは緩ランプ', () => {
+  it('深度スケーリング: 強化はボスのみ+1、HPは緩ランプ (行基準)', () => {
     expect(depthStrength(0)).toBe(0)
-    expect(depthStrength(6)).toBe(0)
     expect(depthStrength(9)).toBe(0)
-    expect(depthStrength(14)).toBe(1) // ボスのみ (15戦目)
-    expect(depthHpScale(0)).toBeCloseTo(0.55) // 2026-08-26 再校正 (StS Act1帯へ)
-    expect(depthHpScale(14)).toBeCloseTo(1.0)
+    expect(depthStrength(BOSS_ROW)).toBe(1) // ボスのみ (行15)
+    expect(depthHpScale(0)).toBeCloseTo(0.55)
+    expect(depthHpScale(14)).toBeCloseTo(0.95)
+    expect(depthHpScale(BOSS_ROW)).toBeCloseTo(1.0)
     // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
-    const run = createRun(5, 'set-confirm')
-    const members = resolveEncounter(run.enemyIds[0])
+    const run = intoFirstBattle(createRun(5, 'set-confirm'))
+    const members = resolveEncounter(currentNode(run)!.encounterId!)
     const def = getEnemyDef(members[0].enemyId)
     expect(run.combat!.enemies[0].maxHp).toBe(
       Math.round(def.maxHp * 0.55 * (members[0].hpScale ?? 1)),
@@ -85,8 +113,8 @@ describe('ラン構造', () => {
 })
 
 describe('報酬ピック', () => {
-  it('勝利で4枚提示 (重複なし・基本札除外)。ピックでデッキが増えて次戦へ', () => {
-    let run = createRun(11, 'set-confirm')
+  it('勝利で4枚提示 (重複なし・基本札除外)。ピックでデッキが増えてマップへ戻る', () => {
+    let run = intoFirstBattle(createRun(11, 'set-confirm'))
     run = forceWin(run)
     expect(run.phase).toBe('reward')
     expect(run.rewardOptions).toHaveLength(4) // 2026-08-26: 3→4枚
@@ -95,17 +123,14 @@ describe('報酬ピック', () => {
     expect(run.rewardOptions).not.toContain('green_guard')
     const picked = run.rewardOptions![0]
     run = applyRunCommand(run, { type: 'PickReward', index: 0 })
-    // 2戦目はエリートオファー対象 → 避ければ通常戦闘へ
-    expect(run.phase).toBe('offer')
-    run = applyRunCommand(run, { type: 'ChooseElite', elite: false })
-    expect(run.phase).toBe('combat')
-    expect(run.battleIndex).toBe(1)
+    expect(run.phase).toBe('map') // ピック後はマップで次のノードを選ぶ
     expect(run.deck).toHaveLength(11)
     expect(run.picks).toEqual([picked])
+    expect(run.battlesWon).toBe(1)
   })
 
   it('報酬はランの色のカードのみ (カラーパイを無視しない)', () => {
-    let run = createRun(11, 'set-confirm') // 緑ラン
+    let run = intoFirstBattle(createRun(11, 'set-confirm')) // 緑ラン
     run = forceWin(run)
     expect(run.rewardOptions!.length).toBeGreaterThan(0)
     for (const cardId of run.rewardOptions!) {
@@ -113,55 +138,63 @@ describe('報酬ピック', () => {
     }
   })
 
-  it('スキップするとデッキは増えず次戦へ', () => {
-    let run = createRun(11, 'set-confirm')
+  it('スキップするとデッキは増えずマップへ', () => {
+    let run = intoFirstBattle(createRun(11, 'set-confirm'))
     run = forceWin(run)
     run = applyRunCommand(run, { type: 'SkipReward' })
-    expect(run.battleIndex).toBe(1)
+    expect(run.phase).toBe('map')
     expect(run.deck).toHaveLength(10)
   })
 
-  it('戦闘中の PickReward は拒否される', () => {
+  it('マップフェーズの PickReward は拒否される', () => {
     const run = createRun(3, 'set-confirm')
     expect(() => applyRunCommand(run, { type: 'PickReward', index: 0 })).toThrow(/報酬フェーズ/)
+  })
+
+  it('進めないノードへの ChooseNode は拒否される', () => {
+    const run = createRun(3, 'set-confirm')
+    expect(() => applyRunCommand(run, { type: 'ChooseNode', col: 9 })).toThrow(/進めないノード/)
   })
 })
 
 describe('HP持ち越しと焚き火', () => {
   it('戦闘で受けたダメージは持ち越される (勝利ごとの自動回復なし = StS踏襲)', () => {
-    let run = createRun(13, 'set-confirm')
+    let run = intoFirstBattle(createRun(13, 'set-confirm'))
     // 被弾した状態を作ってから勝つ
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 27 } } }
     run = forceWin(run)
-    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
+    run = applyRunCommand(run, { type: 'SkipReward' })
+    run = intoFirstBattle(run) // 次の戦闘へ
     expect(run.combat!.player.hp).toBe(27)
   })
 
-  it('3戦目クリア後は焚き火フェーズに入り、回復は自動で入る (選択と排他にしない)', () => {
-    let run = createRun(17, 'set-confirm')
-    run = forceWin(run)
-    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
-    run = forceWin(run)
-    run = applyRunCommand(run, { type: 'SkipReward' })
-    // 3戦目 (battleIndex 2): HP20で勝つ → 焚き火の二択が開く
-    run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
-    run = forceWin(run)
+  it('強制焚き火行 (行5) に入ると回復が自動で入る (選択と排他にしない)', () => {
+    const run = runTo(createRun(17, 'set-confirm'), 'campfire')
     expect(run.phase).toBe('campfire')
-    // 2026-08-26: 回復は焚き火に到達した時点で自動。実測で「回復か強化か」の二択にすると
-    // 到達時HPが常に危機的なため全員が回復しか選べず、強化・除去が死に機能になっていた
-    expect(run.hp).toBe(20 + Math.floor(80 * 0.3))
-    run = applyRunCommand(run, { type: 'CampfireRest' }) // 「何もしない」
-    expect(run.phase).toBe('reward')
+    expect(run.row).toBe(5) // 最初の強制焚き火行
+    // HP20で到達した状況を作り直して回復量を確認する
+    let r2 = createRun(17, 'set-confirm')
+    let guard = 0
+    while (guard++ < 60) {
+      if (r2.phase === 'map') {
+        r2 = chooseToward(r2, 'campfire')
+      } else if (r2.phase === 'combat') {
+        r2 = { ...r2, combat: { ...r2.combat!, player: { ...r2.combat!.player, hp: 20 } } }
+        r2 = forceWin(r2)
+      } else if (r2.phase === 'reward') {
+        r2 = applyRunCommand(r2, { type: 'SkipReward' })
+      } else if (r2.phase === 'relic-reward') {
+        r2 = applyRunCommand(r2, { type: 'SkipRelic' })
+      } else break
+    }
+    expect(r2.phase).toBe('campfire')
+    expect(r2.hp).toBe(20 + Math.floor(r2.maxHp * 0.3))
+    r2 = applyRunCommand(r2, { type: 'CampfireRest' }) // 「何もしない」
+    expect(r2.phase).toBe('map')
   })
 
   it('焚き火でカード除去を選んでも回復は受け取れる (HPと排他ではない)', () => {
-    let run = createRun(17, 'set-confirm')
-    run = forceWin(run)
-    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
-    run = forceWin(run)
-    run = applyRunCommand(run, { type: 'SkipReward' })
-    run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 20 } } }
-    run = forceWin(run)
+    let run = runTo(createRun(17, 'set-confirm'), 'campfire')
     const before = run.deck.length
     const removed = run.deck[0].uid
     const hpAfterHeal = run.hp
@@ -169,11 +202,11 @@ describe('HP持ち越しと焚き火', () => {
     expect(run.deck).toHaveLength(before - 1)
     expect(run.deck.some((c) => c.uid === removed)).toBe(false)
     expect(run.hp).toBe(hpAfterHeal) // 回復は到達時に済んでいる
-    expect(run.phase).toBe('reward')
+    expect(run.phase).toBe('map')
   })
 
   it('敗北でランは終了する', () => {
-    let run = createRun(19, 'set-confirm')
+    let run = intoFirstBattle(createRun(19, 'set-confirm'))
     const c = run.combat!
     // 敵の攻撃で確実に死ぬ状態を作る
     let surgical: GameState = { ...c, player: { ...c.player, hp: 1, block: 0, hand: [] } }
@@ -185,32 +218,34 @@ describe('HP持ち越しと焚き火', () => {
 })
 
 describe('ラン走破', () => {
-  it('15戦すべて勝つとラン勝利。ボス戦の敵は強化+1・HP等倍', () => {
-    let run = createRun(23, 'set-confirm')
-    for (let i = 0; i < RUN_BATTLES; i++) {
-      if (i === RUN_BATTLES - 1) {
-        // ボス戦開始時の深度スケーリングを確認
-        expect(run.combat!.enemies[0].strength).toBe(1)
-        const def = getEnemyDef(run.enemyIds[RUN_BATTLES - 1])
-        expect(run.combat!.enemies[0].maxHp).toBe(def.maxHp)
-      }
-      run = forceWin(run)
-      if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
-      if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
-      if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
-      run = declineOffer(run)
-    }
+  it('ボス (行15) を倒すとラン勝利。ボス戦の敵は強化+1・HP等倍', () => {
+    let run = runTo(createRun(23, 'set-confirm'), 'boss')
+    expect(run.phase).toBe('combat')
+    expect(currentNode(run)!.type).toBe('boss')
+    expect(run.combat!.enemies[0].strength).toBe(1)
+    const def = getEnemyDef(currentNode(run)!.encounterId!)
+    expect(run.combat!.enemies[0].maxHp).toBe(def.maxHp)
+    run = forceWin(run)
     expect(run.phase).toBe('won')
+    // マップ保証: 走破時の戦闘数はボス込みで11〜13 (通常戦10〜12+ボス)
+    expect(run.battlesWon).toBeGreaterThanOrEqual(11)
+    expect(run.battlesWon).toBeLessThanOrEqual(13)
   })
 })
 
 describe('プレイテスト由来の調整 (2026-08-26)', () => {
-  it('敵の並びは直前2戦と同じ敵を避ける (同型の連戦を防ぐ)', () => {
-    // プールが小さくて避けられない場合を除き、3連続の同一敵は出ない
-    for (let seed = 1; seed <= 60; seed++) {
-      const ids = createRun(seed, 'set-confirm').enemyIds
-      for (let i = 2; i < ids.length; i++) {
-        expect(ids[i] === ids[i - 1] && ids[i] === ids[i - 2]).toBe(false)
+  it('中盤以降の敵は3行連続で同じにならない (同型の連戦を防ぐ)', () => {
+    // 行0〜4はプールが3種と小さく回避しきれないことがあるため、中盤以降で検証する
+    for (let seed = 1; seed <= 40; seed++) {
+      const map = createRun(seed, 'set-confirm').map
+      for (let r = 8; r < MAP_ROWS; r++) {
+        const ids = (row: number) =>
+          map[row].map((n) => n.encounterId).filter((x): x is string => x !== null)
+        for (const id of ids(r)) {
+          expect(ids(r - 1).includes(id) && ids(r - 2).includes(id), `seed${seed} row${r}`).toBe(
+            false,
+          )
+        }
       }
     }
   })
@@ -219,7 +254,7 @@ describe('プレイテスト由来の調整 (2026-08-26)', () => {
     // 緑スターターの軸は成長・ランプ。全ての提示が軸内で埋まるランは存在しないはず
     let sawOffAxis = false
     for (let seed = 1; seed <= 40 && !sawOffAxis; seed++) {
-      let run = createRun(seed, 'set-confirm')
+      let run = intoFirstBattle(createRun(seed, 'set-confirm'))
       run = forceWin(run)
       if (run.phase !== 'reward') continue
       const axisIds = ['green_growth_ring', 'green_ramp_sprout', 'green_double_lash']
@@ -248,17 +283,12 @@ describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () =>
   })
 
   it('焚き火で鍛えるとデッキのその1枚だけが強くなる (同じ札は1回だけ)', () => {
-    let run = createRun(17, 'set-confirm')
-    run = forceWin(run)
-    run = declineOffer(applyRunCommand(run, { type: 'SkipReward' }))
-    run = forceWin(run)
-    run = applyRunCommand(run, { type: 'SkipReward' })
-    run = forceWin(run)
+    let run = runTo(createRun(17, 'set-confirm'), 'campfire')
     expect(run.phase).toBe('campfire')
     const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: idx })
     expect(run.deck[idx].def.name).toBe('打撃+')
     expect(run.deck.filter((c) => c.def.name === '打撃+')).toHaveLength(1)
-    expect(run.phase).toBe('reward')
+    expect(run.phase).toBe('map')
   })
 })

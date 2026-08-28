@@ -1,15 +1,11 @@
-// エリート挑戦オファーとレリック (2026-08-25) のテスト。
+// エリートノードとレリック (2026-08-25。2026-08-28 マップ化) のテスト。
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
-import { allRelics, getRelicDef } from './content.ts'
-import { applyRunCommand, createRun, depthHpScale } from './run.ts'
+import { allRelics, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { applyRunCommand, createRun, currentNode, depthHpScale } from './run.ts'
 import type { RunState } from './run.ts'
-import { defendIntent, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
-
-function declineOffer(run: RunState): RunState {
-  return run.phase === 'offer' ? applyRunCommand(run, { type: 'ChooseElite', elite: false }) : run
-}
 
 function forceWin(run: RunState): RunState {
   const c = run.combat!
@@ -22,43 +18,52 @@ function forceWin(run: RunState): RunState {
   )
 }
 
-/** 1戦目を勝ってスキップし、2戦目 (battleIndex 1) のオファーまで進める */
-function toFirstOffer(seed = 11): RunState {
+/** 最初のエリートノードに入るまで進める (途中の戦闘は forceWin、非戦闘はスキップ) */
+function intoFirstElite(seed = 11): RunState {
   let run = createRun(seed, 'set-confirm')
-  run = forceWin(run)
-  run = applyRunCommand(run, { type: 'SkipReward' })
-  return run
+  let guard = 0
+  while (guard++ < 80) {
+    if (run.phase === 'map') {
+      run = chooseToward(run, 'elite')
+      if (run.phase === 'combat' && run.currentElite) return run
+    } else if (run.phase === 'combat') {
+      run = forceWin(run)
+    } else if (run.phase === 'campfire') {
+      run = applyRunCommand(run, { type: 'CampfireRest' })
+    } else if (run.phase === 'workshop') {
+      run = applyRunCommand(run, { type: 'WorkshopSkip' })
+    } else if (run.phase === 'relic-reward') {
+      run = applyRunCommand(run, { type: 'SkipRelic' })
+    } else if (run.phase === 'reward') {
+      run = applyRunCommand(run, { type: 'SkipReward' })
+    } else break
+  }
+  throw new Error('エリートノードに到達できない')
 }
 
-describe('エリート挑戦オファー', () => {
-  it('2戦目 (battleIndex 1) の前にオファーフェーズが入る', () => {
-    const run = toFirstOffer()
-    expect(run.phase).toBe('offer')
-    expect(run.combat).toBeNull()
-  })
-
-  it('避けると通常補正の戦闘が始まる', () => {
-    let run = toFirstOffer()
-    run = applyRunCommand(run, { type: 'ChooseElite', elite: false })
-    expect(run.phase).toBe('combat')
-    expect(run.currentElite).toBe(false)
-    expect(run.combat!.enemies[0].strength).toBeLessThanOrEqual(0) // depth 0 + 群れ補正(負)のみ
-  })
-
-  it('挑むとエリート補正 (強化+2・HP×1.35) の戦闘が始まる', () => {
-    const base = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: false })
-    const elite = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: true })
+describe('エリートノード (マップ化。opt-inオファーは廃止)', () => {
+  it('マップにエリートノードが4つあり、選んで入るとエリート戦になる', () => {
+    const run = createRun(11, 'set-confirm')
+    expect(run.map.flat().filter((n) => n.type === 'elite')).toHaveLength(4)
+    const elite = intoFirstElite()
+    expect(elite.phase).toBe('combat')
     expect(elite.currentElite).toBe(true)
-    expect(elite.combat!.enemies[0].strength).toBe(base.combat!.enemies[0].strength + 2)
-    // HP倍率: 同シードなので同じ敵。1.35倍で丸め
-    const scale = depthHpScale(1)
-    expect(elite.combat!.enemies[0].maxHp).toBeGreaterThan(base.combat!.enemies[0].maxHp)
-    expect(elite.combat!.enemies[0].maxHp / base.combat!.enemies[0].maxHp).toBeCloseTo(1.35, 1)
-    expect(scale).toBeCloseTo(0.55) // depthHpScale(1) と一致 (2026-08-26 再校正)
+  })
+
+  it('エリート補正 (強化+2・HP×1.35) が敵に乗る', () => {
+    const elite = intoFirstElite()
+    const node = currentNode(elite)!
+    const members = resolveEncounter(node.encounterId!)
+    const def = getEnemyDef(members[0].enemyId)
+    const expectHp = Math.round(
+      def.maxHp * depthHpScale(elite.row) * 1.35 * (members[0].hpScale ?? 1),
+    )
+    expect(elite.combat!.enemies[0].maxHp).toBe(expectHp)
+    expect(elite.combat!.enemies[0].strength).toBe(2 + (members[0].strength ?? 0))
   })
 
   it('エリートに勝つとレリック3択 → 取得後にカード報酬へ', () => {
-    let run = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: true })
+    let run = intoFirstElite()
     run = forceWin(run)
     expect(run.phase).toBe('relic-reward')
     expect(run.relicOptions).toHaveLength(3)
@@ -69,7 +74,9 @@ describe('エリート挑戦オファー', () => {
   })
 
   it('通常戦闘の勝利ではレリック報酬は出ない', () => {
-    let run = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: false })
+    let run = createRun(11, 'set-confirm')
+    while (run.phase === 'map') run = chooseToward(run, 'battle')
+    expect(run.currentElite).toBe(false)
     run = forceWin(run)
     expect(run.phase).toBe('reward')
   })
@@ -85,21 +92,22 @@ describe('エリート挑戦オファー', () => {
 describe('レリック効果', () => {
   /** 指定レリックを持った状態で次の戦闘を始める */
   function withRelicIntoBattle(relicId: string): RunState {
-    let run = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: true })
+    let run = intoFirstElite()
     run = forceWin(run)
     const idx = run.relicOptions!.indexOf(relicId)
-    // 候補に無い場合はテスト用に直接注入して次戦へ
     if (idx >= 0) {
       run = applyRunCommand(run, { type: 'PickRelic', index: idx })
     } else {
+      // 候補に無い場合はテスト用に直接注入
       run = { ...run, relics: [relicId], relicOptions: null, phase: 'reward', rewardOptions: [] }
-      run = { ...run, rewardOptions: null }
-      return applyRunCommand(
-        { ...run, phase: 'reward', rewardOptions: ['green_growth_ring'] },
-        { type: 'SkipReward' },
-      )
     }
-    return applyRunCommand(run, { type: 'SkipReward' })
+    if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
+    while (run.phase === 'map') run = chooseToward(run, 'battle')
+    if (run.phase === 'campfire') {
+      run = applyRunCommand(run, { type: 'CampfireRest' })
+      while (run.phase === 'map') run = chooseToward(run, 'battle')
+    }
+    return run
   }
 
   it('A型 (賢者の巻物): 戦闘開始時に2枚ドロー = 初手が2枚多い', () => {
@@ -114,7 +122,7 @@ describe('レリック効果', () => {
   })
 
   it('B型 (鉄の心臓): 取得時に最大HP+8 (現在HPも+8)', () => {
-    let run = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: true })
+    let run = intoFirstElite()
     const hpBefore = run.hp
     const maxBefore = run.maxHp
     run = forceWin(run)
@@ -126,12 +134,12 @@ describe('レリック効果', () => {
   })
 
   it('B型 (収集家の鞄): 報酬ピックの候補+1', () => {
-    let run = applyRunCommand(toFirstOffer(), { type: 'ChooseElite', elite: true })
+    let run = intoFirstElite()
     run = forceWin(run)
     const idx = run.relicOptions!.indexOf('relic_collectors_bag')
     if (idx < 0) return
     run = applyRunCommand(run, { type: 'PickRelic', index: idx })
-    expect(run.rewardOptions).toHaveLength(4) // 3 + 1
+    expect(run.rewardOptions).toHaveLength(4 + 1) // リーダー基本4 + 鞄1
   })
 
   it('レリック定義は全て A型 (effects) か B型 (bonus) を持つ', () => {
@@ -157,11 +165,7 @@ describe('B型レリックの最大HPが戦闘へ届く (2026-08-27 バグ修正
       maxHp: baseMax + 8,
       hp: Math.min(baseMax + 8, run.hp + 8),
     }
-    // 次の戦闘を開始する (報酬スキップ → 次戦へ)
-    run = forceWin(run)
-    if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
-    if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
-    run = declineOffer(run)
+    while (run.phase === 'map') run = chooseToward(run, 'battle')
     expect(run.combat!.player.maxHp).toBe(baseMax + 8)
   })
 })

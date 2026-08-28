@@ -1,9 +1,9 @@
 // 白 (4色目) のテスト。白の柱: 防御・回復の本家 / 威圧 / 従者の横並び / 護りのリアクション。
 import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
-import { createRun } from './run.ts'
+
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('白のカラーパイ', () => {
   it('白のカードとデッキが揃っている', () => {
@@ -15,7 +15,7 @@ describe('白のカラーパイ', () => {
   })
 
   it('白ランは白の基本デッキで始まり、色が保持される', () => {
-    const run = createRun(7, 'set-confirm', 'leader_white')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_white')
     expect(run.colors).toEqual(['white'])
     expect(run.deck.every((c) => c.def.color === 'white')).toBe(true)
   })
@@ -36,7 +36,7 @@ describe('回復 (白の専売)', () => {
     s = { ...s, player: { ...s.player, hp: 50, hand: [] } }
     s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
     // リーダー付き戦闘でないのでパッシブなし → ラン経由で確認
-    const run = createRun(3, 'set-confirm', 'leader_white')
+    const run = createRunInBattle(3, 'set-confirm', 'leader_white')
     expect(
       run.combat!.player.permanents.some((p) => p.def.id === 'leader_white_passive'),
     ).toBe(true)

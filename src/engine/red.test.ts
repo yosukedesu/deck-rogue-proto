@@ -1,10 +1,10 @@
 // 赤 (3色目) のテスト。赤の柱: バーン (延焼) / 刹那のリソース (儀式・衝動) / 粉砕・ランダム火力。
 import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
-import { createRun } from './run.ts'
+
 import { applyCommand } from './state.ts'
 import { windowFromPending } from './effects.ts'
-import { defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameEvent } from './types.ts'
 
 const types = (log: readonly GameEvent[]) => log.map((e) => e.type)
@@ -19,7 +19,7 @@ describe('赤のカラーパイ', () => {
   })
 
   it('赤ランは赤の基本デッキで始まり、色が保持される', () => {
-    const run = createRun(7, 'set-confirm', 'leader_red')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_red')
     expect(run.colors).toEqual(['red'])
     expect(run.deck.every((c) => c.def.color === 'red')).toBe(true)
   })

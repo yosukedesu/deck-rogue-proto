@@ -1,9 +1,9 @@
 // 黒 (5色目) のテスト。黒の柱: ドレイン / 墓地 (ミル+捨て札参照) / 自傷ペイオフ / 呪いリアクション。
 import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
-import { createRun } from './run.ts'
+
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('黒のカラーパイ', () => {
   it('黒のカードとデッキが揃っている (5色完成)', () => {
@@ -15,7 +15,7 @@ describe('黒のカラーパイ', () => {
   })
 
   it('黒ランは黒の基本デッキで始まり、色が保持される', () => {
-    const run = createRun(7, 'set-confirm', 'leader_black')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_black')
     expect(run.colors).toEqual(['black'])
     expect(run.deck.every((c) => c.def.color === 'black')).toBe(true)
   })
@@ -100,7 +100,7 @@ describe('自傷ペイオフ', () => {
 
 describe('リーダーとばり', () => {
   it('パッシブ: 攻撃カードをプレイするたびHP1回復', () => {
-    const run = createRun(3, 'set-confirm', 'leader_black')
+    const run = createRunInBattle(3, 'set-confirm', 'leader_black')
     let s = run.combat!
     s = { ...s, player: { ...s.player, hp: 50 } }
     s = withHand(s, ['black_strike'])

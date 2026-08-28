@@ -1,9 +1,9 @@
 // 青 (2色目) のテスト。青の柱: ドロー / 打ち消しの本家 / ストーム / 氷壁。
 import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
-import { applyRunCommand, createRun } from './run.ts'
+import { applyRunCommand } from './run.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameEvent, GameState } from './types.ts'
 
 const types = (log: readonly GameEvent[]) => log.map((e) => e.type)
@@ -129,7 +129,7 @@ describe('青の置物', () => {
 
 describe('青のラン', () => {
   it('青ランは青の基本デッキで始まり、報酬は青のカードのみ (基本札除外)', () => {
-    let run = createRun(31, 'set-confirm', 'leader_blue')
+    let run = createRunInBattle(31, 'set-confirm', 'leader_blue')
     expect(run.colors).toEqual(['blue'])
     expect(run.deck).toHaveLength(10)
     expect(run.deck.every((c) => c.def.color === 'blue')).toBe(true)

@@ -2,13 +2,13 @@
 // 確定済みルール表「伏せ枚数」「リアクション回数」を固定する。
 import { describe, expect, it } from 'vitest'
 import { getLeaderDef } from './content.ts'
-import { createRun } from './run.ts'
+
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('かすみ (ディミア): 伏せ同時2枚', () => {
   it('2枚まで伏せられ、3枚目は拒否される', () => {
-    const run = createRun(7, 'set-confirm', 'leader_dimir')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
     expect(getLeaderDef('leader_dimir').setSlots).toBe(2)
     let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse', 'blue_mana_leak'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
@@ -19,7 +19,7 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
   })
 
   it('窓に合致する伏せが2枚あれば cardUid で選んで発動し、残りは伏せたまま', () => {
-    const run = createRun(7, 'set-confirm', 'leader_dimir')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
     let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse'])
     // 霜の帳 (被攻撃前) と呪詛返し (被攻撃後) を両方伏せる
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
@@ -35,7 +35,7 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
   })
 
   it('pre窓で温存すれば、同じ行動のpost窓でもう1枚が発動できる', () => {
-    const run = createRun(7, 'set-confirm', 'leader_dimir')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
     let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
@@ -62,7 +62,7 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
   it('伏せ破壊は「1枚だけ逃がして」残り全部を破壊する (2枠のリスクと救出の選択)', () => {
     // 2026-08-27 伏せ破壊への応答: 窓は開くが、1行動1回制限により逃がせるのは1枚だけ。
     // かすみの2枠は「どちらを救うか」の選択になる
-    const run = createRun(7, 'set-confirm', 'leader_dimir')
+    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
     let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
