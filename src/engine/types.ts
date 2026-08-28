@@ -105,6 +105,8 @@ export interface EnemyState extends CombatantState {
   readonly patternIndex: number
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
+  /** 前回の再生判定以降に受けた累計HP損失 (regenBreak の判定用。再生判定のたびにリセット) */
+  readonly hpLostSinceRegen?: number
 }
 
 /** 敵の意図。プレイヤーへは幅あり表示 (例: 攻撃6〜12)。実値は宣言時にロール済みで非公開 */
@@ -276,7 +278,8 @@ export type GameEvent =
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number } // 状態異常付与
-  | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number } // 再生回復
+  | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
+  | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
   | { readonly type: 'HpLost'; readonly amount: number } // 自傷
@@ -583,6 +586,18 @@ export interface EnemyMove {
   readonly hits?: number
   /** この行動が付与する状態異常 (attackの追撃・hexの本体) */
   readonly inflict?: StatusInflict
+  /**
+   * 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
+   * プレイヤーに伏せ札があると、この行動の代わりに setAlt の行動になる。
+   * 既存の条件付き意図 (両分岐予告・行動開始時確定) の配管にそのまま乗る
+   */
+  readonly setAlt?: {
+    readonly kind: EnemyActionKind
+    readonly min?: number
+    readonly max?: number
+    readonly hits?: number
+    readonly inflict?: StatusInflict
+  }
 }
 
 export interface EnemyDef {
@@ -611,6 +626,11 @@ export interface EnemyDef {
   readonly sequenceBelowHalf?: readonly string[]
   /** 再生: 敵フェーズ終了時にHP回復。HP50%以下では停止 (確定済みルール表「再生」) */
   readonly regen?: number
+  /**
+   * 再生の中断条件 (確定済みルール表「再生」2026-08-28): そのターン (前回の再生判定以降) に
+   * 合計N以上のダメージを受けていると、次の敵フェーズの再生が発動しない。敵カードに常時表示
+   */
+  readonly regenBreak?: number
   /** 激昂: 敵フェーズ終了時に強化+N (確定済みルール表「激昂」) */
   readonly enrage?: number
   /**

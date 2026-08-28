@@ -287,15 +287,33 @@ function declareIntents(state: GameState): GameState {
     rng = rngA
 
     let alt: ReturnType<typeof buildIntent>[0] | undefined
+    let condOn = conditionalOn
     if (reactTable && reactTable.length > 0) {
       const [altIdx, rngB] = weightedIndex(rng, reactTable.map((m) => m.weight))
       rng = rngB
       const [altIntent, rngC] = buildIntent(rng, reactTable[altIdx], enemy.strength)
       rng = rngC
       alt = altIntent
+    } else if (!belowHalf && enemy.noReactTable !== true && move.setAlt !== undefined) {
+      // 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
+      // 伏せ札があるとこの行動が setAlt の行動に変わる。既存の条件付き意図の配管に乗せる
+      const sa = move.setAlt
+      const altMove: EnemyMove = {
+        id: `${move.id}@set`,
+        weight: 1,
+        kind: sa.kind,
+        ...(sa.min !== undefined ? { min: sa.min } : {}),
+        ...(sa.max !== undefined ? { max: sa.max } : {}),
+        ...(sa.hits !== undefined ? { hits: sa.hits } : {}),
+        ...(sa.inflict !== undefined ? { inflict: sa.inflict } : {}),
+      }
+      const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength)
+      rng = rngC
+      alt = altIntent
+      condOn = 'set'
     }
 
-    const declared = conditionalOn && alt ? { ...intent, conditionalOn, alt } : intent
+    const declared = condOn && alt ? { ...intent, conditionalOn: condOn, alt } : intent
     const enemies = s.enemies.map((e, j) =>
       j === i ? { ...e, intent: declared, patternIndex: nextPatternIndex } : e,
     )
@@ -1024,14 +1042,27 @@ function finishEnemyPhase(state: GameState): GameState {
     if (e.hp <= 0) continue
     const def = getEnemyDef(e.enemyId)
     if (def.regen !== undefined && e.hp > e.maxHp * 0.5) {
-      const amount = Math.min(def.regen, e.maxHp - e.hp)
-      if (amount > 0) {
-        s = {
-          ...s,
-          enemies: s.enemies.map((x, j) => (j === i ? { ...x, hp: x.hp + amount } : x)),
+      // regenBreak (確定済みルール表「再生」2026-08-28): このターンに閾値以上削られていたら再生しない。
+      // 「チクチク削り」では止まらず、バーストの計画で止められる = 膠着をパズルに変える
+      const broken =
+        def.regenBreak !== undefined && (e.hpLostSinceRegen ?? 0) >= def.regenBreak
+      if (broken) {
+        s = emit(s, { type: 'RegenBroken', enemyIndex: i })
+      } else {
+        const amount = Math.min(def.regen, e.maxHp - e.hp)
+        if (amount > 0) {
+          s = {
+            ...s,
+            enemies: s.enemies.map((x, j) => (j === i ? { ...x, hp: x.hp + amount } : x)),
+          }
+          s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount })
         }
-        s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount })
       }
+    }
+    // 再生判定を通過したら累積をリセット (次のターンの削りを次の判定に使う)
+    s = {
+      ...s,
+      enemies: s.enemies.map((x, j) => (j === i ? { ...x, hpLostSinceRegen: 0 } : x)),
     }
     if (def.enrage !== undefined && def.enrageEveryCards === undefined) {
       // 上限なし = 本家のソフトタイマー (2026-08-26)。長引かせるほど手が付けられなくなる。

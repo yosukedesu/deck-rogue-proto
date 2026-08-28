@@ -73,6 +73,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'StatusInflicted':
       return { text: e.status === 'wound' ? `負傷${e.amount}枚が捨て札に混入した` : `${STATUS_LABEL[e.status]}${e.amount}を付与された`, cls: 'log-bad' }
     case 'RegenTicked': return { text: `敵は再生でHP+${e.amount}`, cls: 'log-bad' }
+    case 'RegenBroken': return { text: '再生が止まった（このターンの削りが閾値を超えた）', cls: 'log-good' }
     case 'EnemyConfused': return { text: `敵に混乱+${e.amount}（攻撃が仲間に向かう）`, cls: 'log-good' }
     case 'ExposedApplied': return { text: `敵に急所+${e.amount}（次のダメージ${e.amount}回が+50%）`, cls: 'log-good' }
     case 'GrowthDischarged': return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }

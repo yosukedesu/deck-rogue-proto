@@ -348,7 +348,14 @@ export function dealDamageToEnemy(
   const hpLoss = amount - blocked
   const enemies = state.enemies.map((e, i) =>
     i === enemyIndex
-      ? { ...e, block: e.block - blocked, hp: e.hp - hpLoss, exposed: exposed ? e.exposed - 1 : e.exposed }
+      ? {
+          ...e,
+          block: e.block - blocked,
+          hp: e.hp - hpLoss,
+          exposed: exposed ? e.exposed - 1 : e.exposed,
+          // regenBreak の判定用 (確定済みルール表「再生」)。再生判定のたびにリセットされる
+          hpLostSinceRegen: (e.hpLostSinceRegen ?? 0) + hpLoss,
+        }
       : e,
   )
   return emit({ ...state, enemies }, { type: 'DamageDealt', source: 'player', amount, hpLoss })

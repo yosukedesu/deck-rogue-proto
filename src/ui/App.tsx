@@ -956,6 +956,11 @@ function BattleScreen({
                     {enemyDef.regen !== undefined && enemy.hp > enemy.maxHp * 0.5 && !dead && (
                       <span className="chip chip-strength">♻️ {kw('再生')} +{enemyDef.regen}</span>
                     )}
+                    {enemyDef.regenBreak !== undefined && !dead && (
+                      <span className="chip chip-strength">
+                        💚 {kw('再生')} {enemyDef.regen}（このターン{enemyDef.regenBreak}以上削ると停止）
+                      </span>
+                    )}
                     {enemyDef.burnResist !== undefined && !dead && (
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}
