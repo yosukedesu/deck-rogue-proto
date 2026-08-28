@@ -159,8 +159,43 @@ describe('強化の3段仕様 (2026-08-27 仕様会議)', () => {
     expect(up.def.effects.find((e) => e.effect === 'drawCards')!.amount).toBe(5)
   })
 
-  it('④上限ランプ (芽吹き) は強化不可', () => {
-    expect(upgradeTier(getCardDef('green_ramp_sprout'))).toBe('none')
+  it('④上限ランプはコスト-1で強化 (2026-08-28 全カード解放。gainEnergyMaxの量は据え置き)', () => {
+    expect(upgradeTier(getCardDef('green_ramp_sprout'))).toBe('cost')
+    const up = upgradeCard({ uid: 'u', def: getCardDef('green_ramp_sprout') })
+    expect(up.def.cost).toBe(0) // 芽吹き+ = 0E・上限+1・消滅 (テンポ損が消えるのが強化の意味)
+    expect(up.def.effects[0].amount).toBe(1) // 上限の増加量は絶対に増えない = 複利安全弁
+    expect(up.def.exhaust).toBe(true) // 消滅は維持 = 1回きり
+    // 陽光の恵み (選択式) も modes 効果をスキャンして 2E→1E
+    expect(upgradeTier(getCardDef('green_ramp_sunlight'))).toBe('cost')
+    const sun = upgradeCard({ uid: 'u2', def: getCardDef('green_ramp_sunlight') })
+    expect(sun.def.cost).toBe(1)
+    expect(JSON.stringify(sun.def.modes)).toBe(JSON.stringify(getCardDef('green_ramp_sunlight').modes)) // モードは据え置き
+  })
+
+  it('④\' 0Eの参照スケーリング札は倍率/量+1 (余波×2・墓暴き5枚。コストを削れない札の受け皿)', () => {
+    const wave = upgradeCard({ uid: 'u', def: getCardDef('blue_aftermath') })
+    expect(wave.def.effects[0].amount).toBe(2) // 詠唱数×1 → ×2 (ドローしないので有限=安全)
+    const digger = upgradeCard({ uid: 'u2', def: getCardDef('black_grave_digger') })
+    expect(digger.def.effects[0].amount).toBe(5) // ミル4→5枚
+    expect(digger.def.exhaustCost).toBe(1) // 対価は据え置き (非対称強化)
+  })
+
+  it('④\'\' 同軸おまけの例外表: 連鎖する思考+=+1ドロー・霊気の奔流+=放出前に霊気+2', () => {
+    expect(upgradeTier(getCardDef('blue_chain_thought'))).toBe('bonus')
+    const chain = upgradeCard({ uid: 'u', def: getCardDef('blue_chain_thought') })
+    expect(chain.def.cost).toBe(1) // コストは据え置き (0E化は補充規約違反)
+    expect(chain.def.effects.map((e) => e.effect)).toEqual(['drawCards', 'drawCardsPerCardPlayed'])
+    expect(chain.def.effects[0].amount).toBe(1) // 自分も詠唱数に数えるフレーバーの+1ドロー
+    const torrent = upgradeCard({ uid: 'u2', def: getCardDef('blue_aether_torrent') })
+    // 順序が仕様: 霊気+2 を先に解決してから放出 (=実質ドロー+2)
+    expect(torrent.def.effects.map((e) => e.effect)).toEqual(['addAether', 'dischargeAetherDraw'])
+    expect(torrent.def.effects[0].amount).toBe(2)
+  })
+
+  it('全カード解放: 強化不可 (none) の札は存在しない (2026-08-28 決定を機械固定)', () => {
+    for (const c of allCards) {
+      expect(upgradeTier(c), `${c.id} が強化不可`).not.toBe('none')
+    }
   })
 
   it('自傷の非対称強化: 対価は据え置きで出力だけ+50% (StSのHemokinesis+と同じ裁定)', () => {
@@ -353,8 +388,8 @@ describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LL
   })
 })
 
-describe('強化不可札の拒否 (2026-08-28。テスターが焚き火1回を浪費した事故の再発防止)', () => {
-  it('芽吹き (上限ランプ) を鍛えようとするとコマンドが拒否される', async () => {
+describe('焚き火の全カード解放 (2026-08-28。旧: 芽吹きは拒否→コスト-1で受理に変更)', () => {
+  it('芽吹きを焚き火で鍛えると 0E・上限+1・消滅 になりデッキに反映される', async () => {
     const { applyRunCommand: apply, createRun: create } = await import('./run.ts')
     let run = create(17, 'set-confirm')
     // 3戦目クリアまで進めて焚き火へ
@@ -366,7 +401,10 @@ describe('強化不可札の拒否 (2026-08-28。テスターが焚き火1回を
     expect(run.phase).toBe('campfire')
     const idx = run.deck.findIndex((c) => c.def.id === 'green_ramp_sprout')
     expect(idx).toBeGreaterThanOrEqual(0)
-    expect(() => apply(run, { type: 'CampfireUpgrade', index: idx })).toThrow(/鍛えられない/)
+    const after = apply(run, { type: 'CampfireUpgrade', index: idx })
+    expect(after.deck[idx].def.name).toBe('芽吹き+')
+    expect(after.deck[idx].def.cost).toBe(0)
+    expect(after.deck[idx].def.effects[0].amount).toBe(1) // 上限量は据え置き
   })
 })
 

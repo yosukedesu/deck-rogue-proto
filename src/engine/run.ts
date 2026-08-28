@@ -370,7 +370,12 @@ const UPGRADABLE_EFFECTS = new Set([
   'dealDamageExecute',
 ])
 
-/** ティア③で+1する「単位」の効果 */
+/**
+ * ティア③で+1する「単位」の効果。
+ * dealDamagePerCardPlayed / exhaustFromDeck は 0E でコストを削れない参照札 (余波・墓暴き) の
+ * 受け皿として追加 (2026-08-28 全カード解放)。ドローしない×Nは有限なので倍率+1でも安全。
+ * drawCardsPerCardPlayed 等のドロー×Nは入れない (倍率+1=×2ドローは無限ループの危険地帯) — ④の例外表で受ける
+ */
 const UNIT_EFFECTS = new Set([
   'drawCards',
   'impulseDraw',
@@ -379,7 +384,22 @@ const UNIT_EFFECTS = new Set([
   'addAether',
   'gainEnergy',
   'discountNext',
+  'dealDamagePerCardPlayed',
+  'exhaustFromDeck',
 ])
+
+/**
+ * ティア④: 同軸おまけの手書き例外表 (2026-08-28 全カード解放)。
+ * ②コスト-1が規約違反 (0E+補充=消滅必須) になり、③の対象効果も持たない補充参照札の受け皿。
+ * おまけは札自身の軸から外れない (カラーパイ・報酬抽選の軸判定を動かさない)。先頭に挿入する
+ * (霊気の奔流は「霊気+2 → 放出」の順で解決されることに意味がある)
+ */
+const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
+  // 連鎖する思考+: 自分自身も詠唱数に数えるフレーバーの +1ドロー
+  blue_chain_thought: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
+  // 霊気の奔流+: 放出の前に霊気+2 (実質ドロー+2)
+  blue_aether_torrent: [{ trigger: 'onPlay', effect: 'addAether', amount: 2 }],
+}
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
 const REFILL_FOR_UPGRADE = new Set([
@@ -408,14 +428,19 @@ function costCutViolates(def: CardDef): boolean {
   return net - newCost >= 0
 }
 
-/** どのティアで強化されるか。'none' = 強化不可 (上限ランプ等。ボタン無効) */
-export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'none' {
+/**
+ * どのティアで強化されるか。'none' = 強化不可。
+ * 2026-08-28 全カード解放: gainEnergyMax の一律ブロックを撤廃 (上限ランプはコスト-1で強化。
+ * gainEnergyMax は UPGRADABLE / UNIT のどちらにも無いので量は絶対に増えない = 複利安全弁は
+ * 「量を強化しない」形で維持)。現行データでは全カードがいずれかのティアに落ちる
+ * (テストで機械固定)。'none' は将来のデータ追加への防衛用に残す
+ */
+export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'bonus' | 'none' {
   const eff = allEffectsOf(def)
-  // 上限ランプは engine の複利に触れる最後の安全弁として強化不可 (確定済みルール表「焚き火」)
-  if (eff.some((e) => e.effect === 'gainEnergyMax')) return 'none'
   if (eff.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'amount'
   if (def.cost >= 1 && !costCutViolates(def)) return 'cost'
   if (eff.some((e) => UNIT_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'unit'
+  if (BONUS_UPGRADES[def.id] !== undefined) return 'bonus'
   return 'none'
 }
 
@@ -462,7 +487,9 @@ export function upgradeCard(card: CardInstance): CardInstance {
         ? { cost: card.def.cost - 1 }
         : tier === 'unit'
           ? mapEffects(boostUnit)
-          : {}
+          : tier === 'bonus'
+            ? { effects: [...(BONUS_UPGRADES[card.def.id] ?? []), ...card.def.effects] }
+            : {}
   return { ...card, def: { ...card.def, name: `${card.def.name}+`, ...patch } }
 }
 
