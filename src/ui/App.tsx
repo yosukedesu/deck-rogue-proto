@@ -1478,6 +1478,22 @@ function RunScreen({
 
   if (run.phase === 'map') {
     const cands = nextChoices(run)
+    // 現在地から到達可能なノード集合 (前向きBFS)。到達不可ノードは薄く表示する
+    const reach = new Set<string>()
+    {
+      let frontier: number[] =
+        run.row < 0 ? run.map[0].map((_, c) => c) : [...(currentNode(run)?.next ?? [])]
+      let r = run.row < 0 ? 0 : run.row + 1
+      while (r < run.map.length && frontier.length > 0) {
+        const nextF = new Set<number>()
+        for (const c of frontier) {
+          reach.add(`${r}:${c}`)
+          for (const to of run.map[r][c].next) nextF.add(to)
+        }
+        frontier = [...nextF]
+        r++
+      }
+    }
     const nodeLabel = (t: MapNodeType, encounterId: string | null) =>
       t === 'boss'
         ? `💀 ${encounterId ? encounterName(encounterId) : 'ボス'}`
@@ -1493,7 +1509,7 @@ function RunScreen({
         <h1>🗺 マップ</h1>
         <div className="panel">
           <div className="choice-desc">
-            全体が最初から見える。次に進むノードを選ぶ（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=HP30%回復+鍛える/除去。🔨工房=カード合成）
+            全体もエッジ（各ノードの「→」=次の行の接続先）も最初から見える。薄いノードは現在地から到達できない——接続は前の行でどの列を選んだかで決まる（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=HP30%回復+鍛える/除去。🔨工房=カード合成）
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
@@ -1514,18 +1530,23 @@ function RunScreen({
                   const here = r === run.row && c === run.col
                   const passed = r <= run.row && !here
                   const clickable = isNextRow && cands.includes(c)
+                  const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`)
                   return (
                     <button
                       key={c}
                       className={clickable ? 'btn btn-primary' : 'btn'}
                       disabled={!clickable}
                       style={{
-                        opacity: passed ? 0.35 : clickable ? 1 : 0.75,
+                        opacity: passed || unreachable ? 0.3 : clickable ? 1 : 0.8,
                         outline: here ? '2px solid var(--accent, #e6b422)' : undefined,
                       }}
+                      title={unreachable ? '現在地からは到達できない' : undefined}
                       onClick={() => clickable && dispatch({ type: 'ChooseNode', col: c })}
                     >
                       {nodeLabel(n.type, n.encounterId)}
+                      {n.next.length > 0 ? (
+                        <span className="pile-info" style={{ marginLeft: 4 }}>→{n.next.join('·')}</span>
+                      ) : null}
                       {here ? '（現在地）' : ''}
                     </button>
                   )
@@ -1859,10 +1880,12 @@ function WorkshopScreen({
       <p className="hint">
         異なる2枚を選んで合成する。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
         タイプの違う2枚も可 — 結果は持続する側（置物＞リアクション＞呪文＞物理）になり、置物化は量÷3で毎ターン化する。
+        コストはVP査定からの逆算（素材コストの単純合算ではない）。特定の組み合わせは手書きレシピ⭐にヒットし、計算値より少し強い一品になる。
       </p>
       {preview && (
         <div className="panel">
           <div className="setup-section-title">
+            {preview.id.startsWith('fusion_') ? '⭐ レシピ発見！ ' : ''}
             合成結果プレビュー{preview.exhaust ? '（消滅つき）' : ''}
           </div>
           <div className="hand-cards" style={{ marginTop: 8 }}>

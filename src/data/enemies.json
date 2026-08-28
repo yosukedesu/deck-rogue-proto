@@ -303,7 +303,7 @@
     "name": "苔まといの主",
     "archetype": "regenerator",
     "flavor": "苔が癒やす、半分までは。剥がれたら、走れ。",
-    "maxHp": 150,
+    "maxHp": 135,
     "regen": 5,
     "moves": [
       {

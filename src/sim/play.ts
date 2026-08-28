@@ -34,7 +34,7 @@ import {
   reactionMatches,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createRun, nextChoices, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, upgradeCard } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -243,16 +243,37 @@ const NODE_ICON: Record<string, string> = {
 }
 
 /** マップ全体をテキスト描画 (全体可視・現在地と次の選択肢を明示) */
+/** 現在地から到達可能なノード集合 (row -> Set<col>)。開始前は行0の全ノードから前向きに広げる */
+function reachableSet(run: RunState): Set<string> {
+  const out = new Set<string>()
+  let frontier: number[] = run.row < 0 ? run.map[0].map((_, c) => c) : [...(currentNode(run)?.next ?? [])]
+  let row = run.row < 0 ? 0 : run.row + 1
+  while (row < run.map.length && frontier.length > 0) {
+    const next = new Set<number>()
+    for (const c of frontier) {
+      out.add(`${row}:${c}`)
+      for (const to of run.map[row][c].next) next.add(to)
+    }
+    frontier = [...next]
+    row++
+  }
+  return out
+}
+
 function renderMap(run: RunState): string {
   const L: string[] = []
   const cands = nextChoices(run)
-  L.push('🗺 マップ (下から上へ。全体が最初から見える。エリート👑=強化+2/HP×1.35、勝てばレリック3択)')
+  const reach = reachableSet(run)
+  L.push('🗺 マップ (下から上へ。全体もエッジ(→接続先col)も最初から見える。エリート👑=強化+2/HP×1.35、勝てばレリック3択)')
+  L.push('   ※現在地から到達できないノードは (到達不可) 付き。接続は前の行でどの列を選んだかで決まる')
   for (let r = run.map.length - 1; r >= 0; r--) {
     const cells = run.map[r].map((n, c) => {
       const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${n.type === 'campfire' ? '焚き火' : n.type === 'workshop' ? '工房' : n.type}`
+      const edges = n.next.length > 0 ? `→${n.next.join('·')}` : ''
       const here = r === run.row && c === run.col ? '【現在地】' : ''
+      const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`) ? '(到達不可)' : ''
       const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : ''
-      return `${label}${here}${choice}`
+      return `[${c}]${label}${edges}${here}${unreachable}${choice}`
     })
     const mark = r === run.row + 1 ? '→' : '  '
     L.push(` ${mark}行${String(r).padStart(2)}: ${cells.join(' | ')}`)
@@ -291,7 +312,8 @@ function renderRun(run: RunState, logFrom: number): string {
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
-    L.push('   (緑同士のみ。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。リアクションは同名同士かレシピのみ)')
+    L.push('   (緑同士のみ。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。コストはVP査定からの逆算=素材コストの単純合算ではない)')
+    L.push('   特定の組み合わせは手書きレシピ(⭐)にヒットし、計算値より少し強い一品になる')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {
@@ -344,11 +366,14 @@ if (mode === 'new-run') {
       console.log('不正な添字')
     } else {
       const reason = fuseBlockReason(a, b)
-      console.log(
-        reason !== null
-          ? `合成不可: ${reason}`
-          : `プレビュー: ${cardLine(fuseCards(a, b))} (素材は消費されていない)`,
-      )
+      if (reason !== null) {
+        console.log(`合成不可: ${reason}`)
+      } else {
+        const def = fuseCards(a, b)
+        const recipe = def.id.startsWith('fusion_') ? '⭐レシピ発見! ' : ''
+        console.log(`プレビュー: ${recipe}${cardLine(def)} (素材は消費されていない)`)
+        console.log('  ※コストはVP査定からの逆算 (素材コストの単純合算ではない)')
+      }
     }
     process.exit(0)
   }
