@@ -1,7 +1,7 @@
 // sim/play.ts — LLM/人間がテキストで1手ずつプレイするためのCLIハーネス
 //
 // 使い方 (状態はJSONファイルに保存され、1コマンド=1プロセスで進める):
-//   npx tsx src/sim/play.ts new-run <leaderId> <seed> <stateFile>
+//   npx tsx src/sim/play.ts new-run <leaderId> <seed> <stateFile> [deckId]  (deckId省略時はリーダー既定。このは: run_basic=大樹の道 / run_trample=荒角の道)
 //   npx tsx src/sim/play.ts new-battle <deckId> <enemyId> <seed> <stateFile>
 //   npx tsx src/sim/play.ts cmd <stateFile> '<コマンドJSON>'
 //   npx tsx src/sim/play.ts show <stateFile>
@@ -372,8 +372,8 @@ function currentLogLength(sf: SaveFile): number {
 
 const [, , mode, ...args] = process.argv
 if (mode === 'new-run') {
-  const [leaderId, seed, file] = args
-  const run = createRun(Number(seed), 'set-confirm', leaderId)
+  const [leaderId, seed, file, deckId] = args
+  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined)
   const sf: SaveFile = { kind: 'run', run, logIndex: 0 }
   save(file, sf)
   console.log(renderRun(run, 0))

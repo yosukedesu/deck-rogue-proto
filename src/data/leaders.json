@@ -18,6 +18,10 @@
         "effect": "addGrowth",
         "amount": 1
       }
+    ],
+    "runDeckChoices": [
+      "run_basic",
+      "run_trample"
     ]
   },
   {

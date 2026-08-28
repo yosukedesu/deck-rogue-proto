@@ -611,7 +611,7 @@ function SetupScreen({
   onStartRun,
 }: {
   onStart: (cfg: Config) => void
-  onStartRun: (seed: number, leaderId: string) => void
+  onStartRun: (seed: number, leaderId: string, runDeckId?: string) => void
 }) {
   const [enemyId, setEnemyId] = useState(allEnemies[0].id)
   const [leaderId, setLeaderId] = useState(allLeaders[0].id)
@@ -659,13 +659,31 @@ function SetupScreen({
           {leader.name}の基本10枚から出発し、勝利ごとに{leader.colors.map((c) => COLOR_LABEL[c]).join('')}
           の{leader.rewardChoices}枚から1枚ピックして構築。敵は段階制でだんだん強くなり、HPは持ち越し。
         </div>
-        <button
-          className="btn btn-primary"
-          style={{ marginTop: 8 }}
-          onClick={() => onStartRun(parseSeed(), leaderId)}
-        >
-          {leader.sprite} {leader.name}でランを開始
-        </button>
+        {(leader.runDeckChoices ?? [leader.runDeckId]).length > 1 ? (
+          <div className="choice-row" style={{ marginTop: 8 }}>
+            {(leader.runDeckChoices ?? []).map((deckId) => {
+              const deck = allDecks.find((d) => d.id === deckId)
+              return (
+                <button
+                  key={deckId}
+                  className="choice"
+                  onClick={() => onStartRun(parseSeed(), leaderId, deckId)}
+                >
+                  <div className="choice-title">{leader.sprite} {deck?.name ?? deckId}で開始</div>
+                  <div className="choice-desc">{deck?.description}</div>
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <button
+            className="btn btn-primary"
+            style={{ marginTop: 8 }}
+            onClick={() => onStartRun(parseSeed(), leaderId)}
+          >
+            {leader.sprite} {leader.name}でランを開始
+          </button>
+        )}
       </div>
 
       <div className="setup-section-title">── 以下は単発戦闘（デッキ・敵を指定して1戦） ──</div>
@@ -1995,9 +2013,9 @@ export default function App() {
     )
   }
   if (state === null || config === null) {
-    return <SetupScreen onStart={start} onStartRun={(seed, leaderId) => {
+    return <SetupScreen onStart={start} onStartRun={(seed, leaderId, runDeckId) => {
         setRunHistory([])
-        setRun(createRun(seed, ADOPTED_MODE, leaderId))
+        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId))
       }} />
   }
   return (

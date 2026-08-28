@@ -4,6 +4,7 @@ import { getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './conten
 import { BOSS_ROW, MAP_ROWS, tierForRow } from './map.ts'
 import {
   applyRunCommand,
+  axesOf,
   createRun,
   currentNode,
   depthHpScale,
@@ -243,6 +244,29 @@ describe('ラン走破', () => {
     // マップ保証: 走破時の戦闘数はボス込みで11〜13 (通常戦10〜12+ボス)
     expect(run.battlesWon).toBeGreaterThanOrEqual(11)
     expect(run.battlesWon).toBeLessThanOrEqual(13)
+  })
+})
+
+describe('種の選択制 (2026-08-29。確定済みルール表「ラン初期デッキ」)', () => {
+  it('このはは大樹の道 (既定) と荒角の道を選べる', () => {
+    const basic = createRun(5, 'set-confirm', 'leader_green')
+    expect(basic.deck.some((c) => c.def.id === 'green_growth_ring')).toBe(true)
+    expect(basic.deck.some((c) => c.def.id === 'green_ramp_sprout')).toBe(true)
+    const trample = createRun(5, 'set-confirm', 'leader_green', 'run_trample')
+    expect(trample.deck).toHaveLength(10)
+    expect(trample.deck.some((c) => c.def.id === 'green_trample_charge')).toBe(true)
+    expect(trample.deck.some((c) => c.def.id === 'green_perm_herd_chief')).toBe(true)
+    expect(trample.deck.some((c) => c.def.id === 'green_growth_ring')).toBe(false)
+  })
+
+  it('リーダーが許可しない初期デッキは拒否される', () => {
+    expect(() => createRun(5, 'set-confirm', 'leader_green', 'starter_red')).toThrow(/選べない初期デッキ/)
+  })
+
+  it('荒角の道はトランプル軸の重み付けを起動する (報酬に勢い/貫通が乗りやすくなる)', () => {
+    const trample = createRun(5, 'set-confirm', 'leader_green', 'run_trample')
+    const axes = new Set(trample.deck.flatMap((c) => [...axesOf(c.def)]))
+    expect(axes.has('trample')).toBe(true)
   })
 })
 

@@ -39,7 +39,7 @@ describe('シグネチャー効果', () => {
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_trample' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 12) // ブロック14を無視して素通し (踏み荒らし 10→12)
+    expect(s.enemies[0].hp).toBe(hpBefore - 16) // ブロック14を無視して素通し (踏み荒らし 3E化で16)
     expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
   })
 
@@ -83,10 +83,10 @@ describe('勢い (トランプル再設計)', () => {
     ])
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trample_charge' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 5) // 助走自身には勢いは乗らない (効果順: ダメージ→勢い+3)
+    expect(s.enemies[0].hp).toBe(hpBefore - 6) // 助走自身には勢いは乗らない (効果順: ダメージ→勢い+3)
     expect(s.player.momentum).toBe(3)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 5 - (6 + 3)) // 打撃に勢い+3が乗る
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - (6 + 3)) // 打撃に勢い+3が乗る
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.momentum).toBe(0) // ターン終了でリセット
   })
@@ -144,7 +144,7 @@ describe('置物 (permanent)', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - 6) // 1発目は素の6
     expect(s.player.momentum).toBe(2)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_double_lash' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - (4 + 2) * 2) // 2発目は各ヒット+2 (二連 4×2)
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - (5 + 2) * 2) // 2発目は各ヒット+2 (二連 5×2)
     expect(s.player.momentum).toBe(4)
   })
 
@@ -155,7 +155,7 @@ describe('置物 (permanent)', () => {
     const hpBefore = s.enemies[0].hp
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (4 + 1)) // 自動で返し4+成長1
+    expect(s.enemies[0].hp).toBe(hpBefore - (5 + 1)) // 自動で返し5+成長1
     expect(s.player.permanents).toHaveLength(1)
     // 判断は挟まらない (set-confirm でも置物は自動発火。伏せがなければ中断しない)
     expect(s.turn).toBe(2)
@@ -216,7 +216,7 @@ describe('手札捨てコスト (discardCost)', () => {
       cardUid: 't0_green_serpent_gulp',
       discardUids: ['t1_green_guard'],
     })
-    expect(s.enemies[0].hp).toBe(hpBefore - 20) // 2026-08-27 StSコモン帯へ
+    expect(s.enemies[0].hp).toBe(hpBefore - 34) // 2026-08-29 大型バニラプレミアム (3E・緑のBludgeon)
     expect(s.player.hand).toHaveLength(0)
     expect(s.player.discardPile.map((c) => c.uid)).toContain('t1_green_guard')
     expect(types(s.eventLog)).toContain('CardsDiscarded')

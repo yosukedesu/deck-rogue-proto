@@ -1642,5 +1642,37 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "run_trample",
+    "name": "荒角の道",
+    "description": "ドラフト連戦の出発点・トランプル型。勢いと貫通で一気に踏み込む（打撃×3・防御×3・リアクション×2・突進の助走・大角の群長）",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 3
+      },
+      {
+        "cardId": "green_guard",
+        "count": 3
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 1
+      },
+      {
+        "cardId": "green_perm_herd_chief",
+        "count": 1
+      }
+    ],
+    "color": "green"
   }
 ]

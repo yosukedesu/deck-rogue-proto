@@ -23,7 +23,7 @@ describe('set-auto (セット式)', () => {
     s = withIntent(s, attackIntent(12))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ReactionTriggered')
-    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 9) // 茨の返し9
+    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 10) // 茨の返し10
     expect(s.player.hp).toBe(s.player.maxHp - 12) // 先にダメージを受けている
     expect(s.player.setCards).toHaveLength(0) // 発動後は捨て札へ
   })
@@ -88,7 +88,7 @@ describe('set-auto (セット式)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).not.toContain('SetCardDestroyed') // 破壊は空振り
     expect(types(s.eventLog)).toContain('ReactionTriggered') // 発動して逃げた
-    expect(s.enemies[0].hp).toBe(hpBefore - 9) // 返し9は破壊しに来た敵へ
+    expect(s.enemies[0].hp).toBe(hpBefore - 10) // 返し10は破壊しに来た敵へ
     expect(s.player.setCards).toHaveLength(0)
     expect(s.player.discardPile.some((c) => c.uid === 't0_green_reaction_thorns')).toBe(true)
   })
@@ -105,7 +105,7 @@ describe('set-confirm (ハイブリッド)', () => {
     expect(s.player.hp).toBe(s.player.maxHp - 11) // 確認時点で既にダメージを受けている
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
     expect(types(s.eventLog)).toContain('ReactionTriggered')
-    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 9)
+    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 10)
     expect(s.player.hp).toBe(s.player.maxHp - 11)
     expect(s.turn).toBe(2) // 敵フェーズが最後まで解決され次ターンへ
   })
@@ -138,7 +138,7 @@ describe('hold-manual (構え式)', () => {
     expect(s.phase).toBe('awaiting-reaction') // 余剰エナジー3で発動可能なため
     s = applyCommand(s, { type: 'ReactManual', cardUid: 't0_green_reaction_thorns' })
     expect(s.player.energy).toBe(3) // 敵ターン中に2へ減った後、次ターン開始で全回復
-    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 9)
+    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 10)
     expect(s.player.hp).toBe(s.player.maxHp - 13)
     expect(s.turn).toBe(2)
     // 発動時にエナジーを払った痕跡: ReactionTriggered がログにある
@@ -182,7 +182,7 @@ describe('hold-manual (構え式)', () => {
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'ReactManual', cardUid: 't0_green_reaction_thorns' })
-    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - (9 + 3))
+    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - (10 + 3))
   })
 })
 

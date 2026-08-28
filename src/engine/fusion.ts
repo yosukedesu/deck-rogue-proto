@@ -218,9 +218,13 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   const others = merged.slice(0, damageEffects.length > 0 ? 2 : 3)
   const effects = [...damageEffects, ...others]
 
-  // --- 値付け: 置物は寿命込み (×3)。査定エンジンがそのまま値付けエンジンになる ---
-  const lifetime = resultType === 'permanent' ? 3 : 1
-  const vp = effects.reduce((acc, e) => acc + effectVp(e) * lifetime, 0)
+  // --- 値付け: 置物は寿命込み (×3)。ただし onPlay の一回きり効果は等倍 (2026-08-29。
+  // 品質パスで置物に登場時効果が付いたため、一回きり分まで×3する過大査定を防ぐ) ---
+  const vp = effects.reduce(
+    (acc, e) =>
+      acc + effectVp(e) * (resultType === 'permanent' && e.trigger !== 'onPlay' ? 3 : 1),
+    0,
+  )
   const discounted = vp * 0.85
   const cost = Math.min(3, Math.max(1, Math.round((discounted - 2) / 6)))
   let exhaust = a.def.exhaust === true || b.def.exhaust === true

@@ -9,6 +9,11 @@
         "trigger": "onPlay",
         "effect": "gainEnergyMax",
         "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 2
       }
     ],
     "exhaust": true
@@ -22,6 +27,11 @@
       {
         "trigger": "onPlay",
         "effect": "gainEnergyMax",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
         "amount": 2
       }
     ],
@@ -88,12 +98,12 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4
+        "amount": 5
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4
+        "amount": 5
       }
     ],
     "axis": [
@@ -109,7 +119,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 14,
+        "amount": 17,
         "pierce": true
       }
     ]
@@ -136,7 +146,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 12
+        "amount": 14
       },
       {
         "trigger": "onPlay",
@@ -183,7 +193,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 28
+        "amount": 36
       },
       {
         "trigger": "onPlay",
@@ -201,7 +211,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 40
+        "amount": 50
       }
     ],
     "axis": [
@@ -217,7 +227,7 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 9
+        "amount": 10
       }
     ]
   },
@@ -247,7 +257,7 @@
       {
         "trigger": "onEnemyAction",
         "effect": "addGrowth",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -279,6 +289,11 @@
         "trigger": "onPlay",
         "effect": "drawCards",
         "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
       }
     ],
     "exhaust": true
@@ -349,19 +364,19 @@
   {
     "id": "green_sig_trample",
     "name": "踏み荒らし",
-    "cost": 2,
+    "cost": 3,
     "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 12,
+        "amount": 16,
         "pierce": true
       },
       {
         "trigger": "onPlay",
         "effect": "addMomentum",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -374,7 +389,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 26,
+        "amount": 32,
         "pierce": true
       }
     ]
@@ -388,7 +403,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5
+        "amount": 6
       },
       {
         "trigger": "onPlay",
@@ -421,6 +436,11 @@
         "trigger": "onTurnStart",
         "effect": "addGrowth",
         "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
       }
     ]
   },
@@ -433,7 +453,7 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 4
+        "amount": 5
       }
     ]
   },
@@ -467,14 +487,14 @@
   {
     "id": "green_serpent_gulp",
     "name": "大蛇の丸呑み",
-    "cost": 2,
+    "cost": 3,
     "type": "physical",
     "discardCost": 1,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 20
+        "amount": 34
       }
     ]
   },
@@ -560,7 +580,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6,
+        "amount": 7,
         "target": "all"
       },
       {
@@ -580,7 +600,7 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 2
+        "amount": 5
       }
     ]
   },
@@ -624,7 +644,7 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 5,
+        "amount": 8,
         "target": "all"
       }
     ]
@@ -669,7 +689,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 7,
+        "amount": 8,
         "pierce": true
       }
     ]

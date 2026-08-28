@@ -703,6 +703,11 @@ export interface LeaderDef {
   readonly rewardChoices: number
   /** ランの初期デッキ */
   readonly runDeckId: string
+  /**
+   * 種の選択制 (確定済みルール表「ラン初期デッキ」2026-08-29): ラン開始時に選べる初期デッキの一覧。
+   * 複数持つリーダーだけ選択UIが出る。省略時は runDeckId のみ
+   */
+  readonly runDeckChoices?: readonly string[]
   readonly sprite: string
   readonly description: string
   /** パッシブ能力。戦闘開始時から場にあるリーダー置物として解決される */

@@ -234,7 +234,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
     expect(dmg.trigger).toBe('onAttacked') // 支配側 (茨の返し) の主窓に吸収
     expect(dmg.amount).toBe(6)
-    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(9)
+    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(10)
   })
 
   it('異名リアクション同士: 条件の異なる同種効果は合算されない (無条件9と HP半分以下20 は別のまま)', () => {
@@ -242,7 +242,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     expect(def.type).toBe('reaction')
     const counters = def.effects.filter((e) => e.effect === 'counter')
     expect(counters).toHaveLength(2)
-    expect(counters.some((e) => e.amount === 9 && e.condition === undefined)).toBe(true)
+    expect(counters.some((e) => e.amount === 10 && e.condition === undefined)).toBe(true)
     expect(counters.some((e) => e.amount === 20 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
   })
 
@@ -285,9 +285,8 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
   it('置物化で誘発できない窓は onTurnStart に落ちる (共鳴する茨 onEnemyBuffed は置物で誘発しない)', () => {
     const def = fuseCards(inst('green_reaction_vine'), inst('green_perm_growth_tree'))
     // 守りの蔓 (onAttackIncoming ブロック12) → 置物はこの窓で誘発できるので窓を保持し÷3
-    const blk = def.effects.find((e) => e.effect === 'gainBlock')!
-    expect(blk.trigger).toBe('onAttackIncoming')
-    expect(blk.amount).toBe(4) // ceil(12/3)
+    const blk = def.effects.find((e) => e.effect === 'gainBlock' && e.trigger === 'onAttackIncoming')!
+    expect(blk.amount).toBe(4) // ceil(12/3)。大樹側の登場時ブロック(onPlay)とは別枠
     expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(1) // 置物側は据え置き
   })
 
@@ -295,7 +294,8 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     const greens = allCards.filter((c) => c.color === 'green')
     const RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
     // 置物にディスパッチされないトリガー = 置物結果が持っていたら死に効果
-    const PERM_DEAD = new Set(['onPlay', 'onEnemyAction', 'onEnemyBuffed', 'onEnemyDefended'])
+    // (onPlay はプレイ時に解決されるので置物でも生きている。2026-08-29 大樹の登場時ブロック対応)
+    const PERM_DEAD = new Set(['onEnemyAction', 'onEnemyBuffed', 'onEnemyDefended'])
     for (let i = 0; i < greens.length; i++) {
       for (let j = i + 1; j < greens.length; j++) {
         const a = { uid: `a${i}`, def: greens[i] }
@@ -325,7 +325,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(2) // 多段が伝播
     expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
-    expect(dmgs[0].amount).toBe(Math.ceil((4 + 4 + 7) / 2)) // 総火力を按分 (8×2)
+    expect(dmgs[0].amount).toBe(Math.ceil((5 + 5 + 8) / 2)) // 総火力を按分 (9×2)
   })
 
   it('全体×貫通: 薙ぎ払い(全体6)×牙の一撃(14貫通) → 全体・貫通の一撃', () => {
@@ -333,7 +333,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
     expect(dmg.target).toBe('all')
     expect(dmg.pierce).toBe(true)
-    expect(dmg.amount).toBe(20) // 6+14
+    expect(dmg.amount).toBe(24) // 7+17
     // 薙ぎ払いの成長+1も引き継がれる
     expect(def.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
   })
@@ -342,7 +342,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(Math.ceil((2 * 5 + 20) / 5)) // 6×5
+    expect(dmgs[0].amount).toBe(Math.ceil((2 * 5 + 34) / 5)) // 9×5 (大型バニラプレミアム後)
     expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
   })
 
@@ -428,20 +428,20 @@ describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名�
     expect(dmgs[0].amount).toBe(4) // (10+10)/5
   })
 
-  it('同名リアクションも合成できる (茨の返し×2 → 返し18。トリガー・条件が同一なので安全)', () => {
+  it('同名リアクションも合成できる (茨の返し×2 → 返し20。トリガー・条件が同一なので安全)', () => {
     const a = inst('green_reaction_thorns', 'u1')
     const b = inst('green_reaction_thorns', 'u2')
     expect(fuseBlockReason(a, b)).toBeNull()
     const def = fuseCards(a, b)
     expect(def.type).toBe('reaction')
-    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(18)
+    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(20)
     expect(def.name).toBe('真・茨の返し')
   })
 
   it('量を持たない同種効果は重複しない (根の紡ぎ×2 → 打ち消しは1つ・成長は合算)', () => {
     const def = fuseCards(inst('green_reaction_root_weave', 'u1'), inst('green_reaction_root_weave', 'u2'))
     expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
-    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(4)
+    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(6)
   })
 
   it('選択式カードは同名でも合成不可 (モード構造を計算合成で作れないため)', () => {

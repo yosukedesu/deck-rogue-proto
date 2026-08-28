@@ -324,8 +324,19 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
   return { ...next, rng, phase: 'map' }
 }
 
-export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_green'): RunState {
+export function createRun(
+  seed: number,
+  mode: ReactionMode,
+  leaderId = 'leader_green',
+  deckId?: string,
+): RunState {
   const leader = getLeaderDef(leaderId)
+  // 種の選択制 (確定済みルール表「ラン初期デッキ」): リーダーが許可する初期デッキのみ受け付ける
+  const deckChoices = leader.runDeckChoices ?? [leader.runDeckId]
+  const chosenDeck = deckId ?? leader.runDeckId
+  if (!deckChoices.includes(chosenDeck)) {
+    throw new Error(`このリーダーでは選べない初期デッキ: ${chosenDeck}`)
+  }
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
   const [map, rngAfterMap] = generateMap(rng0, allEvents.map((e) => e.id))
@@ -339,7 +350,7 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
     leaderId,
     colors: leader.colors,
     rng: rngAfterRelics,
-    deck: buildDeck(leader.runDeckId),
+    deck: buildDeck(chosenDeck),
     hp: leader.maxHp,
     maxHp: leader.maxHp,
     map,
@@ -580,6 +591,12 @@ function costCutViolates(def: CardDef): boolean {
  */
 export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'bonus' | 'none' {
   const eff = allEffectsOf(def)
+  // 上限ランプはコスト-1が正史 (確定済みルール表「焚き火」)。2026-08-29 品質パスで
+  // ランプ札に副次効果 (ブロック等) が付いたため、amount ティアに吸われて
+  // 「0E化の当たり枠」が「副次+50%のハズレ枠」に化けるのを防ぐ
+  if (eff.some((e) => e.effect === 'gainEnergyMax') && def.cost >= 1 && !costCutViolates(def)) {
+    return 'cost'
+  }
   if (eff.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'amount'
   if (def.cost >= 1 && !costCutViolates(def)) return 'cost'
   if (eff.some((e) => UNIT_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'unit'
