@@ -267,6 +267,43 @@ function reachableSet(run: RunState): Set<string> {
   return out
 }
 
+const NODE_LABEL: Record<string, string> = { campfire: '焚き火', workshop: '工房', shop: 'ショップ', event: '?' }
+
+/**
+ * 簡易マップ (既定。トークン節約のため近傍だけ表示):
+ * 現在地の次の3行 + この先の特別ノードの行要約。全図は `show <file> full`
+ */
+function renderMapBrief(run: RunState): string {
+  const L: string[] = []
+  const cands = nextChoices(run)
+  const reach = reachableSet(run)
+  L.push(`🗺 マップ簡易表示 (幕${run.act}/3。全図は show <file> full)`)
+  const from = run.row + 1
+  for (let r = Math.min(run.map.length - 1, from + 2); r >= Math.max(0, from); r--) {
+    const cells = run.map[r].map((n, c) => {
+      const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${NODE_LABEL[n.type] ?? n.type}`
+      const edges = n.next.length > 0 ? `→${n.next.join('·')}` : ''
+      const unreachable = r > run.row && !reach.has(`${r}:${c}`) ? '(到達不可)' : ''
+      const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : ''
+      return `[${c}]${label}${edges}${unreachable}${choice}`
+    })
+    L.push(` ${r === from ? '→' : '  '}行${String(r).padStart(2)}: ${cells.join(' | ')}`)
+  }
+  // この先の特別ノード要約 (計画用の最小情報)
+  const ahead: string[] = []
+  const kinds: [string, string][] = [['campfire','🔥'],['shop','🛒'],['workshop','🔨'],['event','❓'],['elite','👑'],['boss','💀']]
+  for (const [t, icon] of kinds) {
+    const rows: number[] = []
+    run.map.forEach((row, r) => {
+      if (r > run.row && row.some((n, c) => n.type === t && reach.has(`${r}:${c}`))) rows.push(r)
+    })
+    if (rows.length > 0) ahead.push(`${icon}行${rows.join(',')}`)
+  }
+  L.push(`   この先(到達可能): ${ahead.join(' ') || 'なし'}`)
+  L.push('→ {"type":"ChooseNode","col":N} で「←選べる」のノードへ進む')
+  return L.join('\n')
+}
+
 function renderMap(run: RunState): string {
   const L: string[] = []
   const cands = nextChoices(run)
@@ -291,7 +328,7 @@ function renderMap(run: RunState): string {
   return L.join('\n')
 }
 
-function renderRun(run: RunState, logFrom: number): string {
+function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
   L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
@@ -306,7 +343,7 @@ function renderRun(run: RunState, logFrom: number): string {
     })
     L.push('→ {"type":"PickReward","index":N} か {"type":"SkipReward"}')
   } else if (run.phase === 'map') {
-    L.push(renderMap(run))
+    L.push(fullMap ? renderMap(run) : renderMapBrief(run))
   } else if (run.phase === 'campfire') {
     L.push(`🔥 焚き火: 回復は済んでいる (現在 ${run.hp}/${run.maxHp})。この上で1つ選ぶ`)
     L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
@@ -443,15 +480,16 @@ if (mode === 'new-run') {
     console.log(renderBattle(sf.battle, logFrom))
   }
 } else if (mode === 'show') {
-  const [file] = args
+  // show <file> [full] — full でマップ全図 (既定は簡易=トークン節約)
+  const [file, opt] = args
   const sf = load(file)
   // 直近10件のログだけ出す (全ログだと確認ウィンドウが画面外に流れてしまう)
   const tail = (g: GameState | undefined) => Math.max(0, (g?.eventLog.length ?? 0) - 10)
   console.log(
     sf.kind === 'run'
-      ? renderRun(sf.run!, tail(sf.run!.combat ?? undefined))
+      ? renderRun(sf.run!, tail(sf.run!.combat ?? undefined), opt === 'full')
       : renderBattle(sf.battle!, tail(sf.battle)),
   )
 } else {
-  console.log('usage: play.ts new-run <leaderId> <seed> <file> | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file>')
+  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
 }
