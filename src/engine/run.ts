@@ -7,6 +7,7 @@
 
 import { startCombatWithOptions } from './combat.ts'
 import { BOSS_ROW, generateMap } from './map.ts'
+import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
@@ -49,6 +50,15 @@ const ELITE_HP_SCALE = 1.35
  * エリートオファーは5回あるのに3個上限では後半2回が提示すらされず、供給の穴になっていた。
  */
 const RELIC_MAX = 5
+/** ゴールド (確定済みルール表「ゴールド」「ショップ」。相場はStS比例で入れて校正) */
+const STARTING_GOLD = 50
+const GOLD_PER_BATTLE_MIN = 12
+const GOLD_PER_BATTLE_MAX = 18
+const GOLD_ELITE_BONUS_MIN = 30
+const GOLD_ELITE_BONUS_MAX = 40
+const SHOP_CARD_COUNT = 5
+const SHOP_RELIC_PRICE = 150
+const SHOP_REMOVAL_PRICE = 75
 
 /**
  * 深度スケーリング: 敵の初期強化。
@@ -71,7 +81,16 @@ export function depthHpScale(row: number): number {
   return 1.0
 }
 
-export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'campfire' | 'workshop' | 'reward' | 'won' | 'lost'
+export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'campfire' | 'workshop' | 'shop' | 'event' | 'reward' | 'won' | 'lost'
+
+/** ショップの在庫 (ノード進入時にシードから決定) */
+export interface ShopState {
+  readonly cards: readonly { readonly id: string; readonly price: number }[]
+  readonly relicId: string | null
+  readonly relicPrice: number
+  readonly removalPrice: number
+  readonly removalUsed: boolean
+}
 
 export interface RunState {
   readonly seed: number
@@ -95,6 +114,10 @@ export interface RunState {
   readonly col: number
   /** クリアした戦闘数 (統計・結果画面用) */
   readonly battlesWon: number
+  /** 所持ゴールド (確定済みルール表「ゴールド」) */
+  readonly gold: number
+  /** ショップの在庫 (shop フェーズ中のみ非null) */
+  readonly shop: ShopState | null
   readonly phase: RunPhase
   readonly combat: GameState | null
   /** 報酬フェーズの提示カード (cardId) */
@@ -130,6 +153,13 @@ export type RunCommand =
   // 工房 (確定済みルール表「カード合成（工房）」): 異なる2枚を選んで合成するか、見送る
   | { readonly type: 'WorkshopFuse'; readonly indexA: number; readonly indexB: number }
   | { readonly type: 'WorkshopSkip' }
+  // ショップ (確定済みルール表「ショップ」)
+  | { readonly type: 'ShopBuyCard'; readonly index: number }
+  | { readonly type: 'ShopBuyRelic' }
+  | { readonly type: 'ShopRemove'; readonly index: number }
+  | { readonly type: 'ShopLeave' }
+  // ?マス (確定済みルール表「?マス（イベント）」)。removeCard/upgradeCard の選択肢は cardIndex で対象指定
+  | { readonly type: 'EventChoice'; readonly index: number; readonly cardIndex?: number }
 
 /** 現在いるノード (row=-1 の開始前は null) */
 export function currentNode(run: RunState): MapNode | null {
@@ -180,14 +210,125 @@ function enterNode(run: RunState): RunState {
     }
     case 'workshop':
       return { ...run, phase: 'workshop', combat: null, rewardOptions: null }
+    case 'shop':
+      return openShop(run)
+    case 'event':
+      return { ...run, phase: 'event', combat: null, rewardOptions: null }
   }
+}
+
+/** ショップの在庫をシードから決定して開店する */
+function openShop(run: RunState): RunState {
+  const leader = getLeaderDef(run.leaderId)
+  const canRamp = run.colors.includes('green')
+  const costCap = leader.energyMax + (canRamp ? 2 : 0)
+  const pool = allCards.filter(
+    (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+  )
+  let rng = run.rng
+  const cards: { id: string; price: number }[] = []
+  const remaining = [...pool]
+  while (cards.length < SHOP_CARD_COUNT && remaining.length > 0) {
+    const [idx, r1] = nextInt(rng, 0, remaining.length - 1)
+    rng = r1
+    const def = remaining[idx]
+    remaining.splice(idx, 1)
+    // 価格 = 40 + コスト×10 + ロール0〜10 (確定済みルール表「ショップ」)
+    const [roll, r2] = nextInt(rng, 0, 10)
+    rng = r2
+    cards.push({ id: def.id, price: 40 + def.cost * 10 + roll })
+  }
+  const relicId =
+    run.relics.length < RELIC_MAX
+      ? (run.relicQueue.find((id) => !run.relics.includes(id)) ?? null)
+      : null
+  const shop: ShopState = {
+    cards,
+    relicId,
+    relicPrice: SHOP_RELIC_PRICE,
+    removalPrice: SHOP_REMOVAL_PRICE,
+    removalUsed: false,
+  }
+  return { ...run, rng, shop, phase: 'shop', combat: null, rewardOptions: null }
+}
+
+/** イベント効果の適用 (宣言的な EventChoiceDef を RunState に反映する) */
+function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number): RunState {
+  const node = currentNode(run)
+  if (node === null || node.eventId === null) throw new Error('イベントノードではない')
+  const def = getEventDef(node.eventId)
+  const choice = def.choices[choiceIndex]
+  if (choice === undefined) throw new Error(`不正な選択肢: ${choiceIndex}`)
+  if (choice.requireGold !== undefined && run.gold < choice.requireGold) {
+    throw new Error(`ゴールドが足りない (必要${choice.requireGold}G)`)
+  }
+  let next: RunState = { ...run }
+  let rng = run.rng
+  const applyOutcome = (o: { gold?: number; hp?: number; wounds?: number }): void => {
+    if (o.gold) next = { ...next, gold: Math.max(0, next.gold + o.gold) }
+    if (o.hp) next = { ...next, hp: Math.min(next.maxHp, next.hp + o.hp) }
+    if (o.wounds) {
+      const wounds: CardInstance[] = Array.from({ length: o.wounds }, (_, i) => ({
+        uid: `wound_r${run.row}_${i}`,
+        def: WOUND_DEF,
+      }))
+      next = { ...next, deck: [...next.deck, ...wounds] }
+    }
+  }
+  applyOutcome(choice)
+  if (choice.maxHp) {
+    next = { ...next, maxHp: next.maxHp + choice.maxHp, hp: next.hp + choice.maxHp }
+  }
+  if (choice.addRandomCards) {
+    const leader = getLeaderDef(run.leaderId)
+    const canRamp = run.colors.includes('green')
+    const costCap = leader.energyMax + (canRamp ? 2 : 0)
+    const pool = allCards.filter(
+      (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+    )
+    for (let i = 0; i < choice.addRandomCards && pool.length > 0; i++) {
+      const [idx, r1] = nextInt(rng, 0, pool.length - 1)
+      rng = r1
+      next = {
+        ...next,
+        deck: [...next.deck, { uid: `event_r${run.row}_${i}_${pool[idx].id}`, def: pool[idx] }],
+      }
+    }
+  }
+  if (choice.relic && run.relics.length < RELIC_MAX) {
+    const relicId = run.relicQueue.find((id) => !next.relics.includes(id))
+    if (relicId !== undefined) {
+      next = applyRelicBonus({ ...next, relics: [...next.relics, relicId] }, relicId)
+    }
+  }
+  if (choice.removeCard) {
+    const card = next.deck[cardIndex ?? -1]
+    if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+    if (next.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
+    next = { ...next, deck: next.deck.filter((_, i) => i !== cardIndex) }
+  }
+  if (choice.upgradeCard) {
+    const card = next.deck[cardIndex ?? -1]
+    if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+    if (isUpgraded(card)) throw new Error('すでに鍛えられている')
+    if (upgradeTier(card.def) === 'none') throw new Error(`${card.def.name} は鍛えられない`)
+    next = { ...next, deck: next.deck.map((c, i) => (i === cardIndex ? upgradeCard(c) : c)) }
+  }
+  if (choice.gamble) {
+    // ロールはラン RNG = 決定的 (リプレイ再現)
+    const [roll, r1] = nextInt(rng, 0, 999)
+    rng = r1
+    applyOutcome(roll < choice.gamble.chance * 1000 ? choice.gamble.win : choice.gamble.lose)
+  }
+  if (next.hp <= 0) return { ...next, rng, hp: 0, phase: 'lost' }
+  return { ...next, rng, phase: 'map' }
 }
 
 export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_green'): RunState {
   const leader = getLeaderDef(leaderId)
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  const [map, rngAfterMap] = generateMap(rng0)
+  const [map, rngAfterMap] = generateMap(rng0, allEvents.map((e) => e.id))
   const [relicQueue, rngAfterRelics] = shuffle(
     rngAfterMap,
     allRelics.map((r) => r.id),
@@ -205,6 +346,8 @@ export function createRun(seed: number, mode: ReactionMode, leaderId = 'leader_g
     row: -1,
     col: 0,
     battlesWon: 0,
+    gold: STARTING_GOLD,
+    shop: null,
     phase: 'map',
     combat: null,
     rewardOptions: null,
@@ -325,7 +468,24 @@ function rollRewards(run: RunState): RunState {
 function afterVictory(run: RunState, combat: GameState): RunState {
   // 自動回復は狩人の恵み (victoryHealBonus) のみ
   const hp = Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
-  const next: RunState = { ...run, combat, hp, battlesWon: run.battlesWon + 1 }
+  // ゴールド獲得 (通常12〜18G・エリートはさらに+30〜40G。確定済みルール表「ゴールド」)
+  let rng = run.rng
+  const [base, r1] = nextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX)
+  rng = r1
+  let gained = base
+  if (run.currentElite) {
+    const [bonus, r2] = nextInt(rng, GOLD_ELITE_BONUS_MIN, GOLD_ELITE_BONUS_MAX)
+    rng = r2
+    gained += bonus
+  }
+  const next: RunState = {
+    ...run,
+    rng,
+    combat,
+    hp,
+    battlesWon: run.battlesWon + 1,
+    gold: run.gold + gained,
+  }
   if (currentNode(run)?.type === 'boss') return { ...next, phase: 'won' }
   // エリート戦の勝利: レリック3択 (取得済みを除いた候補列の先頭から)
   if (run.currentElite && run.relics.length < RELIC_MAX) {
@@ -586,6 +746,56 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       // デッキが痩せすぎないよう最低5枚は残す
       if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
       return { ...run, deck: run.deck.filter((_, i) => i !== command.index), phase: 'map' }
+    }
+    case 'ShopBuyCard': {
+      if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
+      const item = run.shop.cards[command.index]
+      if (item === undefined) throw new Error(`不正な商品指定: ${command.index}`)
+      if (run.gold < item.price) throw new Error(`ゴールドが足りない (${item.price}G)`)
+      const card: CardInstance = { uid: `buy_r${run.row}_${item.id}`, def: getCardDef(item.id) }
+      return {
+        ...run,
+        gold: run.gold - item.price,
+        deck: [...run.deck, card],
+        picks: [...run.picks, item.id],
+        shop: { ...run.shop, cards: run.shop.cards.filter((_, i) => i !== command.index) },
+      }
+    }
+    case 'ShopBuyRelic': {
+      if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
+      if (run.shop.relicId === null) throw new Error('レリックの在庫がない')
+      if (run.gold < run.shop.relicPrice) throw new Error(`ゴールドが足りない (${run.shop.relicPrice}G)`)
+      const relicId = run.shop.relicId
+      let next: RunState = {
+        ...run,
+        gold: run.gold - run.shop.relicPrice,
+        relics: [...run.relics, relicId],
+        shop: { ...run.shop, relicId: null },
+      }
+      next = applyRelicBonus(next, relicId)
+      return next
+    }
+    case 'ShopRemove': {
+      if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
+      if (run.shop.removalUsed) throw new Error('除去サービスは1回まで')
+      if (run.gold < run.shop.removalPrice) throw new Error(`ゴールドが足りない (${run.shop.removalPrice}G)`)
+      const card = run.deck[command.index]
+      if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
+      if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
+      return {
+        ...run,
+        gold: run.gold - run.shop.removalPrice,
+        deck: run.deck.filter((_, i) => i !== command.index),
+        shop: { ...run.shop, removalUsed: true },
+      }
+    }
+    case 'ShopLeave': {
+      if (run.phase !== 'shop') throw new Error('ショップではない')
+      return { ...run, shop: null, phase: 'map' }
+    }
+    case 'EventChoice': {
+      if (run.phase !== 'event') throw new Error('イベントではない')
+      return applyEventChoice(run, command.index, command.cardIndex)
     }
   }
 }

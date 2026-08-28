@@ -2,7 +2,7 @@
 // 手札やの敵の意図を直接差し替えることで、シャッフル・重み抽選の乱数に
 // 依存しない決定的なルールテストを書けるようにする。
 
-import { getCardDef } from './content.ts'
+import { getCardDef, getEventDef } from './content.ts'
 import { applyCommand, createInitialState } from './state.ts'
 import type { EnemyIntent, GameState, ReactionMode } from './types.ts'
 
@@ -90,6 +90,18 @@ export function createRunInBattle(
   leaderId?: string,
 ): RunState {
   let run = createRun(seed, mode, leaderId)
-  while (run.phase === 'map') run = chooseToward(run, 'battle')
+  let guard = 0
+  while (run.phase !== 'combat' && guard++ < 40) {
+    if (run.phase === 'map') run = chooseToward(run, 'battle')
+    else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
+    else if (run.phase === 'event') {
+      // 規約: 最後の選択肢は常に安全な「立ち去る」
+      const node = run.map[run.row][run.col]
+      const ev = getEventDef(node.eventId!)
+      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+    } else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
+    else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
+    else break
+  }
   return run
 }

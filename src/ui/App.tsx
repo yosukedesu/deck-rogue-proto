@@ -20,6 +20,7 @@ import {
   deckAllowedForLeader,
   deckSize,
   encounterName,
+  getEventDef,
   getCardDef,
   getDeckDef,
   getEnemyDef,
@@ -1503,7 +1504,11 @@ function RunScreen({
             ? '🔥 焚き火'
             : t === 'workshop'
               ? '🔨 工房'
-              : `⚔️ ${encounterId ? encounterName(encounterId) : ''}`
+              : t === 'shop'
+                ? '🛒 ショップ'
+                : t === 'event'
+                  ? '❓ ？？？'
+                  : `⚔️ ${encounterId ? encounterName(encounterId) : ''}`
     return (
       <div className="app setup">
         <h1>🗺 マップ</h1>
@@ -1513,6 +1518,7 @@ function RunScreen({
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
+            <span className="chip">💰 {run.gold}G</span>
             <span className="chip">デッキ {run.deck.length}枚</span>
             <span className="chip">{run.battlesWon}勝</span>
           </div>
@@ -1592,6 +1598,149 @@ function RunScreen({
         >
           見送る
         </button>
+      </div>
+    )
+  }
+
+  if (run.phase === 'shop' && run.shop) {
+    return (
+      <div className="app setup">
+        <h1>🛒 ショップ</h1>
+        <div className="panel">
+          <span className="chip">💰 {run.gold}G</span>
+          <span className="chip">HP {run.hp}/{run.maxHp}</span>
+          <span className="chip">デッキ {run.deck.length}枚</span>
+          <div className="choice-desc" style={{ marginTop: 6 }}>
+            買わずに出てもよい。除去サービスは1回まで。
+          </div>
+        </div>
+        <div className="setup-section-title">カード</div>
+        <div className="hand-cards" style={{ margin: '12px 0' }}>
+          {run.shop.cards.map((item, i) => (
+            <CardFrame
+              key={`${item.id}_${i}`}
+              card={{ uid: `shop${i}`, def: getCardDef(item.id) }}
+              dim={false}
+              ctx={ctx}
+              actions={
+                <button
+                  className="btn btn-primary"
+                  disabled={run.gold < item.price}
+                  onClick={() => dispatch({ type: 'ShopBuyCard', index: i })}
+                >
+                  {item.price}G で買う
+                </button>
+              }
+            />
+          ))}
+        </div>
+        {run.shop.relicId !== null && (
+          <div className="panel">
+            <div className="setup-section-title">レリック</div>
+            {(() => {
+              const r = getRelicDef(run.shop!.relicId!)
+              return (
+                <div>
+                  <span className="chip">{r.sprite} {r.name}</span>
+                  <span className="choice-desc"> {r.description}</span>{' '}
+                  <button
+                    className="btn btn-primary"
+                    disabled={run.gold < run.shop!.relicPrice}
+                    onClick={() => dispatch({ type: 'ShopBuyRelic' })}
+                  >
+                    {run.shop!.relicPrice}G で買う
+                  </button>
+                </div>
+              )
+            })()}
+          </div>
+        )}
+        {!run.shop.removalUsed && (
+          <div className="panel">
+            <div className="setup-section-title">カード除去サービス（{run.shop.removalPrice}G・1回まで）</div>
+            <div className="hand-cards" style={{ marginTop: 8 }}>
+              {run.deck.map((c, i) => (
+                <CardFrame
+                  key={c.uid}
+                  card={c}
+                  dim={false}
+                  ctx={ctx}
+                  actions={
+                    <button
+                      className="btn"
+                      disabled={run.gold < run.shop!.removalPrice || run.deck.length <= 5}
+                      onClick={() => dispatch({ type: 'ShopRemove', index: i })}
+                    >
+                      除去する
+                    </button>
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        <button className="btn" style={{ marginTop: 12 }} onClick={() => dispatch({ type: 'ShopLeave' })}>
+          店を出る
+        </button>
+      </div>
+    )
+  }
+
+  if (run.phase === 'event') {
+    const ev = getEventDef(currentNode(run)!.eventId!)
+    return (
+      <div className="app setup">
+        <h1>{ev.sprite ?? '❓'} {ev.name}</h1>
+        <div className="panel">
+          <div className="choice-desc">{ev.flavor}</div>
+          <div style={{ marginTop: 6 }}>
+            <span className="chip">HP {run.hp}/{run.maxHp}</span>
+            <span className="chip">💰 {run.gold}G</span>
+          </div>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          {ev.choices.map((c, i) => {
+            const goldLocked = c.requireGold !== undefined && run.gold < c.requireGold
+            const needsCard = c.removeCard === true || c.upgradeCard === true
+            if (!needsCard) {
+              return (
+                <div key={i} style={{ margin: '6px 0' }}>
+                  <button
+                    className="btn btn-primary"
+                    disabled={goldLocked}
+                    onClick={() => dispatch({ type: 'EventChoice', index: i })}
+                  >
+                    {c.label}
+                    {goldLocked ? '（G不足）' : ''}
+                  </button>
+                </div>
+              )
+            }
+            return (
+              <div key={i} className="panel" style={{ margin: '6px 0' }}>
+                <div className="choice-title">{c.label} — 対象を選ぶ:</div>
+                <div className="hand-cards" style={{ marginTop: 8 }}>
+                  {run.deck.map((card, ci) => (
+                    <CardFrame
+                      key={card.uid}
+                      card={card}
+                      dim={false}
+                      ctx={ctx}
+                      actions={
+                        <button
+                          className="btn"
+                          onClick={() => dispatch({ type: 'EventChoice', index: i, cardIndex: ci })}
+                        >
+                          このカードを選ぶ
+                        </button>
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
   }

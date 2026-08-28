@@ -1,7 +1,7 @@
 // エリートノードとレリック (2026-08-25。2026-08-28 マップ化) のテスト。
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
-import { allRelics, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { allRelics, getEventDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
 import { applyRunCommand, createRun, currentNode, depthHpScale } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
@@ -36,9 +36,31 @@ function intoFirstElite(seed = 11): RunState {
       run = applyRunCommand(run, { type: 'SkipRelic' })
     } else if (run.phase === 'reward') {
       run = applyRunCommand(run, { type: 'SkipReward' })
+    } else if (run.phase === 'shop') {
+      run = applyRunCommand(run, { type: 'ShopLeave' })
+    } else if (run.phase === 'event') {
+      const ev = getEventDef(run.map[run.row][run.col].eventId!)
+      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else break
   }
   throw new Error('エリートノードに到達できない')
+}
+
+/** 現在のラン状態から次の戦闘に入るまで非戦闘フェーズを消化する */
+function intoBattle(run0: RunState): RunState {
+  let run = run0
+  let guard = 0
+  while (run.phase !== 'combat' && guard++ < 40) {
+    if (run.phase === 'map') run = chooseToward(run, 'battle')
+    else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
+    else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
+    else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
+    else if (run.phase === 'event') {
+      const ev = getEventDef(run.map[run.row][run.col].eventId!)
+      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+    } else break
+  }
+  return run
 }
 
 describe('エリートノード (マップ化。opt-inオファーは廃止)', () => {
@@ -74,8 +96,7 @@ describe('エリートノード (マップ化。opt-inオファーは廃止)', (
   })
 
   it('通常戦闘の勝利ではレリック報酬は出ない', () => {
-    let run = createRun(11, 'set-confirm')
-    while (run.phase === 'map') run = chooseToward(run, 'battle')
+    let run = intoBattle(createRun(11, 'set-confirm'))
     expect(run.currentElite).toBe(false)
     run = forceWin(run)
     expect(run.phase).toBe('reward')
@@ -102,12 +123,7 @@ describe('レリック効果', () => {
       run = { ...run, relics: [relicId], relicOptions: null, phase: 'reward', rewardOptions: [] }
     }
     if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
-    while (run.phase === 'map') run = chooseToward(run, 'battle')
-    if (run.phase === 'campfire') {
-      run = applyRunCommand(run, { type: 'CampfireRest' })
-      while (run.phase === 'map') run = chooseToward(run, 'battle')
-    }
-    return run
+    return intoBattle(run)
   }
 
   it('A型 (賢者の巻物): 戦闘開始時に2枚ドロー = 初手が2枚多い', () => {
@@ -165,7 +181,7 @@ describe('B型レリックの最大HPが戦闘へ届く (2026-08-27 バグ修正
       maxHp: baseMax + 8,
       hp: Math.min(baseMax + 8, run.hp + 8),
     }
-    while (run.phase === 'map') run = chooseToward(run, 'battle')
+    run = intoBattle(run)
     expect(run.combat!.player.maxHp).toBe(baseMax + 8)
   })
 })

@@ -11,6 +11,7 @@ import encountersJson from '../data/encounters.json' with { type: 'json' }
 import enemiesJson from '../data/enemies.json' with { type: 'json' }
 import leadersJson from '../data/leaders.json' with { type: 'json' }
 import relicsJson from '../data/relics.json' with { type: 'json' }
+import eventsJson from '../data/events.json' with { type: 'json' }
 import type {
   CardColor,
   CardDef,
@@ -21,6 +22,7 @@ import type {
   EnemyDef,
   LeaderDef,
   RelicDef,
+  EventDef,
 } from './types.ts'
 
 // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
@@ -57,6 +59,14 @@ export function encounterName(id: string): string {
 export const allDecks = decksJson as readonly DeckDef[]
 export const allLeaders = leadersJson as readonly LeaderDef[]
 export const allRelics = relicsJson as readonly RelicDef[]
+
+export const allEvents = eventsJson as readonly EventDef[]
+
+export function getEventDef(id: string): EventDef {
+  const def = allEvents.find((e) => e.id === id)
+  if (!def) throw new Error(`未定義イベント: ${id}`)
+  return def
+}
 
 export function getRelicDef(id: string): RelicDef {
   const def = allRelics.find((r) => r.id === id)

@@ -1,6 +1,6 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
-import { getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
 import { BOSS_ROW, MAP_ROWS, tierForRow } from './map.ts'
 import {
   applyRunCommand,
@@ -46,6 +46,12 @@ function runTo(run: RunState, target: 'campfire' | 'workshop' | 'elite' | 'boss'
       r = applyRunCommand(r, { type: 'WorkshopSkip' })
     } else if (r.phase === 'combat') {
       r = forceWin(r)
+    } else if (r.phase === 'shop') {
+      r = applyRunCommand(r, { type: 'ShopLeave' })
+    } else if (r.phase === 'event') {
+      const node = r.map[r.row][r.col]
+      const ev = getEventDef(node.eventId!)
+      r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else if (r.phase === 'relic-reward') {
       r = applyRunCommand(r, { type: 'SkipRelic' })
     } else if (r.phase === 'reward') {
@@ -185,6 +191,13 @@ describe('HP持ち越しと焚き火', () => {
         r2 = applyRunCommand(r2, { type: 'SkipReward' })
       } else if (r2.phase === 'relic-reward') {
         r2 = applyRunCommand(r2, { type: 'SkipRelic' })
+      } else if (r2.phase === 'workshop') {
+        r2 = applyRunCommand(r2, { type: 'WorkshopSkip' })
+      } else if (r2.phase === 'shop') {
+        r2 = applyRunCommand(r2, { type: 'ShopLeave' })
+      } else if (r2.phase === 'event') {
+        const ev = getEventDef(r2.map[r2.row][r2.col].eventId!)
+        r2 = applyRunCommand(r2, { type: 'EventChoice', index: ev.choices.length - 1 })
       } else break
     }
     expect(r2.phase).toBe('campfire')

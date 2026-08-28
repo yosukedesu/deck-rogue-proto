@@ -126,13 +126,13 @@ export function buildReport(
   if (run) {
     const leader = getLeaderDef(run.leaderId)
     L.push(`ラン ${leader.name}（${run.leaderId}） / seed ${run.seed} / mode ${run.mode}`)
-    L.push(`進行: ${run.phase} / 行 ${run.row + 1}/16・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / デッキ${run.deck.length}枚`)
+    L.push(`進行: ${run.phase} / 行 ${run.row + 1}/16・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
     L.push(
       `マップ: ${run.map
         .map((row, r) => {
           const cells = row
             .map((n, c) => {
-              const label = n.encounterId !== null ? encounterName(n.encounterId) : n.type === 'campfire' ? '焚き火' : '工房'
+              const label = n.encounterId !== null ? encounterName(n.encounterId) : n.type === 'campfire' ? '焚き火' : n.type === 'workshop' ? '工房' : n.type === 'shop' ? 'ショップ' : '?'
               return `${label}${r === run.row && c === run.col ? '●' : ''}`
             })
             .join('/')

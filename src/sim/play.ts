@@ -15,7 +15,7 @@
 //            {"type":"CampfireRest"} / {"type":"CampfireRemove","index":0} / {"type":"CampfireUpgrade","index":0}  ← 焚き火
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { encounterName, getCardDef, getEnemyDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
@@ -239,7 +239,7 @@ function renderBattle(s: GameState, logFrom: number): string {
 }
 
 const NODE_ICON: Record<string, string> = {
-  battle: '⚔', elite: '👑', campfire: '🔥', workshop: '🔨', boss: '💀',
+  battle: '⚔', elite: '👑', campfire: '🔥', workshop: '🔨', shop: '🛒', event: '❓', boss: '💀',
 }
 
 /** マップ全体をテキスト描画 (全体可視・現在地と次の選択肢を明示) */
@@ -268,7 +268,9 @@ function renderMap(run: RunState): string {
   L.push('   ※現在地から到達できないノードは (到達不可) 付き。接続は前の行でどの列を選んだかで決まる')
   for (let r = run.map.length - 1; r >= 0; r--) {
     const cells = run.map[r].map((n, c) => {
-      const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${n.type === 'campfire' ? '焚き火' : n.type === 'workshop' ? '工房' : n.type}`
+      // ?マスの中身 (eventId) は入るまで伏せる (確定済みルール表「?マス（イベント）」)
+      const typeLabel: Record<string, string> = { campfire: '焚き火', workshop: '工房', shop: 'ショップ', event: '?' }
+      const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${typeLabel[n.type] ?? n.type}`
       const edges = n.next.length > 0 ? `→${n.next.join('·')}` : ''
       const here = r === run.row && c === run.col ? '【現在地】' : ''
       const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`) ? '(到達不可)' : ''
@@ -285,7 +287,7 @@ function renderMap(run: RunState): string {
 function renderRun(run: RunState, logFrom: number): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
-  L.push(`=== ラン: ${leader.name} | 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
@@ -304,6 +306,30 @@ function renderRun(run: RunState, logFrom: number): string {
       L.push(`   [${i}] ${cardLine(c.def)}${mark}`)
     })
     L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
+  } else if (run.phase === 'shop' && run.shop) {
+    L.push(`🛒 ショップ (所持 ${run.gold}G。買わずに出てもよい)`)
+    run.shop.cards.forEach((item, i) => L.push(` [${i}] ${item.price}G: ${cardLine(getCardDef(item.id))}`))
+    if (run.shop.relicId !== null) {
+      const r = getRelicDef(run.shop.relicId)
+      L.push(` レリック ${run.shop.relicPrice}G: ${r.name} (${r.description})`)
+    }
+    if (!run.shop.removalUsed) L.push(` カード除去サービス ${run.shop.removalPrice}G (1回まで)`)
+    L.push('→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopLeave"}')
+    L.push('   デッキ:')
+    run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
+  } else if (run.phase === 'event') {
+    const node = run.map[run.row][run.col]
+    const ev = getEventDef(node.eventId!)
+    L.push(`❓ ${ev.sprite ?? ''} ${ev.name}`)
+    L.push(`   ${ev.flavor}`)
+    ev.choices.forEach((c, i) => {
+      const locked = c.requireGold !== undefined && run.gold < c.requireGold ? ' 【G不足で選べない】' : ''
+      const needCard = c.removeCard || c.upgradeCard ? ' 【要cardIndex(デッキ番号)】' : ''
+      L.push(` [${i}] ${c.label}${locked}${needCard}`)
+    })
+    L.push('→ {"type":"EventChoice","index":N} (対象カードが要る選択肢は {"type":"EventChoice","index":N,"cardIndex":M})')
+    L.push('   デッキ:')
+    run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'workshop') {
     L.push('🔨 工房: 異なる2枚を合成して1枚の新カードにできる (素材は消える)。見送りも可')
     L.push(
@@ -380,7 +406,7 @@ if (mode === 'new-run') {
   if (sf.kind === 'run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
-      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun',
+      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopLeave', 'EventChoice',
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "event_mossy_chest",
+    "name": "苔むした宝箱",
+    "sprite": "🧰",
+    "flavor": "塔の踊り場に、鍵のかかっていない古い宝箱が置かれている。都合が良すぎる気もするが……",
+    "choices": [
+      {
+        "label": "開ける（50%: 75G / 50%: 罠で負傷1がデッキに）",
+        "gamble": {
+          "chance": 0.5,
+          "win": { "gold": 75 },
+          "lose": { "wounds": 1 }
+        }
+      },
+      { "label": "慎重にこじ開ける（確実に 30G）", "gold": 30 },
+      { "label": "立ち去る" }
+    ]
+  },
+  {
+    "id": "event_ghost_peddler",
+    "name": "行商の亡霊",
+    "sprite": "👻",
+    "flavor": "「生き血でも、思い出の品でも。対価さえもらえれば何でも買い取るよ」半透明の商人が笑う。",
+    "choices": [
+      { "label": "血を売る（HP-10 / +55G）", "hp": -10, "gold": 55 },
+      { "label": "カードを1枚売る（デッキから1枚除去 / +35G）", "removeCard": true, "gold": 35 },
+      { "label": "立ち去る" }
+    ]
+  },
+  {
+    "id": "event_ancient_hollow",
+    "name": "古木のうろ",
+    "sprite": "🌳",
+    "flavor": "塔を貫いて育つ大樹のうろから、あたたかい樹液の香りがする。巫女の血が騒ぐ。",
+    "choices": [
+      { "label": "樹液を浴びる（最大HP+7）", "maxHp": 7 },
+      { "label": "枝を借りて鍛える（デッキの1枚を強化）", "upgradeCard": true },
+      { "label": "立ち去る" }
+    ]
+  },
+  {
+    "id": "event_dice_imp",
+    "name": "賽の小鬼",
+    "sprite": "🎲",
+    "flavor": "「遊んでいかない？ 掛け金は30。出た目が良ければ3倍にして返すよ」小鬼が賽を転がしてみせる。",
+    "choices": [
+      {
+        "label": "賭ける（-30G。50%: +90G / 50%: 何も返ってこない）",
+        "requireGold": 30,
+        "gamble": {
+          "chance": 0.5,
+          "win": { "gold": 60 },
+          "lose": {}
+        },
+        "gold": -30
+      },
+      { "label": "立ち去る" }
+    ]
+  },
+  {
+    "id": "event_wandering_painter",
+    "name": "流浪の絵師",
+    "sprite": "🎨",
+    "flavor": "「君の戦いぶりを絵にしたい。礼はこの手札から好きなものを」絵師が描きかけのカードを差し出す。",
+    "choices": [
+      { "label": "1枚もらう（ランダムな緑カード1枚を獲得）", "addRandomCards": 1 },
+      { "label": "立ち去る" }
+    ]
+  },
+  {
+    "id": "event_whispering_stele",
+    "name": "囁く石碑",
+    "sprite": "🗿",
+    "flavor": "古い石碑が頭の中に直接語りかけてくる。「読め。力を与えよう。ただし体は軋むぞ」",
+    "choices": [
+      { "label": "読む（レリック1個 / 負傷2がデッキに）", "relic": true, "wounds": 2 },
+      { "label": "表面だけなぞる（+20G）", "gold": 20 },
+      { "label": "立ち去る" }
+    ]
+  }
+]

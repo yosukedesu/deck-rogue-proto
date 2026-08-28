@@ -1,6 +1,6 @@
 // カード合成 (工房) のテスト。確定済みルール表「カード合成（工房）」「工房ノード」を固定する。
 import { describe, expect, it } from 'vitest'
-import { allCards, getCardDef } from './content.ts'
+import { allCards, getCardDef, getEventDef } from './content.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import { applyRunCommand, createRun, upgradeCard, upgradeTier } from './run.ts'
 import type { RunState } from './run.ts'
@@ -32,6 +32,11 @@ function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
       if (target === 'workshop') return r
       r = applyRunCommand(r, { type: 'WorkshopSkip' })
     } else if (r.phase === 'combat') r = forceWin(r)
+    else if (r.phase === 'shop') r = applyRunCommand(r, { type: 'ShopLeave' })
+    else if (r.phase === 'event') {
+      const ev = getEventDef(r.map[r.row][r.col].eventId!)
+      r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
+    }
     else if (r.phase === 'relic-reward') r = applyRunCommand(r, { type: 'SkipRelic' })
     else if (r.phase === 'reward') r = applyRunCommand(r, { type: 'SkipReward' })
     else return r

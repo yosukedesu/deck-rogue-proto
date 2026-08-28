@@ -4,14 +4,16 @@
 // - どのパスも戦闘数10〜12 (DPで全パスの最小/最大を検証)
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
+import { allEvents } from './content.ts'
 import { createRng } from './rng.ts'
 import { BOSS_ROW, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierForRow } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
+const EVENT_POOL = allEvents.map((e) => e.id)
 
 function mapFor(seed: number): RunMap {
-  return generateMap(createRng(seed))[0]
+  return generateMap(createRng(seed), EVENT_POOL)[0]
 }
 
 describe('マップ生成の構造', () => {
@@ -31,19 +33,34 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('工房×2・エリート×4。特別ノードの行には必ず戦闘の代替がある', () => {
+  it('工房×2・ショップ×1・?×1〜2・エリート×4。特別ノードの行には必ず戦闘の代替がある', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       const all = map.flat()
-      expect(all.filter((n) => n.type === 'workshop')).toHaveLength(2)
-      expect(all.filter((n) => n.type === 'elite')).toHaveLength(4)
+      expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(2)
+      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(1)
+      const events = all.filter((n) => n.type === 'event')
+      expect(events.length, `seed${seed}`).toBeGreaterThanOrEqual(1) // DP不成立の保険で稀に1
+      expect(events.length, `seed${seed}`).toBeLessThanOrEqual(2)
+      expect(all.filter((n) => n.type === 'elite'), `seed${seed}`).toHaveLength(4)
+      // イベントノードだけ eventId を持つ
+      for (const n of events) expect(EVENT_POOL).toContain(n.eventId)
       map.forEach((row, r) => {
-        const specials = row.filter((n) => n.type === 'workshop' || n.type === 'elite')
+        // どの行にも戦闘の代替がある (特別ノードは強制されない。工房行はショップ/?が同居する幅3)
+        const specials = row.filter(
+          (n) => n.type === 'workshop' || n.type === 'elite' || n.type === 'shop' || n.type === 'event',
+        )
         if (specials.length > 0) {
-          expect(specials, `seed${seed} row${r}`).toHaveLength(1) // 1行に1つまで
           expect(row.some((n) => n.type === 'battle'), `seed${seed} row${r}`).toBe(true)
         }
       })
+      // エリート行は隣接しない (連続強制エリートの防止)
+      const eliteRows = map
+        .map((row, r) => (row.some((n) => n.type === 'elite') ? r : -1))
+        .filter((r) => r >= 0)
+      for (let i = 1; i < eliteRows.length; i++) {
+        expect(eliteRows[i] - eliteRows[i - 1], `seed${seed} エリート行が隣接`).toBeGreaterThan(1)
+      }
     }
   })
 
@@ -59,7 +76,7 @@ describe('マップ生成の構造', () => {
         map[r].forEach((node, c) => {
           for (const to of node.next) {
             const t = map[r + 1][to].type
-            const combat = t === 'battle' || t === 'elite' ? 1 : 0
+            const combat = t === 'battle' || t === 'elite' ? 1 : 0 // 工房/ショップ/?/焚き火は非戦闘
             nextMin[to] = Math.min(nextMin[to], minC[c] + combat)
             nextMax[to] = Math.max(nextMax[to], maxC[c] + combat)
           }

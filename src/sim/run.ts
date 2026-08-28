@@ -12,7 +12,7 @@
 //   - 割り込み: set-confirm は常に「発動」、hold-manual は発動可能な先頭カードを常に発動
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
-import { allDecks, allEnemies, allLeaders, getCardDef } from '../engine/content.ts'
+import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
 import { effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, isUpgraded, nextChoices } from '../engine/run.ts'
@@ -396,6 +396,8 @@ function simulateRuns(count: number, baseSeed: number): void {
         run.phase === 'map' ||
         run.phase === 'campfire' ||
         run.phase === 'workshop' ||
+        run.phase === 'shop' ||
+        run.phase === 'event' ||
         run.phase === 'relic-reward'
       ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
@@ -442,6 +444,17 @@ function simulateRuns(count: number, baseSeed: number): void {
         }
         if (run.phase === 'workshop') {
           run = applyRunCommand(run, { type: 'WorkshopSkip' }) // ボットは合成しない (判断が要るため)
+          continue
+        }
+        if (run.phase === 'shop') {
+          run = applyRunCommand(run, { type: 'ShopLeave' }) // ボットは買わない (判断が要るため)
+          continue
+        }
+        if (run.phase === 'event') {
+          // 規約: 最後の選択肢は常に安全な「立ち去る」(確定済みルール表「?マス（イベント）」)
+          const node = run.map[run.row][run.col]
+          const ev = getEventDef(node.eventId!)
+          run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
           continue
         }
         if (run.phase === 'relic-reward') {

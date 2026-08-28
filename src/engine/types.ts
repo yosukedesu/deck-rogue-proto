@@ -453,6 +453,51 @@ export interface CardMode {
   readonly effects: readonly DeclarativeEffect[]
 }
 
+/** ?マス (イベント) の結果効果 (ギャンブルの当たり/外れ用) */
+export interface EventOutcome {
+  readonly gold?: number
+  readonly hp?: number
+  readonly wounds?: number
+}
+
+/** ?マス (イベント) の選択肢。効果は宣言的 (確定済みルール表「?マス（イベント）」) */
+export interface EventChoiceDef {
+  readonly label: string
+  /** ゴールド増減 (負値は支払い) */
+  readonly gold?: number
+  /** HP増減 (最大HPまで。負値は自傷。0未満にはならず、0になったらラン敗北) */
+  readonly hp?: number
+  /** 最大HP増加 (現在HPも同量増える) */
+  readonly maxHp?: number
+  /** 負傷カードをデッキに混入する枚数 */
+  readonly wounds?: number
+  /** 色プールからランダムなカードをN枚獲得 */
+  readonly addRandomCards?: number
+  /** レリック候補列の次の1個を獲得 (上限なら何も起きない) */
+  readonly relic?: boolean
+  /** デッキから1枚を除去 (EventChoice.cardIndex で対象指定) */
+  readonly removeCard?: boolean
+  /** デッキの1枚を鍛える (EventChoice.cardIndex で対象指定) */
+  readonly upgradeCard?: boolean
+  /** この選択肢に必要な所持ゴールド (不足なら選べない) */
+  readonly requireGold?: number
+  /** ギャンブル: chance の確率で win、外れたら lose (ロールはラン RNG = 決定的) */
+  readonly gamble?: {
+    readonly chance: number
+    readonly win: EventOutcome
+    readonly lose: EventOutcome
+  }
+}
+
+/** ?マス (イベント) の定義。data/events.json が一次資料 */
+export interface EventDef {
+  readonly id: string
+  readonly name: string
+  readonly sprite?: string
+  readonly flavor: string
+  readonly choices: readonly EventChoiceDef[]
+}
+
 export interface CardDef {
   /**
    * アーキタイプの軸 (報酬抽選の重み付け用。確定済みルール表「軸の重み付け」)。
