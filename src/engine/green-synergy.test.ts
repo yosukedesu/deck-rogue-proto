@@ -43,12 +43,29 @@ describe('トランプルの網', () => {
     expect(s.player.momentum).toBe(4) // 消費しない (ターン終了で自然に消える)
   })
 
-  it('昂ぶる角笛: 勢いを2倍にして消滅する (開花の儀のトランプル版)', () => {
+  it('昂ぶる角笛: 勢い+2してから2倍・消滅 (2026-08-29 検証ランで空振り腐りが出たため+2を前置)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_flare'])
     s = { ...s, player: { ...s.player, momentum: 5 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_flare' })
-    expect(s.player.momentum).toBe(10)
+    expect(s.player.momentum).toBe((5 + 2) * 2)
     expect(s.player.exhaustPile.map((c) => c.def.id)).toContain('green_horn_flare')
+    // 勢い0で引いても最低4が立つ = 空振りしない
+    let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_flare'])
+    s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_horn_flare' })
+    expect(s2.player.momentum).toBe(4)
+  })
+
+  it('荒角の構え: ブロック6+勢い+3 (トランプルの受け=守りが攻めの準備になる)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [
+      'green_horn_stance',
+      'green_strike',
+    ])
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_stance' })
+    expect(s.player.block).toBe(6)
+    expect(s.player.momentum).toBe(3)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
+    expect(s.enemies[0].hp).toBe(hpBefore - (6 + 3)) // 防御札が後続の攻撃を+3する
   })
 })
 

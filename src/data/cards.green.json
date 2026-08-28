@@ -759,6 +759,11 @@
     "effects": [
       {
         "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
         "effect": "doubleMomentum"
       }
     ]
@@ -824,6 +829,25 @@
         "trigger": "onPlay",
         "effect": "gainBlockPerEnergyMax",
         "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_horn_stance",
+    "name": "荒角の構え",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
       }
     ]
   }
