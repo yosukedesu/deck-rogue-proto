@@ -253,3 +253,43 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
     expect(s.player.nextCardDiscount).toBe(2)
   })
 })
+
+describe('倍化の増刷 (2026-08-29 ユーザー指示「成長・勢いの倍化カードを増やしてほしい」)', () => {
+  it('株分け: 成長2倍+ブロック6・消滅 (守りながら倍加)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_division'])
+    s = { ...s, player: { ...s.player, growth: 4, energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_division' })
+    expect(s.player.growth).toBe(8)
+    expect(s.player.block).toBe(6)
+    expect(s.player.exhaustPile.map((c) => c.def.id)).toContain('green_division')
+  })
+
+  it('満開の刻: 成長2倍→10ダメ (倍加後の成長が乗る)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_full_bloom'])
+    s = { ...s, player: { ...s.player, growth: 6, energy: 4 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_full_bloom' })
+    expect(s.player.growth).toBe(12)
+    expect(s.enemies[0].hp).toBe(hpBefore - (10 + 12))
+  })
+
+  it('疾風の一撃: 勢い2倍→6ダメ (倍化後の勢いが乗る。勢い0でも6ダメ保証=空振りしない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_gale_strike'])
+    s = { ...s, player: { ...s.player, momentum: 4, energy: 3 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_gale_strike' })
+    expect(s.enemies[0].hp).toBe(hpBefore - (6 + 8))
+    let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_gale_strike'])
+    s2 = { ...s2, player: { ...s2.player, energy: 3 } }
+    const hp2 = s2.enemies[0].hp
+    s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_gale_strike' })
+    expect(s2.enemies[0].hp).toBe(hp2 - 6)
+  })
+
+  it('嵐の角笛: 勢い+3してから2倍 (最低6が立つ=角笛の教訓)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_storm_horn'])
+    s = { ...s, player: { ...s.player, momentum: 5, energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_storm_horn' })
+    expect(s.player.momentum).toBe((5 + 3) * 2)
+  })
+})

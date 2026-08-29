@@ -106,6 +106,17 @@ describe('カードデータの不変条件', () => {
     )
     expect(bad.map((c) => c.name)).toEqual([])
   })
+
+  it('倍化 (doubleGrowth / doubleMomentum) を持つ札は消滅する (倍加は1回きりの決断)', () => {
+    // 2026-08-25 裁定「倍加の使い回しが成長97%の主犯」を機械判定に昇格 (2026-08-29 倍化増刷+4と同時)。
+    // それまで設計裁定だけで機械固定されていなかった穴
+    const bad = allCards.filter(
+      (c) =>
+        c.effects.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleMomentum') &&
+        c.exhaust !== true,
+    )
+    expect(bad.map((c) => c.name)).toEqual([])
+  })
 })
 
 describe('基本札の上位互換サイクル (2026-08-27。確定済みルール表「報酬プールの下限」)', () => {
