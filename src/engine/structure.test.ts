@@ -60,11 +60,11 @@ describe('敵の耐性 (延焼耐性)', () => {
 })
 
 describe('巨木の盾 (ビッグマナのスケーリング防御)', () => {
-  it('エナジー上限×3のブロックを得る', () => {
+  it('エナジー上限×4のブロックを得る', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_giant_bark'])
     s = { ...s, player: { ...s.player, energyMax: 5, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_giant_bark' })
-    expect(s.player.block).toBe(15) // 上限5×3 (2026-08-27 ×2→×3)
+    expect(s.player.block).toBe(20) // 上限5×4 (2026-08-29 ×3→×4 典型上限5裁定)
   })
 })
 

@@ -9,12 +9,21 @@
         "label": "開ける（50%: 75G / 50%: 罠で負傷1がデッキに）",
         "gamble": {
           "chance": 0.5,
-          "win": { "gold": 75 },
-          "lose": { "wounds": 1 }
+          "win": {
+            "gold": 75
+          },
+          "lose": {
+            "wounds": 1
+          }
         }
       },
-      { "label": "慎重にこじ開ける（確実に 30G）", "gold": 30 },
-      { "label": "立ち去る" }
+      {
+        "label": "慎重にこじ開ける（確実に 30G）",
+        "gold": 30
+      },
+      {
+        "label": "立ち去る"
+      }
     ]
   },
   {
@@ -23,9 +32,19 @@
     "sprite": "👻",
     "flavor": "「生き血でも、思い出の品でも。対価さえもらえれば何でも買い取るよ」半透明の商人が笑う。",
     "choices": [
-      { "label": "血を売る（HP-10 / +55G）", "hp": -10, "gold": 55 },
-      { "label": "カードを1枚売る（デッキから1枚除去 / +35G）", "removeCard": true, "gold": 35 },
-      { "label": "立ち去る" }
+      {
+        "label": "血を売る（HP-10 / +55G）",
+        "hp": -10,
+        "gold": 55
+      },
+      {
+        "label": "カードを1枚売る（デッキから1枚除去 / +35G）",
+        "removeCard": true,
+        "gold": 35
+      },
+      {
+        "label": "立ち去る"
+      }
     ]
   },
   {
@@ -34,9 +53,17 @@
     "sprite": "🌳",
     "flavor": "塔を貫いて育つ大樹のうろから、あたたかい樹液の香りがする。巫女の血が騒ぐ。",
     "choices": [
-      { "label": "樹液を浴びる（最大HP+7）", "maxHp": 7 },
-      { "label": "枝を借りて鍛える（デッキの1枚を強化）", "upgradeCard": true },
-      { "label": "立ち去る" }
+      {
+        "label": "樹液を浴びる（最大HP+7）",
+        "maxHp": 7
+      },
+      {
+        "label": "枝を借りて鍛える（デッキの1枚を強化）",
+        "upgradeCard": true
+      },
+      {
+        "label": "立ち去る"
+      }
     ]
   },
   {
@@ -50,12 +77,16 @@
         "requireGold": 30,
         "gamble": {
           "chance": 0.5,
-          "win": { "gold": 90 },
+          "win": {
+            "gold": 90
+          },
           "lose": {}
         },
         "gold": -30
       },
-      { "label": "立ち去る" }
+      {
+        "label": "立ち去る"
+      }
     ]
   },
   {
@@ -64,8 +95,13 @@
     "sprite": "🎨",
     "flavor": "「君の戦いぶりを絵にしたい。礼はこの手札から好きなものを」絵師が描きかけのカードを差し出す。",
     "choices": [
-      { "label": "1枚もらう（ランダムな緑カード1枚を獲得）", "addRandomCards": 1 },
-      { "label": "立ち去る" }
+      {
+        "label": "1枚もらう（ランダムな緑カード1枚を獲得）",
+        "addRandomCards": 1
+      },
+      {
+        "label": "立ち去る"
+      }
     ]
   },
   {
@@ -74,9 +110,151 @@
     "sprite": "🗿",
     "flavor": "古い石碑が頭の中に直接語りかけてくる。「読め。力を与えよう。ただし体は軋むぞ」",
     "choices": [
-      { "label": "読む（レリック1個 / 負傷2がデッキに）", "relic": true, "wounds": 2 },
-      { "label": "表面だけなぞる（+20G）", "gold": 20 },
-      { "label": "立ち去る" }
+      {
+        "label": "読む（レリック1個 / 負傷2がデッキに）",
+        "relic": true,
+        "wounds": 2
+      },
+      {
+        "label": "表面だけなぞる（+20G）",
+        "gold": 20
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_healing_spring",
+    "name": "癒しの泉",
+    "sprite": "💧",
+    "flavor": "岩の割れ目から澄んだ水が湧いている。塔の中とは思えない、森の匂いがした。",
+    "choices": [
+      {
+        "label": "浸かる（HP+20）",
+        "hp": 20
+      },
+      {
+        "label": "水を瓶に詰めて売る（+30G）",
+        "gold": 30
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_lost_peddler",
+    "name": "迷いの行商人",
+    "sprite": "🧳",
+    "flavor": "「道に迷ってね……在庫を軽くしたいんだ。安くしておくよ」荷袋から古びた品が覗く。",
+    "choices": [
+      {
+        "label": "レリックを買う（-120G）",
+        "requireGold": 120,
+        "gold": -120,
+        "relic": true
+      },
+      {
+        "label": "カードを買う（-40G・ランダムな緑カード1枚）",
+        "requireGold": 40,
+        "gold": -40,
+        "addRandomCards": 1
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_thorn_altar",
+    "name": "茨の祭壇",
+    "sprite": "🩸",
+    "flavor": "茨に覆われた祭壇が脈打っている。棘の先が、こちらの腕を静かに指した。",
+    "choices": [
+      {
+        "label": "血を捧げる（HP-8・ランダムな緑カード2枚）",
+        "hp": -8,
+        "addRandomCards": 2
+      },
+      {
+        "label": "祈るだけ（+15G）",
+        "gold": 15
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_broken_stairs",
+    "name": "崩れた石段",
+    "sprite": "🪨",
+    "flavor": "石段が崩れて大穴が開いている。下の階の床に、誰かの落とした袋が見える。",
+    "choices": [
+      {
+        "label": "飛び降りて拾う（50%: +45G / 50%: 着地に失敗しHP-12）",
+        "gamble": {
+          "chance": 0.5,
+          "win": {
+            "gold": 45
+          },
+          "lose": {
+            "hp": -12
+          }
+        }
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_silent_gardener",
+    "name": "無言の庭師",
+    "sprite": "🌿",
+    "flavor": "塔の中庭で、老いた庭師が枝を切っている。目が合うと、鋏をこちらに向けて首を傾げた。",
+    "choices": [
+      {
+        "label": "剪定してもらう（デッキから1枚除去）",
+        "removeCard": true
+      },
+      {
+        "label": "庭木の実をもらう（HP+10）",
+        "hp": 10
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_fairy_market",
+    "name": "精霊の市",
+    "sprite": "🧚",
+    "flavor": "小さな灯りが輪になって浮かんでいる。「いらっしゃい。命の値段なら、うちが一番安いよ」",
+    "choices": [
+      {
+        "label": "命の露を買う（-60G・最大HP+6）",
+        "requireGold": 60,
+        "gold": -60,
+        "maxHp": 6
+      },
+      {
+        "label": "怪しい薬を飲む（50%: HP+25 / 50%: HP-10）",
+        "gamble": {
+          "chance": 0.5,
+          "win": {
+            "hp": 25
+          },
+          "lose": {
+            "hp": -10
+          }
+        }
+      },
+      {
+        "label": "立ち去る"
+      }
     ]
   }
 ]

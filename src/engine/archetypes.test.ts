@@ -51,12 +51,12 @@ describe('シグネチャー効果', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - (6 - 4))
   })
 
-  it('森の大爆発: エナジー上限×4のダメージ (成長も乗る)', () => {
+  it('森の大爆発: エナジー上限×6の全体ダメージ (成長も乗る。2026-08-29 花火化)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_sig_overgrowth'])
     s = { ...s, player: { ...s.player, energy: 6, energyMax: 6, growth: 1 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_overgrowth' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (6 * 4 + 1))
+    expect(s.enemies[0].hp).toBe(hpBefore - (6 * 6 + 1))
   })
 
   it('開花の儀: 成長カウンターを2倍にする', () => {

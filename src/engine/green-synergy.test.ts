@@ -3,6 +3,7 @@
 // トランプル/ビッグマナの網 (エンジン→倍加→刈り取り→換金) 8枚と新効果2つを固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
+import { getCardDef } from './content.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
@@ -96,21 +97,21 @@ describe('Xコスト: 大角の暴走 (トリプルブリッジ。確定済み�
 })
 
 describe('ビッグマナの網', () => {
-  it('幹撃: エナジー上限×3ダメージ (中型ペイオフ)', () => {
+  it('幹撃: エナジー上限×4ダメージ (中型ペイオフ。2026-08-29 ×3→×4 典型上限5裁定)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_trunk_blow'])
     s = { ...s, player: { ...s.player, energyMax: 5, energy: 5 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trunk_blow' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 5 * 3)
+    expect(s.enemies[0].hp).toBe(hpBefore - 5 * 4)
   })
 
-  it('大幹の構え: 上限×2ダメ+上限×2ブロックの攻防一体 (ランプ中の無防備への回答)', () => {
+  it('大幹の構え: 上限×3ダメ+上限×3ブロックの攻防一体 (2026-08-29 ×2→×3 典型上限5裁定)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_trunk_stance'])
     s = { ...s, player: { ...s.player, energyMax: 4, energy: 4 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trunk_stance' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 4 * 2)
-    expect(s.player.block).toBe(4 * 2)
+    expect(s.enemies[0].hp).toBe(hpBefore - 4 * 3)
+    expect(s.player.block).toBe(4 * 3)
   })
 
   it('大樹の脈: 毎ターン開始時に次のカード-1 (らいこパッシブと同機構)', () => {
@@ -130,5 +131,69 @@ describe('ビッグマナの網', () => {
     s = { ...s, player: { ...s.player, energyMax: 4, energy: 4 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_canopy_shade' })
     expect(s.player.block).toBe(4 * 2)
+  })
+})
+
+describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃防御吐き先としてあと3種」)', () => {
+  it('蔦の連撃: 4ダメ×Xヒット (貫通なしの入口。成長が各ヒットに乗る)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
+    s = { ...s, player: { ...s.player, energy: 3, growth: 1 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })
+    expect(s.player.energy).toBe(0)
+    expect(s.enemies[0].hp).toBe(hpBefore - (4 + 1) * 3)
+  })
+
+  it('樹皮の重鎧: ブロック6×X (ランプ中の無防備への吐き先)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_bark_armor'])
+    s = { ...s, player: { ...s.player, energy: 4 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_bark_armor' })
+    expect(s.player.energy).toBe(0)
+    expect(s.player.block).toBe(6 * 4)
+  })
+
+  it('森羅の大嵐: 敵全体に3ダメ×Xヒット (全体×多段×ランプの派手枠)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42), ['green_x_sylvan_tempest'])
+    s = { ...s, player: { ...s.player, energy: 3, growth: 2 } }
+    const hp0 = s.enemies[0].hp
+    const hp1 = s.enemies[1].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_sylvan_tempest' })
+    expect(s.enemies[0].hp).toBe(hp0 - (3 + 2) * 3) // 成長は対象ごと・ヒットごとに乗る
+    expect(s.enemies[1].hp).toBe(hp1 - (3 + 2) * 3)
+  })
+})
+
+describe('モード札増刷 (2026-08-29 ユーザー指示「モード系は魅力的なのでもっと刷っていい」)', () => {
+  it('森の裁定: 《牙》14ダメ /《殻》ブロック14 (絡み蔦のラダー)', () => {
+    const mk = () => {
+      let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_mode_verdict'])
+      return { ...s, player: { ...s.player, energy: 3 } }
+    }
+    const fang = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_verdict', modeIndex: 0 })
+    expect(fang.enemies[0].hp).toBe(mk().enemies[0].hp - 14)
+    const shell = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_verdict', modeIndex: 1 })
+    expect(shell.player.block).toBe(14)
+  })
+
+  it('道行きの選択: 《野生》勢い+3+3ダメ /《育成》成長+2 (アーキ分岐)', () => {
+    const mk = () => withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_mode_crossroads'])
+    const wild = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_crossroads', modeIndex: 0 })
+    expect(wild.player.momentum).toBe(3)
+    const nurture = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_crossroads', modeIndex: 1 })
+    expect(nurture.player.growth).toBe(2)
+  })
+
+  it('大樹の岐路: 《天光》上限+1+2ドロー /《豊穣》成長+3+ブロック6。片モードランプなので消滅しない (陽光の恵み裁定)', () => {
+    expect(getCardDef('green_mode_great_fork').exhaust).not.toBe(true)
+    const mk = () => {
+      let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_mode_great_fork'])
+      return { ...s, player: { ...s.player, energy: 3 } }
+    }
+    const light = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_great_fork', modeIndex: 0 })
+    expect(light.player.energyMax).toBe(4)
+    expect(light.player.energy).toBe(0) // 上限は次ターンから (ランプ即時利用廃止)
+    const bounty = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_great_fork', modeIndex: 1 })
+    expect(bounty.player.growth).toBe(3)
+    expect(bounty.player.block).toBe(6)
   })
 })
