@@ -1,6 +1,6 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
-import { allCards, allEvents, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
+import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
 import { ACT_COUNT, BOSS_ROW, generateMap, MAP_ROWS, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
 import {
@@ -50,8 +50,7 @@ function runTo(run: RunState, target: 'campfire' | 'workshop' | 'elite' | 'boss'
     } else if (r.phase === 'shop') {
       r = applyRunCommand(r, { type: 'ShopLeave' })
     } else if (r.phase === 'event') {
-      const node = r.map[r.row][r.col]
-      const ev = getEventDef(node.eventId!)
+      const ev = getEventDef(r.eventId!)
       r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else if (r.phase === 'relic-reward') {
       r = applyRunCommand(r, { type: 'SkipRelic' })
@@ -202,7 +201,7 @@ describe('HP持ち越しと焚き火', () => {
       } else if (r2.phase === 'shop') {
         r2 = applyRunCommand(r2, { type: 'ShopLeave' })
       } else if (r2.phase === 'event') {
-        const ev = getEventDef(r2.map[r2.row][r2.col].eventId!)
+        const ev = getEventDef(r2.eventId!)
         r2 = applyRunCommand(r2, { type: 'EventChoice', index: ev.choices.length - 1 })
       } else break
     }
@@ -260,7 +259,7 @@ describe('ラン走破 (3幕構成)', () => {
     expect(run.map[BOSS_ROW][0].encounterId).toBe('enemy_turtle') // 2幕ボス=大亀
   })
 
-  it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり11〜13×3', () => {
+  it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり9〜15×3 (2026-08-29 18行化+?増設)', () => {
     let run = createRun(23, 'set-confirm')
     // ボスの幕スケール (確定済みルール表「マップ」): HP×1.0/1.6/2.4・強化+1/+1/+2
     const bossHpScale = [1.25, 1.6, 2.4] // 2026-08-29 幕1ボス×1.25 (ユーザー体感「ボスが弱い」)
@@ -278,8 +277,9 @@ describe('ラン走破 (3幕構成)', () => {
       }
     }
     expect(run.phase).toBe('won')
-    expect(run.battlesWon).toBeGreaterThanOrEqual(33)
-    expect(run.battlesWon).toBeLessThanOrEqual(39)
+    // 行0〜16の17行 − 強制焚き火3 = 14 が戦闘可能枠。下限8保証と ?→戦闘の化けで幅がある
+    expect(run.battlesWon).toBeGreaterThanOrEqual(27)
+    expect(run.battlesWon).toBeLessThanOrEqual(45)
   })
 })
 
@@ -331,7 +331,7 @@ describe('プレイテスト由来の調整 (2026-08-26)', () => {
     let violations = 0
     let checked = 0
     for (let seed = 1; seed <= 40; seed++) {
-      const [map] = generateMap(createRng(seed), allEvents.map((e) => e.id), 2)
+      const [map] = generateMap(createRng(seed), 2)
       for (let r = 2; r < MAP_ROWS; r++) {
         const ids = (row: number) =>
           map[row].map((n) => n.encounterId).filter((x): x is string => x !== null)

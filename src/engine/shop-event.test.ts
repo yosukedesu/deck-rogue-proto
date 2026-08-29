@@ -22,8 +22,9 @@ function forceWin(run: RunState): RunState {
 /** 指定イベントのノードに立っている状態を外科的に作る (マップ生成の乱数に依存しないため) */
 function eventState(seed: number, eventId: string): RunState {
   const run = createRun(seed, 'set-confirm')
-  const node: MapNode = { type: 'event', encounterId: null, eventId, next: [] }
-  return { ...run, map: [[node]], row: 0, col: 0, phase: 'event' }
+  // ?は入った瞬間に中身が決まる (2026-08-29): eventId は MapNode でなく RunState が持つ
+  const node: MapNode = { type: 'event', encounterId: null, next: [] }
+  return { ...run, map: [[node]], row: 0, col: 0, phase: 'event', eventId }
 }
 
 /** ショップノードに入るまで進める */
@@ -39,7 +40,7 @@ function intoShop(seed: number): RunState {
     else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
     else if (run.phase === 'event') {
-      const ev = getEventDef(run.map[run.row][run.col].eventId!)
+      const ev = getEventDef(run.eventId!)
       run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else break
   }
@@ -73,7 +74,7 @@ describe('ゴールド', () => {
       else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
       else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
       else if (run.phase === 'event') {
-        const ev = getEventDef(run.map[run.row][run.col].eventId!)
+        const ev = getEventDef(run.eventId!)
         run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
       } else break
     }

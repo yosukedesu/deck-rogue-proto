@@ -41,7 +41,7 @@ function intoFirstElite(seed = 11): RunState {
     } else if (run.phase === 'shop') {
       run = applyRunCommand(run, { type: 'ShopLeave' })
     } else if (run.phase === 'event') {
-      const ev = getEventDef(run.map[run.row][run.col].eventId!)
+      const ev = getEventDef(run.eventId!)
       run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else break
   }
@@ -58,7 +58,7 @@ function intoBattle(run0: RunState): RunState {
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
-      const ev = getEventDef(run.map[run.row][run.col].eventId!)
+      const ev = getEventDef(run.eventId!)
       run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else break
   }
@@ -214,7 +214,7 @@ function intoCampfire(run0: RunState): RunState {
     else if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
-      const ev = getEventDef(run.map[run.row][run.col].eventId!)
+      const ev = getEventDef(run.eventId!)
       run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else break
   }

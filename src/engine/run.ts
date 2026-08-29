@@ -6,7 +6,7 @@
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
 import { startCombatWithOptions } from './combat.ts'
-import { ACT_COUNT, BOSS_ROW, generateMap } from './map.ts'
+import { ACT_COUNT, BOSS_ROW, generateMap, tierFor } from './map.ts'
 import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
@@ -56,6 +56,13 @@ const GOLD_ELITE_BONUS_MIN = 30
 const GOLD_ELITE_BONUS_MAX = 40
 /** 盗人を逃がす前に倒した時の懸賞金 (確定済みルール表「盗みと逃走」) */
 const THIEF_BOUNTY = 10
+/**
+ * ?マスの累積確率の基礎値 (本家 monster10%/shop3%/treasure2%。2026-08-29)。
+ * 浮動小数を持たない = 整数パーセントポイント (Unity移植の RNG 等価性を守る)
+ */
+const UNKNOWN_PITY_BASE = { monster: 10, shop: 3, treasure: 2 } as const
+/** イベント抽選で祠プールを引く確率 (本家 SHRINE_CHANCE = 0.25) */
+const SHRINE_CHANCE_PERCENT = 25
 const SHOP_CARD_COUNT = 5
 const SHOP_RELIC_PRICE = 150
 /** 除去サービス: 回数無制限・使うたびラン通算で+25G (本家Purge式。2026-08-29) */
@@ -164,6 +171,17 @@ export interface RunState {
   readonly campfireForgeBonus: number
   /** この焚き火で「鍛える」を使った回数 (焚き火進入時にリセット) */
   readonly campfireUpgradesUsed: number
+  // ---- ?マスの本家式解決 (2026-08-29)。すべて旧セーブに無いので使用側は ?? ガード ----
+  /** ?マスの累積確率 (整数パーセントポイント。幕頭で基礎値へリセット) */
+  readonly unknownPity: { readonly monster: number; readonly shop: number; readonly treasure: number }
+  /** 直前に入った部屋がショップだったか (本家: ?→ショップの2連続禁止) */
+  readonly lastRoomWasShop: boolean
+  /** event フェーズで解決したイベントID (?は入った瞬間に中身が決まる。MapNode は持たない) */
+  readonly eventId: string | null
+  /** ラン通算で引いたイベント (幕専用・ワンタイムの再出現防止) */
+  readonly seenEventIds: readonly string[]
+  /** この幕で引いた祠 (幕をまたぐと復活する = 本家 Shrine) */
+  readonly seenShrineIds: readonly string[]
 }
 
 export type RunCommand =
@@ -203,11 +221,13 @@ export function nextChoices(run: RunState): readonly number[] {
 }
 
 /** 現在ノードの戦闘を開始する (戦闘シードはラン RNG から決定的に生成)。elite でエリート補正 */
-function launchCombat(run: RunState, elite: boolean): RunState {
+function launchCombat(run: RunState, elite: boolean, encounterOverride?: string): RunState {
   const node = currentNode(run)
-  if (node === null || node.encounterId === null) throw new Error('戦闘ノードではない')
+  // encounterOverride は ?マスが戦闘に解決した時の敵 (ノードは encounterId を持たない)
+  const encounterId = encounterOverride ?? node?.encounterId ?? null
+  if (node === null || encounterId === null) throw new Error('戦闘ノードではない')
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
-  const combat = startCombatWithOptions(combatSeed, run.mode, node.encounterId, {
+  const combat = startCombatWithOptions(combatSeed, run.mode, encounterId, {
     deck: run.deck,
     leaderId: run.leaderId,
     playerHp: run.hp,
@@ -236,6 +256,12 @@ function launchCombat(run: RunState, elite: boolean): RunState {
 
 /** 選んだノードに入る: 戦闘ノードなら戦闘開始、焚き火なら回復、工房ならそのままフェーズへ */
 function enterNode(run: RunState): RunState {
+  const next = enterNodeInner(run)
+  // 本家: 直前の部屋がショップなら ?→ショップ を抑止する (phase==='shop' ⟺ ショップに入った)
+  return { ...next, lastRoomWasShop: next.phase === 'shop' }
+}
+
+function enterNodeInner(run: RunState): RunState {
   const node = currentNode(run)
   if (node === null) throw new Error('ノードにいない')
   switch (node.type) {
@@ -256,8 +282,82 @@ function enterNode(run: RunState): RunState {
     case 'shop':
       return openShop(run)
     case 'event':
-      return { ...run, phase: 'event', combat: null, rewardOptions: null }
+      return resolveUnknown(run)
   }
+}
+
+/**
+ * ?マスの解決 (本家 getEventRoomOutcomeHelper の整数版。2026-08-29)。
+ * 戦闘/ショップ/宝箱/イベントへ分岐し、累積確率を更新する。
+ * 出た種別だけ基礎値へリセット、出なかった種別は基礎値ぶん加算 (上限なし)。幕頭で全リセット。
+ */
+function resolveUnknown(run: RunState): RunState {
+  const pity = run.unknownPity ?? UNKNOWN_PITY_BASE
+  const shopPct = (run.lastRoomWasShop ?? false) ? 0 : pity.shop
+  const [roll, rng] = nextInt(run.rng, 0, 99)
+  const bump = (hit: 'monster' | 'shop' | 'treasure' | 'event') => ({
+    monster: hit === 'monster' ? UNKNOWN_PITY_BASE.monster : pity.monster + UNKNOWN_PITY_BASE.monster,
+    shop: hit === 'shop' ? UNKNOWN_PITY_BASE.shop : pity.shop + UNKNOWN_PITY_BASE.shop,
+    treasure: hit === 'treasure' ? UNKNOWN_PITY_BASE.treasure : pity.treasure + UNKNOWN_PITY_BASE.treasure,
+  })
+  if (roll < pity.monster) {
+    // ?→戦闘: 敵はその行の帯から解決時に抽選する (生成時の直前2行回避は効かない)
+    const pool = tierFor(run.act, run.row)
+    const [i, r2] = nextInt(rng, 0, pool.length - 1)
+    return launchCombat({ ...run, rng: r2, unknownPity: bump('monster'), eventId: null }, false, pool[i])
+  }
+  if (roll < pity.monster + shopPct) {
+    return openShop({ ...run, rng, unknownPity: bump('shop'), eventId: null })
+  }
+  if (roll < pity.monster + shopPct + pity.treasure) {
+    // ?→宝箱: レリック3択のみ (本家 Treasure 行に相当。カード報酬は付かない)
+    const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
+    const base = { ...run, rng, unknownPity: bump('treasure'), eventId: null, combat: null, rewardOptions: null }
+    if (remaining.length === 0) return { ...base, phase: 'map' as const }
+    return { ...base, phase: 'relic-reward' as const, relicOptions: remaining.slice(0, 3) }
+  }
+  const [eventId, r3] = pickEvent(run, rng)
+  const def = getEventDef(eventId)
+  return {
+    ...run,
+    rng: r3,
+    unknownPity: bump('event'),
+    eventId,
+    seenEventIds: [...(run.seenEventIds ?? []), eventId],
+    seenShrineIds:
+      def.kind === 'shrine' ? [...(run.seenShrineIds ?? []), eventId] : (run.seenShrineIds ?? []),
+    phase: 'event',
+    combat: null,
+    rewardOptions: null,
+  }
+}
+
+/**
+ * イベントの抽選 (本家 generateEvent): 25%で祠+ワンタイムのプール、75%で幕プール。
+ * 幕専用とワンタイムは引いたら二度と出ない / 祠は幕をまたぐと復活する。
+ */
+function pickEvent(run: RunState, rng0: RngState): readonly [string, RngState] {
+  const seen = run.seenEventIds ?? []
+  const seenShrine = run.seenShrineIds ?? []
+  const inAct = (e: { act?: number }): boolean => e.act === undefined || e.act === run.act
+  const shrinePool = allEvents.filter(
+    (e) =>
+      inAct(e) &&
+      ((e.kind === 'shrine' && !seenShrine.includes(e.id)) ||
+        (e.kind === 'oneTime' && !seen.includes(e.id))),
+  )
+  const actPool = allEvents.filter(
+    (e) => (e.kind ?? 'act') === 'act' && inAct(e) && !seen.includes(e.id),
+  )
+  const [roll, rng] = nextInt(rng0, 0, 99)
+  const useShrine = roll < SHRINE_CHANCE_PERCENT
+  const primary = useShrine ? shrinePool : actPool
+  const fallback = useShrine ? actPool : shrinePool
+  const pool = primary.length > 0 ? primary : fallback
+  // 両方尽きた場合のみ既出から引き直す (実質到達しない)
+  const final = pool.length > 0 ? pool : allEvents.filter(inAct)
+  const [i, r2] = nextInt(rng, 0, final.length - 1)
+  return [final[i].id, r2]
 }
 
 /** ショップの在庫をシードから決定して開店する */
@@ -292,9 +392,10 @@ function openShop(run: RunState): RunState {
 
 /** イベント効果の適用 (宣言的な EventChoiceDef を RunState に反映する) */
 function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number): RunState {
-  const node = currentNode(run)
-  if (node === null || node.eventId === null) throw new Error('イベントノードではない')
-  const def = getEventDef(node.eventId)
+  // ?は入った瞬間に中身が決まる (2026-08-29)。MapNode でなく RunState が持つ
+  const eventId = run.eventId ?? null
+  if (eventId === null) throw new Error('イベントノードではない')
+  const def = getEventDef(eventId)
   const choice = def.choices[choiceIndex]
   if (choice === undefined) throw new Error(`不正な選択肢: ${choiceIndex}`)
   if (choice.requireGold !== undefined && run.gold < choice.requireGold) {
@@ -307,7 +408,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     if (o.hp) next = { ...next, hp: Math.min(next.maxHp, next.hp + o.hp) }
     if (o.wounds) {
       const wounds: CardInstance[] = Array.from({ length: o.wounds }, (_, i) => ({
-        uid: `wound_r${run.row}_${i}`,
+        uid: `wound_a${run.act}_r${run.row}_${i}`,
         def: WOUND_DEF,
       }))
       next = { ...next, deck: [...next.deck, ...wounds] }
@@ -329,7 +430,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
       rng = r1
       next = {
         ...next,
-        deck: [...next.deck, { uid: `event_r${run.row}_${i}_${pool[idx].id}`, def: pool[idx] }],
+        deck: [...next.deck, { uid: `event_a${run.act}_r${run.row}_${i}_${pool[idx].id}`, def: pool[idx] }],
       }
     }
   }
@@ -377,7 +478,7 @@ export function createRun(
   }
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  const [map, rngAfterMap] = generateMap(rng0, allEvents.map((e) => e.id), 1, leader.colors.includes('green'))
+  const [map, rngAfterMap] = generateMap(rng0, 1, leader.colors.includes('green'))
   const [relicQueue, rngAfterRelics] = shuffle(
     rngAfterMap,
     allRelics.map((r) => r.id),
@@ -414,6 +515,11 @@ export function createRun(
     goldPerVictoryBonus: 0,
     campfireForgeBonus: 0,
     campfireUpgradesUsed: 0,
+    unknownPity: { ...UNKNOWN_PITY_BASE },
+    lastRoomWasShop: false,
+    eventId: null,
+    seenEventIds: [],
+    seenShrineIds: [],
   }
 }
 
@@ -582,8 +688,21 @@ function advanceActIfBossCleared(run: RunState): RunState {
     return { ...run, phase: 'map' }
   }
   const nextAct = run.act + 1
-  const [map, rng] = generateMap(run.rng, allEvents.map((e) => e.id), nextAct, run.colors.includes('green'))
-  return { ...run, rng, act: nextAct, map, row: -1, col: 0, combat: null, phase: 'map' }
+  const [map, rng] = generateMap(run.rng, nextAct, run.colors.includes('green'))
+  return {
+    ...run,
+    rng,
+    act: nextAct,
+    map,
+    row: -1,
+    col: 0,
+    combat: null,
+    phase: 'map',
+    unknownPity: { ...UNKNOWN_PITY_BASE }, // ピティは幕をまたがない (本家 transitionToAct)
+    seenShrineIds: [], // 祠は幕をまたぐと復活する
+    eventId: null,
+    lastRoomWasShop: false,
+  }
 }
 
 /**
@@ -766,7 +885,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const cardId = run.rewardOptions[command.index]
       if (cardId === undefined) throw new Error(`不正な報酬指定: ${command.index}`)
       // uid は行番号で一意化 (1行につき1ノードしか訪れないため衝突しない)
-      const card: CardInstance = { uid: `pick_r${run.row}_${cardId}`, def: getCardDef(cardId) }
+      const card: CardInstance = { uid: `pick_a${run.act}_r${run.row}_${cardId}`, def: getCardDef(cardId) }
       return advanceActIfBossCleared({
         ...run,
         deck: [...run.deck, card],
@@ -792,10 +911,14 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (relicId === undefined) throw new Error(`不正なレリック指定: ${command.index}`)
       let next: RunState = { ...run, relics: [...run.relics, relicId], relicOptions: null }
       next = applyRelicBonus(next, relicId)
+      // ?マスの宝箱はレリックのみでカード報酬は付かない (2026-08-29)。
+      // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (afterVictory は必ず combat を渡す)
+      if (run.combat === null) return { ...next, relicOptions: null, phase: 'map' }
       return rollRewards(next)
     }
     case 'SkipRelic': {
       if (run.phase !== 'relic-reward') throw new Error('レリック報酬フェーズではない')
+      if (run.combat === null) return { ...run, relicOptions: null, phase: 'map' }
       return rollRewards({ ...run, relicOptions: null })
     }
     case 'CampfireRest': {
@@ -836,7 +959,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const reason = fuseBlockReason(a, b)
       if (reason !== null) throw new Error(`合成できない: ${reason}`)
       const fusedDef = fuseCards(a, b)
-      const fused: CardInstance = { uid: `fused_r${run.row}_${fusedDef.id}`, def: fusedDef }
+      const fused: CardInstance = { uid: `fused_a${run.act}_r${run.row}_${fusedDef.id}`, def: fusedDef }
       // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる
       const deck = run.deck.filter((_, i) => i !== command.indexA && i !== command.indexB)
       return { ...run, deck: [...deck, fused], phase: 'map' }
@@ -860,7 +983,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const item = run.shop.cards[command.index]
       if (item === undefined) throw new Error(`不正な商品指定: ${command.index}`)
       if (run.gold < item.price) throw new Error(`ゴールドが足りない (${item.price}G)`)
-      const card: CardInstance = { uid: `buy_r${run.row}_${item.id}`, def: getCardDef(item.id) }
+      const card: CardInstance = { uid: `buy_a${run.act}_r${run.row}_${item.id}`, def: getCardDef(item.id) }
       return {
         ...run,
         gold: run.gold - item.price,

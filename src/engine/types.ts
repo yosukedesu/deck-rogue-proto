@@ -513,11 +513,32 @@ export interface EventChoiceDef {
     readonly win: EventOutcome
     readonly lose: EventOutcome
   }
+  // ---- 2026-08-29 本家踏襲の拡充で追加 ----
+  /**
+   * 現在HPを「最大HPの比率」で増減 (正=回復・負=ダメージ。切り捨て)。
+   * 本家イベントの過半が最大HP比。固定値だとリーダー間 (80/75/65/60) で意味が壊れる
+   */
+  readonly hpRatio?: number
+  /** cardIndex の1枚を除去し、同じレアリティの別のカードに置き換える (本家 Transmogrifier) */
+  readonly transformCard?: boolean
+  /** cardIndex の1枚を複製する (本家 Duplicator) */
+  readonly duplicateCard?: boolean
+  /** 強化可能な札からランダムにN枚を鍛える (対象選択は不要。本家 Shining Light) */
+  readonly upgradeRandomCards?: number
+  /** デッキの負傷カードを全て取り除く (本家 The Divine Fountain)。0枚なら何も起きない */
+  readonly removeAllWounds?: boolean
 }
 
 /** ?マス (イベント) の定義。data/events.json が一次資料 */
 export interface EventDef {
   readonly id: string
+  /**
+   * 層 (本家の3層構造。2026-08-29)。省略=幕専用 (引いたら二度と出ない) /
+   * shrine=祠 (幕をまたぐと復活する) / oneTime=1ランで1回
+   */
+  readonly kind?: 'act' | 'shrine' | 'oneTime'
+  /** 出現する幕。省略=全幕 (祠・ワンタイムの既定) */
+  readonly act?: number
   readonly name: string
   readonly sprite?: string
   readonly flavor: string

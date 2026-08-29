@@ -2013,7 +2013,7 @@ function RunScreen({
   }
 
   if (run.phase === 'event') {
-    const ev = getEventDef(currentNode(run)!.eventId!)
+    const ev = getEventDef(run.eventId!)
     return (
       <div className="app setup">
         <h1>{ev.sprite ?? '❓'} {ev.name}</h1>

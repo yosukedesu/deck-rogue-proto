@@ -392,8 +392,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'event') {
-    const node = run.map[run.row][run.col]
-    const ev = getEventDef(node.eventId!)
+    const ev = getEventDef(run.eventId!)
     L.push(`❓ ${ev.sprite ?? ''} ${ev.name}`)
     L.push(`   ${ev.flavor}`)
     ev.choices.forEach((c, i) => {

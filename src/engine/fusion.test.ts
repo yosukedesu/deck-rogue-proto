@@ -34,7 +34,7 @@ function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
     } else if (r.phase === 'combat') r = forceWin(r)
     else if (r.phase === 'shop') r = applyRunCommand(r, { type: 'ShopLeave' })
     else if (r.phase === 'event') {
-      const ev = getEventDef(r.map[r.row][r.col].eventId!)
+      const ev = getEventDef(r.eventId!)
       r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
     }
     else if (r.phase === 'relic-reward') r = applyRunCommand(r, { type: 'SkipRelic' })

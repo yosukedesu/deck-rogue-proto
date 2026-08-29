@@ -1,19 +1,30 @@
 // マップ生成のテスト。確定済みルール表「マップ」を機械的に固定する。
-// - 16行・行15=ボス固定・強制焚き火行5/10/14
-// - 工房×2 (行4〜12)・エリート×4 (行2〜13)。1行につき特別ノードは1つまで=必ず戦闘の代替がある
-// - どのパスも戦闘数10〜12 (DPで全パスの最小/最大を検証)
+// - 18行・行17=ボス固定・強制焚き火行5/11/16 (2026-08-29 ?マスの本家水準化に伴い16行から拡張)
+// - 部屋タイプは本家の重みで員数化: 工房/ショップ=総ノードの5%・?=22%・エリートは員数固定4
+// - 配置制約 (本家): 行0は全て戦闘 / エリートは行2以降 / 親と同タイプ禁止 (エリート・ショップ・工房) /
+//   兄弟 (同じ親を持つ同行ノード) と同タイプ禁止 (全種)
+// - どのパスも戦闘数8以上 (上限は設けない = 本家に戦闘数の保証は無い)
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
-import { allEvents } from './content.ts'
 import { createRng } from './rng.ts'
 import { ACT_BOSSES, BOSS_ROW, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
-const EVENT_POOL = allEvents.map((e) => e.id)
 
 function mapFor(seed: number): RunMap {
-  return generateMap(createRng(seed), EVENT_POOL)[0]
+  return generateMap(createRng(seed))[0]
+}
+
+/** 各ノードの親 (前の行で自分に繋がる列) */
+function parentsOf(map: RunMap): number[][][] {
+  const parents = map.map((row) => row.map((): number[] => []))
+  for (let r = 0; r < map.length - 1; r++) {
+    map[r].forEach((n, c) => {
+      for (const to of n.next) parents[r + 1][to].push(c)
+    })
+  }
+  return parents
 }
 
 describe('マップ生成の構造', () => {
@@ -21,7 +32,7 @@ describe('マップ生成の構造', () => {
     expect(JSON.stringify(mapFor(7))).toBe(JSON.stringify(mapFor(7)))
   })
 
-  it('16行・行15はボス単体・強制焚き火行 (5/10/14) は全ノード焚き火', () => {
+  it('18行・行17はボス単体・強制焚き火行 (5/11/16) は全ノード焚き火', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       expect(map).toHaveLength(MAP_ROWS)
@@ -33,59 +44,73 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('工房×2・ショップ×1・?×1〜2・エリート×4。特別ノードの行には必ず戦闘の代替がある', () => {
+  it('部屋タイプの員数: 工房/ショップは総ノードの5%・?は18〜26%・エリートちょうど4', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       const all = map.flat()
-      expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(2)
-      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(2)
-      const events = all.filter((n) => n.type === 'event')
-      expect(events.length, `seed${seed}`).toBeGreaterThanOrEqual(1) // DP不成立の保険で稀に1
-      expect(events.length, `seed${seed}`).toBeLessThanOrEqual(2)
+      const total = all.length
+      const expected5 = Math.round(total * 0.05)
+      expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(expected5)
+      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(expected5)
       expect(all.filter((n) => n.type === 'elite'), `seed${seed}`).toHaveLength(4)
-      // イベントノードだけ eventId を持つ
-      for (const n of events) expect(EVENT_POOL).toContain(n.eventId)
-      map.forEach((row, r) => {
-        // どの行にも戦闘の代替がある (特別ノードは強制されない。工房行はショップ/?が同居する幅3)
-        const specials = row.filter(
-          (n) => n.type === 'workshop' || n.type === 'elite' || n.type === 'shop' || n.type === 'event',
-        )
-        if (specials.length > 0) {
-          expect(row.some((n) => n.type === 'battle'), `seed${seed} row${r}`).toBe(true)
-        }
-      })
-      // エリート行は隣接しない (連続強制エリートの防止)
-      const eliteRows = map
-        .map((row, r) => (row.some((n) => n.type === 'elite') ? r : -1))
-        .filter((r) => r >= 0)
-      for (let i = 1; i < eliteRows.length; i++) {
-        expect(eliteRows[i] - eliteRows[i - 1], `seed${seed} エリート行が隣接`).toBeGreaterThan(1)
+      // ?は本家の22%を員数式にしたもの (自由ノードにだけ配るので実測は21.7%)
+      const eventRatio = all.filter((n) => n.type === 'event').length / total
+      expect(eventRatio, `seed${seed} ?の構成比`).toBeGreaterThanOrEqual(0.18)
+      expect(eventRatio, `seed${seed} ?の構成比`).toBeLessThanOrEqual(0.26)
+    }
+  })
+
+  it('行0は全ノードが通常戦闘 (本家 floor1 準拠)', () => {
+    for (const seed of SEEDS) {
+      expect(mapFor(seed)[0].every((n) => n.type === 'battle'), `seed${seed}`).toBe(true)
+    }
+  })
+
+  it('エリートは行2以降にしか出ない', () => {
+    for (const seed of SEEDS) {
+      const map = mapFor(seed)
+      for (let r = 0; r < 2; r++) {
+        expect(map[r].some((n) => n.type === 'elite'), `seed${seed} row${r}`).toBe(false)
       }
     }
   })
 
-  it('どのパスも戦闘数 (エリート込み・ボス除く) が10〜12に収まる', () => {
+  it('親と同タイプにならない (エリート・ショップ・工房)。?と戦闘は縦に続いてよい', () => {
+    const exclusive = new Set(['elite', 'shop', 'workshop'])
     for (const seed of SEEDS) {
       const map = mapFor(seed)
-      // DP: 各ノードに到達するパスの戦闘数の最小/最大
-      let minC: number[] = map[0].map((n) => (n.type === 'battle' || n.type === 'elite' ? 1 : 0))
-      let maxC: number[] = [...minC]
-      for (let r = 0; r < BOSS_ROW; r++) {
-        const nextMin = map[r + 1].map(() => Infinity)
-        const nextMax = map[r + 1].map(() => -Infinity)
-        map[r].forEach((node, c) => {
-          for (const to of node.next) {
-            const t = map[r + 1][to].type
-            const combat = t === 'battle' || t === 'elite' ? 1 : 0 // 工房/ショップ/?/焚き火は非戦闘
-            nextMin[to] = Math.min(nextMin[to], minC[c] + combat)
-            nextMax[to] = Math.max(nextMax[to], maxC[c] + combat)
+      const parents = parentsOf(map)
+      for (let r = 1; r < MAP_ROWS; r++) {
+        map[r].forEach((n, c) => {
+          if (!exclusive.has(n.type)) return
+          for (const p of parents[r][c]) {
+            expect(map[r - 1][p].type, `seed${seed} row${r} col${c} が親と同タイプ`).not.toBe(n.type)
           }
         })
-        minC = nextMin
-        maxC = nextMax
       }
-      expect(minC[0], `seed${seed} 最少戦闘パス`).toBeGreaterThanOrEqual(10)
-      expect(maxC[0], `seed${seed} 最多戦闘パス`).toBeLessThanOrEqual(12)
+    }
+  })
+
+  it('兄弟 (同じ親を共有する同行ノード) が同じ特別ノードにならない', () => {
+    // battle は員数を配った残余の既定なので対象外 (3列の行では必然的に重なる)
+    const special = new Set(['elite', 'shop', 'workshop', 'event'])
+    for (const seed of SEEDS) {
+      const map = mapFor(seed)
+      const parents = parentsOf(map)
+      for (let r = 1; r < BOSS_ROW; r++) {
+        if (FORCED_CAMPFIRE_ROWS.has(r)) continue // 焚き火行は全ノード同種が仕様
+        for (let a = 0; a < map[r].length; a++) {
+          for (let b = a + 1; b < map[r].length; b++) {
+            if (!special.has(map[r][a].type)) continue
+            const shared = parents[r][a].some((p) => parents[r][b].includes(p))
+            if (shared) {
+              expect(map[r][a].type, `seed${seed} row${r} の兄弟 ${a},${b} が同タイプ`).not.toBe(
+                map[r][b].type,
+              )
+            }
+          }
+        }
+      }
     }
   })
 
@@ -116,16 +141,28 @@ describe('マップ生成の構造', () => {
   it('幕ごとにボスが固定される (オーガ→大亀→門番の難度順)', () => {
     const { createRng: mk } = { createRng }
     for (let act = 1; act <= 3; act++) {
-      const [m] = generateMap(mk(7), EVENT_POOL, act)
+      const [m] = generateMap(mk(7), act)
       expect(m[BOSS_ROW][0].encounterId).toBe(ACT_BOSSES[act - 1])
     }
   })
 
   it('緑を含まないランでは工房ノードを生成しない (v1は緑同士のみのため)', () => {
     for (const seed of SEEDS.slice(0, 10)) {
-      const [m] = generateMap(createRng(seed), EVENT_POOL, 1, false)
-      expect(m.flat().filter((n) => n.type === 'workshop')).toHaveLength(0)
-      expect(m.flat().filter((n) => n.type === 'shop')).toHaveLength(2) // ショップ・?は残る
+      const [m] = generateMap(createRng(seed), 1, false)
+      const all = m.flat()
+      expect(all.filter((n) => n.type === 'workshop')).toHaveLength(0)
+      expect(all.filter((n) => n.type === 'shop')).toHaveLength(Math.round(all.length * 0.05))
+      // ?は色で非対称にならない (旧実装は緑ランだけ?が1個に縮退していた)
+      const ratio = all.filter((n) => n.type === 'event').length / all.length
+      expect(ratio, `seed${seed}`).toBeGreaterThanOrEqual(0.18)
+    }
+  })
+
+  it('60シード×3幕すべてでマップ生成が収束する (throw しない)', () => {
+    for (let seed = 1; seed <= 60; seed++) {
+      for (let act = 1; act <= 3; act++) {
+        expect(() => generateMap(createRng(seed), act)).not.toThrow()
+      }
     }
   })
 

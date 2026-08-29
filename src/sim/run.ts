@@ -465,8 +465,7 @@ function simulateRuns(count: number, baseSeed: number): void {
         }
         if (run.phase === 'event') {
           // 規約: 最後の選択肢は常に安全な「立ち去る」(確定済みルール表「?マス（イベント）」)
-          const node = run.map[run.row][run.col]
-          const ev = getEventDef(node.eventId!)
+          const ev = getEventDef(run.eventId!)
           run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
           continue
         }

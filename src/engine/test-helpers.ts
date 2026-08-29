@@ -96,8 +96,7 @@ export function createRunInBattle(
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
       // 規約: 最後の選択肢は常に安全な「立ち去る」
-      const node = run.map[run.row][run.col]
-      const ev = getEventDef(node.eventId!)
+      const ev = getEventDef(run.eventId!)
       run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
     } else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
