@@ -273,7 +273,8 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
     name,
     cost,
     type: resultType,
-    color: 'green',
+    color: a.def.color, // 同色同士しか合成できないので素材から継承する
+
     effects,
     ...(exhaust && resultType !== 'permanent' ? { exhaust: true } : {}),
     ...(a.def.discardCost || b.def.discardCost
@@ -290,7 +291,9 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
 export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null {
   if (a.uid === b.uid) return '同じカードは選べない'
   if (recipeFor(a.def, b.def)) return null // レシピは制約を免除 (手書きで裁定済み)
-  if (a.def.color !== 'green' || b.def.color !== 'green') return '合成は緑カード同士のみ (v1)'
+  // 2026-08-30 全色開放 (ユーザー指示「工房は全部に許可」)。合成ロジックは元から色に依存しておらず、
+  // v1が緑限定だったのは検証範囲を絞るためだった。**同じ色同士**に限る (多色はカラーパイの越境になるので別途)
+  if (a.def.color !== b.def.color) return '合成は同じ色のカード同士のみ'
   if (a.def.modes?.length || b.def.modes?.length) return '選択式カードはレシピでのみ合成できる'
   if (a.def.xCost === true || b.def.xCost === true) return 'Xコスト札は計算合成できない (X参照は査定不能)'
   const all = [...a.def.effects, ...b.def.effects]

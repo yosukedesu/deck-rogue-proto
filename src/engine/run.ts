@@ -539,7 +539,7 @@ export function createRun(
   }
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  const [map, rngAfterMap] = generateMap(rng0, 1, leader.colors.includes('green'))
+  const [map, rngAfterMap] = generateMap(rng0, 1)
   const [relicQueue, rngAfterRelics] = shuffle(
     rngAfterMap,
     allRelics.map((r) => r.id),
@@ -749,7 +749,7 @@ function advanceActIfBossCleared(run: RunState): RunState {
     return { ...run, phase: 'map' }
   }
   const nextAct = run.act + 1
-  const [map, rng] = generateMap(run.rng, nextAct, run.colors.includes('green'))
+  const [map, rng] = generateMap(run.rng, nextAct)
   return {
     ...run,
     rng,
