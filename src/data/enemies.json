@@ -175,7 +175,7 @@
     "id": "enemy_brute",
     "name": "脳筋オーガ",
     "archetype": "brute",
-    "flavor": "雄叫びのあとの二発が本気。数えていれば読める。",
+    "flavor": "雄叫びのあとの二発が本気。数えていれば読める——だが追い詰めれば見境がなくなる。",
     "maxHp": 130,
     "moves": [
       {
@@ -209,13 +209,30 @@
       "warcry",
       "club",
       "club_wild"
+    ],
+    "movesBelowHalf": [
+      {
+        "id": "rage_flurry",
+        "kind": "attack",
+        "min": 7,
+        "max": 9,
+        "hits": 2,
+        "weight": 2
+      },
+      {
+        "id": "war_roar",
+        "kind": "buff",
+        "min": 2,
+        "max": 3,
+        "weight": 1
+      }
     ]
   },
   {
     "id": "enemy_turtle",
     "name": "眠たがりの大亀",
     "archetype": "charger",
-    "flavor": "二度眠り、三度目に薙ぐ。",
+    "flavor": "二度眠り、三度目に薙ぐ。——起こしてしまったら、もう眠らない。",
     "maxHp": 140,
     "moves": [
       {
@@ -241,6 +258,27 @@
     "sequence": [
       "shell",
       "shell",
+      "crush"
+    ],
+    "movesBelowHalf": [
+      {
+        "id": "awake_bite",
+        "kind": "attack",
+        "min": 9,
+        "max": 12,
+        "hits": 2,
+        "weight": 1
+      },
+      {
+        "id": "crush",
+        "kind": "attack",
+        "min": 24,
+        "max": 32,
+        "weight": 1
+      }
+    ],
+    "sequenceBelowHalf": [
+      "awake_bite",
       "crush"
     ]
   },
@@ -454,7 +492,7 @@
     "id": "enemy_warden",
     "name": "刻限の門番",
     "archetype": "enrager",
-    "flavor": "鐘は時間ではなく、お前が手を出した回数で鳴る。",
+    "flavor": "鐘は時間ではなく、お前が手を出した回数で鳴る。刻限が近づけば、乱打が始まる。",
     "maxHp": 155,
     "enrage": 2,
     "moves": [
@@ -491,7 +529,29 @@
       "bell_strike",
       "gate_guard"
     ],
-    "enrageEveryCards": 8
+    "enrageEveryCards": 8,
+    "movesBelowHalf": [
+      {
+        "id": "bell_frenzy",
+        "kind": "attack",
+        "min": 8,
+        "max": 11,
+        "hits": 2,
+        "weight": 1
+      },
+      {
+        "id": "gate_guard",
+        "kind": "attack",
+        "min": 6,
+        "max": 8,
+        "alsoDefend": 12,
+        "weight": 1
+      }
+    ],
+    "sequenceBelowHalf": [
+      "bell_frenzy",
+      "gate_guard"
+    ]
   },
   {
     "id": "enemy_thorn_squirrel",

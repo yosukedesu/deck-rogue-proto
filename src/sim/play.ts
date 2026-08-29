@@ -36,6 +36,7 @@ import {
   windowFromPending,
 } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { battleSummary, summaryLine } from '../engine/summary.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -260,7 +261,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       L.push(` [${c.uid}] ${cardLine(c.def)} 〈${marks || 'プレイ不可'}〉`)
     }
   }
-  if (s.phase === 'won') L.push('★★ 勝利 ★★')
+  if (s.phase === 'won') L.push(`★★ 勝利 ★★  ⚔️ 戦いの記録: ${summaryLine(battleSummary(s.eventLog))}`)
   if (s.phase === 'lost') L.push('★★ 敗北 ★★')
   return L.join('\n')
 }
@@ -355,6 +356,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
+    if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
     L.push('報酬ピック (1枚選ぶ or スキップ):')
     const RARITY_TAG: Record<string, string> = { common: '', uncommon: '◆', rare: '★レア ' }
     run.rewardOptions.forEach((id, i) => {
@@ -413,6 +415,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('   (緑同士のみ。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。コストはVP査定からの逆算=素材コストの単純合算ではない)')
     L.push('   特定の組み合わせは手書きレシピ(⭐)にヒットし、計算値より少し強い一品になる')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
+    if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {
       const def = getRelicDef(id)

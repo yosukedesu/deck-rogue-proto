@@ -40,6 +40,7 @@ import {
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { battleSummary, summaryLine } from '../engine/summary.ts'
 import { BOSS_ROW } from '../engine/map.ts'
 import type { MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -1172,6 +1173,9 @@ function BattleScreen({
               <div className={`result-title ${s.phase === 'won' ? 'result-won' : 'result-lost'}`}>
                 {s.phase === 'won' ? '勝利！' : '敗北…'}
               </div>
+              {s.phase === 'won' && (
+                <p className="hint">⚔️ 戦いの記録: {summaryLine(battleSummary(s.eventLog))}</p>
+              )}
               <button className="btn btn-primary" onClick={() => onRestart(Date.now() % 2 ** 32)}>
                 新シードで再戦
               </button>{' '}
@@ -1652,6 +1656,9 @@ function RunScreen({
     return (
       <div className="app setup">
         <h1>🏆 強個体撃破！ レリックを選べ</h1>
+        {run.combat?.phase === 'won' && (
+          <p className="hint">⚔️ 戦いの記録: {summaryLine(battleSummary(run.combat.eventLog))}</p>
+        )}
         <div className="choice-row" style={{ marginTop: 12 }}>
           {(run.relicOptions ?? []).map((id, i) => {
             const r = getRelicDef(id)
@@ -1925,6 +1932,9 @@ function RunScreen({
     return (
       <div className="app setup">
         <h1>🎴 報酬ピック</h1>
+        {run.combat?.phase === 'won' && (
+          <p className="hint">⚔️ 戦いの記録: {summaryLine(battleSummary(run.combat.eventLog))}</p>
+        )}
         <div className="panel">
           <span className="chip">戦闘 {run.battlesWon}勝</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
