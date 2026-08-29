@@ -390,6 +390,19 @@ function openShop(run: RunState): RunState {
   return { ...run, rng, shop, phase: 'shop', combat: null, rewardOptions: null }
 }
 
+/**
+ * ランの報酬プール (色アイデンティティ・基本札除外・リーダーのコスト上限)。
+ * イベントのランダム獲得・変成と共用する
+ */
+function rewardPool(run: RunState): readonly CardDef[] {
+  const leader = getLeaderDef(run.leaderId)
+  const canRamp = run.colors.includes('green')
+  const costCap = leader.energyMax + (canRamp ? 2 : 0)
+  return allCards.filter(
+    (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+  )
+}
+
 /** イベント効果の適用 (宣言的な EventChoiceDef を RunState に反映する) */
 function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number): RunState {
   // ?は入った瞬間に中身が決まる (2026-08-29)。MapNode でなく RunState が持つ
@@ -403,9 +416,14 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
   }
   let next: RunState = { ...run }
   let rng = run.rng
-  const applyOutcome = (o: { gold?: number; hp?: number; wounds?: number }): void => {
+  const applyOutcome = (o: { gold?: number; hp?: number; hpRatio?: number; wounds?: number }): void => {
     if (o.gold) next = { ...next, gold: Math.max(0, next.gold + o.gold) }
     if (o.hp) next = { ...next, hp: Math.min(next.maxHp, next.hp + o.hp) }
+    // 最大HP比の増減 (2026-08-29)。リーダー間で最大HPが違う (80/75/65/60) ので、
+    // 本家イベントの過半と同じく比率で持つ。切り捨て
+    if (o.hpRatio) {
+      next = { ...next, hp: Math.min(next.maxHp, next.hp + Math.trunc(next.maxHp * o.hpRatio)) }
+    }
     if (o.wounds) {
       const wounds: CardInstance[] = Array.from({ length: o.wounds }, (_, i) => ({
         uid: `wound_a${run.act}_r${run.row}_${i}`,
@@ -419,12 +437,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     next = { ...next, maxHp: next.maxHp + choice.maxHp, hp: next.hp + choice.maxHp }
   }
   if (choice.addRandomCards) {
-    const leader = getLeaderDef(run.leaderId)
-    const canRamp = run.colors.includes('green')
-    const costCap = leader.energyMax + (canRamp ? 2 : 0)
-    const pool = allCards.filter(
-      (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
-    )
+    const pool = rewardPool(run)
     for (let i = 0; i < choice.addRandomCards && pool.length > 0; i++) {
       const [idx, r1] = nextInt(rng, 0, pool.length - 1)
       rng = r1
@@ -452,6 +465,47 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     if (isUpgraded(card)) throw new Error('すでに鍛えられている')
     if (upgradeTier(card.def) === 'none') throw new Error(`${card.def.name} は鍛えられない`)
     next = { ...next, deck: next.deck.map((c, i) => (i === cardIndex ? upgradeCard(c) : c)) }
+  }
+  if (choice.transformCard) {
+    // 変成 (本家 Transmogrifier): 1枚を除去し、同じレアリティの別カードへ置き換える。
+    // 同レアリティ固定なので、レア3%の希少性を迂回する経路にはならない
+    const card = next.deck[cardIndex ?? -1]
+    if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+    const rarity = card.def.rarity ?? 'common'
+    const pool = rewardPool(run).filter((c) => (c.rarity ?? 'common') === rarity && c.id !== card.def.id)
+    if (pool.length > 0) {
+      const [idx, r1] = nextInt(rng, 0, pool.length - 1)
+      rng = r1
+      const replacement: CardInstance = {
+        uid: `trans_a${run.act}_r${run.row}_${pool[idx].id}`,
+        def: pool[idx],
+      }
+      next = { ...next, deck: next.deck.map((c, i) => (i === cardIndex ? replacement : c)) }
+    }
+  }
+  if (choice.duplicateCard) {
+    // 複製 (本家 Duplicator): 同じ def が1枚増える。uid は一意にする
+    const card = next.deck[cardIndex ?? -1]
+    if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+    const copy: CardInstance = { uid: `dup_a${run.act}_r${run.row}_${card.uid}`, def: card.def }
+    next = { ...next, deck: [...next.deck, copy] }
+  }
+  if (choice.upgradeRandomCards) {
+    // ランダム強化 (本家 Shining Light): 強化可能な札からN枚。足りなければそこで打ち切る
+    for (let i = 0; i < choice.upgradeRandomCards; i++) {
+      const idxs = next.deck
+        .map((c, j) => (!isUpgraded(c) && upgradeTier(c.def) !== 'none' ? j : -1))
+        .filter((j) => j >= 0)
+      if (idxs.length === 0) break
+      const [pick, r1] = nextInt(rng, 0, idxs.length - 1)
+      rng = r1
+      const target = idxs[pick]
+      next = { ...next, deck: next.deck.map((c, j) => (j === target ? upgradeCard(c) : c)) }
+    }
+  }
+  if (choice.removeAllWounds) {
+    // 負傷の一掃 (本家 The Divine Fountain)。0枚でも何も起きないだけで throw しない
+    next = { ...next, deck: next.deck.filter((c) => c.def.id !== WOUND_DEF.id) }
   }
   if (choice.gamble) {
     // ロールはラン RNG = 決定的 (リプレイ再現)

@@ -1,6 +1,7 @@
 [
   {
     "id": "event_mossy_chest",
+    "act": 1,
     "name": "苔むした宝箱",
     "sprite": "🧰",
     "flavor": "塔の踊り場に、鍵のかかっていない古い宝箱が置かれている。都合が良すぎる気もするが……",
@@ -28,6 +29,7 @@
   },
   {
     "id": "event_ghost_peddler",
+    "act": 2,
     "name": "行商の亡霊",
     "sprite": "👻",
     "flavor": "「生き血でも、思い出の品でも。対価さえもらえれば何でも買い取るよ」半透明の商人が笑う。",
@@ -49,6 +51,7 @@
   },
   {
     "id": "event_ancient_hollow",
+    "act": 1,
     "name": "古木のうろ",
     "sprite": "🌳",
     "flavor": "塔を貫いて育つ大樹のうろから、あたたかい樹液の香りがする。巫女の血が騒ぐ。",
@@ -68,6 +71,7 @@
   },
   {
     "id": "event_dice_imp",
+    "act": 2,
     "name": "賽の小鬼",
     "sprite": "🎲",
     "flavor": "「遊んでいかない？ 掛け金は30。出た目が良ければ3倍にして返すよ」小鬼が賽を転がしてみせる。",
@@ -91,6 +95,7 @@
   },
   {
     "id": "event_wandering_painter",
+    "act": 1,
     "name": "流浪の絵師",
     "sprite": "🎨",
     "flavor": "「君の戦いぶりを絵にしたい。礼はこの手札から好きなものを」絵師が描きかけのカードを差し出す。",
@@ -106,6 +111,7 @@
   },
   {
     "id": "event_whispering_stele",
+    "act": 2,
     "name": "囁く石碑",
     "sprite": "🗿",
     "flavor": "古い石碑が頭の中に直接語りかけてくる。「読め。力を与えよう。ただし体は軋むぞ」",
@@ -126,13 +132,14 @@
   },
   {
     "id": "event_healing_spring",
+    "act": 1,
     "name": "癒しの泉",
     "sprite": "💧",
     "flavor": "岩の割れ目から澄んだ水が湧いている。塔の中とは思えない、森の匂いがした。",
     "choices": [
       {
-        "label": "浸かる（HP+20）",
-        "hp": 20
+        "label": "浸かる（最大HPの20%回復）",
+        "hpRatio": 0.2
       },
       {
         "label": "水を瓶に詰めて売る（+30G）",
@@ -145,6 +152,7 @@
   },
   {
     "id": "event_lost_peddler",
+    "act": 2,
     "name": "迷いの行商人",
     "sprite": "🧳",
     "flavor": "「道に迷ってね……在庫を軽くしたいんだ。安くしておくよ」荷袋から古びた品が覗く。",
@@ -168,6 +176,7 @@
   },
   {
     "id": "event_thorn_altar",
+    "act": 3,
     "name": "茨の祭壇",
     "sprite": "🩸",
     "flavor": "茨に覆われた祭壇が脈打っている。棘の先が、こちらの腕を静かに指した。",
@@ -188,6 +197,7 @@
   },
   {
     "id": "event_broken_stairs",
+    "act": 1,
     "name": "崩れた石段",
     "sprite": "🪨",
     "flavor": "石段が崩れて大穴が開いている。下の階の床に、誰かの落とした袋が見える。",
@@ -211,6 +221,7 @@
   },
   {
     "id": "event_silent_gardener",
+    "act": 3,
     "name": "無言の庭師",
     "sprite": "🌿",
     "flavor": "塔の中庭で、老いた庭師が枝を切っている。目が合うと、鋏をこちらに向けて首を傾げた。",
@@ -220,8 +231,8 @@
         "removeCard": true
       },
       {
-        "label": "庭木の実をもらう（HP+10）",
-        "hp": 10
+        "label": "庭木の実をもらう（最大HPの12%回復）",
+        "hpRatio": 0.12
       },
       {
         "label": "立ち去る"
@@ -230,6 +241,7 @@
   },
   {
     "id": "event_fairy_market",
+    "act": 3,
     "name": "精霊の市",
     "sprite": "🧚",
     "flavor": "小さな灯りが輪になって浮かんでいる。「いらっしゃい。命の値段なら、うちが一番安いよ」",
@@ -251,6 +263,443 @@
             "hp": -10
           }
         }
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "shrine_purifier",
+    "kind": "shrine",
+    "name": "清めの祠",
+    "sprite": "🕯",
+    "flavor": "白い灰を敷いた小さな祠。手を触れると、荷物がひとつ軽くなる気がした。",
+    "choices": [
+      {
+        "label": "祈る（デッキから1枚を永久に取り除く）",
+        "removeCard": true
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "shrine_whetstone",
+    "kind": "shrine",
+    "name": "研ぎの祠",
+    "sprite": "⚒",
+    "flavor": "砥石が水を張った鉢に沈んでいる。使えと言わんばかりに、刃こぼれの音が響いた。",
+    "choices": [
+      {
+        "label": "祈る（デッキの1枚を鍛える）",
+        "upgradeCard": true
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "shrine_gold",
+    "kind": "shrine",
+    "name": "黄金の祠",
+    "sprite": "✨",
+    "flavor": "金泥で塗られた祠。供物皿は空だが、奥にはまだ何かが眠っている音がする。",
+    "choices": [
+      {
+        "label": "祈る（+90G）",
+        "gold": 90
+      },
+      {
+        "label": "供物皿ごと持ち去る（+190G・負傷2がデッキに）",
+        "gold": 190,
+        "wounds": 2
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "shrine_transmute",
+    "kind": "shrine",
+    "name": "変転の祠",
+    "sprite": "🌀",
+    "flavor": "渦を巻いた石盤。刻まれた文字は読めないが、置いたものが別物になって返るらしい。",
+    "choices": [
+      {
+        "label": "祈る（デッキの1枚を、同じレアリティの別のカードに変える）",
+        "transformCard": true
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "shrine_duplicate",
+    "kind": "shrine",
+    "name": "写しの泉",
+    "sprite": "💠",
+    "flavor": "鏡のような水面に、持っているカードがもう1枚映っている。手を伸ばせば掴めそうだ。",
+    "choices": [
+      {
+        "label": "祈る（デッキの1枚を複製する）",
+        "duplicateCard": true
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "shrine_wheel",
+    "kind": "shrine",
+    "name": "運命の輪",
+    "sprite": "☸",
+    "flavor": "壁一面の巨大な輪。回した者の運を、良い方にも悪い方にも極端に振るという。",
+    "choices": [
+      {
+        "label": "回す（50%: +160G / 50%: HP-16と負傷1）",
+        "gamble": {
+          "chance": 0.5,
+          "win": {
+            "gold": 160
+          },
+          "lose": {
+            "hp": -16,
+            "wounds": 1
+          }
+        }
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_big_fish",
+    "act": 1,
+    "name": "淵の大魚",
+    "sprite": "🐟",
+    "flavor": "塔の底に溜まった水を、白い大魚がゆっくり回っている。腹の中で何かが揺れて見えた。",
+    "choices": [
+      {
+        "label": "熟れた木の実（最大HPの25%を回復）",
+        "hpRatio": 0.25
+      },
+      {
+        "label": "甘い雫（最大HP+5）",
+        "maxHp": 5
+      },
+      {
+        "label": "苔むした籠（レリック1個・負傷1がデッキに）",
+        "relic": true,
+        "wounds": 1
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_wing_statue",
+    "act": 1,
+    "name": "翼の石像",
+    "sprite": "🕊",
+    "flavor": "翼を広げた石像が階段を塞いでいる。台座の窪みは、明らかに血を受けるかたちだ。",
+    "choices": [
+      {
+        "label": "祈る（HP-7・デッキから1枚を取り除く）",
+        "hp": -7,
+        "removeCard": true
+      },
+      {
+        "label": "叩き壊す（+70G・負傷1がデッキに）",
+        "gold": 70,
+        "wounds": 1
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_mushrooms",
+    "act": 1,
+    "name": "眠り茸の群れ",
+    "sprite": "🍄",
+    "flavor": "床一面に色とりどりの茸が生えている。近づくと、胞子がゆっくりと渦を巻いた。",
+    "choices": [
+      {
+        "label": "食べる（最大HP+4・負傷1がデッキに）",
+        "maxHp": 4,
+        "wounds": 1
+      },
+      {
+        "label": "胞子を売り物にする（+45G・HP-8）",
+        "gold": 45,
+        "hp": -8
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_old_beggar",
+    "act": 2,
+    "name": "老いた物乞い",
+    "sprite": "🥣",
+    "flavor": "「75あればいい。代わりに、お前が捨てたがっているものを引き受けよう」",
+    "choices": [
+      {
+        "label": "75G払う（デッキから1枚を永久に取り除く）",
+        "requireGold": 75,
+        "gold": -75,
+        "removeCard": true
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_cursed_tome",
+    "act": 2,
+    "name": "呪いの書",
+    "sprite": "📕",
+    "flavor": "鎖で書見台に繋がれた本。開いたページから読むほど、こめかみが締めつけられる。",
+    "choices": [
+      {
+        "label": "最後まで読み切る（HP-16・レリック1個）",
+        "hp": -16,
+        "relic": true
+      },
+      {
+        "label": "表紙だけ書き写す（+30G）",
+        "gold": 30
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_forgotten_altar",
+    "act": 2,
+    "name": "忘れられた祭壇",
+    "sprite": "🕯",
+    "flavor": "誰に捧げられたのかも分からない祭壇。乾いた血の跡だけが、作法を教えている。",
+    "choices": [
+      {
+        "label": "身を捧げる（最大HP+8・HP-14）",
+        "maxHp": 8,
+        "hp": -14
+      },
+      {
+        "label": "祭具を剥ぎ取る（+140G・負傷2がデッキに）",
+        "gold": 140,
+        "wounds": 2
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_mausoleum",
+    "act": 2,
+    "name": "朽ちた霊廟",
+    "sprite": "⚰",
+    "flavor": "石棺の蓋が半分ずれている。副葬品の光が見えるが、中の主も薄目を開けている。",
+    "choices": [
+      {
+        "label": "棺を開ける（レリック1個。50%で負傷1がデッキに）",
+        "relic": true,
+        "gamble": {
+          "chance": 0.5,
+          "win": {},
+          "lose": {
+            "wounds": 1
+          }
+        }
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_falling",
+    "act": 3,
+    "name": "落ちる床",
+    "sprite": "🕳",
+    "flavor": "踏んだ床石がゆっくりと傾いていく。下の階には、誰かの荷物と、太い蔦が見えた。",
+    "choices": [
+      {
+        "label": "落ちるに任せて荷物を拾う（+120G・負傷1がデッキに）",
+        "gold": 120,
+        "wounds": 1
+      },
+      {
+        "label": "蔦を掴んで這い上がる（最大HPの30%のダメージ・ランダムな2枚を鍛える）",
+        "hpRatio": -0.3,
+        "upgradeRandomCards": 2
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_mind_bloom",
+    "act": 3,
+    "name": "心の花",
+    "sprite": "🌸",
+    "flavor": "光る花が一輪だけ咲いている。覗き込むと、自分が望むものが順に見えてくる。",
+    "choices": [
+      {
+        "label": "我は覚醒を望む（ランダムな2枚を鍛える・負傷2がデッキに）",
+        "upgradeRandomCards": 2,
+        "wounds": 2
+      },
+      {
+        "label": "我は富を望む（+230G・負傷2がデッキに）",
+        "gold": 230,
+        "wounds": 2
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_moai",
+    "act": 3,
+    "name": "石の頭像",
+    "sprite": "🗿",
+    "flavor": "天井まで届く石の頭像。開いた口の奥から、生ぬるい風と樹液の匂いが流れてくる。",
+    "choices": [
+      {
+        "label": "口に飛び込む（最大HPの50%を回復・負傷1がデッキに）",
+        "hpRatio": 0.5,
+        "wounds": 1
+      },
+      {
+        "label": "喉の奥を探る（+90G・HP-14）",
+        "gold": 90,
+        "hp": -14
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_divine_fountain",
+    "kind": "oneTime",
+    "name": "聖なる泉",
+    "sprite": "⛲",
+    "flavor": "澄みきった泉。覗き込むと、負った傷の記憶だけが水面に浮かんでは消えていく。",
+    "choices": [
+      {
+        "label": "飲む（デッキの負傷を全て取り除く）",
+        "removeAllWounds": true
+      },
+      {
+        "label": "水を汲んで売る（+35G）",
+        "gold": 35
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_ominous_forge",
+    "kind": "oneTime",
+    "name": "不吉な鍛冶場",
+    "sprite": "🔥",
+    "flavor": "火の落ちた鍛冶場に、まだ熱を持った鉄床がある。隅の箱には持ち主の道具が残っていた。",
+    "choices": [
+      {
+        "label": "打ち直す（デッキの1枚を鍛える）",
+        "upgradeCard": true
+      },
+      {
+        "label": "道具箱を漁る（レリック1個・負傷2がデッキに）",
+        "relic": true,
+        "wounds": 2
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_joust",
+    "kind": "oneTime",
+    "act": 2,
+    "name": "騎士の賭場",
+    "sprite": "🏇",
+    "flavor": "亡霊の騎士たちが延々と同じ一騎打ちを繰り返している。「賭けるなら今だ、生者よ」",
+    "choices": [
+      {
+        "label": "本命に賭ける（-50G。70%: +120G）",
+        "requireGold": 50,
+        "gold": -50,
+        "gamble": {
+          "chance": 0.7,
+          "win": {
+            "gold": 120
+          },
+          "lose": {}
+        }
+      },
+      {
+        "label": "大穴に賭ける（-50G。25%: +320G）",
+        "requireGold": 50,
+        "gold": -50,
+        "gamble": {
+          "chance": 0.25,
+          "win": {
+            "gold": 320
+          },
+          "lose": {}
+        }
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_tower_tailor",
+    "kind": "oneTime",
+    "name": "塔の仕立屋",
+    "sprite": "✂",
+    "flavor": "「直しも詰めも承ります。ただし前金でね」布地に埋もれた仕立屋が鋏を鳴らす。",
+    "choices": [
+      {
+        "label": "詰めてもらう（-40G・デッキの1枚を鍛える）",
+        "requireGold": 40,
+        "gold": -40,
+        "upgradeCard": true
+      },
+      {
+        "label": "解いてもらう（-70G・デッキから1枚を取り除く）",
+        "requireGold": 70,
+        "gold": -70,
+        "removeCard": true
+      },
+      {
+        "label": "全部任せる（-110G・ランダムな2枚を鍛える）",
+        "requireGold": 110,
+        "gold": -110,
+        "upgradeRandomCards": 2
       },
       {
         "label": "立ち去る"

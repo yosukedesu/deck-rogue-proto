@@ -1,7 +1,7 @@
 // ゴールド・ショップ・?マス (2026-08-28 設計会議) のテスト。
 // 確定済みルール表「ゴールド」「ショップ」「?マス（イベント）」を固定する。
 import { describe, expect, it } from 'vitest'
-import { allEvents, getCardDef, getEventDef } from './content.ts'
+import { allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
 import { applyRunCommand, createRun, shopRemovalPrice, shopUpgradePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
@@ -180,15 +180,45 @@ describe('ショップ', () => {
 })
 
 describe('?マス (イベント)', () => {
-  it('規約: 全イベントの最後の選択肢は安全な「立ち去る」(効果なし)', () => {
+  it('規約: 全イベントの最後の選択肢は安全な「立ち去る」(既知の安全キー以外を一切持たない)', () => {
+    // ホワイトリスト方式 (2026-08-29)。旧実装は5フィールドを名指しで見るだけだったので
+    // removeCard/relic/maxHp と新フィールド (hpRatio/transformCard/duplicateCard/
+    // upgradeRandomCards/removeAllWounds) が全部素通りしていた。イベントを20個足すと
+    // simボットの壊れ検知が黙って死ぬので、未知のキーはすべて弾く
+    const SAFE_KEYS = new Set(['label', 'gold', 'hp'])
     for (const ev of allEvents) {
       const last = ev.choices[ev.choices.length - 1]
+      const extra = Object.keys(last).filter((k) => !SAFE_KEYS.has(k))
+      expect(extra, `${ev.id} の「立ち去る」が未知のキーを持つ`).toEqual([])
       expect(last.gold ?? 0, ev.id).toBeGreaterThanOrEqual(0)
       expect(last.hp ?? 0, ev.id).toBeGreaterThanOrEqual(0)
-      expect(last.wounds ?? 0, ev.id).toBe(0)
-      expect(last.gamble, ev.id).toBeUndefined()
-      expect(last.requireGold, ev.id).toBeUndefined()
     }
+  })
+
+  it('規約: 全イベントの最後の選択肢は cardIndex も所持金も要求せず必ず解決できる', () => {
+    // simボットは常に最後を選ぶ約束なので、1件でも throw すると壊れ検知が止まる
+    for (const ev of allEvents) {
+      const run = eventState(5, ev.id)
+      expect(
+        () => applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 }),
+        ev.id,
+      ).not.toThrow()
+    }
+  })
+
+  it('イベントプールは本家3層の員数を満たす (幕専用6個以上/幕・祠6・ワンタイム4)', () => {
+    const kindOf = (e: (typeof allEvents)[number]) => e.kind ?? 'act'
+    expect(allEvents.filter((e) => kindOf(e) === 'shrine')).toHaveLength(6)
+    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(4)
+    for (const act of [1, 2, 3]) {
+      const pool = allEvents.filter((e) => kindOf(e) === 'act' && e.act === act)
+      expect(pool.length, `幕${act}の幕専用イベント`).toBeGreaterThanOrEqual(6)
+    }
+    // 幕専用は必ず act を持つ (持たないと全幕に出てしまう)
+    for (const e of allEvents) {
+      if (kindOf(e) === 'act') expect(e.act, `${e.id} に act が無い`).toBeDefined()
+    }
+    expect(new Set(allEvents.map((e) => e.id)).size).toBe(allEvents.length)
   })
 
   it('行商の亡霊: 血を売る = HP-10 / +55G', () => {
@@ -257,5 +287,56 @@ describe('?マス (イベント)', () => {
     expect(run.hp).toBe(snapshot.hp)
     expect(run.gold).toBe(snapshot.gold)
     expect(run.deck).toHaveLength(snapshot.deck)
+  })
+})
+
+describe('イベントの新効果 (2026-08-29 本家踏襲の拡充)', () => {
+  it('hpRatio: 最大HP比で回復する (癒しの泉=20%)', () => {
+    let run = eventState(3, 'event_healing_spring')
+    run = { ...run, hp: 10 }
+    const expected = Math.min(run.maxHp, 10 + Math.trunc(run.maxHp * 0.2))
+    run = applyRunCommand(run, { type: 'EventChoice', index: 0 })
+    expect(run.hp).toBe(expected)
+  })
+
+  it('hpRatio: 最大HPを超えて回復しない', () => {
+    let run = eventState(3, 'event_healing_spring')
+    run = { ...run, hp: run.maxHp }
+    run = applyRunCommand(run, { type: 'EventChoice', index: 0 })
+    expect(run.hp).toBe(run.maxHp)
+  })
+
+  it('transformCard: 同じレアリティの別カードに置き換わる (デッキ枚数は不変)', () => {
+    const run = eventState(7, 'shrine_transmute')
+    const before = run.deck.length
+    const target = run.deck[0]
+    const next = applyRunCommand(run, { type: 'EventChoice', index: 0, cardIndex: 0 })
+    expect(next.deck).toHaveLength(before)
+    if (next.deck[0].def.id !== target.def.id) {
+      // 置換が起きたなら同じレアリティであること (レア3%の希少性を迂回しない)
+      expect(next.deck[0].def.rarity ?? 'common').toBe(target.def.rarity ?? 'common')
+    }
+  })
+
+  it('duplicateCard: 同じ def が1枚増え、uid は一意のまま', () => {
+    const run = eventState(7, 'shrine_duplicate')
+    const before = run.deck.length
+    const target = run.deck[0]
+    const next = applyRunCommand(run, { type: 'EventChoice', index: 0, cardIndex: 0 })
+    expect(next.deck).toHaveLength(before + 1)
+    expect(next.deck.filter((c) => c.def.id === target.def.id).length).toBeGreaterThanOrEqual(2)
+    expect(new Set(next.deck.map((c) => c.uid)).size).toBe(next.deck.length)
+  })
+
+  it('removeAllWounds: 負傷を全て取り除く (0枚でも throw しない)', () => {
+    const run = eventState(11, 'event_divine_fountain')
+    const withWounds: RunState = {
+      ...run,
+      deck: [...run.deck, { uid: 'w1', def: WOUND_DEF }, { uid: 'w2', def: WOUND_DEF }],
+    }
+    const next = applyRunCommand(withWounds, { type: 'EventChoice', index: 0 })
+    expect(next.deck.some((c) => c.def.id === WOUND_DEF.id)).toBe(false)
+    // 負傷0枚でも例外にならない
+    expect(() => applyRunCommand(run, { type: 'EventChoice', index: 0 })).not.toThrow()
   })
 })
