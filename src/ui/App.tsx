@@ -1,6 +1,7 @@
 // ui/ は状態を読んでコマンドを投げるだけの薄い層。ゲームロジックを書かない (CLAUDE.md)。
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ReactElement } from 'react'
 import {
   archiveBattle,
   cardName,
@@ -41,8 +42,8 @@ import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, summaryLine } from '../engine/summary.ts'
-import { BOSS_ROW } from '../engine/map.ts'
-import type { MapNodeType } from '../engine/map.ts'
+import { BOSS_ROW, MAP_ROWS } from '../engine/map.ts'
+import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -1523,6 +1524,300 @@ function BattleScreen({
   )
 }
 
+// ---- ランのマップ (StS式の道) ----
+// ノードも接続線も 1枚の SVG の同一座標系に描く。DOM実測・ResizeObserver・オーバーレイを使わないので
+// 「線とノードがずれる」経路が構造的に存在しない。viewBox が外側でクリップするため、
+// 日本語名がどれだけ長くても・フォントが何であっても横スクロールを作れない (豆腐事故の構造的対策)。
+// ★以下の定数は見た目とタップ判定の安全余裕を決める。変更したら scripts/verify-map-ui.ts を必ず再実行する★
+
+const MAP_VW = 380 // SVG のユーザー単位の横幅 (実ピクセルは CSS の width:100% が決める)
+const MAP_PAD_L = 34 // 行ラベルの溝
+const MAP_PAD_R = 8
+const MAP_PAD_T = 18
+const MAP_PAD_B = 48 // 最下行のラベル(最大2行)のディセンダぶん (実測の必要量 1047.5 < VH 1056)
+const MAP_ROW_H = 66 // 行ピッチ。小さくすると線がラベルに食われ、タップ判定も重なる (実測 62.0 > 2*HIT_R=46)
+const MAP_NODE_R = 14
+const MAP_TRIM = MAP_NODE_R + 2 // 線を円の外側で止める量
+const MAP_HIT_R = 23 // 透明の当たり判定 (実寸 46px = タップ target 44px 以上。実測済み)
+const MAP_NAME_FONT = 10
+const MAP_VH = MAP_PAD_T + (MAP_ROWS - 1) * MAP_ROW_H + MAP_PAD_B
+
+/** 決定的ジッタ (本家StS風に格子を崩す)。Math.random は使わない = 再レンダで揺れない */
+function mapJitter(r: number, c: number, salt: number): number {
+  const h = Math.sin(r * 12.9898 + c * 78.233 + salt * 37.719) * 43758.5453
+  return h - Math.floor(h) // 0..1
+}
+const mapNodeX = (r: number, c: number, width: number): number =>
+  MAP_PAD_L +
+  ((c + 0.5) * (MAP_VW - MAP_PAD_L - MAP_PAD_R)) / width +
+  (mapJitter(r, c, 1) - 0.5) * 10
+/** 行15 (ボス) を上に、行0を下に */
+const mapNodeY = (r: number, c: number): number =>
+  MAP_PAD_T + (BOSS_ROW - r) * MAP_ROW_H + (mapJitter(r, c, 2) - 0.5) * 6
+/** その行のノード1つに許すラベル幅 (隣のラベルとの最小ギャップが 34 units 残る値) */
+const mapLabelMaxW = (width: number): number => (MAP_VW - MAP_PAD_L - MAP_PAD_R) / width - 22
+
+const MAP_ICON: Record<MapNodeType, string> = {
+  battle: '⚔️',
+  elite: '👑',
+  campfire: '🔥',
+  workshop: '🔨',
+  shop: '🛒',
+  event: '❓',
+  boss: '💀',
+}
+const MAP_TYPE_LABEL: Record<MapNodeType, string> = {
+  battle: '戦闘',
+  elite: '強個体',
+  campfire: '焚き火',
+  workshop: '工房',
+  shop: 'ショップ',
+  event: '？？？',
+  boss: '幕ボス',
+}
+const mapNodeName = (n: MapNode): string =>
+  n.encounterId !== null ? encounterName(n.encounterId) : MAP_TYPE_LABEL[n.type]
+
+/** テキスト幅の上限見積り (フォント計測に依存しない)。全角=1em / 絵文字=1.3em / それ以外=0.62em で
+ *  必ず実幅以上に見積もるので、この値で textLength を掛ければはみ出しは起きない */
+function mapTextWidth(s: string, size: number): number {
+  let w = 0
+  for (const ch of s) {
+    const cp = ch.codePointAt(0) ?? 0
+    w += cp > 0xffff ? size * 1.3 : cp > 0x2e7f ? size : size * 0.62
+  }
+  return w
+}
+/** 幅を超える時だけ字詰めする (切り捨てないので情報は落ちない) */
+function mapFit(s: string, maxW: number, size: number): {
+  textLength?: number
+  lengthAdjust?: 'spacingAndGlyphs'
+} {
+  return mapTextWidth(s, size) > maxW
+    ? { textLength: maxW, lengthAdjust: 'spacingAndGlyphs' }
+    : {}
+}
+
+/** 現在地から前向きBFSで到達可能なノード集合 ("row:col")。旧実装のインラインBFSをそのまま移設 */
+function mapReachable(run: RunState): ReadonlySet<string> {
+  const reach = new Set<string>()
+  let frontier: number[] =
+    run.row < 0 ? run.map[0].map((_, c) => c) : [...(currentNode(run)?.next ?? [])]
+  let r = run.row < 0 ? 0 : run.row + 1
+  while (r < run.map.length && frontier.length > 0) {
+    const nextF = new Set<number>()
+    for (const c of frontier) {
+      reach.add(`${r}:${c}`)
+      for (const to of run.map[r][c].next) nextF.add(to)
+    }
+    frontier = [...nextF]
+    r++
+  }
+  return reach
+}
+
+/**
+ * 通ってきた経路の記憶 (UI専用の表示用メモ)。engine の RunState は (row,col) しか持たず経路を
+ * 復元できないため、マップ画面を描くたびに現在地を書き留める。キーは seed:act なので幕が変われば
+ * 自然にリセットされ、同一シードで再走しても row<=run.row の範囲は必ず上書きされる。
+ * engine には一切触らない (純ロジック維持)。
+ */
+const mapTakenPath = new Map<string, Map<number, number>>()
+function mapRecordVisit(run: RunState): ReadonlyMap<number, number> {
+  const key = `${run.seed}:${run.act}`
+  let m = mapTakenPath.get(key)
+  if (m === undefined) {
+    m = new Map()
+    mapTakenPath.set(key, m)
+  }
+  if (run.row >= 0) m.set(run.row, run.col) // 冪等 (StrictMode の二重実行でも同じ値)
+  return m
+}
+
+/** マップ本体。engine 無変更・純関数レイアウト (RunMap → 座標) */
+function RunMapView({
+  run,
+  onChoose,
+}: {
+  run: RunState
+  onChoose: (col: number) => void
+}) {
+  const cands = nextChoices(run)
+  const reach = mapReachable(run)
+  const path = mapRecordVisit(run)
+  // 全長 ~1050 units (実寸 ≈1050px) あるので、開いた時に現在地が画面中央に来るようにする。
+  // run.row < 0 (幕の開始直後。1ランで3回通る) は現在地が無いので最下行=行0へ寄せる
+  const focusRow = run.row < 0 ? 0 : run.row
+  const focusCol = run.row < 0 ? 0 : run.col
+  const focusRef = useRef<SVGGElement | null>(null)
+  useEffect(() => {
+    focusRef.current?.scrollIntoView({ block: 'center' })
+  }, [run.act, run.row, run.col])
+
+  // --- 接続線 (データのエッジ1本につき <line> 1本。装飾線を足すと verify-map-ui.ts が落ちる) ---
+  const edges: ReactElement[] = []
+  for (let r = 0; r < MAP_ROWS - 1; r++) {
+    const row = run.map[r]
+    const wNext = run.map[r + 1].length
+    for (let c = 0; c < row.length; c++) {
+      const ax = mapNodeX(r, c, row.length)
+      const ay = mapNodeY(r, c)
+      for (const to of row[c].next) {
+        const bx = mapNodeX(r + 1, to, wNext)
+        const by = mapNodeY(r + 1, to)
+        const len = Math.hypot(bx - ax, by - ay) || 1
+        const ux = ((bx - ax) / len) * MAP_TRIM
+        const uy = ((by - ay) / len) * MAP_TRIM
+        const cls =
+          path.get(r) === c && path.get(r + 1) === to
+            ? 'map-edge-taken' // 通ってきた道 (金)
+            : r === run.row && c === run.col
+              ? 'map-edge-open' // 現在地から進める道 (緑の実線)
+              : r < run.row
+                ? 'map-edge-past'
+                : r === run.row || reach.has(`${r}:${c}`)
+                  ? 'map-edge-live'
+                  : 'map-edge-dead'
+        edges.push(
+          <line
+            key={`e${r}:${c}:${to}`}
+            className={`map-edge ${cls}`}
+            x1={ax + ux}
+            y1={ay + uy}
+            x2={bx - ux}
+            y2={by - uy}
+          />,
+        )
+      }
+    }
+  }
+
+  return (
+    <svg
+      className="map-svg"
+      viewBox={`0 0 ${MAP_VW} ${MAP_VH}`}
+      role="group"
+      aria-label={`ランのマップ 第${run.act}幕`}
+    >
+      {edges}
+      {run.map.map((row, r) => {
+        const maxW = mapLabelMaxW(row.length)
+        return (
+          <g key={`row${r}`}>
+            <text
+              className={r === run.row ? 'map-rowlabel map-rowlabel-here' : 'map-rowlabel'}
+              x={MAP_PAD_L - 10}
+              y={MAP_PAD_T + (BOSS_ROW - r) * MAP_ROW_H + 3}
+              textAnchor="end"
+            >
+              {r === BOSS_ROW ? 'ボス' : `行${r + 1}`}
+            </text>
+            {row.map((n, c) => {
+              const here = r === run.row && c === run.col
+              const onPath = !here && path.get(r) === c && r < run.row
+              const passed = r <= run.row && !here && !onPath
+              const clickable = r === run.row + 1 && cands.includes(c)
+              const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`)
+              const name = mapNodeName(n)
+              // 2行目のバッジ: 文字でも読めるようにする (👑/金枠だけだと初見・タッチ端末で伝わらない)
+              const badge = here
+                ? '現在地'
+                : unreachable
+                  ? '到達不可'
+                  : n.type === 'elite'
+                    ? '強個体'
+                    : n.type === 'boss'
+                      ? '幕ボス'
+                      : null
+              const tip =
+                n.type === 'elite'
+                  ? `強個体: ${name}（強化+2・HP×1.35／勝てばレリック3択）`
+                  : n.type === 'boss'
+                    ? `幕ボス: ${name}（撃破で全回復＋レリック3択）`
+                    : n.type === 'campfire'
+                      ? '焚き火: 自動で30%回復＋「鍛える/取り除く/何もしない」'
+                      : n.type === 'workshop'
+                        ? '工房: デッキの2枚を合成して1枚にする'
+                        : n.type === 'shop'
+                          ? 'ショップ: カード/レリック/除去/強化'
+                          : n.type === 'event'
+                            ? '？: 入るまで中身は分からない'
+                            : `戦闘: ${name}`
+              const nextTip =
+                n.next.length > 0 ? `／次の接続先: ${n.next.map((x) => x + 1).join('・')}` : ''
+              const cls = [
+                'map-node',
+                `map-node-${n.type}`,
+                here ? 'map-node-here' : '',
+                onPath ? 'map-node-taken' : '',
+                clickable ? 'map-node-open' : '',
+                passed || unreachable ? 'map-node-dim' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
+              return (
+                <g
+                  key={`n${r}:${c}`}
+                  ref={r === focusRow && c === focusCol ? focusRef : undefined}
+                  className={cls}
+                  transform={`translate(${mapNodeX(r, c, row.length).toFixed(2)} ${mapNodeY(r, c).toFixed(2)})`}
+                  role="button"
+                  aria-disabled={!clickable}
+                  tabIndex={clickable ? 0 : -1}
+                  aria-label={`${MAP_TYPE_LABEL[n.type]} ${name}${badge !== null ? ` (${badge})` : ''}${clickable ? ' へ進む' : ''}`}
+                  onClick={clickable ? () => onChoose(c) : undefined}
+                  onKeyDown={
+                    clickable
+                      ? (ev) => {
+                          if (ev.key === 'Enter' || ev.key === ' ') {
+                            ev.preventDefault()
+                            onChoose(c)
+                          }
+                        }
+                      : undefined
+                  }
+                >
+                  <title>{`${tip}${nextTip}`}</title>
+                  {/* fill:none だと当たり判定が消える。CSS で transparent を指定している */}
+                  <circle className="map-hit" r={MAP_HIT_R} />
+                  {here ? <circle className="map-ring" r={MAP_NODE_R + 4} /> : null}
+                  <circle className="map-disc" r={MAP_NODE_R} />
+                  <text className="map-icon" y={5} textAnchor="middle">
+                    {MAP_ICON[n.type]}
+                  </text>
+                  <text
+                    className="map-label"
+                    y={MAP_NODE_R + 11}
+                    textAnchor="middle"
+                    {...mapFit(name, maxW, MAP_NAME_FONT)}
+                  >
+                    {name}
+                  </text>
+                  {badge !== null ? (
+                    <text className="map-badge" y={MAP_NODE_R + 20} textAnchor="middle">
+                      {badge}
+                    </text>
+                  ) : null}
+                </g>
+              )
+            })}
+          </g>
+        )
+      })}
+      {run.row < 0 ? (
+        <text
+          className="map-start"
+          x={MAP_VW / 2}
+          y={MAP_PAD_T + (MAP_ROWS - 1) * MAP_ROW_H + 44}
+          textAnchor="middle"
+        >
+          ▲ ここから登る
+        </text>
+      ) : null}
+    </svg>
+  )
+}
+
 // ---- ドラフト連戦 (ラン) 画面 ----
 
 function RunScreen({
@@ -1561,43 +1856,12 @@ function RunScreen({
     ) : null
 
   if (run.phase === 'map') {
-    const cands = nextChoices(run)
-    // 現在地から到達可能なノード集合 (前向きBFS)。到達不可ノードは薄く表示する
-    const reach = new Set<string>()
-    {
-      let frontier: number[] =
-        run.row < 0 ? run.map[0].map((_, c) => c) : [...(currentNode(run)?.next ?? [])]
-      let r = run.row < 0 ? 0 : run.row + 1
-      while (r < run.map.length && frontier.length > 0) {
-        const nextF = new Set<number>()
-        for (const c of frontier) {
-          reach.add(`${r}:${c}`)
-          for (const to of run.map[r][c].next) nextF.add(to)
-        }
-        frontier = [...nextF]
-        r++
-      }
-    }
-    const nodeLabel = (t: MapNodeType, encounterId: string | null) =>
-      t === 'boss'
-        ? `💀 ${encounterId ? encounterName(encounterId) : 'ボス'}`
-        : t === 'elite'
-          ? `👑 ${encounterId ? encounterName(encounterId) : ''}（強個体）`
-          : t === 'campfire'
-            ? '🔥 焚き火'
-            : t === 'workshop'
-              ? '🔨 工房'
-              : t === 'shop'
-                ? '🛒 ショップ'
-                : t === 'event'
-                  ? '❓ ？？？'
-                  : `⚔️ ${encounterId ? encounterName(encounterId) : ''}`
     return (
       <div className="app setup">
         <h1>🗺 マップ — 第{run.act}幕/3</h1>
         <div className="panel">
           <div className="choice-desc">
-            全体もエッジ（各ノードの「→」=次の行の接続先）も最初から見える。薄いノードは現在地から到達できない——接続は前の行でどの列を選んだかで決まる（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=休む(30%回復)/鍛える/除去の択一。🔨工房=カード合成）
+            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=休む(30%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。❓=入るまで不明
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
@@ -1607,42 +1871,8 @@ function RunScreen({
           </div>
           {relicChips}
         </div>
-        <div style={{ marginTop: 12 }}>
-          {[...run.map].map((_, idx) => {
-            const r = run.map.length - 1 - idx // ボス (行15) を上に
-            const row = run.map[r]
-            const isNextRow = r === run.row + 1
-            return (
-              <div key={r} style={{ display: 'flex', gap: 8, alignItems: 'center', margin: '4px 0', justifyContent: 'center' }}>
-                <span className="pile-info" style={{ width: 44, textAlign: 'right' }}>{r === BOSS_ROW ? 'ボス' : `行${r + 1}`}</span>
-                {row.map((n, c) => {
-                  const here = r === run.row && c === run.col
-                  const passed = r <= run.row && !here
-                  const clickable = isNextRow && cands.includes(c)
-                  const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`)
-                  return (
-                    <button
-                      key={c}
-                      className={clickable ? 'btn btn-primary' : 'btn'}
-                      disabled={!clickable}
-                      style={{
-                        opacity: passed || unreachable ? 0.3 : clickable ? 1 : 0.8,
-                        outline: here ? '2px solid var(--accent, #e6b422)' : undefined,
-                      }}
-                      title={unreachable ? '現在地からは到達できない' : undefined}
-                      onClick={() => clickable && dispatch({ type: 'ChooseNode', col: c })}
-                    >
-                      {nodeLabel(n.type, n.encounterId)}
-                      {n.next.length > 0 ? (
-                        <span className="pile-info" style={{ marginLeft: 4 }}>→{n.next.join('·')}</span>
-                      ) : null}
-                      {here ? '（現在地）' : ''}
-                    </button>
-                  )
-                })}
-              </div>
-            )
-          })}
+        <div className="map-wrap">
+          <RunMapView run={run} onChoose={(col) => dispatch({ type: 'ChooseNode', col })} />
         </div>
         <div style={{ marginTop: 12 }}>
           <button className="btn" onClick={() => saveReport(run, null, history)}>📄 状況を書き出す</button>{' '}
@@ -1651,6 +1881,7 @@ function RunScreen({
       </div>
     )
   }
+
 
   if (run.phase === 'relic-reward') {
     return (

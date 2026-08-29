@@ -529,3 +529,82 @@ button:disabled { cursor: default; }
   color: #ff8080;
   font-weight: bold;
 }
+
+/* ---------- ランのマップ (StS式の道: 1枚のSVGにノードと接続線を同一座標系で描く) ----------
+   幾何は App.tsx の MAP_* 定数が唯一の真実で、CSS は色と太さだけを決める。
+   ここに幅・位置の指定は書かない (書くと TS 側の座標と二重管理になる)。 */
+
+.map-wrap { margin-top: 12px; }
+.map-svg {
+  display: block;
+  width: 100%;
+  max-width: 460px; /* デスクトップで細くなりすぎない値。上げると縦も比例して伸びる */
+  height: auto;     /* viewBox のアスペクト比で高さが決まる */
+  min-width: 0;     /* flex/grid の子に置かれた時の min-width:auto 罠よけ */
+  margin: 0 auto;
+  touch-action: manipulation;
+}
+
+/* 接続線: 点線の足跡。データのエッジ1本 = <line> 1本 (装飾線を足すと verify-map-ui.ts が落ちる) */
+.map-edge { fill: none; stroke: var(--border); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 0.5 6; }
+.map-edge-live { stroke: var(--border-strong); }
+.map-edge-open { stroke: var(--accent); stroke-width: 3; stroke-dasharray: none; }
+.map-edge-taken { stroke: var(--energy); stroke-width: 2.5; stroke-dasharray: none; opacity: 0.8; }
+.map-edge-past { stroke: var(--border); opacity: 0.3; }
+.map-edge-dead { stroke: var(--border); opacity: 0.2; }
+
+/* ノード */
+.map-node { opacity: 0.85; }
+.map-hit { fill: transparent; }  /* none にすると当たり判定が消える */
+.map-disc { fill: var(--panel2); stroke: var(--border-strong); stroke-width: 2; }
+.map-ring { fill: none; stroke: var(--energy); stroke-width: 2; }
+.map-icon { font-size: 15px; }
+.map-label {
+  font-size: 10px;
+  fill: var(--muted);
+  paint-order: stroke;       /* 背景色で縁取りして後ろの線を切り抜く (paint-order 非対応なら stroke を外す) */
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.map-badge {
+  font-size: 8px;
+  fill: var(--muted);
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.map-rowlabel { font-size: 8px; fill: var(--muted); opacity: 0.55; }
+.map-rowlabel-here { fill: var(--energy); opacity: 1; }
+.map-start { font-size: 9px; fill: var(--accent); }
+
+/* 種別 (先に置く。以下の状態クラスが同一詳細度の後勝ちで上書きする) */
+.map-node-boss .map-disc,
+.map-node-elite .map-disc { stroke: var(--danger); stroke-width: 3; }
+.map-node-boss .map-badge,
+.map-node-elite .map-badge { fill: var(--danger); }
+.map-node-campfire .map-disc { stroke: #d8a05f; }
+.map-node-shop .map-disc,
+.map-node-workshop .map-disc { stroke: var(--block); }
+.map-node-event .map-disc { stroke: #7fd8e8; stroke-dasharray: 3 3; }
+
+/* 状態 */
+.map-node-taken { opacity: 0.6; }
+.map-node-taken .map-disc { stroke: var(--energy); }
+.map-node-dim { opacity: 0.28; }
+.map-node-here { opacity: 1; }
+.map-node-here .map-disc { stroke: var(--energy); stroke-width: 3; }
+.map-node-here .map-label,
+.map-node-here .map-badge { fill: var(--energy); }
+.map-node-open { opacity: 1; cursor: pointer; }
+.map-node-open .map-disc { fill: var(--accent-dark); stroke: var(--accent); stroke-width: 3; }
+.map-node-open .map-label { fill: var(--text); font-weight: bold; }
+.map-node-open:hover .map-disc { fill: var(--accent); }
+.map-node-open:focus { outline: none; }
+.map-node-open:focus-visible .map-disc { stroke: var(--energy); stroke-width: 4; }
+
+@media (max-width: 700px) {
+  /* 幾何は viewBox が持つので、モバイル用の再レイアウトは不要 (max-width が外れるだけ) */
+  .map-svg { max-width: 100%; }
+}
