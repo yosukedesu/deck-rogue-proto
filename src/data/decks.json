@@ -1662,5 +1662,41 @@
       }
     ],
     "color": "green"
+  },
+  {
+    "id": "deck_riposte",
+    "name": "読み勝ちの構え",
+    "color": "green",
+    "description": "リアクションの成功を成長・勢い・マナに換金する読み合い理想形（面白さ5への処方②の検証用）",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_basic_bash",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_rebound",
+        "count": 2
+      },
+      {
+        "cardId": "green_reaction_parry_stance",
+        "count": 1
+      },
+      {
+        "cardId": "green_perm_hunters_gaze",
+        "count": 2
+      }
+    ]
   }
 ]

@@ -300,8 +300,11 @@ export function chooseCommand(s: GameState): Command {
     })
     // 勢い生成付きの攻撃 (突進の助走など) を同ターンの他の攻撃・大技より先に打つ
     if (role === 'bighit' || role === 'attack') {
+      // isPlayableFromHand を必ず通す (2026-08-29 修正: 勢い+ダメージを持つリアクション
+      // =跳ね返りの蔦をプレイしようとして落ちた。リアクションは伏せる札でプレイ不可)
       const momentumFirst = s.player.hand.filter(
         (c) =>
+          isPlayableFromHand(c) &&
           c.def.effects.some((e) => e.effect === 'addMomentum') &&
           c.def.effects.some(isDamageEffect) &&
           effectiveCost(s, c) <= spendable,
@@ -311,6 +314,7 @@ export function chooseCommand(s: GameState): Command {
       // (2026-08-29 テンポ再校正②。順番を間違えると乗算が空振りする=勢いと同じ分別)
       const exposeFirst = s.player.hand.filter(
         (c) =>
+          isPlayableFromHand(c) &&
           c.def.effects.some((e) => e.effect === 'exposeEnemy') &&
           c.def.effects.some(isDamageEffect) &&
           effectiveCost(s, c) <= spendable,
