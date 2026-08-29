@@ -49,7 +49,7 @@ describe('計算合成', () => {
     const def = fuseCards(inst('green_fang'), inst('green_serpent_gulp')) // 14貫通 + 20(捨て1)
     expect(def.effects.some((e) => e.effect === 'dealDamage')).toBe(true)
     expect(def.cost).toBeGreaterThanOrEqual(1)
-    expect(def.cost).toBeLessThanOrEqual(3)
+    expect(def.cost).toBeLessThanOrEqual(5) // 2026-08-30: 3E頭打ちを5Eへ開放 (価値保存とセット)
     expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
     expect(def.color).toBe('green')
   })
@@ -95,11 +95,12 @@ describe('計算合成', () => {
         if (fuseBlockReason(a, b) !== null) continue
         fusable++
         const def = fuseCards(a, b)
-        // コストは1〜3E (costCap対策。レシピは手書き裁定なので4Eまで許容)
+        // コストは1〜5E (2026-08-30: 3E頭打ちだと「7E相当の素材が3Eで出る」効率2.3倍が
+        // 構造的に発生していた。レシピは手書き裁定なので別枠)
         const isRecipe = def.id.startsWith('fusion_')
         if (!isRecipe) {
           expect(def.cost, def.id).toBeGreaterThanOrEqual(1)
-          expect(def.cost, def.id).toBeLessThanOrEqual(3)
+          expect(def.cost, def.id).toBeLessThanOrEqual(5)
           // 派手枠は3効果まで (多段ヒットのダメージ群は1つと数える)
           const dmgCount = def.effects.filter((e) => e.effect === 'dealDamage').length
           const conceptual = def.effects.length - dmgCount + (dmgCount > 0 ? 1 : 0)
@@ -260,20 +261,25 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     expect(def.cost).toBeGreaterThanOrEqual(2) // 寿命込み (×3) の値付けで安売りしない
   })
 
-  it('置物の値付けは寿命込み: 真・年輪の大樹 (毎ターン成長+2) は3E (一回きり価格の穴を塞いだ)', () => {
+  it('置物の値付けは寿命込み: 真・年輪の大樹 (毎ターン成長+2) は4E (一回きり価格の穴を塞いだ)', () => {
     const def = fuseCards(
       inst('green_perm_growth_tree', 'u1'),
       inst('green_perm_growth_tree', 'u2'),
     )
     expect(def.name).toBe('真・年輪の大樹')
     expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(2) // 1+1 (÷3の二重割引なし)
-    expect(def.cost).toBe(3) // (4VP×2×寿命3)×0.85 → 3E
+    expect(def.cost).toBe(4) // (4VP×2×寿命3)×0.85 → 4E (2026-08-30 コスト上限の開放で頭打ちが外れた)
   })
 
-  it('置物化の禁則①: 帯超過は消滅で払えないので合成不可 (巨獣の踏みつけ40×年輪の大樹)', () => {
-    expect(
-      fuseBlockReason(inst('green_finisher_stomp'), inst('green_perm_growth_tree')),
-    ).toContain('置物に収まらない')
+  it('置物化の帯超過は「合成不可」でなく量の圧縮で解消される (2026-08-30 価値保存)', () => {
+    // 旧実装は 巨獣の踏みつけ×年輪の大樹 を「置物に収まらない」で弾いていた。
+    // 価値保存で素材VPの85%に収まるよう量を逆算するので、弾かずに成立する
+    // (ユーザー方針: 合成不可は増やさない)
+    expect(fuseBlockReason(inst('green_finisher_stomp'), inst('green_perm_growth_tree'))).toBeNull()
+    const def = fuseCards(inst('green_finisher_stomp'), inst('green_perm_growth_tree'))
+    expect(def.type).toBe('permanent')
+    expect(def.exhaust).toBeUndefined() // 置物に消滅は付かない
+    expect(def.cost).toBeLessThanOrEqual(5)
   })
 
   it('置物化の禁則②: 量を持たない効果 (negate) は毎ターン化できず合成不可 (根の紡ぎ×年輪の大樹)', () => {
@@ -325,7 +331,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(2) // 多段が伝播
     expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
-    expect(dmgs[0].amount).toBe(Math.ceil((5 + 5 + 8) / 2)) // 総火力を按分 (9×2)
+    expect(dmgs[0].amount).toBe(8) // 価値保存 (2026-08-30): 貫通×1.25の対価を払うので 9→8
   })
 
   it('全体×貫通: 薙ぎ払い(全体6)×牙の一撃(14貫通) → 全体・貫通の一撃', () => {
@@ -333,7 +339,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
     expect(dmg.target).toBe('all')
     expect(dmg.pierce).toBe(true)
-    expect(dmg.amount).toBe(24) // 7+17
+    expect(dmg.amount).toBe(14) // 価値保存 (2026-08-30): 全体×2と貫通×1.25が無料で乗っていたのを是正 (24→14) // 7+17
     // 薙ぎ払いの成長+1も引き継がれる
     expect(def.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
   })
@@ -457,7 +463,7 @@ describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名�
       if (fuseBlockReason(a, b) !== null) continue
       const def = fuseCards(a, b)
       expect(def.cost, def.id).toBeGreaterThanOrEqual(1)
-      expect(def.cost, def.id).toBeLessThanOrEqual(3)
+      expect(def.cost, def.id).toBeLessThanOrEqual(5) // 2026-08-30 コスト上限の開放
       if (def.effects.some((e) => e.effect === 'gainEnergyMax')) {
         expect(def.exhaust, def.id).toBe(true)
       }

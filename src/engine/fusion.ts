@@ -216,17 +216,40 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 合成札は「ダメージ群を1つと数えて」3効果までの派手枠。あふれたらVPの大きい順に残す
   merged.sort((x, y) => effectVp(y) - effectVp(x))
   const others = merged.slice(0, damageEffects.length > 0 ? 2 : 3)
-  const effects = [...damageEffects, ...others]
 
   // --- 値付け: 置物は寿命込み (×3)。ただし onPlay の一回きり効果は等倍 (2026-08-29。
   // 品質パスで置物に登場時効果が付いたため、一回きり分まで×3する過大査定を防ぐ) ---
-  const vp = effects.reduce(
-    (acc, e) =>
-      acc + effectVp(e) * (resultType === 'permanent' && e.trigger !== 'onPlay' ? 3 : 1),
-    0,
-  )
+  const vpOf = (list: readonly DeclarativeEffect[], type: string): number =>
+    list.reduce(
+      (acc, e) => acc + effectVp(e) * (type === 'permanent' && e.trigger !== 'onPlay' ? 3 : 1),
+      0,
+    )
+
+  // --- 価値の保存 (2026-08-30 修正。実プレイのログ解析で発覚した最大のバグ) ---
+  // 旧実装は「伝播後の効果」からVPを出してコストを逆算していたため、全体化(×2)・貫通(×1.25)が
+  // 合計ダメージ全体に無料で乗り、**合成が価値を増やしていた**
+  // (巨獣の踏みつけ5E+薙ぎ払い2E=68VP → 牙蔦の嵐3E=101.5VP。価値+49%・コスト-57%)。
+  // 素材の合計VPの85% (確定済みルール表の「合成ボーナス≈15%引き」) に収まるよう、
+  // **ダメージ量の方を逆算して伝播の対価を払わせる**。特性の掛け合わせという設計は保つ
+  // 価値は素材の合計を**保存**する (削らない)。確定済みルール表の「合成ボーナス≈15%引き」は
+  // コスト逆算側の割引 (下の discounted) であって価値の削減ではない。
+  // ユーザー指示「同名カードは倍率上げて強いカードが生成されるべき」とも整合する
+  const targetVp = vpOf(a.def.effects, a.def.type) + vpOf(b.def.effects, b.def.type)
+  if (damageEffects.length > 0) {
+    const nonDmgVp = vpOf(others, resultType)
+    const unitVp = vpOf([damageEffects[0]], resultType) / Math.max(1, damageEffects[0].amount ?? 1)
+    const budget = Math.max(0, targetVp - nonDmgVp)
+    // 1ヒットあたりの量を割り付け直す (最低1。多段の形と特性はそのまま維持する)
+    const per = Math.max(1, Math.round(budget / Math.max(0.01, unitVp) / damageEffects.length))
+    for (let i = 0; i < damageEffects.length; i++) damageEffects[i] = { ...damageEffects[i], amount: per }
+  }
+  const effects = [...damageEffects, ...others]
+
+  const vp = vpOf(effects, resultType)
   const discounted = vp * 0.85
-  const cost = Math.min(3, Math.max(1, Math.round((discounted - 2) / 6)))
+  // コスト上限を3E→5Eに開放 (2026-08-30)。3E頭打ちだと「7E相当の素材が3Eで出る」効率2.3倍が
+  // 構造的に発生していた。緑は5E札 (巨獣の踏みつけ) を素で持つのでコスト帯としては既存の範囲
+  const cost = Math.min(5, Math.max(1, Math.round((discounted - 2) / 6)))
   let exhaust = a.def.exhaust === true || b.def.exhaust === true
   let overBand = false
   if (discounted > ALLOW[cost] * 1.5) {
