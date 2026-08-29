@@ -36,7 +36,7 @@ import {
   windowFromPending,
 } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { battleSummary, summaryLine } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -54,7 +54,7 @@ function fx(e: DeclarativeEffect): string {
   const all = e.target === 'all' ? '敵全体に' : ''
   const th = e.exhaustThreshold !== undefined ? `〔忘却の刻${e.exhaustThreshold}: ${e.amountMax}に強化〕` : ''
   const base: Record<string, string> = {
-    dealDamage: `${all}${a}ダメージ`, gainBlock: `ブロック${a}`, gainIceBlock: `氷壁${a}(持ち越し)`,
+    dealDamage: `${all}${a}ダメージ${xHitsSuffix(e)}`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
@@ -100,7 +100,7 @@ function cardLine(def: CardDef): string {
   const body = def.modes?.length
     ? def.modes.map((m, i) => `選択${i}:${m.effects.map(fx).join('+')}`).join(' / ')
     : def.effects.map(fx).join('、')
-  const costLabel = def.xCost ? 'X' : `${def.cost}`
+  const costLabel = cardCostLabel(def)
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 

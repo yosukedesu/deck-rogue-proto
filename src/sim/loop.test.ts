@@ -57,5 +57,7 @@ describe('無限ループ検知', () => {
     expect(stalemates).toEqual([])
     // 上限に余裕があることも確認 (健全な最大は10台のはず)
     expect(worstPlays).toBeLessThanOrEqual(MAX_PLAYS_PER_TURN)
-  })
+    // 全デッキ×全敵×複数シードの総当たりなので、カード・敵が増えるたびに重くなる。
+    // 単独では約4秒だが並列実行だと既定5秒を超えるため上限を上げる (2026-08-29)
+  }, 30000)
 })

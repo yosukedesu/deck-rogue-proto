@@ -72,3 +72,24 @@ export function summaryLine(s: BattleSummary): string {
   ]
   return parts.filter(Boolean).join(' / ')
 }
+
+// ---- カード表示のラベル (UI と CLI で1つの真実を共有する純関数) ----
+
+/**
+ * カードのコスト表記。**Xコスト札は `cost` フィールド (=1) でなく "X" と出す**
+ * (2026-08-29 バグ修正: UI側に xCost の分岐が1つも無く、ピック画面・ショップ・手札・デッキ一覧の
+ * すべてで X札が「1マナ」と表示されていた。CLIだけが独自に対応していたので共有関数に一本化した)。
+ * discounted は「次のカード-N」適用後の実効コスト (素と違う時だけ渡す)。
+ */
+export function cardCostLabel(def: { cost: number; xCost?: boolean }, discounted?: number): string {
+  if (def.xCost === true) return 'X' // 割引はXコストに効かない (確定済みルール表「Xコスト」)
+  return String(discounted ?? def.cost)
+}
+
+/**
+ * Xコスト札のヒット表記。xHits の効果は支払ったXの回数だけ繰り返される。
+ * 表示に出さないと「1マナで7ダメージ」に見えてカードの正体が伝わらない
+ */
+export function xHitsSuffix(e: { xHits?: boolean }): string {
+  return e.xHits === true ? '×Xヒット' : ''
+}

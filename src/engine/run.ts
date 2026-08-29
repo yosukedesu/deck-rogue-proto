@@ -376,10 +376,13 @@ function openShop(run: RunState): RunState {
     rng = r1
     const def = remaining[idx]
     remaining.splice(idx, 1)
-    // 価格 = 40 + コスト×10 + ロール0〜10 (確定済みルール表「ショップ」)
+    // 価格 = 40 + コスト×10 + ロール0〜10 (確定済みルール表「ショップ」)。
+    // Xコスト札は cost フィールドが1なので、そのままだと最安の1コスト札と同値になってしまう
+    // (2026-08-29 バグ修正)。実際に払うのは全エナジーなので、典型のX=3として値付けする
+    const pricedCost = def.xCost === true ? 3 : def.cost
     const [roll, r2] = nextInt(rng, 0, 10)
     rng = r2
-    cards.push({ id: def.id, price: 40 + def.cost * 10 + roll })
+    cards.push({ id: def.id, price: 40 + pricedCost * 10 + roll })
   }
   const relicId = run.relicQueue.find((id) => !run.relics.includes(id)) ?? null
   const shop: ShopState = {

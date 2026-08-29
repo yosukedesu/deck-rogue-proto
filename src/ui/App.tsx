@@ -41,7 +41,7 @@ import {
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { battleSummary, summaryLine } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { BOSS_ROW, MAP_ROWS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -267,7 +267,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
   const atkBreak = atkBonus > 0 ? `（${'基礎'}${e.amount}+補正${atkBonus}）` : ''
   switch (e.effect) {
     case 'dealDamage':
-      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${atkBreak}`
+      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${xHitsSuffix(e)}${atkBreak}`
     case 'dealDamagePerEnergyMax':
       return ctx
         ? `${trigger}エナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
@@ -282,7 +282,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}↩️ 返し${(e.amount ?? 0) + cBonus}ダメージ${pierce}${cBreak}`
     }
     case 'gainBlock':
-      return `${trigger}🛡 ブロック+${e.amount}`
+      return `${trigger}🛡 ブロック+${e.amount}${xHitsSuffix(e)}`
     case 'gainIceBlock':
       return `${trigger}🧊 氷壁+${e.amount}`
     case 'dealDamagePerCardPlayed':
@@ -600,11 +600,13 @@ function CardFrame({
   /** マナ軽減適用後の実効コスト (素のコストと違う時だけ渡す) */
   displayCost?: number
 }) {
-  const discounted = displayCost !== undefined && displayCost !== card.def.cost
+  // Xコスト札は割引の対象外なので「割引済み」表示にもしない
+  const discounted =
+    card.def.xCost !== true && displayCost !== undefined && displayCost !== card.def.cost
   return (
     <div className={`card card-role-${uiCardRole(card.def)}${dim ? ' card-dim' : ''}`}>
       <div className={`card-cost${discounted ? ' card-cost-discounted' : ''}`}>
-        {displayCost ?? card.def.cost}
+        {cardCostLabel(card.def, displayCost)}
       </div>
       <div className="card-name">{card.def.name}</div>
       <div className={`card-category type-${card.def.type}`}>{TYPE_LABEL[card.def.type]}</div>
@@ -1153,7 +1155,7 @@ function BattleScreen({
                       style={{ margin: 3 }}
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
-                      {c.def.name}({c.def.cost}) —{' '}
+                      {c.def.name}({cardCostLabel(c.def)}) —{' '}
                       {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock })}
                     </button>
                   ))}

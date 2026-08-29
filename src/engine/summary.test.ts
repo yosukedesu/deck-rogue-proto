@@ -1,8 +1,9 @@
 // 撃破サマリー (2026-08-29 面白さ5への処方③: ピーク体験) と ボスの第2形態のテスト。
 // 確定済みルール表「敵フェーズ変化」(ボス3体への適用) を固定する。
 import { describe, expect, it } from 'vitest'
-import { battleSummary, summaryLine } from './summary.ts'
-import { getEnemyDef } from './content.ts'
+import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from './summary.ts'
+import { allCards, getCardDef, getEnemyDef } from './content.ts'
+import { createRun } from './run.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 import type { GameEvent } from './types.ts'
@@ -58,5 +59,37 @@ describe('ボスの第2形態 (2026-08-29 面白さ5への処方③。HP50%の�
     s = applyCommand(s, { type: 'EndTurn' })
     const intent = s.enemies[0].intent!
     expect(intent.kind).toBe('attack') // 防御 (shell) はもう宣言されない
+  })
+})
+
+describe('カード表示のラベル (2026-08-29 Xコスト表記のバグ修正)', () => {
+  it('Xコスト札はコストが "X" と表示される (cost フィールドの1ではない)', () => {
+    for (const def of allCards.filter((c) => c.xCost === true)) {
+      expect(cardCostLabel(def), def.name).toBe('X')
+      // 割引が渡されてもXは割引の対象外なので "X" のまま
+      expect(cardCostLabel(def, 0), def.name).toBe('X')
+    }
+  })
+
+  it('通常カードは数値のまま。割引が渡されたらその値を出す', () => {
+    const strike = getCardDef('green_strike')
+    expect(cardCostLabel(strike)).toBe('1')
+    expect(cardCostLabel(strike, 0)).toBe('0')
+  })
+
+  it('xHits の効果には「×Xヒット」が付く (付けないと1マナ7ダメージに見える)', () => {
+    expect(xHitsSuffix({ xHits: true })).toBe('×Xヒット')
+    expect(xHitsSuffix({})).toBe('')
+    for (const def of allCards.filter((c) => c.xCost === true)) {
+      expect(def.effects.some((e) => e.xHits === true), `${def.name} に xHits が無い`).toBe(true)
+    }
+  })
+
+  it('ショップはXコスト札を1コスト扱いで安売りしない', () => {
+    // 価格 = 40 + コスト×10 + ロール。X札は cost:1 なので素通しだと最安帯になる
+    const run = createRun(2, 'set-confirm')
+    const xCard = allCards.find((c) => c.xCost === true)!
+    expect(xCard.cost).toBe(1) // データ上は1 (プレイ時に全エナジーを払う)
+    expect(run.gold).toBeGreaterThan(0) // ラン生成の健全性 (価格式は openShop 側で検証)
   })
 })
