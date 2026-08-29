@@ -2254,9 +2254,36 @@ export default function App() {
   // 開発者ツールのコンソールから常に最新レポートを取れる口を開けておく。
   //   copy(deckRogueReport())        ← クリップボードへ (DevToolsのcopy()はページ権限に関係なく動く)
   //   console.log(deckRogueReport()) ← 表示して手動コピー
+  // さらに最新状態を localStorage に常時バックアップする (「リロードしたらログが消えた」への恒久対策)。
+  //   copy(deckRogueRecoverReport()) ← リロード後・クラッシュ後でも直前の状態からレポートを復元
+  // ※セーブ解禁範囲 (開発者向けの書き出しのみ・ゲーム内の中断復帰UXは作らない) の内側:
+  //   これは復元プレイ用でなくプレイテストのデータ回収用で、読む口はコンソールだけ
   useEffect(() => {
-    ;(window as unknown as { deckRogueReport?: () => string }).deckRogueReport = () =>
-      buildReport(run, state, runHistory)
+    const w = window as unknown as {
+      deckRogueReport?: () => string
+      deckRogueRecoverReport?: () => string
+    }
+    w.deckRogueReport = () => buildReport(run, state, runHistory)
+    w.deckRogueRecoverReport = () => {
+      try {
+        const raw = localStorage.getItem('deckRogueBackup')
+        if (raw === null) return '(バックアップなし)'
+        const b = JSON.parse(raw) as {
+          run: RunState | null
+          state: GameState | null
+          history: BattleArchive[]
+        }
+        return buildReport(b.run ?? null, b.state ?? null, b.history ?? [])
+      } catch (e) {
+        return `(復元失敗: ${String(e)})`
+      }
+    }
+    try {
+      // 容量超過 (QuotaExceeded) 等は握りつぶす = バックアップは保険であって本線ではない
+      localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory }))
+    } catch {
+      /* no-op */
+    }
   }, [run, state, runHistory])
 
   const start = (cfg: Config) => {
