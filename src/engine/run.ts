@@ -53,6 +53,8 @@ const GOLD_PER_BATTLE_MIN = 12
 const GOLD_PER_BATTLE_MAX = 18
 const GOLD_ELITE_BONUS_MIN = 30
 const GOLD_ELITE_BONUS_MAX = 40
+/** 盗人を逃がす前に倒した時の懸賞金 (確定済みルール表「盗みと逃走」) */
+const THIEF_BOUNTY = 10
 const SHOP_CARD_COUNT = 5
 const SHOP_RELIC_PRICE = 150
 /** 除去サービス: 回数無制限・使うたびラン通算で+25G (本家Purge式。2026-08-29) */
@@ -541,13 +543,22 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   }
   // 商人の秤 (B型レリック): 戦闘勝利のゴールド加算
   gained += run.goldPerVictoryBonus ?? 0
+  // 盗みの精算 (確定済みルール表「盗みと逃走」): 逃走した盗人が抱えた額を失い (合計は最低0)、
+  // 逃げる前に倒した盗人は全額戻る (ゴールドは一度も減っていない) + 懸賞金
+  const fledLoss = combat.enemies
+    .filter((e) => e.fled === true)
+    .reduce((sum, e) => sum + (e.stolenGold ?? 0), 0)
+  const bounty =
+    combat.enemies.filter((e) => e.fled !== true && (e.stolenGold ?? 0) > 0).length * THIEF_BOUNTY
+  gained += bounty - fledLoss
   const next: RunState = {
     ...run,
     rng,
     combat,
     hp,
     battlesWon: run.battlesWon + 1,
-    gold: run.gold + gained,
+    // 盗みの喪失で負になりうるので0でクランプ
+    gold: Math.max(0, run.gold + gained),
   }
   // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
   if (run.currentElite || isBoss) {

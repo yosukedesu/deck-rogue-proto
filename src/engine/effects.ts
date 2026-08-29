@@ -362,7 +362,27 @@ export function dealDamageToEnemy(
         }
       : e,
   )
-  return emit({ ...state, enemies }, { type: 'DamageDealt', source: 'player', amount, hpLoss })
+  let s = emit({ ...state, enemies }, { type: 'DamageDealt', source: 'player', amount, hpLoss })
+  // とげ (敵の報復): 攻撃ヒットごとにNダメ反射。そのヒットで倒れたら反射しない = 一撃で抜けば無傷。
+  // 敵フェーズの被弾ではないので憤怒 (damageTakenLastEnemyPhase) や onHpLost は積まない
+  const struck = s.enemies[enemyIndex]
+  if ((struck.thorns ?? 0) > 0 && struck.hp > 0) {
+    const reflect = struck.thorns!
+    const pBlocked = Math.min(s.player.block, reflect)
+    const pIceBlocked = Math.min(s.player.iceBlock, reflect - pBlocked)
+    const pHpLoss = reflect - pBlocked - pIceBlocked
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        block: s.player.block - pBlocked,
+        iceBlock: s.player.iceBlock - pIceBlocked,
+        hp: s.player.hp - pHpLoss,
+      },
+    }
+    s = emit(s, { type: 'ThornsReflected', enemyIndex, amount: reflect, hpLoss: pHpLoss })
+  }
+  return s
 }
 
 /** 山札から n 枚ドロー。山札が尽きたら捨て札をシャッフルして山札に戻す (StS準拠) */

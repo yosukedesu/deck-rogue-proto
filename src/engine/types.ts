@@ -107,6 +107,12 @@ export interface EnemyState extends CombatantState {
   readonly noReactTable?: boolean
   /** 前回の再生判定以降に受けた累計HP損失 (regenBreak の判定用。再生判定のたびにリセット) */
   readonly hpLostSinceRegen?: number
+  /** とげ: プレイヤーの攻撃ヒットごとにNダメ反射 (defからコピー。確定済みルール表「とげ（敵の報復）」) */
+  readonly thorns?: number
+  /** 盗みで抱えているゴールド。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」) */
+  readonly stolenGold?: number
+  /** 逃走済み (hp:0とセットで立つ = 既存の死亡判定がそのまま勝利判定に使える) */
+  readonly fled?: boolean
 }
 
 /** 敵の意図。プレイヤーへは幅あり表示 (例: 攻撃6〜12)。実値は宣言時にロール済みで非公開 */
@@ -120,6 +126,8 @@ export interface EnemyIntent {
   readonly hits?: number
   /** 状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」) */
   readonly inflict?: StatusInflict
+  /** 攻防一体: 攻撃と同時に得る固定ブロック (意図表示「⚔️N+🛡️M」。確定済みルール表「攻防一体・隙」) */
+  readonly alsoDefend?: number
   /**
    * 条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の
    * 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。
@@ -138,6 +146,7 @@ export interface EnemyIntentBranch {
   readonly actual: number
   readonly hits?: number
   readonly inflict?: StatusInflict
+  readonly alsoDefend?: number
 }
 
 /**
@@ -294,6 +303,10 @@ export type GameEvent =
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
   | { readonly type: 'TokenDestroyed'; readonly cardId: string } // トークン破壊 (敵メカニクス)
+  | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
+  | { readonly type: 'GoldStolen'; readonly enemyIndex: number; readonly amount: number } // 盗み (精算は勝利時)
+  | { readonly type: 'EnemyFled'; readonly enemyIndex: number } // 逃走 (戦闘離脱)
+  | { readonly type: 'EnemyHealed'; readonly enemyIndex: number; readonly targetIndex: number; readonly amount: number } // 回復役
   | { readonly type: 'CardRetrieved'; readonly cardId: string } // 屍集め: 消滅置き場から手札へ
   | { readonly type: 'CardPlayedFromExhaust'; readonly cardId: string } // 死者再生: 消滅置き場から直接プレイ
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
@@ -574,6 +587,12 @@ export type EnemyArchetype =
   | 'taunter'
   | 'enrager'
   | 'support'
+  | 'thorned' // とげ型: 攻撃ヒットごとに反射 (針毛の栗鼠)
+  | 'thief' // 盗人型: 盗み→逃走 (こそ泥ゴブリン)
+  | 'bomber' // 爆弾型: 3拍子の大爆発 (火薬樽かつぎ)
+  | 'healer' // 回復役型: 味方回復。編成専用 (苔の癒し手)
+  | 'windup' // 息切れ型: 大技→隙 (大振りの斧鬼)
+  | 'shell' // 甲殻型: 毎ターン積みながら殴る (石殻の番人)
 
 /** buff = 強化 (自分のみ)。rally = 応援 (味方全体の強化)。hex = 状態異常の付与のみ (数値なし・inflict必須) */
 export type EnemyActionKind =
@@ -584,6 +603,10 @@ export type EnemyActionKind =
   | 'buff'
   | 'rally'
   | 'hex'
+  | 'heal' // 回復役: 最もHP割合の低い生存味方 (自分含む) を回復 (確定済みルール表「回復役（敵）」)
+  | 'steal-gold' // 盗み: ロール額を敵が抱える。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」)
+  | 'flee' // 逃走: 戦闘から離脱 (hp:0+fled)。打ち消しで止められる
+  | 'rest' // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば反撃の窓)
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
 export type PlayerStatus = 'weak' | 'vulnerable' | 'wound' | 'junk'
@@ -606,6 +629,8 @@ export interface EnemyMove {
   readonly hits?: number
   /** この行動が付与する状態異常 (attackの追撃・hexの本体) */
   readonly inflict?: StatusInflict
+  /** 攻防一体: 攻撃と同時に得る固定ブロック (確定済みルール表「攻防一体・隙」) */
+  readonly alsoDefend?: number
   /**
    * 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
    * プレイヤーに伏せ札があると、この行動の代わりに setAlt の行動になる。
@@ -617,6 +642,7 @@ export interface EnemyMove {
     readonly max?: number
     readonly hits?: number
     readonly inflict?: StatusInflict
+    readonly alsoDefend?: number
   }
 }
 
@@ -640,6 +666,8 @@ export interface EnemyDef {
   readonly movesVsTokens?: readonly EnemyMove[]
   /** 延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」) */
   readonly burnResist?: number
+  /** とげ: プレイヤーの攻撃ヒットごとにNダメ反射。敵カードに常時表示 (確定済みルール表「とげ（敵の報復）」) */
+  readonly thorns?: number
   /** HP50%以下で切り替わる行動テーブル (フェーズ変化)。優先度: 半分以下 > 伏せ反応 > 通常 */
   readonly movesBelowHalf?: readonly EnemyMove[]
   /** HP50%以下のローテーション (movesBelowHalf の id を参照) */

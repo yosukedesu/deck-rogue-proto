@@ -23,7 +23,8 @@ export function intentText(intent: EnemyIntent | null): string {
   switch (intent.kind) {
     case 'attack': {
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${inflictSuffix(intent)}`
+      const guard = intent.alsoDefend !== undefined ? `+🛡️${intent.alsoDefend}` : ''
+      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${inflictSuffix(intent)}`
     }
     case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
     case 'destroy-set': return '💥 伏せ破壊'
@@ -31,6 +32,10 @@ export function intentText(intent: EnemyIntent | null): string {
     case 'buff': return `💪 強化 +${intent.shownMin}〜${intent.shownMax}`
     case 'rally': return `📣 応援 +${intent.shownMin}〜${intent.shownMax}（味方全体）`
     case 'hex': return `🧿 呪い${inflictSuffix(intent)}`
+    case 'heal': return `💚 回復 ${intent.shownMin}〜${intent.shownMax}（最も傷んだ味方）`
+    case 'steal-gold': return `💰 盗み ${intent.shownMin}〜${intent.shownMax}G`
+    case 'flee': return '🏃 逃走（倒すか打ち消せば阻止）'
+    case 'rest': return '😮‍💨 隙だらけ'
   }
 }
 
@@ -91,6 +96,10 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardExhausted': return { text: `消滅: ${cardName(e.cardId)}（この戦闘から除外）`, cls: 'log-line' }
     case 'BurnDischarged': return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
     case 'TokenDestroyed': return { text: `従者狩り: ${cardName(e.cardId)}が倒された`, cls: 'log-line' }
+    case 'ThornsReflected': return { text: `🦔 とげ反射: ${e.amount}（HP-${e.hpLoss}）`, cls: 'log-damage' }
+    case 'GoldStolen': return { text: `💰 ${e.amount}G を盗まれた（逃がす前に倒せば取り返せる）`, cls: 'log-damage' }
+    case 'EnemyFled': return { text: '🏃 敵が逃走した', cls: 'log-line' }
+    case 'EnemyHealed': return { text: `💚 敵が回復 +${e.amount}`, cls: 'log-line' }
     case 'CardRetrieved': return { text: `回収: ${cardName(e.cardId)}（消滅置き場から手札へ）`, cls: 'log-line' }
     case 'CardPlayedFromExhaust': return { text: `直接プレイ: ${cardName(e.cardId)}（消滅置き場から）`, cls: 'log-line' }
     case 'CardsDiscarded': return { text: `コストとして捨てた: ${e.cardIds.map(cardName).join('、')}`, cls: 'log-line' }

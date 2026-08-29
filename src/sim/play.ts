@@ -102,17 +102,22 @@ function cardLine(def: CardDef): string {
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
-function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; inflict?: { status: string; amount: number } }): string {
+function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; inflict?: { status: string; amount: number }; alsoDefend?: number }): string {
   const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
+  const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}${guard}`,
     defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
     buff: `強化+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`,
     hex: '呪い',
+    heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`,
+    'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
+    flee: '逃走(倒すか打ち消せば阻止)',
+    rest: '隙だらけ',
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -129,10 +134,13 @@ function intentLine(s: GameState, i: number): string {
   const it = e.intent
   const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
+  const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? `${hits}(値は1発あたり)` : ''}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? `${hits}(値は1発あたり)` : ''}${guard}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `強化+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
+    heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
+    flee: '逃走(倒すか打ち消せば阻止)', rest: '隙だらけ',
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -184,12 +192,14 @@ function renderBattle(s: GameState, logFrom: number): string {
     )
   }
   s.enemies.forEach((e, i) => {
-    if (e.hp <= 0) { L.push(`敵${i}: ${getEnemyDef(e.enemyId).name} 💀撃破済み`); return }
+    if (e.hp <= 0) { L.push(`敵${i}: ${getEnemyDef(e.enemyId).name} ${e.fled ? `🏃逃走済み${e.stolenGold ? `(${e.stolenGold}G持ち逃げ)` : ''}` : '💀撃破済み'}`); return }
     const def = getEnemyDef(e.enemyId)
     const tags = [
       e.block ? `ブロック${e.block}` : '', e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
-      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
+      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '',
+      e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
+      def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
       def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ` : `激昂+${def.enrage}/T`) : '',
     ].filter(Boolean).join(' ')
     L.push(`敵${i}: ${def.name} HP${e.hp}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)

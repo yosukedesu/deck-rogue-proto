@@ -103,5 +103,67 @@
         "strength": -2
       }
     ]
+  },
+  {
+    "id": "enc_thief_pair",
+    "name": "こそ泥の二人組",
+    "members": [
+      {
+        "enemyId": "enemy_thief",
+        "hpScale": 0.75,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_thief",
+        "hpScale": 0.75,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_bomber_healer",
+    "name": "火薬樽と癒し手",
+    "members": [
+      {
+        "enemyId": "enemy_bomber",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_moss_healer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_axe_drummer",
+    "name": "斧鬼と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_axe_ogre",
+        "hpScale": 0.65,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_shell_hexer",
+    "name": "石殻と妖術師",
+    "members": [
+      {
+        "enemyId": "enemy_shell_guard",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.55,
+        "strength": -2
+      }
+    ]
   }
 ]

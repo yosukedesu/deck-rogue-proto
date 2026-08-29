@@ -42,9 +42,10 @@ const MAX_PLACEMENT_TRIES = 5000
 
 /** 幕プール制 (確定済みルール表「ランの敵並び」2026-08-29): 幕 → 抽選プール (ソロ敵IDと編成IDの混合) */
 const ACT_POOLS: readonly (readonly string[])[] = [
-  ['enemy_probe', 'enemy_wide_power', 'enc_probe_pair'], // 1幕 (Act1帯)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enc_probe_trio', 'enc_joker_drummer'], // 2幕 (Act2帯)
-  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer'], // 3幕 (Act3帯)
+  // 敵拡充+6体 (2026-08-29): 幕1が実質2種で単調だった。苔の癒し手は編成専用 (ソロ自己回復のスタール防止)
+  ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enemy_thief', 'enc_probe_pair', 'enc_thief_pair'], // 1幕 (Act1帯)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer'], // 2幕 (Act2帯)
+  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer'], // 3幕 (Act3帯)
 ]
 /** 幕ボス (難度順固定。確定済みルール表「マップ」) */
 export const ACT_BOSSES: readonly string[] = ['enemy_brute', 'enemy_turtle', 'enemy_warden']

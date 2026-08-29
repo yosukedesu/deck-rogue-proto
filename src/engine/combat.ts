@@ -154,6 +154,8 @@ export function startCombatWithOptions(
       exposed: 0,
       patternIndex: m.patternOffset ?? 0,
       ...(m.noReactTable === true ? { noReactTable: true } : {}),
+      // とげは def からコピーして状態に持つ (effects.ts が content 参照なしで反射できる)
+      ...(def.thorns !== undefined ? { thorns: def.thorns } : {}),
     }
   })
   state = {
@@ -313,6 +315,7 @@ function declareIntents(state: GameState): GameState {
         ...(sa.max !== undefined ? { max: sa.max } : {}),
         ...(sa.hits !== undefined ? { hits: sa.hits } : {}),
         ...(sa.inflict !== undefined ? { inflict: sa.inflict } : {}),
+        ...(sa.alsoDefend !== undefined ? { alsoDefend: sa.alsoDefend } : {}),
       }
       const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength)
       rng = rngC
@@ -349,6 +352,7 @@ function buildIntent(
     actual: number
     hits?: number
     inflict?: StatusInflict
+    alsoDefend?: number
   },
   GameState['rng'],
 ] {
@@ -367,6 +371,7 @@ function buildIntent(
       actual: clamp(actual + bonus),
       hits: move.hits,
       inflict: move.inflict,
+      alsoDefend: move.alsoDefend,
     },
     next,
   ]
@@ -768,6 +773,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
       actual: acting.actual,
       ...(acting.hits !== undefined ? { hits: acting.hits } : {}),
       ...(acting.inflict !== undefined ? { inflict: acting.inflict } : {}),
+      ...(acting.alsoDefend !== undefined ? { alsoDefend: acting.alsoDefend } : {}),
     }
     // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
     s = {
@@ -969,6 +975,16 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         },
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss })
+      // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る (確定済みルール表「攻防一体・隙」)
+      if (intent.alsoDefend !== undefined && intent.alsoDefend > 0) {
+        s = {
+          ...s,
+          enemies: s.enemies.map((e, i) =>
+            i === enemyIndex ? { ...e, block: e.block + intent.alsoDefend! } : e,
+          ),
+        }
+        s = emit(s, { type: 'BlockGained', target: 'enemy', amount: intent.alsoDefend })
+      }
       // 攻撃に付与された状態異常はダメージ後に適用 (確定済みルール表「状態異常」)
       if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
       return markResolved(s, hpLoss)
@@ -997,6 +1013,61 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         emit({ ...state, enemies }, { type: 'StrengthGained', enemyIndex, amount: intent.actual }),
         0,
       )
+    }
+    case 'heal': {
+      // 回復役: 最もHP割合の低い生存味方 (自分含む) を回復 (確定済みルール表「回復役（敵）」)
+      let targetIdx = enemyIndex
+      let worst = Infinity
+      state.enemies.forEach((e, i) => {
+        if (e.hp <= 0) return
+        const ratio = e.hp / e.maxHp
+        if (ratio < worst) {
+          worst = ratio
+          targetIdx = i
+        }
+      })
+      const target = state.enemies[targetIdx]
+      const healed = Math.min(intent.actual, target.maxHp - target.hp)
+      const s = emit(
+        {
+          ...state,
+          enemies: state.enemies.map((e, i) => (i === targetIdx ? { ...e, hp: e.hp + healed } : e)),
+        },
+        { type: 'EnemyHealed', enemyIndex, targetIndex: targetIdx, amount: healed },
+      )
+      return markResolved(s, 0)
+    }
+    case 'steal-gold': {
+      // 盗み: ロール額を敵が抱える。精算 (逃走なら喪失/撃破なら奪還+懸賞金) は勝利時にrun層
+      // (確定済みルール表「盗みと逃走」。combat層はゴールドを知らない = 純度維持)
+      const s = emit(
+        {
+          ...state,
+          enemies: state.enemies.map((e, i) =>
+            i === enemyIndex ? { ...e, stolenGold: (e.stolenGold ?? 0) + intent.actual } : e,
+          ),
+        },
+        { type: 'GoldStolen', enemyIndex, amount: intent.actual },
+      )
+      return markResolved(s, 0)
+    }
+    case 'flee': {
+      // 逃走: 戦闘から離脱。hp:0+fled で既存の死亡判定・勝利判定がそのまま機能する。
+      // 打ち消し可能 (negateNextAction は本関数冒頭で処理済み) = 逃走自体を止められる
+      const s = emit(
+        {
+          ...state,
+          enemies: state.enemies.map((e, i) =>
+            i === enemyIndex ? { ...e, hp: 0, fled: true, intent: null } : e,
+          ),
+        },
+        { type: 'EnemyFled', enemyIndex },
+      )
+      return markResolved(s, 0)
+    }
+    case 'rest': {
+      // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば1ターンの反撃の窓)
+      return markResolved(state, 0)
     }
     case 'rally': {
       // 応援: 生存する味方全体の強化 (確定済みルール表「応援（ラリー）」)

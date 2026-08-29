@@ -18,7 +18,7 @@
         "kind": "defend",
         "min": 5,
         "max": 9,
-        "weight": 1
+        "weight": 2
       }
     ]
   },
@@ -129,6 +129,13 @@
           "status": "junk",
           "amount": 1
         }
+      },
+      {
+        "id": "ready_tools",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1
       }
     ],
     "movesVsSet": [
@@ -381,6 +388,13 @@
         "kind": "attack",
         "min": 15,
         "max": 19,
+        "weight": 2
+      },
+      {
+        "id": "dodge_prance",
+        "kind": "defend",
+        "min": 5,
+        "max": 8,
         "weight": 1
       }
     ],
@@ -453,10 +467,11 @@
       },
       {
         "id": "gate_guard",
-        "kind": "defend",
-        "min": 12,
-        "max": 16,
-        "weight": 1
+        "kind": "attack",
+        "min": 6,
+        "max": 8,
+        "weight": 1,
+        "alsoDefend": 12
       },
       {
         "id": "bell_hushed",
@@ -477,5 +492,199 @@
       "gate_guard"
     ],
     "enrageEveryCards": 8
+  },
+  {
+    "id": "enemy_thorn_squirrel",
+    "name": "針毛の栗鼠",
+    "archetype": "thorned",
+    "flavor": "触るたび刺さる。ちくちく削るか、一撃で仕留めるか。",
+    "maxHp": 85,
+    "thorns": 2,
+    "moves": [
+      {
+        "id": "gnaw",
+        "kind": "attack",
+        "min": 4,
+        "max": 6,
+        "weight": 2
+      },
+      {
+        "id": "curl_up",
+        "kind": "defend",
+        "min": 5,
+        "max": 8,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_thief",
+    "name": "こそ泥ゴブリン",
+    "archetype": "thief",
+    "flavor": "隠れて、掴んで、走り去る。三歩目の前に捕まえろ。",
+    "maxHp": 70,
+    "moves": [
+      {
+        "id": "sneak",
+        "kind": "defend",
+        "min": 4,
+        "max": 6,
+        "weight": 1
+      },
+      {
+        "id": "snatch",
+        "kind": "steal-gold",
+        "min": 15,
+        "max": 25,
+        "weight": 1
+      },
+      {
+        "id": "mug",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1
+      },
+      {
+        "id": "run_off",
+        "kind": "flee",
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "sneak",
+      "snatch",
+      "mug",
+      "run_off"
+    ]
+  },
+  {
+    "id": "enemy_bomber",
+    "name": "火薬樽かつぎ",
+    "archetype": "bomber",
+    "flavor": "樽の導火線は三拍で燃え尽きる。庇い、投げ、そして——。",
+    "maxHp": 95,
+    "moves": [
+      {
+        "id": "shield_barrel",
+        "kind": "defend",
+        "min": 5,
+        "max": 8,
+        "weight": 1
+      },
+      {
+        "id": "toss_ember",
+        "kind": "attack",
+        "min": 6,
+        "max": 9,
+        "weight": 1
+      },
+      {
+        "id": "big_boom",
+        "kind": "attack",
+        "min": 20,
+        "max": 24,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "shield_barrel",
+      "toss_ember",
+      "big_boom"
+    ]
+  },
+  {
+    "id": "enemy_moss_healer",
+    "name": "苔の癒し手",
+    "archetype": "healer",
+    "flavor": "傷んだ仲間から順に苔を貼る。貼られた側は嫌そうな顔をする。",
+    "maxHp": 75,
+    "moves": [
+      {
+        "id": "mend",
+        "kind": "heal",
+        "min": 8,
+        "max": 12,
+        "weight": 2
+      },
+      {
+        "id": "staff_poke",
+        "kind": "attack",
+        "min": 4,
+        "max": 6,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_axe_ogre",
+    "name": "大振りの斧鬼",
+    "archetype": "windup",
+    "flavor": "振りかぶりは正直、一撃は苛烈、そのあと必ず息が切れる。",
+    "maxHp": 125,
+    "moves": [
+      {
+        "id": "windup",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "setAlt": {
+          "kind": "attack",
+          "min": 14,
+          "max": 18
+        }
+      },
+      {
+        "id": "great_swing",
+        "kind": "attack",
+        "min": 24,
+        "max": 28,
+        "weight": 1
+      },
+      {
+        "id": "gasp",
+        "kind": "rest",
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "windup",
+      "great_swing",
+      "gasp"
+    ]
+  },
+  {
+    "id": "enemy_shell_guard",
+    "name": "石殻の番人",
+    "archetype": "shell",
+    "flavor": "殻ごと押し潰しに来る。殻を割るか、殻ごと貫くか——割れたら中身は柔い。",
+    "maxHp": 130,
+    "moves": [
+      {
+        "id": "shell_bash",
+        "kind": "attack",
+        "min": 12,
+        "max": 16,
+        "weight": 2,
+        "alsoDefend": 10
+      },
+      {
+        "id": "harden",
+        "kind": "defend",
+        "min": 14,
+        "max": 18,
+        "weight": 1
+      }
+    ],
+    "movesBelowHalf": [
+      {
+        "id": "cracked_rage",
+        "kind": "attack",
+        "min": 16,
+        "max": 20,
+        "weight": 1
+      }
+    ]
   }
 ]

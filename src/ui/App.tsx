@@ -77,6 +77,12 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   taunter: '挑発型（伏せ無しに大振り）',
   enrager: '激昂型（毎ターン強化）',
   support: '応援型（味方全体強化）',
+  thorned: 'とげ型（攻撃ヒットごとに反射）',
+  thief: '盗人型（盗んで逃げる）',
+  bomber: '爆弾型（三拍子の大爆発）',
+  healer: '回復役型（味方を癒す）',
+  windup: '息切れ型（大技のあと隙）',
+  shell: '甲殻型（積みながら殴る）',
 }
 const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   'wide-power': '🐍',
@@ -91,6 +97,12 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   taunter: '🤡',
   enrager: '🗿',
   support: '🥁',
+  thorned: '🦔',
+  thief: '🪙',
+  bomber: '🧨',
+  healer: '🌿',
+  windup: '🪓',
+  shell: '🪨',
 }
 
 // カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
@@ -119,6 +131,7 @@ const KEYWORD_HELP: Record<string, string> = {
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
   威圧: '敵の強化を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
   応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
+  とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
@@ -479,6 +492,14 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
       return `📣 応援 +${intent.actual}（味方全体。宣言 +${intent.shownMin}〜+${intent.shownMax}）`
     case 'hex':
       return `🧿 呪い${inflictSuffix(intent)}`
+    case 'heal':
+      return `💚 回復 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
+    case 'steal-gold':
+      return `💰 盗み ${intent.actual}G（宣言 ${intent.shownMin}〜${intent.shownMax}G）`
+    case 'flee':
+      return '🏃 逃走'
+    case 'rest':
+      return '😮‍💨 隙だらけ'
   }
 }
 
@@ -954,7 +975,7 @@ function BattleScreen({
                   setPendingTarget(null)
                 }}
               >
-                <div className="enemy-sprite">{dead ? '💀' : ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
+                <div className="enemy-sprite">{enemy.fled ? '🏃' : dead ? '💀' : ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
                 <div className="enemy-info">
                   <div className="enemy-name">{enemyDef.name}</div>
                   {s.enemies.length === 1 && (
@@ -990,6 +1011,17 @@ function BattleScreen({
                     )}
                     {enemyDef.burnResist !== undefined && !dead && (
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
+                    )}
+                    {enemyDef.thorns !== undefined && !dead && (
+                      <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>
+                    )}
+                    {(enemy.stolenGold ?? 0) > 0 && !dead && (
+                      <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み</span>
+                    )}
+                    {enemy.fled === true && (
+                      <span className="chip">
+                        🏃 逃走済み{(enemy.stolenGold ?? 0) > 0 ? `（${enemy.stolenGold}G持ち逃げ）` : ''}
+                      </span>
                     )}
                     {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
                       enemy.hp <= enemy.maxHp * 0.5 &&
