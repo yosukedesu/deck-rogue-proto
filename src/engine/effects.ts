@@ -852,5 +852,7 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   }
-  return s
+  // 読み勝ちの換金 (確定済みルール表「読み勝ちの換金」2026-08-29): リアクション発動に反応する置物。
+  // 3方式共通の解決経路なので方式非依存。ブラフで伏せただけでは誘発しない = 本当に読み勝った時だけ
+  return runPermanentTriggers(s, 'onReactionFired', enemyIndex)
 }

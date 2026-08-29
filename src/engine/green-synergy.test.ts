@@ -197,3 +197,59 @@ describe('モード札増刷 (2026-08-29 ユーザー指示「モード系は魅
     expect(bounty.player.block).toBe(6)
   })
 })
+
+describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定済みルール表「読み勝ちの換金」)', () => {
+  /** 伏せ札と眼光を仕込み、敵の攻撃に post窓で発動するところまで進める */
+  function fireReaction(setCardId: string, withGaze: boolean): GameState {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withHand(s, [])
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        setCards: [{ uid: 'set0', def: getCardDef(setCardId) }],
+        permanents: withGaze
+          ? [...s.player.permanents, { uid: 'perm0', def: getCardDef('green_perm_hunters_gaze') }]
+          : s.player.permanents,
+      },
+    }
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 } } : e)) }
+    s = applyCommand(s, { type: 'EndTurn' })
+    if (s.phase !== 'awaiting-reaction') throw new Error(`post窓が開いていない: ${s.phase}`)
+    return applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 'set0' })
+  }
+
+  it('狩人の眼光: リアクションが発動するたび成長+2 (onReactionFired)', () => {
+    const s = fireReaction('green_reaction_thorns', true)
+    expect(s.player.growth).toBe(2)
+  })
+
+  it('ブラフで伏せただけ (温存) では眼光は誘発しない', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withHand(s, [])
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        setCards: [{ uid: 'set0', def: getCardDef('green_reaction_thorns') }],
+        permanents: [...s.player.permanents, { uid: 'perm0', def: getCardDef('green_perm_hunters_gaze') }],
+      },
+    }
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 } } : e)) }
+    s = applyCommand(s, { type: 'EndTurn' })
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: false }) // 温存
+    expect(s.player.growth).toBe(0)
+  })
+
+  it('跳ね返りの蔦: 返し6+勢い+3。敵フェーズに得た勢いは次の自ターンまで持続する', () => {
+    const s = fireReaction('green_reaction_rebound', false)
+    // 発動後、敵フェーズが解決し次の自ターンが始まっている (勢いは自ターン終了時にしかリセットされない)
+    expect(s.phase).toBe('player-turn')
+    expect(s.player.momentum).toBe(3)
+  })
+
+  it('見切りの構え: 返し4+次のカード-2 (読み勝ちがマナに変換され翌ターンへ持ち越せる)', () => {
+    const s = fireReaction('green_reaction_parry_stance', false)
+    expect(s.player.nextCardDiscount).toBe(2)
+  })
+})

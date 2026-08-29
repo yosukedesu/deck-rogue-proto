@@ -225,6 +225,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onImpulsePlayed: '衝動カードをプレイするたび: ',
   onAetherGained: '霊気を得るたび: ',
   onCardSet: 'カードを伏せるたび: ',
+  onReactionFired: 'リアクションが発動するたび: ',
 }
 
 /** 誘発の追加条件の表示 */

@@ -1111,5 +1111,60 @@
         "amount": 2
       }
     ]
+  },
+  {
+    "id": "green_perm_hunters_gaze",
+    "name": "狩人の眼光",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onReactionFired",
+        "effect": "addGrowth",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_rebound",
+    "name": "跳ね返りの蔦",
+    "cost": 1,
+    "type": "reaction",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 6
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_parry_stance",
+    "name": "見切りの構え",
+    "cost": 1,
+    "type": "reaction",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 4
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "discountNext",
+        "amount": 2
+      }
+    ]
   }
 ]
