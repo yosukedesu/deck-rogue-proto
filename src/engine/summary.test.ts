@@ -93,3 +93,25 @@ describe('カード表示のラベル (2026-08-29 Xコスト表記のバグ修�
     expect(run.gold).toBeGreaterThan(0) // ラン生成の健全性 (価格式は openShop 側で検証)
   })
 })
+
+describe('撃破サマリーの被ダメ集計 (2026-08-30 計測ランで発覚)', () => {
+  it('とげ反射のHP損失も「被ダメ」に数える', () => {
+    const log: GameEvent[] = [
+      { type: 'TurnStarted', turn: 1 },
+      { type: 'DamageDealt', source: 'player', amount: 6, hpLoss: 6 },
+      { type: 'ThornsReflected', enemyIndex: 0, amount: 2, hpLoss: 2 },
+      { type: 'ThornsReflected', enemyIndex: 0, amount: 2, hpLoss: 2 },
+      { type: 'DamageDealt', source: 'enemy', amount: 5, hpLoss: 5 },
+    ]
+    // 敵の攻撃5 + とげ反射2+2 = 9 (旧実装は5しか数えず「被ダメ5」と表示していた)
+    expect(battleSummary(log).hpLost).toBe(9)
+  })
+
+  it('ブロックで防いだとげ反射は被ダメに数えない (hpLoss=0)', () => {
+    const log: GameEvent[] = [
+      { type: 'TurnStarted', turn: 1 },
+      { type: 'ThornsReflected', enemyIndex: 0, amount: 2, hpLoss: 0 },
+    ]
+    expect(battleSummary(log).hpLost).toBe(0)
+  })
+})

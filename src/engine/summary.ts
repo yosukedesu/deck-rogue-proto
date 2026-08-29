@@ -46,6 +46,11 @@ export function battleSummary(log: readonly GameEvent[]): BattleSummary {
           if (e.amount > 0 && e.hpLoss === 0) perfectBlocks++
         }
         break
+      case 'ThornsReflected':
+        // とげ反射も「受けたダメージ」に数える (2026-08-30 計測ランで発覚: 針毛の栗鼠戦で
+        // 実際は9減っているのに「被ダメ1」と表示されていた = サマリーが嘘をついていた)
+        hpLost += e.hpLoss
+        break
       case 'ReactionTriggered':
         reactionsFired++
         break
