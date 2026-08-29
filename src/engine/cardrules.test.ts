@@ -107,6 +107,16 @@ describe('カードデータの不変条件', () => {
     expect(bad.map((c) => c.name)).toEqual([])
   })
 
+  it('リアクションのコストは2E以下 (3エナジー制で3E伏せは温存不能。2026-08-29 裁定)', () => {
+    // 計測ランで根の紡ぎ (旧3E) が幕1を通して一度も発動できなかった=温存コストが構造的に
+    // 払えない、を受けた裁定。例外: 魔力盗み (青・凍結中) は解凍時に是正する
+    const FROZEN_EXCEPTIONS = new Set(['blue_spell_steal'])
+    const bad = allCards.filter(
+      (c) => c.type === 'reaction' && c.cost > 2 && !FROZEN_EXCEPTIONS.has(c.id),
+    )
+    expect(bad.map((c) => c.name)).toEqual([])
+  })
+
   it('倍化 (doubleGrowth / doubleMomentum) を持つ札は消滅する (倍加は1回きりの決断)', () => {
     // 2026-08-25 裁定「倍加の使い回しが成長97%の主犯」を機械判定に昇格 (2026-08-29 倍化増刷+4と同時)。
     // それまで設計裁定だけで機械固定されていなかった穴

@@ -526,10 +526,12 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   if (isBoss && run.act >= ACT_COUNT) {
     return { ...run, combat, battlesWon: run.battlesWon + 1, phase: 'won' }
   }
-  // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復 (確定済みルール表「マップ」)
-  const hp = isBoss
-    ? run.maxHp
-    : Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + run.victoryHealBonus)
+  // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復 (確定済みルール表「マップ」)。
+  // 2026-08-29 Meat on the Bone式に変更: victoryHeal は HP半分以下の時だけ効く (満タン維持でなく救助)。
+  // 無条件+5は計測ランで「HPが一度も70%を切らず焚き火三択が形骸化」したための処方
+  const rescueHeal =
+    combat.player.hp <= run.maxHp / 2 ? run.victoryHealBonus : 0
+  const hp = isBoss ? run.maxHp : Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal)
   // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G。確定済みルール表「ゴールド」)
   let rng = run.rng
   const [base, r1] = nextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX)

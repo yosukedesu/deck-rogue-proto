@@ -4,125 +4,202 @@
     "name": "茨の冠",
     "sprite": "👑",
     "description": "被攻撃後、攻撃してきた敵に3ダメージ",
-    "effects": [{ "trigger": "onAttacked", "effect": "counter", "amount": 3 }]
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 3
+      }
+    ]
   },
   {
     "id": "relic_sage_scroll",
     "name": "賢者の巻物",
     "sprite": "📜",
     "description": "戦闘開始時、2枚ドロー",
-    "effects": [{ "trigger": "onCombatStart", "effect": "drawCards", "amount": 2 }]
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
   },
   {
     "id": "relic_swift_boots",
     "name": "早駆けの靴",
     "sprite": "👢",
     "description": "戦闘開始時、このターンのエナジー+2",
-    "effects": [{ "trigger": "onCombatStart", "effect": "gainEnergy", "amount": 2 }]
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
   },
   {
     "id": "relic_shield_shard",
     "name": "大盾の欠片",
     "sprite": "🛡️",
     "description": "毎ターン開始時、ブロック+2",
-    "effects": [{ "trigger": "onTurnStart", "effect": "gainBlock", "amount": 2 }]
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
   },
   {
     "id": "relic_vanguard_shield",
     "name": "先手の盾",
     "sprite": "⛨",
     "description": "戦闘開始時、ブロック+8",
-    "effects": [{ "trigger": "onCombatStart", "effect": "gainBlock", "amount": 8 }]
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainBlock",
+        "amount": 8
+      }
+    ]
   },
   {
     "id": "relic_iron_heart",
     "name": "鉄の心臓",
     "sprite": "🫀",
     "description": "取得時、最大HP+8",
-    "bonus": { "maxHp": 8 }
+    "bonus": {
+      "maxHp": 8
+    }
   },
   {
     "id": "relic_hunters_boon",
     "name": "狩人の恵み",
     "sprite": "🏹",
-    "description": "勝利するたびHP+5回復",
-    "bonus": { "victoryHeal": 5 }
+    "description": "勝利時、HPが半分以下なら+8回復",
+    "bonus": {
+      "victoryHeal": 8
+    }
   },
   {
     "id": "relic_collectors_bag",
     "name": "収集家の鞄",
     "sprite": "🎒",
     "description": "報酬ピックの候補+1枚",
-    "bonus": { "rewardChoices": 1 }
+    "bonus": {
+      "rewardChoices": 1
+    }
   },
   {
     "id": "relic_deep_breath",
     "name": "深呼吸の香",
     "sprite": "🕯️",
     "description": "焚き火の回復が最大HPの50%に強化される",
-    "bonus": { "campfireRatio": 0.5 }
+    "bonus": {
+      "campfireRatio": 0.5
+    }
   },
   {
     "id": "relic_growth_seed",
     "name": "成長の種",
     "sprite": "🌱",
     "description": "戦闘開始時、成長+2",
-    "effects": [{ "trigger": "onCombatStart", "effect": "addGrowth", "amount": 2 }]
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "addGrowth",
+        "amount": 2
+      }
+    ]
   },
   {
     "id": "relic_swift_sash",
     "name": "韋駄天の帯",
     "sprite": "🎽",
     "description": "毎ターン開始時、勢い+1",
-    "effects": [{ "trigger": "onTurnStart", "effect": "addMomentum", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addMomentum",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "relic_oldroot_cup",
     "name": "古根の杯",
     "sprite": "🏆",
     "description": "戦闘開始時、エナジー上限+1（次のターンから）",
-    "effects": [{ "trigger": "onCombatStart", "effect": "gainEnergyMax", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "relic_raptor_eye",
     "name": "猛禽の眼",
     "sprite": "👁️",
     "description": "戦闘開始時、敵全体に急所1",
-    "effects": [{ "trigger": "onCombatStart", "effect": "exposeEnemy", "amount": 1, "target": "all" }]
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "exposeEnemy",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
   },
   {
     "id": "relic_merchant_scale",
     "name": "商人の秤",
     "sprite": "⚖️",
     "description": "戦闘勝利のゴールド+8",
-    "bonus": { "goldPerVictory": 8 }
+    "bonus": {
+      "goldPerVictory": 8
+    }
   },
   {
     "id": "relic_smith_whetstone",
     "name": "鍛冶の砥石",
     "sprite": "🪨",
     "description": "焚き火の「鍛える」で2枚まで強化できる",
-    "bonus": { "campfireForge": 1 }
+    "bonus": {
+      "campfireForge": 1
+    }
   },
   {
     "id": "relic_talisman_pouch",
     "name": "符師の懐",
     "sprite": "👝",
     "description": "カードを伏せるたび、1枚ドロー",
-    "effects": [{ "trigger": "onCardSet", "effect": "drawCards", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onCardSet",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "relic_quiet_bell",
     "name": "静かな鈴",
     "sprite": "🔔",
     "description": "伏せ札がある間、敵の攻撃ダメージ-1（最低1）",
-    "combatRule": { "setDamageReduction": 1 }
+    "combatRule": {
+      "setDamageReduction": 1
+    }
   },
   {
     "id": "relic_mirage_mask",
     "name": "蜃気楼の面",
     "sprite": "🎭",
     "description": "敵の意図の実値が常時公開される",
-    "combatRule": { "revealIntents": true }
+    "combatRule": {
+      "revealIntents": true
+    }
   }
 ]

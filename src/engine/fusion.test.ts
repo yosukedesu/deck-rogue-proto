@@ -442,7 +442,7 @@ describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名�
   it('量を持たない同種効果は重複しない (根の紡ぎ×2 → 打ち消しは1つ・成長は合算)', () => {
     const def = fuseCards(inst('green_reaction_root_weave', 'u1'), inst('green_reaction_root_weave', 'u2'))
     expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
-    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(6)
+    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(4) // 根の紡ぎ2E化 (2026-08-29) で3+3→2+2
   })
 
   it('選択式カードは同名でも合成不可 (モード構造を計算合成で作れないため)', () => {

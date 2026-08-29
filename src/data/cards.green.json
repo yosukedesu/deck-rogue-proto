@@ -260,7 +260,7 @@
   {
     "id": "green_reaction_root_weave",
     "name": "根の紡ぎ",
-    "cost": 3,
+    "cost": 2,
     "type": "reaction",
     "effects": [
       {
@@ -270,7 +270,7 @@
       {
         "trigger": "onEnemyAction",
         "effect": "addGrowth",
-        "amount": 3
+        "amount": 2
       }
     ],
     "rarity": "uncommon"
