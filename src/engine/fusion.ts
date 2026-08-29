@@ -39,8 +39,8 @@ const VP_PER: Record<string, number> = {
   loseHp: -1.5,
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
-/** コスト別の許容VP (§1)。合成は 1〜3E に収める (costCap 対策) */
-const ALLOW: Record<number, number> = { 1: 8, 2: 14, 3: 20 }
+/** コスト別の許容VP (§1)。ALLOW = 6×コスト + 2 (+2 = カード1枚の機会費用＝札束補正) */
+const ALLOW: Record<number, number> = { 1: 8, 2: 14, 3: 20, 4: 26, 5: 32 }
 
 function effectVp(e: DeclarativeEffect): number {
   const mult = e.target === 'all' ? 2 : 1
@@ -232,31 +232,96 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 素材の合計VPの85% (確定済みルール表の「合成ボーナス≈15%引き」) に収まるよう、
   // **ダメージ量の方を逆算して伝播の対価を払わせる**。特性の掛け合わせという設計は保つ
   // 価値は素材の合計を**保存**する (削らない)。確定済みルール表の「合成ボーナス≈15%引き」は
-  // コスト逆算側の割引 (下の discounted) であって価値の削減ではない。
+  // コスト逆算側の割引 (定価125%帯での値付け) であって価値の削減ではない。
   // ユーザー指示「同名カードは倍率上げて強いカードが生成されるべき」とも整合する
   const targetVp = vpOf(a.def.effects, a.def.type) + vpOf(b.def.effects, b.def.type)
-  if (damageEffects.length > 0) {
-    const nonDmgVp = vpOf(others, resultType)
-    const unitVp = vpOf([damageEffects[0]], resultType) / Math.max(1, damageEffects[0].amount ?? 1)
-    const budget = Math.max(0, targetVp - nonDmgVp)
-    // 1ヒットあたりの量を割り付け直す (最低1。多段の形と特性はそのまま維持する)
-    const per = Math.max(1, Math.round(budget / Math.max(0.01, unitVp) / damageEffects.length))
-    for (let i = 0; i < damageEffects.length; i++) damageEffects[i] = { ...damageEffects[i], amount: per }
-  }
-  const effects = [...damageEffects, ...others]
+  const othersArr = [...others]
+  // 「量」の効果 = 予算に合わせて削れるもの。焚き火の「鍛える」が触れるのと同じ集合に揃える
+  // (ドロー・成長・勢い等の単位効果と参照スケーリングには触らない)
+  const BLOCKY = new Set([
+    'gainBlock',
+    'gainIceBlock',
+    'counter',
+    'gainHp',
+    'applyBurn',
+    'dealDamageDrain',
+    'dealDamageRandom',
+  ])
+  const blockIdx = othersArr.flatMap((e, i) => (BLOCKY.has(e.effect) ? [i] : []))
+  const unitVp =
+    damageEffects.length > 0 ? vpOf([{ ...damageEffects[0], amount: 1 }], resultType) : 0
+  const canScale = unitVp > 0 || blockIdx.length > 0
 
-  const vp = vpOf(effects, resultType)
-  const discounted = vp * 0.85
-  // コスト上限を3E→5Eに開放 (2026-08-30)。3E頭打ちだと「7E相当の素材が3Eで出る」効率2.3倍が
-  // 構造的に発生していた。緑は5E札 (巨獣の踏みつけ) を素で持つのでコスト帯としては既存の範囲
-  const cost = Math.min(5, Math.max(1, Math.round((discounted - 2) / 6)))
+  /** VP予算に収まるよう「量」の効果を割り付け直す (多段の形・特性・単位効果は維持) */
+  const fitTo = (budgetVp: number): void => {
+    if (unitVp > 0) {
+      const budget = Math.max(0, budgetVp - vpOf(othersArr, resultType))
+      const per = Math.max(1, Math.round(budget / unitVp / damageEffects.length))
+      for (let i = 0; i < damageEffects.length; i++) {
+        damageEffects[i] = { ...damageEffects[i], amount: per }
+      }
+      return
+    }
+    if (blockIdx.length === 0) return
+    const isBlock = (i: number) => blockIdx.includes(i)
+    const fixedVp = vpOf(
+      othersArr.filter((_, i) => !isBlock(i)),
+      resultType,
+    )
+    const blockVp = vpOf(
+      othersArr.filter((_, i) => isBlock(i)),
+      resultType,
+    )
+    const ratio = Math.max(0, (budgetVp - fixedVp) / Math.max(0.01, blockVp))
+    for (const i of blockIdx) {
+      const amt = Math.max(1, Math.round((othersArr[i].amount ?? 0) * ratio))
+      othersArr[i] = { ...othersArr[i], amount: amt }
+    }
+  }
+  // 初回は**ダメージだけ**を素材の合計VPへ合わせる — 特性の伝播 (全体×2・貫通×1.25・多段) の
+  // 対価をダメージ量で払わせるための手順であって、防御量まで動かす意図はない
+  if (unitVp > 0) fitTo(targetVp)
+  let effects = [...damageEffects, ...othersArr]
+
+  // 合成札は「報酬札と同じ定価125%帯」で値付けする (2026-08-30)。
+  // VP表は「カード1枚の機会費用 +2VP」を含む (ALLOW = 6×コスト + 2) ため、2枚を1枚にすると
+  // 許容VPが2減る。定価100%で値付けし直すと 34%のペアでコストが素材の合計より上がっていた
+  // (合成ラボで「打撃1E×牙の一撃2E→4E」として可視化された)。125%帯なら報酬札の水準
+  // (docs/card-power.md「報酬札は定価115〜135%」) とも整合する。
+  // コスト上限は3E→5E (2026-08-30)。3E頭打ちだと「7E相当の素材が3Eで出る」効率2.3倍が構造的に出る
+  const costOf = (list: readonly DeclarativeEffect[]): number =>
+    Math.min(5, Math.max(1, Math.round((vpOf(list, resultType) / 1.25 - 2) / 6)))
+  let cost = costOf(effects)
+
+  // --- 圧縮なのに重くなる、を禁じる (2026-08-30。合成ラボが可視化した穴) ---
+  // 2枚を1枚にする機構でコストが素材の合計を超えると、プレイヤーから見て素直に損になる
+  // (別々に撃てば安く同じ量が出る)。超える場合は **出力を削って払う** —
+  // 「合成不可」を増やさずに契約 (コスト ≤ 素材コストの合計) を守る
+  const costAsMaterial = (d: CardDef) => (d.xCost === true ? 3 : d.cost)
+  const sumCost = Math.min(5, Math.max(1, costAsMaterial(a.def) + costAsMaterial(b.def)))
+  if (cost > sumCost && canScale) {
+    cost = sumCost
+    fitTo(ALLOW[cost] * 1.25)
+    effects = [...damageEffects, ...othersArr]
+    cost = Math.min(cost, costOf(effects)) // 削りすぎて安く収まるならその安い方を採る
+  }
+
+  let vp = vpOf(effects, resultType)
   let exhaust = a.def.exhaust === true || b.def.exhaust === true
   let overBand = false
-  if (discounted > ALLOW[cost] * 1.5) {
-    if (resultType === 'permanent') {
-      overBand = true // 置物は消滅で払えない (場に残り続けるため) → 合成不可として扱う
-    } else {
-      exhaust = true // 帯超過は消滅で払う
+  const bandCap = () => ALLOW[cost] * 1.5 * 1.25 // 帯超過の判定線 (VP換算)
+  if (vp > bandCap()) {
+    if (resultType !== 'permanent') exhaust = true // 帯超過は消滅で払う
+    else {
+      // 置物は消滅で払えない (場に残り続けるため)。量を圧縮して帯に収める。
+      // 圧縮できる量が無い置物 (成長のみ等) はコストを上げて収める
+      if (canScale) {
+        fitTo(bandCap())
+        effects = [...damageEffects, ...othersArr]
+        vp = vpOf(effects, resultType)
+      }
+      while (vp > bandCap() && cost < 5) cost++
+      overBand = vp > bandCap() // 5Eでも収まらない置物だけが合成不可
     }
   }
   const net = effects

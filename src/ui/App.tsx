@@ -15,6 +15,7 @@ import {
   type LogLine,
 } from './report.ts'
 import {
+  allCards,
   allDecks,
   allEncounters,
   allEnemies,
@@ -48,6 +49,7 @@ import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
+import { startCombatWithOptions } from '../engine/combat.ts'
 import type {
   CardColor,
   CardType,
@@ -633,6 +635,159 @@ interface Config {
   deckId: string
   leaderId?: string
   seed: number
+  /** デバッグ: 自分で組んだデッキ (cardId の配列)。指定時は deckId より優先する */
+  customDeck?: readonly string[]
+}
+
+// ---- デバッグ用の開発者ツール (2026-08-30 ユーザー要望)。プレイ用の導線とは分けて畳んでおく ----
+
+/** デッキビルダー: 単発戦で使うデッキを1枚ずつ組む */
+function DeckBuilder({
+  colors,
+  deck,
+  setDeck,
+}: {
+  colors: readonly CardColor[]
+  deck: readonly string[]
+  setDeck: (next: readonly string[]) => void
+}) {
+  const [filter, setFilter] = useState('')
+  const pool = allCards.filter(
+    (c) =>
+      colors.includes(c.color) &&
+      c.id !== 'status_wound' &&
+      c.id !== 'status_junk' &&
+      (filter === '' || c.name.includes(filter)),
+  )
+  const count = (id: string) => deck.filter((x) => x === id).length
+  const add = (id: string) => setDeck([...deck, id])
+  const remove = (id: string) => {
+    const i = deck.lastIndexOf(id)
+    if (i >= 0) setDeck([...deck.slice(0, i), ...deck.slice(i + 1)])
+  }
+  return (
+    <div className="panel" style={{ marginTop: 12 }}>
+      <div className="setup-section-title">
+        🔧 デッキを自分で組む（{deck.length}枚）
+      </div>
+      <div className="choice-desc">
+        単発戦で使うデッキを1枚ずつ選ぶ。0枚のままなら上で選んだプリセットデッキを使う。
+      </div>
+      <div style={{ margin: '8px 0' }}>
+        <input
+          value={filter}
+          onChange={(ev) => setFilter(ev.target.value)}
+          placeholder="カード名で絞り込み"
+          size={18}
+        />{' '}
+        <button className="btn" onClick={() => setDeck([])} disabled={deck.length === 0}>
+          全部外す
+        </button>
+      </div>
+      {deck.length > 0 && (
+        <div className="choice-desc" style={{ marginBottom: 8 }}>
+          <b>いまのデッキ:</b>{' '}
+          {[...new Set(deck)]
+            .map((id) => `${getCardDef(id).name}×${count(id)}`)
+            .join(' / ')}
+        </div>
+      )}
+      <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+        {pool.map((c) => (
+          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '1px 0' }}>
+            <button className="btn" onClick={() => remove(c.id)} disabled={count(c.id) === 0}>
+              −
+            </button>
+            <span style={{ minWidth: 22, textAlign: 'right' }}>{count(c.id) || ''}</span>
+            <button className="btn" onClick={() => add(c.id)}>
+              ＋
+            </button>
+            <span className="pile-info" style={{ minWidth: 26 }}>{cardCostLabel(c)}E</span>
+            <span style={{ minWidth: 120 }}>{c.name}</span>
+            <span className="pile-info">{effectText(c)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** 合成ラボ: 任意の2枚の合成結果をその場で確かめる (工房の計算を検証するため) */
+function FusionLab() {
+  const [aId, setAId] = useState<string | null>(null)
+  const [bId, setBId] = useState<string | null>(null)
+  const [filter, setFilter] = useState('')
+  const pool = allCards.filter(
+    (c) => c.id !== 'status_wound' && c.id !== 'status_junk' && (filter === '' || c.name.includes(filter)),
+  )
+  const a = aId !== null ? { uid: 'lab_a', def: getCardDef(aId) } : null
+  const b = bId !== null ? { uid: 'lab_b', def: getCardDef(bId) } : null
+  let reason: string | null = null
+  let result: CardDef | null = null
+  if (a && b) {
+    reason = fuseBlockReason(a, b)
+    if (reason === null) {
+      try {
+        result = fuseCards(a, b)
+      } catch (e) {
+        reason = e instanceof Error ? e.message : String(e)
+      }
+    }
+  }
+  const pick = (label: string, cur: string | null, set: (v: string | null) => void) => (
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="setup-section-title">{label}</div>
+      <select
+        value={cur ?? ''}
+        onChange={(ev) => set(ev.target.value === '' ? null : ev.target.value)}
+        style={{ width: '100%' }}
+      >
+        <option value="">（選んでください）</option>
+        {pool.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.color} {c.name} ({cardCostLabel(c)}E)
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+  return (
+    <div className="panel" style={{ marginTop: 12 }}>
+      <div className="setup-section-title">🔬 合成ラボ</div>
+      <div className="choice-desc">
+        任意の2枚を選んで工房の合成結果をその場で確かめる（同じ色同士のみ。ランを回さずに検算できる）。
+      </div>
+      <div style={{ margin: '8px 0' }}>
+        <input
+          value={filter}
+          onChange={(ev) => setFilter(ev.target.value)}
+          placeholder="カード名で絞り込み"
+          size={18}
+        />
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {pick('素材A', aId, setAId)}
+        {pick('素材B', bId, setBId)}
+      </div>
+      {reason !== null && (
+        <div className="choice-desc" style={{ marginTop: 8 }}>
+          ❌ 合成できない: {reason}
+        </div>
+      )}
+      {result && (
+        <div style={{ marginTop: 8 }}>
+          <div className="choice-desc">
+            {result.id.startsWith('fusion_') ? '⭐ レシピ発見！ ' : ''}
+            素材コスト {a!.def.cost}E + {b!.def.cost}E → <b>{result.cost}E</b>
+            {result.exhaust ? '（消滅つき）' : ''}
+          </div>
+          <div className="hand-cards" style={{ marginTop: 8 }}>
+            <CardFrame card={{ uid: 'lab_result', def: result }} dim={false} actions={null} />
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 /** デッキ構成の1行サマリ (例: 年輪×4 開花の儀×2 …) */
@@ -655,6 +810,9 @@ function SetupScreen({
   const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
   const [deckId, setDeckId] = useState(allowedDecks[0].id)
   const [seedInput, setSeedInput] = useState('')
+  // デバッグ枠 (2026-08-30 ユーザー要望): 自分で組んだデッキと合成ラボ。既定は畳んでおく
+  const [customDeck, setCustomDeck] = useState<readonly string[]>([])
+  const [showDebug, setShowDebug] = useState(false)
   const parseSeed = () =>
     /^\d+$/.test(seedInput) ? Number(seedInput) >>> 0 : Date.now() % 2 ** 32
   // リーダー変更で使用可能デッキ外を選んでいたら先頭に戻す
@@ -794,11 +952,34 @@ function SetupScreen({
       <div style={{ marginTop: 20 }}>
         <button
           className="btn btn-primary btn-endturn"
-          onClick={() => onStart({ mode: ADOPTED_MODE, enemyId, deckId: effectiveDeckId, leaderId, seed: parseSeed() })}
+          onClick={() =>
+            onStart({
+              mode: ADOPTED_MODE,
+              enemyId,
+              deckId: effectiveDeckId,
+              leaderId,
+              seed: parseSeed(),
+              ...(customDeck.length > 0 ? { customDeck } : {}),
+            })
+          }
         >
           ⚔️ 戦闘開始
+          {customDeck.length > 0 ? `（自分で組んだ${customDeck.length}枚）` : ''}
         </button>
       </div>
+
+      <div className="setup-section-title" style={{ marginTop: 24 }}>
+        ── 開発者ツール ──{' '}
+        <button className="btn" onClick={() => setShowDebug((v) => !v)}>
+          {showDebug ? '閉じる' : '開く'}
+        </button>
+      </div>
+      {showDebug && (
+        <>
+          <DeckBuilder colors={leader.colors} deck={customDeck} setDeck={setCustomDeck} />
+          <FusionLab />
+        </>
+      )}
     </div>
   )
 }
@@ -2288,6 +2469,14 @@ export default function App() {
 
   const start = (cfg: Config) => {
     setConfig(cfg)
+    // デバッグ: 自分で組んだデッキは cardId 列なので、実カードに起こして直接戦闘を開始する
+    if (cfg.customDeck && cfg.customDeck.length > 0) {
+      const deck = cfg.customDeck.map((id, i) => ({ uid: `custom${i}_${id}`, def: getCardDef(id) }))
+      setState(
+        startCombatWithOptions(cfg.seed, cfg.mode, cfg.enemyId, { deck, leaderId: cfg.leaderId }),
+      )
+      return
+    }
     setState(
       applyCommand(createInitialState(cfg.seed, cfg.mode), {
         type: 'StartCombat',

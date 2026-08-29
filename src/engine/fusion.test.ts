@@ -243,8 +243,11 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     expect(def.type).toBe('reaction')
     const counters = def.effects.filter((e) => e.effect === 'counter')
     expect(counters).toHaveLength(2)
-    expect(counters.some((e) => e.amount === 10 && e.condition === undefined)).toBe(true)
-    expect(counters.some((e) => e.amount === 20 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
+    // 2026-08-30: コストは素材の合計 (1E+1E) を超えない。超える分は量を削って払うので
+    // 返しの値は 9→6 / 20→12 に圧縮されるが、条件違いが**別の効果のまま**であることは不変
+    expect(def.cost).toBe(2)
+    expect(counters.some((e) => e.amount === 6 && e.condition === undefined)).toBe(true)
+    expect(counters.some((e) => e.amount === 12 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
   })
 
   it('置物化: 打撃6×年輪の大樹 → 毎ターン2ダメ (÷3切り上げ) + 成長1。従者の少年のラダーに整合', () => {
@@ -292,7 +295,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     const def = fuseCards(inst('green_reaction_vine'), inst('green_perm_growth_tree'))
     // 守りの蔓 (onAttackIncoming ブロック12) → 置物はこの窓で誘発できるので窓を保持し÷3
     const blk = def.effects.find((e) => e.effect === 'gainBlock' && e.trigger === 'onAttackIncoming')!
-    expect(blk.amount).toBe(4) // ceil(12/3)。大樹側の登場時ブロック(onPlay)とは別枠
+    expect(blk.amount).toBe(3) // ceil(12/3)=4 から、素材合計3Eに収めるぶん1削られる
     expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(1) // 置物側は据え置き
   })
 
@@ -302,6 +305,17 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     // 置物にディスパッチされないトリガー = 置物結果が持っていたら死に効果
     // (onPlay はプレイ時に解決されるので置物でも生きている。2026-08-29 大樹の登場時ブロック対応)
     const PERM_DEAD = new Set(['onEnemyAction', 'onEnemyBuffed', 'onEnemyDefended'])
+    // 予算に合わせて削れる「量」の効果 (engine/fusion.ts の BLOCKY + ダメージ)
+    const SCALABLE = new Set([
+      'dealDamage',
+      'gainBlock',
+      'gainIceBlock',
+      'counter',
+      'gainHp',
+      'applyBurn',
+      'dealDamageDrain',
+      'dealDamageRandom',
+    ])
     for (let i = 0; i < greens.length; i++) {
       for (let j = i + 1; j < greens.length; j++) {
         const a = { uid: `a${i}`, def: greens[i] }
@@ -319,6 +333,13 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
         if (def.type === 'permanent') {
           expect(def.effects.every((e) => !PERM_DEAD.has(e.trigger)), def.id).toBe(true)
           expect(def.exhaust, def.id).toBeUndefined()
+        }
+        // 圧縮なのに重くなる、を禁じる (2026-08-30)。削れる「量」を持つ合成はコストが
+        // 素材コストの合計を超えない (超える分は出力を削って払う)
+        // 置物は除く: 値付けが寿命込み (×3) なので、素材より重くなるのが正しい姿
+        if (def.type !== 'permanent' && def.effects.some((e) => SCALABLE.has(e.effect))) {
+          const sum = Math.max(1, greens[i].cost + greens[j].cost) // 0E同士は下限1E
+          expect(def.cost, def.id).toBeLessThanOrEqual(sum)
         }
       }
     }
@@ -339,7 +360,10 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
     expect(dmg.target).toBe('all')
     expect(dmg.pierce).toBe(true)
-    expect(dmg.amount).toBe(14) // 価値保存 (2026-08-30): 全体×2と貫通×1.25が無料で乗っていたのを是正 (24→14) // 7+17
+    // 価値保存 (2026-08-30): 全体×2と貫通×1.25が無料で乗っていたのを是正 (24→14)。
+    // さらに素材コスト合計 (2E+2E) までコストを抑えるぶん 14→11 に圧縮される
+    expect(def.cost).toBe(4)
+    expect(dmg.amount).toBe(11)
     // 薙ぎ払いの成長+1も引き継がれる
     expect(def.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
   })
