@@ -2,7 +2,7 @@
 // 確定済みルール表「ゴールド」「ショップ」「?マス（イベント）」を固定する。
 import { describe, expect, it } from 'vitest'
 import { allEvents, getCardDef, getEventDef } from './content.ts'
-import { applyRunCommand, createRun } from './run.ts'
+import { applyRunCommand, createRun, shopRemovalPrice, shopUpgradePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -97,8 +97,8 @@ describe('ショップ', () => {
     }
     expect(run.shop!.relicId).not.toBeNull()
     expect(run.shop!.relicPrice).toBe(150)
-    expect(run.shop!.removalPrice).toBe(75)
-    expect(run.shop!.removalUsed).toBe(false)
+    expect(shopRemovalPrice(run)).toBe(75)
+    expect(shopUpgradePrice(run)).toBe(100)
   })
 
   it('購入: ゴールドが減りデッキが増える。ゴールド不足は拒否', () => {
@@ -124,14 +124,29 @@ describe('ショップ', () => {
     expect(run.shop!.relicId).toBeNull() // 売り切れ
   })
 
-  it('除去サービス: 75Gで1枚除去、1回まで', () => {
+  it('除去サービス: 回数無制限・使うたびラン通算で+25G逓増 (本家Purge式。2026-08-29)', () => {
     let run = intoShop(11)
-    run = { ...run, gold: 200 }
+    run = { ...run, gold: 300 }
     const before = run.deck.length
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
-    expect(run.gold).toBe(125)
+    expect(run.gold).toBe(300 - 75)
     expect(run.deck).toHaveLength(before - 1)
-    expect(() => applyRunCommand(run, { type: 'ShopRemove', index: 0 })).toThrow(/1回まで/)
+    expect(shopRemovalPrice(run)).toBe(100) // 逓増
+    run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
+    expect(run.gold).toBe(300 - 75 - 100)
+    expect(run.deck).toHaveLength(before - 2)
+  })
+
+  it('強化サービス: 100G+使うたび+30G逓増。焚き火の「鍛える」と同じ3段仕様', () => {
+    let run = intoShop(11)
+    run = { ...run, gold: 300 }
+    const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
+    run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
+    expect(run.gold).toBe(300 - 100)
+    expect(run.deck[idx].def.name).toBe('打撃+')
+    expect(shopUpgradePrice(run)).toBe(130) // 逓増
+    // 強化済みは拒否
+    expect(() => applyRunCommand(run, { type: 'ShopUpgrade', index: idx })).toThrow(/すでに鍛えられている/)
   })
 
   it('買わずに出られる', () => {

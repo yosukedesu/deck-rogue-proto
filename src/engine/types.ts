@@ -438,6 +438,8 @@ export interface DeclarativeEffect {
   readonly amountMax?: number
   /** 貫通 (トランプル): このダメージは敵ブロックを無視する。dealDamage 系のみ有効 */
   readonly pierce?: boolean
+  /** Xコスト札専用: この効果を支払ったX回ぶん繰り返す (大角の暴走=6ダメ×X貫通) */
+  readonly xHits?: boolean
   /** dealDamagePerBlock 用: 解決後にブロックを全て失う (壁を売り払う)。VPの二重計上を消す歯止め */
   readonly spendBlock?: boolean
   /** 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体 */
@@ -509,6 +511,12 @@ export interface CardDef {
    * コモン60%/アンコモン37%/レア3%の本家比率。未指定はコモン扱い (凍結色は解凍時に割当)
    */
   readonly rarity?: 'common' | 'uncommon' | 'rare'
+  /**
+   * Xコスト (確定済みルール表「Xコスト」2026-08-29): プレイ時に現在のエナジーを全て支払い、
+   * 支払った量Xを xHits 効果が参照する。プレイ条件はエナジー1以上。割引の対象外。
+   * cost フィールドは名目値 (カーブ集計用に1を置く)
+   */
+  readonly xCost?: boolean
   /**
    * アーキタイプの軸 (報酬抽選の重み付け用。確定済みルール表「軸の重み付け」)。
    * 効果名から自動導出できない札 (多段ヒットの成長ペイオフ・貫通のトランプル札など) だけ明示する。

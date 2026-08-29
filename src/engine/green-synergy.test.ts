@@ -69,6 +69,32 @@ describe('トランプルの網', () => {
   })
 })
 
+describe('Xコスト: 大角の暴走 (トリプルブリッジ。確定済みルール表「Xコスト」)', () => {
+  it('現在の全エナジーを支払い、Xヒット×6の貫通で解決される (成長・勢いが各ヒットに乗る)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_turtle', 42), ['green_x_stampede'])
+    s = { ...s, player: { ...s.player, energy: 3, growth: 2, momentum: 1 } }
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 10 })) }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_stampede' })
+    expect(s.player.energy).toBe(0) // 全部支払う
+    expect(s.enemies[0].hp).toBe(hpBefore - (6 + 2 + 1) * 3) // 9×3ヒット・貫通
+    expect(s.enemies[0].block).toBe(10)
+  })
+
+  it('エナジー0ではプレイできない。割引 (次のカード-1) の対象外で消費もしない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_stampede'])
+    s = { ...s, player: { ...s.player, energy: 0 } }
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_stampede' })).toThrow(
+      /エナジー不足/,
+    )
+    let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_stampede'])
+    s2 = { ...s2, player: { ...s2.player, energy: 2, nextCardDiscount: 1 } }
+    s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_x_stampede' })
+    expect(s2.player.energy).toBe(0) // X=2 (割引は効かない)
+    expect(s2.player.nextCardDiscount).toBe(1) // 消費もしない
+  })
+})
+
 describe('ビッグマナの網', () => {
   it('幹撃: エナジー上限×3ダメージ (中型ペイオフ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_trunk_blow'])

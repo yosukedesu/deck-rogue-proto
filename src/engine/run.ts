@@ -45,11 +45,8 @@ const VICTORY_HEAL = 0
 /** エリート補正: 強化+2・HP×1.35 (エリートはマップの選択ノード。2026-08-28 opt-inオファー廃止) */
 const ELITE_STRENGTH = 2
 const ELITE_HP_SCALE = 1.35
-/**
- * レリックは1ラン最大5個 (2026-08-26。旧3個)。
- * エリートオファーは5回あるのに3個上限では後半2回が提示すらされず、供給の穴になっていた。
- */
-const RELIC_MAX = 5
+// レリック上限は撤廃 (2026-08-29)。上限5は1幕時代の校正で、3幕化により幕2で満杯
+// →以後のボスレリック・ショップレリックが全部死んでいた。実効上限は在庫数 (9個)
 /** ゴールド (確定済みルール表「ゴールド」「ショップ」。相場はStS比例で入れて校正) */
 const STARTING_GOLD = 50
 const GOLD_PER_BATTLE_MIN = 12
@@ -58,7 +55,21 @@ const GOLD_ELITE_BONUS_MIN = 30
 const GOLD_ELITE_BONUS_MAX = 40
 const SHOP_CARD_COUNT = 5
 const SHOP_RELIC_PRICE = 150
-const SHOP_REMOVAL_PRICE = 75
+/** 除去サービス: 回数無制限・使うたびラン通算で+25G (本家Purge式。2026-08-29) */
+const SHOP_REMOVAL_BASE = 75
+const SHOP_REMOVAL_STEP = 25
+/** 強化サービス: 回数無制限・使うたびラン通算で+30G (2026-08-29 ユーザー指示) */
+const SHOP_UPGRADE_BASE = 100
+const SHOP_UPGRADE_STEP = 30
+
+/** 現在の除去サービス価格 (ラン通算の逓増) */
+export function shopRemovalPrice(run: RunState): number {
+  return SHOP_REMOVAL_BASE + SHOP_REMOVAL_STEP * run.removalCount
+}
+/** 現在の強化サービス価格 (ラン通算の逓増) */
+export function shopUpgradePrice(run: RunState): number {
+  return SHOP_UPGRADE_BASE + SHOP_UPGRADE_STEP * run.upgradeCount
+}
 
 /**
  * 深度スケーリング: 敵の初期強化。
@@ -92,8 +103,6 @@ export interface ShopState {
   readonly cards: readonly { readonly id: string; readonly price: number }[]
   readonly relicId: string | null
   readonly relicPrice: number
-  readonly removalPrice: number
-  readonly removalUsed: boolean
 }
 
 export interface RunState {
@@ -122,6 +131,10 @@ export interface RunState {
   readonly battlesWon: number
   /** 所持ゴールド (確定済みルール表「ゴールド」) */
   readonly gold: number
+  /** ショップ除去サービスの通算使用回数 (逓増価格の基準) */
+  readonly removalCount: number
+  /** ショップ強化サービスの通算使用回数 (逓増価格の基準) */
+  readonly upgradeCount: number
   /** ショップの在庫 (shop フェーズ中のみ非null) */
   readonly shop: ShopState | null
   readonly phase: RunPhase
@@ -163,6 +176,7 @@ export type RunCommand =
   | { readonly type: 'ShopBuyCard'; readonly index: number }
   | { readonly type: 'ShopBuyRelic' }
   | { readonly type: 'ShopRemove'; readonly index: number }
+  | { readonly type: 'ShopUpgrade'; readonly index: number }
   | { readonly type: 'ShopLeave' }
   // ?マス (確定済みルール表「?マス（イベント）」)。removeCard/upgradeCard の選択肢は cardIndex で対象指定
   | { readonly type: 'EventChoice'; readonly index: number; readonly cardIndex?: number }
@@ -189,8 +203,14 @@ function launchCombat(run: RunState, elite: boolean): RunState {
     leaderId: run.leaderId,
     playerHp: run.hp,
     playerMaxHp: run.maxHp,
-    enemyHpScale: depthHpScale(run.row, run.act) * (elite ? ELITE_HP_SCALE : 1),
-    enemyStrength: depthStrength(run.row) + (elite ? ELITE_STRENGTH : 0),
+    // ボスの幕スケール (確定済みルール表「マップ」2026-08-29): HP×1.0/1.6/2.4・強化+1/+1/+2。
+    // 幕2以降のボスが1幕時代の校正のままで消化試合化していた実測への対処
+    enemyHpScale:
+      depthHpScale(run.row, run.act) *
+      (elite ? ELITE_HP_SCALE : 1) *
+      (node.type === 'boss' ? [1, 1.6, 2.4][run.act - 1] : 1),
+    enemyStrength:
+      (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
     relicPermanents: run.relics
       .map(getRelicDef)
       .filter((r) => (r.effects?.length ?? 0) > 0)
@@ -244,16 +264,11 @@ function openShop(run: RunState): RunState {
     rng = r2
     cards.push({ id: def.id, price: 40 + def.cost * 10 + roll })
   }
-  const relicId =
-    run.relics.length < RELIC_MAX
-      ? (run.relicQueue.find((id) => !run.relics.includes(id)) ?? null)
-      : null
+  const relicId = run.relicQueue.find((id) => !run.relics.includes(id)) ?? null
   const shop: ShopState = {
     cards,
     relicId,
     relicPrice: SHOP_RELIC_PRICE,
-    removalPrice: SHOP_REMOVAL_PRICE,
-    removalUsed: false,
   }
   return { ...run, rng, shop, phase: 'shop', combat: null, rewardOptions: null }
 }
@@ -301,7 +316,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
       }
     }
   }
-  if (choice.relic && run.relics.length < RELIC_MAX) {
+  if (choice.relic) {
     const relicId = run.relicQueue.find((id) => !next.relics.includes(id))
     if (relicId !== undefined) {
       next = applyRelicBonus({ ...next, relics: [...next.relics, relicId] }, relicId)
@@ -365,6 +380,8 @@ export function createRun(
     col: 0,
     battlesWon: 0,
     gold: STARTING_GOLD,
+    removalCount: 0,
+    upgradeCount: 0,
     shop: null,
     phase: 'map',
     combat: null,
@@ -517,7 +534,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     gold: run.gold + gained,
   }
   // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
-  if ((run.currentElite || isBoss) && run.relics.length < RELIC_MAX) {
+  if (run.currentElite || isBoss) {
     const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
     if (remaining.length > 0) {
       return { ...next, phase: 'relic-reward', relicOptions: remaining.slice(0, 3) }
@@ -821,16 +838,33 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     }
     case 'ShopRemove': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
-      if (run.shop.removalUsed) throw new Error('除去サービスは1回まで')
-      if (run.gold < run.shop.removalPrice) throw new Error(`ゴールドが足りない (${run.shop.removalPrice}G)`)
+      const price = shopRemovalPrice(run)
+      if (run.gold < price) throw new Error(`ゴールドが足りない (${price}G)`)
       const card = run.deck[command.index]
       if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
       if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
       return {
         ...run,
-        gold: run.gold - run.shop.removalPrice,
+        gold: run.gold - price,
         deck: run.deck.filter((_, i) => i !== command.index),
-        shop: { ...run.shop, removalUsed: true },
+        removalCount: run.removalCount + 1,
+      }
+    }
+    case 'ShopUpgrade': {
+      if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
+      const price = shopUpgradePrice(run)
+      if (run.gold < price) throw new Error(`ゴールドが足りない (${price}G)`)
+      const card = run.deck[command.index]
+      if (card === undefined) throw new Error(`不正な強化指定: ${command.index}`)
+      if (isUpgraded(card)) throw new Error('すでに鍛えられている')
+      if (upgradeTier(card.def) === 'none') {
+        throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
+      }
+      return {
+        ...run,
+        gold: run.gold - price,
+        deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
+        upgradeCount: run.upgradeCount + 1,
       }
     }
     case 'ShopLeave': {

@@ -35,7 +35,7 @@ import {
   setBranchFlipRisks,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -98,7 +98,8 @@ function cardLine(def: CardDef): string {
   const body = def.modes?.length
     ? def.modes.map((m, i) => `選択${i}:${m.effects.map(fx).join('+')}`).join(' / ')
     : def.effects.map(fx).join('、')
-  return `${def.name}(${def.cost}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
+  const costLabel = def.xCost ? 'X' : `${def.cost}`
+  return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
 function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; inflict?: { status: string; amount: number } }): string {
@@ -361,8 +362,9 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       const r = getRelicDef(run.shop.relicId)
       L.push(` レリック ${run.shop.relicPrice}G: ${r.name} (${r.description})`)
     }
-    if (!run.shop.removalUsed) L.push(` カード除去サービス ${run.shop.removalPrice}G (1回まで)`)
-    L.push('→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopLeave"}')
+    L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+25G)`)
+    L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+30G。焚き火の「鍛える」と同じ)`)
+    L.push('→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopLeave"}')
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'event') {
@@ -454,7 +456,7 @@ if (mode === 'new-run') {
   if (sf.kind === 'run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
-      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopLeave', 'EventChoice',
+      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }

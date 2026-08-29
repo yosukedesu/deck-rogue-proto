@@ -257,9 +257,15 @@ describe('ラン走破 (3幕構成)', () => {
 
   it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり11〜13×3', () => {
     let run = createRun(23, 'set-confirm')
+    // ボスの幕スケール (確定済みルール表「マップ」): HP×1.0/1.6/2.4・強化+1/+1/+2
+    const bossHpScale = [1, 1.6, 2.4]
+    const bossStr = [1, 1, 2]
     for (let act = 1; act <= ACT_COUNT; act++) {
       expect(run.act).toBe(act)
       run = runTo(run, 'boss')
+      const def = getEnemyDef(currentNode(run)!.encounterId!)
+      expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * bossHpScale[act - 1]))
+      expect(run.combat!.enemies[0].strength).toBe(bossStr[act - 1])
       run = forceWin(run)
       if (act < ACT_COUNT) {
         if (run.phase === 'relic-reward') run = applyRunCommand(run, { type: 'SkipRelic' })

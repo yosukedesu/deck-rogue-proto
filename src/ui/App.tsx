@@ -39,7 +39,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { BOSS_ROW } from '../engine/map.ts'
 import type { MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -1692,30 +1692,39 @@ function RunScreen({
             })()}
           </div>
         )}
-        {!run.shop.removalUsed && (
-          <div className="panel">
-            <div className="setup-section-title">カード除去サービス（{run.shop.removalPrice}G・1回まで）</div>
-            <div className="hand-cards" style={{ marginTop: 8 }}>
-              {run.deck.map((c, i) => (
-                <CardFrame
-                  key={c.uid}
-                  card={c}
-                  dim={false}
-                  ctx={ctx}
-                  actions={
+        <div className="panel">
+          <div className="setup-section-title">
+            サービス: 除去 {shopRemovalPrice(run)}G ／ 強化 {shopUpgradePrice(run)}G（回数無制限・使うたび値上がり）
+          </div>
+          <div className="hand-cards" style={{ marginTop: 8 }}>
+            {run.deck.map((c, i) => (
+              <CardFrame
+                key={c.uid}
+                card={c}
+                dim={false}
+                ctx={ctx}
+                actions={
+                  <>
                     <button
                       className="btn"
-                      disabled={run.gold < run.shop!.removalPrice || run.deck.length <= 5}
+                      disabled={run.gold < shopRemovalPrice(run) || run.deck.length <= 5}
                       onClick={() => dispatch({ type: 'ShopRemove', index: i })}
                     >
-                      除去する
+                      除去 {shopRemovalPrice(run)}G
+                    </button>{' '}
+                    <button
+                      className="btn"
+                      disabled={run.gold < shopUpgradePrice(run) || !canUpgradeCard(c)}
+                      onClick={() => dispatch({ type: 'ShopUpgrade', index: i })}
+                    >
+                      強化 {shopUpgradePrice(run)}G
                     </button>
-                  }
-                />
-              ))}
-            </div>
+                  </>
+                }
+              />
+            ))}
           </div>
-        )}
+        </div>
         <button className="btn" style={{ marginTop: 12 }} onClick={() => dispatch({ type: 'ShopLeave' })}>
           店を出る
         </button>

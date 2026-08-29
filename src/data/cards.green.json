@@ -900,5 +900,26 @@
       }
     ],
     "rarity": "common"
+  },
+  {
+    "id": "green_x_stampede",
+    "name": "大角の暴走",
+    "cost": 1,
+    "xCost": true,
+    "type": "physical",
+    "color": "green",
+    "rarity": "uncommon",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "pierce": true,
+        "xHits": true
+      }
+    ]
   }
 ]

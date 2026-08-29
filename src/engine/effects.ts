@@ -18,6 +18,8 @@ import type {
  * 素のコスト0のカードは割引を消費しない (対象外)。
  */
 export function effectiveCost(state: GameState, card: CardInstance): number {
+  // Xコスト: 現在のエナジーを全て支払う (最低1 = エナジー0ではプレイ不可)。割引の対象外
+  if (card.def.xCost === true) return Math.max(1, state.player.energy)
   if (card.def.cost === 0) return 0
   return Math.max(0, card.def.cost - state.player.nextCardDiscount)
 }

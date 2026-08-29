@@ -269,6 +269,7 @@ export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null
   if (recipeFor(a.def, b.def)) return null // レシピは制約を免除 (手書きで裁定済み)
   if (a.def.color !== 'green' || b.def.color !== 'green') return '合成は緑カード同士のみ (v1)'
   if (a.def.modes?.length || b.def.modes?.length) return '選択式カードはレシピでのみ合成できる'
+  if (a.def.xCost === true || b.def.xCost === true) return 'Xコスト札は計算合成できない (X参照は査定不能)'
   const all = [...a.def.effects, ...b.def.effects]
   if (!all.every(isComputable)) return 'この効果の組み合わせは合成できない'
   // 置物化する場合、従属側に量を持たない効果 (negate等) があると毎ターン化できない

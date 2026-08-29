@@ -21,7 +21,7 @@ import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
-import type {
+import type { DeclarativeEffect,
   CardInstance,
   EnemyDef,
   EnemyIntent,
@@ -410,8 +410,19 @@ export function playCard(
   if (!isPlayableFromHand(card)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
   // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
   const cost = effectiveCost(state, card)
-  const consumesDiscount = card.def.cost > 0 && state.player.nextCardDiscount > 0
+  const consumesDiscount =
+    card.def.cost > 0 && state.player.nextCardDiscount > 0 && card.def.xCost !== true
   if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  // Xコスト: 支払った量を xHits 効果の繰り返し回数として展開する (多段ヒットと同じ解決)
+  const paidX = card.def.xCost === true ? cost : 0
+  const expandX = (effects: readonly DeclarativeEffect[]): readonly DeclarativeEffect[] =>
+    paidX === 0
+      ? effects
+      : effects.flatMap((e) =>
+          e.xHits === true ? Array.from({ length: paidX }, () => ({ ...e, xHits: undefined })) : [e],
+        )
+  const effCard: CardInstance =
+    paidX === 0 ? card : { ...card, def: { ...card.def, effects: expandX(card.def.effects) } }
 
   // 選択式カードの検証
   const modes = card.def.modes ?? []
@@ -545,10 +556,10 @@ export function playCard(
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   } else {
-    s = resolveOnPlayEffects(s, card, enemyIndex)
+    s = resolveOnPlayEffects(s, effCard, enemyIndex)
   }
   // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
-  const resolvedEffects = chosenMode ? chosenMode.effects : card.def.effects.filter((e) => e.trigger === 'onPlay')
+  const resolvedEffects = chosenMode ? chosenMode.effects : effCard.def.effects.filter((e) => e.trigger === 'onPlay')
   if (resolvedEffects.some(isDamageEffect)) {
     s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
     s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
