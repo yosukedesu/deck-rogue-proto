@@ -53,6 +53,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       block: 0,
       energy: BASE_ENERGY,
       energyMax: BASE_ENERGY, // ランプは戦闘ごとにリセット (確定済みルール)
+      energyMaxAtTurnStart: BASE_ENERGY,
       drawPerTurn: DRAW_PER_TURN,
       hand: [],
       drawPile: [],
@@ -132,6 +133,7 @@ export function startCombatWithOptions(
         drawPerTurn: leader.drawPerTurn,
         energy: leader.energyMax,
         energyMax: leader.energyMax,
+        energyMaxAtTurnStart: leader.energyMax,
         setSlots: leader.setSlots ?? 1,
         permanents: [buildLeaderPassive(leader)],
       },
@@ -383,8 +385,15 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
     ...state,
     turn,
     phase: 'player-turn',
-    // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される
-    player: { ...state.player, block: 0, energy: state.player.energyMax, cardsPlayedThisTurn: 0 },
+    // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
+    // 上限のスナップショットもここで更新 = このターン中のランプは上限参照札に乗らない
+    player: {
+      ...state.player,
+      block: 0,
+      energy: state.player.energyMax,
+      energyMaxAtTurnStart: state.player.energyMax,
+      cardsPlayedThisTurn: 0,
+    },
   }
   s = emit(s, { type: 'TurnStarted', turn })
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))

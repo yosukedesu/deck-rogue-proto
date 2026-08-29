@@ -437,10 +437,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       )
     case 'dealDamagePerEnergyMax':
       // ビッグマナのシグネチャー: エナジー上限 × amount のダメージ
+      // ターン開始時の上限を読む (同ターンのランプは乗らない = ランプの対価を守る。2026-08-30)。
+      // ?? は旧セーブ (フィールド未導入) の退避
       return dealDamageToEnemy(
         state,
         enemyIndex,
-        (effect.amount ?? 0) * state.player.energyMax,
+        (effect.amount ?? 0) * (state.player.energyMaxAtTurnStart ?? state.player.energyMax),
         effect.pierce,
       )
     case 'counter': {
@@ -652,7 +654,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     }
     case 'gainBlockPerEnergyMax': {
       // 巨木の盾 (緑): エナジー上限×X ブロック (ランプの投資が守りにも変換される)
-      const amount = (effect.amount ?? 0) * state.player.energyMax
+      const amount =
+        (effect.amount ?? 0) * (state.player.energyMaxAtTurnStart ?? state.player.energyMax)
       return gainPlayerBlock(state, amount, enemyIndex)
     }
     case 'gainBlockPerExhaust': {

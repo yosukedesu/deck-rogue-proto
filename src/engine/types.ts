@@ -48,6 +48,13 @@ export interface CombatantState {
 export interface PlayerState extends CombatantState {
   readonly energy: number
   readonly energyMax: number // 緑の柱①: ランプで戦闘中のみ増える (戦闘ごとにリセット)
+  /**
+   * このターン開始時点のエナジー上限 (上限参照札はこちらを読む。2026-08-30)。
+   * 確定済みルール「ランプ即時利用の廃止 = 上限増加は次の自ターンから」が、実装では
+   * エナジー補充にしか効いておらず、上限参照札 (幹撃等) が同ターンのランプを即座に
+   * 数えていた (計測ランで発覚した仕様違反)。「今ランプするか今殴るか」の悩みを実装する
+   */
+  readonly energyMaxAtTurnStart: number
   /** 毎ターンのドロー枚数 (リーダーの個性で変わる) */
   readonly drawPerTurn: number
   readonly hand: readonly CardInstance[]

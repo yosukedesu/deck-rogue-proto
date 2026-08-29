@@ -99,7 +99,7 @@ describe('Xコスト: 大角の暴走 (トリプルブリッジ。確定済み�
 describe('ビッグマナの網', () => {
   it('幹撃: エナジー上限×4ダメージ (中型ペイオフ。2026-08-29 ×3→×4 典型上限5裁定)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_trunk_blow'])
-    s = { ...s, player: { ...s.player, energyMax: 5, energy: 5 } }
+    s = { ...s, player: { ...s.player, energyMax: 5, energyMaxAtTurnStart: 5, energy: 5 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trunk_blow' })
     expect(s.enemies[0].hp).toBe(hpBefore - 5 * 4)
@@ -107,7 +107,7 @@ describe('ビッグマナの網', () => {
 
   it('大幹の構え: 上限×3ダメ+上限×3ブロックの攻防一体 (2026-08-29 ×2→×3 典型上限5裁定)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_trunk_stance'])
-    s = { ...s, player: { ...s.player, energyMax: 4, energy: 4 } }
+    s = { ...s, player: { ...s.player, energyMax: 4, energyMaxAtTurnStart: 4, energy: 4 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trunk_stance' })
     expect(s.enemies[0].hp).toBe(hpBefore - 4 * 3)
@@ -128,7 +128,7 @@ describe('ビッグマナの網', () => {
 
   it('木陰の守り: 上限×2ブロック (巨木の盾の小型ラダー)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_canopy_shade'])
-    s = { ...s, player: { ...s.player, energyMax: 4, energy: 4 } }
+    s = { ...s, player: { ...s.player, energyMax: 4, energyMaxAtTurnStart: 4, energy: 4 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_canopy_shade' })
     expect(s.player.block).toBe(4 * 2)
   })
@@ -291,5 +291,34 @@ describe('倍化の増刷 (2026-08-29 ユーザー指示「成長・勢いの倍
     s = { ...s, player: { ...s.player, momentum: 5, energy: 3 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_storm_horn' })
     expect(s.player.momentum).toBe((5 + 3) * 2)
+  })
+})
+
+describe('ランプ即時利用の廃止が上限参照札にも効く (2026-08-30 仕様違反の修正)', () => {
+  // 計測ラン(seed3000)で発覚: ルール表は「上限増加は次の自ターンから」だが、実装は
+  // エナジー補充にしか効いておらず、幹撃等が同ターンのランプを即座に数えていた。
+  // 「今ランプするか今殴るか」の悩み=ランプの対価、を実装に揃える
+  it('同ターンに撃ったランプは上限参照札に乗らない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [
+      'green_ramp_sprout',
+      'green_trunk_blow',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sprout' })
+    expect(s.player.energyMax).toBe(4) // 上限自体は上がっている
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_trunk_blow' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 3 * 4) // ターン開始時の上限3で計算 (4×4=16ではない)
+  })
+
+  it('次の自ターンからは新しい上限で数える', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_ramp_sprout'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sprout' })
+    s = applyCommand(s, { type: 'EndTurn' })
+    let guard = 0
+    while (s.phase === 'awaiting-reaction' && guard++ < 10) {
+      s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+    }
+    expect(s.player.energyMaxAtTurnStart).toBe(4) // 次ターン開始でスナップショット更新
   })
 })

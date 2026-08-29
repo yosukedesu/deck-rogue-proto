@@ -386,3 +386,37 @@ describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () =>
     expect(run.phase).toBe('map')
   })
 })
+
+describe('上限参照札の強化は0Eに落とさない (2026-08-30 裁定)', () => {
+  it('木陰の守り+ はコスト1のまま固定ブロック+4が付く (0E・タダ盾の退化ケースを塞ぐ)', () => {
+    const up = upgradeCard({ uid: 't', def: getCardDef('green_canopy_shade') })
+    expect(up.def.cost).toBe(1) // 0Eにならない
+    expect(up.def.effects.some((e) => e.effect === 'gainBlock' && e.amount === 4)).toBe(true)
+    expect(up.def.effects.some((e) => e.effect === 'gainBlockPerEnergyMax' && e.amount === 2)).toBe(true)
+  })
+
+  it('2E以上の上限参照札 (幹撃) は従来どおりコスト-1', () => {
+    const up = upgradeCard({ uid: 't', def: getCardDef('green_trunk_blow') })
+    expect(up.def.cost).toBe(1)
+  })
+})
+
+describe('スターター札は報酬プールに出ない (2026-08-30 中立スターター化の追随)', () => {
+  it('報酬候補にスターター5種 (打撃/打ち据え/防御/茨の返し/守りの蔓) が出ない', () => {
+    // 40戦ぶんの報酬を回して1枚も出ないことを確認する
+    const STARTERS = [
+      'green_strike',
+      'green_basic_bash',
+      'green_guard',
+      'green_reaction_thorns',
+      'green_reaction_vine',
+    ]
+    for (let seed = 1; seed <= 10; seed++) {
+      let run = intoFirstBattle(createRun(seed, 'set-confirm'))
+      run = forceWin(run)
+      for (const id of STARTERS) {
+        expect(run.rewardOptions, `seed${seed}`).not.toContain(id)
+      }
+    }
+  })
+})

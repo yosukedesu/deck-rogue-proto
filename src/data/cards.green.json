@@ -676,7 +676,7 @@
   {
     "id": "green_thorn_burst",
     "name": "茨の爆ぜ",
-    "cost": 2,
+    "cost": 1,
     "type": "reaction",
     "effects": [
       {

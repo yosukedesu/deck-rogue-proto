@@ -208,11 +208,22 @@ export function saveReport(
   const d = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
   const stamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }))
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `play-${stamp}.md`
-  a.click()
-  URL.revokeObjectURL(url)
+  // 保険 (2026-08-30): ダウンロード/クリップボードが塞がれる環境でも、開発者ツールから
+  // copy(window.__lastReport) で必ず取り出せるようにテキストを残す (「このデータは確実に取りたい」)
+  ;(window as unknown as { __lastReport?: string }).__lastReport = text
+  console.info(
+    `[deck-rogue] レポート生成 (${text.length}文字)。ダウンロードに失敗した場合は ` +
+      'DevTools コンソールで copy(__lastReport) を実行するとクリップボードに入ります',
+  )
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `play-${stamp}.md`
+    a.click()
+    URL.revokeObjectURL(url)
+  } catch {
+    // ダウンロード不可の環境 (iframe・一部モバイル)。__lastReport とクリップボードが受け皿
+  }
   navigator.clipboard?.writeText(text).catch(() => {})
 }

@@ -28,6 +28,10 @@ const REWARD_EXCLUDED = new Set([
   'green_strike',
   'green_guard',
   'green_basic_bash', // 打ち据え (2026-08-29 テンポ再校正②: スターターのBash枠)
+  // スターターのリアクション2枚 (2026-08-30。中立スターター化の追随漏れ = 既に持っている札が
+  // ピックに出ていた。伏せ枠は1つなので2枚目の価値も低い)。凍結色のスターターリアクションは解凍時に追随
+  'green_reaction_thorns',
+  'green_reaction_vine',
   'blue_strike',
   'blue_guard',
   'red_strike',
@@ -807,6 +811,9 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_chain_thought: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
   // 霊気の奔流+: 放出の前に霊気+2 (実質ドロー+2)
   blue_aether_torrent: [{ trigger: 'onPlay', effect: 'addAether', amount: 2 }],
+  // 木陰の守り+: 固定ブロック+4を追加 (上限参照のコスト-1は0Eに落とさない裁定の受け皿。
+  // 倍率には触れない安全弁を守りつつ、上限5で 10→14 ≈ 量+50%相当)
+  green_canopy_shade: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
 }
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
@@ -852,6 +859,13 @@ export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'bonus' 
     return 'cost'
   }
   if (eff.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'amount'
+  // 上限参照札 (per-EnergyMax) のコスト-1強化は0Eまで落とさない (2026-08-30 裁定)。
+  // 木陰の守り+ が 0E・非消滅・上限×2ブロック = 引くたびタダで盾、の退化ケースを塞ぐ。
+  // 1E札は同軸おまけ (BONUS_UPGRADES) の受け皿へ
+  const capRef = eff.some(
+    (e) => e.effect === 'dealDamagePerEnergyMax' || e.effect === 'gainBlockPerEnergyMax',
+  )
+  if (capRef && def.cost === 1) return BONUS_UPGRADES[def.id] !== undefined ? 'bonus' : 'none'
   if (def.cost >= 1 && !costCutViolates(def)) return 'cost'
   if (eff.some((e) => UNIT_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'unit'
   if (BONUS_UPGRADES[def.id] !== undefined) return 'bonus'
