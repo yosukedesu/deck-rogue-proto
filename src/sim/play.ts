@@ -190,7 +190,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       e.block ? `ブロック${e.block}` : '', e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
       def.burnResist ? `延焼耐性${def.burnResist}` : '', def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
-      def.enrage ? `激昂+${def.enrage}/T` : '',
+      def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ` : `激昂+${def.enrage}/T`) : '',
     ].filter(Boolean).join(' ')
     L.push(`敵${i}: ${def.name} HP${e.hp}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })

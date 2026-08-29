@@ -149,6 +149,25 @@ describe('ショップ', () => {
     expect(() => applyRunCommand(run, { type: 'ShopUpgrade', index: idx })).toThrow(/すでに鍛えられている/)
   })
 
+  it('旧セーブ互換: removalCount/upgradeCount 欠落でも価格がNaNにならず、利用でゴールドが汚染されない (2026-08-29 幕3検証で発見)', () => {
+    let run = intoShop(11)
+    // フィールド導入前のセーブ読み込みを再現 (JSONにキーが無い = undefined)
+    const legacy = { ...run, gold: 300 } as Record<string, unknown>
+    delete legacy.removalCount
+    delete legacy.upgradeCount
+    run = legacy as unknown as RunState
+    expect(shopRemovalPrice(run)).toBe(75)
+    expect(shopUpgradePrice(run)).toBe(100)
+    run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
+    expect(run.gold).toBe(300 - 75)
+    expect(Number.isNaN(run.gold)).toBe(false)
+    expect(run.removalCount).toBe(1)
+    const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
+    run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
+    expect(run.gold).toBe(300 - 75 - 100)
+    expect(run.upgradeCount).toBe(1)
+  })
+
   it('買わずに出られる', () => {
     let run = intoShop(11)
     const gold = run.gold

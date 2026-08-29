@@ -62,13 +62,13 @@ const SHOP_REMOVAL_STEP = 25
 const SHOP_UPGRADE_BASE = 100
 const SHOP_UPGRADE_STEP = 30
 
-/** 現在の除去サービス価格 (ラン通算の逓増) */
+/** 現在の除去サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
 export function shopRemovalPrice(run: RunState): number {
-  return SHOP_REMOVAL_BASE + SHOP_REMOVAL_STEP * run.removalCount
+  return SHOP_REMOVAL_BASE + SHOP_REMOVAL_STEP * (run.removalCount ?? 0)
 }
-/** 現在の強化サービス価格 (ラン通算の逓増) */
+/** 現在の強化サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
 export function shopUpgradePrice(run: RunState): number {
-  return SHOP_UPGRADE_BASE + SHOP_UPGRADE_STEP * run.upgradeCount
+  return SHOP_UPGRADE_BASE + SHOP_UPGRADE_STEP * (run.upgradeCount ?? 0)
 }
 
 /**
@@ -143,7 +143,7 @@ export interface RunState {
   readonly rewardOptions: readonly string[] | null
   /** ピック履歴 (cardId。統計・結果画面用) */
   readonly picks: readonly string[]
-  /** 所持レリック (relicId。最大3個) */
+  /** 所持レリック (relicId。上限なし=在庫数まで) */
   readonly relics: readonly string[]
   /** レリック候補列 (ラン開始時にシードから確定。取得済みを除いた先頭3つが提示される) */
   readonly relicQueue: readonly string[]
@@ -847,7 +847,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         ...run,
         gold: run.gold - price,
         deck: run.deck.filter((_, i) => i !== command.index),
-        removalCount: run.removalCount + 1,
+        removalCount: (run.removalCount ?? 0) + 1,
       }
     }
     case 'ShopUpgrade': {
@@ -864,7 +864,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         ...run,
         gold: run.gold - price,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
-        upgradeCount: run.upgradeCount + 1,
+        upgradeCount: (run.upgradeCount ?? 0) + 1,
       }
     }
     case 'ShopLeave': {
