@@ -135,13 +135,13 @@ describe('ビッグマナの網', () => {
 })
 
 describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃防御吐き先としてあと3種」)', () => {
-  it('蔦の連撃: 4ダメ×Xヒット (貫通なしの入口。成長が各ヒットに乗る)', () => {
+  it('蔦の連撃: 7ダメ×Xヒット (貫通なしの入口。成長が各ヒットに乗る)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
     s = { ...s, player: { ...s.player, energy: 3, growth: 1 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })
     expect(s.player.energy).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - (4 + 1) * 3)
+    expect(s.enemies[0].hp).toBe(hpBefore - (7 + 1) * 3)
   })
 
   it('樹皮の重鎧: ブロック6×X (ランプ中の無防備への吐き先)', () => {
@@ -152,14 +152,14 @@ describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃�
     expect(s.player.block).toBe(6 * 4)
   })
 
-  it('森羅の大嵐: 敵全体に3ダメ×Xヒット (全体×多段×ランプの派手枠)', () => {
+  it('森羅の大嵐: 敵全体に5ダメ×Xヒット (全体×多段×ランプの派手枠)', () => {
     let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42), ['green_x_sylvan_tempest'])
     s = { ...s, player: { ...s.player, energy: 3, growth: 2 } }
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_sylvan_tempest' })
-    expect(s.enemies[0].hp).toBe(hp0 - (3 + 2) * 3) // 成長は対象ごと・ヒットごとに乗る
-    expect(s.enemies[1].hp).toBe(hp1 - (3 + 2) * 3)
+    expect(s.enemies[0].hp).toBe(hp0 - (5 + 2) * 3) // 成長は対象ごと・ヒットごとに乗る
+    expect(s.enemies[1].hp).toBe(hp1 - (5 + 2) * 3)
   })
 })
 

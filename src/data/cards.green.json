@@ -938,7 +938,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4,
+        "amount": 7,
         "xHits": true
       }
     ]
@@ -978,7 +978,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3,
+        "amount": 5,
         "target": "all",
         "xHits": true
       }
