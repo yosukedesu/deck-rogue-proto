@@ -172,4 +172,18 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
     expect(amountOf('white_mending', 'gainBlock')).toBeGreaterThanOrEqual(5)
     expect(amountOf('black_gravestone', 'gainBlock')).toBeGreaterThanOrEqual(5)
   })
+
+  // レアリティ (2026-08-29 本家踏襲導入)。割当済みの色は全札に明示があること。
+  // 青・黒は凍結中で未割当 = 全コモン扱いなので対象外 (解凍時にこの配列へ足す)
+  it('割当済みの色 (緑・白・赤) は全札に rarity があり、レアは希少なまま', () => {
+    for (const color of ['green', 'white', 'red'] as const) {
+      const pool = allCards.filter((c) => c.color === color)
+      const missing = pool.filter((c) => c.rarity === undefined).map((c) => c.id)
+      expect(missing, `${color} に rarity 未割当`).toEqual([])
+      const rare = pool.filter((c) => c.rarity === 'rare').length
+      // レア = デッキの方針を一枚で定義する札。全体の1〜2割に収める
+      expect(rare / pool.length, `${color} のレア比率`).toBeGreaterThanOrEqual(0.1)
+      expect(rare / pool.length, `${color} のレア比率`).toBeLessThanOrEqual(0.22)
+    }
+  })
 })
