@@ -1,4 +1,24 @@
 import { allCards, allEnemies, encounterName, getEnemyDef, getLeaderDef } from '../engine/content.ts'
+
+/**
+ * 名前解決の安全版 (2026-08-30)。レポートはプレイテストのデータ回収の道具なので、
+ * 未知のID (旧バージョンが残した 'unknown'、将来のID変更など) で絶対に例外死させない。
+ * localStorage のバックアップには古いデータが残り続けるため、恒久的に必要な防御
+ */
+function safeEncounterName(id: string): string {
+  try {
+    return encounterName(id)
+  } catch {
+    return id
+  }
+}
+function safeEnemyName(id: string): string {
+  try {
+    return getEnemyDef(id).name
+  } catch {
+    return id
+  }
+}
 import { effectiveIntent, effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
 import type { RunState } from '../engine/run.ts'
 import type { CardInstance, GameEvent, GameState } from '../engine/types.ts'
@@ -87,16 +107,16 @@ function renderBoard(s: GameState): string[] {
   out.push(`置物: ${names(p.permanents)}`)
   out.push(`山札${p.drawPile.length} / 捨札${p.discardPile.length} / 消滅${p.exhaustPile.length}`)
   s.enemies.forEach((e, i) => {
-    if (e.hp <= 0) { out.push(`敵${i + 1} ${getEnemyDef(e.enemyId).name}: 撃破済み`); return }
+    if (e.hp <= 0) { out.push(`敵${i + 1} ${safeEnemyName(e.enemyId)}: 撃破済み`); return }
     const dbg = [e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '', e.block ? `ブロック${e.block}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '']
       .filter(Boolean).join(' ')
-    out.push(`敵${i + 1} ${getEnemyDef(e.enemyId).name}: HP ${e.hp}/${e.maxHp} ${dbg} → ${intentText(effectiveIntent(s, i))}`)
+    out.push(`敵${i + 1} ${safeEnemyName(e.enemyId)}: HP ${e.hp}/${e.maxHp} ${dbg} → ${intentText(effectiveIntent(s, i))}`)
   })
   if (s.pendingWindow) {
     const w = s.pendingWindow
     const en = s.enemies[w.enemyIndex]
-    out.push(`★確認ウィンドウ待ち: 敵${w.enemyIndex + 1} ${getEnemyDef(en.enemyId).name} / ${w.stage}窓 / 実値 ${en.intent?.actual}（宣言 ${en.intent?.shownMin}〜${en.intent?.shownMax}）`)
+    out.push(`★確認ウィンドウ待ち: 敵${w.enemyIndex + 1} ${safeEnemyName(en.enemyId)} / ${w.stage}窓 / 実値 ${en.intent?.actual}（宣言 ${en.intent?.shownMin}〜${en.intent?.shownMax}）`)
   }
   return out
 }
@@ -132,7 +152,7 @@ export function buildReport(
         .map((row, r) => {
           const cells = row
             .map((n, c) => {
-              const label = n.encounterId !== null ? encounterName(n.encounterId) : n.type === 'campfire' ? '焚き火' : n.type === 'workshop' ? '工房' : n.type === 'shop' ? 'ショップ' : '?'
+              const label = n.encounterId !== null ? safeEncounterName(n.encounterId) : n.type === 'campfire' ? '焚き火' : n.type === 'workshop' ? '工房' : n.type === 'shop' ? 'ショップ' : '?'
               return `${label}${r === run.row && c === run.col ? '●' : ''}`
             })
             .join('/')
@@ -158,13 +178,13 @@ export function buildReport(
     L.push('|---|---|---|---|---|')
     for (const h of history) {
       L.push(
-        `| ${h.battleNo} | ${encounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} |`,
+        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} |`,
       )
     }
     L.push('')
     for (const h of history) {
       L.push(
-        `### ${h.battleNo}戦目 ${encounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚`,
+        `### ${h.battleNo}戦目 ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚`,
       )
       L.push(...h.lines)
       L.push('')

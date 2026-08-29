@@ -2325,10 +2325,16 @@ export default function App() {
     // setRun の更新関数の中で setRunHistory を呼ぶと StrictMode の二重実行で重複するため、外で行う
     const ended = next.combat?.phase === 'won' || next.combat?.phase === 'lost'
     if (ended && run.combat && run.combat.phase !== next.combat?.phase && next.combat) {
+      // 敵IDはノードでなく戦闘ログから取る (2026-08-30 修正: ?マス発の戦闘はノードが
+      // encounterId を持たず 'unknown' がアーカイブされ、レポート生成が
+      // encounterName('unknown') で例外死していた = 「書き出しがうまくいかない」の真犯人)
+      const started = next.combat.eventLog.find((e) => e.type === 'CombatStarted')
       const archived = archiveBattle(
         next.combat,
         run.battlesWon + 1,
-        currentNode(run)?.encounterId ?? 'unknown',
+        (started?.type === 'CombatStarted' ? started.enemyId : null) ??
+          currentNode(run)?.encounterId ??
+          'unknown',
         run.currentElite,
         run.hp,
         run.deck.length,
