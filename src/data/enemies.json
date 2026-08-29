@@ -4,7 +4,7 @@
     "name": "うねる獣",
     "archetype": "wide-power",
     "flavor": "機嫌で振れ幅が変わる。今日の機嫌は誰も知らない。",
-    "maxHp": 110,
+    "maxHp": 90,
     "moves": [
       {
         "id": "surge",
@@ -27,7 +27,7 @@
     "name": "探り屋",
     "archetype": "probe",
     "flavor": "ちくちくは挨拶。三度目が本気。ただし仕掛けを見たら、挨拶の順番は守らない。",
-    "maxHp": 90,
+    "maxHp": 75,
     "moves": [
       {
         "id": "poke",
@@ -71,7 +71,7 @@
     "name": "用心深い影",
     "archetype": "set-wary",
     "flavor": "伏せ札が怖い。怖いから様子を見る——が、いつまでも我慢はできない。",
-    "maxHp": 100,
+    "maxHp": 85,
     "moves": [
       {
         "id": "slash",
@@ -110,7 +110,7 @@
     "name": "罠壊し",
     "archetype": "set-breaker",
     "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。",
-    "maxHp": 105,
+    "maxHp": 90,
     "moves": [
       {
         "id": "smash",
@@ -249,7 +249,7 @@
     "name": "泥投げの妖術師",
     "archetype": "hexer",
     "flavor": "泥と呪いを投げてくる。手が汚いのは職業柄。",
-    "maxHp": 95,
+    "maxHp": 80,
     "moves": [
       {
         "id": "mud",
@@ -297,7 +297,7 @@
     "name": "牙嵐の狼",
     "archetype": "flurry",
     "flavor": "群れはいない。牙の数だけで群れの働きをする。",
-    "maxHp": 105,
+    "maxHp": 95,
     "moves": [
       {
         "id": "flurry",
@@ -346,7 +346,7 @@
     "name": "苔まといの主",
     "archetype": "regenerator",
     "flavor": "苔が癒やす、半分までは。剥がれたら、走れ。",
-    "maxHp": 135,
+    "maxHp": 115,
     "regen": 5,
     "moves": [
       {
@@ -381,7 +381,7 @@
     "name": "嘲る道化",
     "archetype": "taunter",
     "flavor": "手ぶらの相手にだけ強気。ただし、いつまでも伏せたままなら見破りにくる。",
-    "maxHp": 100,
+    "maxHp": 85,
     "moves": [
       {
         "id": "wild_swing",
@@ -498,7 +498,7 @@
     "name": "針毛の栗鼠",
     "archetype": "thorned",
     "flavor": "触るたび刺さる。ちくちく削るか、一撃で仕留めるか。",
-    "maxHp": 85,
+    "maxHp": 75,
     "thorns": 2,
     "moves": [
       {
@@ -522,7 +522,7 @@
     "name": "こそ泥ゴブリン",
     "archetype": "thief",
     "flavor": "隠れて、掴んで、走り去る。三歩目の前に捕まえろ。",
-    "maxHp": 70,
+    "maxHp": 65,
     "moves": [
       {
         "id": "sneak",
@@ -563,7 +563,7 @@
     "name": "火薬樽かつぎ",
     "archetype": "bomber",
     "flavor": "樽の導火線は三拍で燃え尽きる。庇い、投げ、そして——。",
-    "maxHp": 95,
+    "maxHp": 85,
     "moves": [
       {
         "id": "shield_barrel",
@@ -598,7 +598,7 @@
     "name": "苔の癒し手",
     "archetype": "healer",
     "flavor": "傷んだ仲間から順に苔を貼る。貼られた側は嫌そうな顔をする。",
-    "maxHp": 75,
+    "maxHp": 65,
     "moves": [
       {
         "id": "mend",
@@ -621,7 +621,7 @@
     "name": "大振りの斧鬼",
     "archetype": "windup",
     "flavor": "振りかぶりは正直、一撃は苛烈、そのあと必ず息が切れる。",
-    "maxHp": 125,
+    "maxHp": 110,
     "moves": [
       {
         "id": "windup",
@@ -659,7 +659,7 @@
     "name": "石殻の番人",
     "archetype": "shell",
     "flavor": "殻ごと押し潰しに来る。殻を割るか、殻ごと貫くか——割れたら中身は柔い。",
-    "maxHp": 130,
+    "maxHp": 100,
     "moves": [
       {
         "id": "shell_bash",
@@ -672,8 +672,8 @@
       {
         "id": "harden",
         "kind": "defend",
-        "min": 14,
-        "max": 18,
+        "min": 12,
+        "max": 16,
         "weight": 1
       }
     ],

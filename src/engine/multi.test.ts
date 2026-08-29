@@ -3,6 +3,7 @@
 // 確定済みルール表「戦闘形式」「ターゲティング」「全体攻撃」「混乱」「応援（ラリー）」を固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
+import { getEnemyDef } from './content.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 import type { EnemyIntent, GameState } from './types.ts'
 
@@ -31,7 +32,7 @@ describe('エンカウンター編成', () => {
   it('編成IDで複数体が出現し、群れ補正 (hpScale/strength/patternOffset) が個体に効く', () => {
     const s = freshCombat('set-confirm', 'enc_probe_pair', 42)
     expect(s.enemies).toHaveLength(2)
-    const pairHp = Math.round(90 * 0.5) // 探り屋 maxHp × 群れ補正 (2026-08-25 調整: 0.45→0.5)
+    const pairHp = Math.round(getEnemyDef('enemy_probe').maxHp * 0.5) // 探り屋 maxHp × 群れ補正 (数値のピン留めをやめ def 参照に。2026-08-29 テンポ再校正でHPが動くため)
     expect(s.enemies[0].maxHp).toBe(pairHp)
     expect(s.enemies[1].maxHp).toBe(pairHp)
     expect(s.enemies.every((e) => e.intent !== null)).toBe(true)
