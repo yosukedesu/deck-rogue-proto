@@ -165,11 +165,15 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'HpLost') L.push(` 自傷${e.amount}`)
       else if (e.type === 'StatusInflicted') L.push(` 状態異常:${e.status}${e.amount}`)
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)
+      else if (e.type === 'ThornsReflected') L.push(` 🦔とげ反射${e.amount}(HP損失${e.hpLoss}。ブロックで吸収した分は損失に出ない)`)
+      else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
+      else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
+      else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
     }
   }
   L.push(`--- 盤面 (ターン${s.turn} / phase=${s.phase}) ---`)
   const st = [
-    `HP ${p.hp}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
+    `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '',
@@ -202,7 +206,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
       def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ` : `激昂+${def.enrage}/T`) : '',
     ].filter(Boolean).join(' ')
-    L.push(`敵${i}: ${def.name} HP${e.hp}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
+    L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
   if (p.setCards.length > 0 || p.setSlots > 1) {
     L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}`).join(' / ') || 'なし'}`)
@@ -218,6 +222,10 @@ function renderBattle(s: GameState, logFrom: number): string {
     const win = windowFromPending(s)
     const cands = win ? p.setCards.filter((c) => reactionMatches(s, c, win)) : []
     L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}`).join(' / ') || 'なし'}`)
+    // post窓の誤認防止 (2026-08-29 検証ラン: 瀕死時に返し札を「防御」と誤認して発動→敗死の報告)
+    if (s.pendingWindow.stage === 'post') {
+      L.push('   ※この攻撃はすでに解決済み——発動しても今回の被弾は取り消せない (返し・回復のための窓)')
+    }
     // 後続の敵の条件付き分岐が「伏せなし」側に化ける警告 (2026-08-28)
     for (const ri of setBranchFlipRisks(s)) {
       const rEnemy = s.enemies[ri]

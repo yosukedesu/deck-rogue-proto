@@ -1089,6 +1089,11 @@ function BattleScreen({
                 )}
                 {kw(confirmedIntentText(s.pendingWindow ? effectiveIntent(s, s.pendingWindow.enemyIndex) : (windowEnemy?.intent ?? null)))}
               </div>
+              {s.pendingWindow?.stage === 'post' && (
+                <div className="hint" style={{ marginBottom: 8 }}>
+                  ※この攻撃はすでに解決済み——発動しても今回の被弾は取り消せない（返し・回復のための窓）
+                </div>
+              )}
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
                   {(() => {

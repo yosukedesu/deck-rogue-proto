@@ -520,7 +520,15 @@ export function playCard(
   const aliveCount = state.enemies.filter((e) => e.hp > 0).length
   if (targetIndex !== undefined) {
     const target = state.enemies[targetIndex]
-    if (!target || target.hp <= 0) throw new Error(`不正な対象: ${targetIndex}`)
+    // targetIndex は撃破済みを含む並び順の生インデックス。検証ランで「先頭撃破後に0を指定して
+    // 原因不明のエラー」の報告があったため、死亡対象と生存対象の位置を明示する
+    if (!target) throw new Error(`不正な対象: ${targetIndex} (敵は${state.enemies.length}体)`)
+    if (target.hp <= 0) {
+      const alive = state.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
+      throw new Error(
+        `対象 ${targetIndex} はすでに${target.fled ? '逃走' : '倒れて'}いる (targetIndexは撃破済みを含む並び順。生存: ${alive.join(',')})`,
+      )
+    }
   }
   if (targetIndex === undefined && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
     throw new Error(`${card.def.name} は対象の指定 (targetIndex) が必要`)
