@@ -525,9 +525,15 @@ export function playCard(
     if (!target) throw new Error(`不正な対象: ${targetIndex} (敵は${state.enemies.length}体)`)
     if (target.hp <= 0) {
       const alive = state.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
-      throw new Error(
-        `対象 ${targetIndex} はすでに${target.fled ? '逃走' : '倒れて'}いる (targetIndexは撃破済みを含む並び順。生存: ${alive.join(',')})`,
-      )
+      // 生存1体なら対象は一意なので、死亡枠を指しても自動でリターゲットする
+      // (「生存1体なら自動」の既存則の延長。2026-08-29 検証ランのCLI摩擦報告への対処)
+      if (alive.length === 1) {
+        targetIndex = alive[0]
+      } else {
+        throw new Error(
+          `対象 ${targetIndex} はすでに${target.fled ? '逃走' : '倒れて'}いる (targetIndexは撃破済みを含む並び順。生存: ${alive.join(',')})`,
+        )
+      }
     }
   }
   if (targetIndex === undefined && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
