@@ -234,7 +234,11 @@
     "cards": [
       {
         "cardId": "green_strike",
-        "count": 4
+        "count": 3
+      },
+      {
+        "cardId": "green_basic_bash",
+        "count": 1
       },
       {
         "cardId": "green_guard",

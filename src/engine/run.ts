@@ -27,6 +27,7 @@ import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, Game
 const REWARD_EXCLUDED = new Set([
   'green_strike',
   'green_guard',
+  'green_basic_bash', // 打ち据え (2026-08-29 テンポ再校正②: スターターのBash枠)
   'blue_strike',
   'blue_guard',
   'red_strike',

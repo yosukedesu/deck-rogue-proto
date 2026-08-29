@@ -1091,5 +1091,25 @@
         ]
       }
     ]
+  },
+  {
+    "id": "green_basic_bash",
+    "name": "打ち据え",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "exposeEnemy",
+        "amount": 2
+      }
+    ]
   }
 ]

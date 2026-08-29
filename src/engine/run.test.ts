@@ -95,6 +95,10 @@ describe('ラン構造 (マップ)', () => {
   it('初期デッキは run_basic の10枚 (エンジンの種入り構成)、HPは全快スタート', () => {
     const run = createRun(1, 'set-confirm')
     expect(run.deck).toHaveLength(10)
+    // 2026-08-29 テンポ再校正②: 打ち据え (Bash枠=急所の乗算) がスターターに1枚入る。
+    // sim実測で通常敵平均 -1.3T の最大レバー。報酬プールには出ない基本札
+    expect(run.deck.filter((c) => c.def.id === 'green_basic_bash')).toHaveLength(1)
+    expect(run.deck.filter((c) => c.def.id === 'green_strike')).toHaveLength(3)
     expect(run.hp).toBe(run.maxHp)
     expect(run.phase).toBe('map') // 開始はマップで行0のノードを選ぶ
     const r = intoFirstBattle(run)
@@ -300,11 +304,14 @@ describe('レアリティ抽選 (2026-08-29。確定済みルール表「レア�
 })
 
 describe('中立スターター (2026-08-29 道の選択制を撤回。確定済みルール表「ラン初期デッキ」)', () => {
-  it('スターターは中立10枚 (打撃4・防御4・リアクション2)。エンジンの種は入らない', () => {
+  it('スターターは中立10枚 (打撃3・打ち据え1・防御4・リアクション2)。エンジンの種は入らない', () => {
+    // 2026-08-29 テンポ再校正②: 打撃1枚を打ち据え (Bash枠=急所2の乗算) に置換。
+    // 本家スターターのBashと同じ「戦闘密度」の担い手
     const run = createRun(5, 'set-confirm', 'leader_green')
     expect(run.deck).toHaveLength(10)
     const count = (id: string) => run.deck.filter((c) => c.def.id === id).length
-    expect(count('green_strike')).toBe(4)
+    expect(count('green_strike')).toBe(3)
+    expect(count('green_basic_bash')).toBe(1)
     expect(count('green_guard')).toBe(4)
     expect(count('green_reaction_thorns')).toBe(1)
     expect(count('green_reaction_vine')).toBe(1)

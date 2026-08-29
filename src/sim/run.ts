@@ -307,6 +307,15 @@ export function chooseCommand(s: GameState): Command {
           effectiveCost(s, c) <= spendable,
       )
       if (momentumFirst.length > 0) candidates = momentumFirst
+      // 急所付き攻撃 (打ち据え・急所突き) も同様に先に打つ = 後続の攻撃に+50%が乗る
+      // (2026-08-29 テンポ再校正②。順番を間違えると乗算が空振りする=勢いと同じ分別)
+      const exposeFirst = s.player.hand.filter(
+        (c) =>
+          c.def.effects.some((e) => e.effect === 'exposeEnemy') &&
+          c.def.effects.some(isDamageEffect) &&
+          effectiveCost(s, c) <= spendable,
+      )
+      if (momentumFirst.length === 0 && exposeFirst.length > 0) candidates = exposeFirst
     }
     // 成長カテゴリ内では addGrowth (年輪) を doubleGrowth (開花の儀) より先に
     const card =
