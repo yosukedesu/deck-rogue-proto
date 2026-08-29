@@ -180,7 +180,7 @@ describe('HP持ち越しと焚き火', () => {
     expect(run.combat!.player.hp).toBe(27)
   })
 
-  it('強制焚き火行 (行5) に入ると回復が自動で入る (選択と排他にしない)', () => {
+  it('強制焚き火行 (行5) では「休む」を選ぶと回復する (2026-08-29 本家式の排他三択に復帰)', () => {
     const run = runTo(createRun(17, 'set-confirm'), 'campfire')
     expect(run.phase).toBe('campfire')
     expect(run.row).toBe(5) // 最初の強制焚き火行
@@ -207,20 +207,21 @@ describe('HP持ち越しと焚き火', () => {
       } else break
     }
     expect(r2.phase).toBe('campfire')
+    expect(r2.hp).toBe(20) // 進入時の自動回復は廃止 (2026-08-29)
+    r2 = applyRunCommand(r2, { type: 'CampfireRest' }) // 「休む」= ここで初めて回復
     expect(r2.hp).toBe(20 + Math.floor(r2.maxHp * 0.3))
-    r2 = applyRunCommand(r2, { type: 'CampfireRest' }) // 「何もしない」
     expect(r2.phase).toBe('map')
   })
 
-  it('焚き火でカード除去を選んでも回復は受け取れる (HPと排他ではない)', () => {
+  it('焚き火でカード除去を選ぶと回復は受け取れない (排他三択。2026-08-29 復帰)', () => {
     let run = runTo(createRun(17, 'set-confirm'), 'campfire')
     const before = run.deck.length
     const removed = run.deck[0].uid
-    const hpAfterHeal = run.hp
+    const hpBefore = run.hp
     run = applyRunCommand(run, { type: 'CampfireRemove', index: 0 })
     expect(run.deck).toHaveLength(before - 1)
     expect(run.deck.some((c) => c.uid === removed)).toBe(false)
-    expect(run.hp).toBe(hpAfterHeal) // 回復は到達時に済んでいる
+    expect(run.hp).toBe(hpBefore) // 除去を選んだので回復なし
     expect(run.phase).toBe('map')
   })
 
@@ -244,7 +245,7 @@ describe('ラン走破 (3幕構成)', () => {
     expect(currentNode(run)!.encounterId).toBe('enemy_brute') // 1幕ボス=オーガ
     expect(run.combat!.enemies[0].strength).toBe(1)
     const def = getEnemyDef(currentNode(run)!.encounterId!)
-    expect(run.combat!.enemies[0].maxHp).toBe(def.maxHp)
+    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * 1.25)) // 幕1ボス×1.25 (2026-08-29)
     // 被弾した状態でボスを倒す → 全回復を確認
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 12 } } }
     run = forceWin(run)
@@ -262,7 +263,7 @@ describe('ラン走破 (3幕構成)', () => {
   it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり11〜13×3', () => {
     let run = createRun(23, 'set-confirm')
     // ボスの幕スケール (確定済みルール表「マップ」): HP×1.0/1.6/2.4・強化+1/+1/+2
-    const bossHpScale = [1, 1.6, 2.4]
+    const bossHpScale = [1.25, 1.6, 2.4] // 2026-08-29 幕1ボス×1.25 (ユーザー体感「ボスが弱い」)
     const bossStr = [1, 1, 2]
     for (let act = 1; act <= ACT_COUNT; act++) {
       expect(run.act).toBe(act)

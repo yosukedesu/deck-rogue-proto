@@ -365,13 +365,13 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   } else if (run.phase === 'map') {
     L.push(fullMap ? renderMap(run) : renderMapBrief(run))
   } else if (run.phase === 'campfire') {
-    L.push(`🔥 焚き火: 回復は済んでいる (現在 ${run.hp}/${run.maxHp})。この上で1つ選ぶ`)
+    L.push(`🔥 焚き火: 「休む/鍛える/除去」から1つ選ぶ (排他三択。現在 ${run.hp}/${run.maxHp})`)
     if ((run.campfireForgeBonus ?? 0) > 0) {
-      L.push(`  🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚 (除去とは併用不可)`)
+      L.push(`  🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚 (休む・除去とは併用不可)`)
     }
-    L.push('  強化 → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
-    L.push('  除去 → デッキから1枚を永久に取り除く')
-    L.push('  何もしない → そのまま次へ')
+    L.push(`  休む (CampfireRest) → HP+${Math.floor(run.maxHp * run.campfireRatio)} 回復して次へ${(run.campfireUpgradesUsed ?? 0) > 0 ? ' ※鍛えた後なので回復なしの立ち去りになる' : ''}`)
+    L.push('  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
+    L.push('  除去 (CampfireRemove) → デッキから1枚を永久に取り除く')
     run.deck.forEach((c, i) => {
       const mark = canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
       L.push(`   [${i}] ${cardLine(c.def)}${mark}`)

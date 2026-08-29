@@ -217,7 +217,8 @@ function launchCombat(run: RunState, elite: boolean): RunState {
     enemyHpScale:
       depthHpScale(run.row, run.act) *
       (elite ? ELITE_HP_SCALE : 1) *
-      (node.type === 'boss' ? [1, 1.6, 2.4][run.act - 1] : 1),
+      // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
+      (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1),
     enemyStrength:
       (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
     relicPermanents: run.relics
@@ -244,9 +245,11 @@ function enterNode(run: RunState): RunState {
     case 'elite':
       return launchCombat(run, true)
     case 'campfire': {
-      // 回復は自動 (2026-08-26)。焚き火の選択は「鍛える / 取り除く / 何もしない」
-      const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
-      return { ...run, hp, phase: 'campfire', combat: null, rewardOptions: null, campfireUpgradesUsed: 0 }
+      // 本家式の排他三択に復帰 (2026-08-29 ユーザー体感「強制回復がぬるい」):
+      // 休む(30%回復) / 鍛える / 取り除く から1つ。回復の自動化 (2026-08-26) は
+      // 当時「焚き火到達時HPが常に20〜46%で全員休む一択」だったための処方だが、
+      // テンポ再校正で被ダメが減った今は選択が成立する。マラソンのHP緊張も戻る
+      return { ...run, phase: 'campfire', combat: null, rewardOptions: null, campfireUpgradesUsed: 0 }
     }
     case 'workshop':
       return { ...run, phase: 'workshop', combat: null, rewardOptions: null }
@@ -794,9 +797,14 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       return rollRewards({ ...run, relicOptions: null })
     }
     case 'CampfireRest': {
-      // 「何もしない」= 回復だけ受け取って次へ (回復はノード進入時に適用済み)
+      // 休む = 最大HPの30% (campfireRatio) を回復して次へ。鍛える/除去とは排他 (2026-08-29 復帰)。
+      // 砥石で「鍛える」を使った後は回復なしの立ち去りになる (選べるのは1種類の原則)
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
-      return { ...run, phase: 'map' }
+      const hp =
+        (run.campfireUpgradesUsed ?? 0) > 0
+          ? run.hp
+          : Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
+      return { ...run, hp, phase: 'map' }
     }
     case 'CampfireUpgrade': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')

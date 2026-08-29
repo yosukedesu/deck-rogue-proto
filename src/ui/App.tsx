@@ -1593,7 +1593,7 @@ function RunScreen({
         <h1>🗺 マップ — 第{run.act}幕/3</h1>
         <div className="panel">
           <div className="choice-desc">
-            全体もエッジ（各ノードの「→」=次の行の接続先）も最初から見える。薄いノードは現在地から到達できない——接続は前の行でどの列を選んだかで決まる（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=HP30%回復+鍛える/除去。🔨工房=カード合成）
+            全体もエッジ（各ノードの「→」=次の行の接続先）も最初から見える。薄いノードは現在地から到達できない——接続は前の行でどの列を選んだかで決まる（👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=休む(30%回復)/鍛える/除去の択一。🔨工房=カード合成）
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
@@ -1843,17 +1843,20 @@ function RunScreen({
       <div className="app setup">
         <h1>🔥 焚き火</h1>
         <p className="hint">
-          休息の回復はもう入っている。この上で、デッキの1枚を「鍛える」か「取り除く」か選ぶ。
+          「休む」「鍛える」「取り除く」から1つを選ぶ（本家式の排他三択。2026-08-29復帰）。
           {(run.campfireForgeBonus ?? 0) > 0 &&
-            ` 🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚（除去とは併用不可）。`}
+            ` 🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚（休む・除去とは併用不可）。`}
         </p>
         <div className="choice-row" style={{ marginTop: 12 }}>
           <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>
             <div className="choice-title">
-              <span className="choice-sprite">🛌</span>何もしない
+              <span className="choice-sprite">🛌</span>
+              {(run.campfireUpgradesUsed ?? 0) > 0 ? '立ち去る' : '休む'}
             </div>
             <div className="choice-desc">
-              休息で HP+{heal} は受け取り済み（現在 {run.hp}/{run.maxHp}）
+              {(run.campfireUpgradesUsed ?? 0) > 0
+                ? 'すでに鍛えたので回復はなし'
+                : `HP+${heal} 回復して先へ（現在 ${run.hp}/${run.maxHp}）`}
             </div>
           </button>
         </div>
