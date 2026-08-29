@@ -2,7 +2,7 @@
 // (hold-manual は伏せないので使わない)
 
 import { emit } from '../events.ts'
-import { fireExhaustTriggers, resolveReactionEffects } from '../effects.ts'
+import { fireExhaustTriggers, resolveReactionEffects, runPermanentTriggers } from '../effects.ts'
 import type { CardInstance, GameState } from '../types.ts'
 
 /** SetCard の可否判定 (UI のボタン活性にも使う) */
@@ -35,7 +35,12 @@ export function setCard(state: GameState, cardUid: string): GameState {
       setCards: [...state.player.setCards, card],
     },
   }
-  return emit(s, { type: 'CardSet', cardId: card.def.id })
+  // 伏せに反応する置物 (レリック: 符師の懐=伏せるたび1ドロー)
+  return runPermanentTriggers(
+    emit(s, { type: 'CardSet', cardId: card.def.id }),
+    'onCardSet',
+    Math.max(0, s.enemies.findIndex((e) => e.hp > 0)),
+  )
 }
 
 /** 伏せカードを発動する: 効果解決→伏せ場から捨て札 (消滅札なら消滅置き場) へ。

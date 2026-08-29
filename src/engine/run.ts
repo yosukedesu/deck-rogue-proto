@@ -155,6 +155,12 @@ export interface RunState {
   readonly victoryHealBonus: number
   readonly rewardChoicesBonus: number
   readonly campfireRatio: number
+  /** 戦闘勝利のゴールド加算 (商人の秤)。旧セーブに無いので使用側は ?? 0 ガード */
+  readonly goldPerVictoryBonus: number
+  /** 焚き火の「鍛える」の追加回数 (鍛冶の砥石)。旧セーブに無いので使用側は ?? 0 ガード */
+  readonly campfireForgeBonus: number
+  /** この焚き火で「鍛える」を使った回数 (焚き火進入時にリセット) */
+  readonly campfireUpgradesUsed: number
 }
 
 export type RunCommand =
@@ -215,6 +221,11 @@ function launchCombat(run: RunState, elite: boolean): RunState {
       .map(getRelicDef)
       .filter((r) => (r.effects?.length ?? 0) > 0)
       .map(buildRelicPermanent),
+    // C型レリック: 所持レリックの combatRule を集計して戦闘ルールに渡す
+    setDamageReduction: run.relics
+      .map(getRelicDef)
+      .reduce((sum, r) => sum + (r.combatRule?.setDamageReduction ?? 0), 0),
+    revealIntents: run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
   })
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
 }
@@ -232,7 +243,7 @@ function enterNode(run: RunState): RunState {
     case 'campfire': {
       // 回復は自動 (2026-08-26)。焚き火の選択は「鍛える / 取り除く / 何もしない」
       const hp = Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
-      return { ...run, hp, phase: 'campfire', combat: null, rewardOptions: null }
+      return { ...run, hp, phase: 'campfire', combat: null, rewardOptions: null, campfireUpgradesUsed: 0 }
     }
     case 'workshop':
       return { ...run, phase: 'workshop', combat: null, rewardOptions: null }
@@ -394,6 +405,9 @@ export function createRun(
     victoryHealBonus: 0,
     rewardChoicesBonus: 0,
     campfireRatio: CAMPFIRE_HEAL_RATIO,
+    goldPerVictoryBonus: 0,
+    campfireForgeBonus: 0,
+    campfireUpgradesUsed: 0,
   }
 }
 
@@ -525,6 +539,8 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     rng = r3
     gained += bonus
   }
+  // 商人の秤 (B型レリック): 戦闘勝利のゴールド加算
+  gained += run.goldPerVictoryBonus ?? 0
   const next: RunState = {
     ...run,
     rng,
@@ -710,6 +726,9 @@ function applyRelicBonus(run: RunState, relicId: string): RunState {
     victoryHealBonus: run.victoryHealBonus + (b.victoryHeal ?? 0),
     rewardChoicesBonus: run.rewardChoicesBonus + (b.rewardChoices ?? 0),
     campfireRatio: b.campfireRatio ?? run.campfireRatio,
+    // ?? 0 二段: 旧セーブは RunState 側のフィールド自体が無い (NaN汚染防止。shop-event.test.ts の前例)
+    goldPerVictoryBonus: (run.goldPerVictoryBonus ?? 0) + (b.goldPerVictory ?? 0),
+    campfireForgeBonus: (run.campfireForgeBonus ?? 0) + (b.campfireForge ?? 0),
   }
 }
 
@@ -777,10 +796,14 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (upgradeTier(card.def) === 'none') {
         throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
       }
+      // 鍛冶の砥石 (B型レリック): 追加回数のぶん焚き火に留まり、もう1枚鍛えられる
+      const used = (run.campfireUpgradesUsed ?? 0) + 1
+      const allowed = 1 + (run.campfireForgeBonus ?? 0)
       return {
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
-        phase: 'map',
+        campfireUpgradesUsed: used,
+        phase: used < allowed ? 'campfire' : 'map',
       }
     }
     case 'WorkshopFuse': {
@@ -802,6 +825,8 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     }
     case 'CampfireRemove': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      // 砥石で焚き火に留まっていても「鍛える/取り除く/何もしない から1つ選ぶ」の原則は崩さない
+      if ((run.campfireUpgradesUsed ?? 0) > 0) throw new Error('この焚き火ではすでに鍛えている (選べるのは1種類)')
       const card = run.deck[command.index]
       if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
       // デッキが痩せすぎないよう最低5枚は残す

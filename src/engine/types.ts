@@ -193,6 +193,10 @@ export interface GameState {
   } | null
   /** 発生済みイベントログ (リプレイ・シミュレーション統計の材料) */
   readonly eventLog: readonly GameEvent[]
+  /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional */
+  readonly setDamageReduction?: number
+  /** C型レリック (蜃気楼の面): 意図の実値を常時公開。旧セーブに無いので optional */
+  readonly revealIntents?: boolean
 }
 
 // ============================================================
@@ -377,6 +381,7 @@ export interface DeclarativeEffect {
     | 'onPermanentEntered' // 置物が場に出るたび (白の接着剤。プレイ・召喚・直接プレイすべて。自身の登場にも誘発。戦闘開始時から場にあるもの=リーダー/レリックは「登場」しない)
     | 'onImpulsePlayed' // 衝動カードをプレイした時 (赤の接着剤: 刹那の焔)
     | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
+    | 'onCardSet' // カードを伏せるたび (レリック: 符師の懐。set-confirmシナジー)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -700,6 +705,20 @@ export interface RelicDef {
     readonly victoryHeal?: number
     readonly rewardChoices?: number
     readonly campfireRatio?: number
+    /** 戦闘勝利のゴールド獲得に加算 (商人の秤) */
+    readonly goldPerVictory?: number
+    /** 焚き火の「鍛える」の追加回数 (鍛冶の砥石=+1で計2枚) */
+    readonly campfireForge?: number
+  }
+  /**
+   * C型: 戦闘ルールの改変 (少数精鋭)。launchCombat が所持レリックから集計して
+   * CombatOptions 経由で GameState に渡す
+   */
+  readonly combatRule?: {
+    /** 伏せ札がある間、敵の攻撃実値-N (最低1クランプ。静かな鈴) */
+    readonly setDamageReduction?: number
+    /** 敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。蜃気楼の面) */
+    readonly revealIntents?: boolean
   }
 }
 

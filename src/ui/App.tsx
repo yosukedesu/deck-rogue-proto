@@ -211,6 +211,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onPermanentEntered: '置物が場に出るたび: ',
   onImpulsePlayed: '衝動カードをプレイするたび: ',
   onAetherGained: '霊気を得るたび: ',
+  onCardSet: 'カードを伏せるたび: ',
 }
 
 /** 誘発の追加条件の表示 */
@@ -1805,6 +1806,8 @@ function RunScreen({
         <h1>🔥 焚き火</h1>
         <p className="hint">
           休息の回復はもう入っている。この上で、デッキの1枚を「鍛える」か「取り除く」か選ぶ。
+          {(run.campfireForgeBonus ?? 0) > 0 &&
+            ` 🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚（除去とは併用不可）。`}
         </p>
         <div className="choice-row" style={{ marginTop: 12 }}>
           <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>

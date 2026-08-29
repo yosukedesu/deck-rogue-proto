@@ -104,6 +104,10 @@ export interface CombatOptions {
   readonly enemyStrength?: number
   /** A型レリックの置物 (buildRelicPermanent で生成。リーダーパッシブと同様に注入される) */
   readonly relicPermanents?: readonly CardInstance[]
+  /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N */
+  readonly setDamageReduction?: number
+  /** C型レリック (蜃気楼の面): 意図の実値を常時公開 */
+  readonly revealIntents?: boolean
 }
 
 /** 戦闘開始の実体: デッキシャッフル・敵配置をして第1ターンを開始する */
@@ -167,6 +171,9 @@ export function startCombatWithOptions(
       permanents: [...state.player.permanents, ...(options.relicPermanents ?? [])],
     },
     enemies,
+    // C型レリック。revealIntents は第1ターンの意図宣言 (startPlayerTurn) より前に立てる必要がある
+    ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
+    ...(options.revealIntents ? { revealIntents: true } : {}),
   }
   state = emit(state, { type: 'CombatStarted', enemyId })
   let s = startPlayerTurn(state, 1)
@@ -313,7 +320,14 @@ function declareIntents(state: GameState): GameState {
       condOn = 'set'
     }
 
-    const declared = condOn && alt ? { ...intent, conditionalOn: condOn, alt } : intent
+    // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む。
+    // 表示層 (UI/CLI/最悪被ダメ予測) は shownMin/shownMax を読むだけなので変更不要で、
+    // 条件分岐 (alt) の両側も自動で実値になる
+    const reveal = <T extends { shownMin: number; shownMax: number; actual: number }>(it: T): T =>
+      s.revealIntents ? { ...it, shownMin: it.actual, shownMax: it.actual } : it
+    const shown = reveal(intent)
+    if (alt !== undefined) alt = reveal(alt)
+    const declared = condOn && alt ? { ...shown, conditionalOn: condOn, alt } : shown
     const enemies = s.enemies.map((e, j) =>
       j === i ? { ...e, intent: declared, patternIndex: nextPatternIndex } : e,
     )
@@ -929,6 +943,10 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       for (let h = 0; h < hits; h++) {
         // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
         let v = intent.actual
+        // 静かな鈴 (C型レリック): 伏せ札がある間、各ヒット-N (最低1クランプは威圧と同則)
+        if ((state.setDamageReduction ?? 0) > 0 && state.player.setCards.length > 0) {
+          v = Math.max(1, v - (state.setDamageReduction ?? 0))
+        }
         // 脆弱: 敵の攻撃ダメージ50%増 (切り捨て)
         if (state.player.vulnerable > 0) v = Math.floor(v * 1.5)
         dealtTotal += v
