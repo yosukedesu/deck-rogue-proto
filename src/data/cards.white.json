@@ -666,5 +666,80 @@
       }
     ],
     "rarity": "rare"
+  },
+  {
+    "id": "white_perm_warcry",
+    "name": "白銀の号令",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "blessRetainers",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_perm_anthem",
+    "name": "栄光の頌歌",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "blessRetainers",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_chalice",
+    "name": "光の聖杯",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_apostle",
+    "name": "恵光の使徒",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_radiant_hammer",
+    "name": "燦光の槌",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 10
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 4
+      }
+    ]
   }
 ]

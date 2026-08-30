@@ -45,6 +45,7 @@ const VP_PER: Record<string, number> = {
   dischargeMomentumBlock: 6.0, // 勢いの典型6 × 1.0
   dischargeBurn: 6.0, // 放出時の延焼の典型6 × 1.0 (DoTを手放す対価込み)
   dealDamageCleave: 1.3, // 対象+倒したら別の敵に同値 (連鎖は条件付きなので+30%)
+  exhaustFromDeck: 0.6, // 忘却=墓地燃料1枚≈0.6VP (刻・亡骸の期待価値。2026-08-31 ミル札の合成解禁)
   // 青の参照・放出系の解禁 (2026-08-31 ユーザー指示「工房の参照スケーリング札を解禁」)。
   // 典型値は scripts/card-audit.ts と同一 (詠唱3・氷壁10・霊気2.5・手札5)。
   // per-X効果は形を変えずそのまま引き継がれ、VPだけ典型値で数える = 条件付きダメージと同じ配管
@@ -378,6 +379,26 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
     cost = Math.min(cost, costOf(effects)) // 削りすぎて安く収まるならその安い方を採る
   }
 
+  // リアクションのコスト上限2E (確定済みルール表「リアクションのコスト上限」。2026-08-31
+  // 黒Opusランの指摘: 呪詛返し×怨嗟が3E/reactionを生んで機械判定をすり抜けていた)。
+  // 素材コスト超過と同じ「出力を削って払う」方式で2Eに収める
+  let reactionOverCap = false
+  if (resultType === 'reaction' && cost > 2) {
+    if (canScale) {
+      cost = 2
+      const normal = ALLOW[2] * 1.25
+      if (normal < targetVp * 0.75) {
+        fitTo(Math.min(targetVp, ALLOW[2] * 1.5 * 1.25))
+        clampExhaust = true
+      } else {
+        fitTo(normal)
+      }
+      effects = [...damageEffects, ...othersArr]
+    } else {
+      reactionOverCap = true // 削れる量が無いのに2Eを超える (ほぼ到達不能) = 合成不可
+    }
+  }
+
   let vp = vpOf(effects, resultType)
   let exhaust = a.def.exhaust === true || b.def.exhaust === true || clampExhaust
   if (clampExhaust && vp <= ALLOW[cost] * 1.25) exhaust = a.def.exhaust === true || b.def.exhaust === true // 圧縮後に125%帯へ収まったなら消滅は不要
@@ -397,6 +418,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
       overBand = vp > bandCap() // 5Eでも収まらない置物だけが合成不可
     }
   }
+  overBand = overBand || reactionOverCap
   const net = effects
     .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
     .reduce((acc, e) => acc + (e.amount ?? 0), 0)

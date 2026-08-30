@@ -234,15 +234,23 @@
     "cards": [
       {
         "cardId": "green_strike",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "green_basic_bash",
         "count": 1
       },
       {
+        "cardId": "green_double_lash",
+        "count": 1
+      },
+      {
         "cardId": "green_guard",
-        "count": 4
+        "count": 3
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
       },
       {
         "cardId": "green_reaction_thorns",
@@ -451,11 +459,19 @@
     "cards": [
       {
         "cardId": "blue_strike",
-        "count": 4
+        "count": 3
       },
       {
         "cardId": "blue_guard",
-        "count": 4
+        "count": 3
+      },
+      {
+        "cardId": "blue_ice_lance",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 1
       },
       {
         "cardId": "blue_counterspell",
@@ -887,11 +903,23 @@
     "cards": [
       {
         "cardId": "white_strike",
-        "count": 4
+        "count": 3
       },
       {
         "cardId": "white_guard",
-        "count": 4
+        "count": 2
+      },
+      {
+        "cardId": "white_shield_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "white_service",
+        "count": 1
       },
       {
         "cardId": "white_reaction_ward",
@@ -1091,11 +1119,23 @@
     "cards": [
       {
         "cardId": "black_strike",
-        "count": 4
+        "count": 3
       },
       {
         "cardId": "black_guard",
-        "count": 4
+        "count": 2
+      },
+      {
+        "cardId": "black_dark_pact",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_bursting_corpse",
+        "count": 1
       },
       {
         "cardId": "black_reaction_curse",

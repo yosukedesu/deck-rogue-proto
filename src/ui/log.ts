@@ -87,7 +87,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ExposedApplied': return { text: `敵に急所+${e.amount}（次のダメージ${e.amount}回が+50%）`, cls: 'log-good' }
     case 'GrowthDischarged': return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
     case 'HpHealed': return { text: `HP+${e.amount}回復`, cls: 'log-good' }
-    case 'CardsMilled': return { text: `山札の上${e.count}枚が忘却された（消滅）`, cls: 'log-line' }
+    case 'CardsMilled': return { text: `山札の上${e.count}枚が忘却された（消滅）: ${(e.cardIds ?? []).map(cardName).join('・')}`, cls: 'log-line' }
     case 'EnemyWeakened': return { text: `敵を威圧（強化-${e.amount}）`, cls: 'log-good' }
     case 'ConfusedAttack':
       return { text: e.enemyIndex === e.targetIndex ? `混乱した敵は自分自身に${e.amount}ダメージ！` : `仲間割れ！ 混乱した敵が味方に${e.amount}ダメージ`, cls: 'log-good' }

@@ -146,11 +146,24 @@ export function runPermanentTriggers(
       ? enemyIndex
       : state.enemies.findIndex((e) => e.hp > 0)
   let s = state
+  // アンセム (白 2026-08-31): blessRetainers 持ち置物の合計ぶん、従者 (retainer) の量つき効果を底上げする
+  const anthem = state.player.permanents.reduce(
+    (a, p) =>
+      a +
+      p.def.effects
+        .filter((e) => e.effect === 'blessRetainers')
+        .reduce((x, e) => x + (e.amount ?? 0), 0),
+    0,
+  )
   for (const permanent of state.player.permanents) {
     for (const effect of permanent.def.effects) {
       if (effect.trigger === trigger && blazeConditionMet(s, effect)) {
+        const boosted =
+          anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined
+            ? { ...effect, amount: effect.amount + anthem }
+            : effect
         // target:'all' の置物効果 (白銀の軍旗など) も全体解決する
-        s = resolveEffectTargeted(s, effect, alive)
+        s = resolveEffectTargeted(s, boosted, alive)
       }
     }
   }
@@ -347,19 +360,33 @@ export function hasHuntableTokens(state: GameState): boolean {
  * 回復を伴わない札では生き延びられないので、窓を開いても「もう詰んでいるのに聞かれる」だけになる
  * (2026-08-26 プレイテスト指摘。確定済みルール表「致死時の誘発」)
  */
-export function canSaveFromLethal(card: CardInstance): boolean {
-  return card.def.effects.some((e) =>
-    ['gainHp', 'dealDamageDrain', 'dealDamageDrainPerExhaust'].includes(e.effect),
-  )
+export function canSaveFromLethal(card: CardInstance, state?: GameState): boolean {
+  // 回復量の上限見積もり: gainHp=満額 / ドレイン=与ダメの半分 (敵HPでのクランプは見ない=上限)
+  const healCap = card.def.effects.reduce((acc, e) => {
+    if (e.effect === 'gainHp') return acc + (e.amount ?? 0)
+    if (e.effect === 'dealDamageDrain') return acc + Math.floor((e.amount ?? 0) / 2)
+    if (e.effect === 'dealDamageDrainPerExhaust') {
+      const n = state?.player.exhaustPile.length ?? 0
+      return acc + Math.floor(((e.amount ?? 0) * n) / 2)
+    }
+    return acc
+  }, 0)
+  if (healCap <= 0) return false
+  // 回復量が不足分に届かない札は「救えないのに聞かれる」だけ (2026-08-31 黒Opusラン指摘:
+  // HP-27に回復3の呪詛返しが窓に出て、期待させて殺した)
+  if (state !== undefined && state.player.hp <= 0) {
+    return healCap >= 1 - state.player.hp // 発動後にHP1以上へ届くこと
+  }
+  return true
 }
 
-/** その窓で実際に発動できる伏せ札 (致死状態では回復を伴うものだけ) */
+/** その窓で実際に発動できる伏せ札 (致死状態では不足分を実際に埋められる回復札だけ) */
 export function usableSetCards(
   state: GameState,
   win: ReactionWindow,
 ): readonly CardInstance[] {
   const matched = state.player.setCards.filter((c) => reactionMatches(state, c, win))
-  return state.player.hp <= 0 ? matched.filter(canSaveFromLethal) : matched
+  return state.player.hp <= 0 ? matched.filter((c) => canSaveFromLethal(c, state)) : matched
 }
 
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
@@ -608,6 +635,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
       return emit(next, { type: 'IceBlockGained', amount })
     }
+    case 'blessRetainers':
+      // アンセム (白): 常在の静的効果。runPermanentTriggers が置物の解決時に読むだけで、
+      // ここで解決すべきものは無い (登場時のno-op)
+      return state
     case 'addSpellEcho':
       // 反復 (青): 次に唱える呪文の効果を2回解決するトークン。消費は combat.ts の playCard 側
       return {
@@ -821,7 +852,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
           exhaustPile: [...state.player.exhaustPile, ...milled],
         },
       }
-      s = emit(s, { type: 'CardsMilled', count: n })
+      s = emit(s, { type: 'CardsMilled', count: n, cardIds: milled.map((c) => c.def.id) })
       s = fireExhaustTriggers(s, n, enemyIndex)
       // 亡骸効果 (2026-08-31): ミルされた札の onSelfExhausted が発火する = ミルが即座に価値を返す
       return fireNecroEffects(s, milled, enemyIndex)

@@ -107,15 +107,26 @@ describe('致死時の窓の絞り込み (2026-08-26)', () => {
     expect(s.phase).toBe('lost')
   })
 
-  it('回復を伴う返し札があれば従来どおり窓が開く', () => {
+  it('回復量が不足分に届く返し札があれば窓が開く', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
-      'black_reaction_curse', // 呪詛返し: ドレイン5 = 回復あり
+      'black_reaction_curse', // 呪詛返し: ドレイン6 = 回復3
     ])
     s = { ...s, player: { ...s.player, hp: 5 } }
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_curse' })
-    s = withIntent(s, { kind: 'attack', shownMin: 12, shownMax: 12, actual: 12 })
-    s = applyCommand(s, { type: 'EndTurn' })
+    s = withIntent(s, { kind: 'attack', shownMin: 7, shownMax: 7, actual: 7 })
+    s = applyCommand(s, { type: 'EndTurn' }) // HP-2。回復3で1に届く = 救える
     expect(s.phase).toBe('awaiting-reaction')
+  })
+
+  it('回復量が不足分に届かない札では窓を開かない (2026-08-31 黒Opusラン指摘: HP-27に回復3を期待させて殺した)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_reaction_curse', // 回復3では HP-9 (不足10) を救えない
+    ])
+    s = { ...s, player: { ...s.player, hp: 5 } }
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_curse' })
+    s = withIntent(s, { kind: 'attack', shownMin: 14, shownMax: 14, actual: 14 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('lost')
   })
 })
 

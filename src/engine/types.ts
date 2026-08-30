@@ -344,7 +344,7 @@ export type GameEvent =
   | { readonly type: 'GrowthAdded'; readonly amount: number }
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
   | { readonly type: 'HpHealed'; readonly amount: number } // 回復 (白)
-  | { readonly type: 'CardsMilled'; readonly count: number } // 忘却=山札からの消滅 (黒)
+  | { readonly type: 'CardsMilled'; readonly count: number; readonly cardIds?: readonly string[] } // 忘却=山札からの消滅 (黒)。cardIds=何が墓地へ行ったか (2026-08-31 可視化)
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
@@ -477,6 +477,7 @@ export interface DeclarativeEffect {
     | 'dealDamagePerHandCard' // 抱え込み (青): 手札の枚数×amount のダメージ (解決時の手札 = 自身・追加コストは数えない)
     | 'gainIceBlockPerHandCard' // 抱え込み (青): 手札の枚数×amount の氷壁
     | 'addSpellEcho' // 反復 (青): 次に唱える呪文の効果を2回解決するトークン+X (自ターン終了時に消える)
+    | 'blessRetainers' // アンセム (白 2026-08-31): この置物がある間、従者 (retainer) の量つき効果+X (常在。栄光の頌歌型)
     | 'applyBurnPerDamageTaken' // 業腹 (赤): 直前の敵フェーズで受けたダメージ×amount の延焼 (憤怒→猛り火の橋)
     | 'dealDamagePerIceBlock' // 氷の槍 (青): 現在の氷壁×amount のダメージ (蓄積の換金)
     | 'negateConvertIce' // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る

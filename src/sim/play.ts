@@ -64,7 +64,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
     confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵強化-${a})`,
-    dealDamagePerBlock: `ブロック×${a}ダメ`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
+    dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `上限×${a}ダメ`, gainBlockPerEnergyMax: `上限×${a}ブロック`,
@@ -73,10 +73,10 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
-    dealDamagePerIceBlock: `氷壁×${a}ダメ`, negateConvertIce: '打ち消し+実値ぶん氷壁',
+    dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`,
-    addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える)`,
+    addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える)`, blessRetainers: `【常在】従者の効果+${a}`,
     dealDamagePerNegStrength: `下げた敵強化×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
   }
@@ -90,7 +90,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}]`
     : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
@@ -169,6 +169,10 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)
       else if (e.type === 'CardExhausted') L.push(` 消滅:${cname(e.cardId)}`)
+      else if (e.type === 'CardsMilled') L.push(` 忘却${e.count}枚→消滅置き場: ${(e.cardIds ?? []).map(cname).join('・')}`)
+      else if (e.type === 'NecroFired') L.push(` 💀亡骸発火:${cname(e.cardId)}`)
+      else if (e.type === 'NecroPlayed') L.push(` 💀亡骸プレイ:${cname(e.cardId)}(ゲームから消えた)`)
+      else if (e.type === 'SpellEchoed') L.push(` 🔁反復:${cname(e.cardId)}の効果が2回解決`)
       else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${cname(e.cardId)}が倒された`)
       else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${cname(e.cardId)}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
@@ -220,7 +224,10 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    const necroList = p.exhaustPile.filter((c) => c.def.necroCost !== undefined)
+    if (p.exhaustPile.length > 0) {
+    L.push(`消滅置き場(${p.exhaustPile.length}枚): ${p.exhaustPile.map((c) => c.def.name).join('・')}`)
+  }
+  const necroList = p.exhaustPile.filter((c) => c.def.necroCost !== undefined)
   if (necroList.length > 0) {
     L.push(`亡骸プレイ可(消滅置き場): ${necroList.map((c) => `[${c.uid}] ${c.def.name}(${c.def.necroCost}E)`).join(' / ')} ※{"type":"PlayNecro","cardUid":"..."} 一度きり・ゲームから消える`)
   }

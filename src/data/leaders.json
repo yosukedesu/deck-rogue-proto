@@ -1,328 +1,333 @@
 [
- {
-  "id": "leader_green",
-  "name": "このは",
-  "colors": [
-   "green"
-  ],
-  "maxHp": 80,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic",
-  "sprite": "🌳",
-  "description": "大樹の巫女。タフで、時間とともに育つ。毎ターン開始時に成長+1",
-  "passive": [
-   {
-    "trigger": "onTurnStart",
-    "effect": "addGrowth",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_blue",
-  "name": "みぞれ",
-  "colors": [
-   "blue"
-  ],
-  "maxHp": 65,
-  "drawPerTurn": 6,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_blue",
-  "sprite": "🌊",
-  "description": "潮読みの導師。紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
-  "passive": [
-   {
-    "trigger": "onTurnStart",
-    "effect": "gainIceBlock",
-    "amount": 2
-   }
-  ]
- },
- {
-  "id": "leader_red",
-  "name": "ひばな",
-  "colors": [
-   "red"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_red",
-  "sprite": "🌋",
-  "description": "燼の闘士。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
-  "passive": [
-   {
-    "trigger": "onAttackPlayed",
-    "effect": "addMomentum",
-    "amount": 2
-   }
-  ]
- },
- {
-  "id": "leader_izzet",
-  "name": "らいこ",
-  "colors": [
-   "blue",
-   "red"
-  ],
-  "maxHp": 60,
-  "drawPerTurn": 4,
-  "energyMax": 3,
-  "rewardChoices": 5,
-  "runDeckId": "run_basic_izzet",
-  "sprite": "⚡",
-  "description": "霹靂の魔道士。青赤の複合（イゼット）。紙耐久で手札4枚。毎ターン次のカード-1、報酬ピックの候補が4枚",
-  "passive": [
-   {
-    "trigger": "onTurnStart",
-    "effect": "discountNext",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_white",
-  "name": "ひなた",
-  "colors": [
-   "white"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_white",
-  "sprite": "☀️",
-  "description": "光耀の聖歌士。マラソンを癒しで走り切る。毎ターン開始時にHP1回復",
-  "passive": [
-   {
-    "trigger": "onTurnStart",
-    "effect": "gainHp",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_black",
-  "name": "とばり",
-  "colors": [
-   "black"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_black",
-  "sprite": "🌑",
-  "description": "宵闇の死霊術師。痛みを糧に立つ。カード効果でHPを失うたびHP1回復",
-  "passive": [
-   {
-    "trigger": "onHpLost",
-    "effect": "gainHp",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_azorius",
-  "name": "なぎ",
-  "colors": [
-   "white",
-   "blue"
-  ],
-  "maxHp": 70,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_azorius",
-  "sprite": "🕊️",
-  "description": "静粛の裁定官。白青の複合（アゾリウス）。何が来ても先に構えている。被攻撃前に自動でブロック2",
-  "passive": [
-   {
-    "trigger": "onAttackIncoming",
-    "effect": "gainBlock",
-    "amount": 2
-   }
-  ]
- },
- {
-  "id": "leader_rakdos",
-  "name": "あかね",
-  "colors": [
-   "black",
-   "red"
-  ],
-  "maxHp": 80,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_rakdos",
-  "sprite": "🎭",
-  "description": "血宴の踊り手。黒赤の複合（ラクドス）。痛みは演目の一部。カード効果でHPを失うたび対象に1ダメージ",
-  "passive": [
-   {
-    "trigger": "onHpLost",
-    "effect": "dealDamage",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_gruul",
-  "name": "いぶき",
-  "colors": [
-   "red",
-   "green"
-  ],
-  "maxHp": 80,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_gruul",
-  "sprite": "🐗",
-  "description": "荒野の蛮勇。赤緑の複合（グルール）。殴るほど熱く、太くなる。攻撃カードをプレイするたび勢い+1と成長+1",
-  "passive": [
-   {
-    "trigger": "onAttackPlayed",
-    "effect": "addMomentum",
-    "amount": 1
-   },
-   {
-    "trigger": "onAttackPlayed",
-    "effect": "addGrowth",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_selesnya",
-  "name": "わかば",
-  "colors": [
-   "green",
-   "white"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_selesnya",
-  "sprite": "🌱",
-  "description": "森集いの司。緑白の複合（セレズニア）。仲間が増えるほど森が育つ。置物が場に出るたび成長+1",
-  "passive": [
-   {
-    "trigger": "onPermanentEntered",
-    "effect": "addGrowth",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_orzhov",
-  "name": "あかり",
-  "colors": [
-   "white",
-   "black"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_orzhov",
-  "sprite": "🕯️",
-  "description": "彼岸の聖灯守。白黒の複合（オルゾフ）。命の灯は等価交換。HPが回復するたび対象に1ダメージ",
-  "passive": [
-   {
-    "trigger": "onHealed",
-    "effect": "dealDamage",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_golgari",
-  "name": "くろは",
-  "colors": [
-   "black",
-   "green"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_golgari",
-  "sprite": "🍂",
-  "description": "腐土の園丁。黒緑の複合（ゴルガリ）。朽ちるものは糧になる。カードが消滅するたび成長+1",
-  "passive": [
-   {
-    "trigger": "onCardExhausted",
-    "effect": "addGrowth",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_boros",
-  "name": "あさひ",
-  "colors": [
-   "red",
-   "white"
-  ],
-  "maxHp": 75,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_boros",
-  "sprite": "🌅",
-  "description": "暁軍の旗頭。赤白の複合（ボロス）。夜明けと共に従者が駆けつける。戦闘開始時、従者の少年トークン1体を召喚",
-  "passive": [
-   {
-    "trigger": "onCombatStart",
-    "effect": "summonPermanent",
-    "summonId": "white_perm_squire",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_simic",
-  "name": "しずく",
-  "colors": [
-   "green",
-   "blue"
-  ],
-  "maxHp": 65,
-  "drawPerTurn": 5,
-  "energyMax": 4,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_simic",
-  "sprite": "💠",
-  "description": "変容の探究者。緑青の複合（シミック）。作り変えた器は大きく、脆い。エナジー上限4で開始し、戦闘開始時に1ドロー",
-  "passive": [
-   {
-    "trigger": "onCombatStart",
-    "effect": "drawCards",
-    "amount": 1
-   }
-  ]
- },
- {
-  "id": "leader_dimir",
-  "name": "かすみ",
-  "colors": [
-   "blue",
-   "black"
-  ],
-  "maxHp": 65,
-  "drawPerTurn": 5,
-  "energyMax": 3,
-  "rewardChoices": 4,
-  "runDeckId": "run_basic_dimir",
-  "sprite": "🌫️",
-  "description": "霞幕の密偵。青黒の複合（ディミア）。手の内は二重に隠す。伏せ場が2枠ある（発動は敵の1行動につき1枚まで）",
-  "passive": [],
-  "setSlots": 2
- }
+  {
+    "id": "leader_green",
+    "name": "このは",
+    "colors": [
+      "green"
+    ],
+    "maxHp": 80,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic",
+    "sprite": "🌳",
+    "description": "大樹の巫女。タフで、時間とともに育つ。毎ターン開始時に成長+1",
+    "passive": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_blue",
+    "name": "みぞれ",
+    "colors": [
+      "blue"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 6,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_blue",
+    "sprite": "🌊",
+    "description": "潮読みの導師。紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
+    "passive": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "gainIceBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_red",
+    "name": "ひばな",
+    "colors": [
+      "red"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_red",
+    "sprite": "🌋",
+    "description": "燼の闘士。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
+    "passive": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "leader_izzet",
+    "name": "らいこ",
+    "colors": [
+      "blue",
+      "red"
+    ],
+    "maxHp": 60,
+    "drawPerTurn": 4,
+    "energyMax": 3,
+    "rewardChoices": 5,
+    "runDeckId": "run_basic_izzet",
+    "sprite": "⚡",
+    "description": "霹靂の魔道士。青赤の複合（イゼット）。紙耐久で手札4枚。毎ターン次のカード-1、報酬ピックの候補が4枚",
+    "passive": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_white",
+    "name": "ひなた",
+    "colors": [
+      "white"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_white",
+    "sprite": "☀️",
+    "description": "光耀の聖歌士。マラソンを癒しで走り切る。毎ターン開始時にHP1回復",
+    "passive": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 1
+      },
+      {
+        "trigger": "onHealed",
+        "effect": "gainBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_black",
+    "name": "とばり",
+    "colors": [
+      "black"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_black",
+    "sprite": "🌑",
+    "description": "宵闇の死霊術師。痛みを糧に立つ。カード効果でHPを失うたびHP1回復",
+    "passive": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "gainHp",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_azorius",
+    "name": "なぎ",
+    "colors": [
+      "white",
+      "blue"
+    ],
+    "maxHp": 70,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_azorius",
+    "sprite": "🕊️",
+    "description": "静粛の裁定官。白青の複合（アゾリウス）。何が来ても先に構えている。被攻撃前に自動でブロック2",
+    "passive": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "leader_rakdos",
+    "name": "あかね",
+    "colors": [
+      "black",
+      "red"
+    ],
+    "maxHp": 80,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_rakdos",
+    "sprite": "🎭",
+    "description": "血宴の踊り手。黒赤の複合（ラクドス）。痛みは演目の一部。カード効果でHPを失うたび対象に1ダメージ",
+    "passive": [
+      {
+        "trigger": "onHpLost",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_gruul",
+    "name": "いぶき",
+    "colors": [
+      "red",
+      "green"
+    ],
+    "maxHp": 80,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_gruul",
+    "sprite": "🐗",
+    "description": "荒野の蛮勇。赤緑の複合（グルール）。殴るほど熱く、太くなる。攻撃カードをプレイするたび勢い+1と成長+1",
+    "passive": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 1
+      },
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_selesnya",
+    "name": "わかば",
+    "colors": [
+      "green",
+      "white"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_selesnya",
+    "sprite": "🌱",
+    "description": "森集いの司。緑白の複合（セレズニア）。仲間が増えるほど森が育つ。置物が場に出るたび成長+1",
+    "passive": [
+      {
+        "trigger": "onPermanentEntered",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_orzhov",
+    "name": "あかり",
+    "colors": [
+      "white",
+      "black"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_orzhov",
+    "sprite": "🕯️",
+    "description": "彼岸の聖灯守。白黒の複合（オルゾフ）。命の灯は等価交換。HPが回復するたび対象に1ダメージ",
+    "passive": [
+      {
+        "trigger": "onHealed",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_golgari",
+    "name": "くろは",
+    "colors": [
+      "black",
+      "green"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_golgari",
+    "sprite": "🍂",
+    "description": "腐土の園丁。黒緑の複合（ゴルガリ）。朽ちるものは糧になる。カードが消滅するたび成長+1",
+    "passive": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_boros",
+    "name": "あさひ",
+    "colors": [
+      "red",
+      "white"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_boros",
+    "sprite": "🌅",
+    "description": "暁軍の旗頭。赤白の複合（ボロス）。夜明けと共に従者が駆けつける。戦闘開始時、従者の少年トークン1体を召喚",
+    "passive": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_simic",
+    "name": "しずく",
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 5,
+    "energyMax": 4,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_simic",
+    "sprite": "💠",
+    "description": "変容の探究者。緑青の複合（シミック）。作り変えた器は大きく、脆い。エナジー上限4で開始し、戦闘開始時に1ドロー",
+    "passive": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_dimir",
+    "name": "かすみ",
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 4,
+    "runDeckId": "run_basic_dimir",
+    "sprite": "🌫️",
+    "description": "霞幕の密偵。青黒の複合（ディミア）。手の内は二重に隠す。伏せ場が2枠ある（発動は敵の1行動につき1枚まで）",
+    "passive": [],
+    "setSlots": 2
+  }
 ]

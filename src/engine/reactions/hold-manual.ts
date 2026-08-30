@@ -26,7 +26,7 @@ export function playableReactions(state: GameState): readonly CardInstance[] {
       reactionMatches(state, c, win) &&
       c.def.cost <= state.player.energy &&
       // 致死状態では回復を伴う札だけが生存の可能性を持つ
-      (state.player.hp > 0 || canSaveFromLethal(c)),
+      (state.player.hp > 0 || canSaveFromLethal(c, state)),
   )
 }
 
@@ -37,7 +37,7 @@ function anyPlayable(state: GameState, win: ReactionWindow): boolean {
       c.def.type === 'reaction' &&
       reactionMatches(state, c, win) &&
       c.def.cost <= state.player.energy &&
-      (state.player.hp > 0 || canSaveFromLethal(c)),
+      (state.player.hp > 0 || canSaveFromLethal(c, state)),
   )
 }
 

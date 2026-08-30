@@ -321,6 +321,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         : `${trigger}🧊 手札の枚数×${e.amount}の氷壁`
     case 'addSpellEcho':
       return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える）`
+    case 'blessRetainers':
+      return `${trigger}✨ 【常在】従者の効果+${e.amount}`
     case 'addAether':
       return `${trigger}霊気+${e.amount}`
     case 'discountNext':
@@ -371,8 +373,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}⚔️ ${e.amount}ダメージ（対象HPが25%以下なら${e.amountMax}）`
     case 'dealDamagePerIceBlock':
       return ctx
-        ? `${trigger}⚔️ 現在の氷壁×${e.amount}ダメージ [現在${(e.amount ?? 0) * ctx.iceBlock + atkBonus}]`
-        : `${trigger}⚔️ 現在の氷壁×${e.amount}ダメージ`
+        ? `${trigger}⚔️ 現在の氷壁×${e.amount}ダメージ（氷壁は消費しない・急所は乗らない） [現在${(e.amount ?? 0) * ctx.iceBlock + atkBonus}]`
+        : `${trigger}⚔️ 現在の氷壁×${e.amount}ダメージ（氷壁は消費しない・急所は乗らない）`
     case 'negateConvertIce':
       return `${trigger}🚫 敵の行動1回を打ち消し、その実値ぶん氷壁を得る`
     case 'dischargeAetherDraw':

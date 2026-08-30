@@ -28,6 +28,7 @@ const VP_PER: Record<string, number> = {
   dealDamagePerHandCard: 1.0 * 5,
   gainIceBlockPerHandCard: 1.3 * 5,
   addSpellEcho: 9.0, // 反復1トークン ≈ 典型的な1〜2E呪文のコピー価値9 (StS Burst=1E準拠)
+  exhaustFromDeck: 0.6, // 忘却=墓地燃料1枚≈0.6VP (刻・亡骸の期待価値)
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 const ALLOW = (cost: number) => 6 * cost + 2
