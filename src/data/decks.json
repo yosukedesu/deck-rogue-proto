@@ -1698,5 +1698,57 @@
         "count": 2
       }
     ]
+  },
+  {
+    "id": "deck_blaze",
+    "name": "猛り火理想形",
+    "color": "red",
+    "description": "延焼の合計8で全札が化ける。火を絶やさない限り、火力も防御もドローも猛り火が面倒を見る",
+    "cards": [
+      {
+        "cardId": "red_ignite",
+        "count": 3
+      },
+      {
+        "cardId": "red_blaze_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_fire_rain",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_furnace",
+        "count": 1
+      },
+      {
+        "cardId": "red_blaze_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_blade",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_pursuit",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_wall",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_cloak",
+        "count": 1
+      },
+      {
+        "cardId": "red_blaze_roar",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      }
+    ]
   }
 ]

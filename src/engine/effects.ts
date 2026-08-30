@@ -14,14 +14,33 @@ import type {
 } from './types.ts'
 
 /**
- * 実効コスト: マナ軽減トークン (nextCardDiscount) を適用したプレイコスト。
+ * 猛り火のしきい値 (確定済みルール表「猛り火」)。全札で単一の8。
+ * カードごとに変えないのは、8ひとつを覚えれば全札が読めるようにするため
+ */
+export const BLAZE_THRESHOLD = 8
+
+/**
+ * 猛り火が点いているか = **生存する敵の延焼の合計**がしきい値以上か (2026-08-30)。
+ * 対象1体でなく合計を見るのはユーザー判断——全体延焼 (火の粉の雨・業火の炉) が
+ * そのまま猛り火の燃料になり、ボス単体戦では合計＝そのボスの延焼なので同じ挙動になる
+ */
+export function blazeTotal(state: GameState): number {
+  return state.enemies.reduce((acc, e) => acc + (e.hp > 0 ? e.burn : 0), 0)
+}
+export function isBlazing(state: GameState): boolean {
+  return blazeTotal(state) >= BLAZE_THRESHOLD
+}
+
+/**
+ * 実効コスト: マナ軽減トークン (nextCardDiscount) と猛り火の軽減を適用したプレイコスト。
  * 素のコスト0のカードは割引を消費しない (対象外)。
  */
 export function effectiveCost(state: GameState, card: CardInstance): number {
   // Xコスト: 現在のエナジーを全て支払う (最低1 = エナジー0ではプレイ不可)。割引の対象外
   if (card.def.xCost === true) return Math.max(1, state.player.energy)
   if (card.def.cost === 0) return 0
-  return Math.max(0, card.def.cost - state.player.nextCardDiscount)
+  const blaze = card.def.blazeDiscount !== undefined && isBlazing(state) ? card.def.blazeDiscount : 0
+  return Math.max(0, card.def.cost - blaze - state.player.nextCardDiscount)
 }
 
 /** 自ターンにプレイ可能なカードか。リアクションタイプは false。置物・選択式は常にプレイ可能 */
@@ -123,7 +142,7 @@ export function runPermanentTriggers(
   let s = state
   for (const permanent of state.player.permanents) {
     for (const effect of permanent.def.effects) {
-      if (effect.trigger === trigger) {
+      if (effect.trigger === trigger && blazeConditionMet(s, effect)) {
         // target:'all' の置物効果 (白銀の軍旗など) も全体解決する
         s = resolveEffectTargeted(s, effect, alive)
       }
@@ -231,6 +250,7 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     if (c.minActionValue !== undefined && (win.stage !== 'pre' || win.actual < c.minActionValue)) {
       return false
     }
+    if (c.blaze === true && !isBlazing(state)) return false
     return true
   })
 }
@@ -825,11 +845,22 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
   }
 }
 
+/**
+ * 猛り火の条件を満たすか (onPlay・置物トリガー用)。リアクション窓は
+ * eligibleReactionEffects 側で同じ判定をしている
+ */
+export function blazeConditionMet(state: GameState, effect: DeclarativeEffect): boolean {
+  return effect.condition?.blaze !== true || isBlazing(state)
+}
+
 /** カードの onPlay 効果を順に解決 (target:'all' は全体解決) */
 export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemyIndex: number): GameState {
   let s = state
   for (const effect of card.def.effects) {
-    if (effect.trigger === 'onPlay') s = resolveEffectTargeted(s, effect, enemyIndex)
+    // 猛り火は「解決の時点」で判定する = 同じカードの前の効果 (着火など) で点いたら乗る
+    if (effect.trigger === 'onPlay' && blazeConditionMet(s, effect)) {
+      s = resolveEffectTargeted(s, effect, enemyIndex)
+    }
   }
   return s
 }

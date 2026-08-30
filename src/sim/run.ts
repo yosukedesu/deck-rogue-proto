@@ -13,7 +13,7 @@
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
 import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
-import { effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
+import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, isUpgraded, nextChoices } from '../engine/run.ts'
 import { BOSS_ROW } from '../engine/map.ts'
@@ -103,6 +103,22 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
     state.player.selfHpLost < 5
   ) {
     return false
+  }
+  // 猛り火 (2026-08-30): 点いていない時に撃つとおまけが空振りする。
+  // 手札に「今払える延焼札」があるなら先にそちらを撃って点けてから使う
+  if (
+    card.def.effects.some((e) => e.condition?.blaze === true) &&
+    // 自分で延焼を撒く札 (着火など) は自分で点けられるので温存しない
+    !card.def.effects.some((e) => e.effect === 'applyBurn') &&
+    !isBlazing(state)
+  ) {
+    const canIgniteFirst = state.player.hand.some(
+      (c) =>
+        c.uid !== card.uid &&
+        c.def.effects.some((e) => e.effect === 'applyBurn') &&
+        effectiveCost(state, c) <= state.player.energy,
+    )
+    if (canIgniteFirst) return false
   }
   // 爆熱は延焼3以上でないと換金損。逆上は被弾4以上、破城槌は敵ブロックがないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dischargeBurn')) {

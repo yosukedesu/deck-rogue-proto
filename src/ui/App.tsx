@@ -31,6 +31,7 @@ import {
   getRelicDef,
 } from '../engine/content.ts'
 import {
+  BLAZE_THRESHOLD,
   cardNeedsTarget,
   effectiveIntent,
   reactionMatches,
@@ -241,6 +242,8 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.hpAtOrBelowRatio !== undefined) parts.push(`自分のHPが${Math.round(c.hpAtOrBelowRatio * 100)}%以下`)
   if (c.minDamageTaken !== undefined) parts.push(`${c.minDamageTaken}以上のダメージを受けた`)
   if (c.maxActionValue !== undefined) parts.push(`敵の行動の値が${c.maxActionValue}以下`)
+  if (c.minActionValue !== undefined) parts.push(`敵の行動の値が${c.minActionValue}以上`)
+  if (c.blaze === true) parts.push(`🔥猛り火(延焼合計${BLAZE_THRESHOLD}以上)`)
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
