@@ -100,7 +100,8 @@ function wordOf(def: CardDef): string {
   for (const [eff, w] of WORD) {
     if (def.effects.some((e) => e.effect === eff)) return w
   }
-  return '樹'
+  // フォールバックは色の語で (赤の合成が「樹」になる違和感への対処 2026-08-30)
+  return def.color === 'red' ? '火' : '樹'
 }
 function suffixOf(effects: readonly DeclarativeEffect[]): string {
   const dmgs = effects.filter((e) => e.effect === 'dealDamage' || e.effect === 'dealDamageRandom')
@@ -371,8 +372,18 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   if (net - cost >= 0 && effects.some((e) => REFILL.has(e.effect))) exhaust = true
 
   const suffix =
-    resultType === 'permanent' ? '大樹' : resultType === 'reaction' ? '罠' : suffixOf(effects)
-  const name = sameName ? `真・${a.def.name}` : `${wordOf(a.def)}${wordOf(b.def)}の${suffix}`
+    resultType === 'permanent'
+      ? a.def.color === 'red'
+        ? '炉' // 赤の置物は炉 (「大樹」は緑の語 2026-08-30)
+        : '大樹'
+      : resultType === 'reaction'
+        ? '罠'
+        : suffixOf(effects)
+  // 同じ語の畳語 (焔焔・牙牙) は日本語として不自然なので「大焔」の形に畳む (2026-08-30)
+  const wa = wordOf(a.def)
+  const wb = wordOf(b.def)
+  const stem = wa === wb ? `大${wa}` : `${wa}${wb}`
+  const name = sameName ? `真・${a.def.name}` : `${stem}の${suffix}`
   const ids = [a.def.id, b.def.id].sort()
   const def: CardDef = {
     id: `fused_${ids[0]}__${ids[1]}`,

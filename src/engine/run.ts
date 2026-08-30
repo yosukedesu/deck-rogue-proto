@@ -554,9 +554,16 @@ export function createRun(
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
   const [map, rngAfterMap] = generateMap(rng0, 1)
+  // 伏せ参照レリックは、このランの報酬プールにリアクションが1枚も無い色 (赤単など) では
+  // 永久の死に選択肢になるため候補列から除く (2026-08-30 Opusランで符師の懐が3択に3回連続出現)。
+  // 蜃気楼の面 (意図の実値公開) は伏せに依存しないので残す
+  const SET_RELICS = new Set(['relic_talisman_pouch', 'relic_quiet_bell'])
+  const canSet = allCards.some(
+    (c) => leader.colors.includes(c.color) && c.type === 'reaction',
+  )
   const [relicQueue, rngAfterRelics] = shuffle(
     rngAfterMap,
-    allRelics.map((r) => r.id),
+    allRelics.map((r) => r.id).filter((id) => canSet || !SET_RELICS.has(id)),
   )
   return {
     seed,
