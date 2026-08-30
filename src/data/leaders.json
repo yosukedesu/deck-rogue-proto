@@ -53,10 +53,10 @@
   "rewardChoices": 4,
   "runDeckId": "run_basic_red",
   "sprite": "🌋",
-  "description": "燼の闘士。意外と頑丈な体で、手を出すほど加速する。カードを1枚プレイするたび勢い+2",
+  "description": "燼の闘士。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
   "passive": [
    {
-    "trigger": "onCardPlayed",
+    "trigger": "onAttackPlayed",
     "effect": "addMomentum",
     "amount": 2
    }
@@ -183,11 +183,16 @@
   "rewardChoices": 4,
   "runDeckId": "run_basic_gruul",
   "sprite": "🐗",
-  "description": "荒野の蛮勇。赤緑の複合（グルール）。殴るほど熱くなる。攻撃カードをプレイするたび勢い+1",
+  "description": "荒野の蛮勇。赤緑の複合（グルール）。殴るほど熱く、太くなる。攻撃カードをプレイするたび勢い+1と成長+1",
   "passive": [
    {
     "trigger": "onAttackPlayed",
     "effect": "addMomentum",
+    "amount": 1
+   },
+   {
+    "trigger": "onAttackPlayed",
+    "effect": "addGrowth",
     "amount": 1
    }
   ]

@@ -843,6 +843,14 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   // 木陰の守り+: 固定ブロック+4を追加 (上限参照のコスト-1は0Eに落とさない裁定の受け皿。
   // 倍率には触れない安全弁を守りつつ、上限5で 10→14 ≈ 量+50%相当)
   green_canopy_shade: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
+  // ---- per-Xダメージ参照のコスト強化封じ (2026-08-31) の受け皿: 同軸のおまけを足す ----
+  green_surge_thrust: [{ trigger: 'onPlay', effect: 'addMomentum', amount: 3 }], // 換金前に勢い+3
+  blue_storm_lash: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 5 }], // 固定の初撃5
+  blue_ripple_blade: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }],
+  blue_storm_echo: [{ trigger: 'onAttacked', effect: 'dealDamage', amount: 4 }],
+  blue_ice_lance: [{ trigger: 'onPlay', effect: 'gainIceBlock', amount: 4 }], // 氷壁を足してから撃つ
+  red_all_in: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 6 }],
+  white_rally: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }], // 隊列を組んでから撃つ
 }
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
@@ -891,6 +899,14 @@ export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'bonus' 
   // 上限参照札 (per-EnergyMax) のコスト-1強化は0Eまで落とさない (2026-08-30 裁定)。
   // 木陰の守り+ が 0E・非消滅・上限×2ブロック = 引くたびタダで盾、の退化ケースを塞ぐ。
   // 1E札は同軸おまけ (BONUS_UPGRADES) の受け皿へ
+  // per-Xダメージ参照はコスト強化で1E以下に落とさない (2026-08-31 ユーザー許可。上限参照裁定の拡張)。
+  // 氷の槍 (2E・氷壁×1) が焚き火のコスト強化で1E化し「消費しない参照×毎ターン補充」の
+  // 連射砲 = 幕を勝つボタンになっていた実測への処方。2E以下のper-Xはコストに触れない
+  const perXDmg = eff.some(
+    (e) => e.effect.startsWith('dealDamagePer') && e.effect !== 'dealDamagePerEnergyMax', // 上限参照は既存裁定 (capRef) に委ねる
+  )
+  // 0E札は既存の「倍率/量+1」ティア (④') に委ねる — 有限参照なので安全と裁定済み
+  if (perXDmg && def.cost >= 1 && def.cost <= 2) return BONUS_UPGRADES[def.id] !== undefined ? 'bonus' : 'none'
   const capRef = eff.some(
     (e) => e.effect === 'dealDamagePerEnergyMax' || e.effect === 'gainBlockPerEnergyMax',
   )

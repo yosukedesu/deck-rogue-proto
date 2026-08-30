@@ -141,7 +141,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 7
+        "amount": 5
       }
     ]
   },

@@ -389,12 +389,15 @@ export function dealDamageToEnemy(
   enemyIndex: number,
   baseAmount: number,
   pierce = false,
+  applyExpose = true,
 ): GameState {
   let amount = playerDamageAfterModifiers(state, baseAmount)
   const enemy = state.enemies[enemyIndex]
   if (!enemy || enemy.hp <= 0) return state
-  // 急所 (敵版脆弱): 次に受けるダメージN回が+50% (1ヒットごとに1減。確定済みルール表「急所」)
-  const exposed = enemy.exposed > 0
+  // 急所 (敵版脆弱): 次に受けるダメージN回が+50% (1ヒットごとに1減。確定済みルール表「急所」)。
+  // ブロック変換 (per-Block/per-IceBlock) には乗せない (2026-08-31 ユーザー許可 —
+  // 大盾の反撃が 盾41×2×急所1.5=127 の二乗×増幅になっていた)。乗らない場合は急所を消費しない
+  const exposed = applyExpose && enemy.exposed > 0
   if (exposed) amount = Math.floor(amount * 1.5)
   // 装甲 (2026-08-30): 1ヒットの被ダメはN以下に頭打ち (n²スケーリングへのワクチン。
   // 急所・勢い・成長の全補正の後に適用 = どれだけ盛っても1ヒットは装甲を超えない)
@@ -613,6 +616,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         enemyIndex,
         (effect.amount ?? 0) * state.player.block,
         effect.pierce,
+        false, // 急所はブロック変換に乗らない (2026-08-31)
       )
       // spendBlock: 壁を売り払う (×2以上が乗る札のVP二重計上を消す歯止め)
       return effect.spendBlock ? { ...dealt, player: { ...dealt.player, block: 0 } } : dealt
@@ -927,6 +931,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         enemyIndex,
         (effect.amount ?? 0) * state.player.iceBlock,
         effect.pierce,
+        false, // 急所は氷壁変換に乗らない (2026-08-31)
       )
     case 'dischargeAetherDraw': {
       // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出ダメージと悩む第二の出口)

@@ -70,14 +70,15 @@ describe('ギルドパッシブ', () => {
     expect(s.player.hand.length).toBe(6) // 通常5枚 + 開幕1ドロー
   })
 
-  it('いぶき (グルール): 攻撃カードをプレイするたび勢い+1', () => {
+  it('いぶき (グルール): 攻撃プレイごと勢い+1と成長+1 (2026-08-31 二重通貨に。ひばな攻撃特化との差別化)', () => {
     const run = createRunInBattle(3, 'set-confirm', 'leader_gruul')
     let s = withHand(run.combat!, ['red_strike', 'red_strike'])
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_strike', targetIndex: 0 })
     expect(s.player.momentum).toBe(1)
-    // 2発目には勢い1が乗る
+    expect(s.player.growth).toBe(1)
+    // 2発目には勢い1+成長1が乗る
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike', targetIndex: 0 })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 7)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 8)
   })
 })

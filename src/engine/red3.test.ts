@@ -104,12 +104,18 @@ describe('ひばなのパッシブ = 手数を勢いに変える (2026-08-27)', 
   // 「守らない色」なのに勝ち筋のバーンが時間を要求する、という思想の自己矛盾への回答。
   // 主軸を「時間をかけて焼く」から「手数で加速して短期決着する」へ移した。
   // いぶき(グルール)の「攻撃ごと勢い+1」との差別化は、種類を問わない点と量。
-  it('カードを1枚プレイするたび勢い+2。防御札でも置物でも乗る', () => {
+  it('攻撃カードをプレイするたび勢い+2。防御札では乗らない (2026-08-31 攻撃特化へ変更)', () => {
+    // 旧「カードを1枚プレイするたび+2」は 0マナ×衝動×多段と組んでn²の火力曲線を作り、
+    // 速さを「唯一の柱」にしていた (5色計測で赤の面白さ最下位の主因)。
+    // 攻撃だけが勢いを産む = 攻撃の連鎖だけが加速する。ユーザー案
     let s = startCombatWithLeader('starter_red', 'leader_red')
     expect(s.player.momentum).toBe(0)
     s = withHand(s, ['red_guard']) // 防御札 (ブロック4+衝動ドロー1)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_guard' })
-    expect(s.player.momentum).toBe(2) // 攻撃でなくても勢いが乗る = 守りが攻めの準備になる
+    expect(s.player.momentum).toBe(0) // 防御では乗らない
+    s = withHand(s, ['red_spark'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_spark' })
+    expect(s.player.momentum).toBe(2) // 攻撃 (0マナ火花も攻撃) で乗る
   })
 
   it('手数を重ねるほど後続の攻撃が加速する (0マナ攻撃が加速装置になる)', () => {

@@ -343,7 +343,7 @@
       {
         "trigger": "onPlay",
         "effect": "loseHp",
-        "amount": 4
+        "amount": 6
       },
       {
         "trigger": "onPlay",

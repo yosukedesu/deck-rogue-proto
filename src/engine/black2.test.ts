@@ -85,9 +85,9 @@ describe('自傷の誘発と換金', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_blood_price' })
-    expect(s.player.selfHpLost).toBe(4)
+    expect(s.player.selfHpLost).toBe(6) // 血の代償 HP-4→-6 (2026-08-31 許可済みナーフ)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_harvest_sin' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 24 - 4 * 2)
+    expect(s.enemies[0].hp).toBe(enemyHp - 24 - 6 * 2)
   })
 })
 

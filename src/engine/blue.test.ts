@@ -54,8 +54,8 @@ describe('ストーム (詠唱数参照)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (7ダメージ。2026-08-30 引き上げ)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×7 = 14 (2026-08-27 214%の壊れ是正)
-    expect(s.enemies[0].hp).toBe(hpBefore - 7 - 14)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×5 = 10 (2026-08-31 ×7→×5 許可済みナーフ)
+    expect(s.enemies[0].hp).toBe(hpBefore - 7 - 10)
     // ターンをまたぐとリセット
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)

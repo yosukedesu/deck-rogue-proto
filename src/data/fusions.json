@@ -1,213 +1,303 @@
 [
-  {
-    "a": "green_growth_ring",
-    "b": "green_double_lash",
-    "result": {
-      "id": "fusion_vine_wheel",
-      "name": "蔦車輪",
-      "cost": 2,
-      "type": "physical",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onPlay",
-          "effect": "addGrowth",
-          "amount": 2
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 4
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 4
-        }
-      ]
+ {
+  "a": "green_growth_ring",
+  "b": "green_double_lash",
+  "result": {
+   "id": "fusion_vine_wheel",
+   "name": "蔦車輪",
+   "cost": 2,
+   "type": "physical",
+   "color": "green",
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "addGrowth",
+     "amount": 2
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 4
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 4
     }
-  },
-  {
-    "a": "green_sig_rite_of_bloom",
-    "b": "green_sig_vine_dance",
-    "result": {
-      "id": "fusion_bloom_dance",
-      "name": "開花乱舞",
-      "cost": 3,
-      "type": "physical",
-      "color": "green",
-      "exhaust": true,
-      "effects": [
-        {
-          "trigger": "onPlay",
-          "effect": "doubleGrowth"
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
-        }
-      ]
-    }
-  },
-  {
-    "a": "green_reaction_vine",
-    "b": "green_reaction_thorns",
-    "result": {
-      "id": "fusion_thorn_bastion",
-      "name": "茨の砦",
-      "cost": 1,
-      "type": "reaction",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onAttackIncoming",
-          "effect": "gainBlock",
-          "amount": 12
-        },
-        {
-          "trigger": "onAttackIncoming",
-          "effect": "counter",
-          "amount": 6
-        }
-      ]
-    }
-  },
-  {
-    "a": "green_giant_bark",
-    "b": "green_bark_armor",
-    "result": {
-      "id": "fusion_great_carapace",
-      "name": "大樹の甲殻",
-      "cost": 2,
-      "type": "physical",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onPlay",
-          "effect": "gainBlockPerEnergyMax",
-          "amount": 3
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "addGrowth",
-          "amount": 1
-        }
-      ]
-    }
-  },
-  {
-    "a": "green_trample_charge",
-    "b": "green_horn_strike",
-    "result": {
-      "id": "fusion_wild_stampede",
-      "name": "暴走する荒角",
-      "cost": 1,
-      "type": "physical",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 8,
-          "pierce": true
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "addMomentum",
-          "amount": 3
-        }
-      ]
-    }
-  },
-  {
-    "a": "green_ramp_sprout",
-    "b": "green_finisher_stomp",
-    "result": {
-      "id": "fusion_sapling_maul",
-      "name": "若木の巨槌",
-      "cost": 4,
-      "type": "physical",
-      "color": "green",
-      "exhaust": true,
-      "effects": [
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 32
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "gainEnergyMax",
-          "amount": 1
-        }
-      ]
-    }
-  },
-  {
-    "a": "green_strike",
-    "b": "green_perm_herd_chief",
-    "result": {
-      "id": "fusion_raging_chief",
-      "name": "荒ぶる群長",
-      "cost": 2,
-      "type": "permanent",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onAttackPlayed",
-          "effect": "addMomentum",
-          "amount": 2
-        },
-        {
-          "trigger": "onTurnStart",
-          "effect": "dealDamage",
-          "amount": 3
-        }
-      ]
-    }
-  },
-  {
-    "a": "green_reaction_vine",
-    "b": "green_perm_thorn_thicket",
-    "result": {
-      "id": "fusion_bramble_hedge",
-      "name": "宿茨の生垣",
-      "cost": 2,
-      "type": "permanent",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onAttackIncoming",
-          "effect": "gainBlock",
-          "amount": 5
-        },
-        {
-          "trigger": "onAttacked",
-          "effect": "counter",
-          "amount": 5
-        }
-      ]
-    }
+   ]
   }
+ },
+ {
+  "a": "green_sig_rite_of_bloom",
+  "b": "green_sig_vine_dance",
+  "result": {
+   "id": "fusion_bloom_dance",
+   "name": "開花乱舞",
+   "cost": 3,
+   "type": "physical",
+   "color": "green",
+   "exhaust": true,
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "doubleGrowth"
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 3
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 3
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 3
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 3
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 3
+    }
+   ]
+  }
+ },
+ {
+  "a": "green_reaction_vine",
+  "b": "green_reaction_thorns",
+  "result": {
+   "id": "fusion_thorn_bastion",
+   "name": "茨の砦",
+   "cost": 1,
+   "type": "reaction",
+   "color": "green",
+   "effects": [
+    {
+     "trigger": "onAttackIncoming",
+     "effect": "gainBlock",
+     "amount": 12
+    },
+    {
+     "trigger": "onAttackIncoming",
+     "effect": "counter",
+     "amount": 6
+    }
+   ]
+  }
+ },
+ {
+  "a": "green_giant_bark",
+  "b": "green_bark_armor",
+  "result": {
+   "id": "fusion_great_carapace",
+   "name": "大樹の甲殻",
+   "cost": 2,
+   "type": "physical",
+   "color": "green",
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "gainBlockPerEnergyMax",
+     "amount": 3
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "addGrowth",
+     "amount": 1
+    }
+   ]
+  }
+ },
+ {
+  "a": "green_trample_charge",
+  "b": "green_horn_strike",
+  "result": {
+   "id": "fusion_wild_stampede",
+   "name": "暴走する荒角",
+   "cost": 1,
+   "type": "physical",
+   "color": "green",
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 8,
+     "pierce": true
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "addMomentum",
+     "amount": 3
+    }
+   ]
+  }
+ },
+ {
+  "a": "green_ramp_sprout",
+  "b": "green_finisher_stomp",
+  "result": {
+   "id": "fusion_sapling_maul",
+   "name": "若木の巨槌",
+   "cost": 4,
+   "type": "physical",
+   "color": "green",
+   "exhaust": true,
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 32
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "gainEnergyMax",
+     "amount": 1
+    }
+   ]
+  }
+ },
+ {
+  "a": "green_strike",
+  "b": "green_perm_herd_chief",
+  "result": {
+   "id": "fusion_raging_chief",
+   "name": "荒ぶる群長",
+   "cost": 2,
+   "type": "permanent",
+   "color": "green",
+   "effects": [
+    {
+     "trigger": "onAttackPlayed",
+     "effect": "addMomentum",
+     "amount": 2
+    },
+    {
+     "trigger": "onTurnStart",
+     "effect": "dealDamage",
+     "amount": 3
+    }
+   ]
+  }
+ },
+ {
+  "a": "green_reaction_vine",
+  "b": "green_perm_thorn_thicket",
+  "result": {
+   "id": "fusion_bramble_hedge",
+   "name": "宿茨の生垣",
+   "cost": 2,
+   "type": "permanent",
+   "color": "green",
+   "effects": [
+    {
+     "trigger": "onAttackIncoming",
+     "effect": "gainBlock",
+     "amount": 5
+    },
+    {
+     "trigger": "onAttacked",
+     "effect": "counter",
+     "amount": 5
+    }
+   ]
+  }
+ },
+ {
+  "a": "red_strike",
+  "b": "red_ignite",
+  "result": {
+   "id": "fusion_red_flame_fang",
+   "name": "炎蛇の牙",
+   "cost": 2,
+   "type": "spell",
+   "color": "red",
+   "rarity": "uncommon",
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 9
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "applyBurn",
+     "amount": 6
+    },
+    {
+     "trigger": "onPlay",
+     "condition": {
+      "blaze": true
+     },
+     "effect": "dealDamage",
+     "amount": 4
+    }
+   ]
+  }
+ },
+ {
+  "a": "red_guard",
+  "b": "red_spark",
+  "result": {
+   "id": "fusion_red_ember_dance",
+   "name": "火の粉舞い",
+   "cost": 1,
+   "type": "physical",
+   "color": "red",
+   "rarity": "uncommon",
+   "effects": [
+    {
+     "trigger": "onPlay",
+     "effect": "gainBlock",
+     "amount": 5
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "dealDamage",
+     "amount": 4
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "impulseDraw",
+     "amount": 1
+    }
+   ]
+  }
+ },
+ {
+  "a": "red_perm_flarecoat",
+  "b": "red_perm_thorn_flame",
+  "result": {
+   "id": "fusion_red_wrath_mail",
+   "name": "怒火の鎧",
+   "cost": 2,
+   "type": "permanent",
+   "color": "red",
+   "rarity": "rare",
+   "effects": [
+    {
+     "trigger": "onAttacked",
+     "effect": "dealDamage",
+     "amount": 3
+    },
+    {
+     "trigger": "onAttacked",
+     "effect": "applyBurn",
+     "amount": 4
+    },
+    {
+     "trigger": "onPlay",
+     "effect": "gainBlock",
+     "amount": 5
+    }
+   ]
+  }
+ }
 ]
