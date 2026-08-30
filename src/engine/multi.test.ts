@@ -100,8 +100,8 @@ describe('全体攻撃 (target: all)', () => {
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_flame_wave' })
-    expect(s.enemies[0].hp).toBe(hp0 - 9) // 炎の波 9 (2026-08-27 StSコモン帯)
-    expect(s.enemies[1].hp).toBe(hp1 - 9)
+    expect(s.enemies[0].hp).toBe(hp0 - 12) // 炎の波 12 (2026-08-30 全体化係数の色レート化: 赤=本家×1.5)
+    expect(s.enemies[1].hp).toBe(hp1 - 12)
   })
 
   it('成長は対象ごとに乗る', () => {
@@ -111,8 +111,8 @@ describe('全体攻撃 (target: all)', () => {
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_flame_wave' })
-    expect(s.enemies[0].hp).toBe(hp0 - 12) // 9 + 成長3
-    expect(s.enemies[1].hp).toBe(hp1 - 12)
+    expect(s.enemies[0].hp).toBe(hp0 - 15) // 12 + 成長3
+    expect(s.enemies[1].hp).toBe(hp1 - 15)
   })
 })
 

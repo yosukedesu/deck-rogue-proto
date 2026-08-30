@@ -333,7 +333,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 9,
+        "amount": 12,
         "target": "all"
       }
     ]
@@ -348,7 +348,7 @@
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 6,
+        "amount": 8,
         "target": "all"
       }
     ]
@@ -442,7 +442,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "applyBurn",
-        "amount": 2,
+        "amount": 3,
         "target": "all"
       }
     ]
@@ -457,13 +457,13 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 8,
+        "amount": 11,
         "target": "all"
       },
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 3,
+        "amount": 4,
         "target": "all"
       }
     ]
@@ -601,8 +601,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageRandom",
-        "amount": 6,
-        "amountMax": 18,
+        "amount": 9,
+        "amountMax": 25,
         "target": "all"
       }
     ],
@@ -716,7 +716,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 8,
+        "amount": 11,
         "target": "all"
       },
       {
@@ -858,7 +858,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6,
+        "amount": 8,
         "target": "all"
       },
       {
@@ -867,7 +867,7 @@
           "blaze": true
         },
         "effect": "dealDamage",
-        "amount": 4,
+        "amount": 6,
         "target": "all"
       }
     ]
@@ -919,7 +919,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 9,
+        "amount": 12,
         "target": "all"
       },
       {
@@ -928,7 +928,7 @@
           "blaze": true
         },
         "effect": "applyBurn",
-        "amount": 4,
+        "amount": 5,
         "target": "all"
       }
     ]
@@ -966,13 +966,13 @@
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 4,
+        "amount": 5,
         "target": "all"
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3,
+        "amount": 4,
         "target": "all"
       }
     ]
@@ -987,7 +987,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4
+        "amount": 5
       },
       {
         "trigger": "onPlay",
@@ -1223,7 +1223,7 @@
           "blaze": true
         },
         "effect": "dealDamage",
-        "amount": 5,
+        "amount": 6,
         "target": "all"
       }
     ]
@@ -1314,13 +1314,13 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6,
+        "amount": 8,
         "target": "all"
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6,
+        "amount": 8,
         "target": "all"
       }
     ]
@@ -1349,7 +1349,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 20,
+        "amount": 27,
         "target": "all"
       }
     ]
@@ -1364,7 +1364,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 25,
+        "amount": 33,
         "target": "all"
       }
     ]

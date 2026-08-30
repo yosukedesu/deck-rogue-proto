@@ -24,8 +24,16 @@ const ALLOW = (cost: number) => 6 * cost + 2
 /** 条件付き効果の期待値係数。猛り火は実測で「戦闘の55%程度で成立」なので 0.6 で数える */
 const COND = (e: DeclarativeEffect) => (e.condition ? 0.6 : 1)
 
-function effectVp(e: DeclarativeEffect, type: string): number {
-  const mult = (e.target === 'all' ? 2 : 1) * (e.pierce ? 1.25 : 1) * COND(e)
+/**
+ * 全体化係数の色レート (2026-08-30)。実測は平均1.44体・ソロ率60%・ボスは常にソロ。
+ * 赤=全体火力の本家=×1.5 (実測の丸め) で査定し、1体あたりの数値を高く刷ってよい。
+ * 他色は×2のまま (割高。§42「全体調整は不要」= 緑白黒の全体札には触らない)
+ */
+const AOE_MULT: Record<string, number> = { red: 1.5 }
+
+function effectVp(e: DeclarativeEffect, type: string, color?: string): number {
+  const aoe = e.target === 'all' ? (AOE_MULT[color ?? ''] ?? 2) : 1
+  const mult = aoe * (e.pierce ? 1.25 : 1) * COND(e)
   // 置物は寿命込み (×3)。ただし onPlay の一回きり効果は等倍
   const life = type === 'permanent' && e.trigger !== 'onPlay' ? 3 : 1
   const per = VP_PER[e.effect]
@@ -40,7 +48,7 @@ function effectVp(e: DeclarativeEffect, type: string): number {
 const TYPICAL_X = 3
 function vpOfList(list: readonly DeclarativeEffect[], def: CardDef): number {
   return list.reduce(
-    (a, e) => a + effectVp(e, def.type) * (e.xHits === true ? TYPICAL_X : 1),
+    (a, e) => a + effectVp(e, def.type, def.color) * (e.xHits === true ? TYPICAL_X : 1),
     0,
   )
 }
