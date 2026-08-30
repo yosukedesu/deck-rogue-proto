@@ -857,6 +857,11 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_ice_lance: [{ trigger: 'onPlay', effect: 'gainIceBlock', amount: 4 }], // 氷壁を足してから撃つ
   red_all_in: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 6 }],
   white_rally: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }], // 隊列を組んでから撃つ
+  // プール拡充 (2026-08-31): per-X参照でコスト強化を封じた札の受け皿
+  blue_page_wind: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
+  blue_rolling_wave: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
+  black_grave_pressure: [{ trigger: 'onPlay', effect: 'exhaustFromDeck', amount: 2 }], // 自分で燃料を足してから刈る
+  white_rank_thrust: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
 }
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */

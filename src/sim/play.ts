@@ -234,7 +234,10 @@ function renderBattle(s: GameState, logFrom: number): string {
   L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
-    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})`).join(' / ')}`)
+    // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
+    const anthem = p.permanents.reduce((a, c) => a + c.def.effects.filter((e) => e.effect === 'blessRetainers').reduce((x, e) => x + (e.amount ?? 0), 0), 0)
+    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=量つき効果に加算】` : ''}`).join(' / ')}`)
+    if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者の量つき効果すべてに加算)`)
   }
   if (s.phase === 'awaiting-reaction' && s.pendingWindow) {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]
@@ -403,7 +406,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
-  const stolenNow = run.combat?.enemies.reduce((a, e) => a + (e.stolenGold ?? 0), 0) ?? 0
+  const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.stolenGold ?? 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
   L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))

@@ -1490,6 +1490,19 @@ function BattleScreen({
             {player.spellEchoes > 0 && (
               <span className="chip chip-aether">🔁 {kw('反復')} {player.spellEchoes}</span>
             )}
+            {(() => {
+              const anthem = player.permanents.reduce(
+                (a, c) =>
+                  a +
+                  c.def.effects
+                    .filter((e) => e.effect === 'blessRetainers')
+                    .reduce((x, e) => x + (e.amount ?? 0), 0),
+                0,
+              )
+              return anthem > 0 ? (
+                <span className="chip chip-aether">✨ アンセム+{anthem}（従者の量つき効果に加算）</span>
+              ) : null
+            })()}
             {player.nextCardDiscount > 0 && (
               <span className="chip chip-aether">🔥 次のカード-{player.nextCardDiscount}</span>
             )}

@@ -839,5 +839,393 @@
     "axis": [
       "graveyard"
     ]
+  },
+  {
+    "id": "black_blood_thirst",
+    "name": "血の渇き",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "black_pain_spike",
+    "name": "痛みの棘",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 11
+      }
+    ]
+  },
+  {
+    "id": "black_oblivion_blade",
+    "name": "忘却の刃",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "amountMax": 12,
+        "exhaustThreshold": 5
+      }
+    ]
+  },
+  {
+    "id": "black_oblivion_veil",
+    "name": "忘却の帳",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6,
+        "amountMax": 12,
+        "exhaustThreshold": 5
+      }
+    ]
+  },
+  {
+    "id": "black_corpse_kiss",
+    "name": "骸の口づけ",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamageDrain",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_rotten_claw",
+    "name": "朽ちた爪",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "exhaust": true,
+    "necroCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "black_underworld_hand",
+    "name": "冥府の手",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamageDrain",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "black_shadow_cleaver",
+    "name": "影の大鉈",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_perm_bone_mill",
+    "name": "骨風車",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_remorse_bone",
+    "name": "悔恨の骨",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_reviving_shield",
+    "name": "蘇る盾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "necroCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "black_grand_offering",
+    "name": "供物の大火",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaustCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 17
+      }
+    ]
+  },
+  {
+    "id": "black_underworld_embrace",
+    "name": "冥府の抱擁",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamageDrain",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "black_corpse_scythe",
+    "name": "骸の大鎌",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_grand_drain",
+    "name": "大吸血",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 17
+      }
+    ]
+  },
+  {
+    "id": "black_agony_strike",
+    "name": "苦悶の一撃",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 21
+      }
+    ]
+  },
+  {
+    "id": "black_grave_pressure",
+    "name": "墓山の重圧",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "black_perm_bone_throne",
+    "name": "骨の玉座",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "gainBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_doom_wind",
+    "name": "終焉の風",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 15,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_oblivion_axe",
+    "name": "忘却の斧",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "amountMax": 14,
+        "exhaustThreshold": 5
+      }
+    ]
+  },
+  {
+    "id": "black_deadman_jaw",
+    "name": "亡者の顎",
+    "cost": 3,
+    "type": "physical",
+    "rarity": "rare",
+    "exhaust": true,
+    "necroCost": 2,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 14
+      }
+    ]
+  },
+  {
+    "id": "black_perm_leech_queen",
+    "name": "蛭の女王",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamageDrain",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_thousand_graves",
+    "name": "千の墓標",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_yomi_gate",
+    "name": "黄泉の門",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 9,
+        "target": "all"
+      }
+    ]
   }
 ]
