@@ -309,6 +309,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return `${trigger}次にプレイするカードのコスト-${e.amount}`
     case 'applyBurn':
       return `${trigger}${aoe}延焼+${e.amount}`
+    case 'applyBurnPerDamageTaken':
+      return `${trigger}${aoe}直前の敵ターンに受けたダメージ×${e.amount}の延焼`
+    case 'dealDamagePerRandomPlayed':
+      return `${trigger}${aoe}この戦闘で撃った運任せの札×${e.amount}ダメージ${pierce}`
     case 'shatterBlock':
       return `${trigger}${aoe || '敵の'}ブロックを全て粉砕する`
     case 'confuse':

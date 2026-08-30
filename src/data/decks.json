@@ -1750,5 +1750,49 @@
         "count": 2
       }
     ]
+  },
+  {
+    "id": "deck_gamble",
+    "name": "運任せ理想形",
+    "color": "red",
+    "description": "乱数を撃つほど賭博師の焔が火を積み、一擲乾坤が枚数を刈り取る。ロールの上下でなく「何回振ったか」が勝ち筋",
+    "cards": [
+      {
+        "cardId": "red_gamble",
+        "count": 3
+      },
+      {
+        "cardId": "red_long_shot",
+        "count": 3
+      },
+      {
+        "cardId": "red_bomb",
+        "count": 2
+      },
+      {
+        "cardId": "red_chaos_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "red_grand_fireworks",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_gambler",
+        "count": 2
+      },
+      {
+        "cardId": "red_all_in",
+        "count": 2
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 3
+      }
+    ]
   }
 ]

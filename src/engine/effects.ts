@@ -75,6 +75,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'shatterBlockConvert',
     'dealDamageExecute',
     'dealDamagePerDamageTaken',
+    'dealDamagePerRandomPlayed',
     'dealDamagePerIceBlock',
     'counter',
   ].includes(effect.effect)
@@ -106,6 +107,8 @@ const ENEMY_TARGETED = new Set([
   'shatterBlockConvert',
   'dealDamageExecute',
   'dealDamagePerDamageTaken',
+  'dealDamagePerRandomPlayed',
+  'applyBurnPerDamageTaken',
   'dealDamagePerIceBlock',
   // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
   'playFromExhaust',
@@ -658,6 +661,24 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         execute ? (effect.amountMax ?? effect.amount ?? 0) : (effect.amount ?? 0),
         effect.pierce,
       )
+    }
+    case 'dealDamagePerRandomPlayed':
+      // 一擲乾坤 (赤カオス): この戦闘で撃ったランダム火力の枚数×amount。
+      // ロールの結果ではなく**枚数**を数えるので、査定も学習も乱数に振り回されない
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.randomPlayedThisCombat,
+        effect.pierce,
+      )
+    case 'applyBurnPerDamageTaken': {
+      // 業腹 (赤): 直前の敵フェーズで受けたダメージ×amount の延焼。
+      // 憤怒 (被弾) → 猛り火 (延焼のしきい値) を繋ぐ橋 = 殴られるほど火が育つ
+      const burn = (effect.amount ?? 0) * state.player.damageTakenLastEnemyPhase
+      const target = state.enemies[enemyIndex]
+      if (burn <= 0 || !target || target.hp <= 0) return state
+      const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, burn: e.burn + burn } : e))
+      return emit({ ...state, enemies }, { type: 'BurnApplied', enemyIndex, amount: burn })
     }
     case 'dealDamagePerDamageTaken':
       // 逆上 (赤の憤怒): 直前の敵フェーズで受けたダメージ×amount (被弾の換金)

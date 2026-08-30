@@ -74,6 +74,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       weak: 0,
       vulnerable: 0,
       selfHpLost: 0, // カード効果で失ったHPの累計 (背徳の収穫の参照値。戦闘内のみ)
+      randomPlayedThisCombat: 0, // ランダム火力の枚数 (一擲乾坤の参照値。戦闘内のみ)
       damageTakenLastEnemyPhase: 0, // 直前の敵フェーズで受けた攻撃ダメージ (逆上の参照値)
     },
     enemies: [],
@@ -616,6 +617,16 @@ export function playCard(
   // 衝動プレイの誘発 (赤の接着剤: 刹那の焔)
   if (state.player.impulseUids.includes(cardUid)) {
     s = runPermanentTriggers(s, 'onImpulsePlayed', enemyIndex)
+  }
+  // ランダム火力の誘発 (赤カオスの接着剤: 賭博師の焔。2026-08-30)。
+  // **カード単位で1回**数える — target:'all' のランダム火力 (大花火) は敵の数だけ解決されるので、
+  // 効果の解決側で数えると頭数ぶん多重に数えてしまう
+  if (card.def.effects.some((e) => e.effect === 'dealDamageRandom')) {
+    s = {
+      ...s,
+      player: { ...s.player, randomPlayedThisCombat: s.player.randomPlayedThisCombat + 1 },
+    }
+    s = runPermanentTriggers(s, 'onRandomPlayed', enemyIndex)
   }
   // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない。
   // 直接プレイ (死者再生) より先に加算する = 直接プレイされるカードから見て再生自身は「先にプレイされた1枚」

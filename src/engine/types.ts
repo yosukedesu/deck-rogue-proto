@@ -93,6 +93,8 @@ export interface PlayerState extends CombatantState {
   readonly vulnerable: number
   /** この戦闘でカード効果 (loseHp) により失ったHPの累計 (黒: 背徳の収穫の参照値。敵からの被弾は含まない) */
   readonly selfHpLost: number
+  /** この戦闘でプレイしたランダム火力の枚数 (カオスの刈り取りの参照値。2026-08-30) */
+  readonly randomPlayedThisCombat: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
   readonly damageTakenLastEnemyPhase: number
 }
@@ -407,6 +409,7 @@ export interface DeclarativeEffect {
     | 'onCostExhausted' // 消滅コスト (exhaustCost) を支払った時のみ (置物。黒: 闇市の帳簿)
     | 'onPermanentEntered' // 置物が場に出るたび (白の接着剤。プレイ・召喚・直接プレイすべて。自身の登場にも誘発。戦闘開始時から場にあるもの=リーダー/レリックは「登場」しない)
     | 'onImpulsePlayed' // 衝動カードをプレイした時 (赤の接着剤: 刹那の焔)
+    | 'onRandomPlayed' // ランダム火力の札をプレイした時 (赤カオスの接着剤: 賭博師の焔。2026-08-30)
     | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
     | 'onCardSet' // カードを伏せるたび (レリック: 符師の懐。set-confirmシナジー)
     | 'onReactionFired' // リアクションが発動するたび (置物。緑: 狩人の眼光=読み勝ちの換金。自己誘発・全方式共通)
@@ -455,6 +458,8 @@ export interface DeclarativeEffect {
     | 'shatterBlockConvert' // 破城槌 (赤): 敵のブロックを全て破壊し、破壊した値と同じダメージを与える
     | 'dealDamageExecute' // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ
     | 'dealDamagePerDamageTaken' // 逆上 (赤): 直前の敵フェーズで受けたダメージ×amount (憤怒=被弾の換金)
+    | 'dealDamagePerRandomPlayed' // 一擲乾坤 (赤カオス): この戦闘で撃ったランダム火力の枚数×amount
+    | 'applyBurnPerDamageTaken' // 業腹 (赤): 直前の敵フェーズで受けたダメージ×amount の延焼 (憤怒→猛り火の橋)
     | 'dealDamagePerIceBlock' // 氷の槍 (青): 現在の氷壁×amount のダメージ (蓄積の換金)
     | 'negateConvertIce' // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る
     | 'dischargeAetherDraw' // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出の第二の出口)

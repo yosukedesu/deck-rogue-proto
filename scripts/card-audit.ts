@@ -9,6 +9,12 @@ const VP_PER: Record<string, number> = {
   gainEnergy: 5.0, addGrowth: 4.0, addMomentum: 1.5, applyBurn: 1.5, addAether: 3.0,
   discountNext: 2.5, counter: 1.0, gainHp: 1.5, weakenEnemy: 5.0, dealDamageDrain: 1.5,
   exposeEnemy: 2.0, dealDamageRandom: 1.0, dealDamageExecute: 1.0, loseHp: -1.5,
+  // per-X 参照は「典型的な参照量 × 単価」で数える (実測の中央値から)。
+  // 被弾は「1ターンあたりのHP損失」の実測 2.5〜5 から典型4 (ブロックで防いだ分は数えない)。
+  // カオスは1戦闘で撃つ乱数札の典型3枚
+  dealDamagePerDamageTaken: 1.0 * 4,
+  applyBurnPerDamageTaken: 1.5 * 4,
+  dealDamagePerRandomPlayed: 1.0 * 3,
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 const ALLOW = (cost: number) => 6 * cost + 2

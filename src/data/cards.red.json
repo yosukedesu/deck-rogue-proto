@@ -1368,5 +1368,114 @@
         "target": "all"
       }
     ]
+  },
+  {
+    "id": "red_perm_gambler",
+    "name": "賭博師の焔",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onRandomPlayed",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_all_in",
+    "name": "一擲乾坤",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerRandomPlayed",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "red_long_shot",
+    "name": "山師の勘",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_perm_ledger",
+    "name": "焔の目録",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onImpulsePlayed",
+        "effect": "addMomentum",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_perm_runfire",
+    "name": "走り火",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onImpulsePlayed",
+        "effect": "dealDamage",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_spite",
+    "name": "業腹",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurnPerDamageTaken",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_perm_pyre",
+    "name": "火だるま",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurnPerDamageTaken",
+        "amount": 1
+      }
+    ]
   }
 ]
