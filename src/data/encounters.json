@@ -184,7 +184,7 @@
  },
  {
   "id": "enc_beast_pair",
-  "name": "うねる獣の二匹",
+  "name": "獣と栗鼠",
   "members": [
    {
     "enemyId": "enemy_wide_power",
@@ -192,11 +192,9 @@
     "strength": -2
    },
    {
-    "enemyId": "enemy_wide_power",
+    "enemyId": "enemy_thorn_squirrel",
     "hpScale": 0.6,
-    "strength": -2,
-    "patternOffset": 1,
-    "noReactTable": true
+    "strength": -1
    }
   ]
  },

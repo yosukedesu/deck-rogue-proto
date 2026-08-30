@@ -54,7 +54,8 @@ describe('消滅の誘発 (亡者の合唱)', () => {
       cardUid: 't1_black_grave_digger',
       exhaustUids: ['t2_black_strike'],
     })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6)
+    // 忘却の刻 7→5 (2026-08-30) で合唱の強化 (1→3) がミルの途中から乗るようになった
+    expect(s.enemies[0].hp).toBe(enemyHp - 14)
     // 消滅置き場: コスト1 + 墓暴き自身1 + 忘却4 = 6枚
     expect(s.player.exhaustPile).toHaveLength(6)
   })

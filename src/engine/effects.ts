@@ -396,6 +396,9 @@ export function dealDamageToEnemy(
   // 急所 (敵版脆弱): 次に受けるダメージN回が+50% (1ヒットごとに1減。確定済みルール表「急所」)
   const exposed = enemy.exposed > 0
   if (exposed) amount = Math.floor(amount * 1.5)
+  // 装甲 (2026-08-30): 1ヒットの被ダメはN以下に頭打ち (n²スケーリングへのワクチン。
+  // 急所・勢い・成長の全補正の後に適用 = どれだけ盛っても1ヒットは装甲を超えない)
+  if (enemy.armor !== undefined && amount > enemy.armor) amount = enemy.armor
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
   const hpLoss = amount - blocked
   const enemies = state.enemies.map((e, i) =>

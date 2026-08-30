@@ -43,8 +43,8 @@ describe('氷壁の換金 (氷の槍)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ice_lance' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 13) // 氷壁13×1 (2026-08-27)
-    expect(s.player.iceBlock).toBe(13)
+    expect(s.enemies[0].hp).toBe(hpBefore - 15) // 氷壁15×1 (2026-08-30 引き上げ)
+    expect(s.player.iceBlock).toBe(15)
   })
 })
 

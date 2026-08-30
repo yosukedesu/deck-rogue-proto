@@ -160,6 +160,7 @@ export function startCombatWithOptions(
       ...(m.noReactTable === true ? { noReactTable: true } : {}),
       // とげは def からコピーして状態に持つ (effects.ts が content 参照なしで反射できる)
       ...(def.thorns !== undefined ? { thorns: def.thorns } : {}),
+      ...(def.armor !== undefined ? { armor: def.armor } : {}),
     }
   })
   state = {

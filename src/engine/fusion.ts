@@ -83,6 +83,10 @@ const REFILL = new Set([
 /** 名前生成: 軸→語幹 (緑v1)。レシピ札は手書き名が優先される */
 const WORD: readonly (readonly [string, string])[] = [
   ['applyBurn', '焔'],
+  ['gainIceBlock', '氷'],
+  ['negate', '封'],
+  ['dealDamageDrain', '血'],
+  ['gainHp', '光'],
   ['addGrowth', '蔦'],
   ['doubleGrowth', '花'],
   ['addMomentum', '角'],
@@ -100,8 +104,9 @@ function wordOf(def: CardDef): string {
   for (const [eff, w] of WORD) {
     if (def.effects.some((e) => e.effect === eff)) return w
   }
-  // フォールバックは色の語で (赤の合成が「樹」になる違和感への対処 2026-08-30)
-  return def.color === 'red' ? '火' : '樹'
+  // フォールバックは色の語で (緑以外の合成が「樹」になる違和感への対処 2026-08-30)
+  const FALLBACK: Record<string, string> = { red: '火', blue: '水', white: '光', black: '影' }
+  return FALLBACK[def.color ?? ''] ?? '樹'
 }
 function suffixOf(effects: readonly DeclarativeEffect[]): string {
   const dmgs = effects.filter((e) => e.effect === 'dealDamage' || e.effect === 'dealDamageRandom')
@@ -376,11 +381,10 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
     .reduce((acc, e) => acc + (e.amount ?? 0), 0)
   if (net - cost >= 0 && effects.some((e) => REFILL.has(e.effect))) exhaust = true
 
+  const PERM_SUFFIX: Record<string, string> = { red: '炉', blue: '泉', white: '祭壇', black: '柩' }
   const suffix =
     resultType === 'permanent'
-      ? a.def.color === 'red'
-        ? '炉' // 赤の置物は炉 (「大樹」は緑の語 2026-08-30)
-        : '大樹'
+      ? (PERM_SUFFIX[a.def.color ?? ''] ?? '大樹')
       : resultType === 'reaction'
         ? '罠'
         : suffixOf(effects)

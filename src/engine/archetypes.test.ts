@@ -54,6 +54,7 @@ describe('シグネチャー効果', () => {
   it('森の大爆発: エナジー上限×6の全体ダメージ (成長も乗る。2026-08-29 花火化)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_sig_overgrowth'])
     s = { ...s, player: { ...s.player, energy: 6, energyMax: 6, energyMaxAtTurnStart: 6, growth: 1 } }
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: undefined })) } // 装甲を外してコンボの素値を測る
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_overgrowth' })
     expect(s.enemies[0].hp).toBe(hpBefore - (6 * 6 + 1))
@@ -210,6 +211,7 @@ describe('手札捨てコスト (discardCost)', () => {
       'green_serpent_gulp',
       'green_guard',
     ])
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: undefined })) } // 装甲を外してコンボの素値を測る
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, {
       type: 'PlayCard',

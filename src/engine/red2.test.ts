@@ -55,6 +55,7 @@ describe('処刑 (とどめの一撃)', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - 10) // 25%超: 素の10 (2026-08-30 引き上げ)
     const maxHp = s.enemies[0].maxHp
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: Math.floor(maxHp * 0.25) })) }
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: undefined })) } // 装甲を外して素値を測る
     const low = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_final_blow' })
     expect(s.enemies[0].hp).toBe(low - 28) // 処刑 10→28 (2026-08-30 引き上げ)

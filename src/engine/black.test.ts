@@ -99,14 +99,18 @@ describe('自傷ペイオフ', () => {
 })
 
 describe('リーダーとばり', () => {
-  it('パッシブ: 攻撃カードをプレイするたびHP1回復', () => {
+  it('パッシブ: カード効果でHPを失うたびHP1回復 (2026-08-30 回復側を絞る是正。攻撃ごと回復は廃止)', () => {
+    // 旧「攻撃プレイごとHP+1」は血染めの刃との重ね掛けで自傷の対価が名目化していた
+    // (自傷札を撃つほどHPが増えるランを実測)。回復と自傷を同じ券にして相殺を止める
     const run = createRunInBattle(3, 'set-confirm', 'leader_black')
     let s = run.combat!
     s = { ...s, player: { ...s.player, hp: 50 } }
-    // プール変更で敵がとげ持ちになるシードがあるため、反射を外して回復だけを測る
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, thorns: 0 })) }
     s = withHand(s, ['black_strike'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_strike', targetIndex: 0 })
-    expect(s.player.hp).toBe(51)
+    expect(s.player.hp).toBe(50) // 攻撃では回復しない
+    s = withHand(s, ['black_blood_rite']) // 血の儀式: HP-2
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_blood_rite' })
+    expect(s.player.hp).toBe(49) // -2 +1 (自傷のたび回復1) = 実効-1
   })
 })

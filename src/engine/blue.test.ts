@@ -32,14 +32,14 @@ describe('氷壁 (持ち越しブロック)', () => {
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_guard' })
-    expect(s.player.iceBlock).toBe(13) // 2026-08-27 StSコモン帯 (13)
+    expect(s.player.iceBlock).toBe(15) // 2026-08-30 凍結遺産の下限引き上げ (13→15)
     expect(s.player.block).toBe(5)
     // 攻撃10: 通常ブロック5を先に消費し、残り5を氷壁で受ける
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(s.player.maxHp)
     expect(s.player.block).toBe(0) // 次ターン開始でリセット
-    expect(s.player.iceBlock).toBe(8) // 13 - 5 が持ち越されている
+    expect(s.player.iceBlock).toBe(10) // 15 - 5 が持ち越されている
   })
 })
 
@@ -53,9 +53,9 @@ describe('ストーム (詠唱数参照)', () => {
     s = { ...s, player: { ...s.player, energy: 6 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (6ダメージ)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (7ダメージ。2026-08-30 引き上げ)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×7 = 14 (2026-08-27 214%の壊れ是正)
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 14)
+    expect(s.enemies[0].hp).toBe(hpBefore - 7 - 14)
     // ターンをまたぐとリセット
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)
@@ -169,6 +169,7 @@ describe('霊気 (妨害→フィニッシュ変換)', () => {
       'blue_aether_burst',
     ])
     s = { ...s, player: { ...s.player, aether: 4 } }
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: undefined })) } // 装甲を外して素値を測る
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_aether_burst' })
     expect(s.enemies[0].hp).toBe(hpBefore - 4 * 7)

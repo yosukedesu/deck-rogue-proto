@@ -130,7 +130,7 @@
         "effect": "dealDamage",
         "amount": 6,
         "amountMax": 12,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -147,7 +147,7 @@
         "effect": "dealDamage",
         "amount": 18,
         "amountMax": 30,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -163,7 +163,7 @@
         "effect": "dealDamage",
         "amount": 5,
         "amountMax": 10,
-        "exhaustThreshold": 7,
+        "exhaustThreshold": 5,
         "target": "all"
       }
     ]
@@ -194,7 +194,7 @@
         "effect": "exhaustFromDeck",
         "amount": 3,
         "amountMax": 0,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -309,7 +309,7 @@
         "effect": "dealDamage",
         "amount": 8,
         "amountMax": 16,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -465,7 +465,7 @@
         "effect": "dealDamageDrain",
         "amount": 14,
         "amountMax": 26,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -570,7 +570,7 @@
         "effect": "dealDamage",
         "amount": 1,
         "amountMax": 3,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -622,7 +622,7 @@
         "effect": "dealDamage",
         "amount": 3,
         "amountMax": 7,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -638,7 +638,7 @@
         "effect": "gainBlock",
         "amount": 11,
         "amountMax": 20,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },
@@ -673,7 +673,7 @@
         "effect": "dealDamageDrain",
         "amount": 2,
         "amountMax": 5,
-        "exhaustThreshold": 7
+        "exhaustThreshold": 5
       }
     ]
   },

@@ -1217,6 +1217,9 @@ function BattleScreen({
                         💚 {kw('再生')} {enemyDef.regen}（このターン{enemyDef.regenBreak}以上削ると停止）
                       </span>
                     )}
+                    {enemyDef.armor !== undefined && !dead && (
+                      <span className="chip chip-strength" title="1ヒットで受けるダメージはこの値以下。延焼は装甲を無視する">🛡 装甲{enemyDef.armor}</span>
+                    )}
                     {enemyDef.burnResist !== undefined && !dead && (
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}

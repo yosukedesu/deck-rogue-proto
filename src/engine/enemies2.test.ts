@@ -234,9 +234,30 @@ describe('発火保証パッケージ (2026-08-30。3幕フルラン実測「設
   it('激昂の与ダメ併用: 門番は累計80ダメージを跨ぐたびに強化+2 (高火力1枚デッキも鳴らす)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_warden', 42), ['green_fang'])
     s = { ...s, player: { ...s.player, growth: 70, energy: 9 } } // 14+70=84 = 80を1回跨ぐ
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) } // 開幕ブロックを外して素の判定に
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0, armor: undefined })) } // 開幕ブロック・装甲を外して素の判定に
     const strBefore = s.enemies[0].strength
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_fang' })
     expect(s.enemies[0].strength).toBe(strBefore + 2)
+  })
+})
+
+describe('装甲 (2026-08-30 n²スケーリングへのワクチン)', () => {
+  it('1ヒットの被ダメは装甲値で頭打ちになる (急所・成長込みの最終値に適用)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_warden', 42), ['green_fang'])
+    s = { ...s, player: { ...s.player, growth: 100, energy: 9 } } // 14+100=114の一撃
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_fang' })
+    expect(hpBefore - s.enemies[0].hp).toBe(35) // 門番の装甲35
+  })
+
+  it('延焼は装甲を無視する (バーンが装甲の解答になる)', () => {
+    let s = freshCombat('set-confirm', 'enemy_warden', 42)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 50, block: 0 })) }
+    const hpBefore = s.enemies[0].hp
+    s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    // 延焼50は装甲35を超えて丸ごと通る (敵フェーズ開始時のDoT)
+    expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(50)
   })
 })

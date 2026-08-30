@@ -116,6 +116,8 @@ export interface EnemyState extends CombatantState {
   readonly patternIndex: number
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
+  /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
+  readonly armor?: number
   /** この戦闘で受けた累計ダメージ (enrageEveryDamage の判定用。2026-08-30) */
   readonly damageTakenTotal?: number
   /** 前回の再生判定以降に受けた累計HP損失 (regenBreak の判定用。再生判定のたびにリセット) */
@@ -757,6 +759,14 @@ export interface EnemyDef {
    * これはT1から問いを出せる — 貫通 (緑)・延焼 (赤)・粉砕が最初のターンから解答になる
    */
   readonly startingBlock?: number
+  /**
+   * 装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。
+   * 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・
+   * 成長×X) に対し、カードをナーフせず敵側で受ける構造的な処方。多段デッキには「ヒット数で
+   * 押し切れ」、一撃デッキには「上限まで」と別の問いを出す。とげ・延焼耐性と同じく常時表示 (フェアネス)。
+   * 延焼 (DoT) はヒットではないので装甲を無視する = バーンが装甲の解答になる
+   */
+  readonly armor?: number
 }
 
 // ---- エンカウンター (1〜3体の編成。data/encounters.json) ----

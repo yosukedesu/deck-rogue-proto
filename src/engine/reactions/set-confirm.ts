@@ -64,6 +64,7 @@ export const setConfirmSystem: ReactionSystem = {
     switch (event.type) {
       case 'EnemyActionExecuting': {
         if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
+        if (event.kind === 'rest') return state // 隙 (何もしない) に確認を挟まない (2026-08-30 ノイズ指摘)
         const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
         const win = { stage: 'pre', kind: event.kind, actual } as const
         if (usableSetCards(state, win).length > 0) {

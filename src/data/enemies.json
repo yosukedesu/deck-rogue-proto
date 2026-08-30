@@ -231,7 +231,8 @@
    "rage_flurry",
    "rage_flurry",
    "war_roar"
-  ]
+  ],
+  "armor": 25
  },
  {
   "id": "enemy_turtle",
@@ -286,7 +287,8 @@
    "awake_bite",
    "crush"
   ],
-  "startingBlock": 10
+  "startingBlock": 10,
+  "armor": 30
  },
  {
   "id": "enemy_hexer",
@@ -563,7 +565,8 @@
    "gate_guard"
   ],
   "startingBlock": 15,
-  "enrageEveryDamage": 80
+  "enrageEveryDamage": 80,
+  "armor": 35
  },
  {
   "id": "enemy_thorn_squirrel",
@@ -752,6 +755,7 @@
     "weight": 1
    }
   ],
-  "startingBlock": 10
+  "startingBlock": 10,
+  "armor": 18
  }
 ]

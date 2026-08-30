@@ -42,7 +42,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 7
       },
       {
         "trigger": "onPlay",
@@ -61,7 +61,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 13
+        "amount": 15
       }
     ]
   },
@@ -75,7 +75,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 19
+        "amount": 21
       }
     ]
   },
@@ -459,7 +459,7 @@
         "effect": "confuse",
         "amount": 1,
         "condition": {
-          "maxActionValue": 10
+          "maxActionValue": 16
         }
       }
     ]
@@ -515,7 +515,7 @@
   {
     "id": "blue_spell_steal",
     "name": "魔力盗み",
-    "cost": 3,
+    "cost": 2,
     "type": "reaction",
     "rarity": "rare",
     "effects": [
