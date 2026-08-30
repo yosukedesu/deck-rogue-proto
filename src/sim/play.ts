@@ -273,6 +273,23 @@ const NODE_ICON: Record<string, string> = {
 
 /** マップ全体をテキスト描画 (全体可視・現在地と次の選択肢を明示) */
 /** 現在地から到達可能なノード集合 (row -> Set<col>)。開始前は行0の全ノードから前向きに広げる */
+/** 指定ノードから先の到達可能集合 (選択肢ごとの内訳表示用) */
+function reachableFrom(run: RunState, row0: number, col0: number): Set<string> {
+  const out = new Set<string>()
+  let frontier: number[] = [col0]
+  let row = row0
+  while (row < run.map.length && frontier.length > 0) {
+    const next = new Set<number>()
+    for (const c of frontier) {
+      out.add(`${row}:${c}`)
+      for (const to of run.map[row][c].next) next.add(to)
+    }
+    frontier = [...next]
+    row++
+  }
+  return out
+}
+
 function reachableSet(run: RunState): Set<string> {
   const out = new Set<string>()
   let frontier: number[] = run.row < 0 ? run.map[0].map((_, c) => c) : [...(currentNode(run)?.next ?? [])]
@@ -321,7 +338,20 @@ function renderMapBrief(run: RunState): string {
     })
     if (rows.length > 0) ahead.push(`${icon}行${rows.join(',')}`)
   }
-  L.push(`   この先(到達可能): ${ahead.join(' ') || 'なし'}`)
+  L.push(`   この先(いずれかの経路で到達可能): ${ahead.join(' ') || 'なし'}`)
+  // 選択肢ごとの内訳 (2026-08-30 Opusテスターの指摘: 「この先(到達可能)」を「これから行ける」と
+  // 読んでゴールド系レリックを取った直後、選んだ枝でショップへの経路が消え421Gが死んだ)。
+  // どの枝を選ぶと何が残るかを、選ぶ前に見せる
+  for (const c of cands) {
+    const sub = reachableFrom(run, run.row + 1, c)
+    const marks = kinds
+      .filter(([t]) => [...sub].some((k) => {
+        const [r2, c2] = k.split(':').map(Number)
+        return run.map[r2][c2].type === t
+      }))
+      .map(([, icon]) => icon)
+    L.push(`   [col:${c}]を選ぶと → ${marks.join('') || '戦闘のみ'}`)
+  }
   L.push('→ {"type":"ChooseNode","col":N} で「←選べる」のノードへ進む')
   return L.join('\n')
 }

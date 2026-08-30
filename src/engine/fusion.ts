@@ -325,15 +325,30 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 「合成不可」を増やさずに契約 (コスト ≤ 素材コストの合計) を守る
   const costAsMaterial = (d: CardDef) => (d.xCost === true ? 3 : d.cost)
   const sumCost = Math.min(5, Math.max(1, costAsMaterial(a.def) + costAsMaterial(b.def)))
+  let clampExhaust = false
   if (cost > sumCost && canScale) {
     cost = sumCost
-    fitTo(ALLOW[cost] * 1.25)
+    // 強ペアの価値粉砕を止める (2026-08-30 Opusテスターの指摘「良い札同士だと必ず劣化する = 工房が
+    // ゴミ圧縮機」)。圧縮の床を125%帯でなく**150%帯+消滅**に緩める — 帯超過を消滅で払う既存契約の
+    // 再利用で、「強い2枚 → 強い1枚だが一度きり」の決断に変わる。置物は消滅で払えないので従来通り
+    // 圧縮の損が25%以内なら従来どおり圧縮する (使い回しを守る)。それを超える強ペアだけ
+    // 価値を150%帯まで残し、超過を消滅で払う — 境界ケースまで消滅にすると
+    // 「わずかな超過で一回きり化」という別の理不尽が生まれるため
+    const normal = ALLOW[cost] * 1.25
+    if (resultType !== 'permanent' && normal < targetVp * 0.75) {
+      const capped = ALLOW[cost] * 1.5 * 1.25
+      fitTo(Math.min(targetVp, capped))
+      clampExhaust = true // 125%帯を超えて残した価値は消滅で払う
+    } else {
+      fitTo(normal)
+    }
     effects = [...damageEffects, ...othersArr]
     cost = Math.min(cost, costOf(effects)) // 削りすぎて安く収まるならその安い方を採る
   }
 
   let vp = vpOf(effects, resultType)
-  let exhaust = a.def.exhaust === true || b.def.exhaust === true
+  let exhaust = a.def.exhaust === true || b.def.exhaust === true || clampExhaust
+  if (clampExhaust && vp <= ALLOW[cost] * 1.25) exhaust = a.def.exhaust === true || b.def.exhaust === true // 圧縮後に125%帯へ収まったなら消滅は不要
   let overBand = false
   const bandCap = () => ALLOW[cost] * 1.5 * 1.25 // 帯超過の判定線 (VP換算)
   if (vp > bandCap()) {
