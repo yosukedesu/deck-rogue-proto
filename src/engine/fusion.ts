@@ -37,6 +37,14 @@ const VP_PER: Record<string, number> = {
   dealDamageRandom: 1.0,
   dealDamageExecute: 1.0,
   loseHp: -1.5,
+  // per-X 参照・放出系は「典型参照量 × 単価」(scripts/card-audit.ts §49 と同じ前提。2026-08-30)
+  dealDamagePerDamageTaken: 4.0, // 被弾の典型4 × 1.0
+  applyBurnPerDamageTaken: 6.0, // 被弾4 × 延焼1.5
+  dealDamagePerRandomPlayed: 3.0, // 乱数札の典型3枚 × 1.0
+  dischargeMomentumBurn: 9.0, // 勢いの典型6 × 延焼1.5
+  dischargeMomentumBlock: 6.0, // 勢いの典型6 × 1.0
+  dischargeBurn: 6.0, // 放出時の延焼の典型6 × 1.0 (DoTを手放す対価込み)
+  dealDamageCleave: 1.3, // 対象+倒したら別の敵に同値 (連鎖は条件付きなので+30%)
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 /** コスト別の許容VP (§1)。ALLOW = 6×コスト + 2 (+2 = カード1枚の機会費用＝札束補正) */
@@ -45,9 +53,16 @@ const ALLOW: Record<number, number> = { 1: 8, 2: 14, 3: 20, 4: 26, 5: 32 }
 function effectVp(e: DeclarativeEffect): number {
   const mult = e.target === 'all' ? 2 : 1
   const per = VP_PER[e.effect]
-  if (per !== undefined) return per * (e.amount ?? 0) * mult * (e.pierce ? 1.25 : 1)
+  // 幅を持つ量 (乱数・処刑) は平均値で数える (2026-08-30。最小値査定だと
+  // 火運の賭け2〜16が「2」で値付けされ、合成が350%の1E札を生む価値漏れになっていた)
+  const amt = e.amountMax !== undefined ? ((e.amount ?? 0) + e.amountMax) / 2 : (e.amount ?? 0)
+  // 条件付き効果は期待値係数0.6 (scripts/card-audit.ts と同じ前提。2026-08-30)。
+  // 3効果の枠にあぶれた条件付きダメージは無条件ダメージへ換金されるが、
+  // 満額(1.0)だと条件の対価がタダで外れる水増しになる — 0.6掛けなら公正な換金
+  const cond = e.condition !== undefined ? 0.6 : 1
+  if (per !== undefined) return per * amt * mult * (e.pierce ? 1.25 : 1) * cond
   const flat = VP_FLAT[e.effect]
-  if (flat !== undefined) return flat * mult
+  if (flat !== undefined) return flat * mult * cond
   return 0
 }
 
@@ -67,6 +82,7 @@ const REFILL = new Set([
 
 /** 名前生成: 軸→語幹 (緑v1)。レシピ札は手書き名が優先される */
 const WORD: readonly (readonly [string, string])[] = [
+  ['applyBurn', '焔'],
   ['addGrowth', '蔦'],
   ['doubleGrowth', '花'],
   ['addMomentum', '角'],
@@ -77,6 +93,8 @@ const WORD: readonly (readonly [string, string])[] = [
   ['counter', '棘'],
   ['weakenEnemy', '根'],
   ['dealDamage', '牙'],
+  ['dealDamageRandom', '賭'],
+  ['impulseDraw', '閃'],
 ]
 function wordOf(def: CardDef): string {
   for (const [eff, w] of WORD) {
@@ -85,7 +103,7 @@ function wordOf(def: CardDef): string {
   return '樹'
 }
 function suffixOf(effects: readonly DeclarativeEffect[]): string {
-  const dmgs = effects.filter((e) => e.effect === 'dealDamage')
+  const dmgs = effects.filter((e) => e.effect === 'dealDamage' || e.effect === 'dealDamageRandom')
   const blk = effects.some((e) => e.effect === 'gainBlock' || e.effect === 'gainIceBlock')
   // 特性が名前に出る: 多段=乱撃 / 全体=嵐 / 貫通=穿ち
   if (dmgs.some((e) => e.target === 'all')) return '嵐'
@@ -94,6 +112,7 @@ function suffixOf(effects: readonly DeclarativeEffect[]): string {
   if (dmgs.length > 0 && blk) return '構え'
   if (blk) return '盾'
   if (dmgs.length > 0) return '一撃'
+  if (effects.some((e) => e.effect === 'applyBurn')) return '熾火'
   return '祝福'
 }
 
@@ -134,8 +153,12 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
 
   // --- 攻撃の特性を抽出して掛け合わせる (多段・貫通・全体の伝播) ---
   // 置物カードの dealDamage は既に毎ターン型なので抽出しない (一回きり分だけが変換対象)
+  // 条件付き (猛り火など) のダメージは抽出しない = convert 側で条件ごと引き継ぐ (2026-08-30。
+  // 旧実装は条件を落として無条件ダメージに合算しており、423ペアで猛り火の条件が消えていた)
   const dmgOf = (c: CardInstance) =>
-    c.def.type === 'permanent' ? [] : c.def.effects.filter((e) => e.effect === 'dealDamage')
+    c.def.type === 'permanent'
+      ? []
+      : c.def.effects.filter((e) => e.effect === 'dealDamage' && e.condition === undefined)
   const dmgA = dmgOf(a)
   const dmgB = dmgOf(b)
   const totalDmg = [...dmgA, ...dmgB].reduce((acc, e) => acc + (e.amount ?? 0), 0)
@@ -178,7 +201,9 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 「支配側か」ではなく「素材がもう持続型か」で判定する。同名置物×置物のような
   // 「両方すでに毎ターン型」の合成で従属側まで÷3してしまう二重割引を防ぐ。
   const convert = (e: DeclarativeEffect, srcType: string): DeclarativeEffect | null => {
-    if (e.effect === 'dealDamage' && srcType !== 'permanent') return null // 上のダメージ群で処理済み
+    if (e.effect === 'dealDamage' && srcType !== 'permanent' && e.condition === undefined) {
+      return null // 上のダメージ群で処理済み (条件付きは通す)
+    }
     if (resultType === 'permanent' && srcType !== 'permanent') {
       // 一回きり → 毎ターン化は量÷3 (切り上げ)。置物が誘発できる窓 (hooks.ts の2窓) だけ残し、
       // それ以外 (onEnemyAction 等は置物にディスパッチされない) は onTurnStart に落とす
@@ -239,6 +264,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 「量」の効果 = 予算に合わせて削れるもの。焚き火の「鍛える」が触れるのと同じ集合に揃える
   // (ドロー・成長・勢い等の単位効果と参照スケーリングには触らない)
   const BLOCKY = new Set([
+    'dealDamage', // 無条件分は抽出済みなので、ここに来るのは条件付き (猛り火等) のみ
     'gainBlock',
     'gainIceBlock',
     'counter',

@@ -243,11 +243,11 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     expect(def.type).toBe('reaction')
     const counters = def.effects.filter((e) => e.effect === 'counter')
     expect(counters).toHaveLength(2)
-    // 2026-08-30: コストは素材の合計 (1E+1E) を超えない。超える分は量を削って払うので
-    // 返しの値は 9→6 / 20→12 に圧縮されるが、条件違いが**別の効果のまま**であることは不変
+    // 2026-08-30: コストは素材の合計 (1E+1E) を超えない。条件付きは期待値係数0.6で
+    // 数えるため圧縮が浅くなり 9→8 / 20→16。条件違いが**別の効果のまま**であることは不変
     expect(def.cost).toBe(2)
-    expect(counters.some((e) => e.amount === 6 && e.condition === undefined)).toBe(true)
-    expect(counters.some((e) => e.amount === 12 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
+    expect(counters.some((e) => e.amount === 8 && e.condition === undefined)).toBe(true)
+    expect(counters.some((e) => e.amount === 16 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
   })
 
   it('置物化: 打撃6×年輪の大樹 → 毎ターン2ダメ (÷3切り上げ) + 成長1。従者の少年のラダーに整合', () => {
@@ -339,6 +339,59 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
         // 置物は除く: 値付けが寿命込み (×3) なので、素材より重くなるのが正しい姿
         if (def.type !== 'permanent' && def.effects.some((e) => SCALABLE.has(e.effect))) {
           const sum = Math.max(1, greens[i].cost + greens[j].cost) // 0E同士は下限1E
+          expect(def.cost, def.id).toBeLessThanOrEqual(sum)
+        }
+      }
+    }
+  })
+})
+
+describe('赤の工房 (2026-08-30 全色開放後の赤対応)', () => {
+  it('猛り火条件付きダメージは条件ごと引き継がれる (平坦化しない)', () => {
+    // 猛り火の一撃 (5 + {猛}7) × 火弾 (6): 無条件分だけが合算され、{猛}7は条件のまま残る
+    const def = fuseCards(inst('red_blaze_strike'), inst('red_strike'))
+    const uncond = def.effects.filter((e) => e.effect === 'dealDamage' && e.condition === undefined)
+    const blaze = def.effects.filter((e) => e.effect === 'dealDamage' && e.condition?.blaze === true)
+    expect(uncond.length).toBeGreaterThan(0)
+    expect(blaze).toHaveLength(1)
+    expect(blaze[0].amount).toBe(7)
+  })
+
+  it('乱数札は平均値で値付けされる (最小値査定の350%価値漏れの再発防止)', () => {
+    // 火運の賭け (乱2〜16 = 平均9) × とどめの一撃 (処刑10〜28 = 平均19)
+    const def = fuseCards(inst('red_gamble'), inst('red_final_blow'))
+    expect(def.cost).toBeGreaterThanOrEqual(3) // 旧実装は最小値査定で1Eになっていた
+  })
+
+  it('今日の新効果 (火移し・一擲乾坤・業腹) が合成可能 (VP表に典型参照量で登録)', () => {
+    expect(fuseBlockReason(inst('red_fire_shift'), inst('red_strike'))).toBeNull()
+    expect(fuseBlockReason(inst('red_all_in'), inst('red_strike'))).toBeNull()
+    expect(fuseBlockReason(inst('red_spite'), inst('red_strike'))).toBeNull()
+  })
+
+  it('名前に赤語彙が出る (緑v1の 樹/牙 だけにならない)', () => {
+    const def = fuseCards(inst('red_ignite'), inst('red_ember'))
+    expect(def.name).toContain('焔') // 着火×くすぶる残り火 = 延焼が主役
+  })
+
+  it('赤×赤の全組み合わせでコスト契約と支配順位が守られる', () => {
+    const reds = allCards.filter((c) => c.color === 'red')
+    const RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
+    for (let i = 0; i < reds.length; i++) {
+      for (let j = i + 1; j < reds.length; j++) {
+        const a = { uid: `a${i}`, def: reds[i] }
+        const b = { uid: `b${j}`, def: reds[j] }
+        if (fuseBlockReason(a, b) !== null) continue
+        const def = fuseCards(a, b)
+        if (def.id.startsWith('fusion_')) continue
+        expect(RANK[def.type], def.id).toBe(Math.max(RANK[reds[i].type], RANK[reds[j].type]))
+        if (def.type === 'reaction') {
+          expect(def.effects.every((e) => e.trigger !== 'onPlay'), def.id).toBe(true)
+        }
+        // 圧縮なのに重くなる、を禁じる (置物は寿命込み値付けなので除外)
+        const SCALABLE = new Set(['dealDamage', 'gainBlock', 'gainIceBlock', 'counter', 'gainHp', 'applyBurn', 'dealDamageDrain', 'dealDamageRandom'])
+        if (def.type !== 'permanent' && def.effects.some((e) => SCALABLE.has(e.effect))) {
+          const sum = Math.max(1, reds[i].cost + reds[j].cost)
           expect(def.cost, def.id).toBeLessThanOrEqual(sum)
         }
       }
