@@ -1,6 +1,7 @@
 // engine/state.ts — 状態遷移の入口
 // GameState はイミュータブル。applyCommand(state, command) => newState の純関数のみで遷移する。
 // 方式固有コマンドは ReactionSystem に委譲し、割り込み中断中だった場合は敵フェーズを再開する。
+import { retrieveSetCard } from './reactions/set-base.ts'
 
 import { continueAfterWindow, createInitialState, endTurn, playCard, startCombat } from './combat.ts'
 import { getReactionSystem } from './reactions/index.ts'
@@ -16,6 +17,8 @@ export function applyCommand(state: GameState, command: Command): GameState {
       return playCard(state, command.cardUid, command.modeIndex, command.discardUids, command.targetIndex, command.exhaustUids, command.retrieveUid)
     case 'EndTurn':
       return endTurn(state)
+    case 'RetrieveSetCard':
+      return retrieveSetCard(state, command.cardUid)
     case 'SetCard':
     case 'ReactManual':
     case 'ConfirmReaction': {

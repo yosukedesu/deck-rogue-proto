@@ -408,6 +408,8 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       energy: state.player.energyMax,
       energyMaxAtTurnStart: state.player.energyMax,
       cardsPlayedThisTurn: 0,
+      // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
+      setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
     },
   }
   s = emit(s, { type: 'TurnStarted', turn })

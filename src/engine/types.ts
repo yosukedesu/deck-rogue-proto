@@ -256,6 +256,7 @@ export type Command =
       readonly retrieveUid?: string
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
+  | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
   | {
       readonly type: 'ConfirmReaction'
@@ -276,6 +277,7 @@ export type GameEvent =
   | { readonly type: 'CardsDrawn'; readonly count: number }
   | { readonly type: 'CardPlayed'; readonly cardId: string }
   | { readonly type: 'CardSet'; readonly cardId: string }
+  | { readonly type: 'SetCardRetrieved'; readonly cardId: string }
   | { readonly type: 'EnemyIntentDeclared'; readonly enemyIndex: number; readonly intent: EnemyIntent }
   /** 敵行動の実行直前フック点 (pre窓)。ReactionSystem はこれを見て割り込む */
   | { readonly type: 'EnemyActionExecuting'; readonly enemyIndex: number; readonly kind: EnemyActionKind }
@@ -613,6 +615,13 @@ export interface CardInstance {
   readonly def: CardDef
   /** 召喚トークン: 敵の「トークン破壊」の対象になる (手張り置物・リーダー・レリックは対象外) */
   readonly token?: boolean
+  /**
+   * 伏せの鮮度 (2026-08-30 見切り)。このターンに伏せられた札だけ true。
+   * 敵の伏せ反応 (setAlt/movesVsSet) は**新しい札にだけ**反応する — 置きっぱなしの札は
+   * 「織り込み済み」で敵の行動を変えない (蓋の対処)。ただし破壊 (destroy-set) の判定は
+   * 鮮度を問わない = 晒し続けた札は壊されには行かれる。自ターン開始時に false へ
+   */
+  readonly setFresh?: boolean
   /**
    * 生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。
    * 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない

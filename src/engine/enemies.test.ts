@@ -252,33 +252,20 @@ describe('伏せへの罰 (2026-08-26。無期限温存で敵を弱い分岐に�
 
 describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏せ破壊への応答」)', () => {
   // 5色テストで3色が独立に「読み合いでなく一方的な没収」と報告した問題への対処。
-  // destroy-set の実行前に確認ウィンドウが開き、壊される札は誘発の種別を問わず「発動して逃がす」候補になる。
-  it('onAttackIncoming の守りの蔓でも destroy-set に応答でき、発動すれば破壊は空振りする', () => {
+  // 逃がしルールは廃止 (2026-08-30 A2)。破壊されそうな札は回収 (1E) で事前に引き上げる —
+  // 「発動して逃がす」は破壊を敵の最弱行動にしていた (3幕フルラン実測)
+  it('回収: 1E払って伏せ札を手札に戻せる (払った伏せコストは返らない)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
     s = withHand(s, ['green_reaction_vine'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
-    s = withIntent(s, {
-      kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0,
-      inflict: { status: 'junk', amount: 1 },
-    })
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.phase).toBe('awaiting-reaction') // 窓が開く (旧実装は開かず没収だった)
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_vine' })
-    // 効果は解決される (EndTurn は敵フェーズを走り切って次の自ターンまで進むので、
-    // ブロックの現在値でなくイベントで確認する)
-    expect(
-      s.eventLog.some((e) => e.type === 'BlockGained' && e.target === 'player' && e.amount >= 12),
-    ).toBe(true)
-    expect(s.player.discardPile.some((c) => c.def.id === 'green_reaction_vine')).toBe(true)
-    expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(false) // 破壊は空振り
-    // がらくたも付与されない (壊す物が無い)
-    const junk = [...s.player.hand, ...s.player.drawPile, ...s.player.discardPile].filter(
-      (c) => c.def.id === 'status_junk',
-    )
-    expect(junk).toHaveLength(0)
+    const energyBefore = s.player.energy
+    s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_reaction_vine' })
+    expect(s.player.energy).toBe(energyBefore - 1)
+    expect(s.player.setCards).toHaveLength(0)
+    expect(s.player.hand.some((c) => c.uid === 't0_green_reaction_vine')).toBe(true)
   })
 
-  it('温存すれば従来どおり破壊され、がらくたが付与される', () => {
+  it('破壊は素直に通り、がらくたが付与される (2026-08-30 窓は開かない)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
     s = withHand(s, ['green_reaction_vine'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
@@ -287,7 +274,6 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
       inflict: { status: 'junk', amount: 1 },
     })
     s = applyCommand(s, { type: 'EndTurn' })
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
     expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
     // がらくたは山札のランダム位置に混ざり、次ターンのドローで手札に来ていることもある
     const junk = [...s.player.hand, ...s.player.drawPile, ...s.player.discardPile].filter(
@@ -306,15 +292,14 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
     expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
   })
 
-  it('弾け実の罠を発動で逃がすと counter だけ解決され、onSetDestroyed の12全体は発火しない', () => {
+  it('弾け実の罠は破壊されると必ず爆ぜる (逃がしルール廃止で罰札が常に発火する)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
     s = withHand(s, ['green_reaction_powder_pod'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_powder_pod' })
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.phase).toBe('awaiting-reaction')
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_powder_pod' })
-    expect(hpBefore - s.enemies[0].hp).toBe(3) // counter3 のみ。破壊されていないので12は出ない
+    expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
+    expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(12) // onSetDestroyed の12全体
   })
 })

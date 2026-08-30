@@ -1261,7 +1261,20 @@ function BattleScreen({
               {player.setCards.map((c) => (
                 <span key={c.uid}>
                   <div className="card card-back">伏</div>
-                  <div className="set-slot-label">{c.def.name}</div>
+                  <div className="set-slot-label">
+                    {c.def.name}
+                    {c.setFresh !== true && <span title="敵はこの札に反応しない (織り込み済み)">（見切られ）</span>}
+                  </div>
+                  {s.phase === 'player-turn' && (
+                    <button
+                      className="btn"
+                      disabled={player.energy < 1}
+                      title="1E払って手札に戻す (伏せコストは返らない)"
+                      onClick={() => dispatch({ type: 'RetrieveSetCard', cardUid: c.uid })}
+                    >
+                      回収(1E)
+                    </button>
+                  )}
                 </span>
               ))}
               {Array.from({ length: Math.max(0, player.setSlots - player.setCards.length) }).map((_, i) => (

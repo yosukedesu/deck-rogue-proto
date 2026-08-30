@@ -13,10 +13,7 @@ describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクシ
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_powder_pod' })
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'EndTurn' })
-    // 2026-08-27: 伏せ破壊への応答の窓が開くようになった。火薬は「壊させたい」札なので温存を選ぶ
-    expect(s.phase).toBe('awaiting-reaction')
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+    s = applyCommand(s, { type: 'EndTurn' }) // 2026-08-30 逃がし廃止: 窓は開かず破壊が素直に通る
     expect(s.enemies[0].hp).toBe(hpBefore - 12)
     expect(s.player.setCards).toHaveLength(0)
     expect(s.player.discardPile.some((c) => c.def.id === 'green_reaction_powder_pod')).toBe(true)

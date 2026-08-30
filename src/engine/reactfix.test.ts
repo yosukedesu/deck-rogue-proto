@@ -118,3 +118,64 @@ describe('致死時の窓の絞り込み (2026-08-26)', () => {
     expect(s.phase).toBe('awaiting-reaction')
   })
 })
+
+describe('見切りと回収 (2026-08-30 A2。伏せの概念監査)', () => {
+  it('置きっぱなしの伏せ札は敵の分岐を変えない (蓋の対処 = 敵は新しい札にだけ反応する)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), [
+      'green_reaction_thorns',
+    ])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    // 伏せた直後 = 新しい札なので alt (反応テーブル) 側
+    expect(effectiveIntent(s, 0)!.kind).toBe(s.enemies[0].intent!.alt!.kind)
+    // 発動せず敵の防御行動を素通しして次ターンへ → 置きっぱなし = 織り込み済み
+    s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.setCards).toHaveLength(1)
+    expect(s.player.setCards[0].setFresh).toBe(false)
+    const intent = s.enemies[0].intent!
+    if (intent.conditionalOn === 'set' && intent.alt && intent.alt.kind !== 'destroy-set') {
+      // 敵の伏せ反応は基準側 (伏せなし) のまま = 蓋にならない
+      expect(effectiveIntent(s, 0)!.kind).toBe(intent.kind)
+    }
+  })
+
+  it('破壊 (destroy-set) の判定だけは鮮度を問わない (晒し続けた札は壊されには行かれる)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), [
+      'green_reaction_thorns',
+    ])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+    s = applyCommand(s, { type: 'EndTurn' }) // 札は古くなる
+    // 破壊分岐の条件付き意図を細工: alt が destroy-set なら古い札でも「あり」側
+    s = {
+      ...s,
+      enemies: s.enemies.map((e, i) =>
+        i === 0
+          ? {
+              ...e,
+              intent: {
+                kind: 'attack',
+                shownMin: 5,
+                shownMax: 5,
+                actual: 5,
+                conditionalOn: 'set',
+                alt: { kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0 },
+              },
+            }
+          : e,
+      ),
+    }
+    expect(effectiveIntent(s, 0)!.kind).toBe('destroy-set')
+  })
+
+  it('回収は自ターンのみ・1E必要 (エナジー0では回収できない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
+      'green_reaction_thorns',
+    ])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = { ...s, player: { ...s.player, energy: 0 } }
+    expect(() =>
+      applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_reaction_thorns' }),
+    ).toThrow(/エナジー不足/)
+  })
+})

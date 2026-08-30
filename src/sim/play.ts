@@ -8,7 +8,7 @@
 //
 // コマンドJSON例:
 //   {"type":"PlayCard","cardUid":"c12","targetIndex":0}
-//   {"type":"SetCard","cardUid":"c3"} / {"type":"EndTurn"}
+//   {"type":"SetCard","cardUid":"c3"} / {"type":"RetrieveSetCard","cardUid":"c3"} (1E) / {"type":"EndTurn"}
 //   {"type":"ConfirmReaction","fire":true,"cardUid":"c3"} / {"type":"ConfirmReaction","fire":false}
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
@@ -218,7 +218,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}`).join(' / ') || 'なし'}`)
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})`).join(' / ')}`)
@@ -519,7 +519,7 @@ if (mode === 'new-run') {
   if (sf.kind === 'run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
-      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
+      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice', 'RetrieveSetCard',
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }

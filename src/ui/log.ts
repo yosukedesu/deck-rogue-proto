@@ -59,6 +59,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardsDrawn': return { text: `${e.count}枚ドロー`, cls: 'log-line' }
     case 'CardPlayed': return { text: `プレイ: ${cardName(e.cardId)}`, cls: 'log-line' }
     case 'CardSet': return { text: `伏せた: ${cardName(e.cardId)}`, cls: 'log-line' }
+    case 'SetCardRetrieved': return { text: `回収: ${cardName(e.cardId)} (1E払って手札へ)`, cls: 'log-line' }
     case 'EnemyIntentDeclared': return { text: `敵の意図: ${intentText(e.intent)}`, cls: 'log-line' }
     case 'EnemyActionExecuting':
     case 'EnemyActionResolved': return null

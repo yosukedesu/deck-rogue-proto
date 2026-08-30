@@ -32,7 +32,7 @@ export function setCard(state: GameState, cardUid: string): GameState {
       ...state.player,
       energy: state.player.energy - card.def.cost,
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
-      setCards: [...state.player.setCards, card],
+      setCards: [...state.player.setCards, { ...card, setFresh: true }],
     },
   }
   // 伏せに反応する置物 (レリック: 符師の懐=伏せるたび1ドロー)
@@ -40,6 +40,32 @@ export function setCard(state: GameState, cardUid: string): GameState {
     emit(s, { type: 'CardSet', cardId: card.def.id }),
     'onCardSet',
     Math.max(0, s.enemies.findIndex((e) => e.hp > 0)),
+  )
+}
+
+/**
+ * 回収 (2026-08-30 A2): 1E払って伏せ札を手札に戻す。払った伏せコストは返らない。
+ * 読み違いの代償を「枠の固定死」から「1E払って賭け直し」に変える。
+ * 逃がしルール (伏せ破壊への応答) の廃止とセット — 破壊されそうな札は事前に自分で引き上げる
+ */
+export function retrieveSetCard(state: GameState, cardUid: string): GameState {
+  if (state.phase !== 'player-turn') throw new Error('回収は自ターンのみ')
+  const card = state.player.setCards.find((c) => c.uid === cardUid)
+  if (!card) throw new Error(`伏せ場にないカード: ${cardUid}`)
+  if (state.player.energy < 1) throw new Error('エナジー不足: 回収には1E必要')
+  const restored = { ...card }
+  delete (restored as { setFresh?: boolean }).setFresh
+  return emit(
+    {
+      ...state,
+      player: {
+        ...state.player,
+        energy: state.player.energy - 1,
+        setCards: state.player.setCards.filter((c) => c.uid !== cardUid),
+        hand: [...state.player.hand, restored],
+      },
+    },
+    { type: 'SetCardRetrieved', cardId: card.def.id },
   )
 }
 

@@ -233,9 +233,9 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
       win.stage === 'pre'
         ? e.trigger === 'onEnemyAction' ||
           (e.trigger === 'onAttackIncoming' && win.kind === 'attack') ||
-          // 伏せ破壊への応答 (2026-08-27。確定済みルール表): 壊される札は誘発の種別を問わず
-          // 「発動して逃がす」候補になる。onSetDestroyed だけは対象外 (破壊された時にのみ発火する効果)
-          (win.kind === 'destroy-set' && REACTION_TRIGGERS.has(e.trigger))
+          // 逃がしルールは廃止 (2026-08-30 A2)。破壊されそうな札は回収 (1E) で事前に引き上げる —
+          // 「発動して逃がす」は破壊を敵の最弱行動にしていた (3幕フルラン実測)
+          false
         : (e.trigger === 'onAttacked' && win.kind === 'attack') ||
           (e.trigger === 'onEnemyBuffed' && (win.kind === 'buff' || win.kind === 'rally')) ||
           (e.trigger === 'onEnemyDefended' && win.kind === 'defend')
@@ -269,7 +269,14 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
   if (!intent) return null
   if (!intent.conditionalOn || !intent.alt) return intent
   const met =
-    intent.conditionalOn === 'set' ? state.player.setCards.length > 0 : hasHuntableTokens(state)
+    intent.conditionalOn === 'set'
+      ? // 見切り (2026-08-30 A2): 敵の伏せ反応は**そのターンに伏せられた札**にだけ反応する。
+        // 置きっぱなしの札は「織り込み済み」= 蓋 (置くだけで攻撃が消え続ける) の対処。
+        // ただし破壊 (destroy-set) は鮮度を問わない — 晒し続けた札は壊されには行かれる
+        intent.alt?.kind === 'destroy-set'
+        ? state.player.setCards.length > 0
+        : state.player.setCards.some((c) => c.setFresh === true)
+      : hasHuntableTokens(state)
   if (!met) return intent
   return { ...intent.alt, conditionalOn: intent.conditionalOn, alt: intent.alt }
 }
