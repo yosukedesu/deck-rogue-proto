@@ -29,6 +29,7 @@ function cname(cardId: string): string {
 import {
   cardNeedsTarget,
   effectiveCost,
+  playerCanSet,
   effectiveIntent,
   isPlayableFromHand,
   reactionMatches,
@@ -129,6 +130,10 @@ function intentLine(s: GameState, i: number): string {
   const e = s.enemies[i]
   if (!e.intent) return '---'
   // 条件付き意図: 両分岐を予告する (プレイヤーが自ターン中にどちらを選ばせるか決められる)
+  if (e.intent.conditionalOn === 'set' && e.intent.alt && !playerCanSet(s)) {
+    // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)
+    return branchText(e.intent) // branchText は素の値だけを読む
+  }
   if (e.intent.conditionalOn && e.intent.alt) {
     const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
     const now = effectiveIntent(s, i)!

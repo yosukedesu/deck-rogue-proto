@@ -331,6 +331,23 @@ export function usableSetCards(
 
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
 // 威嚇 (延焼による攻撃弱体) は 2026-08-25 に撤去: 延焼は純DoTに戻し、赤の受けは憤怒 (被弾の換金) が担う
+/**
+ * このプレイヤーは今後この戦闘で伏せられるか (2026-08-30)。
+ * リアクションを1枚も持たないデッキ (赤単など) では、setAlt の「伏せ札あり」分岐は
+ * 到達不能なので **表示層はこの判定で分岐の予告を隠す** (エンジンの分岐判定自体は変えない =
+ * 強い側の固定は「伏せない色の税」として受容する。ユーザー裁定)。
+ * 消滅置き場は数えない (リアクションは死者再生の対象外 = 戻ってこない)
+ */
+export function playerCanSet(state: GameState): boolean {
+  const zones = [
+    state.player.hand,
+    state.player.drawPile,
+    state.player.discardPile,
+    state.player.setCards,
+  ]
+  return zones.some((z) => z.some((c) => c.def.type === 'reaction'))
+}
+
 export function windowFromPending(state: GameState): ReactionWindow | null {
   const pending = state.pendingWindow
   if (!pending) return null

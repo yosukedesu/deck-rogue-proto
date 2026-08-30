@@ -1244,7 +1244,7 @@
       {
         "trigger": "onImpulsePlayed",
         "effect": "addMomentum",
-        "amount": 4
+        "amount": 2
       }
     ]
   },

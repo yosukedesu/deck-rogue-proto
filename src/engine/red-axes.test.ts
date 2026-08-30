@@ -67,7 +67,7 @@ describe('衝動の受け皿 (onImpulsePlayed のペイオフ3枚目・4枚目)'
     const hpBefore = s.enemies[0].hp
     const momentumBefore = s.player.momentum
     s = applyCommand(s, { type: 'PlayCard', cardUid: impulse[0] })
-    expect(s.player.momentum).toBe(momentumBefore + 4) // 焔の目録
+    expect(s.player.momentum).toBe(momentumBefore + 2) // 焔の目録 (2026-08-30 勢い三重掛けの是正で+4→+2。ユーザー許可)
     // 走り火の3ダメージ + 衝動札自身のダメージ (勢い込み) が入る
     expect(s.enemies[0].hp).toBeLessThanOrEqual(hpBefore - 3)
   })

@@ -33,6 +33,7 @@ import {
 import {
   BLAZE_THRESHOLD,
   cardNeedsTarget,
+  playerCanSet,
   effectiveIntent,
   reactionMatches,
   setBranchFlipRisks,
@@ -484,6 +485,11 @@ function conditionalIntentText(s: GameState, i: number): string {
   const intent = s.enemies[i]?.intent
   if (!intent) return '---'
   if (!intent.conditionalOn || !intent.alt) return intentText(intent)
+  // 伏せられないデッキには「伏せ札あり」分岐を予告しない (到達不能な選択肢の常時表示は
+  // 「お前にはこの選択肢は無い」の掲示になる — 2026-08-30 Opusラン報告)
+  if (intent.conditionalOn === 'set' && !playerCanSet(s)) {
+    return intentText({ ...intent, conditionalOn: undefined, alt: undefined })
+  }
   const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
