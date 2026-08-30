@@ -291,39 +291,6 @@
     ]
   },
   {
-    "id": "red_reaction_flareback",
-    "name": "逆燃",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "applyBurn",
-        "amount": 8
-      }
-    ]
-  },
-  {
-    "id": "red_reaction_eruption",
-    "name": "爆発反応",
-    "cost": 2,
-    "type": "reaction",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onEnemyAction",
-        "effect": "counter",
-        "amount": 16
-      },
-      {
-        "trigger": "onEnemyAction",
-        "effect": "applyBurn",
-        "amount": 4
-      }
-    ]
-  },
-  {
     "id": "red_flame_wave",
     "name": "炎の波",
     "cost": 2,
@@ -354,43 +321,6 @@
     ]
   },
   {
-    "id": "red_trap_powder",
-    "name": "罠仕掛けの火薬",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 3
-      },
-      {
-        "trigger": "onSetDestroyed",
-        "effect": "dealDamage",
-        "amount": 12,
-        "target": "all"
-      }
-    ]
-  },
-  {
-    "id": "red_flinch_fire",
-    "name": "先手の炎",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onAttackIncoming",
-        "effect": "dealDamage",
-        "amount": 12
-      }
-    ],
-    "axis": [
-      "wrath"
-    ]
-  },
-  {
     "id": "red_billiard",
     "name": "玉突き",
     "cost": 2,
@@ -401,20 +331,6 @@
         "trigger": "onPlay",
         "effect": "dealDamageCleave",
         "amount": 10
-      }
-    ]
-  },
-  {
-    "id": "red_ambush_trap",
-    "name": "追い打ちの罠",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onAttackPlayed",
-        "effect": "dealDamage",
-        "amount": 12
       }
     ]
   },
@@ -494,28 +410,6 @@
         "trigger": "onAttacked",
         "effect": "addMomentum",
         "amount": 4
-      }
-    ],
-    "axis": [
-      "wrath"
-    ]
-  },
-  {
-    "id": "red_reaction_defiance",
-    "name": "反骨の炎",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "applyBurn",
-        "amount": 5
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "addMomentum",
-        "amount": 3
       }
     ],
     "axis": [
@@ -630,25 +524,6 @@
     ]
   },
   {
-    "id": "red_reaction_ignition",
-    "name": "引火",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onAttackPlayed",
-        "effect": "dealDamage",
-        "amount": 3
-      },
-      {
-        "trigger": "onAttackPlayed",
-        "effect": "applyBurn",
-        "amount": 6
-      }
-    ]
-  },
-  {
     "id": "red_fang_breaker",
     "name": "砕牙",
     "cost": 2,
@@ -683,26 +558,6 @@
         "trigger": "onPlay",
         "effect": "applyBurn",
         "amount": 4
-      }
-    ]
-  },
-  {
-    "id": "red_reaction_scale",
-    "name": "逆鱗",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "common",
-    "axis": [
-      "wrath"
-    ],
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "condition": {
-          "minDamageTaken": 10
-        },
-        "effect": "addMomentum",
-        "amount": 8
       }
     ]
   },
@@ -1066,25 +921,6 @@
     ]
   },
   {
-    "id": "red_reaction_backdraft",
-    "name": "逆火",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 7
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "applyBurn",
-        "amount": 4
-      }
-    ]
-  },
-  {
     "id": "red_perm_ward",
     "name": "業火の護符",
     "cost": 2,
@@ -1282,25 +1118,6 @@
         "trigger": "onTurnStart",
         "effect": "impulseDraw",
         "amount": 2
-      }
-    ]
-  },
-  {
-    "id": "red_reaction_backlash",
-    "name": "火返し",
-    "cost": 2,
-    "type": "reaction",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 15
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "applyBurn",
-        "amount": 5
       }
     ]
   },
@@ -1661,54 +1478,35 @@
     ]
   },
   {
-    "id": "red_reaction_planted_fire",
-    "name": "仕掛け火",
+    "id": "red_perm_flarecoat",
+    "name": "火纏い",
     "cost": 1,
-    "type": "reaction",
+    "type": "permanent",
     "rarity": "common",
     "effects": [
       {
-        "trigger": "onSpellPlayed",
+        "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 7
+        "amount": 2
       }
     ]
   },
   {
-    "id": "red_reaction_fanning",
-    "name": "煽り火の罠",
-    "cost": 1,
-    "type": "reaction",
-    "rarity": "common",
+    "id": "red_perm_thorn_flame",
+    "name": "棘火の帳",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
-        "trigger": "onAttackPlayed",
+        "trigger": "onAttacked",
         "effect": "dealDamage",
         "amount": 3
       },
       {
-        "trigger": "onAttackPlayed",
-        "effect": "addMomentum",
-        "amount": 5
-      }
-    ]
-  },
-  {
-    "id": "red_reaction_chain_powder",
-    "name": "連火の仕込み",
-    "cost": 2,
-    "type": "reaction",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onAttackPlayed",
-        "effect": "dealDamage",
-        "amount": 10
-      },
-      {
-        "trigger": "onAttackPlayed",
+        "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 5
+        "amount": 2
       }
     ]
   }

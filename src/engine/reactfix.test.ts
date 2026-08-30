@@ -16,11 +16,11 @@ describe('条件付き意図 (敵の反応が実行時の盤面で決まる)', (
   })
 
   it('同じターンに伏せると、その行動が即座に反応テーブル側へ切り替わる', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter_red'), [
-      'red_reaction_flareback',
+    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), [
+      'green_reaction_thorns',
     ])
     const before = effectiveIntent(s, 0)!.kind
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_reaction_flareback' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     const after = effectiveIntent(s, 0)!
     // alt (反応テーブル) 側に切り替わっている = 「今から伏せて誘導」が成立する
     expect(after.kind).toBe(s.enemies[0].intent!.alt!.kind)

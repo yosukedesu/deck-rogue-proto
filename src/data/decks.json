@@ -542,11 +542,11 @@
         "count": 1
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {
-        "cardId": "red_reaction_eruption",
+        "cardId": "red_perm_thorn_flame",
         "count": 1
       }
     ]
@@ -586,11 +586,11 @@
         "count": 2
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 2
       },
       {
-        "cardId": "red_reaction_eruption",
+        "cardId": "red_perm_thorn_flame",
         "count": 1
       },
       {
@@ -650,7 +650,7 @@
         "count": 2
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       }
     ]
@@ -674,11 +674,11 @@
         "count": 2
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {
-        "cardId": "red_reaction_eruption",
+        "cardId": "red_perm_thorn_flame",
         "count": 1
       },
       {
@@ -714,7 +714,7 @@
         "count": 1
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {
@@ -1242,7 +1242,7 @@
         "count": 2
       },
       {
-        "cardId": "red_reaction_scale",
+        "cardId": "red_perm_pyre",
         "count": 1
       },
       {
@@ -1250,7 +1250,7 @@
         "count": 1
       },
       {
-        "cardId": "red_reaction_defiance",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {
@@ -1338,7 +1338,7 @@
         "count": 1
       },
       {
-        "cardId": "red_reaction_defiance",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {
@@ -1378,7 +1378,7 @@
         "count": 1
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {
@@ -1538,7 +1538,7 @@
         "count": 1
       },
       {
-        "cardId": "red_reaction_flareback",
+        "cardId": "red_perm_flarecoat",
         "count": 1
       },
       {

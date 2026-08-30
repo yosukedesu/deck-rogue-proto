@@ -305,15 +305,15 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
     expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
   })
 
-  it('罠仕掛けの火薬を発動で逃がすと counter だけ解決され、onSetDestroyed の12全体は発火しない', () => {
-    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter_red')
-    s = withHand(s, ['red_trap_powder'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_trap_powder' })
+  it('弾け実の罠を発動で逃がすと counter だけ解決され、onSetDestroyed の12全体は発火しない', () => {
+    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
+    s = withHand(s, ['green_reaction_powder_pod'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_powder_pod' })
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_red_trap_powder' })
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_powder_pod' })
     expect(hpBefore - s.enemies[0].hp).toBe(3) // counter3 のみ。破壊されていないので12は出ない
   })
 })

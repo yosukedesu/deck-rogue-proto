@@ -1359,5 +1359,39 @@
       }
     ],
     "rarity": "uncommon"
+  },
+  {
+    "id": "green_reaction_preempt",
+    "name": "先制の蔦槍",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "dealDamage",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_powder_pod",
+    "name": "弾け実の罠",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 3
+      },
+      {
+        "trigger": "onSetDestroyed",
+        "effect": "dealDamage",
+        "amount": 12,
+        "target": "all"
+      }
+    ]
   }
 ]

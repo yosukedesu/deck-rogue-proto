@@ -5,12 +5,12 @@ import { applyCommand } from './state.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
-describe('伏せ破壊への罰 (罠仕掛けの火薬)', () => {
+describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクション撤去で緑へ移管)', () => {
   it('罠壊しに破壊されると敵全体に12ダメージが爆ぜる', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter_red'), [
-      'red_trap_powder',
+    let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), [
+      'green_reaction_powder_pod',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_trap_powder' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_powder_pod' })
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
@@ -19,23 +19,12 @@ describe('伏せ破壊への罰 (罠仕掛けの火薬)', () => {
     s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
     expect(s.enemies[0].hp).toBe(hpBefore - 12)
     expect(s.player.setCards).toHaveLength(0)
-    expect(s.player.discardPile.some((c) => c.def.id === 'red_trap_powder')).toBe(true)
+    expect(s.player.discardPile.some((c) => c.def.id === 'green_reaction_powder_pod')).toBe(true)
   })
 })
 
 describe('自己誘発リアクション', () => {
-  it('追い打ちの罠: 伏せ中に攻撃カードをプレイすると起爆し、同じ敵に8ダメージ', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
-      'red_ambush_trap',
-      'red_strike',
-    ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_ambush_trap' })
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 12) // 火弾6 + 追い打ち12 (2026-08-30 緑水準へ引き上げ)
-    expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
-    expect(s.player.discardPile.some((c) => c.def.id === 'red_ambush_trap')).toBe(true)
-  })
+  // 追い打ちの罠は赤のリアクション撤去 (2026-08-30) で削除。自己誘発の機構は反響の符が固定する
 
   it('反響の符: 呪文プレイで起爆し1ドロー+霊気2。物理では起爆しない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
@@ -115,27 +104,27 @@ describe('キル連鎖 (玉突き)', () => {
   })
 })
 
-describe('先手の炎 (被攻撃前の先制ダメージ)', () => {
+describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手の炎を緑へ移管)', () => {
   it('pre窓で10ダメージ。攻撃自体はそのまま受ける (倒せなければ)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
-      'red_flinch_fire',
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
+      'green_reaction_preempt',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_flinch_fire' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_preempt' })
     s = withIntent(s, attackIntent(10))
     const playerHp = s.player.hp
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].hp).toBe(enemyHp - 12) // 先手の炎 (2026-08-30 pre窓の150%上限ちょうどへ)
+    expect(s.enemies[0].hp).toBe(enemyHp - 12) // 先制の蔦槍 (pre窓の150%上限ちょうど)
     expect(s.player.hp).toBe(playerHp - 10) // 威嚇は撤去済み: 素の10を受ける
   })
 
-  it('先手の炎で敵を倒せば、その攻撃は発生しない (焼き切り)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
-      'red_flinch_fire',
+  it('先制の蔦槍で敵を倒せば、その攻撃は発生しない (焼き切り)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
+      'green_reaction_preempt',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_flinch_fire' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_preempt' })
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 5 })) }
     s = withIntent(s, attackIntent(10))
     const playerHp = s.player.hp
