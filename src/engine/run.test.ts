@@ -97,8 +97,8 @@ describe('ラン構造 (マップ)', () => {
     // 2026-08-29 テンポ再校正②: 打ち据え (Bash枠=急所の乗算) がスターターに1枚入る。
     // sim実測で通常敵平均 -1.3T の最大レバー。報酬プールには出ない基本札
     expect(run.deck.filter((c) => c.def.id === 'green_basic_bash')).toHaveLength(1)
-    // 2026-08-31 個性注入: 打撃2・二連の蔦打ち1 (多段=成長パッシブ直結)
-    expect(run.deck.filter((c) => c.def.id === 'green_strike')).toHaveLength(2)
+    // 2026-08-31 個性注入: 打撃1・二連の蔦打ち1 (多段=成長パッシブ直結)・蔦の楔1 (火花型の派生)
+    expect(run.deck.filter((c) => c.def.id === 'green_strike')).toHaveLength(1)
     expect(run.hp).toBe(run.maxHp)
     expect(run.phase).toBe('map') // 開始はマップで行0のノードを選ぶ
     const r = intoFirstBattle(run)
@@ -312,7 +312,8 @@ describe('中立スターター (2026-08-29 道の選択制を撤回。確定済
     const run = createRun(5, 'set-confirm', 'leader_green')
     expect(run.deck).toHaveLength(10)
     const count = (id: string) => run.deck.filter((c) => c.def.id === id).length
-    expect(count('green_strike')).toBe(2)
+    expect(count('green_strike')).toBe(1)
+    expect(count('green_vine_wedge')).toBe(1)
     expect(count('green_basic_bash')).toBe(1)
     expect(count('green_double_lash')).toBe(1)
     expect(count('green_guard')).toBe(3)

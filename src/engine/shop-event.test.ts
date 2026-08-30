@@ -163,7 +163,8 @@ describe('ショップ', () => {
     expect(run.gold).toBe(300 - 75)
     expect(Number.isNaN(run.gold)).toBe(false)
     expect(run.removalCount).toBe(1)
-    const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
+    // 個性注入 (2026-08-31) で打撃は1枚になったため、除去で消えていない防御を対象にする
+    const idx = run.deck.findIndex((c) => c.def.id === 'green_guard')
     run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
     expect(run.gold).toBe(300 - 75 - 100)
     expect(run.upgradeCount).toBe(1)

@@ -234,7 +234,7 @@
     "cards": [
       {
         "cardId": "green_strike",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "green_basic_bash",
@@ -258,6 +258,10 @@
       },
       {
         "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_vine_wedge",
         "count": 1
       }
     ],
@@ -459,7 +463,7 @@
     "cards": [
       {
         "cardId": "blue_strike",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "blue_guard",
@@ -479,6 +483,10 @@
       },
       {
         "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "blue_tide_drop",
         "count": 1
       }
     ]
@@ -903,7 +911,7 @@
     "cards": [
       {
         "cardId": "white_strike",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "white_guard",
@@ -927,6 +935,10 @@
       },
       {
         "cardId": "white_reaction_retribution",
+        "count": 1
+      },
+      {
+        "cardId": "white_bodyslam",
         "count": 1
       }
     ]
@@ -1119,7 +1131,7 @@
     "cards": [
       {
         "cardId": "black_strike",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "black_guard",
@@ -1143,6 +1155,10 @@
       },
       {
         "cardId": "black_reaction_grudge",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
         "count": 1
       }
     ]
