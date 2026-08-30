@@ -254,21 +254,24 @@ function ctx2Block(e: DeclarativeEffect, _ctx: EffectCtx | undefined, trigger: s
 }
 
 /** 効果1つを1行のテキストに変換する。忘却の刻 (しきい値) は達成状態を添えて表示する */
-function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx): string {
+function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx, holderType?: string): string {
   const t = e.exhaustThreshold
   if (t !== undefined) {
     const met = ctx !== undefined && ctx.exhausted >= t
     const shown = met ? { ...e, amount: e.amountMax } : e
     const note = met ? `〔忘却の刻${t}: 発動中⚡〕` : `〔忘却の刻${t}: ${e.amountMax}に強化〕`
-    return `${renderEffectItemCore(shown, ctx)} ${note}`
+    return `${renderEffectItemCore(shown, ctx, holderType)} ${note}`
   }
-  return renderEffectItemCore(e, ctx)
+  return renderEffectItemCore(e, ctx, holderType)
 }
 
-function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
+function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?: string): string {
   // 攻撃ダメージには成長+勢い、返しには成長のみ (勢いは自ターン終了でリセットされるため)
   const atkBonus = ctx ? ctx.growth + ctx.momentum : 0
-  const trigger = TRIGGER_LABEL[e.trigger] + conditionLabel(e)
+  // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
+  const trigger =
+    (e.trigger === 'onPlay' && holderType === 'permanent' ? '登場時: ' : TRIGGER_LABEL[e.trigger]) +
+    conditionLabel(e)
   const pierce = e.pierce ? '(貫通)' : ''
   const aoe = e.target === 'all' ? '敵全体に' : ''
   // トータル先頭表記: 補正込みの実ダメージを先に出し、内訳を括弧で添える
@@ -433,11 +436,11 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
 }
 
 /** 効果列を行の配列に変換。連続する同一行は「×N」にまとめる (多段ヒット対策) */
-function effectItems(effects: readonly DeclarativeEffect[], ctx?: EffectCtx): string[] {
+function effectItems(effects: readonly DeclarativeEffect[], ctx?: EffectCtx, holderType?: string): string[] {
   const lines: string[] = []
   const counts: number[] = []
   for (const e of effects) {
-    const text = renderEffectItem(e, ctx)
+    const text = renderEffectItem(e, ctx, holderType)
     if (lines.length > 0 && lines[lines.length - 1] === text) {
       counts[counts.length - 1] += 1
     } else {
@@ -458,7 +461,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.modes && def.modes.length > 0) {
     def.modes.forEach((m, i) => lines.push(`選択${i + 1}: ${effectItems(m.effects, ctx).join('、')}`))
   } else {
-    lines.push(...effectItems(def.effects, ctx))
+    lines.push(...effectItems(def.effects, ctx, def.type))
   }
   if (def.exhaust) lines.push('消滅')
   return lines

@@ -50,7 +50,7 @@ interface SaveFile {
 }
 
 // ---- 効果の短文レンダラ (UIの簡易版) ----
-function fx(e: DeclarativeEffect): string {
+function fx(e: DeclarativeEffect, holderType?: string): string {
   const a = e.amount ?? 0
   const all = e.target === 'all' ? '敵全体に' : ''
   const th = e.exhaustThreshold !== undefined ? `〔忘却の刻${e.exhaustThreshold}: ${e.amountMax}に強化〕` : ''
@@ -79,7 +79,8 @@ function fx(e: DeclarativeEffect): string {
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
   }
   const trig: Record<string, string> = {
-    onPlay: '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
+    // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
+    onPlay: holderType === 'permanent' ? '登場時:' : '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
     onEnemyBuffed: '敵強化時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと:', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
@@ -100,8 +101,8 @@ function cardLine(def: CardDef): string {
     def.retainer ? '従者' : '',
   ].filter(Boolean).join('・')
   const body = def.modes?.length
-    ? def.modes.map((m, i) => `選択${i}:${m.effects.map(fx).join('+')}`).join(' / ')
-    : def.effects.map(fx).join('、')
+    ? def.modes.map((m, i) => `選択${i}:${m.effects.map((e) => fx(e, def.type)).join('+')}`).join(' / ')
+    : def.effects.map((e) => fx(e, def.type)).join('、')
   const costLabel = cardCostLabel(def)
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
@@ -220,7 +221,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}`).join(' / ') || 'なし'}`)
   }
   if (p.permanents.length > 0) {
-    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map(fx).join('、')})`).join(' / ')}`)
+    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})`).join(' / ')}`)
   }
   if (s.phase === 'awaiting-reaction' && s.pendingWindow) {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]
