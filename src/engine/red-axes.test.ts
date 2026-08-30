@@ -106,3 +106,26 @@ describe('憤怒の即時性 (被弾がその場で火になる = 憤怒→猛�
     expect(s.enemies[0].burn).toBeGreaterThanOrEqual(7)
   })
 })
+
+// --- 橋渡しモード札 (2026-08-30。「緑同様のモード呪文を赤にも」) ---
+describe('赤のモード札 (アーキ分岐の入口)', () => {
+  it('焚の岐路: 延焼5 か 勢い+3+3ダメ をプレイ時に選ぶ (バーン線⇄手数線)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_mode_crossroad',
+    ])
+    const burn = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_mode_crossroad', modeIndex: 0 })
+    expect(burn.enemies[0].burn).toBe(5)
+    const tempo = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_mode_crossroad', modeIndex: 1 })
+    expect(tempo.player.momentum).toBe(3)
+  })
+
+  it('刻限の炎: どちらのモードでも消滅する (衝動4以上の消滅必須はカード単位)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_mode_deadline',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    const a = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_mode_deadline', modeIndex: 1 })
+    expect(a.enemies[0].burn).toBe(6)
+    expect(a.player.exhaustPile.some((c) => c.def.id === 'red_mode_deadline')).toBe(true)
+  })
+})

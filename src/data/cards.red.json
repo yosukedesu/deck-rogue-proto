@@ -1515,5 +1515,111 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "red_mode_crossroad",
+    "name": "焚の岐路",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [],
+    "modes": [
+      {
+        "name": "延焼5",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "applyBurn",
+            "amount": 5
+          }
+        ]
+      },
+      {
+        "name": "勢い+3と3ダメージ",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addMomentum",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "red_mode_firecontrol",
+    "name": "火加減",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [],
+    "modes": [
+      {
+        "name": "8ダメージ",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8
+          }
+        ]
+      },
+      {
+        "name": "ブロック6",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "gainBlock",
+            "amount": 6
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "red_mode_deadline",
+    "name": "刻限の炎",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [],
+    "modes": [
+      {
+        "name": "衝動4と一時マナ+1",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "impulseDraw",
+            "amount": 4
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "gainEnergy",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "name": "延焼6と1ドロー",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "applyBurn",
+            "amount": 6
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 1
+          }
+        ]
+      }
+    ]
   }
 ]
