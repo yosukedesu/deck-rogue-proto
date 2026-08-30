@@ -1514,5 +1514,71 @@
         "amount": 2
       }
     ]
+  },
+  {
+    "id": "red_fluke_spark",
+    "name": "まぐれ火",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 9
+      }
+    ]
+  },
+  {
+    "id": "red_double_dice",
+    "name": "二連の賭け矢",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 8
+      }
+    ]
+  },
+  {
+    "id": "red_leap_arrow",
+    "name": "跳ね火の矢",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 4,
+        "amountMax": 16
+      }
+    ]
+  },
+  {
+    "id": "red_double_down",
+    "name": "倍賭け",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 6,
+        "amountMax": 28
+      }
+    ]
   }
 ]
