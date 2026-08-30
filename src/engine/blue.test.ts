@@ -84,22 +84,22 @@ describe('ストーム (詠唱数参照)', () => {
 })
 
 describe('青の打ち消し (本家)', () => {
-  it('マナ漏出: 敵の行動の値が12以下なら打ち消せる', () => {
+  it('マナ漏出: 敵の行動の値が15以下なら打ち消せる (2026-08-31 ≤12→≤15。幕3打点帯で死んでいた是正)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_mana_leak'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_mana_leak' })
-    s = withIntent(s, attackIntent(12))
+    s = withIntent(s, attackIntent(15))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')
     expect(s.player.hp).toBe(s.player.maxHp)
   })
 
-  it('マナ漏出: 13以上の攻撃は打ち消せず素通しになる (空振り)', () => {
+  it('マナ漏出: 16以上の攻撃は打ち消せず素通しになる (空振り)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_mana_leak'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_mana_leak' })
-    s = withIntent(s, attackIntent(13))
+    s = withIntent(s, attackIntent(16))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).not.toContain('ActionNegated')
-    expect(s.player.hp).toBe(s.player.maxHp - 13)
+    expect(s.player.hp).toBe(s.player.maxHp - 16)
     expect(s.player.setCards).toHaveLength(1) // 伏せたまま持続
   })
 

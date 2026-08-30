@@ -189,14 +189,14 @@
       {
         "trigger": "onEnemyAction",
         "condition": {
-          "maxActionValue": 12
+          "maxActionValue": 15
         },
         "effect": "negate"
       },
       {
         "trigger": "onEnemyAction",
         "condition": {
-          "maxActionValue": 12
+          "maxActionValue": 15
         },
         "effect": "addAether",
         "amount": 1
@@ -248,6 +248,11 @@
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
       {
         "trigger": "onTurnStart",
         "effect": "drawCards",
@@ -414,6 +419,11 @@
     "effects": [
       {
         "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
         "amount": 2
       }
@@ -426,6 +436,11 @@
     "type": "spell",
     "rarity": "common",
     "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 2
+      },
       {
         "trigger": "onPlay",
         "effect": "gainIceBlockPerCardPlayed",
@@ -533,7 +548,7 @@
   {
     "id": "blue_ice_lance",
     "name": "氷の槍",
-    "cost": 2,
+    "cost": 1,
     "type": "spell",
     "rarity": "uncommon",
     "effects": [
@@ -676,7 +691,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -724,6 +739,247 @@
         "trigger": "onPlay",
         "effect": "gainIceBlock",
         "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "blue_undertow",
+    "name": "逆巻き",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negate",
+        "condition": {
+          "minActionValue": 12
+        }
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addAether",
+        "amount": 2,
+        "condition": {
+          "minActionValue": 12
+        }
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_lance",
+    "name": "霊気の槍",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAether",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_vortex_ring",
+    "name": "渦電の輪",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onActionNegated",
+        "effect": "addAether",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_flood",
+    "name": "満ちる霊気",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAether",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_weight_of_wisdom",
+    "name": "知恵の重み",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_tome_shield",
+    "name": "書庫の盾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_knowledge_torrent",
+    "name": "知識の奔流",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_deep_cloak",
+    "name": "懐深き外套",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_omniscient_blow",
+    "name": "全知の一撃",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_echo",
+    "name": "反復",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_stance",
+    "name": "谺の構え",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "addSpellEcho",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_double_chant",
+    "name": "二重詠唱",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_echo_circle",
+    "name": "こだまの法陣",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addSpellEcho",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_stack_bastion",
+    "name": "万巻の砦",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_sea",
+    "name": "反響の海",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 2
       }
     ]
   }

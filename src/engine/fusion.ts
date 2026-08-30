@@ -45,6 +45,18 @@ const VP_PER: Record<string, number> = {
   dischargeMomentumBlock: 6.0, // 勢いの典型6 × 1.0
   dischargeBurn: 6.0, // 放出時の延焼の典型6 × 1.0 (DoTを手放す対価込み)
   dealDamageCleave: 1.3, // 対象+倒したら別の敵に同値 (連鎖は条件付きなので+30%)
+  // 青の参照・放出系の解禁 (2026-08-31 ユーザー指示「工房の参照スケーリング札を解禁」)。
+  // 典型値は scripts/card-audit.ts と同一 (詠唱3・氷壁10・霊気2.5・手札5)。
+  // per-X効果は形を変えずそのまま引き継がれ、VPだけ典型値で数える = 条件付きダメージと同じ配管
+  dealDamagePerCardPlayed: 3.0,
+  gainIceBlockPerCardPlayed: 3.9,
+  drawCardsPerCardPlayed: 9.0,
+  dealDamagePerIceBlock: 10.0,
+  dischargeAether: 2.5,
+  dischargeAetherDraw: 7.5,
+  dealDamagePerHandCard: 5.0,
+  gainIceBlockPerHandCard: 6.5,
+  addSpellEcho: 9.0, // 反復1トークン ≈ 典型コピー価値9
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 /** コスト別の許容VP (§1)。ALLOW = 6×コスト + 2 (+2 = カード1枚の機会費用＝札束補正) */

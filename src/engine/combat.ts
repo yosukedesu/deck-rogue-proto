@@ -76,6 +76,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       selfHpLost: 0, // カード効果で失ったHPの累計 (背徳の収穫の参照値。戦闘内のみ)
       randomPlayedThisCombat: 0, // ランダム火力の枚数 (一擲乾坤の参照値。戦闘内のみ)
       damageTakenLastEnemyPhase: 0, // 直前の敵フェーズで受けた攻撃ダメージ (逆上の参照値)
+      spellEchoes: 0, // 反復トークン (青: 呪文コピー)
     },
     enemies: [],
     pendingWindow: null,
@@ -424,12 +425,15 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
     },
   }
   s = emit(s, { type: 'TurnStarted', turn })
+  // ドローを onTurnStart 誘発より先に行う (2026-08-31 変更)。
+  // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
+  // 泉 (onTurnStart ドロー) 等は順序が変わっても合計枚数は同じ = 既存挙動と等価
+  s = drawCards(s, s.player.drawPerTurn)
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   // ターン開始誘発 (従者の自動攻撃など) で敵が全滅したら即座に勝利を確定する
   // (プレイテストで発見: 判定がないと撃破済みの敵に手札が撃てる状態が残る)
   s = checkCombatEnd(s)
   if (s.phase === 'won' || s.phase === 'lost') return s
-  s = drawCards(s, s.player.drawPerTurn)
   return declareIntents(s)
 }
 
@@ -621,12 +625,22 @@ export function playCard(
     s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     s = fireExhaustTriggers(s, 1, enemyIndex)
   }
-  if (chosenMode) {
-    for (const effect of chosenMode.effects) {
-      s = resolveEffectTargeted(s, effect, enemyIndex)
+  // 反復 (青の呪文コピー 2026-08-31): 呪文なら反復トークンを1つ消費し、効果を「2回」解決する。
+  // 消費は解決前 = 反復札自身が反復された場合、自分の生むトークンを自分で食わない (+2が立つ)。
+  // 詠唱数・onAttackPlayed等のプレイ誘発は1回のまま (プレイは1回。効果だけが2回) = StSのBurst/Amplify準拠
+  const echoed = card.def.type === 'spell' && state.player.spellEchoes > 0
+  if (echoed) {
+    s = { ...s, player: { ...s.player, spellEchoes: s.player.spellEchoes - 1 } }
+    s = emit(s, { type: 'SpellEchoed', cardId: card.def.id })
+  }
+  for (let echoPass = 0; echoPass < (echoed ? 2 : 1); echoPass++) {
+    if (chosenMode) {
+      for (const effect of chosenMode.effects) {
+        s = resolveEffectTargeted(s, effect, enemyIndex)
+      }
+    } else {
+      s = resolveOnPlayEffects(s, effCard, enemyIndex)
     }
-  } else {
-    s = resolveOnPlayEffects(s, effCard, enemyIndex)
   }
   // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
   const resolvedEffects = chosenMode ? chosenMode.effects : effCard.def.effects.filter((e) => e.trigger === 'onPlay')
@@ -730,7 +744,10 @@ export function endTurn(state: GameState): GameState {
   let s = emit(state, { type: 'TurnEnded', turn: state.turn })
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
   // 弱体もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
-  s = { ...s, player: { ...s.player, momentum: 0, weak: Math.max(0, s.player.weak - 1) } }
+  s = {
+    ...s,
+    player: { ...s.player, momentum: 0, spellEchoes: 0, weak: Math.max(0, s.player.weak - 1) },
+  }
   // 衝動 (このターン限りの手札) は未使用なら消滅する
   if (s.player.impulseUids.length > 0) {
     const impulse = new Set(s.player.impulseUids)

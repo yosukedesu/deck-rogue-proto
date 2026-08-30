@@ -399,7 +399,11 @@
       },
       {
         "cardId": "blue_mana_leak",
-        "count": 3
+        "count": 2
+      },
+      {
+        "cardId": "blue_undertow",
+        "count": 2
       },
       {
         "cardId": "blue_spell_steal",
@@ -407,35 +411,31 @@
       },
       {
         "cardId": "blue_perm_mirror",
-        "count": 2
+        "count": 1
+      },
+      {
+        "cardId": "blue_perm_vortex_ring",
+        "count": 1
       },
       {
         "cardId": "blue_perm_static",
-        "count": 2
+        "count": 1
       },
       {
-        "cardId": "blue_frost_veil",
-        "count": 2
-      },
-      {
-        "cardId": "blue_cold_reading",
+        "cardId": "blue_aether_lance",
         "count": 2
       },
       {
         "cardId": "blue_aether_burst",
-        "count": 3
+        "count": 1
       },
       {
-        "cardId": "blue_aether_torrent",
+        "cardId": "blue_aether_flood",
         "count": 1
       },
       {
         "cardId": "blue_ice_wall",
-        "count": 2
-      },
-      {
-        "cardId": "blue_frost_armor",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "blue_strike",
@@ -1776,6 +1776,94 @@
       {
         "cardId": "red_guard",
         "count": 3
+      }
+    ]
+  },
+  {
+    "id": "deck_grimoire",
+    "name": "抱え込み理想形",
+    "cards": [
+      {
+        "cardId": "blue_weight_of_wisdom",
+        "count": 3
+      },
+      {
+        "cardId": "blue_tome_shield",
+        "count": 2
+      },
+      {
+        "cardId": "blue_knowledge_torrent",
+        "count": 2
+      },
+      {
+        "cardId": "blue_perm_deep_cloak",
+        "count": 1
+      },
+      {
+        "cardId": "blue_omniscient_blow",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 2
+      },
+      {
+        "cardId": "blue_churn",
+        "count": 1
+      },
+      {
+        "cardId": "blue_archive",
+        "count": 1
+      },
+      {
+        "cardId": "blue_thick_ice",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_echo",
+    "name": "反復書庫理想形",
+    "cards": [
+      {
+        "cardId": "blue_echo",
+        "count": 3
+      },
+      {
+        "cardId": "blue_double_chant",
+        "count": 2
+      },
+      {
+        "cardId": "blue_perm_echo_circle",
+        "count": 1
+      },
+      {
+        "cardId": "blue_weight_of_wisdom",
+        "count": 2
+      },
+      {
+        "cardId": "blue_knowledge_torrent",
+        "count": 2
+      },
+      {
+        "cardId": "blue_omniscient_blow",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 1
+      },
+      {
+        "cardId": "blue_archive",
+        "count": 1
+      },
+      {
+        "cardId": "blue_stack_bastion",
+        "count": 1
+      },
+      {
+        "cardId": "blue_thick_ice",
+        "count": 1
       }
     ]
   }

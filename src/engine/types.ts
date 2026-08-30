@@ -99,6 +99,8 @@ export interface PlayerState extends CombatantState {
   readonly randomPlayedThisCombat: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
   readonly damageTakenLastEnemyPhase: number
+  /** 反復トークン (青: 呪文コピー)。次に唱える呪文の効果を2回解決する。自ターン終了時にリセット (勢いと同じ持続則 = 敵フェーズに得た分は次の自ターンまで持つ) */
+  readonly spellEchoes: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -310,6 +312,7 @@ export type GameEvent =
   | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number }
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
+  | { readonly type: 'SpellEchoed'; readonly cardId: string } // 反復 (青): 呪文の効果が2回解決された
   | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
@@ -467,6 +470,9 @@ export interface DeclarativeEffect {
     | 'dealDamageExecute' // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ
     | 'dealDamagePerDamageTaken' // 逆上 (赤): 直前の敵フェーズで受けたダメージ×amount (憤怒=被弾の換金)
     | 'dealDamagePerRandomPlayed' // 一擲乾坤 (赤カオス): この戦闘で撃ったランダム火力の枚数×amount
+    | 'dealDamagePerHandCard' // 抱え込み (青): 手札の枚数×amount のダメージ (解決時の手札 = 自身・追加コストは数えない)
+    | 'gainIceBlockPerHandCard' // 抱え込み (青): 手札の枚数×amount の氷壁
+    | 'addSpellEcho' // 反復 (青): 次に唱える呪文の効果を2回解決するトークン+X (自ターン終了時に消える)
     | 'applyBurnPerDamageTaken' // 業腹 (赤): 直前の敵フェーズで受けたダメージ×amount の延焼 (憤怒→猛り火の橋)
     | 'dealDamagePerIceBlock' // 氷の槍 (青): 現在の氷壁×amount のダメージ (蓄積の換金)
     | 'negateConvertIce' // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る

@@ -24,7 +24,7 @@ import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '..
  * ボット用の役割分類。カードタイプ廃止後は効果から導出する
  * (タイプは物理/呪文/リアクション/置物の機械的区分になったため)
  */
-type BotRole = 'ramp' | 'draw' | 'permanent' | 'growth' | 'bighit' | 'attack' | 'defend' | 'payoff' | 'reaction' | 'other'
+type BotRole = 'ramp' | 'draw' | 'handpayoff' | 'permanent' | 'growth' | 'echo' | 'bighit' | 'attack' | 'defend' | 'payoff' | 'reaction' | 'other'
 
 function botRole(def: CardDef): BotRole {
   if (def.type === 'reaction') return 'reaction'
@@ -36,11 +36,15 @@ function botRole(def: CardDef): BotRole {
   if (has('summonPermanent')) return 'permanent'
   // ブロック参照の換金札は「壁を積んでから」なので最後に回す (2026-08-26)
   if (has('dealDamagePerBlock')) return 'payoff'
+  // 抱え込み (青 2026-08-31): 手札参照は「手札が厚いうちに」= ドローの直後・手札を減らす前に撃つ
+  if (has('dealDamagePerHandCard', 'gainIceBlockPerHandCard')) return 'handpayoff'
+  // 反復 (青): トークンは大呪文の直前に立てる (bighit/attack より先)
+  if (has('addSpellEcho')) return 'echo'
   if (has('addGrowth', 'doubleGrowth')) return 'growth'
   if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
   if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
-  if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'exhaustFromDeck')) return 'draw'
+  if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
   if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainBlockPerEnergyMax', 'gainBlockPerExhaust', 'gainHp', 'weakenEnemy')) return 'defend'
@@ -50,6 +54,8 @@ function botRole(def: CardDef): BotRole {
 const PLAY_PRIORITY: readonly BotRole[] = [
   'ramp',
   'draw', // ドローは先に (ストームの詠唱数も稼げる)
+  'echo', // 反復トークンはペイオフの直前に立てる (手札参照×2が本命の結婚相手)
+  'handpayoff', // 手札参照はドローの直後・手札を減らす前 (抱え込み 2026-08-31)
   'permanent', // 置物はエンジンなので早置き
   'growth',
   'bighit', // 旧フィニッシャー枠 (コスト3以上のダメージ札)
@@ -156,6 +162,20 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (
     card.def.effects.some((e) => e.effect === 'dischargeAetherDraw') &&
     state.player.aether < 2
+  ) {
+    return false
+  }
+  // 霊気放出系 (霊気の槍・満ちる霊気) は霊気2以上でないと換金損 (2026-08-31)
+  if (card.def.effects.some((e) => e.effect === 'dischargeAether') && state.player.aether < 2) {
+    return false
+  }
+  // 反復 (青): 手札に他のダメージ呪文がないとトークンが腐る (ターン終了で消えるため)
+  if (
+    card.def.effects.some((e) => e.effect === 'addSpellEcho') &&
+    !state.player.hand.some(
+      (c) =>
+        c.uid !== card.uid && c.def.type === 'spell' && c.def.effects.some(isDamageEffect),
+    )
   ) {
     return false
   }

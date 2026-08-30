@@ -18,6 +18,16 @@ const VP_PER: Record<string, number> = {
   // 勢いの変換器 (2026-08-30): 変換時の典型勢い6 (ひばなはプレイごと+2で1ターン8〜10、他リーダーは生成札依存)
   dischargeMomentumBurn: 1.5 * 6,
   dischargeMomentumBlock: 1.0 * 6,
+  // 青の参照・放出系 (2026-08-31 青の完成回)。詠唱典型3・氷壁典型10・霊気典型2.5・手札典型5
+  dealDamagePerCardPlayed: 1.0 * 3,
+  gainIceBlockPerCardPlayed: 1.3 * 3,
+  drawCardsPerCardPlayed: 3.0 * 3,
+  dealDamagePerIceBlock: 1.0 * 10,
+  dischargeAether: 2.5, // 霊気典型2.5 × 倍率amount (全消費の手放し対価込み)
+  dischargeAetherDraw: 3.0 * 2.5,
+  dealDamagePerHandCard: 1.0 * 5,
+  gainIceBlockPerHandCard: 1.3 * 5,
+  addSpellEcho: 9.0, // 反復1トークン ≈ 典型的な1〜2E呪文のコピー価値9 (StS Burst=1E準拠)
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 const ALLOW = (cost: number) => 6 * cost + 2

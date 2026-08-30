@@ -78,6 +78,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerDamageTaken',
     'dealDamagePerRandomPlayed',
     'dealDamagePerIceBlock',
+    'dealDamagePerHandCard',
     'counter',
   ].includes(effect.effect)
 }
@@ -111,6 +112,7 @@ const ENEMY_TARGETED = new Set([
   'dealDamagePerRandomPlayed',
   'applyBurnPerDamageTaken',
   'dealDamagePerIceBlock',
+  'dealDamagePerHandCard',
   // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
   'playFromExhaust',
 ])
@@ -566,6 +568,28 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'drawCardsPerCardPlayed':
       // ストームドロー (青): 詠唱数 × amount 枚ドロー
       return drawCards(state, (effect.amount ?? 0) * state.player.cardsPlayedThisTurn)
+    case 'dealDamagePerHandCard':
+      // 抱え込み (青 2026-08-31): 手札の枚数 × amount のダメージ。
+      // プレイしたカードは解決前に手札を離れる既存フローなので、自身・追加コストは自然に数えない
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.hand.length,
+        effect.pierce,
+      )
+    case 'gainIceBlockPerHandCard': {
+      // 抱え込み (青): 手札の枚数 × amount の氷壁
+      const amount = (effect.amount ?? 0) * state.player.hand.length
+      if (amount === 0) return state
+      const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
+      return emit(next, { type: 'IceBlockGained', amount })
+    }
+    case 'addSpellEcho':
+      // 反復 (青): 次に唱える呪文の効果を2回解決するトークン。消費は combat.ts の playCard 側
+      return {
+        ...state,
+        player: { ...state.player, spellEchoes: state.player.spellEchoes + (effect.amount ?? 0) },
+      }
     case 'addAether': {
       // 霊気 (青): 妨害・リアクション成功の蓄積。獲得の誘発 (静電の帳) が乗る
       const amount = effect.amount ?? 0

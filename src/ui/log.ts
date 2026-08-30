@@ -72,6 +72,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'StrengthGained': return { text: `敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
     case 'IceBlockGained': return { text: `氷壁+${e.amount}（持ち越しブロック）`, cls: 'log-line' }
     case 'AetherGained': return { text: `霊気+${e.amount}`, cls: 'log-good' }
+    case 'SpellEchoed': return { text: `🔁 反復: ${cardName(e.cardId)} の効果が2回解決`, cls: 'log-good' }
     case 'AetherDischarged': return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
     case 'DiscountGained': return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }

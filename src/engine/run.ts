@@ -639,6 +639,8 @@ const EFFECT_AXIS: Record<string, string> = {
   dealDamageRandom: 'chaos', dealDamagePerRandomPlayed: 'chaos',
   dealDamageExecute: 'execute', exposeEnemy: 'execute',
   confuse: 'confuse',
+  dealDamagePerHandCard: 'grimoire', gainIceBlockPerHandCard: 'grimoire', // 抱え込み (青 2026-08-31)
+  addSpellEcho: 'echo', // 反復 (青の呪文コピー)
 }
 
 /** 誘発トリガー → 軸。置物の「接着剤」札はここでほぼ自動的に分類される */
@@ -846,6 +848,9 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   // ---- per-Xダメージ参照のコスト強化封じ (2026-08-31) の受け皿: 同軸のおまけを足す ----
   green_surge_thrust: [{ trigger: 'onPlay', effect: 'addMomentum', amount: 3 }], // 換金前に勢い+3
   blue_storm_lash: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 5 }], // 固定の初撃5
+  // 抱え込み (2026-08-31): ドローは手札=弾を増やす同軸のおまけ
+  blue_weight_of_wisdom: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
+  blue_knowledge_torrent: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
   blue_ripple_blade: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }],
   blue_storm_echo: [{ trigger: 'onAttacked', effect: 'dealDamage', amount: 4 }],
   blue_ice_lance: [{ trigger: 'onPlay', effect: 'gainIceBlock', amount: 4 }], // 氷壁を足してから撃つ
