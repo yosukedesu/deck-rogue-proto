@@ -1659,5 +1659,57 @@
         "amount": 2
       }
     ]
+  },
+  {
+    "id": "red_reaction_planted_fire",
+    "name": "仕掛け火",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "applyBurn",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_fanning",
+    "name": "煽り火の罠",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_reaction_chain_powder",
+    "name": "連火の仕込み",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "dealDamage",
+        "amount": 10
+      },
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "applyBurn",
+        "amount": 5
+      }
+    ]
   }
 ]

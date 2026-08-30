@@ -129,3 +129,33 @@ describe('赤のモード札 (アーキ分岐の入口)', () => {
     expect(a.player.exhaustPile.some((c) => c.def.id === 'red_mode_deadline')).toBe(true)
   })
 })
+
+// --- 自己誘発 = 赤のリアクションの本家 (2026-08-30 裁定「赤は敵に反応しない。赤の伏せは自分の攻撃の伏線」) ---
+describe('赤の自己誘発リアクション', () => {
+  it('仕掛け火: 伏せてから呪文をプレイすると起爆して延焼7 (確認ウィンドウなし)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_reaction_planted_fire',
+      'red_strike', // 火弾 = spell
+    ])
+    s = withEnergy(s, 9)
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_reaction_planted_fire' })
+    expect(s.enemies[0].burn).toBe(0) // 伏せただけでは何も起きない = ブラフ兼用
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike' })
+    expect(s.enemies[0].burn).toBe(7)
+    expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
+  })
+
+  it('煽り火の罠: 攻撃プレイで起爆し3ダメ+勢い+5 (全額投資と両立する = バーンの構造課題への答え)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_reaction_fanning',
+      'red_spark',
+    ])
+    s = withEnergy(s, 9)
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_reaction_fanning' })
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_spark' })
+    // 火花4 + 罠3 が入り、勢い+5 が立つ
+    expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(7)
+    expect(s.player.momentum).toBeGreaterThanOrEqual(5)
+  })
+})
