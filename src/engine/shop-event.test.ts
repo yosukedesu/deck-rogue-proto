@@ -2,7 +2,7 @@
 // 確定済みルール表「ゴールド」「ショップ」「?マス（イベント）」を固定する。
 import { describe, expect, it } from 'vitest'
 import { allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
-import { applyRunCommand, createRun, shopRemovalPrice, shopUpgradePrice } from './run.ts'
+import { applyRunCommand, createRun, eventChoiceNeedsCard, shopRemovalPrice, shopUpgradePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -193,6 +193,25 @@ describe('?マス (イベント)', () => {
       expect(last.gold ?? 0, ev.id).toBeGreaterThanOrEqual(0)
       expect(last.hp ?? 0, ev.id).toBeGreaterThanOrEqual(0)
     }
+  })
+
+  it('規約: eventChoiceNeedsCard が false の選択肢は cardIndex なしで必ず解決できる', () => {
+    // UI/CLI はこの判定だけを見て対象選択を出す。判定漏れがあると
+    // 「対象を選べないのに cardIndex を要求される」ダイアログになる
+    // (2026-08-30 変転の祠 transformCard / 写しの泉 duplicateCard で実際に発生)
+    const missed: string[] = []
+    for (const ev of allEvents) {
+      for (const [i, c] of ev.choices.entries()) {
+        if (eventChoiceNeedsCard(c)) continue
+        const run = eventState(5, ev.id)
+        try {
+          applyRunCommand(run, { type: 'EventChoice', index: i })
+        } catch (e) {
+          if (String(e).includes('cardIndex')) missed.push(`${ev.name}/${c.label}`)
+        }
+      }
+    }
+    expect(missed).toEqual([])
   })
 
   it('規約: 全イベントの最後の選択肢は cardIndex も所持金も要求せず必ず解決できる', () => {

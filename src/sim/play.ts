@@ -35,7 +35,7 @@ import {
   setBranchFlipRisks,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
@@ -397,7 +397,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push(`   ${ev.flavor}`)
     ev.choices.forEach((c, i) => {
       const locked = c.requireGold !== undefined && run.gold < c.requireGold ? ' 【G不足で選べない】' : ''
-      const needCard = c.removeCard || c.upgradeCard ? ' 【要cardIndex(デッキ番号)】' : ''
+      const needCard = eventChoiceNeedsCard(c) ? ' 【要cardIndex(デッキ番号)】' : ''
       L.push(` [${i}] ${c.label}${locked}${needCard}`)
     })
     L.push('→ {"type":"EventChoice","index":N} (対象カードが要る選択肢は {"type":"EventChoice","index":N,"cardIndex":M})')

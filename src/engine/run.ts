@@ -21,7 +21,7 @@ import {
 } from './content.ts'
 import { createRng, nextInt, shuffle } from './rng.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, GameState, RngState, ReactionMode } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, EventChoiceDef, GameState, ReactionMode, RngState } from './types.ts'
 
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 const REWARD_EXCLUDED = new Set([
@@ -411,6 +411,20 @@ function rewardPool(run: RunState): readonly CardDef[] {
 }
 
 /** イベント効果の適用 (宣言的な EventChoiceDef を RunState に反映する) */
+/**
+ * この選択肢は cardIndex (デッキの対象カード) を要求するか。
+ * **UI・CLI はこれを見て対象選択を出す**——判定を各所で書くと、効果を足したときに
+ * 片方だけ追随して「選べないダイアログ」が出る (2026-08-30 変転の祠で実際に起きた)。
+ */
+export function eventChoiceNeedsCard(choice: EventChoiceDef): boolean {
+  return (
+    choice.removeCard === true ||
+    choice.upgradeCard === true ||
+    choice.transformCard === true ||
+    choice.duplicateCard === true
+  )
+}
+
 function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number): RunState {
   // ?は入った瞬間に中身が決まる (2026-08-29)。MapNode でなく RunState が持つ
   const eventId = run.eventId ?? null

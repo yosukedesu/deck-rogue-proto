@@ -43,7 +43,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { BOSS_ROW, MAP_ROWS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -2219,7 +2219,7 @@ function RunScreen({
         <div style={{ marginTop: 12 }}>
           {ev.choices.map((c, i) => {
             const goldLocked = c.requireGold !== undefined && run.gold < c.requireGold
-            const needsCard = c.removeCard === true || c.upgradeCard === true
+            const needsCard = eventChoiceNeedsCard(c)
             if (!needsCard) {
               return (
                 <div key={i} style={{ margin: '6px 0' }}>
