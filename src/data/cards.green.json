@@ -582,7 +582,7 @@
       {
         "trigger": "onAttacked",
         "condition": {
-          "minDamageTaken": 10
+          "minActionValue": 10
         },
         "effect": "counter",
         "amount": 24

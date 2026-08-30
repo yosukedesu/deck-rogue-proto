@@ -594,11 +594,10 @@ export function playCard(
       energy: state.player.energy - cost,
       nextCardDiscount: consumesDiscount ? 0 : state.player.nextCardDiscount,
       hand: state.player.hand.filter((c) => !removed.has(c.uid)),
-      discardPile: [
-        ...state.player.discardPile,
-        ...discardedCards,
-        ...(isPermanent || isExhaust ? [] : [card]),
-      ],
+      // プレイ中のカードはまだ捨て札に置かない (limbo)。効果解決中のドローが捨て札を
+      // 再シャッフルすると自分自身を引き直せてしまう (2026-08-31 黒Opusラン発見:
+      // 闇の契約を撃った同ターンに闇の契約を引いた)。解決後に置く = StS準拠
+      discardPile: [...state.player.discardPile, ...discardedCards],
       permanents: isPermanent ? [...state.player.permanents, card] : state.player.permanents,
       exhaustPile: [
         ...state.player.exhaustPile,
@@ -683,6 +682,10 @@ export function playCard(
     },
   }
   s = tickCardTimers(s)
+  // limbo からの着地: プレイし終えたカードをここで捨て札へ置く (置物・消滅カードは除く)
+  if (!isPermanent && !isExhaust) {
+    s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, card] } }
+  }
   // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)
   if (isRetrieve && retrieveUid !== undefined) {
     const chosen = s.player.exhaustPile.find((c) => c.uid === retrieveUid)
@@ -867,6 +870,7 @@ function postActionStage(state: GameState, enemyIndex: number): GameState {
     enemyIndex,
     kind: act.kind,
     hpLoss: act.hpLoss,
+    actual: act.actual,
   } as const
   let s = emit(state, resolved)
   s = dispatchHooks(s, resolved)
@@ -1037,14 +1041,29 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   if (enemy.hp <= 0 || enemy.intent === null) return state
   if (state.negateNextAction) {
     // 打ち消しの成功に反応する置物 (青: 還流の水鏡)。negate / negateConvertIce の両方がここを通る
-    const negated = emit({ ...state, negateNextAction: false }, { type: 'ActionNegated', enemyIndex })
+    let base = { ...state, negateNextAction: false }
+    // 盗みは宣言と同時に成立する (発火保証パッケージ) が、打ち消しに成功したら抱えた分を
+    // 取り戻す (2026-08-31 青Opusラン指摘: 確認ウィンドウが「打ち消せる」と提示するのに
+    // 実行が no-op で、取り返せると誤解させていた。打ち消し=盗みの解除、で表示と実体を揃える)
+    const eff = effectiveIntent(state, enemyIndex)
+    if (eff?.kind === 'steal-gold' && (enemy.stolenGold ?? 0) > 0) {
+      base = {
+        ...base,
+        enemies: base.enemies.map((e, i) =>
+          i === enemyIndex
+            ? { ...e, stolenGold: Math.max(0, (e.stolenGold ?? 0) - eff.actual) }
+            : e,
+        ),
+      }
+    }
+    const negated = emit(base, { type: 'ActionNegated', enemyIndex })
     return runPermanentTriggers(negated, 'onActionNegated', enemyIndex)
   }
   const intent = effectiveIntent(state, enemyIndex)!
   // 解決した行動を記録する (post窓の誘発判定に使う)
   const markResolved = (s: GameState, hpLoss: number): GameState => ({
     ...s,
-    lastAction: { enemyIndex, kind: intent.kind, hpLoss },
+    lastAction: { enemyIndex, kind: intent.kind, hpLoss, actual: intent.actual },
   })
   switch (intent.kind) {
     case 'attack': {

@@ -223,6 +223,8 @@ export interface GameState {
     readonly enemyIndex: number
     readonly kind: EnemyActionKind
     readonly hpLoss: number
+    /** その行動の実値 (2026-08-31: post窓の minActionValue 判定用) */
+    readonly actual: number
   } | null
   /** 発生済みイベントログ (リプレイ・シミュレーション統計の材料) */
   readonly eventLog: readonly GameEvent[]
@@ -294,6 +296,7 @@ export type GameEvent =
       readonly enemyIndex: number
       readonly kind: EnemyActionKind
       readonly hpLoss: number
+      readonly actual: number
     }
   | { readonly type: 'ActionNegated'; readonly enemyIndex: number }
   | { readonly type: 'EnemyConfused'; readonly enemyIndex: number; readonly amount: number } // 混乱付与

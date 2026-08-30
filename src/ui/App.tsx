@@ -349,8 +349,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🕳 山札の上${e.amount}枚を消滅させる`
     case 'dealDamagePerExhaust':
       return ctx
-        ? `${trigger}⚔️ 消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
-        : `${trigger}⚔️ 消滅した枚数×${e.amount}ダメージ${pierce}`
+        ? `${trigger}⚔️ ${aoe}消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
+        : `${trigger}⚔️ ${aoe}消滅した枚数×${e.amount}ダメージ${pierce}`
     case 'dealDamageDrainPerExhaust':
       return ctx
         ? `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復 [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
@@ -425,8 +425,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}HPを${e.amount}失う`
     case 'dischargeAether':
       return ctx
-        ? `${trigger}霊気×${e.amount}ダメージを与え、霊気を全て放出する [現在${(e.amount ?? 0) * ctx.aether + atkBonus}]`
-        : `${trigger}霊気×${e.amount}ダメージを与え、霊気を全て放出する`
+        ? `${trigger}${aoe}霊気×${e.amount}ダメージを与え、霊気を全て放出する [現在${(e.amount ?? 0) * ctx.aether + atkBonus}]`
+        : `${trigger}${aoe}霊気×${e.amount}ダメージを与え、霊気を全て放出する`
     case 'gainEnergy':
       return `${trigger}このターン、エナジー+${e.amount}`
     case 'gainEnergyMax':
@@ -481,6 +481,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
     lines.push(...effectItems(def.effects, ctx, def.type))
   }
   if (def.exhaust) lines.push('消滅')
+  if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
   return lines
 }
 

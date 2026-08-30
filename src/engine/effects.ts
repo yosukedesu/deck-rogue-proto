@@ -263,7 +263,13 @@ export function resolveEffectTargeted(
  */
 export type ReactionWindow =
   | { readonly stage: 'pre'; readonly kind: EnemyActionKind; readonly actual: number }
-  | { readonly stage: 'post'; readonly kind: EnemyActionKind; readonly hpLoss: number }
+  | {
+      readonly stage: 'post'
+      readonly kind: EnemyActionKind
+      readonly hpLoss: number
+      /** その行動の実値 (2026-08-31: minActionValue を post 窓でも判定するため。表示されている実値で読める条件にする) */
+      readonly actual: number
+    }
 
 /** この誘発窓でカードが発動できるか (トリガー一致 + 追加条件) */
 export function reactionMatches(state: GameState, card: CardInstance, win: ReactionWindow): boolean {
@@ -290,7 +296,10 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     if (c.maxActionValue !== undefined && (win.stage !== 'pre' || win.actual > c.maxActionValue)) {
       return false
     }
-    if (c.minActionValue !== undefined && (win.stage !== 'pre' || win.actual < c.minActionValue)) {
+    // minActionValue は pre/post 両窓で判定する (2026-08-31)。旧・pre専用だと post 窓の
+    // 「大技への返し」が作れず、minDamageTaken (HP損失基準) は「防御を固めるほど自分の
+    // リアクションが死ぬ」構造欠陥だった (黒Opusランで怨嗟が全12戦一度も発動せず)
+    if (c.minActionValue !== undefined && win.actual < c.minActionValue) {
       return false
     }
     if (c.blaze === true && !isBlazing(state)) return false
@@ -416,7 +425,7 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
   if (pending.stage === 'pre') {
     return { stage: 'pre', kind: intent.kind, actual: intent.actual }
   }
-  return { stage: 'post', kind: intent.kind, hpLoss: state.lastAction?.hpLoss ?? 0 }
+  return { stage: 'post', kind: intent.kind, hpLoss: state.lastAction?.hpLoss ?? 0, actual: intent.actual }
 }
 
 /**

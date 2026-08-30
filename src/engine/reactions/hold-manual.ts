@@ -104,7 +104,7 @@ export const holdManualSystem: ReactionSystem = {
       }
       case 'EnemyActionResolved': {
         if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
-        if (anyPlayable(state, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss })) {
+        if (anyPlayable(state, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual })) {
           return {
             ...state,
             phase: 'awaiting-reaction',

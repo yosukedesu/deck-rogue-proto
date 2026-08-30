@@ -59,7 +59,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
-    dischargeAether: `霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`,
+    dischargeAether: `${all}霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`,
     applyBurn: `${all}延焼+${a}`, shatterBlock: '敵ブロック全破壊', shatterBlockConvert: '敵ブロック全破壊+破壊値ダメ',
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
@@ -69,7 +69,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `上限×${a}ダメ`, gainBlockPerEnergyMax: `上限×${a}ブロック`,
     dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
-    exhaustFromDeck: `山札の上${a}枚を消滅`, dealDamagePerExhaust: `消滅数×${a}ダメ`,
+    exhaustFromDeck: `山札の上${a}枚を消滅`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
@@ -100,6 +100,7 @@ function cardLine(def: CardDef): string {
     def.exhaust ? '消滅' : '',
     def.discardCost ? `捨てコスト${def.discardCost}` : '',
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
+    def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
     def.retainer ? '従者' : '',
   ].filter(Boolean).join('・')
   const body = def.modes?.length

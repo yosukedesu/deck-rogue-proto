@@ -33,7 +33,7 @@ export const setAutoSystem: ReactionSystem = {
       }
       case 'EnemyActionResolved': {
         if (state.reactionUsedThisAction) return state
-        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss } as const
+        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual } as const
         const card = usableSetCards(state, win)[0]
         if (card) {
           return fireSetCard(state, card, event.enemyIndex)

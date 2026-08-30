@@ -58,6 +58,20 @@ describe('盗みと逃走 (こそ泥ゴブリン)', () => {
     expect(s.phase).toBe('won')
   })
 
+  it('盗みの打ち消しは抱えた額を取り戻す (2026-08-31。宣言即成立でも打ち消し=盗みの解除)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_thief', 42), [])
+    s = withIntent(s, intent({ kind: 'steal-gold', shownMin: 15, shownMax: 25, actual: 20 }))
+    // patternIndex を小突きの位置へ = 次ターンの宣言が盗みにならないようにする
+    // (返金の検証が「翌ターンの新しい盗み」に上書きされるのを防ぐ)
+    s = {
+      ...s,
+      enemies: s.enemies.map((e) => ({ ...e, stolenGold: 20, patternIndex: 2 })),
+      negateNextAction: true,
+    }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies[0].stolenGold).toBe(0)
+  })
+
   it('打ち消しで逃走を阻止できる', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_thief', 42), [])
     s = { ...s, negateNextAction: true }

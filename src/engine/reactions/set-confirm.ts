@@ -78,7 +78,7 @@ export const setConfirmSystem: ReactionSystem = {
       }
       case 'EnemyActionResolved': {
         if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
-        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss } as const
+        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual } as const
         if (usableSetCards(state, win).length > 0) {
           return {
             ...state,
