@@ -155,7 +155,7 @@ describe('勢いの変換器 (消費型)', () => {
     ])
     s = { ...s, player: { ...s.player, momentum: 6 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ember_stance' })
-    expect(s.player.block).toBe(3 + 6)
+    expect(s.player.block).toBe(4 + 6) // 基礎3→4 (2026-08-31 引き上げ)
     expect(s.player.momentum).toBe(0)
   })
 

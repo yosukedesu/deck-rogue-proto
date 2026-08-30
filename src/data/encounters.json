@@ -278,5 +278,38 @@
     "hpScale": 0.7
    }
   ]
+ },
+ {
+  "id": "enc_bomber_drummer",
+  "name": "火薬樽と太鼓",
+  "members": [
+   {
+    "enemyId": "enemy_bomber",
+    "hpScale": 0.65,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_drummer",
+    "hpScale": 0.7
+   }
+  ]
+ },
+ {
+  "id": "enc_squirrel_pair",
+  "name": "栗鼠の二匹",
+  "members": [
+   {
+    "enemyId": "enemy_thorn_squirrel",
+    "hpScale": 0.9,
+    "strength": 0
+   },
+   {
+    "enemyId": "enemy_thorn_squirrel",
+    "hpScale": 0.9,
+    "strength": 0,
+    "patternOffset": 1,
+    "noReactTable": true
+   }
+  ]
  }
 ]

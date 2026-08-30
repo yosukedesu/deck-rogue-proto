@@ -1290,6 +1290,11 @@
     "effects": [
       {
         "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 2
+      },
+      {
+        "trigger": "onAttacked",
         "effect": "applyBurnPerDamageTaken",
         "amount": 1
       }
@@ -1324,7 +1329,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 3
+        "amount": 4
       },
       {
         "trigger": "onPlay",
@@ -1449,7 +1454,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 5
+        "amount": 6
       },
       {
         "trigger": "onPlay",

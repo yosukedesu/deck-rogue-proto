@@ -11,6 +11,9 @@
 // エッジは非交差 (連続区間分割) で、全ノードが開始から到達可能かつボスへ到達可能。
 // ?マスの中身はここでは決めない — 入室時に run.ts が本家式の累積確率で解決する。
 import { nextInt } from './rng.ts'
+
+/** エリート個体化を禁じる編成 (盗み逃走は素の数字でだけレースが成立する) */
+const NO_ELITE = new Set(['enemy_thief', 'enc_thief_pair', 'enc_thief_beast'])
 import type { RngState } from './types.ts'
 
 export type MapNodeType = 'battle' | 'elite' | 'campfire' | 'workshop' | 'shop' | 'event' | 'boss'
@@ -59,7 +62,7 @@ const ACT_POOLS: readonly (readonly string[])[] = [
   // うねる獣(読みなし休符)・探り屋(読みの教師)・栗鼠(とげ芸)・伏せ警戒/罠壊し/樽(固有芸)・
   // 苔の主(再生)・斧鬼(大技→隙)・石殻(甲殻)・オーガ(元ボスの再登場)
   ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enc_probe_pair', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast'], // 1幕 (ソロ3/8)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber'], // 2幕 (ソロ3/9)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair'], // 2幕 (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
   ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer'], // 3幕 (ソロ4/11)
 ]
 /** 幕ボス (難度順固定。確定済みルール表「マップ」) */
@@ -199,7 +202,11 @@ export function generateMap(
           r === BOSS_ROW ? 'boss' : FORCED_CAMPFIRE_ROWS.has(r) ? 'campfire' : typeAt(r, c)
         let encounterId: string | null = null
         if (type === 'battle' || type === 'elite' || type === 'boss') {
-          const pool = tierFor(act, r)
+          const basePool = tierFor(act, r)
+          // こそ泥はエリートにしない (2026-08-31 ユーザー裁定)。エリート補正 (HP×1.35+強化) が乗ると
+          // 「満タン34HP+ブロックを1ターンで抜け」が構造的に不可能 = 盗みが税に化ける実測への処方
+          const pool =
+            type === 'elite' ? basePool.filter((id) => !NO_ELITE.has(id)) : basePool
           const recent = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
           const fresh = pool.filter((id) => !recent.includes(id))
           const candidates = fresh.length > 0 ? fresh : pool
