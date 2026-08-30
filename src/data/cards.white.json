@@ -21,13 +21,13 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 5
+        "effect": "gainBlock",
+        "amount": 4
       },
       {
         "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 4
+        "effect": "dealDamage",
+        "amount": 5
       }
     ],
     "rarity": "common"

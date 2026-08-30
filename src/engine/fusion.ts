@@ -58,6 +58,11 @@ const VP_PER: Record<string, number> = {
   dealDamagePerHandCard: 5.0,
   gainIceBlockPerHandCard: 6.5,
   addSpellEcho: 9.0, // 反復1トークン ≈ 典型コピー価値9
+  // 白の参照系の解禁 (2026-08-31 白Opusラン指摘「集結・城壁砕きが全ペア合成不可 =
+  // コミット型デッキほど工房の価値が下がる」)。典型: 自前ブロック8・置物3体
+  dealDamagePerBlock: 8.0,
+  dealDamagePerPermanent: 3.0,
+  gainBlockPerPermanent: 3.0,
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 /** コスト別の許容VP (§1)。ALLOW = 6×コスト + 2 (+2 = カード1枚の機会費用＝札束補正) */
@@ -115,7 +120,23 @@ const WORD: readonly (readonly [string, string])[] = [
   ['dealDamageRandom', '賭'],
   ['impulseDraw', '閃'],
 ]
+/** 色別の語彙上書き (2026-08-31 白ラン指摘「白素材から牙葉の祭壇=緑語彙が生成」への是正) */
+const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
+  white: [
+    ['summonPermanent', '旗'],
+    ['dealDamagePerPermanent', '列'],
+    ['gainHp', '光'],
+    ['weakenEnemy', '威'],
+    ['dealDamagePerBlock', '壁'],
+    ['gainBlock', '盾'],
+    ['dealDamage', '聖'],
+    ['drawCards', '典'],
+  ],
+}
 function wordOf(def: CardDef): string {
+  for (const [eff, w] of COLOR_WORD[def.color ?? ''] ?? []) {
+    if (def.effects.some((e) => e.effect === eff)) return w
+  }
   for (const [eff, w] of WORD) {
     if (def.effects.some((e) => e.effect === eff)) return w
   }

@@ -117,7 +117,7 @@
     "id": "relic_swift_sash",
     "name": "韋駄天の帯",
     "sprite": "🎽",
-    "description": "毎ターン開始時、勢い+1",
+    "description": "毎ターン開始時、勢い+1（勢いはそのターンの攻撃ダメージすべてに加算される——どの色でも乗る）",
     "effects": [
       {
         "trigger": "onTurnStart",
