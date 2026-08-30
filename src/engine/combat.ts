@@ -11,6 +11,7 @@ import {
   effectiveCost,
   effectiveIntent,
   fireExhaustTriggers,
+  fireNecroEffects,
   hasHuntableTokens,
   isDamageEffect,
   isPlayableFromHand,
@@ -621,6 +622,8 @@ export function playCard(
     s = runPermanentTriggers(s, 'onCostExhausted', enemyIndex)
   }
   s = fireExhaustTriggers(s, exhaustedCards.length, enemyIndex)
+  // 亡骸効果: 消滅コストで支払われた札は「プレイ以外の経路」なので発火する
+  s = fireNecroEffects(s, exhaustedCards, enemyIndex)
   if (isExhaust) {
     s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     s = fireExhaustTriggers(s, 1, enemyIndex)
@@ -738,6 +741,62 @@ export function playCard(
   return checkCombatEnd(s)
 }
 
+/**
+ * 亡骸プレイ (黒 2026-08-31): 消滅置き場の necroCost 持ち札を一度だけプレイする。
+ * プレイ後はゲームから完全に取り除かれる = 刻 (消滅置き場参照) の燃料も減る緊張。
+ * 割引 (discountNext) の対象外。反復 (spellEchoes) の対象外 (死者再生の直接プレイと同じ扱い)。
+ * necroCost 持ち札は modes / xCost / 追加コストを持たない単純な札に限る (cardrules で機械固定)
+ */
+export function playNecro(state: GameState, cardUid: string, targetIndex?: number): GameState {
+  if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
+  const card = state.player.exhaustPile.find((c) => c.uid === cardUid)
+  if (!card) throw new Error(`消滅置き場にないカード: ${cardUid}`)
+  const cost = card.def.necroCost
+  if (cost === undefined) throw new Error(`${card.def.name} は亡骸プレイを持たない`)
+  if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  const aliveCount = state.enemies.filter((e) => e.hp > 0).length
+  if (targetIndex !== undefined) {
+    const target = state.enemies[targetIndex]
+    if (!target || target.hp <= 0) throw new Error(`不正な対象: ${targetIndex}`)
+  }
+  if (targetIndex === undefined && aliveCount > 1 && cardNeedsTarget(card)) {
+    throw new Error(`${card.def.name} は対象の指定 (targetIndex) が必要`)
+  }
+  const enemyIndex = targetIndex ?? state.enemies.findIndex((e) => e.hp > 0)
+  let s: GameState = {
+    ...state,
+    player: {
+      ...state.player,
+      energy: state.player.energy - cost,
+      // ゲームから完全に取り除く (消滅置き場にも戻らない)
+      exhaustPile: state.player.exhaustPile.filter((c) => c.uid !== cardUid),
+    },
+  }
+  s = emit(s, { type: 'NecroPlayed', cardId: card.def.id })
+  s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
+  s = resolveOnPlayEffects(s, card, enemyIndex)
+  if (card.def.effects.filter((e) => e.trigger === 'onPlay').some(isDamageEffect)) {
+    s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
+    s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
+  }
+  s = runPermanentTriggers(s, 'onCardPlayed', enemyIndex)
+  if (card.def.type === 'spell') {
+    s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
+    s = runPermanentTriggers(s, 'onSpellPlayed', enemyIndex)
+  }
+  // 亡骸プレイも「プレイ」として詠唱数に数える (直接プレイと同じ既存則)
+  s = {
+    ...s,
+    player: {
+      ...s.player,
+      cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1,
+      cardsPlayedTotal: s.player.cardsPlayedTotal + 1,
+    },
+  }
+  s = tickCardTimers(s)
+  return checkCombatEnd(s)
+}
+
 /** EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する */
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
@@ -765,7 +824,10 @@ export function endTurn(state: GameState): GameState {
       s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     }
     // 衝動失効も消滅 = 亡者の合唱が誘発する (確定済みルール表「消滅の誘発」)
-    s = fireExhaustTriggers(s, expired.length, Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+    const aliveIdx = Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
+    s = fireExhaustTriggers(s, expired.length, aliveIdx)
+    // 亡骸効果: 衝動で引いた亡骸札の失効もプレイ以外の消滅なので発火する
+    s = fireNecroEffects(s, expired, aliveIdx)
   }
   // 敵ブロックはこのタイミングで失効 (前の敵ターンの防御は自ターンの攻撃を受け止めたら役目を終える)
   s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }

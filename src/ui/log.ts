@@ -73,6 +73,8 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'IceBlockGained': return { text: `氷壁+${e.amount}（持ち越しブロック）`, cls: 'log-line' }
     case 'AetherGained': return { text: `霊気+${e.amount}`, cls: 'log-good' }
     case 'SpellEchoed': return { text: `🔁 反復: ${cardName(e.cardId)} の効果が2回解決`, cls: 'log-good' }
+    case 'NecroFired': return { text: `💀 亡骸: ${cardName(e.cardId)} が消滅して効果が発火`, cls: 'log-good' }
+    case 'NecroPlayed': return { text: `💀 亡骸プレイ: ${cardName(e.cardId)} (ゲームから取り除かれた)`, cls: 'log-line' }
     case 'AetherDischarged': return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
     case 'DiscountGained': return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }

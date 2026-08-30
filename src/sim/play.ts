@@ -87,7 +87,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onAttackPlayed: '攻撃プレイごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと:', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
-    onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:',
+    onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
   }
   const cond = e.condition
     ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}]`
@@ -186,7 +186,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   const st = [
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
-    p.aether ? `霊気${p.aether}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
+    p.aether ? `霊気${p.aether}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '',
     p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '', p.randomPlayedThisCombat ? `運任せ札${p.randomPlayedThisCombat}枚` : '',
     `山札${p.drawPile.length}/捨て札${p.discardPile.length}`,
@@ -220,7 +220,11 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+    const necroList = p.exhaustPile.filter((c) => c.def.necroCost !== undefined)
+  if (necroList.length > 0) {
+    L.push(`亡骸プレイ可(消滅置き場): ${necroList.map((c) => `[${c.uid}] ${c.def.name}(${c.def.necroCost}E)`).join(' / ')} ※{"type":"PlayNecro","cardUid":"..."} 一度きり・ゲームから消える`)
+  }
+  L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})`).join(' / ')}`)

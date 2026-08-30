@@ -236,6 +236,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onAetherGained: '霊気を得るたび: ',
   onCardSet: 'カードを伏せるたび: ',
   onReactionFired: 'リアクションが発動するたび: ',
+  onSelfExhausted: '亡骸 (この札がプレイ以外で消滅した時): ',
 }
 
 /** 誘発の追加条件の表示 */
@@ -1484,6 +1485,9 @@ function BattleScreen({
             {player.aether > 0 && (
               <span className="chip chip-aether">⚡ {kw('霊気')} {player.aether}</span>
             )}
+            {player.spellEchoes > 0 && (
+              <span className="chip chip-aether">🔁 {kw('反復')} {player.spellEchoes}</span>
+            )}
             {player.nextCardDiscount > 0 && (
               <span className="chip chip-aether">🔥 次のカード-{player.nextCardDiscount}</span>
             )}
@@ -1504,6 +1508,41 @@ function BattleScreen({
                 消滅 {player.exhaustPile.length} 枚
               </>
             )}
+            {/* 亡骸プレイ (黒 2026-08-31): 消滅置き場の necroCost 持ち札を一度だけプレイ */}
+            {s.phase === 'player-turn' &&
+              player.exhaustPile
+                .filter((c) => c.def.necroCost !== undefined)
+                .map((c) => {
+                  const nCost = c.def.necroCost ?? 0
+                  const alive = s.enemies
+                    .map((e, i) => ({ e, i }))
+                    .filter(({ e }) => e.hp > 0)
+                  const needsPick = alive.length > 1 && cardNeedsTarget(c)
+                  return (
+                    <div key={c.uid} style={{ marginTop: 4 }}>
+                      {needsPick ? (
+                        alive.map(({ e, i }) => (
+                          <button
+                            key={i}
+                            className="btn"
+                            disabled={player.energy < nCost}
+                            onClick={() => dispatch({ type: 'PlayNecro', cardUid: c.uid, targetIndex: i })}
+                          >
+                            💀 {c.def.name}({nCost}E)→{getEnemyDef(e.enemyId).name}
+                          </button>
+                        ))
+                      ) : (
+                        <button
+                          className="btn"
+                          disabled={player.energy < nCost}
+                          onClick={() => dispatch({ type: 'PlayNecro', cardUid: c.uid })}
+                        >
+                          💀 {c.def.name} 亡骸プレイ({nCost}E)
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
           </div>
         </div>
       </div>

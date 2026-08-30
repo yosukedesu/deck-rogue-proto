@@ -374,6 +374,16 @@ export function chooseCommand(s: GameState): Command {
       candidates.find((c) => c.def.effects.some((e) => e.effect === 'addGrowth')) ?? candidates[0]
     if (card) return buildPlayCommand(s, card)
   }
+  // 亡骸プレイ (黒 2026-08-31): 手札を使い切ったら余りエナジーで消滅置き場の亡骸札を撃つ
+  const necro = s.player.exhaustPile.find(
+    (c) => c.def.necroCost !== undefined && c.def.necroCost <= s.player.energy - reserve,
+  )
+  if (necro) {
+    const alive = s.enemies.map((e, i) => ({ e, i })).filter(({ e }) => e.hp > 0)
+    const target =
+      alive.length > 1 ? alive.reduce((a, b) => (b.e.hp < a.e.hp ? b : a)).i : undefined
+    return { type: 'PlayNecro', cardUid: necro.uid, targetIndex: target }
+  }
   return { type: 'EndTurn' }
 }
 

@@ -3,7 +3,7 @@
 // 方式固有コマンドは ReactionSystem に委譲し、割り込み中断中だった場合は敵フェーズを再開する。
 import { retrieveSetCard } from './reactions/set-base.ts'
 
-import { continueAfterWindow, createInitialState, endTurn, playCard, startCombat } from './combat.ts'
+import { continueAfterWindow, createInitialState, endTurn, playCard, playNecro, startCombat } from './combat.ts'
 import { getReactionSystem } from './reactions/index.ts'
 import type { Command, GameState } from './types.ts'
 
@@ -19,6 +19,8 @@ export function applyCommand(state: GameState, command: Command): GameState {
       return endTurn(state)
     case 'RetrieveSetCard':
       return retrieveSetCard(state, command.cardUid)
+    case 'PlayNecro':
+      return playNecro(state, command.cardUid, command.targetIndex)
     case 'SetCard':
     case 'ReactManual':
     case 'ConfirmReaction': {

@@ -43,7 +43,9 @@ const AOE_MULT: Record<string, number> = { red: 1.5 }
 
 function effectVp(e: DeclarativeEffect, type: string, color?: string): number {
   const aoe = e.target === 'all' ? (AOE_MULT[color ?? ''] ?? 2) : 1
-  const mult = aoe * (e.pierce ? 1.25 : 1) * COND(e)
+  // 亡骸効果 (onSelfExhausted) はミル・消滅コスト経由でしか発火しない = 期待値0.5
+  const necro = e.trigger === 'onSelfExhausted' ? 0.5 : 1
+  const mult = aoe * (e.pierce ? 1.25 : 1) * COND(e) * necro
   // 置物は寿命込み (×3)。ただし onPlay の一回きり効果は等倍
   const life = type === 'permanent' && e.trigger !== 'onPlay' ? 3 : 1
   const per = VP_PER[e.effect]

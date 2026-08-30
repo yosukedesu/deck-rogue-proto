@@ -205,6 +205,30 @@ export function fireExhaustTriggers(state: GameState, count: number, enemyIndex:
   return s
 }
 
+/**
+ * 亡骸効果 (黒 2026-08-31): プレイ以外の経路 (ミル・消滅コスト・衝動失効) で消滅した札の
+ * onSelfExhausted 効果を発火する。プレイして消滅した場合は呼ばれない (onPlayが仕事を終えている)。
+ * 発火順は「置物の消滅誘発 (fireExhaustTriggers) → 亡骸」で呼び出し側が揃える
+ */
+export function fireNecroEffects(
+  state: GameState,
+  cards: readonly CardInstance[],
+  enemyIndex: number,
+): GameState {
+  let s = state
+  for (const card of cards) {
+    const necro = card.def.effects.filter((e) => e.trigger === 'onSelfExhausted')
+    if (necro.length === 0) continue
+    s = emit(s, { type: 'NecroFired', cardId: card.def.id })
+    for (const effect of necro) {
+      // 対象は現在の生存先頭 (ミルは対象を取らない自動誘発。全体効果はそのまま全体解決)
+      const idx = s.enemies[enemyIndex]?.hp > 0 ? enemyIndex : Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
+      s = resolveEffectTargeted(s, effect, idx)
+    }
+  }
+  return s
+}
+
 /** 効果1つを対象規則に従って解決する。target:'all' は生存する敵全体に順に解決 (確定済みルール表「全体攻撃」) */
 export function resolveEffectTargeted(
   state: GameState,
@@ -798,7 +822,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         },
       }
       s = emit(s, { type: 'CardsMilled', count: n })
-      return fireExhaustTriggers(s, n, enemyIndex)
+      s = fireExhaustTriggers(s, n, enemyIndex)
+      // 亡骸効果 (2026-08-31): ミルされた札の onSelfExhausted が発火する = ミルが即座に価値を返す
+      return fireNecroEffects(s, milled, enemyIndex)
     }
     case 'dealDamagePerExhaust':
       // 墓地参照 (黒): 消滅した枚数×X (確定済みルール表「黒の柱」)

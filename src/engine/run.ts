@@ -656,6 +656,7 @@ const TRIGGER_AXIS: Record<string, string> = {
   onSpellPlayed: 'storm',
   onBlockGained: 'fortress',
   onActionNegated: 'permission',
+  onSelfExhausted: 'graveyard', // 亡骸効果 (黒 2026-08-31)
 }
 
 /** この札が属する軸 (効果名・トリガー・フィールドからの自動導出 + JSONの明示宣言) */

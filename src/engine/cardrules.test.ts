@@ -200,4 +200,32 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
       expect(rare / pool.length, `${color} のレア比率`).toBeLessThanOrEqual(0.22)
     }
   })
+
+  // 亡骸プレイ (necroCost 2026-08-31): playNecro は playCard の簡約版なので、
+  // 複雑な札 (選択式・X・追加コスト・コスト再利用・リアクション・置物) には付けられない
+  it('necroCost 持ちは単純な札のみ (modes/xCost/追加コスト/再利用/リアクション/置物は不可)', () => {
+    for (const c of allCards.filter((c) => c.necroCost !== undefined)) {
+      expect(c.modes ?? [], `${c.name}: modes不可`).toEqual([])
+      expect(c.xCost ?? false, `${c.name}: xCost不可`).toBe(false)
+      expect(c.discardCost ?? 0, `${c.name}: 捨てコスト不可`).toBe(0)
+      expect(c.exhaustCost ?? 0, `${c.name}: 消滅コスト不可`).toBe(0)
+      expect(['spell', 'physical'], `${c.name}: 呪文か物理のみ`).toContain(c.type)
+      const forbidden = c.effects.some(
+        (e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust',
+      )
+      expect(forbidden, `${c.name}: コスト再利用効果は不可`).toBe(false)
+      // 消滅置き場に自然に届くこと = 消滅持ちであること (ミル頼みの死に札を防ぐ)
+      expect(c.exhaust, `${c.name}: 亡骸プレイ持ちは消滅を持つこと`).toBe(true)
+    }
+  })
+
+  // 亡骸効果 (onSelfExhausted): 発火は自動なので、対象を要求する効果は置けない…ではなく
+  // 単体対象は「生存先頭に自動解決」される。ここでは規約として「亡骸効果は量を持つこと」を固定
+  it('亡骸効果 (onSelfExhausted) は量を持つ宣言的効果のみ (negate等の量なしは不可)', () => {
+    for (const c of allCards) {
+      for (const e of c.effects.filter((e) => e.trigger === 'onSelfExhausted')) {
+        expect(e.amount !== undefined, `${c.name}: 亡骸効果は amount 必須`).toBe(true)
+      }
+    }
+  })
 })

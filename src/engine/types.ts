@@ -263,6 +263,7 @@ export type Command =
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
+  | { readonly type: 'PlayNecro'; readonly cardUid: string; readonly targetIndex?: number } // 亡骸プレイ (黒 2026-08-31): 消滅置き場の necroCost 持ち札を一度だけプレイ (プレイ後はゲームから完全に取り除く)
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
   | {
       readonly type: 'ConfirmReaction'
@@ -313,6 +314,8 @@ export type GameEvent =
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
   | { readonly type: 'SpellEchoed'; readonly cardId: string } // 反復 (青): 呪文の効果が2回解決された
+  | { readonly type: 'NecroFired'; readonly cardId: string } // 亡骸効果 (黒): 消滅した札の亡骸効果が発火した
+  | { readonly type: 'NecroPlayed'; readonly cardId: string } // 亡骸プレイ (黒): 消滅置き場からプレイされ、ゲームから取り除かれた
   | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
@@ -424,6 +427,7 @@ export interface DeclarativeEffect {
     | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
     | 'onCardSet' // カードを伏せるたび (レリック: 符師の懐。set-confirmシナジー)
     | 'onReactionFired' // リアクションが発動するたび (置物。緑: 狩人の眼光=読み勝ちの換金。自己誘発・全方式共通)
+    | 'onSelfExhausted' // 亡骸効果 (黒 2026-08-31): この札が「プレイ以外の経路」(ミル・消滅コスト・衝動失効) で消滅した時。プレイして消滅した場合は発火しない (onPlayが仕事を終えているため)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   readonly effect:
@@ -611,6 +615,8 @@ export interface CardDef {
   readonly modes?: readonly CardMode[]
   /** 消滅: 使用後この戦闘から除外される */
   readonly exhaust?: boolean
+  /** 亡骸プレイ (黒 2026-08-31): 消滅置き場からNエナジーで一度だけプレイできる。プレイ後はゲームから完全に取り除かれる (刻の燃料も減る)。割引 (discountNext) の対象外 */
+  readonly necroCost?: number
   /** 追加コスト: 手札を N 枚捨てる */
   readonly discardCost?: number
   /** 追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる) */

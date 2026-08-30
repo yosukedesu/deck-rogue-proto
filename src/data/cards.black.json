@@ -695,5 +695,149 @@
         "amount": 2
       }
     ]
+  },
+  {
+    "id": "black_bursting_corpse",
+    "name": "爆ぜる骸",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_whispering_ghost",
+    "name": "囁く亡霊",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_grudge_bone",
+    "name": "怨みの骨",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainBlock",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "black_groaning_skull",
+    "name": "呻く頭蓋",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamageDrain",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_corpse_tinder",
+    "name": "骸の火種",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_undying_fang",
+    "name": "朽ちぬ牙",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "necroCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 9
+      }
+    ],
+    "axis": [
+      "graveyard"
+    ]
+  },
+  {
+    "id": "black_necro_knight",
+    "name": "亡骸の騎士",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "rare",
+    "exhaust": true,
+    "necroCost": 2,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageDrain",
+        "amount": 12
+      }
+    ],
+    "axis": [
+      "graveyard"
+    ]
   }
 ]

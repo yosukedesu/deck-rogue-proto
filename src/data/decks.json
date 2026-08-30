@@ -1866,5 +1866,51 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "deck_necro",
+    "name": "亡骸の宴",
+    "cards": [
+      {
+        "cardId": "black_bursting_corpse",
+        "count": 2
+      },
+      {
+        "cardId": "black_whispering_ghost",
+        "count": 2
+      },
+      {
+        "cardId": "black_grudge_bone",
+        "count": 1
+      },
+      {
+        "cardId": "black_groaning_skull",
+        "count": 1
+      },
+      {
+        "cardId": "black_corpse_tinder",
+        "count": 2
+      },
+      {
+        "cardId": "black_mill",
+        "count": 2
+      },
+      {
+        "cardId": "black_grave_digger",
+        "count": 1
+      },
+      {
+        "cardId": "black_undying_fang",
+        "count": 1
+      },
+      {
+        "cardId": "black_necro_knight",
+        "count": 1
+      },
+      {
+        "cardId": "black_offering",
+        "count": 1
+      }
+    ]
   }
 ]

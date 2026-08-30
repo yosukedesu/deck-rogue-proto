@@ -72,9 +72,11 @@ function effectVp(e: DeclarativeEffect): number {
   // 3効果の枠にあぶれた条件付きダメージは無条件ダメージへ換金されるが、
   // 満額(1.0)だと条件の対価がタダで外れる水増しになる — 0.6掛けなら公正な換金
   const cond = e.condition !== undefined ? 0.6 : 1
-  if (per !== undefined) return per * amt * mult * (e.pierce ? 1.25 : 1) * cond
+  // 亡骸効果 (onSelfExhausted) はミル・消滅コスト経由でしか発火しない = 期待値0.5で数える
+  const necro = e.trigger === 'onSelfExhausted' ? 0.5 : 1
+  if (per !== undefined) return per * amt * mult * (e.pierce ? 1.25 : 1) * cond * necro
   const flat = VP_FLAT[e.effect]
-  if (flat !== undefined) return flat * mult * cond
+  if (flat !== undefined) return flat * mult * cond * necro
   return 0
 }
 
@@ -176,7 +178,9 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   const dmgOf = (c: CardInstance) =>
     c.def.type === 'permanent'
       ? []
-      : c.def.effects.filter((e) => e.effect === 'dealDamage' && e.condition === undefined)
+      : c.def.effects.filter(
+          (e) => e.effect === 'dealDamage' && e.condition === undefined && e.trigger === 'onPlay',
+        )
   const dmgA = dmgOf(a)
   const dmgB = dmgOf(b)
   const totalDmg = [...dmgA, ...dmgB].reduce((acc, e) => acc + (e.amount ?? 0), 0)
@@ -224,8 +228,13 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 「支配側か」ではなく「素材がもう持続型か」で判定する。同名置物×置物のような
   // 「両方すでに毎ターン型」の合成で従属側まで÷3してしまう二重割引を防ぐ。
   const convert = (e: DeclarativeEffect, srcType: string): DeclarativeEffect | null => {
-    if (e.effect === 'dealDamage' && srcType !== 'permanent' && e.condition === undefined) {
-      return null // 上のダメージ群で処理済み (条件付きは通す)
+    if (
+      e.effect === 'dealDamage' &&
+      srcType !== 'permanent' &&
+      e.condition === undefined &&
+      e.trigger === 'onPlay'
+    ) {
+      return null // 上のダメージ群で処理済み (条件付き・亡骸 onSelfExhausted は通す)
     }
     if (resultType === 'permanent' && srcType !== 'permanent') {
       // 一回きり → 毎ターン化は量÷3 (切り上げ)。置物が誘発できる窓 (hooks.ts の2窓) だけ残し、
@@ -434,6 +443,9 @@ export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null
   if (a.def.color !== b.def.color) return '合成は同じ色のカード同士のみ'
   if (a.def.modes?.length || b.def.modes?.length) return '選択式カードはレシピでのみ合成できる'
   if (a.def.xCost === true || b.def.xCost === true) return 'Xコスト札は計算合成できない (X参照は査定不能)'
+  if (a.def.necroCost !== undefined || b.def.necroCost !== undefined) {
+    return '亡骸プレイ持ちは計算合成できない (一度きりの再演は査定不能)'
+  }
   const all = [...a.def.effects, ...b.def.effects]
   if (!all.every(isComputable)) return 'この効果の組み合わせは合成できない'
   // 置物化する場合、従属側に量を持たない効果 (negate等) があると毎ターン化できない
