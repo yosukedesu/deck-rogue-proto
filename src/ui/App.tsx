@@ -2278,7 +2278,8 @@ function RunScreen({
   }
 
   if (run.phase === 'campfire') {
-    const heal = Math.floor(run.maxHp * run.campfireRatio)
+    // 上限クランプ後の実回復量 (満タンで+41と表示される誤解を防ぐ 2026-08-30)
+    const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
     return (
       <div className="app setup">
         <h1>🔥 焚き火</h1>

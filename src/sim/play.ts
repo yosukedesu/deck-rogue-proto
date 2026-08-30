@@ -407,7 +407,9 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     if ((run.campfireForgeBonus ?? 0) > 0) {
       L.push(`  🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚 (休む・除去とは併用不可)`)
     }
-    L.push(`  休む (CampfireRest) → HP+${Math.floor(run.maxHp * run.campfireRatio)} 回復して次へ${(run.campfireUpgradesUsed ?? 0) > 0 ? ' ※鍛えた後なので回復なしの立ち去りになる' : ''}`)
+    // 上限クランプ後の実回復量を表示する (2026-08-30 Opusラン指摘: 満タンでも+41と出ていた)
+    const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
+    L.push(`  休む (CampfireRest) → HP+${heal} 回復して次へ${(run.campfireUpgradesUsed ?? 0) > 0 ? ' ※鍛えた後なので回復なしの立ち去りになる' : ''}`)
     L.push('  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)')
     L.push('  除去 (CampfireRemove) → デッキから1枚を永久に取り除く')
     run.deck.forEach((c, i) => {
