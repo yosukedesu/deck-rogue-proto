@@ -207,6 +207,7 @@ interface EffectCtx {
   permanents: number
   damageTaken: number
   iceBlock: number
+  randomPlayed: number
 }
 
 const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
@@ -317,7 +318,9 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'applyBurnPerDamageTaken':
       return `${trigger}${aoe}直前の敵ターンに受けたダメージ×${e.amount}の延焼`
     case 'dealDamagePerRandomPlayed':
-      return `${trigger}${aoe}この戦闘で撃った運任せの札×${e.amount}ダメージ${pierce}`
+      return ctx
+        ? `${trigger}${aoe}この戦闘で撃った運任せの札×${e.amount}ダメージ${pierce} [現在${ctx.randomPlayed}枚=${ctx.randomPlayed * (e.amount ?? 0) + atkBonus}]`
+        : `${trigger}${aoe}この戦闘で撃った運任せの札×${e.amount}ダメージ${pierce}`
     case 'shatterBlock':
       return `${trigger}${aoe || '敵の'}ブロックを全て粉砕する`
     case 'confuse':
@@ -1297,7 +1300,7 @@ function BattleScreen({
                   <b>{c.def.name}</b>
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat }}
                   />
                 </div>
               ))}
@@ -1338,6 +1341,7 @@ function BattleScreen({
                             selfHpLost: player.selfHpLost,
                             permanents: player.permanents.length,
                             damageTaken: player.damageTakenLastEnemyPhase,
+                            randomPlayed: player.randomPlayedThisCombat,
                             iceBlock: player.iceBlock,
                             cardsPlayed: player.cardsPlayedThisTurn,
                             aether: player.aether,
@@ -1375,7 +1379,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({cardCostLabel(c.def)}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat })}
                     </button>
                   ))}
                   <button
@@ -1532,7 +1536,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat }}
                     dim={!eligible}
                     hint={eligible ? undefined : directPlay ? '直接プレイ不可' : undefined}
                     actions={
@@ -1611,7 +1615,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat }}
                       dim={isSource || isChosen}
                       hint={isSource ? 'プレイするカード' : isChosen ? '消滅予定' : undefined}
                       actions={
@@ -1653,7 +1657,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -1677,7 +1681,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat }}
                     displayCost={effCost}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={

@@ -186,7 +186,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '',
-    p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
+    p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '', p.randomPlayedThisCombat ? `運任せ札${p.randomPlayedThisCombat}枚` : '',
     `山札${p.drawPile.length}/捨て札${p.discardPile.length}`,
   ].filter(Boolean).join(' | ')
   L.push(`自分: ${st}`)
