@@ -75,17 +75,8 @@ describe('延焼 (バーン)', () => {
   })
 })
 
-describe('粉砕とランダム火力', () => {
-  it('粉砕: 敵のブロックを全て破壊してからダメージが通る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_turtle', 42, 'starter_red'), ['red_smash'])
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_smash' })
-    expect(types(s.eventLog)).toContain('BlockShattered')
-    expect(s.enemies[0].block).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - 13) // 割った後は素通し (叩き割り 11→13)
-  })
-
+// 粉砕は緑へ移管 (2026-08-30 カラーパイ再編)。テストは green-synergy.test.ts にある
+describe('ランダム火力', () => {
   it('ランダム火力: 範囲内のダメージで、同じシードなら同じ結果', () => {
     const play = () => {
       let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), ['red_gamble'])

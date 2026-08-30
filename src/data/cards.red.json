@@ -210,48 +210,6 @@
     ]
   },
   {
-    "id": "red_shatter",
-    "name": "粉砕",
-    "cost": 1,
-    "type": "physical",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "shatterBlock"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 5
-      }
-    ],
-    "axis": [
-      "shatter"
-    ]
-  },
-  {
-    "id": "red_smash",
-    "name": "叩き割り",
-    "cost": 2,
-    "type": "physical",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "shatterBlock"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 13
-      }
-    ],
-    "axis": [
-      "shatter"
-    ]
-  },
-  {
     "id": "red_gamble",
     "name": "火運の賭け",
     "cost": 1,
@@ -517,20 +475,6 @@
     ]
   },
   {
-    "id": "red_payback",
-    "name": "逆上",
-    "cost": 1,
-    "type": "physical",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerDamageTaken",
-        "amount": 2
-      }
-    ]
-  },
-  {
     "id": "red_reaction_defiance",
     "name": "反骨の炎",
     "cost": 1,
@@ -604,27 +548,6 @@
         "effect": "gainEnergy",
         "amount": 2
       }
-    ]
-  },
-  {
-    "id": "red_battering_ram",
-    "name": "破城槌",
-    "cost": 2,
-    "type": "physical",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "shatterBlockConvert"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 6
-      }
-    ],
-    "axis": [
-      "shatter"
     ]
   },
   {
@@ -727,13 +650,13 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerDamageTaken",
-        "amount": 1
+        "effect": "dealDamage",
+        "amount": 4
       },
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -758,20 +681,6 @@
     ]
   },
   {
-    "id": "red_perm_gauntlet",
-    "name": "憤怒の篭手",
-    "cost": 2,
-    "type": "permanent",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onTurnStart",
-        "effect": "dealDamagePerDamageTaken",
-        "amount": 1
-      }
-    ]
-  },
-  {
     "id": "red_wrath_roar",
     "name": "憤怒の咆哮",
     "cost": 3,
@@ -781,14 +690,13 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4,
+        "amount": 8,
         "target": "all"
       },
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerDamageTaken",
-        "amount": 1,
-        "target": "all"
+        "effect": "addMomentum",
+        "amount": 4
       }
     ]
   },

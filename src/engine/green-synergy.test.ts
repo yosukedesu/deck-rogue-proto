@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
 import { getCardDef } from './content.ts'
-import { freshCombat, withHand } from './test-helpers.ts'
+import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 function withEnergy(s: GameState, energy: number): GameState {
@@ -320,5 +320,50 @@ describe('ランプ即時利用の廃止が上限参照札にも効く (2026-08-
       s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
     }
     expect(s.player.energyMaxAtTurnStart).toBe(4) // 次ターン開始でスナップショット更新
+  })
+})
+
+// --- 赤からの移管 (2026-08-30 カラーパイ再編 Phase 1) ---
+// ユーザー判断「逆上は緑のカラーパイ / 粉砕は緑に渡したい」。逆上は素のまま渡すと
+// 中立スターターで中央値2ダメ・57%が2以下と分散が極端なので、固定5の床を付けて渡した。
+describe('赤からの移管: 被弾の換金と粉砕', () => {
+  it('茨の報い: 固定5 + 直前の敵フェーズで受けたダメージ×1', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withIntent(s, attackIntent(8))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.damageTakenLastEnemyPhase).toBe(8)
+    s = withHand(s, ['green_thorn_repay'])
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 13) // 床5 + 被弾8
+  })
+
+  it('茨の報い: 被弾0のターンでも床の5は出る (緑のスターターで腐らせない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_thorn_repay'])
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 5)
+  })
+
+  it('岩砕きの根: 敵のブロックを全て破壊してからダメージが通る', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_turtle', 42), ['green_rock_root'])
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_rock_root' })
+    expect(s.enemies[0].block).toBe(0)
+    expect(s.enemies[0].hp).toBe(hpBefore - 13)
+  })
+
+  it('根喰らいの蔓: 破壊した値をダメージに換金する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [])
+    s = withIntent(s, defendIntent(10))
+    s = applyCommand(s, { type: 'EndTurn' }) // 敵がブロック10を得る
+    s = withHand(s, ['green_devour_vine'])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_devour_vine' })
+    expect(s.enemies[0].block).toBe(0)
+    expect(s.enemies[0].hp).toBe(hpBefore - 15) // 破壊値10 + 基礎5
   })
 })

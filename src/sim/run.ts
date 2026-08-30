@@ -108,8 +108,11 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'dischargeBurn')) {
     return state.enemies.some((e) => e.hp > 0 && e.burn >= 3)
   }
+  // 被弾参照は「他に固定ダメージを持たない札」だけ温存する (2026-08-30 移管で床が付いた。
+  // 茨の報い = 固定5 + 被弾×1 は被弾0でも5出るので、温存すると誤って腐らせる)
   if (
     card.def.effects.some((e) => e.effect === 'dealDamagePerDamageTaken') &&
+    !card.def.effects.some((e) => e.effect === 'dealDamage') &&
     state.player.damageTakenLastEnemyPhase < 4
   ) {
     return false

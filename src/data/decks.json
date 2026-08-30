@@ -522,11 +522,11 @@
         "count": 1
       },
       {
-        "cardId": "red_shatter",
+        "cardId": "red_ember_slash",
         "count": 1
       },
       {
-        "cardId": "red_smash",
+        "cardId": "red_fire_rain",
         "count": 1
       },
       {
@@ -642,7 +642,7 @@
         "count": 2
       },
       {
-        "cardId": "red_smash",
+        "cardId": "red_spreading_fire",
         "count": 2
       },
       {
@@ -1234,7 +1234,7 @@
         "count": 2
       },
       {
-        "cardId": "red_payback",
+        "cardId": "red_hearth_shield",
         "count": 2
       },
       {
@@ -1246,7 +1246,7 @@
         "count": 1
       },
       {
-        "cardId": "red_perm_gauntlet",
+        "cardId": "red_ignite",
         "count": 1
       },
       {
@@ -1346,7 +1346,7 @@
         "count": 1
       },
       {
-        "cardId": "red_payback",
+        "cardId": "red_ignite",
         "count": 1
       }
     ]

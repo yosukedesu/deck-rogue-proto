@@ -3,7 +3,7 @@
 // 赤の受け: 守らず、被弾を次の攻撃の燃料に換金する (威嚇の後継)。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
-import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('憤怒 (被弾の換金)', () => {
   it('憤怒の仮面: 被攻撃後に勢い+2。敵フェーズに得た勢いは次の自ターンの攻撃に乗る', () => {
@@ -19,17 +19,6 @@ describe('憤怒 (被弾の換金)', () => {
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_strike' })
     expect(s.enemies[0].hp).toBe(enemyHp - 6 - 2)
-  })
-
-  it('逆上: 直前の敵フェーズで受けたダメージ×2のダメージ', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [])
-    s = withIntent(s, attackIntent(8))
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.damageTakenLastEnemyPhase).toBe(8)
-    s = withHand(s, ['red_payback'])
-    const enemyHp = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_payback' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 16)
   })
 
   it('ブロックで防いだ分は憤怒に数えない (HP損失のみ)', () => {
@@ -72,20 +61,7 @@ describe('処刑 (とどめの一撃)', () => {
   })
 })
 
-describe('粉砕の換金 (破城槌)', () => {
-  it('敵のブロックを全て破壊し、破壊した値と同じダメージを与える', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
-      'red_battering_ram',
-    ])
-    s = withIntent(s, defendIntent(10))
-    s = applyCommand(s, { type: 'EndTurn' }) // 敵がブロック10を得る
-    s = withHand(s, ['red_battering_ram'])
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_battering_ram' })
-    expect(s.enemies[0].block).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - 16) // 破壊値10 + 基礎6 (2026-08-27。敵ブロック0でも死に札にならない)
-  })
-})
+// 粉砕の換金 (破城槌 → 根喰らいの蔓) は緑へ移管 (2026-08-30)。テストは green-synergy.test.ts
 
 describe('刹那の焔 (衝動の誘発)', () => {
   it('衝動でプレイしたカードだけ延焼+1が乗る', () => {

@@ -1258,5 +1258,106 @@
         "effect": "doubleMomentum"
       }
     ]
+  },
+  {
+    "id": "green_thorn_repay",
+    "name": "茨の報い",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerDamageTaken",
+        "amount": 1
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_perm_pain_root",
+    "name": "痛みを喰う根",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamagePerDamageTaken",
+        "amount": 1
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_vine_wedge",
+    "name": "蔦の楔",
+    "cost": 1,
+    "type": "physical",
+    "axis": [
+      "shatter"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlock"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_devour_vine",
+    "name": "根喰らいの蔓",
+    "cost": 2,
+    "type": "physical",
+    "axis": [
+      "shatter"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlockConvert"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_rock_root",
+    "name": "岩砕きの根",
+    "cost": 2,
+    "type": "physical",
+    "axis": [
+      "shatter"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlock"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      }
+    ],
+    "rarity": "uncommon"
   }
 ]
