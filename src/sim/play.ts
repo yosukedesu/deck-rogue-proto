@@ -63,7 +63,7 @@ function fx(e: DeclarativeEffect): string {
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
     confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵強化-${a})`,
-    dealDamagePerBlock: `ブロック×${a}ダメ`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`,
+    dealDamagePerBlock: `ブロック×${a}ダメ`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `上限×${a}ダメ`, gainBlockPerEnergyMax: `上限×${a}ブロック`,
@@ -71,6 +71,7 @@ function fx(e: DeclarativeEffect): string {
     exhaustFromDeck: `山札の上${a}枚を消滅`, dealDamagePerExhaust: `消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
+    applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
     dealDamagePerIceBlock: `氷壁×${a}ダメ`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerNegStrength: `下げた敵強化×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ',
@@ -411,7 +412,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
-    L.push('   (緑同士のみ。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。コストはVP査定からの逆算=素材コストの単純合算ではない)')
+    L.push('   (同じ色同士。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。コストはVP査定からの逆算=素材コストの単純合算ではない)')
     L.push('   特定の組み合わせは手書きレシピ(⭐)にヒットし、計算値より少し強い一品になる')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
