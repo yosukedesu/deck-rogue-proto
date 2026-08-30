@@ -168,6 +168,7 @@
  },
  {
   "id": "enc_squirrel_probe",
+  "name": "栗鼠と探り屋",
   "members": [
    {
     "enemyId": "enemy_thorn_squirrel",
@@ -183,6 +184,7 @@
  },
  {
   "id": "enc_beast_pair",
+  "name": "うねる獣の二匹",
   "members": [
    {
     "enemyId": "enemy_wide_power",
@@ -200,6 +202,7 @@
  },
  {
   "id": "enc_thief_beast",
+  "name": "こそ泥と獣",
   "members": [
    {
     "enemyId": "enemy_thief",
@@ -215,6 +218,7 @@
  },
  {
   "id": "enc_joker_hexer",
+  "name": "道化と妖術師",
   "members": [
    {
     "enemyId": "enemy_joker",
@@ -230,6 +234,7 @@
  },
  {
   "id": "enc_wary_bomber",
+  "name": "影と火薬樽",
   "members": [
    {
     "enemyId": "enemy_set_wary",
@@ -245,6 +250,7 @@
  },
  {
   "id": "enc_wolf_pair",
+  "name": "狼の二頭",
   "members": [
    {
     "enemyId": "enemy_wolf",
@@ -262,6 +268,7 @@
  },
  {
   "id": "enc_moss_healer",
+  "name": "苔の主と癒し手",
   "members": [
    {
     "enemyId": "enemy_moss",
