@@ -4,6 +4,7 @@
     "name": "影の一撃",
     "cost": 1,
     "type": "physical",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -17,6 +18,7 @@
     "name": "骨の盾",
     "cost": 1,
     "type": "physical",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -30,6 +32,7 @@
     "name": "生命吸収",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -43,6 +46,7 @@
     "name": "貪り喰らう",
     "cost": 3,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -56,6 +60,7 @@
     "name": "痛みの対価",
     "cost": 1,
     "type": "physical",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -74,6 +79,7 @@
     "name": "血の儀式",
     "cost": 0,
     "type": "spell",
+    "rarity": "common",
     "exhaust": true,
     "effects": [
       {
@@ -93,6 +99,7 @@
     "name": "忘却の霧",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -111,6 +118,7 @@
     "name": "亡霊の槍",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -131,6 +139,7 @@
     "name": "死者の行進",
     "cost": 3,
     "type": "spell",
+    "rarity": "uncommon",
     "exhaust": true,
     "effects": [
       {
@@ -147,6 +156,7 @@
     "name": "死体爆発",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -163,6 +173,7 @@
     "name": "蛭の王",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -176,6 +187,7 @@
     "name": "冒涜の祭壇",
     "cost": 1,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -191,6 +203,7 @@
     "name": "生き血の税",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -204,6 +217,7 @@
     "name": "冒涜の取引",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -218,6 +232,7 @@
     "name": "闇の契約",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -236,6 +251,7 @@
     "name": "呪詛返し",
     "cost": 1,
     "type": "reaction",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -249,6 +265,7 @@
     "name": "怨嗟",
     "cost": 2,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -265,6 +282,7 @@
     "name": "死神の鎌",
     "cost": 4,
     "type": "physical",
+    "rarity": "rare",
     "exhaust": true,
     "effects": [
       {
@@ -279,6 +297,7 @@
     "name": "絶望の重み",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -299,6 +318,7 @@
     "name": "影の刃",
     "cost": 0,
     "type": "physical",
+    "rarity": "common",
     "exhaust": true,
     "effects": [
       {
@@ -318,6 +338,7 @@
     "name": "血の代償",
     "cost": 2,
     "type": "physical",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -336,6 +357,7 @@
     "name": "死の風",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -355,6 +377,7 @@
     "name": "貪欲の宴",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -369,6 +392,7 @@
     "name": "墓暴き",
     "cost": 0,
     "type": "spell",
+    "rarity": "common",
     "exhaust": true,
     "exhaustCost": 1,
     "effects": [
@@ -384,6 +408,7 @@
     "name": "深き忘却",
     "cost": 2,
     "type": "spell",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onPlay",
@@ -402,6 +427,7 @@
     "name": "供物の火",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "exhaustCost": 1,
     "effects": [
       {
@@ -416,6 +442,7 @@
     "name": "冥府への道",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "exhaustCost": 2,
     "effects": [
       {
@@ -430,6 +457,7 @@
     "name": "死霊の饗宴",
     "cost": 3,
     "type": "spell",
+    "rarity": "uncommon",
     "exhaust": true,
     "effects": [
       {
@@ -446,6 +474,7 @@
     "name": "死者再生",
     "cost": 2,
     "type": "spell",
+    "rarity": "rare",
     "exhaust": true,
     "effects": [
       {
@@ -459,6 +488,7 @@
     "name": "屍集め",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -477,6 +507,7 @@
     "name": "背徳の収穫",
     "cost": 3,
     "type": "spell",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onPlay",
@@ -490,6 +521,7 @@
     "name": "血染めの刃",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onAttackPlayed",
@@ -503,6 +535,7 @@
     "name": "血の月",
     "cost": 2,
     "type": "permanent",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onHealed",
@@ -516,6 +549,7 @@
     "name": "苦痛の芯",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onHpLost",
@@ -529,6 +563,7 @@
     "name": "亡者の合唱",
     "cost": 2,
     "type": "permanent",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onCardExhausted",
@@ -544,6 +579,7 @@
     "name": "闇市の帳簿",
     "cost": 2,
     "type": "permanent",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onCostExhausted",
@@ -557,6 +593,7 @@
     "name": "死中の活",
     "cost": 2,
     "type": "reaction",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -573,6 +610,7 @@
     "name": "血の目覚め",
     "cost": 1,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onSpellPlayed",
@@ -593,6 +631,7 @@
     "name": "亡者の壁",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -608,6 +647,7 @@
     "name": "衰滅の呪い",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -626,6 +666,7 @@
     "name": "屍の苗床",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -641,6 +682,7 @@
     "name": "墓石の盾",
     "cost": 1,
     "type": "physical",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",

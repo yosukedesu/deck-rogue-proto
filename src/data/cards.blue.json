@@ -4,6 +4,7 @@
     "name": "水撃",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -22,6 +23,7 @@
     "name": "氷盾",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -35,6 +37,7 @@
     "name": "渦流の鞭",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -53,6 +56,7 @@
     "name": "氷壁",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -66,6 +70,7 @@
     "name": "大氷河",
     "cost": 3,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -79,6 +84,7 @@
     "name": "思案",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -97,6 +103,7 @@
     "name": "記憶の渦",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "discardCost": 1,
     "effects": [
       {
@@ -111,6 +118,7 @@
     "name": "魔力変換",
     "cost": 1,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -128,6 +136,7 @@
     "name": "奔流の連撃",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -141,6 +150,7 @@
     "name": "大津波",
     "cost": 3,
     "type": "spell",
+    "rarity": "rare",
     "exhaust": true,
     "effects": [
       {
@@ -156,6 +166,7 @@
     "name": "対抗呪文",
     "cost": 2,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onEnemyAction",
@@ -173,6 +184,7 @@
     "name": "マナ漏出",
     "cost": 1,
     "type": "reaction",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onEnemyAction",
@@ -196,6 +208,7 @@
     "name": "霜の帳",
     "cost": 1,
     "type": "reaction",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onAttackIncoming",
@@ -214,6 +227,7 @@
     "name": "冷徹な観察",
     "cost": 1,
     "type": "reaction",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -232,6 +246,7 @@
     "name": "賢者の泉",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -245,6 +260,7 @@
     "name": "霜の鎧",
     "cost": 2,
     "type": "permanent",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -258,6 +274,7 @@
     "name": "水鏡の書庫",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -276,6 +293,7 @@
     "name": "霊気放出",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -289,6 +307,7 @@
     "name": "渦の障壁",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -302,6 +321,7 @@
     "name": "連鎖する思考",
     "cost": 1,
     "type": "spell",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onPlay",
@@ -315,6 +335,7 @@
     "name": "ひらめき",
     "cost": 0,
     "type": "spell",
+    "rarity": "common",
     "exhaust": true,
     "effects": [
       {
@@ -329,6 +350,7 @@
     "name": "魔力の火花",
     "cost": 0,
     "type": "spell",
+    "rarity": "uncommon",
     "exhaust": true,
     "effects": [
       {
@@ -346,6 +368,7 @@
     "name": "集中",
     "cost": 1,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -368,6 +391,7 @@
     "name": "幻惑の囁き",
     "cost": 2,
     "type": "spell",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onPlay",
@@ -386,6 +410,7 @@
     "name": "さざなみの刃",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -399,6 +424,7 @@
     "name": "泡沫の鎧",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -412,6 +438,7 @@
     "name": "嵐の残響",
     "cost": 1,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -425,6 +452,7 @@
     "name": "囁きの罠",
     "cost": 2,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onEnemyAction",
@@ -441,6 +469,7 @@
     "name": "反響の符",
     "cost": 1,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onSpellPlayed",
@@ -459,6 +488,7 @@
     "name": "静電の帳",
     "cost": 1,
     "type": "permanent",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onAetherGained",
@@ -473,6 +503,7 @@
     "name": "霊気の奔流",
     "cost": 1,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -486,6 +517,7 @@
     "name": "魔力盗み",
     "cost": 3,
     "type": "reaction",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onEnemyAction",
@@ -503,6 +535,7 @@
     "name": "氷の槍",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -516,6 +549,7 @@
     "name": "霧の分身",
     "cost": 2,
     "type": "permanent",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onSpellPlayed",
@@ -529,6 +563,7 @@
     "name": "氷結の連鎖",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -547,6 +582,7 @@
     "name": "大漩渦",
     "cost": 3,
     "type": "spell",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onPlay",
@@ -561,6 +597,7 @@
     "name": "心眼",
     "cost": 1,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onEnemyDefended",
@@ -579,6 +616,7 @@
     "name": "白波の壁",
     "cost": 2,
     "type": "reaction",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onAttackIncoming",
@@ -597,6 +635,7 @@
     "name": "凍てつく枷",
     "cost": 2,
     "type": "spell",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -615,6 +654,7 @@
     "name": "還流の水鏡",
     "cost": 2,
     "type": "permanent",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onActionNegated",
@@ -628,6 +668,7 @@
     "name": "潮の一滴",
     "cost": 0,
     "type": "spell",
+    "rarity": "common",
     "axis": [
       "storm"
     ],
@@ -644,6 +685,7 @@
     "name": "余波",
     "cost": 0,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -657,6 +699,7 @@
     "name": "早瀬の一撃",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -675,6 +718,7 @@
     "name": "厚氷の盾",
     "cost": 1,
     "type": "spell",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",

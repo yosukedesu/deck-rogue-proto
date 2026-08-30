@@ -188,9 +188,9 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
   })
 
   // レアリティ (2026-08-29 本家踏襲導入)。割当済みの色は全札に明示があること。
-  // 青・黒は凍結中で未割当 = 全コモン扱いなので対象外 (解凍時にこの配列へ足す)
+  // 2026-08-30 青・黒も割当済み = 全5色を機械判定
   it('割当済みの色 (緑・白・赤) は全札に rarity があり、レアは希少なまま', () => {
-    for (const color of ['green', 'white', 'red'] as const) {
+    for (const color of ['green', 'white', 'red', 'blue', 'black'] as const) {
       const pool = allCards.filter((c) => c.color === color)
       const missing = pool.filter((c) => c.rarity === undefined).map((c) => c.id)
       expect(missing, `${color} に rarity 未割当`).toEqual([])

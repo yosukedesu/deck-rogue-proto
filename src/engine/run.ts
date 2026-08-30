@@ -34,6 +34,12 @@ const REWARD_EXCLUDED = new Set([
   'green_reaction_vine',
   'blue_strike',
   'blue_guard',
+  'blue_counterspell', // 青スターターのリアクション2枚 (2026-08-30 中立化追随)
+  'blue_frost_veil',
+  'white_reaction_ward', // 白スターターのリアクション2枚 (解凍時の追随漏れを同時に是正)
+  'white_reaction_retribution',
+  'black_reaction_curse', // 黒スターターのリアクション2枚
+  'black_reaction_grudge',
   'red_strike',
   'red_guard',
   'white_strike',

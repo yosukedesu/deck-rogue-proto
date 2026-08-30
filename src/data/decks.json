@@ -451,11 +451,11 @@
     "cards": [
       {
         "cardId": "blue_strike",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "blue_guard",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "blue_counterspell",
@@ -463,14 +463,6 @@
       },
       {
         "cardId": "blue_frost_veil",
-        "count": 1
-      },
-      {
-        "cardId": "blue_ice_wall",
-        "count": 1
-      },
-      {
-        "cardId": "blue_ponder",
         "count": 1
       }
     ]
@@ -1099,11 +1091,11 @@
     "cards": [
       {
         "cardId": "black_strike",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "black_guard",
-        "count": 3
+        "count": 4
       },
       {
         "cardId": "black_reaction_curse",
@@ -1111,14 +1103,6 @@
       },
       {
         "cardId": "black_reaction_grudge",
-        "count": 1
-      },
-      {
-        "cardId": "black_drain",
-        "count": 1
-      },
-      {
-        "cardId": "black_mill",
         "count": 1
       }
     ]
