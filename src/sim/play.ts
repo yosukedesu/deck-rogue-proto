@@ -81,7 +81,7 @@ function fx(e: DeclarativeEffect): string {
     onEnemyBuffed: '敵強化時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと:', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
-    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onAetherGained: '霊気獲得ごと:',
+    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:',
   }
   const cond = e.condition

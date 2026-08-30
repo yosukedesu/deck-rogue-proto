@@ -229,6 +229,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onCostExhausted: '消滅コストを支払うたび: ',
   onPermanentEntered: '置物が場に出るたび: ',
   onImpulsePlayed: '衝動カードをプレイするたび: ',
+  onRandomPlayed: '運任せの札をプレイするたび: ',
   onAetherGained: '霊気を得るたび: ',
   onCardSet: 'カードを伏せるたび: ',
   onReactionFired: 'リアクションが発動するたび: ',
