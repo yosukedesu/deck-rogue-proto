@@ -25,12 +25,16 @@ export function setCard(state: GameState, cardUid: string): GameState {
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (card.def.type !== 'reaction') throw new Error(`${card.def.name} は伏せられない (リアクションタイプのみ)`)
-  if (card.def.cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  // 回収ターンの伏せ直しは0E (2026-08-30。回収1E+伏せ直しコストの二重払いが「常に攻撃2枚に負ける」
+  // 死に機構だった実測への処方 = 実質「1Eで伏せ替え」)
+  const freeReset = state.player.freeResetUid === card.uid
+  if (!freeReset && card.def.cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const s: GameState = {
     ...state,
     player: {
       ...state.player,
-      energy: state.player.energy - card.def.cost,
+      energy: state.player.energy - (freeReset ? 0 : card.def.cost),
+      ...(freeReset ? { freeResetUid: undefined } : {}),
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
       setCards: [...state.player.setCards, { ...card, setFresh: true }],
     },
@@ -63,6 +67,7 @@ export function retrieveSetCard(state: GameState, cardUid: string): GameState {
         energy: state.player.energy - 1,
         setCards: state.player.setCards.filter((c) => c.uid !== cardUid),
         hand: [...state.player.hand, restored],
+        freeResetUid: cardUid, // このターン中の伏せ直しは0E
       },
     },
     { type: 'SetCardRetrieved', cardId: card.def.id },

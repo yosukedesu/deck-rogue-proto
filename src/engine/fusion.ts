@@ -163,7 +163,12 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   const dmgA = dmgOf(a)
   const dmgB = dmgOf(b)
   const totalDmg = [...dmgA, ...dmgB].reduce((acc, e) => acc + (e.amount ?? 0), 0)
-  const hits = Math.min(5, Math.max(dmgA.length, dmgB.length))
+  // ヒット合算 (2026-08-30 ユーザー裁定。旧「最大ヒット数に按分」は多段×多段が
+  // ヒット減+消滅の下位互換になり、デッキが強いほど工房が無価値になっていた)。
+  // どちらかが多段ならヒット数を合算する (上限5) = 三連の角×二連の蔦打ち → 5ヒットの派手枠。
+  // VP保存は不変なので1ヒットあたりの量は下がるが、多段の伝播 (成長・勢いが全ヒットに乗る) は膨らむ
+  const anyMulti = dmgA.length > 1 || dmgB.length > 1
+  const hits = anyMulti ? Math.min(5, dmgA.length + dmgB.length) : 1
   const pierce = [...dmgA, ...dmgB].some((e) => e.pierce === true)
   const allTarget = [...dmgA, ...dmgB].some((e) => e.target === 'all')
 

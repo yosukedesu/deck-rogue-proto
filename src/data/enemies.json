@@ -199,9 +199,9 @@
     "max": 13,
     "weight": 1,
     "setAlt": {
-     "kind": "buff",
-     "min": 2,
-     "max": 2
+     "kind": "attack",
+     "min": 12,
+     "max": 16
     }
    }
   ],
@@ -524,9 +524,13 @@
     "max": 17,
     "weight": 1,
     "setAlt": {
-     "kind": "defend",
-     "min": 10,
-     "max": 14
+     "kind": "attack",
+     "min": 11,
+     "max": 15,
+     "inflict": {
+      "status": "weak",
+      "amount": 1
+     }
     }
    }
   ],

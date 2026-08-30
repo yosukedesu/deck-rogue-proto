@@ -403,9 +403,9 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
   it('多段×貫通: 二連の蔦打ち(4×2)×荒角の一撃(7貫通) → 貫通の多段ヒット', () => {
     const def = fuseCards(inst('green_double_lash'), inst('green_horn_strike'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
-    expect(dmgs).toHaveLength(2) // 多段が伝播
+    expect(dmgs).toHaveLength(3) // ヒット合算 (2026-08-30): 2+1=3ヒット (旧: 最大側の2に按分)
     expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
-    expect(dmgs[0].amount).toBe(8) // 価値保存 (2026-08-30): 貫通×1.25の対価を払うので 9→8
+    expect(dmgs[0].amount).toBe(5) // 価値保存: 量は下がるがヒットは増える (成長の乗り先が3回に)
   })
 
   it('全体×貫通: 薙ぎ払い(全体6)×牙の一撃(14貫通) → 全体・貫通の一撃', () => {

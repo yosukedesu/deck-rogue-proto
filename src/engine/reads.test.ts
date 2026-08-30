@@ -49,18 +49,18 @@ describe('setAlt = 行動単位の条件分岐', () => {
     expect(dmg).toBeLessThanOrEqual(22)
   })
 
-  it('門番: 鐘の1発目は伏せありで「門を閉ざす」(防御) に変わる', () => {
+  it('門番: 鐘の1発目は伏せありで「崩し打ち」(攻撃+弱体1) = 罰型の対価に変わる', () => {
+    // 2026-08-30 罰型化: 旧「門を閉ざす」(防御化) は、0Eの死に札を伏せるだけで最終ボスの
+    // 初手がタダで消える「敵の1ターンを無料で買うボタン」だった (3幕フルラン実測)。
+    // 伏せを見たら「やや弱いが弱体1を置く」= 伏せる側にも代償が出る妖術師型の賭けへ
     let s = freshCombat('set-confirm', 'enemy_warden', 42)
     const intent = s.enemies[0].intent!
     expect(intent.kind).toBe('attack')
     expect(intent.conditionalOn).toBe('set')
-    expect(intent.alt!.kind).toBe('defend')
-    // 伏せて迎えると攻撃されない
-    s = withSet(s)
-    const hpBefore = s.player.hp
-    s = toNextTurn(s)
-    expect(s.player.hp).toBe(hpBefore)
+    expect(intent.alt!.kind).toBe('attack')
+    expect(intent.alt!.inflict?.status).toBe('weak')
     // 2発目の鐘は無条件 (膠着破り): 分岐なしの攻撃
+    s = toNextTurn(s)
     expect(s.enemies[0].intent!.kind).toBe('attack')
     expect(s.enemies[0].intent!.conditionalOn).toBeUndefined()
   })
@@ -97,7 +97,10 @@ describe('setAlt = 行動単位の条件分岐', () => {
     const intent = s.enemies[0].intent! // 3歩目 = club_wild
     expect(intent.kind).toBe('attack')
     expect(intent.conditionalOn).toBe('set')
-    expect(intent.alt!.kind).toBe('buff')
+    // 2026-08-30 罰型化: 伏せを見ると激怒の雑な強打 (基礎9-13 → 12-16)。
+    // 「伏せた札で受けきれるか」の賭けになる (旧: 強化+2 = 無料ターン化していた)
+    expect(intent.alt!.kind).toBe('attack')
+    expect(intent.alt!.shownMax).toBeGreaterThan(intent.shownMax)
   })
 
   it('うねる獣は意図的に読みなし (Act1の休符)', () => {

@@ -62,6 +62,8 @@ export interface PlayerState extends CombatantState {
   readonly discardPile: readonly CardInstance[]
   /** 伏せているカード (基本は同時1枚。setSlots で拡張) */
   readonly setCards: readonly CardInstance[]
+  /** 回収 (2026-08-30) したターン中、この uid の札は伏せ直しコスト不要 (自ターン終了でクリア) */
+  readonly freeResetUid?: string
   /** 伏せ枠の数。既定1。かすみ (ディミア) のリーダー個性で2 (確定済みルール表「伏せ枚数」) */
   readonly setSlots: number
   /** 置物: プレイすると場に残り戦闘中ずっと効果を発揮 (破壊不可・伏せ破壊の対象外) */

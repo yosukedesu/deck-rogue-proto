@@ -252,6 +252,15 @@ function declareIntents(state: GameState): GameState {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0) continue
     const def = getEnemyDef(enemy.enemyId)
+    // 盗んだ敵は次の宣言で必ず逃走する (2026-08-30。宣言即成立の盗みが「倒せば全額戻る」で
+    // 無害化していた実測への処方 = 「1ターン以内に倒せ」のレースを尖らせる)
+    const fleeMove = def.moves.find((m) => m.kind === 'flee')
+    if ((enemy.stolenGold ?? 0) > 0 && fleeMove && enemy.intent?.kind !== 'flee') {
+      const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength)
+      const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
+      s = emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
+      continue
+    }
     // フェーズ変化: HP50%以下の行動テーブルが最優先 (確定済みルール表「敵フェーズ変化」)
     const belowHalf =
       enemy.hp <= enemy.maxHp * 0.5 &&
@@ -408,6 +417,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       energy: state.player.energyMax,
       energyMaxAtTurnStart: state.player.energyMax,
       cardsPlayedThisTurn: 0,
+      freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
       setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
     },

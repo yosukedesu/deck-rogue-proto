@@ -179,3 +179,32 @@ describe('見切りと回収 (2026-08-30 A2。伏せの概念監査)', () => {
     ).toThrow(/エナジー不足/)
   })
 })
+
+describe('回収ターンの伏せ直し0E (2026-08-30 死に機構への処方)', () => {
+  it('回収した同じ札は、そのターン中なら0Eで伏せ直せる (実質1Eの伏せ替え)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
+      'green_reaction_thorns',
+    ])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    const e0 = s.player.energy
+    s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_reaction_thorns' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    expect(s.player.energy).toBe(e0 - 1) // 回収の1Eだけ。伏せ直しは無料
+    expect(s.player.setCards[0].setFresh).toBe(true) // 伏せ直しは「新しい札」= 敵は反応する
+  })
+})
+
+describe('盗んだ敵は次の宣言で必ず逃走 (2026-08-30。1ターン以内に倒せのレース)', () => {
+  it('stolenGold を抱えた敵の次の意図は flee で固定される', () => {
+    let s = freshCombat('set-confirm', 'enemy_thief', 42)
+    s = {
+      ...s,
+      enemies: s.enemies.map((e) => ({ ...e, stolenGold: 20 })),
+    }
+    s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    if (s.phase === 'player-turn') {
+      expect(s.enemies[0].intent?.kind).toBe('flee')
+    }
+  })
+})
