@@ -575,13 +575,6 @@
     "min": 4,
     "max": 6,
     "weight": 2
-   },
-   {
-    "id": "curl_up",
-    "kind": "defend",
-    "min": 5,
-    "max": 8,
-    "weight": 1
    }
   ]
  },

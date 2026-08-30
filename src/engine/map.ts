@@ -52,10 +52,15 @@ const MAX_PLACEMENT_TRIES = 5000
 
 /** 幕プール制 (確定済みルール表「ランの敵並び」2026-08-29): 幕 → 抽選プール (ソロ敵IDと編成IDの混合) */
 const ACT_POOLS: readonly (readonly string[])[] = [
-  // 敵拡充+6体 (2026-08-29): 幕1が実質2種で単調だった。苔の癒し手は編成専用 (ソロ自己回復のスタール防止)
-  ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enemy_thief', 'enc_probe_pair', 'enc_thief_pair'], // 1幕 (Act1帯)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_hexer', 'enemy_joker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer'], // 2幕 (Act2帯)
-  ['enemy_brute', 'enemy_wolf', 'enemy_moss', 'enemy_set_breaker', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer'], // 3幕 (Act3帯)
+  // 敵拡充+6体 (2026-08-29): 幕1が実質2種で単調だった。苔の癒し手は編成専用 (ソロ自己回復のスタール防止)。
+  // 基本2体化 (2026-08-30 ユーザー指示「敵の数は基本2がいい」): ソロ率60%→35%前後へ。
+  // 複数体はHPを盛らずにワンショットを止める自然な構造 (3幕フルラン実測: T1キルを唯一免れたのは
+  // 2体編成 = HPが分散していたから)。ソロで残すのは芸のある個体だけ —
+  // うねる獣(読みなし休符)・探り屋(読みの教師)・栗鼠(とげ芸)・伏せ警戒/罠壊し/樽(固有芸)・
+  // 苔の主(再生)・斧鬼(大技→隙)・石殻(甲殻)・オーガ(元ボスの再登場)
+  ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enc_probe_pair', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast'], // 1幕 (ソロ3/8)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber'], // 2幕 (ソロ3/9)
+  ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer'], // 3幕 (ソロ4/11)
 ]
 /** 幕ボス (難度順固定。確定済みルール表「マップ」) */
 export const ACT_BOSSES: readonly string[] = ['enemy_brute', 'enemy_turtle', 'enemy_warden']

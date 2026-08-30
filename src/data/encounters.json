@@ -1,169 +1,277 @@
 [
-  {
-    "id": "enc_probe_pair",
-    "name": "探り屋の二人組",
-    "members": [
-      {
-        "enemyId": "enemy_probe",
-        "hpScale": 0.5,
-        "strength": -2
-      },
-      {
-        "enemyId": "enemy_probe",
-        "hpScale": 0.5,
-        "strength": -2,
-        "patternOffset": 1,
-        "noReactTable": true
-      }
-    ]
-  },
-  {
-    "id": "enc_probe_trio",
-    "name": "探り屋の三人組",
-    "members": [
-      {
-        "enemyId": "enemy_probe",
-        "hpScale": 0.38,
-        "strength": -3
-      },
-      {
-        "enemyId": "enemy_probe",
-        "hpScale": 0.38,
-        "strength": -3,
-        "patternOffset": 1,
-        "noReactTable": true
-      },
-      {
-        "enemyId": "enemy_probe",
-        "hpScale": 0.38,
-        "strength": -3,
-        "patternOffset": 2,
-        "noReactTable": true
-      }
-    ]
-  },
-  {
-    "id": "enc_hexer_shadow",
-    "name": "妖術師と用心棒",
-    "members": [
-      {
-        "enemyId": "enemy_hexer",
-        "hpScale": 0.6,
-        "strength": -2
-      },
-      {
-        "enemyId": "enemy_set_wary",
-        "hpScale": 0.55,
-        "strength": -3
-      }
-    ]
-  },
-  {
-    "id": "enc_joker_drummer",
-    "name": "道化と太鼓",
-    "members": [
-      {
-        "enemyId": "enemy_joker",
-        "hpScale": 0.65,
-        "strength": -2
-      },
-      {
-        "enemyId": "enemy_drummer",
-        "hpScale": 0.7
-      }
-    ]
-  },
-  {
-    "id": "enc_wolf_drummer",
-    "name": "狼と太鼓",
-    "members": [
-      {
-        "enemyId": "enemy_wolf",
-        "hpScale": 0.65,
-        "strength": -2
-      },
-      {
-        "enemyId": "enemy_drummer",
-        "hpScale": 0.7
-      }
-    ]
-  },
-  {
-    "id": "enc_breaker_hexer",
-    "name": "罠壊しと妖術師",
-    "members": [
-      {
-        "enemyId": "enemy_set_breaker",
-        "hpScale": 0.6,
-        "strength": -3
-      },
-      {
-        "enemyId": "enemy_hexer",
-        "hpScale": 0.55,
-        "strength": -2
-      }
-    ]
-  },
-  {
-    "id": "enc_thief_pair",
-    "name": "こそ泥の二人組",
-    "members": [
-      {
-        "enemyId": "enemy_thief",
-        "hpScale": 0.75,
-        "strength": -1
-      },
-      {
-        "enemyId": "enemy_thief",
-        "hpScale": 0.75,
-        "strength": -1
-      }
-    ]
-  },
-  {
-    "id": "enc_bomber_healer",
-    "name": "火薬樽と癒し手",
-    "members": [
-      {
-        "enemyId": "enemy_bomber",
-        "hpScale": 0.65,
-        "strength": -2
-      },
-      {
-        "enemyId": "enemy_moss_healer",
-        "hpScale": 0.7
-      }
-    ]
-  },
-  {
-    "id": "enc_axe_drummer",
-    "name": "斧鬼と太鼓",
-    "members": [
-      {
-        "enemyId": "enemy_axe_ogre",
-        "hpScale": 0.65,
-        "strength": -3
-      },
-      {
-        "enemyId": "enemy_drummer",
-        "hpScale": 0.7
-      }
-    ]
-  },
-  {
-    "id": "enc_shell_hexer",
-    "name": "石殻と妖術師",
-    "members": [
-      {
-        "enemyId": "enemy_shell_guard",
-        "hpScale": 0.6,
-        "strength": -2
-      },
-      {
-        "enemyId": "enemy_hexer",
-        "hpScale": 0.55,
-        "strength": -2
-      }
-    ]
-  }
+ {
+  "id": "enc_probe_pair",
+  "name": "探り屋の二人組",
+  "members": [
+   {
+    "enemyId": "enemy_probe",
+    "hpScale": 0.5,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_probe",
+    "hpScale": 0.5,
+    "strength": -2,
+    "patternOffset": 1,
+    "noReactTable": true
+   }
+  ]
+ },
+ {
+  "id": "enc_probe_trio",
+  "name": "探り屋の三人組",
+  "members": [
+   {
+    "enemyId": "enemy_probe",
+    "hpScale": 0.38,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_probe",
+    "hpScale": 0.38,
+    "strength": -3,
+    "patternOffset": 1,
+    "noReactTable": true
+   },
+   {
+    "enemyId": "enemy_probe",
+    "hpScale": 0.38,
+    "strength": -3,
+    "patternOffset": 2,
+    "noReactTable": true
+   }
+  ]
+ },
+ {
+  "id": "enc_hexer_shadow",
+  "name": "妖術師と用心棒",
+  "members": [
+   {
+    "enemyId": "enemy_hexer",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_set_wary",
+    "hpScale": 0.55,
+    "strength": -3
+   }
+  ]
+ },
+ {
+  "id": "enc_joker_drummer",
+  "name": "道化と太鼓",
+  "members": [
+   {
+    "enemyId": "enemy_joker",
+    "hpScale": 0.65,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_drummer",
+    "hpScale": 0.7
+   }
+  ]
+ },
+ {
+  "id": "enc_wolf_drummer",
+  "name": "狼と太鼓",
+  "members": [
+   {
+    "enemyId": "enemy_wolf",
+    "hpScale": 0.65,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_drummer",
+    "hpScale": 0.7
+   }
+  ]
+ },
+ {
+  "id": "enc_breaker_hexer",
+  "name": "罠壊しと妖術師",
+  "members": [
+   {
+    "enemyId": "enemy_set_breaker",
+    "hpScale": 0.6,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_hexer",
+    "hpScale": 0.55,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_thief_pair",
+  "name": "こそ泥の二人組",
+  "members": [
+   {
+    "enemyId": "enemy_thief",
+    "hpScale": 0.75,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_thief",
+    "hpScale": 0.75,
+    "strength": -1
+   }
+  ]
+ },
+ {
+  "id": "enc_bomber_healer",
+  "name": "火薬樽と癒し手",
+  "members": [
+   {
+    "enemyId": "enemy_bomber",
+    "hpScale": 0.65,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_moss_healer",
+    "hpScale": 0.7
+   }
+  ]
+ },
+ {
+  "id": "enc_axe_drummer",
+  "name": "斧鬼と太鼓",
+  "members": [
+   {
+    "enemyId": "enemy_axe_ogre",
+    "hpScale": 0.65,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_drummer",
+    "hpScale": 0.7
+   }
+  ]
+ },
+ {
+  "id": "enc_shell_hexer",
+  "name": "石殻と妖術師",
+  "members": [
+   {
+    "enemyId": "enemy_shell_guard",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_hexer",
+    "hpScale": 0.55,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_squirrel_probe",
+  "members": [
+   {
+    "enemyId": "enemy_thorn_squirrel",
+    "hpScale": 0.6,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_probe",
+    "hpScale": 0.6,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_beast_pair",
+  "members": [
+   {
+    "enemyId": "enemy_wide_power",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_wide_power",
+    "hpScale": 0.6,
+    "strength": -2,
+    "patternOffset": 1,
+    "noReactTable": true
+   }
+  ]
+ },
+ {
+  "id": "enc_thief_beast",
+  "members": [
+   {
+    "enemyId": "enemy_thief",
+    "hpScale": 0.7,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_wide_power",
+    "hpScale": 0.6,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_joker_hexer",
+  "members": [
+   {
+    "enemyId": "enemy_joker",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_hexer",
+    "hpScale": 0.55,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_wary_bomber",
+  "members": [
+   {
+    "enemyId": "enemy_set_wary",
+    "hpScale": 0.55,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_bomber",
+    "hpScale": 0.65,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_wolf_pair",
+  "members": [
+   {
+    "enemyId": "enemy_wolf",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_wolf",
+    "hpScale": 0.6,
+    "strength": -2,
+    "patternOffset": 1,
+    "noReactTable": true
+   }
+  ]
+ },
+ {
+  "id": "enc_moss_healer",
+  "members": [
+   {
+    "enemyId": "enemy_moss",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_moss_healer",
+    "hpScale": 0.7
+   }
+  ]
+ }
 ]

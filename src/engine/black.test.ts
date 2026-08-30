@@ -103,6 +103,8 @@ describe('リーダーとばり', () => {
     const run = createRunInBattle(3, 'set-confirm', 'leader_black')
     let s = run.combat!
     s = { ...s, player: { ...s.player, hp: 50 } }
+    // プール変更で敵がとげ持ちになるシードがあるため、反射を外して回復だけを測る
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, thorns: 0 })) }
     s = withHand(s, ['black_strike'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_strike', targetIndex: 0 })
     expect(s.player.hp).toBe(51)
