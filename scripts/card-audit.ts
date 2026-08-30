@@ -15,6 +15,9 @@ const VP_PER: Record<string, number> = {
   dealDamagePerDamageTaken: 1.0 * 4,
   applyBurnPerDamageTaken: 1.5 * 4,
   dealDamagePerRandomPlayed: 1.0 * 3,
+  // 勢いの変換器 (2026-08-30): 変換時の典型勢い6 (ひばなはプレイごと+2で1ターン8〜10、他リーダーは生成札依存)
+  dischargeMomentumBurn: 1.5 * 6,
+  dischargeMomentumBlock: 1.0 * 6,
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 const ALLOW = (cost: number) => 6 * cost + 2

@@ -390,6 +390,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx): string {
       return ctx && ctx.growth > 0
         ? `${trigger}⚔️ 成長×${e.amount}ダメージを与え、成長を全て失う [現在${ctx.growth * (e.amount ?? 0) + ctx.growth}]`
         : `${trigger}⚔️ 成長×${e.amount}ダメージを与え、成長を全て失う`
+    case 'dischargeMomentumBurn':
+      return `${trigger}🔥 勢い×${e.amount}の延焼を与え、勢いを全て失う`
+    case 'dischargeMomentumBlock':
+      return `${trigger}🛡️ 勢い×${e.amount}のブロックを得て、勢いを全て失う`
     case 'dealDamageCleave':
       return `${trigger}⚔️ ${(e.amount ?? 0) + atkBonus}ダメージ${atkBreak}。倒したら別の敵にも同値`
     case 'dealDamageRandom':

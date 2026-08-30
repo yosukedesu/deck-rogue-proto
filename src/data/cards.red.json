@@ -1477,5 +1477,43 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "red_fire_shift",
+    "name": "火移し",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBurn",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_ember_stance",
+    "name": "余勢の構え",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBlock",
+        "amount": 1
+      }
+    ]
   }
 ]

@@ -133,3 +133,41 @@ function getBlazeCards() {
     (c) => c.blazeDiscount !== undefined || c.effects.some((e) => e.condition?.blaze === true),
   )
 }
+
+// --- 勢いの変換器 (2026-08-30。ユーザー方針「周辺アーキを赤のパッシブに合う設計に」) ---
+// パッシブ (プレイごと勢い+2) は発電機のまま、出口を攻撃ダメージ以外に増やす。
+// 消費型 = 「以降の攻撃に乗せ続けるか、引っ越すか」のターン内順序パズル。
+describe('勢いの変換器 (消費型)', () => {
+  it('火移し: 勢い×1の延焼を与え、勢いを全て失う (手数→猛り火の橋)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_fire_shift',
+    ])
+    s = { ...s, player: { ...s.player, momentum: 7 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_fire_shift' })
+    expect(s.enemies[0].burn).toBe(2 + 7) // 素の2 + 勢い7
+    expect(s.player.momentum).toBe(0)
+    expect(isBlazing(s)).toBe(true) // 勢い7がそのまま猛り火のしきい値を超える
+  })
+
+  it('余勢の構え: 勢い×1のブロックを得て、勢いを全て失う (攻めの勢いが守りになる)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_ember_stance',
+    ])
+    s = { ...s, player: { ...s.player, momentum: 6 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ember_stance' })
+    expect(s.player.block).toBe(3 + 6)
+    expect(s.player.momentum).toBe(0)
+  })
+
+  it('順序パズル: 変換後の攻撃には勢いが乗らない (消費の対価)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
+      'red_fire_shift',
+      'red_strike',
+    ])
+    s = { ...s, player: { ...s.player, momentum: 5, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_fire_shift' })
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 6) // 勢い0なので素の6だけ
+  })
+})

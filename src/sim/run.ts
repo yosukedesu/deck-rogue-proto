@@ -120,6 +120,15 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
     )
     if (canIgniteFirst) return false
   }
+  // 勢いの変換器は勢い3以上でないと空撃ち (2026-08-30)
+  if (
+    card.def.effects.some(
+      (e) => e.effect === 'dischargeMomentumBurn' || e.effect === 'dischargeMomentumBlock',
+    ) &&
+    state.player.momentum < 3
+  ) {
+    return false
+  }
   // 爆熱は延焼3以上でないと換金損。逆上は被弾4以上、破城槌は敵ブロックがないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dischargeBurn')) {
     return state.enemies.some((e) => e.hp > 0 && e.burn >= 3)

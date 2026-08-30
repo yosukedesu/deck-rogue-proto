@@ -72,6 +72,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerSelfHpLost',
     'dealDamagePerNegStrength',
     'dischargeBurn',
+  'dischargeMomentumBurn',
     'shatterBlockConvert',
     'dealDamageExecute',
     'dealDamagePerDamageTaken',
@@ -745,6 +746,30 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       let s = dealDamageToEnemy(state, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
       s = { ...s, player: { ...s.player, growth: 0 } }
       return emit(s, { type: 'GrowthDischarged', spent })
+    }
+    case 'dischargeMomentumBurn': {
+      // 火移し (赤): 勢い×amount の延焼を与え、勢いを全て失う。
+      // パッシブ・手数で積んだ勢いを「以降の攻撃に乗せ続けるか、火に引っ越すか」の
+      // 順序パズルに変える (勢いの変換器 2026-08-30。ユーザー方針「周辺アーキをパッシブに合わせる」)
+      const spent = state.player.momentum
+      const burn = spent * (effect.amount ?? 0)
+      const target = state.enemies[enemyIndex]
+      if (burn <= 0 || !target || target.hp <= 0) return state
+      const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, burn: e.burn + burn } : e))
+      let s: GameState = { ...state, enemies, player: { ...state.player, momentum: 0 } }
+      return emit(s, { type: 'BurnApplied', enemyIndex, amount: burn })
+    }
+    case 'dischargeMomentumBlock': {
+      // 余勢の構え (赤): 勢い×amount のブロックを得て、勢いを全て失う
+      const spent = state.player.momentum
+      const block = spent * (effect.amount ?? 0)
+      if (block <= 0) return state
+      let s: GameState = {
+        ...state,
+        player: { ...state.player, momentum: 0, block: state.player.block + block },
+      }
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block })
+      return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
     case 'dealDamageCleave': {
       // キル連鎖: 対象にXダメージ。倒れたら別の生存敵に同値 (確定済みルール表「キル連鎖」)
