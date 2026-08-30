@@ -1139,5 +1139,10 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (run.phase !== 'event') throw new Error('イベントではない')
       return applyEventChoice(run, command.index, command.cardIndex)
     }
+      default:
+      // 未知のコマンドは throw (2026-08-30)。旧実装は switch を素通りして undefined を返し、
+      // CLIハーネスがそれを保存してセーブを破壊した (実プレイでラン喪失。play.ts の
+      // コマンド分類ミスが引き金だが、エンジンが undefined を返さなければ被害は出なかった)
+      throw new Error(`未知のランコマンド: ${(command as { type: string }).type}`)
   }
 }
