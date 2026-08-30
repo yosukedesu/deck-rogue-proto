@@ -2,7 +2,7 @@
 // カード効果は data/*.json の宣言的記述をここで状態遷移に変換する。
 // 表現できない効果だけ scriptId で名前付きスクリプトに逃がす (現状は未登録)。
 
-import { getCardDef } from './content.ts'
+import { getCardDef, getEnemyDef } from './content.ts'
 import { emit } from './events.ts'
 import { nextInt, shuffle } from './rng.ts'
 import type {
@@ -400,10 +400,33 @@ export function dealDamageToEnemy(
           exposed: exposed ? e.exposed - 1 : e.exposed,
           // regenBreak の判定用 (確定済みルール表「再生」)。再生判定のたびにリセットされる
           hpLostSinceRegen: (e.hpLostSinceRegen ?? 0) + hpLoss,
+          damageTakenTotal: (e.damageTakenTotal ?? 0) + hpLoss,
         }
       : e,
   )
   let s = emit({ ...state, enemies }, { type: 'DamageDealt', source: 'player', amount, hpLoss })
+  // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化。
+  // 枚数トリガーの盲点 (1枚で100点出すデッキが素通しする) への処方
+  {
+    const struck0 = s.enemies[enemyIndex]
+    const defE = getEnemyDef(struck0.enemyId)
+    if (defE.enrageEveryDamage !== undefined && struck0.hp > 0 && hpLoss > 0) {
+      const before = (struck0.damageTakenTotal ?? 0) - hpLoss
+      const crossings =
+        Math.floor((struck0.damageTakenTotal ?? 0) / defE.enrageEveryDamage) -
+        Math.floor(before / defE.enrageEveryDamage)
+      const gain = crossings * (defE.enrage ?? 2)
+      if (gain > 0) {
+        s = {
+          ...s,
+          enemies: s.enemies.map((e, i) =>
+            i === enemyIndex ? { ...e, strength: e.strength + gain } : e,
+          ),
+        }
+        s = emit(s, { type: 'StrengthGained', enemyIndex, amount: gain })
+      }
+    }
+  }
   // とげ (敵の報復): 攻撃ヒットごとにNダメ反射。そのヒットで倒れたら反射しない = 一撃で抜けば無傷。
   // 敵フェーズの被弾ではないので憤怒 (damageTakenLastEnemyPhase) や onHpLost は積まない
   const struck = s.enemies[enemyIndex]

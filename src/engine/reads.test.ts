@@ -128,12 +128,15 @@ describe('膠着破りの不変条件 (setAlt版)', () => {
 describe('regenBreak (苔まといの主の再生をバーストで止める)', () => {
   it('そのターンに12以上削ると次の再生が発動しない', () => {
     let s = freshCombat('set-confirm', 'enemy_moss', 42)
-    expect(getEnemyDef('enemy_moss').regenBreak).toBe(12)
-    s = withHand(s, ['green_fang']) // 2E・14ダメージ (>=12)
+    // 2026-08-30 割合化: 12は幕3の平均ターン火力66に対して自動成立していた (再生が1点も仕事せず)。
+    // 幕3の想定ターン火力の半分 = 30 へ
+    expect(getEnemyDef('enemy_moss').regenBreak).toBe(30)
+    s = withHand(s, ['green_fang']) // 14ダメ + 成長16 = 30 (しきい値ちょうど)
+    s = { ...s, player: { ...s.player, growth: 16 } }
     const target = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_fang' })
     const afterHit = s.enemies[0].hp
-    expect(target - afterHit).toBeGreaterThanOrEqual(12)
+    expect(target - afterHit).toBeGreaterThanOrEqual(30)
     s = toNextTurn(s)
     // 再生していない (敵の攻撃後もHPは削った値のまま)
     expect(s.enemies[0].hp).toBe(afterHit)
@@ -142,8 +145,8 @@ describe('regenBreak (苔まといの主の再生をバーストで止める)', 
 
   it('12未満の削りでは従来どおり再生する', () => {
     let s = freshCombat('set-confirm', 'enemy_moss', 42)
-    s = withHand(s, ['green_strike']) // 6ダメージ (<12)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+    s = withHand(s, ['green_fang']) // 14ダメージ (<30)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_fang' })
     const afterHit = s.enemies[0].hp
     s = toNextTurn(s)
     expect(s.enemies[0].hp).toBe(afterHit + 5) // regen 5

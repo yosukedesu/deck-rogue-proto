@@ -203,3 +203,40 @@ describe('幕1ボスの第2形態 (2026-08-30 Opusテスターの指摘「サン
     expect(def.sequenceBelowHalf).toEqual(['rage_flurry', 'rage_flurry', 'war_roar'])
   })
 })
+
+describe('発火保証パッケージ (2026-08-30。3幕フルラン実測「設計が発火する前に敵が死ぬ」への処方)', () => {
+  it('盗みは宣言と同時に成立する (宣言ターンに倒しても盗みのレースは発生している)', () => {
+    let s = freshCombat('set-confirm', 'enemy_thief', 42)
+    // こそ泥の意図が steal-gold になるまでターンを送る (初手が盗みでないシードもある)
+    for (let i = 0; i < 6 && s.enemies[0].intent?.kind !== 'steal-gold'; i++) {
+      s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+      s = applyCommand(s, { type: 'EndTurn' })
+    }
+    if (s.enemies[0].intent?.kind === 'steal-gold') {
+      // 宣言の時点で既に抱えている = 実行を待たない
+      expect(s.enemies[0].stolenGold ?? 0).toBeGreaterThan(0)
+      expect(s.eventLog.some((e) => e.type === 'GoldStolen')).toBe(true)
+    }
+  })
+
+  it('開幕ブロック: 大亀・門番・火薬樽・石殻は戦闘開始時からブロックを持つ (T1から見える問い)', () => {
+    for (const [id, block] of [
+      ['enemy_turtle', 10],
+      ['enemy_warden', 15],
+      ['enemy_bomber', 12],
+      ['enemy_shell_guard', 10],
+    ] as const) {
+      const s = freshCombat('set-confirm', id, 42)
+      expect(s.enemies[0].block, id).toBe(block)
+    }
+  })
+
+  it('激昂の与ダメ併用: 門番は累計80ダメージを跨ぐたびに強化+2 (高火力1枚デッキも鳴らす)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_warden', 42), ['green_fang'])
+    s = { ...s, player: { ...s.player, growth: 70, energy: 9 } } // 14+70=84 = 80を1回跨ぐ
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) } // 開幕ブロックを外して素の判定に
+    const strBefore = s.enemies[0].strength
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_fang' })
+    expect(s.enemies[0].strength).toBe(strBefore + 2)
+  })
+})

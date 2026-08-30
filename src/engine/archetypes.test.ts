@@ -252,14 +252,17 @@ describe('敵特性 (StS参考)', () => {
   })
 
   it('強化 (筋力): 雄叫び後の攻撃は実値も幅表示も上がる', () => {
-    let s = freshCombat('set-confirm', 'enemy_brute') // ターン1の意図は必ず warcry (2〜4)
+    // 2026-08-30 「宣言ターン内に仕事」: T1は club (攻撃)。無償の強化ターンを速攻に献上しない
+    let s = freshCombat('set-confirm', 'enemy_brute')
+    expect(s.enemies[0].intent?.kind).toBe('attack')
+    s = applyCommand(s, { type: 'EndTurn' }) // T2の意図が warcry (2〜4)
     expect(s.enemies[0].intent?.kind).toBe('buff')
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('StrengthGained')
     const str = s.enemies[0].strength
     expect(str).toBeGreaterThanOrEqual(2)
     expect(str).toBeLessThanOrEqual(4)
-    const intent = s.enemies[0].intent! // ターン2は club (基礎 9〜13)
+    const intent = s.enemies[0].intent! // ターン3は club_wild (基礎 9〜13)
     expect(intent.kind).toBe('attack')
     expect(intent.shownMin).toBe(9 + str)
     expect(intent.shownMax).toBe(13 + str)

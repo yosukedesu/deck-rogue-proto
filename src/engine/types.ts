@@ -114,6 +114,8 @@ export interface EnemyState extends CombatantState {
   readonly patternIndex: number
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
+  /** この戦闘で受けた累計ダメージ (enrageEveryDamage の判定用。2026-08-30) */
+  readonly damageTakenTotal?: number
   /** 前回の再生判定以降に受けた累計HP損失 (regenBreak の判定用。再生判定のたびにリセット) */
   readonly hpLostSinceRegen?: number
   /** とげ: プレイヤーの攻撃ヒットごとにNダメ反射 (defからコピー。確定済みルール表「とげ（敵の報復）」) */
@@ -732,6 +734,18 @@ export interface EnemyDef {
    * enrage と併用する場合、こちらが指定されていれば毎フェーズの自動強化は行わない。
    */
   readonly enrageEveryCards?: number
+  /**
+   * 激昂の与ダメ併用トリガー (2026-08-30)。この敵が受けた累計ダメージが N の倍数に達するたび
+   * 強化+enrage。枚数トリガーは「1枚で100点出すデッキ」を素通しする盲点があった (実測:
+   * 門番戦12枚プレイで1回しか鳴らず) — 高火力・少枚数のデッキにもタイマーを効かせる
+   */
+  readonly enrageEveryDamage?: number
+  /**
+   * 開幕ブロック (2026-08-30 静的性質の配布)。戦闘開始時からこの量のブロックを持つ
+   * (甲羅・門・抱えた樽・積んだ殻)。敵の特性が「敵のターンが来て初めて情報になる」のに対し、
+   * これはT1から問いを出せる — 貫通 (緑)・延焼 (赤)・粉砕が最初のターンから解答になる
+   */
+  readonly startingBlock?: number
 }
 
 // ---- エンカウンター (1〜3体の編成。data/encounters.json) ----

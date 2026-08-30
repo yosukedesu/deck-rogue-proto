@@ -149,7 +149,8 @@ export function startCombatWithOptions(
       enemyId: m.enemyId,
       hp: maxHp,
       maxHp,
-      block: 0,
+      // 開幕ブロック (2026-08-30 静的性質の配布): 甲羅・門・抱えた樽はT1から見える問い
+      block: def.startingBlock ?? 0,
       intent: null,
       strength: (options.enemyStrength ?? 0) + (m.strength ?? 0),
       burn: 0,
@@ -334,10 +335,23 @@ function declareIntents(state: GameState): GameState {
     const shown = reveal(intent)
     if (alt !== undefined) alt = reveal(alt)
     const declared = condOn && alt ? { ...shown, conditionalOn: condOn, alt } : shown
+    // 盗みは宣言と同時に成立する (2026-08-30 「宣言ターン内に仕事をする」パッケージ)。
+    // 旧実装は実行時成立のため、宣言ターンに倒すと盗み・逃走の設計が丸ごと空振りしていた
+    // (3幕フルラン実測: こそ泥4戦で盗み・逃走を一度も見ていない)。宣言時に抱えれば
+    // 「今すぐ倒して取り返す (+懸賞金) か、放置して失うか」のレースが必ず発生する
+    const stolen = declared.kind === 'steal-gold' ? declared.actual : 0
     const enemies = s.enemies.map((e, j) =>
-      j === i ? { ...e, intent: declared, patternIndex: nextPatternIndex } : e,
+      j === i
+        ? {
+            ...e,
+            intent: declared,
+            patternIndex: nextPatternIndex,
+            ...(stolen > 0 ? { stolenGold: (e.stolenGold ?? 0) + stolen } : {}),
+          }
+        : e,
     )
     s = emit({ ...s, rng, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: declared })
+    if (stolen > 0) s = emit(s, { type: 'GoldStolen', enemyIndex: i, amount: stolen })
   }
   return s
 }
@@ -1072,17 +1086,9 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       return markResolved(s, 0)
     }
     case 'steal-gold': {
-      // 盗み: ロール額を敵が抱える。精算 (逃走なら喪失/撃破なら奪還+懸賞金) は勝利時にrun層
-      // (確定済みルール表「盗みと逃走」。combat層はゴールドを知らない = 純度維持)
-      const s = emit(
-        {
-          ...state,
-          enemies: state.enemies.map((e, i) =>
-            i === enemyIndex ? { ...e, stolenGold: (e.stolenGold ?? 0) + intent.actual } : e,
-          ),
-        },
-        { type: 'GoldStolen', enemyIndex, amount: intent.actual },
-      )
+      // 盗みは宣言時に成立済み (2026-08-30)。実行時は「袋に詰める」だけの演出 = no-op。
+      // 精算 (逃走なら喪失/撃破なら奪還+懸賞金) は勝利時にrun層 (combat層はゴールドを知らない)
+      const s = state
       return markResolved(s, 0)
     }
     case 'flee': {

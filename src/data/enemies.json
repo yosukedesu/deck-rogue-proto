@@ -206,8 +206,8 @@
    }
   ],
   "sequence": [
-   "warcry",
    "club",
+   "warcry",
    "club_wild"
   ],
   "movesBelowHalf": [
@@ -285,7 +285,8 @@
   "sequenceBelowHalf": [
    "awake_bite",
    "crush"
-  ]
+  ],
+  "startingBlock": 10
  },
  {
   "id": "enemy_hexer",
@@ -417,7 +418,7 @@
    }
   ],
   "burnResist": 2,
-  "regenBreak": 12
+  "regenBreak": 30
  },
  {
   "id": "enemy_joker",
@@ -556,7 +557,9 @@
   "sequenceBelowHalf": [
    "bell_frenzy",
    "gate_guard"
-  ]
+  ],
+  "startingBlock": 15,
+  "enrageEveryDamage": 80
  },
  {
   "id": "enemy_thorn_squirrel",
@@ -656,7 +659,8 @@
    "shield_barrel",
    "toss_ember",
    "big_boom"
-  ]
+  ],
+  "startingBlock": 12
  },
  {
   "id": "enemy_moss_healer",
@@ -750,6 +754,7 @@
     "max": 20,
     "weight": 1
    }
-  ]
+  ],
+  "startingBlock": 10
  }
 ]

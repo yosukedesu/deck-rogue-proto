@@ -240,7 +240,8 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
   it('共鳴する茨: 敵の強化に反応して成長+4', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_resonance'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_resonance' })
-    // 脳筋オーガのターン1は雄叫び (buff) で確定
+    // 2026-08-30 T1は club になったので、雄叫び (buff) を意図に細工して検証する
+    s = withIntent(s, { kind: 'buff', shownMin: 2, shownMax: 4, actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('StrengthGained') // 強化自体は通る
     expect(types(s.eventLog)).toContain('ReactionTriggered')

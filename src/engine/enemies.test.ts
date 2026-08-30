@@ -190,7 +190,8 @@ describe('激昂 (刻限の門番) = 時喰らい型タイマー', () => {
       if (s.phase !== 'player-turn') break
     }
     expect(s.player.cardsPlayedTotal).toBe(every * 2)
-    expect(s.enemies[0].strength).toBe(amount * 2) // 2回鳴る = 上限に頭打ちしない
+    // 枚数16枚で2回 + 打撃6×16=96ダメが enrageEveryDamage(80) を1回跨ぐ = +2 (2026-08-30 与ダメ併用)
+    expect(s.enemies[0].strength).toBe(amount * 2 + 2)
   })
 })
 
