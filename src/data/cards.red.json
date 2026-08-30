@@ -230,9 +230,10 @@
       {
         "trigger": "onPlay",
         "effect": "gainEnergy",
-        "amount": 1
+        "amount": 2
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "red_gamble",
@@ -571,7 +572,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainEnergy",
-        "amount": 2
+        "amount": 3
       }
     ]
   },

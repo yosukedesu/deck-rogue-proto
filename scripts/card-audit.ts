@@ -48,15 +48,18 @@ export function assess(def: CardDef): { vp: number; pct: number; computable: boo
   return { vp, pct: (vp / ALLOW(Math.max(0.5, cost))) * 100, computable }
 }
 
-const only = process.argv[2]
-const rows = allCards
-  .filter((c) => (only ? c.color === only : true))
-  .map((c) => ({ c, a: assess(c) }))
-  .filter((r) => r.a.computable)
-  .sort((x, y) => y.a.pct - x.a.pct)
-for (const { c, a } of rows) {
-  const flag = a.pct > 165 ? '⚠高' : a.pct < 100 ? '↓低' : '  '
-  console.log(`${flag} ${String(Math.round(a.pct)).padStart(4)}%  ${c.color} ${c.cost}E ${c.name}`)
+// CLI としてだけ出力する (import しただけで全件が流れるのを防ぐ)
+if (process.argv[1]?.endsWith('card-audit.ts')) {
+  const only = process.argv[2]
+  const rows = allCards
+    .filter((c) => (only ? c.color === only : true))
+    .map((c) => ({ c, a: assess(c) }))
+    .filter((r) => r.a.computable)
+    .sort((x, y) => y.a.pct - x.a.pct)
+  for (const { c, a } of rows) {
+    const flag = a.pct > 165 ? '⚠高' : a.pct < 100 ? '↓低' : '  '
+    console.log(`${flag} ${String(Math.round(a.pct)).padStart(4)}%  ${c.color} ${c.cost}E ${c.name}`)
+  }
+  const pcts = rows.map((r) => r.a.pct).sort((a, b) => a - b)
+  console.log(`n=${rows.length} 中央${Math.round(pcts[pcts.length >> 1])}% 165%超${pcts.filter((p) => p > 165).length} 100%未満${pcts.filter((p) => p < 100).length}`)
 }
-const pcts = rows.map((r) => r.a.pct).sort((a, b) => a - b)
-console.log(`n=${rows.length} 中央${Math.round(pcts[pcts.length >> 1])}% 165%超${pcts.filter((p) => p > 165).length} 100%未満${pcts.filter((p) => p < 100).length}`)
