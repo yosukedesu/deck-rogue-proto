@@ -32,7 +32,7 @@ describe('自己誘発リアクション', () => {
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_red_ambush_trap' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 8) // 火弾6 + 追い打ち8 (2026-08-27)
+    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 12) // 火弾6 + 追い打ち12 (2026-08-30 緑水準へ引き上げ)
     expect(s.player.setCards).toHaveLength(0) // 起爆後は捨て札へ
     expect(s.player.discardPile.some((c) => c.def.id === 'red_ambush_trap')).toBe(true)
   })
@@ -127,7 +127,7 @@ describe('先手の炎 (被攻撃前の先制ダメージ)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].hp).toBe(enemyHp - 10) // 先手の炎 8→10
+    expect(s.enemies[0].hp).toBe(enemyHp - 12) // 先手の炎 (2026-08-30 pre窓の150%上限ちょうどへ)
     expect(s.player.hp).toBe(playerHp - 10) // 威嚇は撤去済み: 素の10を受ける
   })
 

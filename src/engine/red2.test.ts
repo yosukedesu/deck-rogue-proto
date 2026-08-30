@@ -13,12 +13,12 @@ describe('憤怒 (被弾の換金)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_perm_rage_mask' })
     s = withIntent(s, attackIntent(6))
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.momentum).toBe(2)
-    // 次の自ターンの攻撃に+2が乗る
+    expect(s.player.momentum).toBe(4) // 2026-08-30 緑水準へ引き上げ
+    // 次の自ターンの攻撃に+4が乗る
     s = withHand(s, ['red_strike'])
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_strike' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 2)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 4) // 火弾6 + 憤怒の仮面の勢い4
   })
 
   it('ブロックで防いだ分は憤怒に数えない (HP損失のみ)', () => {
@@ -52,12 +52,12 @@ describe('処刑 (とどめの一撃)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_final_blow' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 8) // 25%超: 素の8
+    expect(s.enemies[0].hp).toBe(hpBefore - 10) // 25%超: 素の10 (2026-08-30 引き上げ)
     const maxHp = s.enemies[0].maxHp
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: Math.floor(maxHp * 0.25) })) }
     const low = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_final_blow' })
-    expect(s.enemies[0].hp).toBe(low - 24)
+    expect(s.enemies[0].hp).toBe(low - 28) // 処刑 10→28 (2026-08-30 引き上げ)
   })
 })
 

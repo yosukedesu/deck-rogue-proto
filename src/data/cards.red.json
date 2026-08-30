@@ -23,7 +23,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3
+        "amount": 4
       }
     ],
     "axis": [
@@ -163,7 +163,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "applyBurn",
-        "amount": 2
+        "amount": 4
       }
     ]
   },
@@ -177,7 +177,7 @@
       {
         "trigger": "onAttackPlayed",
         "effect": "applyBurn",
-        "amount": 1
+        "amount": 2
       }
     ]
   },
@@ -225,7 +225,7 @@
       {
         "trigger": "onPlay",
         "effect": "impulseDraw",
-        "amount": 5
+        "amount": 6
       },
       {
         "trigger": "onPlay",
@@ -262,8 +262,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageRandom",
-        "amount": 8,
-        "amountMax": 32
+        "amount": 10,
+        "amountMax": 38
       }
     ],
     "axis": [
@@ -299,7 +299,7 @@
       {
         "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 6
+        "amount": 8
       }
     ]
   },
@@ -313,12 +313,12 @@
       {
         "trigger": "onEnemyAction",
         "effect": "counter",
-        "amount": 12
+        "amount": 16
       },
       {
         "trigger": "onEnemyAction",
         "effect": "applyBurn",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -382,7 +382,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "dealDamage",
-        "amount": 10
+        "amount": 12
       }
     ],
     "axis": [
@@ -413,7 +413,7 @@
       {
         "trigger": "onAttackPlayed",
         "effect": "dealDamage",
-        "amount": 8
+        "amount": 12
       }
     ]
   },
@@ -441,7 +441,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "applyBurn",
-        "amount": 1,
+        "amount": 2,
         "target": "all"
       }
     ]
@@ -492,7 +492,7 @@
       {
         "trigger": "onAttacked",
         "effect": "addMomentum",
-        "amount": 2
+        "amount": 4
       }
     ],
     "axis": [
@@ -509,12 +509,12 @@
       {
         "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 4
+        "amount": 5
       },
       {
         "trigger": "onAttacked",
         "effect": "addMomentum",
-        "amount": 2
+        "amount": 3
       }
     ],
     "axis": [
@@ -531,7 +531,7 @@
       {
         "trigger": "onImpulsePlayed",
         "effect": "applyBurn",
-        "amount": 2
+        "amount": 4
       }
     ]
   },
@@ -566,7 +566,7 @@
       {
         "trigger": "onPlay",
         "effect": "impulseDraw",
-        "amount": 5
+        "amount": 7
       },
       {
         "trigger": "onPlay",
@@ -585,8 +585,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageExecute",
-        "amount": 8,
-        "amountMax": 24
+        "amount": 10,
+        "amountMax": 28
       }
     ]
   },
@@ -600,8 +600,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamageRandom",
-        "amount": 5,
-        "amountMax": 15,
+        "amount": 6,
+        "amountMax": 18,
         "target": "all"
       }
     ],
@@ -619,12 +619,12 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 10
+        "amount": 12
       },
       {
         "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -638,12 +638,12 @@
       {
         "trigger": "onAttackPlayed",
         "effect": "dealDamage",
-        "amount": 2
+        "amount": 3
       },
       {
         "trigger": "onAttackPlayed",
         "effect": "applyBurn",
-        "amount": 5
+        "amount": 6
       }
     ]
   },
@@ -662,7 +662,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 11
+        "amount": 13
       }
     ]
   },
@@ -701,7 +701,7 @@
           "minDamageTaken": 10
         },
         "effect": "addMomentum",
-        "amount": 6
+        "amount": 8
       }
     ]
   },
@@ -735,7 +735,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 5
+        "amount": 7
       },
       {
         "trigger": "onPlay",
@@ -882,7 +882,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5
+        "amount": 6
       },
       {
         "trigger": "onPlay",
@@ -1006,7 +1006,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 7
+        "amount": 8
       },
       {
         "trigger": "onPlay",
@@ -1074,12 +1074,12 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 6
+        "amount": 7
       },
       {
         "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -1107,17 +1107,17 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 7
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 7
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 7
       }
     ]
   },
@@ -1139,7 +1139,7 @@
           "blaze": true
         },
         "effect": "dealDamage",
-        "amount": 4
+        "amount": 5
       }
     ]
   },
@@ -1175,7 +1175,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 10
+        "amount": 12
       },
       {
         "trigger": "onPlay",
@@ -1183,7 +1183,7 @@
           "blaze": true
         },
         "effect": "dealDamage",
-        "amount": 10
+        "amount": 12
       }
     ]
   },
@@ -1294,12 +1294,12 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 12
+        "amount": 15
       },
       {
         "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 4
+        "amount": 5
       }
     ]
   },
@@ -1320,6 +1320,50 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 6,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_meteor",
+    "name": "隕火",
+    "cost": 3,
+    "type": "physical",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 30
+      }
+    ]
+  },
+  {
+    "id": "red_cataclysm",
+    "name": "業火の顎",
+    "cost": 4,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 20,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_last_day",
+    "name": "紅蓮の終焉",
+    "cost": 5,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 25,
         "target": "all"
       }
     ]

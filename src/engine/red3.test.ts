@@ -28,12 +28,12 @@ function withDrawPile(state: GameState, cardIds: readonly string[]): GameState {
 }
 
 describe('赤の0マナ攻撃 (火花)', () => {
-  it('0マナ・3ダメージで、消滅せず捨て札に行く (何度でも回ってくる)', () => {
+  it('0マナ・4ダメージで、消滅せず捨て札に行く (何度でも回ってくる)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_red'), ['red_spark'])
     const energy = s.player.energy
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_spark' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 3)
+    expect(s.enemies[0].hp).toBe(enemyHp - 4) // 2026-08-30 緑の0E帯へ引き上げ
     expect(s.player.energy).toBe(energy) // エナジーを1点も使わない
     expect(s.player.discardPile.map((c) => c.def.id)).toContain('red_spark')
     expect(s.player.exhaustPile).toHaveLength(0) // 消滅必須ルールの対象外 (補充を伴わないため)
@@ -48,7 +48,7 @@ describe('赤の0マナ攻撃 (火花)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_perm_ember' })
     expect(s.enemies[0].burn).toBe(0)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_spark' })
-    expect(s.enemies[0].burn).toBe(1) // 0マナの一手が延焼を1点積む
+    expect(s.enemies[0].burn).toBe(2) // 0マナの一手が延焼を2点積む (2026-08-30 残り火を引き上げ)
   })
 
   it('連打しても手札が尽きて必ず止まる (補充を伴わない0マナはループしない)', () => {
@@ -81,7 +81,7 @@ describe('灰の盾 (防御に衝動ドローを付けて腐らせない)', () =
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_guard' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 'd0_red_spark' })
     expect(s.player.block).toBe(4)
-    expect(s.enemies[0].hp).toBe(enemyHp - 3)
+    expect(s.enemies[0].hp).toBe(enemyHp - 4)
     expect(s.player.energy).toBe(energy - 1) // 灰の盾の1Eだけ。攻防一体
   })
 })
@@ -116,10 +116,10 @@ describe('ひばなのパッシブ = 手数を勢いに変える (2026-08-27)', 
     let s = startCombatWithLeader('starter_red', 'leader_red')
     s = withHand(s, ['red_spark', 'red_spark', 'red_strike'])
     const hp0 = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_spark' }) // 3ダメ (勢い0で解決→勢い+2)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_spark' }) // 3+2=5ダメ →勢い+2
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_spark' }) // 4ダメ (勢い0で解決→勢い+2)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_spark' }) // 4+2=6ダメ →勢い+2
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_red_strike' }) // 6+4=10ダメ
-    expect(hp0 - s.enemies[0].hp).toBe(3 + 5 + 10)
+    expect(hp0 - s.enemies[0].hp).toBe(4 + 6 + 10)
     expect(s.player.momentum).toBe(6)
   })
 })

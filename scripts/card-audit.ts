@@ -27,10 +27,22 @@ function effectVp(e: DeclarativeEffect, type: string): number {
   const flat = VP_FLAT[e.effect]
   return flat !== undefined ? flat * mult * life : 0
 }
+/** Xコストの典型 X=3 (docs/card-power.md §41)。xHits は効果をX回複製する */
+const TYPICAL_X = 3
+function vpOfList(list: readonly DeclarativeEffect[], def: CardDef): number {
+  return list.reduce(
+    (a, e) => a + effectVp(e, def.type) * (e.xHits === true ? TYPICAL_X : 1),
+    0,
+  )
+}
 export function assess(def: CardDef): { vp: number; pct: number; computable: boolean } {
-  const list = def.effects
-  const computable = list.every((e) => VP_PER[e.effect] !== undefined || VP_FLAT[e.effect] !== undefined)
-  const vp = list.reduce((a, e) => a + effectVp(e, def.type), 0)
+  const modes = def.modes ?? []
+  // 選択式は「柔軟性の上乗せ」を別に置き、絶対値としては最も高いモードで測る (§37)
+  const lists = modes.length > 0 ? modes.map((m) => m.effects) : [def.effects]
+  const computable = lists
+    .flat()
+    .every((e) => VP_PER[e.effect] !== undefined || VP_FLAT[e.effect] !== undefined)
+  const vp = Math.max(...lists.map((l) => vpOfList(l, def)))
   // 猛り火の軽減は「そのぶん安く撃てる」= 実効コストが下がる。期待値ぶんだけ帯を絞る
   const cost = (def.xCost === true ? 3 : def.cost) - (def.blazeDiscount ?? 0) * 0.6
   return { vp, pct: (vp / ALLOW(Math.max(0.5, cost))) * 100, computable }
