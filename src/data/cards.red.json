@@ -1621,5 +1621,43 @@
         ]
       }
     ]
+  },
+  {
+    "id": "red_charcoal_guard",
+    "name": "炭火の備え",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_afterheat_mail",
+    "name": "余熱の鎧",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBlock",
+        "amount": 2
+      }
+    ]
   }
 ]
