@@ -913,6 +913,9 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   black_grave_pressure: [{ trigger: 'onPlay', effect: 'exhaustFromDeck', amount: 2 }], // 自分で燃料を足してから刈る
   white_rank_thrust: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
   red_streak_bet: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }], // 固定の床3 (茨の報い型)
+  // 上限参照の1E札はコストを0Eへ落とさない裁定 (2026-08-30) の受け皿
+  green_sapling_strike: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 4 }],
+  green_trunk_guard: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
 }
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */

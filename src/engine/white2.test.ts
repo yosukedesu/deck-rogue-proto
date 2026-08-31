@@ -97,7 +97,7 @@ describe('隊列の盾', () => {
 })
 
 describe('回復軸の接着剤 (聖なる鐘)', () => {
-  it('実回復のたびブロック3 (満タンでは誘発しない)', () => {
+  it('回復のたびブロック3 (満タンの過剰回復でも誘発。2026-08-31)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_bell',
       'white_heal',
@@ -105,13 +105,13 @@ describe('回復軸の接着剤 (聖なる鐘)', () => {
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_bell' })
-    // 満タン: 回復0 → 鐘は鳴らない
+    // 満タン: 実回復0でも鐘は鳴る (満タン沈黙3割への処方)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
-    expect(s.player.block).toBe(0)
+    expect(s.player.block).toBe(3)
     s = { ...s, player: { ...s.player, hp: 50 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_heal' }) // 癒しの光 5→6
     expect(s.player.hp).toBe(56) // 癒しの光6
-    expect(s.player.block).toBe(3)
+    expect(s.player.block).toBe(6)
   })
 })
 

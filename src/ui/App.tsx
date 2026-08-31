@@ -230,7 +230,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onAttackPlayed: '攻撃プレイ後: ',
   onSpellPlayed: '呪文をプレイした時: ',
   onSetDestroyed: 'この伏せが破壊された時: ',
-  onHealed: 'HPが回復するたび: ',
+  onHealed: 'HPが回復するたび (満タンでも誘発): ',
   onHpLost: 'カード効果でHPを失うたび: ',
   onCardExhausted: 'カードが消滅するたび: ',
   onCostExhausted: '消滅コストを支払うたび: ',
@@ -372,7 +372,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         ? `${trigger}⚔️ この戦闘でカード効果により失ったHP×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.selfHpLost + atkBonus}]`
         : `${trigger}⚔️ この戦闘でカード効果により失ったHP×${e.amount}ダメージ${pierce}`
     case 'retrieveFromExhaust':
-      return `${trigger}⚰️ 消滅置き場からカード${e.amount ?? 1}枚を選んで手札に戻す`
+      return `${trigger}⚰️ 消滅置き場からカード${e.amount ?? 1}枚を選んで手札に戻す（戻した札はこの戦闘中コスト0）`
     case 'playFromExhaust':
       return `${trigger}⚰️ 消滅置き場のカード1枚（リアクション以外）をコストを支払わず直接プレイ（そのカードは消滅置き場に残る）`
     case 'summonPermanent':

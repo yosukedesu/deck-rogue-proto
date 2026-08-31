@@ -38,6 +38,8 @@ export function isBlazing(state: GameState): boolean {
 export function effectiveCost(state: GameState, card: CardInstance): number {
   // Xコスト: 現在のエナジーを全て支払う (最低1 = エナジー0ではプレイ不可)。割引の対象外
   if (card.def.xCost === true) return Math.max(1, state.player.energy)
+  // 屍集めで戻した札はこの戦闘中0E (2026-08-31 rework。割引も消費しない)
+  if (card.freeThisCombat === true) return 0
   if (card.def.cost === 0) return 0
   const blaze = card.def.blazeDiscount !== undefined && isBlazing(state) ? card.def.blazeDiscount : 0
   return Math.max(0, card.def.cost - blaze - state.player.nextCardDiscount)
@@ -182,13 +184,17 @@ export function runPermanentTriggers(
 }
 
 /**
- * 実回復 (>0) を適用し、HpHealed を発行して onHealed 置物 (血の月) を誘発する。
+ * 回復を適用し、HpHealed を発行して onHealed 置物 (血の月・聖なる鐘) を誘発する。
+ * 過剰回復 (満タンで実回復0) でも誘発する (2026-08-31 ユーザー決定。回復換金デッキで
+ * 「HP満タンだと回復札と onHealed が丸ごと沈黙するターンが3割」の実測への処方)。
+ * 回復量0の効果 (ドレインの与ダメ0など) は「回復していない」ので誘発しない。
  * 誘発側の効果は回復を含まない前提 = 再帰しない (回復する onHealed 置物は設計禁止)。
  */
 export function healPlayer(state: GameState, amount: number, enemyIndex: number): GameState {
+  if (amount <= 0) return state
   const healed = Math.min(amount, state.player.maxHp - state.player.hp)
-  if (healed <= 0) return state
-  let s: GameState = { ...state, player: { ...state.player, hp: state.player.hp + healed } }
+  let s: GameState =
+    healed > 0 ? { ...state, player: { ...state.player, hp: state.player.hp + healed } } : state
   s = emit(s, { type: 'HpHealed', amount: healed })
   return runPermanentTriggers(s, 'onHealed', enemyIndex)
 }

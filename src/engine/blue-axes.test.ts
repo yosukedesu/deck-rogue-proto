@@ -123,7 +123,7 @@ describe('統合パーミッション (消して稼いで放つ)', () => {
     expect(s.player.aether).toBe(2)
   })
 
-  it('渦電の輪: 打ち消しに成功するたび霊気+2 (稼ぎの接着剤)', () => {
+  it('渦電の輪: 打ち消しに成功するたび霊気+1 (稼ぎの接着剤。2026-08-31 1E化で+2→+1)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_perm_vortex_ring',
       'blue_counterspell',
@@ -134,7 +134,7 @@ describe('統合パーミッション (消して稼いで放つ)', () => {
     s = withIntent(s, attackIntent(8))
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.player.aether).toBe(1 + 2) // 対抗呪文の+1 + 渦電の輪の+2
+    expect(s.player.aether).toBe(1 + 1) // 対抗呪文の+1 + 渦電の輪の+1
   })
 
   it('霊気の槍は霊気×4ダメージを与えて全消費する (出口のコモン化)', () => {

@@ -49,7 +49,7 @@ describe('アンセム (blessRetainers)', () => {
 })
 
 describe('回復の換金 (onHealed網)', () => {
-  it('光の聖杯: 回復するたびブロック2 (実回復>0の時だけ)', () => {
+  it('光の聖杯: 回復するたびブロック2 (満タンの過剰回復でも誘発。2026-08-31)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_chalice',
       'white_heal',
@@ -59,10 +59,10 @@ describe('回復の換金 (onHealed網)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_chalice' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
     expect(s.player.block).toBe(2)
-    // 満タンでの回復は実回復0 = 誘発しない
+    // 満タンでの回復 = 実回復0でも誘発する (満タン沈黙3割への処方)
     s = withHand(s, ['white_heal'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_heal' })
-    expect(s.player.block).toBe(2)
+    expect(s.player.block).toBe(4)
   })
 
   it('ひなたのパッシブ: 毎T回復1が回復時誘発 (ブロック1) の鼓動になる', () => {

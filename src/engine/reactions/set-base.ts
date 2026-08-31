@@ -13,7 +13,7 @@ export function canSetCard(state: GameState, cardUid: string): boolean {
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) return false
   if (card.def.type !== 'reaction') return false // 伏せ対象は reaction タイプのみ
-  return card.def.cost <= state.player.energy
+  return (card.freeThisCombat === true ? 0 : card.def.cost) <= state.player.energy
 }
 
 /** SetCard: コスト事前払いで手札から伏せる */
@@ -26,14 +26,15 @@ export function setCard(state: GameState, cardUid: string): GameState {
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (card.def.type !== 'reaction') throw new Error(`${card.def.name} は伏せられない (リアクションタイプのみ)`)
   // 回収ターンの伏せ直しは0E (2026-08-30。回収1E+伏せ直しコストの二重払いが「常に攻撃2枚に負ける」
-  // 死に機構だった実測への処方 = 実質「1Eで伏せ替え」)
+  // 死に機構だった実測への処方 = 実質「1Eで伏せ替え」)。屍集めで戻した札 (freeThisCombat) も0E
+  const setCost = card.freeThisCombat === true ? 0 : card.def.cost
   const freeReset = state.player.freeResetUid === card.uid
-  if (!freeReset && card.def.cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  if (!freeReset && setCost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const s: GameState = {
     ...state,
     player: {
       ...state.player,
-      energy: state.player.energy - (freeReset ? 0 : card.def.cost),
+      energy: state.player.energy - (freeReset ? 0 : setCost),
       ...(freeReset ? { freeResetUid: undefined } : {}),
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
       setCards: [...state.player.setCards, { ...card, setFresh: true }],

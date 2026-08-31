@@ -77,7 +77,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`,
     addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者の効果+${a}`,
-    dealDamagePerNegStrength: `下げた敵強化×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ',
+    dealDamagePerNegStrength: `下げた敵強化×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
   }
   const trig: Record<string, string> = {
@@ -85,7 +85,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onPlay: holderType === 'permanent' ? '登場時:' : '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
     onEnemyBuffed: '敵強化時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
-    onHealed: '回復ごと:', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
+    onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
   }
@@ -198,7 +198,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${cname(e.cardId)}が倒された`)
       else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${cname(e.cardId)}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
-      else if (e.type === 'HpHealed') L.push(` 回復${e.amount}`)
+      else if (e.type === 'HpHealed') L.push(e.amount > 0 ? ` 回復${e.amount}` : ' 回復0(満タン。onHealedは誘発)')
       else if (e.type === 'HpLost') L.push(` 自傷${e.amount}`)
       else if (e.type === 'StatusInflicted') L.push(` 状態異常:${e.status}${e.amount}`)
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)

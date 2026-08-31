@@ -562,7 +562,7 @@
   {
     "id": "blue_perm_mist_double",
     "name": "霧の分身",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "rare",
     "effects": [
@@ -783,14 +783,14 @@
   {
     "id": "blue_perm_vortex_ring",
     "name": "渦電の輪",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onActionNegated",
         "effect": "addAether",
-        "amount": 2
+        "amount": 1
       }
     ]
   },

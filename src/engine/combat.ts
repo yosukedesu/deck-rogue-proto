@@ -479,7 +479,10 @@ export function playCard(
   // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
   const cost = effectiveCost(state, card)
   const consumesDiscount =
-    card.def.cost > 0 && state.player.nextCardDiscount > 0 && card.def.xCost !== true
+    card.def.cost > 0 &&
+    state.player.nextCardDiscount > 0 &&
+    card.def.xCost !== true &&
+    card.freeThisCombat !== true // 屍集めの0E札は割引を消費しない (素の0Eと同じ扱い)
   if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   // Xコスト: 支払った量を xHits 効果の繰り返し回数として展開する (多段ヒットと同じ解決)
   const paidX = card.def.xCost === true ? cost : 0
@@ -692,16 +695,19 @@ export function playCard(
   } else if (!isPermanent) {
     s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, card] } }
   }
-  // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)
+  // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)。
+  // 戻した札はこの戦闘中0E (2026-08-31 rework。亡骸に役割を吸われ一度もプレイされなかった実測への処方
+  // = 「任意の札を選べてテンポも付く」で住み分ける)。Xコスト札は対象外
   if (isRetrieve && retrieveUid !== undefined) {
     const chosen = s.player.exhaustPile.find((c) => c.uid === retrieveUid)
     if (chosen) {
+      const free = chosen.def.xCost !== true
       s = {
         ...s,
         player: {
           ...s.player,
           exhaustPile: s.player.exhaustPile.filter((c) => c.uid !== retrieveUid),
-          hand: [...s.player.hand, chosen],
+          hand: [...s.player.hand, free ? { ...chosen, freeThisCombat: true } : chosen],
         },
       }
       s = emit(s, { type: 'CardRetrieved', cardId: chosen.def.id })

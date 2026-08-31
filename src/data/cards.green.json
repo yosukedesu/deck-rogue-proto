@@ -33,7 +33,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 2
+        "amount": 4
       }
     ],
     "exhaust": true,
@@ -829,6 +829,41 @@
       }
     ],
     "rarity": "common"
+  },
+  {
+    "id": "green_sapling_strike",
+    "name": "若幹の一撃",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_trunk_guard",
+    "name": "幹の構え",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerEnergyMax",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "green_trunk_stance",

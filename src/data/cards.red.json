@@ -923,14 +923,14 @@
   {
     "id": "red_perm_ward",
     "name": "業火の護符",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onAttacked",
         "effect": "applyBurn",
-        "amount": 4
+        "amount": 2
       }
     ]
   },
@@ -1189,14 +1189,14 @@
   {
     "id": "red_perm_gambler",
     "name": "賭博師の焔",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onRandomPlayed",
         "effect": "applyBurn",
-        "amount": 4
+        "amount": 2
       }
     ]
   },

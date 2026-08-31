@@ -2,6 +2,7 @@
 // 確定済みルール表「コスト再利用」「消滅コスト」「消滅の誘発」「自傷の換金」を固定する。
 // 黒の第5の柱: 払ったコストの再利用ハック (HP→背徳の収穫 / 手札→闇市の帳簿 / エナジー→死者再生+血の儀式)
 import { describe, expect, it } from 'vitest'
+import { effectiveCost } from './effects.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
@@ -94,7 +95,7 @@ describe('自傷の誘発と換金', () => {
 })
 
 describe('回復の誘発 (血の月)', () => {
-  it('ドレインの実回復で2ダメージが乗る。満タン時は誘発しない', () => {
+  it('ドレインの回復で2ダメージが乗る。満タンの過剰回復でも誘発する (2026-08-31)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_perm_moon',
       'black_drain',
@@ -103,13 +104,13 @@ describe('回復の誘発 (血の月)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_perm_moon' })
     const enemyHp = s.enemies[0].hp
-    // 満タン: 回復0 → 血の月は誘発しない
+    // 満タン: 実回復0でも「回復した」として誘発する (満タン沈黙3割への処方)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6) // 生命吸収 5→6
-    // HPを減らす → 実回復 → 血の月2ダメ
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 2) // 生命吸収6 + 血の月2
+    // HPを減らした実回復でも当然誘発する
     s = { ...s, player: { ...s.player, hp: 50 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 6 - 2)
+    expect(s.enemies[0].hp).toBe(enemyHp - 8 - 6 - 2)
     expect(s.player.hp).toBe(53)
   })
 })
@@ -186,6 +187,16 @@ describe('コスト再利用 (死者再生・屍集め)', () => {
     })
     expect(s.player.hand.some((c) => c.uid === scythe.uid)).toBe(true)
     expect(s.player.exhaustPile.some((c) => c.uid === scythe.uid)).toBe(false)
+    // 2026-08-31 rework: 戻した札はこの戦闘中0E (亡骸との住み分け = 任意の札+テンポ)
+    const back = s.player.hand.find((c) => c.uid === scythe.uid)!
+    expect(back.freeThisCombat).toBe(true)
+    expect(effectiveCost(s, back)).toBe(0)
+    // 割引トークンも消費しない (素の0E札と同じ扱い)
+    const energyBefore = s.player.energy
+    s = { ...s, player: { ...s.player, nextCardDiscount: 1 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: scythe.uid, targetIndex: 0 })
+    expect(s.player.energy).toBe(energyBefore)
+    expect(s.player.nextCardDiscount).toBe(1)
   })
 })
 

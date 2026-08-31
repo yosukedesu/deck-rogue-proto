@@ -519,7 +519,7 @@
   {
     "id": "black_perm_blade",
     "name": "血染めの刃",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
@@ -547,7 +547,7 @@
   {
     "id": "black_perm_pain_core",
     "name": "苦痛の芯",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
@@ -561,7 +561,7 @@
   {
     "id": "black_perm_chorus",
     "name": "亡者の合唱",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "rare",
     "effects": [
@@ -577,7 +577,7 @@
   {
     "id": "black_perm_ledger",
     "name": "闇市の帳簿",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "rare",
     "effects": [
@@ -1121,7 +1121,7 @@
   {
     "id": "black_perm_bone_throne",
     "name": "骨の玉座",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [

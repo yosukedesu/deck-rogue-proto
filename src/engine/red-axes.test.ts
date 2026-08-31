@@ -22,7 +22,8 @@ describe('カオスの受け皿 (onRandomPlayed / 撃った枚数の参照)', ()
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_perm_gambler' })
     expect(s.enemies[0].burn).toBe(0) // 置物を出しただけでは誘発しない
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_gamble' })
-    expect(s.enemies[0].burn).toBe(4)
+    expect(s.enemies[0].burn).toBe(2) // 2026-08-31 1E化で4→2
+
   })
 
   it('全体ランダム火力でも枚数は1しか増えない (敵の頭数ぶん多重に数えない)', () => {
