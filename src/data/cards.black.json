@@ -554,7 +554,7 @@
       {
         "trigger": "onHpLost",
         "effect": "dealDamage",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -1262,6 +1262,45 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 8,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_blood_spray",
+    "name": "血飛沫の刃",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      }
+    ]
+  },
+  {
+    "id": "black_agony_sweep",
+    "name": "悶絶の薙ぎ",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12,
         "target": "all"
       }
     ]

@@ -124,6 +124,23 @@ const WORD: readonly (readonly [string, string])[] = [
 ]
 /** 色別の語彙上書き (2026-08-31 白ラン指摘「白素材から牙葉の祭壇=緑語彙が生成」への是正) */
 const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
+  black: [
+    ['dealDamageDrain', '血'],
+    ['exhaustFromDeck', '墓'],
+    ['loseHp', '贄'],
+    ['gainBlock', '骨'],
+    ['drawCards', '冥'],
+    ['gainHp', '宵'],
+    ['dealDamage', '影'],
+  ],
+  blue: [
+    ['gainIceBlock', '氷'],
+    ['negate', '封'],
+    ['addAether', '霊'],
+    ['addSpellEcho', '谺'],
+    ['drawCards', '書'],
+    ['dealDamage', '潮'],
+  ],
   red: [
     ['applyBurn', '焔'],
     ['dealDamageRandom', '賭'],

@@ -180,7 +180,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   if (events.length > 0) {
     L.push('--- 直近の出来事 ---')
     for (const e of events) {
-      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})`)
+      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}`)
       else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)

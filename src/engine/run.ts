@@ -1018,7 +1018,27 @@ export function upgradeCard(card: CardInstance): CardInstance {
         : tier === 'unit'
           ? mapEffects(boostUnit)
           : tier === 'bonus'
-            ? { effects: [...(BONUS_UPGRADES[card.def.id] ?? []), ...card.def.effects] }
+            ? {
+                // 同種効果は合算する (2026-08-31 青ラン指摘: 巻き波+ が「1ドロー、詠唱×2、1ドロー」と分裂表示)
+                effects: (BONUS_UPGRADES[card.def.id] ?? []).reduce(
+                  (acc: DeclarativeEffect[], b) => {
+                    const i = acc.findIndex(
+                      (e) =>
+                        e.effect === b.effect &&
+                        e.trigger === b.trigger &&
+                        e.target === b.target &&
+                        e.amount !== undefined &&
+                        b.amount !== undefined,
+                    )
+                    if (i >= 0) {
+                      acc[i] = { ...acc[i], amount: (acc[i].amount ?? 0) + (b.amount ?? 0) }
+                      return acc
+                    }
+                    return [b, ...acc]
+                  },
+                  [...card.def.effects],
+                ),
+              }
             : {}
   let def: CardDef = { ...card.def, name: `${card.def.name}+`, ...patch }
   // 正味エナジー増の規約 (確定済みルール表「正味エナジー増」) を強化後の派生にも守らせる

@@ -495,7 +495,8 @@ export function dealDamageToEnemy(
   if (exposed) amount = Math.floor(amount * 1.5)
   // 装甲 (2026-08-30): 1ヒットの被ダメはN以下に頭打ち (n²スケーリングへのワクチン。
   // 急所・勢い・成長の全補正の後に適用 = どれだけ盛っても1ヒットは装甲を超えない)
-  if (enemy.armor !== undefined && amount > enemy.armor) amount = enemy.armor
+  const armorCut = enemy.armor !== undefined && amount > enemy.armor ? amount - enemy.armor : 0
+  if (armorCut > 0) amount = enemy.armor!
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
   const hpLoss = amount - blocked
   const enemies = state.enemies.map((e, i) =>
@@ -511,7 +512,10 @@ export function dealDamageToEnemy(
         }
       : e,
   )
-  let s = emit({ ...state, enemies }, { type: 'DamageDealt', source: 'player', amount, hpLoss })
+  let s = emit(
+    { ...state, enemies },
+    { type: 'DamageDealt', source: 'player', amount, hpLoss, ...(armorCut > 0 ? { armorCut } : {}) },
+  )
   // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化。
   // 枚数トリガーの盲点 (1枚で100点出すデッキが素通しする) への処方
   {

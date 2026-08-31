@@ -66,7 +66,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ActionNegated': return { text: '敵の行動は打ち消された！', cls: 'log-good' }
     case 'DamageDealt':
       return e.source === 'player'
-        ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})`, cls: 'log-line' }
+        ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}`, cls: 'log-line' }
         : { text: `敵の攻撃${e.amount} → HP減 ${e.hpLoss}`, cls: 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': return { text: `敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }

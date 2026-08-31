@@ -606,11 +606,9 @@ export function playCard(
       // 闇の契約を撃った同ターンに闇の契約を引いた)。解決後に置く = StS準拠
       discardPile: [...state.player.discardPile, ...discardedCards],
       permanents: isPermanent ? [...state.player.permanents, card] : state.player.permanents,
-      exhaustPile: [
-        ...state.player.exhaustPile,
-        ...exhaustedCards,
-        ...(isExhaust ? [card] : []),
-      ],
+      // プレイした消滅札自身も limbo (効果解決後に消滅置き場へ)。2026-08-31 黒Opusラン発見:
+      // 影の刃 (消滅・自傷2) が「消滅回復→自傷」の順に解決され、とばりの回復が常に満タンで無駄になっていた
+      exhaustPile: [...state.player.exhaustPile, ...exhaustedCards],
     },
   }
   if (discardedCards.length > 0) {
@@ -630,10 +628,6 @@ export function playCard(
   s = fireExhaustTriggers(s, exhaustedCards.length, enemyIndex)
   // 亡骸効果: 消滅コストで支払われた札は「プレイ以外の経路」なので発火する
   s = fireNecroEffects(s, exhaustedCards, enemyIndex)
-  if (isExhaust) {
-    s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
-    s = fireExhaustTriggers(s, 1, enemyIndex)
-  }
   // 反復 (青の呪文コピー 2026-08-31): 呪文なら反復トークンを1つ消費し、効果を「2回」解決する。
   // 消費は解決前 = 反復札自身が反復された場合、自分の生むトークンを自分で食わない (+2が立つ)。
   // 詠唱数・onAttackPlayed等のプレイ誘発は1回のまま (プレイは1回。効果だけが2回) = StSのBurst/Amplify準拠
@@ -689,8 +683,13 @@ export function playCard(
     },
   }
   s = tickCardTimers(s)
-  // limbo からの着地: プレイし終えたカードをここで捨て札へ置く (置物・消滅カードは除く)
-  if (!isPermanent && !isExhaust) {
+  // limbo からの着地: プレイし終えたカードをここで捨て札 (消滅札は消滅置き場) へ置く。
+  // 消滅の誘発も解決後 = 「使用後、この戦闘から除外」の語義どおり (2026-08-31 順序是正)
+  if (isExhaust) {
+    s = { ...s, player: { ...s.player, exhaustPile: [...s.player.exhaustPile, card] } }
+    s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+    s = fireExhaustTriggers(s, 1, enemyIndex)
+  } else if (!isPermanent) {
     s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, card] } }
   }
   // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)

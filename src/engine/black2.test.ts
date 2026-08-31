@@ -54,15 +54,17 @@ describe('消滅の誘発 (亡者の合唱)', () => {
       cardUid: 't1_black_grave_digger',
       exhaustUids: ['t2_black_strike'],
     })
-    // 忘却の刻 7→5 (2026-08-30) で合唱の強化 (1→3) がミルの途中から乗るようになった
-    expect(s.enemies[0].hp).toBe(enemyHp - 14)
+    // 忘却の刻 7→5 (2026-08-30) で合唱の強化 (1→3) がミルの途中から乗る。
+    // 2026-08-31 プレイ札の消滅は解決後 (limbo) に変更: コスト1 → ミル4枚が置かれた後に
+    // 誘発4回 (刻5到達済み=3×4) → 自身3 = 合計16
+    expect(s.enemies[0].hp).toBe(enemyHp - 16)
     // 消滅置き場: コスト1 + 墓暴き自身1 + 忘却4 = 6枚
     expect(s.player.exhaustPile).toHaveLength(6)
   })
 })
 
 describe('自傷の誘発と換金', () => {
-  it('苦痛の芯: カード効果でHPを失うたび2ダメージ (影の刃で合計10)', () => {
+  it('苦痛の芯: カード効果でHPを失うたび3ダメージ (2026-08-31 量2→3。影の刃で合計11)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_perm_pain_core',
       'black_shadow_blade',
@@ -71,9 +73,9 @@ describe('自傷の誘発と換金', () => {
     const enemyHp = s.enemies[0].hp
     const hp = s.player.hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_shadow_blade' })
-    // 影の刃: HP-2 (芯2ダメ) → 8ダメ
+    // 影の刃: HP-2 (芯3ダメ) → 8ダメ
     expect(s.player.hp).toBe(hp - 2)
-    expect(s.enemies[0].hp).toBe(enemyHp - 2 - 8)
+    expect(s.enemies[0].hp).toBe(enemyHp - 3 - 8)
     expect(s.player.selfHpLost).toBe(2)
   })
 

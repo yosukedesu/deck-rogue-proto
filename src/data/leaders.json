@@ -122,7 +122,7 @@
     "rewardChoices": 4,
     "runDeckId": "run_basic_black",
     "sprite": "🌑",
-    "description": "宵闇の死霊術師。痛みを糧に立つ。カード効果でHPを失うたびHP1回復",
+    "description": "宵闇の死霊術師。滅びを糧に立つ。カードが消滅するたびHP1回復",
     "passive": [
       {
         "trigger": "onCardExhausted",
