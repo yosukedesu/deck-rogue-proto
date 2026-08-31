@@ -15,7 +15,7 @@
 //   エリートだけは員数固定4 (重み8%だとレリック供給が-28%になるため設計約束を優先)。
 // 配置制約は本家の3つ: ①エリートは ELITE_MIN_ROW 以降 ②親と同タイプ禁止 (エリート/ショップ/工房のみ。
 //   ?と戦闘は縦に続いてよい) ③兄弟 (同じ親を共有する同行ノード) と同タイプ禁止 (全種)。
-// どのパスも戦闘数の下限8を保証する (上限は設けない = 本家に戦闘数の保証は無く「何回戦うか」を選べる)。
+// 戦闘数の保証は無い (2026-08-31 床8を撤廃・本家完全準拠 —「何回戦うか」を選べるのがルート選択)。
 // エッジは非交差 (格子空間のクランプで保証)、全ノードが開始から到達可能かつボスへ到達可能。
 // ?マスの中身はここでは決めない — 入室時に run.ts が本家式の累積確率で解決する。
 import { nextInt } from './rng.ts'
@@ -88,8 +88,6 @@ const CAMPFIRE_MIN_ROW = 5
 const ELITE_COUNT = 4
 /** エリートを置ける最小行。本家は floor1〜5 禁止だが、序盤のレリック供給を守るため行2から */
 const ELITE_MIN_ROW = 2
-/** どのパスも最低これだけは戦闘する。上限は設けない (本家に戦闘数の保証は無い) */
-const MIN_COMBAT_PER_PATH = 8
 /**
  * 「エリートを狙うパス」で踏める最低数 (2026-08-31 パスウォーク化に伴う保証)。
  * 広い盤面ではエリート4個が散り、実測で中央値2 (最低1) しか1本のパスで拾えなくなった
@@ -221,7 +219,42 @@ export function generateMap(
       }
     }
 
-    // 2. 格子 → 行内の詰めた添字へ変換 (ChooseNode.col の互換維持。col に格子列を残す)
+    // 2. 分岐の補強 (2026-08-31 Opusマップ検証「単一出口79%＝体験は一本道。行0の1手で
+    //    8ノード先まで確定していた」への処方): 出次数1のノードに、隣列 (±1) の既存ノードへの
+    //    非交差エッジを1本足す。本家アルゴリズムのウォークだけでは7列格子でレーンが分かれ、
+    //    合流由来の分岐がほぼ出ない (実測: 本数を12まで増やしても出次数1.48で総ノード93に膨張。
+    //    補強なら総ノード不変で出次数1.22→1.47・単一出口79%→54% = 2行に1回は選べる)
+    for (let y = 0; y < walkRows - 1; y++) {
+      for (const col of [...visited[y]].sort((a, b) => a - b)) {
+        const cur = latEdges[y].get(col)
+        if (cur === undefined || cur.size !== 1) continue
+        const [coin, nextRng] = nextInt(rng, 0, 1)
+        rng = nextRng
+        const base = [...cur][0]
+        const order = coin === 1 ? [base + 1, base - 1] : [base - 1, base + 1]
+        for (const cand of order) {
+          if (Math.abs(cand - col) > 1 || cand < 0 || cand >= GRID_COLS) continue
+          if (!visited[y + 1].has(cand)) continue
+          // 交差チェック: 同行の他ノードの既存エッジと交差しない場合だけ足す
+          let ok = true
+          for (const [c2, s2] of latEdges[y]) {
+            if (c2 === col) continue
+            for (const t2 of s2) {
+              if ((c2 - col) * (t2 - cand) < 0) {
+                ok = false
+                break
+              }
+            }
+            if (!ok) break
+          }
+          if (!ok) continue
+          addLatEdge(y, col, cand)
+          break
+        }
+      }
+    }
+
+    // 3. 格子 → 行内の詰めた添字へ変換 (ChooseNode.col の互換維持。col に格子列を残す)
     const colsOf: number[][] = visited.map((s) => [...s].sort((a, b) => a - b))
     const widths: number[] = [...colsOf.map((c) => c.length), 1] // +ボス行
     const edges: number[][][] = []
@@ -286,24 +319,6 @@ export function generateMap(
       }
       return true
     }
-    // 戦闘数DP: 全パスの最小戦闘数 (エリートは戦闘に数える。焚き火・宝箱・ボスは0)
-    const combatOf = (r: number, c: number): number => {
-      const t = typeGrid[r][c]
-      return t === 'battle' || t === 'elite' ? 1 : 0
-    }
-    const minCombats = (): number => {
-      let minC = Array.from({ length: widths[0] }, (_, c) => combatOf(0, c))
-      for (let r = 0; r < MAP_ROWS - 1; r++) {
-        const next = new Array<number>(widths[r + 1]).fill(Infinity)
-        for (let c = 0; c < widths[r]; c++) {
-          for (const to of edges[r][c]) {
-            next[to] = Math.min(next[to], minC[c] + combatOf(r + 1, to))
-          }
-        }
-        minC = next
-      }
-      return minC[0]
-    }
     /** エリート供給: 1本のパスで踏める最大数 (DP最大値) */
     const maxElites = (): number => {
       let maxE = Array.from({ length: widths[0] }, () => 0)
@@ -327,8 +342,13 @@ export function generateMap(
       for (const [r, c] of freeNodes) if (typeGrid[r][c] === 'elite') typeGrid[r][c] = 'battle'
       let failed = false
       for (let k = 0; k < ELITE_COUNT; k++) {
+        // 直前で必ず避けられる: 全ての親に出口2以上 (2026-08-31 Opus検証「行0の選択の副産物で
+        // エリート2体が通行料になった」への処方 = 挑む/避けるが常にその場の選択になる)
         const cand = freeNodes.filter(
-          ([r, c]) => typeGrid[r][c] === 'battle' && assignable(r, c, 'elite'),
+          ([r, c]) =>
+            typeGrid[r][c] === 'battle' &&
+            assignable(r, c, 'elite') &&
+            parents[r][c].every((p) => edges[r - 1][p].length >= 2),
         )
         if (cand.length === 0) {
           failed = true
@@ -342,27 +362,16 @@ export function generateMap(
     }
     if (!eliteOk) continue
 
-    // 3b. 非戦闘ノードは「置いた後の戦闘数の床 (全パスの最小戦闘数) が最大になる位置」に置く
-    // (2026-08-31 宝箱行の追加で床8×クォータの両立が総当たりだと当たりにくくなった:
-    //  床の余裕を食い潰さない位置へ貪欲に置き、同値はランダムに選ぶ = 特別ノードが
-    //  自然にパス間へ分散する。最後のDP検証は保険として残す)
+    // 3b. 部屋の配置: 本家準拠の素のランダム (制約は assignable のみ)。
+    // 戦闘数の床は撤廃 (2026-08-31 ユーザー裁定「床を撤廃・本家完全準拠」——本家に戦闘数の
+    // 保証は無く「何回戦うかを選べる」がルート選択の中身。戦闘の少ないパスは報酬・金も
+    // 少ない自己均衡。旧・床8は分岐の充実と両立しなかった: 単一出口59%で生成300リトライ)
     let placementFailed = false
     for (const [t, n] of quota) {
       for (let k = 0; k < n; k++) {
-        let bestVal = -1
-        let cand: (readonly [number, number])[] = []
-        for (const [r, c] of freeNodes) {
-          if (typeGrid[r][c] !== 'battle' || !assignable(r, c, t)) continue
-          typeGrid[r][c] = t
-          const v = minCombats()
-          typeGrid[r][c] = 'battle'
-          if (v < MIN_COMBAT_PER_PATH || v < bestVal) continue
-          if (v > bestVal) {
-            bestVal = v
-            cand = []
-          }
-          cand.push([r, c])
-        }
+        const cand = freeNodes.filter(
+          ([r, c]) => typeGrid[r][c] === 'battle' && assignable(r, c, t),
+        )
         if (cand.length === 0) {
           placementFailed = true
           break
@@ -374,9 +383,6 @@ export function generateMap(
       if (placementFailed) break
     }
     if (placementFailed) continue
-
-    // 4. DP検証 (保険): どのパスも戦闘数が MIN_COMBAT_PER_PATH 以上か (上限は設けない)
-    if (minCombats() < MIN_COMBAT_PER_PATH) continue // 戦闘数の下限は最後まで緩めない。作り直す
 
     // 5. ノードの実体化 (直前2行と同じ敵は避ける)。?の中身は持たせない (入室時に決まる)
     const recentEnemies: string[][] = []

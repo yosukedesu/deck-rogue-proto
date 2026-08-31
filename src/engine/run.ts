@@ -327,12 +327,29 @@ function enterNodeInner(run: RunState): RunState {
   }
 }
 
+/**
+ * レリック3択の抽選: 残候補からシードRNGで3枚引く (2026-08-31)。
+ * 旧・候補列の先頭3枚固定は、断ったレリックが以後の全提示に再登場し続け、
+ * 幕1の5提示中「砥石5回・鉄の心臓4回」の反復を生んでいた (Opusマップ検証の指摘)
+ */
+function drawRelicOptions(run: RunState): readonly [readonly string[], RngState] {
+  const pool = run.relicQueue.filter((id) => !run.relics.includes(id))
+  let rng = run.rng
+  const picked: string[] = []
+  while (picked.length < 3 && pool.length > 0) {
+    const [i, next] = nextInt(rng, 0, pool.length - 1)
+    rng = next
+    picked.push(pool.splice(i, 1)[0])
+  }
+  return [picked, rng]
+}
+
 /** 宝箱: レリック3択 (スキップ可)。候補列が尽きていれば素通りで map へ戻る */
 function openTreasure(run: RunState): RunState {
-  const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
-  const base = { ...run, combat: null, rewardOptions: null }
-  if (remaining.length === 0) return { ...base, phase: 'map' as const }
-  return { ...base, phase: 'relic-reward' as const, relicOptions: remaining.slice(0, 3) }
+  const [options, rng] = drawRelicOptions(run)
+  const base = { ...run, rng, combat: null, rewardOptions: null }
+  if (options.length === 0) return { ...base, phase: 'map' as const }
+  return { ...base, phase: 'relic-reward' as const, relicOptions: options }
 }
 
 /**
@@ -825,9 +842,9 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   }
   // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
   if (run.currentElite || isBoss) {
-    const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
-    if (remaining.length > 0) {
-      return { ...next, phase: 'relic-reward', relicOptions: remaining.slice(0, 3) }
+    const [options, rng2] = drawRelicOptions(next)
+    if (options.length > 0) {
+      return { ...next, rng: rng2, phase: 'relic-reward', relicOptions: options }
     }
   }
   return rollRewards(next)

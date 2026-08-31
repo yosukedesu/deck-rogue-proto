@@ -3,7 +3,8 @@
 // - 部屋タイプは本家の重みで員数化: 工房/ショップ=総ノードの5%・?=22%・焚き火=12%・エリートは員数固定4
 // - 配置制約 (本家): 行0は全て戦闘 / エリートは行2以降 / 焚き火は行5以降 /
 //   親と同タイプ禁止 (エリート・ショップ・工房・焚き火) / 兄弟と同タイプ禁止 (全種)
-// - どのパスも戦闘数8以上 (上限は設けない = 本家に戦闘数の保証は無い)
+// - 戦闘数の保証は無い (2026-08-31 床8撤廃・本家完全準拠 =「何回戦うか」を選べる)
+// - 分岐の補強: 出次数1のノードに非交差エッジを1本足す / エリートは全親に出口2以上の位置のみ
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
@@ -203,6 +204,24 @@ describe('マップ生成の構造', () => {
             expect((a1 - a2) * (b1 - b2) < 0, `seed${seed} row${r} でエッジが交差`).toBe(false)
           }
         }
+      }
+    }
+  })
+
+  it('エリートは直前で必ず避けられる (全ての親に出口2以上。2026-08-31 Opus検証への処方)', () => {
+    for (const seed of SEEDS) {
+      const map = mapFor(seed)
+      const parents = parentsOf(map)
+      for (let r = 1; r < MAP_ROWS - 1; r++) {
+        map[r].forEach((n, c) => {
+          if (n.type !== 'elite') return
+          for (const p of parents[r][c]) {
+            expect(
+              map[r - 1][p].next.length,
+              `seed${seed} row${r} のエリートが回避不能`,
+            ).toBeGreaterThanOrEqual(2)
+          }
+        })
       }
     }
   })
