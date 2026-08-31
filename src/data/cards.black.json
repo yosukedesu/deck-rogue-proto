@@ -503,7 +503,7 @@
     "name": "引導",
     "cost": 1,
     "type": "spell",
-    "rarity": "uncommon",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
@@ -1227,6 +1227,42 @@
         "trigger": "onPlay",
         "effect": "addCardToHand",
         "amount": 1,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_bone_gleaning",
+    "name": "骨拾い",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeck",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 3,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_blade_forging",
+    "name": "骨刃打ち",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "exhaustCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 4,
         "summonId": "black_shiv_token"
       }
     ]

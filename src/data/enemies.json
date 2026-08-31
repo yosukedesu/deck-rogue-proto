@@ -1079,8 +1079,7 @@
         "kind": "attack",
         "min": 6,
         "max": 9,
-        "weight": 1,
-        "alsoDefend": 6
+        "weight": 1
       },
       {
         "id": "grand_steal",
