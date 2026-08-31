@@ -529,8 +529,10 @@ function conditionalIntentText(s: GameState, i: number): string {
   const baseOnly = intentText({ ...intent, conditionalOn: undefined, alt: undefined })
   if (intentText({ ...intent.alt }) === baseOnly && intent.alt.actual === intent.actual) return baseOnly
   // 表示が同値で実値だけ違う: 2分岐で予告するとノイズ (探り屋のローテ替え等) なので1行+注記に
-  // (2026-08-31 再検証ラン指摘③「同値なのに分岐として予告される」)
-  if (intentText({ ...intent.alt }) === baseOnly) return `${baseOnly}（伏せの有無で実値が変わる）`
+  // (2026-08-31 再検証ラン指摘③)。どちら向きかは判断材料なので添える (同日HP経済ラン指摘④)
+  if (intentText({ ...intent.alt }) === baseOnly) {
+    return `${baseOnly}（伏せると実値が${intent.alt.actual > intent.actual ? '上がる' : '下がる'}）`
+  }
   const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
@@ -2531,6 +2533,7 @@ function RunScreen({
               card={{ uid: `shop${i}`, def: getCardDef(item.id) }}
               dim={item.sold === true}
               ctx={ctx}
+              hint={getCardDef(item.id).rarity === 'rare' ? '★レア（確定枠）' : getCardDef(item.id).rarity === 'uncommon' ? '◆アンコモン' : undefined}
               actions={
                 <button
                   className="btn btn-primary"

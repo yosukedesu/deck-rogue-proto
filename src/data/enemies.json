@@ -1221,7 +1221,11 @@
         "max": 24,
         "weight": 1,
         "setAlt": {
-          "kind": "destroy-set"
+          "kind": "destroy-set",
+          "inflict": {
+            "status": "junk",
+            "amount": 1
+          }
         }
       }
     ],

@@ -154,19 +154,25 @@ function intentLine(s: GameState, i: number): string {
     e.intent.alt &&
     branchText(e.intent.alt) === branchText(e.intent)
   ) {
-    // 表示が同値で実値だけ違う: 2分岐の予告はノイズ (探り屋のローテ替え等) なので1行+注記
-    // (2026-08-31 再検証ラン指摘③)
-    return `${branchText(e.intent)}(伏せの有無で実値が変わる)`
+    // 表示が同値で実値だけ違う: 2分岐の予告はノイズ (探り屋のローテ替え等) なので1行+注記。
+    // どちら向きに変わるかは判断材料なので添える (2026-08-31 HP経済ラン指摘④)
+    const dir = e.intent.alt.actual > e.intent.actual ? '上がる' : '下がる'
+    return `${branchText(e.intent)}(伏せると実値が${dir})`
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
     const now = effectiveIntent(s, i)!
-    const stale =
+    // 破壊分岐は見切り (setFresh) を無視して発動する既存則。汎用の「伏せ直せば変わる」を
+    // 破壊分岐に出すと嘘になる (2026-08-31 HP経済ラン指摘①: 伏せ場の「敵は反応しない」と矛盾表示)
+    const staleNow =
       e.intent.conditionalOn === 'set' &&
       s.player.setCards.length > 0 &&
       s.player.setCards.every((c) => c.setFresh !== true)
-        ? ' (伏せ札は見切られ中=このターン伏せ直せば変わる)'
-        : ''
+    const stale = !staleNow
+      ? ''
+      : e.intent.alt.kind === 'destroy-set'
+        ? ' (破壊分岐は見切りを無視する=置きっぱなしでも壊しに来る)'
+        : ' (伏せ札は見切られ中=このターン伏せ直せば変わる)'
     return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」${stale}`
   }
   const it = e.intent
@@ -527,7 +533,9 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push(`→ ${forgeLeftHere > 0 ? '{"type":"CampfireUpgrade","index":N} / ' : ''}{"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)`)
   } else if (run.phase === 'shop' && run.shop) {
     L.push(`🛒 ショップ (所持 ${run.gold}G。買わずに出てもよい)`)
-    run.shop.cards.forEach((item, i) => L.push(item.sold === true ? ` [${i}] 〔売切〕` : ` [${i}] ${item.price}G: ${cardLine(getCardDef(item.id))}`))
+    // レア表記は報酬ピックと同じ (2026-08-31 検証ラン指摘: 6枠目がレア確定枠だと分からない)
+    const SHOP_RARITY: Record<string, string> = { common: '', uncommon: '◆', rare: '★レア ' }
+    run.shop.cards.forEach((item, i) => L.push(item.sold === true ? ` [${i}] 〔売切〕` : ` [${i}] ${item.price}G: ${SHOP_RARITY[getCardDef(item.id).rarity ?? 'common']}${cardLine(getCardDef(item.id))}`))
     if (run.shop.relicId !== null) {
       const r = getRelicDef(run.shop.relicId)
       L.push(` レリック ${run.shop.relicPrice}G: ${r.name} (${r.description})`)
@@ -610,6 +618,7 @@ if (mode === 'new-run') {
     const b = sf.run!.deck[c.indexB]
     if (!a || !b) {
       console.log('不正な添字')
+      process.exit(1)
     } else {
       const reason = fuseBlockReason(a, b)
       if (reason !== null) {
@@ -633,9 +642,10 @@ if (mode === 'new-run') {
     try {
       sf.run = applyRunCommand(sf.run!, runCmd)
     } catch (err) {
-      // 不正なコマンドはスタックトレースでなく1行のエラーで返す (状態は保存しない)
+      // 不正なコマンドはスタックトレースでなく1行のエラーで返し、exit 1 にする
+      // (2026-08-31 検証ラン指摘: exit 0 だとスクリプト/LLMがエラーを検知できず計算がずれる)
       console.log(`エラー: ${err instanceof Error ? err.message : String(err)}`)
-      process.exit(0)
+      process.exit(1)
     }
     sf.logIndex = currentLogLength(sf)
     save(file, sf)
@@ -645,7 +655,7 @@ if (mode === 'new-run') {
       sf.battle = applyCommand(sf.battle!, cmd as Command)
     } catch (err) {
       console.log(`エラー: ${err instanceof Error ? err.message : String(err)}`)
-      process.exit(0)
+      process.exit(1)
     }
     sf.logIndex = currentLogLength(sf)
     save(file, sf)

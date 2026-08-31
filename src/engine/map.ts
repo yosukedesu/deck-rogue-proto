@@ -374,10 +374,11 @@ export function generateMap(
     // 戦闘数の床は撤廃 (2026-08-31 ユーザー裁定「床を撤廃・本家完全準拠」——本家に戦闘数の
     // 保証は無く「何回戦うかを選べる」がルート選択の中身。戦闘の少ないパスは報酬・金も
     // 少ない自己均衡。旧・床8は分岐の充実と両立しなかった: 単一出口59%で生成300リトライ)
-    // 焚き火数の max-DP (前向き/後ろ向き)。F[r][c]+B[r][c]+1 = そのノードを焚き火にした時に
-    // そこを通るパスが踏める最大数 (ボス前の全焚き火行は typeGrid 経由で自動的に算入される)
-    const campDP = (forward: boolean): number[][] => {
-      const gain = (r: number, c: number): number => (typeGrid[r][c] === 'campfire' ? 1 : 0)
+    // 部屋タイプ数の max-DP (前向き/後ろ向き)。焚き火: F+B+1 = そのノードを焚き火にした時に
+    // そこを通るパスが踏める最大数 (ボス前の全焚き火行は typeGrid 経由で自動的に算入される)。
+    // 工房ガード (幕1) はエリート数で同じDPを使う
+    const typeMaxDP = (forward: boolean, t0: MapNodeType): number[][] => {
+      const gain = (r: number, c: number): number => (typeGrid[r][c] === t0 ? 1 : 0)
       const out: number[][] = widths.map((w) => new Array<number>(w).fill(-Infinity))
       if (forward) {
         for (let c = 0; c < widths[0]; c++) out[0][c] = gain(0, c)
@@ -409,11 +410,20 @@ export function generateMap(
         const guard =
           t === 'campfire'
             ? (() => {
-                const F = campDP(true)
-                const B = campDP(false)
+                const F = typeMaxDP(true, 'campfire')
+                const B = typeMaxDP(false, 'campfire')
                 return (r: number, c: number) => F[r][c] + B[r][c] + 1 <= CAMPFIRE_PATH_MAX
               })()
-            : () => true
+            : t === 'workshop' && act === 1
+              ? (() => {
+                  // 幕1の工房は「エリートも踏める経路の上」に置く (2026-08-31 HP経済ラン:
+                  // 工房・エリート・4焚き火が同一分岐に固まり「工房を取ると幕1エリート全滅」の
+                  // 事故ルート化。工房は幕1に1個しか無いので、両取りの経路の存在を保証する)
+                  const F = typeMaxDP(true, 'elite')
+                  const B = typeMaxDP(false, 'elite')
+                  return (r: number, c: number) => F[r][c] + B[r][c] >= 1
+                })()
+              : () => true
         const cand = freeNodes.filter(
           ([r, c]) => typeGrid[r][c] === 'battle' && assignable(r, c, t) && guard(r, c),
         )
