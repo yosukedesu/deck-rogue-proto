@@ -1072,7 +1072,7 @@
     "name": "金羽の大鴉",
     "archetype": "elite",
     "flavor": "光るものは全部おれのもの。翼があるやつに、追いつけるかな？",
-    "maxHp": 55,
+    "maxHp": 75,
     "moves": [
       {
         "id": "hide",
@@ -1092,7 +1092,8 @@
     "sequence": [
       "hide",
       "grand_steal"
-    ]
+    ],
+    "startingBlock": 12
   },
   {
     "id": "enemy_elite_mirror_djinn",

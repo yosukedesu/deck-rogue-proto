@@ -472,8 +472,8 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       const r = getRelicDef(run.shop.relicId)
       L.push(` レリック ${run.shop.relicPrice}G: ${r.name} (${r.description})`)
     }
-    L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+25G)`)
-    L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+30G。焚き火の「鍛える」と同じ)`)
+    L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+50G)`)
+    L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
     L.push('→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopLeave"}')
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))

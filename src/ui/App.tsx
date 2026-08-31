@@ -2239,7 +2239,7 @@ function RunScreen({
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
           <span className="chip">デッキ {run.deck.length}枚</span>
           <div className="choice-desc" style={{ marginTop: 6 }}>
-            買わずに出てもよい。除去サービスは1回まで。
+            買わずに出てもよい。除去・強化は回数無制限（使うたび+50G逓増）。
           </div>
         </div>
         <div className="setup-section-title">カード</div>

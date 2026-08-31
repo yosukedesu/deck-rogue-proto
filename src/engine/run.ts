@@ -36,6 +36,26 @@ const REWARD_EXCLUDED = new Set([
   'blue_guard',
   'blue_counterspell', // 青スターターのリアクション2枚 (2026-08-30 中立化追随)
   'blue_frost_veil',
+  // --- 2026-08-31 スターター個性注入の追随 (赤Opusランで火花が報酬に4回出た漏れ。
+  // 確定済みルール「報酬プールはスターター札除外」に全色を同期) ---
+  'green_double_lash',
+  'green_entangle',
+  'green_vine_wedge',
+  'blue_ice_lance',
+  'blue_ponder',
+  'blue_tide_drop',
+  'red_spark',
+  'red_ignite',
+  'red_perm_flarecoat',
+  'red_perm_thorn_flame',
+  'white_shield_strike',
+  'white_perm_squire',
+  'white_service',
+  'white_bodyslam',
+  'black_dark_pact',
+  'black_drain',
+  'black_bursting_corpse',
+  'black_shadow_blade',
   'white_reaction_ward', // 白スターターのリアクション2枚 (解凍時の追随漏れを同時に是正)
   'white_reaction_retribution',
   'black_reaction_curse', // 黒スターターのリアクション2枚
