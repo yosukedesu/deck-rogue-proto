@@ -231,14 +231,14 @@
   {
     "id": "black_dark_pact",
     "name": "闇の契約",
-    "cost": 2,
+    "cost": 0,
     "type": "spell",
     "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "loseHp",
-        "amount": 2
+        "amount": 4
       },
       {
         "trigger": "onPlay",
