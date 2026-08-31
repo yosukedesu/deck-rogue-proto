@@ -288,8 +288,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${xHitsSuffix(e)}${atkBreak}`
     case 'dealDamagePerEnergyMax':
       return ctx
-        ? `${trigger}エナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
-        : `${trigger}エナジー上限×${e.amount}ダメージ${pierce}`
+        ? `${trigger}ターン開始時のエナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
+        : `${trigger}ターン開始時のエナジー上限×${e.amount}ダメージ${pierce}`
     case 'dealDamagePerMomentum':
       return ctx
         ? `${trigger}勢い×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.momentum + atkBonus}]`
@@ -395,8 +395,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}⚔️ 対象の下げられた強化×${e.amount}の追加ダメージ（威圧の換金）`
     case 'gainBlockPerEnergyMax':
       return ctx
-        ? `${trigger}🛡 エナジー上限×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.energyMax}]`
-        : `${trigger}🛡 エナジー上限×${e.amount}ブロック`
+        ? `${trigger}🛡 ターン開始時のエナジー上限×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.energyMax}]`
+        : `${trigger}🛡 ターン開始時のエナジー上限×${e.amount}ブロック`
     case 'gainBlockPerExhaust':
       return ctx
         ? `${trigger}🛡 消滅した枚数×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.exhausted}]`

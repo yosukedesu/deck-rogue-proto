@@ -71,8 +71,12 @@ const TURN_LIMIT = 50 // 無限戦闘の保険。超えたら敗北扱い
 /** 成長0での doubleGrowth など、プレイしても無意味・不可能なカードを弾く */
 function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'doubleGrowth')) return state.player.growth > 0
-  // 成長放出は成長2以上でないと損 (エンジンを空撃ちしない)
-  if (card.def.effects.some((e) => e.effect === 'dischargeGrowth')) return state.player.growth >= 2
+  // 成長放出: 純放出札は成長5まで積んでから刈る (2026-08-31 収穫軸化。2で刈ると雪だるまが育たない)。
+  // 固定ダメージを併せ持つ札 (実りの一撃) は攻撃札なので2以上で撃ってよい
+  if (card.def.effects.some((e) => e.effect === 'dischargeGrowth')) {
+    const hasFlat = card.def.effects.some((e) => e.effect === 'dealDamage')
+    return state.player.growth >= (hasFlat ? 2 : 4)
+  }
   // 自傷カードはHPに余裕がないと自殺 (loseHp合計+5のマージン)
   const selfHarm = card.def.effects
     .filter((e) => e.effect === 'loseHp')

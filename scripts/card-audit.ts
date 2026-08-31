@@ -18,6 +18,7 @@ const VP_PER: Record<string, number> = {
   // 勢いの変換器 (2026-08-30): 変換時の典型勢い6 (ひばなはプレイごと+2で1ターン8〜10、他リーダーは生成札依存)
   dischargeMomentumBurn: 1.5 * 6,
   dischargeMomentumBlock: 1.0 * 6,
+  dischargeGrowth: 1.0 * 5, // 放出時の典型成長5 (このは+1/T+種+2。全消費の手放し対価込み)
   // 青の参照・放出系 (2026-08-31 青の完成回)。詠唱典型3・氷壁典型10・霊気典型2.5・手札典型5
   dealDamagePerCardPlayed: 1.0 * 3,
   gainIceBlockPerCardPlayed: 1.3 * 3,

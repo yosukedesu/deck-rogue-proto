@@ -1393,5 +1393,71 @@
         "target": "all"
       }
     ]
+  },
+  {
+    "id": "green_sapling_reap",
+    "name": "若枝の刈り取り",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_harvest_strike",
+    "name": "実りの一撃",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_cycle_harvest",
+    "name": "巡りの収穫",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_grand_harvest",
+    "name": "大収穫の儀",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 6
+      }
+    ]
   }
 ]

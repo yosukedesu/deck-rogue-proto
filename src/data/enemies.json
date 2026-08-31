@@ -1071,15 +1071,16 @@
     "id": "enemy_elite_gold_raven",
     "name": "金羽の大鴉",
     "archetype": "elite",
-    "flavor": "光るものは全部おれのもの。翼があるやつに、追いつけるかな？",
-    "maxHp": 75,
+    "flavor": "光るものは全部おれのもの。つついて、奪って、飛んで逃げる。",
+    "maxHp": 68,
     "moves": [
       {
-        "id": "hide",
-        "kind": "defend",
-        "min": 8,
-        "max": 10,
-        "weight": 1
+        "id": "peck",
+        "kind": "attack",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "alsoDefend": 6
       },
       {
         "id": "grand_steal",
@@ -1090,10 +1091,10 @@
       }
     ],
     "sequence": [
-      "hide",
+      "peck",
       "grand_steal"
     ],
-    "startingBlock": 12
+    "startingBlock": 8
   },
   {
     "id": "enemy_elite_mirror_djinn",

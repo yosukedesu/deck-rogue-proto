@@ -1968,5 +1968,47 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "deck_harvest",
+    "name": "大収穫の道",
+    "cards": [
+      {
+        "cardId": "green_growth_ring",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_growth_tree",
+        "count": 2
+      },
+      {
+        "cardId": "green_sig_rite_of_bloom",
+        "count": 1
+      },
+      {
+        "cardId": "green_sapling_reap",
+        "count": 2
+      },
+      {
+        "cardId": "green_harvest_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_cycle_harvest",
+        "count": 2
+      },
+      {
+        "cardId": "green_grand_harvest",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      }
+    ]
   }
 ]
