@@ -130,17 +130,18 @@ export function depthStrength(row: number): number {
  * 段3＝現状維持 (×1.0/×1.0)。打点優先で伸ばす＝「同じ危険を短く濃く」の既定路線。
  * 全敵一律 (ボス・エリート含む)。既存の幕スケール・打点+15%の上に乗算する。
  */
+// 打点は段10で×3.0 (2026-09-01 ユーザー裁定「10で三倍の打点くらいに」。段3→10は約×1.17/段の幾何級数)
 export const DIFFICULTY_TABLE: readonly { readonly hp: number; readonly atk: number }[] = [
   { hp: 0.85, atk: 0.85 }, // 1
   { hp: 0.95, atk: 0.95 }, // 2
   { hp: 1.0, atk: 1.0 }, // 3 = 既定 (現状維持)
-  { hp: 1.05, atk: 1.1 }, // 4
-  { hp: 1.1, atk: 1.2 }, // 5
-  { hp: 1.15, atk: 1.3 }, // 6
-  { hp: 1.2, atk: 1.4 }, // 7
-  { hp: 1.25, atk: 1.5 }, // 8
-  { hp: 1.3, atk: 1.6 }, // 9
-  { hp: 1.35, atk: 1.75 }, // 10
+  { hp: 1.05, atk: 1.15 }, // 4
+  { hp: 1.1, atk: 1.35 }, // 5
+  { hp: 1.15, atk: 1.6 }, // 6
+  { hp: 1.2, atk: 1.9 }, // 7
+  { hp: 1.25, atk: 2.2 }, // 8
+  { hp: 1.3, atk: 2.6 }, // 9
+  { hp: 1.35, atk: 3.0 }, // 10
 ]
 export const DEFAULT_DIFFICULTY = 3
 /** 難易度→倍率。範囲外と旧セーブの欠落 (undefined) は既定3へ丸める */

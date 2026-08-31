@@ -464,11 +464,11 @@ describe('スターター札は報酬プールに出ない (2026-08-30 中立ス
 })
 
 describe('難易度10段階 (確定済みルール表「難易度」2026-09-01)', () => {
-  it('表の固定: 10段・段3=×1.0/×1.0・段10=HP×1.35/打点×1.75・単調非減少・打点優先', () => {
+  it('表の固定: 10段・段3=×1.0/×1.0・段10=HP×1.35/打点×3.0・単調非減少・打点優先', () => {
     expect(DIFFICULTY_TABLE).toHaveLength(10)
     expect(DEFAULT_DIFFICULTY).toBe(3)
     expect(DIFFICULTY_TABLE[2]).toEqual({ hp: 1.0, atk: 1.0 })
-    expect(DIFFICULTY_TABLE[9]).toEqual({ hp: 1.35, atk: 1.75 })
+    expect(DIFFICULTY_TABLE[9]).toEqual({ hp: 1.35, atk: 3.0 })
     expect(DIFFICULTY_TABLE[0].hp).toBeLessThan(1) // 1〜2は現状より易しい側
     for (let i = 1; i < 10; i++) {
       expect(DIFFICULTY_TABLE[i].hp).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].hp)
@@ -499,20 +499,20 @@ describe('難易度10段階 (確定済みルール表「難易度」2026-09-01)'
     expect(hard.enemies[0].enemyId).toBe(base.enemies[0].enemyId) // 同シード=同じ敵
     // HP×1.35 (丸めは combat 側で1回だけ)
     expect(hard.enemies[0].maxHp / base.enemies[0].maxHp).toBeCloseTo(1.35, 1)
-    expect(hard.enemies[0].atkScale).toBe(1.75) // 幕1通常敵: 1 × 1.75
+    expect(hard.enemies[0].atkScale).toBe(3.0) // 幕1通常敵: 1 × 3.0
     expect(base.enemies[0].atkScale).toBeUndefined() // 段3=×1.0 は現状と完全一致 (無印)
   })
 
   it('全敵一律 (ユーザー選択): ボス・エリートにも難易度倍率が掛かる', () => {
     const to = (d: number, target: 'boss' | 'elite') =>
       runTo(createRun(7, 'set-confirm', 'leader_green', undefined, d), target)
-    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(1.75)
+    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(3.0)
     // エリート: 素の値×難易度のみ (幕内深度スケールを掛けない既存裁定は維持)
     const e3 = to(3, 'elite').combat!.enemies[0]
     const e10 = to(10, 'elite').combat!.enemies[0]
     expect(e10.enemyId).toBe(e3.enemyId) // 難易度はRNG列に影響しない=同じ敵
     expect(e10.maxHp / e3.maxHp).toBeCloseTo(1.35, 1)
-    expect(e10.atkScale).toBe(1.75)
+    expect(e10.atkScale).toBe(3.0)
     expect(e3.atkScale).toBeUndefined()
   })
 })
