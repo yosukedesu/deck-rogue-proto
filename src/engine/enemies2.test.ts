@@ -277,3 +277,34 @@ describe('装甲 (2026-08-30 n²スケーリングへのワクチン)', () => {
     expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(50)
   })
 })
+
+describe('山札喰い (2026-08-31 大喰らいの蟲。kind:mill)', () => {
+  it('山札の上N枚が消滅置き場へ行き、onCardExhausted 置物が誘発する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_elite_devourer', 42, 'starter_black'), [
+      'black_perm_chorus', // 亡者の合唱: 消滅ごと1ダメ
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_perm_chorus' })
+    const drawBefore = s.player.drawPile.length
+    const exhaustBefore = s.player.exhaustPile.length
+    const enemyHp = s.enemies[0].hp
+    s = withIntent(s, { kind: 'mill', shownMin: 3, shownMax: 3, actual: 3 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    // EndTurn後の自ターン開始ドローも drawPile を減らすので、消滅置き場の増分で判定する
+    expect(s.player.exhaustPile.length).toBe(exhaustBefore + 3)
+    expect(s.player.drawPile.length).toBeLessThan(drawBefore)
+    // 亡者の合唱がミル3枚ぶん誘発している (消滅ごと1ダメ)
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(enemyHp - 3)
+  })
+
+  it('打ち消しで山札喰いを止められる (敵の任意の行動の既存則)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_elite_devourer', 42), ['green_reaction_root_weave'])
+    const drawBefore = s.player.drawPile.length
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_weave' })
+    s = withIntent(s, { kind: 'mill', shownMin: 3, shownMax: 3, actual: 3 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
+    // 打ち消し成功 = 山札は減らない (ターン開始の5ドローぶんだけ動く)
+    expect(s.player.exhaustPile.length).toBe(0)
+    expect(s.player.drawPile.length).toBeGreaterThanOrEqual(drawBefore - 5)
+  })
+})

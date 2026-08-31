@@ -15,6 +15,7 @@ import {
   hasHuntableTokens,
   isDamageEffect,
   isPlayableFromHand,
+  millPlayerDeck,
   resolveEffectTargeted,
   resolveOnPlayEffects,
 } from './effects.ts'
@@ -1237,6 +1238,12 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
     case 'rest': {
       // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば1ターンの反撃の窓)
       return markResolved(state, 0)
+    }
+    case 'mill': {
+      // 山札喰い (2026-08-31 大喰らいの蟲): 山札の上N枚を消滅させる。
+      // 亡骸・onCardExhausted は発火する (ミルの既存則) = 黒の墓地デッキには部分的な追い風
+      // というマッチアップの色も込み。打ち消し可 (negateNextAction は冒頭で処理済み)
+      return markResolved(millPlayerDeck(state, intent.actual, enemyIndex), 0)
     }
     case 'rally': {
       // 応援: 生存する味方全体の強化 (確定済みルール表「応援（ラリー）」)

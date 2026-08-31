@@ -27,9 +27,10 @@ import { nextInt } from './rng.ts'
  * ステータスは素の値で完成しているので、マップのエリート補正 (HP×1.35+強化) は掛けない
  */
 export const ELITE_POOLS: readonly (readonly string[])[] = [
-  ['enemy_elite_sergeant', 'enc_elite_sentries', 'enemy_elite_gold_raven'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた) / 金羽の大鴉 (大金を盗んで逃げるレース)
-  ['enemy_elite_iron_egg', 'enemy_elite_slaver', 'enemy_elite_mirror_djinn'], // 2幕: 眠れる鉄卵 (起こすか削るか) / 奴隷商 (デバフ漬け) / 写し身の魔人 (エリート級の手数の鏡)
-  ['enemy_elite_stab_book', 'enemy_elite_giant_face', 'enemy_elite_doom_chanter'], // 3幕: 刺突の書 (増える多段) / 巨面 (二拍子の死) / 終焉の唱い手 (プレイ6枚ごと強化+2の時限歌)
+  // 各幕4種 (2026-08-31 再検証ラン「プール3種×4枠で同一個体が同一パスに2回=消化試合」への処方)
+  ['enemy_elite_sergeant', 'enc_elite_sentries', 'enemy_elite_gold_raven', 'enemy_elite_devourer'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた) / 金羽の大鴉 (金レース) / 大喰らいの蟲 (山札喰い=デッキが第二のHP)
+  ['enemy_elite_iron_egg', 'enemy_elite_slaver', 'enemy_elite_mirror_djinn', 'enemy_elite_owl'], // 2幕: 眠れる鉄卵 (起こすか削るか) / 奴隷商 (デバフ漬け) / 写し身の魔人 (手数の鏡) / 読み手の梟 (伏せ読み=set-confirm検定)
+  ['enemy_elite_stab_book', 'enemy_elite_giant_face', 'enemy_elite_doom_chanter', 'enemy_elite_deathless'], // 3幕: 刺突の書 (増える多段) / 巨面 (二拍子) / 終焉の唱い手 (枚数タイマー) / 不滅の騎士 (再生バースト検定)
 ]
 import type { RngState } from './types.ts'
 

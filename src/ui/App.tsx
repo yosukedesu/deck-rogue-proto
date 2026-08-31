@@ -563,6 +563,8 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
       return '🏃 逃走'
     case 'rest':
       return '😮‍💨 隙だらけ'
+    case 'mill':
+      return `📖 山札喰い ${intent.actual}枚（宣言 ${intent.shownMin}〜${intent.shownMax}枚。消滅置き場へ）`
   }
 }
 
@@ -2141,7 +2143,7 @@ function RunMapView({
                   : n.type === 'boss'
                     ? `幕ボス: ${name}（撃破で全回復＋レリック3択）`
                     : n.type === 'campfire'
-                      ? '焚き火: 自動で30%回復＋「鍛える/取り除く/何もしない」'
+                      ? '焚き火: 休む(25%回復)/鍛える/取り除く の択一'
                       : n.type === 'workshop'
                         ? '工房: デッキの2枚を合成して1枚にする'
                         : n.type === 'shop'
@@ -2376,7 +2378,7 @@ function RunScreen({
         <h1>🗺 マップ — 第{run.act}幕/3</h1>
         <div className="panel">
           <div className="choice-desc">
-            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=固有ギミックの専用敵、勝てばレリック3択+レア1枚確定（逃がすとレア無し）。🔥焚き火=休む(30%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。🎁宝箱=レリック3択。❓=入るまで不明
+            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=固有ギミックの専用敵、勝てばレリック3択+レア1枚確定（逃がすとレア無し）。🔥焚き火=休む(25%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。🎁宝箱=レリック3択。❓=入るまで不明
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>

@@ -126,6 +126,7 @@ function branchText(it: { kind: string; shownMin: number; shownMax: number; hits
     'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
     flee: '逃走(倒すか打ち消せば阻止)',
     rest: '隙だらけ',
+    mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅置き場へ。亡骸は発火する)`,
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -181,7 +182,7 @@ function intentLine(s: GameState, i: number): string {
     attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `強化+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
-    heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
+    heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,
     flee: '逃走(倒すか打ち消せば阻止)', rest: '隙だらけ',
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`

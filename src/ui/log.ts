@@ -36,6 +36,7 @@ export function intentText(intent: EnemyIntent | null): string {
     case 'steal-gold': return `💰 盗み ${intent.shownMin}〜${intent.shownMax}G`
     case 'flee': return '🏃 逃走（倒すか打ち消せば阻止）'
     case 'rest': return '😮‍💨 隙だらけ'
+    case 'mill': return `📖 山札喰い ${intent.shownMin}〜${intent.shownMax}枚（消滅置き場へ。亡骸は発火する）`
   }
 }
 

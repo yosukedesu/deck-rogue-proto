@@ -200,6 +200,28 @@ export function healPlayer(state: GameState, amount: number, enemyIndex: number)
 }
 
 /**
+ * 山札の上N枚を消滅させる (プレイヤーの忘却系カードと敵の山札喰い 'mill' が共用)。
+ * 亡骸 (onSelfExhausted)・onCardExhausted は発火する = ミルの既存則 (誰が削っても墓地は墓地)
+ */
+export function millPlayerDeck(state: GameState, amount: number, enemyIndex: number): GameState {
+  const n = Math.min(amount, state.player.drawPile.length)
+  if (n <= 0) return state
+  const milled = state.player.drawPile.slice(0, n)
+  let s: GameState = {
+    ...state,
+    player: {
+      ...state.player,
+      drawPile: state.player.drawPile.slice(n),
+      exhaustPile: [...state.player.exhaustPile, ...milled],
+    },
+  }
+  s = emit(s, { type: 'CardsMilled', count: n, cardIds: milled.map((c) => c.def.id) })
+  s = fireExhaustTriggers(s, n, enemyIndex)
+  // 亡骸効果 (2026-08-31): ミルされた札の onSelfExhausted が発火する = ミルが即座に価値を返す
+  return fireNecroEffects(s, milled, enemyIndex)
+}
+
+/**
  * ブロック獲得を適用し BlockGained を発行して onBlockGained 置物 (城壁の弩) を誘発する。
  * emit はログ追記だけでフックを回さないので、healPlayer と同型のヘルパーが要る。
  * 氷壁 (gainIceBlock) は別経路なので誘発しない = 青の柱④を侵さない。
@@ -926,25 +948,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = (effect.amount ?? 0) * state.player.exhaustPile.length
       return gainPlayerBlock(state, amount, enemyIndex)
     }
-    case 'exhaustFromDeck': {
+    case 'exhaustFromDeck':
       // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、
       // 墓地=消滅置き場とする (単調増加。デッキを永久燃料にする緊張感。戦闘内限定)
-      const n = Math.min(effect.amount ?? 0, state.player.drawPile.length)
-      if (n <= 0) return state
-      const milled = state.player.drawPile.slice(0, n)
-      let s: GameState = {
-        ...state,
-        player: {
-          ...state.player,
-          drawPile: state.player.drawPile.slice(n),
-          exhaustPile: [...state.player.exhaustPile, ...milled],
-        },
-      }
-      s = emit(s, { type: 'CardsMilled', count: n, cardIds: milled.map((c) => c.def.id) })
-      s = fireExhaustTriggers(s, n, enemyIndex)
-      // 亡骸効果 (2026-08-31): ミルされた札の onSelfExhausted が発火する = ミルが即座に価値を返す
-      return fireNecroEffects(s, milled, enemyIndex)
-    }
+      return millPlayerDeck(state, effect.amount ?? 0, enemyIndex)
     case 'dealDamagePerExhaust':
       // 墓地参照 (黒): 消滅した枚数×X (確定済みルール表「黒の柱」)
       return dealDamageToEnemy(

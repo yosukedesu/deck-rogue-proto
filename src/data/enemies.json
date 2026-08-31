@@ -1156,5 +1156,110 @@
       "dual_chant",
       "crescendo"
     ]
+  },
+  {
+    "id": "enemy_elite_devourer",
+    "name": "大喰らいの蟲",
+    "archetype": "elite",
+    "flavor": "頁も刃も、腹に入れば同じこと。食べた分だけ、太る。",
+    "maxHp": 70,
+    "moves": [
+      {
+        "id": "bite",
+        "kind": "attack",
+        "min": 8,
+        "max": 11,
+        "weight": 1
+      },
+      {
+        "id": "devour",
+        "kind": "mill",
+        "min": 3,
+        "max": 3,
+        "weight": 1
+      },
+      {
+        "id": "fatten",
+        "kind": "buff",
+        "min": 2,
+        "max": 2,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "bite",
+      "devour",
+      "bite",
+      "fatten"
+    ]
+  },
+  {
+    "id": "enemy_elite_owl",
+    "name": "読み手の梟",
+    "archetype": "elite",
+    "flavor": "伏せた瞬間だけ、羽が止まる。読まれているのはどちらか。",
+    "maxHp": 95,
+    "moves": [
+      {
+        "id": "wing",
+        "kind": "attack",
+        "min": 8,
+        "max": 11,
+        "weight": 1
+      },
+      {
+        "id": "brace",
+        "kind": "defend",
+        "min": 8,
+        "max": 12,
+        "weight": 1
+      },
+      {
+        "id": "talon_dive",
+        "kind": "attack",
+        "min": 18,
+        "max": 24,
+        "weight": 1,
+        "setAlt": {
+          "kind": "destroy-set"
+        }
+      }
+    ],
+    "sequence": [
+      "wing",
+      "brace",
+      "talon_dive"
+    ]
+  },
+  {
+    "id": "enemy_elite_deathless",
+    "name": "不滅の騎士",
+    "archetype": "elite",
+    "flavor": "鎧の下は苔と誓い。半分を割るまでは、何度でも立つ。",
+    "maxHp": 120,
+    "armor": 20,
+    "regen": 5,
+    "regenBreak": 33,
+    "moves": [
+      {
+        "id": "cleave",
+        "kind": "attack",
+        "min": 16,
+        "max": 22,
+        "weight": 1
+      },
+      {
+        "id": "stance",
+        "kind": "attack",
+        "min": 8,
+        "max": 12,
+        "alsoDefend": 12,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "cleave",
+      "stance"
+    ]
   }
 ]

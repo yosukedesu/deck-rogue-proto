@@ -700,6 +700,7 @@ export type EnemyActionKind =
   | 'steal-gold' // 盗み: ロール額を敵が抱える。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」)
   | 'flee' // 逃走: 戦闘から離脱 (hp:0+fled)。打ち消しで止められる
   | 'rest' // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば反撃の窓)
+  | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
 export type PlayerStatus = 'weak' | 'vulnerable' | 'wound' | 'junk'
