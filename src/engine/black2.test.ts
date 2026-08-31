@@ -61,8 +61,9 @@ describe('消滅の誘発 (亡者の合唱)', () => {
     // 忘却の刻 7→5 (2026-08-30) で合唱の強化 (1→3) がミルの途中から乗る。
     // 2026-08-31 プレイ札の消滅は解決後 (limbo) に変更: コスト1 → ミル4枚が置かれた後に
     // 誘発4回 (刻5到達済み=3×4) → 自身3 = 合計16。
-    // 2026-09-01 亡骸の面配布: コスト消滅した影の一撃の亡骸2ダメが加わり18
-    expect(s.enemies[0].hp).toBe(enemyHp - 18)
+    // 2026-09-01 亡骸の面配布: コスト消滅の影の一撃(2) + 同型統合後の山札順で
+    // ミルに血飛沫の刃の亡骸(3)が入り 合計21
+    expect(s.enemies[0].hp).toBe(enemyHp - 21)
     // 消滅置き場: コスト1 + 墓暴き自身1 + 忘却4 = 6枚
     expect(s.player.exhaustPile).toHaveLength(6)
   })
@@ -98,23 +99,23 @@ describe('自傷の誘発と換金', () => {
   })
 })
 
-describe('回復の誘発 (血の月)', () => {
-  it('ドレインの回復で2ダメージが乗る。満タンの過剰回復でも誘発する (2026-08-31)', () => {
+describe('回復の誘発 (血の燭台。2026-09-01 血の月を同型統合)', () => {
+  it('ドレインの回復で1ダメージが乗る。満タンの過剰回復でも誘発する', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
-      'black_perm_moon',
+      'black_blood_candle',
       'black_drain',
       'black_drain',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_perm_moon' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_blood_candle' })
     const enemyHp = s.enemies[0].hp
     // 満タン: 実回復0でも「回復した」として誘発する (満タン沈黙3割への処方)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 2) // 生命吸収6 + 血の月2
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 1) // 生命吸収6 + 燭台1
     // HPを減らした実回復でも当然誘発する
     s = { ...s, player: { ...s.player, hp: 50 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_black_drain' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 8 - 6 - 2)
+    expect(s.enemies[0].hp).toBe(enemyHp - 7 - 6 - 1)
     expect(s.player.hp).toBe(53)
   })
 })

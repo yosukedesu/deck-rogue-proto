@@ -30,8 +30,9 @@ describe('A: 亡骸効果 (onSelfExhausted)', () => {
     }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_mill' })
-    // 爆ぜる骸がミルされ、亡骸: 全体3ダメが発火している
-    expect(hpBefore - s.enemies[0].hp).toBe(3)
+    // 爆ぜる骸がミルされ、亡骸: 全体3ダメが発火している (2026-09-01 亡骸の面配布で
+    // 同時にミルされた他の札の亡骸も乗りうるため下限で判定)
+    expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(3)
     expect(s.eventLog.some((e) => e.type === 'NecroFired')).toBe(true)
   })
 
@@ -64,23 +65,23 @@ describe('A: 亡骸効果 (onSelfExhausted)', () => {
 describe('B: 亡骸プレイ (necroCost)', () => {
   it('消滅置き場から一度だけプレイでき、プレイ後はゲームから完全に取り除かれる', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
-      'black_undying_fang', // 朽ちぬ牙: 1E・9ダメ・消滅・亡骸プレイ1E
+      'black_rotten_claw', // 朽ちた爪: 1E・8ダメ・消滅・亡骸プレイ1E (2026-09-01 朽ちぬ牙を統合)
     ])
     s = withEnergy(s, 9)
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_undying_fang' })
-    expect(hpBefore - s.enemies[0].hp).toBe(9)
-    expect(s.player.exhaustPile.some((c) => c.def.id === 'black_undying_fang')).toBe(true)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_rotten_claw' })
+    expect(hpBefore - s.enemies[0].hp).toBe(8)
+    expect(s.player.exhaustPile.some((c) => c.def.id === 'black_rotten_claw')).toBe(true)
     // 消滅置き場から亡骸プレイ
-    const uid = s.player.exhaustPile.find((c) => c.def.id === 'black_undying_fang')!.uid
+    const uid = s.player.exhaustPile.find((c) => c.def.id === 'black_rotten_claw')!.uid
     const energyBefore = s.player.energy
     const castsBefore = s.player.cardsPlayedThisTurn
     s = applyCommand(s, { type: 'PlayNecro', cardUid: uid })
-    expect(hpBefore - s.enemies[0].hp).toBe(18)
+    expect(hpBefore - s.enemies[0].hp).toBe(16)
     expect(s.player.energy).toBe(energyBefore - 1)
     expect(s.player.cardsPlayedThisTurn).toBe(castsBefore + 1) // 詠唱数に数える
     // ゲームから完全に消える = 消滅置き場にも居ない (刻の燃料が減る緊張)
-    expect(s.player.exhaustPile.some((c) => c.def.id === 'black_undying_fang')).toBe(false)
+    expect(s.player.exhaustPile.some((c) => c.def.id === 'black_rotten_claw')).toBe(false)
     // 二度目はプレイできない
     expect(() => applyCommand(s, { type: 'PlayNecro', cardUid: uid })).toThrow()
   })

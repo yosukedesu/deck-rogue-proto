@@ -214,9 +214,9 @@ describe('強化の3段仕様 (2026-08-27 仕様会議)', () => {
   })
 
   it('自傷の非対称強化: 対価は据え置きで出力だけ+50% (StSのHemokinesis+と同じ裁定)', () => {
-    const up = upgradeCard(inst('black_pain')) // 1E・HP-3・16ダメ
-    expect(up.def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(24)
-    expect(up.def.effects.find((e) => e.effect === 'loseHp')!.amount).toBe(3) // 据え置き
+    const up = upgradeCard(inst('black_blood_price')) // 2E・HP-6・24ダメ (2026-09-01 同型統合)
+    expect(up.def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(36)
+    expect(up.def.effects.find((e) => e.effect === 'loseHp')!.amount).toBe(6) // 据え置き
   })
 })
 

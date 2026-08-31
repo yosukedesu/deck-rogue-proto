@@ -86,15 +86,16 @@ describe('墓地 (セルフミル + 捨て札参照)', () => {
 })
 
 describe('自傷ペイオフ', () => {
-  it('痛みの対価: HP3を失い16ダメージ', () => {
+  it('血の代償: HP6を失い24ダメージ (2026-09-01 同型統合で痛みの対価・苦悶の一撃を吸収)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
-      'black_pain',
+      'black_blood_price',
     ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
     const hp = s.player.hp
     const enemyHp = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_pain' })
-    expect(s.player.hp).toBe(hp - 3)
-    expect(s.enemies[0].hp).toBe(enemyHp - 16) // 2026-08-27 報酬プール底上げ
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_blood_price' })
+    expect(s.player.hp).toBe(hp - 6)
+    expect(s.enemies[0].hp).toBe(enemyHp - 24)
   })
 })
 
