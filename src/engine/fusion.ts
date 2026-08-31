@@ -45,6 +45,7 @@ const VP_PER: Record<string, number> = {
   dischargeMomentumBlock: 6.0, // 勢いの典型6 × 1.0
   dischargeBurn: 6.0, // 放出時の延焼の典型6 × 1.0 (DoTを手放す対価込み)
   dischargeGrowth: 5.0, // 放出時の典型成長5 (2026-08-31 収穫軸化)
+  dischargeGrowthBlock: 5.0,
   dealDamageCleave: 1.3, // 対象+倒したら別の敵に同値 (連鎖は条件付きなので+30%)
   exhaustFromDeck: 0.6, // 忘却=墓地燃料1枚≈0.6VP (刻・亡骸の期待価値。2026-08-31 ミル札の合成解禁)
   // 青の参照・放出系の解禁 (2026-08-31 ユーザー指示「工房の参照スケーリング札を解禁」)。

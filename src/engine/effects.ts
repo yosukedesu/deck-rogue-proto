@@ -942,6 +942,14 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       s = { ...s, player: { ...s.player, growth: 0 } }
       return emit(s, { type: 'GrowthDischarged', spent })
     }
+    case 'dischargeGrowthBlock': {
+      // 守りの刈り (緑 2026-08-31 収穫の性格付け): 成長×amount のブロックを得て成長を全て失う。
+      // 「攻めの刈り(×ダメ)」と別の売り時 = 大技の予告を見て守りに換金する判断
+      const spent = state.player.growth
+      let s = gainPlayerBlock(state, spent * (effect.amount ?? 0), enemyIndex)
+      s = { ...s, player: { ...s.player, growth: 0 } }
+      return emit(s, { type: 'GrowthDischarged', spent })
+    }
     case 'dischargeMomentumBurn': {
       // 火移し (赤): 勢い×amount の延焼を与え、勢いを全て失う。
       // パッシブ・手数で積んだ勢いを「以降の攻撃に乗せ続けるか、火に引っ越すか」の

@@ -290,6 +290,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}ターン開始時のエナジー上限×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.energyMax + atkBonus}]`
         : `${trigger}ターン開始時のエナジー上限×${e.amount}ダメージ${pierce}`
+    case 'dischargeGrowthBlock':
+      return ctx
+        ? `${trigger}🛡 成長×${e.amount}のブロックを得て、成長を全て失う [現在${(e.amount ?? 0) * ctx.growth}]`
+        : `${trigger}🛡 成長×${e.amount}のブロックを得て、成長を全て失う`
     case 'dealDamagePerMomentum':
       return ctx
         ? `${trigger}勢い×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.momentum + atkBonus}]`

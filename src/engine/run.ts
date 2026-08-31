@@ -655,7 +655,7 @@ export function createRun(
  * CardDef.axis で明示する (JSONで宣言。ここは自動導出ぶんだけ)。
  */
 const EFFECT_AXIS: Record<string, string> = {
-  addGrowth: 'growth', doubleGrowth: 'growth', dischargeGrowth: 'growth',
+  addGrowth: 'growth', doubleGrowth: 'growth', dischargeGrowth: 'growth', dischargeGrowthBlock: 'growth',
   gainEnergyMax: 'ramp', dealDamagePerEnergyMax: 'ramp', gainBlockPerEnergyMax: 'ramp',
   addMomentum: 'trample', dealDamagePerMomentum: 'trample', doubleMomentum: 'trample',
   dischargeMomentumBurn: 'burn', dischargeMomentumBlock: 'trample',
@@ -740,8 +740,11 @@ function rollRewards(run: RunState): RunState {
     rng = r1
     // エリート報酬はレア1枚確定 (2026-08-31 ユーザー指示。本家のエリート=レア率上昇を確約に強化)。
     // 先頭スロットをレア帯で引く。以降のスロットは通常比率
+    // 逃がしたエリート (金羽の大鴉など) はレア確定を失う (2026-08-31 緑・青ラン指摘
+    // 「逃がしてもフル報酬=ノーリスク」への処方。レリック3択は維持=エリート報酬の約束は守る)
+    const eliteEscaped = run.combat?.enemies.some((e) => e.fled === true) === true
     const wanted: ('rare' | 'uncommon' | 'common')[] =
-      run.currentElite && picked.length === 0
+      run.currentElite && picked.length === 0 && !eliteEscaped
         ? ['rare', 'uncommon', 'common']
         : roll < 3
           ? ['rare', 'uncommon', 'common']

@@ -1396,14 +1396,14 @@
   },
   {
     "id": "green_sapling_reap",
-    "name": "若枝の刈り取り",
+    "name": "若枝の盾張り",
     "cost": 1,
     "type": "physical",
     "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dischargeGrowth",
+        "effect": "dischargeGrowthBlock",
         "amount": 2
       }
     ]
@@ -1457,6 +1457,11 @@
         "trigger": "onPlay",
         "effect": "dischargeGrowth",
         "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
       }
     ]
   }

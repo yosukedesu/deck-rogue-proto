@@ -73,7 +73,7 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'doubleGrowth')) return state.player.growth > 0
   // 成長放出: 純放出札は成長5まで積んでから刈る (2026-08-31 収穫軸化。2で刈ると雪だるまが育たない)。
   // 固定ダメージを併せ持つ札 (実りの一撃) は攻撃札なので2以上で撃ってよい
-  if (card.def.effects.some((e) => e.effect === 'dischargeGrowth')) {
+  if (card.def.effects.some((e) => e.effect === 'dischargeGrowth' || e.effect === 'dischargeGrowthBlock')) {
     const hasFlat = card.def.effects.some((e) => e.effect === 'dealDamage')
     return state.player.growth >= (hasFlat ? 2 : 4)
   }

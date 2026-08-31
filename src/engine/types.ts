@@ -494,6 +494,7 @@ export interface DeclarativeEffect {
     | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
     | 'gainBlockPerEnergyMax' // 巨木の盾 (緑): エナジー上限×X ブロック (ランプ中の無防備を受けるスケーリング防御)
     | 'gainBlockPerExhaust' // 亡者の壁 (黒): 消滅した枚数×X ブロック (墓地型のタイマー耐性)
+    | 'dischargeGrowthBlock' // 守りの刈り (緑 2026-08-31): 成長×Nブロックを得て成長を全て失う (収穫の性格付け)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dischargeMomentumBurn' // 火移し (赤): 勢い×amount の延焼を与え、勢いを全て失う (手数→猛り火の橋)
     | 'dischargeMomentumBlock' // 余勢の構え (赤): 勢い×amount のブロックを得て、勢いを全て失う (攻めの勢いが守りになる)
