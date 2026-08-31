@@ -947,10 +947,13 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return emit({ ...state, enemies }, { type: 'ExposedApplied', enemyIndex, amount })
     }
     case 'dischargeGrowth': {
-      // 成長放出 (緑): 成長×amount のダメージを与え、成長を全て失う (確定済みルール表「成長放出」)
+      // 成長放出 (緑): 成長×amount のダメージを与え、成長を全て失う (確定済みルール表「成長放出」)。
+      // 成長を先に0にしてからダメージ解決 = 放出は成長を「参照」する効果であり、
+      // 与ダメ全てへの加算で自分自身を二重に数えない (2026-08-31 収穫再走で「表記×3が実効×4」の
+      // 隠れ倍率と実測され、攻めの刈りと守りの刈りの実レートが2倍差に開いていた是正)
       const spent = state.player.growth
-      let s = dealDamageToEnemy(state, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
-      s = { ...s, player: { ...s.player, growth: 0 } }
+      let s: GameState = { ...state, player: { ...state.player, growth: 0 } }
+      s = dealDamageToEnemy(s, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
       return emit(s, { type: 'GrowthDischarged', spent })
     }
     case 'dischargeGrowthBlock': {

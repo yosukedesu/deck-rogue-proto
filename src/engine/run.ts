@@ -1160,8 +1160,10 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       }
       // 供給を後ろへ (2026-08-31): 幕1の「鍛える」はラン通算1回まで。
       // 幕1でデッキが完成し幕2が消化試合になる供給集中 (緑・赤ラン一致) への処方
-      if (run.act === 1 && (run.act1Forges ?? 0) >= 1) {
-        throw new Error('幕1で鍛えられるのは1回まで (幕2から解禁)')
+      // 砥石の追加回数ぶんは幕1でも許す (2026-08-31: エリート報酬の砥石が幕1で丸ごと
+      // 死にレリックになる矛盾。リスクを払って得た例外は制限より優先する)
+      if (run.act === 1 && (run.act1Forges ?? 0) >= 1 + (run.campfireForgeBonus ?? 0)) {
+        throw new Error('幕1で鍛えられるのは1回まで (幕2から解禁。砥石があればその追加分だけ可)')
       }
       // 鍛冶の砥石 (B型レリック): 追加回数のぶん焚き火に留まり、もう1枚鍛えられる
       const used = (run.campfireUpgradesUsed ?? 0) + 1

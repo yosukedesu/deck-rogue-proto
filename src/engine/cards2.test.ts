@@ -69,12 +69,12 @@ describe('急所 (敵版脆弱)', () => {
 })
 
 describe('成長放出 (開花の蔦)', () => {
-  it('成長×4ダメージ (成長加算込みで×5) を与え、成長が0になる', () => {
+  it('成長×2の全体放出 (2026-08-31 開花の蔦=全体化の性格・放出に成長加算は乗らない=二重取り是正)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_bloom_lash'])
     s = { ...s, player: { ...s.player, growth: 4, energy: 9 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_bloom_lash' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (4 * 4 + 4)) // 放出16 + 成長加算4
+    expect(s.enemies[0].hp).toBe(hpBefore - 4 * 2) // 放出8のみ (加算の二重取りなし)
     expect(s.player.growth).toBe(0)
   })
 })

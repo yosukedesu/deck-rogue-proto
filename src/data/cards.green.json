@@ -649,7 +649,8 @@
       {
         "trigger": "onPlay",
         "effect": "dischargeGrowth",
-        "amount": 4
+        "amount": 2,
+        "target": "all"
       }
     ],
     "rarity": "uncommon"
@@ -1397,14 +1398,19 @@
   {
     "id": "green_sapling_reap",
     "name": "若枝の盾張り",
-    "cost": 1,
+    "cost": 2,
     "type": "physical",
     "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
         "effect": "dischargeGrowthBlock",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
