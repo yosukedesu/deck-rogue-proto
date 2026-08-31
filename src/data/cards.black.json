@@ -1672,5 +1672,57 @@
         "amount": 2
       }
     ]
+  },
+  {
+    "id": "black_burning_bone",
+    "name": "燃ゆる骨片",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_tallow_shield",
+    "name": "脂燭の盾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_yomigaeri",
+    "name": "黄泉還り",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "recycleExhaust",
+        "amount": 4
+      }
+    ]
   }
 ]

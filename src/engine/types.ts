@@ -350,6 +350,7 @@ export type GameEvent =
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
   | { readonly type: 'CardsAddedToHand'; readonly cardId: string; readonly count: number } // 骨刃などのトークン生成
+  | { readonly type: 'ExhaustRecycled'; readonly count: number } // 輪廻: 消滅置き場を山札へ還した
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
   | { readonly type: 'TokenDestroyed'; readonly cardId: string } // トークン破壊 (敵メカニクス)
   | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
@@ -487,6 +488,7 @@ export interface DeclarativeEffect {
     | 'addCardToHand' // 骨刃 (黒 2026-09-01): summonId のトークン札X枚を手札に加える (この戦闘限り。ラン層のデッキには入らない)
     | 'empowerShivs' // 骨刃の強化 (黒): 【常在】shivToken 札の与ダメ+X (プレイ時に注入。急所読み=StS Accuracy)
     | 'dealDamagePerHeal' // 回復の換金 (黒 2026-09-01): この戦闘で回復した回数×Xダメージ (滾る血汐。過剰回復も数える)
+    | 'recycleExhaust' // 輪廻 (黒 2026-09-01): 消滅置き場のカードを全て山札に混ぜて戻し、戻した枚数×Xダメージ。刻・消滅数参照・亡骸プレイの燃料が全て失われるのが対価 (戻した札の亡骸はもう一度落とせる)
     | 'dealDamagePerExhaust' // 墓地参照 (黒): 消滅した枚数×Xダメージ (単調増加。衝動失効・消滅札とも共鳴)
     | 'dealDamageDrainPerExhaust' // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
     | 'dealDamagePerSelfHpLost' // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×Xダメージ (背徳の収穫)

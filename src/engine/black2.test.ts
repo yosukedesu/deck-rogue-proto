@@ -426,3 +426,58 @@ describe('黒の回復換金とエナジー源 (2026-09-01)', () => {
     expect(s.phase === 'player-turn' || s.phase === 'won').toBe(true) // 無限ループしない
   })
 })
+
+describe('黄泉還り (2026-09-01 輪廻。recycleExhaust)', () => {
+  it('消滅置き場を全て山札に還し、還した枚数×4ダメージ。刻・消滅数参照は0に戻る', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_yomigaeri',
+    ])
+    // 消滅置き場に6枚仕込む
+    const fuel = s.player.drawPile.slice(0, 6)
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        energy: 9,
+        drawPile: s.player.drawPile.slice(6),
+        exhaustPile: [...s.player.exhaustPile, ...fuel],
+      },
+    }
+    const drawBefore = s.player.drawPile.length
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_yomigaeri' })
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 * 4)
+    expect(s.player.drawPile.length).toBe(drawBefore + 6)
+    // 黄泉還り自身の消滅置き場行きは解決後 (limbo) なので、置き場は自身の…素の札は捨て札へ
+    expect(s.player.exhaustPile.filter((c) => fuel.some((f) => f.uid === c.uid))).toHaveLength(0)
+  })
+
+  it('消滅置き場が空なら何も起きない (0ダメ)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_yomigaeri',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_yomigaeri' })
+    expect(s.enemies[0].hp).toBe(enemyHp)
+  })
+
+  it('燃ゆる骨片: ミルされると亡骸で一時マナ+1 (亡骸マナのコモン化)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_last_rites',
+      'black_burning_bone',
+    ])
+    const bone = s.player.hand.find((c) => c.def.id === 'black_burning_bone')!
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        hand: s.player.hand.filter((c) => c.uid !== bone.uid),
+        drawPile: [bone, ...s.player.drawPile],
+      },
+    }
+    const rites = s.player.hand.find((c) => c.def.id === 'black_last_rites')!
+    s = applyCommand(s, { type: 'PlayCard', cardUid: rites.uid, deckUids: [bone.uid] })
+    expect(s.player.energy).toBe(3 - 1 + 1)
+  })
+})

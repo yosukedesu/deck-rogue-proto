@@ -71,7 +71,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
     exhaustFromDeck: `山札の上${a}枚を消滅`, exhaustFromDeckChoose: `山札か捨て札から好きな${a}枚を選んで消滅(亡骸は発火。要deckUids)`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
-    dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerHeal: `この戦闘で回復した回数×${a}ダメ(過剰回復も数える)`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
+    recycleExhaust: `消滅置き場を全て山札に還して混ぜ、還した枚数×${a}ダメ(刻・消滅数参照は0に戻る)`, dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerHeal: `この戦闘で回復した回数×${a}ダメ(過剰回復も数える)`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
     dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
@@ -223,6 +223,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
       else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
+      else if (e.type === 'ExhaustRecycled') L.push(` ♻️輪廻: 消滅置き場${e.count}枚が山札へ還った`)
     }
   }
   L.push(`--- 盤面 (ターン${s.turn} / phase=${s.phase}) ---`)

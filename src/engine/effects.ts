@@ -65,6 +65,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerEnergyMax',
     'dealDamagePerMomentum',
     'dealDamagePerHeal',
+    'recycleExhaust',
     'dischargeAether',
     'dischargeGrowth',
     'dealDamageCleave',
@@ -118,6 +119,7 @@ const ENEMY_TARGETED = new Set([
   'applyBurnPerDamageTaken',
   'dealDamagePerIceBlock',
   'dealDamagePerHandCard',
+  'recycleExhaust',
   // 直接プレイ (死者再生): 選んだカードの単体対象効果を同じ対象に解決するため、対象を要求する
   'playFromExhaust',
 ])
@@ -984,6 +986,24 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         player: { ...state.player, hand: [...state.player.hand, ...made] },
       }
       return emit(s, { type: 'CardsAddedToHand', cardId: def.id, count: made.length })
+    }
+    case 'recycleExhaust': {
+      // 輪廻 (黒 2026-09-01): 消滅置き場を全て山札に混ぜて戻し、戻した枚数×Xダメージ。
+      // 対価 = 刻が割れ、消滅数参照が0になり、亡骸プレイ候補も山へ帰る。
+      // 見返り = 亡骸持ちの札をもう一度落とせる (輪廻)。ダメージは移動前の枚数で数える
+      const n = state.player.exhaustPile.length
+      if (n === 0) return state
+      const [mixed, rng] = shuffle(state.rng, [
+        ...state.player.drawPile,
+        ...state.player.exhaustPile,
+      ])
+      let s: GameState = {
+        ...state,
+        rng,
+        player: { ...state.player, drawPile: mixed, exhaustPile: [] },
+      }
+      s = emit(s, { type: 'ExhaustRecycled', count: n })
+      return dealDamageToEnemy(s, enemyIndex, (effect.amount ?? 0) * n, effect.pierce)
     }
     case 'empowerShivs':
       // 骨刃の強化 (急所読み): 常在パッシブ。加算は combat.ts の playCard がプレイ時に注入する

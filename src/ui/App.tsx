@@ -369,6 +369,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復 [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
         : `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復`
+    case 'recycleExhaust':
+      return `${trigger}♻️ 消滅置き場のカードを全て山札に混ぜて戻し、戻した枚数×${e.amount}ダメージ（刻・消滅数参照は0に戻る。亡骸はもう一度落とせる）`
     case 'dealDamagePerHeal':
       return `${trigger}⚔️ この戦闘で回復した回数×${e.amount}ダメージ${pierce}（過剰回復も数える）`
     case 'dealDamagePerSelfHpLost':

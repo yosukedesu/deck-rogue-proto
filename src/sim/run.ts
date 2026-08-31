@@ -109,6 +109,13 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   ) {
     return false
   }
+  // 輪廻 (黄泉還り) は消滅6枚以上でないと大損 (燃料の全放棄が対価)
+  if (
+    card.def.effects.some((e) => e.effect === 'recycleExhaust') &&
+    state.player.exhaustPile.length < 6
+  ) {
+    return false
+  }
   // 回復の換金 (滾る血汐) は回復2回以上でないと空撃ち
   if (
     card.def.effects.some((e) => e.effect === 'dealDamagePerHeal') &&
