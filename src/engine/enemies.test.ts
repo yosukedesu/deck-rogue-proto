@@ -2,7 +2,7 @@
 // 状態異常 (弱体/脆弱/負傷)・連撃・再生・フェーズ変化・激昂・挑発。
 // 確定済みルール表「敵の設計原則」「状態異常」「連撃」「再生」「敵フェーズ変化」「激昂」を固定する。
 import { describe, expect, it } from 'vitest'
-import { allEnemies, getEnemyDef } from './content.ts'
+import { allEnemies, getCardDef, getEnemyDef } from './content.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -301,5 +301,68 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.eventLog.some((e) => e.type === 'SetCardDestroyed')).toBe(true)
     expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(12) // onSetDestroyed の12全体
+  })
+})
+
+describe('虚弱 (カードのプレイで得るブロック25%減。2026-09-01 敵圧監査)', () => {
+  it('虚弱中にカードで得るブロックは25%減 (切り捨て)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_guard'])
+    s = { ...s, player: { ...s.player, frail: 1 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_guard' })
+    expect(s.player.block).toBe(3) // 防御5 → floor(5*0.75)=3
+  })
+
+  it('氷壁は虚弱の対象外 (別経路 = 青の柱を侵さない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['blue_ice_wall'])
+    s = { ...s, player: { ...s.player, frail: 1 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
+    expect(s.player.iceBlock).toBe(15) // 減らない
+  })
+
+  it('置物のターン開始ブロックは虚弱の対象外 (カードのプレイではない)', () => {
+    let s = noHand(freshCombat('set-confirm', 'enemy_brute', 42))
+    const def = getCardDef('white_perm_shieldmaiden')
+    s = {
+      ...s,
+      player: { ...s.player, frail: 3, permanents: [{ uid: 'perm_test', def }] },
+    }
+    s = withIntent(s, attackIntent(1))
+    s = applyCommand(s, { type: 'EndTurn' })
+    // 次ターン開始時の盾の乙女 (毎ターンブロック2) は素通し
+    expect(s.player.block).toBe(2)
+  })
+
+  it('虚弱は自ターン終了時に1減る (弱体と同じ対称則)', () => {
+    let s = noHand(freshCombat('set-confirm', 'enemy_brute', 42))
+    s = { ...s, player: { ...s.player, frail: 2 } }
+    s = withIntent(s, attackIntent(5))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.frail).toBe(1)
+  })
+})
+
+describe('alsoBuff (攻撃と同時の強化。2026-09-01 バフ専用ターンを作らない雪だるま)', () => {
+  it('攻撃の解決後に強化が乗る (次の攻撃から加算される)', () => {
+    let s = noHand(freshCombat('set-confirm', 'enemy_brute', 42))
+    const before = s.enemies[0].strength
+    s = withIntent(s, { kind: 'attack', shownMin: 5, shownMax: 7, actual: 5, alsoBuff: 1 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies[0].strength).toBe(before + 1)
+    expect(s.eventLog.some((e) => e.type === 'StrengthGained' && e.amount === 1)).toBe(true)
+  })
+})
+
+describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解消)', () => {
+  it('囁きの狂信者はカルト型タイマー (毎フェーズ強化+2の激昂)', () => {
+    const def = getEnemyDef('enemy_cultist')
+    expect(def.enrage).toBe(2)
+    expect(def.enrageEveryCards).toBeUndefined() // 毎フェーズ自動 = 時限爆弾
+  })
+
+  it('酸吐きの蛞蝓は状態異常の教師 (舐め=弱体 → 酸=虚弱 → 体当たりのローテーション)', () => {
+    const def = getEnemyDef('enemy_slug')
+    expect(def.sequence).toEqual(['lick', 'acid_spit', 'tackle'])
+    expect(def.moves.find((m) => m.id === 'lick')!.inflict).toEqual({ status: 'weak', amount: 2 })
+    expect(def.moves.find((m) => m.id === 'acid_spit')!.inflict).toEqual({ status: 'frail', amount: 1 })
   })
 })

@@ -305,13 +305,13 @@
         "weight": 1,
         "inflict": {
           "status": "weak",
-          "amount": 2
+          "amount": 3
         },
         "setAlt": {
           "kind": "hex",
           "inflict": {
             "status": "weak",
-            "amount": 2
+            "amount": 3
           }
         }
       },
@@ -352,11 +352,13 @@
         "max": 7,
         "weight": 1,
         "hits": 3,
+        "alsoBuff": 1,
         "setAlt": {
           "kind": "attack",
           "min": 5,
           "max": 7,
-          "hits": 2
+          "hits": 2,
+          "alsoBuff": 1
         }
       },
       {
@@ -434,7 +436,11 @@
         "kind": "attack",
         "min": 15,
         "max": 19,
-        "weight": 2
+        "weight": 2,
+        "inflict": {
+          "status": "vulnerable",
+          "amount": 2
+        }
       },
       {
         "id": "dodge_prance",
@@ -736,7 +742,11 @@
         "min": 12,
         "max": 16,
         "weight": 2,
-        "alsoDefend": 10
+        "alsoDefend": 10,
+        "inflict": {
+          "status": "frail",
+          "amount": 1
+        }
       },
       {
         "id": "harden",
@@ -800,6 +810,58 @@
         "weight": 1,
         "mirrorHits": true
       }
+    ]
+  },
+  {
+    "id": "enemy_cultist",
+    "name": "囁きの狂信者",
+    "archetype": "enrager",
+    "flavor": "祈るほどに刃が重くなる。囁きを止めるには、口を塞ぐしかない。",
+    "maxHp": 65,
+    "enrage": 2,
+    "moves": [
+      {
+        "id": "dark_blade",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_slug",
+    "name": "酸吐きの蛞蝓",
+    "archetype": "hexer",
+    "flavor": "舐められたら力が抜け、浴びせられたら鎧が緩む。ぬめりは全部が武器。",
+    "maxHp": 70,
+    "moves": [
+      {
+        "id": "lick",
+        "kind": "hex",
+        "weight": 1,
+        "inflict": { "status": "weak", "amount": 2 }
+      },
+      {
+        "id": "acid_spit",
+        "kind": "attack",
+        "min": 5,
+        "max": 7,
+        "weight": 1,
+        "inflict": { "status": "frail", "amount": 1 }
+      },
+      {
+        "id": "tackle",
+        "kind": "attack",
+        "min": 8,
+        "max": 10,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "lick",
+      "acid_spit",
+      "tackle"
     ]
   },
   {
@@ -944,7 +1006,7 @@
         "weight": 1,
         "inflict": {
           "status": "weak",
-          "amount": 1
+          "amount": 2
         }
       }
     ],
@@ -976,7 +1038,7 @@
         "weight": 1,
         "inflict": {
           "status": "weak",
-          "amount": 1
+          "amount": 2
         }
       },
       {
@@ -985,7 +1047,7 @@
         "weight": 1,
         "inflict": {
           "status": "vulnerable",
-          "amount": 2
+          "amount": 3
         }
       },
       {
@@ -1116,7 +1178,7 @@
         "weight": 1,
         "inflict": {
           "status": "weak",
-          "amount": 2
+          "amount": 3
         }
       }
     ],

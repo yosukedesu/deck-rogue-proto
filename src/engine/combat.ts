@@ -76,6 +76,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       impulseUids: [],
       weak: 0,
       vulnerable: 0,
+      frail: 0,
       selfHpLost: 0, // カード効果で失ったHPの累計 (背徳の収穫の参照値。戦闘内のみ)
       randomPlayedThisCombat: 0, // ランダム火力の枚数 (一擲乾坤の参照値。戦闘内のみ)
       damageTakenLastEnemyPhase: 0, // 直前の敵フェーズで受けた攻撃ダメージ (逆上の参照値)
@@ -345,6 +346,7 @@ function declareIntents(state: GameState): GameState {
         ...(sa.hits !== undefined ? { hits: sa.hits } : {}),
         ...(sa.inflict !== undefined ? { inflict: sa.inflict } : {}),
         ...(sa.alsoDefend !== undefined ? { alsoDefend: sa.alsoDefend } : {}),
+        ...(sa.alsoBuff !== undefined ? { alsoBuff: sa.alsoBuff } : {}),
       }
       const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
       rng = rngC
@@ -396,6 +398,7 @@ function buildIntent(
     hits?: number
     inflict?: StatusInflict
     alsoDefend?: number
+    alsoBuff?: number
   },
   GameState['rng'],
 ] {
@@ -419,6 +422,7 @@ function buildIntent(
       ...(move.mirrorHits === true ? { mirrorHits: true } : {}),
       inflict: move.inflict,
       alsoDefend: move.alsoDefend,
+      ...(move.alsoBuff !== undefined ? { alsoBuff: move.alsoBuff } : {}),
     },
     next,
   ]
@@ -718,9 +722,12 @@ export function playCard(
   }
   for (let echoPass = 0; echoPass < (echoed ? 2 : 1); echoPass++) {
     if (chosenMode) {
+      // 虚弱の判定用フラグ (resolveOnPlayEffects と同じ扱い。モード効果もカードのプレイ)
+      s = { ...s, resolvingCardPlay: true }
       for (const effect of chosenMode.effects) {
         s = resolveEffectTargeted(s, effect, enemyIndex)
       }
+      s = { ...s, resolvingCardPlay: false }
     } else {
       s = resolveOnPlayEffects(s, effCard, enemyIndex)
     }
@@ -894,10 +901,16 @@ export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
   let s = emit(state, { type: 'TurnEnded', turn: state.turn })
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
-  // 弱体もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
+  // 弱体・虚弱もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
   s = {
     ...s,
-    player: { ...s.player, momentum: 0, spellEchoes: 0, weak: Math.max(0, s.player.weak - 1) },
+    player: {
+      ...s.player,
+      momentum: 0,
+      spellEchoes: 0,
+      weak: Math.max(0, s.player.weak - 1),
+      frail: Math.max(0, s.player.frail - 1),
+    },
   }
   // 衝動 (このターン限りの手札) は未使用なら消滅する
   if (s.player.impulseUids.length > 0) {
@@ -1008,6 +1021,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
       ...(acting.mirrorHits === true ? { mirrorHits: true } : {}),
       ...(acting.inflict !== undefined ? { inflict: acting.inflict } : {}),
       ...(acting.alsoDefend !== undefined ? { alsoDefend: acting.alsoDefend } : {}),
+      ...(acting.alsoBuff !== undefined ? { alsoBuff: acting.alsoBuff } : {}),
     }
     // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
     s = {
@@ -1074,11 +1088,13 @@ const WOUND_CAP = 5
 /** 状態異常をプレイヤーに付与する。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 */
 function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameState {
   const { status, amount } = inflict
-  if (status === 'weak' || status === 'vulnerable') {
+  if (status === 'weak' || status === 'vulnerable' || status === 'frail') {
     const player =
       status === 'weak'
         ? { ...state.player, weak: state.player.weak + amount }
-        : { ...state.player, vulnerable: state.player.vulnerable + amount }
+        : status === 'vulnerable'
+          ? { ...state.player, vulnerable: state.player.vulnerable + amount }
+          : { ...state.player, frail: state.player.frail + amount }
     return emit({ ...state, player }, { type: 'StatusInflicted', status, amount })
   }
   if (status === 'junk') {
@@ -1241,6 +1257,17 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       }
       // 攻撃に付与された状態異常はダメージ後に適用 (確定済みルール表「状態異常」)
       if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
+      // 攻撃と同時の強化 (alsoBuff 2026-09-01): バフ専用ターン=無償ターンを作らずに雪だるまを見せる。
+      // 打ち消せば強化ごと消える (行動単位の無効化に自然に乗る)
+      if (intent.alsoBuff !== undefined && s.enemies[enemyIndex] && s.enemies[enemyIndex].hp > 0) {
+        s = {
+          ...s,
+          enemies: s.enemies.map((e, j) =>
+            j === enemyIndex ? { ...e, strength: e.strength + intent.alsoBuff! } : e,
+          ),
+        }
+        s = emit(s, { type: 'StrengthGained', enemyIndex, amount: intent.alsoBuff })
+      }
       return markResolved(s, hpLoss)
     }
     case 'hex': {

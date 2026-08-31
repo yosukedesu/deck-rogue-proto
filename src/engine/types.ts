@@ -95,6 +95,11 @@ export interface PlayerState extends CombatantState {
   readonly weak: number
   /** 脆弱: 残りNフェーズの間、敵の攻撃ダメージ50%増 (切り捨て・威嚇適用後)。敵フェーズ終了時に1減る */
   readonly vulnerable: number
+  /**
+   * 虚弱 (2026-09-01 本家Frail相当): 残りNターンの間、カードのプレイで得るブロック25%減
+   * (切り捨て・最低1)。氷壁・リアクション・置物トリガー・パッシブ由来は対象外。自ターン終了時に1減る
+   */
+  readonly frail: number
   /** この戦闘でカード効果 (loseHp) により失ったHPの累計 (黒: 背徳の収穫の参照値。敵からの被弾は含まない) */
   readonly selfHpLost: number
   /** この戦闘でプレイしたランダム火力の枚数 (カオスの刈り取りの参照値。2026-08-30) */
@@ -154,6 +159,8 @@ export interface EnemyIntent {
   readonly inflict?: StatusInflict
   /** 攻防一体: 攻撃と同時に得る固定ブロック (意図表示「⚔️N+🛡️M」。確定済みルール表「攻防一体・隙」) */
   readonly alsoDefend?: number
+  /** 攻撃と同時に強化+N (2026-09-01 敵圧監査。バフ専用ターン=無償ターンを作らずに雪だるまを初手から見せる) */
+  readonly alsoBuff?: number
   /**
    * 条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の
    * 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。
@@ -173,6 +180,7 @@ export interface EnemyIntentBranch {
   readonly hits?: number
   readonly inflict?: StatusInflict
   readonly alsoDefend?: number
+  readonly alsoBuff?: number
 }
 
 /**
@@ -225,6 +233,8 @@ export interface GameState {
   readonly pendingWindow: PendingWindow | null
   /** リーダーパッシブ・レリック (innate置物) の効果を解決中フラグ (2026-08-31 鬼軍曹の怒りをカード由来の守りに限定するため。遷移中のみ立つ) */
   readonly innateResolving?: boolean
+  /** カードの onPlay 効果を解決中フラグ (2026-09-01 虚弱を「カードのプレイで得るブロック」に限定するため。遷移中のみ立つ) */
+  readonly resolvingCardPlay?: boolean
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
   readonly negateNextAction: boolean
   /** 敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」) */
@@ -721,7 +731,7 @@ export type EnemyActionKind =
   | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
-export type PlayerStatus = 'weak' | 'vulnerable' | 'wound' | 'junk'
+export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk'
 
 /** 状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚) */
 export interface StatusInflict {
@@ -745,6 +755,8 @@ export interface EnemyMove {
   readonly inflict?: StatusInflict
   /** 攻防一体: 攻撃と同時に得る固定ブロック (確定済みルール表「攻防一体・隙」) */
   readonly alsoDefend?: number
+  /** 攻撃と同時に強化+N (2026-09-01。バフ専用ターンを作らずに短期戦でも雪だるまを見せる) */
+  readonly alsoBuff?: number
   /**
    * 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
    * プレイヤーに伏せ札があると、この行動の代わりに setAlt の行動になる。
@@ -757,6 +769,7 @@ export interface EnemyMove {
     readonly hits?: number
     readonly inflict?: StatusInflict
     readonly alsoDefend?: number
+    readonly alsoBuff?: number
   }
 }
 

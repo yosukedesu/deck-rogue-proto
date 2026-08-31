@@ -114,12 +114,13 @@ function cardLine(def: CardDef): string {
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
-function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number }): string {
+function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number }): string {
   const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
+  const buff = it.alsoBuff !== undefined ? `+強化${it.alsoBuff}` : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}${guard}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}${guard}${buff}`,
     defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
@@ -234,7 +235,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
-    `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '',
+    `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '',
     p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
     // 運任せカウンタは参照札 (×N換金/onRandomPlayed) を持つデッキでだけ意味を持つ — ノイズ抑制
     p.randomPlayedThisCombat && [...p.hand, ...p.drawPile, ...p.discardPile, ...p.setCards, ...p.permanents].some((c) => c.def.effects.some((e) => e.effect === 'dealDamagePerRandomPlayed' || e.trigger === 'onRandomPlayed')) ? `運任せ札${p.randomPlayedThisCombat}枚` : '',

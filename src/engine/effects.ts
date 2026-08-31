@@ -237,6 +237,11 @@ export function millPlayerDeck(state: GameState, amount: number, enemyIndex: num
  */
 export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: number): GameState {
   if (amount <= 0) return state
+  // 虚弱 (2026-09-01 本家Frail相当): カードのプレイで得るブロックだけ25%減 (切り捨て・最低1)。
+  // 氷壁は別関数・リアクション/置物/パッシブは resolvingCardPlay が立たないので素通し
+  if (state.resolvingCardPlay === true && state.player.frail > 0) {
+    amount = Math.max(1, Math.floor(amount * 0.75))
+  }
   let s: GameState = { ...state, player: { ...state.player, block: state.player.block + amount } }
   s = emit(s, { type: 'BlockGained', target: 'player', amount })
   s = angerGuardWatchers(s)
@@ -1198,14 +1203,17 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect): 
 
 /** カードの onPlay 効果を順に解決 (target:'all' は全体解決) */
 export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemyIndex: number): GameState {
-  let s = state
+  // 虚弱 (2026-09-01) の判定用フラグ:「カードのプレイで得るブロック」だけを25%減の対象にする。
+  // ネストしたカードプレイ (死者再生→直接プレイ) があるので前の値を退避して復元する
+  const prev = state.resolvingCardPlay === true
+  let s: GameState = { ...state, resolvingCardPlay: true }
   for (const effect of card.def.effects) {
     // 猛り火は「解決の時点」で判定する = 同じカードの前の効果 (着火など) で点いたら乗る
     if (effect.trigger === 'onPlay' && blazeConditionMet(s, effect)) {
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   }
-  return s
+  return { ...s, resolvingCardPlay: prev }
 }
 
 const REACTION_TRIGGERS = new Set([

@@ -135,6 +135,7 @@ const KEYWORD_HELP: Record<string, string> = {
   処刑: '対象のHPが最大の25%以下なら、ダメージが跳ね上がる',
   弱体: '与えるダメージが25%減る（切り捨て）。自分のターン終了時に1減る',
   脆弱: '敵の攻撃で受けるダメージが50%増える（切り捨て）。敵の行動フェーズ終了時に1減る',
+  虚弱: 'カードのプレイで得るブロックが25%減る（切り捨て・最低1）。氷壁・リアクション・置物由来は減らない。自分のターン終了時に1減る',
   負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
   再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
   激昂: '自動で強化が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび',
@@ -1608,6 +1609,9 @@ function BattleScreen({
             )}
             {player.vulnerable > 0 && (
               <span className="chip chip-strength">💔 {kw('脆弱')} {player.vulnerable}</span>
+            )}
+            {player.frail > 0 && (
+              <span className="chip chip-strength">🦴 {kw('虚弱')} {player.frail}</span>
             )}
           </div>
           <div className="pile-info">

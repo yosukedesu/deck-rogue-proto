@@ -81,13 +81,13 @@ describe('setAlt = 行動単位の条件分岐', () => {
     expect(drummer.intent!.alt!.kind).toBe('attack')
   })
 
-  it('妖術師: 泥投げは伏せありで泥呪い (攻撃せず弱体2) に変わる', () => {
+  it('妖術師: 泥投げは伏せありで泥呪い (攻撃せず弱体3) に変わる', () => {
     const s = freshCombat('set-confirm', 'enemy_hexer', 42)
     const intent = s.enemies[0].intent! // 1歩目 = mud
     expect(intent.kind).toBe('attack')
     expect(intent.conditionalOn).toBe('set')
     expect(intent.alt!.kind).toBe('hex')
-    expect(intent.alt!.inflict).toEqual({ status: 'weak', amount: 2 })
+    expect(intent.alt!.inflict).toEqual({ status: 'weak', amount: 3 }) // 2026-09-01 敵圧監査で2→3
   })
 
   it('オーガ: 3歩目の棍棒は伏せありで激怒 (強化+2) に変わる', () => {

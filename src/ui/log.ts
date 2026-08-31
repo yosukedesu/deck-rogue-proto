@@ -11,7 +11,7 @@ const KIND_LABEL: Record<string, string> = {
   'destroy-token': '従者狩り', buff: '強化', rally: '応援', hex: '呪い',
 }
 
-export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', wound: '負傷', junk: 'がらくた' }
+export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた' }
 
 export function inflictSuffix(intent: EnemyIntent): string {
   if (!intent.inflict) return ''
@@ -24,7 +24,8 @@ export function intentText(intent: EnemyIntent | null): string {
     case 'attack': {
       const hits = intent.mirrorHits === true ? '×手数' : (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
       const guard = intent.alsoDefend !== undefined ? `+🛡️${intent.alsoDefend}` : ''
-      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${inflictSuffix(intent)}`
+      const buff = intent.alsoBuff !== undefined ? `+💪${intent.alsoBuff}` : ''
+      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${buff}${inflictSuffix(intent)}`
     }
     case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
     case 'destroy-set': return '💥 伏せ破壊'
