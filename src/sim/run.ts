@@ -273,6 +273,19 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
   if (card.def.effects.some((e) => e.effect === 'playFromExhaust')) {
     retrieveUid = pickDirectPlayTarget(state)?.uid
   }
+  // 引導 (黒 2026-08-31): 負傷・がらくた > 亡骸持ち (起爆) > 先頭、の順で消滅させる札を選ぶ
+  let deckUids: string[] | undefined
+  const deckChooseN = card.def.effects
+    .filter((e) => e.effect === 'exhaustFromDeckChoose')
+    .reduce((a, e) => a + (e.amount ?? 1), 0)
+  if (deckChooseN > 0) {
+    const rank = (c: (typeof state.player.drawPile)[number]): number =>
+      c.def.id.startsWith('status_') ? 0 : c.def.effects.some((e) => e.trigger === 'onSelfExhausted') ? 1 : 2
+    const pool = [...state.player.drawPile, ...state.player.discardPile].sort(
+      (a, b) => rank(a) - rank(b),
+    )
+    deckUids = pool.slice(0, Math.min(deckChooseN, pool.length)).map((c) => c.uid)
+  }
   // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)
   let targetIndex: number | undefined
   let bestHp = Infinity
@@ -283,7 +296,7 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
       targetIndex = i
     }
   }
-  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, targetIndex }
+  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, targetIndex }
 }
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */

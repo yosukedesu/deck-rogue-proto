@@ -359,6 +359,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🩸 ${aoe}${(e.amount ?? 0) + atkBonus}ダメージを与え、HP${Math.floor((e.amount ?? 0) / 2)}回復${atkBreak}`
     case 'exhaustFromDeck':
       return `${trigger}🕳 山札の上${e.amount}枚を消滅させる`
+    case 'exhaustFromDeckChoose':
+      return `${trigger}⚰️ 山札か捨て札から好きな${e.amount ?? 1}枚を選んで消滅させる（亡骸は発火する）`
     case 'dealDamagePerExhaust':
       return ctx
         ? `${trigger}⚔️ ${aoe}消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
@@ -1110,6 +1112,17 @@ function BattleScreen({
     player.hand.some((c) => c.uid === pendingRetrieve.cardUid)
       ? pendingRetrieve
       : null
+  // 引導 (2026-08-31): 山札か捨て札から消滅させる札を選んでいる状態
+  const [pendingDeckChoose, setPendingDeckChoose] = useState<{
+    cardUid: string
+    modeIndex?: number
+  } | null>(null)
+  const activeDeckChoose =
+    pendingDeckChoose &&
+    s.phase === 'player-turn' &&
+    player.hand.some((c) => c.uid === pendingDeckChoose.cardUid)
+      ? pendingDeckChoose
+      : null
   // StS式ターゲティング: 単体対象カードのプレイ時、敵タップ待ちの状態
   const [pendingTarget, setPendingTarget] = useState<{
     cardUid: string
@@ -1117,6 +1130,7 @@ function BattleScreen({
     discardUids?: string[]
     exhaustUids?: string[]
     retrieveUid?: string
+    deckUids?: string[]
   } | null>(null)
   const activeTarget =
     pendingTarget &&
@@ -1131,12 +1145,13 @@ function BattleScreen({
     discardUids?: string[],
     exhaustUids?: string[],
     retrieveUid?: string,
+    deckUids?: string[],
   ) => {
     const card = player.hand.find((c) => c.uid === cardUid)
     if (card && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
-      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid })
+      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids })
     } else {
-      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid })
+      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids })
     }
   }
   // 追加コスト・消滅置き場選択を済ませてからプレイに進む多段フロー:
@@ -1154,6 +1169,14 @@ function BattleScreen({
     }
     if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')) {
       setPendingRetrieve({ cardUid, modeIndex })
+      return
+    }
+    // 引導: 山札か捨て札が空でなければ消滅させる札を選ばせる (両方空なら選択なしでプレイ)
+    if (
+      card.def.effects.some((e) => e.effect === 'exhaustFromDeckChoose') &&
+      player.drawPile.length + player.discardPile.length > 0
+    ) {
+      setPendingDeckChoose({ cardUid, modeIndex })
       return
     }
     playOrTarget(cardUid, modeIndex)
@@ -1224,6 +1247,7 @@ function BattleScreen({
                     discardUids: activeTarget.discardUids,
                     exhaustUids: activeTarget.exhaustUids,
                     retrieveUid: activeTarget.retrieveUid,
+                    deckUids: activeTarget.deckUids,
                     targetIndex: i,
                   })
                   setPendingTarget(null)
@@ -1689,6 +1713,55 @@ function BattleScreen({
                   />
                 )
               })}
+            </div>
+          </div>
+        )}
+        {activeDeckChoose && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeDeckChoose.cardUid)?.def.name}」:
+            山札か捨て札から消滅させるカードを選んでください（山札は並び替え表示＝引き順は伏せたまま）{' '}
+            <button className="btn" onClick={() => setPendingDeckChoose(null)}>
+              キャンセル
+            </button>
+          </div>
+        )}
+        {activeDeckChoose && (
+          <div className="hand-row">
+            <div className="hand-cards">
+              {[
+                ...[...player.drawPile]
+                  .sort(
+                    (a, b) =>
+                      a.def.cost - b.def.cost || a.def.name.localeCompare(b.def.name, 'ja'),
+                  )
+                  .map((c) => ({ c, src: '山札' })),
+                ...player.discardPile.map((c) => ({ c, src: '捨て札' })),
+              ].map(({ c, src }) => (
+                <CardFrame
+                  key={c.uid}
+                  card={c}
+                  dim={false}
+                  hint={src}
+                  actions={
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        setPendingDeckChoose(null)
+                        playOrTarget(
+                          activeDeckChoose.cardUid,
+                          activeDeckChoose.modeIndex,
+                          undefined,
+                          undefined,
+                          undefined,
+                          [c.uid],
+                        )
+                      }}
+                    >
+                      消滅させる（{src}）
+                    </button>
+                  }
+                />
+              ))}
             </div>
           </div>
         )}
@@ -2353,6 +2426,8 @@ function RunScreen({
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
   const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/18)` : `行${run.row + 1}/18・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
+  // 報酬ピックの「鍛えた姿(+)で表示」(2026-08-31 ユーザー要望。本家のアップグレードプレビュー相当)
+  const [showUpgradedPick, setShowUpgradedPick] = useState(false)
   const ctx = undefined
   // 所持レリックの表示行 (ホバーで効果説明)
   const relicChips =
@@ -2712,21 +2787,37 @@ function RunScreen({
           <DeckChip run={run} />
           {relicChips}
         </div>
-        <div className="setup-section-title">1枚選んでデッキに加える（スキップ可）</div>
+        <div className="setup-section-title">
+          1枚選んでデッキに加える（スキップ可）{' '}
+          <label className="viewer-toggle">
+            <input
+              type="checkbox"
+              checked={showUpgradedPick}
+              onChange={(e) => setShowUpgradedPick(e.target.checked)}
+            />{' '}
+            鍛えた姿（+）で表示
+          </label>
+        </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
-          {(run.rewardOptions ?? []).map((cardId, i) => (
-            <CardFrame
-              key={i}
-              card={{ uid: `opt${i}`, def: getCardDef(cardId) }}
-              dim={false}
-              ctx={ctx}
-              actions={
-                <button className="btn btn-primary" onClick={() => dispatch({ type: 'PickReward', index: i })}>
-                  獲得する
-                </button>
-              }
-            />
-          ))}
+          {(run.rewardOptions ?? []).map((cardId, i) => {
+            const inst = { uid: `opt${i}`, def: getCardDef(cardId) }
+            const upgradable = canUpgradeCard(inst)
+            const shown = showUpgradedPick && upgradable ? upgradeCard(inst) : inst
+            return (
+              <CardFrame
+                key={i}
+                card={shown}
+                dim={false}
+                ctx={ctx}
+                hint={showUpgradedPick && !upgradable ? '鍛えられない' : undefined}
+                actions={
+                  <button className="btn btn-primary" onClick={() => dispatch({ type: 'PickReward', index: i })}>
+                    獲得する{showUpgradedPick && upgradable ? '（獲得は無印のまま）' : ''}
+                  </button>
+                }
+              />
+            )
+          })}
         </div>
         <button className="btn" onClick={() => dispatch({ type: 'SkipReward' })}>
           スキップして次へ

@@ -472,6 +472,7 @@ export function playCard(
   targetIndex?: number,
   exhaustUids?: readonly string[],
   retrieveUid?: string,
+  deckUids?: readonly string[],
 ): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
@@ -568,6 +569,28 @@ export function playCard(
     }
   }
 
+  // 引導 (2026-08-31): 山札か捨て札から選んで消滅させる札 (deckUids) の検証。
+  // 両山が空なら選択なしでプレイできる (残りの効果だけ解決 = 空撃ちを禁止しない)
+  const deckChooseN = card.def.effects
+    .filter((e) => e.effect === 'exhaustFromDeckChoose')
+    .reduce((a, e) => a + (e.amount ?? 1), 0)
+  const deckPool = [...state.player.drawPile, ...state.player.discardPile]
+  const deckChooseUids = deckChooseN > 0 ? (deckUids ?? []) : []
+  if (deckChooseN > 0) {
+    const need = Math.min(deckChooseN, deckPool.length)
+    if (deckChooseUids.length !== need) {
+      throw new Error(`${card.def.name} は山札か捨て札から${need}枚の指定 (deckUids) が必要`)
+    }
+    if (new Set(deckChooseUids).size !== deckChooseUids.length) {
+      throw new Error('deckUids の指定が重複している')
+    }
+    for (const uid of deckChooseUids) {
+      if (!deckPool.some((c) => c.uid === uid)) {
+        throw new Error(`山札にも捨て札にも無いカード: ${uid}`)
+      }
+    }
+  }
+
   // StS式ターゲティング (確定済みルール表「ターゲティング」):
   // 生存2体以上で単体対象カードは targetIndex 必須。生存1体なら自動。対象不要カードは無視
   const aliveCount = state.enemies.filter((e) => e.hp > 0).length
@@ -632,6 +655,27 @@ export function playCard(
   s = fireExhaustTriggers(s, exhaustedCards.length, enemyIndex)
   // 亡骸効果: 消滅コストで支払われた札は「プレイ以外の経路」なので発火する
   s = fireNecroEffects(s, exhaustedCards, enemyIndex)
+  // 引導 (黒 2026-08-31): 山札か捨て札から選んだ札を消滅させる。効果解決の前に行う =
+  // 直後のドロー効果が選んだ札を手札へ引き込む競合を防ぐ。亡骸・onCardExhausted は発火する
+  // (プレイ以外の経路)。反復 (echo) されても選択消滅は1回 (選んだ札は1枚しか無い)
+  if (deckChooseUids.length > 0) {
+    const chosenSet = new Set(deckChooseUids)
+    const chosenCards = [...s.player.drawPile, ...s.player.discardPile].filter((c) =>
+      chosenSet.has(c.uid),
+    )
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        drawPile: s.player.drawPile.filter((c) => !chosenSet.has(c.uid)),
+        discardPile: s.player.discardPile.filter((c) => !chosenSet.has(c.uid)),
+        exhaustPile: [...s.player.exhaustPile, ...chosenCards],
+      },
+    }
+    for (const c of chosenCards) s = emit(s, { type: 'CardExhausted', cardId: c.def.id })
+    s = fireExhaustTriggers(s, chosenCards.length, enemyIndex)
+    s = fireNecroEffects(s, chosenCards, enemyIndex)
+  }
   // 反復 (青の呪文コピー 2026-08-31): 呪文なら反復トークンを1つ消費し、効果を「2回」解決する。
   // 消費は解決前 = 反復札自身が反復された場合、自分の生むトークンを自分で食わない (+2が立つ)。
   // 詠唱数・onAttackPlayed等のプレイ誘発は1回のまま (プレイは1回。効果だけが2回) = StSのBurst/Amplify準拠

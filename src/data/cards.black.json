@@ -484,6 +484,25 @@
     ]
   },
   {
+    "id": "black_last_rites",
+    "name": "引導",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exhaustFromDeckChoose",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
     "id": "black_corpse_collect",
     "name": "屍集め",
     "cost": 1,

@@ -266,6 +266,8 @@ export type Command =
       readonly exhaustUids?: readonly string[]
       /** retrieveFromExhaust / playFromExhaust 用: 消滅置き場から選ぶカードの uid */
       readonly retrieveUid?: string
+      /** exhaustFromDeckChoose (引導) 用: 山札か捨て札から選んで消滅させるカードの uid */
+      readonly deckUids?: readonly string[]
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
@@ -473,6 +475,7 @@ export interface DeclarativeEffect {
     | 'dealDamagePerPermanent' // 集結 (白): 置物の数×Xダメージ (従者の横並び参照)
     | 'dealDamageDrain' // ドレイン (黒の専売): Xダメージを与え、floor(X/2)回復
     | 'exhaustFromDeck' // 忘却 (黒): 山札の上X枚を消滅させる (捨て札はリシャッフルで空になるため消滅を墓地とする)
+    | 'exhaustFromDeckChoose' // 引導 (黒 2026-08-31): 山札か捨て札から好きなX枚を選んで消滅させる (combat.ts が deckUids で解決。亡骸・onCardExhausted は発火 = 狙い撃ちの起爆と燃料化)
     | 'dealDamagePerExhaust' // 墓地参照 (黒): 消滅した枚数×Xダメージ (単調増加。衝動失効・消滅札とも共鳴)
     | 'dealDamageDrainPerExhaust' // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
     | 'dealDamagePerSelfHpLost' // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×Xダメージ (背徳の収穫)

@@ -952,6 +952,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 忘却 (黒): 山札の上X枚を消滅させる。捨て札はリシャッフルで空になるため、
       // 墓地=消滅置き場とする (単調増加。デッキを永久燃料にする緊張感。戦闘内限定)
       return millPlayerDeck(state, effect.amount ?? 0, enemyIndex)
+    case 'exhaustFromDeckChoose':
+      // 引導 (黒): 山札か捨て札から選んで消滅。選択は combat.ts の playCard が deckUids で解決する
+      return state
     case 'dealDamagePerExhaust':
       // 墓地参照 (黒): 消滅した枚数×X (確定済みルール表「黒の柱」)
       return dealDamageToEnemy(

@@ -244,3 +244,48 @@ describe('ドレインの回復基準 (プレイテスト発見の不整合)', (
     expect(s.player.hp).toBe(36)
   })
 })
+
+describe('引導 (2026-08-31 選択消滅。exhaustFromDeckChoose)', () => {
+  it('山札から選んだ札が消滅し、亡骸 (onSelfExhausted) が発火する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_last_rites',
+    ])
+    // 山札の先頭に爆ぜる骸 (亡骸: 全体3ダメ) を仕込み、それを狙い撃ちで消滅させる
+    const corpse = s.player.drawPile.find((c) => c.def.id === 'black_bursting_corpse')
+    let target = corpse
+    if (!target) {
+      // スターターに無ければ手札から山札へ移して作る
+      s = withHand(s, ['black_last_rites', 'black_bursting_corpse'])
+      const inHand = s.player.hand.find((c) => c.def.id === 'black_bursting_corpse')!
+      s = {
+        ...s,
+        player: {
+          ...s.player,
+          hand: s.player.hand.filter((c) => c.uid !== inHand.uid),
+          drawPile: [inHand, ...s.player.drawPile],
+        },
+      }
+      target = inHand
+    }
+    const enemyHp = s.enemies[0].hp
+    const rites = s.player.hand.find((c) => c.def.id === 'black_last_rites')!
+    s = applyCommand(s, { type: 'PlayCard', cardUid: rites.uid, deckUids: [target.uid] })
+    expect(s.player.exhaustPile.some((c) => c.uid === target!.uid)).toBe(true)
+    expect(s.player.drawPile.some((c) => c.uid === target!.uid)).toBe(false)
+    // 爆ぜる骸の亡骸: 全体3ダメが発火している
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(enemyHp - 3)
+  })
+
+  it('deckUids 無しはエラー。山札も捨て札も空なら選択なしでプレイできる (ドローだけ解決)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_last_rites',
+    ])
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_last_rites' })).toThrow(
+      /deckUids/,
+    )
+    // 両山を空にすると選択なしで通る (ドロー1だけ空振りせず解決...山札0なのでドローも0枚)
+    s = { ...s, player: { ...s.player, drawPile: [], discardPile: [] } }
+    const played = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_last_rites' })
+    expect(played.player.discardPile.some((c) => c.def.id === 'black_last_rites')).toBe(true)
+  })
+})

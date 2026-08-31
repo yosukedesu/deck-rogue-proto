@@ -48,6 +48,7 @@ const VP_PER: Record<string, number> = {
   dischargeGrowthBlock: 5.0,
   dealDamageCleave: 1.3, // 対象+倒したら別の敵に同値 (連鎖は条件付きなので+30%)
   exhaustFromDeck: 0.6, // 忘却=墓地燃料1枚≈0.6VP (刻・亡骸の期待価値。2026-08-31 ミル札の合成解禁)
+  exhaustFromDeckChoose: 1.2, // 引導=狙い撃ちの燃料化 (選べる精度ぶんランダムミルの2倍で査定)
   // 青の参照・放出系の解禁 (2026-08-31 ユーザー指示「工房の参照スケーリング札を解禁」)。
   // 典型値は scripts/card-audit.ts と同一 (詠唱3・氷壁10・霊気2.5・手札5)。
   // per-X効果は形を変えずそのまま引き継がれ、VPだけ典型値で数える = 条件付きダメージと同じ配管

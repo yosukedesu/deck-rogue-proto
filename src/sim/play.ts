@@ -69,7 +69,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
     dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
-    exhaustFromDeck: `山札の上${a}枚を消滅`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
+    exhaustFromDeck: `山札の上${a}枚を消滅`, exhaustFromDeckChoose: `山札か捨て札から好きな${a}枚を選んで消滅(亡骸は発火。要deckUids)`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
@@ -261,15 +261,24 @@ function renderBattle(s: GameState, logFrom: number): string {
     ].filter(Boolean).join(' ')
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
-  if (p.setCards.length > 0 || p.setSlots > 1) {
-    if (p.exhaustPile.length > 0) {
+  // 消滅置き場・亡骸は伏せの有無と無関係に出す (旧実装は伏せ条件の if に巻き込まれていた)
+  if (p.exhaustPile.length > 0) {
     L.push(`消滅置き場(${p.exhaustPile.length}枚): ${p.exhaustPile.map((c) => c.def.name).join('・')}`)
   }
   const necroList = p.exhaustPile.filter((c) => c.def.necroCost !== undefined)
   if (necroList.length > 0) {
     L.push(`亡骸プレイ可(消滅置き場): ${necroList.map((c) => `[${c.uid}] ${c.def.name}(${c.def.necroCost}E)`).join(' / ')} ※{"type":"PlayNecro","cardUid":"..."} 一度きり・ゲームから消える`)
   }
-  L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+  // 引導 (exhaustFromDeckChoose): 手札に選択消滅札がある時だけ候補を出す。山札は名前順=引き順は伏せたまま
+  if (p.hand.some((c) => c.def.effects.some((e) => e.effect === 'exhaustFromDeckChoose'))) {
+    const draw = [...p.drawPile]
+      .sort((a, b) => a.def.name.localeCompare(b.def.name, 'ja'))
+      .map((c) => `[${c.uid}]${c.def.name}(山)`)
+    const disc = p.discardPile.map((c) => `[${c.uid}]${c.def.name}(捨)`)
+    L.push(`引導の選択候補(deckUids): ${[...draw, ...disc].join(' ') || 'なし'} ※山札は名前順表示`)
+  }
+  if (p.setCards.length > 0 || p.setSlots > 1) {
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
@@ -326,6 +335,10 @@ function renderBattle(s: GameState, logFrom: number): string {
         c.def.discardCost ? '要discardUids' : '',
         c.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')
           ? '要retrieveUid'
+          : '',
+        c.def.effects.some((e) => e.effect === 'exhaustFromDeckChoose') &&
+        p.drawPile.length + p.discardPile.length > 0
+          ? '要deckUids(下の選択候補から)'
           : '',
         canSet
           ? '伏せ可'
