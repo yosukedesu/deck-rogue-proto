@@ -43,9 +43,11 @@ describe('とげ (敵の報復。針毛の栗鼠)', () => {
 describe('盗みと逃走 (こそ泥ゴブリン)', () => {
   it('盗み: ロール額を敵が抱え込む (ゴールドはまだ減らない = combat層は金を知らない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_thief', 42), [])
-    s = withIntent(s, intent({ kind: 'steal-gold', shownMin: 15, shownMax: 25, actual: 20 }))
+    s = withIntent(s, intent({ kind: 'steal-gold', shownMin: 12, shownMax: 20, actual: 16 }))
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.enemies[0].stolenGold).toBe(20)
+    // 宣言即成立: EndTurn 後の「次の宣言」(snatch 12〜20のロール) が抱えた額になる
+    expect(s.enemies[0].stolenGold).toBeGreaterThanOrEqual(12)
+    expect(s.enemies[0].stolenGold).toBeLessThanOrEqual(20)
   })
 
   it('逃走: hp0+fledで離脱し、最後の1体なら戦闘は勝利で終わる', () => {

@@ -1235,6 +1235,23 @@
     ]
   },
   {
+    "id": "red_streak_bet",
+    "name": "続け賭け",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerRandomPlayed",
+        "amount": 3
+      }
+    ],
+    "axis": [
+      "chaos"
+    ]
+  },
+  {
     "id": "red_perm_ledger",
     "name": "焔の目録",
     "cost": 2,

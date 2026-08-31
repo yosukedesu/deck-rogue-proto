@@ -143,7 +143,8 @@ export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'campfire' | 'worksho
 
 /** ショップの在庫 (ノード進入時にシードから決定) */
 export interface ShopState {
-  readonly cards: readonly { readonly id: string; readonly price: number }[]
+  /** sold: 購入済みスロット (2026-08-31: 詰めると後続indexがずれて別商品を掴む事故があった) */
+  readonly cards: readonly { readonly id: string; readonly price: number; readonly sold?: boolean }[]
   readonly relicId: string | null
   readonly relicPrice: number
 }
@@ -911,6 +912,7 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_rolling_wave: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
   black_grave_pressure: [{ trigger: 'onPlay', effect: 'exhaustFromDeck', amount: 2 }], // 自分で燃料を足してから刈る
   white_rank_thrust: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
+  red_streak_bet: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }], // 固定の床3 (茨の報い型)
 }
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
@@ -1207,6 +1209,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
       const item = run.shop.cards[command.index]
       if (item === undefined) throw new Error(`不正な商品指定: ${command.index}`)
+      if (item.sold === true) throw new Error('その商品は売り切れ')
       if (run.gold < item.price) throw new Error(`ゴールドが足りない (${item.price}G)`)
       const card: CardInstance = { uid: `buy_a${run.act}_r${run.row}_${item.id}`, def: getCardDef(item.id) }
       return {
@@ -1214,7 +1217,11 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         gold: run.gold - item.price,
         deck: [...run.deck, card],
         picks: [...run.picks, item.id],
-        shop: { ...run.shop, cards: run.shop.cards.filter((_, i) => i !== command.index) },
+        // index を詰めない = 売切マーク (2026-08-31 黒ラン: 連続購入で別商品を掴んだ事故)
+        shop: {
+          ...run.shop,
+          cards: run.shop.cards.map((c, i) => (i === command.index ? { ...c, sold: true } : c)),
+        },
       }
     }
     case 'ShopBuyRelic': {

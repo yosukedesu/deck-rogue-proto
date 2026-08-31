@@ -64,7 +64,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
     confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵強化-${a})`,
-    dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
+    dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)${e.spendBlock === true ? '。解決後にブロックを全て失う' : ''}`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`, dealDamagePerCardPlayedTotal: `${all}この戦闘の累計プレイ数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
@@ -138,8 +138,14 @@ function intentLine(s: GameState, i: number): string {
     // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)
     return branchText(e.intent) // branchText は素の値だけを読む
   }
-  if (e.intent.conditionalOn && e.intent.alt && branchText(e.intent.alt) === branchText(e.intent)) {
-    // 両分岐が同値なら畳む (2026-08-31 緑再走の指摘: 「攻撃5〜7／攻撃5〜7」は読む価値のないノイズ)
+  if (
+    e.intent.conditionalOn &&
+    e.intent.alt &&
+    branchText(e.intent.alt) === branchText(e.intent) &&
+    e.intent.alt.actual === e.intent.actual
+  ) {
+    // 表示も実値も同じ時だけ畳む (2026-08-31 黒ラン: 幅が同じで実値だけ違う分岐を畳むと
+    // 「伏せると実値が上がる」損分岐が不可視になっていた。実値が違えば分岐予告を残す)
     return branchText(e.intent)
   }
   if (e.intent.conditionalOn && e.intent.alt) {
@@ -208,7 +214,10 @@ function renderBattle(s: GameState, logFrom: number): string {
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '',
-    p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '', p.randomPlayedThisCombat ? `運任せ札${p.randomPlayedThisCombat}枚` : '',
+    p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
+    // 運任せカウンタは参照札 (×N換金/onRandomPlayed) を持つデッキでだけ意味を持つ — ノイズ抑制
+    p.randomPlayedThisCombat && [...p.hand, ...p.drawPile, ...p.discardPile, ...p.setCards, ...p.permanents].some((c) => c.def.effects.some((e) => e.effect === 'dealDamagePerRandomPlayed' || e.trigger === 'onRandomPlayed')) ? `運任せ札${p.randomPlayedThisCombat}枚` : '',
+    p.energyMaxAtTurnStart !== undefined && p.energyMaxAtTurnStart !== p.energyMax ? `上限参照は${p.energyMaxAtTurnStart}を読む(今ターンのランプは次Tから)` : '',
     `山札${p.drawPile.length}/捨て札${p.discardPile.length}`,
   ].filter(Boolean).join(' | ')
   L.push(`自分: ${st}`)
@@ -277,7 +286,9 @@ function renderBattle(s: GameState, logFrom: number): string {
       const threat = (k: string, mx: number, h?: number) => (k === 'attack' ? mx * (h ?? 1) : 0)
       const after = threat(it.kind, it.shownMax, it.hits)
       const before = it.alt ? threat(it.alt.kind, it.alt.shownMax, it.alt.hits) : after
-      const mark = after < before ? '💡(弱くなる=利得)' : after > before ? '⚠(強くなる)' : '⚠'
+      // 攻撃同士の比較のみ方向を出す (2026-08-31 白ラン: 応援+2を「弱くなる=利得」と誤表示)
+      const comparable = it.kind === 'attack' && it.alt?.kind === 'attack'
+      const mark = !comparable ? '⚠' : after < before ? '💡(弱くなる=利得)' : after > before ? '⚠(強くなる)' : '⚠'
       L.push(`   ${mark} 発動すると伏せ枠が空く: ${getEnemyDef(rEnemy.enemyId).name}の行動が【伏せなし】分岐 (${branchText(it)}) に変わる`)
     }
     L.push(`   → {"type":"ConfirmReaction","fire":true,"cardUid":"..."} か {"type":"ConfirmReaction","fire":false} (温存)`)
@@ -456,15 +467,17 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   } else if (run.phase === 'campfire') {
     L.push(`🔥 焚き火: 「休む/鍛える/除去」から1つ選ぶ (排他三択。現在 ${run.hp}/${run.maxHp})`)
     if ((run.campfireForgeBonus ?? 0) > 0) {
-      {
       const byBonus = 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)
       const byAct1 = run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity
-      L.push(`  🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, Math.min(byBonus, byAct1))}枚 (休む・除去とは併用不可)`)
-    }
+      const forgeLeft = Math.max(0, Math.min(byBonus, byAct1))
+      if (forgeLeft > 0) L.push(`  🪨鍛冶の砥石: 鍛えるはあと${forgeLeft}枚 (休む・除去とは併用不可)`)
     }
     // 上限クランプ後の実回復量を表示する (2026-08-30 Opusラン指摘: 満タンでも+41と出ていた)
     const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
-    L.push((run.campfireUpgradesUsed ?? 0) > 0 ? '  休む (CampfireRest) → 鍛えた後なので回復なしの立ち去り (1種類の原則)' : `  休む (CampfireRest) → HP+${heal} 回復して次へ`)
+    L.push(
+      (run.campfireUpgradesUsed ?? 0) > 0 ? '  休む (CampfireRest) → 鍛えた後なので回復なしの立ち去り (1種類の原則)'
+      : heal <= 0 ? '  休む (CampfireRest) → HP満タンなので回復なしの立ち去り'
+      : `  休む (CampfireRest) → HP+${heal} 回復して次へ`)
     L.push(`  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)${run.act === 1 ? ` ※幕1はラン通算1回まで(残り${Math.max(0, 1 - (run.act1Forges ?? 0))})` : ''}`)
     L.push('  除去 (CampfireRemove) → デッキから1枚を永久に取り除く')
     run.deck.forEach((c, i) => {
@@ -474,7 +487,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
   } else if (run.phase === 'shop' && run.shop) {
     L.push(`🛒 ショップ (所持 ${run.gold}G。買わずに出てもよい)`)
-    run.shop.cards.forEach((item, i) => L.push(` [${i}] ${item.price}G: ${cardLine(getCardDef(item.id))}`))
+    run.shop.cards.forEach((item, i) => L.push(item.sold === true ? ` [${i}] 〔売切〕` : ` [${i}] ${item.price}G: ${cardLine(getCardDef(item.id))}`))
     if (run.shop.relicId !== null) {
       const r = getRelicDef(run.shop.relicId)
       L.push(` レリック ${run.shop.relicPrice}G: ${r.name} (${r.description})`)

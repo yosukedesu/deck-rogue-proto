@@ -116,8 +116,10 @@ describe('ショップ', () => {
     expect(run.gold).toBe(0)
     expect(run.deck).toHaveLength(before + 1)
     expect(run.deck[run.deck.length - 1].def.id).toBe(item.id)
-    expect(run.shop!.cards).toHaveLength(5) // 売り切れ
-    expect(() => applyRunCommand(run, { type: 'ShopBuyCard', index: 0 })).toThrow(/ゴールドが足りない/)
+    // index は詰めない = 売切マーク (2026-08-31 黒ラン: 連続購入で別商品を掴んだ事故への処方)
+    expect(run.shop!.cards).toHaveLength(6)
+    expect(run.shop!.cards[0].sold).toBe(true)
+    expect(() => applyRunCommand(run, { type: 'ShopBuyCard', index: 0 })).toThrow(/売り切れ/)
   })
 
   it('レリック購入: 候補列の次の1個。150G', () => {

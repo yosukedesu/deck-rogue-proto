@@ -104,5 +104,5 @@ export function cardCostLabel(def: { cost: number; xCost?: boolean }, discounted
  * 表示に出さないと「1マナで7ダメージ」に見えてカードの正体が伝わらない
  */
 export function xHitsSuffix(e: { xHits?: boolean }): string {
-  return e.xHits === true ? '×Xヒット' : ''
+  return e.xHits === true ? '×Xヒット(各ヒットに成長・勢いが乗る)' : ''
 }

@@ -257,7 +257,7 @@ function conditionLabel(e: DeclarativeEffect): string {
 }
 
 function ctx2Block(e: DeclarativeEffect, _ctx: EffectCtx | undefined, trigger: string, pierce: string): string {
-  return `${trigger}⚔️ ブロック×${e.amount}ダメージ${pierce}`
+  return `${trigger}⚔️ ブロック×${e.amount}ダメージ${pierce}${e.spendBlock === true ? '（解決後にブロックを全て失う）' : ''}`
 }
 
 /** 効果1つを1行のテキストに変換する。忘却の刻 (しきい値) は達成状態を添えて表示する */
@@ -523,9 +523,9 @@ function conditionalIntentText(s: GameState, i: number): string {
   if (intent.conditionalOn === 'set' && !playerCanSet(s)) {
     return intentText({ ...intent, conditionalOn: undefined, alt: undefined })
   }
-  // 両分岐が同値なら畳む (2026-08-31: 「攻撃5〜7／攻撃5〜7」は読む価値のないノイズ)
+  // 表示も実値も同じ時だけ畳む (2026-08-31: 実値だけ違う分岐を畳むと損分岐が不可視になる)
   const baseOnly = intentText({ ...intent, conditionalOn: undefined, alt: undefined })
-  if (intentText({ ...intent.alt }) === baseOnly) return baseOnly
+  if (intentText({ ...intent.alt }) === baseOnly && intent.alt.actual === intent.actual) return baseOnly
   const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
@@ -1396,10 +1396,11 @@ function BattleScreen({
                     const threat = (k: string, mx: number, h?: number) => (k === 'attack' ? mx * (h ?? 1) : 0)
                     const after = threat(it.kind, it.shownMax, it.hits)
                     const before = it.alt ? threat(it.alt.kind, it.alt.shownMax, it.alt.hits) : after
-                    const gain = after < before
+                    const comparable = it.kind === 'attack' && it.alt?.kind === 'attack'
+                    const gain = comparable && after < before
                     return (
                       <div key={ri} className="choice-desc" style={{ margin: '6px 0', color: gain ? 'var(--good, #7ec97e)' : 'var(--warn, #e0a458)' }}>
-                        {gain ? '💡' : '⚠'} 発動すると伏せ枠が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せなし】分岐（{intentText(s.enemies[ri].intent)}）に変わる{gain ? '（弱くなる=利得）' : after > before ? '（強くなる）' : ''}
+                        {gain ? '💡' : '⚠'} 発動すると伏せ枠が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せなし】分岐（{intentText(s.enemies[ri].intent)}）に変わる{gain ? '（弱くなる=利得）' : comparable && after > before ? '（強くなる）' : ''}
                       </div>
                     )
                   })}
@@ -2257,15 +2258,15 @@ function RunScreen({
             <CardFrame
               key={`${item.id}_${i}`}
               card={{ uid: `shop${i}`, def: getCardDef(item.id) }}
-              dim={false}
+              dim={item.sold === true}
               ctx={ctx}
               actions={
                 <button
                   className="btn btn-primary"
-                  disabled={run.gold < item.price}
+                  disabled={item.sold === true || run.gold < item.price}
                   onClick={() => dispatch({ type: 'ShopBuyCard', index: i })}
                 >
-                  {item.price}G で買う
+                  {item.sold === true ? '売切' : `${item.price}G で買う`}
                 </button>
               }
             />
@@ -2404,18 +2405,27 @@ function RunScreen({
         <p className="hint">
           「休む」「鍛える」「取り除く」から1つを選ぶ（本家式の排他三択。2026-08-29復帰）。
           {(run.campfireForgeBonus ?? 0) > 0 &&
-            ` 🪨鍛冶の砥石: 鍛えるはあと${1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)}枚（休む・除去とは併用不可）。`}
+            Math.max(0, Math.min(
+              1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
+              run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
+            )) > 0 &&
+            ` 🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, Math.min(
+              1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
+              run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
+            ))}枚（休む・除去とは併用不可）。`}
         </p>
         <div className="choice-row" style={{ marginTop: 12 }}>
           <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>
             <div className="choice-title">
               <span className="choice-sprite">🛌</span>
-              {(run.campfireUpgradesUsed ?? 0) > 0 ? '立ち去る' : '休む'}
+              {(run.campfireUpgradesUsed ?? 0) > 0 || heal <= 0 ? '立ち去る' : '休む'}
             </div>
             <div className="choice-desc">
               {(run.campfireUpgradesUsed ?? 0) > 0
                 ? 'すでに鍛えたので回復はなし'
-                : `HP+${heal} 回復して先へ（現在 ${run.hp}/${run.maxHp}）`}
+                : heal <= 0
+                  ? `HP満タンなので回復はなし（現在 ${run.hp}/${run.maxHp}）`
+                  : `HP+${heal} 回復して先へ（現在 ${run.hp}/${run.maxHp}）`}
             </div>
           </button>
         </div>

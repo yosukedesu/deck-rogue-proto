@@ -33,6 +33,28 @@
     "rarity": "common"
   },
   {
+    "id": "white_wall_jab",
+    "name": "城壁の一突き",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 1
+      }
+    ],
+    "axis": [
+      "fortress"
+    ]
+  },
+  {
     "id": "white_guard",
     "name": "白盾",
     "cost": 1,
@@ -456,6 +478,20 @@
       }
     ],
     "rarity": "uncommon"
+  },
+  {
+    "id": "white_perm_pilgrim_bell",
+    "name": "巡礼の鈴",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
   },
   {
     "id": "white_service",
