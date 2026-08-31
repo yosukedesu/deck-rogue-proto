@@ -624,8 +624,8 @@ export function createRun(
   }
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  // 供給を後ろへ (2026-08-31): 工房は幕2以降。幕1でデッキが完成する供給集中 (複数ラン一致) への処方
-  const [map, rngAfterMap] = generateMap(rng0, 1, false)
+  // 幕1の工房はちょうど1個 (2026-08-31 ユーザー指示。個数の制御は map.ts の quota 側)
+  const [map, rngAfterMap] = generateMap(rng0, 1, true)
   // 伏せ参照レリックは、このランの報酬プールにリアクションが1枚も無い色 (赤単など) では
   // 永久の死に選択肢になるため候補列から除く (2026-08-30 Opusランで符師の懐が3択に3回連続出現)。
   // 蜃気楼の面 (意図の実値公開) は伏せに依存しないので残す

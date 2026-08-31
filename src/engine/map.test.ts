@@ -72,7 +72,8 @@ describe('マップ生成の構造', () => {
         .filter((_, r) => !FORCED_CAMPFIRE_ROWS.has(r))
         .flat()
         .filter((n) => n.type === 'campfire')
-      expect(scattered, `seed${seed}`).toHaveLength(Math.round(total * 0.12))
+      // 12%→8% (2026-08-31 ユーザー指示「焚き火減らして」。回復25%とセットのHP経済の絞り)
+      expect(scattered, `seed${seed}`).toHaveLength(Math.round(total * 0.08))
       for (let r = 0; r < 5; r++) {
         expect(map[r].some((n) => n.type === 'campfire'), `seed${seed} row${r} に焚き火`).toBe(false)
       }
@@ -81,13 +82,14 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('部屋タイプの員数: 工房/ショップは総ノードの5%・?は18〜26%・エリートちょうど4', () => {
+  it('部屋タイプの員数: 工房=幕1は1個・ショップは総ノードの5%・?は18〜26%・エリートちょうど4', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       const all = map.flat()
       const total = all.length
       const expected5 = Math.round(total * 0.05)
-      expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(expected5)
+      // 工房: 幕1 (mapFor の既定) はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」)
+      expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(1)
       expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(expected5)
       expect(all.filter((n) => n.type === 'elite'), `seed${seed}`).toHaveLength(4)
       // ?は本家の22%を員数式にしたもの (自由ノードにだけ配るので実測は21.7%)

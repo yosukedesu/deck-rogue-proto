@@ -81,7 +81,7 @@ const ROOM_WEIGHTS: Readonly<Record<'shop' | 'workshop' | 'event' | 'campfire', 
   shop: 0.05,
   workshop: 0.05,
   event: 0.22,
-  campfire: 0.12, // 本家の Rest 重み
+  campfire: 0.08, // 本家Rest=0.12→0.08 (2026-08-31 ユーザー指示「焚き火減らして」。回復25%と合わせHP経済を絞る。散布5〜6個+ボス前全焚き火行)
 }
 /** 焚き火を置ける最小行 (本家「6階より下に休憩なし」= index 5 以降) */
 const CAMPFIRE_MIN_ROW = 5
@@ -278,8 +278,9 @@ export function generateMap(
     const total = widths.reduce((a, b) => a + b, 0)
     const quota: readonly (readonly [MapNodeType, number])[] = [
       ['campfire', Math.round(total * ROOM_WEIGHTS.campfire)], // 本家Rest: 散布される休憩
-      // 工房 (合成v1は緑同士のみ) は緑を含まないランでは配置しない。枠は戦闘に置き換わる
-      ['workshop', allowWorkshop ? Math.round(total * ROOM_WEIGHTS.workshop) : 0],
+      // 工房: 幕1はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」= 供給集中を
+      // 避けつつ合成の楽しみを前倒し)。幕2/3は重み5%。allowWorkshop=false は全面禁止 (テスト用)
+      ['workshop', !allowWorkshop ? 0 : act === 1 ? 1 : Math.round(total * ROOM_WEIGHTS.workshop)],
       ['shop', Math.round(total * ROOM_WEIGHTS.shop)],
       ['event', Math.round(total * ROOM_WEIGHTS.event)],
     ]
