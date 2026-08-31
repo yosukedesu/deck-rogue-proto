@@ -391,7 +391,7 @@ function renderMapBrief(run: RunState): string {
       const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : ''
       return `[${c}]${label}${edges}${unreachable}${choice}`
     })
-    L.push(` ${r === from ? '→' : '  '}行${String(r).padStart(2)}: ${cells.join(' | ')}`)
+    L.push(` ${r === from ? '→' : '  '}行${String(r + 1).padStart(2)}: ${cells.join(' | ')}`)
   }
   // この先の特別ノード要約 (計画用の最小情報)
   const ahead: string[] = []
@@ -401,7 +401,7 @@ function renderMapBrief(run: RunState): string {
     run.map.forEach((row, r) => {
       if (r > run.row && row.some((n, c) => n.type === t && reach.has(`${r}:${c}`))) rows.push(r)
     })
-    if (rows.length > 0) ahead.push(`${icon}行${rows.join(',')}`)
+    if (rows.length > 0) ahead.push(`${icon}行${rows.map((x) => x + 1).join(',')}`)
   }
   L.push(`   この先(いずれかの経路で到達可能): ${ahead.join(' ') || 'なし'}`)
   // 選択肢ごとの内訳 (2026-08-30 Opusテスターの指摘: 「この先(到達可能)」を「これから行ける」と
@@ -439,7 +439,7 @@ function renderMap(run: RunState): string {
       return `[${c}]${label}${edges}${here}${unreachable}${choice}`
     })
     const mark = r === run.row + 1 ? '→' : '  '
-    L.push(` ${mark}行${String(r).padStart(2)}: ${cells.join(' | ')}`)
+    L.push(` ${mark}行${String(r + 1).padStart(2)}: ${cells.join(' | ')}`)
   }
   L.push('→ {"type":"ChooseNode","col":N} で「←選べる」のノードへ進む')
   return L.join('\n')

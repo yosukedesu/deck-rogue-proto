@@ -1049,6 +1049,7 @@ function BattleScreen({
   onExport,
   extraChip,
   backLabel,
+  run,
 }: {
   state: GameState
   config: Config
@@ -1059,6 +1060,8 @@ function BattleScreen({
   onExport: () => void
   extraChip?: string
   backLabel?: string
+  /** ラン中の戦闘なら渡す (デッキ全体・マップの閲覧ビューに使う。単発検証戦では undefined) */
+  run?: RunState | null
 }) {
   const player = s.player
   const system = getReactionSystem(s.reactionMode)
@@ -1152,6 +1155,11 @@ function BattleScreen({
   }
   const lines = s.eventLog.map(logLine).filter((l): l is LogLine => l !== null)
   const setCard = player.setCards[0]
+  // 閲覧ビュー (2026-08-31): 山札・捨て札・消滅置き場・デッキ全体・マップをいつでも確認できる
+  const [pileView, setPileView] = useState<'draw' | 'discard' | 'exhaust' | 'deck' | 'map' | null>(
+    null,
+  )
+  const pileCtx: EffectCtx = { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, handCards: Math.max(0, player.hand.length - 1) }
 
   return (
     <div className="app battle">
@@ -1544,13 +1552,30 @@ function BattleScreen({
             )}
           </div>
           <div className="pile-info">
-            山札 {player.drawPile.length} 枚
+            <button className="btn btn-mini" onClick={() => setPileView('draw')}>
+              山札 {player.drawPile.length}枚
+            </button>
             <br />
-            捨て札 {player.discardPile.length} 枚
+            <button className="btn btn-mini" onClick={() => setPileView('discard')}>
+              捨て札 {player.discardPile.length}枚
+            </button>
             {player.exhaustPile.length > 0 && (
               <>
                 <br />
-                消滅 {player.exhaustPile.length} 枚
+                <button className="btn btn-mini" onClick={() => setPileView('exhaust')}>
+                  消滅 {player.exhaustPile.length}枚
+                </button>
+              </>
+            )}
+            {run != null && (
+              <>
+                <br />
+                <button className="btn btn-mini" onClick={() => setPileView('deck')}>
+                  🎴 デッキ
+                </button>{' '}
+                <button className="btn btn-mini" onClick={() => setPileView('map')}>
+                  🗺 マップ
+                </button>
               </>
             )}
             {/* 亡骸プレイ (黒 2026-08-31): 消滅置き場の necroCost 持ち札を一度だけプレイ */}
@@ -1841,6 +1866,42 @@ function BattleScreen({
           ))}
         </div>
       </div>
+
+      {/* 閲覧ビュー (2026-08-31): 山札は引き順を伏せて並び替え表示 (本家準拠) */}
+      {pileView === 'draw' && (
+        <CardListOverlay
+          title="🂠 山札"
+          cards={player.drawPile}
+          ctx={pileCtx}
+          sorted
+          onClose={() => setPileView(null)}
+        />
+      )}
+      {pileView === 'discard' && (
+        <CardListOverlay
+          title="🗑 捨て札"
+          cards={player.discardPile}
+          ctx={pileCtx}
+          onClose={() => setPileView(null)}
+        />
+      )}
+      {pileView === 'exhaust' && (
+        <CardListOverlay
+          title="⚰️ 消滅置き場"
+          cards={player.exhaustPile}
+          ctx={pileCtx}
+          note="消滅した札はこの戦闘には戻らない（💀亡骸プレイ・屍集めを除く）"
+          onClose={() => setPileView(null)}
+        />
+      )}
+      {pileView === 'deck' && run != null && (
+        <CardListOverlay
+          title="🎴 デッキ全体（ランのマスターデッキ）"
+          cards={run.deck}
+          onClose={() => setPileView(null)}
+        />
+      )}
+      {pileView === 'map' && run != null && <MapOverlay run={run} onClose={() => setPileView(null)} />}
     </div>
   )
 }
@@ -1975,11 +2036,14 @@ function mapRecordVisit(run: RunState): ReadonlyMap<number, number> {
 function RunMapView({
   run,
   onChoose,
+  interactive = true,
 }: {
   run: RunState
   onChoose: (col: number) => void
+  /** false = 閲覧のみ (戦闘中のマップ確認。ノードは押せない) */
+  interactive?: boolean
 }) {
-  const cands = nextChoices(run)
+  const cands = interactive ? nextChoices(run) : []
   const reach = mapReachable(run)
   const path = mapRecordVisit(run)
   // 全長 ~1050 units (実寸 ≈1050px) あるので、開いた時に現在地が画面中央に来るようにする。
@@ -2157,6 +2221,113 @@ function RunMapView({
   )
 }
 
+// ---- 閲覧ビュー (2026-08-31 ユーザー要望「対戦中やマップ時にデッキ・墓地・マップを確認したい」) ----
+
+/** カード一覧のオーバーレイ。本家準拠で「鍛えた姿 (+)」にも切り替えられる */
+function CardListOverlay({
+  title,
+  cards,
+  ctx,
+  sorted,
+  note,
+  onClose,
+}: {
+  title: string
+  cards: readonly CardInstance[]
+  ctx?: EffectCtx
+  /** 山札は引き順を伏せるため並び替えて表示する (本家準拠) */
+  sorted?: boolean
+  note?: string
+  onClose: () => void
+}) {
+  const [showUpgraded, setShowUpgraded] = useState(false)
+  const list = sorted
+    ? [...cards].sort(
+        (a, b) => a.def.cost - b.def.cost || a.def.name.localeCompare(b.def.name, 'ja'),
+      )
+    : cards
+  return (
+    <div className="viewer-overlay" onClick={onClose}>
+      <div className="viewer-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="viewer-head">
+          <span className="viewer-title">
+            {title}（{cards.length}枚）
+          </span>
+          <label className="viewer-toggle">
+            <input
+              type="checkbox"
+              checked={showUpgraded}
+              onChange={(e) => setShowUpgraded(e.target.checked)}
+            />{' '}
+            鍛えた姿（+）で表示
+          </label>
+          <button className="btn" onClick={onClose}>
+            ✕ 閉じる
+          </button>
+        </div>
+        {sorted === true && (
+          <p className="hint">※山札は引き順を伏せるため並び替えて表示（本家準拠）</p>
+        )}
+        {note !== undefined && <p className="hint">{note}</p>}
+        <div className="hand-cards viewer-cards">
+          {list.length === 0 && <p className="hint">（空）</p>}
+          {list.map((c) => {
+            const upgradable = canUpgradeCard(c)
+            const shown = showUpgraded && upgradable ? upgradeCard(c) : c
+            return (
+              <CardFrame
+                key={c.uid}
+                card={shown}
+                dim={false}
+                ctx={ctx}
+                actions={
+                  showUpgraded && !upgradable ? (
+                    <span className="hint">{isUpgraded(c) ? '鍛え済み' : '鍛えられない'}</span>
+                  ) : null
+                }
+              />
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** マップの閲覧オーバーレイ (戦闘中などマップフェーズ外から現在地と道を確認する) */
+function MapOverlay({ run, onClose }: { run: RunState; onClose: () => void }) {
+  return (
+    <div className="viewer-overlay" onClick={onClose}>
+      <div className="viewer-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="viewer-head">
+          <span className="viewer-title">🗺 マップ — 第{run.act}幕/3（閲覧のみ）</span>
+          <button className="btn" onClick={onClose}>
+            ✕ 閉じる
+          </button>
+        </div>
+        <div className="map-wrap">
+          <RunMapView run={run} onChoose={() => {}} interactive={false} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** 「デッキN枚を見る」チップ (自前でオーバーレイの開閉を持つ = どの画面にも1行で置ける) */
+function DeckChip({ run }: { run: RunState }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button className="chip chip-btn" onClick={() => setOpen(true)}>
+        🎴 デッキ {run.deck.length}枚を見る
+      </button>
+      {open && (
+        <CardListOverlay title="🎴 デッキ" cards={run.deck} onClose={() => setOpen(false)} />
+      )}
+    </>
+  )
+}
+
 // ---- ドラフト連戦 (ラン) 画面 ----
 
 function RunScreen({
@@ -2174,7 +2345,7 @@ function RunScreen({
   onRestart: (seed: number) => void
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
-  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
+  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/18)` : `行${run.row + 1}/18・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
   const ctx = undefined
   // 所持レリックの表示行 (ホバーで効果説明)
   const relicChips =
@@ -2205,7 +2376,7 @@ function RunScreen({
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
             <span className="chip">💰 {run.gold}G</span>
-            <span className="chip">デッキ {run.deck.length}枚</span>
+            <DeckChip run={run} />
             <span className="chip">{run.battlesWon}勝</span>
           </div>
           {relicChips}
@@ -2265,7 +2436,7 @@ function RunScreen({
         <div className="panel">
           <span className="chip">💰 {run.gold}G</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
-          <span className="chip">デッキ {run.deck.length}枚</span>
+          <DeckChip run={run} />
           <div className="choice-desc" style={{ marginTop: 6 }}>
             買わずに出てもよい。除去・強化は回数無制限（使うたび+50G逓増）。
           </div>
@@ -2504,6 +2675,7 @@ function RunScreen({
         onBack={onExit}
         extraChip={progressChip}
         backLabel="ランを放棄"
+        run={run}
       />
     )
   }
@@ -2518,7 +2690,7 @@ function RunScreen({
         <div className="panel">
           <span className="chip">戦闘 {run.battlesWon}勝</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
-          <span className="chip">デッキ {run.deck.length}枚</span>
+          <DeckChip run={run} />
           {relicChips}
         </div>
         <div className="setup-section-title">1枚選んでデッキに加える（スキップ可）</div>

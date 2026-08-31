@@ -608,3 +608,49 @@ button:disabled { cursor: default; }
   /* 幾何は viewBox が持つので、モバイル用の再レイアウトは不要 (max-width が外れるだけ) */
   .map-svg { max-width: 100%; }
 }
+/* ---- 閲覧ビュー (2026-08-31 デッキ・墓地・マップの確認オーバーレイ) ---- */
+.viewer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 50;
+  overflow-y: auto;
+  padding: 16px 12px;
+}
+.viewer-panel {
+  max-width: 920px;
+  margin: 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.viewer-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.viewer-title {
+  font-weight: 700;
+  font-size: 15px;
+  flex: 1;
+}
+.viewer-toggle {
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.viewer-cards {
+  margin-top: 10px;
+}
+.chip-btn {
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: inherit;
+}
+.btn-mini {
+  padding: 1px 7px;
+  font-size: 11px;
+}
