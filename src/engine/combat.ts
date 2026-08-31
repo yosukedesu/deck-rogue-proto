@@ -503,8 +503,30 @@ export function playCard(
       : effects.flatMap((e) =>
           e.xHits === true ? Array.from({ length: paidX }, () => ({ ...e, xHits: undefined })) : [e],
         )
-  const effCard: CardInstance =
+  let effCard: CardInstance =
     paidX === 0 ? card : { ...card, def: { ...card.def, effects: expandX(card.def.effects) } }
+  // 骨刃の強化 (急所読み等の empowerShivs): ナイフトークンのダメージに常在ボーナスを注入
+  if (card.def.shivToken === true) {
+    const shivBonus = state.player.permanents.reduce(
+      (a, p) =>
+        a +
+        p.def.effects
+          .filter((e) => e.effect === 'empowerShivs')
+          .reduce((x, e) => x + (e.amount ?? 0), 0),
+      0,
+    )
+    if (shivBonus > 0) {
+      effCard = {
+        ...effCard,
+        def: {
+          ...effCard.def,
+          effects: effCard.def.effects.map((e) =>
+            e.effect === 'dealDamage' ? { ...e, amount: (e.amount ?? 0) + shivBonus } : e,
+          ),
+        },
+      }
+    }
+  }
 
   // 選択式カードの検証
   const modes = card.def.modes ?? []

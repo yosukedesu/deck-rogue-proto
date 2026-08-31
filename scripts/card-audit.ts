@@ -32,6 +32,7 @@ const VP_PER: Record<string, number> = {
   addSpellEcho: 9.0, // 反復1トークン ≈ 典型的な1〜2E呪文のコピー価値9 (StS Burst=1E準拠)
   addCasts: 2.5, // 焚べる: 詠唱+1 ≈ 参照×2〜3の増分
   exhaustFromDeck: 0.6, // 忘却=墓地燃料1枚≈0.6VP (刻・亡骸の期待価値)
+  addCardToHand: 3.0, // 骨のナイフ1枚 ≈ 4ダメ(0E)+消滅燃料0.6 の割引現在価値
   dealDamagePerBlock: 1.0 * 8, dealDamagePerPermanent: 1.0 * 3, gainBlockPerPermanent: 1.0 * 3, // 白の参照典型 (自前ブロック8・置物3体)
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }

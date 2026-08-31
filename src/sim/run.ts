@@ -47,6 +47,8 @@ function botRole(def: CardDef): BotRole {
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
+  // 骨刃の生成 (黒 2026-09-01): ナイフを撒いてから殴る = ドロー枠で早めに
+  if (has('addCardToHand')) return 'draw'
   if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainBlockPerEnergyMax', 'gainBlockPerExhaust', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }

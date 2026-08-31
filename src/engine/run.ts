@@ -25,6 +25,7 @@ import type { CardColor, CardDef, CardInstance, Command, DeclarativeEffect, Even
 
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 const REWARD_EXCLUDED = new Set([
+  'black_shiv_token', // 骨のナイフ: 生成トークン (この戦闘限り) = 報酬・ショップに出さない
   'green_strike',
   'green_guard',
   'green_basic_bash', // 打ち据え (2026-08-29 テンポ再校正②: スターターのBash枠)
@@ -902,6 +903,8 @@ const UPGRADABLE_EFFECTS = new Set([
  * drawCardsPerCardPlayed 等のドロー×Nは入れない (倍率+1=×2ドローは無限ループの危険地帯) — ④の例外表で受ける
  */
 const UNIT_EFFECTS = new Set([
+  'addCardToHand', // 骨刃の舞+ = ナイフ+1 (本家の+準拠)
+  'empowerShivs', // 急所読み+ = 常在+1
   'drawCards',
   'impulseDraw',
   'addGrowth',
@@ -944,6 +947,10 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   black_grave_pressure: [{ trigger: 'onPlay', effect: 'exhaustFromDeck', amount: 2 }], // 自分で燃料を足してから刈る
   white_rank_thrust: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
   red_streak_bet: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }], // 固定の床3 (茨の報い型)
+  // 刃の葬列+ = ナイフをもう1枚 (per-Exhaust参照はコストに触れない裁定の受け皿)
+  black_blade_procession: [
+    { trigger: 'onPlay', effect: 'addCardToHand', amount: 1, summonId: 'black_shiv_token' },
+  ],
   // 上限参照の1E札はコストを0Eへ落とさない裁定 (2026-08-30) の受け皿
   green_sapling_strike: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 4 }],
   green_trunk_guard: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
@@ -951,6 +958,7 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
 const REFILL_FOR_UPGRADE = new Set([
+  'addCardToHand', // トークン生成も手札の補充 (0E化の無限ループ規約対象)
   'drawCards',
   'drawCardsPerCardPlayed',
   'dischargeAetherDraw',

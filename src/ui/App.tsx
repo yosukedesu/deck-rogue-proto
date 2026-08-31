@@ -379,6 +379,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}⚰️ 消滅置き場のカード1枚（リアクション以外）をコストを支払わず直接プレイ（そのカードは消滅置き場に残る）`
     case 'summonPermanent':
       return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す`
+    case 'addCardToHand':
+      return `${trigger}🗡️ ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚手札に加える（この戦闘限り）`
+    case 'empowerShivs':
+      return `${trigger}🗡️ 【常在】骨のナイフの与ダメージ+${e.amount}`
     case 'dischargeBurn':
       return `${trigger}💥 爆熱: 対象の延焼×${e.amount}ダメージを与え、延焼を全て失わせる`
     case 'shatterBlockConvert':

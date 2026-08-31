@@ -347,6 +347,7 @@ export type GameEvent =
   | { readonly type: 'MomentumAdded'; readonly amount: number }
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
+  | { readonly type: 'CardsAddedToHand'; readonly cardId: string; readonly count: number } // 骨刃などのトークン生成
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
   | { readonly type: 'TokenDestroyed'; readonly cardId: string } // トークン破壊 (敵メカニクス)
   | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
@@ -481,6 +482,8 @@ export interface DeclarativeEffect {
     | 'dealDamageDrain' // ドレイン (黒の専売): Xダメージを与え、floor(X/2)回復
     | 'exhaustFromDeck' // 忘却 (黒): 山札の上X枚を消滅させる (捨て札はリシャッフルで空になるため消滅を墓地とする)
     | 'exhaustFromDeckChoose' // 引導 (黒 2026-08-31): 山札か捨て札から好きなX枚を選んで消滅させる (combat.ts が deckUids で解決。亡骸・onCardExhausted は発火 = 狙い撃ちの起爆と燃料化)
+    | 'addCardToHand' // 骨刃 (黒 2026-09-01): summonId のトークン札X枚を手札に加える (この戦闘限り。ラン層のデッキには入らない)
+    | 'empowerShivs' // 骨刃の強化 (黒): 【常在】shivToken 札の与ダメ+X (プレイ時に注入。急所読み=StS Accuracy)
     | 'dealDamagePerExhaust' // 墓地参照 (黒): 消滅した枚数×Xダメージ (単調増加。衝動失効・消滅札とも共鳴)
     | 'dealDamageDrainPerExhaust' // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
     | 'dealDamagePerSelfHpLost' // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×Xダメージ (背徳の収穫)
@@ -644,6 +647,8 @@ export interface CardDef {
   readonly exhaustCost?: number
   /** 従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」) */
   readonly retainer?: boolean
+  /** 骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札 */
+  readonly shivToken?: boolean
 }
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */

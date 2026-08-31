@@ -955,6 +955,24 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'exhaustFromDeckChoose':
       // 引導 (黒): 山札か捨て札から選んで消滅。選択は combat.ts の playCard が deckUids で解決する
       return state
+    case 'addCardToHand': {
+      // 骨刃 (黒 2026-09-01): summonId のトークン札を手札に加える (この戦闘限り)。
+      // uid は eventLog 長ベース = 単調増加なので衝突せず、シードから決定的
+      const def = getCardDef(effect.summonId ?? '')
+      const made: CardInstance[] = Array.from({ length: effect.amount ?? 1 }, (_, i) => ({
+        uid: `tok_${state.eventLog.length}_${i}_${def.id}`,
+        def,
+        token: true,
+      }))
+      const s: GameState = {
+        ...state,
+        player: { ...state.player, hand: [...state.player.hand, ...made] },
+      }
+      return emit(s, { type: 'CardsAddedToHand', cardId: def.id, count: made.length })
+    }
+    case 'empowerShivs':
+      // 骨刃の強化 (急所読み): 常在パッシブ。加算は combat.ts の playCard がプレイ時に注入する
+      return state
     case 'dealDamagePerExhaust':
       // 墓地参照 (黒): 消滅した枚数×X (確定済みルール表「黒の柱」)
       return dealDamageToEnemy(

@@ -18,6 +18,7 @@ function allEffects(def: CardDef) {
  * どれだけ安くても必ず停止する (循環が閉じない)。
  */
 const REFILL_EFFECTS = [
+  'addCardToHand', // トークン生成も手札の補充 (骨刃 2026-09-01)
   'drawCards',
   'drawCardsPerCardPlayed',
   'dischargeAetherDraw',

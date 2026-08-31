@@ -2006,5 +2006,52 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "deck_shiv",
+    "name": "骨刃の宴",
+    "description": "骨刃アーキの理想形。ナイフを撒いて消滅置き場を太らせ、合唱・消滅数参照で刈る",
+    "cards": [
+      {
+        "cardId": "black_shiv_dance",
+        "count": 2
+      },
+      {
+        "cardId": "black_cloak_dagger",
+        "count": 2
+      },
+      {
+        "cardId": "black_shiv_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_quick_shiv",
+        "count": 1
+      },
+      {
+        "cardId": "black_infinite_blades",
+        "count": 1
+      },
+      {
+        "cardId": "black_accuracy",
+        "count": 1
+      },
+      {
+        "cardId": "black_whetstone_altar",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_chorus",
+        "count": 1
+      },
+      {
+        "cardId": "black_blade_procession",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      }
+    ]
   }
 ]

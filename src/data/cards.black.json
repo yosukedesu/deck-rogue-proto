@@ -1345,5 +1345,176 @@
         "target": "all"
       }
     ]
+  },
+  {
+    "id": "black_shiv_token",
+    "name": "骨のナイフ",
+    "cost": 0,
+    "type": "physical",
+    "rarity": "common",
+    "exhaust": true,
+    "shivToken": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "black_shiv_dance",
+    "name": "骨刃の舞",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 3,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_cloak_dagger",
+    "name": "外套と短刀",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 1,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_quick_shiv",
+    "name": "咄嗟の骨刃",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 1,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_shiv_strike",
+    "name": "骨刃流し",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 1,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_infinite_blades",
+    "name": "果てなき骨刃",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addCardToHand",
+        "amount": 1,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_accuracy",
+    "name": "急所読み",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "empowerShivs",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_shiv_rain",
+    "name": "骨刃の雨",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 4,
+        "summonId": "black_shiv_token"
+      }
+    ]
+  },
+  {
+    "id": "black_blade_procession",
+    "name": "刃の葬列",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "amount": 1,
+        "summonId": "black_shiv_token"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerExhaust",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_whetstone_altar",
+    "name": "刃研ぎの祭壇",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addCardToHand",
+        "amount": 1,
+        "summonId": "black_shiv_token"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "empowerShivs",
+        "amount": 2
+      }
+    ]
   }
 ]

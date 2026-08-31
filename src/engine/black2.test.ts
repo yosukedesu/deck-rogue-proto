@@ -321,3 +321,45 @@ describe('魂の薪 (2026-09-01 消滅時にエナジーを生む札)', () => {
     expect(s.player.exhaustPile.some((c) => c.def.id === 'black_soul_kindling')).toBe(true)
   })
 })
+
+describe('骨刃 (2026-09-01 本家Shivの黒移植)', () => {
+  it('骨刃の舞: 骨のナイフ3枚が手札に加わり、打つと4ダメ+消滅置き場へ (合唱が鳴る)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_perm_chorus',
+      'black_shiv_dance',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_perm_chorus' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_shiv_dance' })
+    const shivs = s.player.hand.filter((c) => c.def.id === 'black_shiv_token')
+    expect(shivs).toHaveLength(3)
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: shivs[0].uid })
+    // ナイフ4ダメ + 消滅で合唱1ダメ
+    expect(s.enemies[0].hp).toBe(enemyHp - 4 - 1)
+    expect(s.player.exhaustPile.some((c) => c.def.id === 'black_shiv_token')).toBe(true)
+  })
+
+  it('急所読み (empowerShivs): ナイフの与ダメが常在で+3される (StS Accuracy)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_accuracy',
+      'black_quick_shiv',
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_accuracy' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_quick_shiv' })
+    const shiv = s.player.hand.find((c) => c.def.id === 'black_shiv_token')!
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: shiv.uid })
+    expect(s.enemies[0].hp).toBe(enemyHp - (4 + 3))
+  })
+
+  it('果てなき骨刃: 毎ターン開始にナイフ1枚 (置物)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_infinite_blades',
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_infinite_blades' })
+    s = withIntent(s, { kind: 'defend', shownMin: 0, shownMax: 0, actual: 0 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.hand.some((c) => c.def.id === 'black_shiv_token')).toBe(true)
+  })
+})
