@@ -228,7 +228,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(2)
   })
 
-  it('物理×リアクション → 罠に吸収: 打撃×茨の返し = 被攻撃後6ダメ+返し9 (onPlay効果が残らない)', () => {
+  it('物理×リアクション → 罠に吸収: 打撃×茨の返し = 被攻撃後10ダメ+返し10 (onPlay効果が残らない)', () => {
     const def = fuseCards(inst('green_strike'), inst('green_reaction_thorns'))
     expect(def.type).toBe('reaction')
     expect(def.name.endsWith('の罠')).toBe(true)
@@ -236,7 +236,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     expect(def.effects.every((e) => e.trigger !== 'onPlay')).toBe(true)
     const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
     expect(dmg.trigger).toBe('onAttacked') // 支配側 (茨の返し) の主窓に吸収
-    expect(dmg.amount).toBe(6)
+    expect(dmg.amount).toBe(10) // 合成プレミアム×1.25 (2026-09-01) で 6→10
     expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(10)
   })
 
@@ -246,19 +246,20 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     const counters = def.effects.filter((e) => e.effect === 'counter')
     expect(counters).toHaveLength(2)
     // 2026-08-30: コストは素材の合計 (1E+1E) を超えない。条件付きは期待値係数0.6で
-    // 数えるため圧縮が浅くなり 9→8 / 20→16。条件違いが**別の効果のまま**であることは不変
+    // 数えるため圧縮が浅くなる。条件違いが**別の効果のまま**であることは不変。
+    // 合成プレミアム×1.25 (2026-09-01) で 8→10 / 16→20
     expect(def.cost).toBe(2)
-    expect(counters.some((e) => e.amount === 8 && e.condition === undefined)).toBe(true)
-    expect(counters.some((e) => e.amount === 16 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
+    expect(counters.some((e) => e.amount === 10 && e.condition === undefined)).toBe(true)
+    expect(counters.some((e) => e.amount === 20 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
   })
 
-  it('置物化: 打撃6×年輪の大樹 → 毎ターン2ダメ (÷3切り上げ) + 成長1。従者の少年のラダーに整合', () => {
+  it('置物化: 打撃6×年輪の大樹 → 毎ターンダメ (÷3切り上げ) + 成長1。窓の変換則を固定', () => {
     const def = fuseCards(inst('green_strike'), inst('green_perm_growth_tree'))
     expect(def.type).toBe('permanent')
     expect(def.name.endsWith('の大樹')).toBe(true)
     const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
     expect(dmg.trigger).toBe('onTurnStart')
-    expect(dmg.amount).toBe(2) // ceil(6/3)
+    expect(dmg.amount).toBe(4) // ceil(6/3)=2 に合成プレミアム×1.25 (2026-09-01。プレミアムはスケール可能な量へ集中配分される)
     const growth = def.effects.find((e) => e.effect === 'addGrowth')!
     expect(growth.trigger).toBe('onTurnStart')
     expect(growth.amount).toBe(1) // 置物側は既に毎ターン型なので÷3しない
@@ -297,7 +298,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
     const def = fuseCards(inst('green_reaction_vine'), inst('green_perm_growth_tree'))
     // 守りの蔓 (onAttackIncoming ブロック12) → 置物はこの窓で誘発できるので窓を保持し÷3
     const blk = def.effects.find((e) => e.effect === 'gainBlock' && e.trigger === 'onAttackIncoming')!
-    expect(blk.amount).toBe(3) // ceil(12/3)=4 から、素材合計3Eに収めるぶん1削られる
+    expect(blk.amount).toBe(4) // ceil(12/3)=4 → 素材合計3Eへの圧縮で3 → プレミアム×1.25で4へ復帰
     expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(1) // 置物側は据え置き
   })
 
@@ -407,7 +408,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(3) // ヒット合算 (2026-08-30): 2+1=3ヒット (旧: 最大側の2に按分)
     expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
-    expect(dmgs[0].amount).toBe(5) // 価値保存: 量は下がるがヒットは増える (成長の乗り先が3回に)
+    expect(dmgs[0].amount).toBe(6) // 価値保存×プレミアム1.25: ヒットが増えた上で per-hit も戻る (成長の乗り先が3回に)
   })
 
   it('全体×貫通: 薙ぎ払い(全体6)×牙の一撃(14貫通) → 全体・貫通の一撃', () => {
@@ -416,9 +417,9 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     expect(dmg.target).toBe('all')
     expect(dmg.pierce).toBe(true)
     // 価値保存 (2026-08-30): 全体×2と貫通×1.25が無料で乗っていたのを是正 (24→14)。
-    // さらに素材コスト合計 (2E+2E) までコストを抑えるぶん 14→11 に圧縮される
+    // 素材コスト合計 (2E+2E) への圧縮で11 → 合成プレミアム×1.25 (2026-09-01) で14へ復帰
     expect(def.cost).toBe(4)
-    expect(dmg.amount).toBe(11)
+    expect(dmg.amount).toBe(14)
     // 薙ぎ払いの成長+1も引き継がれる
     expect(def.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
   })
@@ -427,7 +428,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(Math.ceil((2 * 5 + 34) / 5)) // 9×5 (大型バニラプレミアム後)
+    expect(dmgs[0].amount).toBe(Math.ceil(((2 * 5 + 34) * 1.25) / 5)) // 11×5 (大型バニラプレミアム+合成プレミアム後)
     expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
   })
 
@@ -503,24 +504,24 @@ describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名�
   it('打撃×打撃 → 真・打撃 (量が2枚ぶんに圧縮され、コストはVP逆算で1E)', () => {
     const def = fuseCards(inst('green_strike', 'u1'), inst('green_strike', 'u2'))
     expect(def.name).toBe('真・打撃')
-    expect(def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(12) // 6+6
-    expect(def.cost).toBe(1) // (12×0.85-2)/6 ≈ 1.4 → 1E
+    expect(def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(15) // (6+6)×プレミアム1.25
+    expect(def.cost).toBe(1) // コストはプレミアム前のVPから逆算 = 据え置き (工房の目玉)
   })
 
   it('蔦の乱舞×蔦の乱舞 → 5ヒットのまま量が倍 (4×5)', () => {
     const def = fuseCards(inst('green_sig_vine_dance', 'u1'), inst('green_sig_vine_dance', 'u2'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(4) // (10+10)/5
+    expect(dmgs[0].amount).toBe(5) // (10+10)×1.25/5
   })
 
-  it('同名リアクションも合成できる (茨の返し×2 → 返し20。トリガー・条件が同一なので安全)', () => {
+  it('同名リアクションも合成できる (茨の返し×2 → 返し25。トリガー・条件が同一なので安全)', () => {
     const a = inst('green_reaction_thorns', 'u1')
     const b = inst('green_reaction_thorns', 'u2')
     expect(fuseBlockReason(a, b)).toBeNull()
     const def = fuseCards(a, b)
     expect(def.type).toBe('reaction')
-    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(20)
+    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(25) // (10+10)×1.25
     expect(def.name).toBe('真・茨の返し')
   })
 

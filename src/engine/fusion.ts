@@ -72,6 +72,8 @@ const VP_PER: Record<string, number> = {
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
 /** コスト別の許容VP (§1)。ALLOW = 6×コスト + 2 (+2 = カード1枚の機会費用＝札束補正) */
 const ALLOW: Record<number, number> = { 1: 8, 2: 14, 3: 20, 4: 26, 5: 32 }
+/** 合成プレミアム (2026-09-01): 量の出力に掛かる倍率。「工房はランの目玉」の魅力を数字で保証する */
+const FUSION_PREMIUM = 1.25
 
 function effectVp(e: DeclarativeEffect): number {
   const mult = e.target === 'all' ? 2 : 1
@@ -450,6 +452,17 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
     } else {
       reactionOverCap = true // 削れる量が無いのに2Eを超える (ほぼ到達不能) = 合成不可
     }
+  }
+
+  // --- 合成プレミアム (2026-09-01 ユーザー体感「工房が弱すぎて面白くなくなってる」) ---
+  // 価値保存の公正化 (2026-08-30) は+49%の水増しバグ是正としては正しかったが、125%帯への
+  // 値付けが「工房はランの目玉・多少の壊れは許容」(同日ユーザー方針) の魅力まで削っていた。
+  // コストは据え置き (「素材コスト合計以下」の契約は不変) で、量の出力だけを×1.25する =
+  // 「2枚が溶け合う時、価値は足し算を1/4超える」。典型の仕上がりは定価150〜160%。
+  // 帯超過 (187.5%) を超えた分は直後の既存チェックが消滅で払わせる = 法体系は不変
+  if (canScale) {
+    fitTo(vpOf(effects, resultType) * FUSION_PREMIUM)
+    effects = [...damageEffects, ...othersArr]
   }
 
   let vp = vpOf(effects, resultType)
