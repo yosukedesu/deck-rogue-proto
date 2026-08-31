@@ -266,7 +266,16 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx, holderType?: st
   if (t !== undefined) {
     const met = ctx !== undefined && ctx.exhausted >= t
     const shown = met ? { ...e, amount: e.amountMax } : e
-    const note = met ? `〔忘却の刻${t}: 発動中⚡〕` : `〔忘却の刻${t}: ${e.amountMax}に強化〕`
+    // amountMax < amount は「刻に達したら弱まる/止まる」安全弁 (冒涜の祭壇=ミル停止)。
+    // 「強化」と表示すると壊れて見える (2026-09-01 黒Opusランの指摘)
+    const weaker = (e.amountMax ?? 0) < (e.amount ?? 0)
+    const note = weaker
+      ? met
+        ? `〔忘却の刻${t}: ${e.amountMax === 0 ? '停止中' : `${e.amountMax}に減少中`}〕`
+        : `〔忘却の刻${t}: ${e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`}〕`
+      : met
+        ? `〔忘却の刻${t}: 発動中⚡〕`
+        : `〔忘却の刻${t}: ${e.amountMax}に強化〕`
     return `${renderEffectItemCore(shown, ctx, holderType)} ${note}`
   }
   return renderEffectItemCore(e, ctx, holderType)

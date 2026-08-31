@@ -53,7 +53,10 @@ interface SaveFile {
 function fx(e: DeclarativeEffect, holderType?: string): string {
   const a = e.amount ?? 0
   const all = e.target === 'all' ? '敵全体に' : ''
-  const th = e.exhaustThreshold !== undefined ? `〔忘却の刻${e.exhaustThreshold}: ${e.amountMax}に強化〕` : ''
+  // amountMax < amount は弱まる/止まる側の安全弁 (冒涜の祭壇=刻5でミル停止)。「強化」と書かない
+  const th = e.exhaustThreshold !== undefined
+    ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に強化`}〕`
+    : ''
   const base: Record<string, string> = {
     dealDamage: `${all}${a}ダメージ${e.pierce === true ? '(貫通)' : ''}${xHitsSuffix(e)}`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
@@ -539,7 +542,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     }
     L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+50G)`)
     L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
-    L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号${run.act === 1 ? '。※幕1は強化サービス利用不可' : ''}) / {"type":"ShopLeave"}`)
+    L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopLeave"}`)
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'event') {
