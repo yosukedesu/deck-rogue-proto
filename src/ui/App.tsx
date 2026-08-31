@@ -44,7 +44,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { BOSS_ROW, GRID_COLS, MAP_ROWS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -883,10 +883,12 @@ function SetupScreen({
   onStartRun,
 }: {
   onStart: (cfg: Config) => void
-  onStartRun: (seed: number, leaderId: string, runDeckId?: string) => void
+  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number) => void
 }) {
   const [enemyId, setEnemyId] = useState(allEnemies[0].id)
   const [leaderId, setLeaderId] = useState(allLeaders[0].id)
+  // 難易度 (確定済みルール表「難易度」): 1〜10・既定3=現状維持
+  const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
   const leader = getLeaderDef(leaderId)
   const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
   const [deckId, setDeckId] = useState(allowedDecks[0].id)
@@ -935,6 +937,24 @@ function SetupScreen({
           {leader.name}の基本10枚から出発し、勝利ごとに{leader.colors.map((c) => COLOR_LABEL[c]).join('')}
           の{leader.rewardChoices}枚から1枚ピックして構築。敵は段階制でだんだん強くなり、HPは持ち越し。
         </div>
+        <div style={{ marginTop: 10 }}>
+          <span className="choice-title">🎚 難易度 </span>
+          {DIFFICULTY_TABLE.map((_, i) => (
+            <button
+              key={i}
+              className={`btn${difficulty === i + 1 ? ' btn-primary' : ''}`}
+              style={{ minWidth: 34, marginRight: 4, marginBottom: 4 }}
+              onClick={() => setDifficulty(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <div className="choice-desc">
+            {difficulty === DEFAULT_DIFFICULTY
+              ? `${DEFAULT_DIFFICULTY}: 標準（現状のバランス）`
+              : `${difficulty}: 敵HP×${DIFFICULTY_TABLE[difficulty - 1].hp} / 敵打点×${DIFFICULTY_TABLE[difficulty - 1].atk}${difficulty < DEFAULT_DIFFICULTY ? '（易しめ）' : ''}`}
+          </div>
+        </div>
         {(leader.runDeckChoices ?? [leader.runDeckId]).length > 1 ? (
           <div className="choice-row" style={{ marginTop: 8 }}>
             {(leader.runDeckChoices ?? []).map((deckId) => {
@@ -943,7 +963,7 @@ function SetupScreen({
                 <button
                   key={deckId}
                   className="choice"
-                  onClick={() => onStartRun(parseSeed(), leaderId, deckId)}
+                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty)}
                 >
                   <div className="choice-title">{leader.sprite} {deck?.name ?? deckId}で開始</div>
                   <div className="choice-desc">{deck?.description}</div>
@@ -955,7 +975,7 @@ function SetupScreen({
           <button
             className="btn btn-primary"
             style={{ marginTop: 8 }}
-            onClick={() => onStartRun(parseSeed(), leaderId)}
+            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty)}
           >
             {leader.sprite} {leader.name}でランを開始
           </button>
@@ -2545,7 +2565,7 @@ function RunScreen({
   onRestart: (seed: number) => void
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
-  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/18)` : `行${run.row + 1}/18・${run.battlesWon}勝`}・デッキ${run.deck.length}枚`
+  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/18)` : `行${run.row + 1}/18・${run.battlesWon}勝`}・デッキ${run.deck.length}枚・🎚${run.difficulty ?? DEFAULT_DIFFICULTY}`
   // 報酬ピックの「鍛えた姿(+)で表示」(2026-08-31 ユーザー要望。本家のアップグレードプレビュー相当)
   const [showUpgradedPick, setShowUpgradedPick] = useState(false)
   const ctx = undefined
@@ -2580,6 +2600,7 @@ function RunScreen({
             <span className="chip">💰 {run.gold}G</span>
             <DeckChip run={run} />
             <span className="chip">{run.battlesWon}勝</span>
+            <span className="chip">🎚 難易度 {run.difficulty ?? DEFAULT_DIFFICULTY}</span>
           </div>
           {relicChips}
         </div>
@@ -2954,7 +2975,7 @@ function RunScreen({
       <div className="panel">
         <div className="choice-desc">
           到達: {won ? 'ボス撃破' : `${run.battlesWon}戦クリア`} / seed {run.seed} /
-          最終デッキ {run.deck.length}枚
+          難易度 {run.difficulty ?? DEFAULT_DIFFICULTY} / 最終デッキ {run.deck.length}枚
         </div>
         <div className="choice-desc" style={{ marginTop: 6 }}>
           ピック履歴:{' '}
@@ -3103,15 +3124,16 @@ export default function App() {
         }}
         onRestart={(seed) => {
           setRunHistory([])
-          setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green'))
+          // 難易度はリスタートでも引き継ぐ (旧セーブ由来の欠落は既定3)
+          setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green', undefined, prev?.difficulty ?? DEFAULT_DIFFICULTY))
         }}
       />
     )
   }
   if (state === null || config === null) {
-    return <SetupScreen onStart={start} onStartRun={(seed, leaderId, runDeckId) => {
+    return <SetupScreen onStart={start} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
         setRunHistory([])
-        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId))
+        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))
       }} />
   }
   return (

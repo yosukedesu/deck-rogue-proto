@@ -1,7 +1,7 @@
 // sim/play.ts — LLM/人間がテキストで1手ずつプレイするためのCLIハーネス
 //
 // 使い方 (状態はJSONファイルに保存され、1コマンド=1プロセスで進める):
-//   npx tsx src/sim/play.ts new-run <leaderId> <seed> <stateFile> [deckId]  (deckId省略時はリーダー既定。このは: run_basic=大樹の道 / run_trample=荒角の道)
+//   npx tsx src/sim/play.ts new-run <leaderId> <seed> <stateFile> [deckId] [difficulty]  (deckId省略時はリーダー既定。difficulty=1〜10・省略時3=現状)
 //   npx tsx src/sim/play.ts new-battle <deckId> <enemyId> <seed> <stateFile>
 //   npx tsx src/sim/play.ts cmd <stateFile> '<コマンドJSON>'
 //   npx tsx src/sim/play.ts show <stateFile>
@@ -491,7 +491,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
   // 倒した盗人 (逃走前) の抱えた金は勝利時に戻るので「盗まれ中」に数えない (2026-08-31 再検証ラン指摘①)
   const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.hp > 0 || e.fled === true ? (e.stolenGold ?? 0) : 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
-  L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/18`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/18`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
@@ -595,8 +595,8 @@ function currentLogLength(sf: SaveFile): number {
 
 const [, , mode, ...args] = process.argv
 if (mode === 'new-run') {
-  const [leaderId, seed, file, deckId] = args
-  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined)
+  const [leaderId, seed, file, deckId, difficulty] = args
+  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined)
   const sf: SaveFile = { kind: 'run', run, logIndex: 0 }
   save(file, sf)
   console.log(renderRun(run, 0))
@@ -674,5 +674,5 @@ if (mode === 'new-run') {
       : renderBattle(sf.battle!, tail(sf.battle)),
   )
 } else {
-  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
+  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
 }

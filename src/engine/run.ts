@@ -125,6 +125,30 @@ export function depthStrength(row: number): number {
   return row >= BOSS_ROW ? 1 : 0
 }
 
+/**
+ * 難易度10段階 (確定済みルール表「難易度」2026-09-01 ユーザー指示「敵が弱い」)。
+ * 段3＝現状維持 (×1.0/×1.0)。打点優先で伸ばす＝「同じ危険を短く濃く」の既定路線。
+ * 全敵一律 (ボス・エリート含む)。既存の幕スケール・打点+15%の上に乗算する。
+ */
+export const DIFFICULTY_TABLE: readonly { readonly hp: number; readonly atk: number }[] = [
+  { hp: 0.85, atk: 0.85 }, // 1
+  { hp: 0.95, atk: 0.95 }, // 2
+  { hp: 1.0, atk: 1.0 }, // 3 = 既定 (現状維持)
+  { hp: 1.05, atk: 1.1 }, // 4
+  { hp: 1.1, atk: 1.2 }, // 5
+  { hp: 1.15, atk: 1.3 }, // 6
+  { hp: 1.2, atk: 1.4 }, // 7
+  { hp: 1.25, atk: 1.5 }, // 8
+  { hp: 1.3, atk: 1.6 }, // 9
+  { hp: 1.35, atk: 1.75 }, // 10
+]
+export const DEFAULT_DIFFICULTY = 3
+/** 難易度→倍率。範囲外と旧セーブの欠落 (undefined) は既定3へ丸める */
+export function difficultyScale(level: number | undefined): { readonly hp: number; readonly atk: number } {
+  const n = Number.isFinite(level) ? Math.round(level as number) : DEFAULT_DIFFICULTY
+  return DIFFICULTY_TABLE[Math.min(DIFFICULTY_TABLE.length, Math.max(1, n)) - 1]
+}
+
 /** 深度スケーリング: 敵HP倍率。確定済みルール表「敵の数値基準」の帯に対応する */
 export function depthHpScale(row: number, act = 1): number {
   // 幕×幕内前後半の2段スケール (確定済みルール表「ランの敵強化」2026-08-29 3幕化)。
@@ -159,6 +183,8 @@ export interface RunState {
   readonly leaderId: string
   /** リーダーの色アイデンティティ (leaderId から導出してキャッシュ) */
   readonly colors: readonly CardColor[]
+  /** 難易度 (1〜10・既定3=現状維持。確定済みルール表「難易度」。旧セーブに無いので読み取りは difficultyScale 経由) */
+  readonly difficulty: number
   /** ラン専用RNG (敵並び・報酬・戦闘シードの決定に使う) */
   readonly rng: RngState
   /** 現在のデッキ (ピックで増える) */
@@ -265,6 +291,8 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
   const encounterId = encounterOverride ?? node?.encounterId ?? null
   if (node === null || encounterId === null) throw new Error('戦闘ノードではない')
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
+  // 難易度倍率 (確定済みルール表「難易度」): 全敵一律で既存スケールの上に乗算
+  const diff = difficultyScale(run.difficulty)
   const combat = startCombatWithOptions(combatSeed, run.mode, encounterId, {
     deck: run.deck,
     leaderId: run.leaderId,
@@ -274,17 +302,18 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     // 幕2以降のボスが1幕時代の校正のままで消化試合化していた実測への対処
     // エリート専用敵は素の値で完成 = 幕内深度スケールも掛けない (2026-08-31 緑Opusランで発見:
     // depthHpScale が残っていて鬼軍曹82→45・鉄卵112→90 と設計値の55〜80%で出ていた)
-    enemyHpScale: elite
-      ? 1
-      : depthHpScale(run.row, run.act) *
-        // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
-        (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1),
+    enemyHpScale:
+      (elite
+        ? 1
+        : depthHpScale(run.row, run.act) *
+          // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
+          (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1)) * diff.hp,
     enemyStrength:
       (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
     // 幕2/3の通常敵は打点+15% (2026-09-01 ユーザー裁定。HP経済ラン2本連続「幕2で被ダメ0の
     // 戦闘が過半=育ったデッキに打点が届かない」への処方。HP帯は据え置き=危険だけ濃くする。
-    // ボス・エリートは各自の校正 (幕スケール/素の値) があるため対象外)
-    enemyAtkScale: elite || node.type === 'boss' ? 1 : [1, 1.15, 1.15][run.act - 1],
+    // ボス・エリートは各自の校正 (幕スケール/素の値) があるため対象外。難易度倍率は全敵一律に乗る)
+    enemyAtkScale: (elite || node.type === 'boss' ? 1 : [1, 1.15, 1.15][run.act - 1]) * diff.atk,
     relicPermanents: run.relics
       .map(getRelicDef)
       .filter((r) => (r.effects?.length ?? 0) > 0)
@@ -618,6 +647,7 @@ export function createRun(
   mode: ReactionMode,
   leaderId = 'leader_green',
   deckId?: string,
+  difficulty = DEFAULT_DIFFICULTY,
 ): RunState {
   const leader = getLeaderDef(leaderId)
   // 種の選択制 (確定済みルール表「ラン初期デッキ」): リーダーが許可する初期デッキのみ受け付ける
@@ -646,6 +676,10 @@ export function createRun(
     mode,
     leaderId,
     colors: leader.colors,
+    // 範囲外・非数は表の端/既定へ丸めて保存 (以降の読み取りも difficultyScale が守る)
+    difficulty: Number.isFinite(difficulty)
+      ? Math.min(DIFFICULTY_TABLE.length, Math.max(1, Math.round(difficulty)))
+      : DEFAULT_DIFFICULTY,
     rng: rngAfterRelics,
     deck: buildDeck(chosenDeck),
     hp: leader.maxHp,

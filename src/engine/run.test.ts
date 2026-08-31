@@ -7,8 +7,11 @@ import {
   applyRunCommand,
   createRun,
   currentNode,
+  DEFAULT_DIFFICULTY,
   depthHpScale,
   depthStrength,
+  DIFFICULTY_TABLE,
+  difficultyScale,
   isUpgraded,
   upgradeCard,
 } from './run.ts'
@@ -457,5 +460,59 @@ describe('スターター札は報酬プールに出ない (2026-08-30 中立ス
         expect(run.rewardOptions, `seed${seed}`).not.toContain(id)
       }
     }
+  })
+})
+
+describe('難易度10段階 (確定済みルール表「難易度」2026-09-01)', () => {
+  it('表の固定: 10段・段3=×1.0/×1.0・段10=HP×1.35/打点×1.75・単調非減少・打点優先', () => {
+    expect(DIFFICULTY_TABLE).toHaveLength(10)
+    expect(DEFAULT_DIFFICULTY).toBe(3)
+    expect(DIFFICULTY_TABLE[2]).toEqual({ hp: 1.0, atk: 1.0 })
+    expect(DIFFICULTY_TABLE[9]).toEqual({ hp: 1.35, atk: 1.75 })
+    expect(DIFFICULTY_TABLE[0].hp).toBeLessThan(1) // 1〜2は現状より易しい側
+    for (let i = 1; i < 10; i++) {
+      expect(DIFFICULTY_TABLE[i].hp).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].hp)
+      expect(DIFFICULTY_TABLE[i].atk).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].atk)
+    }
+    // 打点優先 (ユーザー選択): 4以上の段では打点倍率がHP倍率以上
+    for (let i = 3; i < 10; i++) {
+      expect(DIFFICULTY_TABLE[i].atk).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i].hp)
+    }
+  })
+
+  it('difficultyScale: 旧セーブの欠落 (undefined) は既定3・範囲外は表の端へ丸める', () => {
+    expect(difficultyScale(undefined)).toEqual({ hp: 1.0, atk: 1.0 })
+    expect(difficultyScale(0)).toEqual(DIFFICULTY_TABLE[0])
+    expect(difficultyScale(99)).toEqual(DIFFICULTY_TABLE[9])
+  })
+
+  it('createRun の既定は3 (現状維持) で、範囲外指定は丸めて保存する', () => {
+    expect(createRun(1, 'set-confirm').difficulty).toBe(DEFAULT_DIFFICULTY)
+    expect(createRun(1, 'set-confirm', 'leader_green', undefined, 15).difficulty).toBe(10)
+  })
+
+  it('難易度10は最初の戦闘から敵HP・打点が上がる (段3との同シード比較)', () => {
+    const first = (d: number) =>
+      intoFirstBattle(createRun(42, 'set-confirm', 'leader_green', undefined, d)).combat!
+    const base = first(3)
+    const hard = first(10)
+    expect(hard.enemies[0].enemyId).toBe(base.enemies[0].enemyId) // 同シード=同じ敵
+    // HP×1.35 (丸めは combat 側で1回だけ)
+    expect(hard.enemies[0].maxHp / base.enemies[0].maxHp).toBeCloseTo(1.35, 1)
+    expect(hard.enemies[0].atkScale).toBe(1.75) // 幕1通常敵: 1 × 1.75
+    expect(base.enemies[0].atkScale).toBeUndefined() // 段3=×1.0 は現状と完全一致 (無印)
+  })
+
+  it('全敵一律 (ユーザー選択): ボス・エリートにも難易度倍率が掛かる', () => {
+    const to = (d: number, target: 'boss' | 'elite') =>
+      runTo(createRun(7, 'set-confirm', 'leader_green', undefined, d), target)
+    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(1.75)
+    // エリート: 素の値×難易度のみ (幕内深度スケールを掛けない既存裁定は維持)
+    const e3 = to(3, 'elite').combat!.enemies[0]
+    const e10 = to(10, 'elite').combat!.enemies[0]
+    expect(e10.enemyId).toBe(e3.enemyId) // 難易度はRNG列に影響しない=同じ敵
+    expect(e10.maxHp / e3.maxHp).toBeCloseTo(1.35, 1)
+    expect(e10.atkScale).toBe(1.75)
+    expect(e3.atkScale).toBeUndefined()
   })
 })
