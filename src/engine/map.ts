@@ -52,18 +52,25 @@ export type RunMap = readonly (readonly MapNode[])[]
 
 export const MAP_ROWS = 18
 export const BOSS_ROW = MAP_ROWS - 1
-/** 全パスが通る強制焚き火行 (16=ボス前休憩は本家準拠。焚き火間の最大連戦 5/5/4) */
-export const FORCED_CAMPFIRE_ROWS: ReadonlySet<number> = new Set([5, 11, 16])
+/**
+ * 全パスが通る強制焚き火行 (2026-08-31 本家配置化: 行16=ボス前休憩のみ。本家の「最上段は全て
+ * 休憩」準拠)。残りの焚き火は部屋タイプ (重み12%) として散布する — 旧5/11の強制行は廃止し、
+ * 「どこで休むか」をルート選択に入れる (焚き火間の最大連戦保証も本家に無いので廃止)
+ */
+export const FORCED_CAMPFIRE_ROWS: ReadonlySet<number> = new Set([16])
 
 /**
  * 本家の部屋タイプ重み。本家の癖ごと写す = 「幕の全ノード数」に掛けて枚数を作り、
  * 自由ノードにだけ配る → 自由ノード内の実効密度が名目より上がる (本家も同じ構造)
  */
-const ROOM_WEIGHTS: Readonly<Record<'shop' | 'workshop' | 'event', number>> = {
+const ROOM_WEIGHTS: Readonly<Record<'shop' | 'workshop' | 'event' | 'campfire', number>> = {
   shop: 0.05,
   workshop: 0.05,
   event: 0.22,
+  campfire: 0.12, // 本家の Rest 重み
 }
+/** 焚き火を置ける最小行 (本家「6階より下に休憩なし」= index 5 以降) */
+const CAMPFIRE_MIN_ROW = 5
 /** エリートだけは員数固定。重み8%だと幕3個=1パス1.31体でレリック供給が-28%になるため */
 const ELITE_COUNT = 4
 /** エリートを置ける最小行。本家は floor1〜5 禁止だが、序盤のレリック供給を守るため行2から */
@@ -77,8 +84,12 @@ const MIN_COMBAT_PER_PATH = 8
  * (完全回避可能なルートの成立は不変 — これは「狙えば拾える」側の保証)
  */
 const ELITE_PATH_MIN = 3
-/** 親と同タイプを禁止する部屋 (本家準拠。?と戦闘は対象外 = ?の縦連続は許可) */
-const PARENT_EXCLUSIVE: ReadonlySet<MapNodeType> = new Set(['elite', 'shop', 'workshop'])
+/**
+ * 親と同タイプを禁止する部屋 (本家準拠 = elite/shop/rest。?と戦闘は対象外 = ?の縦連続は許可)。
+ * campfire を含めることで、行16 (全ノード焚き火) の親 = 行15 に焚き火が置かれない
+ * = 本家の「13階に休憩なし」と同じ効果が自動で出る
+ */
+const PARENT_EXCLUSIVE: ReadonlySet<MapNodeType> = new Set(['elite', 'shop', 'workshop', 'campfire'])
 /** 生成リトライの上限 (パスとエッジを引き直す単一段階) */
 const MAX_PLACEMENT_TRIES = 5000
 /** 格子の列数と歩かせるパスの本数 (本家: 7列×6本) */
@@ -220,13 +231,20 @@ export function generateMap(
     const total = widths.reduce((a, b) => a + b, 0)
     const quota: readonly (readonly [MapNodeType, number])[] = [
       ['elite', ELITE_COUNT],
+      ['campfire', Math.round(total * ROOM_WEIGHTS.campfire)], // 本家Rest: 散布される休憩
       // 工房 (合成v1は緑同士のみ) は緑を含まないランでは配置しない。枠は戦闘に置き換わる
       ['workshop', allowWorkshop ? Math.round(total * ROOM_WEIGHTS.workshop) : 0],
       ['shop', Math.round(total * ROOM_WEIGHTS.shop)],
       ['event', Math.round(total * ROOM_WEIGHTS.event)],
     ]
     const specialAt = new Map<string, MapNodeType>()
-    const typeAt = (r: number, c: number): MapNodeType => specialAt.get(`${r}:${c}`) ?? 'battle'
+    // 強制行・ボス行も正しい型を返す (親同種禁止が「行15の焚き火」を自動で弾くために必要)
+    const typeAt = (r: number, c: number): MapNodeType =>
+      r === BOSS_ROW
+        ? 'boss'
+        : FORCED_CAMPFIRE_ROWS.has(r)
+          ? 'campfire'
+          : (specialAt.get(`${r}:${c}`) ?? 'battle')
     // 自由ノード = 行0 (本家 floor1 は全て通常戦闘)・強制焚き火行・ボス行 を除く全ノード
     const freeNodes: (readonly [number, number])[] = []
     for (let r = 1; r < BOSS_ROW; r++) {
@@ -235,6 +253,7 @@ export function generateMap(
     }
     const assignable = (r: number, c: number, t: MapNodeType): boolean => {
       if (t === 'elite' && r < ELITE_MIN_ROW) return false
+      if (t === 'campfire' && r < CAMPFIRE_MIN_ROW) return false // 本家「6階より下に休憩なし」
       // 兄弟同種禁止: 同じ親を共有する同行ノードと同タイプにしない (本家は全種が対象)
       for (let c2 = 0; c2 < widths[r]; c2++) {
         if (c2 === c || typeAt(r, c2) !== t) continue
@@ -251,9 +270,8 @@ export function generateMap(
     }
     // 戦闘数DP: 全パスの最小戦闘数 (エリートは戦闘に数える。焚き火・ボスは0)
     const combatOf = (r: number, c: number): number => {
-      if (r === BOSS_ROW || FORCED_CAMPFIRE_ROWS.has(r)) return 0
       const t = typeAt(r, c)
-      return t === 'workshop' || t === 'shop' || t === 'event' ? 0 : 1
+      return t === 'battle' || t === 'elite' ? 1 : 0
     }
     const minCombats = (): number => {
       let minC = Array.from({ length: widths[0] }, (_, c) => combatOf(0, c))
@@ -273,7 +291,7 @@ export function generateMap(
       // 非戦闘ノードは「置くと戦闘数の床を割る位置」を候補から外す (2026-08-31 パスウォーク化に伴う)。
       // 旧・棄却サンプリングは分岐の濃いDAGで「特別ノードを7個以上通せるパス」がほぼ必ず存在し
       // 生成が数百回リトライしていた。床はここで構成的に守り、最後のDP検証は保険として残す
-      const guardsFloor = t === 'workshop' || t === 'shop' || t === 'event'
+      const guardsFloor = t === 'campfire' || t === 'workshop' || t === 'shop' || t === 'event'
       for (let k = 0; k < n; k++) {
         const cand = freeNodes.filter(([r, c]) => {
           const key = `${r}:${c}`
@@ -322,8 +340,7 @@ export function generateMap(
       const rowNodes: MapNode[] = []
       const rowEnemies: string[] = []
       for (let c = 0; c < widths[r]; c++) {
-        const type: MapNodeType =
-          r === BOSS_ROW ? 'boss' : FORCED_CAMPFIRE_ROWS.has(r) ? 'campfire' : typeAt(r, c)
+        const type: MapNodeType = typeAt(r, c) // 強制行・ボス行も typeAt が正しい型を返す
         let encounterId: string | null = null
         if (type === 'battle' || type === 'elite' || type === 'boss') {
           const basePool = tierFor(act, r)

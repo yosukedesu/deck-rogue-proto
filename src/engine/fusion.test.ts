@@ -23,7 +23,9 @@ function forceWin(run: RunState): RunState {
 function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
   let r = run
   let guard = 0
-  while (guard++ < 80) {
+  // 工房は幕2以降にしか無い (供給を後ろへ)。幕1を丸ごと走破してから探すので上限は広めに取る
+  // (2026-08-31 焚き火の散布化で幕1の戦闘数が増え、旧80では幕2の工房に届かなくなった)
+  while (guard++ < 240) {
     if (r.phase === 'map') { r = chooseToward(r, target); continue }
     if (r.phase === 'campfire') {
       if (target === 'campfire') return r

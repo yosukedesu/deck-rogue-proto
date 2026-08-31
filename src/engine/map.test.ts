@@ -1,8 +1,8 @@
 // マップ生成のテスト。確定済みルール表「マップ」を機械的に固定する。
-// - 18行・行17=ボス固定・強制焚き火行5/11/16 (2026-08-29 ?マスの本家水準化に伴い16行から拡張)
-// - 部屋タイプは本家の重みで員数化: 工房/ショップ=総ノードの5%・?=22%・エリートは員数固定4
-// - 配置制約 (本家): 行0は全て戦闘 / エリートは行2以降 / 親と同タイプ禁止 (エリート・ショップ・工房) /
-//   兄弟 (同じ親を持つ同行ノード) と同タイプ禁止 (全種)
+// - 18行・行17=ボス固定・強制焚き火行は16のみ (2026-08-31 本家配置化。焚き火は部屋タイプ12%で散布)
+// - 部屋タイプは本家の重みで員数化: 工房/ショップ=総ノードの5%・?=22%・焚き火=12%・エリートは員数固定4
+// - 配置制約 (本家): 行0は全て戦闘 / エリートは行2以降 / 焚き火は行5以降 /
+//   親と同タイプ禁止 (エリート・ショップ・工房・焚き火) / 兄弟と同タイプ禁止 (全種)
 // - どのパスも戦闘数8以上 (上限は設けない = 本家に戦闘数の保証は無い)
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
@@ -12,8 +12,15 @@ import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
 
+// 生成はパスウォーク化で1枚数十msかかる。テストごとに引き直さずシード単位でキャッシュする
+const mapCache = new Map<number, RunMap>()
 function mapFor(seed: number): RunMap {
-  return generateMap(createRng(seed))[0]
+  let m = mapCache.get(seed)
+  if (m === undefined) {
+    m = generateMap(createRng(seed))[0]
+    mapCache.set(seed, m)
+  }
+  return m
 }
 
 /** 各ノードの親 (前の行で自分に繋がる列) */
@@ -32,7 +39,7 @@ describe('マップ生成の構造', () => {
     expect(JSON.stringify(mapFor(7))).toBe(JSON.stringify(mapFor(7)))
   })
 
-  it('18行・行17はボス単体・強制焚き火行 (5/11/16) は全ノード焚き火', () => {
+  it('18行・行17はボス単体・行16 (ボス前) は全ノード焚き火', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       expect(map).toHaveLength(MAP_ROWS)
@@ -41,6 +48,24 @@ describe('マップ生成の構造', () => {
       for (const r of FORCED_CAMPFIRE_ROWS) {
         expect(map[r].every((n) => n.type === 'campfire'), `seed${seed} row${r}`).toBe(true)
       }
+    }
+  })
+
+  it('焚き火は本家配置: 散布12%・行5未満と行15に置かれない (2026-08-31)', () => {
+    for (const seed of SEEDS) {
+      const map = mapFor(seed)
+      const total = map.flat().length
+      // 散布分 = 強制行16を除いた焚き火の員数
+      const scattered = map
+        .filter((_, r) => !FORCED_CAMPFIRE_ROWS.has(r))
+        .flat()
+        .filter((n) => n.type === 'campfire')
+      expect(scattered, `seed${seed}`).toHaveLength(Math.round(total * 0.12))
+      for (let r = 0; r < 5; r++) {
+        expect(map[r].some((n) => n.type === 'campfire'), `seed${seed} row${r} に焚き火`).toBe(false)
+      }
+      // 行15は行16 (全ノード焚き火) の親なので、親同種禁止により焚き火が置かれない (本家の13階禁止)
+      expect(map[15].some((n) => n.type === 'campfire'), `seed${seed} row15 に焚き火`).toBe(false)
     }
   })
 
@@ -75,8 +100,8 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('親と同タイプにならない (エリート・ショップ・工房)。?と戦闘は縦に続いてよい', () => {
-    const exclusive = new Set(['elite', 'shop', 'workshop'])
+  it('親と同タイプにならない (エリート・ショップ・工房・焚き火)。?と戦闘は縦に続いてよい', () => {
+    const exclusive = new Set(['elite', 'shop', 'workshop', 'campfire'])
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       const parents = parentsOf(map)
@@ -215,7 +240,7 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('60シード×3幕すべてでマップ生成が収束する (throw しない)', () => {
+  it('60シード×3幕すべてでマップ生成が収束する (throw しない)', { timeout: 60000 }, () => {
     for (let seed = 1; seed <= 60; seed++) {
       for (let act = 1; act <= 3; act++) {
         expect(() => generateMap(createRng(seed), act)).not.toThrow()

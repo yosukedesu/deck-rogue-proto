@@ -510,8 +510,11 @@ function simulateRuns(count: number, baseSeed: number): void {
               const amt = c.def.effects.reduce((a, e) => a + (e.amount ?? 0), 0)
               if (amt > bestAmount) { bestAmount = amt; best = i2 }
             })
+            // 幕1の鍛えるはラン通算1回まで (焚き火の散布化で幕1に複数の焚き火が来るようになった)
+            const act1Blocked =
+              run.act === 1 && (run.act1Forges ?? 0) >= 1 + (run.campfireForgeBonus ?? 0)
             run =
-              best >= 0
+              best >= 0 && !act1Blocked
                 ? applyRunCommand(run, { type: 'CampfireUpgrade', index: best })
                 : applyRunCommand(run, { type: 'CampfireRest' })
           }

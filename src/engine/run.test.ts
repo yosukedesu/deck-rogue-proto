@@ -189,10 +189,10 @@ describe('HP持ち越しと焚き火', () => {
     expect(run.combat!.player.hp).toBe(27)
   })
 
-  it('強制焚き火行 (行5) では「休む」を選ぶと回復する (2026-08-29 本家式の排他三択に復帰)', () => {
+  it('焚き火では「休む」を選ぶと回復する (2026-08-29 本家式の排他三択。2026-08-31 散布配置)', () => {
     const run = runTo(createRun(17, 'set-confirm'), 'campfire')
     expect(run.phase).toBe('campfire')
-    expect(run.row).toBe(5) // 最初の強制焚き火行
+    expect(run.row).toBeGreaterThanOrEqual(5) // 焚き火は行5以降にしか置かれない (本家準拠)
     // HP20で到達した状況を作り直して回復量を確認する
     let r2 = createRun(17, 'set-confirm')
     let guard = 0
