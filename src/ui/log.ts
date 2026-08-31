@@ -22,7 +22,7 @@ export function intentText(intent: EnemyIntent | null): string {
   if (!intent) return '---'
   switch (intent.kind) {
     case 'attack': {
-      const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
+      const hits = intent.mirrorHits === true ? '×手数' : (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
       const guard = intent.alsoDefend !== undefined ? `+🛡️${intent.alsoDefend}` : ''
       return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${inflictSuffix(intent)}`
     }

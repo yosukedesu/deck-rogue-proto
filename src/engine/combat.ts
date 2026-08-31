@@ -399,6 +399,7 @@ function buildIntent(
       shownMax: clamp((move.max ?? 0) + bonus),
       actual: clamp(actual + bonus),
       hits: move.hits,
+      ...(move.mirrorHits === true ? { mirrorHits: true } : {}),
       inflict: move.inflict,
       alsoDefend: move.alsoDefend,
     },
@@ -916,6 +917,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
       shownMax: acting.shownMax,
       actual: acting.actual,
       ...(acting.hits !== undefined ? { hits: acting.hits } : {}),
+      ...(acting.mirrorHits === true ? { mirrorHits: true } : {}),
       ...(acting.inflict !== undefined ? { inflict: acting.inflict } : {}),
       ...(acting.alsoDefend !== undefined ? { alsoDefend: acting.alsoDefend } : {}),
     }
@@ -1100,7 +1102,12 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       }
       // 連撃 (hits>1) は1発ずつ解決する (確定済みルール表「連撃」)。
       // 各ヒットに脆弱を補正し、通常ブロック→氷壁の順で消費する
-      const hits = intent.hits ?? 1
+      // 手数の鏡 (物真似 2026-08-31): 実行時のヒット数 = このターンにプレイした枚数 (最低1)。
+      // 敵フェーズ中は cardsPlayedThisTurn がまだこのターンの値を保持している
+      const hits =
+        intent.mirrorHits === true
+          ? Math.max(1, state.player.cardsPlayedThisTurn)
+          : (intent.hits ?? 1)
       let block = state.player.block
       let iceBlock = state.player.iceBlock
       let dealtTotal = 0

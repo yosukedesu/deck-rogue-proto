@@ -7,7 +7,7 @@
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
-import { ACT_BOSSES, BOSS_ROW, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor } from './map.ts'
+import { ACT_BOSSES, BOSS_ROW, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -173,7 +173,8 @@ describe('マップ生成の構造', () => {
         for (const node of row) {
           if (node.type === 'battle' || node.type === 'elite' || node.type === 'boss') {
             expect(node.encounterId).not.toBeNull()
-            expect(tierFor(1, r)).toContain(node.encounterId)
+            const pool = node.type === 'elite' ? ELITE_POOLS[0] : tierFor(1, r)
+            expect(pool).toContain(node.encounterId)
           } else {
             expect(node.encounterId).toBeNull()
           }

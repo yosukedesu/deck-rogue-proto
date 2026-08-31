@@ -65,7 +65,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
     confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵強化-${a})`,
     dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
-    dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`,
+    dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`, dealDamagePerCardPlayedTotal: `${all}この戦闘の累計プレイ数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     dealDamagePerEnergyMax: `上限×${a}ダメ`, gainBlockPerEnergyMax: `上限×${a}ブロック`,
     dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
@@ -76,7 +76,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`,
-    addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える)`, blessRetainers: `【常在】従者の効果+${a}`,
+    addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, blessRetainers: `【常在】従者の効果+${a}`,
     dealDamagePerNegStrength: `下げた敵強化×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
   }
@@ -110,8 +110,8 @@ function cardLine(def: CardDef): string {
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
-function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; inflict?: { status: string; amount: number }; alsoDefend?: number }): string {
-  const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
+function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number }): string {
+  const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const kinds: Record<string, string> = {
@@ -141,7 +141,13 @@ function intentLine(s: GameState, i: number): string {
   if (e.intent.conditionalOn && e.intent.alt) {
     const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
     const now = effectiveIntent(s, i)!
-    return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」`
+    const stale =
+      e.intent.conditionalOn === 'set' &&
+      s.player.setCards.length > 0 &&
+      s.player.setCards.every((c) => c.setFresh !== true)
+        ? ' (伏せ札は見切られ中=このターン伏せ直せば変わる)'
+        : ''
+    return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」${stale}`
   }
   const it = e.intent
   const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回` : ''
@@ -202,7 +208,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   s.enemies.forEach((e, i) => {
     if (e.hp <= 0) return
     const it = effectiveIntent(s, i)
-    if (it?.kind === 'attack') worst += it.shownMax * (it.hits ?? 1)
+    if (it?.kind === 'attack') worst += it.shownMax * (it.mirrorHits === true ? Math.max(1, p.cardsPlayedThisTurn) : (it.hits ?? 1))
   })
   if (worst > 0) {
     const defense = p.block + p.iceBlock
@@ -217,7 +223,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const tags = [
       e.block ? `ブロック${e.block}` : '', e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
-      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '',
+      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたが通常ブロックを得るたび強化+${def.angerOnBlock}。氷壁は対象外)` : '',
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
       def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
       def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ` : `激昂+${def.enrage}/T`) : '',
@@ -255,7 +261,12 @@ function renderBattle(s: GameState, logFrom: number): string {
     // 後続の敵の条件付き分岐が「伏せなし」側に化ける警告 (2026-08-28)
     for (const ri of setBranchFlipRisks(s)) {
       const rEnemy = s.enemies[ri]
-      L.push(`   ⚠ 発動すると伏せ枠が空く: ${getEnemyDef(rEnemy.enemyId).name}の行動が【伏せなし】分岐 (${branchText(rEnemy.intent!)}) に変わる`)
+      const it = rEnemy.intent!
+      const threat = (k: string, mx: number, h?: number) => (k === 'attack' ? mx * (h ?? 1) : 0)
+      const after = threat(it.kind, it.shownMax, it.hits)
+      const before = it.alt ? threat(it.alt.kind, it.alt.shownMax, it.alt.hits) : after
+      const mark = after < before ? '💡(弱くなる=利得)' : after > before ? '⚠(強くなる)' : '⚠'
+      L.push(`   ${mark} 発動すると伏せ枠が空く: ${getEnemyDef(rEnemy.enemyId).name}の行動が【伏せなし】分岐 (${branchText(it)}) に変わる`)
     }
     L.push(`   → {"type":"ConfirmReaction","fire":true,"cardUid":"..."} か {"type":"ConfirmReaction","fire":false} (温存)`)
   }

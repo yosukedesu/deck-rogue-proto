@@ -141,6 +141,8 @@ export interface EnemyIntent {
   readonly actual: number
   /** 連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」 */
   readonly hits?: number
+  /** 手数の鏡: 実行時にヒット数=このターンのプレイ枚数 (最低1) になる。表示は「×手数」 */
+  readonly mirrorHits?: boolean
   /** 状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」) */
   readonly inflict?: StatusInflict
   /** 攻防一体: 攻撃と同時に得る固定ブロック (意図表示「⚔️N+🛡️M」。確定済みルール表「攻防一体・隙」) */
@@ -438,6 +440,7 @@ export interface DeclarativeEffect {
     | 'gainBlock'
     | 'gainIceBlock' // 氷壁: ターン開始で消えず持ち越されるブロック (青)
     | 'dealDamagePerCardPlayed' // ストーム攻撃: 詠唱数 × amount のダメージ (青)
+    | 'dealDamagePerCardPlayedTotal' // 大津波 (青 2026-08-31): この戦闘の累計プレイ数 × amount。長く戦うほど肥えるフィニッシャー
     | 'dealDamagePerMomentum' // トランプル換金: 勢い × amount のダメージ (緑。勢いは消費しない)
     | 'doubleMomentum' // トランプルの倍加: 現在の勢いを2倍にする (緑。角笛)
     | 'gainIceBlockPerCardPlayed' // ストーム防御: 詠唱数 × amount の氷壁 (青)
@@ -663,6 +666,8 @@ export type EnemyArchetype =
   | 'taunter'
   | 'enrager'
   | 'support'
+  | 'mimic' // 物真似 (手数の鏡 2026-08-31)
+  | 'elite' // エリート専用敵 (本家型 2026-08-31)
   | 'thorned' // とげ型: 攻撃ヒットごとに反射 (針毛の栗鼠)
   | 'thief' // 盗人型: 盗み→逃走 (こそ泥ゴブリン)
   | 'bomber' // 爆弾型: 3拍子の大爆発 (火薬樽かつぎ)
@@ -703,6 +708,8 @@ export interface EnemyMove {
   readonly weight: number
   /** 連撃: 攻撃をN回のヒットに分割 (確定済みルール表「連撃」) */
   readonly hits?: number
+  /** 手数の鏡 (物真似 2026-08-31): 実行時のヒット数=プレイヤーがこのターンにプレイした枚数 (最低1)。hits は無視される */
+  readonly mirrorHits?: boolean
   /** この行動が付与する状態異常 (attackの追撃・hexの本体) */
   readonly inflict?: StatusInflict
   /** 攻防一体: 攻撃と同時に得る固定ブロック (確定済みルール表「攻防一体・隙」) */
@@ -744,6 +751,8 @@ export interface EnemyDef {
   readonly burnResist?: number
   /** とげ: プレイヤーの攻撃ヒットごとにNダメ反射。敵カードに常時表示 (確定済みルール表「とげ（敵の報復）」) */
   readonly thorns?: number
+  /** 鬼軍曹 (エリート 2026-08-31): プレイヤーが通常ブロックを得るたび強化+N (氷壁は対象外)。敵カードに常時表示 */
+  readonly angerOnBlock?: number
   /** HP50%以下で切り替わる行動テーブル (フェーズ変化)。優先度: 半分以下 > 伏せ反応 > 通常 */
   readonly movesBelowHalf?: readonly EnemyMove[]
   /** HP50%以下のローテーション (movesBelowHalf の id を参照) */

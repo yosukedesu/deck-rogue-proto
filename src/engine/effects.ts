@@ -59,6 +59,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamage',
     'dealDamageRandom',
     'dealDamagePerCardPlayed',
+    'dealDamagePerCardPlayedTotal',
     'dealDamagePerEnergyMax',
     'dealDamagePerMomentum',
     'dischargeAether',
@@ -88,6 +89,7 @@ const ENEMY_TARGETED = new Set([
   'dealDamage',
   'dealDamageRandom',
   'dealDamagePerCardPlayed',
+  'dealDamagePerCardPlayedTotal',
   'dealDamagePerEnergyMax',
   'dealDamagePerMomentum',
   'dischargeAether',
@@ -191,6 +193,19 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
   if (amount <= 0) return state
   let s: GameState = { ...state, player: { ...state.player, block: state.player.block + amount } }
   s = emit(s, { type: 'BlockGained', target: 'player', amount })
+  // 鬼軍曹 (エリート 2026-08-31): プレイヤーが通常ブロックを得るたび強化+N。
+  // 「縮こまる奴が許せない」= 守りを固めるほど敵が育つ、攻めを強制する問い (StS Gremlin Nob型)。
+  // 氷壁は別経路なので誘発しない
+  for (let i = 0; i < s.enemies.length; i++) {
+    const anger = getEnemyDef(s.enemies[i].enemyId).angerOnBlock
+    if (s.enemies[i].hp > 0 && anger !== undefined) {
+      s = {
+        ...s,
+        enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + anger } : x)),
+      }
+      s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: anger })
+    }
+  }
   return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
 }
 
@@ -610,6 +625,16 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
       return emit(next, { type: 'IceBlockGained', amount })
     }
+    case 'dealDamagePerCardPlayedTotal':
+      // 大津波 (青 2026-08-31): この戦闘の累計プレイ数 × amount。
+      // 詠唱参照時代の「3E払うと同ターンの詠唱数が伸びない」自家撞着を、
+      // 長く戦うほど肥えるフィニッシャーに作り替えた
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.cardsPlayedTotal,
+        effect.pierce,
+      )
     case 'dealDamagePerCardPlayed':
       // ストーム攻撃 (青): 詠唱数 × amount のダメージ
       return dealDamageToEnemy(

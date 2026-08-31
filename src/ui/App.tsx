@@ -90,6 +90,8 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   healer: '回復役型（味方を癒す）',
   windup: '息切れ型（大技のあと隙）',
   shell: '甲殻型（積みながら殴る）',
+  mimic: '物真似型（手数の鏡）',
+  elite: 'エリート',
 }
 const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   'wide-power': '🐍',
@@ -104,6 +106,8 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   taunter: '🤡',
   enrager: '🗿',
   support: '🥁',
+  mimic: '🪞',
+  elite: '👑',
   thorned: '🦔',
   thief: '🪙',
   bomber: '🧨',
@@ -299,6 +303,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🛡 ブロック+${e.amount}${xHitsSuffix(e)}`
     case 'gainIceBlock':
       return `${trigger}🧊 氷壁+${e.amount}`
+    case 'dealDamagePerCardPlayedTotal':
+      return `${trigger}${aoe}この戦闘でプレイした累計枚数×${e.amount}ダメージ${pierce}`
     case 'dealDamagePerCardPlayed':
       return ctx
         ? `${trigger}詠唱数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.cardsPlayed + atkBonus}]`
@@ -320,7 +326,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         ? `${trigger}🧊 手札の枚数×${e.amount}の氷壁 [現在${(e.amount ?? 0) * ctx.handCards}]`
         : `${trigger}🧊 手札の枚数×${e.amount}の氷壁`
     case 'addSpellEcho':
-      return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える）`
+      return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える。とげ反射も2回受ける）`
     case 'blessRetainers':
       return `${trigger}✨ 【常在】従者の効果+${e.amount}`
     case 'addAether':
@@ -1241,6 +1247,9 @@ function BattleScreen({
                     {enemyDef.burnResist !== undefined && !dead && (
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}
+                    {enemyDef.angerOnBlock !== undefined && !dead && (
+                      <span className="chip chip-strength">😤 あなたがブロックを得るたび強化+{enemyDef.angerOnBlock}（氷壁は対象外）</span>
+                    )}
                     {enemyDef.thorns !== undefined && !dead && (
                       <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>
                     )}
@@ -1373,11 +1382,18 @@ function BattleScreen({
                       </div>
                     ))
                   })()}
-                  {setBranchFlipRisks(s).map((ri) => (
-                    <div key={ri} className="choice-desc" style={{ margin: '6px 0', color: 'var(--warn, #e0a458)' }}>
-                      ⚠ 発動すると伏せ枠が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せなし】分岐（{intentText(s.enemies[ri].intent)}）に変わる
-                    </div>
-                  ))}
+                  {setBranchFlipRisks(s).map((ri) => {
+                    const it = s.enemies[ri].intent!
+                    const threat = (k: string, mx: number, h?: number) => (k === 'attack' ? mx * (h ?? 1) : 0)
+                    const after = threat(it.kind, it.shownMax, it.hits)
+                    const before = it.alt ? threat(it.alt.kind, it.alt.shownMax, it.alt.hits) : after
+                    const gain = after < before
+                    return (
+                      <div key={ri} className="choice-desc" style={{ margin: '6px 0', color: gain ? 'var(--good, #7ec97e)' : 'var(--warn, #e0a458)' }}>
+                        {gain ? '💡' : '⚠'} 発動すると伏せ枠が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せなし】分岐（{intentText(s.enemies[ri].intent)}）に変わる{gain ? '（弱くなる=利得）' : after > before ? '（強くなる）' : ''}
+                      </div>
+                    )
+                  })}
                   <button className="btn" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
                     温存する
                   </button>
@@ -1437,7 +1453,7 @@ function BattleScreen({
           s.enemies.forEach((e, i) => {
             if (e.hp <= 0) return
             const it = effectiveIntent(s, i)
-            if (it?.kind === 'attack') worst += it.shownMax * (it.hits ?? 1)
+            if (it?.kind === 'attack') worst += it.shownMax * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
           })
           if (worst <= 0) return null
           const defense = player.block + player.iceBlock

@@ -13,7 +13,16 @@
 import { nextInt } from './rng.ts'
 
 /** エリート個体化を禁じる編成 (盗み逃走は素の数字でだけレースが成立する) */
-const NO_ELITE = new Set(['enemy_thief', 'enc_thief_pair', 'enc_thief_beast'])
+/**
+ * エリート専用プール (2026-08-31 ユーザー指示「エリートはエリート専用敵に」)。本家StS方式:
+ * エリートは通常敵の強個体でなく、固有のギミックを持つ専用敵 (Nob/Lagavulin/刺突の書型)。
+ * ステータスは素の値で完成しているので、マップのエリート補正 (HP×1.35+強化) は掛けない
+ */
+export const ELITE_POOLS: readonly (readonly string[])[] = [
+  ['enemy_elite_sergeant', 'enc_elite_sentries'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた)
+  ['enemy_elite_iron_egg', 'enemy_elite_slaver'], // 2幕: 眠れる鉄卵 (起こすか削るか) / 奴隷商 (デバフ漬け)
+  ['enemy_elite_stab_book', 'enemy_elite_giant_face'], // 3幕: 刺突の書 (増える多段) / 巨面 (二拍子の死)
+]
 import type { RngState } from './types.ts'
 
 export type MapNodeType = 'battle' | 'elite' | 'campfire' | 'workshop' | 'shop' | 'event' | 'boss'
@@ -61,8 +70,8 @@ const ACT_POOLS: readonly (readonly string[])[] = [
   // 2体編成 = HPが分散していたから)。ソロで残すのは芸のある個体だけ —
   // うねる獣(読みなし休符)・探り屋(読みの教師)・栗鼠(とげ芸)・伏せ警戒/罠壊し/樽(固有芸)・
   // 苔の主(再生)・斧鬼(大技→隙)・石殻(甲殻)・オーガ(元ボスの再登場)
-  ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enc_probe_pair', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast'], // 1幕 (ソロ3/8)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair'], // 2幕 (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
+  ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enemy_apprentice_colossus', 'enemy_mimic_imp', 'enc_probe_pair', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast'], // 1幕 (ソロ5/10。2026-08-31 反復感への処方+2: 見習い巨像=タイマー予習・物真似の子鬼=手数の鏡予習)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair', 'enemy_whetstone_colossus', 'enemy_mimic_jester'], // 2幕 (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
   ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer'], // 3幕 (ソロ4/11)
 ]
 /** 幕ボス (難度順固定。確定済みルール表「マップ」) */
@@ -205,8 +214,7 @@ export function generateMap(
           const basePool = tierFor(act, r)
           // こそ泥はエリートにしない (2026-08-31 ユーザー裁定)。エリート補正 (HP×1.35+強化) が乗ると
           // 「満タン34HP+ブロックを1ターンで抜け」が構造的に不可能 = 盗みが税に化ける実測への処方
-          const pool =
-            type === 'elite' ? basePool.filter((id) => !NO_ELITE.has(id)) : basePool
+          const pool = type === 'elite' ? ELITE_POOLS[act - 1] : basePool
           const recent = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
           const fresh = pool.filter((id) => !recent.includes(id))
           const candidates = fresh.length > 0 ? fresh : pool

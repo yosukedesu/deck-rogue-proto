@@ -54,8 +54,9 @@ const CAMPFIRE_HEAL_RATIO = 0.3
 /** 勝利ごとの自動回復は廃止 (2026-08-25 StS踏襲。回復は焚き火のみ=マラソン構造) */
 const VICTORY_HEAL = 0
 /** エリート補正: 強化+2・HP×1.35 (エリートはマップの選択ノード。2026-08-28 opt-inオファー廃止) */
-const ELITE_STRENGTH = 2
-const ELITE_HP_SCALE = 1.35
+// エリート補正は廃止 (2026-08-31 エリート専用敵化): 専用敵は素の値で完成しているため
+const ELITE_STRENGTH = 0
+const ELITE_HP_SCALE = 1
 // レリック上限は撤廃 (2026-08-29)。上限5は1幕時代の校正で、3幕化により幕2で満杯
 // →以後のボスレリック・ショップレリックが全部死んでいた。実効上限は在庫数 (9個)
 /** ゴールド (確定済みルール表「ゴールド」「ショップ」。相場はStS比例で入れて校正) */
@@ -700,8 +701,16 @@ function rollRewards(run: RunState): RunState {
   while (picked.length < want && remaining.length > 0) {
     const [roll, r1] = nextInt(rng, 0, 99)
     rng = r1
+    // エリート報酬はレア1枚確定 (2026-08-31 ユーザー指示。本家のエリート=レア率上昇を確約に強化)。
+    // 先頭スロットをレア帯で引く。以降のスロットは通常比率
     const wanted: ('rare' | 'uncommon' | 'common')[] =
-      roll < 3 ? ['rare', 'uncommon', 'common'] : roll < 40 ? ['uncommon', 'common'] : ['common']
+      run.currentElite && picked.length === 0
+        ? ['rare', 'uncommon', 'common']
+        : roll < 3
+          ? ['rare', 'uncommon', 'common']
+          : roll < 40
+            ? ['uncommon', 'common']
+            : ['common']
     // 希望レアリティの札が尽きていたら下の帯へフォールバック。それも無ければプール全体
     let candidates: CardDef[] = []
     for (const r of wanted) {

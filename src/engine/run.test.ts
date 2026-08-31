@@ -1,7 +1,7 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
-import { ACT_COUNT, BOSS_ROW, generateMap, MAP_ROWS, tierFor } from './map.ts'
+import { ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, MAP_ROWS, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
 import {
   applyRunCommand,
@@ -76,7 +76,9 @@ describe('ラン構造 (マップ)', () => {
     run.map.forEach((row, r) => {
       for (const node of row) {
         if (node.encounterId !== null) {
-          expect(tierFor(1, r), `row ${r}`).toContain(node.encounterId)
+          // エリートノードは専用プール (2026-08-31)。それ以外は行の帯
+          const pool = node.type === 'elite' ? ELITE_POOLS[0] : tierFor(1, r)
+          expect(pool, `row ${r}`).toContain(node.encounterId)
         }
       }
     })

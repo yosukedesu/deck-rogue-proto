@@ -52,6 +52,7 @@ const VP_PER: Record<string, number> = {
   dealDamagePerCardPlayed: 3.0,
   gainIceBlockPerCardPlayed: 3.9,
   drawCardsPerCardPlayed: 9.0,
+  dealDamagePerCardPlayedTotal: 12.0,
   dealDamagePerIceBlock: 10.0,
   dischargeAether: 2.5,
   dischargeAetherDraw: 7.5,

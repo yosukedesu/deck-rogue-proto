@@ -74,16 +74,15 @@ describe('エリートノード (マップ化。opt-inオファーは廃止)', (
     expect(elite.currentElite).toBe(true)
   })
 
-  it('エリート補正 (強化+2・HP×1.35) が敵に乗る', () => {
+  it('エリートは専用敵 (2026-08-31)。補正は掛けず素の値 + 幕内深度スケールだけが乗る', () => {
     const elite = intoFirstElite()
     const node = currentNode(elite)!
+    expect(node.encounterId!.includes('elite')).toBe(true) // エリート専用プールから出る
     const members = resolveEncounter(node.encounterId!)
     const def = getEnemyDef(members[0].enemyId)
-    const expectHp = Math.round(
-      def.maxHp * depthHpScale(elite.row) * 1.35 * (members[0].hpScale ?? 1),
-    )
+    const expectHp = Math.round(def.maxHp * depthHpScale(elite.row) * (members[0].hpScale ?? 1))
     expect(elite.combat!.enemies[0].maxHp).toBe(expectHp)
-    expect(elite.combat!.enemies[0].strength).toBe(2 + (members[0].strength ?? 0))
+    expect(elite.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })
 
   it('エリートに勝つとレリック3択 → 取得後にカード報酬へ', () => {
