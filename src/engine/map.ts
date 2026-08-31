@@ -85,6 +85,12 @@ const ROOM_WEIGHTS: Readonly<Record<'shop' | 'workshop' | 'event' | 'campfire', 
 }
 /** 焚き火を置ける最小行 (本家「6階より下に休憩なし」= index 5 以降) */
 const CAMPFIRE_MIN_ROW = 5
+/**
+ * 1本のパスで踏める焚き火の上限 (ボス前の全焚き火行の1回を含む。2026-08-31 ユーザー裁定
+ * 「最良ルートで3〜4個に制限できていればok」)。ガード無しだと21.5%のマップで5個以上の
+ * 焚き火ハシゴルートが成立していた (200シード実測: 3=17/4=140/5=42/6=1)
+ */
+const CAMPFIRE_PATH_MAX = 4
 /** エリートだけは員数固定。重み8%だと幕3個=1パス1.31体でレリック供給が-28%になるため */
 const ELITE_COUNT = 4
 /** エリートを置ける最小行。本家は floor1〜5 禁止だが、序盤のレリック供給を守るため行2から */
@@ -368,11 +374,48 @@ export function generateMap(
     // 戦闘数の床は撤廃 (2026-08-31 ユーザー裁定「床を撤廃・本家完全準拠」——本家に戦闘数の
     // 保証は無く「何回戦うかを選べる」がルート選択の中身。戦闘の少ないパスは報酬・金も
     // 少ない自己均衡。旧・床8は分岐の充実と両立しなかった: 単一出口59%で生成300リトライ)
+    // 焚き火数の max-DP (前向き/後ろ向き)。F[r][c]+B[r][c]+1 = そのノードを焚き火にした時に
+    // そこを通るパスが踏める最大数 (ボス前の全焚き火行は typeGrid 経由で自動的に算入される)
+    const campDP = (forward: boolean): number[][] => {
+      const gain = (r: number, c: number): number => (typeGrid[r][c] === 'campfire' ? 1 : 0)
+      const out: number[][] = widths.map((w) => new Array<number>(w).fill(-Infinity))
+      if (forward) {
+        for (let c = 0; c < widths[0]; c++) out[0][c] = gain(0, c)
+        for (let r = 0; r < MAP_ROWS - 1; r++) {
+          for (let c = 0; c < widths[r]; c++) {
+            for (const to of edges[r][c]) {
+              out[r + 1][to] = Math.max(out[r + 1][to], out[r][c] + gain(r + 1, to))
+            }
+          }
+        }
+      } else {
+        out[MAP_ROWS - 1][0] = gain(MAP_ROWS - 1, 0)
+        for (let r = MAP_ROWS - 2; r >= 0; r--) {
+          for (let c = 0; c < widths[r]; c++) {
+            for (const to of edges[r][c]) {
+              out[r][c] = Math.max(out[r][c], out[r + 1][to] + gain(r, c))
+            }
+          }
+        }
+      }
+      return out
+    }
     let placementFailed = false
     for (const [t, n] of quota) {
       for (let k = 0; k < n; k++) {
+        // 焚き火だけは「置いた後もどのパスも上限4以下」の位置に限る (2026-08-31 ユーザー裁定
+        // 「最良ルートで3〜4個」。通らないパスの最大は現在の全体最大(≤上限)以下なので
+        // F+B+1 ≤ 上限 ⟺ 置いてよい、の帰納で全パスの上限が保たれる)
+        const guard =
+          t === 'campfire'
+            ? (() => {
+                const F = campDP(true)
+                const B = campDP(false)
+                return (r: number, c: number) => F[r][c] + B[r][c] + 1 <= CAMPFIRE_PATH_MAX
+              })()
+            : () => true
         const cand = freeNodes.filter(
-          ([r, c]) => typeGrid[r][c] === 'battle' && assignable(r, c, t),
+          ([r, c]) => typeGrid[r][c] === 'battle' && assignable(r, c, t) && guard(r, c),
         )
         if (cand.length === 0) {
           placementFailed = true

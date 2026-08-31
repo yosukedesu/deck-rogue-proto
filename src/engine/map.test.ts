@@ -210,6 +210,23 @@ describe('マップ生成の構造', () => {
     }
   })
 
+  it('焚き火ハシゴの上限: どのパスも焚き火4個以下 (ボス前行込み。2026-08-31 ユーザー裁定)', () => {
+    for (const seed of SEEDS) {
+      const map = mapFor(seed)
+      let v = map[0].map((n) => (n.type === 'campfire' ? 1 : 0))
+      for (let r = 0; r < MAP_ROWS - 1; r++) {
+        const next = new Array<number>(map[r + 1].length).fill(-Infinity)
+        map[r].forEach((n, c) => {
+          for (const to of n.next) {
+            next[to] = Math.max(next[to], v[c] + (map[r + 1][to].type === 'campfire' ? 1 : 0))
+          }
+        })
+        v = next
+      }
+      expect(v[0], `seed${seed}`).toBeLessThanOrEqual(4)
+    }
+  })
+
   it('エリートは直前で必ず避けられる (全ての親に出口2以上。2026-08-31 Opus検証への処方)', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
