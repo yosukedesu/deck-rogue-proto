@@ -144,9 +144,18 @@ function intentLine(s: GameState, i: number): string {
     branchText(e.intent.alt) === branchText(e.intent) &&
     e.intent.alt.actual === e.intent.actual
   ) {
-    // 表示も実値も同じ時だけ畳む (2026-08-31 黒ラン: 幅が同じで実値だけ違う分岐を畳むと
+    // 表示も実値も同じ時だけ完全に畳む (2026-08-31 黒ラン: 幅が同じで実値だけ違う分岐を畳むと
     // 「伏せると実値が上がる」損分岐が不可視になっていた。実値が違えば分岐予告を残す)
     return branchText(e.intent)
+  }
+  if (
+    e.intent.conditionalOn &&
+    e.intent.alt &&
+    branchText(e.intent.alt) === branchText(e.intent)
+  ) {
+    // 表示が同値で実値だけ違う: 2分岐の予告はノイズ (探り屋のローテ替え等) なので1行+注記
+    // (2026-08-31 再検証ラン指摘③)
+    return `${branchText(e.intent)}(伏せの有無で実値が変わる)`
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
@@ -275,9 +284,14 @@ function renderBattle(s: GameState, logFrom: number): string {
     const win = windowFromPending(s)
     const cands = win ? p.setCards.filter((c) => reactionMatches(s, c, win)) : []
     L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}`).join(' / ') || 'なし'}`)
-    // post窓の誤認防止 (2026-08-29 検証ラン: 瀕死時に返し札を「防御」と誤認して発動→敗死の報告)
+    // post窓の誤認防止 (2026-08-29 検証ラン: 瀕死時に返し札を「防御」と誤認して発動→敗死の報告)。
+    // 文言は攻撃窓のみ (2026-08-31 再検証ラン指摘②: 敵強化時の窓に「被弾は取り消せない」が出ていた)
     if (s.pendingWindow.stage === 'post') {
-      L.push('   ※この攻撃はすでに解決済み——発動しても今回の被弾は取り消せない (返し・回復のための窓)')
+      L.push(
+        it?.kind === 'attack'
+          ? '   ※この攻撃はすでに解決済み——発動しても今回の被弾は取り消せない (返し・回復のための窓)'
+          : '   ※この行動はすでに解決済み (行動に反応するための窓)',
+      )
     }
     // 後続の敵の条件付き分岐が「伏せなし」側に化ける警告 (2026-08-28)
     for (const ri of setBranchFlipRisks(s)) {
@@ -449,8 +463,9 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
-  const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.stolenGold ?? 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
-  L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 行${run.row + 1}/18 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  // 倒した盗人 (逃走前) の抱えた金は勝利時に戻るので「盗まれ中」に数えない (2026-08-31 再検証ラン指摘①)
+  const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.hp > 0 || e.fled === true ? (e.stolenGold ?? 0) : 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
+  L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/18`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
@@ -478,13 +493,24 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       (run.campfireUpgradesUsed ?? 0) > 0 ? '  休む (CampfireRest) → 鍛えた後なので回復なしの立ち去り (1種類の原則)'
       : heal <= 0 ? '  休む (CampfireRest) → HP満タンなので回復なしの立ち去り'
       : `  休む (CampfireRest) → HP+${heal} 回復して次へ`)
-    L.push(`  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)${run.act === 1 ? ` ※幕1はラン通算1回まで(残り${Math.max(0, 1 - (run.act1Forges ?? 0))})` : ''}`)
+    // 鍛えるが使えない焚き火 (幕1のラン通算1回を使用済み等) では強化UIを丸ごと畳む
+    // (2026-08-31 再検証ラン指摘④「残り0と書いてあるのに全カードの鍛えるプレビューが並ぶ」)
+    const forgeLeftHere = Math.max(0, Math.min(
+      1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
+      run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
+    ))
+    L.push(
+      forgeLeftHere > 0
+        ? `  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)${run.act === 1 ? ` ※幕1はラン通算1回まで(残り${forgeLeftHere})` : ''}`
+        : '  強化 (CampfireUpgrade) は使えない (幕1はラン通算1回まで・使用済み)',
+    )
     L.push('  除去 (CampfireRemove) → デッキから1枚を永久に取り除く')
     run.deck.forEach((c, i) => {
-      const mark = canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
+      const mark =
+        forgeLeftHere <= 0 ? '' : canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
       L.push(`   [${i}] ${cardLine(c.def)}${mark}`)
     })
-    L.push('→ {"type":"CampfireUpgrade","index":N} / {"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)')
+    L.push(`→ ${forgeLeftHere > 0 ? '{"type":"CampfireUpgrade","index":N} / ' : ''}{"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)`)
   } else if (run.phase === 'shop' && run.shop) {
     L.push(`🛒 ショップ (所持 ${run.gold}G。買わずに出てもよい)`)
     run.shop.cards.forEach((item, i) => L.push(item.sold === true ? ` [${i}] 〔売切〕` : ` [${i}] ${item.price}G: ${cardLine(getCardDef(item.id))}`))
@@ -510,7 +536,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'workshop') {
-    L.push('🔨 工房: 異なる2枚を合成して1枚の新カードにできる (素材は消える)。見送りも可')
+    L.push('🔨 工房: デッキの2枚を合成して1枚の新カードにできる (同名2枚は「真・」強化版。素材は消える)。見送りも可')
     L.push(
       '   タイプ跨ぎも可: 結果は持続する側 (置物＞リアクション＞呪文＞物理)。置物化は量÷3で毎ターン化',
     )

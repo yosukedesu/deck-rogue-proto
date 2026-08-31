@@ -523,9 +523,12 @@ function conditionalIntentText(s: GameState, i: number): string {
   if (intent.conditionalOn === 'set' && !playerCanSet(s)) {
     return intentText({ ...intent, conditionalOn: undefined, alt: undefined })
   }
-  // 表示も実値も同じ時だけ畳む (2026-08-31: 実値だけ違う分岐を畳むと損分岐が不可視になる)
+  // 表示も実値も同じ時だけ完全に畳む (2026-08-31: 実値だけ違う分岐を畳むと損分岐が不可視になる)
   const baseOnly = intentText({ ...intent, conditionalOn: undefined, alt: undefined })
   if (intentText({ ...intent.alt }) === baseOnly && intent.alt.actual === intent.actual) return baseOnly
+  // 表示が同値で実値だけ違う: 2分岐で予告するとノイズ (探り屋のローテ替え等) なので1行+注記に
+  // (2026-08-31 再検証ラン指摘③「同値なのに分岐として予告される」)
+  if (intentText({ ...intent.alt }) === baseOnly) return `${baseOnly}（伏せの有無で実値が変わる）`
   const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
@@ -1359,7 +1362,9 @@ function BattleScreen({
               </div>
               {s.pendingWindow?.stage === 'post' && (
                 <div className="hint" style={{ marginBottom: 8 }}>
-                  ※この攻撃はすでに解決済み——発動しても今回の被弾は取り消せない（返し・回復のための窓）
+                  {effectiveIntent(s, s.pendingWindow.enemyIndex)?.kind === 'attack'
+                    ? '※この攻撃はすでに解決済み——発動しても今回の被弾は取り消せない（返し・回復のための窓）'
+                    : '※この行動はすでに解決済み（行動に反応するための窓）'}
                 </div>
               )}
               {s.reactionMode === 'set-confirm' && setCard ? (
@@ -2588,6 +2593,14 @@ function RunScreen({
   if (run.phase === 'campfire') {
     // 上限クランプ後の実回復量 (満タンで+41と表示される誤解を防ぐ 2026-08-30)
     const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
+    // 鍛えるが使えない焚き火 (幕1のラン通算1回を使用済み等) では強化UIを丸ごと畳む
+    // (2026-08-31 再検証ラン指摘④「残り0と書いてあるのに全カードの鍛えるプレビューが並ぶ」)。
+    // 砥石の追加分 (campfireForgeBonus) は同じ焚き火で複数回鍛えられるので回数で判定する
+    const canForgeHere =
+      Math.min(
+        1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
+        run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
+      ) > 0
     return (
       <div className="app setup">
         <h1>🔥 焚き火</h1>
@@ -2619,7 +2632,9 @@ function RunScreen({
           </button>
         </div>
         <div className="setup-section-title" style={{ marginTop: 20 }}>
-          デッキの1枚を「鍛える」か「取り除く」（デッキ{run.deck.length}枚・最低5枚は残る）
+          {canForgeHere
+            ? `デッキの1枚を「鍛える」か「取り除く」（デッキ${run.deck.length}枚・最低5枚は残る）`
+            : `デッキの1枚を「取り除く」（鍛えるは使えない: 幕1はラン通算1回まで。デッキ${run.deck.length}枚・最低5枚は残る）`}
         </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {run.deck.map((c, i) => (
@@ -2630,7 +2645,7 @@ function RunScreen({
               ctx={ctx}
               actions={
                 <>
-                  {canUpgradeCard(c) && (
+                  {canForgeHere && canUpgradeCard(c) && (
                     <div className="choice-desc" style={{ marginBottom: 4 }}>
                       鍛えると→ {describeUpgrade(c)}
                     </div>
@@ -2642,13 +2657,15 @@ function RunScreen({
                   >
                     取り除く
                   </button>{' '}
-                  <button
-                    className="btn btn-primary"
-                    disabled={!canUpgradeCard(c)}
-                    onClick={() => dispatch({ type: 'CampfireUpgrade', index: i })}
-                  >
-                    {isUpgraded(c) ? '鍛済' : canUpgradeCard(c) ? '鍛える' : '鍛不可'}
-                  </button>
+                  {canForgeHere && (
+                    <button
+                      className="btn btn-primary"
+                      disabled={!canUpgradeCard(c)}
+                      onClick={() => dispatch({ type: 'CampfireUpgrade', index: i })}
+                    >
+                      {isUpgraded(c) ? '鍛済' : canUpgradeCard(c) ? '鍛える' : '鍛不可'}
+                    </button>
+                  )}
                 </>
               }
             />
@@ -2932,7 +2949,7 @@ function WorkshopScreen({
     <div className="app setup">
       <h1>🔨 工房</h1>
       <p className="hint">
-        異なる2枚を選んで合成する。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
+        デッキの2枚を選んで合成する（同名2枚は「真・」強化版になる）。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
         タイプの違う2枚も可 — 結果は持続する側（置物＞リアクション＞呪文＞物理）になり、置物化は量÷3で毎ターン化する。
         コストはVP査定からの逆算（素材コストの単純合算ではない）。特定の組み合わせは手書きレシピ⭐にヒットし、計算値より少し強い一品になる。
       </p>
