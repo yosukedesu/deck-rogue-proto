@@ -249,6 +249,26 @@
     "exhaust": true
   },
   {
+    "id": "black_soul_kindling",
+    "name": "魂の薪",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
     "id": "black_reaction_curse",
     "name": "呪詛返し",
     "cost": 1,

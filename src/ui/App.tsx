@@ -876,6 +876,7 @@ function SetupScreen({
   // デバッグ枠 (2026-08-30 ユーザー要望): 自分で組んだデッキと合成ラボ。既定は畳んでおく
   const [customDeck, setCustomDeck] = useState<readonly string[]>([])
   const [showDebug, setShowDebug] = useState(false)
+  const [showCatalog, setShowCatalog] = useState(false)
   const parseSeed = () =>
     /^\d+$/.test(seedInput) ? Number(seedInput) >>> 0 : Date.now() % 2 ** 32
   // リーダー変更で使用可能デッキ外を選んでいたら先頭に戻す
@@ -1030,6 +1031,14 @@ function SetupScreen({
           {customDeck.length > 0 ? `（自分で組んだ${customDeck.length}枚）` : ''}
         </button>
       </div>
+
+      <div className="setup-section-title" style={{ marginTop: 24 }}>
+        ── 資料 ──{' '}
+        <button className="btn" onClick={() => setShowCatalog(true)}>
+          📚 カード図鑑
+        </button>
+      </div>
+      {showCatalog && <CardCatalogOverlay onClose={() => setShowCatalog(false)} />}
 
       <div className="setup-section-title" style={{ marginTop: 24 }}>
         ── 開発者ツール ──{' '}
@@ -2389,6 +2398,94 @@ function MapOverlay({ run, onClose }: { run: RunState; onClose: () => void }) {
         </div>
         <div className="map-wrap">
           <RunMapView run={run} onChoose={() => {}} interactive={false} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** カード図鑑 (2026-09-01 ユーザー要望「カード一覧見れるページ」)。全カードを色/タイプ/レア/検索で絞り込み */
+function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
+  const [color, setColor] = useState('all')
+  const [ctype, setCtype] = useState('all')
+  const [rarity, setRarity] = useState('all')
+  const [q, setQ] = useState('')
+  const [showUpgraded, setShowUpgraded] = useState(false)
+  const colorOf = (id: string, c?: string) => c ?? id.split('_')[0]
+  const COLOR_LABEL: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
+  const RARITY_LABEL: Record<string, string> = { common: 'コモン', uncommon: '◆アンコモン', rare: '★レア' }
+  const pool = allCards
+    .filter((c) => !c.id.startsWith('status_'))
+    .filter((c) => color === 'all' || colorOf(c.id, c.color) === color)
+    .filter((c) => ctype === 'all' || c.type === ctype)
+    .filter((c) => rarity === 'all' || (c.rarity ?? 'common') === rarity)
+    .filter((c) => q === '' || c.name.includes(q))
+    .sort(
+      (a, b) =>
+        colorOf(a.id, a.color).localeCompare(colorOf(b.id, b.color)) ||
+        a.cost - b.cost ||
+        a.name.localeCompare(b.name, 'ja'),
+    )
+  const chip = (active: boolean, label: string, onClick: () => void) => (
+    <button key={label} className={`chip chip-btn${active ? ' chip-mode' : ''}`} onClick={onClick}>
+      {label}
+    </button>
+  )
+  return (
+    <div className="viewer-overlay" onClick={onClose}>
+      <div className="viewer-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="viewer-head">
+          <span className="viewer-title">📚 カード図鑑（{pool.length}枚）</span>
+          <label className="viewer-toggle">
+            <input
+              type="checkbox"
+              checked={showUpgraded}
+              onChange={(e) => setShowUpgraded(e.target.checked)}
+            />{' '}
+            鍛えた姿（+）で表示
+          </label>
+          <button className="btn" onClick={onClose}>
+            ✕ 閉じる
+          </button>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          {chip(color === 'all', '全色', () => setColor('all'))}
+          {(['green', 'blue', 'red', 'white', 'black'] as const).map((c) =>
+            chip(color === c, COLOR_LABEL[c], () => setColor(c)),
+          )}
+          {' ｜ '}
+          {chip(ctype === 'all', '全タイプ', () => setCtype('all'))}
+          {(Object.keys(TYPE_LABEL) as CardType[]).map((t) =>
+            chip(ctype === t, TYPE_LABEL[t], () => setCtype(t)),
+          )}
+          {' ｜ '}
+          {chip(rarity === 'all', '全レア度', () => setRarity('all'))}
+          {(['common', 'uncommon', 'rare'] as const).map((r) =>
+            chip(rarity === r, RARITY_LABEL[r], () => setRarity(r)),
+          )}{' '}
+          <input
+            placeholder="名前で検索"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            style={{ marginLeft: 8 }}
+          />
+        </div>
+        <div className="hand-cards viewer-cards">
+          {pool.length === 0 && <p className="hint">（該当なし）</p>}
+          {pool.map((def) => {
+            const inst = { uid: `cat_${def.id}`, def }
+            const upgradable = canUpgradeCard(inst)
+            const shown = showUpgraded && upgradable ? upgradeCard(inst) : inst
+            return (
+              <CardFrame
+                key={def.id}
+                card={shown}
+                dim={false}
+                hint={`${COLOR_LABEL[colorOf(def.id, def.color)] ?? colorOf(def.id, def.color)}・${RARITY_LABEL[def.rarity ?? 'common']}${showUpgraded && !upgradable ? '・鍛えられない' : ''}`}
+                actions={null}
+              />
+            )
+          })}
         </div>
       </div>
     </div>

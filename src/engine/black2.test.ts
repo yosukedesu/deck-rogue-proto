@@ -289,3 +289,35 @@ describe('引導 (2026-08-31 選択消滅。exhaustFromDeckChoose)', () => {
     expect(played.player.discardPile.some((c) => c.def.id === 'black_last_rites')).toBe(true)
   })
 })
+
+describe('魂の薪 (2026-09-01 消滅時にエナジーを生む札)', () => {
+  it('引導で狙い撃ちミル → 亡骸で一時マナ+1が自ターン中に即使える', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_last_rites',
+      'black_soul_kindling',
+    ])
+    const k = s.player.hand.find((c) => c.def.id === 'black_soul_kindling')!
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        hand: s.player.hand.filter((c) => c.uid !== k.uid),
+        drawPile: [k, ...s.player.drawPile],
+      },
+    }
+    const rites = s.player.hand.find((c) => c.def.id === 'black_last_rites')!
+    // エナジー3 → 引導1E で2 → 薪の亡骸+1 で3
+    s = applyCommand(s, { type: 'PlayCard', cardUid: rites.uid, deckUids: [k.uid] })
+    expect(s.player.energy).toBe(3)
+    expect(s.player.exhaustPile.some((c) => c.uid === k.uid)).toBe(true)
+  })
+
+  it('プレイ経路: 1E払って一時マナ+2 (正味+1) で消滅。亡骸は発火しない (プレイ=仕事済み)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_soul_kindling',
+    ])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_soul_kindling' })
+    expect(s.player.energy).toBe(3 - 1 + 2) // 亡骸+1は乗らない
+    expect(s.player.exhaustPile.some((c) => c.def.id === 'black_soul_kindling')).toBe(true)
+  })
+})

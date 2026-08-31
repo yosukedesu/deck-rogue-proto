@@ -76,7 +76,12 @@ export function assess(def: CardDef): { vp: number; pct: number; computable: boo
   const computable = lists
     .flat()
     .every((e) => VP_PER[e.effect] !== undefined || VP_FLAT[e.effect] !== undefined)
-  const vp = Math.max(...lists.map((l) => vpOfList(l, def)))
+  const vpRaw = Math.max(...lists.map((l) => vpOfList(l, def)))
+  // 追加コストの算入 (2026-09-01 ユーザー質問「消滅コストをメリットとして評価してる？」を機に整備):
+  // これまで捨て/消滅コストは査定で罰にも旨味にも数えていなかった。
+  // 捨て1枚 = 手札の機会費用 −1.5VP。消滅1枚 = −2VP (この戦闘で二度と使えない) だが、
+  // 墓地燃料 (刻・亡骸・per-Exhaust の的) として +0.6VP 戻る = 正味 −1.4VP
+  const vp = vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4
   // 猛り火の軽減は「そのぶん安く撃てる」= 実効コストが下がる。期待値ぶんだけ帯を絞る
   const cost = (def.xCost === true ? 3 : def.cost) - (def.blazeDiscount ?? 0) * 0.6
   return { vp, pct: (vp / ALLOW(Math.max(0.5, cost))) * 100, computable }
