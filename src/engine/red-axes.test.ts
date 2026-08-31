@@ -2,6 +2,7 @@
 // ①カオス = 乱数4枚に対しペイオフ0 ②衝動 = 撒く14枚に対しペイオフ1 ③憤怒 = 被弾の見返りが1テンポ遅れる。
 import { describe, expect, it } from 'vitest'
 import { isBlazing } from './effects.ts'
+import { getCardDef } from './content.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -127,5 +128,28 @@ describe('赤のモード札 (アーキ分岐の入口)', () => {
     const a = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_mode_deadline', modeIndex: 1 })
     expect(a.enemies[0].burn).toBe(6)
     expect(a.player.exhaustPile.some((c) => c.def.id === 'red_mode_deadline')).toBe(true)
+  })
+})
+
+describe('猛り火の点火瞬間 (2026-08-31 バーン縛りランの処方)', () => {
+  it('ターン中にしきい値8を跨いだ瞬間、猛り火条件のターン開始置物が1回発火する (灰の外套)', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        energy: 9,
+        hand: [],
+        permanents: [
+          ...s.player.permanents,
+          { uid: 'p_cloak', def: getCardDef('red_blaze_cloak') },
+        ],
+      },
+    }
+    s = withHand(s, ['red_ember', 'red_ember'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ember' }) // 延焼4 (未点火)
+    expect(s.player.block).toBe(0)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_ember' }) // 延焼8 = 点火の瞬間
+    expect(s.player.block).toBe(9) // 灰の外套が即座に発火
   })
 })

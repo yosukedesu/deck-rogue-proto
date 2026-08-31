@@ -700,10 +700,26 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.hp <= 0) return state
+      const wasBlazing = isBlazing(state)
       const enemies = state.enemies.map((e, i) =>
         i === enemyIndex ? { ...e, burn: e.burn + amount } : e,
       )
-      return emit({ ...state, enemies }, { type: 'BurnApplied', enemyIndex, amount })
+      let s = emit({ ...state, enemies }, { type: 'BurnApplied', enemyIndex, amount })
+      // 猛り火の点火瞬間 (2026-08-31 バーン縛りランで発覚): ターン開始トリガー×猛り火条件の
+      // 置物 (灰の外套等) は「自分のターンにカードで点ける」のに判定がターン開始に走るため、
+      // 延焼8が敵フェーズを生き残らない限り一度も発火しない実質デッドカードだった。
+      // しきい値を跨いだ瞬間に、そのターンぶんのターン開始・猛り火効果を1回発火する =
+      // 「点いた瞬間から守られる」の直感に揃える
+      if (!wasBlazing && isBlazing(s) && s.phase === 'player-turn') {
+        for (const permanent of s.player.permanents) {
+          for (const pe of permanent.def.effects) {
+            if (pe.trigger === 'onTurnStart' && pe.condition?.blaze === true) {
+              s = resolveEffectTargeted(s, pe, enemyIndex)
+            }
+          }
+        }
+      }
+      return s
     }
     case 'confuse': {
       // 混乱 (青): 敵の攻撃が他の生存敵 (いなければ自分) に向かう (確定済みルール表「混乱」)

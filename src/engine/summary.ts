@@ -51,6 +51,14 @@ export function battleSummary(log: readonly GameEvent[]): BattleSummary {
         // 実際は9減っているのに「被ダメ1」と表示されていた = サマリーが嘘をついていた)
         hpLost += e.hpLoss
         break
+      case 'BurnTick':
+        // 延焼ティックもプレイヤーの与ダメージ (2026-08-31 赤バーン縛りランで発覚:
+        // うねる獣59HPを倒して「総与ダメ27」= バーン型では表示が実ダメの半分以下だった。
+        // ThornsReflected と同じ「サマリーが嘘をつく」穴)。敵フェーズ中のティックは
+        // 直前の自ターンの投資なので、最大ターン火力 (currentTurnDealt) にも算入する
+        totalDealt += e.amount
+        currentTurnDealt += e.amount
+        break
       case 'ReactionTriggered':
         reactionsFired++
         break
