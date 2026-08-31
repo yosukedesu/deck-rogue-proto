@@ -461,7 +461,7 @@
       {
         "trigger": "onPlay",
         "effect": "impulseDraw",
-        "amount": 7
+        "amount": 6
       },
       {
         "trigger": "onPlay",

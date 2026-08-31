@@ -328,8 +328,15 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
     expect(run.phase).toBe('map')
   })
 
-  it('鍛冶の砥石あり: 2枚まで鍛えられる。除去との併用は不可 (1種類の原則)', () => {
+  it('幕1の「鍛える」はラン通算1回まで (供給を後ろへ 2026-08-31)', () => {
     let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1 }
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
+    // 砥石があっても幕1の2枚目は拒否される (幕1でデッキが完成する供給集中への処方)
+    expect(() => applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })).toThrow(/幕1で鍛えられるのは1回まで/)
+  })
+
+  it('鍛冶の砥石あり (幕2以降): 2枚まで鍛えられる。除去との併用は不可 (1種類の原則)', () => {
+    let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1, act: 2 }
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
     expect(run.phase).toBe('campfire') // 1枚目の後も留まる
     expect(() => applyRunCommand(run, { type: 'CampfireRemove', index: 1 })).toThrow('すでに鍛えている')

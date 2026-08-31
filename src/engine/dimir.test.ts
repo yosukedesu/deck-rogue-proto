@@ -29,7 +29,8 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
     // pre窓: 霜の帳だけが合致
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_blue_frost_veil' })
-    expect(s.player.iceBlock).toBeGreaterThan(0)
+    // 氷壁は獲得後に残りの敵の攻撃で消費されうる (編成戦) ので、獲得イベントで検証する
+    expect(s.eventLog.some((e) => e.type === 'IceBlockGained')).toBe(true)
     // 発動済みフラグにより同一行動のpost窓 (呪詛返し) は開かない = 1行動1回
     expect(s.player.setCards.map((c) => c.uid)).toEqual(['t1_black_reaction_curse'])
   })

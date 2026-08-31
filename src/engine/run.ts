@@ -204,6 +204,8 @@ export interface RunState {
   readonly campfireForgeBonus: number
   /** この焚き火で「鍛える」を使った回数 (焚き火進入時にリセット) */
   readonly campfireUpgradesUsed: number
+  /** 幕1で焚き火の「鍛える」を使った通算回数 (供給を後ろへ 2026-08-31: 幕1は1回まで) */
+  readonly act1Forges?: number
   // ---- ?マスの本家式解決 (2026-08-29)。すべて旧セーブに無いので使用側は ?? ガード ----
   /** ?マスの累積確率 (整数パーセントポイント。幕頭で基礎値へリセット) */
   readonly unknownPity: { readonly monster: number; readonly shop: number; readonly treasure: number }
@@ -594,7 +596,8 @@ export function createRun(
   }
   const rng0 = createRng(seed)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  const [map, rngAfterMap] = generateMap(rng0, 1)
+  // 供給を後ろへ (2026-08-31): 工房は幕2以降。幕1でデッキが完成する供給集中 (複数ラン一致) への処方
+  const [map, rngAfterMap] = generateMap(rng0, 1, false)
   // 伏せ参照レリックは、このランの報酬プールにリアクションが1枚も無い色 (赤単など) では
   // 永久の死に選択肢になるため候補列から除く (2026-08-30 Opusランで符師の懐が3択に3回連続出現)。
   // 蜃気楼の面 (意図の実値公開) は伏せに依存しないので残す
@@ -824,7 +827,7 @@ function advanceActIfBossCleared(run: RunState): RunState {
     return { ...run, phase: 'map' }
   }
   const nextAct = run.act + 1
-  const [map, rng] = generateMap(run.rng, nextAct)
+  const [map, rng] = generateMap(run.rng, nextAct, true)
   return {
     ...run,
     rng,
@@ -1111,6 +1114,11 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (upgradeTier(card.def) === 'none') {
         throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
       }
+      // 供給を後ろへ (2026-08-31): 幕1の「鍛える」はラン通算1回まで。
+      // 幕1でデッキが完成し幕2が消化試合になる供給集中 (緑・赤ラン一致) への処方
+      if (run.act === 1 && (run.act1Forges ?? 0) >= 1) {
+        throw new Error('幕1で鍛えられるのは1回まで (幕2から解禁)')
+      }
       // 鍛冶の砥石 (B型レリック): 追加回数のぶん焚き火に留まり、もう1枚鍛えられる
       const used = (run.campfireUpgradesUsed ?? 0) + 1
       const allowed = 1 + (run.campfireForgeBonus ?? 0)
@@ -1118,6 +1126,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
         campfireUpgradesUsed: used,
+        act1Forges: run.act === 1 ? (run.act1Forges ?? 0) + 1 : (run.act1Forges ?? 0),
         phase: used < allowed ? 'campfire' : 'map',
       }
     }
