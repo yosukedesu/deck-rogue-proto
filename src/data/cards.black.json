@@ -215,22 +215,23 @@
   {
     "id": "black_hand_ripper",
     "name": "冒涜の取引",
-    "cost": 1,
+    "cost": 2,
     "type": "spell",
     "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 4
+        "amount": 3
       }
     ],
-    "exhaustCost": 1
+    "exhaustCost": 1,
+    "exhaust": true
   },
   {
     "id": "black_dark_pact",
     "name": "闇の契約",
-    "cost": 1,
+    "cost": 2,
     "type": "spell",
     "rarity": "common",
     "effects": [
@@ -242,9 +243,10 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 4
+        "amount": 3
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "black_reaction_curse",
