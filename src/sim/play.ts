@@ -55,7 +55,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
   const all = e.target === 'all' ? '敵全体に' : ''
   const th = e.exhaustThreshold !== undefined ? `〔忘却の刻${e.exhaustThreshold}: ${e.amountMax}に強化〕` : ''
   const base: Record<string, string> = {
-    dealDamage: `${all}${a}ダメージ${xHitsSuffix(e)}`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
+    dealDamage: `${all}${a}ダメージ${e.pierce === true ? '(貫通)' : ''}${xHitsSuffix(e)}`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
@@ -150,11 +150,16 @@ function intentLine(s: GameState, i: number): string {
     return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」${stale}`
   }
   const it = e.intent
-  const hits = (it.hits ?? 1) > 1 ? `×${it.hits}回` : ''
+  const hits =
+    it.mirrorHits === true
+      ? `×手数(あなたが今ターンプレイした枚数ぶん。現在${Math.max(1, s.player.cardsPlayedThisTurn)})`
+      : (it.hits ?? 1) > 1
+        ? `×${it.hits}回`
+        : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? `${hits}(値は1発あたり)` : ''}${guard}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `強化+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
@@ -394,7 +399,7 @@ function renderMap(run: RunState): string {
   const L: string[] = []
   const cands = nextChoices(run)
   const reach = reachableSet(run)
-  L.push('🗺 マップ (下から上へ。全体もエッジ(→接続先col)も最初から見える。エリート👑=強化+2/HP×1.35、勝てばレリック3択)')
+  L.push('🗺 マップ (下から上へ。全体もエッジ(→接続先col)も最初から見える。エリート👑=固有ギミックの専用敵〔素の値・補正なし〕、勝てばレリック3択+レア1枚確定)')
   L.push('   ※現在地から到達できないノードは (到達不可) 付き。接続は前の行でどの列を選んだかで決まる')
   for (let r = run.map.length - 1; r >= 0; r--) {
     const cells = run.map[r].map((n, c) => {

@@ -18,7 +18,7 @@
         "kind": "defend",
         "min": 5,
         "max": 9,
-        "weight": 2
+        "weight": 1
       }
     ]
   },
@@ -762,8 +762,8 @@
     "id": "enemy_apprentice_colossus",
     "name": "見習い巨像",
     "archetype": "windup",
-    "flavor": "構えて、振るう。それしか知らない。だからこそ読める。",
-    "maxHp": 48,
+    "flavor": "振るってから、構える。二拍子の型は崩さない。",
+    "maxHp": 52,
     "moves": [
       {
         "id": "brace",
@@ -781,8 +781,8 @@
       }
     ],
     "sequence": [
-      "brace",
-      "swing"
+      "swing",
+      "brace"
     ]
   },
   {
@@ -796,21 +796,10 @@
         "id": "mimic",
         "kind": "attack",
         "min": 2,
-        "max": 3,
+        "max": 2,
         "weight": 1,
         "mirrorHits": true
-      },
-      {
-        "id": "giggle",
-        "kind": "defend",
-        "min": 4,
-        "max": 6,
-        "weight": 1
       }
-    ],
-    "sequence": [
-      "mimic",
-      "giggle"
     ]
   },
   {
@@ -862,18 +851,7 @@
         "max": 4,
         "weight": 1,
         "mirrorHits": true
-      },
-      {
-        "id": "mock",
-        "kind": "defend",
-        "min": 8,
-        "max": 11,
-        "weight": 1
       }
-    ],
-    "sequence": [
-      "mirror_dance",
-      "mock"
     ]
   },
   {
@@ -970,8 +948,8 @@
     ],
     "sequence": [
       "sleep",
-      "sleep",
       "awaken",
+      "tail",
       "tail",
       "tail",
       "tail",

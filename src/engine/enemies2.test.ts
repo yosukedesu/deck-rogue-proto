@@ -173,9 +173,9 @@ describe('回復役 (苔の癒し手) と 攻防一体・隙', () => {
 })
 
 describe('防御割合の監査 (2026-08-29 ユーザー指摘「既存敵の防御選択割合が低くない？」)', () => {
-  it('うねる獣: 防御重み1→2 (40%)', () => {
+  it('うねる獣: 防御重みは1に戻す (2026-08-31 緑ランで4連続防御の無音化を実測。休符が無音になっていた)', () => {
     const coil = getEnemyDef('enemy_wide_power').moves.find((m) => m.id === 'coil')!
-    expect(coil.weight).toBe(2)
+    expect(coil.weight).toBe(1)
   })
 
   it('罠壊し・道化: 通常テーブルに防御行動を持つ', () => {

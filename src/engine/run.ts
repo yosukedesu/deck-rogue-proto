@@ -56,7 +56,6 @@ const VICTORY_HEAL = 0
 /** エリート補正: 強化+2・HP×1.35 (エリートはマップの選択ノード。2026-08-28 opt-inオファー廃止) */
 // エリート補正は廃止 (2026-08-31 エリート専用敵化): 専用敵は素の値で完成しているため
 const ELITE_STRENGTH = 0
-const ELITE_HP_SCALE = 1
 // レリック上限は撤廃 (2026-08-29)。上限5は1幕時代の校正で、3幕化により幕2で満杯
 // →以後のボスレリック・ショップレリックが全部死んでいた。実効上限は在庫数 (9個)
 /** ゴールド (確定済みルール表「ゴールド」「ショップ」。相場はStS比例で入れて校正) */
@@ -245,11 +244,13 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     playerMaxHp: run.maxHp,
     // ボスの幕スケール (確定済みルール表「マップ」2026-08-29): HP×1.0/1.6/2.4・強化+1/+1/+2。
     // 幕2以降のボスが1幕時代の校正のままで消化試合化していた実測への対処
-    enemyHpScale:
-      depthHpScale(run.row, run.act) *
-      (elite ? ELITE_HP_SCALE : 1) *
-      // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
-      (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1),
+    // エリート専用敵は素の値で完成 = 幕内深度スケールも掛けない (2026-08-31 緑Opusランで発見:
+    // depthHpScale が残っていて鬼軍曹82→45・鉄卵112→90 と設計値の55〜80%で出ていた)
+    enemyHpScale: elite
+      ? 1
+      : depthHpScale(run.row, run.act) *
+        // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
+        (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1),
     enemyStrength:
       (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
     relicPermanents: run.relics

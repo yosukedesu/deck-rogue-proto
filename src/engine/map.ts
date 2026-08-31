@@ -203,6 +203,7 @@ export function generateMap(
     // 5. ノードの実体化 (直前2行と同じ敵は避ける)。?の中身は持たせない (入室時に決まる)
     const recentEnemies: string[][] = []
     const map: MapNode[][] = []
+    const usedElites = new Set<string>()
     for (let r = 0; r < MAP_ROWS; r++) {
       const rowNodes: MapNode[] = []
       const rowEnemies: string[] = []
@@ -214,13 +215,22 @@ export function generateMap(
           const basePool = tierFor(act, r)
           // こそ泥はエリートにしない (2026-08-31 ユーザー裁定)。エリート補正 (HP×1.35+強化) が乗ると
           // 「満タン34HP+ブロックを1ターンで抜け」が構造的に不可能 = 盗みが税に化ける実測への処方
-          const pool = type === 'elite' ? ELITE_POOLS[act - 1] : basePool
+          // エリートは幕内で未使用の個体を優先する (2026-08-31 緑ランで歩哨の双子が4枠中3回)
+          const pool =
+            type === 'elite'
+              ? (() => {
+                  const all = ELITE_POOLS[act - 1]
+                  const fresh = all.filter((id) => !usedElites.has(id))
+                  return fresh.length > 0 ? fresh : all
+                })()
+              : basePool
           const recent = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
           const fresh = pool.filter((id) => !recent.includes(id))
           const candidates = fresh.length > 0 ? fresh : pool
           const [idx, next] = nextInt(rng, 0, candidates.length - 1)
           rng = next
           encounterId = candidates[idx]
+          if (type === 'elite') usedElites.add(encounterId)
           rowEnemies.push(encounterId)
         }
         rowNodes.push({ type, encounterId, next: r < MAP_ROWS - 1 ? edges[r][c] : [] })

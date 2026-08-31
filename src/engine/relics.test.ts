@@ -74,13 +74,14 @@ describe('エリートノード (マップ化。opt-inオファーは廃止)', (
     expect(elite.currentElite).toBe(true)
   })
 
-  it('エリートは専用敵 (2026-08-31)。補正は掛けず素の値 + 幕内深度スケールだけが乗る', () => {
+  it('エリートは専用敵 (2026-08-31)。補正も幕内深度スケールも掛けず素の値で出る', () => {
+    // 緑Opusランで発見: depthHpScale が残っていて鬼軍曹82→45 と設計値の55%で出ていた
     const elite = intoFirstElite()
     const node = currentNode(elite)!
     expect(node.encounterId!.includes('elite')).toBe(true) // エリート専用プールから出る
     const members = resolveEncounter(node.encounterId!)
     const def = getEnemyDef(members[0].enemyId)
-    const expectHp = Math.round(def.maxHp * depthHpScale(elite.row) * (members[0].hpScale ?? 1))
+    const expectHp = Math.round(def.maxHp * (members[0].hpScale ?? 1))
     expect(elite.combat!.enemies[0].maxHp).toBe(expectHp)
     expect(elite.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })
