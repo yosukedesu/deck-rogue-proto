@@ -68,6 +68,25 @@ export function stepToward(run: RunState, target: MapNodeType): number {
     memo.set(key, ok)
     return ok
   }
+  // 次の一歩そのものが target なら最優先。次点は「戦闘を踏みながら target へ届く」一歩
+  // (パスウォーク化で行の幅が広がり、target へ届くが今すぐ?マスを踏む一歩を先に掴む事故が出た)
+  const isCombat = (t: MapNodeType | undefined): boolean =>
+    t === 'battle' || t === 'elite' || t === 'boss'
+  if (target === 'battle') {
+    // 戦闘狙いは「次も戦闘・その先にも戦闘」の連鎖を優先 (行き止まりの?へ吸い込まれない)
+    const chain = cands.find((c) => {
+      const n = run.map[run.row + 1][c]
+      return n.type === 'battle' && n.next.some((c2) => isCombat(run.map[run.row + 2]?.[c2]?.type))
+    })
+    if (chain !== undefined) return chain
+  }
+  const immediate = cands.find((c) => run.map[run.row + 1][c].type === target)
+  if (immediate !== undefined) return immediate
+  const viaBattle = cands.find((c) => {
+    const t = run.map[run.row + 1][c].type
+    return (t === 'battle' || t === 'elite' || t === 'boss') && reaches(run.row + 1, c)
+  })
+  if (viaBattle !== undefined) return viaBattle
   const found = cands.find((c) => reaches(run.row + 1, c))
   if (found !== undefined) return found
   const battle = cands.find((c) => {

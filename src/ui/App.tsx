@@ -46,7 +46,7 @@ import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
-import { BOSS_ROW, MAP_ROWS } from '../engine/map.ts'
+import { BOSS_ROW, GRID_COLS, MAP_ROWS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -1868,15 +1868,29 @@ function mapJitter(r: number, c: number, salt: number): number {
   const h = Math.sin(r * 12.9898 + c * 78.233 + salt * 37.719) * 43758.5453
   return h - Math.floor(h) // 0..1
 }
-const mapNodeX = (r: number, c: number, width: number): number =>
-  MAP_PAD_L +
-  ((c + 0.5) * (MAP_VW - MAP_PAD_L - MAP_PAD_R)) / width +
-  (mapJitter(r, c, 1) - 0.5) * 10
-/** 行15 (ボス) を上に、行0を下に */
+const MAP_INNER_W = MAP_VW - MAP_PAD_L - MAP_PAD_R
+/**
+ * X座標は格子列 (MapNode.col 0〜6) で決める (2026-08-31 本家式パスウォーク化)。
+ * 行内で等間隔に均すと蛇行が消えて全行が同じ扇に見える — 本家の「道の形」は格子座標が作る。
+ * col を持たない旧セーブのマップは行内等間隔へフォールバック
+ */
+const mapNodeX = (r: number, c: number, row: readonly MapNode[]): number => {
+  const col = row[c].col
+  const t = col !== undefined ? (col + 0.5) / GRID_COLS : (c + 0.5) / row.length
+  return MAP_PAD_L + t * MAP_INNER_W + (mapJitter(r, c, 1) - 0.5) * 10
+}
+/** 行17 (ボス) を上に、行0を下に */
 const mapNodeY = (r: number, c: number): number =>
   MAP_PAD_T + (BOSS_ROW - r) * MAP_ROW_H + (mapJitter(r, c, 2) - 0.5) * 6
-/** その行のノード1つに許すラベル幅 (隣のラベルとの最小ギャップが 34 units 残る値) */
-const mapLabelMaxW = (width: number): number => (MAP_VW - MAP_PAD_L - MAP_PAD_R) / width - 22
+/** 各ノードのラベル幅: 隣ノードとの実距離から決める (格子座標では隣接列がかなり近い) */
+const mapLabelWidths = (r: number, row: readonly MapNode[]): number[] => {
+  const xs = row.map((_, c) => mapNodeX(r, c, row))
+  return xs.map((x, i) => {
+    const left = i > 0 ? x - xs[i - 1] : 2 * (x - MAP_PAD_L + 10)
+    const right = i < xs.length - 1 ? xs[i + 1] - x : 2 * (MAP_VW - x)
+    return Math.max(24, Math.min(left, right) - 8)
+  })
+}
 
 const MAP_ICON: Record<MapNodeType, string> = {
   battle: '⚔️',
@@ -1979,12 +1993,12 @@ function RunMapView({
   const edges: ReactElement[] = []
   for (let r = 0; r < MAP_ROWS - 1; r++) {
     const row = run.map[r]
-    const wNext = run.map[r + 1].length
+    const rowNext = run.map[r + 1]
     for (let c = 0; c < row.length; c++) {
-      const ax = mapNodeX(r, c, row.length)
+      const ax = mapNodeX(r, c, row)
       const ay = mapNodeY(r, c)
       for (const to of row[c].next) {
-        const bx = mapNodeX(r + 1, to, wNext)
+        const bx = mapNodeX(r + 1, to, rowNext)
         const by = mapNodeY(r + 1, to)
         const len = Math.hypot(bx - ax, by - ay) || 1
         const ux = ((bx - ax) / len) * MAP_TRIM
@@ -2022,7 +2036,7 @@ function RunMapView({
     >
       {edges}
       {run.map.map((row, r) => {
-        const maxW = mapLabelMaxW(row.length)
+        const labelWs = mapLabelWidths(r, row)
         return (
           <g key={`row${r}`}>
             <text
@@ -2052,7 +2066,7 @@ function RunMapView({
                       : null
               const tip =
                 n.type === 'elite'
-                  ? `強個体: ${name}（強化+2・HP×1.35／勝てばレリック3択）`
+                  ? `強個体: ${name}（固有ギミックの専用敵・素の値／勝てばレリック3択+レア1枚確定）`
                   : n.type === 'boss'
                     ? `幕ボス: ${name}（撃破で全回復＋レリック3択）`
                     : n.type === 'campfire'
@@ -2081,7 +2095,7 @@ function RunMapView({
                   key={`n${r}:${c}`}
                   ref={r === focusRow && c === focusCol ? focusRef : undefined}
                   className={cls}
-                  transform={`translate(${mapNodeX(r, c, row.length).toFixed(2)} ${mapNodeY(r, c).toFixed(2)})`}
+                  transform={`translate(${mapNodeX(r, c, row).toFixed(2)} ${mapNodeY(r, c).toFixed(2)})`}
                   role="button"
                   aria-disabled={!clickable}
                   tabIndex={clickable ? 0 : -1}
@@ -2110,7 +2124,7 @@ function RunMapView({
                     className="map-label"
                     y={MAP_NODE_R + 11}
                     textAnchor="middle"
-                    {...mapFit(name, maxW, MAP_NAME_FONT)}
+                    {...mapFit(name, labelWs[c], MAP_NAME_FONT)}
                   >
                     {name}
                   </text>
@@ -2182,7 +2196,7 @@ function RunScreen({
         <h1>🗺 マップ — 第{run.act}幕/3</h1>
         <div className="panel">
           <div className="choice-desc">
-            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=強化+2/HP×1.35、勝てばレリック3択。🔥焚き火=休む(30%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。❓=入るまで不明
+            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=固有ギミックの専用敵、勝てばレリック3択+レア1枚確定（逃がすとレア無し）。🔥焚き火=休む(30%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。❓=入るまで不明
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>

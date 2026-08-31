@@ -1,6 +1,14 @@
 // engine/map.ts — ランのマップ生成 (純ロジック。確定済みルール表「マップ」)
 // StS式DAG・全体可視。18行 (行0〜17)・行17=ボス固定・強制焚き火行=5/11/16。
 //
+// 生成は本家式パスウォーク (2026-08-31 ユーザー指示「本家並みのマップ生成分岐」で全面置換):
+//   7列格子×6本のパスウォーク。開始列はランダム (最初の2本は別列 = 行0は必ず2ノード以上)、
+//   各行で列±1移動。交差防止 = 左隣ノードの最大接続先と右隣ノードの最小接続先で挟むクランプ。
+//   共通祖先が5行以内の合流は1回引き直す (小ひし形の抑制 = 本家 getCommonAncestor 準拠)。
+//   行の幅は訪問列数で可変 (実測2〜5)。強制焚き火行・行0も複数ノード化 (全ノードが
+//   焚き火/戦闘なので「全パスが通る」保証は不変)。ボスは行16の全ノードから接続。
+//   旧「行幅2〜3の連続区間分割」は分岐がほぼ梯子で、本家の蛇行・合流・複数スタートが無かった。
+//
 // 部屋タイプは本家の重みテーブルで員数を作り、ノード単位で配る (2026-08-29 全面置換):
 //   ショップ5%・工房5%・?マス22% を「幕の全ノード数」に掛けて枚数化し、
 //   行0 (本家 floor1 は必ず戦闘)・強制焚き火行・ボス行を除いた自由ノードにだけ配る。
@@ -8,7 +16,7 @@
 // 配置制約は本家の3つ: ①エリートは ELITE_MIN_ROW 以降 ②親と同タイプ禁止 (エリート/ショップ/工房のみ。
 //   ?と戦闘は縦に続いてよい) ③兄弟 (同じ親を共有する同行ノード) と同タイプ禁止 (全種)。
 // どのパスも戦闘数の下限8を保証する (上限は設けない = 本家に戦闘数の保証は無く「何回戦うか」を選べる)。
-// エッジは非交差 (連続区間分割) で、全ノードが開始から到達可能かつボスへ到達可能。
+// エッジは非交差 (格子空間のクランプで保証)、全ノードが開始から到達可能かつボスへ到達可能。
 // ?マスの中身はここでは決めない — 入室時に run.ts が本家式の累積確率で解決する。
 import { nextInt } from './rng.ts'
 
@@ -31,8 +39,13 @@ export interface MapNode {
   readonly type: MapNodeType
   /** battle / elite / boss のみ。それ以外は null */
   readonly encounterId: string | null
-  /** 次の行のどの列へ進めるか */
+  /** 次の行のどの列 (行内の詰めた添字) へ進めるか */
   readonly next: readonly number[]
+  /**
+   * 格子列 (0〜GRID_COLS-1)。表示専用 — UIが本家の蛇行を再現するための座標で、
+   * コマンド (ChooseNode.col) は従来どおり行内の詰めた添字を使う
+   */
+  readonly col?: number
 }
 
 export type RunMap = readonly (readonly MapNode[])[]
@@ -57,10 +70,22 @@ const ELITE_COUNT = 4
 const ELITE_MIN_ROW = 2
 /** どのパスも最低これだけは戦闘する。上限は設けない (本家に戦闘数の保証は無い) */
 const MIN_COMBAT_PER_PATH = 8
+/**
+ * 「エリートを狙うパス」で踏める最低数 (2026-08-31 パスウォーク化に伴う保証)。
+ * 広い盤面ではエリート4個が散り、実測で中央値2 (最低1) しか1本のパスで拾えなくなった
+ * = 員数固定4の目的だったレリック供給が配置の運で崩れる。3個踏める経路の存在を保証する
+ * (完全回避可能なルートの成立は不変 — これは「狙えば拾える」側の保証)
+ */
+const ELITE_PATH_MIN = 3
 /** 親と同タイプを禁止する部屋 (本家準拠。?と戦闘は対象外 = ?の縦連続は許可) */
 const PARENT_EXCLUSIVE: ReadonlySet<MapNodeType> = new Set(['elite', 'shop', 'workshop'])
-/** 生成リトライの上限 (幅とエッジを引き直す単一段階。実測は平均70回・最大325) */
+/** 生成リトライの上限 (パスとエッジを引き直す単一段階) */
 const MAX_PLACEMENT_TRIES = 5000
+/** 格子の列数と歩かせるパスの本数 (本家: 7列×6本) */
+export const GRID_COLS = 7
+const PATH_WALKS = 6
+/** 共通祖先をこの行数まで遡って探す (本家 getCommonAncestor の maxDepth=5) */
+const ANCESTOR_DEPTH = 5
 
 /** 幕プール制 (確定済みルール表「ランの敵並び」2026-08-29): 幕 → 抽選プール (ソロ敵IDと編成IDの混合) */
 const ACT_POOLS: readonly (readonly string[])[] = [
@@ -95,38 +120,96 @@ export function generateMap(
 ): readonly [RunMap, RngState] {
   let rng = rng0
   for (let attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++) {
-    // 1. 行の幅 (行0=2 / 強制焚き火行・ボス行=1 / それ以外は2〜3)
-    const widths: number[] = []
-    for (let r = 0; r < MAP_ROWS; r++) {
-      if (r === BOSS_ROW || FORCED_CAMPFIRE_ROWS.has(r)) widths.push(1)
-      else if (r === 0) widths.push(2)
-      else {
-        const [w, next] = nextInt(rng, 2, 3)
+    // 1. 本家式パスウォーク: 7列格子を6本のパスが行0→行16へ歩く。
+    //    訪問したマスがノードになり、歩いた区間がエッジになる (合流 = 自然なマージ)
+    const walkRows = BOSS_ROW // 行0〜16 (ボス行はウォーク対象外)
+    const visited: Set<number>[] = Array.from({ length: walkRows }, () => new Set<number>())
+    // latEdges[y] = 格子列 → 次の行の格子列の集合 (y: 0〜15)
+    const latEdges: Map<number, Set<number>>[] = Array.from(
+      { length: walkRows - 1 },
+      () => new Map<number, Set<number>>(),
+    )
+    // latParents[y] = 格子列 → 前の行の格子列の集合 (共通祖先の探索用)
+    const latParents: Map<number, Set<number>>[] = Array.from(
+      { length: walkRows },
+      () => new Map<number, Set<number>>(),
+    )
+    const addLatEdge = (y: number, from: number, to: number): void => {
+      let s = latEdges[y].get(from)
+      if (s === undefined) latEdges[y].set(from, (s = new Set()))
+      s.add(to)
+      let p = latParents[y + 1].get(to)
+      if (p === undefined) latParents[y + 1].set(to, (p = new Set()))
+      p.add(from)
+    }
+    /**
+     * (y,a) と (y,b) が ANCESTOR_DEPTH 行以内に共通祖先を持つか (本家 getCommonAncestor 準拠)。
+     * 左ノードは「右端の親」、右ノードは「左端の親」だけを辿る = 内側のチェーンが閉じる
+     * 実際のひし形だけを検出する。集合ベースの全祖先比較にすると、6本のパスは数行で
+     * ほぼ全員が祖先を共有するため合流がほぼ全て弾かれ、行が痩せず総ノードが膨張する (実測69)
+     */
+    const nearCommonAncestor = (y: number, a: number, b: number): boolean => {
+      let l = Math.min(a, b)
+      let r = Math.max(a, b)
+      for (let row = y; row > 0 && row > y - ANCESTOR_DEPTH; row--) {
+        const lp = latParents[row].get(l)
+        const rp = latParents[row].get(r)
+        if (lp === undefined || lp.size === 0 || rp === undefined || rp.size === 0) return false
+        l = Math.max(...lp)
+        r = Math.min(...rp)
+        if (l === r) return true
+      }
+      return false
+    }
+    const clampCol = (x: number): number => Math.max(0, Math.min(GRID_COLS - 1, x))
+    const startCols: number[] = []
+    for (let p = 0; p < PATH_WALKS; p++) {
+      let x = 0
+      // 最初の2本は別の列から (本家準拠 = 行0が必ず2ノード以上になり、開始の選択が生まれる)
+      for (;;) {
+        const [v, next] = nextInt(rng, 0, GRID_COLS - 1)
         rng = next
-        widths.push(w)
+        x = v
+        if (p !== 1 || x !== startCols[0]) break
+      }
+      startCols.push(x)
+      visited[0].add(x)
+      for (let y = 0; y < walkRows - 1; y++) {
+        const [d, next] = nextInt(rng, -1, 1)
+        rng = next
+        let nx = clampCol(x + d)
+        // 小ひし形の抑制: 合流先の別の親と共通祖先が近い (=直前に分かれた道と即再合流) なら1回引き直す
+        const otherParents = [...(latParents[y + 1].get(nx) ?? [])].filter((c) => c !== x)
+        if (otherParents.some((c) => nearCommonAncestor(y, x, c))) {
+          const [d2, next2] = nextInt(rng, -1, 1)
+          rng = next2
+          nx = clampCol(x + d2)
+        }
+        // 交差防止 (本家準拠): 左隣ノードの最大接続先より左へは行けない /
+        // 右隣ノードの最小接続先より右へは行けない (合流=同一点は許す)
+        const left = x > 0 ? latEdges[y].get(x - 1) : undefined
+        if (left !== undefined && left.size > 0) nx = Math.max(nx, Math.max(...left))
+        const right = x < GRID_COLS - 1 ? latEdges[y].get(x + 1) : undefined
+        if (right !== undefined && right.size > 0) nx = Math.min(nx, Math.min(...right))
+        addLatEdge(y, x, nx)
+        visited[y + 1].add(nx)
+        x = nx
       }
     }
 
-    // 2. エッジ: 連続区間分割 (非交差・全ノード到達保証) + 確率で隣へ1本追加
+    // 2. 格子 → 行内の詰めた添字へ変換 (ChooseNode.col の互換維持。col に格子列を残す)
+    const colsOf: number[][] = visited.map((s) => [...s].sort((a, b) => a - b))
+    const widths: number[] = [...colsOf.map((c) => c.length), 1] // +ボス行
     const edges: number[][][] = []
-    for (let r = 0; r < MAP_ROWS - 1; r++) {
-      const a = widths[r]
-      const b = widths[r + 1]
-      const rowEdges: number[][] = []
-      for (let i = 0; i < a; i++) {
-        const lo = Math.floor((i * b) / a)
-        const hi = Math.floor(((i + 1) * b - 1) / a)
-        const next: number[] = []
-        for (let c = lo; c <= hi; c++) next.push(c)
-        if (hi + 1 < b) {
-          const [coin, nrng] = nextInt(rng, 0, 1)
-          rng = nrng
-          if (coin === 1) next.push(hi + 1)
-        }
-        rowEdges.push(next)
-      }
-      edges.push(rowEdges)
+    for (let r = 0; r < walkRows - 1; r++) {
+      edges.push(
+        colsOf[r].map((col) =>
+          [...(latEdges[r].get(col) ?? [])].sort((a, b) => a - b).map((to) => colsOf[r + 1].indexOf(to)),
+        ),
+      )
     }
+    // 行16 (ボス前休憩) の全ノード → ボス (本家: 最上段は全てボスへ)
+    edges.push(colsOf[walkRows - 1].map(() => [0]))
     // 親テーブル (本家の親/兄弟制約の判定に使う)
     const parents: number[][][] = widths.map((w) => Array.from({ length: w }, (): number[] => []))
     for (let r = 0; r < MAP_ROWS - 1; r++) {
@@ -166,10 +249,41 @@ export function generateMap(
       }
       return true
     }
+    // 戦闘数DP: 全パスの最小戦闘数 (エリートは戦闘に数える。焚き火・ボスは0)
+    const combatOf = (r: number, c: number): number => {
+      if (r === BOSS_ROW || FORCED_CAMPFIRE_ROWS.has(r)) return 0
+      const t = typeAt(r, c)
+      return t === 'workshop' || t === 'shop' || t === 'event' ? 0 : 1
+    }
+    const minCombats = (): number => {
+      let minC = Array.from({ length: widths[0] }, (_, c) => combatOf(0, c))
+      for (let r = 0; r < MAP_ROWS - 1; r++) {
+        const next = new Array<number>(widths[r + 1]).fill(Infinity)
+        for (let c = 0; c < widths[r]; c++) {
+          for (const to of edges[r][c]) {
+            next[to] = Math.min(next[to], minC[c] + combatOf(r + 1, to))
+          }
+        }
+        minC = next
+      }
+      return minC[0]
+    }
     let placementFailed = false
     for (const [t, n] of quota) {
+      // 非戦闘ノードは「置くと戦闘数の床を割る位置」を候補から外す (2026-08-31 パスウォーク化に伴う)。
+      // 旧・棄却サンプリングは分岐の濃いDAGで「特別ノードを7個以上通せるパス」がほぼ必ず存在し
+      // 生成が数百回リトライしていた。床はここで構成的に守り、最後のDP検証は保険として残す
+      const guardsFloor = t === 'workshop' || t === 'shop' || t === 'event'
       for (let k = 0; k < n; k++) {
-        const cand = freeNodes.filter(([r, c]) => !specialAt.has(`${r}:${c}`) && assignable(r, c, t))
+        const cand = freeNodes.filter(([r, c]) => {
+          const key = `${r}:${c}`
+          if (specialAt.has(key) || !assignable(r, c, t)) return false
+          if (!guardsFloor) return true
+          specialAt.set(key, t)
+          const ok = minCombats() >= MIN_COMBAT_PER_PATH
+          specialAt.delete(key)
+          return ok
+        })
         if (cand.length === 0) {
           placementFailed = true
           break
@@ -182,23 +296,23 @@ export function generateMap(
     }
     if (placementFailed) continue
 
-    // 4. DP検証: どのパスも戦闘数が MIN_COMBAT_PER_PATH 以上か (上限は設けない)
-    const combatOf = (r: number, c: number): number => {
-      if (r === BOSS_ROW || FORCED_CAMPFIRE_ROWS.has(r)) return 0
-      const t = typeAt(r, c)
-      return t === 'workshop' || t === 'shop' || t === 'event' ? 0 : 1
-    }
-    let minC = Array.from({ length: widths[0] }, (_, c) => combatOf(0, c))
-    for (let r = 0; r < MAP_ROWS - 1; r++) {
-      const next = new Array<number>(widths[r + 1]).fill(Infinity)
-      for (let c = 0; c < widths[r]; c++) {
-        for (const to of edges[r][c]) {
-          next[to] = Math.min(next[to], minC[c] + combatOf(r + 1, to))
+    // 4. DP検証 (保険): どのパスも戦闘数が MIN_COMBAT_PER_PATH 以上か (上限は設けない)
+    if (minCombats() < MIN_COMBAT_PER_PATH) continue // 戦闘数の下限は最後まで緩めない。作り直す
+    // エリート供給の保証: 3個以上踏める経路が存在するか (DP最大値)
+    {
+      let maxE = Array.from({ length: widths[0] }, () => 0)
+      for (let r = 0; r < MAP_ROWS - 1; r++) {
+        const next = new Array<number>(widths[r + 1]).fill(-Infinity)
+        for (let c = 0; c < widths[r]; c++) {
+          for (const to of edges[r][c]) {
+            const gain = typeAt(r + 1, to) === 'elite' ? 1 : 0
+            next[to] = Math.max(next[to], maxE[c] + gain)
+          }
         }
+        maxE = next
       }
-      minC = next
+      if (maxE[0] < ELITE_PATH_MIN) continue
     }
-    if (minC[0] < MIN_COMBAT_PER_PATH) continue // 戦闘数の下限は最後まで緩めない。作り直す
 
     // 5. ノードの実体化 (直前2行と同じ敵は避ける)。?の中身は持たせない (入室時に決まる)
     const recentEnemies: string[][] = []
@@ -233,7 +347,12 @@ export function generateMap(
           if (type === 'elite') usedElites.add(encounterId)
           rowEnemies.push(encounterId)
         }
-        rowNodes.push({ type, encounterId, next: r < MAP_ROWS - 1 ? edges[r][c] : [] })
+        rowNodes.push({
+          type,
+          encounterId,
+          next: r < MAP_ROWS - 1 ? edges[r][c] : [],
+          col: r === BOSS_ROW ? Math.floor(GRID_COLS / 2) : colsOf[r][c],
+        })
       }
       recentEnemies.push(rowEnemies)
       map.push(rowNodes)

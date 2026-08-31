@@ -66,7 +66,14 @@ function runTo(run: RunState, target: 'campfire' | 'workshop' | 'elite' | 'boss'
 /** 最初の戦闘に入る */
 function intoFirstBattle(run: RunState): RunState {
   let r = run
-  while (r.phase === 'map') r = chooseToward(r, 'battle')
+  let guard = 0
+  // ショップ・工房はHPに触れず素通りできる。イベント・焚き火は stepToward が原則避ける
+  while (r.phase !== 'combat' && guard++ < 40) {
+    if (r.phase === 'map') r = chooseToward(r, 'battle')
+    else if (r.phase === 'shop') r = applyRunCommand(r, { type: 'ShopLeave' })
+    else if (r.phase === 'workshop') r = applyRunCommand(r, { type: 'WorkshopSkip' })
+    else break
+  }
   return r
 }
 

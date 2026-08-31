@@ -93,8 +93,10 @@ describe('ショップ', () => {
     for (const item of run.shop!.cards.slice(0, 5)) {
       const def = getCardDef(item.id)
       expect(def.color).toBe('green')
-      expect(item.price).toBeGreaterThanOrEqual(40 + def.cost * 10)
-      expect(item.price).toBeLessThanOrEqual(50 + def.cost * 10)
+      // X札は典型X=3で値付けされる (確定済みルール表「Xコスト」)
+      const priceCost = def.xCost === true ? 3 : def.cost
+      expect(item.price).toBeGreaterThanOrEqual(40 + priceCost * 10)
+      expect(item.price).toBeLessThanOrEqual(50 + priceCost * 10)
     }
     // 6枠目 = レア確定・高額 (120+コスト×10)
     const rare = run.shop!.cards[5]
