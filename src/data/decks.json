@@ -2053,5 +2053,52 @@
         "count": 2
       }
     ]
+  },
+  {
+    "id": "deck_bloodfeast",
+    "name": "血汐の宴",
+    "description": "黒の回復換金型の理想形。ドレイン+亡骸回復でonHealedを鳴らし、燭台・香炉・血汐で刈る",
+    "cards": [
+      {
+        "cardId": "black_drain",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_thirst",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_candle",
+        "count": 1
+      },
+      {
+        "cardId": "black_thirst_censer",
+        "count": 1
+      },
+      {
+        "cardId": "black_seething_blood",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_moon",
+        "count": 1
+      },
+      {
+        "cardId": "black_corpse_candle",
+        "count": 1
+      },
+      {
+        "cardId": "black_bone_stoke",
+        "count": 1
+      },
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      }
+    ]
   }
 ]

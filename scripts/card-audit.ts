@@ -33,6 +33,7 @@ const VP_PER: Record<string, number> = {
   addCasts: 2.5, // 焚べる: 詠唱+1 ≈ 参照×2〜3の増分
   exhaustFromDeck: 0.6, // 忘却=墓地燃料1枚≈0.6VP (刻・亡骸の期待価値)
   addCardToHand: 3.0, // 骨のナイフ1枚 ≈ 4ダメ(0E)+消滅燃料0.6 の割引現在価値
+  dealDamagePerHeal: 1.0 * 4, // 回復回数の典型4 (ドレイン+とばり/亡骸回復)
   dealDamagePerBlock: 1.0 * 8, dealDamagePerPermanent: 1.0 * 3, gainBlockPerPermanent: 1.0 * 3, // 白の参照典型 (自前ブロック8・置物3体)
 }
 const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }

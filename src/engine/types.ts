@@ -82,6 +82,8 @@ export interface PlayerState extends CombatantState {
   readonly cardsPlayedTotal: number
   /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
   readonly aether: number
+  /** この戦闘で回復した回数 (過剰回復も数える = onHealed と同じ回数論。滾る血汐の参照) */
+  readonly healsThisCombat: number
   /**
    * マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。
    * 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し
@@ -484,6 +486,7 @@ export interface DeclarativeEffect {
     | 'exhaustFromDeckChoose' // 引導 (黒 2026-08-31): 山札か捨て札から好きなX枚を選んで消滅させる (combat.ts が deckUids で解決。亡骸・onCardExhausted は発火 = 狙い撃ちの起爆と燃料化)
     | 'addCardToHand' // 骨刃 (黒 2026-09-01): summonId のトークン札X枚を手札に加える (この戦闘限り。ラン層のデッキには入らない)
     | 'empowerShivs' // 骨刃の強化 (黒): 【常在】shivToken 札の与ダメ+X (プレイ時に注入。急所読み=StS Accuracy)
+    | 'dealDamagePerHeal' // 回復の換金 (黒 2026-09-01): この戦闘で回復した回数×Xダメージ (滾る血汐。過剰回復も数える)
     | 'dealDamagePerExhaust' // 墓地参照 (黒): 消滅した枚数×Xダメージ (単調増加。衝動失効・消滅札とも共鳴)
     | 'dealDamageDrainPerExhaust' // 墓地参照ドレイン (黒): 消滅枚数×Xダメージ + 半分回復 (死霊の饗宴)
     | 'dealDamagePerSelfHpLost' // 自傷の換金 (黒): この戦闘でカード効果により失ったHP×Xダメージ (背徳の収穫)

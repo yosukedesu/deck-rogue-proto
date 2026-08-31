@@ -950,6 +950,8 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   black_blade_procession: [
     { trigger: 'onPlay', effect: 'addCardToHand', amount: 1, summonId: 'black_shiv_token' },
   ],
+  // 滾る血汐+ = ドレイン4を追加 (回復回数の参照はコストに触れない裁定の受け皿。自分で1回鳴らせる)
+  black_seething_blood: [{ trigger: 'onPlay', effect: 'dealDamageDrain', amount: 4 }],
   // 上限参照の1E札はコストを0Eへ落とさない裁定 (2026-08-30) の受け皿
   green_sapling_strike: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 4 }],
   green_trunk_guard: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],

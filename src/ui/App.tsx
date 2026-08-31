@@ -369,6 +369,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復 [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
         : `${trigger}🩸 消滅した枚数×${e.amount}ダメージ+半分回復`
+    case 'dealDamagePerHeal':
+      return `${trigger}⚔️ この戦闘で回復した回数×${e.amount}ダメージ${pierce}（過剰回復も数える）`
     case 'dealDamagePerSelfHpLost':
       return ctx
         ? `${trigger}⚔️ この戦闘でカード効果により失ったHP×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.selfHpLost + atkBonus}]`

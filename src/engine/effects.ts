@@ -64,6 +64,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerCardPlayedTotal',
     'dealDamagePerEnergyMax',
     'dealDamagePerMomentum',
+    'dealDamagePerHeal',
     'dischargeAether',
     'dischargeGrowth',
     'dealDamageCleave',
@@ -193,8 +194,14 @@ export function runPermanentTriggers(
 export function healPlayer(state: GameState, amount: number, enemyIndex: number): GameState {
   if (amount <= 0) return state
   const healed = Math.min(amount, state.player.maxHp - state.player.hp)
-  let s: GameState =
-    healed > 0 ? { ...state, player: { ...state.player, hp: state.player.hp + healed } } : state
+  let s: GameState = {
+    ...state,
+    player: {
+      ...state.player,
+      hp: state.player.hp + Math.max(0, healed),
+      healsThisCombat: state.player.healsThisCombat + 1, // 過剰回復も1回 (onHealedと同じ回数論)
+    },
+  }
   s = emit(s, { type: 'HpHealed', amount: healed })
   return runPermanentTriggers(s, 'onHealed', enemyIndex)
 }
@@ -639,6 +646,14 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
   switch (effect.effect) {
     case 'dealDamage':
       return dealDamageToEnemy(state, enemyIndex, effect.amount ?? 0, effect.pierce)
+    case 'dealDamagePerHeal':
+      // 回復の換金 (黒 2026-09-01): この戦闘で回復した回数×X (滾る血汐。過剰回復も数える)
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) * state.player.healsThisCombat,
+        effect.pierce,
+      )
     case 'dealDamagePerMomentum':
       // トランプルの換金 (2026-08-29): 勢い × amount のダメージ。勢いは消費しない
       // (勢いはターン終了で消えるので「売り時」の緊張は自然に発生する)。

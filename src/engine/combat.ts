@@ -71,6 +71,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       cardsPlayedThisTurn: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
+      healsThisCombat: 0,
       nextCardDiscount: 0,
       impulseUids: [],
       weak: 0,

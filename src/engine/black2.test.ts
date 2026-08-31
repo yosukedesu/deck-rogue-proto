@@ -3,6 +3,8 @@
 // 黒の第5の柱: 払ったコストの再利用ハック (HP→背徳の収穫 / 手札→闇市の帳簿 / エナジー→死者再生+血の儀式)
 import { describe, expect, it } from 'vitest'
 import { effectiveCost } from './effects.ts'
+import * as combatModule from './combat.ts'
+import * as contentModule from './content.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
@@ -363,5 +365,64 @@ describe('骨刃 (2026-09-01 本家Shivの黒移植)', () => {
     s = withIntent(s, { kind: 'defend', shownMin: 0, shownMax: 0, actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hand.some((c) => c.def.id === 'black_shiv_token')).toBe(true)
+  })
+})
+
+describe('黒の回復換金とエナジー源 (2026-09-01)', () => {
+  it('血の燭台: 回復するたび1ダメ (ドレインの回復で誘発。過剰回復でも)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_blood_candle',
+      'black_drain',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_blood_candle' })
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
+    // 生命吸収6 + 燭台1 (満タンの過剰回復でも誘発)
+    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 1)
+    expect(s.player.healsThisCombat).toBe(1)
+  })
+
+  it('滾る血汐: この戦闘で回復した回数×3ダメ', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_seething_blood',
+    ])
+    s = { ...s, player: { ...s.player, energy: 9, healsThisCombat: 4 } }
+    const enemyHp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_seething_blood' })
+    expect(s.enemies[0].hp).toBe(enemyHp - 12)
+  })
+
+  it('亡者の蝋燭: 刻5以上なら一時マナ+3 (しきい値がgainEnergyにも効く)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
+      'black_corpse_candle',
+    ])
+    const filler = s.player.drawPile.slice(0, 5)
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        drawPile: s.player.drawPile.slice(5),
+        exhaustPile: [...s.player.exhaustPile, ...filler],
+      },
+    }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_corpse_candle' })
+    expect(s.player.energy).toBe(3 - 1 + 3)
+  })
+
+  it('渇きの香炉×とばり: 回復→ミル→消滅回復→ミル…のカスケードは山札で止まる (有限=全掘りの対価はドロー枯渇)', () => {
+    let s = combatModule.startCombatWithOptions(42, 'set-confirm', 'enemy_brute', {
+      deck: contentModule.buildDeck('starter_black'),
+      leaderId: 'leader_black',
+    })
+    s = withHand(s, ['black_thirst_censer', 'black_drain'])
+    s = { ...s, player: { ...s.player, energy: 9, hp: 40 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_thirst_censer' })
+    const drawBefore = s.player.drawPile.length
+    expect(drawBefore).toBeGreaterThan(0)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
+    // ドレインの回復1回が山札を掘り尽くす (とばり=消滅ごと回復1が香炉と共鳴する)
+    expect(s.player.drawPile).toHaveLength(0)
+    expect(s.phase === 'player-turn' || s.phase === 'won').toBe(true) // 無限ループしない
   })
 })

@@ -1577,5 +1577,100 @@
         "amount": 2
       }
     ]
+  },
+  {
+    "id": "black_blood_candle",
+    "name": "血の燭台",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_crimson_feast",
+    "name": "真紅の饗宴",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "dealDamage",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "black_thirst_censer",
+    "name": "渇きの香炉",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "exhaustFromDeck",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_seething_blood",
+    "name": "滾る血汐",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHeal",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "black_corpse_candle",
+    "name": "亡者の蝋燭",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1,
+        "amountMax": 3,
+        "exhaustThreshold": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "black_bone_stoke",
+    "name": "骨焚き",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "exhaust": true,
+    "exhaustCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
   }
 ]

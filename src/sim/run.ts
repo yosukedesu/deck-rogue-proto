@@ -109,6 +109,13 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   ) {
     return false
   }
+  // 回復の換金 (滾る血汐) は回復2回以上でないと空撃ち
+  if (
+    card.def.effects.some((e) => e.effect === 'dealDamagePerHeal') &&
+    state.player.healsThisCombat < 2
+  ) {
+    return false
+  }
   // 自傷の換金 (背徳の収穫) は失ったHP5以上でないと空撃ち
   if (
     card.def.effects.some((e) => e.effect === 'dealDamagePerSelfHpLost') &&
