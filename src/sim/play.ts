@@ -138,6 +138,10 @@ function intentLine(s: GameState, i: number): string {
     // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)
     return branchText(e.intent) // branchText は素の値だけを読む
   }
+  if (e.intent.conditionalOn && e.intent.alt && branchText(e.intent.alt) === branchText(e.intent)) {
+    // 両分岐が同値なら畳む (2026-08-31 緑再走の指摘: 「攻撃5〜7／攻撃5〜7」は読む価値のないノイズ)
+    return branchText(e.intent)
+  }
   if (e.intent.conditionalOn && e.intent.alt) {
     const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
     const now = effectiveIntent(s, i)!
@@ -294,7 +298,15 @@ function renderBattle(s: GameState, logFrom: number): string {
         c.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')
           ? '要retrieveUid'
           : '',
-        canSet ? '伏せ可' : '',
+        canSet
+          ? '伏せ可'
+          : c.def.type === 'reaction'
+            ? p.setCards.length >= p.setSlots
+              ? '伏せ枠が満杯(回収{"type":"RetrieveSetCard"}で空く)'
+              : c.def.cost > p.energy
+                ? '伏せるエナジー不足'
+                : ''
+            : '',
         cardNeedsTarget(c) && s.enemies.filter((e) => e.hp > 0).length > 1 ? '要targetIndex' : '',
         p.impulseUids.includes(c.uid) ? '衝動(このターン限り)' : '',
       ].filter(Boolean).join('・')

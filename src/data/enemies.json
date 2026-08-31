@@ -763,7 +763,7 @@
     "name": "見習い巨像",
     "archetype": "windup",
     "flavor": "振るってから、構える。二拍子の型は崩さない。",
-    "maxHp": 52,
+    "maxHp": 70,
     "moves": [
       {
         "id": "brace",
@@ -918,14 +918,16 @@
     "id": "enemy_elite_iron_egg",
     "name": "眠れる鉄卵",
     "archetype": "elite",
-    "flavor": "起こすまでは、ただの置物。起こしたなら、覚悟はできているな？",
+    "flavor": "眠っている間も、殻は厚くなり続ける。起こすか、削り続けるか。",
     "maxHp": 112,
     "armor": 22,
     "moves": [
       {
         "id": "sleep",
-        "kind": "rest",
-        "weight": 1
+        "kind": "defend",
+        "weight": 1,
+        "min": 14,
+        "max": 18
       },
       {
         "id": "awaken",

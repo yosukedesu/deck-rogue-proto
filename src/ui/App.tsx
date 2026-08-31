@@ -517,6 +517,9 @@ function conditionalIntentText(s: GameState, i: number): string {
   if (intent.conditionalOn === 'set' && !playerCanSet(s)) {
     return intentText({ ...intent, conditionalOn: undefined, alt: undefined })
   }
+  // 両分岐が同値なら畳む (2026-08-31: 「攻撃5〜7／攻撃5〜7」は読む価値のないノイズ)
+  const baseOnly = intentText({ ...intent, conditionalOn: undefined, alt: undefined })
+  if (intentText({ ...intent.alt }) === baseOnly) return baseOnly
   const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
