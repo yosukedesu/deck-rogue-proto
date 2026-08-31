@@ -333,7 +333,7 @@ function renderBattle(s: GameState, logFrom: number): string {
 }
 
 const NODE_ICON: Record<string, string> = {
-  battle: '⚔', elite: '👑', campfire: '🔥', workshop: '🔨', shop: '🛒', event: '❓', boss: '💀',
+  battle: '⚔', elite: '👑', campfire: '🔥', workshop: '🔨', shop: '🛒', event: '❓', treasure: '🎁', boss: '💀',
 }
 
 /** マップ全体をテキスト描画 (全体可視・現在地と次の選択肢を明示) */
@@ -371,7 +371,7 @@ function reachableSet(run: RunState): Set<string> {
   return out
 }
 
-const NODE_LABEL: Record<string, string> = { campfire: '焚き火', workshop: '工房', shop: 'ショップ', event: '?' }
+const NODE_LABEL: Record<string, string> = { campfire: '焚き火', workshop: '工房', shop: 'ショップ', event: '?', treasure: '宝箱' }
 
 /**
  * 簡易マップ (既定。トークン節約のため近傍だけ表示):
@@ -430,7 +430,7 @@ function renderMap(run: RunState): string {
   for (let r = run.map.length - 1; r >= 0; r--) {
     const cells = run.map[r].map((n, c) => {
       // ?マスの中身 (eventId) は入るまで伏せる (確定済みルール表「?マス（イベント）」)
-      const typeLabel: Record<string, string> = { campfire: '焚き火', workshop: '工房', shop: 'ショップ', event: '?' }
+      const typeLabel: Record<string, string> = { campfire: '焚き火', workshop: '工房', shop: 'ショップ', event: '?', treasure: '宝箱(レリック3択)' }
       const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${typeLabel[n.type] ?? n.type}`
       const edges = n.next.length > 0 ? `→${n.next.join('·')}` : ''
       const here = r === run.row && c === run.col ? '【現在地】' : ''

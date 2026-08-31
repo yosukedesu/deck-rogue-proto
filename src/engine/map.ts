@@ -33,7 +33,15 @@ export const ELITE_POOLS: readonly (readonly string[])[] = [
 ]
 import type { RngState } from './types.ts'
 
-export type MapNodeType = 'battle' | 'elite' | 'campfire' | 'workshop' | 'shop' | 'event' | 'boss'
+export type MapNodeType =
+  | 'battle'
+  | 'elite'
+  | 'campfire'
+  | 'workshop'
+  | 'shop'
+  | 'event'
+  | 'treasure'
+  | 'boss'
 
 export interface MapNode {
   readonly type: MapNodeType
@@ -58,6 +66,11 @@ export const BOSS_ROW = MAP_ROWS - 1
  * 「どこで休むか」をルート選択に入れる (焚き火間の最大連戦保証も本家に無いので廃止)
  */
 export const FORCED_CAMPFIRE_ROWS: ReadonlySet<number> = new Set([16])
+/**
+ * 宝箱行 (2026-08-31 ユーザー選択)。本家の「9階は全ノード宝箱」に相当 — 18行では行9 (表示行10)。
+ * 全パスが必ず1回通る = レリック供給+1/幕。進入するとレリック3択 (?→宝箱と同じ配管)
+ */
+export const TREASURE_ROW = 9
 
 /**
  * 本家の部屋タイプ重み。本家の癖ごと写す = 「幕の全ノード数」に掛けて枚数を作り、
@@ -230,25 +243,30 @@ export function generateMap(
     // 3. 部屋タイプの員数を作り、自由ノードへ配る (本家式)
     const total = widths.reduce((a, b) => a + b, 0)
     const quota: readonly (readonly [MapNodeType, number])[] = [
-      ['elite', ELITE_COUNT],
       ['campfire', Math.round(total * ROOM_WEIGHTS.campfire)], // 本家Rest: 散布される休憩
       // 工房 (合成v1は緑同士のみ) は緑を含まないランでは配置しない。枠は戦闘に置き換わる
       ['workshop', allowWorkshop ? Math.round(total * ROOM_WEIGHTS.workshop) : 0],
       ['shop', Math.round(total * ROOM_WEIGHTS.shop)],
       ['event', Math.round(total * ROOM_WEIGHTS.event)],
     ]
-    const specialAt = new Map<string, MapNodeType>()
-    // 強制行・ボス行も正しい型を返す (親同種禁止が「行15の焚き火」を自動で弾くために必要)
-    const typeAt = (r: number, c: number): MapNodeType =>
-      r === BOSS_ROW
-        ? 'boss'
-        : FORCED_CAMPFIRE_ROWS.has(r)
-          ? 'campfire'
-          : (specialAt.get(`${r}:${c}`) ?? 'battle')
+    // 型グリッド: 文字列キーのMapだと床ガードのDP (数千回) が文字列連結で律速する。
+    // 強制行・ボス行も最初から正しい型を持つ (親同種禁止が「行15の焚き火」を弾くために必要)
+    const typeGrid: MapNodeType[][] = widths.map((w, r) =>
+      Array.from({ length: w }, (): MapNodeType =>
+        r === BOSS_ROW
+          ? 'boss'
+          : FORCED_CAMPFIRE_ROWS.has(r)
+            ? 'campfire'
+            : r === TREASURE_ROW
+              ? 'treasure'
+              : 'battle',
+      ),
+    )
+    const typeAt = (r: number, c: number): MapNodeType => typeGrid[r][c]
     // 自由ノード = 行0 (本家 floor1 は全て通常戦闘)・強制焚き火行・ボス行 を除く全ノード
     const freeNodes: (readonly [number, number])[] = []
     for (let r = 1; r < BOSS_ROW; r++) {
-      if (FORCED_CAMPFIRE_ROWS.has(r)) continue
+      if (FORCED_CAMPFIRE_ROWS.has(r) || r === TREASURE_ROW) continue
       for (let c = 0; c < widths[r]; c++) freeNodes.push([r, c])
     }
     const assignable = (r: number, c: number, t: MapNodeType): boolean => {
@@ -268,9 +286,9 @@ export function generateMap(
       }
       return true
     }
-    // 戦闘数DP: 全パスの最小戦闘数 (エリートは戦闘に数える。焚き火・ボスは0)
+    // 戦闘数DP: 全パスの最小戦闘数 (エリートは戦闘に数える。焚き火・宝箱・ボスは0)
     const combatOf = (r: number, c: number): number => {
-      const t = typeAt(r, c)
+      const t = typeGrid[r][c]
       return t === 'battle' || t === 'elite' ? 1 : 0
     }
     const minCombats = (): number => {
@@ -286,38 +304,8 @@ export function generateMap(
       }
       return minC[0]
     }
-    let placementFailed = false
-    for (const [t, n] of quota) {
-      // 非戦闘ノードは「置くと戦闘数の床を割る位置」を候補から外す (2026-08-31 パスウォーク化に伴う)。
-      // 旧・棄却サンプリングは分岐の濃いDAGで「特別ノードを7個以上通せるパス」がほぼ必ず存在し
-      // 生成が数百回リトライしていた。床はここで構成的に守り、最後のDP検証は保険として残す
-      const guardsFloor = t === 'campfire' || t === 'workshop' || t === 'shop' || t === 'event'
-      for (let k = 0; k < n; k++) {
-        const cand = freeNodes.filter(([r, c]) => {
-          const key = `${r}:${c}`
-          if (specialAt.has(key) || !assignable(r, c, t)) return false
-          if (!guardsFloor) return true
-          specialAt.set(key, t)
-          const ok = minCombats() >= MIN_COMBAT_PER_PATH
-          specialAt.delete(key)
-          return ok
-        })
-        if (cand.length === 0) {
-          placementFailed = true
-          break
-        }
-        const [i, next] = nextInt(rng, 0, cand.length - 1)
-        rng = next
-        specialAt.set(`${cand[i][0]}:${cand[i][1]}`, t)
-      }
-      if (placementFailed) break
-    }
-    if (placementFailed) continue
-
-    // 4. DP検証 (保険): どのパスも戦闘数が MIN_COMBAT_PER_PATH 以上か (上限は設けない)
-    if (minCombats() < MIN_COMBAT_PER_PATH) continue // 戦闘数の下限は最後まで緩めない。作り直す
-    // エリート供給の保証: 3個以上踏める経路が存在するか (DP最大値)
-    {
+    /** エリート供給: 1本のパスで踏める最大数 (DP最大値) */
+    const maxElites = (): number => {
       let maxE = Array.from({ length: widths[0] }, () => 0)
       for (let r = 0; r < MAP_ROWS - 1; r++) {
         const next = new Array<number>(widths[r + 1]).fill(-Infinity)
@@ -329,8 +317,66 @@ export function generateMap(
         }
         maxE = next
       }
-      if (maxE[0] < ELITE_PATH_MIN) continue
+      return maxE[0]
     }
+    // 3a. エリート: 素のランダム配置 + 供給保証 (3個踏める経路の存在)。判定はここで行う —
+    // 高価な床ガード付き配置の後に回すと、保証落ちのたびに全配置をやり直して生成が
+    // 数百msに膨れる (2026-08-31 宝箱行追加後の実測345ms/枚への処方)。安価なので内側でループ
+    let eliteOk = false
+    for (let tryE = 0; tryE < 20 && !eliteOk; tryE++) {
+      for (const [r, c] of freeNodes) if (typeGrid[r][c] === 'elite') typeGrid[r][c] = 'battle'
+      let failed = false
+      for (let k = 0; k < ELITE_COUNT; k++) {
+        const cand = freeNodes.filter(
+          ([r, c]) => typeGrid[r][c] === 'battle' && assignable(r, c, 'elite'),
+        )
+        if (cand.length === 0) {
+          failed = true
+          break
+        }
+        const [i, next] = nextInt(rng, 0, cand.length - 1)
+        rng = next
+        typeGrid[cand[i][0]][cand[i][1]] = 'elite'
+      }
+      eliteOk = !failed && maxElites() >= ELITE_PATH_MIN
+    }
+    if (!eliteOk) continue
+
+    // 3b. 非戦闘ノードは「置いた後の戦闘数の床 (全パスの最小戦闘数) が最大になる位置」に置く
+    // (2026-08-31 宝箱行の追加で床8×クォータの両立が総当たりだと当たりにくくなった:
+    //  床の余裕を食い潰さない位置へ貪欲に置き、同値はランダムに選ぶ = 特別ノードが
+    //  自然にパス間へ分散する。最後のDP検証は保険として残す)
+    let placementFailed = false
+    for (const [t, n] of quota) {
+      for (let k = 0; k < n; k++) {
+        let bestVal = -1
+        let cand: (readonly [number, number])[] = []
+        for (const [r, c] of freeNodes) {
+          if (typeGrid[r][c] !== 'battle' || !assignable(r, c, t)) continue
+          typeGrid[r][c] = t
+          const v = minCombats()
+          typeGrid[r][c] = 'battle'
+          if (v < MIN_COMBAT_PER_PATH || v < bestVal) continue
+          if (v > bestVal) {
+            bestVal = v
+            cand = []
+          }
+          cand.push([r, c])
+        }
+        if (cand.length === 0) {
+          placementFailed = true
+          break
+        }
+        const [i, next] = nextInt(rng, 0, cand.length - 1)
+        rng = next
+        typeGrid[cand[i][0]][cand[i][1]] = t
+      }
+      if (placementFailed) break
+    }
+    if (placementFailed) continue
+
+    // 4. DP検証 (保険): どのパスも戦闘数が MIN_COMBAT_PER_PATH 以上か (上限は設けない)
+    if (minCombats() < MIN_COMBAT_PER_PATH) continue // 戦闘数の下限は最後まで緩めない。作り直す
 
     // 5. ノードの実体化 (直前2行と同じ敵は避ける)。?の中身は持たせない (入室時に決まる)
     const recentEnemies: string[][] = []

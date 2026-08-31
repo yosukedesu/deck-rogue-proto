@@ -1,7 +1,7 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
-import { ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, MAP_ROWS, tierFor } from './map.ts'
+import { ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, MAP_ROWS, tierFor, TREASURE_ROW } from './map.ts'
 import { createRng } from './rng.ts'
 import {
   applyRunCommand,
@@ -175,6 +175,32 @@ describe('報酬ピック', () => {
   it('進めないノードへの ChooseNode は拒否される', () => {
     const run = createRun(3, 'set-confirm')
     expect(() => applyRunCommand(run, { type: 'ChooseNode', col: 9 })).toThrow(/進めないノード/)
+  })
+})
+
+describe('宝箱行 (2026-08-31)', () => {
+  it('宝箱行に入るとレリック3択になり、選んでもカード報酬は付かずマップへ戻る', () => {
+    let r = createRun(21, 'set-confirm')
+    let guard = 0
+    while (r.row < TREASURE_ROW && guard++ < 120) {
+      if (r.phase === 'map') r = chooseToward(r, 'treasure')
+      else if (r.phase === 'combat') r = forceWin(r)
+      else if (r.phase === 'reward') r = applyRunCommand(r, { type: 'SkipReward' })
+      else if (r.phase === 'relic-reward') r = applyRunCommand(r, { type: 'SkipRelic' })
+      else if (r.phase === 'campfire') r = applyRunCommand(r, { type: 'CampfireRest' })
+      else if (r.phase === 'shop') r = applyRunCommand(r, { type: 'ShopLeave' })
+      else if (r.phase === 'workshop') r = applyRunCommand(r, { type: 'WorkshopSkip' })
+      else if (r.phase === 'event') {
+        const ev = getEventDef(r.eventId!)
+        r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
+      } else break
+    }
+    expect(r.row).toBe(TREASURE_ROW)
+    expect(r.phase).toBe('relic-reward')
+    const before = r.relics.length
+    r = applyRunCommand(r, { type: 'PickRelic', index: 0 })
+    expect(r.relics).toHaveLength(before + 1)
+    expect(r.phase).toBe('map') // カード報酬は付かない (宝箱はレリックのみ)
   })
 })
 

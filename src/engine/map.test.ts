@@ -7,7 +7,7 @@
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
-import { ACT_BOSSES, BOSS_ROW, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor } from './map.ts'
+import { ACT_BOSSES, BOSS_ROW, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor, TREASURE_ROW } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -48,6 +48,17 @@ describe('マップ生成の構造', () => {
       for (const r of FORCED_CAMPFIRE_ROWS) {
         expect(map[r].every((n) => n.type === 'campfire'), `seed${seed} row${r}`).toBe(true)
       }
+    }
+  })
+
+  it('宝箱行 (行9) は全ノード宝箱で、他の行に宝箱は無い (2026-08-31)', () => {
+    for (const seed of SEEDS) {
+      const map = mapFor(seed)
+      expect(map[TREASURE_ROW].every((n) => n.type === 'treasure'), `seed${seed}`).toBe(true)
+      map.forEach((row, r) => {
+        if (r === TREASURE_ROW) return
+        expect(row.some((n) => n.type === 'treasure'), `seed${seed} row${r} に宝箱`).toBe(false)
+      })
     }
   })
 

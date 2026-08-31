@@ -1899,6 +1899,7 @@ const MAP_ICON: Record<MapNodeType, string> = {
   workshop: '🔨',
   shop: '🛒',
   event: '❓',
+  treasure: '🎁',
   boss: '💀',
 }
 const MAP_TYPE_LABEL: Record<MapNodeType, string> = {
@@ -1908,6 +1909,7 @@ const MAP_TYPE_LABEL: Record<MapNodeType, string> = {
   workshop: '工房',
   shop: 'ショップ',
   event: '？？？',
+  treasure: '宝箱',
   boss: '幕ボス',
 }
 const mapNodeName = (n: MapNode): string =>
@@ -2077,7 +2079,9 @@ function RunMapView({
                           ? 'ショップ: カード/レリック/除去/強化'
                           : n.type === 'event'
                             ? '？: 入るまで中身は分からない（イベント85%／戦闘10%／ショップ3%／宝箱2%。外れた種別は次から確率が上がる）'
-                            : `戦闘: ${name}`
+                            : n.type === 'treasure'
+                              ? '宝箱: レリック3択（本家の宝箱行。カード報酬は無い）'
+                              : `戦闘: ${name}`
               const nextTip =
                 n.next.length > 0 ? `／次の接続先: ${n.next.map((x) => x + 1).join('・')}` : ''
               const cls = [
@@ -2196,7 +2200,7 @@ function RunScreen({
         <h1>🗺 マップ — 第{run.act}幕/3</h1>
         <div className="panel">
           <div className="choice-desc">
-            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=固有ギミックの専用敵、勝てばレリック3択+レア1枚確定（逃がすとレア無し）。🔥焚き火=休む(30%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。❓=入るまで不明
+            全体も道（接続線）も最初から見える。<b>緑の実線＝いま進める道</b>／金の線＝通ってきた道／薄い点線＝現在地から到達できない道（接続は前の行でどの列を選んだかで決まる）。👑強個体=固有ギミックの専用敵、勝てばレリック3択+レア1枚確定（逃がすとレア無し）。🔥焚き火=休む(30%回復)/鍛える/取り除く の択一。🔨工房=カード合成。🛒ショップ。🎁宝箱=レリック3択。❓=入るまで不明
           </div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>

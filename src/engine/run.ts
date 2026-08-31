@@ -321,7 +321,18 @@ function enterNodeInner(run: RunState): RunState {
       return openShop(run)
     case 'event':
       return resolveUnknown(run)
+    case 'treasure':
+      // 宝箱行 (2026-08-31): 本家の「9階は全ノード宝箱」。レリック3択のみ・カード報酬なし
+      return openTreasure(run)
   }
+}
+
+/** 宝箱: レリック3択 (スキップ可)。候補列が尽きていれば素通りで map へ戻る */
+function openTreasure(run: RunState): RunState {
+  const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
+  const base = { ...run, combat: null, rewardOptions: null }
+  if (remaining.length === 0) return { ...base, phase: 'map' as const }
+  return { ...base, phase: 'relic-reward' as const, relicOptions: remaining.slice(0, 3) }
 }
 
 /**
@@ -348,11 +359,8 @@ function resolveUnknown(run: RunState): RunState {
     return openShop({ ...run, rng, unknownPity: bump('shop'), eventId: null })
   }
   if (roll < pity.monster + shopPct + pity.treasure) {
-    // ?→宝箱: レリック3択のみ (本家 Treasure 行に相当。カード報酬は付かない)
-    const remaining = run.relicQueue.filter((id) => !run.relics.includes(id))
-    const base = { ...run, rng, unknownPity: bump('treasure'), eventId: null, combat: null, rewardOptions: null }
-    if (remaining.length === 0) return { ...base, phase: 'map' as const }
-    return { ...base, phase: 'relic-reward' as const, relicOptions: remaining.slice(0, 3) }
+    // ?→宝箱: レリック3択のみ (宝箱行と同じ配管。カード報酬は付かない)
+    return openTreasure({ ...run, rng, unknownPity: bump('treasure'), eventId: null })
   }
   const [eventId, r3] = pickEvent(run, rng)
   const def = getEventDef(eventId)
