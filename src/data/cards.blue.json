@@ -134,14 +134,14 @@
   {
     "id": "blue_storm_lash",
     "name": "奔流の連撃",
-    "cost": 2,
+    "cost": 1,
     "type": "spell",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 5
+        "amount": 3
       }
     ]
   },
@@ -1069,13 +1069,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCardPlayed",
-        "amount": 2,
+        "amount": 3,
         "target": "all"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "drawCards",
-        "amount": 1
       }
     ]
   },
@@ -1247,6 +1242,46 @@
         "trigger": "onAttacked",
         "effect": "gainIceBlock",
         "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_kindle_chant",
+    "name": "焚べ火の詠唱",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "discardCost": 2,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCasts",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_thought_bonfire",
+    "name": "思考の大焚火",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "discardCost": 3,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCasts",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
       }
     ]
   }

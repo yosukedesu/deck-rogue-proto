@@ -667,7 +667,7 @@ const EFFECT_AXIS: Record<string, string> = {
   exhaustFromDeck: 'graveyard', dealDamagePerExhaust: 'graveyard', retrieveFromExhaust: 'graveyard',
   playFromExhaust: 'graveyard', gainBlockPerExhaust: 'graveyard', dealDamageDrainPerExhaust: 'graveyard',
   loseHp: 'selfharm', dealDamagePerSelfHpLost: 'selfharm',
-  dealDamagePerCardPlayed: 'storm', drawCardsPerCardPlayed: 'storm',
+  dealDamagePerCardPlayed: 'storm', drawCardsPerCardPlayed: 'storm', addCasts: 'storm',
   impulseDraw: 'impulse',
   weakenEnemy: 'oppress', dealDamagePerNegStrength: 'oppress',
   gainHp: 'heal', dealDamageDrain: 'heal',

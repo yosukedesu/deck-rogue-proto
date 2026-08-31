@@ -343,19 +343,27 @@
     "cards": [
       {
         "cardId": "blue_mana_convert",
-        "count": 3
+        "count": 2
       },
       {
         "cardId": "blue_ponder",
         "count": 2
       },
       {
-        "cardId": "blue_chain_thought",
+        "cardId": "blue_kindle_chant",
         "count": 2
       },
       {
+        "cardId": "blue_thought_bonfire",
+        "count": 1
+      },
+      {
+        "cardId": "blue_chain_thought",
+        "count": 1
+      },
+      {
         "cardId": "blue_focus",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "blue_flash",
@@ -366,15 +374,11 @@
         "count": 1
       },
       {
-        "cardId": "blue_strike",
-        "count": 3
-      },
-      {
         "cardId": "blue_storm_lash",
         "count": 3
       },
       {
-        "cardId": "blue_tsunami",
+        "cardId": "blue_rolling_wave",
         "count": 1
       },
       {
@@ -382,19 +386,11 @@
         "count": 1
       },
       {
-        "cardId": "blue_storm_barrier",
-        "count": 1
-      },
-      {
-        "cardId": "blue_frost_armor",
-        "count": 2
-      },
-      {
         "cardId": "blue_tide_drop",
         "count": 2
       },
       {
-        "cardId": "blue_aftermath",
+        "cardId": "blue_frost_armor",
         "count": 1
       }
     ]

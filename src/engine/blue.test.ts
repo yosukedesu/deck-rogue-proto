@@ -44,7 +44,7 @@ describe('氷壁 (持ち越しブロック)', () => {
 })
 
 describe('ストーム (詠唱数参照)', () => {
-  it('奔流の連撃はこのターンにプレイした他のカード×7 (自身は数えない)', () => {
+  it('奔流の連撃はこのターンにプレイした他のカード×3 (2026-08-31 稼ぐ札と使う札の帯分離で1E×3化。自身は数えない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_guard',
       'blue_current_lash',
@@ -54,8 +54,8 @@ describe('ストーム (詠唱数参照)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_current_lash' }) // 2枚目 (7ダメージ。2026-08-30 引き上げ)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×5 = 10 (2026-08-31 ×7→×5 許可済みナーフ)
-    expect(s.enemies[0].hp).toBe(hpBefore - 7 - 10)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_lash' }) // 3枚目: 詠唱数2 ×3 = 6
+    expect(s.enemies[0].hp).toBe(hpBefore - 7 - 6)
     // ターンをまたぐとリセット
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.cardsPlayedThisTurn).toBe(0)

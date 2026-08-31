@@ -61,6 +61,7 @@ const VP_PER: Record<string, number> = {
   dealDamagePerHandCard: 5.0,
   gainIceBlockPerHandCard: 6.5,
   addSpellEcho: 9.0, // 反復1トークン ≈ 典型コピー価値9
+  addCasts: 2.5,
   // 白の参照系の解禁 (2026-08-31 白Opusラン指摘「集結・城壁砕きが全ペア合成不可 =
   // コミット型デッキほど工房の価値が下がる」)。典型: 自前ブロック8・置物3体
   dealDamagePerBlock: 8.0,

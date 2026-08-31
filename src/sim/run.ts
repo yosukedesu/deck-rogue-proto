@@ -31,7 +31,7 @@ function botRole(def: CardDef): BotRole {
   if (def.type === 'permanent') return 'permanent'
   const effects = def.modes?.length ? def.modes[0].effects : def.effects
   const has = (...ids: string[]) => effects.some((e) => ids.includes(e.effect))
-  if (has('gainEnergyMax', 'gainEnergy', 'discountNext')) return 'ramp'
+  if (has('gainEnergyMax', 'gainEnergy', 'discountNext', 'addCasts')) return 'ramp' // 焚べる=詠唱の前積みも早置き
   // 召喚 (白): トークンを場に出すカードは置物枠で早置き
   if (has('summonPermanent')) return 'permanent'
   // ブロック参照の換金札は「壁を積んでから」なので最後に回す (2026-08-26)

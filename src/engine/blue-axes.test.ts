@@ -148,3 +148,26 @@ describe('統合パーミッション (消して稼いで放つ)', () => {
     expect(s.player.aether).toBe(0)
   })
 })
+
+describe('焚べる (addCasts 2026-08-31 ストーム構造難の処方)', () => {
+  it('詠唱数+2は参照に乗るが、累計プレイ数 (激昂タイマー) には数えない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
+      'blue_kindle_chant',
+      'blue_guard',
+      'blue_guard',
+      'blue_storm_lash',
+    ])
+    s = withEnergy(s, 9)
+    const totalBefore = s.player.cardsPlayedTotal
+    s = applyCommand(s, {
+      type: 'PlayCard',
+      cardUid: 't0_blue_kindle_chant',
+      discardUids: ['t1_blue_guard', 't2_blue_guard'],
+    })
+    expect(s.player.cardsPlayedThisTurn).toBe(1 + 2) // 自身1 + 焚べ2
+    expect(s.player.cardsPlayedTotal).toBe(totalBefore + 1) // 激昂タイマーは実プレイのみ
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't3_blue_storm_lash' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 9) // 詠唱数3 ×3
+  })
+})

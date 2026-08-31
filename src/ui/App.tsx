@@ -331,6 +331,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         : `${trigger}🧊 手札の枚数×${e.amount}の氷壁`
     case 'addSpellEcho':
       return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える。とげ反射も2回受ける）`
+    case 'addCasts':
+      return `${trigger}🌀 詠唱数+${e.amount}（激昂タイマーには数えない）`
     case 'blessRetainers':
       return `${trigger}✨ 【常在】従者の効果+${e.amount}`
     case 'addAether':

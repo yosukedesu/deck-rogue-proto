@@ -683,6 +683,17 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // アンセム (白): 常在の静的効果。runPermanentTriggers が置物の解決時に読むだけで、
       // ここで解決すべきものは無い (登場時のno-op)
       return state
+    case 'addCasts':
+      // 焚べる (青): 詠唱数+N。手札を燃料に変える = 「引く→撃てない→捨てる」の苦痛を資源化。
+      // cardsPlayedTotal (激昂タイマー) には数えない。物真似 (mirrorHits) は同じカウンターを
+      // 読むので焚べた嵩は鏡にも映る = ミラー戦では焚べるか我慢するかの読みになる
+      return {
+        ...state,
+        player: {
+          ...state.player,
+          cardsPlayedThisTurn: state.player.cardsPlayedThisTurn + (effect.amount ?? 0),
+        },
+      }
     case 'addSpellEcho':
       // 反復 (青): 次に唱える呪文の効果を2回解決するトークン。消費は combat.ts の playCard 側
       return {
