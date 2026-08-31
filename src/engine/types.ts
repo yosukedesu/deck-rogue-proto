@@ -216,6 +216,8 @@ export interface GameState {
   readonly enemies: readonly EnemyState[]
   /** 割り込み中断中の再開情報。通常は null */
   readonly pendingWindow: PendingWindow | null
+  /** リーダーパッシブ・レリック (innate置物) の効果を解決中フラグ (2026-08-31 鬼軍曹の怒りをカード由来の守りに限定するため。遷移中のみ立つ) */
+  readonly innateResolving?: boolean
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
   readonly negateNextAction: boolean
   /** 敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」) */

@@ -1284,5 +1284,25 @@
         "amount": 3
       }
     ]
+  },
+  {
+    "id": "blue_whisper_kindle",
+    "name": "囁きの焚べ火",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCasts",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      }
+    ]
   }
 ]

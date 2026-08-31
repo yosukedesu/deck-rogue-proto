@@ -1257,7 +1257,7 @@ function BattleScreen({
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}
                     {enemyDef.angerOnBlock !== undefined && !dead && (
-                      <span className="chip chip-strength">😤 あなたがブロック・氷壁を得るたび強化+{enemyDef.angerOnBlock}</span>
+                      <span className="chip chip-strength">😤 あなたがカードでブロック・氷壁を得るたび強化+{enemyDef.angerOnBlock}（パッシブ・レリックの自動分は除く）</span>
                     )}
                     {enemyDef.thorns !== undefined && !dead && (
                       <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>

@@ -1,7 +1,7 @@
 // 青の完成回 (2026-08-31)。新柱2本 (抱え込み=手札参照 / 反復=呪文コピー) と
 // 統合パーミッション (消して稼いで放つ) の機構を固定する。
 import { describe, expect, it } from 'vitest'
-import { applyCommand } from './state.ts'
+import { applyCommand, createInitialState } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
@@ -169,5 +169,26 @@ describe('焚べる (addCasts 2026-08-31 ストーム構造難の処方)', () =>
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't3_blue_storm_lash' })
     expect(s.enemies[0].hp).toBe(hpBefore - 9) // 詠唱数3 ×3
+  })
+})
+
+describe('鬼軍曹の怒りはカード由来の守りのみ (2026-08-31 焚べ型ランの是正)', () => {
+  it('みぞれのパッシブ氷壁では怒らず、カードの氷壁では怒る', () => {
+    let s = applyCommand(createInitialState(42, 'set-confirm'), {
+      type: 'StartCombat',
+      seed: 42,
+      enemyId: 'enemy_elite_sergeant',
+      deckId: 'starter_blue',
+      leaderId: 'leader_blue',
+    })
+    const str0 = s.enemies[0].strength
+    s = withHand(s, ['blue_tide_drop', 'blue_guard'])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    // 呪文プレイ → パッシブが氷壁+1 (innate) = 怒らない
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_tide_drop' })
+    expect(s.enemies[0].strength).toBe(str0)
+    // カードの氷壁 (氷盾) = 怒る (パッシブの+1はこのプレイでも怒らない = +1のみ)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_guard' })
+    expect(s.enemies[0].strength).toBe(str0 + 1)
   })
 })

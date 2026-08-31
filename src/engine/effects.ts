@@ -164,8 +164,17 @@ export function runPermanentTriggers(
           anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined
             ? { ...effect, amount: effect.amount + anthem }
             : effect
-        // target:'all' の置物効果 (白銀の軍旗など) も全体解決する
-        s = resolveEffectTargeted(s, boosted, alive)
+        // innate置物 (リーダーパッシブ・レリック) の解決中は鬼軍曹の怒りを立てない
+        // (2026-08-31 焚べ型ラン: みぞれの自動氷壁が止められない怒り=「みぞれは戦うな」に
+        // なっていた。怒りはプレイヤーが選んだカード由来の守りにだけ反応する)
+        const isInnate = permanent.innate === true
+        let next = resolveEffectTargeted(
+          isInnate ? { ...s, innateResolving: true } : s,
+          boosted,
+          alive,
+        )
+        if (isInnate) next = { ...next, innateResolving: false }
+        s = next
       }
     }
   }
@@ -204,6 +213,8 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
  * ギミックが一度も発火しないノーリスクのエリートになっていた。壁は普遍の状態量なので両方見る)
  */
 function angerGuardWatchers(state: GameState): GameState {
+  // パッシブ・レリック由来の守り (innate解決中) には怒らない = プレイヤーに止める手段が無いため
+  if (state.innateResolving === true) return state
   let s = state
   for (let i = 0; i < s.enemies.length; i++) {
     const anger = getEnemyDef(s.enemies[i].enemyId).angerOnBlock
