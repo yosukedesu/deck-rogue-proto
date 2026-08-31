@@ -213,7 +213,7 @@ describe('マップ生成の構造', () => {
   it('焚き火ハシゴの上限: どのパスも焚き火4個以下 (ボス前行込み。2026-08-31 ユーザー裁定)', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
-      let v = map[0].map((n) => (n.type === 'campfire' ? 1 : 0))
+      let v: number[] = map[0].map((n) => (n.type === 'campfire' ? 1 : 0))
       for (let r = 0; r < MAP_ROWS - 1; r++) {
         const next = new Array<number>(map[r + 1].length).fill(-Infinity)
         map[r].forEach((n, c) => {
