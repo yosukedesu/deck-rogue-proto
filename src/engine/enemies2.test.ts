@@ -3,6 +3,8 @@
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
 import { getEnemyDef, resolveEncounter } from './content.ts'
+import * as contentModule from './content.ts'
+import * as combatModule from './combat.ts'
 import { applyRunCommand, createRun } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, freshCombat, withHand, withIntent } from './test-helpers.ts'
@@ -306,5 +308,35 @@ describe('山札喰い (2026-08-31 大喰らいの蟲。kind:mill)', () => {
     // 打ち消し成功 = 山札は減らない (ターン開始の5ドローぶんだけ動く)
     expect(s.player.exhaustPile.length).toBe(0)
     expect(s.player.drawPile.length).toBeGreaterThanOrEqual(drawBefore - 5)
+  })
+})
+
+describe('幕2/3の打点スケール (2026-09-01 ユーザー裁定「打点+15%」。HPは据え置き)', () => {
+  it('enemyAtkScale=1.15: 攻撃の幅・実値が四捨五入で乗算され、強化は倍率の後に加算される', () => {
+    const { startCombatWithOptions } = combatModule
+    const { buildDeck } = contentModule
+    const scaled = startCombatWithOptions(42, 'set-confirm', 'enemy_probe', {
+      deck: buildDeck('starter'),
+      enemyAtkScale: 1.15,
+      enemyStrength: 1,
+    })
+    // 探り屋の小突き 5〜7 → 基礎×1.15を四捨五入 (6,8) + 強化1 = 7〜9
+    const it0 = scaled.enemies[0].intent!
+    expect(it0.kind).toBe('attack')
+    expect(it0.shownMin).toBe(Math.round(5 * 1.15) + 1)
+    expect(it0.shownMax).toBe(Math.round(7 * 1.15) + 1)
+    expect(it0.actual).toBeGreaterThanOrEqual(it0.shownMin)
+    expect(it0.actual).toBeLessThanOrEqual(it0.shownMax)
+  })
+
+  it('倍率なし (既定1) は従来どおり', () => {
+    const { startCombatWithOptions } = combatModule
+    const { buildDeck } = contentModule
+    const base = startCombatWithOptions(42, 'set-confirm', 'enemy_probe', {
+      deck: buildDeck('starter'),
+    })
+    const it0 = base.enemies[0].intent!
+    expect(it0.shownMin).toBe(5)
+    expect(it0.shownMax).toBe(7)
   })
 })

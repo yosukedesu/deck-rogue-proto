@@ -281,6 +281,10 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
         (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1),
     enemyStrength:
       (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
+    // 幕2/3の通常敵は打点+15% (2026-09-01 ユーザー裁定。HP経済ラン2本連続「幕2で被ダメ0の
+    // 戦闘が過半=育ったデッキに打点が届かない」への処方。HP帯は据え置き=危険だけ濃くする。
+    // ボス・エリートは各自の校正 (幕スケール/素の値) があるため対象外)
+    enemyAtkScale: elite || node.type === 'boss' ? 1 : [1, 1.15, 1.15][run.act - 1],
     relicPermanents: run.relics
       .map(getRelicDef)
       .filter((r) => (r.effects?.length ?? 0) > 0)

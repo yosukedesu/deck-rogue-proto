@@ -95,9 +95,9 @@
     "id": "relic_deep_breath",
     "name": "深呼吸の香",
     "sprite": "🕯️",
-    "description": "焚き火の回復が最大HPの50%に強化される",
+    "description": "焚き火の回復が最大HPの35%に強化される",
     "bonus": {
-      "campfireRatio": 0.5
+      "campfireRatio": 0.35
     }
   },
   {

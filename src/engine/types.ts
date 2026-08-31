@@ -120,6 +120,11 @@ export interface EnemyState extends CombatantState {
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
   readonly armor?: number
+  /**
+   * 打点倍率 (2026-09-01 ユーザー裁定「幕2/3の打点+15%」)。攻撃の基礎値に乗算して四捨五入
+   * (強化は倍率の後に加算)。幕2/3の通常戦闘のみ = ボス・エリートは各自の校正のため1
+   */
+  readonly atkScale?: number
   /** この戦闘で受けた累計ダメージ (enrageEveryDamage の判定用。2026-08-30) */
   readonly damageTakenTotal?: number
   /** 前回の再生判定以降に受けた累計HP損失 (regenBreak の判定用。再生判定のたびにリセット) */

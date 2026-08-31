@@ -107,6 +107,8 @@ export interface CombatOptions {
   readonly enemyHpScale?: number
   /** 敵の初期強化 (攻撃の実値・幅表示に加算される) */
   readonly enemyStrength?: number
+  /** 敵の打点倍率 (2026-09-01 幕2/3+15%。攻撃の基礎値に乗算・四捨五入。強化は倍率の後) */
+  readonly enemyAtkScale?: number
   /** A型レリックの置物 (buildRelicPermanent で生成。リーダーパッシブと同様に注入される) */
   readonly relicPermanents?: readonly CardInstance[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N */
@@ -156,6 +158,9 @@ export function startCombatWithOptions(
       block: def.startingBlock ?? 0,
       intent: null,
       strength: (options.enemyStrength ?? 0) + (m.strength ?? 0),
+      ...(options.enemyAtkScale !== undefined && options.enemyAtkScale !== 1
+        ? { atkScale: options.enemyAtkScale }
+        : {}),
       burn: 0,
       confusion: 0,
       exposed: 0,
@@ -266,7 +271,7 @@ function declareIntents(state: GameState): GameState {
       weight: 1,
     }
     if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
-      const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength)
+      const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
       const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
       s = emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
       continue
@@ -315,7 +320,7 @@ function declareIntents(state: GameState): GameState {
       move = baseTable[moveIdx]
       rng = rngAfter
     }
-    const [intent, rngA] = buildIntent(rng, move, enemy.strength)
+    const [intent, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1)
     rng = rngA
 
     let alt: ReturnType<typeof buildIntent>[0] | undefined
@@ -323,7 +328,7 @@ function declareIntents(state: GameState): GameState {
     if (reactTable && reactTable.length > 0) {
       const [altIdx, rngB] = weightedIndex(rng, reactTable.map((m) => m.weight))
       rng = rngB
-      const [altIntent, rngC] = buildIntent(rng, reactTable[altIdx], enemy.strength)
+      const [altIntent, rngC] = buildIntent(rng, reactTable[altIdx], enemy.strength, enemy.atkScale ?? 1)
       rng = rngC
       alt = altIntent
     } else if (!belowHalf && enemy.noReactTable !== true && move.setAlt !== undefined) {
@@ -340,7 +345,7 @@ function declareIntents(state: GameState): GameState {
         ...(sa.inflict !== undefined ? { inflict: sa.inflict } : {}),
         ...(sa.alsoDefend !== undefined ? { alsoDefend: sa.alsoDefend } : {}),
       }
-      const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength)
+      const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
       rng = rngC
       alt = altIntent
       condOn = 'set'
@@ -380,6 +385,7 @@ function buildIntent(
   rng: GameState['rng'],
   move: EnemyMove,
   strength: number,
+  atkScale = 1,
 ): readonly [
   {
     kind: EnemyMove['kind']
@@ -398,13 +404,16 @@ function buildIntent(
     ;[actual, next] = nextInt(rng, move.min, move.max)
   }
   const bonus = move.kind === 'attack' ? strength : 0
+  // 打点倍率 (幕2/3+15%): 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算 =
+  // 幅表示・実値・per-hit のすべてに同じ規則で効く (alsoDefend・付与量は対象外)
+  const scale = (v: number) => (move.kind === 'attack' ? Math.round(v * atkScale) : v)
   const clamp = (v: number) => (move.kind === 'attack' ? Math.max(1, v) : v)
   return [
     {
       kind: move.kind,
-      shownMin: clamp((move.min ?? 0) + bonus),
-      shownMax: clamp((move.max ?? 0) + bonus),
-      actual: clamp(actual + bonus),
+      shownMin: clamp(scale(move.min ?? 0) + bonus),
+      shownMax: clamp(scale(move.max ?? 0) + bonus),
+      actual: clamp(scale(actual) + bonus),
       hits: move.hits,
       ...(move.mirrorHits === true ? { mirrorHits: true } : {}),
       inflict: move.inflict,
