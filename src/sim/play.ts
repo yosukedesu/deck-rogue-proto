@@ -156,7 +156,7 @@ function intentLine(s: GameState, i: number): string {
   const it = e.intent
   const hits =
     it.mirrorHits === true
-      ? `×手数(あなたが今ターンプレイした枚数ぶん。現在${Math.max(1, s.player.cardsPlayedThisTurn)})`
+      ? `×手数(あなたが今ターンプレイした枚数ぶん。現在${Math.max(1, s.player.cardsPlayedThisTurn)}${s.player.cardsPlayedThisTurn === 0 ? '=最低値' : ''})`
       : (it.hits ?? 1) > 1
         ? `×${it.hits}回`
         : ''
@@ -217,7 +217,10 @@ function renderBattle(s: GameState, logFrom: number): string {
   s.enemies.forEach((e, i) => {
     if (e.hp <= 0) return
     const it = effectiveIntent(s, i)
-    if (it?.kind === 'attack') worst += it.shownMax * (it.mirrorHits === true ? Math.max(1, p.cardsPlayedThisTurn) : (it.hits ?? 1))
+    if (it?.kind === 'attack') {
+      const perHit = p.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+      worst += perHit * (it.mirrorHits === true ? Math.max(1, p.cardsPlayedThisTurn) : (it.hits ?? 1))
+    }
   })
   if (worst > 0) {
     const defense = p.block + p.iceBlock
@@ -232,7 +235,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const tags = [
       e.block ? `ブロック${e.block}` : '', e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
-      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたが通常ブロックを得るたび強化+${def.angerOnBlock}。氷壁は対象外)` : '',
+      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたがブロック・氷壁を得るたび強化+${def.angerOnBlock})` : '',
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
       def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
       def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ` : `激昂+${def.enrage}/T`) : '',
@@ -436,7 +439,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   const leader = getLeaderDef(run.leaderId)
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
   const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.stolenGold ?? 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
-  L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 幕${run.act}/3 行${run.row + 1}/16 | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
@@ -474,7 +477,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     }
     L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+50G)`)
     L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
-    L.push('→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopLeave"}')
+    L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号${run.act === 1 ? '。※幕1は強化サービス利用不可' : ''}) / {"type":"ShopLeave"}`)
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'event') {

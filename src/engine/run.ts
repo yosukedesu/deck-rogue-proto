@@ -1020,7 +1020,28 @@ export function upgradeCard(card: CardInstance): CardInstance {
           : tier === 'bonus'
             ? { effects: [...(BONUS_UPGRADES[card.def.id] ?? []), ...card.def.effects] }
             : {}
-  return { ...card, def: { ...card.def, name: `${card.def.name}+`, ...patch } }
+  let def: CardDef = { ...card.def, name: `${card.def.name}+`, ...patch }
+  // 正味エナジー増の規約 (確定済みルール表「正味エナジー増」) を強化後の派生にも守らせる
+  // (2026-08-31 青Opusラン発見: 水鏡の書庫+ = 5ドロー+一時マナ2 = 正味0マナの補充札が
+  // 非消滅で生成され「毎ターン実質タダで5ドロー」の壊れ性能だった)。
+  // 合成 (fusion.ts) と同じ処方 = 違反したら消滅を自動付与して合法化する
+  const REFILL_FOR_LEGALITY = [
+    'drawCards',
+    'drawCardsPerCardPlayed',
+    'dischargeAetherDraw',
+    'impulseDraw',
+    'retrieveFromExhaust',
+    'playFromExhaust',
+  ]
+  const allEffects = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+  const netGain = allEffects
+    .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
+    .reduce((a, e) => a + (e.amount ?? 0), 0)
+  const refills = allEffects.some((e) => REFILL_FOR_LEGALITY.includes(e.effect))
+  if (netGain - def.cost >= 0 && refills && def.exhaust !== true) {
+    def = { ...def, exhaust: true }
+  }
+  return { ...card, def }
 }
 
 /** B型レリックの取得時効果を適用する */
@@ -1201,6 +1222,9 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     }
     case 'ShopUpgrade': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
+      // 供給を後ろへ (2026-08-31): 幕1はショップの強化サービスも封じる。
+      // 焚き火の「鍛える1回」制限が100Gで迂回できていた (青Opusラン実測) の穴埋め
+      if (run.act === 1) throw new Error('幕1では強化サービスは利用できない (幕2から)')
       const price = shopUpgradePrice(run)
       if (run.gold < price) throw new Error(`ゴールドが足りない (${price}G)`)
       const card = run.deck[command.index]

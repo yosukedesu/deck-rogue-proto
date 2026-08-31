@@ -1251,7 +1251,7 @@ function BattleScreen({
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}
                     {enemyDef.angerOnBlock !== undefined && !dead && (
-                      <span className="chip chip-strength">😤 あなたがブロックを得るたび強化+{enemyDef.angerOnBlock}（氷壁は対象外）</span>
+                      <span className="chip chip-strength">😤 あなたがブロック・氷壁を得るたび強化+{enemyDef.angerOnBlock}</span>
                     )}
                     {enemyDef.thorns !== undefined && !dead && (
                       <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>
@@ -1456,7 +1456,10 @@ function BattleScreen({
           s.enemies.forEach((e, i) => {
             if (e.hp <= 0) return
             const it = effectiveIntent(s, i)
-            if (it?.kind === 'attack') worst += it.shownMax * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
+            if (it?.kind === 'attack') {
+              const perHit = player.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+              worst += perHit * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
+            }
           })
           if (worst <= 0) return null
           const defense = player.block + player.iceBlock

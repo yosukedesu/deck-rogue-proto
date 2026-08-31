@@ -193,9 +193,18 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
   if (amount <= 0) return state
   let s: GameState = { ...state, player: { ...state.player, block: state.player.block + amount } }
   s = emit(s, { type: 'BlockGained', target: 'player', amount })
-  // 鬼軍曹 (エリート 2026-08-31): プレイヤーが通常ブロックを得るたび強化+N。
-  // 「縮こまる奴が許せない」= 守りを固めるほど敵が育つ、攻めを強制する問い (StS Gremlin Nob型)。
-  // 氷壁は別経路なので誘発しない
+  s = angerGuardWatchers(s)
+  return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
+}
+
+/**
+ * 鬼軍曹 (エリート 2026-08-31): プレイヤーが守りを得るたび強化+N。
+ * 「縮こまる奴が許せない」= 守りを固めるほど敵が育つ、攻めを強制する問い (StS Gremlin Nob型)。
+ * 通常ブロック・氷壁の両方に反応する (2026-08-31 青Opusラン: 氷壁対象外だと青が構造的に免疫 =
+ * ギミックが一度も発火しないノーリスクのエリートになっていた。壁は普遍の状態量なので両方見る)
+ */
+function angerGuardWatchers(state: GameState): GameState {
+  let s = state
   for (let i = 0; i < s.enemies.length; i++) {
     const anger = getEnemyDef(s.enemies[i].enemyId).angerOnBlock
     if (s.enemies[i].hp > 0 && anger !== undefined) {
@@ -206,7 +215,15 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
       s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: anger })
     }
   }
-  return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
+  return s
+}
+
+/** 氷壁の獲得 (青)。IceBlockGained を発行し、守りに反応する敵 (鬼軍曹) を怒らせる */
+export function gainPlayerIceBlock(state: GameState, amount: number): GameState {
+  if (amount <= 0) return state
+  let s: GameState = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
+  s = emit(s, { type: 'IceBlockGained', amount })
+  return angerGuardWatchers(s)
 }
 
 /** カード効果によるHP損失。selfHpLost に累積し onHpLost 置物 (苦痛の芯) を誘発する (敵からの被弾は通らない) */
@@ -619,12 +636,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       return gainPlayerBlock(state, amount, enemyIndex)
     }
-    case 'gainIceBlock': {
+    case 'gainIceBlock':
       // 氷壁 (青): ターン開始で消えず持ち越されるブロック
-      const amount = effect.amount ?? 0
-      const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
-      return emit(next, { type: 'IceBlockGained', amount })
-    }
+      return gainPlayerIceBlock(state, effect.amount ?? 0)
     case 'dealDamagePerCardPlayedTotal':
       // 大津波 (青 2026-08-31): この戦闘の累計プレイ数 × amount。
       // 詠唱参照時代の「3E払うと同ターンの詠唱数が伸びない」自家撞着を、
@@ -643,13 +657,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         (effect.amount ?? 0) * state.player.cardsPlayedThisTurn,
         effect.pierce,
       )
-    case 'gainIceBlockPerCardPlayed': {
+    case 'gainIceBlockPerCardPlayed':
       // ストーム防御 (青): 詠唱数 × amount の氷壁
-      const amount = (effect.amount ?? 0) * state.player.cardsPlayedThisTurn
-      if (amount === 0) return state
-      const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
-      return emit(next, { type: 'IceBlockGained', amount })
-    }
+      return gainPlayerIceBlock(state, (effect.amount ?? 0) * state.player.cardsPlayedThisTurn)
     case 'drawCardsPerCardPlayed':
       // ストームドロー (青): 詠唱数 × amount 枚ドロー
       return drawCards(state, (effect.amount ?? 0) * state.player.cardsPlayedThisTurn)
@@ -662,13 +672,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         (effect.amount ?? 0) * state.player.hand.length,
         effect.pierce,
       )
-    case 'gainIceBlockPerHandCard': {
+    case 'gainIceBlockPerHandCard':
       // 抱え込み (青): 手札の枚数 × amount の氷壁
-      const amount = (effect.amount ?? 0) * state.player.hand.length
-      if (amount === 0) return state
-      const next = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
-      return emit(next, { type: 'IceBlockGained', amount })
-    }
+      return gainPlayerIceBlock(state, (effect.amount ?? 0) * state.player.hand.length)
     case 'blessRetainers':
       // アンセム (白): 常在の静的効果。runPermanentTriggers が置物の解決時に読むだけで、
       // ここで解決すべきものは無い (登場時のno-op)
@@ -1034,8 +1040,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const actual = effectiveIntent(state, enemyIndex)?.actual ?? 0
       let s: GameState = { ...state, negateNextAction: true }
       if (actual > 0) {
-        s = { ...s, player: { ...s.player, iceBlock: s.player.iceBlock + actual } }
-        s = emit(s, { type: 'IceBlockGained', amount: actual })
+        s = gainPlayerIceBlock(s, actual)
       }
       return s
     }

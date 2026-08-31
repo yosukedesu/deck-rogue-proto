@@ -257,8 +257,14 @@ function declareIntents(state: GameState): GameState {
     const def = getEnemyDef(enemy.enemyId)
     // 盗んだ敵は次の宣言で必ず逃走する (2026-08-30。宣言即成立の盗みが「倒せば全額戻る」で
     // 無害化していた実測への処方 = 「1ターン以内に倒せ」のレースを尖らせる)
-    const fleeMove = def.moves.find((m) => m.kind === 'flee')
-    if ((enemy.stolenGold ?? 0) > 0 && fleeMove && enemy.intent?.kind !== 'flee') {
+    // flee の move を持たない盗人 (金羽の大鴉) でも合成の逃走を宣言する (2026-08-31 青ラン発見:
+    // 大鴉が盗んだ後も防御を続け、レース設計が丸ごと空振りしていた)
+    const fleeMove = def.moves.find((m) => m.kind === 'flee') ?? {
+      id: 'forced_flee',
+      kind: 'flee' as const,
+      weight: 1,
+    }
+    if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
       const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength)
       const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
       s = emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })

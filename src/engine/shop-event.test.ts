@@ -143,8 +143,9 @@ describe('ショップ', () => {
     expect(run.deck).toHaveLength(before - 2)
   })
 
-  it('強化サービス: 100G+使うたび+50G逓増 (2026-08-31 シンク強化)。焚き火の「鍛える」と同じ3段仕様', () => {
-    let run = intoShop(11)
+  it('強化サービス: 100G+使うたび+50G逓増 (2026-08-31 シンク強化)。幕1は利用不可・幕2から', () => {
+    expect(() => applyRunCommand({ ...intoShop(11), gold: 300 }, { type: 'ShopUpgrade', index: 0 })).toThrow(/幕1では強化サービスは利用できない/)
+    let run = { ...intoShop(11), act: 2 }
     run = { ...run, gold: 300 }
     const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
     run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
@@ -169,6 +170,7 @@ describe('ショップ', () => {
     expect(Number.isNaN(run.gold)).toBe(false)
     expect(run.removalCount).toBe(1)
     // 個性注入 (2026-08-31) で打撃は1枚になったため、除去で消えていない防御を対象にする
+    run = { ...run, act: 2 } // 幕1の強化サービス封鎖 (2026-08-31) を跨ぐ
     const idx = run.deck.findIndex((c) => c.def.id === 'green_guard')
     run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
     expect(run.gold).toBe(300 - 75 - 100)
