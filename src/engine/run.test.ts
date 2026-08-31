@@ -113,7 +113,7 @@ describe('ラン構造 (マップ)', () => {
     expect(depthStrength(BOSS_ROW)).toBe(1) // ボスのみ (行15)
     expect(depthHpScale(0, 1)).toBeCloseTo(0.55)
     expect(depthHpScale(14, 1)).toBeCloseTo(0.65) // 幕内後半 (2段スケール)
-    expect(depthHpScale(0, 3)).toBeCloseTo(0.95)
+    expect(depthHpScale(0, 3)).toBeCloseTo(1.05) // 2026-08-31 幕2/3を+0.10 (置き去り是正)
     expect(depthHpScale(BOSS_ROW, 1)).toBeCloseTo(1.0) // 幕ボスは素のHP
     // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
     const run = intoFirstBattle(createRun(5, 'set-confirm'))

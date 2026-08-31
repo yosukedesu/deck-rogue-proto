@@ -77,10 +77,11 @@ const SHOP_CARD_COUNT = 5
 const SHOP_RELIC_PRICE = 150
 /** 除去サービス: 回数無制限・使うたびラン通算で+25G (本家Purge式。2026-08-29) */
 const SHOP_REMOVAL_BASE = 75
-const SHOP_REMOVAL_STEP = 25
+// 逓増を強化 (2026-08-31 ゴールドシンク: 502Gで強化2+除去2が同時に買えて選択になっていない実測)
+const SHOP_REMOVAL_STEP = 50
 /** 強化サービス: 回数無制限・使うたびラン通算で+30G (2026-08-29 ユーザー指示) */
 const SHOP_UPGRADE_BASE = 100
-const SHOP_UPGRADE_STEP = 30
+const SHOP_UPGRADE_STEP = 50
 
 /** 現在の除去サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
 export function shopRemovalPrice(run: RunState): number {
@@ -107,10 +108,12 @@ export function depthHpScale(row: number, act = 1): number {
   // 各幕のプールは既にその幕の帯に校正済みなので、幕内の2段が「幕内でもだんだん強く」を再現する
   if (row >= BOSS_ROW) return 1.0 // 幕ボスは素のHP
   const late = row >= 8
+  // 2026-08-31 幕2/3を+0.10。「幕2の消化試合」の最後の根 = ボスだけ幕スケールで太り
+  // 通常敵が置き去り、の実測への処方。打点帯は据え置き = 危険を濃くせず長さだけ半歩戻す
   const table: readonly (readonly [number, number])[] = [
     [0.55, 0.65], // 1幕
-    [0.8, 0.9], // 2幕
-    [0.95, 1.05], // 3幕
+    [0.9, 1.0], // 2幕
+    [1.05, 1.15], // 3幕
   ]
   const [early, lateScale] = table[act - 1]
   return late ? lateScale : early
@@ -395,6 +398,16 @@ function openShop(run: RunState): RunState {
     const [roll, r2] = nextInt(rng, 0, 10)
     rng = r2
     cards.push({ id: def.id, price: 40 + pricedCost * 10 + roll })
+  }
+  // レア枠 (2026-08-31 ゴールドシンク): 品揃えの6枠目はレア確定・高額 (120+コスト×10 ≈ 150G)。
+  // 「金は貯まるが使い道が選択にならない」実測への処方 = 高額の一点物を置く
+  const rarePool = remaining.filter((c) => c.rarity === 'rare')
+  if (rarePool.length > 0) {
+    const [ri, r3] = nextInt(rng, 0, rarePool.length - 1)
+    rng = r3
+    const def = rarePool[ri]
+    const pricedCost = def.xCost === true ? 3 : def.cost
+    cards.push({ id: def.id, price: 120 + pricedCost * 10 })
   }
   const relicId = run.relicQueue.find((id) => !run.relics.includes(id)) ?? null
   const shop: ShopState = {

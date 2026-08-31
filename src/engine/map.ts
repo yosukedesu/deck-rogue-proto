@@ -19,9 +19,9 @@ import { nextInt } from './rng.ts'
  * ステータスは素の値で完成しているので、マップのエリート補正 (HP×1.35+強化) は掛けない
  */
 export const ELITE_POOLS: readonly (readonly string[])[] = [
-  ['enemy_elite_sergeant', 'enc_elite_sentries'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた)
-  ['enemy_elite_iron_egg', 'enemy_elite_slaver'], // 2幕: 眠れる鉄卵 (起こすか削るか) / 奴隷商 (デバフ漬け)
-  ['enemy_elite_stab_book', 'enemy_elite_giant_face'], // 3幕: 刺突の書 (増える多段) / 巨面 (二拍子の死)
+  ['enemy_elite_sergeant', 'enc_elite_sentries', 'enemy_elite_gold_raven'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた) / 金羽の大鴉 (大金を盗んで逃げるレース)
+  ['enemy_elite_iron_egg', 'enemy_elite_slaver', 'enemy_elite_mirror_djinn'], // 2幕: 眠れる鉄卵 (起こすか削るか) / 奴隷商 (デバフ漬け) / 写し身の魔人 (エリート級の手数の鏡)
+  ['enemy_elite_stab_book', 'enemy_elite_giant_face', 'enemy_elite_doom_chanter'], // 3幕: 刺突の書 (増える多段) / 巨面 (二拍子の死) / 終焉の唱い手 (プレイ6枚ごと強化+2の時限歌)
 ]
 import type { RngState } from './types.ts'
 

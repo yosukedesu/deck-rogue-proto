@@ -86,16 +86,21 @@ describe('ゴールド', () => {
 })
 
 describe('ショップ', () => {
-  it('在庫はカード5枚 (色プール・基本札除外)・レリック1個・除去サービス。価格は40+コスト×10+0〜10', () => {
+  it('在庫はカード5枚+レア枠1 (2026-08-31 ゴールドシンク)・レリック1個・除去サービス', () => {
     const run = intoShop(11)
     expect(run.shop).not.toBeNull()
-    expect(run.shop!.cards).toHaveLength(5)
-    for (const item of run.shop!.cards) {
+    expect(run.shop!.cards).toHaveLength(6)
+    for (const item of run.shop!.cards.slice(0, 5)) {
       const def = getCardDef(item.id)
       expect(def.color).toBe('green')
       expect(item.price).toBeGreaterThanOrEqual(40 + def.cost * 10)
       expect(item.price).toBeLessThanOrEqual(50 + def.cost * 10)
     }
+    // 6枠目 = レア確定・高額 (120+コスト×10)
+    const rare = run.shop!.cards[5]
+    const rareDef = getCardDef(rare.id)
+    expect(rareDef.rarity).toBe('rare')
+    expect(rare.price).toBe(120 + (rareDef.xCost === true ? 3 : rareDef.cost) * 10)
     expect(run.shop!.relicId).not.toBeNull()
     expect(run.shop!.relicPrice).toBe(150)
     expect(shopRemovalPrice(run)).toBe(75)
@@ -111,7 +116,7 @@ describe('ショップ', () => {
     expect(run.gold).toBe(0)
     expect(run.deck).toHaveLength(before + 1)
     expect(run.deck[run.deck.length - 1].def.id).toBe(item.id)
-    expect(run.shop!.cards).toHaveLength(4) // 売り切れ
+    expect(run.shop!.cards).toHaveLength(5) // 売り切れ
     expect(() => applyRunCommand(run, { type: 'ShopBuyCard', index: 0 })).toThrow(/ゴールドが足りない/)
   })
 
@@ -125,27 +130,27 @@ describe('ショップ', () => {
     expect(run.shop!.relicId).toBeNull() // 売り切れ
   })
 
-  it('除去サービス: 回数無制限・使うたびラン通算で+25G逓増 (本家Purge式。2026-08-29)', () => {
+  it('除去サービス: 回数無制限・使うたびラン通算で+50G逓増 (2026-08-31 シンク強化)', () => {
     let run = intoShop(11)
     run = { ...run, gold: 300 }
     const before = run.deck.length
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
     expect(run.gold).toBe(300 - 75)
     expect(run.deck).toHaveLength(before - 1)
-    expect(shopRemovalPrice(run)).toBe(100) // 逓増
+    expect(shopRemovalPrice(run)).toBe(125) // 逓増
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
-    expect(run.gold).toBe(300 - 75 - 100)
+    expect(run.gold).toBe(300 - 75 - 125)
     expect(run.deck).toHaveLength(before - 2)
   })
 
-  it('強化サービス: 100G+使うたび+30G逓増。焚き火の「鍛える」と同じ3段仕様', () => {
+  it('強化サービス: 100G+使うたび+50G逓増 (2026-08-31 シンク強化)。焚き火の「鍛える」と同じ3段仕様', () => {
     let run = intoShop(11)
     run = { ...run, gold: 300 }
     const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
     run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
     expect(run.gold).toBe(300 - 100)
     expect(run.deck[idx].def.name).toBe('打撃+')
-    expect(shopUpgradePrice(run)).toBe(130) // 逓増
+    expect(shopUpgradePrice(run)).toBe(150) // 逓増
     // 強化済みは拒否
     expect(() => applyRunCommand(run, { type: 'ShopUpgrade', index: idx })).toThrow(/すでに鍛えられている/)
   })

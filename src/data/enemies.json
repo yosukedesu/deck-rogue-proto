@@ -1066,5 +1066,93 @@
       "glare",
       "crush"
     ]
+  },
+  {
+    "id": "enemy_elite_gold_raven",
+    "name": "金羽の大鴉",
+    "archetype": "elite",
+    "flavor": "光るものは全部おれのもの。翼があるやつに、追いつけるかな？",
+    "maxHp": 55,
+    "moves": [
+      {
+        "id": "hide",
+        "kind": "defend",
+        "min": 8,
+        "max": 10,
+        "weight": 1
+      },
+      {
+        "id": "grand_steal",
+        "kind": "steal-gold",
+        "min": 40,
+        "max": 60,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "hide",
+      "grand_steal"
+    ]
+  },
+  {
+    "id": "enemy_elite_mirror_djinn",
+    "name": "写し身の魔人",
+    "archetype": "elite",
+    "flavor": "あなたの手数が、そのまま刃になって返る。鏡に映る自分と戦え。",
+    "maxHp": 96,
+    "moves": [
+      {
+        "id": "mirror",
+        "kind": "attack",
+        "min": 4,
+        "max": 5,
+        "weight": 1,
+        "mirrorHits": true
+      },
+      {
+        "id": "gaze",
+        "kind": "hex",
+        "weight": 1,
+        "inflict": {
+          "status": "weak",
+          "amount": 2
+        }
+      }
+    ],
+    "sequence": [
+      "mirror",
+      "mirror",
+      "gaze"
+    ]
+  },
+  {
+    "id": "enemy_elite_doom_chanter",
+    "name": "終焉の唱い手",
+    "archetype": "elite",
+    "flavor": "あなたが札を切るたび、詠唱は一節進む。急げ。歌が終わる前に。",
+    "maxHp": 125,
+    "enrageEveryCards": 6,
+    "moves": [
+      {
+        "id": "dual_chant",
+        "kind": "attack",
+        "min": 10,
+        "max": 13,
+        "weight": 1,
+        "hits": 2
+      },
+      {
+        "id": "crescendo",
+        "kind": "buff",
+        "min": 2,
+        "max": 3,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "dual_chant",
+      "dual_chant",
+      "crescendo"
+    ]
   }
 ]
