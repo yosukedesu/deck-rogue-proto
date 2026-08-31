@@ -147,8 +147,9 @@ describe('ショップ', () => {
     expect(run.deck).toHaveLength(before - 2)
   })
 
-  it('強化サービス: 100G+使うたび+50G逓増 (2026-08-31 シンク強化)。幕1は利用不可・幕2から', () => {
-    expect(() => applyRunCommand({ ...intoShop(11), gold: 300 }, { type: 'ShopUpgrade', index: 0 })).toThrow(/幕1では強化サービスは利用できない/)
+  it('強化サービス: 100G+使うたび+50G逓増 (2026-08-31 シンク強化)。幕1でも使える (2026-09-01 制限撤廃)', () => {
+    const act1 = applyRunCommand({ ...intoShop(11), gold: 300 }, { type: 'ShopUpgrade', index: 0 })
+    expect(act1.deck.some((c) => c.def.name.endsWith('+'))).toBe(true)
     let run = { ...intoShop(11), act: 2 }
     run = { ...run, gold: 300 }
     const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')

@@ -10,6 +10,11 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 2
       }
     ]
   },
@@ -24,6 +29,11 @@
         "trigger": "onPlay",
         "effect": "gainBlock",
         "amount": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainBlock",
+        "amount": 2
       }
     ]
   },
@@ -38,6 +48,11 @@
         "trigger": "onPlay",
         "effect": "dealDamageDrain",
         "amount": 6
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainHp",
+        "amount": 2
       }
     ]
   },
@@ -131,6 +146,11 @@
         "amount": 6,
         "amountMax": 12,
         "exhaustThreshold": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 3
       }
     ]
   },
@@ -164,6 +184,12 @@
         "amount": 5,
         "amountMax": 10,
         "exhaustThreshold": 5,
+        "target": "all"
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 2,
         "target": "all"
       }
     ]
@@ -680,6 +706,11 @@
         "amount": 11,
         "amountMax": 20,
         "exhaustThreshold": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainBlock",
+        "amount": 4
       }
     ]
   },
@@ -734,6 +765,11 @@
         "trigger": "onPlay",
         "effect": "exhaustFromDeck",
         "amount": 2
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainBlock",
+        "amount": 3
       }
     ]
   },
@@ -892,6 +928,11 @@
         "trigger": "onPlay",
         "effect": "dealDamageDrain",
         "amount": 7
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainHp",
+        "amount": 2
       }
     ]
   },
@@ -911,6 +952,11 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 11
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 2
       }
     ]
   },
@@ -927,6 +973,11 @@
         "amount": 6,
         "amountMax": 12,
         "exhaustThreshold": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 2
       }
     ]
   },
@@ -943,6 +994,11 @@
         "amount": 6,
         "amountMax": 12,
         "exhaustThreshold": 5
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "gainBlock",
+        "amount": 3
       }
     ]
   },
@@ -1323,6 +1379,11 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 13
+      },
+      {
+        "trigger": "onSelfExhausted",
+        "effect": "dealDamage",
+        "amount": 3
       }
     ]
   },

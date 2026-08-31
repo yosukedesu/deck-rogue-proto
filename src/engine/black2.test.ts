@@ -19,7 +19,8 @@ describe('消滅コスト (exhaustCost)', () => {
       cardUid: 't0_black_offering',
       exhaustUids: ['t1_black_strike'],
     })
-    expect(s.enemies[0].hp).toBe(enemyHp - 13)
+    // 2026-09-01 亡骸の面配布: コストで消滅した影の一撃の亡骸 (2ダメ) も発火する
+    expect(s.enemies[0].hp).toBe(enemyHp - 13 - 2)
     expect(s.player.exhaustPile.some((c) => c.def.id === 'black_strike')).toBe(true)
     expect(s.player.hand).toHaveLength(0)
   })
@@ -57,8 +58,9 @@ describe('消滅の誘発 (亡者の合唱)', () => {
     })
     // 忘却の刻 7→5 (2026-08-30) で合唱の強化 (1→3) がミルの途中から乗る。
     // 2026-08-31 プレイ札の消滅は解決後 (limbo) に変更: コスト1 → ミル4枚が置かれた後に
-    // 誘発4回 (刻5到達済み=3×4) → 自身3 = 合計16
-    expect(s.enemies[0].hp).toBe(enemyHp - 16)
+    // 誘発4回 (刻5到達済み=3×4) → 自身3 = 合計16。
+    // 2026-09-01 亡骸の面配布: コスト消滅した影の一撃の亡骸2ダメが加わり18
+    expect(s.enemies[0].hp).toBe(enemyHp - 18)
     // 消滅置き場: コスト1 + 墓暴き自身1 + 忘却4 = 6枚
     expect(s.player.exhaustPile).toHaveLength(6)
   })

@@ -328,13 +328,14 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
     expect(run.phase).toBe('map')
   })
 
-  it('幕1の「鍛える」はラン通算1回まで。ただし砥石の追加分は例外 (2026-08-31 死にレリック矛盾の是正)', () => {
-    // 砥石なし: 2枚目は拒否
+  it('幕1でも鍛えるに通算制限は無い (2026-09-01 ユーザー指示「幕に対しての制限不要」で撤廃)', () => {
+    // 別の焚き火なら幕1でも何度でも鍛えられる (焚き火1回につき1枚の原則は不変)
     let bare = intoCampfire(createRun(11, 'set-confirm'))
     bare = applyRunCommand(bare, { type: 'CampfireUpgrade', index: 0 })
     bare = { ...bare, phase: 'campfire' as const, campfireUpgradesUsed: 0 }
-    expect(() => applyRunCommand(bare, { type: 'CampfireUpgrade', index: 1 })).toThrow(/幕1で鍛えられるのは1回まで/)
-    // 砥石あり: 追加分の2枚目まで鍛えられる (エリート報酬が幕1で丸ごと死なない)
+    bare = applyRunCommand(bare, { type: 'CampfireUpgrade', index: 1 })
+    expect(bare.deck.filter((c) => c.def.name.endsWith('+'))).toHaveLength(2)
+    // 砥石あり: 幕1でも追加分の2枚目まで
     let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1 }
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })

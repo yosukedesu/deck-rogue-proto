@@ -2774,28 +2774,17 @@ function RunScreen({
   if (run.phase === 'campfire') {
     // 上限クランプ後の実回復量 (満タンで+41と表示される誤解を防ぐ 2026-08-30)
     const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
-    // 鍛えるが使えない焚き火 (幕1のラン通算1回を使用済み等) では強化UIを丸ごと畳む
-    // (2026-08-31 再検証ラン指摘④「残り0と書いてあるのに全カードの鍛えるプレビューが並ぶ」)。
-    // 砥石の追加分 (campfireForgeBonus) は同じ焚き火で複数回鍛えられるので回数で判定する
-    const canForgeHere =
-      Math.min(
-        1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
-        run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
-      ) > 0
+    // 鍛えるが使えない焚き火 (この焚き火で使用済み) では強化UIを丸ごと畳む
+    // (2026-08-31 再検証ラン指摘④)。幕1の通算制限は撤廃 (2026-09-01 ユーザー指示)
+    const canForgeHere = 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0) > 0
     return (
       <div className="app setup">
         <h1>🔥 焚き火</h1>
         <p className="hint">
           「休む」「鍛える」「取り除く」から1つを選ぶ（本家式の排他三択。2026-08-29復帰）。
           {(run.campfireForgeBonus ?? 0) > 0 &&
-            Math.max(0, Math.min(
-              1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
-              run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
-            )) > 0 &&
-            ` 🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, Math.min(
-              1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0),
-              run.act === 1 ? 1 + (run.campfireForgeBonus ?? 0) - (run.act1Forges ?? 0) : Infinity,
-            ))}枚（休む・除去とは併用不可）。`}
+            Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)) > 0 &&
+            ` 🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0))}枚（休む・除去とは併用不可）。`}
         </p>
         <div className="choice-row" style={{ marginTop: 12 }}>
           <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>
@@ -2815,7 +2804,7 @@ function RunScreen({
         <div className="setup-section-title" style={{ marginTop: 20 }}>
           {canForgeHere
             ? `デッキの1枚を「鍛える」か「取り除く」（デッキ${run.deck.length}枚・最低5枚は残る）`
-            : `デッキの1枚を「取り除く」（鍛えるは使えない: 幕1はラン通算1回まで。デッキ${run.deck.length}枚・最低5枚は残る）`}
+            : `デッキの1枚を「取り除く」（鍛えるはこの焚き火では使用済み。デッキ${run.deck.length}枚・最低5枚は残る）`}
         </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {run.deck.map((c, i) => (

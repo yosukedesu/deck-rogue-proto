@@ -209,7 +209,6 @@ export interface RunState {
   /** この焚き火で「鍛える」を使った回数 (焚き火進入時にリセット) */
   readonly campfireUpgradesUsed: number
   /** 幕1で焚き火の「鍛える」を使った通算回数 (供給を後ろへ 2026-08-31: 幕1は1回まで) */
-  readonly act1Forges?: number
   // ---- ?マスの本家式解決 (2026-08-29)。すべて旧セーブに無いので使用側は ?? ガード ----
   /** ?マスの累積確率 (整数パーセントポイント。幕頭で基礎値へリセット) */
   readonly unknownPity: { readonly monster: number; readonly shop: number; readonly treasure: number }
@@ -1202,13 +1201,8 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (upgradeTier(card.def) === 'none') {
         throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
       }
-      // 供給を後ろへ (2026-08-31): 幕1の「鍛える」はラン通算1回まで。
-      // 幕1でデッキが完成し幕2が消化試合になる供給集中 (緑・赤ラン一致) への処方
-      // 砥石の追加回数ぶんは幕1でも許す (2026-08-31: エリート報酬の砥石が幕1で丸ごと
-      // 死にレリックになる矛盾。リスクを払って得た例外は制限より優先する)
-      if (run.act === 1 && (run.act1Forges ?? 0) >= 1 + (run.campfireForgeBonus ?? 0)) {
-        throw new Error('幕1で鍛えられるのは1回まで (幕2から解禁。砥石があればその追加分だけ可)')
-      }
+      // 幕1の「鍛える1回」制限は撤廃 (2026-09-01 ユーザー指示「幕に対しての制限不要」。
+      // 旧・供給集中対策 2026-08-31 は工房の幕1×1個化と焚き火の希少化で役目を終えた)
       // 鍛冶の砥石 (B型レリック): 追加回数のぶん焚き火に留まり、もう1枚鍛えられる
       const used = (run.campfireUpgradesUsed ?? 0) + 1
       const allowed = 1 + (run.campfireForgeBonus ?? 0)
@@ -1216,7 +1210,6 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
         campfireUpgradesUsed: used,
-        act1Forges: run.act === 1 ? (run.act1Forges ?? 0) + 1 : (run.act1Forges ?? 0),
         phase: used < allowed ? 'campfire' : 'map',
       }
     }
@@ -1296,9 +1289,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     }
     case 'ShopUpgrade': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
-      // 供給を後ろへ (2026-08-31): 幕1はショップの強化サービスも封じる。
-      // 焚き火の「鍛える1回」制限が100Gで迂回できていた (青Opusラン実測) の穴埋め
-      if (run.act === 1) throw new Error('幕1では強化サービスは利用できない (幕2から)')
+      // 幕1の強化サービス封鎖は撤廃 (2026-09-01。焚き火の幕1制限撤廃と対で不要になった)
       const price = shopUpgradePrice(run)
       if (run.gold < price) throw new Error(`ゴールドが足りない (${price}G)`)
       const card = run.deck[command.index]
