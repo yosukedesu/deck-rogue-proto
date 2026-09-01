@@ -149,13 +149,13 @@ describe('戦闘評価のログ出力 (2026-09-01)', () => {
   it('評価が戦闘履歴テーブルの列と見出しに出る (未評価は空欄)', () => {
     const run = createRun(7, 'set-confirm')
     const combat = freshCombat('set-confirm', 'enemy_probe', 42)
-    const rated = { ...archiveBattle({ ...combat, phase: 'won' as const }, 1, 'enemy_probe', false, 80, 10), rating: { strength: 4, fun: 5 } }
+    const rated = { ...archiveBattle({ ...combat, phase: 'won' as const }, 1, 'enemy_probe', false, 80, 10), rating: { strength: 4, fun: 5, note: '読み合いが濃かった' } }
     const unrated = archiveBattle({ ...combat, phase: 'won' as const }, 2, 'enemy_probe', false, 75, 10)
     const text = buildReport(run, null, [rated, unrated])
-    expect(text).toContain('| 強さ | 面白さ |')
-    expect(text).toContain('| 4 | 5 |')
-    expect(text).toContain('/ 評価: 強さ4 面白さ5')
-    expect(text).toContain('|  |  |') // 未評価行は空欄
+    expect(text).toContain('| 強さ | 面白さ | メモ |')
+    expect(text).toContain('| 4 | 5 | 読み合いが濃かった |')
+    expect(text).toContain('/ 評価: 強さ4 面白さ5「読み合いが濃かった」')
+    expect(text).toContain('|  |  |  |') // 未評価行は空欄
   })
 })
 

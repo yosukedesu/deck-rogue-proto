@@ -26,10 +26,14 @@ import { cardName, intentText, logLine } from './log.ts'
 export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine } from './log.ts'
 export type { LogLine } from './log.ts'
 
-/** 戦闘直後の5段階評価 (2026-09-01 ユーザー要望「敵の強さや面白さを5段階で入力→ログに出せばいいデータ」) */
+/**
+ * 戦闘直後の5段階評価 (2026-09-01 ユーザー要望「敵の強さや面白さを5段階で入力→ログに出せばいいデータ」)。
+ * note は同日追補 (ユーザー指摘「フィードバックメモなくない？」) — 点数の理由がその場で残る
+ */
 export interface BattleRating {
-  readonly strength: number // 敵の強さ 1〜5
-  readonly fun: number // 面白さ 1〜5
+  readonly strength?: number // 敵の強さ 1〜5
+  readonly fun?: number // 面白さ 1〜5
+  readonly note?: string // ひとことメモ (自由記述)
 }
 
 export interface BattleArchive {
@@ -199,17 +203,17 @@ export function buildReport(
   if (history.length > 0) {
     L.push(`## これまでの戦闘（${history.length}戦）`)
     L.push('')
-    L.push('| # | 敵 | 結果 | ターン | HP | 強さ | 面白さ |')
-    L.push('|---|---|---|---|---|---|---|')
+    L.push('| # | 敵 | 結果 | ターン | HP | 強さ | 面白さ | メモ |')
+    L.push('|---|---|---|---|---|---|---|---|')
     for (const h of history) {
       L.push(
-        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} | ${h.rating?.strength ?? ''} | ${h.rating?.fun ?? ''} |`,
+        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} | ${h.rating?.strength ?? ''} | ${h.rating?.fun ?? ''} | ${(h.rating?.note ?? '').trim().replace(/\|/g, '｜')} |`,
       )
     }
     L.push('')
     for (const h of history) {
       L.push(
-        `### ${h.battleNo}戦目 ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚${h.rating ? ` / 評価: 強さ${h.rating.strength} 面白さ${h.rating.fun}` : ''}`,
+        `### ${h.battleNo}戦目 ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚${h.rating ? ` / 評価:${h.rating.strength !== undefined ? ` 強さ${h.rating.strength}` : ''}${h.rating.fun !== undefined ? ` 面白さ${h.rating.fun}` : ''}${(h.rating.note ?? '').trim() !== '' ? `「${h.rating.note!.trim()}」` : ''}` : ''}`,
       )
       L.push(...h.lines)
       L.push('')

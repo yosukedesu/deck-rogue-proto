@@ -4236,8 +4236,8 @@ export default function App() {
   const [runHistory, setRunHistory] = useState<readonly BattleArchive[]>([])
   // プレイ中メモ (2026-09-01): 気づきをその場で記録し、レポート書き出しに同梱する。新しいラン/戦闘の開始でリセット
   const [playNotes, setPlayNotes] = useState<readonly PlayNote[]>([])
-  // 単発戦闘の評価入力済みフラグ (ランは runHistory 側の rating で判定する)
-  const [battleRated, setBattleRated] = useState(false)
+  // 単発戦闘の評価 (ランは runHistory 側の rating で判定する)
+  const [battleRated, setBattleRated] = useState<BattleRating | null>(null)
 
   // 書き出しの保険 (2026-08-30): ダウンロードもクリップボードも塞がれる環境向けに、
   // 開発者ツールのコンソールから常に最新レポートを取れる口を開けておく。
@@ -4336,7 +4336,7 @@ export default function App() {
   const start = (cfg: Config) => {
     setConfig(cfg)
     setPlayNotes([])
-    setBattleRated(false)
+    setBattleRated(null)
     // デバッグ: 自分で組んだデッキは cardId 列なので、実カードに起こして直接戦闘を開始する
     if (cfg.customDeck && cfg.customDeck.length > 0) {
       const deck = cfg.customDeck.map((id, i) => ({ uid: `custom${i}_${id}`, def: getCardDef(id) }))
@@ -4423,12 +4423,9 @@ export default function App() {
       />
       <NoteBar count={playNotes.length} onAdd={addNote} />
       {(() => {
-        // 戦闘直後の評価入力 (2026-09-01)。決着直後のフェーズでだけ出し、入力かフェーズ離脱で消える
+        // 戦闘直後の評価入力 (2026-09-01)。決着直後のフェーズの間は出続け、点数の後からメモも追記できる
         const last = runHistory[runHistory.length - 1]
-        const show =
-          last !== undefined &&
-          last.rating === undefined &&
-          ['reward', 'relic-reward', 'won', 'lost'].includes(run.phase)
+        const show = last !== undefined && ['reward', 'relic-reward', 'won', 'lost'].includes(run.phase)
         if (!show) return null
         let name = last.enemyId
         try {
@@ -4436,13 +4433,15 @@ export default function App() {
         } catch {
           /* 未知IDは生のまま */
         }
+        const patchRating = (patch: BattleRating) =>
+          setRunHistory((h) => h.map((a, i) => (i === h.length - 1 ? { ...a, rating: { ...a.rating, ...patch } } : a)))
         return (
           <BattleRatingBar
             key={last.battleNo}
             label={`${last.battleNo}戦目 ${name}`}
-            onRate={(rating) =>
-              setRunHistory((h) => h.map((a, i) => (i === h.length - 1 ? { ...a, rating } : a)))
-            }
+            rated={last.rating ?? null}
+            onRate={patchRating}
+            onNote={(note) => patchRating({ note })}
           />
         )
       })()}
@@ -4489,13 +4488,15 @@ export default function App() {
       }}
     />
     <NoteBar count={playNotes.length} onAdd={addNote} />
-    {(state.phase === 'won' || state.phase === 'lost') && !battleRated && (
+    {(state.phase === 'won' || state.phase === 'lost') && (
       <BattleRatingBar
         label="この戦闘"
+        rated={battleRated}
         onRate={(r) => {
-          addNote(`[戦闘評価] 強さ${r.strength} 面白さ${r.fun}`)
-          setBattleRated(true)
+          addNote(`[戦闘評価] 強さ${r.strength} 面白さ${r.fun}${(r.note ?? '') !== '' ? ` — ${r.note}` : ''}`)
+          setBattleRated(r)
         }}
+        onNote={(note) => addNote(`[戦闘メモ] ${note}`)}
       />
     )}
     </>
@@ -4503,19 +4504,40 @@ export default function App() {
 }
 
 /**
- * 戦闘直後の5段階評価バー (2026-09-01 ユーザー要望)。強さ・面白さの両方を選んだ瞬間に記録される。
+ * 戦闘直後の5段階評価バー (2026-09-01 ユーザー要望)。強さ・面白さの両方を選んだ瞬間に記録され、
+ * ひとことメモ (同日追補「フィードバックメモなくない？」) はEnterでいつでも保存/追記できる。
  * 入力は任意 — 次のノードへ進めば消える (評価しない自由)。記録はレポートの戦闘履歴テーブルに列で出る
  */
-function BattleRatingBar({ label, onRate }: { label: string; onRate: (r: BattleRating) => void }) {
-  const [strength, setStrength] = useState<number | null>(null)
-  const [fun, setFun] = useState<number | null>(null)
+function BattleRatingBar({
+  label,
+  rated,
+  onRate,
+  onNote,
+}: {
+  label: string
+  /** すでに記録済みの評価 (この戦闘のフェーズ内なら表示してメモ追記を受け付ける) */
+  rated: BattleRating | null
+  onRate: (r: BattleRating) => void
+  onNote: (note: string) => void
+}) {
+  const [strength, setStrength] = useState<number | null>(rated?.strength ?? null)
+  const [fun, setFun] = useState<number | null>(rated?.fun ?? null)
+  const [note, setNote] = useState(rated?.note ?? '')
+  const [flash, setFlash] = useState(false)
+  const saveNote = () => {
+    if (note.trim() === '') return
+    onNote(note.trim())
+    setFlash(true)
+    setTimeout(() => setFlash(false), 800)
+  }
   const pick = (kind: 'strength' | 'fun', n: number) => {
     const st = kind === 'strength' ? n : strength
     const fn = kind === 'fun' ? n : fun
     if (kind === 'strength') setStrength(n)
     else setFun(n)
-    if (st !== null && fn !== null) onRate({ strength: st, fun: fn })
+    if (st !== null && fn !== null) onRate({ strength: st, fun: fn, ...(note.trim() !== '' ? { note: note.trim() } : {}) })
   }
+  const committed = rated !== null && rated.strength !== undefined && rated.fun !== undefined
   const row = (title: string, kind: 'strength' | 'fun', val: number | null) => (
     <span style={{ display: 'inline-flex', gap: 2, alignItems: 'center', fontSize: 12 }}>
       {title}
@@ -4538,11 +4560,20 @@ function BattleRatingBar({ label, onRate }: { label: string; onRate: (r: BattleR
         background: 'rgba(18,22,30,0.94)', border: '1px solid #445',
         borderRadius: 8, padding: '6px 10px', display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap',
       }}
-      title="両方選ぶと記録されます (任意入力。レポートの戦闘履歴に載る)"
+      title="点数は両方選ぶと記録、メモはEnterで保存 (任意入力。レポートの戦闘履歴に載る)"
     >
-      <span style={{ fontSize: 12 }}>⚔️ {label} の評価</span>
+      <span style={{ fontSize: 12 }}>⚔️ {label} の評価{committed ? ' ✅' : ''}</span>
       {row('強さ', 'strength', strength)}
       {row('面白さ', 'fun', fun)}
+      <input
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') saveNote()
+        }}
+        placeholder={flash ? '✅ 保存しました' : 'ひとことメモ (Enterで保存)'}
+        style={{ width: 190, fontSize: 12 }}
+      />
     </div>
   )
 }
