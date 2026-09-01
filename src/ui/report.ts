@@ -639,8 +639,151 @@ export function buildProposals(bundle: ProposalBundle): string {
       new: (bundle.newLeaderDefs ?? []).map(leaderDraftToDefJson),
     },
     memo: bundle.newCards.trim() !== '' ? bundle.newCards.trim() : undefined,
+    // 読み戻し (ラウンドトリップ) 用の下書き原本。図鑑の「調整案を読み込む」がこれを読む
+    sourceDraft: bundle,
   }
   return JSON.stringify(doc, null, 2)
+}
+
+// ---- 調整案のライブ適用 (2026-09-01)。マークを現行定義へ当てて差し替え用の定義列を作る ----
+
+function deepClone<T>(v: T): T {
+  return JSON.parse(JSON.stringify(v)) as T
+}
+
+/** カードマーク → 適用済み定義。redef があればそれが完全形 (他のマークより優先) */
+export function applyCardMark(def: (typeof allCards)[number], m: CardProposalMark): (typeof allCards)[number] {
+  if (m.redef !== undefined) {
+    const j = cardDraftToDefJson(m.redef) as unknown as (typeof allCards)[number] & { id: string }
+    return { ...j, id: def.id } // 差し替えは同じidを維持する
+  }
+  const d = deepClone(def) as unknown as Record<string, unknown>
+  if (m.cost !== undefined) {
+    if (m.cost === 'X') {
+      d.xCost = true
+      d.cost = 1
+    } else {
+      d.cost = Number(m.cost)
+      delete d.xCost
+    }
+  }
+  if (m.rarity !== undefined) d.rarity = m.rarity
+  if (m.exhaust !== undefined) {
+    if (m.exhaust) d.exhaust = true
+    else delete d.exhaust
+  }
+  const effects = d.effects as Record<string, unknown>[]
+  for (const [key, val] of Object.entries(m.fields ?? {})) {
+    const eff = /^e(\d+)\.(amount|amountMax)$/.exec(key)
+    const cond = /^e(\d+)\.cond\.(\w+)$/.exec(key)
+    if (eff && effects[Number(eff[1])]) effects[Number(eff[1])][eff[2]] = val
+    else if (cond && effects[Number(cond[1])]) {
+      const e = effects[Number(cond[1])]
+      e.condition = { ...(e.condition as Record<string, unknown> | undefined), [cond[2]]: val }
+    } else d[key] = val
+  }
+  return d as unknown as (typeof allCards)[number]
+}
+
+/** 敵マーク → 適用済み定義。fields のパス (m0.min / vs1.alt.max / bh0.inflict.amount / maxHp 等) を書き戻す */
+export function applyEnemyMark(def: ReturnType<typeof getEnemyDef>, m: SimpleMark): ReturnType<typeof getEnemyDef> {
+  const d = deepClone(def) as unknown as Record<string, unknown>
+  const TABLE: Record<string, string> = { m: 'moves', vs: 'movesVsSet', tk: 'movesVsTokens', bh: 'movesBelowHalf' }
+  for (const [key, val] of Object.entries(m.fields ?? {})) {
+    const mm = /^(m|vs|tk|bh)(\d+)\.(?:(alt)\.)?(?:(inflict)\.)?(\w+)$/.exec(key)
+    if (!mm) {
+      d[key] = val
+      continue
+    }
+    const table = d[TABLE[mm[1]]] as Record<string, unknown>[] | undefined
+    const mv = table?.[Number(mm[2])]
+    if (!mv) continue
+    const base = mm[3] === 'alt' ? (mv.setAlt as Record<string, unknown> | undefined) : mv
+    if (!base) continue
+    const holder = mm[4] === 'inflict' ? (base.inflict as Record<string, unknown> | undefined) : base
+    if (!holder) continue
+    holder[mm[5]] = val
+  }
+  return d as unknown as ReturnType<typeof getEnemyDef>
+}
+
+/** レリックマーク → 適用済み定義 */
+export function applyRelicMark(def: (typeof allRelics)[number], m: SimpleMark): (typeof allRelics)[number] {
+  const d = deepClone(def) as unknown as Record<string, unknown>
+  for (const [key, val] of Object.entries(m.fields ?? {})) {
+    const eff = /^e(\d+)\.amount$/.exec(key)
+    const bonus = /^bonus\.(\w+)$/.exec(key)
+    if (eff) {
+      const effects = d.effects as Record<string, unknown>[] | undefined
+      if (effects?.[Number(eff[1])]) effects[Number(eff[1])].amount = val
+    } else if (bonus) {
+      d.bonus = { ...(d.bonus as Record<string, unknown> | undefined), [bonus[1]]: val }
+    } else if (key === 'rule.setDamageReduction') {
+      d.combatRule = { ...(d.combatRule as Record<string, unknown> | undefined), setDamageReduction: val }
+    } else d[key] = val
+  }
+  return d as unknown as (typeof allRelics)[number]
+}
+
+/** リーダーマーク → 適用済み定義 */
+export function applyLeaderMark(def: (typeof allLeaders)[number], m: SimpleMark): (typeof allLeaders)[number] {
+  const d = deepClone(def) as unknown as Record<string, unknown>
+  for (const [key, val] of Object.entries(m.fields ?? {})) {
+    const pv = /^p(\d+)\.amount$/.exec(key)
+    if (pv) {
+      const passive = d.passive as Record<string, unknown>[]
+      if (passive[Number(pv[1])]) passive[Number(pv[1])].amount = val
+    } else d[key] = val
+  }
+  return d as unknown as (typeof allLeaders)[number]
+}
+
+/**
+ * バンドル全体 → 差し替え/追記用の定義列 (content.applyDebugOverrides に渡す形)。
+ * 削除案は適用しない (スターター・理想形が壊れるため = 提案としてのみ渡る)。
+ * 新規defのidがプレースホルダのままなら debug_ 連番を振る
+ */
+export function buildOverrideDefs(bundle: ProposalBundle): {
+  cards: (typeof allCards)[number][]
+  enemies: ReturnType<typeof getEnemyDef>[]
+  relics: (typeof allRelics)[number][]
+  leaders: (typeof allLeaders)[number][]
+} {
+  let seq = 0
+  const fixId = (j: Record<string, unknown>, prefix: string): Record<string, unknown> => {
+    const id = String(j.id ?? '')
+    if (id === '' || id.includes('TODO')) j.id = `debug_${prefix}_${++seq}`
+    return j
+  }
+  const cards: (typeof allCards)[number][] = []
+  for (const [id, m] of Object.entries(bundle.cardMarks)) {
+    if (isEmptyMark(m) || m.remove === true) continue
+    const def = allCards.find((c) => c.id === id)
+    if (def) cards.push(applyCardMark(def, m))
+  }
+  for (const nd of bundle.newCardDefs) cards.push(fixId(cardDraftToDefJson(nd), 'card') as unknown as (typeof allCards)[number])
+  const enemies: ReturnType<typeof getEnemyDef>[] = []
+  for (const [id, m] of Object.entries(bundle.enemyMarks ?? {})) {
+    if (isEmptySimpleMark(m) || m.remove === true) continue
+    const def = allEnemies.find((e) => e.id === id)
+    if (def) enemies.push(applyEnemyMark(def, m))
+  }
+  for (const nd of bundle.newEnemyDefs ?? []) enemies.push(fixId(enemyDraftToDefJson(nd), 'enemy') as unknown as ReturnType<typeof getEnemyDef>)
+  const relics: (typeof allRelics)[number][] = []
+  for (const [id, m] of Object.entries(bundle.relicMarks ?? {})) {
+    if (isEmptySimpleMark(m) || m.remove === true) continue
+    const def = allRelics.find((r) => r.id === id)
+    if (def) relics.push(applyRelicMark(def, m))
+  }
+  for (const nd of bundle.newRelicDefs ?? []) relics.push(fixId(relicDraftToDefJson(nd), 'relic') as unknown as (typeof allRelics)[number])
+  const leaders: (typeof allLeaders)[number][] = []
+  for (const [id, m] of Object.entries(bundle.leaderMarks ?? {})) {
+    if (isEmptySimpleMark(m) || m.remove === true) continue
+    const def = allLeaders.find((l) => l.id === id)
+    if (def) leaders.push(applyLeaderMark(def, m))
+  }
+  for (const nd of bundle.newLeaderDefs ?? []) leaders.push(fixId(leaderDraftToDefJson(nd), 'leader') as unknown as (typeof allLeaders)[number])
+  return { cards, enemies, relics, leaders }
 }
 
 // ---- セーブ機能 (2026-09-01 ユーザー裁定で解禁範囲を拡張: 続きから+ファイル書き出し/読み込み) ----

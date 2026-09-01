@@ -719,6 +719,46 @@ export function createRun(
 }
 
 /**
+ * チェックポイント開始 (2026-09-01 デバッグ機能「幕2/幕3から代表デッキで開始」)。
+ * 幕2の谷・終盤の検証に毎回幕1を遊ぶコストを消す = LLMランの「幕サンプリング」を人間にも。
+ * 通常の createRun を土台に、幕・マップ・デッキ・レリック (B型ボーナス込み)・HP・金だけ差し替える純関数
+ */
+export function createDebugCheckpointRun(
+  seed: number,
+  mode: ReactionMode,
+  leaderId: string,
+  opts: {
+    readonly act: number // 2 | 3
+    readonly deckId: string
+    readonly relicIds?: readonly string[]
+    readonly hpRatio?: number // 0.05〜1 (既定1)
+    readonly gold?: number
+    readonly difficulty?: number
+  },
+): RunState {
+  const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY)
+  const act = Math.min(ACT_COUNT, Math.max(1, Math.round(opts.act)))
+  const [map, rng] = generateMap(base.rng, act, act === 1)
+  let run: RunState = {
+    ...base,
+    act,
+    map,
+    rng,
+    row: -1,
+    col: 0,
+    deck: buildDeck(opts.deckId), // デッキ選択制の検証は通さない (デバッグ = 理想形も可)
+    battlesWon: act === 3 ? 19 : act === 2 ? 10 : 0,
+    gold: opts.gold ?? 150,
+  }
+  for (const id of opts.relicIds ?? []) {
+    getRelicDef(id) // 未定義なら throw
+    run = applyRelicBonus({ ...run, relics: [...run.relics, id], relicQueue: run.relicQueue.filter((q) => q !== id) }, id)
+  }
+  const ratio = Math.min(1, Math.max(0.05, opts.hpRatio ?? 1))
+  return { ...run, hp: Math.max(1, Math.round(run.maxHp * ratio)) }
+}
+
+/**
  * 効果名 → アーキタイプの軸。確定済みルール表「軸の重み付け」。
  * 効果に軸が現れない札 (多段ヒットの成長ペイオフ・貫通のトランプル札など) は
  * CardDef.axis で明示する (JSONで宣言。ここは自動導出ぶんだけ)。

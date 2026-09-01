@@ -15,6 +15,7 @@ import {
   LEADER_TOP_FIELDS,
   isEmptyMark,
   isEmptySimpleMark,
+  buildOverrideDefs,
   saveProposals,
   saveReport,
   saveRunFile,
@@ -29,6 +30,7 @@ import {
   type LeaderDraft,
   type LogLine,
   type PlayNote,
+  type ProposalBundle,
   type RelicDraft,
   type RunSaveFile,
   type SimpleMark,
@@ -39,6 +41,9 @@ import {
   allEncounters,
   allEnemies,
   allRelics,
+  applyDebugOverrides,
+  clearDebugOverrides,
+  debugOverridesActive,
   allLeaders,
   deckAllowedForLeader,
   deckSize,
@@ -64,7 +69,7 @@ import {
 } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { BOSS_ROW, GRID_COLS, MAP_ROWS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -902,11 +907,98 @@ function deckComposition(deckId: string): string {
     .join(' ')
 }
 
+/** チェックポイント開始 (2026-09-01 デバッグ): 幕2/3から代表デッキ+レリックで開始 = 谷・終盤の検証を幕1抜きで */
+function CheckpointPanel({
+  leaderId,
+  difficulty,
+  onStart,
+}: {
+  leaderId: string
+  difficulty: number
+  onStart: (opts: { seed: number; leaderId: string; act: number; deckId: string; relicIds: readonly string[]; hpRatio: number; gold: number; difficulty: number }) => void
+}) {
+  const leader = getLeaderDef(leaderId)
+  const decks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
+  const [act, setAct] = useState(2)
+  const [deckId, setDeckId] = useState(decks[0]?.id ?? '')
+  const [relicIds, setRelicIds] = useState<readonly string[]>([])
+  const [hpPct, setHpPct] = useState(100)
+  const [gold, setGold] = useState(150)
+  const effectiveDeck = decks.some((d) => d.id === deckId) ? deckId : (decks[0]?.id ?? '')
+  const S = { fontSize: 12 } as const
+  return (
+    <div className="panel" style={{ marginTop: 12 }}>
+      <div className="setup-section-title">🚩 チェックポイント開始（デバッグ: 幕2/3から検証）</div>
+      <div className="choice-desc">
+        選択中のリーダー（{leader.name}）と難易度🎚{difficulty}で、指定の幕から開始。レリックのB型効果（最大HP等）も適用される。
+        幕2の想定 ≈ レリック2〜3個・幕3 ≈ 5〜6個
+      </div>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginTop: 6 }}>
+        <label style={S}>
+          幕{' '}
+          <select value={String(act)} onChange={(e) => setAct(Number(e.target.value))}>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </label>
+        <label style={S}>
+          デッキ{' '}
+          <select value={effectiveDeck} onChange={(e) => setDeckId(e.target.value)}>
+            {decks.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}（{deckSize(d)}枚）</option>
+            ))}
+          </select>
+        </label>
+        <label style={S}>
+          HP% <input type="number" min={5} max={100} style={{ width: 52 }} value={hpPct} onChange={(e) => setHpPct(Number(e.target.value) || 100)} />
+        </label>
+        <label style={S}>
+          💰 <input type="number" min={0} style={{ width: 60 }} value={gold} onChange={(e) => setGold(Number(e.target.value) || 0)} />
+        </label>
+      </div>
+      <div style={{ marginTop: 6, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {allRelics.map((r) => (
+          <label key={r.id} style={{ fontSize: 11 }} title={r.description}>
+            <input
+              type="checkbox"
+              checked={relicIds.includes(r.id)}
+              onChange={(e) =>
+                setRelicIds((prev) => (e.target.checked ? [...prev, r.id] : prev.filter((x) => x !== r.id)))
+              }
+            />{' '}
+            {r.sprite}{r.name}
+          </label>
+        ))}
+      </div>
+      <button
+        className="btn btn-primary"
+        style={{ marginTop: 8 }}
+        disabled={effectiveDeck === ''}
+        onClick={() =>
+          onStart({
+            seed: Date.now() % 2 ** 32,
+            leaderId,
+            act,
+            deckId: effectiveDeck,
+            relicIds,
+            hpRatio: Math.min(1, Math.max(0.05, hpPct / 100)),
+            gold,
+            difficulty,
+          })
+        }
+      >
+        🚩 幕{act}から開始（レリック{relicIds.length}個）
+      </button>
+    </div>
+  )
+}
+
 function SetupScreen({
   onStart,
   onStartRun,
   resume,
   onLoadSave,
+  onStartCheckpoint,
 }: {
   onStart: (cfg: Config) => void
   onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number) => void
@@ -914,6 +1006,8 @@ function SetupScreen({
   resume?: { label: string; onResume: () => void } | null
   /** セーブファイル (.json) の読み込み */
   onLoadSave?: (f: File) => void
+  /** チェックポイント開始 (デバッグ) */
+  onStartCheckpoint?: (opts: { seed: number; leaderId: string; act: number; deckId: string; relicIds: readonly string[]; hpRatio: number; gold: number; difficulty: number }) => void
 }) {
   const [enemyId, setEnemyId] = useState(allEnemies[0].id)
   const [leaderId, setLeaderId] = useState(allLeaders[0].id)
@@ -1146,6 +1240,9 @@ function SetupScreen({
         <>
           <DeckBuilder colors={leader.colors} deck={customDeck} setDeck={setCustomDeck} />
           <FusionLab />
+          {onStartCheckpoint !== undefined && (
+            <CheckpointPanel leaderId={leaderId} difficulty={difficulty} onStart={onStartCheckpoint} />
+          )}
         </>
       )}
     </div>
@@ -3037,6 +3134,8 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
     }
   }, [draft])
   const [tab, setTab] = useState<'cards' | 'enemies' | 'relics' | 'leaders'>('cards')
+  const [overlayOn, setOverlayOn] = useState(debugOverridesActive())
+  const bundleOf = (d: TunerDraft): ProposalBundle => ({ cardMarks: d.marks, newCards: d.newCards, newCardDefs: d.newCardDefs, enemyMarks: d.enemyMarks, newEnemyDefs: d.newEnemyDefs, relicMarks: d.relicMarks, newRelicDefs: d.newRelicDefs, leaderMarks: d.leaderMarks, newLeaderDefs: d.newLeaderDefs })
   const markOf = (id: string): CardProposalMark => draft.marks[id] ?? {}
   const setMark = (id: string, m: CardProposalMark) =>
     setDraft((d) => {
@@ -3133,9 +3232,66 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 />{' '}
                 マーク済みのみ表示
               </label>{' '}
-              <button className="btn btn-primary" onClick={() => saveProposals({ cardMarks: draft.marks, newCards: draft.newCards, newCardDefs: draft.newCardDefs, enemyMarks: draft.enemyMarks, newEnemyDefs: draft.newEnemyDefs, relicMarks: draft.relicMarks, newRelicDefs: draft.newRelicDefs, leaderMarks: draft.leaderMarks, newLeaderDefs: draft.newLeaderDefs })}>
+              <button className="btn btn-primary" onClick={() => saveProposals(bundleOf(draft))}>
                 📄 調整案を書き出す
               </button>{' '}
+              <button
+                className="btn"
+                title="マークした変更・新規案をこの場のゲームデータに反映する (削除案は対象外。リロードで元に戻る)"
+                onClick={() => {
+                  const res = applyDebugOverrides(buildOverrideDefs(bundleOf(draft)))
+                  setOverlayOn(debugOverridesActive())
+                  alert(`⚡ 適用しました: 置換${res.replaced}件 / 追加${res.added}件\n次に始めるラン・戦闘から反映されます (リロードで元に戻る。削除案は適用されない)`)
+                }}
+              >
+                ⚡ 適用して遊ぶ
+              </button>{' '}
+              {overlayOn && (
+                <button
+                  className="btn"
+                  onClick={() => {
+                    clearDebugOverrides()
+                    setOverlayOn(false)
+                  }}
+                >
+                  ↩ 適用を解除
+                </button>
+              )}{' '}
+              <label className="btn" style={{ display: 'inline-block', cursor: 'pointer' }} title="書き出した tuning-proposals-*.json を読み戻して編集を続ける">
+                📂 調整案を読み込む
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0]
+                    e.target.value = ''
+                    if (f === undefined) return
+                    f.text()
+                      .then((text) => {
+                        const doc = JSON.parse(text) as { kind?: string; sourceDraft?: ProposalBundle }
+                        if (doc.kind !== 'deck-rogue-tuning-proposals' || doc.sourceDraft === undefined) {
+                          alert('調整案ファイル (tuning-proposals-*.json) ではないか、古い形式です')
+                          return
+                        }
+                        const b = doc.sourceDraft
+                        setDraft({
+                          marks: { ...b.cardMarks },
+                          newCards: b.newCards,
+                          newCardDefs: [...b.newCardDefs],
+                          enemyMarks: { ...(b.enemyMarks ?? {}) },
+                          newEnemyDefs: [...(b.newEnemyDefs ?? [])],
+                          relicMarks: { ...(b.relicMarks ?? {}) },
+                          newRelicDefs: [...(b.newRelicDefs ?? [])],
+                          leaderMarks: { ...(b.leaderMarks ?? {}) },
+                          newLeaderDefs: [...(b.newLeaderDefs ?? [])],
+                        })
+                        alert('調整案を読み込みました (下書きを上書き)')
+                      })
+                      .catch((err) => alert(`読み込みに失敗: ${String(err)}`))
+                  }}
+                />
+              </label>{' '}
               <button
                 className="btn"
                 onClick={() => {
@@ -4199,7 +4355,11 @@ export default function App() {
     } catch {
       /* 壊れたバックアップは無視 */
     }
-    return <SetupScreen onStart={start} resume={resume} onLoadSave={loadSaveFile} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
+    return <SetupScreen onStart={start} resume={resume} onLoadSave={loadSaveFile} onStartCheckpoint={(opts) => {
+        setRunHistory([])
+        setPlayNotes([])
+        setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
+      }} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
         setRunHistory([])
         setPlayNotes([])
         setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))

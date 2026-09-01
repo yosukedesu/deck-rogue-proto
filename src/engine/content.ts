@@ -181,3 +181,77 @@ export function buildDeck(deckId: string): readonly CardInstance[] {
 export function deckSize(deck: DeckDef): number {
   return deck.cards.reduce((sum, e) => sum + e.count, 0)
 }
+
+// ---- デバッグ・オーバーレイ (2026-09-01 ユーザー要望「調整案のライブ適用」) ----
+// 図鑑の調整モードで編集した定義を、データ読込層で差し替える。engineは適用済みの定義しか見ない
+// (純ロジックの原則は不変)。リロードで元に戻る。適用中は debugOverridesActive() が true =
+// レポート・セーブのデータ指紋が自然に変わるのに加えて明示のマーカーにも使う。
+
+let overlayPristine: {
+  cards: readonly CardDef[]
+  enemies: readonly EnemyDef[]
+  relics: readonly RelicDef[]
+  leaders: readonly LeaderDef[]
+} | null = null
+
+export function debugOverridesActive(): boolean {
+  return overlayPristine !== null
+}
+
+/** id一致で置換・なければ追記。配列はモジュール内の実体を直接書き換える (全lookupがfindなので即反映) */
+function patchArray<T extends { readonly id: string }>(arr: readonly T[], items: readonly T[]): [number, number] {
+  const a = arr as T[]
+  let replaced = 0
+  let added = 0
+  for (const it of items) {
+    const i = a.findIndex((x) => x.id === it.id)
+    if (i >= 0) {
+      a[i] = it
+      replaced++
+    } else {
+      a.push(it)
+      added++
+    }
+  }
+  return [replaced, added]
+}
+
+export function applyDebugOverrides(o: {
+  readonly cards?: readonly CardDef[]
+  readonly enemies?: readonly EnemyDef[]
+  readonly relics?: readonly RelicDef[]
+  readonly leaders?: readonly LeaderDef[]
+}): { replaced: number; added: number } {
+  if (overlayPristine === null) {
+    overlayPristine = { cards: [...allCards], enemies: [...allEnemies], relics: [...allRelics], leaders: [...allLeaders] }
+  }
+  let replaced = 0
+  let added = 0
+  for (const [arr, items] of [
+    [allCards, o.cards],
+    [allEnemies, o.enemies],
+    [allRelics, o.relics],
+    [allLeaders, o.leaders],
+  ] as const) {
+    if (items === undefined) continue
+    const [r, a] = patchArray(arr as readonly { readonly id: string }[], items as readonly { readonly id: string }[])
+    replaced += r
+    added += a
+  }
+  return { replaced, added }
+}
+
+/** オーバーレイを解除して元データへ戻す */
+export function clearDebugOverrides(): void {
+  if (overlayPristine === null) return
+  const restore = <T,>(arr: readonly T[], orig: readonly T[]) => {
+    const a = arr as T[]
+    a.length = 0
+    a.push(...orig)
+  }
+  restore(allCards, overlayPristine.cards)
+  restore(allEnemies, overlayPristine.enemies)
+  restore(allRelics, overlayPristine.relics)
+  restore(allLeaders, overlayPristine.leaders)
+  overlayPristine = null
+}

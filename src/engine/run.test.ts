@@ -5,6 +5,7 @@ import { ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, MAP_ROWS, tierFor, TREAS
 import { createRng } from './rng.ts'
 import {
   applyRunCommand,
+  createDebugCheckpointRun,
   createRun,
   currentNode,
   DEFAULT_DIFFICULTY,
@@ -514,5 +515,30 @@ describe('難易度10段階 (確定済みルール表「難易度」2026-09-01)'
     expect(e10.maxHp / e3.maxHp).toBeCloseTo(1.35, 1)
     expect(e10.atkScale).toBe(3.0)
     expect(e3.atkScale).toBeUndefined()
+  })
+})
+
+describe('チェックポイント開始 (2026-09-01 デバッグ機能)', () => {
+  it('幕2から代表デッキ+レリックで開始し、B型ボーナス・難易度・幕スケールが効く', () => {
+    const run = createDebugCheckpointRun(7, 'set-confirm', 'leader_green', {
+      act: 2,
+      deckId: 'run_basic',
+      relicIds: ['relic_iron_heart', 'relic_growth_seed'],
+      hpRatio: 0.6,
+      gold: 200,
+      difficulty: 5,
+    })
+    expect(run.act).toBe(2)
+    expect(run.maxHp).toBe(88) // 鉄の心臓のB型 (+8) が適用される
+    expect(run.hp).toBe(Math.round(88 * 0.6))
+    expect(run.relics).toEqual(['relic_iron_heart', 'relic_growth_seed'])
+    expect(run.relicQueue).not.toContain('relic_iron_heart') // 候補列から除かれる = 再提示されない
+    expect(run.gold).toBe(200)
+    expect(run.difficulty).toBe(5)
+    expect(run.battlesWon).toBe(10)
+    // 最初の戦闘は幕2のプール・幕2の深度スケール+難易度倍率
+    const r = intoFirstBattle(run)
+    expect(tierFor(2, 0)).toContain(currentNode(r)!.encounterId)
+    expect(r.combat!.enemies[0].atkScale).toBeCloseTo(1.15 * 1.35) // 幕2打点+15% × 難易度5
   })
 })

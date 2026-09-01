@@ -3,7 +3,7 @@
 // encounterName('unknown') が例外死する」だったための回帰テスト。
 // レポートはプレイテストのデータ回収の道具なので、どんな状態でも絶対に落ちないことを固定する。
 import { describe, expect, it } from 'vitest'
-import { archiveBattle, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, isEmptyMark } from './report.ts'
+import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, isEmptyMark } from './report.ts'
 import { getEnemyDef } from '../engine/content.ts'
 import { createRun } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
@@ -70,7 +70,7 @@ describe('カード調整案の提案書 (2026-09-01。同日ユーザー裁定�
     expect(doc.cards.removals).toHaveLength(1)
     expect(doc.cards.removals[0].id).toBe('green_fang')
     expect(doc.memo).toBe('緑1E: 5ダメ+成長1の入口コモン')
-    expect(JSON.stringify(doc)).not.toContain('blue_strike')
+    expect(JSON.stringify(doc.cards)).not.toContain('blue_strike') // 空マークは節に出ない (sourceDraft原本には残る=読み戻し用)
   })
 
   it('現行データに存在しないID (統合で消えた札の下書き) でも落ちず、その旨がcurrentに入る', () => {
@@ -248,5 +248,39 @@ describe('セーブ機能 (2026-09-01 裁定で解禁拡張: 続きから+ファ
     expect(sf.logIndex).toBe(0)
     expect(sf.fingerprint).toContain('cards')
     expect(sf.playNotes).toHaveLength(1)
+  })
+})
+
+describe('調整案のライブ適用 (2026-09-01)', () => {
+  it('applyCardMark: コスト/数値/条件のパスが定義に書き戻る (redefは完全形が勝つ)', () => {
+    const def = { id: 'green_strike', name: '打撃', cost: 1, type: 'physical', color: 'green', rarity: 'common', effects: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 6 }] }
+    const out = applyCardMark(def as never, { cost: '0', exhaust: true, fields: { 'e0.amount': 9, 'e0.cond.minActionValue': 10 } })
+    expect(out.cost).toBe(0)
+    expect(out.exhaust).toBe(true)
+    expect(out.effects[0].amount).toBe(9)
+    expect(out.effects[0].condition).toEqual({ minActionValue: 10 })
+    const re = applyCardMark(def as never, { fields: { 'e0.amount': 99 }, redef: { name: '打撃・改', color: 'green', cost: 2, type: 'physical', rarity: 'rare', effects: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 12 }] } })
+    expect(re.id).toBe('green_strike') // 差し替えでもidは維持
+    expect(re.name).toBe('打撃・改')
+    expect(re.effects[0].amount).toBe(12) // fieldsよりredefが勝つ
+  })
+
+  it('buildOverrideDefs: マーク済みだけが差し替え列に入り、削除案は入らず、新規はdebug_idが振られる', () => {
+    const o = buildOverrideDefs({
+      cardMarks: {
+        green_strike: { fields: { 'e0.amount': 9 } },
+        green_fang: { remove: true }, // 削除案は適用しない
+        blue_strike: {},
+      },
+      newCards: '',
+      newCardDefs: [{ name: '試作', color: 'green', cost: 1, type: 'physical', rarity: 'common', effects: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 5 }] }],
+      enemyMarks: { enemy_probe: { fields: { maxHp: 50, 'm0.max': 9 } } },
+    })
+    expect(o.cards).toHaveLength(2)
+    expect(o.cards[0].effects[0].amount).toBe(9)
+    expect(o.cards[1].id).toContain('debug_card_')
+    expect(o.enemies[0].maxHp).toBe(50)
+    expect(o.enemies[0].moves[0].max).toBe(9)
+    expect(JSON.stringify(o)).not.toContain('green_fang')
   })
 })
