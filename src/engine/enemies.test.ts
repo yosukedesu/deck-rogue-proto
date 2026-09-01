@@ -792,6 +792,53 @@ describe('ギミック変種 (2026-09-02 全体改善・第6波)', () => {
   })
 })
 
+describe('デバフ拡張と時限呪い (2026-09-02 全体改善・第7波)', () => {
+  it('霞み: ドローが2枚減り (最低3)、自ターン終了時に1減る', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withIntent(s, { kind: 'attack', shownMin: 3, shownMax: 3, actual: 3, inflict: { status: 'mist', amount: 2 } })
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.mist).toBe(2)
+    expect(s.player.hand.filter((c) => c.def.id !== 'status_scald')).toHaveLength(3) // 5-2=3
+    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = { ...s, player: { ...s.player, hand: [] } }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.mist).toBe(1)
+  })
+
+  it('重り: 敵の攻撃がプレイ枚数×10%重くなる (justAppliedガードあり)', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = { ...s, player: { ...s.player, slow: 1, energy: 9, hp: 70, block: 0 } }
+    // 3枚プレイしてからターン終了 → 敵の攻撃10は floor(10*1.3)=13
+    s = withHand(s, ['green_strike', 'green_strike', 'green_strike'])
+    for (let k = 0; k < 3; k++) {
+      const uid = s.player.hand[0].uid
+      s = applyCommand(s, { type: 'PlayCard', cardUid: uid })
+    }
+    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
+    const hp0 = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(hp0 - s.player.hp).toBe(13)
+  })
+
+  it('仮初の烙印: 手札滞留で烙印と同じHP-1、勝利を重ねると自然消滅する (run層)', () => {
+    // combat側: GUILT_DEFが烙印tickに数えられる
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        hand: [{ uid: 'g0', def: getCardDef('status_guilt') }],
+      },
+    }
+    const hp0 = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(hp0 - s.player.hp).toBe(1)
+  })
+})
+
+
 
 
 

@@ -4,7 +4,7 @@
 // state.ts が方式コマンド処理後に continueAfterWindow() で再開する。
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
-import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF } from './content.ts'
+import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
 import {
   cardNeedsTarget,
   drawCards,
@@ -515,7 +515,8 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   // ドローを onTurnStart 誘発より先に行う (2026-08-31 変更)。
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
   // 泉 (onTurnStart ドロー) 等は順序が変わっても合計枚数は同じ = 既存挙動と等価
-  s = drawCards(s, s.player.drawPerTurn)
+  // 霞み (2026-09-02): ドロー-2・最低3枚 (完全ゼロ化はしない = 全捨てルールと衝突するため)
+  s = drawCards(s, (s.player.mist ?? 0) > 0 ? Math.max(3, s.player.drawPerTurn - 2) : s.player.drawPerTurn)
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   // ターン開始誘発 (従者の自動攻撃など) で敵が全滅したら即座に勝利を確定する
   // (プレイテストで発見: 判定がないと撃破済みの敵に手札が撃てる状態が残る)
@@ -1064,6 +1065,7 @@ export function endTurn(state: GameState): GameState {
       weak: Math.max(0, s.player.weak - 1),
       frail: Math.max(0, s.player.frail - 1),
       restrain: Math.max(0, s.player.restrain - 1),
+      mist: Math.max(0, (s.player.mist ?? 0) - 1),
     },
   }
   // 火傷・烙印 (2026-09-02): 自ターン終了時に手札にあると疼く (火傷=2/枚・烙印=1/枚)。
@@ -1071,7 +1073,9 @@ export function endTurn(state: GameState): GameState {
   // 捨てコスト・消滅コストの支払いに使えば疼く前に処分できる (手札マネジメントの問い)
   {
     const scalds = s.player.hand.filter((c) => c.def.id === SCALD_DEF.id).length
-    const brands = s.player.hand.filter((c) => c.def.id === BRAND_DEF.id).length
+    const brands = s.player.hand.filter(
+      (c) => c.def.id === BRAND_DEF.id || c.def.id === GUILT_DEF.id,
+    ).length
     const burnHp = scalds * 2 + brands * 1
     if (burnHp > 0) {
       s = { ...s, player: { ...s.player, hp: s.player.hp - burnHp } }
@@ -1261,6 +1265,19 @@ export const RESTRAIN_PLAY_CAP = 3
 
 function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameState {
   const { status, amount } = inflict
+  if (status === 'mist') {
+    return emit(
+      { ...state, player: { ...state.player, mist: (state.player.mist ?? 0) + amount } },
+      { type: 'StatusInflicted', status, amount },
+    )
+  }
+  if (status === 'slow') {
+    // justAppliedガードは脆弱と同則 (敵フェーズ中の付与は同フェーズ末の減衰を免除)
+    return emit(
+      { ...state, player: { ...state.player, slow: (state.player.slow ?? 0) + amount, slowFresh: true } },
+      { type: 'StatusInflicted', status, amount },
+    )
+  }
   if (status === 'weak' || status === 'vulnerable' || status === 'frail' || status === 'restrain') {
     const player =
       status === 'weak'
@@ -1423,6 +1440,11 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         }
         // 脆弱: 敵の攻撃ダメージ50%増 (切り捨て)
         if (state.player.vulnerable > 0) v = Math.floor(v * 1.5)
+        // 重り (2026-09-02 StS2 SlowPower式): +10%×このターンのプレイ枚数 (切り捨て)。
+        // 手数の罰の被弾版 = 鏡 (ヒット数) と別の受け方を要求する
+        if ((state.player.slow ?? 0) > 0 && state.player.cardsPlayedThisTurn > 0) {
+          v = Math.floor(v * (1 + 0.1 * state.player.cardsPlayedThisTurn))
+        }
         dealtTotal += v
         const blocked = Math.min(block, v)
         block -= blocked
@@ -1656,6 +1678,8 @@ function finishEnemyPhase(state: GameState): GameState {
           ? s.player.vulnerable
           : Math.max(0, s.player.vulnerable - 1),
       vulnerableFresh: false,
+      slow: s.player.slowFresh === true ? (s.player.slow ?? 0) : Math.max(0, (s.player.slow ?? 0) - 1),
+      slowFresh: false,
     },
   }
   // 再生 (HP50%超のみ) と激昂 (確定済みルール表「再生」「激昂」)

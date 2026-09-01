@@ -160,6 +160,19 @@ export const BRAND_DEF: CardDef = {
 }
 
 /**
+ * 仮初の烙印 (2026-09-02 StS2 Guilty式の時限呪い): 烙印と同じ滞留HP-1だが、
+ * 5戦すると自然に消える (CardInstance.expiresAfterBattles)。イベントの中間対価の器
+ */
+export const GUILT_DEF: CardDef = {
+  id: 'status_guilt',
+  name: '仮初の烙印',
+  cost: 0,
+  type: 'spell',
+  color: 'black',
+  effects: [],
+}
+
+/**
  * がらくた (状態異常カード): 罠壊しが山札に混ぜ込む使用不可の死に札。
  * 負傷 (捨て札に混入) と違い山札へ直接混ざるため、すぐ引かされる = 手札事故を即座に作る。
  */
@@ -176,6 +189,7 @@ export function getCardDef(id: string): CardDef {
   if (id === WOUND_DEF.id) return WOUND_DEF
   if (id === SCALD_DEF.id) return SCALD_DEF
   if (id === BRAND_DEF.id) return BRAND_DEF
+  if (id === GUILT_DEF.id) return GUILT_DEF
   if (id === JUNK_DEF.id) return JUNK_DEF
   const def = allCards.find((c) => c.id === id)
   if (!def) throw new Error(`未定義カード: ${id}`)

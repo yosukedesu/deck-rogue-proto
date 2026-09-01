@@ -238,11 +238,11 @@ describe('?マス (イベント)', () => {
     }
   })
 
-  it('イベントプールは本家3層の員数を満たす (幕専用6個以上/幕・祠7・ワンタイム5)', () => {
+  it('イベントプールは本家3層の員数を満たす (幕専用6個以上/幕・祠7・ワンタイム6)', () => {
     // 2026-09-02 呪いイベント+2 (黒曜の偶像=oneTime・血染めの祭壇=shrine)
     const kindOf = (e: (typeof allEvents)[number]) => e.kind ?? 'act'
     expect(allEvents.filter((e) => kindOf(e) === 'shrine')).toHaveLength(7)
-    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(5)
+    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(6) // 2026-09-02 毒の三杯 (どの毒を飲むかの選択)
     for (const act of [1, 2, 3]) {
       const pool = allEvents.filter((e) => kindOf(e) === 'act' && e.act === act)
       expect(pool.length, `幕${act}の幕専用イベント`).toBeGreaterThanOrEqual(6)

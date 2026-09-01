@@ -100,6 +100,18 @@ export interface PlayerState extends CombatantState {
   /** この戦闘で注入された火傷の累計 (上限5/戦闘の判定。火傷札は消えるので山を数えられない) */
   readonly scaldsThisCombat?: number
   /**
+   * 霞み (2026-09-02 StS2 MindRot式): 残りNターン、ターン開始のドロー-2 (最低3枚)。
+   * 自ターン終了時に-1。完全ゼロ化 (NoDraw) は全捨てルールと衝突するため導入しない
+   */
+  readonly mist?: number
+  /**
+   * 重り (2026-09-02 StS2 SlowPower式): 残りNフェーズ、敵の攻撃ダメージ+10%×このターンの
+   * プレイ枚数 (切り捨て)。手数の罰の被弾版 (鏡=ヒット数が増える、重り=1発が重くなる)。
+   * 敵フェーズ終了時に-1 (justAppliedガードは脆弱と共用の slowFresh)
+   */
+  readonly slow?: number
+  readonly slowFresh?: boolean
+  /**
    * 虚弱 (2026-09-01 本家Frail相当): 残りNターンの間、カードのプレイで得るブロック25%減
    * (切り捨て・最低1)。氷壁・リアクション・置物トリガー・パッシブ由来は対象外。自ターン終了時に1減る
    */
@@ -602,6 +614,8 @@ export interface EventChoiceDef {
   readonly wounds?: number
   /** 呪いの烙印 (2026-09-02 呪いイベント): 自ターン終了時に手札にあるとHP-1の恒久札をデッキに混入 */
   readonly brands?: number
+  /** 仮初の烙印 (2026-09-02 時限呪い): 滞留HP-1は烙印と同じだが5戦で自然消滅する札をN枚混入 */
+  readonly timedCurses?: number
   /** 色プールからランダムなカードをN枚獲得 */
   readonly addRandomCards?: number
   /** レリック候補列の次の1個を獲得 (上限なら何も起きない) */
@@ -701,6 +715,8 @@ export interface CardInstance {
    * 自ターンを過ごした火傷は次の全捨てで消える = 1回きり
    */
   readonly scaldFresh?: boolean
+  /** 時限呪い (2026-09-02 StS2 Guilty式): 残りN戦で自然消滅する。勝利ごとに-1・0でデッキから除去 */
+  readonly expiresAfterBattles?: number
   readonly uid: string
   readonly def: CardDef
   /** 召喚トークン: 敵の「トークン破壊」の対象になる (手張り置物・リーダー・レリックは対象外) */
@@ -767,7 +783,7 @@ export type EnemyActionKind =
   | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
-export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk' | 'scald' | 'restrain'
+export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk' | 'scald' | 'restrain' | 'mist' | 'slow'
 
 /** 状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚) */
 export interface StatusInflict {

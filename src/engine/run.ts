@@ -11,7 +11,7 @@ import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
-  BRAND_DEF,
+  BRAND_DEF, GUILT_DEF,
   allCards,
   allRelics,
   buildDeck,
@@ -546,7 +546,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
   }
   let next: RunState = { ...run }
   let rng = run.rng
-  const applyOutcome = (o: { gold?: number; hp?: number; hpRatio?: number; wounds?: number; brands?: number }): void => {
+  const applyOutcome = (o: { gold?: number; hp?: number; hpRatio?: number; wounds?: number; brands?: number; timedCurses?: number }): void => {
     if (o.gold) next = { ...next, gold: Math.max(0, next.gold + o.gold) }
     if (o.hp) next = { ...next, hp: Math.min(next.maxHp, next.hp + o.hp) }
     // 最大HP比の増減 (2026-08-29)。リーダー間で最大HPが違う (80/75/65/60) ので、
@@ -568,6 +568,15 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
         def: BRAND_DEF,
       }))
       next = { ...next, deck: [...next.deck, ...brands] }
+    }
+    if (o.timedCurses) {
+      // 仮初の烙印 (2026-09-02 StS2 Guilty式): 烙印と同じ滞留HP-1だが5戦で自然消滅する中間対価
+      const guilts: CardInstance[] = Array.from({ length: o.timedCurses }, (_, i) => ({
+        uid: `guilt_a${run.act}_r${run.row}_${i}`,
+        def: GUILT_DEF,
+        expiresAfterBattles: 5,
+      }))
+      next = { ...next, deck: [...next.deck, ...guilts] }
     }
   }
   applyOutcome(choice)
@@ -975,11 +984,20 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   const bounty =
     combat.enemies.filter((e) => e.fled !== true && (e.stolenGold ?? 0) > 0).length * THIEF_BOUNTY
   gained += bounty - fledLoss
+  // 時限呪い (2026-09-02 StS2 Guilty式): 勝利ごとに残り戦数-1・0でデッキから自然消滅
+  const deckAfterCurses = run.deck
+    .map((c) =>
+      c.expiresAfterBattles !== undefined
+        ? { ...c, expiresAfterBattles: c.expiresAfterBattles - 1 }
+        : c,
+    )
+    .filter((c) => c.expiresAfterBattles === undefined || c.expiresAfterBattles > 0)
   const next: RunState = {
     ...run,
     rng,
     combat,
     hp,
+    deck: deckAfterCurses,
     battlesWon: run.battlesWon + 1,
     // 盗みの喪失で負になりうるので0でクランプ
     gold: Math.max(0, run.gold + gained),

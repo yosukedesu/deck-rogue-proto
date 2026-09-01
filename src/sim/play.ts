@@ -241,7 +241,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
-    `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで)` : '',
+    `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで)` : '', (p.mist ?? 0) ? `霞み${p.mist}(ドロー-2)` : '', (p.slow ?? 0) ? `重り${p.slow}(被ダメ+10%×プレイ枚数)` : '',
     p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
     // 運任せカウンタは参照札 (×N換金/onRandomPlayed) を持つデッキでだけ意味を持つ — ノイズ抑制
     p.randomPlayedThisCombat && [...p.hand, ...p.drawPile, ...p.discardPile, ...p.setCards, ...p.permanents].some((c) => c.def.effects.some((e) => e.effect === 'dealDamagePerRandomPlayed' || e.trigger === 'onRandomPlayed')) ? `運任せ札${p.randomPlayedThisCombat}枚` : '',
@@ -259,6 +259,8 @@ function renderBattle(s: GameState, logFrom: number): string {
       let perHit = p.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
       if ((s.setDamageReduction ?? 0) > 0 && p.setCards.length > 0)
         perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
+      if ((p.slow ?? 0) > 0 && p.cardsPlayedThisTurn > 0)
+        perHit = Math.floor(perHit * (1 + 0.1 * p.cardsPlayedThisTurn))
       worst += perHit * (it.mirrorHits === true ? Math.max(1, p.cardsPlayedThisTurn) : (it.hits ?? 1))
     }
   })

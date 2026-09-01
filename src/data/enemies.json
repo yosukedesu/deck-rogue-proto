@@ -1216,11 +1216,23 @@
     "min": 12,
     "max": 16,
     "weight": 1
+   },
+   {
+    "id": "weight",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 1,
+    "inflict": {
+     "status": "slow",
+     "amount": 2
+    }
    }
   ],
   "sequence": [
    "chain",
    "net",
+   "weight",
    "lash"
   ]
  },
@@ -1448,6 +1460,10 @@
       "status": "junk",
       "amount": 1
      }
+    },
+    "inflict": {
+     "status": "mist",
+     "amount": 1
     }
    }
   ],

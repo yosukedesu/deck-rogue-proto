@@ -188,6 +188,8 @@ const KEYWORD_HELP: Record<string, string> = {
   庇う: 'この敵が生きている間、あなたの単体対象カードは他の敵を選べずこの敵に向かう。全体攻撃と延焼の毎ターンダメージは素通し',
   連携: '他の仲間が1体でも生きている間、この敵の攻撃に+N（宣言時に判定。仲間を倒せば次の宣言から素に戻る）',
   拘束: '残りNターンの間、1ターンにプレイできるカードは3枚まで。伏せる・リアクション発動は制限されない',
+  霞み: '残りNターンの間、ターン開始のドローが2枚減る（最低3枚）',
+  重り: '残りNフェーズの間、敵の攻撃ダメージ+10%×このターンのプレイ枚数。手数を出すほど重く受ける',
   重圧: 'この敵が生きている間、あなたのカードのコストが増える。倒せば即座に元に戻る（キル順の圧）',
   残機: '倒すと次の形態で再起動する。オーバーキルのダメージは持ち越されない＝小分けに倒すしかない',
   孵化: '放っておくと孵化して強い姿になる。卵のうちに割るか、親から倒すかの資源配分。孵化は打ち消しで1ターン遅らせられる',
@@ -1899,6 +1901,8 @@ function BattleScreen({
               // 静かな鈴 (C型): 伏せ札がある間、敵の攻撃実値-N (最低1)。予測にも算入する
               if ((s.setDamageReduction ?? 0) > 0 && player.setCards.length > 0)
                 perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
+              if ((player.slow ?? 0) > 0 && player.cardsPlayedThisTurn > 0)
+                perHit = Math.floor(perHit * (1 + 0.1 * player.cardsPlayedThisTurn))
               worst += perHit * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
             }
           })
@@ -1979,6 +1983,12 @@ function BattleScreen({
             )}
             {player.frail > 0 && (
               <span className="chip chip-strength">🦴 {kw('虚弱')} {player.frail}</span>
+            )}
+            {(player.mist ?? 0) > 0 && (
+              <span className="chip chip-strength">🌫️ {kw('霞み')} {player.mist}</span>
+            )}
+            {(player.slow ?? 0) > 0 && (
+              <span className="chip chip-strength">⚓ {kw('重り')} {player.slow}（今+{player.cardsPlayedThisTurn * 10}%）</span>
             )}
             {player.restrain > 0 && (
               <span className="chip chip-strength">⛓️ {kw('拘束')} {player.restrain}{player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP ? '（このターンはもう出せない）' : `（あと${RESTRAIN_PLAY_CAP - player.cardsPlayedThisTurn}枚）`}</span>
