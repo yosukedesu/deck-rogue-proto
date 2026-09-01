@@ -1,6 +1,6 @@
 // ui/ は状態を読んでコマンドを投げるだけの薄い層。ゲームロジックを書かない (CLAUDE.md)。
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import {
   archiveBattle,
@@ -16,6 +16,7 @@ import {
   isEmptyMark,
   isEmptySimpleMark,
   buildOverrideDefs,
+  replayStates,
   saveProposals,
   saveReport,
   saveRunFile,
@@ -32,6 +33,7 @@ import {
   type PlayNote,
   type ProposalBundle,
   type RelicDraft,
+  type RunJournal,
   type RunSaveFile,
   type SimpleMark,
 } from './report.ts'
@@ -998,6 +1000,7 @@ function SetupScreen({
   onStartRun,
   resume,
   onLoadSave,
+  onLoadReplay,
   onStartCheckpoint,
 }: {
   onStart: (cfg: Config) => void
@@ -1006,6 +1009,8 @@ function SetupScreen({
   resume?: { label: string; onResume: () => void } | null
   /** セーブファイル (.json) の読み込み */
   onLoadSave?: (f: File) => void
+  /** リプレイ (journal付きセーブ) の読み込み → ビューアで再生 */
+  onLoadReplay?: (f: File) => void
   /** チェックポイント開始 (デバッグ) */
   onStartCheckpoint?: (opts: { seed: number; leaderId: string; act: number; deckId: string; relicIds: readonly string[]; hpRatio: number; gold: number; difficulty: number }) => void
 }) {
@@ -1078,6 +1083,21 @@ function SetupScreen({
                 onChange={(e) => {
                   const f = e.target.files?.[0]
                   if (f !== undefined) onLoadSave(f)
+                  e.target.value = ''
+                }}
+              />
+            </label>
+          )}{' '}
+          {onLoadReplay !== undefined && (
+            <label className="btn" style={{ marginTop: 6, display: 'inline-block', cursor: 'pointer' }} title="💾で書き出したセーブ(記録付き)を1手ずつ再生。任意の地点から操作の引き継ぎもできる">
+              🎬 リプレイを読み込む
+              <input
+                type="file"
+                accept=".json,application/json"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f !== undefined) onLoadReplay(f)
                   e.target.value = ''
                 }}
               />
@@ -3795,8 +3815,10 @@ function RunScreen({
   dispatch,
   history,
   notes,
+  journal,
   onExit,
   onRestart,
+  onReplay,
 }: {
   run: RunState
   dispatch: (c: RunCommand) => void
@@ -3804,8 +3826,12 @@ function RunScreen({
   history: readonly BattleArchive[]
   /** プレイ中メモ (書き出しに同梱) */
   notes: readonly PlayNote[]
+  /** リプレイ・ジャーナル (セーブに同梱する。記録が無いラン=旧セーブ由来は null) */
+  journal?: RunJournal | null
   onExit: () => void
   onRestart: (seed: number) => void
+  /** このランのリプレイを開く (記録がある時だけ渡される) */
+  onReplay?: () => void
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
   const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚・🎚${run.difficulty ?? DEFAULT_DIFFICULTY}`
@@ -3852,7 +3878,7 @@ function RunScreen({
         </div>
         <div style={{ marginTop: 12 }}>
           <button className="btn" onClick={() => saveReport(run, null, history, notes)}>📄 状況を書き出す</button>{' '}
-          <button className="btn" onClick={() => saveRunFile(run, history, notes)}>💾 セーブを書き出す</button>{' '}
+          <button className="btn" onClick={() => saveRunFile(run, history, notes, journal ?? null)}>💾 セーブを書き出す</button>{' '}
           <button className="btn" onClick={onExit}>ランを放棄（自動保存は残る）</button>
         </div>
       </div>
@@ -4265,6 +4291,11 @@ function RunScreen({
         <button className="btn" onClick={() => onRestart(run.seed)}>
           同シードで再挑戦
         </button>{' '}
+        {onReplay !== undefined && (
+          <button className="btn" onClick={onReplay}>
+            🎬 このランをリプレイ
+          </button>
+        )}{' '}
         <button className="btn" onClick={onExit}>
           設定に戻る
         </button>
@@ -4285,6 +4316,10 @@ export default function App() {
   const [playNotes, setPlayNotes] = useState<readonly PlayNote[]>([])
   // 単発戦闘の評価 (ランは runHistory 側の rating で判定する)
   const [battleRated, setBattleRated] = useState<BattleRating | null>(null)
+  // リプレイ・ジャーナル (2026-09-01): ランの全コマンドを記録。origin+commands で完全再現できる
+  const [journal, setJournal] = useState<RunJournal | null>(null)
+  // 表示中のリプレイ (nullでなければリプレイビューアを出す)
+  const [replaying, setReplaying] = useState<RunJournal | null>(null)
 
   // 書き出しの保険 (2026-08-30): ダウンロードもクリップボードも塞がれる環境向けに、
   // 開発者ツールのコンソールから常に最新レポートを取れる口を開けておく。
@@ -4320,15 +4355,15 @@ export default function App() {
       // 進行が無い時は書かない (2026-09-01 修正: マウント直後や放棄後に null で上書きすると
       // リロード後の復元・「続きから」が消える — 従来この上書きでリロード復元が実は効いていなかった)
       if (run !== null || state !== null) {
-        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, fingerprint: dataFingerprint() }))
+        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, journal, fingerprint: dataFingerprint() }))
       }
     } catch {
       /* no-op */
     }
-  }, [run, state, runHistory, playNotes])
+  }, [run, state, runHistory, playNotes, journal])
 
   /** セーブ復帰の共通処理 (続きから/ファイル読み込み)。データ指紋が違えば警告して選ばせる */
-  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string): void => {
+  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string, j: RunJournal | null = null): void => {
     if (fingerprint !== undefined && fingerprint !== dataFingerprint()) {
       const ok = window.confirm(
         'このセーブは別のデータバージョンで作られています。カード・敵の定義が変わっていると正しく動かない可能性がありますが、読み込みますか？',
@@ -4337,6 +4372,7 @@ export default function App() {
     }
     setRunHistory(history)
     setPlayNotes(notes)
+    setJournal(j)
     setState(null)
     setConfig(null)
     setRun(r)
@@ -4347,9 +4383,9 @@ export default function App() {
     try {
       const raw = localStorage.getItem('deckRogueBackup')
       if (raw === null) return
-      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string }
+      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string; journal?: RunJournal | null }
       if (b.run == null) return
-      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint)
+      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint, b.journal ?? null)
     } catch (e) {
       alert(`復帰に失敗しました: ${String(e)}`)
     }
@@ -4365,7 +4401,22 @@ export default function App() {
           alert('ランのセーブファイル (kind:"run") ではありません。単発戦闘のセーブはCLI (sim/play.ts) で開けます')
           return
         }
-        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint)
+        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint, sf.journal ?? null)
+      })
+      .catch((e) => alert(`読み込みに失敗しました: ${String(e)}`))
+  }
+
+  /** リプレイ (.json セーブのジャーナル) を読み込んでビューアを開く */
+  const loadReplayFile = (file: File): void => {
+    file
+      .text()
+      .then((text) => {
+        const sf = JSON.parse(text) as Partial<RunSaveFile>
+        if (sf.journal === undefined || sf.journal === null) {
+          alert('このファイルにはリプレイ記録 (journal) がありません。記録付きのセーブは💾で書き出せます')
+          return
+        }
+        setReplaying(sf.journal)
       })
       .catch((e) => alert(`読み込みに失敗しました: ${String(e)}`))
   }
@@ -4425,6 +4476,8 @@ export default function App() {
       alert(err instanceof Error ? err.message : String(err))
       return
     }
+    // リプレイ記録 (成功したコマンドだけ。journal が無いラン=旧セーブ由来は記録しない)
+    setJournal((j) => (j === null ? j : { ...j, commands: [...j.commands, command] }))
     // 戦闘が決着した瞬間だけ履歴に積む (次戦の開始で combat が上書きされる前に捕まえる)。
     // setRun の更新関数の中で setRunHistory を呼ぶと StrictMode の二重実行で重複するため、外で行う
     const ended = next.combat?.phase === 'won' || next.combat?.phase === 'lost'
@@ -4449,6 +4502,23 @@ export default function App() {
     setRun(next)
   }
 
+  if (replaying !== null) {
+    return (
+      <ReplayScreen
+        journal={replaying}
+        onExit={() => setReplaying(null)}
+        onTakeover={(stateAt, truncated) => {
+          setRunHistory([])
+          setPlayNotes([])
+          setJournal(truncated)
+          setState(null)
+          setConfig(null)
+          setRun(stateAt)
+          setReplaying(null)
+        }}
+      />
+    )
+  }
   if (run !== null) {
     return (
       <>
@@ -4457,6 +4527,8 @@ export default function App() {
         dispatch={dispatchRun}
         history={runHistory}
         notes={playNotes}
+        journal={journal}
+        onReplay={journal !== null ? () => setReplaying(journal) : undefined}
         onExit={() => {
           setRun(null)
           setRunHistory([])
@@ -4464,6 +4536,7 @@ export default function App() {
         onRestart={(seed) => {
           setRunHistory([])
           setPlayNotes([])
+          setJournal(run !== null ? { origin: { kind: 'run', seed, leaderId: run.leaderId, difficulty: run.difficulty ?? DEFAULT_DIFFICULTY }, commands: [] } : null)
           // 難易度はリスタートでも引き継ぐ (旧セーブ由来の欠落は既定3)
           setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green', undefined, prev?.difficulty ?? DEFAULT_DIFFICULTY))
         }}
@@ -4512,13 +4585,15 @@ export default function App() {
     } catch {
       /* 壊れたバックアップは無視 */
     }
-    return <SetupScreen onStart={start} resume={resume} onLoadSave={loadSaveFile} onStartCheckpoint={(opts) => {
+    return <SetupScreen onStart={start} resume={resume} onLoadSave={loadSaveFile} onLoadReplay={loadReplayFile} onStartCheckpoint={(opts) => {
         setRunHistory([])
         setPlayNotes([])
+        setJournal({ origin: { kind: 'checkpoint', seed: opts.seed, leaderId: opts.leaderId, checkpoint: { act: opts.act, deckId: opts.deckId, relicIds: opts.relicIds, hpRatio: opts.hpRatio, gold: opts.gold, difficulty: opts.difficulty } }, commands: [] })
         setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
       }} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
         setRunHistory([])
         setPlayNotes([])
+        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty }, commands: [] })
         setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))
       }} />
   }
@@ -4631,6 +4706,89 @@ function BattleRatingBar({
  * プレイ中メモの入力バー (2026-09-01 ユーザー要望「気がついたことが揮発せずにいい」)。
  * 画面右下に常駐し、Enterで記録。記録は文脈 (幕/行/ターン/HP) 付きでレポート書き出しに同梱される
  */
+/**
+ * リプレイビューア (2026-09-01 ユーザー要望「ログからのリプレイ機能」)。
+ * ジャーナル (開始条件+全コマンド) を再実行した状態列を1手/戦闘単位でシークする。
+ * 盤面は本物の RunScreen を読み取り専用 (pointer-events: none) で再利用 = 表示の二重実装なし。
+ * 「ここから再開」でその地点から操作を引き継げる (以降のリプレイは破棄 = 実質の巻き戻し)
+ */
+function ReplayScreen({
+  journal,
+  onExit,
+  onTakeover,
+}: {
+  journal: RunJournal
+  onExit: () => void
+  onTakeover: (state: RunState, truncated: RunJournal) => void
+}) {
+  const replay = useMemo(() => replayStates(journal), [journal])
+  const states = replay.states
+  const [idx, setIdx] = useState(0)
+  const cur = Math.max(0, Math.min(idx, states.length - 1))
+  const run = states[cur]
+  const battleStarts = useMemo(() => {
+    const out: { index: number; label: string }[] = []
+    for (let i = 1; i < states.length; i++) {
+      if (states[i].phase === 'combat' && states[i - 1].phase !== 'combat') {
+        out.push({ index: i, label: `${states[i].battlesWon + 1}戦目` })
+      }
+    }
+    return out
+  }, [states])
+  const clamp = (n: number) => Math.max(0, Math.min(states.length - 1, n))
+  const prevBattle = () => {
+    const b = [...battleStarts].reverse().find((x) => x.index < cur)
+    setIdx(b !== undefined ? b.index : 0)
+  }
+  const nextBattle = () => {
+    const b = battleStarts.find((x) => x.index > cur)
+    setIdx(b !== undefined ? b.index : states.length - 1)
+  }
+  return (
+    <>
+      <div
+        style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 80,
+          background: 'rgba(13,16,24,0.97)', borderBottom: '1px solid #556',
+          padding: '6px 12px', display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap',
+        }}
+      >
+        <b>🎬 リプレイ</b>
+        <span className="choice-desc">{cur}/{states.length - 1}手・{battleStarts.filter((b) => b.index <= cur).length}戦目</span>
+        <button className="btn" onClick={() => setIdx(0)}>⏮</button>
+        <button className="btn" onClick={prevBattle}>◀◀ 戦闘</button>
+        <button className="btn" onClick={() => setIdx(clamp(cur - 1))}>◀ 1手</button>
+        <button className="btn" onClick={() => setIdx(clamp(cur + 1))}>1手 ▶</button>
+        <button className="btn" onClick={nextBattle}>戦闘 ▶▶</button>
+        <button className="btn" onClick={() => setIdx(states.length - 1)}>⏭</button>
+        <input
+          type="range"
+          min={0}
+          max={states.length - 1}
+          value={cur}
+          onChange={(e) => setIdx(Number(e.target.value))}
+          style={{ flex: 1, minWidth: 120 }}
+        />
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            if (window.confirm('この地点から操作を引き継ぎますか？（以降のリプレイは破棄され、ここからの続きが新しい記録になります）')) {
+              onTakeover(run, { origin: journal.origin, commands: journal.commands.slice(0, cur) })
+            }
+          }}
+        >
+          ▶ ここから再開
+        </button>
+        <button className="btn" onClick={onExit}>✕ 閉じる</button>
+        {replay.error !== null && <span style={{ color: 'var(--warn, #e0a458)', fontSize: 12 }}>{replay.error}</span>}
+      </div>
+      <div style={{ paddingTop: 52, pointerEvents: 'none' }}>
+        <RunScreen run={run} dispatch={() => {}} history={[]} notes={[]} onExit={() => {}} onRestart={() => {}} />
+      </div>
+    </>
+  )
+}
+
 /**
  * キーボードショートカット (2026-09-01 ユーザー要望「UI側もうちょい遊びやすく」)。
  * data-hotkey 属性の付いた要素をクリックする方式 = 活性判定・ガードはボタン側の disabled が

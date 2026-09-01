@@ -20,7 +20,8 @@ function safeEnemyName(id: string): string {
   }
 }
 import { effectiveIntent, effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
-import type { RunState } from '../engine/run.ts'
+import type { RunCommand, RunState } from '../engine/run.ts'
+import { applyRunCommand, createDebugCheckpointRun, createRun } from '../engine/run.ts'
 import type { CardInstance, GameEvent, GameState } from '../engine/types.ts'
 import { cardName, intentText, logLine } from './log.ts'
 export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine } from './log.ts'
@@ -793,8 +794,59 @@ export function buildOverrideDefs(bundle: ProposalBundle): {
 // ---- セーブ機能 (2026-09-01 ユーザー裁定で解禁範囲を拡張: 続きから+ファイル書き出し/読み込み) ----
 
 /**
+ * リプレイ・ジャーナル (2026-09-01 ユーザー要望「ログからのリプレイ機能」)。
+ * エンジンの決定性 (同じシード+同じコマンド列=同じ結果) を使い、ランの全コマンドを
+ * UI層で記録する。origin から createRun / createDebugCheckpointRun を再現し、
+ * commands を順に applyRunCommand すれば任意の地点の盤面が正確に復元できる
+ */
+export interface ReplayOrigin {
+  readonly kind: 'run' | 'checkpoint'
+  readonly seed: number
+  readonly leaderId: string
+  readonly deckId?: string
+  readonly difficulty?: number
+  /** kind='checkpoint' の開始オプション (createDebugCheckpointRun の引数) */
+  readonly checkpoint?: {
+    readonly act: number
+    readonly deckId: string
+    readonly relicIds?: readonly string[]
+    readonly hpRatio?: number
+    readonly gold?: number
+    readonly difficulty?: number
+  }
+}
+export interface RunJournal {
+  readonly origin: ReplayOrigin
+  readonly commands: readonly RunCommand[]
+}
+
+/** origin からラン初期状態を再現する */
+export function replayInitialRun(origin: ReplayOrigin): RunState {
+  if (origin.kind === 'checkpoint' && origin.checkpoint !== undefined) {
+    return createDebugCheckpointRun(origin.seed, 'set-confirm', origin.leaderId, origin.checkpoint)
+  }
+  return createRun(origin.seed, 'set-confirm', origin.leaderId, origin.deckId, origin.difficulty)
+}
+
+/**
+ * ジャーナル全体を再実行し、各コマンド後の状態列を返す (states[0]=初期状態、states[i]=iコマンド後)。
+ * データ定義が変わって再現が分岐した場合はそこで打ち切り、error に理由を入れる
+ */
+export function replayStates(journal: RunJournal): { states: RunState[]; error: string | null } {
+  const states: RunState[] = [replayInitialRun(journal.origin)]
+  for (let i = 0; i < journal.commands.length; i++) {
+    try {
+      states.push(applyRunCommand(states[states.length - 1], journal.commands[i]))
+    } catch (e) {
+      return { states, error: `コマンド${i + 1}/${journal.commands.length}で再現が分岐 (データ変更の可能性): ${e instanceof Error ? e.message : String(e)}` }
+    }
+  }
+  return { states, error: null }
+}
+
+/**
  * ランのセーブファイル (sim/play.ts の SaveFile 互換 = CLIでもそのまま開ける)。
- * history/playNotes/fingerprint はUI側の拡張フィールド (CLIは無視する)
+ * history/playNotes/fingerprint/journal はUI側の拡張フィールド (CLIは無視する)
  */
 export interface RunSaveFile {
   readonly kind: 'run'
@@ -803,6 +855,8 @@ export interface RunSaveFile {
   readonly fingerprint?: string
   readonly history?: readonly BattleArchive[]
   readonly playNotes?: readonly PlayNote[]
+  /** リプレイ・ジャーナル (記録があるランのみ) */
+  readonly journal?: RunJournal
 }
 
 /** ランのセーブを直列化する (純関数)。戦闘ログはスナップショット上限で切り詰める (engineは読まない) */
@@ -810,6 +864,7 @@ export function buildRunSaveFile(
   run: RunState,
   history: readonly BattleArchive[] = [],
   playNotes: readonly PlayNote[] = [],
+  journal: RunJournal | null = null,
 ): string {
   const r = run.combat ? { ...run, combat: trimLog(run.combat) } : run
   const sf: RunSaveFile = {
@@ -819,6 +874,7 @@ export function buildRunSaveFile(
     fingerprint: dataFingerprint(),
     history,
     playNotes,
+    ...(journal !== null ? { journal } : {}),
   }
   return JSON.stringify(sf)
 }
@@ -828,8 +884,9 @@ export function saveRunFile(
   run: RunState,
   history: readonly BattleArchive[] = [],
   playNotes: readonly PlayNote[] = [],
+  journal: RunJournal | null = null,
 ): void {
-  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes))
+  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes, journal))
 }
 
 /** 調整案一式の書き出し (ダウンロード + クリップボード) */

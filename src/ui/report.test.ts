@@ -3,9 +3,9 @@
 // encounterName('unknown') が例外死する」だったための回帰テスト。
 // レポートはプレイテストのデータ回収の道具なので、どんな状態でも絶対に落ちないことを固定する。
 import { describe, expect, it } from 'vitest'
-import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, isEmptyMark } from './report.ts'
+import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, isEmptyMark, replayInitialRun, replayStates } from './report.ts'
 import { getEnemyDef } from '../engine/content.ts'
-import { createRun } from '../engine/run.ts'
+import { applyRunCommand, createRun, nextChoices } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
 
 describe('レポートは絶対に落ちない', () => {
@@ -282,5 +282,42 @@ describe('調整案のライブ適用 (2026-09-01)', () => {
     expect(o.enemies[0].maxHp).toBe(50)
     expect(o.enemies[0].moves[0].max).toBe(9)
     expect(JSON.stringify(o)).not.toContain('green_fang')
+  })
+})
+
+describe('リプレイ (2026-09-01 ジャーナル方式)', () => {
+  it('replayStates: origin+コマンド列から状態列が完全再現される (決定性の実証)', () => {
+    const origin = { kind: 'run' as const, seed: 7, leaderId: 'leader_green', difficulty: 4 }
+    let r = replayInitialRun(origin)
+    expect(r.difficulty).toBe(4)
+    const commands = []
+    const c1 = { type: 'ChooseNode' as const, col: nextChoices(r)[0] }
+    r = applyRunCommand(r, c1)
+    commands.push(c1)
+    expect(r.phase).toBe('combat') // 行0は必ず戦闘 (本家準拠)
+    const c2 = { type: 'Combat' as const, command: { type: 'EndTurn' as const } }
+    r = applyRunCommand(r, c2)
+    commands.push(c2)
+    const { states, error } = replayStates({ origin, commands })
+    expect(error).toBeNull()
+    expect(states).toHaveLength(3)
+    expect(JSON.stringify(states[2])).toBe(JSON.stringify(r)) // バイト単位で一致
+  })
+
+  it('不正なコマンド (データ変更で分岐) は error で打ち切り、throwしない', () => {
+    const { states, error } = replayStates({
+      origin: { kind: 'run', seed: 7, leaderId: 'leader_green' },
+      commands: [{ type: 'ChooseNode', col: 99 }],
+    })
+    expect(error).toContain('分岐')
+    expect(states).toHaveLength(1)
+  })
+
+  it('セーブファイルに journal が同梱され、無ければフィールドごと落ちる', () => {
+    const run = createRun(7, 'set-confirm')
+    const withJ = JSON.parse(buildRunSaveFile(run, [], [], { origin: { kind: 'run', seed: 7, leaderId: 'leader_green' }, commands: [] }))
+    expect(withJ.journal.origin.seed).toBe(7)
+    const noJ = JSON.parse(buildRunSaveFile(run))
+    expect(noJ.journal).toBeUndefined()
   })
 })
