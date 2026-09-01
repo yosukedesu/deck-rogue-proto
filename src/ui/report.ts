@@ -906,7 +906,7 @@ export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunStat
       const before = prev.deck[cmd.index]
       const after = next.deck[cmd.index]
       if (!before || !after) return null
-      return { at, text: `ショップ: 強化 ${before.def.name} → ${after.def.name}（${prev.gold - next.gold}G）` }
+      return { at, text: `ショップ: 鍛えた ${before.def.name} → ${after.def.name}（${prev.gold - next.gold}G）` }
     }
     case 'EventChoice': {
       if (prev.eventId == null) return null

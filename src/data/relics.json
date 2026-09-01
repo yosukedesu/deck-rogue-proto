@@ -95,7 +95,7 @@
     "id": "relic_deep_breath",
     "name": "深呼吸の香",
     "sprite": "🕯️",
-    "description": "焚き火の回復が最大HPの35%に強化される",
+    "description": "焚き火の回復が最大HPの35%に増える",
     "bonus": {
       "campfireRatio": 0.35
     }
@@ -166,7 +166,7 @@
     "id": "relic_smith_whetstone",
     "name": "鍛冶の砥石",
     "sprite": "🪨",
-    "description": "焚き火の「鍛える」で2枚まで強化できる",
+    "description": "焚き火の「鍛える」を2枚まで使える",
     "bonus": {
       "campfireForge": 1
     }

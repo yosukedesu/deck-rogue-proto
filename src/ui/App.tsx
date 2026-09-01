@@ -109,14 +109,14 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   probe: '探り型（ローテーション）',
   'set-wary': '伏せ警戒型',
   'set-breaker': '伏せ破壊型',
-  brute: '脳筋型（強化ループ）',
+  brute: '脳筋型（筋力ループ）',
   charger: 'チャージ型（大技予告）',
   hexer: '妖術師型（状態異常）',
   flurry: '連撃型',
   regenerator: '再生型（HP半分で豹変）',
   taunter: '挑発型（伏せ無しに大振り）',
-  enrager: '激昂型（毎ターン強化）',
-  support: '応援型（味方全体強化）',
+  enrager: '激昂型（毎ターン筋力+）',
+  support: '応援型（味方全体の筋力+）',
   thorned: 'とげ型（攻撃ヒットごとに反射）',
   thief: '盗人型（盗んで逃げる）',
   bomber: '爆弾型（三拍子の大爆発）',
@@ -171,11 +171,11 @@ const KEYWORD_HELP: Record<string, string> = {
   虚弱: 'カードのプレイで得るブロックが25%減る（切り捨て・最低1）。氷壁・リアクション・置物由来は減らない。自分のターン終了時に1減る',
   負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
   再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
-  激昂: '自動で強化が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび、「/被ダメN」はこの敵が受けた累計ダメージがNの倍数を跨ぐたび',
+  激昂: '自動で筋力が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび、「/被ダメN」はこの敵が受けた累計ダメージがNの倍数を跨ぐたび',
   混乱: '混乱した敵の攻撃は、プレイヤーでなく他の生存敵（いなければ自分自身）に向かう。攻撃1回ごとに1減る',
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
-  威圧: '敵の強化を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
-  応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
+  威圧: '敵の筋力を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
+  応援: '味方全体の筋力を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
   装甲: '1ヒットで受けるダメージがこの値以下に頭打ちになる。多段で削るか、装甲を無視する延焼で焼くのが解答',
   とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
@@ -190,18 +190,18 @@ const KEYWORD_HELP: Record<string, string> = {
   ドレイン: 'ダメージを与え、その半分（切り捨て）だけHPが回復する（黒の専売）',
   直接プレイ: '消滅置き場のカードをコストを支払わずプレイする。プレイ後もカードは消滅置き場に残る（置物は場に出る）',
   置物: 'プレイすると場に残り、戦闘中ずっと効果を発揮する（破壊されない）',
-  打ち消す: '敵の行動1回を完全に無効化する（攻撃・防御・伏せ破壊・強化すべて対象）',
+  打ち消す: '敵の行動1回を完全に無効化する（攻撃・防御・伏せ破壊・筋力上げすべて対象）',
   返し: '攻撃してきた敵にダメージを与える（敵の攻撃自体は受ける）',
   被攻撃前: '敵の攻撃でダメージを受ける直前に発動できる（軽減向き）',
   被攻撃後: '敵の攻撃でダメージを受けた後に発動できる（返し向き）',
-  敵強化時: '敵が強化した直後に発動できる',
+  敵強化時: '敵が筋力を上げた直後に発動できる',
   敵防御時: '敵がブロックを得た直後に発動できる',
   敵行動時: '敵の行動が確定した直後（実行前）に発動できる。打ち消し向き',
   毎ターン開始時: '自分のターン開始時に自動で発動する',
   攻撃プレイ後: '攻撃カードをプレイするたび自動で発動する（そのカード自身には乗らない）',
   追加コスト: 'プレイするためにエナジーとは別に支払うコスト',
   エナジー上限: '毎ターン開始時に回復するエナジーの量。戦闘ごとに3へリセット',
-  強化: '以降の攻撃の実値と幅表示に加算される（敵のバフ。打ち消しで無効化できる）',
+  筋力: '以降の攻撃の実値と幅表示に加算される（敵のバフ。打ち消しで無効化できる）',
   伏せ破壊: '伏せているカードを破壊して捨て札に送る',
   氷壁: 'このブロックはターン開始で消えず持ち越される。通常ブロックを使い切った後に消費される',
   詠唱数: 'このターンにプレイしたカードの枚数（そのカード自身は数えない）。ターン開始でリセット',
@@ -310,7 +310,7 @@ function renderEffectItem(e: DeclarativeEffect, ctx?: EffectCtx, holderType?: st
         : `〔忘却の刻${t}: ${e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`}〕`
       : met
         ? `〔忘却の刻${t}: 発動中⚡〕`
-        : `〔忘却の刻${t}: ${e.amountMax}に強化〕`
+        : `〔忘却の刻${t}: ${e.amountMax}に増える〕`
     return `${renderEffectItemCore(shown, ctx, holderType)} ${note}`
   }
   return renderEffectItemCore(e, ctx, holderType)
@@ -452,7 +452,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         ? `${trigger}⚔️ 直前の敵フェーズで受けたダメージ×${e.amount}ダメージ [現在${(e.amount ?? 0) * ctx.damageTaken + atkBonus}]`
         : `${trigger}⚔️ 直前の敵フェーズで受けたダメージ×${e.amount}ダメージ`
     case 'dealDamagePerNegStrength':
-      return `${trigger}⚔️ 対象の下げられた強化×${e.amount}の追加ダメージ（威圧の換金）`
+      return `${trigger}⚔️ 対象の下げられた筋力×${e.amount}の追加ダメージ（威圧の換金）`
     case 'gainBlockPerEnergyMax':
       return ctx
         ? `${trigger}🛡 ターン開始時のエナジー上限×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.energyMax}]`
@@ -466,7 +466,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         ? `${trigger}🛡 置物の数×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.permanents}]`
         : `${trigger}🛡 置物の数×${e.amount}ブロック`
     case 'weakenEnemy':
-      return `${trigger}${aoe}威圧${e.amount}（敵の強化-${e.amount}）`
+      return `${trigger}${aoe}威圧${e.amount}（敵の筋力-${e.amount}）`
     case 'dealDamagePerBlock':
       return ctx2Block(e, ctx, trigger, pierce)
     case 'dealDamagePerPermanent':
@@ -606,7 +606,7 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
     case 'destroy-token':
       return '🪓 従者狩り'
     case 'buff':
-      return `💪 強化 +${intent.actual}（宣言 +${intent.shownMin}〜+${intent.shownMax}）`
+      return `💪 筋力 +${intent.actual}（宣言 +${intent.shownMin}〜+${intent.shownMax}）`
     case 'rally':
       return `📣 応援 +${intent.actual}（味方全体。宣言 +${intent.shownMin}〜+${intent.shownMax}）`
     case 'hex':
@@ -1597,7 +1597,7 @@ function BattleScreen({
                       <span className="chip chip-block">🛡 ブロック {enemy.block}</span>
                     )}
                     {enemy.strength > 0 && (
-                      <span className="chip chip-strength">💪 {kw('強化')} +{enemy.strength}</span>
+                      <span className="chip chip-strength">💪 {kw('筋力')} +{enemy.strength}</span>
                     )}
                     {enemy.burn > 0 && (
                       <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>
@@ -1623,7 +1623,7 @@ function BattleScreen({
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>
                     )}
                     {enemyDef.angerOnBlock !== undefined && !dead && (
-                      <span className="chip chip-strength">😤 あなたがカードでブロック・氷壁を得るたび強化+{enemyDef.angerOnBlock}（パッシブ・レリックの自動分は除く）</span>
+                      <span className="chip chip-strength">😤 あなたがカードでブロック・氷壁を得るたび筋力+{enemyDef.angerOnBlock}（パッシブ・レリックの自動分は除く）</span>
                     )}
                     {enemyDef.thorns !== undefined && !dead && (
                       <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>
@@ -2582,7 +2582,7 @@ function RunMapView({
                       : n.type === 'workshop'
                         ? '工房: デッキの2枚を合成して1枚にする'
                         : n.type === 'shop'
-                          ? 'ショップ: カード/レリック/除去/強化'
+                          ? 'ショップ: カード/レリック/除去/鍛える'
                           : n.type === 'event'
                             ? '？: 入るまで中身は分からない（イベント85%／戦闘10%／ショップ3%／宝箱2%。外れた種別は次から確率が上がる）'
                             : n.type === 'treasure'
@@ -2770,8 +2770,8 @@ const ENEMY_VOCAB = (() => {
   return { kinds: [...kinds].sort(), archetypes: [...archetypes].sort(), statuses: Object.keys(STATUS_LABEL) }
 })()
 
-const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時強化💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪強化', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い' }
+const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時筋力💪' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
@@ -3084,7 +3084,7 @@ const EFFECT_JA: Record<string, string> = {
   dealDamagePerCardPlayedTotal: '累計プレイ数×Nダメ', dealDamagePerEnergyMax: '上限×Nダメ', dealDamagePerMomentum: '勢い×Nダメ(非消費)',
   dealDamagePerExhaust: '消滅数×Nダメ', dealDamagePerHandCard: '手札数×Nダメ', dealDamagePerHeal: '回復回数×Nダメ',
   dealDamagePerDamageTaken: '被ダメ×Nダメ', dealDamagePerSelfHpLost: '失ったHP×Nダメ', dealDamagePerPermanent: '置物数×Nダメ',
-  dealDamagePerRandomPlayed: '運任せ数×Nダメ', dealDamagePerNegStrength: '下げた強化×Nダメ',
+  dealDamagePerRandomPlayed: '運任せ数×Nダメ', dealDamagePerNegStrength: '下げた筋力×Nダメ',
   gainBlock: 'ブロックN', gainBlockPerEnergyMax: '上限×Nブロック', gainBlockPerPermanent: '置物数×Nブロック',
   gainIceBlock: '氷壁N(持ち越し)', gainIceBlockPerCardPlayed: '詠唱数×N氷壁', gainIceBlockPerHandCard: '手札数×N氷壁',
   gainHp: 'HP回復N', loseHp: '自傷HP-N', counter: '返しN(リアクション)', negate: '打ち消し', negateConvertIce: '打ち消し+実値ぶん氷壁',
@@ -3094,7 +3094,7 @@ const EFFECT_JA: Record<string, string> = {
   addMomentum: '勢い+N', doubleMomentum: '勢い2倍', dischargeMomentumBlock: '勢い×Nブロック(全消費)', dischargeMomentumBurn: '勢い×N延焼(全消費)',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
-  addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵強化-N)',
+  addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
   shatterBlock: '粉砕(敵ブロック全壊)', shatterBlockConvert: '粉砕+破壊値ダメ',
   exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
   retrieveFromExhaust: '消滅置き場から回収', playFromExhaust: '消滅置き場から直接プレイ',
@@ -4025,7 +4025,7 @@ function RunScreen({
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
           <DeckChip run={run} />
           <div className="choice-desc" style={{ marginTop: 6 }}>
-            買わずに出てもよい。除去・強化は回数無制限（使うたび+50G逓増）。
+            買わずに出てもよい。除去・鍛えるは回数無制限（使うたび+50G逓増）。
           </div>
         </div>
         <div className="setup-section-title">カード</div>
@@ -4072,7 +4072,7 @@ function RunScreen({
         )}
         <div className="panel">
           <div className="setup-section-title">
-            サービス: 除去 {shopRemovalPrice(run)}G ／ 強化 {shopUpgradePrice(run)}G（回数無制限・使うたび値上がり）
+            サービス: 除去 {shopRemovalPrice(run)}G ／ 鍛える {shopUpgradePrice(run)}G（回数無制限・使うたび値上がり）
           </div>
           <div className="hand-cards" style={{ marginTop: 8 }}>
             {run.deck.map((c, i) => (
@@ -4100,7 +4100,7 @@ function RunScreen({
                       disabled={run.gold < shopUpgradePrice(run) || !canUpgradeCard(c)}
                       onClick={() => dispatch({ type: 'ShopUpgrade', index: i })}
                     >
-                      強化 {shopUpgradePrice(run)}G
+                      鍛える {shopUpgradePrice(run)}G
                     </button>
                   </>
                 }

@@ -61,7 +61,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
   const all = e.target === 'all' ? '敵全体に' : ''
   // amountMax < amount は弱まる/止まる側の安全弁 (冒涜の祭壇=刻5でミル停止)。「強化」と書かない
   const th = e.exhaustThreshold !== undefined
-    ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に強化`}〕`
+    ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に増える`}〕`
     : ''
   const base: Record<string, string> = {
     dealDamage: `${all}${a}ダメージ${e.pierce === true ? '(貫通)' : ''}${xHitsSuffix(e)}`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
@@ -72,7 +72,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     applyBurn: `${all}延焼+${a}`, shatterBlock: '敵ブロック全破壊', shatterBlockConvert: '敵ブロック全破壊+破壊値ダメ',
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
-    confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵強化-${a})`,
+    confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵の筋力-${a})`,
     dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)${e.spendBlock === true ? '。解決後にブロックを全て失う' : ''}`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`, dealDamagePerCardPlayedTotal: `${all}この戦闘の累計プレイ数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
@@ -87,13 +87,13 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`,
     addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者の効果+${a}`,
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
-    dealDamagePerNegStrength: `下げた敵強化×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
+    dealDamagePerNegStrength: `下げた敵の筋力×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
     onPlay: holderType === 'permanent' ? '登場時:' : '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
-    onEnemyBuffed: '敵強化時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
+    onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
@@ -124,13 +124,13 @@ function branchText(it: { kind: string; shownMin: number; shownMax: number; hits
   const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
-  const buff = it.alsoBuff !== undefined ? `+強化${it.alsoBuff}` : ''
+  const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
   const kinds: Record<string, string> = {
     attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}${guard}${buff}`,
     defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
-    buff: `強化+${it.shownMin}〜${it.shownMax}`,
+    buff: `筋力+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`,
     hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`,
@@ -197,7 +197,7 @@ function intentLine(s: GameState, i: number): string {
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const kinds: Record<string, string> = {
     attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
-    'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `強化+${it.shownMin}〜${it.shownMax}`,
+    'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `筋力+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,
     flee: '逃走(倒すか打ち消せば阻止)', rest: '隙だらけ',
@@ -270,9 +270,9 @@ function renderBattle(s: GameState, logFrom: number): string {
     if (e.hp <= 0) { L.push(`敵${i}: ${getEnemyDef(e.enemyId).name} ${e.fled ? `🏃逃走済み${e.stolenGold ? `(${e.stolenGold}G持ち逃げ)` : ''}` : '💀撃破済み'}`); return }
     const def = getEnemyDef(e.enemyId)
     const tags = [
-      e.block ? `ブロック${e.block}` : '', e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '',
+      e.block ? `ブロック${e.block}` : '', e.strength ? `筋力${e.strength > 0 ? '+' : ''}${e.strength}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
-      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび強化+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)` : '',
+      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)` : '',
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
       def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
       def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ${def.enrageEveryDamage !== undefined ? `・+${def.enrage}/被ダメ${def.enrageEveryDamage}` : ''}` : `激昂+${def.enrage}/T`) : '',

@@ -8,7 +8,7 @@ import type { EnemyIntent, GameEvent } from '../engine/types.ts'
 
 const KIND_LABEL: Record<string, string> = {
   attack: '攻撃', defend: '防御', 'destroy-set': '伏せ破壊',
-  'destroy-token': '従者狩り', buff: '強化', rally: '応援', hex: '呪い',
+  'destroy-token': '従者狩り', buff: '筋力上げ', rally: '応援', hex: '呪い',
 }
 
 export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた' }
@@ -30,8 +30,8 @@ export function intentText(intent: EnemyIntent | null): string {
     case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}`
     case 'destroy-set': return '💥 伏せ破壊'
     case 'destroy-token': return '🪓 従者狩り'
-    case 'buff': return `💪 強化 +${intent.shownMin}〜${intent.shownMax}`
-    case 'rally': return `📣 応援 +${intent.shownMin}〜${intent.shownMax}（味方全体）`
+    case 'buff': return `💪 筋力 +${intent.shownMin}〜${intent.shownMax}`
+    case 'rally': return `📣 応援 +${intent.shownMin}〜${intent.shownMax}（味方全体の筋力）`
     case 'hex': return `🧿 呪い${inflictSuffix(intent)}`
     case 'heal': return `💚 回復 ${intent.shownMin}〜${intent.shownMax}（最も傷んだ味方）`
     case 'steal-gold': return `💰 盗み ${intent.shownMin}〜${intent.shownMax}G`
@@ -75,7 +75,7 @@ export function logLine(e: GameEvent): LogLine | null {
       // 激昂の発火は理由を明示する (2026-09-01 検証ラン「跨いだ瞬間を後から確認できない」への処方)
       const ENRAGE_JA: Record<string, string> = { 'enrage-cards': '激昂〔プレイ枚数の節目〕', 'enrage-damage': '激昂〔累計被ダメの節目〕', 'enrage-phase': '激昂〔毎フェーズ〕' }
       const why = e.reason !== undefined ? `😡 ${ENRAGE_JA[e.reason] ?? e.reason}: ` : ''
-      return { text: `${why}敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
+      return { text: `${why}敵の筋力 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
     }
     case 'IceBlockGained': return { text: `氷壁+${e.amount}（持ち越しブロック）`, cls: 'log-line' }
     case 'AetherGained': return { text: `霊気+${e.amount}`, cls: 'log-good' }
@@ -95,7 +95,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'GrowthDischarged': return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
     case 'HpHealed': return { text: `HP+${e.amount}回復`, cls: 'log-good' }
     case 'CardsMilled': return { text: `山札の上${e.count}枚が忘却された（この戦闘から除外・ランのデッキには残る）: ${(e.cardIds ?? []).map(cardName).join('・')}`, cls: 'log-line' }
-    case 'EnemyWeakened': return { text: `敵を威圧（強化-${e.amount}）`, cls: 'log-good' }
+    case 'EnemyWeakened': return { text: `敵を威圧（筋力-${e.amount}）`, cls: 'log-good' }
     case 'ConfusedAttack':
       return { text: e.enemyIndex === e.targetIndex ? `混乱した敵は自分自身に${e.amount}ダメージ！` : `仲間割れ！ 混乱した敵が味方に${e.amount}ダメージ`, cls: 'log-good' }
     case 'BlockShattered': return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
