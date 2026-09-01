@@ -16,12 +16,12 @@
     "id": "relic_sage_scroll",
     "name": "賢者の巻物",
     "sprite": "📜",
-    "description": "戦闘開始時、2枚ドロー",
+    "description": "戦闘開始時、1枚ドロー",
     "effects": [
       {
         "trigger": "onCombatStart",
         "effect": "drawCards",
-        "amount": 2
+        "amount": 1
       }
     ]
   },
@@ -29,12 +29,12 @@
     "id": "relic_swift_boots",
     "name": "早駆けの靴",
     "sprite": "👢",
-    "description": "戦闘開始時、このターンのエナジー+2",
+    "description": "戦闘開始時、このターンのエナジー+1",
     "effects": [
       {
         "trigger": "onCombatStart",
         "effect": "gainEnergy",
-        "amount": 2
+        "amount": 1
       }
     ]
   },
@@ -42,12 +42,12 @@
     "id": "relic_shield_shard",
     "name": "大盾の欠片",
     "sprite": "🛡️",
-    "description": "毎ターン開始時、ブロック+2",
+    "description": "毎ターン開始時、ブロック+1",
     "effects": [
       {
         "trigger": "onTurnStart",
         "effect": "gainBlock",
-        "amount": 2
+        "amount": 1
       }
     ]
   },
@@ -55,12 +55,12 @@
     "id": "relic_vanguard_shield",
     "name": "先手の盾",
     "sprite": "⛨",
-    "description": "戦闘開始時、ブロック+8",
+    "description": "戦闘開始時、ブロック+5",
     "effects": [
       {
         "trigger": "onCombatStart",
         "effect": "gainBlock",
-        "amount": 8
+        "amount": 5
       }
     ]
   },
@@ -104,12 +104,12 @@
     "id": "relic_growth_seed",
     "name": "成長の種",
     "sprite": "🌱",
-    "description": "戦闘開始時、成長+2",
+    "description": "戦闘開始時、成長+1",
     "effects": [
       {
         "trigger": "onCombatStart",
         "effect": "addGrowth",
-        "amount": 2
+        "amount": 1
       }
     ]
   },

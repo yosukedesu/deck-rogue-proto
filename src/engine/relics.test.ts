@@ -128,15 +128,15 @@ describe('レリック効果', () => {
     return intoBattle(run)
   }
 
-  it('A型 (賢者の巻物): 戦闘開始時に2枚ドロー = 初手が2枚多い', () => {
+  it('A型 (賢者の巻物): 戦闘開始時に1枚ドロー = 初手が1枚多い (2026-09-01 弱体化 2→1)', () => {
     const run = withRelicIntoBattle('relic_sage_scroll')
     const c = run.combat!
-    expect(c.player.hand.length).toBe(c.player.drawPerTurn + 2)
+    expect(c.player.hand.length).toBe(c.player.drawPerTurn + 1)
   })
 
-  it('A型 (先手の盾): 戦闘開始時にブロック+8', () => {
+  it('A型 (先手の盾): 戦闘開始時にブロック+5 (2026-09-01 弱体化 8→5)', () => {
     const run = withRelicIntoBattle('relic_vanguard_shield')
-    expect(run.combat!.player.block).toBe(8)
+    expect(run.combat!.player.block).toBe(5)
   })
 
   it('B型 (鉄の心臓): 取得時に最大HP+8 (現在HPも+8)', () => {
@@ -222,10 +222,10 @@ function intoCampfire(run0: RunState): RunState {
 }
 
 describe('第二弾レリック: 緑3本柱 + 汎用 (A型)', () => {
-  it('成長の種: 戦闘開始時に成長+2 (リーダーパッシブとは別枠で加算)', () => {
+  it('成長の種: 戦闘開始時に成長+1 (2026-09-01 弱体化 2→1。リーダーパッシブとは別枠で加算)', () => {
     const base = injectedIntoBattle('relic_thorn_crown') // 成長に触らない対照 (このはの毎T+1のみ)
     const run = injectedIntoBattle('relic_growth_seed')
-    expect(run.combat!.player.growth).toBe(base.combat!.player.growth + 2)
+    expect(run.combat!.player.growth).toBe(base.combat!.player.growth + 1)
   })
 
   it('韋駄天の帯: 第1ターン開始時に勢い+1', () => {
