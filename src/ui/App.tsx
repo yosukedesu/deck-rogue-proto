@@ -16,6 +16,7 @@ import {
   isEmptyMark,
   isEmptySimpleMark,
   buildOverrideDefs,
+  describeRunChoice,
   replayStates,
   saveProposals,
   saveReport,
@@ -33,6 +34,7 @@ import {
   type PlayNote,
   type ProposalBundle,
   type RelicDraft,
+  type RunChoice,
   type RunJournal,
   type RunSaveFile,
   type SimpleMark,
@@ -3793,6 +3795,36 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
   )
 }
 
+/** 選択履歴チップ (2026-09-01)。ピック・鍛錬・合成・購入・イベントの意思決定を一覧するオーバーレイ */
+function ChoiceLogChip({ choices }: { choices: readonly RunChoice[] }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button className="chip chip-btn" onClick={() => setOpen(true)}>
+        📜 選択 {choices.length}件
+      </button>
+      {open && (
+        <div className="viewer-overlay" onClick={() => setOpen(false)}>
+          <div className="viewer-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="viewer-head">
+              <span className="viewer-title">📜 選択履歴（{choices.length}件）</span>
+              <button className="btn" onClick={() => setOpen(false)}>✕ 閉じる</button>
+            </div>
+            <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {choices.length === 0 && <p className="hint">（このランの記録はまだありません。今のランがジャーナル記録前に始まった場合も空になります）</p>}
+              {choices.map((c, i) => (
+                <div key={i} className="choice-desc" style={{ fontSize: 12 }}>
+                  <span style={{ opacity: 0.6 }}>[{c.at}]</span> {c.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 /** 「デッキN枚を見る」チップ (自前でオーバーレイの開閉を持つ = どの画面にも1行で置ける) */
 function DeckChip({ run }: { run: RunState }) {
   const [open, setOpen] = useState(false)
@@ -3816,6 +3848,7 @@ function RunScreen({
   history,
   notes,
   journal,
+  choices,
   onExit,
   onRestart,
   onReplay,
@@ -3828,6 +3861,8 @@ function RunScreen({
   notes: readonly PlayNote[]
   /** リプレイ・ジャーナル (セーブに同梱する。記録が無いラン=旧セーブ由来は null) */
   journal?: RunJournal | null
+  /** 選択履歴 (ピック・鍛錬・合成・購入の意思決定ログ。書き出しに同梱) */
+  choices?: readonly RunChoice[]
   onExit: () => void
   onRestart: (seed: number) => void
   /** このランのリプレイを開く (記録がある時だけ渡される) */
@@ -3868,6 +3903,7 @@ function RunScreen({
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
             <span className="chip">💰 {run.gold}G</span>
             <DeckChip run={run} />
+            <ChoiceLogChip choices={choices ?? []} />
             <span className="chip">{run.battlesWon}勝</span>
             <span className="chip">🎚 難易度 {run.difficulty ?? DEFAULT_DIFFICULTY}</span>
           </div>
@@ -3877,8 +3913,8 @@ function RunScreen({
           <RunMapView run={run} onChoose={(col) => dispatch({ type: 'ChooseNode', col })} />
         </div>
         <div style={{ marginTop: 12 }}>
-          <button className="btn" onClick={() => saveReport(run, null, history, notes)}>📄 状況を書き出す</button>{' '}
-          <button className="btn" onClick={() => saveRunFile(run, history, notes, journal ?? null)}>💾 セーブを書き出す</button>{' '}
+          <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [])}>📄 状況を書き出す</button>{' '}
+          <button className="btn" onClick={() => saveRunFile(run, history, notes, journal ?? null, choices ?? [])}>💾 セーブを書き出す</button>{' '}
           <button className="btn" onClick={onExit}>ランを放棄（自動保存は残る）</button>
         </div>
       </div>
@@ -4185,7 +4221,7 @@ function RunScreen({
   if (run.phase === 'combat' && run.combat) {
     return (
       <BattleScreen
-        onExport={() => saveReport(run, null, history, notes)}
+        onExport={() => saveReport(run, null, history, notes, choices ?? [])}
         state={run.combat}
         config={{
           mode: run.mode,
@@ -4252,7 +4288,7 @@ function RunScreen({
         <button className="btn" data-hotkey="skip" onClick={() => dispatch({ type: 'SkipReward' })}>
           スキップして次へ（S）
         </button>{' '}
-        <button className="btn" onClick={() => saveReport(run, null, history, notes)}>
+        <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [])}>
           📄 状況を書き出す
         </button>
         {run.picks.length > 0 && (
@@ -4282,7 +4318,7 @@ function RunScreen({
         </div>
       </div>
       <div style={{ marginTop: 16 }}>
-        <button className="btn btn-primary" onClick={() => saveReport(run, null, history, notes)}>
+        <button className="btn btn-primary" onClick={() => saveReport(run, null, history, notes, choices ?? [])}>
           📄 状況を書き出す
         </button>{' '}
         <button className="btn" onClick={() => onRestart(Date.now() % 2 ** 32)}>
@@ -4296,6 +4332,7 @@ function RunScreen({
             🎬 このランをリプレイ
           </button>
         )}{' '}
+        <ChoiceLogChip choices={choices ?? []} />{' '}
         <button className="btn" onClick={onExit}>
           設定に戻る
         </button>
@@ -4320,6 +4357,8 @@ export default function App() {
   const [journal, setJournal] = useState<RunJournal | null>(null)
   // 表示中のリプレイ (nullでなければリプレイビューアを出す)
   const [replaying, setReplaying] = useState<RunJournal | null>(null)
+  // 選択履歴 (2026-09-01): ピック・鍛錬・合成・購入などの意思決定を人間向けの1行で積む
+  const [choiceLog, setChoiceLog] = useState<readonly RunChoice[]>([])
 
   // 書き出しの保険 (2026-08-30): ダウンロードもクリップボードも塞がれる環境向けに、
   // 開発者ツールのコンソールから常に最新レポートを取れる口を開けておく。
@@ -4334,7 +4373,7 @@ export default function App() {
       deckRogueReport?: () => string
       deckRogueRecoverReport?: () => string
     }
-    w.deckRogueReport = () => buildReport(run, state, runHistory, '', playNotes)
+    w.deckRogueReport = () => buildReport(run, state, runHistory, '', playNotes, choiceLog)
     w.deckRogueRecoverReport = () => {
       try {
         const raw = localStorage.getItem('deckRogueBackup')
@@ -4355,15 +4394,15 @@ export default function App() {
       // 進行が無い時は書かない (2026-09-01 修正: マウント直後や放棄後に null で上書きすると
       // リロード後の復元・「続きから」が消える — 従来この上書きでリロード復元が実は効いていなかった)
       if (run !== null || state !== null) {
-        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, journal, fingerprint: dataFingerprint() }))
+        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, journal, choices: choiceLog, fingerprint: dataFingerprint() }))
       }
     } catch {
       /* no-op */
     }
-  }, [run, state, runHistory, playNotes, journal])
+  }, [run, state, runHistory, playNotes, journal, choiceLog])
 
   /** セーブ復帰の共通処理 (続きから/ファイル読み込み)。データ指紋が違えば警告して選ばせる */
-  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string, j: RunJournal | null = null): void => {
+  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string, j: RunJournal | null = null, choices: readonly RunChoice[] = []): void => {
     if (fingerprint !== undefined && fingerprint !== dataFingerprint()) {
       const ok = window.confirm(
         'このセーブは別のデータバージョンで作られています。カード・敵の定義が変わっていると正しく動かない可能性がありますが、読み込みますか？',
@@ -4373,6 +4412,7 @@ export default function App() {
     setRunHistory(history)
     setPlayNotes(notes)
     setJournal(j)
+    setChoiceLog(choices)
     setState(null)
     setConfig(null)
     setRun(r)
@@ -4383,9 +4423,9 @@ export default function App() {
     try {
       const raw = localStorage.getItem('deckRogueBackup')
       if (raw === null) return
-      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string; journal?: RunJournal | null }
+      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string; journal?: RunJournal | null; choices?: RunChoice[] }
       if (b.run == null) return
-      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint, b.journal ?? null)
+      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint, b.journal ?? null, b.choices ?? [])
     } catch (e) {
       alert(`復帰に失敗しました: ${String(e)}`)
     }
@@ -4401,7 +4441,7 @@ export default function App() {
           alert('ランのセーブファイル (kind:"run") ではありません。単発戦闘のセーブはCLI (sim/play.ts) で開けます')
           return
         }
-        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint, sf.journal ?? null)
+        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint, sf.journal ?? null, sf.choices ?? [])
       })
       .catch((e) => alert(`読み込みに失敗しました: ${String(e)}`))
   }
@@ -4478,6 +4518,11 @@ export default function App() {
     }
     // リプレイ記録 (成功したコマンドだけ。journal が無いラン=旧セーブ由来は記録しない)
     setJournal((j) => (j === null ? j : { ...j, commands: [...j.commands, command] }))
+    // 選択履歴 (戦闘外の意思決定だけが1行になる)
+    {
+      const line = describeRunChoice(run, command, next)
+      if (line !== null) setChoiceLog((c) => [...c, line])
+    }
     // 戦闘が決着した瞬間だけ履歴に積む (次戦の開始で combat が上書きされる前に捕まえる)。
     // setRun の更新関数の中で setRunHistory を呼ぶと StrictMode の二重実行で重複するため、外で行う
     const ended = next.combat?.phase === 'won' || next.combat?.phase === 'lost'
@@ -4507,10 +4552,11 @@ export default function App() {
       <ReplayScreen
         journal={replaying}
         onExit={() => setReplaying(null)}
-        onTakeover={(stateAt, truncated) => {
+        onTakeover={(stateAt, truncated, choices) => {
           setRunHistory([])
           setPlayNotes([])
           setJournal(truncated)
+          setChoiceLog(choices)
           setState(null)
           setConfig(null)
           setRun(stateAt)
@@ -4528,6 +4574,7 @@ export default function App() {
         history={runHistory}
         notes={playNotes}
         journal={journal}
+        choices={choiceLog}
         onReplay={journal !== null ? () => setReplaying(journal) : undefined}
         onExit={() => {
           setRun(null)
@@ -4536,6 +4583,7 @@ export default function App() {
         onRestart={(seed) => {
           setRunHistory([])
           setPlayNotes([])
+          setChoiceLog([])
           setJournal(run !== null ? { origin: { kind: 'run', seed, leaderId: run.leaderId, difficulty: run.difficulty ?? DEFAULT_DIFFICULTY }, commands: [] } : null)
           // 難易度はリスタートでも引き継ぐ (旧セーブ由来の欠落は既定3)
           setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green', undefined, prev?.difficulty ?? DEFAULT_DIFFICULTY))
@@ -4588,11 +4636,13 @@ export default function App() {
     return <SetupScreen onStart={start} resume={resume} onLoadSave={loadSaveFile} onLoadReplay={loadReplayFile} onStartCheckpoint={(opts) => {
         setRunHistory([])
         setPlayNotes([])
+        setChoiceLog([])
         setJournal({ origin: { kind: 'checkpoint', seed: opts.seed, leaderId: opts.leaderId, checkpoint: { act: opts.act, deckId: opts.deckId, relicIds: opts.relicIds, hpRatio: opts.hpRatio, gold: opts.gold, difficulty: opts.difficulty } }, commands: [] })
         setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
       }} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
         setRunHistory([])
         setPlayNotes([])
+        setChoiceLog([])
         setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty }, commands: [] })
         setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))
       }} />
@@ -4719,13 +4769,23 @@ function ReplayScreen({
 }: {
   journal: RunJournal
   onExit: () => void
-  onTakeover: (state: RunState, truncated: RunJournal) => void
+  onTakeover: (state: RunState, truncated: RunJournal, choices: readonly RunChoice[]) => void
 }) {
   const replay = useMemo(() => replayStates(journal), [journal])
   const states = replay.states
   const [idx, setIdx] = useState(0)
+  const [showChoices, setShowChoices] = useState(true)
   const cur = Math.max(0, Math.min(idx, states.length - 1))
   const run = states[cur]
+  // 選択履歴 (2026-09-01 「リプレイで見直すのだからユーザー選択が分かるように」): クリックでその地点へ
+  const choiceEntries = useMemo(() => {
+    const out: { index: number; choice: RunChoice }[] = []
+    for (let i = 0; i < journal.commands.length && i + 1 < states.length; i++) {
+      const c = describeRunChoice(states[i], journal.commands[i], states[i + 1])
+      if (c !== null) out.push({ index: i + 1, choice: c })
+    }
+    return out
+  }, [states, journal])
   const battleStarts = useMemo(() => {
     const out: { index: number; label: string }[] = []
     for (let i = 1; i < states.length; i++) {
@@ -4769,11 +4829,16 @@ function ReplayScreen({
           onChange={(e) => setIdx(Number(e.target.value))}
           style={{ flex: 1, minWidth: 120 }}
         />
+        <button className="btn" onClick={() => setShowChoices((v) => !v)}>📜 選択{showChoices ? 'を隠す' : `（${choiceEntries.length}）`}</button>
         <button
           className="btn btn-primary"
           onClick={() => {
             if (window.confirm('この地点から操作を引き継ぎますか？（以降のリプレイは破棄され、ここからの続きが新しい記録になります）')) {
-              onTakeover(run, { origin: journal.origin, commands: journal.commands.slice(0, cur) })
+              onTakeover(
+                run,
+                { origin: journal.origin, commands: journal.commands.slice(0, cur) },
+                choiceEntries.filter((e) => e.index <= cur).map((e) => e.choice),
+              )
             }
           }}
         >
@@ -4782,7 +4847,36 @@ function ReplayScreen({
         <button className="btn" onClick={onExit}>✕ 閉じる</button>
         {replay.error !== null && <span style={{ color: 'var(--warn, #e0a458)', fontSize: 12 }}>{replay.error}</span>}
       </div>
-      <div style={{ paddingTop: 52, pointerEvents: 'none' }}>
+      {showChoices && (
+        <div
+          style={{
+            position: 'fixed', top: 52, right: 8, bottom: 8, width: 330, zIndex: 75,
+            background: 'rgba(13,16,24,0.96)', border: '1px solid #556', borderRadius: 8,
+            padding: 8, overflowY: 'auto',
+          }}
+        >
+          <b style={{ fontSize: 13 }}>📜 選択履歴（クリックでその地点へ）</b>
+          {choiceEntries.map((e, i) => {
+            const isPast = e.index <= cur
+            const isCurrent = isPast && (i === choiceEntries.length - 1 || choiceEntries[i + 1].index > cur)
+            return (
+              <div
+                key={i}
+                onClick={() => setIdx(e.index)}
+                style={{
+                  fontSize: 12, padding: '3px 4px', borderRadius: 4, cursor: 'pointer',
+                  opacity: isPast ? 1 : 0.45,
+                  background: isCurrent ? 'rgba(120,160,255,0.22)' : undefined,
+                }}
+              >
+                <span style={{ opacity: 0.6 }}>[{e.choice.at}]</span> {e.choice.text}
+              </div>
+            )
+          })}
+          {choiceEntries.length === 0 && <p className="hint">（選択の記録なし）</p>}
+        </div>
+      )}
+      <div style={{ paddingTop: 52, paddingRight: showChoices ? 346 : 0, pointerEvents: 'none' }}>
         <RunScreen run={run} dispatch={() => {}} history={[]} notes={[]} onExit={() => {}} onRestart={() => {}} />
       </div>
     </>

@@ -3,7 +3,7 @@
 // encounterName('unknown') が例外死する」だったための回帰テスト。
 // レポートはプレイテストのデータ回収の道具なので、どんな状態でも絶対に落ちないことを固定する。
 import { describe, expect, it } from 'vitest'
-import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, isEmptyMark, replayInitialRun, replayStates } from './report.ts'
+import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, describeRunChoice, isEmptyMark, replayInitialRun, replayStates } from './report.ts'
 import { getEnemyDef } from '../engine/content.ts'
 import { applyRunCommand, createRun, nextChoices } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
@@ -319,5 +319,33 @@ describe('リプレイ (2026-09-01 ジャーナル方式)', () => {
     expect(withJ.journal.origin.seed).toBe(7)
     const noJ = JSON.parse(buildRunSaveFile(run))
     expect(noJ.journal).toBeUndefined()
+  })
+})
+
+describe('選択履歴 (2026-09-01「何をピックしたか・鍛錬の結果が分かりにくい」)', () => {
+  it('describeRunChoice: 進路・報酬ピック(見送り込み)が言語化される', () => {
+    let r = createRun(7, 'set-confirm')
+    const c1 = { type: 'ChooseNode' as const, col: nextChoices(r)[0] }
+    const r1 = applyRunCommand(r, c1)
+    const line1 = describeRunChoice(r, c1, r1)!
+    expect(line1.text).toContain('進路:')
+    expect(line1.at).toBe('幕1 行1')
+    // 報酬フェーズを外科的に作ってピックの言語化を確認
+    const withReward = { ...r1, phase: 'reward' as const, rewardOptions: ['green_fang', 'green_sweep', 'green_growth_seedling'] }
+    const cmd = { type: 'PickReward' as const, index: 0 }
+    const after = applyRunCommand(withReward, cmd)
+    const line2 = describeRunChoice(withReward, cmd, after)!
+    expect(line2.text).toContain('牙の一撃 を獲得')
+    expect(line2.text).toContain('見送り:')
+  })
+
+  it('選択履歴がレポートとセーブに同梱される', () => {
+    const run = createRun(7, 'set-confirm')
+    const choices = [{ at: '幕1 行3', text: '焚き火: 鍛えた 打撃 → 打撃+' }]
+    const text = buildReport(run, null, [], '', [], choices)
+    expect(text).toContain('## 選択履歴（1件')
+    expect(text).toContain('鍛えた 打撃 → 打撃+')
+    const sf = JSON.parse(buildRunSaveFile(run, [], [], null, choices))
+    expect(sf.choices).toHaveLength(1)
   })
 })

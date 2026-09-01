@@ -1,4 +1,4 @@
-import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getLeaderDef } from '../engine/content.ts'
+import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 
 /**
  * 名前解決の安全版 (2026-08-30)。レポートはプレイテストのデータ回収の道具なので、
@@ -20,7 +20,7 @@ function safeEnemyName(id: string): string {
   }
 }
 import { effectiveIntent, effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
-import type { RunState } from '../engine/run.ts'
+import type { RunCommand, RunState } from '../engine/run.ts'
 import type { CardInstance, GameEvent, GameState } from '../engine/types.ts'
 import { cardName, intentText, logLine } from './log.ts'
 export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine } from './log.ts'
@@ -159,6 +159,7 @@ export function buildReport(
   history: readonly BattleArchive[] = [],
   note = '',
   playNotes: readonly PlayNote[] = [],
+  choices: readonly RunChoice[] = [],
 ): string {
   const s = run ? run.combat : state
   const L: string[] = []
@@ -198,6 +199,11 @@ export function buildReport(
   if (playNotes.length > 0) {
     L.push(`## プレイメモ（${playNotes.length}件・プレイヤーがその場で残した気づき）`)
     for (const n of playNotes) L.push(`- [${n.at.slice(11, 16)} ${n.context}] ${n.text}`)
+    L.push('')
+  }
+  if (choices.length > 0) {
+    L.push(`## 選択履歴（${choices.length}件・ピック/鍛錬/合成/購入/イベントの意思決定）`)
+    for (const c of choices) L.push(`- [${c.at}] ${c.text}`)
     L.push('')
   }
   if (history.length > 0) {
@@ -283,8 +289,9 @@ export function saveReport(
   state: GameState | null,
   history: readonly BattleArchive[] = [],
   playNotes: readonly PlayNote[] = [],
+  choices: readonly RunChoice[] = [],
 ): void {
-  deliverText(`play-${stampNow()}.md`, buildReport(run, state, history, '', playNotes))
+  deliverText(`play-${stampNow()}.md`, buildReport(run, state, history, '', playNotes, choices))
 }
 
 // ---- カード調整サイクル (2026-09-01 ユーザー要望) ----
@@ -790,6 +797,142 @@ export function buildOverrideDefs(bundle: ProposalBundle): {
   return { cards, enemies, relics, leaders }
 }
 
+// ---- 選択履歴 (2026-09-01 ユーザー要望「何をピックしたのか・鍛錬の結果が分かりにくい」) ----
+
+/** ランの意思決定1件の記録。text は人間向けの1行 (見送った候補も含む) */
+export interface RunChoice {
+  readonly at: string // 「幕N 行M」
+  readonly text: string
+}
+
+const NODE_LABEL: Record<string, string> = {
+  battle: '⚔️', elite: '👑強個体', boss: '💀幕ボス', campfire: '🔥焚き火',
+  workshop: '🔨工房', shop: '🛒ショップ', event: '❓', treasure: '🎁宝箱',
+}
+
+/**
+ * ランコマンド → 選択履歴の1行 (純関数)。prev=適用前・next=適用後の状態から
+ * 「何を選び、何を見送ったか」を言語化する。戦闘操作 (Combat) は対象外 (戦闘ログが担当)
+ */
+export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunState): RunChoice | null {
+  const at = `幕${next.act} 行${next.row + 1}`
+  const names = (ids: readonly string[]) => ids.map(cardName).join('・')
+  switch (cmd.type) {
+    case 'ChooseNode': {
+      const node = next.map[next.row]?.[next.col]
+      if (!node) return null
+      const label = node.encounterId !== null ? `${NODE_LABEL[node.type] ?? ''} ${safeEncounterName(node.encounterId)}` : NODE_LABEL[node.type] ?? node.type
+      return { at, text: `進路: ${label}` }
+    }
+    case 'PickReward': {
+      const opts = prev.rewardOptions ?? []
+      const picked = opts[cmd.index]
+      if (picked === undefined) return null
+      const passed = opts.filter((_, i) => i !== cmd.index)
+      return { at, text: `報酬ピック: ${cardName(picked)} を獲得（見送り: ${names(passed) || 'なし'}）` }
+    }
+    case 'SkipReward': {
+      const opts = prev.rewardOptions ?? []
+      return { at, text: `報酬ピック: スキップ（候補: ${names(opts) || 'なし'}）` }
+    }
+    case 'PickRelic': {
+      const opts = prev.relicOptions ?? []
+      const picked = opts[cmd.index]
+      if (picked === undefined) return null
+      const nameOf = (id: string) => {
+        try {
+          return getRelicDef(id).name
+        } catch {
+          return id
+        }
+      }
+      return { at, text: `レリック: ${nameOf(picked)} を獲得（見送り: ${opts.filter((_, i) => i !== cmd.index).map(nameOf).join('・') || 'なし'}）` }
+    }
+    case 'SkipRelic': {
+      const opts = prev.relicOptions ?? []
+      const nameOf = (id: string) => {
+        try {
+          return getRelicDef(id).name
+        } catch {
+          return id
+        }
+      }
+      return { at, text: `レリック: 見送り（候補: ${opts.map(nameOf).join('・') || 'なし'}）` }
+    }
+    case 'CampfireRest':
+      return { at, text: `焚き火: 休む（HP ${prev.hp}→${next.hp}）` }
+    case 'CampfireUpgrade': {
+      const before = prev.deck[cmd.index]
+      const after = next.deck[cmd.index]
+      if (!before || !after) return null
+      return { at, text: `焚き火: 鍛えた ${before.def.name} → ${after.def.name}` }
+    }
+    case 'CampfireRemove': {
+      const c = prev.deck[cmd.index]
+      return c ? { at, text: `焚き火: ${c.def.name} を取り除いた` } : null
+    }
+    case 'WorkshopFuse': {
+      const a = prev.deck[cmd.indexA]
+      const b = prev.deck[cmd.indexB]
+      const prevUids = new Set(prev.deck.map((c) => c.uid))
+      const made = next.deck.find((c) => !prevUids.has(c.uid))
+      if (!a || !b || !made) return null
+      return { at, text: `工房: ${a.def.name} × ${b.def.name} → ${made.def.name}（${made.def.xCost === true ? 'X' : made.def.cost}E）` }
+    }
+    case 'WorkshopSkip':
+      return { at, text: '工房: 見送り' }
+    case 'ShopBuyCard': {
+      const item = prev.shop?.cards[cmd.index]
+      if (!item) return null
+      return { at, text: `ショップ: ${cardName(item.id)} を${item.price}Gで購入` }
+    }
+    case 'ShopBuyRelic': {
+      const id = prev.shop?.relicId
+      if (id == null) return null
+      const nm = (() => {
+        try {
+          return getRelicDef(id).name
+        } catch {
+          return id
+        }
+      })()
+      return { at, text: `ショップ: レリック ${nm} を${prev.shop!.relicPrice}Gで購入` }
+    }
+    case 'ShopRemove': {
+      const c = prev.deck[cmd.index]
+      return c ? { at, text: `ショップ: ${c.def.name} を除去（${prev.gold - next.gold}G）` } : null
+    }
+    case 'ShopUpgrade': {
+      const before = prev.deck[cmd.index]
+      const after = next.deck[cmd.index]
+      if (!before || !after) return null
+      return { at, text: `ショップ: 強化 ${before.def.name} → ${after.def.name}（${prev.gold - next.gold}G）` }
+    }
+    case 'EventChoice': {
+      if (prev.eventId == null) return null
+      let evName = prev.eventId
+      let label = `選択肢${cmd.index}`
+      try {
+        const ev = getEventDef(prev.eventId)
+        evName = ev.name
+        label = ev.choices[cmd.index]?.label ?? label
+      } catch {
+        /* 未知イベントは生ID */
+      }
+      const target = cmd.cardIndex !== undefined ? prev.deck[cmd.cardIndex] : undefined
+      const hpDiff = next.hp - prev.hp
+      const goldDiff = next.gold - prev.gold
+      const outcome = [
+        hpDiff !== 0 ? `HP${hpDiff > 0 ? '+' : ''}${hpDiff}` : '',
+        goldDiff !== 0 ? `${goldDiff > 0 ? '+' : ''}${goldDiff}G` : '',
+      ].filter(Boolean).join('・')
+      return { at, text: `イベント[${evName}]: ${label}${target ? `（対象: ${target.def.name}）` : ''}${outcome ? `（${outcome}）` : ''}` }
+    }
+    default:
+      return null
+  }
+}
+
 // ---- セーブ機能 (2026-09-01 ユーザー裁定で解禁範囲を拡張: 続きから+ファイル書き出し/読み込み) ----
 
 /**
@@ -816,6 +959,8 @@ export interface RunSaveFile {
   readonly playNotes?: readonly PlayNote[]
   /** リプレイ・ジャーナル (記録があるランのみ) */
   readonly journal?: RunJournal
+  /** 選択履歴 (ピック・鍛錬・合成・購入などの意思決定ログ) */
+  readonly choices?: readonly RunChoice[]
 }
 
 /** ランのセーブを直列化する (純関数)。戦闘ログはスナップショット上限で切り詰める (engineは読まない) */
@@ -824,6 +969,7 @@ export function buildRunSaveFile(
   history: readonly BattleArchive[] = [],
   playNotes: readonly PlayNote[] = [],
   journal: RunJournal | null = null,
+  choices: readonly RunChoice[] = [],
 ): string {
   const r = run.combat ? { ...run, combat: trimLog(run.combat) } : run
   const sf: RunSaveFile = {
@@ -834,6 +980,7 @@ export function buildRunSaveFile(
     history,
     playNotes,
     ...(journal !== null ? { journal } : {}),
+    ...(choices.length > 0 ? { choices } : {}),
   }
   return JSON.stringify(sf)
 }
@@ -844,8 +991,9 @@ export function saveRunFile(
   history: readonly BattleArchive[] = [],
   playNotes: readonly PlayNote[] = [],
   journal: RunJournal | null = null,
+  choices: readonly RunChoice[] = [],
 ): void {
-  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes, journal))
+  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes, journal, choices))
 }
 
 /** 調整案一式の書き出し (ダウンロード + クリップボード) */
