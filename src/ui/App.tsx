@@ -10,8 +10,10 @@ import {
   logLine,
   buildReport,
   cardDraftToDefJson,
+  ENEMY_TOP_FIELDS,
   isEmptyMark,
-  saveCardProposals,
+  isEmptySimpleMark,
+  saveProposals,
   saveReport,
   STATUS_LABEL,
   type BattleArchive,
@@ -19,14 +21,19 @@ import {
   type CardDraft,
   type CardProposalMark,
   type EffectDraft,
+  type EnemyDraft,
+  type EnemyMoveDraft,
   type LogLine,
   type PlayNote,
+  type RelicDraft,
+  type SimpleMark,
 } from './report.ts'
 import {
   allCards,
   allDecks,
   allEncounters,
   allEnemies,
+  allRelics,
   allLeaders,
   deckAllowedForLeader,
   deckSize,
@@ -68,10 +75,13 @@ import type {
   Command,
   DeclarativeEffect,
   EnemyArchetype,
+  EnemyDef,
   EnemyIntent,
+  EnemyMove,
   GameEvent,
   GameState,
   ReactionMode,
+  RelicDef,
 } from '../engine/types.ts'
 import './styles.css'
 
@@ -2453,6 +2463,218 @@ function MapOverlay({ run, onClose }: { run: RunState; onClose: () => void }) {
   )
 }
 
+// ---- 敵・レリックの調整 (2026-09-01 ユーザー要望「敵やレリックもカード同様に」) ----
+
+/** 実データ語彙 (現行の敵から抽出)。行動kind・アーキタイプ・状態異常 */
+const ENEMY_VOCAB = (() => {
+  const kinds = new Set<string>()
+  const archetypes = new Set<string>()
+  for (const e of allEnemies) {
+    archetypes.add(e.archetype)
+    for (const t of [e.moves, e.movesVsSet ?? [], e.movesVsTokens ?? [], e.movesBelowHalf ?? []]) {
+      for (const m of t) kinds.add(m.kind)
+    }
+  }
+  return { kinds: [...kinds].sort(), archetypes: [...archetypes].sort(), statuses: Object.keys(STATUS_LABEL) }
+})()
+
+const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時強化💪' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️', defend: '🛡', buff: '💪', rally: '📣', hex: '🧿', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い' }
+
+function moveLine(mv: EnemyMove): string {
+  const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
+  const inflict = mv.inflict ? ` ＋${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}${mv.inflict.amount}` : ''
+  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${inflict}${mv.setAlt !== undefined ? '【伏せ時分岐】' : ''}`
+}
+
+/** 敵の数値フィールド (実データのパス+現行値)。存在するものだけ編集対象 */
+function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: number }[] {
+  const out: { key: string; label: string; cur: number }[] = []
+  for (const [k, ja] of ENEMY_TOP_FIELDS) {
+    const v = (def as unknown as Record<string, unknown>)[k]
+    if (typeof v === 'number') out.push({ key: k, label: ja, cur: v })
+  }
+  const tables: readonly (readonly [string, string, readonly EnemyMove[] | undefined])[] = [
+    ['m', '', def.moves],
+    ['vs', '伏せ反応', def.movesVsSet],
+    ['tk', '従者反応', def.movesVsTokens],
+    ['bh', '半分以下', def.movesBelowHalf],
+  ]
+  for (const [pfx, ja, tbl] of tables) {
+    tbl?.forEach((mv, i) => {
+      const base = `${ja}「${mv.id}」`
+      for (const f of ['min', 'max', 'weight', 'hits', 'alsoDefend', 'alsoBuff'] as const) {
+        const v = mv[f]
+        if (typeof v === 'number') out.push({ key: `${pfx}${i}.${f}`, label: `${base}${MOVE_FIELD_JA[f]}`, cur: v })
+      }
+      if (mv.inflict) out.push({ key: `${pfx}${i}.inflict.amount`, label: `${base}${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}量`, cur: mv.inflict.amount })
+      const sa = mv.setAlt
+      if (sa !== undefined) {
+        for (const f of ['min', 'max', 'hits'] as const) {
+          const v = sa[f]
+          if (typeof v === 'number') out.push({ key: `${pfx}${i}.alt.${f}`, label: `${base}伏せ時${MOVE_FIELD_JA[f]}`, cur: v })
+        }
+        if (sa.inflict) out.push({ key: `${pfx}${i}.alt.inflict.amount`, label: `${base}伏せ時${STATUS_LABEL[sa.inflict.status] ?? sa.inflict.status}量`, cur: sa.inflict.amount })
+      }
+    })
+  }
+  return out
+}
+
+const RELIC_BONUS_JA: Record<string, string> = { maxHp: '最大HP+', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数' }
+
+function relicTunerFields(def: RelicDef): { key: string; label: string; cur: number }[] {
+  const out: { key: string; label: string; cur: number }[] = []
+  def.effects?.forEach((e, i) => {
+    if (typeof e.amount === 'number') out.push({ key: `e${i}.amount`, label: `効果〔${e.trigger}/${e.effect}〕の量`, cur: e.amount })
+  })
+  for (const [k, ja] of Object.entries(RELIC_BONUS_JA)) {
+    const v = (def.bonus as unknown as Record<string, unknown> | undefined)?.[k]
+    if (typeof v === 'number') out.push({ key: `bonus.${k}`, label: ja, cur: v })
+  }
+  if (typeof def.combatRule?.setDamageReduction === 'number') {
+    out.push({ key: 'rule.setDamageReduction', label: '伏せ中の敵攻撃-N', cur: def.combatRule.setDamageReduction })
+  }
+  return out
+}
+
+/** 汎用の数値マーク編集 (敵・レリック共通)。現行値と違う値だけ提案として残る */
+function SimpleMarkEditor({ fields, mark, onChange }: { fields: readonly { key: string; label: string; cur: number }[]; mark: SimpleMark; onChange: (m: SimpleMark) => void }) {
+  const S = { fontSize: 11, opacity: 0.9 } as const
+  const setField = (key: string, cur: number, raw: string) => {
+    const next: Record<string, number> = { ...(mark.fields ?? {}) }
+    const v = Number(raw)
+    if (raw === '' || !Number.isFinite(v) || v === cur) delete next[key]
+    else next[key] = v
+    onChange({ ...mark, fields: next })
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 4 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {fields.map((f) => (
+          <label key={f.key} style={{ ...S, display: 'inline-flex', gap: 3, alignItems: 'center' }} title={f.key}>
+            {f.label}
+            <input type="number" step="any" value={mark.fields?.[f.key] ?? f.cur} onChange={(e) => setField(f.key, f.cur, e.target.value)} style={{ width: 52, fontSize: 11, background: mark.fields?.[f.key] !== undefined ? 'rgba(120,160,255,0.25)' : undefined }} />
+          </label>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <input value={mark.change ?? ''} onChange={(e) => onChange({ ...mark, change: e.target.value })} placeholder="補足 (自由記述)" style={{ flex: 1, fontSize: 11 }} />
+        <label style={{ ...S, color: mark.remove === true ? '#f88' : undefined }}>
+          <input type="checkbox" checked={mark.remove === true} onChange={(e) => onChange({ ...mark, remove: e.target.checked || undefined })} /> 削除案
+        </label>
+      </div>
+    </div>
+  )
+}
+
+function EnemyMoveDraftRow({ value, onChange, onDelete }: { value: EnemyMoveDraft; onChange: (m: EnemyMoveDraft) => void; onDelete: () => void }) {
+  const S = { fontSize: 11 } as const
+  return (
+    <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap', border: '1px solid #334', borderRadius: 4, padding: 3 }}>
+      <input placeholder="行動id" value={value.id} onChange={(e) => onChange({ ...value, id: e.target.value })} style={{ width: 80, fontSize: 11 }} />
+      <select style={S} value={value.kind} onChange={(e) => onChange({ ...value, kind: e.target.value })}>
+        {ENEMY_VOCAB.kinds.map((k) => (
+          <option key={k} value={k}>{MOVE_KIND_ICON[k] ?? ''}{k}</option>
+        ))}
+      </select>
+      <label style={S}>最小 <input type="number" style={{ width: 44 }} value={value.min ?? ''} onChange={(e) => onChange({ ...value, min: numOrUndef(e.target.value) })} /></label>
+      <label style={S}>最大 <input type="number" style={{ width: 44 }} value={value.max ?? ''} onChange={(e) => onChange({ ...value, max: numOrUndef(e.target.value) })} /></label>
+      <label style={S}>×hits <input type="number" style={{ width: 38 }} value={value.hits ?? ''} onChange={(e) => onChange({ ...value, hits: numOrUndef(e.target.value) })} /></label>
+      <label style={S}>重み <input type="number" style={{ width: 38 }} value={value.weight ?? ''} onChange={(e) => onChange({ ...value, weight: numOrUndef(e.target.value) })} /></label>
+      <label style={S}>付与{' '}
+        <select value={value.inflictStatus ?? ''} onChange={(e) => onChange({ ...value, inflictStatus: e.target.value === '' ? undefined : e.target.value })}>
+          <option value="">なし</option>
+          {ENEMY_VOCAB.statuses.map((k) => (
+            <option key={k} value={k}>{STATUS_LABEL[k]}</option>
+          ))}
+        </select>
+      </label>
+      {(value.inflictStatus ?? '') !== '' && (
+        <input type="number" style={{ width: 38 }} value={value.inflictAmount ?? 1} onChange={(e) => onChange({ ...value, inflictAmount: numOrUndef(e.target.value) })} />
+      )}
+      <label style={S}>+🛡 <input type="number" style={{ width: 38 }} value={value.alsoDefend ?? ''} onChange={(e) => onChange({ ...value, alsoDefend: numOrUndef(e.target.value) })} /></label>
+      <label style={S}>+💪 <input type="number" style={{ width: 38 }} value={value.alsoBuff ?? ''} onChange={(e) => onChange({ ...value, alsoBuff: numOrUndef(e.target.value) })} /></label>
+      <button className="chip chip-btn" onClick={onDelete}>✕</button>
+    </div>
+  )
+}
+
+function EnemyDraftEditor({ value, onChange, onDelete }: { value: EnemyDraft; onChange: (d: EnemyDraft) => void; onDelete: () => void }) {
+  const S = { fontSize: 11 } as const
+  return (
+    <div style={{ border: '1px solid #556', borderRadius: 6, padding: 6, marginTop: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label style={S}>名前 <input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} style={{ width: 110 }} /></label>
+        <label style={S}>id <input value={value.id ?? ''} placeholder="空=実装時に命名" onChange={(e) => onChange({ ...value, id: e.target.value === '' ? undefined : e.target.value })} style={{ width: 120 }} /></label>
+        <label style={S}>絵文字 <input value={value.sprite ?? ''} onChange={(e) => onChange({ ...value, sprite: e.target.value === '' ? undefined : e.target.value })} style={{ width: 40 }} /></label>
+        <label style={S}>HP <input type="number" style={{ width: 52 }} value={value.maxHp} onChange={(e) => onChange({ ...value, maxHp: Number(e.target.value) || 0 })} /></label>
+        <label style={S}>型{' '}
+          <select value={value.archetype} onChange={(e) => onChange({ ...value, archetype: e.target.value })}>
+            {ENEMY_VOCAB.archetypes.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        {ENEMY_TOP_FIELDS.filter(([k]) => k !== 'maxHp').map(([k, ja]) => (
+          <label key={k} style={S}>{ja} <input type="number" style={{ width: 44 }} value={(value as unknown as Record<string, number | undefined>)[k] ?? ''} onChange={(e) => onChange({ ...value, [k]: numOrUndef(e.target.value) } as EnemyDraft)} /></label>
+        ))}
+      </div>
+      {value.moves.map((mv, i) => (
+        <EnemyMoveDraftRow
+          key={i}
+          value={mv}
+          onChange={(nm) => onChange({ ...value, moves: value.moves.map((x, j) => (j === i ? nm : x)) })}
+          onDelete={() => onChange({ ...value, moves: value.moves.filter((_, j) => j !== i) })}
+        />
+      ))}
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <button className="chip chip-btn" onClick={() => onChange({ ...value, moves: [...value.moves, { id: `move${value.moves.length + 1}`, kind: 'attack', min: 6, max: 9, weight: 1 }] })}>＋ 行動を追加</button>
+        <label style={{ ...S, flex: 1 }}>ローテーション(idカンマ区切り・空=重み抽選) <input value={value.sequence ?? ''} onChange={(e) => onChange({ ...value, sequence: e.target.value === '' ? undefined : e.target.value })} style={{ width: '55%', fontSize: 11 }} /></label>
+        <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
+      </div>
+      <div className="choice-desc" style={{ fontSize: 10 }}>高度な仕掛け (setAlt=伏せ時分岐・伏せ/従者反応テーブル・フェーズ変化) は補足/メモに書けば実装時に起こします</div>
+    </div>
+  )
+}
+
+function RelicDraftEditor({ value, onChange, onDelete }: { value: RelicDraft; onChange: (d: RelicDraft) => void; onDelete: () => void }) {
+  const S = { fontSize: 11 } as const
+  return (
+    <div style={{ border: '1px solid #556', borderRadius: 6, padding: 6, marginTop: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label style={S}>名前 <input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} style={{ width: 110 }} /></label>
+        <label style={S}>id <input value={value.id ?? ''} placeholder="空=実装時に命名" onChange={(e) => onChange({ ...value, id: e.target.value === '' ? undefined : e.target.value })} style={{ width: 120 }} /></label>
+        <label style={S}>絵文字 <input value={value.sprite ?? ''} onChange={(e) => onChange({ ...value, sprite: e.target.value === '' ? undefined : e.target.value })} style={{ width: 40 }} /></label>
+        <label style={{ ...S, flex: 1 }}>説明 <input value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} style={{ width: '70%', fontSize: 11 }} /></label>
+      </div>
+      <div className="choice-desc" style={{ fontSize: 10 }}>A型=戦闘内フック効果 (下の効果行。onCombatStart=戦闘開始時 / onTurnStart=毎ターン開始時 など)</div>
+      {value.effects.map((ef, i) => (
+        <EffectDraftRow
+          key={i}
+          value={ef}
+          onChange={(ne) => onChange({ ...value, effects: value.effects.map((x, j) => (j === i ? ne : x)) })}
+          onDelete={() => onChange({ ...value, effects: value.effects.filter((_, j) => j !== i) })}
+        />
+      ))}
+      <div>
+        <button className="chip chip-btn" onClick={() => onChange({ ...value, effects: [...value.effects, { trigger: 'onCombatStart', effect: 'gainBlock', amount: 5 }] })}>＋ 効果を追加</button>
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <span style={S}>B型(ラン定数):</span>
+        {Object.entries(RELIC_BONUS_JA).map(([k, ja]) => (
+          <label key={k} style={S}>{ja} <input type="number" step="any" style={{ width: 44 }} value={(value as unknown as Record<string, number | undefined>)[k] ?? ''} onChange={(e) => onChange({ ...value, [k]: numOrUndef(e.target.value) } as RelicDraft)} /></label>
+        ))}
+        <label style={S}>伏せ中攻撃-N <input type="number" style={{ width: 38 }} value={value.setDamageReduction ?? ''} onChange={(e) => onChange({ ...value, setDamageReduction: numOrUndef(e.target.value) })} /></label>
+        <label style={S}><input type="checkbox" checked={value.revealIntents === true} onChange={(e) => onChange({ ...value, revealIntents: e.target.checked || undefined })} /> 実値公開</label>
+        <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
+      </div>
+    </div>
+  )
+}
+
 /** カード調整案の下書き置き場 (localStorage)。リロードしても作業が消えない */
 const TUNER_STORAGE_KEY = 'deckRogueCardTuner'
 interface TunerDraft {
@@ -2460,18 +2682,27 @@ interface TunerDraft {
   readonly newCards: string
   /** 新カード案 (構造化。2026-09-01「カード1枚が実データとして作れるレベル」) */
   readonly newCardDefs: readonly CardDraft[]
+  /** 敵・レリックのマークと新規案 (2026-09-01「敵やレリックもカード同様に」) */
+  readonly enemyMarks: Record<string, SimpleMark>
+  readonly newEnemyDefs: readonly EnemyDraft[]
+  readonly relicMarks: Record<string, SimpleMark>
+  readonly newRelicDefs: readonly RelicDraft[]
 }
 function loadTunerDraft(): TunerDraft {
   try {
     const raw = localStorage.getItem(TUNER_STORAGE_KEY)
     if (raw !== null) {
       const d = JSON.parse(raw) as Partial<TunerDraft>
-      return { marks: d.marks ?? {}, newCards: d.newCards ?? '', newCardDefs: d.newCardDefs ?? [] }
+      return {
+        marks: d.marks ?? {}, newCards: d.newCards ?? '', newCardDefs: d.newCardDefs ?? [],
+        enemyMarks: d.enemyMarks ?? {}, newEnemyDefs: d.newEnemyDefs ?? [],
+        relicMarks: d.relicMarks ?? {}, newRelicDefs: d.newRelicDefs ?? [],
+      }
     }
   } catch {
     /* 壊れた下書きは捨てる */
   }
-  return { marks: {}, newCards: '', newCardDefs: [] }
+  return { marks: {}, newCards: '', newCardDefs: [], enemyMarks: {}, newEnemyDefs: [], relicMarks: {}, newRelicDefs: [] }
 }
 
 /**
@@ -2700,6 +2931,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
       /* 容量超過等は無視 = 下書きは保険 */
     }
   }, [draft])
+  const [tab, setTab] = useState<'cards' | 'enemies' | 'relics'>('cards')
   const markOf = (id: string): CardProposalMark => draft.marks[id] ?? {}
   const setMark = (id: string, m: CardProposalMark) =>
     setDraft((d) => {
@@ -2708,7 +2940,22 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
       else marks[id] = m
       return { ...d, marks }
     })
-  const markedCount = Object.keys(draft.marks).length
+  const setEnemyMark = (id: string, m: SimpleMark) =>
+    setDraft((d) => {
+      const marks = { ...d.enemyMarks }
+      if (isEmptySimpleMark(m)) delete marks[id]
+      else marks[id] = m
+      return { ...d, enemyMarks: marks }
+    })
+  const setRelicMark = (id: string, m: SimpleMark) =>
+    setDraft((d) => {
+      const marks = { ...d.relicMarks }
+      if (isEmptySimpleMark(m)) delete marks[id]
+      else marks[id] = m
+      return { ...d, relicMarks: marks }
+    })
+  const markedCount =
+    Object.keys(draft.marks).length + Object.keys(draft.enemyMarks).length + Object.keys(draft.relicMarks).length
   const colorOf = (id: string, c?: string) => c ?? id.split('_')[0]
   const COLOR_LABEL: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
   const RARITY_LABEL: Record<string, string> = { common: 'コモン', uncommon: '◆アンコモン', rare: '★レア' }
@@ -2734,16 +2981,21 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
     <div className="viewer-overlay" onClick={onClose}>
       <div className="viewer-panel" onClick={(e) => e.stopPropagation()}>
         <div className="viewer-head">
-          <span className="viewer-title">📚 カード図鑑（{pool.length}枚）</span>
-          <label className="viewer-toggle">
-            <input
-              type="checkbox"
-              checked={showUpgraded}
-              onChange={(e) => setShowUpgraded(e.target.checked)}
-            />{' '}
-            鍛えた姿（+）で表示
-          </label>
-          <label className="viewer-toggle" title="変更案・削除案・新カード案をマークして1枚のmdに書き出す (AIレビュー→実装のサイクル用)">
+          <span className="viewer-title">📚 図鑑</span>
+          {chip(tab === 'cards', `カード（${allCards.filter((c) => !c.id.startsWith('status_')).length}）`, () => setTab('cards'))}
+          {chip(tab === 'enemies', `敵（${allEnemies.length}）`, () => setTab('enemies'))}
+          {chip(tab === 'relics', `レリック（${allRelics.length}）`, () => setTab('relics'))}
+          {tab === 'cards' && (
+            <label className="viewer-toggle">
+              <input
+                type="checkbox"
+                checked={showUpgraded}
+                onChange={(e) => setShowUpgraded(e.target.checked)}
+              />{' '}
+              鍛えた姿（+）で表示
+            </label>
+          )}
+          <label className="viewer-toggle" title="変更案・削除案・新規案をマークして1枚のmdに書き出す (AIレビュー→実装のサイクル用)">
             <input type="checkbox" checked={tuner} onChange={(e) => setTuner(e.target.checked)} />{' '}
             🛠 調整モード{markedCount > 0 ? `（${markedCount}件）` : ''}
           </label>
@@ -2768,20 +3020,21 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 />{' '}
                 マーク済みのみ表示
               </label>{' '}
-              <button className="btn btn-primary" onClick={() => saveCardProposals(draft.marks, draft.newCards, draft.newCardDefs)}>
+              <button className="btn btn-primary" onClick={() => saveProposals({ cardMarks: draft.marks, newCards: draft.newCards, newCardDefs: draft.newCardDefs, enemyMarks: draft.enemyMarks, newEnemyDefs: draft.newEnemyDefs, relicMarks: draft.relicMarks, newRelicDefs: draft.newRelicDefs })}>
                 📄 調整案を書き出す
               </button>{' '}
               <button
                 className="btn"
                 onClick={() => {
                   if (window.confirm('調整案の下書きをすべて消しますか？')) {
-                    setDraft({ marks: {}, newCards: '', newCardDefs: [] })
+                    setDraft({ marks: {}, newCards: '', newCardDefs: [], enemyMarks: {}, newEnemyDefs: [], relicMarks: {}, newRelicDefs: [] })
                   }
                 }}
               >
                 🗑 下書きを全消去
               </button>
             </div>
+            {tab === 'cards' && (
             <div style={{ marginTop: 6 }}>
               <b style={{ fontSize: 12 }}>新カード案（{draft.newCardDefs.length}件）</b>{' '}
               <button
@@ -2799,12 +3052,64 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 ＋ 新カード案を追加
               </button>
             </div>
-            {draft.newCardDefs.map((d, i) => (
+            )}
+            {tab === 'cards' && draft.newCardDefs.map((d, i) => (
               <CardDraftEditor
                 key={i}
                 value={d}
                 onChange={(nd) => setDraft((s2) => ({ ...s2, newCardDefs: s2.newCardDefs.map((x, j) => (j === i ? nd : x)) }))}
                 onDelete={() => setDraft((s2) => ({ ...s2, newCardDefs: s2.newCardDefs.filter((_, j) => j !== i) }))}
+              />
+            ))}
+            {tab === 'enemies' && (
+              <div style={{ marginTop: 6 }}>
+                <b style={{ fontSize: 12 }}>新しい敵案（{draft.newEnemyDefs.length}件）</b>{' '}
+                <button
+                  className="chip chip-btn"
+                  onClick={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      newEnemyDefs: [
+                        ...d.newEnemyDefs,
+                        { name: '', archetype: ENEMY_VOCAB.archetypes[0] ?? 'wide-power', maxHp: 50, moves: [{ id: 'strike', kind: 'attack', min: 6, max: 9, weight: 1 }] },
+                      ],
+                    }))
+                  }
+                >
+                  ＋ 新しい敵案を追加
+                </button>
+              </div>
+            )}
+            {tab === 'enemies' && draft.newEnemyDefs.map((d, i) => (
+              <EnemyDraftEditor
+                key={i}
+                value={d}
+                onChange={(nd) => setDraft((s2) => ({ ...s2, newEnemyDefs: s2.newEnemyDefs.map((x, j) => (j === i ? nd : x)) }))}
+                onDelete={() => setDraft((s2) => ({ ...s2, newEnemyDefs: s2.newEnemyDefs.filter((_, j) => j !== i) }))}
+              />
+            ))}
+            {tab === 'relics' && (
+              <div style={{ marginTop: 6 }}>
+                <b style={{ fontSize: 12 }}>新レリック案（{draft.newRelicDefs.length}件）</b>{' '}
+                <button
+                  className="chip chip-btn"
+                  onClick={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      newRelicDefs: [...d.newRelicDefs, { name: '', description: '', effects: [] }],
+                    }))
+                  }
+                >
+                  ＋ 新レリック案を追加
+                </button>
+              </div>
+            )}
+            {tab === 'relics' && draft.newRelicDefs.map((d, i) => (
+              <RelicDraftEditor
+                key={i}
+                value={d}
+                onChange={(nd) => setDraft((s2) => ({ ...s2, newRelicDefs: s2.newRelicDefs.map((x, j) => (j === i ? nd : x)) }))}
+                onDelete={() => setDraft((s2) => ({ ...s2, newRelicDefs: s2.newRelicDefs.filter((_, j) => j !== i) }))}
               />
             ))}
             <textarea
@@ -2816,6 +3121,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             />
           </div>
         )}
+        {tab === 'cards' && (
         <div style={{ marginTop: 8 }}>
           {chip(color === 'all', '全色', () => setColor('all'))}
           {(['green', 'blue', 'red', 'white', 'black'] as const).map((c) =>
@@ -2838,6 +3144,53 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             style={{ marginLeft: 8 }}
           />
         </div>
+        )}
+        {tab === 'enemies' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+            {allEnemies
+              .filter((e) => !(tuner && markedOnly) || draft.enemyMarks[e.id] !== undefined)
+              .map((e) => {
+                const dirty = draft.enemyMarks[e.id] !== undefined
+                return (
+                  <div key={e.id} className="panel" style={{ padding: 6, background: dirty ? 'rgba(120,160,255,0.10)' : undefined }}>
+                    <b>{e.name}</b>{' '}
+                    <span className="choice-desc">
+                      {e.id} / HP{e.maxHp} / {ARCHETYPE_LABEL[e.archetype] ?? e.archetype}
+                    </span>
+                    <div className="choice-desc" style={{ fontSize: 11 }}>
+                      {e.moves.map(moveLine).join('　')}
+                      {e.movesVsSet !== undefined ? `　◆伏せ反応: ${e.movesVsSet.map(moveLine).join(' ')}` : ''}
+                      {e.movesVsTokens !== undefined ? `　◆従者反応: ${e.movesVsTokens.map(moveLine).join(' ')}` : ''}
+                      {e.movesBelowHalf !== undefined ? `　◆半分以下: ${e.movesBelowHalf.map(moveLine).join(' ')}` : ''}
+                      {e.sequence !== undefined ? `　◇ローテ: ${e.sequence.join('→')}` : ''}
+                    </div>
+                    {tuner && (
+                      <SimpleMarkEditor fields={enemyTunerFields(e)} mark={draft.enemyMarks[e.id] ?? {}} onChange={(m) => setEnemyMark(e.id, m)} />
+                    )}
+                  </div>
+                )
+              })}
+          </div>
+        )}
+        {tab === 'relics' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+            {allRelics
+              .filter((r) => !(tuner && markedOnly) || draft.relicMarks[r.id] !== undefined)
+              .map((r) => {
+                const dirty = draft.relicMarks[r.id] !== undefined
+                return (
+                  <div key={r.id} className="panel" style={{ padding: 6, background: dirty ? 'rgba(120,160,255,0.10)' : undefined }}>
+                    <b>{r.sprite} {r.name}</b> <span className="choice-desc">{r.id}</span>
+                    <div className="choice-desc" style={{ fontSize: 11 }}>{r.description}</div>
+                    {tuner && (
+                      <SimpleMarkEditor fields={relicTunerFields(r)} mark={draft.relicMarks[r.id] ?? {}} onChange={(m) => setRelicMark(r.id, m)} />
+                    )}
+                  </div>
+                )
+              })}
+          </div>
+        )}
+        {tab === 'cards' && (
         <div className="hand-cards viewer-cards">
           {pool.length === 0 && <p className="hint">（該当なし）</p>}
           {pool.map((def) => {
@@ -2965,6 +3318,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             )
           })}
         </div>
+        )}
       </div>
     </div>
   )

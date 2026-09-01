@@ -3,7 +3,8 @@
 // encounterName('unknown') が例外死する」だったための回帰テスト。
 // レポートはプレイテストのデータ回収の道具なので、どんな状態でも絶対に落ちないことを固定する。
 import { describe, expect, it } from 'vitest'
-import { archiveBattle, buildCardProposals, buildReport, cardDraftToDefJson, isEmptyMark } from './report.ts'
+import { archiveBattle, buildCardProposals, buildProposals, buildReport, cardDraftToDefJson, isEmptyMark } from './report.ts'
+import { getEnemyDef } from '../engine/content.ts'
 import { createRun } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
 
@@ -150,5 +151,53 @@ describe('戦闘評価のログ出力 (2026-09-01)', () => {
     expect(text).toContain('| 4 | 5 |')
     expect(text).toContain('/ 評価: 強さ4 面白さ5')
     expect(text).toContain('|  |  |') // 未評価行は空欄
+  })
+})
+
+describe('敵・レリックの調整サイクル (2026-09-01)', () => {
+  it('敵の数値マークが「現行→提案」の差分行になる', () => {
+    const probe = getEnemyDef('enemy_probe')
+    const text = buildProposals({
+      cardMarks: {},
+      newCards: '',
+      newCardDefs: [],
+      enemyMarks: {
+        enemy_probe: { fields: { maxHp: 50, [`m0.max`]: 9 }, change: '序盤の教師をやや強く' },
+        enemy_wide_power: { remove: true },
+      },
+    })
+    expect(text).toContain('## 敵の変更案（1件）')
+    expect(text).toContain(`HP: ${probe.maxHp} → 50`)
+    expect(text).toContain(`「${probe.moves[0].id}」の最大: ${probe.moves[0].max} → 9`)
+    expect(text).toContain('補足: 序盤の教師をやや強く')
+    expect(text).toContain('## 敵の削除案（1件）')
+    expect(text).toContain('うねる獣')
+  })
+
+  it('レリックの数値マークと新規案 (敵・レリック) がJSONで出る', () => {
+    const text = buildProposals({
+      cardMarks: {},
+      newCards: '',
+      newCardDefs: [],
+      relicMarks: { relic_vanguard_shield: { fields: { 'e0.amount': 6 } } },
+      newEnemyDefs: [
+        {
+          name: '試作の骸骨', archetype: 'wide-power', maxHp: 44,
+          moves: [{ id: 'slash', kind: 'attack', min: 7, max: 10, weight: 2, inflictStatus: 'weak', inflictAmount: 1 }],
+          sequence: 'slash, slash', thorns: 2,
+        },
+      ],
+      newRelicDefs: [
+        { name: '試作の護符', description: '毎ターンブロック+1', effects: [{ trigger: 'onTurnStart', effect: 'gainBlock', amount: 1 }], maxHp: 5, setDamageReduction: 1 },
+      ],
+    })
+    expect(text).toContain('効果〔onCombatStart/gainBlock〕の量: 5 → 6')
+    expect(text).toContain('## 新しい敵案（1件）')
+    expect(text).toContain('"sequence"')
+    expect(text).toContain('"thorns": 2')
+    expect(text).toContain('"status": "weak"')
+    expect(text).toContain('## 新しいレリック案（1件）')
+    expect(text).toContain('"setDamageReduction": 1')
+    expect(text).toContain('"maxHp": 5')
   })
 })
