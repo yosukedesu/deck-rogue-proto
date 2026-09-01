@@ -531,6 +531,60 @@ export function playerDamageAfterModifiers(state: GameState, baseAmount: number)
   return Math.max(1, Math.floor(amount * 0.75))
 }
 
+/**
+ * カードホバー用のダメージ内訳 (2026-09-01 ユーザー要望)。dealDamageToEnemy と同じ手順を
+ * 数字だけで辿る純関数 — 表示が実処理とずれたらこちらのバグ。敵が倒れていれば null
+ */
+export interface DamageBreakdownStep {
+  readonly label: string
+  readonly value: number
+}
+export interface DamageBreakdown {
+  readonly steps: readonly DamageBreakdownStep[]
+  readonly blocked: number
+  readonly hpLoss: number
+}
+export function damageBreakdown(
+  state: GameState,
+  enemyIndex: number,
+  baseAmount: number,
+  pierce = false,
+  applyExpose = true,
+): DamageBreakdown | null {
+  const enemy = state.enemies[enemyIndex]
+  if (!enemy || enemy.hp <= 0) return null
+  const p = state.player
+  const steps: DamageBreakdownStep[] = [{ label: '基礎', value: baseAmount }]
+  let amount = baseAmount
+  if (p.growth > 0) {
+    amount += p.growth
+    steps.push({ label: `成長+${p.growth}`, value: amount })
+  }
+  if (p.momentum > 0) {
+    amount += p.momentum
+    steps.push({ label: `勢い+${p.momentum}`, value: amount })
+  }
+  if (p.weak > 0 && amount > 0) {
+    const w = Math.max(1, Math.floor(amount * 0.75))
+    if (w !== amount) {
+      amount = w
+      steps.push({ label: '弱体-25%', value: amount })
+    }
+  }
+  if (applyExpose && enemy.exposed > 0) {
+    amount = Math.floor(amount * 1.5)
+    steps.push({ label: '急所×1.5', value: amount })
+  }
+  if (enemy.armor !== undefined && amount > enemy.armor) {
+    amount = enemy.armor
+    steps.push({ label: `装甲上限${enemy.armor}`, value: amount })
+  }
+  const blocked = pierce ? 0 : Math.min(enemy.block, amount)
+  if (blocked > 0) steps.push({ label: `敵ブロック-${blocked}`, value: amount - blocked })
+  if (pierce && enemy.block > 0) steps.push({ label: '貫通(ブロック無視)', value: amount })
+  return { steps, blocked, hpLoss: amount - blocked }
+}
+
 export function dealDamageToEnemy(
   state: GameState,
   enemyIndex: number,

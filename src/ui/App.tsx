@@ -55,7 +55,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import {
+import { damageBreakdown,
   BLAZE_THRESHOLD,
   cardNeedsTarget,
   playerCanSet,
@@ -1251,6 +1251,45 @@ function SetupScreen({
 
 // ---- 戦闘画面 ----
 
+/** ホバー内訳の対象になる「基礎値=amountのダメージ効果」 */
+const TIP_DAMAGE_EFFECTS = new Set(['dealDamage', 'dealDamageDrain', 'dealDamageCleave', 'dealDamageExecute', 'dealDamageRandom'])
+
+/**
+ * カードホバー時のダメージ内訳 (2026-09-01 ユーザー要望)。engineの damageBreakdown (実処理と同手順の
+ * 純関数) を生存敵ごとに評価する。多段カード (効果の繰り返し) は各行を独立に見積もる =
+ * 急所・ブロックの消費はヒット順に減るため、2発目以降は先頭ヒット基準の概算
+ */
+function damageTipLines(s: GameState, c: CardInstance): string[] {
+  const dmgEffects = c.def.effects.filter((e) => TIP_DAMAGE_EFFECTS.has(e.effect) && typeof e.amount === 'number')
+  if (dmgEffects.length === 0) return []
+  const alive = s.enemies.map((e, i) => [e, i] as const).filter(([e]) => e.hp > 0)
+  if (alive.length === 0) return []
+  const lines: string[] = ['⚔ ダメージ内訳（成長・勢い・弱体・急所・装甲・敵ブロック込み）']
+  dmgEffects.forEach((ef, k) => {
+    const head = dmgEffects.length > 1 ? `効果${k + 1} ` : ''
+    for (const [enemy, i] of alive) {
+      const name = (() => {
+        try {
+          return getEnemyDef(enemy.enemyId).name
+        } catch {
+          return enemy.enemyId
+        }
+      })()
+      const bd = damageBreakdown(s, i, ef.amount!, ef.pierce === true)
+      if (bd === null) continue
+      const chain = bd.steps.map((st) => `${st.label}${st.value}`).join(' → ')
+      if (ef.effect === 'dealDamageRandom' && typeof ef.amountMax === 'number') {
+        const bdMax = damageBreakdown(s, i, ef.amountMax, ef.pierce === true)
+        lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}〜${bdMax?.hpLoss ?? bd.hpLoss}（ロール幅）`)
+      } else {
+        lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}`)
+      }
+    }
+  })
+  if (dmgEffects.length > 1) lines.push('※多段は各行独立の見積り（急所・敵ブロックの消費は先頭ヒット基準）')
+  return lines
+}
+
 function BattleScreen({
   state: s,
   config,
@@ -1282,6 +1321,8 @@ function BattleScreen({
   // 誘発確認ウィンドウの対象敵 (pendingWindow の enemyIndex)
   const windowEnemy = s.pendingWindow ? s.enemies[s.pendingWindow.enemyIndex] : s.enemies[0]
   // 手札捨てコストの選択中状態 (UIローカル。対象カードが手札を離れたら自動で無効化)
+  // カードホバーのダメージ内訳 (2026-09-01)
+  const [hoverUid, setHoverUid] = useState<string | null>(null)
   const [pendingDiscard, setPendingDiscard] = useState<{
     cardUid: string
     modeIndex?: number
@@ -2085,9 +2126,26 @@ function BattleScreen({
                   )
                 }
                 const play = (modeIndex?: number) => startPlay(c.uid, modeIndex)
+                const tip = hoverUid === c.uid ? damageTipLines(s, c) : []
                 return (
-                  <CardFrame
+                  <div
                     key={c.uid}
+                    style={{ position: 'relative', display: 'flex' }}
+                    onMouseEnter={() => setHoverUid(c.uid)}
+                    onMouseLeave={() => setHoverUid((prev) => (prev === c.uid ? null : prev))}
+                  >
+                  {tip.length > 0 && (
+                    <div
+                      style={{
+                        position: 'absolute', bottom: '100%', left: 0, zIndex: 70, marginBottom: 4,
+                        background: 'rgba(13,16,24,0.97)', border: '1px solid #556', borderRadius: 6,
+                        padding: '6px 8px', fontSize: 11, whiteSpace: 'pre', pointerEvents: 'none', lineHeight: 1.5,
+                      }}
+                    >
+                      {tip.join('\n')}
+                    </div>
+                  )}
+                  <CardFrame
                     card={c}
                     ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, handCards: Math.max(0, player.hand.length - 1) }}
                     displayCost={effCost}
@@ -2126,6 +2184,7 @@ function BattleScreen({
                       </>
                     }
                   />
+                  </div>
                 )
               })}
             {s.phase === 'awaiting-reaction' && (

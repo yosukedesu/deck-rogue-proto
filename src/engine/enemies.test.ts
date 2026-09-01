@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { allEnemies, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
 import { tierFor } from './map.ts'
 import { applyCommand } from './state.ts'
+import { damageBreakdown, dealDamageToEnemy } from './effects.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
@@ -399,5 +400,33 @@ describe('デバフ圧の本家水準化 (2026-09-01 第2弾。確定済みル�
       }
       expect(carriers / pool.length, `幕${act}: ${carriers}/${pool.length}`).toBeGreaterThanOrEqual(0.6)
     }
+  })
+})
+
+describe('ダメージ内訳 damageBreakdown (2026-09-01 カードホバー用。実処理と同手順の純関数)', () => {
+  it('成長→勢い→弱体(床1)→急所→装甲→敵ブロックの順で値が推移する', () => {
+    let s = freshCombat('set-confirm', 'enemy_warden', 42) // 門番 = 装甲35
+    s = {
+      ...s,
+      player: { ...s.player, growth: 10, momentum: 5, weak: 1 },
+      enemies: s.enemies.map((e) => ({ ...e, exposed: 1, block: 6 })),
+    }
+    const bd = damageBreakdown(s, 0, 30)!
+    // 30+10+5=45 → 弱体 floor(45*0.75)=33 → 急所 floor(33*1.5)=49 → 装甲35 → ブロック6 ⇒ 29
+    expect(bd.steps.map((st) => st.value)).toEqual([30, 40, 45, 33, 49, 35, 29])
+    expect(bd.hpLoss).toBe(29)
+    // 実処理との一致 (dealDamageToEnemy の DamageDealt と同じ値になる)
+    const after = dealDamageToEnemy(s, 0, 30)
+    const ev = after.eventLog.findLast((e) => e.type === 'DamageDealt')
+    expect(ev?.type === 'DamageDealt' && ev.hpLoss).toBe(29)
+  })
+
+  it('貫通は敵ブロックを無視し、倒れている敵には null', () => {
+    let s = freshCombat('set-confirm', 'enemy_probe', 42)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 10 })) }
+    expect(damageBreakdown(s, 0, 8, true)!.hpLoss).toBe(8)
+    expect(damageBreakdown(s, 0, 8, false)!.hpLoss).toBe(0)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 0 })) }
+    expect(damageBreakdown(s, 0, 8)).toBeNull()
   })
 })
