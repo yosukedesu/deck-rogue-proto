@@ -42,12 +42,12 @@
     "id": "relic_shield_shard",
     "name": "大盾の欠片",
     "sprite": "🛡️",
-    "description": "毎ターン開始時、ブロック+1",
+    "description": "毎ターン開始時、ブロック+2",
     "effects": [
       {
         "trigger": "onTurnStart",
         "effect": "gainBlock",
-        "amount": 1
+        "amount": 2
       }
     ]
   },
@@ -77,7 +77,7 @@
     "id": "relic_hunters_boon",
     "name": "狩人の恵み",
     "sprite": "🏹",
-    "description": "勝利時、HPが半分以下なら+8回復",
+    "description": "勝利時、HPが30%以下なら+8回復",
     "bonus": {
       "victoryHeal": 8
     }
