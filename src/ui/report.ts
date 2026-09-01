@@ -279,10 +279,69 @@ export function saveReport(
 // 開発者がブラウザの図鑑上で「変更案・削除案・新カード案」をマークし、1枚のmdに書き出して
 // AIレビュー→実装へ渡す。ブラウザはリポジトリに書けないので、成果物は提案書であってデータ変更ではない
 
-/** 1枚のカードへのマーク。change=変更案の自由記述 / remove=削除案 */
+/**
+ * 1枚のカードへのマーク (2026-09-01 構造化。ユーザー指摘「実データと揃える形のほうが楽」)。
+ * cost/rarity/exhaust/fields は**現行値と異なる時だけ**保存する = 保存されていれば提案。
+ * fields のキーは実データのパス: "e0.amount"（効果0の量）・"e0.hits"（ヒット数）・
+ * "e0.cond.minActionValue"（条件値）・"exhaustCost"/"discardCost"/"necroCost"（追加コスト）。
+ * change は補足の自由記述 (構造化で表せない意図をここに書く)
+ */
 export interface CardProposalMark {
   readonly change?: string
   readonly remove?: boolean
+  readonly cost?: string // '0'〜'5' | 'X'
+  readonly rarity?: string // 'common' | 'uncommon' | 'rare'
+  readonly exhaust?: boolean
+  readonly fields?: Readonly<Record<string, number>>
+}
+
+/** マークが空 (提案なし) か */
+export function isEmptyMark(m: CardProposalMark): boolean {
+  return (
+    (m.change ?? '').trim() === '' &&
+    m.remove !== true &&
+    m.cost === undefined &&
+    m.rarity === undefined &&
+    m.exhaust === undefined &&
+    Object.keys(m.fields ?? {}).length === 0
+  )
+}
+
+/** fields キー → 現行値 (defから解決)。不明キーは undefined */
+function currentFieldValue(def: (typeof allCards)[number], key: string): number | undefined {
+  const eff = /^e(\d+)\.(amount|amountMax)$/.exec(key)
+  if (eff) {
+    const e = def.effects[Number(eff[1])] as unknown as Record<string, unknown> | undefined
+    const v = e?.[eff[2]]
+    return typeof v === 'number' ? v : undefined
+  }
+  const cond = /^e(\d+)\.cond\.(\w+)$/.exec(key)
+  if (cond) {
+    const e = def.effects[Number(cond[1])]
+    const v = (e?.condition as unknown as Record<string, unknown> | undefined)?.[cond[2]]
+    return typeof v === 'number' ? v : undefined
+  }
+  if (key === 'exhaustCost' || key === 'discardCost' || key === 'necroCost') return def[key]
+  return undefined
+}
+
+/** fields キー → 人間向けラベル */
+function fieldLabel(def: (typeof allCards)[number], key: string): string {
+  const CARD_COST_LABEL: Record<string, string> = {
+    exhaustCost: '消滅コスト',
+    discardCost: '捨てコスト',
+    necroCost: '亡骸コスト',
+  }
+  if (CARD_COST_LABEL[key] !== undefined) return CARD_COST_LABEL[key]
+  const eff = /^e(\d+)\.(amount|amountMax)$/.exec(key)
+  if (eff) {
+    const e = def.effects[Number(eff[1])]
+    const base = e ? `効果${Number(eff[1]) + 1}〔${e.trigger}/${e.effect}${e.target === 'all' ? '(全体)' : ''}〕` : key
+    return `${base}の${eff[2] === 'amountMax' ? 'ロール上限' : '量'}`
+  }
+  const cond = /^e(\d+)\.cond\.(\w+)$/.exec(key)
+  if (cond) return `効果${Number(cond[1]) + 1}の条件 ${cond[2]}`
+  return key
 }
 
 /** 調整案の提案書を生成する (純関数)。マークの無いエントリと空文字は無視する */
@@ -291,7 +350,7 @@ export function buildCardProposals(
   newCards: string,
 ): string {
   const defOf = (id: string) => allCards.find((c) => c.id === id)
-  const line = (id: string): string => {
+  const head = (id: string): string => {
     const d = defOf(id)
     if (!d) return `**${id}**（現行データに存在しない — 統合/リネーム済みの可能性）`
     const COLOR: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
@@ -299,20 +358,42 @@ export function buildCardProposals(
     const cost = d.xCost === true ? 'X' : `${d.cost}E`
     return `**${d.name}**（\`${id}\` ${COLOR[d.color] ?? d.color}/${RARITY[d.rarity ?? 'common']}/${cost}/${d.type}） 現行: \`${JSON.stringify(d.effects)}\``
   }
-  const changes = Object.entries(marks).filter(([, m]) => (m.change ?? '').trim() !== '')
-  const removes = Object.entries(marks).filter(([, m]) => m.remove === true)
+  /** 構造化マーク → 「現行→提案」の差分行 (実データと同じ語彙で並ぶ = そのまま実装に落とせる) */
+  const diffLines = (id: string, m: CardProposalMark): string[] => {
+    const d = defOf(id)
+    const out: string[] = []
+    if (m.cost !== undefined) {
+      out.push(`  - コスト: ${d ? (d.xCost === true ? 'X' : d.cost) : '?'} → ${m.cost}`)
+    }
+    if (m.rarity !== undefined) out.push(`  - レアリティ: ${d?.rarity ?? 'common'} → ${m.rarity}`)
+    if (m.exhaust !== undefined) {
+      out.push(`  - 消滅: ${d?.exhaust === true ? 'あり' : 'なし'} → ${m.exhaust ? 'あり' : 'なし'}`)
+    }
+    for (const [key, val] of Object.entries(m.fields ?? {})) {
+      const cur = d ? currentFieldValue(d, key) : undefined
+      out.push(`  - ${d ? fieldLabel(d, key) : key}: ${cur ?? '?'} → ${val}`)
+    }
+    if ((m.change ?? '').trim() !== '') out.push(`  - 補足: ${m.change!.trim()}`)
+    return out
+  }
+  const entries = Object.entries(marks).filter(([, m]) => !isEmptyMark(m))
+  const changes = entries.filter(([, m]) => m.remove !== true)
+  const removes = entries.filter(([, m]) => m.remove === true)
   const L: string[] = []
   L.push('# カード調整案')
   L.push(`書き出し: ${new Date().toISOString()} / データ指紋: ${dataFingerprint()}`)
   L.push('')
   L.push(`## 変更案（${changes.length}件）`)
   for (const [id, m] of changes) {
-    L.push(`- ${line(id)}`)
-    L.push(`  - 提案: ${m.change!.trim()}`)
+    L.push(`- ${head(id)}`)
+    L.push(...diffLines(id, m))
   }
   L.push('')
   L.push(`## 削除案（${removes.length}件）`)
-  for (const [id] of removes) L.push(`- ${line(id)}`)
+  for (const [id, m] of removes) {
+    L.push(`- ${head(id)}`)
+    L.push(...diffLines(id, { ...m, remove: false, cost: undefined, rarity: undefined, exhaust: undefined, fields: {} }))
+  }
   L.push('')
   L.push('## 新カード案')
   L.push(newCards.trim() === '' ? '（なし）' : newCards.trim())

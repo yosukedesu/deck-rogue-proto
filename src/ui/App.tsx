@@ -9,6 +9,7 @@ import {
   intentText,
   logLine,
   buildReport,
+  isEmptyMark,
   saveCardProposals,
   saveReport,
   STATUS_LABEL,
@@ -2490,7 +2491,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
   const setMark = (id: string, m: CardProposalMark) =>
     setDraft((d) => {
       const marks = { ...d.marks }
-      if ((m.change ?? '') === '' && m.remove !== true) delete marks[id]
+      if (isEmptyMark(m)) delete marks[id]
       else marks[id] = m
       return { ...d, marks }
     })
@@ -2540,9 +2541,10 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
         {tuner && (
           <div className="panel" style={{ marginTop: 8 }}>
             <div className="choice-desc">
-              各カードの下の入力欄に変更案（例: 「6→9ダメ」「コスト2→1」「弱い、削除より強化希望」）、
-              チェックで削除案。下書きは自動保存（リロードしても残る）。
-              書き出したmdをAIに渡すと査定レビュー→実装される。
+              各カードの下でコスト・レアリティ・消滅・数値（効果量/ヒット数/条件値/追加コスト）を
+              実データと同じ形で直接編集（現行値と違う値だけが提案として記録される）。
+              構造で表せない意図は「補足」に自由記述、チェックで削除案。
+              下書きは自動保存（リロードしても残る）。書き出したmdをAIに渡すと査定レビュー→実装される。
             </div>
             <div style={{ marginTop: 6 }}>
               <label className="viewer-toggle">
@@ -2615,23 +2617,98 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             )
             if (!tuner) return frame
             const mark = markOf(def.id)
+            // 実データと同じ形の数値フィールド (2026-09-01 ユーザー指摘「実データと揃える形のほうが楽」)。
+            // 現行値と違う値だけが提案として mark.fields に残る
+            const numFields: { key: string; label: string; cur: number }[] = []
+            def.effects.forEach((ef, i) => {
+              const short = renderEffectItem(ef).slice(0, 14)
+              if (typeof ef.amount === 'number') numFields.push({ key: `e${i}.amount`, label: short, cur: ef.amount })
+              if (typeof ef.amountMax === 'number') numFields.push({ key: `e${i}.amountMax`, label: `${short}上限`, cur: ef.amountMax })
+              for (const [ck, cv] of Object.entries(ef.condition ?? {})) {
+                if (typeof cv === 'number') numFields.push({ key: `e${i}.cond.${ck}`, label: `条件${ck}`, cur: cv })
+              }
+            })
+            const COST_LABELS: Record<string, string> = { exhaustCost: '消滅コスト', discardCost: '捨てコスト', necroCost: '亡骸コスト' }
+            for (const ck of ['exhaustCost', 'discardCost', 'necroCost'] as const) {
+              const cv = def[ck]
+              if (typeof cv === 'number') numFields.push({ key: ck, label: COST_LABELS[ck], cur: cv })
+            }
+            const setField = (key: string, cur: number, raw: string) => {
+              const fields: Record<string, number> = { ...(mark.fields ?? {}) }
+              const v = Number(raw)
+              if (raw === '' || !Number.isFinite(v) || v === cur) delete fields[key]
+              else fields[key] = v
+              setMark(def.id, { ...mark, fields })
+            }
+            const curCost = def.xCost === true ? 'X' : String(def.cost)
+            const curRarity = def.rarity ?? 'common'
+            const dirty = draft.marks[def.id] !== undefined
+            const S = { fontSize: 11, opacity: 0.9 } as const
             return (
-              <div key={def.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div
+                key={def.id}
+                style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 3, borderRadius: 6, background: dirty ? 'rgba(120,160,255,0.12)' : 'transparent' }}
+              >
                 {frame}
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <label style={S}>
+                    コスト{' '}
+                    <select
+                      value={mark.cost ?? curCost}
+                      onChange={(e) => setMark(def.id, { ...mark, cost: e.target.value === curCost ? undefined : e.target.value })}
+                    >
+                      {['0', '1', '2', '3', '4', '5', 'X'].map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label style={S}>
+                    レア{' '}
+                    <select
+                      value={mark.rarity ?? curRarity}
+                      onChange={(e) => setMark(def.id, { ...mark, rarity: e.target.value === curRarity ? undefined : e.target.value })}
+                    >
+                      <option value="common">コモン</option>
+                      <option value="uncommon">アンコ</option>
+                      <option value="rare">レア</option>
+                    </select>
+                  </label>
+                  <label style={S}>
+                    <input
+                      type="checkbox"
+                      checked={mark.exhaust ?? def.exhaust === true}
+                      onChange={(e) => setMark(def.id, { ...mark, exhaust: e.target.checked === (def.exhaust === true) ? undefined : e.target.checked })}
+                    />{' '}
+                    消滅
+                  </label>
+                  <label style={{ ...S, color: mark.remove === true ? '#f88' : undefined }}>
+                    <input
+                      type="checkbox"
+                      checked={mark.remove === true}
+                      onChange={(e) => setMark(def.id, { ...mark, remove: e.target.checked || undefined })}
+                    />{' '}
+                    削除案
+                  </label>
+                </div>
+                {numFields.map((f) => (
+                  <label key={f.key} style={{ ...S, display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={f.key}>
+                      {f.label}
+                    </span>
+                    <input
+                      type="number"
+                      value={mark.fields?.[f.key] ?? f.cur}
+                      onChange={(e) => setField(f.key, f.cur, e.target.value)}
+                      style={{ width: 52, fontSize: 11, background: mark.fields?.[f.key] !== undefined ? 'rgba(120,160,255,0.25)' : undefined }}
+                    />
+                  </label>
+                ))}
                 <input
                   value={mark.change ?? ''}
                   onChange={(e) => setMark(def.id, { ...mark, change: e.target.value })}
-                  placeholder="変更案"
+                  placeholder="補足 (自由記述)"
                   style={{ width: '100%', boxSizing: 'border-box', fontSize: 11 }}
                 />
-                <label style={{ fontSize: 11, opacity: 0.85 }}>
-                  <input
-                    type="checkbox"
-                    checked={mark.remove === true}
-                    onChange={(e) => setMark(def.id, { ...mark, remove: e.target.checked })}
-                  />{' '}
-                  削除案
-                </label>
               </div>
             )
           })}
