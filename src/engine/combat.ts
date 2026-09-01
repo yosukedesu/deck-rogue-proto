@@ -260,9 +260,15 @@ function tickCardTimers(state: GameState): GameState {
 function declareIntents(state: GameState): GameState {
   let s = state
   for (let i = 0; i < s.enemies.length; i++) {
-    const enemy = s.enemies[i]
-    if (enemy.hp <= 0) continue
-    const def = getEnemyDef(enemy.enemyId)
+    const rawEnemy = s.enemies[i]
+    if (rawEnemy.hp <= 0) continue
+    const def = getEnemyDef(rawEnemy.enemyId)
+    // 連携 (2026-09-02): 他の仲間が生存中は攻撃+N (宣言時判定 = 宣言時固定の既存則)
+    const bond =
+      def.bondStrength !== undefined && s.enemies.some((o, j) => j !== i && o.hp > 0)
+        ? def.bondStrength
+        : 0
+    const enemy = bond > 0 ? { ...rawEnemy, strength: rawEnemy.strength + bond } : rawEnemy
     // 盗んだ敵は次の宣言で必ず逃走する (2026-08-30。宣言即成立の盗みが「倒せば全額戻る」で
     // 無害化していた実測への処方 = 「1ターン以内に倒せ」のレースを尖らせる)
     // flee の move を持たない盗人 (金羽の大鴉) でも合成の逃走を宣言する (2026-08-31 青ラン発見:
@@ -693,6 +699,15 @@ export function playCard(
   }
   if (targetIndex === undefined && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
     throw new Error(`${card.def.name} は対象の指定 (targetIndex) が必要`)
+  }
+  // 庇う (2026-09-02): 護衛が生存中、単体対象は護衛に向かう (対象ごとリダイレクト =
+  // ダメージ以外の単体効果 [延焼・急所等] も護衛が受ける。全体攻撃は targetIndex を使わないので素通し)
+  if (targetIndex !== undefined) {
+    const t = state.enemies[targetIndex]
+    if (t && getEnemyDef(t.enemyId).guardian !== true) {
+      const g = state.enemies.findIndex((e) => e.hp > 0 && getEnemyDef(e.enemyId).guardian === true)
+      if (g >= 0) targetIndex = g
+    }
   }
   const enemyIndex = targetIndex ?? state.enemies.findIndex((e) => e.hp > 0)
   const isPermanent = card.def.type === 'permanent'

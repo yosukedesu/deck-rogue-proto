@@ -499,3 +499,47 @@ describe('分裂 (2026-09-02 敵ギミック第1波。本家Slime準拠)', () =>
     expect(s.enemies[1].atkScale).toBe(1.6)
   })
 })
+
+describe('陣形: 庇うと連携 (2026-09-02 敵ギミック第1波)', () => {
+  it('護衛の生存中、単体対象は護衛にリダイレクトされる (全体攻撃は素通し)', () => {
+    let s = freshCombat('set-confirm', 'enc_squire_archer', 42)
+    expect(s.enemies).toHaveLength(2)
+    const squireHp = s.enemies[0].hp
+    const archerHp = s.enemies[1].hp
+    // 射手 (index1) を狙っても従士に向かう
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 1 })
+    expect(s.enemies[1].hp).toBe(archerHp) // 射手は無傷
+    expect(s.enemies[0].hp + s.enemies[0].block - 6).toBeLessThan(squireHp + 6) // 従士が受けた
+    // 全体攻撃は両方に届く
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_sweep'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sweep' })
+    expect(s.enemies[1].hp).toBeLessThan(archerHp)
+  })
+
+  it('護衛が倒れたら単体対象は素通しになる', () => {
+    let s = freshCombat('set-confirm', 'enc_squire_archer', 42)
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, hp: 0 } : e)) }
+    const archerHp = s.enemies[1].hp
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 1 })
+    expect(s.enemies[1].hp).toBeLessThan(archerHp)
+  })
+
+  it('連携: 仲間の生存中は攻撃+N、倒れたら次の宣言から素に戻る', () => {
+    // 双牙の狼 bondStrength=2。sequence=[twin_bite(4-6×2), lunge(9-12), prowl(defend)]・2頭目はoffset1
+    const s = freshCombat('set-confirm', 'enc_fang_twins', 42)
+    expect(s.enemies[0].intent?.shownMin).toBe(6) // twin_bite 4+2
+    expect(s.enemies[0].intent?.shownMax).toBe(8) // 6+2
+    expect(s.enemies[1].intent?.shownMin).toBe(11) // lunge 9+2
+    expect(s.enemies[1].intent?.shownMax).toBe(14) // 12+2
+    // 片方を倒してターンを進めると、次の宣言は素の幅 (宣言時判定)
+    let t: GameState = { ...s, enemies: s.enemies.map((e, i) => (i === 1 ? { ...e, hp: 0 } : e)) }
+    t = withHand(t, [])
+    t = applyCommand(t, { type: 'EndTurn' })
+    expect(t.enemies[0].intent?.shownMin).toBe(9) // lunge 素
+    expect(t.enemies[0].intent?.shownMax).toBe(12)
+  })
+})
+

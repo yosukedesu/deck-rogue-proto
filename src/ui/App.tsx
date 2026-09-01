@@ -124,6 +124,7 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   windup: '息切れ型（大技のあと隙）',
   shell: '甲殻型（積みながら殴る）',
   splitter: '分裂型（倒すと小型に分裂）',
+  guardian: '護衛型（仲間への単体攻撃を庇う）',
   mimic: '物真似型（手数の鏡）',
   elite: 'エリート',
 }
@@ -149,6 +150,7 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   windup: '🪓',
   shell: '🪨',
   splitter: '🫠',
+  guardian: '🛡️',
 }
 
 // カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
@@ -183,6 +185,8 @@ const KEYWORD_HELP: Record<string, string> = {
   分裂: '倒すと小型の敵に分かれて場に残る。分裂体はその敵フェーズから行動する。全体攻撃・延焼・オーバーキルの一撃が解答',
   装甲: '1ヒットで受けるダメージがこの値以下に頭打ちになる。多段で削るか、装甲を無視する延焼で焼くのが解答',
   とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
+  庇う: 'この敵が生きている間、あなたの単体対象カードは他の敵を選べずこの敵に向かう。全体攻撃と延焼の毎ターンダメージは素通し',
+  連携: '他の仲間が1体でも生きている間、この敵の攻撃に+N（宣言時に判定。仲間を倒せば次の宣言から素に戻る）',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
@@ -1566,7 +1570,12 @@ function BattleScreen({
           {s.enemies.map((enemy, i) => {
             const enemyDef = getEnemyDef(enemy.enemyId)
             const dead = enemy.hp <= 0
-            const targetable = activeTarget !== null && !dead
+            // 庇う (2026-09-02): 護衛の生存中、単体対象は護衛しか選べない (エンジンのリダイレクトと同じ判定)
+            const guardIdx = s.enemies.findIndex(
+              (e) => e.hp > 0 && getEnemyDef(e.enemyId).guardian === true,
+            )
+            const guarded = guardIdx >= 0 && guardIdx !== i
+            const targetable = activeTarget !== null && !dead && !guarded
             return (
               <div
                 key={i}
@@ -1637,6 +1646,15 @@ function BattleScreen({
                     )}
                     {enemyDef.splitInto !== undefined && !dead && (
                       <span className="chip chip-strength">🫠 {kw('分裂')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}×{enemyDef.splitInto.count}</span>
+                    )}
+                    {enemyDef.guardian === true && !dead && (
+                      <span className="chip chip-strength">🛡️ {kw('庇う')}</span>
+                    )}
+                    {guarded && !dead && (
+                      <span className="chip chip-block">🛡️ 庇われている（単体対象はこの敵を選べない）</span>
+                    )}
+                    {enemyDef.bondStrength !== undefined && !dead && (
+                      <span className="chip chip-strength">🤝 {kw('連携')}+{enemyDef.bondStrength}</span>
                     )}
                     {(enemy.stolenGold ?? 0) > 0 && !dead && (
                       <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み</span>

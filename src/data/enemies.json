@@ -1,1477 +1,1576 @@
 [
-  {
-    "id": "enemy_wide_power",
-    "name": "うねる獣",
-    "archetype": "wide-power",
-    "flavor": "機嫌で振れ幅が変わる。今日の機嫌は誰も知らない。",
-    "maxHp": 90,
-    "moves": [
-      {
-        "id": "surge",
-        "kind": "attack",
-        "min": 8,
-        "max": 15,
-        "weight": 3
-      },
-      {
-        "id": "coil",
-        "kind": "defend",
-        "min": 5,
-        "max": 9,
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "enemy_probe",
-    "name": "探り屋",
-    "archetype": "probe",
-    "flavor": "ちくちくは挨拶。三度目が本気。ただし仕掛けを見たら、挨拶の順番は守らない。",
-    "maxHp": 75,
-    "moves": [
-      {
-        "id": "poke",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1
-      },
-      {
-        "id": "lunge",
-        "kind": "attack",
-        "min": 12,
-        "max": 16,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "poke",
-      "poke",
-      "lunge"
-    ],
-    "movesVsSet": [
-      {
-        "id": "lunge",
-        "kind": "attack",
-        "min": 12,
-        "max": 16,
-        "weight": 1
-      },
-      {
-        "id": "poke",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 2
-      }
-    ]
-  },
-  {
-    "id": "enemy_set_wary",
-    "name": "用心深い影",
-    "archetype": "set-wary",
-    "flavor": "伏せ札が怖い。怖いから様子を見る——が、いつまでも我慢はできない。",
-    "maxHp": 85,
-    "moves": [
-      {
-        "id": "slash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 1
-      }
-    ],
-    "movesVsSet": [
-      {
-        "id": "hide",
-        "kind": "defend",
-        "min": 6,
-        "max": 9,
-        "weight": 2
-      },
-      {
-        "id": "careful_slash",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1
-      },
-      {
-        "id": "slash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "enemy_set_breaker",
-    "name": "罠壊し",
-    "archetype": "set-breaker",
-    "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。",
-    "maxHp": 90,
-    "moves": [
-      {
-        "id": "smash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 2
-      },
-      {
-        "id": "toss_junk",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1,
-        "inflict": {
-          "status": "junk",
-          "amount": 1
-        }
-      },
-      {
-        "id": "ready_tools",
-        "kind": "defend",
-        "min": 6,
-        "max": 9,
-        "weight": 1
-      }
-    ],
-    "movesVsSet": [
-      {
-        "id": "break_trap",
-        "kind": "destroy-set",
-        "weight": 2,
-        "inflict": {
-          "status": "junk",
-          "amount": 1
-        }
-      },
-      {
-        "id": "smash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 1
-      }
-    ],
-    "movesVsTokens": [
-      {
-        "id": "break_token",
-        "kind": "destroy-token",
-        "weight": 2
-      },
-      {
-        "id": "smash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "enemy_brute",
-    "name": "脳筋オーガ",
-    "archetype": "brute",
-    "flavor": "雄叫びのあとの二発が本気。数えていれば読める——だが追い詰めれば見境がなくなる。",
-    "maxHp": 130,
-    "moves": [
-      {
-        "id": "warcry",
-        "kind": "buff",
-        "min": 2,
-        "max": 4,
-        "weight": 1
-      },
-      {
-        "id": "club",
-        "kind": "attack",
-        "min": 9,
-        "max": 13,
-        "weight": 1
-      },
-      {
-        "id": "club_wild",
-        "kind": "attack",
-        "min": 9,
-        "max": 13,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 12,
-          "max": 16
-        }
-      }
-    ],
-    "sequence": [
-      "club",
-      "warcry",
-      "club_wild"
-    ],
-    "movesBelowHalf": [
-      {
-        "id": "rage_flurry",
-        "kind": "attack",
-        "min": 7,
-        "max": 9,
-        "hits": 2,
-        "weight": 2
-      },
-      {
-        "id": "war_roar",
-        "kind": "buff",
-        "min": 2,
-        "max": 3,
-        "weight": 1
-      }
-    ],
-    "sequenceBelowHalf": [
-      "rage_flurry",
-      "rage_flurry",
-      "war_roar"
-    ],
-    "armor": 25
-  },
-  {
-    "id": "enemy_turtle",
-    "name": "眠たがりの大亀",
-    "archetype": "charger",
-    "flavor": "二度眠り、三度目に薙ぐ。——起こしてしまったら、もう眠らない。",
-    "maxHp": 140,
-    "moves": [
-      {
-        "id": "shell",
-        "kind": "defend",
-        "min": 12,
-        "max": 16,
-        "weight": 1
-      },
-      {
-        "id": "crush",
-        "kind": "attack",
-        "min": 24,
-        "max": 32,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 16,
-          "max": 22
-        }
-      }
-    ],
-    "sequence": [
-      "shell",
-      "shell",
-      "crush"
-    ],
-    "movesBelowHalf": [
-      {
-        "id": "awake_bite",
-        "kind": "attack",
-        "min": 9,
-        "max": 12,
-        "hits": 2,
-        "weight": 1
-      },
-      {
-        "id": "crush",
-        "kind": "attack",
-        "min": 24,
-        "max": 32,
-        "weight": 1
-      }
-    ],
-    "sequenceBelowHalf": [
-      "awake_bite",
-      "crush"
-    ],
-    "startingBlock": 10,
-    "armor": 30
-  },
-  {
-    "id": "enemy_hexer",
-    "name": "泥投げの妖術師",
-    "archetype": "hexer",
-    "flavor": "泥と呪いを投げてくる。手が汚いのは職業柄。",
-    "maxHp": 80,
-    "moves": [
-      {
-        "id": "mud",
-        "kind": "attack",
-        "min": 6,
-        "max": 9,
-        "weight": 1,
-        "inflict": {
-          "status": "weak",
-          "amount": 3
-        },
-        "setAlt": {
-          "kind": "hex",
-          "inflict": {
-            "status": "weak",
-            "amount": 3
-          }
-        }
-      },
-      {
-        "id": "curse",
-        "kind": "hex",
-        "weight": 1,
-        "inflict": {
-          "status": "wound",
-          "amount": 2
-        }
-      },
-      {
-        "id": "slap",
-        "kind": "attack",
-        "min": 10,
-        "max": 14,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "mud",
-      "curse",
-      "slap"
-    ]
-  },
-  {
-    "id": "enemy_wolf",
-    "name": "牙嵐の狼",
-    "archetype": "flurry",
-    "flavor": "群れはいない。牙の数だけで群れの働きをする。",
-    "maxHp": 95,
-    "moves": [
-      {
-        "id": "flurry",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1,
-        "hits": 3,
-        "alsoBuff": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 5,
-          "max": 7,
-          "hits": 2,
-          "alsoBuff": 1
-        }
-      },
-      {
-        "id": "howl",
-        "kind": "buff",
-        "min": 1,
-        "max": 2,
-        "weight": 1
-      },
-      {
-        "id": "rend",
-        "kind": "attack",
-        "min": 4,
-        "max": 6,
-        "weight": 1,
-        "hits": 4,
-        "setAlt": {
-          "kind": "attack",
-          "min": 4,
-          "max": 6,
-          "hits": 2
-        }
-      }
-    ],
-    "sequence": [
-      "flurry",
-      "howl",
-      "rend"
-    ]
-  },
-  {
-    "id": "enemy_moss",
-    "name": "苔まといの主",
-    "archetype": "regenerator",
-    "flavor": "苔が癒やす、半分までは。剥がれたら、走れ。",
-    "maxHp": 115,
-    "regen": 5,
-    "moves": [
-      {
-        "id": "slam",
-        "kind": "attack",
-        "min": 10,
-        "max": 14,
-        "weight": 2,
-        "inflict": {
-          "status": "frail",
-          "amount": 1
-        }
-      },
-      {
-        "id": "moss_shell",
-        "kind": "defend",
-        "min": 7,
-        "max": 10,
-        "weight": 1
-      }
-    ],
-    "movesBelowHalf": [
-      {
-        "id": "bite",
-        "kind": "attack",
-        "min": 15,
-        "max": 19,
-        "weight": 1
-      }
-    ],
-    "burnResist": 2,
-    "regenBreak": 30
-  },
-  {
-    "id": "enemy_joker",
-    "name": "嘲る道化",
-    "archetype": "taunter",
-    "flavor": "手ぶらの相手にだけ強気。ただし、いつまでも伏せたままなら見破りにくる。",
-    "maxHp": 85,
-    "moves": [
-      {
-        "id": "wild_swing",
-        "kind": "attack",
-        "min": 15,
-        "max": 19,
-        "weight": 2,
-        "inflict": {
-          "status": "vulnerable",
-          "amount": 2
-        }
-      },
-      {
-        "id": "dodge_prance",
-        "kind": "defend",
-        "min": 5,
-        "max": 8,
-        "weight": 1
-      }
-    ],
-    "movesVsSet": [
-      {
-        "id": "cautious_jab",
-        "kind": "attack",
-        "min": 7,
-        "max": 10,
-        "weight": 2
-      },
-      {
-        "id": "mock",
-        "kind": "defend",
-        "min": 5,
-        "max": 8,
-        "weight": 1
-      },
-      {
-        "id": "call_bluff",
-        "kind": "destroy-set",
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "enemy_drummer",
-    "name": "鼓吹きコボルト",
-    "archetype": "support",
-    "flavor": "太鼓が鳴るたび、みんな元気になる。最初に黙らせたい。",
-    "maxHp": 55,
-    "moves": [
-      {
-        "id": "war_drum",
-        "kind": "rally",
-        "min": 1,
-        "max": 2,
-        "setAlt": {
-          "kind": "attack",
-          "min": 4,
-          "max": 6
-        }
-      },
-      {
-        "id": "thump",
-        "kind": "attack",
-        "min": 4,
-        "max": 6
-      }
-    ],
-    "sequence": [
-      "war_drum",
-      "thump"
-    ]
-  },
-  {
-    "id": "enemy_warden",
-    "name": "刻限の門番",
-    "archetype": "enrager",
-    "flavor": "鐘は時間ではなく、お前が手を出した回数で鳴る。刻限が近づけば、乱打が始まる。",
-    "maxHp": 155,
-    "enrage": 2,
-    "moves": [
-      {
-        "id": "bell_strike",
-        "kind": "attack",
-        "min": 13,
-        "max": 17,
-        "weight": 1
-      },
-      {
-        "id": "gate_guard",
-        "kind": "attack",
-        "min": 6,
-        "max": 8,
-        "weight": 1,
-        "alsoDefend": 12
-      },
-      {
-        "id": "bell_hushed",
-        "kind": "attack",
-        "min": 13,
-        "max": 17,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 11,
-          "max": 15,
-          "inflict": {
-            "status": "weak",
-            "amount": 1
-          }
-        }
-      }
-    ],
-    "sequence": [
-      "bell_hushed",
-      "bell_strike",
-      "gate_guard"
-    ],
-    "enrageEveryCards": 8,
-    "movesBelowHalf": [
-      {
-        "id": "bell_frenzy",
-        "kind": "attack",
-        "min": 8,
-        "max": 11,
-        "hits": 2,
-        "weight": 1
-      },
-      {
-        "id": "gate_guard",
-        "kind": "attack",
-        "min": 6,
-        "max": 8,
-        "alsoDefend": 12,
-        "weight": 1
-      }
-    ],
-    "sequenceBelowHalf": [
-      "bell_frenzy",
-      "gate_guard"
-    ],
-    "startingBlock": 15,
-    "enrageEveryDamage": 80,
-    "armor": 35
-  },
-  {
-    "id": "enemy_thorn_squirrel",
-    "name": "針毛の栗鼠",
-    "archetype": "thorned",
-    "flavor": "触るたび刺さる。ちくちく削るか、一撃で仕留めるか。",
-    "maxHp": 75,
-    "thorns": 2,
-    "moves": [
-      {
-        "id": "gnaw",
-        "kind": "attack",
-        "min": 4,
-        "max": 6,
-        "weight": 2
-      }
-    ]
-  },
-  {
-    "id": "enemy_thief",
-    "name": "こそ泥ゴブリン",
-    "archetype": "thief",
-    "flavor": "隠れて、掴んで、走り去る。三歩目の前に捕まえろ。",
-    "maxHp": 65,
-    "moves": [
-      {
-        "id": "sneak",
-        "kind": "defend",
-        "min": 4,
-        "max": 6,
-        "weight": 1
-      },
-      {
-        "id": "snatch",
-        "kind": "steal-gold",
-        "min": 12,
-        "max": 20,
-        "weight": 1
-      },
-      {
-        "id": "mug",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1
-      },
-      {
-        "id": "run_off",
-        "kind": "flee",
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "sneak",
-      "snatch",
-      "mug",
-      "run_off"
-    ]
-  },
-  {
-    "id": "enemy_bomber",
-    "name": "火薬樽かつぎ",
-    "archetype": "bomber",
-    "flavor": "樽の導火線は三拍で燃え尽きる。庇い、投げ、そして——。",
-    "maxHp": 85,
-    "moves": [
-      {
-        "id": "shield_barrel",
-        "kind": "defend",
-        "min": 5,
-        "max": 8,
-        "weight": 1
-      },
-      {
-        "id": "toss_ember",
-        "kind": "attack",
-        "min": 6,
-        "max": 9,
-        "weight": 1
-      },
-      {
-        "id": "big_boom",
-        "kind": "attack",
-        "min": 20,
-        "max": 24,
-        "weight": 1,
-        "inflict": {
-          "status": "scald",
-          "amount": 2
-        }
-      }
-    ],
-    "sequence": [
-      "shield_barrel",
-      "toss_ember",
-      "big_boom"
-    ],
-    "startingBlock": 12
-  },
-  {
-    "id": "enemy_moss_healer",
-    "name": "苔の癒し手",
-    "archetype": "healer",
-    "flavor": "傷んだ仲間から順に苔を貼る。貼られた側は嫌そうな顔をする。",
-    "maxHp": 65,
-    "moves": [
-      {
-        "id": "mend",
-        "kind": "heal",
-        "min": 8,
-        "max": 12,
-        "weight": 2
-      },
-      {
-        "id": "staff_poke",
-        "kind": "attack",
-        "min": 4,
-        "max": 6,
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "enemy_axe_ogre",
-    "name": "大振りの斧鬼",
-    "archetype": "windup",
-    "flavor": "振りかぶりは正直、一撃は苛烈、そのあと必ず息が切れる。",
-    "maxHp": 110,
-    "moves": [
-      {
-        "id": "windup",
-        "kind": "defend",
-        "min": 6,
-        "max": 9,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 14,
-          "max": 18
-        }
-      },
-      {
-        "id": "great_swing",
-        "kind": "attack",
-        "min": 24,
-        "max": 28,
-        "weight": 1,
-        "inflict": {
-          "status": "weak",
-          "amount": 1
-        }
-      },
-      {
-        "id": "gasp",
-        "kind": "rest",
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "windup",
-      "great_swing",
-      "gasp"
-    ]
-  },
-  {
-    "id": "enemy_shell_guard",
-    "name": "石殻の番人",
-    "archetype": "shell",
-    "flavor": "殻ごと押し潰しに来る。殻を割るか、殻ごと貫くか——割れたら中身は柔い。",
-    "maxHp": 100,
-    "moves": [
-      {
-        "id": "shell_bash",
-        "kind": "attack",
-        "min": 12,
-        "max": 16,
-        "weight": 2,
-        "alsoDefend": 10,
-        "inflict": {
-          "status": "frail",
-          "amount": 1
-        }
-      },
-      {
-        "id": "harden",
-        "kind": "defend",
-        "min": 12,
-        "max": 16,
-        "weight": 1
-      }
-    ],
-    "movesBelowHalf": [
-      {
-        "id": "cracked_rage",
-        "kind": "attack",
-        "min": 16,
-        "max": 20,
-        "weight": 1
-      }
-    ],
-    "startingBlock": 10,
-    "armor": 18
-  },
-  {
-    "id": "enemy_apprentice_colossus",
-    "name": "見習い巨像",
-    "archetype": "windup",
-    "flavor": "振るってから、構える。二拍子の型は崩さない。",
-    "maxHp": 70,
-    "moves": [
-      {
-        "id": "brace",
-        "kind": "defend",
-        "min": 6,
-        "max": 9,
-        "weight": 1
-      },
-      {
-        "id": "swing",
-        "kind": "attack",
-        "min": 14,
-        "max": 16,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "swing",
-      "brace"
-    ]
-  },
-  {
-    "id": "enemy_mimic_imp",
-    "name": "物真似の子鬼",
-    "archetype": "mimic",
-    "flavor": "あなたの手数をけらけら笑いながら数えている。",
-    "maxHp": 42,
-    "moves": [
-      {
-        "id": "mimic",
-        "kind": "attack",
-        "min": 2,
-        "max": 2,
-        "weight": 1,
-        "mirrorHits": true
-      }
-    ]
-  },
-  {
-    "id": "enemy_cultist",
-    "name": "囁きの狂信者",
-    "archetype": "enrager",
-    "flavor": "祈るほどに刃が重くなる。囁きを止めるには、口を塞ぐしかない。",
-    "maxHp": 65,
-    "enrage": 2,
-    "moves": [
-      {
-        "id": "dark_blade",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "id": "enemy_slug",
-    "name": "酸吐きの蛞蝓",
-    "archetype": "hexer",
-    "flavor": "舐められたら力が抜け、浴びせられたら鎧が緩む。ぬめりは全部が武器。",
-    "maxHp": 70,
-    "moves": [
-      {
-        "id": "lick",
-        "kind": "hex",
-        "weight": 1,
-        "inflict": {
-          "status": "weak",
-          "amount": 2
-        }
-      },
-      {
-        "id": "acid_spit",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1,
-        "inflict": {
-          "status": "frail",
-          "amount": 1
-        }
-      },
-      {
-        "id": "tackle",
-        "kind": "attack",
-        "min": 8,
-        "max": 10,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "lick",
-      "acid_spit",
-      "tackle"
-    ]
-  },
-  {
-    "id": "enemy_whetstone_colossus",
-    "name": "砥石の巨像",
-    "archetype": "windup",
-    "flavor": "三拍の後に刃が落ちる。数えられる死は、避けられる死だ。",
-    "maxHp": 78,
-    "moves": [
-      {
-        "id": "brace",
-        "kind": "defend",
-        "min": 10,
-        "max": 14,
-        "weight": 1
-      },
-      {
-        "id": "hone",
-        "kind": "buff",
-        "min": 2,
-        "max": 3,
-        "weight": 1
-      },
-      {
-        "id": "guillotine",
-        "kind": "attack",
-        "min": 26,
-        "max": 30,
-        "weight": 1,
-        "inflict": {
-          "status": "frail",
-          "amount": 1
-        }
-      }
-    ],
-    "sequence": [
-      "brace",
-      "hone",
-      "guillotine"
-    ]
-  },
-  {
-    "id": "enemy_mimic_jester",
-    "name": "物真似の道化",
-    "archetype": "mimic",
-    "flavor": "あなたが撃った数だけ、鏡の刃が返ってくる。",
-    "maxHp": 68,
-    "moves": [
-      {
-        "id": "mirror_dance",
-        "kind": "attack",
-        "min": 3,
-        "max": 4,
-        "weight": 1,
-        "mirrorHits": true
-      }
-    ]
-  },
-  {
-    "id": "enemy_cinder_imp",
-    "name": "焚きつけのインプ",
-    "archetype": "hexer",
-    "flavor": "火の粉を投げて笑う小鬼。手札で火傷が疼く前に、捨てるか、燃やされるか。",
-    "maxHp": 62,
-    "moves": [
-      {
-        "id": "spark_toss",
-        "kind": "attack",
-        "min": 6,
-        "max": 9,
-        "weight": 1,
-        "inflict": {
-          "status": "scald",
-          "amount": 1
-        }
-      },
-      {
-        "id": "fan_flames",
-        "kind": "hex",
-        "weight": 1,
-        "inflict": {
-          "status": "scald",
-          "amount": 2
-        }
-      },
-      {
-        "id": "bite",
-        "kind": "attack",
-        "min": 10,
-        "max": 14,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "spark_toss",
-      "fan_flames",
-      "bite"
-    ]
-  },
-  {
-    "id": "enemy_rock_beetle",
-    "name": "岩皮の甲虫",
-    "archetype": "shell",
-    "flavor": "小さな体を、身の丈に合わない岩の殻が包む。割るか、貫くか、焼くか。",
-    "maxHp": 30,
-    "startingBlock": 12,
-    "moves": [
-      {
-        "id": "harden",
-        "kind": "defend",
-        "min": 12,
-        "max": 15,
-        "weight": 1
-      },
-      {
-        "id": "horn_jab",
-        "kind": "attack",
-        "min": 6,
-        "max": 9,
-        "weight": 1,
-        "alsoDefend": 8
-      }
-    ],
-    "sequence": [
-      "horn_jab",
-      "harden",
-      "horn_jab"
-    ]
-  },
-  {
-    "id": "enemy_big_slime",
-    "name": "大苔スライム",
-    "archetype": "splitter",
-    "flavor": "苔と泥の巨体。斬っても潰しても、中から小さいのが這い出してくる。",
-    "maxHp": 72,
-    "splitInto": {
-      "enemyId": "enemy_moss_slime",
-      "count": 2
+ {
+  "id": "enemy_wide_power",
+  "name": "うねる獣",
+  "archetype": "wide-power",
+  "flavor": "機嫌で振れ幅が変わる。今日の機嫌は誰も知らない。",
+  "maxHp": 90,
+  "moves": [
+   {
+    "id": "surge",
+    "kind": "attack",
+    "min": 8,
+    "max": 15,
+    "weight": 3
+   },
+   {
+    "id": "coil",
+    "kind": "defend",
+    "min": 5,
+    "max": 9,
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_probe",
+  "name": "探り屋",
+  "archetype": "probe",
+  "flavor": "ちくちくは挨拶。三度目が本気。ただし仕掛けを見たら、挨拶の順番は守らない。",
+  "maxHp": 75,
+  "moves": [
+   {
+    "id": "poke",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1
+   },
+   {
+    "id": "lunge",
+    "kind": "attack",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "poke",
+   "poke",
+   "lunge"
+  ],
+  "movesVsSet": [
+   {
+    "id": "lunge",
+    "kind": "attack",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   },
+   {
+    "id": "poke",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 2
+   }
+  ]
+ },
+ {
+  "id": "enemy_set_wary",
+  "name": "用心深い影",
+  "archetype": "set-wary",
+  "flavor": "伏せ札が怖い。怖いから様子を見る——が、いつまでも我慢はできない。",
+  "maxHp": 85,
+  "moves": [
+   {
+    "id": "slash",
+    "kind": "attack",
+    "min": 11,
+    "max": 15,
+    "weight": 1
+   }
+  ],
+  "movesVsSet": [
+   {
+    "id": "hide",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 2
+   },
+   {
+    "id": "careful_slash",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1
+   },
+   {
+    "id": "slash",
+    "kind": "attack",
+    "min": 11,
+    "max": 15,
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_set_breaker",
+  "name": "罠壊し",
+  "archetype": "set-breaker",
+  "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。",
+  "maxHp": 90,
+  "moves": [
+   {
+    "id": "smash",
+    "kind": "attack",
+    "min": 11,
+    "max": 15,
+    "weight": 2
+   },
+   {
+    "id": "toss_junk",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1,
+    "inflict": {
+     "status": "junk",
+     "amount": 1
+    }
+   },
+   {
+    "id": "ready_tools",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   }
+  ],
+  "movesVsSet": [
+   {
+    "id": "break_trap",
+    "kind": "destroy-set",
+    "weight": 2,
+    "inflict": {
+     "status": "junk",
+     "amount": 1
+    }
+   },
+   {
+    "id": "smash",
+    "kind": "attack",
+    "min": 11,
+    "max": 15,
+    "weight": 1
+   }
+  ],
+  "movesVsTokens": [
+   {
+    "id": "break_token",
+    "kind": "destroy-token",
+    "weight": 2
+   },
+   {
+    "id": "smash",
+    "kind": "attack",
+    "min": 11,
+    "max": 15,
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_brute",
+  "name": "脳筋オーガ",
+  "archetype": "brute",
+  "flavor": "雄叫びのあとの二発が本気。数えていれば読める——だが追い詰めれば見境がなくなる。",
+  "maxHp": 130,
+  "moves": [
+   {
+    "id": "warcry",
+    "kind": "buff",
+    "min": 2,
+    "max": 4,
+    "weight": 1
+   },
+   {
+    "id": "club",
+    "kind": "attack",
+    "min": 9,
+    "max": 13,
+    "weight": 1
+   },
+   {
+    "id": "club_wild",
+    "kind": "attack",
+    "min": 9,
+    "max": 13,
+    "weight": 1,
+    "setAlt": {
+     "kind": "attack",
+     "min": 12,
+     "max": 16
+    }
+   }
+  ],
+  "sequence": [
+   "club",
+   "warcry",
+   "club_wild"
+  ],
+  "movesBelowHalf": [
+   {
+    "id": "rage_flurry",
+    "kind": "attack",
+    "min": 7,
+    "max": 9,
+    "hits": 2,
+    "weight": 2
+   },
+   {
+    "id": "war_roar",
+    "kind": "buff",
+    "min": 2,
+    "max": 3,
+    "weight": 1
+   }
+  ],
+  "sequenceBelowHalf": [
+   "rage_flurry",
+   "rage_flurry",
+   "war_roar"
+  ],
+  "armor": 25
+ },
+ {
+  "id": "enemy_turtle",
+  "name": "眠たがりの大亀",
+  "archetype": "charger",
+  "flavor": "二度眠り、三度目に薙ぐ。——起こしてしまったら、もう眠らない。",
+  "maxHp": 140,
+  "moves": [
+   {
+    "id": "shell",
+    "kind": "defend",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   },
+   {
+    "id": "crush",
+    "kind": "attack",
+    "min": 24,
+    "max": 32,
+    "weight": 1,
+    "setAlt": {
+     "kind": "attack",
+     "min": 16,
+     "max": 22
+    }
+   }
+  ],
+  "sequence": [
+   "shell",
+   "shell",
+   "crush"
+  ],
+  "movesBelowHalf": [
+   {
+    "id": "awake_bite",
+    "kind": "attack",
+    "min": 9,
+    "max": 12,
+    "hits": 2,
+    "weight": 1
+   },
+   {
+    "id": "crush",
+    "kind": "attack",
+    "min": 24,
+    "max": 32,
+    "weight": 1
+   }
+  ],
+  "sequenceBelowHalf": [
+   "awake_bite",
+   "crush"
+  ],
+  "startingBlock": 10,
+  "armor": 30
+ },
+ {
+  "id": "enemy_hexer",
+  "name": "泥投げの妖術師",
+  "archetype": "hexer",
+  "flavor": "泥と呪いを投げてくる。手が汚いのは職業柄。",
+  "maxHp": 80,
+  "moves": [
+   {
+    "id": "mud",
+    "kind": "attack",
+    "min": 6,
+    "max": 9,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 3
     },
-    "moves": [
-      {
-        "id": "slam",
-        "kind": "attack",
-        "min": 9,
-        "max": 13,
-        "weight": 2
-      },
-      {
-        "id": "ooze_guard",
-        "kind": "defend",
-        "min": 6,
-        "max": 9,
-        "weight": 1
-      }
-    ]
+    "setAlt": {
+     "kind": "hex",
+     "inflict": {
+      "status": "weak",
+      "amount": 3
+     }
+    }
+   },
+   {
+    "id": "curse",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "wound",
+     "amount": 2
+    }
+   },
+   {
+    "id": "slap",
+    "kind": "attack",
+    "min": 10,
+    "max": 14,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "mud",
+   "curse",
+   "slap"
+  ]
+ },
+ {
+  "id": "enemy_wolf",
+  "name": "牙嵐の狼",
+  "archetype": "flurry",
+  "flavor": "群れはいない。牙の数だけで群れの働きをする。",
+  "maxHp": 95,
+  "moves": [
+   {
+    "id": "flurry",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1,
+    "hits": 3,
+    "alsoBuff": 1,
+    "setAlt": {
+     "kind": "attack",
+     "min": 5,
+     "max": 7,
+     "hits": 2,
+     "alsoBuff": 1
+    }
+   },
+   {
+    "id": "howl",
+    "kind": "buff",
+    "min": 1,
+    "max": 2,
+    "weight": 1
+   },
+   {
+    "id": "rend",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "hits": 4,
+    "setAlt": {
+     "kind": "attack",
+     "min": 4,
+     "max": 6,
+     "hits": 2
+    }
+   }
+  ],
+  "sequence": [
+   "flurry",
+   "howl",
+   "rend"
+  ]
+ },
+ {
+  "id": "enemy_moss",
+  "name": "苔まといの主",
+  "archetype": "regenerator",
+  "flavor": "苔が癒やす、半分までは。剥がれたら、走れ。",
+  "maxHp": 115,
+  "regen": 5,
+  "moves": [
+   {
+    "id": "slam",
+    "kind": "attack",
+    "min": 10,
+    "max": 14,
+    "weight": 2,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   },
+   {
+    "id": "moss_shell",
+    "kind": "defend",
+    "min": 7,
+    "max": 10,
+    "weight": 1
+   }
+  ],
+  "movesBelowHalf": [
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 15,
+    "max": 19,
+    "weight": 1
+   }
+  ],
+  "burnResist": 2,
+  "regenBreak": 30
+ },
+ {
+  "id": "enemy_joker",
+  "name": "嘲る道化",
+  "archetype": "taunter",
+  "flavor": "手ぶらの相手にだけ強気。ただし、いつまでも伏せたままなら見破りにくる。",
+  "maxHp": 85,
+  "moves": [
+   {
+    "id": "wild_swing",
+    "kind": "attack",
+    "min": 15,
+    "max": 19,
+    "weight": 2,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 2
+    }
+   },
+   {
+    "id": "dodge_prance",
+    "kind": "defend",
+    "min": 5,
+    "max": 8,
+    "weight": 1
+   }
+  ],
+  "movesVsSet": [
+   {
+    "id": "cautious_jab",
+    "kind": "attack",
+    "min": 7,
+    "max": 10,
+    "weight": 2
+   },
+   {
+    "id": "mock",
+    "kind": "defend",
+    "min": 5,
+    "max": 8,
+    "weight": 1
+   },
+   {
+    "id": "call_bluff",
+    "kind": "destroy-set",
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_drummer",
+  "name": "鼓吹きコボルト",
+  "archetype": "support",
+  "flavor": "太鼓が鳴るたび、みんな元気になる。最初に黙らせたい。",
+  "maxHp": 55,
+  "moves": [
+   {
+    "id": "war_drum",
+    "kind": "rally",
+    "min": 1,
+    "max": 2,
+    "setAlt": {
+     "kind": "attack",
+     "min": 4,
+     "max": 6
+    }
+   },
+   {
+    "id": "thump",
+    "kind": "attack",
+    "min": 4,
+    "max": 6
+   }
+  ],
+  "sequence": [
+   "war_drum",
+   "thump"
+  ]
+ },
+ {
+  "id": "enemy_warden",
+  "name": "刻限の門番",
+  "archetype": "enrager",
+  "flavor": "鐘は時間ではなく、お前が手を出した回数で鳴る。刻限が近づけば、乱打が始まる。",
+  "maxHp": 155,
+  "enrage": 2,
+  "moves": [
+   {
+    "id": "bell_strike",
+    "kind": "attack",
+    "min": 13,
+    "max": 17,
+    "weight": 1
+   },
+   {
+    "id": "gate_guard",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "alsoDefend": 12
+   },
+   {
+    "id": "bell_hushed",
+    "kind": "attack",
+    "min": 13,
+    "max": 17,
+    "weight": 1,
+    "setAlt": {
+     "kind": "attack",
+     "min": 11,
+     "max": 15,
+     "inflict": {
+      "status": "weak",
+      "amount": 1
+     }
+    }
+   }
+  ],
+  "sequence": [
+   "bell_hushed",
+   "bell_strike",
+   "gate_guard"
+  ],
+  "enrageEveryCards": 8,
+  "movesBelowHalf": [
+   {
+    "id": "bell_frenzy",
+    "kind": "attack",
+    "min": 8,
+    "max": 11,
+    "hits": 2,
+    "weight": 1
+   },
+   {
+    "id": "gate_guard",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "alsoDefend": 12,
+    "weight": 1
+   }
+  ],
+  "sequenceBelowHalf": [
+   "bell_frenzy",
+   "gate_guard"
+  ],
+  "startingBlock": 15,
+  "enrageEveryDamage": 80,
+  "armor": 35
+ },
+ {
+  "id": "enemy_thorn_squirrel",
+  "name": "針毛の栗鼠",
+  "archetype": "thorned",
+  "flavor": "触るたび刺さる。ちくちく削るか、一撃で仕留めるか。",
+  "maxHp": 75,
+  "thorns": 2,
+  "moves": [
+   {
+    "id": "gnaw",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 2
+   }
+  ]
+ },
+ {
+  "id": "enemy_thief",
+  "name": "こそ泥ゴブリン",
+  "archetype": "thief",
+  "flavor": "隠れて、掴んで、走り去る。三歩目の前に捕まえろ。",
+  "maxHp": 65,
+  "moves": [
+   {
+    "id": "sneak",
+    "kind": "defend",
+    "min": 4,
+    "max": 6,
+    "weight": 1
+   },
+   {
+    "id": "snatch",
+    "kind": "steal-gold",
+    "min": 12,
+    "max": 20,
+    "weight": 1
+   },
+   {
+    "id": "mug",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1
+   },
+   {
+    "id": "run_off",
+    "kind": "flee",
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "sneak",
+   "snatch",
+   "mug",
+   "run_off"
+  ]
+ },
+ {
+  "id": "enemy_bomber",
+  "name": "火薬樽かつぎ",
+  "archetype": "bomber",
+  "flavor": "樽の導火線は三拍で燃え尽きる。庇い、投げ、そして——。",
+  "maxHp": 85,
+  "moves": [
+   {
+    "id": "shield_barrel",
+    "kind": "defend",
+    "min": 5,
+    "max": 8,
+    "weight": 1
+   },
+   {
+    "id": "toss_ember",
+    "kind": "attack",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   },
+   {
+    "id": "big_boom",
+    "kind": "attack",
+    "min": 20,
+    "max": 24,
+    "weight": 1,
+    "inflict": {
+     "status": "scald",
+     "amount": 2
+    }
+   }
+  ],
+  "sequence": [
+   "shield_barrel",
+   "toss_ember",
+   "big_boom"
+  ],
+  "startingBlock": 12
+ },
+ {
+  "id": "enemy_moss_healer",
+  "name": "苔の癒し手",
+  "archetype": "healer",
+  "flavor": "傷んだ仲間から順に苔を貼る。貼られた側は嫌そうな顔をする。",
+  "maxHp": 65,
+  "moves": [
+   {
+    "id": "mend",
+    "kind": "heal",
+    "min": 8,
+    "max": 12,
+    "weight": 2
+   },
+   {
+    "id": "staff_poke",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_axe_ogre",
+  "name": "大振りの斧鬼",
+  "archetype": "windup",
+  "flavor": "振りかぶりは正直、一撃は苛烈、そのあと必ず息が切れる。",
+  "maxHp": 110,
+  "moves": [
+   {
+    "id": "windup",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 1,
+    "setAlt": {
+     "kind": "attack",
+     "min": 14,
+     "max": 18
+    }
+   },
+   {
+    "id": "great_swing",
+    "kind": "attack",
+    "min": 24,
+    "max": 28,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   },
+   {
+    "id": "gasp",
+    "kind": "rest",
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "windup",
+   "great_swing",
+   "gasp"
+  ]
+ },
+ {
+  "id": "enemy_shell_guard",
+  "name": "石殻の番人",
+  "archetype": "shell",
+  "flavor": "殻ごと押し潰しに来る。殻を割るか、殻ごと貫くか——割れたら中身は柔い。",
+  "maxHp": 100,
+  "moves": [
+   {
+    "id": "shell_bash",
+    "kind": "attack",
+    "min": 12,
+    "max": 16,
+    "weight": 2,
+    "alsoDefend": 10,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   },
+   {
+    "id": "harden",
+    "kind": "defend",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   }
+  ],
+  "movesBelowHalf": [
+   {
+    "id": "cracked_rage",
+    "kind": "attack",
+    "min": 16,
+    "max": 20,
+    "weight": 1
+   }
+  ],
+  "startingBlock": 10,
+  "armor": 18
+ },
+ {
+  "id": "enemy_apprentice_colossus",
+  "name": "見習い巨像",
+  "archetype": "windup",
+  "flavor": "振るってから、構える。二拍子の型は崩さない。",
+  "maxHp": 70,
+  "moves": [
+   {
+    "id": "brace",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   },
+   {
+    "id": "swing",
+    "kind": "attack",
+    "min": 14,
+    "max": 16,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "swing",
+   "brace"
+  ]
+ },
+ {
+  "id": "enemy_mimic_imp",
+  "name": "物真似の子鬼",
+  "archetype": "mimic",
+  "flavor": "あなたの手数をけらけら笑いながら数えている。",
+  "maxHp": 42,
+  "moves": [
+   {
+    "id": "mimic",
+    "kind": "attack",
+    "min": 2,
+    "max": 2,
+    "weight": 1,
+    "mirrorHits": true
+   }
+  ]
+ },
+ {
+  "id": "enemy_cultist",
+  "name": "囁きの狂信者",
+  "archetype": "enrager",
+  "flavor": "祈るほどに刃が重くなる。囁きを止めるには、口を塞ぐしかない。",
+  "maxHp": 65,
+  "enrage": 2,
+  "moves": [
+   {
+    "id": "dark_blade",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_slug",
+  "name": "酸吐きの蛞蝓",
+  "archetype": "hexer",
+  "flavor": "舐められたら力が抜け、浴びせられたら鎧が緩む。ぬめりは全部が武器。",
+  "maxHp": 70,
+  "moves": [
+   {
+    "id": "lick",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 2
+    }
+   },
+   {
+    "id": "acid_spit",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   },
+   {
+    "id": "tackle",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "lick",
+   "acid_spit",
+   "tackle"
+  ]
+ },
+ {
+  "id": "enemy_whetstone_colossus",
+  "name": "砥石の巨像",
+  "archetype": "windup",
+  "flavor": "三拍の後に刃が落ちる。数えられる死は、避けられる死だ。",
+  "maxHp": 78,
+  "moves": [
+   {
+    "id": "brace",
+    "kind": "defend",
+    "min": 10,
+    "max": 14,
+    "weight": 1
+   },
+   {
+    "id": "hone",
+    "kind": "buff",
+    "min": 2,
+    "max": 3,
+    "weight": 1
+   },
+   {
+    "id": "guillotine",
+    "kind": "attack",
+    "min": 26,
+    "max": 30,
+    "weight": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   }
+  ],
+  "sequence": [
+   "brace",
+   "hone",
+   "guillotine"
+  ]
+ },
+ {
+  "id": "enemy_mimic_jester",
+  "name": "物真似の道化",
+  "archetype": "mimic",
+  "flavor": "あなたが撃った数だけ、鏡の刃が返ってくる。",
+  "maxHp": 68,
+  "moves": [
+   {
+    "id": "mirror_dance",
+    "kind": "attack",
+    "min": 3,
+    "max": 4,
+    "weight": 1,
+    "mirrorHits": true
+   }
+  ]
+ },
+ {
+  "id": "enemy_cinder_imp",
+  "name": "焚きつけのインプ",
+  "archetype": "hexer",
+  "flavor": "火の粉を投げて笑う小鬼。手札で火傷が疼く前に、捨てるか、燃やされるか。",
+  "maxHp": 62,
+  "moves": [
+   {
+    "id": "spark_toss",
+    "kind": "attack",
+    "min": 6,
+    "max": 9,
+    "weight": 1,
+    "inflict": {
+     "status": "scald",
+     "amount": 1
+    }
+   },
+   {
+    "id": "fan_flames",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "scald",
+     "amount": 2
+    }
+   },
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 10,
+    "max": 14,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "spark_toss",
+   "fan_flames",
+   "bite"
+  ]
+ },
+ {
+  "id": "enemy_rock_beetle",
+  "name": "岩皮の甲虫",
+  "archetype": "shell",
+  "flavor": "小さな体を、身の丈に合わない岩の殻が包む。割るか、貫くか、焼くか。",
+  "maxHp": 30,
+  "startingBlock": 12,
+  "moves": [
+   {
+    "id": "harden",
+    "kind": "defend",
+    "min": 12,
+    "max": 15,
+    "weight": 1
+   },
+   {
+    "id": "horn_jab",
+    "kind": "attack",
+    "min": 6,
+    "max": 9,
+    "weight": 1,
+    "alsoDefend": 8
+   }
+  ],
+  "sequence": [
+   "horn_jab",
+   "harden",
+   "horn_jab"
+  ]
+ },
+ {
+  "id": "enemy_big_slime",
+  "name": "大苔スライム",
+  "archetype": "splitter",
+  "flavor": "苔と泥の巨体。斬っても潰しても、中から小さいのが這い出してくる。",
+  "maxHp": 72,
+  "splitInto": {
+   "enemyId": "enemy_moss_slime",
+   "count": 2
   },
-  {
-    "id": "enemy_moss_slime",
-    "name": "苔スライム",
-    "archetype": "splitter",
-    "flavor": "大苔スライムのかけら。小さくても噛む。",
-    "maxHp": 26,
-    "moves": [
-      {
-        "id": "bump",
-        "kind": "attack",
-        "min": 5,
-        "max": 8,
-        "weight": 1
-      },
-      {
-        "id": "ooze",
-        "kind": "defend",
-        "min": 4,
-        "max": 6,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "bump",
-      "ooze"
-    ]
-  },
-  {
-    "id": "enemy_elite_sergeant",
-    "name": "鞭打ちの鬼軍曹",
-    "archetype": "elite",
-    "flavor": "「盾を上げたな？」——縮こまる者を見ると、鞭の手が止まらない。",
-    "maxHp": 82,
-    "angerOnBlock": 1,
-    "moves": [
-      {
-        "id": "whip",
-        "kind": "attack",
-        "min": 8,
-        "max": 10,
-        "weight": 1
-      },
-      {
-        "id": "double_whip",
-        "kind": "attack",
-        "min": 5,
-        "max": 6,
-        "weight": 1,
-        "hits": 2
-      }
-    ],
-    "sequence": [
-      "whip",
-      "double_whip"
-    ]
-  },
-  {
-    "id": "enemy_elite_sentry",
-    "name": "歩哨",
-    "archetype": "elite",
-    "flavor": "塔の秩序を守る石の番人。侵入者の鞄にがらくたを詰め込む。",
-    "maxHp": 42,
-    "moves": [
-      {
-        "id": "bolt",
-        "kind": "attack",
-        "min": 4,
-        "max": 5,
-        "weight": 1,
-        "inflict": {
-          "status": "junk",
-          "amount": 2
-        }
-      },
-      {
-        "id": "beam",
-        "kind": "attack",
-        "min": 9,
-        "max": 11,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "bolt",
-      "beam"
-    ]
-  },
-  {
-    "id": "enemy_elite_iron_egg",
-    "name": "眠れる鉄卵",
-    "archetype": "elite",
-    "flavor": "眠っている間も、殻は厚くなり続ける。起こすか、削り続けるか。",
-    "maxHp": 112,
-    "armor": 22,
-    "moves": [
-      {
-        "id": "sleep",
-        "kind": "defend",
-        "weight": 1,
-        "min": 14,
-        "max": 18
-      },
-      {
-        "id": "awaken",
-        "kind": "buff",
-        "min": 3,
-        "max": 3,
-        "weight": 1
-      },
-      {
-        "id": "tail",
-        "kind": "attack",
-        "min": 18,
-        "max": 22,
-        "weight": 1,
-        "inflict": {
-          "status": "weak",
-          "amount": 2
-        }
-      }
-    ],
-    "sequence": [
-      "sleep",
-      "awaken",
-      "tail",
-      "tail",
-      "tail",
-      "tail",
-      "tail",
-      "tail",
-      "tail",
-      "tail"
-    ]
-  },
-  {
-    "id": "enemy_elite_slaver",
-    "name": "鎖持ちの奴隷商",
-    "archetype": "elite",
-    "flavor": "鎖は骨を砕かない。心を折るために振るう。",
-    "maxHp": 95,
-    "moves": [
-      {
-        "id": "chain",
-        "kind": "attack",
-        "min": 11,
-        "max": 14,
-        "weight": 1,
-        "inflict": {
-          "status": "weak",
-          "amount": 2
-        }
-      },
-      {
-        "id": "net",
-        "kind": "hex",
-        "weight": 1,
-        "inflict": {
-          "status": "vulnerable",
-          "amount": 3
-        }
-      },
-      {
-        "id": "lash",
-        "kind": "attack",
-        "min": 12,
-        "max": 16,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "chain",
-      "net",
-      "lash"
-    ]
-  },
-  {
-    "id": "enemy_elite_stab_book",
-    "name": "刺突の書",
-    "archetype": "elite",
-    "flavor": "頁をめくるたび、刺し方がひとつ増える。",
-    "maxHp": 130,
-    "moves": [
-      {
-        "id": "stab2",
-        "kind": "attack",
-        "min": 6,
-        "max": 8,
-        "weight": 1,
-        "hits": 2
-      },
-      {
-        "id": "stab3",
-        "kind": "attack",
-        "min": 6,
-        "max": 8,
-        "weight": 1,
-        "hits": 3
-      },
-      {
-        "id": "stab4",
-        "kind": "attack",
-        "min": 6,
-        "max": 8,
-        "weight": 1,
-        "hits": 4
-      }
-    ],
-    "sequence": [
-      "stab2",
-      "stab3",
-      "stab4"
-    ]
-  },
-  {
-    "id": "enemy_elite_giant_face",
-    "name": "巨面",
-    "archetype": "elite",
-    "flavor": "睨まれたら、次は潰される。二拍子の死の予告。",
-    "maxHp": 140,
-    "moves": [
-      {
-        "id": "glare",
-        "kind": "buff",
-        "min": 2,
-        "max": 3,
-        "weight": 1
-      },
-      {
-        "id": "crush",
-        "kind": "attack",
-        "min": 30,
-        "max": 34,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "glare",
-      "crush"
-    ]
-  },
-  {
-    "id": "enemy_elite_gold_raven",
-    "name": "金羽の大鴉",
-    "archetype": "elite",
-    "flavor": "光るものは全部おれのもの。つついて、奪って、飛んで逃げる。",
-    "maxHp": 58,
-    "moves": [
-      {
-        "id": "peck",
-        "kind": "attack",
-        "min": 6,
-        "max": 9,
-        "weight": 1
-      },
-      {
-        "id": "grand_steal",
-        "kind": "steal-gold",
-        "min": 40,
-        "max": 60,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "peck",
-      "grand_steal"
-    ],
-    "startingBlock": 6
-  },
-  {
-    "id": "enemy_elite_mirror_djinn",
-    "name": "写し身の魔人",
-    "archetype": "elite",
-    "flavor": "あなたの手数が、そのまま刃になって返る。鏡に映る自分と戦え。",
-    "maxHp": 96,
-    "moves": [
-      {
-        "id": "mirror",
-        "kind": "attack",
-        "min": 4,
-        "max": 5,
-        "weight": 1,
-        "mirrorHits": true
-      },
-      {
-        "id": "gaze",
-        "kind": "hex",
-        "weight": 1,
-        "inflict": {
-          "status": "weak",
-          "amount": 3
-        }
-      }
-    ],
-    "sequence": [
-      "mirror",
-      "mirror",
-      "gaze"
-    ]
-  },
-  {
-    "id": "enemy_elite_doom_chanter",
-    "name": "終焉の唱い手",
-    "archetype": "elite",
-    "flavor": "あなたが札を切るたび、詠唱は一節進む。急げ。歌が終わる前に。",
-    "maxHp": 125,
-    "enrageEveryCards": 6,
-    "moves": [
-      {
-        "id": "dual_chant",
-        "kind": "attack",
-        "min": 10,
-        "max": 13,
-        "weight": 1,
-        "hits": 2
-      },
-      {
-        "id": "crescendo",
-        "kind": "buff",
-        "min": 2,
-        "max": 3,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "dual_chant",
-      "dual_chant",
-      "crescendo"
-    ]
-  },
-  {
-    "id": "enemy_elite_devourer",
-    "name": "大喰らいの蟲",
-    "archetype": "elite",
-    "flavor": "頁も刃も、腹に入れば同じこと。食べた分だけ、太る。",
-    "maxHp": 70,
-    "moves": [
-      {
-        "id": "bite",
-        "kind": "attack",
-        "min": 8,
-        "max": 11,
-        "weight": 1
-      },
-      {
-        "id": "devour",
-        "kind": "mill",
-        "min": 3,
-        "max": 3,
-        "weight": 1
-      },
-      {
-        "id": "fatten",
-        "kind": "buff",
-        "min": 2,
-        "max": 2,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "bite",
-      "devour",
-      "bite",
-      "fatten"
-    ]
-  },
-  {
-    "id": "enemy_elite_owl",
-    "name": "読み手の梟",
-    "archetype": "elite",
-    "flavor": "伏せた瞬間だけ、羽が止まる。読まれているのはどちらか。",
-    "maxHp": 95,
-    "moves": [
-      {
-        "id": "wing",
-        "kind": "attack",
-        "min": 8,
-        "max": 11,
-        "weight": 1
-      },
-      {
-        "id": "brace",
-        "kind": "defend",
-        "min": 8,
-        "max": 12,
-        "weight": 1
-      },
-      {
-        "id": "talon_dive",
-        "kind": "attack",
-        "min": 18,
-        "max": 24,
-        "weight": 1,
-        "setAlt": {
-          "kind": "destroy-set",
-          "inflict": {
-            "status": "junk",
-            "amount": 1
-          }
-        }
-      }
-    ],
-    "sequence": [
-      "wing",
-      "brace",
-      "talon_dive"
-    ]
-  },
-  {
-    "id": "enemy_elite_deathless",
-    "name": "不滅の騎士",
-    "archetype": "elite",
-    "flavor": "鎧の下は苔と誓い。半分を割るまでは、何度でも立つ。",
-    "maxHp": 120,
-    "armor": 20,
-    "regen": 5,
-    "regenBreak": 33,
-    "moves": [
-      {
-        "id": "cleave",
-        "kind": "attack",
-        "min": 16,
-        "max": 22,
-        "weight": 1
-      },
-      {
-        "id": "stance",
-        "kind": "attack",
-        "min": 8,
-        "max": 12,
-        "alsoDefend": 12,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "cleave",
-      "stance"
-    ]
-  }
+  "moves": [
+   {
+    "id": "slam",
+    "kind": "attack",
+    "min": 9,
+    "max": 13,
+    "weight": 2
+   },
+   {
+    "id": "ooze_guard",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   }
+  ]
+ },
+ {
+  "id": "enemy_moss_slime",
+  "name": "苔スライム",
+  "archetype": "splitter",
+  "flavor": "大苔スライムのかけら。小さくても噛む。",
+  "maxHp": 26,
+  "moves": [
+   {
+    "id": "bump",
+    "kind": "attack",
+    "min": 5,
+    "max": 8,
+    "weight": 1
+   },
+   {
+    "id": "ooze",
+    "kind": "defend",
+    "min": 4,
+    "max": 6,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "bump",
+   "ooze"
+  ]
+ },
+ {
+  "id": "enemy_elite_sergeant",
+  "name": "鞭打ちの鬼軍曹",
+  "archetype": "elite",
+  "flavor": "「盾を上げたな？」——縮こまる者を見ると、鞭の手が止まらない。",
+  "maxHp": 82,
+  "angerOnBlock": 1,
+  "moves": [
+   {
+    "id": "whip",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 1
+   },
+   {
+    "id": "double_whip",
+    "kind": "attack",
+    "min": 5,
+    "max": 6,
+    "weight": 1,
+    "hits": 2
+   }
+  ],
+  "sequence": [
+   "whip",
+   "double_whip"
+  ]
+ },
+ {
+  "id": "enemy_elite_sentry",
+  "name": "歩哨",
+  "archetype": "elite",
+  "flavor": "塔の秩序を守る石の番人。侵入者の鞄にがらくたを詰め込む。",
+  "maxHp": 42,
+  "moves": [
+   {
+    "id": "bolt",
+    "kind": "attack",
+    "min": 4,
+    "max": 5,
+    "weight": 1,
+    "inflict": {
+     "status": "junk",
+     "amount": 2
+    }
+   },
+   {
+    "id": "beam",
+    "kind": "attack",
+    "min": 9,
+    "max": 11,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "bolt",
+   "beam"
+  ]
+ },
+ {
+  "id": "enemy_elite_iron_egg",
+  "name": "眠れる鉄卵",
+  "archetype": "elite",
+  "flavor": "眠っている間も、殻は厚くなり続ける。起こすか、削り続けるか。",
+  "maxHp": 112,
+  "armor": 22,
+  "moves": [
+   {
+    "id": "sleep",
+    "kind": "defend",
+    "weight": 1,
+    "min": 14,
+    "max": 18
+   },
+   {
+    "id": "awaken",
+    "kind": "buff",
+    "min": 3,
+    "max": 3,
+    "weight": 1
+   },
+   {
+    "id": "tail",
+    "kind": "attack",
+    "min": 18,
+    "max": 22,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 2
+    }
+   }
+  ],
+  "sequence": [
+   "sleep",
+   "awaken",
+   "tail",
+   "tail",
+   "tail",
+   "tail",
+   "tail",
+   "tail",
+   "tail",
+   "tail"
+  ]
+ },
+ {
+  "id": "enemy_elite_slaver",
+  "name": "鎖持ちの奴隷商",
+  "archetype": "elite",
+  "flavor": "鎖は骨を砕かない。心を折るために振るう。",
+  "maxHp": 95,
+  "moves": [
+   {
+    "id": "chain",
+    "kind": "attack",
+    "min": 11,
+    "max": 14,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 2
+    }
+   },
+   {
+    "id": "net",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 3
+    }
+   },
+   {
+    "id": "lash",
+    "kind": "attack",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "chain",
+   "net",
+   "lash"
+  ]
+ },
+ {
+  "id": "enemy_elite_stab_book",
+  "name": "刺突の書",
+  "archetype": "elite",
+  "flavor": "頁をめくるたび、刺し方がひとつ増える。",
+  "maxHp": 130,
+  "moves": [
+   {
+    "id": "stab2",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "stab3",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "hits": 3
+   },
+   {
+    "id": "stab4",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "hits": 4
+   }
+  ],
+  "sequence": [
+   "stab2",
+   "stab3",
+   "stab4"
+  ]
+ },
+ {
+  "id": "enemy_elite_giant_face",
+  "name": "巨面",
+  "archetype": "elite",
+  "flavor": "睨まれたら、次は潰される。二拍子の死の予告。",
+  "maxHp": 140,
+  "moves": [
+   {
+    "id": "glare",
+    "kind": "buff",
+    "min": 2,
+    "max": 3,
+    "weight": 1
+   },
+   {
+    "id": "crush",
+    "kind": "attack",
+    "min": 30,
+    "max": 34,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "glare",
+   "crush"
+  ]
+ },
+ {
+  "id": "enemy_elite_gold_raven",
+  "name": "金羽の大鴉",
+  "archetype": "elite",
+  "flavor": "光るものは全部おれのもの。つついて、奪って、飛んで逃げる。",
+  "maxHp": 58,
+  "moves": [
+   {
+    "id": "peck",
+    "kind": "attack",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   },
+   {
+    "id": "grand_steal",
+    "kind": "steal-gold",
+    "min": 40,
+    "max": 60,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "peck",
+   "grand_steal"
+  ],
+  "startingBlock": 6
+ },
+ {
+  "id": "enemy_elite_mirror_djinn",
+  "name": "写し身の魔人",
+  "archetype": "elite",
+  "flavor": "あなたの手数が、そのまま刃になって返る。鏡に映る自分と戦え。",
+  "maxHp": 96,
+  "moves": [
+   {
+    "id": "mirror",
+    "kind": "attack",
+    "min": 4,
+    "max": 5,
+    "weight": 1,
+    "mirrorHits": true
+   },
+   {
+    "id": "gaze",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 3
+    }
+   }
+  ],
+  "sequence": [
+   "mirror",
+   "mirror",
+   "gaze"
+  ]
+ },
+ {
+  "id": "enemy_elite_doom_chanter",
+  "name": "終焉の唱い手",
+  "archetype": "elite",
+  "flavor": "あなたが札を切るたび、詠唱は一節進む。急げ。歌が終わる前に。",
+  "maxHp": 125,
+  "enrageEveryCards": 6,
+  "moves": [
+   {
+    "id": "dual_chant",
+    "kind": "attack",
+    "min": 10,
+    "max": 13,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "crescendo",
+    "kind": "buff",
+    "min": 2,
+    "max": 3,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "dual_chant",
+   "dual_chant",
+   "crescendo"
+  ]
+ },
+ {
+  "id": "enemy_elite_devourer",
+  "name": "大喰らいの蟲",
+  "archetype": "elite",
+  "flavor": "頁も刃も、腹に入れば同じこと。食べた分だけ、太る。",
+  "maxHp": 70,
+  "moves": [
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 8,
+    "max": 11,
+    "weight": 1
+   },
+   {
+    "id": "devour",
+    "kind": "mill",
+    "min": 3,
+    "max": 3,
+    "weight": 1
+   },
+   {
+    "id": "fatten",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "bite",
+   "devour",
+   "bite",
+   "fatten"
+  ]
+ },
+ {
+  "id": "enemy_elite_owl",
+  "name": "読み手の梟",
+  "archetype": "elite",
+  "flavor": "伏せた瞬間だけ、羽が止まる。読まれているのはどちらか。",
+  "maxHp": 95,
+  "moves": [
+   {
+    "id": "wing",
+    "kind": "attack",
+    "min": 8,
+    "max": 11,
+    "weight": 1
+   },
+   {
+    "id": "brace",
+    "kind": "defend",
+    "min": 8,
+    "max": 12,
+    "weight": 1
+   },
+   {
+    "id": "talon_dive",
+    "kind": "attack",
+    "min": 18,
+    "max": 24,
+    "weight": 1,
+    "setAlt": {
+     "kind": "destroy-set",
+     "inflict": {
+      "status": "junk",
+      "amount": 1
+     }
+    }
+   }
+  ],
+  "sequence": [
+   "wing",
+   "brace",
+   "talon_dive"
+  ]
+ },
+ {
+  "id": "enemy_elite_deathless",
+  "name": "不滅の騎士",
+  "archetype": "elite",
+  "flavor": "鎧の下は苔と誓い。半分を割るまでは、何度でも立つ。",
+  "maxHp": 120,
+  "armor": 20,
+  "regen": 5,
+  "regenBreak": 33,
+  "moves": [
+   {
+    "id": "cleave",
+    "kind": "attack",
+    "min": 16,
+    "max": 22,
+    "weight": 1
+   },
+   {
+    "id": "stance",
+    "kind": "attack",
+    "min": 8,
+    "max": 12,
+    "alsoDefend": 12,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "cleave",
+   "stance"
+  ]
+ },
+ {
+  "id": "enemy_shield_squire",
+  "name": "盾持ちの従士",
+  "archetype": "guardian",
+  "flavor": "主を守るのが仕事。あなたの刃は、まずこの盾に届く。",
+  "maxHp": 70,
+  "guardian": true,
+  "startingBlock": 6,
+  "moves": [
+   {
+    "id": "shield_bash",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "alsoDefend": 5
+   },
+   {
+    "id": "brace",
+    "kind": "defend",
+    "min": 10,
+    "max": 13,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "shield_bash",
+   "brace"
+  ]
+ },
+ {
+  "id": "enemy_crossbow_archer",
+  "name": "弩弓の射手",
+  "archetype": "charger",
+  "flavor": "従士の陰から狙い撃つ。急所を射抜かれる前に、盾の陣を崩せるか。",
+  "maxHp": 46,
+  "moves": [
+   {
+    "id": "bolt",
+    "kind": "attack",
+    "min": 9,
+    "max": 13,
+    "weight": 1
+   },
+   {
+    "id": "aimed_shot",
+    "kind": "attack",
+    "min": 14,
+    "max": 18,
+    "weight": 1,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 1
+    }
+   }
+  ],
+  "sequence": [
+   "bolt",
+   "bolt",
+   "aimed_shot"
+  ]
+ },
+ {
+  "id": "enemy_bond_wolf",
+  "name": "双牙の狼",
+  "archetype": "flurry",
+  "flavor": "二頭でひとつの獣。片方の牙が折れれば、残る牙も鈍る。",
+  "maxHp": 105,
+  "bondStrength": 2,
+  "moves": [
+   {
+    "id": "twin_bite",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "lunge",
+    "kind": "attack",
+    "min": 9,
+    "max": 12,
+    "weight": 1
+   },
+   {
+    "id": "prowl",
+    "kind": "defend",
+    "min": 8,
+    "max": 12,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "twin_bite",
+   "lunge",
+   "prowl"
+  ]
+ }
 ]
