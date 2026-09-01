@@ -719,6 +719,56 @@ export function createRun(
 }
 
 /**
+ * リプレイ・ジャーナル (2026-09-01)。エンジンの決定性 (同じシード+同じコマンド列=同じ結果) の
+ * 具現化 — origin から初期状態を再現し commands を順に適用すれば任意の地点が正確に復元できる。
+ * ブラウザUIとCLIハーネス (sim/play.ts) の両方が同じ形式で記録する
+ */
+export interface ReplayOrigin {
+  readonly kind: 'run' | 'checkpoint'
+  readonly seed: number
+  readonly leaderId: string
+  readonly deckId?: string
+  readonly difficulty?: number
+  /** kind='checkpoint' の開始オプション (createDebugCheckpointRun の引数) */
+  readonly checkpoint?: {
+    readonly act: number
+    readonly deckId: string
+    readonly relicIds?: readonly string[]
+    readonly hpRatio?: number
+    readonly gold?: number
+    readonly difficulty?: number
+  }
+}
+export interface RunJournal {
+  readonly origin: ReplayOrigin
+  readonly commands: readonly RunCommand[]
+}
+
+/** origin からラン初期状態を再現する */
+export function replayInitialRun(origin: ReplayOrigin): RunState {
+  if (origin.kind === 'checkpoint' && origin.checkpoint !== undefined) {
+    return createDebugCheckpointRun(origin.seed, 'set-confirm', origin.leaderId, origin.checkpoint)
+  }
+  return createRun(origin.seed, 'set-confirm', origin.leaderId, origin.deckId, origin.difficulty)
+}
+
+/**
+ * ジャーナル全体を再実行し、各コマンド後の状態列を返す (states[0]=初期状態、states[i]=iコマンド後)。
+ * データ定義が変わって再現が分岐した場合はそこで打ち切り、error に理由を入れる
+ */
+export function replayStates(journal: RunJournal): { states: RunState[]; error: string | null } {
+  const states: RunState[] = [replayInitialRun(journal.origin)]
+  for (let i = 0; i < journal.commands.length; i++) {
+    try {
+      states.push(applyRunCommand(states[states.length - 1], journal.commands[i]))
+    } catch (e) {
+      return { states, error: `コマンド${i + 1}/${journal.commands.length}で再現が分岐 (データ変更の可能性): ${e instanceof Error ? e.message : String(e)}` }
+    }
+  }
+  return { states, error: null }
+}
+
+/**
  * チェックポイント開始 (2026-09-01 デバッグ機能「幕2/幕3から代表デッキで開始」)。
  * 幕2の谷・終盤の検証に毎回幕1を遊ぶコストを消す = LLMランの「幕サンプリング」を人間にも。
  * 通常の createRun を土台に、幕・マップ・デッキ・レリック (B型ボーナス込み)・HP・金だけ差し替える純関数

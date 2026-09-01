@@ -20,8 +20,7 @@ function safeEnemyName(id: string): string {
   }
 }
 import { effectiveIntent, effectiveCost, isPlayableFromHand } from '../engine/effects.ts'
-import type { RunCommand, RunState } from '../engine/run.ts'
-import { applyRunCommand, createDebugCheckpointRun, createRun } from '../engine/run.ts'
+import type { RunState } from '../engine/run.ts'
 import type { CardInstance, GameEvent, GameState } from '../engine/types.ts'
 import { cardName, intentText, logLine } from './log.ts'
 export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine } from './log.ts'
@@ -799,50 +798,10 @@ export function buildOverrideDefs(bundle: ProposalBundle): {
  * UI層で記録する。origin から createRun / createDebugCheckpointRun を再現し、
  * commands を順に applyRunCommand すれば任意の地点の盤面が正確に復元できる
  */
-export interface ReplayOrigin {
-  readonly kind: 'run' | 'checkpoint'
-  readonly seed: number
-  readonly leaderId: string
-  readonly deckId?: string
-  readonly difficulty?: number
-  /** kind='checkpoint' の開始オプション (createDebugCheckpointRun の引数) */
-  readonly checkpoint?: {
-    readonly act: number
-    readonly deckId: string
-    readonly relicIds?: readonly string[]
-    readonly hpRatio?: number
-    readonly gold?: number
-    readonly difficulty?: number
-  }
-}
-export interface RunJournal {
-  readonly origin: ReplayOrigin
-  readonly commands: readonly RunCommand[]
-}
-
-/** origin からラン初期状態を再現する */
-export function replayInitialRun(origin: ReplayOrigin): RunState {
-  if (origin.kind === 'checkpoint' && origin.checkpoint !== undefined) {
-    return createDebugCheckpointRun(origin.seed, 'set-confirm', origin.leaderId, origin.checkpoint)
-  }
-  return createRun(origin.seed, 'set-confirm', origin.leaderId, origin.deckId, origin.difficulty)
-}
-
-/**
- * ジャーナル全体を再実行し、各コマンド後の状態列を返す (states[0]=初期状態、states[i]=iコマンド後)。
- * データ定義が変わって再現が分岐した場合はそこで打ち切り、error に理由を入れる
- */
-export function replayStates(journal: RunJournal): { states: RunState[]; error: string | null } {
-  const states: RunState[] = [replayInitialRun(journal.origin)]
-  for (let i = 0; i < journal.commands.length; i++) {
-    try {
-      states.push(applyRunCommand(states[states.length - 1], journal.commands[i]))
-    } catch (e) {
-      return { states, error: `コマンド${i + 1}/${journal.commands.length}で再現が分岐 (データ変更の可能性): ${e instanceof Error ? e.message : String(e)}` }
-    }
-  }
-  return { states, error: null }
-}
+// リプレイ機構は engine/run.ts へ移設 (2026-09-01 CLI/Opusランも同形式で記録するため)。互換の再エクスポート
+export { replayInitialRun, replayStates } from '../engine/run.ts'
+export type { ReplayOrigin, RunJournal } from '../engine/run.ts'
+import type { RunJournal } from '../engine/run.ts'
 
 /**
  * ランのセーブファイル (sim/play.ts の SaveFile 互換 = CLIでもそのまま開ける)。

@@ -6,6 +6,10 @@
 //   npx tsx src/sim/play.ts cmd <stateFile> '<コマンドJSON>'
 //   npx tsx src/sim/play.ts show <stateFile>
 //
+// 状態ファイルにはリプレイ・ジャーナル (journal) が自動で記録される (2026-09-01)。
+// ブラウザのタイトル画面「🎬 リプレイを読み込む」にこのファイルを渡すと、CLI/Opusランを
+// 1手ずつ観戦でき、任意の地点から人間が操作を引き継げる
+//
 // コマンドJSON例:
 //   {"type":"PlayCard","cardUid":"c12","targetIndex":0}
 //   {"type":"SetCard","cardUid":"c3"} / {"type":"RetrieveSetCard","cardUid":"c3"} (1E) / {"type":"EndTurn"}
@@ -40,13 +44,15 @@ import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNee
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
-import type { RunCommand, RunState } from '../engine/run.ts'
+import type { RunCommand, RunJournal, RunState } from '../engine/run.ts'
 
 interface SaveFile {
   kind: 'run' | 'battle'
   run?: RunState
   battle?: GameState
   logIndex: number
+  /** リプレイ・ジャーナル (2026-09-01)。ブラウザの🎬リプレイと同形式 = Opusランも観戦・引き継ぎできる */
+  journal?: RunJournal
 }
 
 // ---- 効果の短文レンダラ (UIの簡易版) ----
@@ -597,7 +603,17 @@ const [, , mode, ...args] = process.argv
 if (mode === 'new-run') {
   const [leaderId, seed, file, deckId, difficulty] = args
   const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined)
-  const sf: SaveFile = { kind: 'run', run, logIndex: 0 }
+  const journal: RunJournal = {
+    origin: {
+      kind: 'run',
+      seed: Number(seed),
+      leaderId,
+      ...(deckId ? { deckId } : {}),
+      ...(difficulty ? { difficulty: Number(difficulty) } : {}),
+    },
+    commands: [],
+  }
+  const sf: SaveFile = { kind: 'run', run, logIndex: 0, journal }
   save(file, sf)
   console.log(renderRun(run, 0))
 } else if (mode === 'new-battle') {
@@ -642,6 +658,8 @@ if (mode === 'new-run') {
         : { type: 'Combat', command: cmd as Command }
     try {
       sf.run = applyRunCommand(sf.run!, runCmd)
+      // リプレイ記録 (成功したコマンドだけ。旧ファイル=journal無しは記録しない)
+      if (sf.journal !== undefined) sf.journal = { ...sf.journal, commands: [...sf.journal.commands, runCmd] }
     } catch (err) {
       // 不正なコマンドはスタックトレースでなく1行のエラーで返し、exit 1 にする
       // (2026-08-31 検証ラン指摘: exit 0 だとスクリプト/LLMがエラーを検知できず計算がずれる)
