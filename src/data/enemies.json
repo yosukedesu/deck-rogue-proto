@@ -643,8 +643,7 @@
    "snatch",
    "mug",
    "run_off"
-  ],
-  "thorns": 1
+  ]
  },
  {
   "id": "enemy_bomber",

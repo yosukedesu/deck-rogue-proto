@@ -1120,10 +1120,40 @@ export function endTurn(state: GameState): GameState {
     s = {
       ...s,
       enemies: s.enemies.map((e, j) =>
-        j === i ? { ...e, hp: e.hp - amount, burn: Math.max(0, e.burn - decay) } : e,
+        j === i
+          ? {
+              ...e,
+              hp: e.hp - amount,
+              burn: Math.max(0, e.burn - decay),
+              // 延焼ティックも与ダメ系カウンタに算入する (2026-09-02 ミニングで発見した盲点の是正。
+              // 撃破サマリーの延焼算入 (2026-08-31) と同じ裁定「ダメージはダメージ」——
+              // バーンは regenBreak (再生止め) の解答になれる代わりに、与ダメ激昂のタイマーを進める
+              damageTakenTotal: (e.damageTakenTotal ?? 0) + amount,
+              hpLostSinceRegen: (e.hpLostSinceRegen ?? 0) + amount,
+            }
+          : e,
       ),
     }
     s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
+    // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
+    {
+      const struck = s.enemies[i]
+      const defE = getEnemyDef(struck.enemyId)
+      if (defE.enrageEveryDamage !== undefined && struck.hp > 0) {
+        const before = (struck.damageTakenTotal ?? 0) - amount
+        const crossings =
+          Math.floor((struck.damageTakenTotal ?? 0) / defE.enrageEveryDamage) -
+          Math.floor(before / defE.enrageEveryDamage)
+        const gain = crossings * (defE.enrage ?? 2)
+        if (gain > 0) {
+          s = {
+            ...s,
+            enemies: s.enemies.map((e, j) => (j === i ? { ...e, strength: e.strength + gain } : e)),
+          }
+          s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: gain, reason: 'enrage-damage' })
+        }
+      }
+    }
   }
   s = checkCombatEnd(s) // 行動前に焼き切れば敵は動けない
   if (isOver(s)) return s

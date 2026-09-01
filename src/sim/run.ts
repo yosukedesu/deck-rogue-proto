@@ -489,6 +489,7 @@ function simulateRuns(count: number, baseSeed: number): void {
   console.log('leader,runs,cleared,clearRate,avgBattlesCleared,avgFinalDeckSize')
   for (const leader of allLeaders) {
     const deathsByBattle = new Array<number>(BOSS_ROW + 1).fill(0)
+    const deathsByEnemy = new Map<string, number>()
     let cleared = 0
     let totalBattlesCleared = 0
     let totalDeckSize = 0
@@ -580,7 +581,13 @@ function simulateRuns(count: number, baseSeed: number): void {
       totalBattlesCleared += battlesCleared
       totalDeckSize += run.deck.length
       if (run.phase === 'won' && !aborted) cleared += 1
-      else deathsByBattle[Math.min(Math.max(run.row, 0), BOSS_ROW)] += 1
+      else {
+        deathsByBattle[Math.min(Math.max(run.row, 0), BOSS_ROW)] += 1
+        // 死因の敵の集計 (2026-09-02 分散監視。StS2教訓「平均勝率でなく、どのデッキが
+        // どの敵に詰むかの分散が炎上の火種」への一級指標化)
+        const killer = run.combat?.enemies.map((e) => e.enemyId).join('+') ?? '(非戦闘)'
+        deathsByEnemy.set(killer, (deathsByEnemy.get(killer) ?? 0) + 1)
+      }
     }
     console.log(
       [
@@ -596,6 +603,15 @@ function simulateRuns(count: number, baseSeed: number): void {
       `# ${leader.id} 敗北した戦闘の分布: ` +
         deathsByBattle.map((d, i) => (d > 0 ? `${i + 1}戦目:${d}` : null)).filter(Boolean).join(' '),
     )
+    {
+      const deaths = [...deathsByEnemy.entries()].sort((x, y) => y[1] - x[1])
+      const totalDeaths = deaths.reduce((sum, [, n]) => sum + n, 0)
+      if (totalDeaths > 0) {
+        const top = deaths.slice(0, 5).map(([id, n]) => `${id}:${n}`).join(' ')
+        const concentrated = deaths[0][1] / totalDeaths > 0.5 ? ' ⚠死因集中' : ''
+        console.error(`# ${leader.id} 死因の敵 top5: ${top}${concentrated}`)
+      }
+    }
   }
 }
 
