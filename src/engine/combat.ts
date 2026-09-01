@@ -4,7 +4,7 @@
 // state.ts が方式コマンド処理後に continueAfterWindow() で再開する。
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
-import { buildDeck, getEnemyDef } from './content.ts'
+import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF } from './content.ts'
 import {
   cardNeedsTarget,
   drawCards,
@@ -912,6 +912,20 @@ export function endTurn(state: GameState): GameState {
       frail: Math.max(0, s.player.frail - 1),
     },
   }
+  // 火傷・烙印 (2026-09-02): 自ターン終了時に手札にあると疼く (火傷=2/枚・烙印=1/枚)。
+  // ブロックで防げない直接HP損失。自傷 (selfHpLost) には数えない = 敵由来の痛み。
+  // 捨てコスト・消滅コストの支払いに使えば疼く前に処分できる (手札マネジメントの問い)
+  {
+    const scalds = s.player.hand.filter((c) => c.def.id === SCALD_DEF.id).length
+    const brands = s.player.hand.filter((c) => c.def.id === BRAND_DEF.id).length
+    const burnHp = scalds * 2 + brands * 1
+    if (burnHp > 0) {
+      s = { ...s, player: { ...s.player, hp: s.player.hp - burnHp } }
+      s = emit(s, { type: 'ScaldTick', count: scalds + brands, amount: burnHp })
+      s = checkCombatEnd(s)
+      if (s.phase === 'lost') return s
+    }
+  }
   // 衝動 (このターン限りの手札) は未使用なら消滅する
   if (s.player.impulseUids.length > 0) {
     const impulse = new Set(s.player.impulseUids)
@@ -1084,6 +1098,8 @@ function fireSelfSetTriggers(
 
 /** 負傷 (死に札) の1戦闘上限。ハメ防止 (確定済みルール表「状態異常」) */
 const WOUND_CAP = 5
+/** 火傷の1戦闘あたり上限 (負傷と同思想のハメ防止) */
+const SCALD_CAP = 5
 
 /** 状態異常をプレイヤーに付与する。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 */
 function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameState {
@@ -1096,6 +1112,25 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
           ? { ...state.player, vulnerable: state.player.vulnerable + amount }
           : { ...state.player, frail: state.player.frail + amount }
     return emit({ ...state, player }, { type: 'StatusInflicted', status, amount })
+  }
+  if (status === 'scald') {
+    // 火傷 (2026-09-02): 手札に直接押し込む = 即時の圧。上限は負傷と同じ思想で5枚/戦闘
+    const existing = [
+      ...state.player.hand,
+      ...state.player.drawPile,
+      ...state.player.discardPile,
+    ].filter((c) => c.def.id === SCALD_DEF.id).length
+    const add = Math.min(amount, SCALD_CAP - existing)
+    if (add <= 0) return state
+    const scalds = Array.from({ length: add }, (_, i) => ({
+      uid: `${SCALD_DEF.id}#${existing + i}_t${state.turn}`,
+      def: SCALD_DEF,
+    }))
+    const s2: GameState = {
+      ...state,
+      player: { ...state.player, hand: [...state.player.hand, ...scalds] },
+    }
+    return emit(s2, { type: 'StatusInflicted', status: 'scald', amount: add })
   }
   if (status === 'junk') {
     // がらくた: 山札のランダムな位置に混ぜ込む (負傷と違い、すぐ引かされる)

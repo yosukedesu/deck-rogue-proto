@@ -132,6 +132,34 @@ export const WOUND_DEF: CardDef = {
 }
 
 /**
+ * 火傷 (状態異常カード 2026-09-02 敵ギミック第1波)。本家StSのBurn相当:
+ * 使用不可の死に札で、**自ターン終了時に手札にあると自傷2**。戦闘終了で消える (デッキに残らない)。
+ * 捨てコスト・消滅コストの支払いには使える = 手札マネジメントの問い。負傷 (痛みが遅い) との差別化
+ */
+export const SCALD_DEF: CardDef = {
+  id: 'status_scald',
+  name: '火傷',
+  cost: 0,
+  type: 'spell',
+  color: 'red',
+  effects: [],
+}
+
+/**
+ * 呪いの烙印 (状態異常カード 2026-09-02 呪いイベント用)。火傷の恒久版・弱化形:
+ * 使用不可で、自ターン終了時に手札にあると自傷1。**ランのデッキに残る** (焚き火・ショップで除去可能)。
+ * ?マスの「大報酬と引き換えの恒久汚染」取引に使う
+ */
+export const BRAND_DEF: CardDef = {
+  id: 'status_brand',
+  name: '呪いの烙印',
+  cost: 0,
+  type: 'spell',
+  color: 'black',
+  effects: [],
+}
+
+/**
  * がらくた (状態異常カード): 罠壊しが山札に混ぜ込む使用不可の死に札。
  * 負傷 (捨て札に混入) と違い山札へ直接混ざるため、すぐ引かされる = 手札事故を即座に作る。
  */
@@ -146,6 +174,8 @@ export const JUNK_DEF: CardDef = {
 
 export function getCardDef(id: string): CardDef {
   if (id === WOUND_DEF.id) return WOUND_DEF
+  if (id === SCALD_DEF.id) return SCALD_DEF
+  if (id === BRAND_DEF.id) return BRAND_DEF
   if (id === JUNK_DEF.id) return JUNK_DEF
   const def = allCards.find((c) => c.id === id)
   if (!def) throw new Error(`未定義カード: ${id}`)

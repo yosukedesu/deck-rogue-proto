@@ -169,6 +169,8 @@ const KEYWORD_HELP: Record<string, string> = {
   弱体: '与えるダメージが25%減る（切り捨て）。自分のターン終了時に1減る',
   脆弱: '敵の攻撃で受けるダメージが50%増える（切り捨て）。敵の行動フェーズ終了時に1減る',
   虚弱: 'カードのプレイで得るブロックが25%減る（切り捨て・最低1）。氷壁・リアクション・置物由来は減らない。自分のターン終了時に1減る',
+  火傷: '使えない死に札。自ターン終了時に手札にあるとHP-2。戦闘終了で消える。捨てコスト・消滅コストの支払いには使える',
+  呪いの烙印: '使えない死に札。自ターン終了時に手札にあるとHP-1。ランのデッキに残り続ける（焚き火・ショップで除去可能）',
   負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
   再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
   激昂: '自動で筋力が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび、「/被ダメN」はこの敵が受けた累計ダメージがNの倍数を跨ぐたび',
@@ -538,6 +540,8 @@ function effectItems(effects: readonly DeclarativeEffect[], ctx?: EffectCtx, hol
 function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   // 負傷 (状態異常カード): 効果を持たない死に札
   if (def.id === 'status_wound') return ['使えない（ターン終了時に捨てられる）']
+  if (def.id === 'status_scald') return ['使えない。自ターン終了時に手札にあるとHP-2（この戦闘限り。捨て/消滅コストの支払いには使える）']
+  if (def.id === 'status_brand') return ['使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。焚き火・ショップで除去できる）']
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
   if ((def.exhaustCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.exhaustCost}枚を消滅させる`)

@@ -11,7 +11,7 @@ const KIND_LABEL: Record<string, string> = {
   'destroy-token': '従者狩り', buff: '筋力上げ', rally: '応援', hex: '呪い',
 }
 
-export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた' }
+export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた', scald: '火傷' }
 
 export function inflictSuffix(intent: EnemyIntent): string {
   if (!intent.inflict) return ''
@@ -86,8 +86,9 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'DiscountGained': return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
     case 'BurnTick': return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
+    case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':
-      return { text: e.status === 'wound' ? `負傷${e.amount}枚が捨て札に混入した` : `${STATUS_LABEL[e.status]}${e.amount}を付与された`, cls: 'log-bad' }
+      return { text: e.status === 'wound' ? `負傷${e.amount}枚が捨て札に混入した` : e.status === 'scald' ? `火傷${e.amount}枚が手札に押し込まれた（ターン終了時に手札にあるとHP-2）` : `${STATUS_LABEL[e.status]}${e.amount}を付与された`, cls: 'log-bad' }
     case 'RegenTicked': return { text: `敵は再生でHP+${e.amount}`, cls: 'log-bad' }
     case 'RegenBroken': return { text: '再生が止まった（このターンの削りが閾値を超えた）', cls: 'log-good' }
     case 'EnemyConfused': return { text: `敵に混乱+${e.amount}（攻撃が仲間に向かう）`, cls: 'log-good' }

@@ -403,7 +403,10 @@
         "min": 10,
         "max": 14,
         "weight": 2,
-        "inflict": { "status": "frail", "amount": 1 }
+        "inflict": {
+          "status": "frail",
+          "amount": 1
+        }
       },
       {
         "id": "moss_shell",
@@ -660,7 +663,10 @@
         "min": 20,
         "max": 24,
         "weight": 1,
-        "inflict": { "status": "wound", "amount": 1 }
+        "inflict": {
+          "status": "scald",
+          "amount": 2
+        }
       }
     ],
     "sequence": [
@@ -718,7 +724,10 @@
         "min": 24,
         "max": 28,
         "weight": 1,
-        "inflict": { "status": "weak", "amount": 1 }
+        "inflict": {
+          "status": "weak",
+          "amount": 1
+        }
       },
       {
         "id": "gasp",
@@ -843,7 +852,10 @@
         "id": "lick",
         "kind": "hex",
         "weight": 1,
-        "inflict": { "status": "weak", "amount": 2 }
+        "inflict": {
+          "status": "weak",
+          "amount": 2
+        }
       },
       {
         "id": "acid_spit",
@@ -851,7 +863,10 @@
         "min": 5,
         "max": 7,
         "weight": 1,
-        "inflict": { "status": "frail", "amount": 1 }
+        "inflict": {
+          "status": "frail",
+          "amount": 1
+        }
       },
       {
         "id": "tackle",
@@ -894,7 +909,10 @@
         "min": 26,
         "max": 30,
         "weight": 1,
-        "inflict": { "status": "frail", "amount": 1 }
+        "inflict": {
+          "status": "frail",
+          "amount": 1
+        }
       }
     ],
     "sequence": [
@@ -918,6 +936,47 @@
         "weight": 1,
         "mirrorHits": true
       }
+    ]
+  },
+  {
+    "id": "enemy_cinder_imp",
+    "name": "焚きつけのインプ",
+    "archetype": "hexer",
+    "flavor": "火の粉を投げて笑う小鬼。手札で火傷が疼く前に、捨てるか、燃やされるか。",
+    "maxHp": 62,
+    "moves": [
+      {
+        "id": "spark_toss",
+        "kind": "attack",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "inflict": {
+          "status": "scald",
+          "amount": 1
+        }
+      },
+      {
+        "id": "fan_flames",
+        "kind": "hex",
+        "weight": 1,
+        "inflict": {
+          "status": "scald",
+          "amount": 2
+        }
+      },
+      {
+        "id": "bite",
+        "kind": "attack",
+        "min": 10,
+        "max": 14,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "spark_toss",
+      "fan_flames",
+      "bite"
     ]
   },
   {

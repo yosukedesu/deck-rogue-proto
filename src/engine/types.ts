@@ -350,7 +350,8 @@ export type GameEvent =
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
-  | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number } // 状態異常付与
+  | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
+  | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
@@ -733,7 +734,7 @@ export type EnemyActionKind =
   | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
-export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk'
+export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk' | 'scald'
 
 /** 状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚) */
 export interface StatusInflict {

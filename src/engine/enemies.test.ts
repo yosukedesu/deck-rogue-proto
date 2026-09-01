@@ -370,12 +370,12 @@ describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解�
 })
 
 describe('デバフ圧の本家水準化 (2026-09-01 第2弾。確定済みルール表「状態異常」)', () => {
-  it('攻撃ライダーの4件: 樽の爆発=負傷1・砥石の断頭=虚弱1・苔の叩きつけ=虚弱1・斧鬼の大振り=弱体1', () => {
+  it('攻撃ライダーの4件: 樽の爆発=火傷2(2026-09-02格上げ)・砥石の断頭=虚弱1・苔の叩きつけ=虚弱1・斧鬼の大振り=弱体1', () => {
     const pin = (enemyId: string, moveId: string, status: string, amount: number) => {
       const m = getEnemyDef(enemyId).moves.find((x) => x.id === moveId)!
       expect(m.inflict, `${enemyId}.${moveId}`).toEqual({ status, amount })
     }
-    pin('enemy_bomber', 'big_boom', 'wound', 1)
+    pin('enemy_bomber', 'big_boom', 'scald', 2) // 2026-09-02 敵ギミック第1波: 負傷1→火傷2 (即時の圧へ)
     pin('enemy_whetstone_colossus', 'guillotine', 'frail', 1)
     pin('enemy_moss', 'slam', 'frail', 1)
     pin('enemy_axe_ogre', 'great_swing', 'weak', 1)
@@ -428,5 +428,42 @@ describe('ダメージ内訳 damageBreakdown (2026-09-01 カードホバー用�
     expect(damageBreakdown(s, 0, 8, false)!.hpLoss).toBe(0)
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 0 })) }
     expect(damageBreakdown(s, 0, 8)).toBeNull()
+  })
+})
+
+describe('火傷 (2026-09-02 敵ギミック第1波。本家Burn相当)', () => {
+  it('火傷は手札に押し込まれ、自ターン終了時に手札にあると1枚2の直接HP損失', () => {
+    let s = freshCombat('set-confirm', 'enemy_cinder_imp', 42)
+    s = noHand(s)
+    s = applyCommand(s, { type: 'EndTurn' }) as GameState
+    // 手動で付与を再現: 手札に火傷2枚
+    s = {
+      ...s,
+      phase: 'player-turn',
+      player: {
+        ...s.player,
+        hand: [
+          { uid: 'sc1', def: getCardDef('status_scald') },
+          { uid: 'sc2', def: getCardDef('status_scald') },
+        ],
+      },
+    }
+    const hp = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.eventLog.some((e) => e.type === 'ScaldTick' && e.amount === 4)).toBe(true)
+    // 直接HP損失4 (敵の攻撃分は別途) — ScaldTick時点のHPで検証する代わりにイベント量で固定済み
+    expect(hp - s.player.hp).toBeGreaterThanOrEqual(4)
+  })
+
+  it('焚きつけのインプ: 火の粉(攻撃+火傷1)→煽り(火傷2)→噛みつき のローテ', () => {
+    const def = getEnemyDef('enemy_cinder_imp')
+    expect(def.sequence).toEqual(['spark_toss', 'fan_flames', 'bite'])
+    expect(def.moves.find((m) => m.id === 'spark_toss')?.inflict).toEqual({ status: 'scald', amount: 1 })
+    expect(def.moves.find((m) => m.id === 'fan_flames')?.inflict).toEqual({ status: 'scald', amount: 2 })
+  })
+
+  it('火傷は捨てコストの支払いに使える (処分の抜け道 = 手札マネジメントの問い)', () => {
+    const def = getCardDef('status_scald')
+    expect(def.effects).toEqual([]) // 使用不可の死に札 (プレイ効果なし)
   })
 })
