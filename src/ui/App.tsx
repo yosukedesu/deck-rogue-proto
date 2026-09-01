@@ -10,12 +10,14 @@ import {
   logLine,
   buildReport,
   cardDraftToDefJson,
+  dataFingerprint,
   ENEMY_TOP_FIELDS,
   LEADER_TOP_FIELDS,
   isEmptyMark,
   isEmptySimpleMark,
   saveProposals,
   saveReport,
+  saveRunFile,
   STATUS_LABEL,
   type BattleArchive,
   type BattleRating,
@@ -28,6 +30,7 @@ import {
   type LogLine,
   type PlayNote,
   type RelicDraft,
+  type RunSaveFile,
   type SimpleMark,
 } from './report.ts'
 import {
@@ -902,9 +905,15 @@ function deckComposition(deckId: string): string {
 function SetupScreen({
   onStart,
   onStartRun,
+  resume,
+  onLoadSave,
 }: {
   onStart: (cfg: Config) => void
   onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number) => void
+  /** 「続きから」(localStorageバックアップにランがある時だけ非null) */
+  resume?: { label: string; onResume: () => void } | null
+  /** セーブファイル (.json) の読み込み */
+  onLoadSave?: (f: File) => void
 }) {
   const [enemyId, setEnemyId] = useState(allEnemies[0].id)
   const [leaderId, setLeaderId] = useState(allLeaders[0].id)
@@ -952,6 +961,34 @@ function SetupScreen({
         ))}
       </div>
 
+      {(resume != null || onLoadSave !== undefined) && (
+        <div className="panel" style={{ marginTop: 16 }}>
+          <div className="choice-title">💾 セーブ</div>
+          {resume != null && (
+            <button className="btn btn-primary" style={{ marginTop: 6 }} onClick={resume.onResume}>
+              ▶ 続きから（{resume.label}）
+            </button>
+          )}{' '}
+          {onLoadSave !== undefined && (
+            <label className="btn" style={{ marginTop: 6, display: 'inline-block', cursor: 'pointer' }}>
+              📂 セーブファイルを読み込む
+              <input
+                type="file"
+                accept=".json,application/json"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f !== undefined) onLoadSave(f)
+                  e.target.value = ''
+                }}
+              />
+            </label>
+          )}
+          <div className="choice-desc" style={{ marginTop: 4 }}>
+            進行は自動でこの端末に保存されます（単一スロット・最新のみ）。ファイルは💾ボタンで書き出せて、CLI（sim/play.ts）でもそのまま開けます
+          </div>
+        </div>
+      )}
       <div className="panel" style={{ marginTop: 16 }}>
         <div className="choice-title">🏕 ドラフト連戦（マップラン・ボスまで16行）</div>
         <div className="choice-desc">
@@ -3531,7 +3568,8 @@ function RunScreen({
         </div>
         <div style={{ marginTop: 12 }}>
           <button className="btn" onClick={() => saveReport(run, null, history, notes)}>📄 状況を書き出す</button>{' '}
-          <button className="btn" onClick={onExit}>ランを放棄</button>
+          <button className="btn" onClick={() => saveRunFile(run, history, notes)}>💾 セーブを書き出す</button>{' '}
+          <button className="btn" onClick={onExit}>ランを放棄（自動保存は残る）</button>
         </div>
       </div>
     )
@@ -3965,12 +4003,59 @@ export default function App() {
       }
     }
     try {
-      // 容量超過 (QuotaExceeded) 等は握りつぶす = バックアップは保険であって本線ではない
-      localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes }))
+      // 容量超過 (QuotaExceeded) 等は握りつぶす = バックアップは保険であって本線ではない。
+      // 進行が無い時は書かない (2026-09-01 修正: マウント直後や放棄後に null で上書きすると
+      // リロード後の復元・「続きから」が消える — 従来この上書きでリロード復元が実は効いていなかった)
+      if (run !== null || state !== null) {
+        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, fingerprint: dataFingerprint() }))
+      }
     } catch {
       /* no-op */
     }
   }, [run, state, runHistory, playNotes])
+
+  /** セーブ復帰の共通処理 (続きから/ファイル読み込み)。データ指紋が違えば警告して選ばせる */
+  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string): void => {
+    if (fingerprint !== undefined && fingerprint !== dataFingerprint()) {
+      const ok = window.confirm(
+        'このセーブは別のデータバージョンで作られています。カード・敵の定義が変わっていると正しく動かない可能性がありますが、読み込みますか？',
+      )
+      if (!ok) return
+    }
+    setRunHistory(history)
+    setPlayNotes(notes)
+    setState(null)
+    setConfig(null)
+    setRun(r)
+  }
+
+  /** タイトル画面の「続きから」: localStorage バックアップからランを復帰 */
+  const resumeFromBackup = (): void => {
+    try {
+      const raw = localStorage.getItem('deckRogueBackup')
+      if (raw === null) return
+      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string }
+      if (b.run == null) return
+      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint)
+    } catch (e) {
+      alert(`復帰に失敗しました: ${String(e)}`)
+    }
+  }
+
+  /** セーブファイル (.json = sim/play.ts 互換) の読み込み */
+  const loadSaveFile = (file: File): void => {
+    file
+      .text()
+      .then((text) => {
+        const sf = JSON.parse(text) as Partial<RunSaveFile> & { kind?: string }
+        if (sf.kind !== 'run' || sf.run == null) {
+          alert('ランのセーブファイル (kind:"run") ではありません。単発戦闘のセーブはCLI (sim/play.ts) で開けます')
+          return
+        }
+        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint)
+      })
+      .catch((e) => alert(`読み込みに失敗しました: ${String(e)}`))
+  }
 
   const addNote = (text: string) => {
     const c = run?.combat ?? state
@@ -4099,7 +4184,22 @@ export default function App() {
     )
   }
   if (state === null || config === null) {
-    return <SetupScreen onStart={start} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
+    let resume: { label: string; onResume: () => void } | null = null
+    try {
+      const raw = localStorage.getItem('deckRogueBackup')
+      const b = raw !== null ? (JSON.parse(raw) as { run?: RunState | null }) : null
+      if (b?.run != null) {
+        const r = b.run
+        const leaderName = allLeaders.find((l) => l.id === r.leaderId)?.name ?? r.leaderId
+        resume = {
+          label: `${leaderName} 幕${r.act} 行${r.row + 1} / HP${r.hp}/${r.maxHp} / ${r.battlesWon}勝 / 🎚${r.difficulty ?? 3}`,
+          onResume: resumeFromBackup,
+        }
+      }
+    } catch {
+      /* 壊れたバックアップは無視 */
+    }
+    return <SetupScreen onStart={start} resume={resume} onLoadSave={loadSaveFile} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
         setRunHistory([])
         setPlayNotes([])
         setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))

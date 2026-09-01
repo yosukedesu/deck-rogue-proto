@@ -3,7 +3,7 @@
 // encounterName('unknown') が例外死する」だったための回帰テスト。
 // レポートはプレイテストのデータ回収の道具なので、どんな状態でも絶対に落ちないことを固定する。
 import { describe, expect, it } from 'vitest'
-import { archiveBattle, buildProposals, buildReport, cardDraftToDefJson, isEmptyMark } from './report.ts'
+import { archiveBattle, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, isEmptyMark } from './report.ts'
 import { getEnemyDef } from '../engine/content.ts'
 import { createRun } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
@@ -236,5 +236,17 @@ describe('リーダーの調整サイクル (2026-09-01)', () => {
     expect(nl.name).toBe('つばき')
     expect(nl.colors).toEqual(['red', 'white'])
     expect(nl.passive[0].trigger).toBe('onAttackPlayed')
+  })
+})
+
+describe('セーブ機能 (2026-09-01 裁定で解禁拡張: 続きから+ファイル書き出し/読み込み)', () => {
+  it('buildRunSaveFile: sim/play.ts互換のSaveFile形 (kind/run/logIndex) + UI拡張フィールド', () => {
+    const run = createRun(7, 'set-confirm')
+    const sf = JSON.parse(buildRunSaveFile(run, [], [{ at: '2026-09-01T00:00:00.000Z', context: 'x', text: 'y' }]))
+    expect(sf.kind).toBe('run')
+    expect(sf.run.seed).toBe(7)
+    expect(sf.logIndex).toBe(0)
+    expect(sf.fingerprint).toContain('cards')
+    expect(sf.playNotes).toHaveLength(1)
   })
 })

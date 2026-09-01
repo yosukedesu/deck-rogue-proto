@@ -84,7 +84,7 @@ export function archiveBattle(
 }
 
 /** カードデータの指紋。エクスポートを読む側が「同じビルドか」を判定する */
-function dataFingerprint(): string {
+export function dataFingerprint(): string {
   let h = 5381
   for (const c of allCards) {
     const s = `${c.id}:${c.cost}:${c.effects.length}`
@@ -641,6 +641,48 @@ export function buildProposals(bundle: ProposalBundle): string {
     memo: bundle.newCards.trim() !== '' ? bundle.newCards.trim() : undefined,
   }
   return JSON.stringify(doc, null, 2)
+}
+
+// ---- セーブ機能 (2026-09-01 ユーザー裁定で解禁範囲を拡張: 続きから+ファイル書き出し/読み込み) ----
+
+/**
+ * ランのセーブファイル (sim/play.ts の SaveFile 互換 = CLIでもそのまま開ける)。
+ * history/playNotes/fingerprint はUI側の拡張フィールド (CLIは無視する)
+ */
+export interface RunSaveFile {
+  readonly kind: 'run'
+  readonly run: RunState
+  readonly logIndex: number
+  readonly fingerprint?: string
+  readonly history?: readonly BattleArchive[]
+  readonly playNotes?: readonly PlayNote[]
+}
+
+/** ランのセーブを直列化する (純関数)。戦闘ログはスナップショット上限で切り詰める (engineは読まない) */
+export function buildRunSaveFile(
+  run: RunState,
+  history: readonly BattleArchive[] = [],
+  playNotes: readonly PlayNote[] = [],
+): string {
+  const r = run.combat ? { ...run, combat: trimLog(run.combat) } : run
+  const sf: RunSaveFile = {
+    kind: 'run',
+    run: r,
+    logIndex: r.combat?.eventLog.length ?? 0,
+    fingerprint: dataFingerprint(),
+    history,
+    playNotes,
+  }
+  return JSON.stringify(sf)
+}
+
+/** セーブの書き出し (ダウンロード + クリップボード)。ファイルは CLI (sim/play.ts) でも開ける */
+export function saveRunFile(
+  run: RunState,
+  history: readonly BattleArchive[] = [],
+  playNotes: readonly PlayNote[] = [],
+): void {
+  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes))
 }
 
 /** 調整案一式の書き出し (ダウンロード + クリップボード) */
