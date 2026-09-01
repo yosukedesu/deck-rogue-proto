@@ -9,10 +9,13 @@ import {
   intentText,
   logLine,
   buildReport,
+  saveCardProposals,
   saveReport,
   STATUS_LABEL,
   type BattleArchive,
+  type CardProposalMark,
   type LogLine,
+  type PlayNote,
 } from './report.ts'
 import {
   allCards,
@@ -2445,13 +2448,53 @@ function MapOverlay({ run, onClose }: { run: RunState; onClose: () => void }) {
   )
 }
 
-/** カード図鑑 (2026-09-01 ユーザー要望「カード一覧見れるページ」)。全カードを色/タイプ/レア/検索で絞り込み */
+/** カード調整案の下書き置き場 (localStorage)。リロードしても作業が消えない */
+const TUNER_STORAGE_KEY = 'deckRogueCardTuner'
+interface TunerDraft {
+  readonly marks: Record<string, CardProposalMark>
+  readonly newCards: string
+}
+function loadTunerDraft(): TunerDraft {
+  try {
+    const raw = localStorage.getItem(TUNER_STORAGE_KEY)
+    if (raw !== null) {
+      const d = JSON.parse(raw) as Partial<TunerDraft>
+      return { marks: d.marks ?? {}, newCards: d.newCards ?? '' }
+    }
+  } catch {
+    /* 壊れた下書きは捨てる */
+  }
+  return { marks: {}, newCards: '' }
+}
+
+/** カード図鑑 (2026-09-01 ユーザー要望「カード一覧見れるページ」)。全カードを色/タイプ/レア/検索で絞り込み。
+ * 🛠調整モード (同日 ユーザー要望「カード調整サイクル」): 図鑑上で変更案・削除案・新カード案をマークし、
+ * 1枚のmdに書き出してAIレビュー→実装へ渡す。下書きは localStorage に自動保存 */
 function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
   const [color, setColor] = useState('all')
   const [ctype, setCtype] = useState('all')
   const [rarity, setRarity] = useState('all')
   const [q, setQ] = useState('')
   const [showUpgraded, setShowUpgraded] = useState(false)
+  const [tuner, setTuner] = useState(false)
+  const [markedOnly, setMarkedOnly] = useState(false)
+  const [draft, setDraft] = useState<TunerDraft>(loadTunerDraft)
+  useEffect(() => {
+    try {
+      localStorage.setItem(TUNER_STORAGE_KEY, JSON.stringify(draft))
+    } catch {
+      /* 容量超過等は無視 = 下書きは保険 */
+    }
+  }, [draft])
+  const markOf = (id: string): CardProposalMark => draft.marks[id] ?? {}
+  const setMark = (id: string, m: CardProposalMark) =>
+    setDraft((d) => {
+      const marks = { ...d.marks }
+      if ((m.change ?? '') === '' && m.remove !== true) delete marks[id]
+      else marks[id] = m
+      return { ...d, marks }
+    })
+  const markedCount = Object.keys(draft.marks).length
   const colorOf = (id: string, c?: string) => c ?? id.split('_')[0]
   const COLOR_LABEL: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
   const RARITY_LABEL: Record<string, string> = { common: 'コモン', uncommon: '◆アンコモン', rare: '★レア' }
@@ -2461,6 +2504,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
     .filter((c) => ctype === 'all' || c.type === ctype)
     .filter((c) => rarity === 'all' || (c.rarity ?? 'common') === rarity)
     .filter((c) => q === '' || c.name.includes(q))
+    .filter((c) => !(tuner && markedOnly) || draft.marks[c.id] !== undefined)
     .sort(
       (a, b) =>
         colorOf(a.id, a.color).localeCompare(colorOf(b.id, b.color)) ||
@@ -2485,10 +2529,53 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             />{' '}
             鍛えた姿（+）で表示
           </label>
+          <label className="viewer-toggle" title="変更案・削除案・新カード案をマークして1枚のmdに書き出す (AIレビュー→実装のサイクル用)">
+            <input type="checkbox" checked={tuner} onChange={(e) => setTuner(e.target.checked)} />{' '}
+            🛠 調整モード{markedCount > 0 ? `（${markedCount}件）` : ''}
+          </label>
           <button className="btn" onClick={onClose}>
             ✕ 閉じる
           </button>
         </div>
+        {tuner && (
+          <div className="panel" style={{ marginTop: 8 }}>
+            <div className="choice-desc">
+              各カードの下の入力欄に変更案（例: 「6→9ダメ」「コスト2→1」「弱い、削除より強化希望」）、
+              チェックで削除案。下書きは自動保存（リロードしても残る）。
+              書き出したmdをAIに渡すと査定レビュー→実装される。
+            </div>
+            <div style={{ marginTop: 6 }}>
+              <label className="viewer-toggle">
+                <input
+                  type="checkbox"
+                  checked={markedOnly}
+                  onChange={(e) => setMarkedOnly(e.target.checked)}
+                />{' '}
+                マーク済みのみ表示
+              </label>{' '}
+              <button className="btn btn-primary" onClick={() => saveCardProposals(draft.marks, draft.newCards)}>
+                📄 調整案を書き出す
+              </button>{' '}
+              <button
+                className="btn"
+                onClick={() => {
+                  if (window.confirm('調整案の下書きをすべて消しますか？')) {
+                    setDraft({ marks: {}, newCards: '' })
+                  }
+                }}
+              >
+                🗑 下書きを全消去
+              </button>
+            </div>
+            <textarea
+              value={draft.newCards}
+              onChange={(e) => setDraft((d) => ({ ...d, newCards: e.target.value }))}
+              placeholder={'新カード案 (自由記述。例: 緑1E 攻撃: 5ダメ+成長1 — ○○の穴を埋める入口コモン)'}
+              rows={3}
+              style={{ width: '100%', marginTop: 6, boxSizing: 'border-box' }}
+            />
+          </div>
+        )}
         <div style={{ marginTop: 8 }}>
           {chip(color === 'all', '全色', () => setColor('all'))}
           {(['green', 'blue', 'red', 'white', 'black'] as const).map((c) =>
@@ -2517,14 +2604,35 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             const inst = { uid: `cat_${def.id}`, def }
             const upgradable = canUpgradeCard(inst)
             const shown = showUpgraded && upgradable ? upgradeCard(inst) : inst
-            return (
+            const frame = (
               <CardFrame
-                key={def.id}
+                key={tuner ? undefined : def.id}
                 card={shown}
-                dim={false}
+                dim={tuner && markOf(def.id).remove === true}
                 hint={`${COLOR_LABEL[colorOf(def.id, def.color)] ?? colorOf(def.id, def.color)}・${RARITY_LABEL[def.rarity ?? 'common']}${showUpgraded && !upgradable ? '・鍛えられない' : ''}`}
                 actions={null}
               />
+            )
+            if (!tuner) return frame
+            const mark = markOf(def.id)
+            return (
+              <div key={def.id} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {frame}
+                <input
+                  value={mark.change ?? ''}
+                  onChange={(e) => setMark(def.id, { ...mark, change: e.target.value })}
+                  placeholder="変更案"
+                  style={{ width: '100%', boxSizing: 'border-box', fontSize: 11 }}
+                />
+                <label style={{ fontSize: 11, opacity: 0.85 }}>
+                  <input
+                    type="checkbox"
+                    checked={mark.remove === true}
+                    onChange={(e) => setMark(def.id, { ...mark, remove: e.target.checked })}
+                  />{' '}
+                  削除案
+                </label>
+              </div>
             )
           })}
         </div>
@@ -2554,6 +2662,7 @@ function RunScreen({
   run,
   dispatch,
   history,
+  notes,
   onExit,
   onRestart,
 }: {
@@ -2561,6 +2670,8 @@ function RunScreen({
   dispatch: (c: RunCommand) => void
   /** 決着済みの戦闘の履歴 (書き出しに含める) */
   history: readonly BattleArchive[]
+  /** プレイ中メモ (書き出しに同梱) */
+  notes: readonly PlayNote[]
   onExit: () => void
   onRestart: (seed: number) => void
 }) {
@@ -2608,7 +2719,7 @@ function RunScreen({
           <RunMapView run={run} onChoose={(col) => dispatch({ type: 'ChooseNode', col })} />
         </div>
         <div style={{ marginTop: 12 }}>
-          <button className="btn" onClick={() => saveReport(run, null, history)}>📄 状況を書き出す</button>{' '}
+          <button className="btn" onClick={() => saveReport(run, null, history, notes)}>📄 状況を書き出す</button>{' '}
           <button className="btn" onClick={onExit}>ランを放棄</button>
         </div>
       </div>
@@ -2886,7 +2997,7 @@ function RunScreen({
   if (run.phase === 'combat' && run.combat) {
     return (
       <BattleScreen
-        onExport={() => saveReport(run, null, history)}
+        onExport={() => saveReport(run, null, history, notes)}
         state={run.combat}
         config={{
           mode: run.mode,
@@ -2953,7 +3064,7 @@ function RunScreen({
         <button className="btn" onClick={() => dispatch({ type: 'SkipReward' })}>
           スキップして次へ
         </button>{' '}
-        <button className="btn" onClick={() => saveReport(run, null, history)}>
+        <button className="btn" onClick={() => saveReport(run, null, history, notes)}>
           📄 状況を書き出す
         </button>
         {run.picks.length > 0 && (
@@ -2983,7 +3094,7 @@ function RunScreen({
         </div>
       </div>
       <div style={{ marginTop: 16 }}>
-        <button className="btn btn-primary" onClick={() => saveReport(run, null, history)}>
+        <button className="btn btn-primary" onClick={() => saveReport(run, null, history, notes)}>
           📄 状況を書き出す
         </button>{' '}
         <button className="btn" onClick={() => onRestart(Date.now() % 2 ** 32)}>
@@ -3008,6 +3119,8 @@ export default function App() {
   const [run, setRun] = useState<RunState | null>(null)
   // ラン全10戦の履歴。engine の RunState は combat を単一スロットで上書きするため UI 側で溜める
   const [runHistory, setRunHistory] = useState<readonly BattleArchive[]>([])
+  // プレイ中メモ (2026-09-01): 気づきをその場で記録し、レポート書き出しに同梱する。新しいラン/戦闘の開始でリセット
+  const [playNotes, setPlayNotes] = useState<readonly PlayNote[]>([])
 
   // 書き出しの保険 (2026-08-30): ダウンロードもクリップボードも塞がれる環境向けに、
   // 開発者ツールのコンソールから常に最新レポートを取れる口を開けておく。
@@ -3022,7 +3135,7 @@ export default function App() {
       deckRogueReport?: () => string
       deckRogueRecoverReport?: () => string
     }
-    w.deckRogueReport = () => buildReport(run, state, runHistory)
+    w.deckRogueReport = () => buildReport(run, state, runHistory, '', playNotes)
     w.deckRogueRecoverReport = () => {
       try {
         const raw = localStorage.getItem('deckRogueBackup')
@@ -3031,22 +3144,34 @@ export default function App() {
           run: RunState | null
           state: GameState | null
           history: BattleArchive[]
+          playNotes?: PlayNote[]
         }
-        return buildReport(b.run ?? null, b.state ?? null, b.history ?? [])
+        return buildReport(b.run ?? null, b.state ?? null, b.history ?? [], '', b.playNotes ?? [])
       } catch (e) {
         return `(復元失敗: ${String(e)})`
       }
     }
     try {
       // 容量超過 (QuotaExceeded) 等は握りつぶす = バックアップは保険であって本線ではない
-      localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory }))
+      localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes }))
     } catch {
       /* no-op */
     }
-  }, [run, state, runHistory])
+  }, [run, state, runHistory, playNotes])
+
+  const addNote = (text: string) => {
+    const c = run?.combat ?? state
+    const context = run
+      ? `幕${run.act} 行${run.row + 1} ${run.phase}${run.phase === 'combat' && c ? ` T${c.turn}` : ''} ${run.battlesWon}勝 HP${run.phase === 'combat' && c ? c.player.hp : run.hp}`
+      : c
+        ? `単発 T${c.turn} HP${c.player.hp}`
+        : 'セットアップ'
+    setPlayNotes((p) => [...p, { at: new Date().toISOString(), context, text }])
+  }
 
   const start = (cfg: Config) => {
     setConfig(cfg)
+    setPlayNotes([])
     // デバッグ: 自分で組んだデッキは cardId 列なので、実カードに起こして直接戦闘を開始する
     if (cfg.customDeck && cfg.customDeck.length > 0) {
       const deck = cfg.customDeck.map((id, i) => ({ uid: `custom${i}_${id}`, def: getCardDef(id) }))
@@ -3114,31 +3239,38 @@ export default function App() {
 
   if (run !== null) {
     return (
+      <>
       <RunScreen
         run={run}
         dispatch={dispatchRun}
         history={runHistory}
+        notes={playNotes}
         onExit={() => {
           setRun(null)
           setRunHistory([])
         }}
         onRestart={(seed) => {
           setRunHistory([])
+          setPlayNotes([])
           // 難易度はリスタートでも引き継ぐ (旧セーブ由来の欠落は既定3)
           setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green', undefined, prev?.difficulty ?? DEFAULT_DIFFICULTY))
         }}
       />
+      <NoteBar count={playNotes.length} onAdd={addNote} />
+      </>
     )
   }
   if (state === null || config === null) {
     return <SetupScreen onStart={start} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
         setRunHistory([])
+        setPlayNotes([])
         setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))
       }} />
   }
   return (
+    <>
     <BattleScreen
-      onExport={() => saveReport(null, state)}
+      onExport={() => saveReport(null, state, [], playNotes)}
       state={state}
       config={config}
       dispatch={dispatch}
@@ -3148,6 +3280,45 @@ export default function App() {
         setConfig(null)
       }}
     />
+    <NoteBar count={playNotes.length} onAdd={addNote} />
+    </>
+  )
+}
+
+/**
+ * プレイ中メモの入力バー (2026-09-01 ユーザー要望「気がついたことが揮発せずにいい」)。
+ * 画面右下に常駐し、Enterで記録。記録は文脈 (幕/行/ターン/HP) 付きでレポート書き出しに同梱される
+ */
+function NoteBar({ count, onAdd }: { count: number; onAdd: (text: string) => void }) {
+  const [text, setText] = useState('')
+  const [flash, setFlash] = useState(false)
+  const submit = () => {
+    const t = text.trim()
+    if (t === '') return
+    onAdd(t)
+    setText('')
+    setFlash(true)
+    setTimeout(() => setFlash(false), 800)
+  }
+  return (
+    <div
+      style={{
+        position: 'fixed', right: 12, bottom: 12, zIndex: 60,
+        background: 'rgba(18,22,30,0.94)', border: '1px solid #445',
+        borderRadius: 8, padding: '6px 8px', display: 'flex', gap: 6, alignItems: 'center',
+      }}
+    >
+      <span title="レポート書き出し(📄)に「プレイメモ」として同梱されます">📝{count > 0 ? count : ''}</span>
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') submit()
+        }}
+        placeholder={flash ? '✅ 記録しました' : '気づきメモ (Enterで記録)'}
+        style={{ width: 200 }}
+      />
+    </div>
   )
 }
 

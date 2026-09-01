@@ -38,6 +38,17 @@ export interface BattleArchive {
   readonly lines: readonly string[]
 }
 
+/**
+ * プレイ中メモ (2026-09-01 ユーザー要望「気がついたことが揮発せずにいい」)。
+ * UI層の観察記録であってゲーム状態ではない — engine には持たせない。
+ * レポート書き出しに「## プレイメモ」として同梱される
+ */
+export interface PlayNote {
+  readonly at: string // ISO時刻
+  readonly context: string // 記録時の文脈 (幕/行/フェーズ/ターン)
+  readonly text: string
+}
+
 /** 1戦闘あたりの保管ログ行数の上限 (10戦ぶんでもファイルが読める範囲に収める) */
 const ARCHIVE_LINES_CAP = 300
 
@@ -135,6 +146,7 @@ export function buildReport(
   state: GameState | null,
   history: readonly BattleArchive[] = [],
   note = '',
+  playNotes: readonly PlayNote[] = [],
 ): string {
   const s = run ? run.combat : state
   const L: string[] = []
@@ -171,6 +183,11 @@ export function buildReport(
     L.push('（戦闘・ランともに未開始）')
   }
   L.push('')
+  if (playNotes.length > 0) {
+    L.push(`## プレイメモ（${playNotes.length}件・プレイヤーがその場で残した気づき）`)
+    for (const n of playNotes) L.push(`- [${n.at.slice(11, 16)} ${n.context}] ${n.text}`)
+    L.push('')
+  }
   if (history.length > 0) {
     L.push(`## これまでの戦闘（${history.length}戦）`)
     L.push('')
@@ -219,31 +236,95 @@ export function buildReport(
  * 書き出し実行。ダウンロードとクリップボードコピーを両方やる
  * (スマホの Safari は a[download] が不安定なため、貼り付けでも渡せるようにする)
  */
-export function saveReport(
-  run: RunState | null,
-  state: GameState | null,
-  history: readonly BattleArchive[] = [],
-): void {
-  const text = buildReport(run, state, history)
+function stampNow(): string {
   const d = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
-  const stamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`
-  // 保険 (2026-08-30): ダウンロード/クリップボードが塞がれる環境でも、開発者ツールから
-  // copy(window.__lastReport) で必ず取り出せるようにテキストを残す (「このデータは確実に取りたい」)
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`
+}
+
+/**
+ * テキストの配達 (ダウンロード + クリップボード + __lastReport)。
+ * 保険 (2026-08-30): ダウンロード/クリップボードが塞がれる環境でも、開発者ツールから
+ * copy(window.__lastReport) で必ず取り出せるようにテキストを残す (「このデータは確実に取りたい」)
+ */
+function deliverText(filename: string, text: string): void {
   ;(window as unknown as { __lastReport?: string }).__lastReport = text
   console.info(
-    `[deck-rogue] レポート生成 (${text.length}文字)。ダウンロードに失敗した場合は ` +
+    `[deck-rogue] ${filename} 生成 (${text.length}文字)。ダウンロードに失敗した場合は ` +
       'DevTools コンソールで copy(__lastReport) を実行するとクリップボードに入ります',
   )
   try {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }))
     const a = document.createElement('a')
     a.href = url
-    a.download = `play-${stamp}.md`
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
   } catch {
     // ダウンロード不可の環境 (iframe・一部モバイル)。__lastReport とクリップボードが受け皿
   }
   navigator.clipboard?.writeText(text).catch(() => {})
+}
+
+export function saveReport(
+  run: RunState | null,
+  state: GameState | null,
+  history: readonly BattleArchive[] = [],
+  playNotes: readonly PlayNote[] = [],
+): void {
+  deliverText(`play-${stampNow()}.md`, buildReport(run, state, history, '', playNotes))
+}
+
+// ---- カード調整サイクル (2026-09-01 ユーザー要望) ----
+// 開発者がブラウザの図鑑上で「変更案・削除案・新カード案」をマークし、1枚のmdに書き出して
+// AIレビュー→実装へ渡す。ブラウザはリポジトリに書けないので、成果物は提案書であってデータ変更ではない
+
+/** 1枚のカードへのマーク。change=変更案の自由記述 / remove=削除案 */
+export interface CardProposalMark {
+  readonly change?: string
+  readonly remove?: boolean
+}
+
+/** 調整案の提案書を生成する (純関数)。マークの無いエントリと空文字は無視する */
+export function buildCardProposals(
+  marks: Readonly<Record<string, CardProposalMark>>,
+  newCards: string,
+): string {
+  const defOf = (id: string) => allCards.find((c) => c.id === id)
+  const line = (id: string): string => {
+    const d = defOf(id)
+    if (!d) return `**${id}**（現行データに存在しない — 統合/リネーム済みの可能性）`
+    const COLOR: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
+    const RARITY: Record<string, string> = { common: 'コモン', uncommon: 'アンコモン', rare: 'レア' }
+    const cost = d.xCost === true ? 'X' : `${d.cost}E`
+    return `**${d.name}**（\`${id}\` ${COLOR[d.color] ?? d.color}/${RARITY[d.rarity ?? 'common']}/${cost}/${d.type}） 現行: \`${JSON.stringify(d.effects)}\``
+  }
+  const changes = Object.entries(marks).filter(([, m]) => (m.change ?? '').trim() !== '')
+  const removes = Object.entries(marks).filter(([, m]) => m.remove === true)
+  const L: string[] = []
+  L.push('# カード調整案')
+  L.push(`書き出し: ${new Date().toISOString()} / データ指紋: ${dataFingerprint()}`)
+  L.push('')
+  L.push(`## 変更案（${changes.length}件）`)
+  for (const [id, m] of changes) {
+    L.push(`- ${line(id)}`)
+    L.push(`  - 提案: ${m.change!.trim()}`)
+  }
+  L.push('')
+  L.push(`## 削除案（${removes.length}件）`)
+  for (const [id] of removes) L.push(`- ${line(id)}`)
+  L.push('')
+  L.push('## 新カード案')
+  L.push(newCards.trim() === '' ? '（なし）' : newCards.trim())
+  L.push('')
+  L.push('※ この提案書はレビュー用。実装時は card-power.md の査定 (定価115〜135%帯・色レート・追加コスト算入) を通すこと')
+  return L.join('\n')
+}
+
+/** 調整案の書き出し (ダウンロード + クリップボード) */
+export function saveCardProposals(
+  marks: Readonly<Record<string, CardProposalMark>>,
+  newCards: string,
+): void {
+  deliverText(`card-proposals-${stampNow()}.md`, buildCardProposals(marks, newCards))
 }
