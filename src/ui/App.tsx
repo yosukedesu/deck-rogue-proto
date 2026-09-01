@@ -2675,7 +2675,7 @@ const ENEMY_VOCAB = (() => {
 })()
 
 const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時強化💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️', defend: '🛡', buff: '💪', rally: '📣', hex: '🧿', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪強化', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
@@ -2722,7 +2722,7 @@ const RELIC_BONUS_JA: Record<string, string> = { maxHp: '最大HP+', victoryHeal
 function relicTunerFields(def: RelicDef): { key: string; label: string; cur: number }[] {
   const out: { key: string; label: string; cur: number }[] = []
   def.effects?.forEach((e, i) => {
-    if (typeof e.amount === 'number') out.push({ key: `e${i}.amount`, label: `効果〔${e.trigger}/${e.effect}〕の量`, cur: e.amount })
+    if (typeof e.amount === 'number') out.push({ key: `e${i}.amount`, label: `効果〔${triggerJa(e.trigger)}: ${effectJa(e.effect)}〕の量`, cur: e.amount })
   })
   for (const [k, ja] of Object.entries(RELIC_BONUS_JA)) {
     const v = (def.bonus as unknown as Record<string, unknown> | undefined)?.[k]
@@ -2769,9 +2769,9 @@ function EnemyMoveDraftRow({ value, onChange, onDelete }: { value: EnemyMoveDraf
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap', border: '1px solid #334', borderRadius: 4, padding: 3 }}>
       <input placeholder="行動id" value={value.id} onChange={(e) => onChange({ ...value, id: e.target.value })} style={{ width: 80, fontSize: 11 }} />
-      <select style={S} value={value.kind} onChange={(e) => onChange({ ...value, kind: e.target.value })}>
+      <select style={S} value={value.kind} title={value.kind} onChange={(e) => onChange({ ...value, kind: e.target.value })}>
         {ENEMY_VOCAB.kinds.map((k) => (
-          <option key={k} value={k}>{MOVE_KIND_ICON[k] ?? ''}{k}</option>
+          <option key={k} value={k}>{MOVE_KIND_ICON[k] ?? k}</option>
         ))}
       </select>
       <label style={S}>最小 <input type="number" style={{ width: 44 }} value={value.min ?? ''} onChange={(e) => onChange({ ...value, min: numOrUndef(e.target.value) })} /></label>
@@ -2806,9 +2806,9 @@ function EnemyDraftEditor({ value, onChange, onDelete }: { value: EnemyDraft; on
         <label style={S}>絵文字 <input value={value.sprite ?? ''} onChange={(e) => onChange({ ...value, sprite: e.target.value === '' ? undefined : e.target.value })} style={{ width: 40 }} /></label>
         <label style={S}>HP <input type="number" style={{ width: 52 }} value={value.maxHp} onChange={(e) => onChange({ ...value, maxHp: Number(e.target.value) || 0 })} /></label>
         <label style={S}>型{' '}
-          <select value={value.archetype} onChange={(e) => onChange({ ...value, archetype: e.target.value })}>
+          <select value={value.archetype} title={value.archetype} onChange={(e) => onChange({ ...value, archetype: e.target.value })}>
             {ENEMY_VOCAB.archetypes.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>{(ARCHETYPE_LABEL as Record<string, string>)[a] ?? a}</option>
             ))}
           </select>
         </label>
@@ -2879,7 +2879,7 @@ function leaderTunerFields(def: LeaderDef): { key: string; label: string; cur: n
     if (typeof v === 'number') out.push({ key: k, label: ja, cur: v })
   }
   def.passive.forEach((e, i) => {
-    if (typeof e.amount === 'number') out.push({ key: `p${i}.amount`, label: `パッシブ〔${e.trigger}/${e.effect}〕の量`, cur: e.amount })
+    if (typeof e.amount === 'number') out.push({ key: `p${i}.amount`, label: `パッシブ〔${triggerJa(e.trigger)}: ${effectJa(e.effect)}〕の量`, cur: e.amount })
   })
   return out
 }
@@ -2970,6 +2970,57 @@ function loadTunerDraft(): TunerDraft {
  * 実データ語彙 (現行カードから抽出)。カードビルダーのドロップダウンはこの語彙に限定する —
  * 新しい trigger/effect 名は engine 実装が要るため、機構の新設は「補足/メモ」で提案する
  */
+// ---- 編集UIの日本語ラベル (2026-09-01 ユーザー要望「json定義の名称がそのままでは指摘者に分かりにくい」) ----
+// データのキーは英語のまま (エクスポート・実装の語彙)。表示だけ日本語に寄せる
+
+/** trigger → 日本語 (TRIGGER_LABEL の「: 」抜き。onPlay はプレイ時) */
+function triggerJa(t: string): string {
+  if (t === 'onPlay') return 'プレイ時'
+  const label = (TRIGGER_LABEL as Record<string, string>)[t]
+  return label !== undefined && label !== '' ? label.replace(/: $/, '') : t
+}
+
+/** effect → 短い日本語名 (量はNで示す)。未知の効果名は生のまま出す */
+const EFFECT_JA: Record<string, string> = {
+  dealDamage: 'ダメージN', dealDamageRandom: 'ランダムダメージN〜上限', dealDamageDrain: 'ドレインN(半分回復)',
+  dealDamageCleave: 'キル連鎖N', dealDamageExecute: '処刑N(HP25%以下で上限)',
+  dealDamagePerBlock: 'ブロック×Nダメ', dealDamagePerIceBlock: '氷壁×Nダメ', dealDamagePerCardPlayed: '詠唱数×Nダメ',
+  dealDamagePerCardPlayedTotal: '累計プレイ数×Nダメ', dealDamagePerEnergyMax: '上限×Nダメ', dealDamagePerMomentum: '勢い×Nダメ(非消費)',
+  dealDamagePerExhaust: '消滅数×Nダメ', dealDamagePerHandCard: '手札数×Nダメ', dealDamagePerHeal: '回復回数×Nダメ',
+  dealDamagePerDamageTaken: '被ダメ×Nダメ', dealDamagePerSelfHpLost: '失ったHP×Nダメ', dealDamagePerPermanent: '置物数×Nダメ',
+  dealDamagePerRandomPlayed: '運任せ数×Nダメ', dealDamagePerNegStrength: '下げた強化×Nダメ',
+  gainBlock: 'ブロックN', gainBlockPerEnergyMax: '上限×Nブロック', gainBlockPerPermanent: '置物数×Nブロック',
+  gainIceBlock: '氷壁N(持ち越し)', gainIceBlockPerCardPlayed: '詠唱数×N氷壁', gainIceBlockPerHandCard: '手札数×N氷壁',
+  gainHp: 'HP回復N', loseHp: '自傷HP-N', counter: '返しN(リアクション)', negate: '打ち消し', negateConvertIce: '打ち消し+実値ぶん氷壁',
+  drawCards: 'Nドロー', drawCardsPerCardPlayed: '詠唱数×Nドロー', impulseDraw: '衝動ドローN(このターン限り)',
+  gainEnergy: '一時マナ+N', gainEnergyMax: 'エナジー上限+N', discountNext: '次のカード-N',
+  addGrowth: '成長+N', doubleGrowth: '成長2倍', dischargeGrowth: '成長放出(×Nダメ全消費)', dischargeGrowthBlock: '成長×Nブロック(全消費)',
+  addMomentum: '勢い+N', doubleMomentum: '勢い2倍', dischargeMomentumBlock: '勢い×Nブロック(全消費)', dischargeMomentumBurn: '勢い×N延焼(全消費)',
+  applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
+  addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
+  addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵強化-N)',
+  shatterBlock: '粉砕(敵ブロック全壊)', shatterBlockConvert: '粉砕+破壊値ダメ',
+  exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
+  retrieveFromExhaust: '消滅置き場から回収', playFromExhaust: '消滅置き場から直接プレイ',
+  summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
+  blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
+}
+function effectJa(e: string): string {
+  return EFFECT_JA[e] ?? e
+}
+
+/** 条件キー → 日本語 */
+const COND_JA: Record<string, string> = {
+  blaze: '猛り火(延焼計8以上)',
+  hpAtOrBelowRatio: 'HPが比率以下(0.5=半分)',
+  minActionValue: '敵の行動値が値以上',
+  maxActionValue: '敵の行動値が値以下',
+  minDamageTaken: '被ダメが値以上',
+}
+function condJa(k: string): string {
+  return COND_JA[k] ?? k
+}
+
 const CARD_VOCAB: { triggers: readonly string[]; effects: readonly string[]; condKeys: readonly string[] } = (() => {
   const t = new Set<string>()
   const e = new Set<string>()
@@ -3032,14 +3083,14 @@ function EffectDraftRow({
   const S = { fontSize: 11 } as const
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap', border: '1px solid #334', borderRadius: 4, padding: 3 }}>
-      <select style={S} value={value.trigger} onChange={(ev) => onChange({ ...value, trigger: ev.target.value })}>
+      <select style={S} value={value.trigger} title={value.trigger} onChange={(ev) => onChange({ ...value, trigger: ev.target.value })}>
         {CARD_VOCAB.triggers.map((t) => (
-          <option key={t} value={t}>{t}</option>
+          <option key={t} value={t}>{triggerJa(t)}</option>
         ))}
       </select>
-      <select style={S} value={value.effect} onChange={(ev) => onChange({ ...value, effect: ev.target.value })}>
+      <select style={S} value={value.effect} title={value.effect} onChange={(ev) => onChange({ ...value, effect: ev.target.value })}>
         {CARD_VOCAB.effects.map((t) => (
-          <option key={t} value={t}>{t}</option>
+          <option key={t} value={t}>{effectJa(t)}</option>
         ))}
       </select>
       <label style={S}>
@@ -3058,10 +3109,10 @@ function EffectDraftRow({
       </label>
       <label style={S}>
         条件{' '}
-        <select value={value.condKey ?? ''} onChange={(ev) => onChange({ ...value, condKey: ev.target.value === '' ? undefined : ev.target.value })}>
+        <select value={value.condKey ?? ''} title={value.condKey ?? ''} onChange={(ev) => onChange({ ...value, condKey: ev.target.value === '' ? undefined : ev.target.value })}>
           <option value="">なし</option>
           {CARD_VOCAB.condKeys.map((k) => (
-            <option key={k} value={k}>{k}</option>
+            <option key={k} value={k}>{condJa(k)}</option>
           ))}
         </select>
       </label>
@@ -3596,7 +3647,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
               if (typeof ef.amount === 'number') numFields.push({ key: `e${i}.amount`, label: short, cur: ef.amount })
               if (typeof ef.amountMax === 'number') numFields.push({ key: `e${i}.amountMax`, label: `${short}上限`, cur: ef.amountMax })
               for (const [ck, cv] of Object.entries(ef.condition ?? {})) {
-                if (typeof cv === 'number') numFields.push({ key: `e${i}.cond.${ck}`, label: `条件${ck}`, cur: cv })
+                if (typeof cv === 'number') numFields.push({ key: `e${i}.cond.${ck}`, label: `条件〔${condJa(ck)}〕`, cur: cv })
               }
             })
             const COST_LABELS: Record<string, string> = { exhaustCost: '消滅コスト', discardCost: '捨てコスト', necroCost: '亡骸コスト' }
