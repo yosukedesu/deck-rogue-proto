@@ -4006,6 +4006,9 @@ function RunScreen({
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
             <span className="chip">💰 {run.gold}G</span>
+            {/* デッキ確認 (2026-09-01 ユーザー指摘「イベント画面に強化確認する方法がない」。
+                ビューアの「鍛えた姿(+)で表示」トグルで強化後の姿も確認できる) */}
+            <DeckChip run={run} />
           </div>
         </div>
         <div style={{ marginTop: 12 }}>
