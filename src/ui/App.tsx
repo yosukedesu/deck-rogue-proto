@@ -189,6 +189,9 @@ const KEYWORD_HELP: Record<string, string> = {
   連携: '他の仲間が1体でも生きている間、この敵の攻撃に+N（宣言時に判定。仲間を倒せば次の宣言から素に戻る）',
   拘束: '残りNターンの間、1ターンにプレイできるカードは3枚まで。伏せる・リアクション発動は制限されない',
   重圧: 'この敵が生きている間、あなたのカードのコストが増える。倒せば即座に元に戻る（キル順の圧）',
+  残機: '倒すと次の形態で再起動する。オーバーキルのダメージは持ち越されない＝小分けに倒すしかない',
+  孵化: '放っておくと孵化して強い姿になる。卵のうちに割るか、親から倒すかの資源配分。孵化は打ち消しで1ターン遅らせられる',
+  弔い: '仲間が倒れるたび筋力+N（逃走は除く）。同時に削って同時に落とすのが正解＝全体攻撃の出番',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
@@ -632,6 +635,8 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
       return '🏃 逃走'
     case 'rest':
       return '😮‍💨 隙だらけ'
+    case 'hatch':
+      return '🐣 孵化する'
     case 'mill':
       return `📖 山札喰い ${intent.actual}枚（宣言 ${intent.shownMin}〜${intent.shownMax}枚。消滅置き場へ）`
   }
@@ -1647,7 +1652,17 @@ function BattleScreen({
                       <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>
                     )}
                     {enemyDef.splitInto !== undefined && !dead && (
-                      <span className="chip chip-strength">🫠 {kw('分裂')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}×{enemyDef.splitInto.count}</span>
+                      <span className="chip chip-strength">
+                        {enemyDef.splitInto.count === 1
+                          ? <>♻️ {kw('残機')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}として再起動</>
+                          : <>🫠 {kw('分裂')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}×{enemyDef.splitInto.count}{enemyDef.splitInto.stunned === true ? '（出現ターンは動かない）' : ''}</>}
+                      </span>
+                    )}
+                    {enemyDef.hatchInto !== undefined && !dead && (
+                      <span className="chip chip-strength">🥚 {kw('孵化')}: {getEnemyDef(enemyDef.hatchInto.enemyId).name}になる</span>
+                    )}
+                    {enemyDef.mournStrength !== undefined && !dead && (
+                      <span className="chip chip-strength">🕯️ {kw('弔い')}+{enemyDef.mournStrength}</span>
                     )}
                     {enemyDef.guardian === true && !dead && (
                       <span className="chip chip-strength">🛡️ {kw('庇う')}</span>
@@ -2826,7 +2841,7 @@ const ENEMY_VOCAB = (() => {
 })()
 
 const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時筋力💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''

@@ -1638,5 +1638,249 @@
    "slam",
    "mud_guard"
   ]
+ },
+ {
+  "id": "enemy_elite_husk_3",
+  "name": "不滅の骸兵・参",
+  "archetype": "splitter",
+  "flavor": "三度まで立ち上がる。骨が減るほど、剣筋は冴える。",
+  "maxHp": 60,
+  "splitInto": {
+   "enemyId": "enemy_elite_husk_2",
+   "count": 1
+  },
+  "moves": [
+   {
+    "id": "slash",
+    "kind": "attack",
+    "min": 14,
+    "max": 18,
+    "weight": 1
+   },
+   {
+    "id": "guard",
+    "kind": "defend",
+    "min": 8,
+    "max": 11,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "slash",
+   "slash",
+   "guard"
+  ]
+ },
+ {
+  "id": "enemy_elite_husk_2",
+  "name": "不滅の骸兵・弐",
+  "archetype": "splitter",
+  "flavor": "二度目の骸は軽い。軽い剣は速い。",
+  "maxHp": 40,
+  "splitInto": {
+   "enemyId": "enemy_elite_husk_1",
+   "count": 1,
+   "strength": 2
+  },
+  "moves": [
+   {
+    "id": "slash",
+    "kind": "attack",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "slash"
+  ]
+ },
+ {
+  "id": "enemy_elite_husk_1",
+  "name": "不滅の骸兵・壱",
+  "archetype": "brute",
+  "flavor": "最後の骨格。もう守るものが無い剣は、いちばん鋭い。",
+  "maxHp": 25,
+  "moves": [
+   {
+    "id": "slash",
+    "kind": "attack",
+    "min": 10,
+    "max": 14,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "slash"
+  ]
+ },
+ {
+  "id": "enemy_brood_toad",
+  "name": "蟲抱えの蛙鬼",
+  "archetype": "splitter",
+  "flavor": "腹の中で何かが蠢いている。潰せば、出てくる。",
+  "maxHp": 90,
+  "splitInto": {
+   "enemyId": "enemy_broodling",
+   "count": 3,
+   "stunned": true
+  },
+  "moves": [
+   {
+    "id": "tongue",
+    "kind": "attack",
+    "min": 11,
+    "max": 15,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   },
+   {
+    "id": "squat",
+    "kind": "defend",
+    "min": 7,
+    "max": 10,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "tongue",
+   "squat"
+  ]
+ },
+ {
+  "id": "enemy_broodling",
+  "name": "蠢く幼体",
+  "archetype": "flurry",
+  "flavor": "生まれたてでも牙はある。",
+  "maxHp": 18,
+  "moves": [
+   {
+    "id": "gnaw",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "gnaw"
+  ]
+ },
+ {
+  "id": "enemy_brood_raptor",
+  "name": "抱卵の走竜",
+  "archetype": "guardian",
+  "flavor": "巣を守る母は、巣立ちの時間を稼ぐ。",
+  "maxHp": 66,
+  "guardian": true,
+  "moves": [
+   {
+    "id": "claw",
+    "kind": "attack",
+    "min": 8,
+    "max": 11,
+    "weight": 1
+   },
+   {
+    "id": "shelter",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "claw",
+   "shelter"
+  ]
+ },
+ {
+  "id": "enemy_raptor_egg",
+  "name": "走竜の卵",
+  "archetype": "charger",
+  "flavor": "殻ごしに鼓動が速くなっていく。割るなら今のうち。",
+  "maxHp": 16,
+  "hatchInto": {
+   "enemyId": "enemy_raptor_chick"
+  },
+  "moves": [
+   {
+    "id": "quiver",
+    "kind": "defend",
+    "min": 4,
+    "max": 6,
+    "weight": 1
+   },
+   {
+    "id": "hatch",
+    "kind": "hatch",
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "quiver",
+   "quiver",
+   "hatch"
+  ],
+  "sequenceLoopFrom": 2
+ },
+ {
+  "id": "enemy_raptor_chick",
+  "name": "走竜の仔",
+  "archetype": "flurry",
+  "flavor": "孵ったばかりで腹ぺこ。",
+  "maxHp": 22,
+  "moves": [
+   {
+    "id": "peck",
+    "kind": "attack",
+    "min": 7,
+    "max": 9,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "peck"
+  ]
+ },
+ {
+  "id": "enemy_mourn_beast",
+  "name": "弔いの獣",
+  "archetype": "flurry",
+  "flavor": "番いの片割れを失うと、悲しみは牙になる。",
+  "maxHp": 95,
+  "mournStrength": 4,
+  "moves": [
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "leap",
+    "kind": "attack",
+    "min": 12,
+    "max": 16,
+    "weight": 1
+   },
+   {
+    "id": "lick",
+    "kind": "defend",
+    "min": 6,
+    "max": 9,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "bite",
+   "leap",
+   "lick"
+  ]
  }
 ]

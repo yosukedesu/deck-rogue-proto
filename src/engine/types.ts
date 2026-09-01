@@ -139,6 +139,8 @@ export interface EnemyState extends CombatantState {
   readonly lastMoveId?: string
   /** once 行動の使用済みID (1戦闘1回の判定用) */
   readonly usedOnce?: readonly string[]
+  /** この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる) */
+  readonly mournProcessed?: boolean
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
@@ -370,13 +372,14 @@ export type GameEvent =
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
   | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)
-  | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02) // 状態異常付与
+  | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02)
+  | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
   | { readonly type: 'HpLost'; readonly amount: number } // 自傷
-  | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number; readonly reason?: 'enrage-cards' | 'enrage-damage' | 'enrage-phase' }
+  | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number; readonly reason?: 'enrage-cards' | 'enrage-damage' | 'enrage-phase' | 'mourn' }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
   | { readonly type: 'MomentumAdded'; readonly amount: number }
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
@@ -751,6 +754,7 @@ export type EnemyArchetype =
 export type EnemyActionKind =
   | 'attack'
   | 'defend'
+  | 'hatch' // 孵化 (2026-09-02): その敵が hatchInto の敵に変身する。打ち消し可 = 孵化を遅らせる読み
   | 'destroy-set'
   | 'destroy-token' // 召喚トークン1体をランダムに破壊 (確定済みルール表「トークン破壊」)
   | 'buff'
@@ -871,7 +875,14 @@ export interface EnemyDef {
    * 分裂体は素の値 (深度スケール非適用)・親の atkScale (難易度) を継承・生成時に意図を宣言して
    * その敵フェーズから行動する (本家準拠)。分裂体の定義は sequence 必須 (生成時宣言を決定的にするため)
    */
-  readonly splitInto?: { readonly enemyId: string; readonly count: number }
+  readonly splitInto?: {
+    readonly enemyId: string
+    readonly count: number
+    /** 分裂体の初回意図を「隙」にする (2026-09-02 罰型分裂の緩和版: 出現ターンは動かない = 全体攻撃の売り時) */
+    readonly stunned?: boolean
+    /** 分裂体の初期筋力 (2026-09-02 残機チェーン用: 倒すたび体は縮むが刃は鋭くなる) */
+    readonly strength?: number
+  }
   /**
    * 庇う (2026-09-02 陣形もの)。この敵が生存中、プレイヤーの単体対象カードは他の敵を選べず
    * この敵に向かう (対象の強制=キル順の問い)。全体攻撃・延焼ティック・打ち消しは素通し=解答。
@@ -904,6 +915,23 @@ export interface EnemyDef {
    */
   readonly movesWhenAlone?: readonly EnemyMove[]
   readonly sequenceWhenAlone?: readonly string[]
+  /**
+   * ローテーションの巻き戻し位置 (2026-09-02 StS2の「一度きりの前奏→ループ」を1フィールドで)。
+   * sequence を最後まで進んだら添字 loopFrom へ戻る (未指定=0 で完全後方互換)。
+   * 儀式1回→永久攻撃・盗み→逃走の一方通行・打ち消された孵化の即再試行などが書ける
+   */
+  readonly sequenceLoopFrom?: number
+  readonly sequenceBelowHalfLoopFrom?: number
+  /**
+   * 孵化 (2026-09-02 StS2 ToughEgg式): kind:'hatch' の行動を解決すると、この敵が指定の敵へ
+   * 変身する (HP全快・筋力0・ローテ先頭から。難易度 atkScale は継承)。打ち消せば1ターン遅らせられる
+   */
+  readonly hatchInto?: { readonly enemyId: string }
+  /**
+   * 弔い強化 (2026-09-02 連携の逆問い): 仲間が倒れるたび (逃走は除く) 筋力+N。
+   * 「同時に削って同時に落とせ」= 全体攻撃が構造的な最適解になる編成の器
+   */
+  readonly mournStrength?: number
   /**
    * 常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」):
    * この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。

@@ -707,5 +707,91 @@ describe('正確性の修正 (2026-09-02 StS2解析ミニングで発見)', () =
   })
 })
 
+describe('ギミック変種 (2026-09-02 全体改善・第6波)', () => {
+  it('残機: 骸兵は倒すたび次の形態で再起動し、最終形態を倒すと勝利。弐→壱は筋力+2で出る', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_husk_3', 42)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+    expect(s.phase).toBe('player-turn')
+    expect(s.enemies.some((e) => e.enemyId === 'enemy_elite_husk_2' && e.hp > 0)).toBe(true)
+    // 弐を倒すと壱 (筋力+2)
+    s = { ...s, enemies: s.enemies.map((e) => (e.hp > 0 ? { ...e, hp: 1, block: 0 } : e)) }
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: s.enemies.findIndex((e) => e.hp > 0) })
+    const husk1 = s.enemies.find((e) => e.enemyId === 'enemy_elite_husk_1' && e.hp > 0)
+    expect(husk1).toBeDefined()
+    expect(husk1!.strength).toBe(2)
+  })
+
+  it('スタン付き分裂: 蛙鬼の幼体は出現ターンに動かない (初回意図=隙)', () => {
+    let s = freshCombat('set-confirm', 'enemy_brood_toad', 42)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+    const broodlings = s.enemies.filter((e) => e.enemyId === 'enemy_broodling' && e.hp > 0)
+    expect(broodlings).toHaveLength(3)
+    for (const b of broodlings) expect(b.intent?.kind).toBe('rest')
+  })
+
+  it('孵化: 卵は3手目に孵化して走竜の仔になり、打ち消すと次の宣言も孵化 (=1ターン遅延)', () => {
+    let s = freshCombat('set-confirm', 'enc_raptor_nest', 42)
+    const eggIdx = s.enemies.findIndex((e) => e.enemyId === 'enemy_raptor_egg')
+    expect(eggIdx).toBeGreaterThanOrEqual(0)
+    // 2ターン回すと3手目=孵化の意図
+    for (let t = 0; t < 2; t++) {
+      s = withHand(s, [])
+      s = applyCommand(s, { type: 'EndTurn' })
+    }
+    expect(s.enemies[eggIdx].intent?.kind).toBe('hatch')
+    // そのまま敵フェーズを通すと孵化する
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies[eggIdx].enemyId).toBe('enemy_raptor_chick')
+    expect(s.enemies[eggIdx].hp).toBe(22)
+    // sequenceLoopFrom=2: もう1つの卵も以降の宣言は常に孵化 (打ち消し遅延が1ターン単位になる根拠)
+  })
+
+  it('弔い強化: 番いの片割れを倒すと残りの筋力+4 (逃走では発火しない)', () => {
+    let s = freshCombat('set-confirm', 'enc_mourn_beasts', 42)
+    const before = s.enemies[1].strength
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, hp: 1, block: 0 } : e)) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 0 })
+    expect(s.enemies[1].strength).toBe(before + 4)
+    expect(s.eventLog.some((e) => e.type === 'StrengthGained' && e.reason === 'mourn')).toBe(true)
+  })
+
+  it('sequenceLoopFrom: 前奏を終えるとloopFrom位置から巡回する', () => {
+    applyDebugOverrides({
+      enemies: [
+        {
+          id: 'test_loopfrom',
+          name: 'テスト前奏',
+          archetype: 'brute',
+          maxHp: 200,
+          sequenceLoopFrom: 1,
+          moves: [
+            { id: 'warmup', kind: 'buff', min: 3, max: 3, weight: 1 },
+            { id: 'jab', kind: 'attack', min: 5, max: 5, weight: 1 },
+            { id: 'cross', kind: 'attack', min: 9, max: 9, weight: 1 },
+          ],
+          sequence: ['warmup', 'jab', 'cross'],
+        },
+      ],
+    })
+    let s = freshCombat('set-confirm', 'test_loopfrom', 7)
+    const kinds: string[] = []
+    for (let t = 0; t < 6 && s.phase === 'player-turn'; t++) {
+      kinds.push(s.enemies[0].lastMoveId ?? '?')
+      s = withHand(s, [])
+      s = applyCommand(s, { type: 'EndTurn' })
+    }
+    expect(kinds).toEqual(['warmup', 'jab', 'cross', 'jab', 'cross', 'jab']) // warmupは一度きり
+  })
+})
+
+
 
 

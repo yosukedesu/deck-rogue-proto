@@ -339,7 +339,18 @@ function declareIntents(state: GameState): GameState {
     // 通常分岐: sequence を持つ敵は固定ローテーション
     let move: EnemyMove
     if (sequence && sequence.length > 0) {
-      const moveId = sequence[enemy.patternIndex % sequence.length]
+      // sequenceLoopFrom (2026-09-02): 一度きりの前奏→ループ。最後まで進んだら loopFrom へ戻る
+      const loopFrom = belowHalf
+        ? (def.sequenceBelowHalfLoopFrom ?? 0)
+        : whenAlone || phaseSwitched
+          ? 0
+          : (def.sequenceLoopFrom ?? 0)
+      const len = sequence.length
+      const idx =
+        enemy.patternIndex < len
+          ? enemy.patternIndex
+          : loopFrom + ((enemy.patternIndex - loopFrom) % (len - loopFrom))
+      const moveId = sequence[idx]
       const found = baseTable.find((m) => m.id === moveId)
       if (!found) throw new Error(`敵 ${def.id} の sequence が未定義の行動を参照: ${moveId}`)
       move = found
@@ -533,19 +544,27 @@ function processSplits(state: GameState): GameState {
     for (let k = 0; k < splitInto.count; k++) {
       const moveId = childDef.sequence?.[k % (childDef.sequence.length || 1)]
       const move = childDef.moves.find((m) => m.id === moveId) ?? childDef.moves[0]
-      const [intent, rng2] = buildIntent(s.rng, move, 0, e.atkScale ?? 1)
+      // stunned (2026-09-02 罰型分裂の緩和版): 分裂体の初回意図は「隙」= 出現ターンは動かない
+      const childStrength = splitInto.strength ?? 0
+      const [intent, rng2] =
+        splitInto.stunned === true
+          ? ([
+              { kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0 },
+              s.rng,
+            ] as const)
+          : buildIntent(s.rng, move, childStrength, e.atkScale ?? 1)
       const child = {
         enemyId: splitInto.enemyId,
         hp: childDef.maxHp,
         maxHp: childDef.maxHp,
         block: childDef.startingBlock ?? 0,
         intent,
-        strength: 0,
+        strength: childStrength,
         ...(e.atkScale !== undefined ? { atkScale: e.atkScale } : {}),
         burn: 0,
         confusion: 0,
         exposed: 0,
-        patternIndex: (k + 1) % (childDef.sequence?.length ?? 1),
+        patternIndex: splitInto.stunned === true ? 0 : (k + 1) % (childDef.sequence?.length ?? 1),
         ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
         ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
       }
@@ -556,9 +575,34 @@ function processSplits(state: GameState): GameState {
   return s
 }
 
+/**
+ * 弔い強化 (2026-09-02 連携の逆問い): 仲間が倒れるたび (逃走は除く)、生存する
+ * mournStrength 持ちの筋力+N。「同時に削って同時に落とせ」= 全体攻撃が構造的な最適解になる
+ */
+function processMourning(state: GameState): GameState {
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) {
+    const dead = s.enemies[i]
+    if (dead.hp > 0 || dead.fled === true || dead.mournProcessed === true) continue
+    s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, mournProcessed: true } : x)) }
+    for (let j = 0; j < s.enemies.length; j++) {
+      if (j === i || s.enemies[j].hp <= 0) continue
+      const amount = getEnemyDef(s.enemies[j].enemyId).mournStrength
+      if (amount === undefined || amount <= 0) continue
+      s = {
+        ...s,
+        enemies: s.enemies.map((x, k) => (k === j ? { ...x, strength: x.strength + amount } : x)),
+      }
+      s = emit(s, { type: 'StrengthGained', enemyIndex: j, amount, reason: 'mourn' })
+    }
+  }
+  return s
+}
+
 export function checkCombatEnd(state: GameState): GameState {
   if (state.phase === 'won' || state.phase === 'lost') return state
   state = processSplits(state)
+  state = processMourning(state)
   if (state.player.hp <= 0) {
     return emit({ ...state, phase: 'lost' }, { type: 'CombatEnded', result: 'lost' })
   }
@@ -1495,6 +1539,39 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
     case 'rest': {
       // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば1ターンの反撃の窓)
       return markResolved(state, 0)
+    }
+    case 'hatch': {
+      // 孵化 (2026-09-02 StS2 ToughEgg式): この敵が hatchInto の敵へ変身する。
+      // HP全快・筋力0・ローテ先頭から。atkScale (難易度) は継承。打ち消せば1ターン遅らせられる
+      // (卵のローテを sequenceLoopFrom で孵化に巻き戻しておくと「次も孵化」= 遅延は1ターン単位)
+      const def = getEnemyDef(enemy.enemyId)
+      const into = def.hatchInto
+      if (into === undefined) return markResolved(state, 0)
+      const newDef = getEnemyDef(into.enemyId)
+      let s: GameState = {
+        ...state,
+        enemies: state.enemies.map((e, j) =>
+          j === enemyIndex
+            ? {
+                ...e,
+                enemyId: into.enemyId,
+                hp: newDef.maxHp,
+                maxHp: newDef.maxHp,
+                block: 0,
+                strength: 0,
+                patternIndex: 0,
+                keyMoveUses: 0,
+                lastMoveId: undefined,
+                usedOnce: [],
+                intent: null,
+              }
+            : e,
+        ),
+      }
+      s = emit(s, { type: 'EnemyHatched', enemyIndex, fromId: def.id, intoId: into.enemyId })
+      // 生まれた姿で即座に意図を宣言する (分裂と同じ「その敵フェーズから行動」の一貫則は
+      // 取らない — 孵化はその敵の「行動」自体なので、次の宣言フェーズで初手が決まる)
+      return markResolved(s, 0)
     }
     case 'mill': {
       // 山札喰い (2026-08-31 大喰らいの蟲): 山札の上N枚を消滅させる。

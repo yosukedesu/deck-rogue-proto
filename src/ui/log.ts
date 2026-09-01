@@ -46,6 +46,7 @@ export function intentText(intent: EnemyIntent | null): string {
     case 'steal-gold': return `💰 盗み ${intent.shownMin}〜${intent.shownMax}G`
     case 'flee': return '🏃 逃走（倒すか打ち消せば阻止）'
     case 'rest': return '😮‍💨 隙だらけ'
+    case 'hatch': return '🐣 孵化する'
     case 'mill': return `📖 山札喰い ${intent.shownMin}〜${intent.shownMax}枚（消滅置き場へ。亡骸は発火する）`
   }
 }
@@ -82,7 +83,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': {
       // 激昂の発火は理由を明示する (2026-09-01 検証ラン「跨いだ瞬間を後から確認できない」への処方)
-      const ENRAGE_JA: Record<string, string> = { 'enrage-cards': '激昂〔プレイ枚数の節目〕', 'enrage-damage': '激昂〔累計被ダメの節目〕', 'enrage-phase': '激昂〔毎フェーズ〕' }
+      const ENRAGE_JA: Record<string, string> = { 'enrage-cards': '激昂〔プレイ枚数の節目〕', 'enrage-damage': '激昂〔累計被ダメの節目〕', 'enrage-phase': '激昂〔毎フェーズ〕', mourn: '弔い〔仲間が倒れた〕' }
       const why = e.reason !== undefined ? `😡 ${ENRAGE_JA[e.reason] ?? e.reason}: ` : ''
       return { text: `${why}敵の筋力 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
     }
@@ -96,6 +97,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
     case 'BurnTick': return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
     case 'EnemySplit': return { text: `🫠 分裂！ 倒した敵から${e.count}体が現れた`, cls: 'log-bad' }
+    case 'EnemyHatched': return { text: '🐣 孵化した！', cls: 'log-bad' }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':
       return { text: e.status === 'wound' ? `負傷${e.amount}枚が捨て札に混入した` : e.status === 'scald' ? `火傷${e.amount}枚が手札に押し込まれた（ターン終了時に手札にあるとHP-2）` : `${STATUS_LABEL[e.status]}${e.amount}を付与された`, cls: 'log-bad' }

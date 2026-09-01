@@ -357,5 +357,36 @@
     "patternOffset": 1
    }
   ]
+ },
+ {
+  "id": "enc_raptor_nest",
+  "name": "抱卵の走竜",
+  "members": [
+   {
+    "enemyId": "enemy_brood_raptor"
+   },
+   {
+    "enemyId": "enemy_raptor_egg"
+   },
+   {
+    "enemyId": "enemy_raptor_egg",
+    "patternOffset": 1
+   }
+  ]
+ },
+ {
+  "id": "enc_mourn_beasts",
+  "name": "弔いの獣の番い",
+  "members": [
+   {
+    "enemyId": "enemy_mourn_beast",
+    "hpScale": 0.55
+   },
+   {
+    "enemyId": "enemy_mourn_beast",
+    "hpScale": 0.55,
+    "patternOffset": 1
+   }
+  ]
  }
 ]
