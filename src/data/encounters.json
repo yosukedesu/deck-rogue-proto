@@ -322,6 +322,10 @@
    {
     "enemyId": "enemy_elite_sentry",
     "patternOffset": 1
+   },
+   {
+    "enemyId": "enemy_elite_sentry",
+    "patternOffset": 2
    }
   ]
  },

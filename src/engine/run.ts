@@ -163,7 +163,7 @@ export function depthHpScale(row: number, act = 1): number {
   // 2026-09-01 幕2/3を+0.15 (段3新ベース検証: 完成デッキのターン火力40に対し敵HP60〜80が
   // 2ターンで溶け、デバフ・タイマーが鳴る前に敵が死んでいた。「幕2の谷」の敵側の受け)
   const table: readonly (readonly [number, number])[] = [
-    [0.55, 0.65], // 1幕
+    [0.62, 0.72], // 1幕 (2026-09-02 +0.07。ユーザー裁定「幕1はもうちょっと強くていい」×StS2対照「幕1増強は打点でなくHP上端」。実効上端58.5→64.8)
     [1.05, 1.15], // 2幕
     [1.2, 1.3], // 3幕
   ]
@@ -312,7 +312,7 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
         ? 1
         : depthHpScale(run.row, run.act) *
           // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
-          (node.type === 'boss' ? [1.25, 1.6, 2.4][run.act - 1] : 1)) * diff.hp,
+          (node.type === 'boss' ? [1.35, 1.6, 2.4][run.act - 1] : 1)) * diff.hp, // 幕1 1.25→1.35 (2026-09-02 オーガ実効175.5=本家最弱ボス水準。打点・強化は不変=激昂・第2形態が見える確率を上げる)
     enemyStrength:
       (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
     // 幕2/3の通常敵は打点+15% (2026-09-01 ユーザー裁定。HP経済ラン2本連続「幕2で被ダメ0の

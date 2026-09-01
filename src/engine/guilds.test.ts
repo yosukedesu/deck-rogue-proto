@@ -33,10 +33,10 @@ describe('ギルドパッシブ', () => {
   it('あかね (ラクドス): カード効果でHPを失うたび対象に1ダメージ', () => {
     const run = createRunInBattle(3, 'set-confirm', 'leader_rakdos')
     let s = withHand(run.combat!, ['black_shadow_blade'])
-    const enemyHp = s.enemies[0].hp
+    const enemyTotal = s.enemies[0].hp + s.enemies[0].block // 開幕ブロック持ちが初戦に来ても通る (2026-09-02 Weak帯導入)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_shadow_blade', targetIndex: 0 })
     // 影の刃: HP-2 (あかね1ダメ) → 8ダメ
-    expect(s.enemies[0].hp).toBe(enemyHp - 1 - 8)
+    expect(s.enemies[0].hp + s.enemies[0].block).toBe(enemyTotal - 1 - 8)
   })
 
   it('わかば (セレズニア): 置物が場に出るたび成長+1', () => {
@@ -73,12 +73,12 @@ describe('ギルドパッシブ', () => {
   it('いぶき (グルール): 攻撃プレイごと勢い+1と成長+1 (2026-08-31 二重通貨に。ひばな攻撃特化との差別化)', () => {
     const run = createRunInBattle(3, 'set-confirm', 'leader_gruul')
     let s = withHand(run.combat!, ['red_strike', 'red_strike'])
-    const enemyHp = s.enemies[0].hp
+    const enemyTotal = s.enemies[0].hp + s.enemies[0].block
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_strike', targetIndex: 0 })
     expect(s.player.momentum).toBe(1)
     expect(s.player.growth).toBe(1)
     // 2発目には勢い1+成長1が乗る
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_strike', targetIndex: 0 })
-    expect(s.enemies[0].hp).toBe(enemyHp - 6 - 8)
+    expect(s.enemies[0].hp + s.enemies[0].block).toBe(enemyTotal - 6 - 8)
   })
 })

@@ -122,8 +122,8 @@ describe('ラン構造 (マップ)', () => {
     expect(depthStrength(0)).toBe(0)
     expect(depthStrength(9)).toBe(0)
     expect(depthStrength(BOSS_ROW)).toBe(1) // ボスのみ (行15)
-    expect(depthHpScale(0, 1)).toBeCloseTo(0.55)
-    expect(depthHpScale(14, 1)).toBeCloseTo(0.65) // 幕内後半 (2段スケール)
+    expect(depthHpScale(0, 1)).toBeCloseTo(0.62) // 2026-09-02 幕1+0.07 (StS2対照の幕1増強)
+    expect(depthHpScale(14, 1)).toBeCloseTo(0.72) // 幕内後半 (2段スケール。2026-09-02 +0.07)
     expect(depthHpScale(0, 3)).toBeCloseTo(1.2) // 2026-09-01 幕2/3を+0.15 (完成デッキに2Tで溶ける谷の受け)
     expect(depthHpScale(BOSS_ROW, 1)).toBeCloseTo(1.0) // 幕ボスは素のHP
     // 初戦から素の強さで登場 (編成の場合は先頭メンバーで検証。群れ補正 hpScale は深度と乗算)
@@ -131,7 +131,7 @@ describe('ラン構造 (マップ)', () => {
     const members = resolveEncounter(currentNode(run)!.encounterId!)
     const def = getEnemyDef(members[0].enemyId)
     expect(run.combat!.enemies[0].maxHp).toBe(
-      Math.round(def.maxHp * 0.55 * (members[0].hpScale ?? 1)),
+      Math.round(def.maxHp * 0.62 * (members[0].hpScale ?? 1)), // 2026-09-02 幕1+0.07
     )
     expect(run.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })
@@ -284,7 +284,7 @@ describe('ラン走破 (3幕構成)', () => {
     expect(currentNode(run)!.encounterId).toBe('enemy_brute') // 1幕ボス=オーガ
     expect(run.combat!.enemies[0].strength).toBe(1)
     const def = getEnemyDef(currentNode(run)!.encounterId!)
-    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * 1.25)) // 幕1ボス×1.25 (2026-08-29)
+    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * 1.35)) // 幕1ボス×1.35 (2026-09-02 本家最弱ボス水準)
     // 被弾した状態でボスを倒す → 全回復を確認
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 12 } } }
     run = forceWin(run)
@@ -302,7 +302,7 @@ describe('ラン走破 (3幕構成)', () => {
   it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり9〜15×3 (2026-08-29 18行化+?増設)', () => {
     let run = createRun(23, 'set-confirm')
     // ボスの幕スケール (確定済みルール表「マップ」): HP×1.0/1.6/2.4・強化+1/+1/+2
-    const bossHpScale = [1.25, 1.6, 2.4] // 2026-08-29 幕1ボス×1.25 (ユーザー体感「ボスが弱い」)
+    const bossHpScale = [1.35, 1.6, 2.4] // 2026-09-02 幕1 1.25→1.35 // 2026-08-29 幕1ボス×1.25 (ユーザー体感「ボスが弱い」)
     const bossStr = [1, 1, 2]
     for (let act = 1; act <= ACT_COUNT; act++) {
       expect(run.act).toBe(act)

@@ -625,7 +625,7 @@ describe('行動文法の器 (2026-09-02 StS2解析からの全体改善)', () =
     expect(s.phase).toBe('player-turn')
     const it = s.enemies[0].intent
     expect(it?.kind).toBe('attack')
-    expect(it?.shownMin).toBeGreaterThanOrEqual(11) // avenging_rush 11-14 (通常の盾打ち6-8ではない)
+    expect(it?.shownMin).toBeGreaterThanOrEqual(9) // avenging_rush 9-12 (通常の盾打ち6-8ではない。2026-09-02 白スターターsim13%で半歩戻し)
   })
 
   it('拘束: 1ターンにプレイできるカードは3枚まで。伏せは制限されず、ターン終了で1減る', () => {
