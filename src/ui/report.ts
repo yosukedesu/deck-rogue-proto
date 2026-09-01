@@ -26,6 +26,12 @@ import { cardName, intentText, logLine } from './log.ts'
 export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine } from './log.ts'
 export type { LogLine } from './log.ts'
 
+/** 戦闘直後の5段階評価 (2026-09-01 ユーザー要望「敵の強さや面白さを5段階で入力→ログに出せばいいデータ」) */
+export interface BattleRating {
+  readonly strength: number // 敵の強さ 1〜5
+  readonly fun: number // 面白さ 1〜5
+}
+
 export interface BattleArchive {
   readonly battleNo: number
   readonly enemyId: string
@@ -36,6 +42,8 @@ export interface BattleArchive {
   readonly hpAfter: number
   readonly deckSize: number
   readonly lines: readonly string[]
+  /** 戦闘直後にプレイヤーが入力した評価 (任意。未入力なら undefined) */
+  readonly rating?: BattleRating
 }
 
 /**
@@ -191,17 +199,17 @@ export function buildReport(
   if (history.length > 0) {
     L.push(`## これまでの戦闘（${history.length}戦）`)
     L.push('')
-    L.push('| # | 敵 | 結果 | ターン | HP |')
-    L.push('|---|---|---|---|---|')
+    L.push('| # | 敵 | 結果 | ターン | HP | 強さ | 面白さ |')
+    L.push('|---|---|---|---|---|---|---|')
     for (const h of history) {
       L.push(
-        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} |`,
+        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} | ${h.rating?.strength ?? ''} | ${h.rating?.fun ?? ''} |`,
       )
     }
     L.push('')
     for (const h of history) {
       L.push(
-        `### ${h.battleNo}戦目 ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚`,
+        `### ${h.battleNo}戦目 ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} — ${h.result === 'won' ? '勝利' : '敗北'} / ${h.turns}ターン / HP ${h.hpBefore}→${h.hpAfter} / デッキ${h.deckSize}枚${h.rating ? ` / 評価: 強さ${h.rating.strength} 面白さ${h.rating.fun}` : ''}`,
       )
       L.push(...h.lines)
       L.push('')
