@@ -335,6 +335,8 @@ export type GameEvent =
       readonly source: 'player' | 'enemy'
       readonly amount: number // ブロック適用前の値
       readonly hpLoss: number // 実際に減った HP
+      /** 関与した敵 (source=playerなら対象、enemyなら攻撃者)。UIの結果演出用 (2026-09-01) */
+      readonly enemyIndex?: number
       /** 装甲で切り捨てられた量 (2026-08-31 収穫ラン指摘「切られた量が見えないと積むのをやめる判断を学習できない」) */
       readonly armorCut?: number
     }

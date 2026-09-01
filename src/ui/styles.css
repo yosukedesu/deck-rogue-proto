@@ -658,3 +658,42 @@ button:disabled { cursor: default; }
   padding: 1px 7px;
   font-size: 11px;
 }
+
+/* ---------- 機能フィードバック演出 (2026-09-01 ユーザー指示で最小解禁。装飾・サウンドは引き続きやらない) ---------- */
+
+button:not(:disabled) { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+.enemy-targetable { cursor: crosshair; }
+.hand-cards .card:hover { border-color: var(--accent, #7fb37f); }
+
+/* 浮き数字: 直前の解決結果 (ダメージ/ブロック/回復) をその場に出す */
+.float-layer { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 5; }
+.float-num {
+  position: absolute; left: 50%; top: 28%;
+  font-weight: bold; font-size: 18px; white-space: nowrap;
+  text-shadow: 0 1px 3px #000, 0 0 2px #000;
+  animation: floatUp 0.9s ease-out forwards;
+}
+.float-dmg { color: #ff7b6b; }
+.float-block { color: #8ab8ff; }
+.float-heal { color: #7ec97e; }
+.float-miss { color: #b9b9b9; font-size: 14px; }
+@keyframes floatUp {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to { opacity: 0; transform: translate(-50%, -26px); }
+}
+
+/* 選択トースト: ピック・鍛錬・合成・購入の結果を1行で出す */
+.toast-choice {
+  position: fixed; bottom: 64px; left: 50%; transform: translateX(-50%);
+  z-index: 65; pointer-events: none;
+  background: rgba(18, 22, 30, 0.95); border: 1px solid #667; border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; max-width: 80vw;
+  animation: toastFade 2.6s ease-in forwards;
+}
+@keyframes toastFade {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; }
+}

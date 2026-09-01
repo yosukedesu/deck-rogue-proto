@@ -1244,7 +1244,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           damageTakenLastEnemyPhase: state.player.damageTakenLastEnemyPhase + hpLoss,
         },
       }
-      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss })
+      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex })
       // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る (確定済みルール表「攻防一体・隙」)
       if (intent.alsoDefend !== undefined && intent.alsoDefend > 0) {
         s = {

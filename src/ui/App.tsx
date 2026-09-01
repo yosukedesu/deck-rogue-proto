@@ -1351,6 +1351,58 @@ function BattleScreen({
   // 手札捨てコストの選択中状態 (UIローカル。対象カードが手札を離れたら自動で無効化)
   // カードホバーのダメージ内訳 (2026-09-01)
   const [hoverUid, setHoverUid] = useState<string | null>(null)
+  // 結果の浮き数字 (2026-09-01 機能フィードバック演出)。eventLog の新着から導出する
+  interface FloatNum { id: number; where: 'player' | number; text: string; cls: string }
+  const [floats, setFloats] = useState<readonly FloatNum[]>([])
+  const floatSeq = useRef(0)
+  const prevLogLen = useRef(0)
+  useEffect(() => {
+    if (prevLogLen.current > s.eventLog.length) prevLogLen.current = 0 // 新しい戦闘でリセット
+    const news = s.eventLog.slice(prevLogLen.current)
+    prevLogLen.current = s.eventLog.length
+    const add: FloatNum[] = []
+    const push = (where: 'player' | number, text: string, cls: string) =>
+      add.push({ id: ++floatSeq.current, where, text, cls })
+    for (const e of news) {
+      switch (e.type) {
+        case 'DamageDealt':
+          if (e.source === 'player' && e.enemyIndex !== undefined) {
+            push(e.enemyIndex, e.hpLoss > 0 ? `-${e.hpLoss}` : 'ブロック', e.hpLoss > 0 ? 'float-dmg' : 'float-miss')
+          } else if (e.source === 'enemy') {
+            push('player', e.hpLoss > 0 ? `-${e.hpLoss}` : '完全に防いだ', e.hpLoss > 0 ? 'float-dmg' : 'float-miss')
+          }
+          break
+        case 'BlockGained':
+          if (e.target === 'player') push('player', `🛡+${e.amount}`, 'float-block')
+          break
+        case 'IceBlockGained':
+          push('player', `❄+${e.amount}`, 'float-block')
+          break
+        case 'HpHealed':
+          if (e.amount > 0) push('player', `+${e.amount}`, 'float-heal')
+          break
+        case 'HpLost':
+          push('player', `-${e.amount}`, 'float-dmg')
+          break
+        case 'ThornsReflected':
+          if (e.hpLoss > 0) push('player', `🦔-${e.hpLoss}`, 'float-dmg')
+          break
+      }
+    }
+    if (add.length > 0) {
+      setFloats((f) => [...f, ...add].slice(-16))
+      const ids = new Set(add.map((a) => a.id))
+      setTimeout(() => setFloats((f) => f.filter((x) => !ids.has(x.id))), 950)
+    }
+  }, [s.eventLog.length]) // eslint-disable-line react-hooks/exhaustive-deps
+  const floatsFor = (where: 'player' | number) =>
+    floats.filter((f) => f.where === where).map((f, i) => (
+      <span key={f.id} className={`float-num ${f.cls}`} style={{ marginLeft: `${(i % 3) * 26 - 26}px`, top: `${22 + (i % 2) * 18}%` }}>
+        {f.text}
+      </span>
+    ))
+
+
   const [pendingDiscard, setPendingDiscard] = useState<{
     cardUid: string
     modeIndex?: number
@@ -1511,6 +1563,7 @@ function BattleScreen({
               <div
                 key={i}
                 className={`enemy-card${targetable ? ' enemy-targetable' : ''}${dead ? ' enemy-dead' : ''}`}
+                style={{ position: 'relative' }}
                 {...(targetable && i < 9 ? { 'data-hotkey': `num-${i + 1}` } : {})}
                 onClick={() => {
                   if (!targetable || !activeTarget) return
@@ -1527,6 +1580,7 @@ function BattleScreen({
                   setPendingTarget(null)
                 }}
               >
+                <div className="float-layer">{floatsFor(i)}</div>
                 <div className="enemy-sprite">{enemy.fled ? '🏃' : dead ? '💀' : ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
                 <div className="enemy-info">
                   <div className="enemy-name">{enemyDef.name}</div>
@@ -1793,7 +1847,8 @@ function BattleScreen({
           )
         })()}
 
-      <div className="panel area-player">
+      <div className="panel area-player" style={{ position: 'relative' }}>
+        <div className="float-layer">{floatsFor('player')}</div>
         <div className="player-row">
           <div className="player-hp">
             <div className="stat-label">プレイヤー HP</div>
@@ -4461,6 +4516,16 @@ export default function App() {
       .catch((e) => alert(`読み込みに失敗しました: ${String(e)}`))
   }
 
+  // 選択トースト (2026-09-01 機能フィードバック演出): ピック・鍛錬・合成・購入の結果を画面下部に一瞬出す
+  const [choiceToast, setChoiceToast] = useState<{ id: number; text: string } | null>(null)
+  const prevChoiceLen = useRef(0)
+  useEffect(() => {
+    if (choiceLog.length > prevChoiceLen.current) {
+      setChoiceToast({ id: choiceLog.length, text: choiceLog[choiceLog.length - 1].text })
+    }
+    prevChoiceLen.current = choiceLog.length
+  }, [choiceLog])
+
   const addNote = (text: string) => {
     const c = run?.combat ?? state
     const context = run
@@ -4591,6 +4656,9 @@ export default function App() {
       />
       <NoteBar count={playNotes.length} onAdd={addNote} />
       <HotkeyClicker />
+      {choiceToast !== null && (
+        <div key={choiceToast.id} className="toast-choice">📜 {choiceToast.text}</div>
+      )}
       {(() => {
         // 戦闘直後の評価入力 (2026-09-01)。決着直後のフェーズの間は出続け、点数の後からメモも追記できる
         const last = runHistory[runHistory.length - 1]

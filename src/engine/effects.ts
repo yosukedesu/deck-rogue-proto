@@ -621,7 +621,7 @@ export function dealDamageToEnemy(
   )
   let s = emit(
     { ...state, enemies },
-    { type: 'DamageDealt', source: 'player', amount, hpLoss, ...(armorCut > 0 ? { armorCut } : {}) },
+    { type: 'DamageDealt', source: 'player', amount, hpLoss, enemyIndex, ...(armorCut > 0 ? { armorCut } : {}) },
   )
   // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化。
   // 枚数トリガーの盲点 (1枚で100点出すデッキが素通しする) への処方
