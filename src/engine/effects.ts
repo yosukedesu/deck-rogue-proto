@@ -35,14 +35,33 @@ export function isBlazing(state: GameState): boolean {
  * 実効コスト: マナ軽減トークン (nextCardDiscount) と猛り火の軽減を適用したプレイコスト。
  * 素のコスト0のカードは割引を消費しない (対象外)。
  */
+/**
+ * 常在オーラ (2026-09-02 StS2 Afflictions式): 生存する敵の aura による同タイプのコスト増の合計。
+ * 敵を倒せば即0 = キル順の圧。割引 (discountNext) はオーラ増加分にも効く (増えた分を割で相殺できる)
+ */
+export function auraCostUp(state: GameState, card: CardInstance): number {
+  let up = 0
+  for (const e of state.enemies) {
+    if (e.hp <= 0) continue
+    const aura = getEnemyDef(e.enemyId).aura
+    if (aura === undefined) continue
+    if (aura.cardType !== undefined && aura.cardType !== card.def.type) continue
+    up += aura.costUp
+  }
+  return up
+}
+
 export function effectiveCost(state: GameState, card: CardInstance): number {
-  // Xコスト: 現在のエナジーを全て支払う (最低1 = エナジー0ではプレイ不可)。割引の対象外
+  // Xコスト: 現在のエナジーを全て支払う (最低1 = エナジー0ではプレイ不可)。割引・オーラの対象外
   if (card.def.xCost === true) return Math.max(1, state.player.energy)
-  // 屍集めで戻した札はこの戦闘中0E (2026-08-31 rework。割引も消費しない)
+  // 屍集めで戻した札はこの戦闘中0E (2026-08-31 rework。割引も消費しない。オーラも「0Eの約束」を破らない)
   if (card.freeThisCombat === true) return 0
-  if (card.def.cost === 0) return 0
+  const up = auraCostUp(state, card)
+  // 素のコスト0のカードは割引と無縁 (消費しない既存則) — オーラの重さはそのまま払う
+  // (0マナ手数への圧が重圧オーラの狙い)
+  if (card.def.cost === 0) return up
   const blaze = card.def.blazeDiscount !== undefined && isBlazing(state) ? card.def.blazeDiscount : 0
-  return Math.max(0, card.def.cost - blaze - state.player.nextCardDiscount)
+  return Math.max(0, card.def.cost + up - blaze - state.player.nextCardDiscount)
 }
 
 /** 自ターンにプレイ可能なカードか。リアクションタイプは false。置物・選択式は常にプレイ可能 */

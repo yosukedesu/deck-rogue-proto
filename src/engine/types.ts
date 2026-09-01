@@ -100,6 +100,12 @@ export interface PlayerState extends CombatantState {
    * (切り捨て・最低1)。氷壁・リアクション・置物トリガー・パッシブ由来は対象外。自ターン終了時に1減る
    */
   readonly frail: number
+  /**
+   * 拘束 (2026-09-02 本家StS2 Sloth相当。敵ギミック改善波): 残りNターンの間、
+   * 1ターンにプレイできるカードは3枚まで (RESTRAIN_PLAY_CAP)。伏せ・リアクション発動は
+   * プレイでないので制限しない (set-confirmの読み合いを殺さない)。自ターン終了時に-1
+   */
+  readonly restrain: number
   /** この戦闘でカード効果 (loseHp) により失ったHPの累計 (黒: 背徳の収穫の参照値。敵からの被弾は含まない) */
   readonly selfHpLost: number
   /** この戦闘でプレイしたランダム火力の枚数 (カオスの刈り取りの参照値。2026-08-30) */
@@ -123,6 +129,12 @@ export interface EnemyState extends CombatantState {
   readonly exposed: number
   /** 行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用 */
   readonly patternIndex: number
+  /** phaseAfterUses の対象行動を宣言した回数 (2026-09-02 回数カウンタのフェーズ変化) */
+  readonly keyMoveUses?: number
+  /** 直前に宣言した行動ID (noRepeat の判定用) */
+  readonly lastMoveId?: string
+  /** once 行動の使用済みID (1戦闘1回の判定用) */
+  readonly usedOnce?: readonly string[]
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
@@ -741,7 +753,7 @@ export type EnemyActionKind =
   | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
-export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk' | 'scald'
+export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk' | 'scald' | 'restrain'
 
 /** 状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚) */
 export interface StatusInflict {
@@ -751,6 +763,12 @@ export interface StatusInflict {
 
 /** 敵の1行動。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし */
 export interface EnemyMove {
+  /**
+   * 確率分岐の制約 (2026-09-02 StS2行動文法): noRepeat=直前と同じ技は引かない /
+   * once=1戦闘に1回だけ。weight抽選の敵のみ意味を持つ (sequenceの敵は並びが既に制約)
+   */
+  readonly noRepeat?: boolean
+  readonly once?: boolean
   readonly id: string
   readonly kind: EnemyActionKind
   readonly min?: number
@@ -855,6 +873,33 @@ export interface EnemyDef {
    * (宣言時に判定=宣言時固定の既存則。仲間が倒れれば次の宣言から素に戻る=キル順の逆問い)
    */
   readonly bondStrength?: number
+  /**
+   * 初手固定 (2026-09-02 StS2行動文法「その敵の問いを最初のターンに必ず見せる」)。
+   * weight抽選の敵の最初の宣言だけこの行動IDを使う。sequenceの敵には不要 (並びの先頭が兼ねる)
+   */
+  readonly opener?: string
+  /**
+   * 回数カウンタのフェーズ変化 (2026-09-02 StS2 KnowledgeDemon式): moveId を uses 回宣言したら
+   * 行動ローテーションを sequence へ恒久切替 (patternIndexは0から)。HP半分テーブルが優先
+   */
+  readonly phaseAfterUses?: {
+    readonly moveId: string
+    readonly uses: number
+    readonly sequence: readonly string[]
+  }
+  /**
+   * 味方の生死で行動テーブル切替 (2026-09-02 StS2 LivingShield式転職): 他の仲間が全滅すると
+   * このテーブル/ローテへ切替 (優先度: HP半分 > 単独時 > 通常。反応テーブル・setAltは無効化 =
+   * 転職後は素直に殴る)。護衛が「守る相手を失って本気になる」等
+   */
+  readonly movesWhenAlone?: readonly EnemyMove[]
+  readonly sequenceWhenAlone?: readonly string[]
+  /**
+   * 常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」):
+   * この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。
+   * 敵を倒せば即解除 = キル順の圧。打ち消し不可 (行動でなく存在)。敵カードに常時表示
+   */
+  readonly aura?: { readonly cardType?: CardType; readonly costUp: number }
   /**
    * 装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。
    * 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・

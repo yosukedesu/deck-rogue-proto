@@ -1,12 +1,14 @@
 // 敵の作り込み (2026-08-24) のテスト。
 // 状態異常 (弱体/脆弱/負傷)・連撃・再生・フェーズ変化・激昂・挑発。
 // 確定済みルール表「敵の設計原則」「状態異常」「連撃」「再生」「敵フェーズ変化」「激昂」を固定する。
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { allEnemies, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
 import { tierFor } from './map.ts'
 import { applyCommand } from './state.ts'
 import { damageBreakdown, dealDamageToEnemy } from './effects.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { applyDebugOverrides, clearDebugOverrides } from './content.ts'
+import { effectiveCost } from './effects.ts'
 import type { GameState } from './types.ts'
 
 const noHand = (s: GameState): GameState => withHand(s, [])
@@ -542,4 +544,127 @@ describe('陣形: 庇うと連携 (2026-09-02 敵ギミック第1波)', () => {
     expect(t.enemies[0].intent?.shownMax).toBe(12)
   })
 })
+
+describe('行動文法の器 (2026-09-02 StS2解析からの全体改善)', () => {
+  afterEach(() => clearDebugOverrides())
+
+  it('opener: weight抽選の敵でも最初の宣言は指定の行動 (初手固定)', () => {
+    applyDebugOverrides({
+      enemies: [
+        {
+          id: 'test_opener',
+          name: 'テスト初手',
+          archetype: 'wide-power',
+          maxHp: 50,
+          opener: 'howl',
+          moves: [
+            { id: 'bite', kind: 'attack', min: 5, max: 8, weight: 9 },
+            { id: 'howl', kind: 'buff', min: 2, max: 2, weight: 1 },
+          ],
+        },
+      ],
+    })
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const s = freshCombat('set-confirm', 'test_opener', seed)
+      expect(s.enemies[0].intent?.kind).toBe('buff') // 重み1/10でも初手は必ずhowl
+    }
+  })
+
+  it('noRepeat: 直前と同じ行動は引かない / once: 1戦闘に1回だけ', () => {
+    applyDebugOverrides({
+      enemies: [
+        {
+          id: 'test_norepeat',
+          name: 'テスト分岐制約',
+          archetype: 'wide-power',
+          maxHp: 500,
+          moves: [
+            { id: 'big', kind: 'attack', min: 20, max: 20, weight: 5, noRepeat: true },
+            { id: 'small', kind: 'attack', min: 1, max: 1, weight: 1 },
+            { id: 'roar', kind: 'buff', min: 3, max: 3, weight: 20, once: true },
+          ],
+        },
+      ],
+    })
+    let s = freshCombat('set-confirm', 'test_norepeat', 7)
+    const seen: string[] = []
+    let buffs = 0
+    for (let t = 0; t < 12; t++) {
+      const it = s.enemies[0].intent
+      const label = it?.kind === 'buff' ? 'roar' : it?.actual === 20 ? 'big' : 'small'
+      if (label === 'roar') buffs++
+      if (seen.length > 0 && label === 'big') expect(seen[seen.length - 1]).not.toBe('big')
+      seen.push(label)
+      s = withHand(s, [])
+      s = applyCommand(s, { type: 'EndTurn' })
+      if (s.phase !== 'player-turn') break
+    }
+    expect(buffs).toBeLessThanOrEqual(1) // onceは1回まで
+  })
+
+  it('phaseAfterUses: 妖術師は呪いを2回宣言したら殴りローテへ恒久切替 (KnowledgeDemon式)', () => {
+    let s = freshCombat('set-confirm', 'enemy_hexer', 42)
+    const kinds: string[] = []
+    for (let t = 0; t < 10 && s.phase === 'player-turn'; t++) {
+      kinds.push(s.enemies[0].intent?.kind ?? '?')
+      s = withHand(s, [])
+      s = applyCommand(s, { type: 'EndTurn' })
+    }
+    // 旧ローテ mud→curse→slap で curse(hex) は2回まで。7ターン目以降に hex が現れない
+    const hexCount = kinds.filter((k) => k === 'hex').length
+    expect(hexCount).toBe(2)
+    expect(kinds.slice(6)).not.toContain('hex')
+  })
+
+  it('movesWhenAlone: 従士は射手が倒れると護りを捨てて殴りに転職する (LivingShield式)', () => {
+    let s = freshCombat('set-confirm', 'enc_squire_archer', 42)
+    // 射手を倒して宣言し直す
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 1 ? { ...e, hp: 0 } : e)) }
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('player-turn')
+    const it = s.enemies[0].intent
+    expect(it?.kind).toBe('attack')
+    expect(it?.shownMin).toBeGreaterThanOrEqual(11) // avenging_rush 11-14 (通常の盾打ち6-8ではない)
+  })
+
+  it('拘束: 1ターンにプレイできるカードは3枚まで。伏せは制限されず、ターン終了で1減る', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = { ...s, player: { ...s.player, restrain: 1, energy: 9 } }
+    s = withHand(s, ['green_strike', 'green_strike', 'green_strike', 'green_strike', 'green_reaction_thorns'])
+    for (let k = 0; k < 3; k++) {
+      const uid = s.player.hand.find((c) => c.def.id === 'green_strike')!.uid
+      s = applyCommand(s, { type: 'PlayCard', cardUid: uid })
+    }
+    const fourth = s.player.hand.find((c) => c.def.id === 'green_strike')!.uid
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: fourth })).toThrow(/拘束/)
+    // 伏せはプレイでないので通る
+    const reaction = s.player.hand.find((c) => c.def.id === 'green_reaction_thorns')!.uid
+    expect(() => applyCommand(s, { type: 'SetCard', cardUid: reaction })).not.toThrow()
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.restrain).toBe(0)
+  })
+
+  it('重圧オーラ: 敵の生存中カードのコストが上がり、倒すと即座に戻る', () => {
+    applyDebugOverrides({
+      enemies: [
+        {
+          id: 'test_aura',
+          name: 'テスト重圧',
+          archetype: 'hexer',
+          maxHp: 40,
+          aura: { cardType: 'physical', costUp: 1 },
+          moves: [{ id: 'poke', kind: 'attack', min: 3, max: 5, weight: 1 }],
+        },
+      ],
+    })
+    let s = freshCombat('set-confirm', 'test_aura', 42)
+    s = withHand(s, ['green_strike'])
+    const card = s.player.hand[0]
+    expect(effectiveCost(s, card)).toBe(card.def.cost + 1)
+    const dead = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 0 })) }
+    expect(effectiveCost(dead, card)).toBe(card.def.cost)
+  })
+})
+
 

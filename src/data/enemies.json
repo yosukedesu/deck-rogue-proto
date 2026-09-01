@@ -336,7 +336,15 @@
    "mud",
    "curse",
    "slap"
-  ]
+  ],
+  "phaseAfterUses": {
+   "moveId": "curse",
+   "uses": 2,
+   "sequence": [
+    "slap",
+    "mud"
+   ]
+  }
  },
  {
   "id": "enemy_wolf",
@@ -1478,7 +1486,7 @@
   "id": "enemy_shield_squire",
   "name": "盾持ちの従士",
   "archetype": "guardian",
-  "flavor": "主を守るのが仕事。あなたの刃は、まずこの盾に届く。",
+  "flavor": "主を守るのが仕事。守る相手を失った盾は、ただの鈍器になる。",
   "maxHp": 70,
   "guardian": true,
   "startingBlock": 6,
@@ -1502,6 +1510,18 @@
   "sequence": [
    "shield_bash",
    "brace"
+  ],
+  "movesWhenAlone": [
+   {
+    "id": "avenging_rush",
+    "kind": "attack",
+    "min": 11,
+    "max": 14,
+    "weight": 1
+   }
+  ],
+  "sequenceWhenAlone": [
+   "avenging_rush"
   ]
  },
  {

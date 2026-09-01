@@ -11,7 +11,7 @@ const KIND_LABEL: Record<string, string> = {
   'destroy-token': '従者狩り', buff: '筋力上げ', rally: '応援', hex: '呪い',
 }
 
-export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた', scald: '火傷' }
+export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた', scald: '火傷', restrain: '拘束' }
 
 export function inflictSuffix(intent: EnemyIntent): string {
   if (!intent.inflict) return ''

@@ -80,7 +80,7 @@ import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
-import { startCombatWithOptions } from '../engine/combat.ts'
+import { RESTRAIN_PLAY_CAP, startCombatWithOptions } from '../engine/combat.ts'
 import type {
   CardColor,
   CardType,
@@ -187,6 +187,8 @@ const KEYWORD_HELP: Record<string, string> = {
   とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
   庇う: 'この敵が生きている間、あなたの単体対象カードは他の敵を選べずこの敵に向かう。全体攻撃と延焼の毎ターンダメージは素通し',
   連携: '他の仲間が1体でも生きている間、この敵の攻撃に+N（宣言時に判定。仲間を倒せば次の宣言から素に戻る）',
+  拘束: '残りNターンの間、1ターンにプレイできるカードは3枚まで。伏せる・リアクション発動は制限されない',
+  重圧: 'この敵が生きている間、あなたのカードのコストが増える。倒せば即座に元に戻る（キル順の圧）',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
@@ -1656,6 +1658,9 @@ function BattleScreen({
                     {enemyDef.bondStrength !== undefined && !dead && (
                       <span className="chip chip-strength">🤝 {kw('連携')}+{enemyDef.bondStrength}</span>
                     )}
+                    {enemyDef.aura !== undefined && !dead && (
+                      <span className="chip chip-strength">🕸️ {kw('重圧')}: {enemyDef.aura.cardType !== undefined ? TYPE_LABEL[enemyDef.aura.cardType] : '全'}カード+{enemyDef.aura.costUp}</span>
+                    )}
                     {(enemy.stolenGold ?? 0) > 0 && !dead && (
                       <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み</span>
                     )}
@@ -1944,6 +1949,9 @@ function BattleScreen({
             {player.frail > 0 && (
               <span className="chip chip-strength">🦴 {kw('虚弱')} {player.frail}</span>
             )}
+            {player.restrain > 0 && (
+              <span className="chip chip-strength">⛓️ {kw('拘束')} {player.restrain}{player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP ? '（このターンはもう出せない）' : `（あと${RESTRAIN_PLAY_CAP - player.cardsPlayedThisTurn}枚）`}</span>
+            )}
           </div>
           <div className="pile-info">
             <button className="btn btn-mini" onClick={() => setPileView('draw')}>
@@ -2163,6 +2171,7 @@ function BattleScreen({
                   )
                 const canPlay =
                   isPlayableFromHand(c) &&
+                  !(player.restrain > 0 && player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP) &&
                   effCost <= player.energy &&
                   player.hand.length - 1 >= discardCost &&
                   player.hand.length - 1 >= exhaustCostN &&

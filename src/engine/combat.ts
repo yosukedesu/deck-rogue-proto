@@ -77,6 +77,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       weak: 0,
       vulnerable: 0,
       frail: 0,
+      restrain: 0,
       selfHpLost: 0, // カード効果で失ったHPの累計 (背徳の収穫の参照値。戦闘内のみ)
       randomPlayedThisCombat: 0, // ランダム火力の枚数 (一擲乾坤の参照値。戦闘内のみ)
       damageTakenLastEnemyPhase: 0, // 直前の敵フェーズで受けた攻撃ダメージ (逆上の参照値)
@@ -288,7 +289,23 @@ function declareIntents(state: GameState): GameState {
     const belowHalf =
       enemy.hp <= enemy.maxHp * 0.5 &&
       (def.movesBelowHalf !== undefined || def.sequenceBelowHalf !== undefined)
-    const sequence = belowHalf ? def.sequenceBelowHalf : def.sequence
+    // 単独時テーブル (2026-09-02 StS2 LivingShield式転職): 仲間が全滅したら切替。
+    // 優先度は HP半分 > 単独時 > 通常。反応テーブル・setAltは無効化 = 転職後は素直に殴る
+    const whenAlone =
+      !belowHalf &&
+      (def.movesWhenAlone !== undefined || def.sequenceWhenAlone !== undefined) &&
+      !s.enemies.some((o, j) => j !== i && o.hp > 0)
+    // 回数カウンタのフェーズ変化 (2026-09-02 StS2 KnowledgeDemon式): 対象行動を規定回数
+    // 宣言したら恒久切替 (切替時に patternIndex は 0 へ巻き戻し済み)
+    const phaseSwitched =
+      def.phaseAfterUses !== undefined && (enemy.keyMoveUses ?? 0) >= def.phaseAfterUses.uses
+    const sequence = belowHalf
+      ? def.sequenceBelowHalf
+      : whenAlone
+        ? def.sequenceWhenAlone
+        : phaseSwitched
+          ? def.phaseAfterUses?.sequence
+          : def.sequence
     // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する
     // (確定済みルール表「条件付き意図」。実行時の盤面で分岐 = プレイヤーが自ターン中に選べる)
     // 両テーブルを持つ敵 (罠壊し) は conditionalOn を1つしか持てないので、宣言時の盤面で片方を選ぶ。
@@ -301,7 +318,7 @@ function declareIntents(state: GameState): GameState {
     const vsTokens =
       enemy.noReactTable !== true && def.movesVsTokens?.length ? def.movesVsTokens : undefined
     const preferTokens = s.player.setCards.length === 0 && hasHuntableTokens(s)
-    const reactTable = belowHalf
+    const reactTable = belowHalf || whenAlone
       ? undefined
       : preferTokens
         ? (vsTokens ?? vsSet)
@@ -311,7 +328,11 @@ function declareIntents(state: GameState): GameState {
       : reactTable === vsSet
         ? 'set'
         : 'tokens'
-    const baseTable = belowHalf ? (def.movesBelowHalf ?? def.moves) : def.moves
+    const baseTable = belowHalf
+      ? (def.movesBelowHalf ?? def.moves)
+      : whenAlone
+        ? (def.movesWhenAlone ?? def.moves)
+        : def.moves
 
     let rng = s.rng
     let nextPatternIndex = enemy.patternIndex
@@ -323,10 +344,33 @@ function declareIntents(state: GameState): GameState {
       if (!found) throw new Error(`敵 ${def.id} の sequence が未定義の行動を参照: ${moveId}`)
       move = found
       nextPatternIndex = enemy.patternIndex + 1
+    } else if (enemy.patternIndex === 0 && def.opener !== undefined && !belowHalf && !whenAlone) {
+      // 初手固定 (2026-09-02 StS2行動文法): 最初の宣言だけ指定の行動 = その敵の問いをT1に見せる
+      const found = baseTable.find((m) => m.id === def.opener)
+      if (!found) throw new Error(`敵 ${def.id} の opener が未定義の行動を参照: ${def.opener}`)
+      move = found
+      nextPatternIndex = enemy.patternIndex + 1
     } else {
-      const [moveIdx, rngAfter] = weightedIndex(rng, baseTable.map((m) => m.weight))
-      move = baseTable[moveIdx]
+      // noRepeat=直前と同じ技は引かない / once=1戦闘1回 (2026-09-02 StS2の「読める揺らぎ」)。
+      // 除外で候補が空になる時は制約なしで引く (スタール防止)
+      const usable = baseTable.filter(
+        (m) =>
+          !(m.once === true && (enemy.usedOnce ?? []).includes(m.id)) &&
+          !(m.noRepeat === true && m.id === enemy.lastMoveId),
+      )
+      const table = usable.length > 0 ? usable : baseTable
+      const [moveIdx, rngAfter] = weightedIndex(rng, table.map((m) => m.weight))
+      move = table[moveIdx]
       rng = rngAfter
+      nextPatternIndex = enemy.patternIndex + 1
+    }
+    // 回数カウンタ: 対象行動の宣言を数え、しきい値到達の瞬間に patternIndex を 0 へ
+    // (次の宣言から phaseAfterUses.sequence の先頭で始まる)
+    const pau = def.phaseAfterUses
+    let nextKeyUses = enemy.keyMoveUses ?? 0
+    if (pau !== undefined && !phaseSwitched && move.id === pau.moveId) {
+      nextKeyUses += 1
+      if (nextKeyUses >= pau.uses) nextPatternIndex = 0
     }
     const [intent, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1)
     rng = rngA
@@ -379,6 +423,9 @@ function declareIntents(state: GameState): GameState {
             ...e,
             intent: declared,
             patternIndex: nextPatternIndex,
+            keyMoveUses: nextKeyUses,
+            lastMoveId: move.id,
+            ...(move.once === true ? { usedOnce: [...(e.usedOnce ?? []), move.id] } : {}),
             ...(stolen > 0 ? { stolenGold: (e.stolenGold ?? 0) + stolen } : {}),
           }
         : e,
@@ -541,6 +588,10 @@ export function playCard(
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (!isPlayableFromHand(card)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
+  // 拘束 (2026-09-02): 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない
+  if (state.player.restrain > 0 && state.player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP) {
+    throw new Error(`拘束中はこのターンあと${RESTRAIN_PLAY_CAP}枚までしかプレイできない`)
+  }
   // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
   const cost = effectiveCost(state, card)
   const consumesDiscount =
@@ -968,6 +1019,7 @@ export function endTurn(state: GameState): GameState {
       spellEchoes: 0,
       weak: Math.max(0, s.player.weak - 1),
       frail: Math.max(0, s.player.frail - 1),
+      restrain: Math.max(0, s.player.restrain - 1),
     },
   }
   // 火傷・烙印 (2026-09-02): 自ターン終了時に手札にあると疼く (火傷=2/枚・烙印=1/枚)。
@@ -1160,15 +1212,20 @@ const WOUND_CAP = 5
 const SCALD_CAP = 5
 
 /** 状態異常をプレイヤーに付与する。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 */
+/** 拘束中に1ターンでプレイできるカードの上限 (本家StS2 Sloth=「4枚目以降プレイ不可」準拠) */
+export const RESTRAIN_PLAY_CAP = 3
+
 function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameState {
   const { status, amount } = inflict
-  if (status === 'weak' || status === 'vulnerable' || status === 'frail') {
+  if (status === 'weak' || status === 'vulnerable' || status === 'frail' || status === 'restrain') {
     const player =
       status === 'weak'
         ? { ...state.player, weak: state.player.weak + amount }
         : status === 'vulnerable'
           ? { ...state.player, vulnerable: state.player.vulnerable + amount }
-          : { ...state.player, frail: state.player.frail + amount }
+          : status === 'frail'
+            ? { ...state.player, frail: state.player.frail + amount }
+            : { ...state.player, restrain: state.player.restrain + amount }
     return emit({ ...state, player }, { type: 'StatusInflicted', status, amount })
   }
   if (status === 'scald') {

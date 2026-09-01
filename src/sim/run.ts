@@ -14,6 +14,7 @@
 
 import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
 import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
+import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, isUpgraded, nextChoices } from '../engine/run.ts'
 import { BOSS_ROW } from '../engine/map.ts'
@@ -142,7 +143,8 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
       (c) =>
         c.uid !== card.uid &&
         c.def.effects.some((e) => e.effect === 'applyBurn') &&
-        effectiveCost(state, c) <= state.player.energy,
+        effectiveCost(state, c) <= state.player.energy &&
+        !(state.player.restrain > 0 && state.player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP),
     )
     if (canIgniteFirst) return false
   }
