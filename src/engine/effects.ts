@@ -641,7 +641,7 @@ export function dealDamageToEnemy(
             i === enemyIndex ? { ...e, strength: e.strength + gain } : e,
           ),
         }
-        s = emit(s, { type: 'StrengthGained', enemyIndex, amount: gain })
+        s = emit(s, { type: 'StrengthGained', enemyIndex, amount: gain, reason: 'enrage-damage' })
       }
     }
   }

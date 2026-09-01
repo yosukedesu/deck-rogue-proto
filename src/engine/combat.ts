@@ -245,7 +245,7 @@ function tickCardTimers(state: GameState): GameState {
       ...s,
       enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),
     }
-    s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount })
+    s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount, reason: 'enrage-cards' })
   }
   return s
 }
@@ -1451,7 +1451,7 @@ function finishEnemyPhase(state: GameState): GameState {
         ...s,
         enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),
       }
-      s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount })
+      s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount, reason: 'enrage-phase' })
     }
   }
   s = {

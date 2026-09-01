@@ -71,7 +71,12 @@ export function logLine(e: GameEvent): LogLine | null {
         ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}`, cls: 'log-line' }
         : { text: `敵の攻撃${e.amount} → HP減 ${e.hpLoss}`, cls: 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
-    case 'StrengthGained': return { text: `敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
+    case 'StrengthGained': {
+      // 激昂の発火は理由を明示する (2026-09-01 検証ラン「跨いだ瞬間を後から確認できない」への処方)
+      const ENRAGE_JA: Record<string, string> = { 'enrage-cards': '激昂〔プレイ枚数の節目〕', 'enrage-damage': '激昂〔累計被ダメの節目〕', 'enrage-phase': '激昂〔毎フェーズ〕' }
+      const why = e.reason !== undefined ? `😡 ${ENRAGE_JA[e.reason] ?? e.reason}: ` : ''
+      return { text: `${why}敵が強化 +${e.amount}（以降の攻撃に加算）`, cls: 'log-bad' }
+    }
     case 'IceBlockGained': return { text: `氷壁+${e.amount}（持ち越しブロック）`, cls: 'log-line' }
     case 'AetherGained': return { text: `霊気+${e.amount}`, cls: 'log-good' }
     case 'SpellEchoed': return { text: `🔁 反復: ${cardName(e.cardId)} の効果が2回解決`, cls: 'log-good' }
@@ -105,7 +110,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'BurnDischarged': return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
     case 'TokenDestroyed': return { text: `従者狩り: ${cardName(e.cardId)}が倒された`, cls: 'log-line' }
     case 'ThornsReflected': return { text: `🦔 とげ反射: ${e.amount}（HP-${e.hpLoss}）`, cls: 'log-damage' }
-    case 'GoldStolen': return { text: `💰 ${e.amount}G を盗まれた（逃がす前に倒せば取り返せる）`, cls: 'log-damage' }
+    case 'GoldStolen': return { text: `💰 盗みを宣言して${e.amount}Gを先取りされた（宣言と同時に成立する。逃がす前に倒せば取り返せる）`, cls: 'log-damage' }
     case 'EnemyFled': return { text: '🏃 敵が逃走した', cls: 'log-line' }
     case 'EnemyHealed': return { text: `💚 敵が回復 +${e.amount}`, cls: 'log-line' }
     case 'CardRetrieved': return { text: `回収: ${cardName(e.cardId)}（消滅置き場から手札へ）`, cls: 'log-line' }

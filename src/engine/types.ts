@@ -354,7 +354,7 @@ export type GameEvent =
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
   | { readonly type: 'HpLost'; readonly amount: number } // 自傷
-  | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number }
+  | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number; readonly reason?: 'enrage-cards' | 'enrage-damage' | 'enrage-phase' }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
   | { readonly type: 'MomentumAdded'; readonly amount: number }
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
