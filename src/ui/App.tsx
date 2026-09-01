@@ -3071,7 +3071,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
               鍛えた姿（+）で表示
             </label>
           )}
-          <label className="viewer-toggle" title="変更案・削除案・新規案をマークして1枚のmdに書き出す (AIレビュー→実装のサイクル用)">
+          <label className="viewer-toggle" title="変更案・削除案・新規案をマークして1枚のjsonに書き出す (AIレビュー→実装のサイクル用)">
             <input type="checkbox" checked={tuner} onChange={(e) => setTuner(e.target.checked)} />{' '}
             🛠 調整モード{markedCount > 0 ? `（${markedCount}件）` : ''}
           </label>
@@ -3085,7 +3085,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
               各カードの下でコスト・レアリティ・消滅・数値（効果量/ヒット数/条件値/追加コスト）を
               実データと同じ形で直接編集（現行値と違う値だけが提案として記録される）。
               構造で表せない意図は「補足」に自由記述、チェックで削除案。
-              下書きは自動保存（リロードしても残る）。書き出したmdをAIに渡すと査定レビュー→実装される。
+              下書きは自動保存（リロードしても残る）。書き出したjson（現行データ同梱・パスキー付き）をAIに渡すと査定レビュー→実装される。
             </div>
             <div style={{ marginTop: 6 }}>
               <label className="viewer-toggle">

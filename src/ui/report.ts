@@ -262,7 +262,7 @@ function deliverText(filename: string, text: string): void {
       'DevTools コンソールで copy(__lastReport) を実行するとクリップボードに入ります',
   )
   try {
-    const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }))
+    const url = URL.createObjectURL(new Blob([text], { type: filename.endsWith('.json') ? 'application/json' : 'text/markdown' }))
     const a = document.createElement('a')
     a.href = url
     a.download = filename
@@ -399,14 +399,6 @@ export function isEmptySimpleMark(m: SimpleMark): boolean {
   return (m.change ?? '').trim() === '' && m.remove !== true && Object.keys(m.fields ?? {}).length === 0
 }
 
-/** 敵の行動テーブルのプレフィックス → EnemyDef のフィールド名 */
-const ENEMY_TABLE: Record<string, 'moves' | 'movesVsSet' | 'movesVsTokens' | 'movesBelowHalf'> = {
-  m: 'moves',
-  vs: 'movesVsSet',
-  tk: 'movesVsTokens',
-  bh: 'movesBelowHalf',
-}
-const ENEMY_TABLE_LABEL: Record<string, string> = { m: '行動', vs: '伏せ反応', tk: '従者反応', bh: '半分以下' }
 /** 敵のトップレベル数値フィールド (存在する時だけ編集対象になる) */
 export const ENEMY_TOP_FIELDS: readonly (readonly [string, string])[] = [
   ['maxHp', 'HP'],
@@ -421,59 +413,6 @@ export const ENEMY_TOP_FIELDS: readonly (readonly [string, string])[] = [
   ['enrageEveryDamage', '激昂:被ダメごと'],
   ['angerOnBlock', 'ブロック反応の強化'],
 ]
-
-/** 敵 fields キー → 現行値。例: "maxHp"・"m0.min"・"vs1.inflict.amount"・"m2.alt.max" */
-function enemyFieldValue(def: ReturnType<typeof getEnemyDef>, key: string): number | undefined {
-  const top = (def as unknown as Record<string, unknown>)[key]
-  if (typeof top === 'number') return top
-  const mm = /^(m|vs|tk|bh)(\d+)\.(?:(alt)\.)?(?:(inflict)\.)?(\w+)$/.exec(key)
-  if (!mm) return undefined
-  const table = def[ENEMY_TABLE[mm[1]]]
-  const mv = table?.[Number(mm[2])] as unknown as Record<string, unknown> | undefined
-  if (!mv) return undefined
-  const base = mm[3] === 'alt' ? (mv.setAlt as Record<string, unknown> | undefined) : mv
-  const holder = mm[4] === 'inflict' ? (base?.inflict as Record<string, unknown> | undefined) : base
-  const v = holder?.[mm[5]]
-  return typeof v === 'number' ? v : undefined
-}
-
-function enemyFieldLabel(def: ReturnType<typeof getEnemyDef>, key: string): string {
-  const top = ENEMY_TOP_FIELDS.find(([k]) => k === key)
-  if (top) return top[1]
-  const mm = /^(m|vs|tk|bh)(\d+)\.(?:(alt)\.)?(?:(inflict)\.)?(\w+)$/.exec(key)
-  if (!mm) return key
-  const table = def[ENEMY_TABLE[mm[1]]]
-  const mv = table?.[Number(mm[2])]
-  const name = mv ? `${ENEMY_TABLE_LABEL[mm[1]]}「${mv.id}」` : key
-  const FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体ブロック', alsoBuff: '同時強化', amount: '付与量' }
-  return `${name}${mm[3] === 'alt' ? '(伏せ時分岐)' : ''}の${mm[4] === 'inflict' ? '状態異常' : ''}${FIELD_JA[mm[5]] ?? mm[5]}`
-}
-
-/** レリック fields キー → 現行値。例: "e0.amount"・"bonus.maxHp"・"rule.setDamageReduction" */
-function relicFieldValue(def: (typeof allRelics)[number], key: string): number | undefined {
-  const eff = /^e(\d+)\.amount$/.exec(key)
-  if (eff) return def.effects?.[Number(eff[1])]?.amount
-  const bonus = /^bonus\.(\w+)$/.exec(key)
-  if (bonus) return (def.bonus as unknown as Record<string, unknown> | undefined)?.[bonus[1]] as number | undefined
-  if (key === 'rule.setDamageReduction') return def.combatRule?.setDamageReduction
-  return undefined
-}
-
-const RELIC_BONUS_LABEL: Record<string, string> = {
-  maxHp: '最大HP', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+',
-  campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数',
-}
-function relicFieldLabel(def: (typeof allRelics)[number], key: string): string {
-  const eff = /^e(\d+)\.amount$/.exec(key)
-  if (eff) {
-    const e = def.effects?.[Number(eff[1])]
-    return e ? `効果〔${e.trigger}/${e.effect}〕の量` : key
-  }
-  const bonus = /^bonus\.(\w+)$/.exec(key)
-  if (bonus) return RELIC_BONUS_LABEL[bonus[1]] ?? bonus[1]
-  if (key === 'rule.setDamageReduction') return '伏せ中の敵攻撃-N'
-  return key
-}
 
 /** 敵の新規作成ドラフト。高度な分岐 (setAlt・伏せ反応・フェーズ変化) は補足/メモで提案する */
 export interface EnemyMoveDraft {
@@ -589,25 +528,6 @@ export const LEADER_TOP_FIELDS: readonly (readonly [string, string])[] = [
   ['setSlots', '伏せ枠'],
 ]
 
-function leaderFieldValue(def: (typeof allLeaders)[number], key: string): number | undefined {
-  const top = (def as unknown as Record<string, unknown>)[key]
-  if (typeof top === 'number') return top
-  const pv = /^p(\d+)\.amount$/.exec(key)
-  if (pv) return def.passive[Number(pv[1])]?.amount
-  return undefined
-}
-
-function leaderFieldLabel(def: (typeof allLeaders)[number], key: string): string {
-  const top = LEADER_TOP_FIELDS.find(([k]) => k === key)
-  if (top) return top[1]
-  const pv = /^p(\d+)\.amount$/.exec(key)
-  if (pv) {
-    const e = def.passive[Number(pv[1])]
-    return e ? `パッシブ〔${e.trigger}/${e.effect}〕の量` : key
-  }
-  return key
-}
-
 /** リーダーの新規作成ドラフト。パッシブはカードと同じ EffectDraft */
 export interface LeaderDraft {
   readonly id?: string
@@ -642,43 +562,6 @@ export function leaderDraftToDefJson(d: LeaderDraft): Record<string, unknown> {
   return j
 }
 
-/** fields キー → 現行値 (defから解決)。不明キーは undefined */
-function currentFieldValue(def: (typeof allCards)[number], key: string): number | undefined {
-  const eff = /^e(\d+)\.(amount|amountMax)$/.exec(key)
-  if (eff) {
-    const e = def.effects[Number(eff[1])] as unknown as Record<string, unknown> | undefined
-    const v = e?.[eff[2]]
-    return typeof v === 'number' ? v : undefined
-  }
-  const cond = /^e(\d+)\.cond\.(\w+)$/.exec(key)
-  if (cond) {
-    const e = def.effects[Number(cond[1])]
-    const v = (e?.condition as unknown as Record<string, unknown> | undefined)?.[cond[2]]
-    return typeof v === 'number' ? v : undefined
-  }
-  if (key === 'exhaustCost' || key === 'discardCost' || key === 'necroCost') return def[key]
-  return undefined
-}
-
-/** fields キー → 人間向けラベル */
-function fieldLabel(def: (typeof allCards)[number], key: string): string {
-  const CARD_COST_LABEL: Record<string, string> = {
-    exhaustCost: '消滅コスト',
-    discardCost: '捨てコスト',
-    necroCost: '亡骸コスト',
-  }
-  if (CARD_COST_LABEL[key] !== undefined) return CARD_COST_LABEL[key]
-  const eff = /^e(\d+)\.(amount|amountMax)$/.exec(key)
-  if (eff) {
-    const e = def.effects[Number(eff[1])]
-    const base = e ? `効果${Number(eff[1]) + 1}〔${e.trigger}/${e.effect}${e.target === 'all' ? '(全体)' : ''}〕` : key
-    return `${base}の${eff[2] === 'amountMax' ? 'ロール上限' : '量'}`
-  }
-  const cond = /^e(\d+)\.cond\.(\w+)$/.exec(key)
-  if (cond) return `効果${Number(cond[1]) + 1}の条件 ${cond[2]}`
-  return key
-}
-
 /** 調整案の一式 (カード・敵・レリック)。図鑑の🛠調整モードの下書きがこの形で書き出される */
 export interface ProposalBundle {
   readonly cardMarks: Readonly<Record<string, CardProposalMark>>
@@ -692,208 +575,75 @@ export interface ProposalBundle {
   readonly newLeaderDefs?: readonly LeaderDraft[]
 }
 
-/** 汎用マークの節 (変更案+削除案)。敵・レリックで共用 */
-function simpleMarkSections(
-  domain: string,
-  marks: Readonly<Record<string, SimpleMark>> | undefined,
-  head: (id: string) => string,
-  cur: (id: string, key: string) => number | undefined,
-  label: (id: string, key: string) => string,
-): string[] {
-  const entries = Object.entries(marks ?? {}).filter(([, m]) => !isEmptySimpleMark(m))
-  const changes = entries.filter(([, m]) => m.remove !== true)
-  const removes = entries.filter(([, m]) => m.remove === true)
-  const body = (id: string, m: SimpleMark, withFields: boolean): string[] => {
-    const out: string[] = [`- ${head(id)}`]
-    if (withFields) {
-      for (const [key, val] of Object.entries(m.fields ?? {})) {
-        out.push(`  - ${label(id, key)}: ${cur(id, key) ?? '?'} → ${val}`)
-      }
-    }
-    if ((m.change ?? '').trim() !== '') out.push(`  - 補足: ${m.change!.trim()}`)
-    return out
+/**
+ * 調整案の書き出しは生JSON (2026-09-01 ユーザー裁定「mdじゃなくて生のjsonのほうが良い」)。
+ * - fields のキーは実データのパスそのまま = AIレビュー側で逆引き不要・適用をスクリプト化できる
+ * - current にマーク時点の現行定義を丸ごと同梱 = 書き出しとレビューの間のデータ変化を検出できる
+ * - 自由記述 (補足・メモ) はJSON文字列で持つ (mdはプレイレポート側に残る = 物語はmd・データはjson)
+ */
+function flatMarks<M extends SimpleMark>(
+  marks: Readonly<Record<string, M>> | undefined,
+  isEmpty: (m: M) => boolean,
+  currentOf: (id: string) => unknown,
+  proposalOf: (m: M) => Record<string, unknown>,
+): { changes: Record<string, unknown>[]; removals: Record<string, unknown>[] } {
+  const entries = Object.entries(marks ?? {}).filter(([, m]) => !isEmpty(m))
+  const note = (m: M) => ((m.change ?? '').trim() !== '' ? m.change!.trim() : undefined)
+  return {
+    changes: entries
+      .filter(([, m]) => m.remove !== true)
+      .map(([id, m]) => ({ id, current: currentOf(id) ?? '現行データに存在しない (統合/リネーム済みの可能性)', proposal: proposalOf(m), note: note(m) })),
+    removals: entries
+      .filter(([, m]) => m.remove === true)
+      .map(([id, m]) => ({ id, current: currentOf(id) ?? '現行データに存在しない', note: note(m) })),
   }
-  const L: string[] = []
-  L.push(`## ${domain}の変更案（${changes.length}件）`)
-  for (const [id, m] of changes) L.push(...body(id, m, true))
-  L.push('')
-  L.push(`## ${domain}の削除案（${removes.length}件）`)
-  for (const [id, m] of removes) L.push(...body(id, m, false))
-  L.push('')
-  return L
 }
 
-/** 新規ドラフトの節 (JSONブロック)。敵・レリックで共用 */
-function newDefSections(domain: string, defs: readonly { name: string }[] | undefined, toJson: (d: never) => Record<string, unknown>): string[] {
-  const list = defs ?? []
-  const L: string[] = [`## 新しい${domain}案（${list.length}件）`]
-  for (const d of list) {
-    L.push(`### ${d.name.trim() !== '' ? d.name : '（無名の下書き）'}`)
-    L.push('```json')
-    L.push(JSON.stringify(toJson(d as never), null, 2))
-    L.push('```')
-  }
-  L.push('')
-  return L
-}
-
-/** 調整案の提案書を生成する (純関数)。旧シグネチャの互換ラッパ */
-export function buildCardProposals(
-  marks: Readonly<Record<string, CardProposalMark>>,
-  newCards: string,
-  newCardDefs: readonly CardDraft[] = [],
-): string {
-  return buildProposals({ cardMarks: marks, newCards, newCardDefs })
-}
-
-/** 調整案の提案書 (カード・敵・レリック一式) を生成する (純関数)。マークの無いエントリと空文字は無視する */
+/** 調整案一式 → 生JSON (純関数)。マークの無いエントリと空文字は無視する */
 export function buildProposals(bundle: ProposalBundle): string {
-  const marks = bundle.cardMarks
-  const newCards = bundle.newCards
-  const newCardDefs = bundle.newCardDefs
-  const defOf = (id: string) => allCards.find((c) => c.id === id)
-  const head = (id: string): string => {
-    const d = defOf(id)
-    if (!d) return `**${id}**（現行データに存在しない — 統合/リネーム済みの可能性）`
-    const COLOR: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
-    const RARITY: Record<string, string> = { common: 'コモン', uncommon: 'アンコモン', rare: 'レア' }
-    const cost = d.xCost === true ? 'X' : `${d.cost}E`
-    return `**${d.name}**（\`${id}\` ${COLOR[d.color] ?? d.color}/${RARITY[d.rarity ?? 'common']}/${cost}/${d.type}） 現行: \`${JSON.stringify(d.effects)}\``
-  }
-  /** 構造化マーク → 「現行→提案」の差分行 (実データと同じ語彙で並ぶ = そのまま実装に落とせる) */
-  const diffLines = (id: string, m: CardProposalMark): string[] => {
-    const d = defOf(id)
-    const out: string[] = []
-    if (m.cost !== undefined) {
-      out.push(`  - コスト: ${d ? (d.xCost === true ? 'X' : d.cost) : '?'} → ${m.cost}`)
-    }
-    if (m.rarity !== undefined) out.push(`  - レアリティ: ${d?.rarity ?? 'common'} → ${m.rarity}`)
-    if (m.exhaust !== undefined) {
-      out.push(`  - 消滅: ${d?.exhaust === true ? 'あり' : 'なし'} → ${m.exhaust ? 'あり' : 'なし'}`)
-    }
-    for (const [key, val] of Object.entries(m.fields ?? {})) {
-      const cur = d ? currentFieldValue(d, key) : undefined
-      out.push(`  - ${d ? fieldLabel(d, key) : key}: ${cur ?? '?'} → ${val}`)
-    }
-    if ((m.change ?? '').trim() !== '') out.push(`  - 補足: ${m.change!.trim()}`)
-    if (m.redef !== undefined) {
-      out.push('  - 定義ごと差し替え（下のJSONが提案の完全形）:')
-      out.push('```json')
-      out.push(JSON.stringify(cardDraftToDefJson(m.redef), null, 2))
-      out.push('```')
-    }
+  const cardProposal = (m: CardProposalMark): Record<string, unknown> => {
+    const out: Record<string, unknown> = {}
+    if (m.cost !== undefined) out.cost = m.cost
+    if (m.rarity !== undefined) out.rarity = m.rarity
+    if (m.exhaust !== undefined) out.exhaust = m.exhaust
+    if (Object.keys(m.fields ?? {}).length > 0) out.fields = m.fields
+    if (m.redef !== undefined) out.redef = cardDraftToDefJson(m.redef)
     return out
   }
-  const entries = Object.entries(marks).filter(([, m]) => !isEmptyMark(m))
-  const changes = entries.filter(([, m]) => m.remove !== true)
-  const removes = entries.filter(([, m]) => m.remove === true)
-  const L: string[] = []
-  L.push('# カード調整案')
-  L.push(`書き出し: ${new Date().toISOString()} / データ指紋: ${dataFingerprint()}`)
-  L.push('')
-  L.push(`## 変更案（${changes.length}件）`)
-  for (const [id, m] of changes) {
-    L.push(`- ${head(id)}`)
-    L.push(...diffLines(id, m))
+  const simpleProposal = (m: SimpleMark): Record<string, unknown> =>
+    Object.keys(m.fields ?? {}).length > 0 ? { fields: m.fields } : {}
+  const doc = {
+    kind: 'deck-rogue-tuning-proposals',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    fingerprint: dataFingerprint(),
+    howToRead:
+      'fieldsのキーは実データのパス: e0.amount=effects[0].amount / e0.cond.X=effects[0].condition.X / ' +
+      'm0=moves[0]・vs=movesVsSet・tk=movesVsTokens・bh=movesBelowHalf・.alt.=setAlt / p0=passive[0] / ' +
+      'bonus.*=レリックB型 / rule.*=combatRule。current はマーク時点の現行定義。new は配置先ファイルへそのまま貼れる形 ' +
+      '(カードの color は配置先ファイルの指示で、実ファイルでは取り除く)。実装時は card-power.md の査定と機械テストを通すこと',
+    cards: {
+      ...flatMarks(bundle.cardMarks, isEmptyMark, (id) => allCards.find((c) => c.id === id), cardProposal),
+      new: bundle.newCardDefs.map(cardDraftToDefJson),
+    },
+    enemies: {
+      ...flatMarks(bundle.enemyMarks, isEmptySimpleMark, (id) => allEnemies.find((e) => e.id === id), simpleProposal),
+      new: (bundle.newEnemyDefs ?? []).map(enemyDraftToDefJson),
+    },
+    relics: {
+      ...flatMarks(bundle.relicMarks, isEmptySimpleMark, (id) => allRelics.find((r) => r.id === id), simpleProposal),
+      new: (bundle.newRelicDefs ?? []).map(relicDraftToDefJson),
+    },
+    leaders: {
+      ...flatMarks(bundle.leaderMarks, isEmptySimpleMark, (id) => allLeaders.find((l) => l.id === id), simpleProposal),
+      new: (bundle.newLeaderDefs ?? []).map(leaderDraftToDefJson),
+    },
+    memo: bundle.newCards.trim() !== '' ? bundle.newCards.trim() : undefined,
   }
-  L.push('')
-  L.push(`## 削除案（${removes.length}件）`)
-  for (const [id, m] of removes) {
-    L.push(`- ${head(id)}`)
-    L.push(...diffLines(id, { ...m, remove: false, cost: undefined, rarity: undefined, exhaust: undefined, fields: {} }))
-  }
-  L.push('')
-  L.push(`## 新カード案（${newCardDefs.length}件）`)
-  for (const d of newCardDefs) {
-    L.push(`### ${d.name.trim() !== '' ? d.name : '（無名の下書き）'}`)
-    L.push('```json')
-    L.push(JSON.stringify(cardDraftToDefJson(d), null, 2))
-    L.push('```')
-  }
-  L.push('')
-  // ---- 敵・レリック節 (2026-09-01) ----
-  const enemyHead = (id: string): string => {
-    const d = allEnemies.find((e) => e.id === id)
-    if (!d) return `**${id}**（現行データに存在しない）`
-    return `**${d.name}**（\`${id}\` HP${d.maxHp}/${d.archetype}） 現行: \`${JSON.stringify(d)}\``
-  }
-  L.push(
-    ...simpleMarkSections(
-      '敵',
-      bundle.enemyMarks,
-      enemyHead,
-      (id, key) => {
-        const d = allEnemies.find((e) => e.id === id)
-        return d ? enemyFieldValue(d, key) : undefined
-      },
-      (id, key) => {
-        const d = allEnemies.find((e) => e.id === id)
-        return d ? enemyFieldLabel(d, key) : key
-      },
-    ),
-  )
-  L.push(...newDefSections('敵', bundle.newEnemyDefs, enemyDraftToDefJson as (d: never) => Record<string, unknown>))
-  const relicHead = (id: string): string => {
-    const d = allRelics.find((r) => r.id === id)
-    if (!d) return `**${id}**（現行データに存在しない）`
-    return `**${d.name}**（\`${id}\`）「${d.description}」 現行: \`${JSON.stringify({ ...d, name: undefined, description: undefined, sprite: undefined })}\``
-  }
-  L.push(
-    ...simpleMarkSections(
-      'レリック',
-      bundle.relicMarks,
-      relicHead,
-      (id, key) => {
-        const d = allRelics.find((r) => r.id === id)
-        return d ? relicFieldValue(d, key) : undefined
-      },
-      (id, key) => {
-        const d = allRelics.find((r) => r.id === id)
-        return d ? relicFieldLabel(d, key) : key
-      },
-    ),
-  )
-  L.push(...newDefSections('レリック', bundle.newRelicDefs, relicDraftToDefJson as (d: never) => Record<string, unknown>))
-  const leaderHead = (id: string): string => {
-    const d = allLeaders.find((l) => l.id === id)
-    if (!d) return `**${id}**（現行データに存在しない）`
-    return `**${d.name}**（\`${id}\` ${d.colors.join('/')} HP${d.maxHp}） 現行: \`${JSON.stringify(d)}\``
-  }
-  L.push(
-    ...simpleMarkSections(
-      'リーダー',
-      bundle.leaderMarks,
-      leaderHead,
-      (id, key) => {
-        const d = allLeaders.find((l) => l.id === id)
-        return d ? leaderFieldValue(d, key) : undefined
-      },
-      (id, key) => {
-        const d = allLeaders.find((l) => l.id === id)
-        return d ? leaderFieldLabel(d, key) : key
-      },
-    ),
-  )
-  L.push(...newDefSections('リーダー', bundle.newLeaderDefs, leaderDraftToDefJson as (d: never) => Record<string, unknown>))
-  if (newCards.trim() !== '') {
-    L.push('### メモ（自由記述）')
-    L.push(newCards.trim())
-    L.push('')
-  }
-  L.push('※ この提案書はレビュー用。実装時は card-power.md の査定 (定価115〜135%帯・色レート・追加コスト算入) と敵の数値基準・cardrules/enemiesの機械テストを通すこと')
-  return L.join('\n')
+  return JSON.stringify(doc, null, 2)
 }
 
 /** 調整案一式の書き出し (ダウンロード + クリップボード) */
 export function saveProposals(bundle: ProposalBundle): void {
-  deliverText(`tuning-proposals-${stampNow()}.md`, buildProposals(bundle))
-}
-
-/** 調整案の書き出し (ダウンロード + クリップボード) */
-export function saveCardProposals(
-  marks: Readonly<Record<string, CardProposalMark>>,
-  newCards: string,
-  newCardDefs: readonly CardDraft[] = [],
-): void {
-  deliverText(`card-proposals-${stampNow()}.md`, buildCardProposals(marks, newCards, newCardDefs))
+  deliverText(`tuning-proposals-${stampNow()}.json`, buildProposals(bundle))
 }
