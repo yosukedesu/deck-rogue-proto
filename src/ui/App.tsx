@@ -123,6 +123,7 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   healer: '回復役型（味方を癒す）',
   windup: '息切れ型（大技のあと隙）',
   shell: '甲殻型（積みながら殴る）',
+  splitter: '分裂型（倒すと小型に分裂）',
   mimic: '物真似型（手数の鏡）',
   elite: 'エリート',
 }
@@ -147,6 +148,7 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   healer: '🌿',
   windup: '🪓',
   shell: '🪨',
+  splitter: '🫠',
 }
 
 // カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
@@ -178,6 +180,7 @@ const KEYWORD_HELP: Record<string, string> = {
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
   威圧: '敵の筋力を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
   応援: '味方全体の筋力を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
+  分裂: '倒すと小型の敵に分かれて場に残る。分裂体はその敵フェーズから行動する。全体攻撃・延焼・オーバーキルの一撃が解答',
   装甲: '1ヒットで受けるダメージがこの値以下に頭打ちになる。多段で削るか、装甲を無視する延焼で焼くのが解答',
   とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
@@ -1631,6 +1634,9 @@ function BattleScreen({
                     )}
                     {enemyDef.thorns !== undefined && !dead && (
                       <span className="chip chip-strength">🦔 {kw('とげ')} {enemyDef.thorns}</span>
+                    )}
+                    {enemyDef.splitInto !== undefined && !dead && (
+                      <span className="chip chip-strength">🫠 {kw('分裂')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}×{enemyDef.splitInto.count}</span>
                     )}
                     {(enemy.stolenGold ?? 0) > 0 && !dead && (
                       <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み</span>

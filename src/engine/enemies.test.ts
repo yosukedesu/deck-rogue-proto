@@ -467,3 +467,35 @@ describe('火傷 (2026-09-02 敵ギミック第1波。本家Burn相当)', () => 
     expect(def.effects).toEqual([]) // 使用不可の死に札 (プレイ効果なし)
   })
 })
+
+describe('分裂 (2026-09-02 敵ギミック第1波。本家Slime準拠)', () => {
+  it('大苔スライムを倒すと苔スライム×2が意図付きで現れ、戦闘は続く', () => {
+    let s = freshCombat('set-confirm', 'enemy_big_slime', 42)
+    // 外科的に瀕死へ → 6ダメで撃破
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+    expect(s.phase).toBe('player-turn') // 勝利していない
+    expect(s.enemies).toHaveLength(3)
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(0)
+    expect(s.enemies[0].split).toBe(true) // 二度と分裂しない
+    expect(s.enemies[1].enemyId).toBe('enemy_moss_slime')
+    expect(s.enemies[1].intent).not.toBeNull() // 生成時に意図宣言 = その敵フェーズから行動
+    expect(s.enemies[2].intent).not.toBeNull()
+    expect(s.eventLog.filter((e) => e.type === 'EnemySplit')).toHaveLength(1)
+    // 分裂体を両方倒せば勝利
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? e : { ...e, hp: 1, block: 0 })) }
+    s = withHand(s, ['green_sweep'])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sweep' })
+    expect(s.phase).toBe('won')
+  })
+
+  it('難易度の打点倍率 (atkScale) は分裂体に継承される', () => {
+    let s = freshCombat('set-confirm', 'enemy_big_slime', 42)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 1, block: 0, atkScale: 1.6 })) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+    expect(s.enemies[1].atkScale).toBe(1.6)
+  })
+})

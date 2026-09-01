@@ -1010,6 +1010,60 @@
     ]
   },
   {
+    "id": "enemy_big_slime",
+    "name": "大苔スライム",
+    "archetype": "splitter",
+    "flavor": "苔と泥の巨体。斬っても潰しても、中から小さいのが這い出してくる。",
+    "maxHp": 72,
+    "splitInto": {
+      "enemyId": "enemy_moss_slime",
+      "count": 2
+    },
+    "moves": [
+      {
+        "id": "slam",
+        "kind": "attack",
+        "min": 9,
+        "max": 13,
+        "weight": 2
+      },
+      {
+        "id": "ooze_guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_moss_slime",
+    "name": "苔スライム",
+    "archetype": "splitter",
+    "flavor": "大苔スライムのかけら。小さくても噛む。",
+    "maxHp": 26,
+    "moves": [
+      {
+        "id": "bump",
+        "kind": "attack",
+        "min": 5,
+        "max": 8,
+        "weight": 1
+      },
+      {
+        "id": "ooze",
+        "kind": "defend",
+        "min": 4,
+        "max": 6,
+        "weight": 1
+      }
+    ],
+    "sequence": [
+      "bump",
+      "ooze"
+    ]
+  },
+  {
     "id": "enemy_elite_sergeant",
     "name": "鞭打ちの鬼軍曹",
     "archetype": "elite",

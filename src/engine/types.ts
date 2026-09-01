@@ -142,6 +142,8 @@ export interface EnemyState extends CombatantState {
   readonly stolenGold?: number
   /** 逃走済み (hp:0とセットで立つ = 既存の死亡判定がそのまま勝利判定に使える) */
   readonly fled?: boolean
+  /** 分裂済み (2026-09-02)。倒れた分裂親が二度と分裂しないためのフラグ */
+  readonly split?: boolean
 }
 
 /** 敵の意図。プレイヤーへは幅あり表示 (例: 攻撃6〜12)。実値は宣言時にロール済みで非公開 */
@@ -351,7 +353,8 @@ export type GameEvent =
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
-  | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02) // 状態異常付与
+  | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)
+  | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
@@ -719,6 +722,7 @@ export type EnemyArchetype =
   | 'healer' // 回復役型: 味方回復。編成専用 (苔の癒し手)
   | 'windup' // 息切れ型: 大技→隙 (大振りの斧鬼)
   | 'shell' // 甲殻型: 毎ターン積みながら殴る (石殻の番人)
+  | 'splitter' // 分裂型: 倒すと小型に分裂 (大苔スライム 2026-09-02)
 
 /** buff = 強化 (自分のみ)。rally = 応援 (味方全体の強化)。hex = 状態異常の付与のみ (数値なし・inflict必須) */
 export type EnemyActionKind =
@@ -833,6 +837,12 @@ export interface EnemyDef {
    * これはT1から問いを出せる — 貫通 (緑)・延焼 (赤)・粉砕が最初のターンから解答になる
    */
   readonly startingBlock?: number
+  /**
+   * 分裂 (2026-09-02 敵ギミック第1波)。この敵が倒れた時、指定の敵N体が場に現れる (本家Slime)。
+   * 分裂体は素の値 (深度スケール非適用)・親の atkScale (難易度) を継承・生成時に意図を宣言して
+   * その敵フェーズから行動する (本家準拠)。分裂体の定義は sequence 必須 (生成時宣言を決定的にするため)
+   */
+  readonly splitInto?: { readonly enemyId: string; readonly count: number }
   /**
    * 装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。
    * 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・

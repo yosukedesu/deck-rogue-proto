@@ -461,8 +461,51 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
 }
 
 /** 勝敗判定。すでに決着済みなら何もしない (CombatEnded の二重記録防止) */
+/**
+ * 分裂 (2026-09-02): 倒れた分裂親から小型を場に出す。勝利判定より先に走る =
+ * 親を倒しても分裂体が残れば戦闘は続く。分裂体は生成時に意図を宣言し、その敵フェーズから行動する
+ * (本家Slime準拠)。分裂体は素の値・親の atkScale (難易度) を継承・patternIndex をずらして同期を防ぐ
+ */
+function processSplits(state: GameState): GameState {
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) {
+    const e = s.enemies[i]
+    if (e.hp > 0 || e.split === true || e.fled === true) continue
+    const def = getEnemyDef(e.enemyId)
+    const splitInto = def.splitInto
+    if (splitInto === undefined) continue
+    s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, split: true } : x)) }
+    s = emit(s, { type: 'EnemySplit', enemyIndex: i, into: splitInto.enemyId, count: splitInto.count })
+    const childDef = getEnemyDef(splitInto.enemyId)
+    for (let k = 0; k < splitInto.count; k++) {
+      const moveId = childDef.sequence?.[k % (childDef.sequence.length || 1)]
+      const move = childDef.moves.find((m) => m.id === moveId) ?? childDef.moves[0]
+      const [intent, rng2] = buildIntent(s.rng, move, 0, e.atkScale ?? 1)
+      const child = {
+        enemyId: splitInto.enemyId,
+        hp: childDef.maxHp,
+        maxHp: childDef.maxHp,
+        block: childDef.startingBlock ?? 0,
+        intent,
+        strength: 0,
+        ...(e.atkScale !== undefined ? { atkScale: e.atkScale } : {}),
+        burn: 0,
+        confusion: 0,
+        exposed: 0,
+        patternIndex: (k + 1) % (childDef.sequence?.length ?? 1),
+        ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
+        ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
+      }
+      s = { ...s, rng: rng2, enemies: [...s.enemies, child] }
+      s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent })
+    }
+  }
+  return s
+}
+
 export function checkCombatEnd(state: GameState): GameState {
   if (state.phase === 'won' || state.phase === 'lost') return state
+  state = processSplits(state)
   if (state.player.hp <= 0) {
     return emit({ ...state, phase: 'lost' }, { type: 'CombatEnded', result: 'lost' })
   }

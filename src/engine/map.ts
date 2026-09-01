@@ -131,7 +131,7 @@ const ACT_POOLS: readonly (readonly string[])[] = [
   // うねる獣(読みなし休符)・探り屋(読みの教師)・栗鼠(とげ芸)・伏せ警戒/罠壊し/樽(固有芸)・
   // 苔の主(再生)・斧鬼(大技→隙)・石殻(甲殻)・オーガ(元ボスの再登場)
   ['enemy_probe', 'enemy_wide_power', 'enemy_thorn_squirrel', 'enemy_apprentice_colossus', 'enemy_mimic_imp', 'enemy_cultist', 'enemy_slug', 'enc_probe_pair', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast'], // 1幕 (ソロ7/12。2026-09-01 敵圧監査+2: 狂信者=カルト型タイマー・蛞蝓=状態異常の教師〔幕1のデバフゼロを解消〕。2026-08-31 反復感への処方+2: 見習い巨像=タイマー予習・物真似の子鬼=手数の鏡予習)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair', 'enemy_whetstone_colossus', 'enemy_mimic_jester', 'enemy_cinder_imp', 'enemy_rock_beetle'], // 2幕 (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair', 'enemy_whetstone_colossus', 'enemy_mimic_jester', 'enemy_cinder_imp', 'enemy_rock_beetle', 'enemy_big_slime'], // 2幕 (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
   ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer'], // 3幕 (ソロ4/11)
 ]
 /** 幕ボス (難度順固定。確定済みルール表「マップ」) */
