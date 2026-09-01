@@ -531,7 +531,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
         forgeLeftHere <= 0 ? '' : canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
       L.push(`   [${i}] ${cardLine(c.def)}${mark}`)
     })
-    L.push(`→ ${forgeLeftHere > 0 ? '{"type":"CampfireUpgrade","index":N} / ' : ''}{"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(何もしない)`)
+    L.push(`→ ${forgeLeftHere > 0 ? '{"type":"CampfireUpgrade","index":N} / ' : ''}{"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(休む=回復して次へ)`)
   } else if (run.phase === 'shop' && run.shop) {
     L.push(`🛒 ショップ (所持 ${run.gold}G。買わずに出てもよい)`)
     // レア表記は報酬ピックと同じ (2026-08-31 検証ラン指摘: 6枠目がレア確定枠だと分からない)

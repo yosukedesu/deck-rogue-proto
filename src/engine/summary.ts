@@ -101,8 +101,13 @@ export function cardCostLabel(def: { cost: number; xCost?: boolean }, discounted
 
 /**
  * Xコスト札のヒット表記。xHits の効果は支払ったXの回数だけ繰り返される。
- * 表示に出さないと「1マナで7ダメージ」に見えてカードの正体が伝わらない
+ * 表示に出さないと「1マナで7ダメージ」に見えてカードの正体が伝わらない。
+ * 成長・勢いの注記はダメージ効果だけに付ける (2026-09-01 検証ラン指摘: 樹皮の重鎧=Xブロックに
+ * 旧文言がそのまま出て「成長がブロックに乗る」と読め、防御計算を誤らせていた)
  */
-export function xHitsSuffix(e: { xHits?: boolean }): string {
-  return e.xHits === true ? '×Xヒット(各ヒットに成長・勢いが乗る)' : ''
+export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
+  if (e.xHits !== true) return ''
+  return e.effect !== undefined && e.effect.startsWith('dealDamage')
+    ? '×Xヒット(各ヒットに成長・勢いが乗る)'
+    : '×Xヒット'
 }
