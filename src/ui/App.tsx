@@ -167,7 +167,7 @@ const KEYWORD_HELP: Record<string, string> = {
   虚弱: 'カードのプレイで得るブロックが25%減る（切り捨て・最低1）。氷壁・リアクション・置物由来は減らない。自分のターン終了時に1減る',
   負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
   再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
-  激昂: '自動で強化が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび',
+  激昂: '自動で強化が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび、「/被ダメN」はこの敵が受けた累計ダメージがNの倍数を跨ぐたび',
   混乱: '混乱した敵の攻撃は、プレイヤーでなく他の生存敵（いなければ自分自身）に向かう。攻撃1回ごとに1減る',
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
   威圧: '敵の強化を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
@@ -1566,6 +1566,7 @@ function BattleScreen({
                       <span className="chip chip-strength">
                         😡 {kw('激昂')} +{enemyDef.enrage}
                         {enemyDef.enrageEveryCards ? `/${enemyDef.enrageEveryCards}枚プレイ` : '/T'}
+                        {enemyDef.enrageEveryDamage !== undefined ? `・+${enemyDef.enrage}/被ダメ${enemyDef.enrageEveryDamage}` : ''}
                       </span>
                     )}
                   </div>

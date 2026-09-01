@@ -269,7 +269,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび強化+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)` : '',
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
       def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
-      def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ` : `激昂+${def.enrage}/T`) : '',
+      def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ${def.enrageEveryDamage !== undefined ? `・+${def.enrage}/被ダメ${def.enrageEveryDamage}` : ''}` : `激昂+${def.enrage}/T`) : '',
     ].filter(Boolean).join(' ')
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
