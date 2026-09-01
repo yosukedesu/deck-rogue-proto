@@ -201,3 +201,26 @@ describe('敵・レリックの調整サイクル (2026-09-01)', () => {
     expect(text).toContain('"maxHp": 5')
   })
 })
+
+describe('リーダーの調整サイクル (2026-09-01)', () => {
+  it('リーダーの数値マークと新規案がJSONで出る', () => {
+    const text = buildProposals({
+      cardMarks: {},
+      newCards: '',
+      newCardDefs: [],
+      leaderMarks: { leader_green: { fields: { maxHp: 75, 'p0.amount': 2 }, change: '成長の初速を上げたい' } },
+      newLeaderDefs: [
+        {
+          name: 'つばき', colors: ['red', 'white'], maxHp: 70, drawPerTurn: 5, energyMax: 3, rewardChoices: 4,
+          description: 'ボロスの闘僧', passive: [{ trigger: 'onAttackPlayed', effect: 'gainBlock', amount: 1 }],
+        },
+      ],
+    })
+    expect(text).toContain('## リーダーの変更案（1件）')
+    expect(text).toContain('最大HP: 80 → 75')
+    expect(text).toContain('パッシブ〔onTurnStart/addGrowth〕の量: 1 → 2')
+    expect(text).toContain('## 新しいリーダー案（1件）')
+    expect(text).toContain('"colors"')
+    expect(text).toContain('つばき')
+  })
+})

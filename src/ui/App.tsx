@@ -11,6 +11,7 @@ import {
   buildReport,
   cardDraftToDefJson,
   ENEMY_TOP_FIELDS,
+  LEADER_TOP_FIELDS,
   isEmptyMark,
   isEmptySimpleMark,
   saveProposals,
@@ -23,6 +24,7 @@ import {
   type EffectDraft,
   type EnemyDraft,
   type EnemyMoveDraft,
+  type LeaderDraft,
   type LogLine,
   type PlayNote,
   type RelicDraft,
@@ -80,6 +82,7 @@ import type {
   EnemyMove,
   GameEvent,
   GameState,
+  LeaderDef,
   ReactionMode,
   RelicDef,
 } from '../engine/types.ts'
@@ -2675,6 +2678,68 @@ function RelicDraftEditor({ value, onChange, onDelete }: { value: RelicDraft; on
   )
 }
 
+/** リーダーの数値フィールド (存在するものだけ編集対象) */
+function leaderTunerFields(def: LeaderDef): { key: string; label: string; cur: number }[] {
+  const out: { key: string; label: string; cur: number }[] = []
+  for (const [k, ja] of LEADER_TOP_FIELDS) {
+    const v = (def as unknown as Record<string, unknown>)[k]
+    if (typeof v === 'number') out.push({ key: k, label: ja, cur: v })
+  }
+  def.passive.forEach((e, i) => {
+    if (typeof e.amount === 'number') out.push({ key: `p${i}.amount`, label: `パッシブ〔${e.trigger}/${e.effect}〕の量`, cur: e.amount })
+  })
+  return out
+}
+
+function LeaderDraftEditor({ value, onChange, onDelete }: { value: LeaderDraft; onChange: (d: LeaderDraft) => void; onDelete: () => void }) {
+  const S = { fontSize: 11 } as const
+  const COLOR_JA: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
+  const toggleColor = (c: string, on: boolean) => {
+    const set = new Set(value.colors)
+    if (on) set.add(c)
+    else set.delete(c)
+    onChange({ ...value, colors: [...set] })
+  }
+  return (
+    <div style={{ border: '1px solid #556', borderRadius: 6, padding: 6, marginTop: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label style={S}>名前 <input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} style={{ width: 100 }} /></label>
+        <label style={S}>id <input value={value.id ?? ''} placeholder="空=実装時に命名" onChange={(e) => onChange({ ...value, id: e.target.value === '' ? undefined : e.target.value })} style={{ width: 120 }} /></label>
+        <label style={S}>絵文字 <input value={value.sprite ?? ''} onChange={(e) => onChange({ ...value, sprite: e.target.value === '' ? undefined : e.target.value })} style={{ width: 40 }} /></label>
+        <span style={S}>色:</span>
+        {(['green', 'blue', 'red', 'white', 'black'] as const).map((c) => (
+          <label key={c} style={S}>
+            <input type="checkbox" checked={value.colors.includes(c)} onChange={(e) => toggleColor(c, e.target.checked)} /> {COLOR_JA[c]}
+          </label>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label style={S}>HP <input type="number" style={{ width: 48 }} value={value.maxHp} onChange={(e) => onChange({ ...value, maxHp: Number(e.target.value) || 0 })} /></label>
+        <label style={S}>ドロー <input type="number" style={{ width: 40 }} value={value.drawPerTurn} onChange={(e) => onChange({ ...value, drawPerTurn: Number(e.target.value) || 0 })} /></label>
+        <label style={S}>エナジー <input type="number" style={{ width: 40 }} value={value.energyMax} onChange={(e) => onChange({ ...value, energyMax: Number(e.target.value) || 0 })} /></label>
+        <label style={S}>ピック候補 <input type="number" style={{ width: 40 }} value={value.rewardChoices} onChange={(e) => onChange({ ...value, rewardChoices: Number(e.target.value) || 0 })} /></label>
+        <label style={S}>伏せ枠 <input type="number" style={{ width: 38 }} value={value.setSlots ?? ''} placeholder="1" onChange={(e) => onChange({ ...value, setSlots: numOrUndef(e.target.value) })} /></label>
+        <label style={S}>初期デッキid <input value={value.runDeckId ?? ''} placeholder="run_basic" onChange={(e) => onChange({ ...value, runDeckId: e.target.value === '' ? undefined : e.target.value })} style={{ width: 110 }} /></label>
+      </div>
+      <label style={{ ...S, display: 'flex', gap: 4 }}>説明 <input value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} style={{ flex: 1, fontSize: 11 }} /></label>
+      <div className="choice-desc" style={{ fontSize: 10 }}>パッシブ (戦闘開始時から場にあるリーダー置物。onTurnStart=毎ターン / onAttackPlayed=攻撃プレイごと 等)</div>
+      {value.passive.map((ef, i) => (
+        <EffectDraftRow
+          key={i}
+          value={ef}
+          onChange={(ne) => onChange({ ...value, passive: value.passive.map((x, j) => (j === i ? ne : x)) })}
+          onDelete={() => onChange({ ...value, passive: value.passive.filter((_, j) => j !== i) })}
+        />
+      ))}
+      <div>
+        <button className="chip chip-btn" onClick={() => onChange({ ...value, passive: [...value.passive, { trigger: 'onTurnStart', effect: 'addGrowth', amount: 1 }] })}>＋ パッシブ効果を追加</button>{' '}
+        <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
+      </div>
+      <div className="choice-desc" style={{ fontSize: 10 }}>HPは5刻み・アーキタイプの物語で正当化できる差のみ (基準75。確定済みルール表「リーダーの個性」)</div>
+    </div>
+  )
+}
+
 /** カード調整案の下書き置き場 (localStorage)。リロードしても作業が消えない */
 const TUNER_STORAGE_KEY = 'deckRogueCardTuner'
 interface TunerDraft {
@@ -2687,6 +2752,8 @@ interface TunerDraft {
   readonly newEnemyDefs: readonly EnemyDraft[]
   readonly relicMarks: Record<string, SimpleMark>
   readonly newRelicDefs: readonly RelicDraft[]
+  readonly leaderMarks: Record<string, SimpleMark>
+  readonly newLeaderDefs: readonly LeaderDraft[]
 }
 function loadTunerDraft(): TunerDraft {
   try {
@@ -2697,12 +2764,13 @@ function loadTunerDraft(): TunerDraft {
         marks: d.marks ?? {}, newCards: d.newCards ?? '', newCardDefs: d.newCardDefs ?? [],
         enemyMarks: d.enemyMarks ?? {}, newEnemyDefs: d.newEnemyDefs ?? [],
         relicMarks: d.relicMarks ?? {}, newRelicDefs: d.newRelicDefs ?? [],
+        leaderMarks: d.leaderMarks ?? {}, newLeaderDefs: d.newLeaderDefs ?? [],
       }
     }
   } catch {
     /* 壊れた下書きは捨てる */
   }
-  return { marks: {}, newCards: '', newCardDefs: [], enemyMarks: {}, newEnemyDefs: [], relicMarks: {}, newRelicDefs: [] }
+  return { marks: {}, newCards: '', newCardDefs: [], enemyMarks: {}, newEnemyDefs: [], relicMarks: {}, newRelicDefs: [], leaderMarks: {}, newLeaderDefs: [] }
 }
 
 /**
@@ -2931,7 +2999,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
       /* 容量超過等は無視 = 下書きは保険 */
     }
   }, [draft])
-  const [tab, setTab] = useState<'cards' | 'enemies' | 'relics'>('cards')
+  const [tab, setTab] = useState<'cards' | 'enemies' | 'relics' | 'leaders'>('cards')
   const markOf = (id: string): CardProposalMark => draft.marks[id] ?? {}
   const setMark = (id: string, m: CardProposalMark) =>
     setDraft((d) => {
@@ -2954,8 +3022,15 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
       else marks[id] = m
       return { ...d, relicMarks: marks }
     })
+  const setLeaderMark = (id: string, m: SimpleMark) =>
+    setDraft((d) => {
+      const marks = { ...d.leaderMarks }
+      if (isEmptySimpleMark(m)) delete marks[id]
+      else marks[id] = m
+      return { ...d, leaderMarks: marks }
+    })
   const markedCount =
-    Object.keys(draft.marks).length + Object.keys(draft.enemyMarks).length + Object.keys(draft.relicMarks).length
+    Object.keys(draft.marks).length + Object.keys(draft.enemyMarks).length + Object.keys(draft.relicMarks).length + Object.keys(draft.leaderMarks).length
   const colorOf = (id: string, c?: string) => c ?? id.split('_')[0]
   const COLOR_LABEL: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
   const RARITY_LABEL: Record<string, string> = { common: 'コモン', uncommon: '◆アンコモン', rare: '★レア' }
@@ -2985,6 +3060,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
           {chip(tab === 'cards', `カード（${allCards.filter((c) => !c.id.startsWith('status_')).length}）`, () => setTab('cards'))}
           {chip(tab === 'enemies', `敵（${allEnemies.length}）`, () => setTab('enemies'))}
           {chip(tab === 'relics', `レリック（${allRelics.length}）`, () => setTab('relics'))}
+          {chip(tab === 'leaders', `リーダー（${allLeaders.length}）`, () => setTab('leaders'))}
           {tab === 'cards' && (
             <label className="viewer-toggle">
               <input
@@ -3020,14 +3096,14 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 />{' '}
                 マーク済みのみ表示
               </label>{' '}
-              <button className="btn btn-primary" onClick={() => saveProposals({ cardMarks: draft.marks, newCards: draft.newCards, newCardDefs: draft.newCardDefs, enemyMarks: draft.enemyMarks, newEnemyDefs: draft.newEnemyDefs, relicMarks: draft.relicMarks, newRelicDefs: draft.newRelicDefs })}>
+              <button className="btn btn-primary" onClick={() => saveProposals({ cardMarks: draft.marks, newCards: draft.newCards, newCardDefs: draft.newCardDefs, enemyMarks: draft.enemyMarks, newEnemyDefs: draft.newEnemyDefs, relicMarks: draft.relicMarks, newRelicDefs: draft.newRelicDefs, leaderMarks: draft.leaderMarks, newLeaderDefs: draft.newLeaderDefs })}>
                 📄 調整案を書き出す
               </button>{' '}
               <button
                 className="btn"
                 onClick={() => {
                   if (window.confirm('調整案の下書きをすべて消しますか？')) {
-                    setDraft({ marks: {}, newCards: '', newCardDefs: [], enemyMarks: {}, newEnemyDefs: [], relicMarks: {}, newRelicDefs: [] })
+                    setDraft({ marks: {}, newCards: '', newCardDefs: [], enemyMarks: {}, newEnemyDefs: [], relicMarks: {}, newRelicDefs: [], leaderMarks: {}, newLeaderDefs: [] })
                   }
                 }}
               >
@@ -3112,6 +3188,33 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 onDelete={() => setDraft((s2) => ({ ...s2, newRelicDefs: s2.newRelicDefs.filter((_, j) => j !== i) }))}
               />
             ))}
+            {tab === 'leaders' && (
+              <div style={{ marginTop: 6 }}>
+                <b style={{ fontSize: 12 }}>新リーダー案（{draft.newLeaderDefs.length}件）</b>{' '}
+                <button
+                  className="chip chip-btn"
+                  onClick={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      newLeaderDefs: [
+                        ...d.newLeaderDefs,
+                        { name: '', colors: ['green'], maxHp: 75, drawPerTurn: 5, energyMax: 3, rewardChoices: 4, description: '', passive: [] },
+                      ],
+                    }))
+                  }
+                >
+                  ＋ 新リーダー案を追加
+                </button>
+              </div>
+            )}
+            {tab === 'leaders' && draft.newLeaderDefs.map((d, i) => (
+              <LeaderDraftEditor
+                key={i}
+                value={d}
+                onChange={(nd) => setDraft((s2) => ({ ...s2, newLeaderDefs: s2.newLeaderDefs.map((x, j) => (j === i ? nd : x)) }))}
+                onDelete={() => setDraft((s2) => ({ ...s2, newLeaderDefs: s2.newLeaderDefs.filter((_, j) => j !== i) }))}
+              />
+            ))}
             <textarea
               value={draft.newCards}
               onChange={(e) => setDraft((d) => ({ ...d, newCards: e.target.value }))}
@@ -3184,6 +3287,31 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                     <div className="choice-desc" style={{ fontSize: 11 }}>{r.description}</div>
                     {tuner && (
                       <SimpleMarkEditor fields={relicTunerFields(r)} mark={draft.relicMarks[r.id] ?? {}} onChange={(m) => setRelicMark(r.id, m)} />
+                    )}
+                  </div>
+                )
+              })}
+          </div>
+        )}
+        {tab === 'leaders' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+            {allLeaders
+              .filter((l) => !(tuner && markedOnly) || draft.leaderMarks[l.id] !== undefined)
+              .map((l) => {
+                const dirty = draft.leaderMarks[l.id] !== undefined
+                const COLOR_JA: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
+                return (
+                  <div key={l.id} className="panel" style={{ padding: 6, background: dirty ? 'rgba(120,160,255,0.10)' : undefined }}>
+                    <b>{l.sprite} {l.name}</b>{' '}
+                    <span className="choice-desc">
+                      {l.id} / {l.colors.map((c) => COLOR_JA[c] ?? c).join('')} / HP{l.maxHp} / ドロー{l.drawPerTurn} / エナジー{l.energyMax} / ピック{l.rewardChoices}{(l.setSlots ?? 1) > 1 ? ` / 伏せ枠${l.setSlots}` : ''}
+                    </span>
+                    <div className="choice-desc" style={{ fontSize: 11 }}>{l.description}</div>
+                    <div className="choice-desc" style={{ fontSize: 11 }}>
+                      パッシブ: {l.passive.length > 0 ? l.passive.map((e) => renderEffectItem(e)).join('、') : '（なし）'} ／ 初期デッキ: {l.runDeckId}
+                    </div>
+                    {tuner && (
+                      <SimpleMarkEditor fields={leaderTunerFields(l)} mark={draft.leaderMarks[l.id] ?? {}} onChange={(m) => setLeaderMark(l.id, m)} />
                     )}
                   </div>
                 )

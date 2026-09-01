@@ -1,4 +1,4 @@
-import { allCards, allEnemies, allRelics, encounterName, getEnemyDef, getLeaderDef } from '../engine/content.ts'
+import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getLeaderDef } from '../engine/content.ts'
 
 /**
  * 名前解決の安全版 (2026-08-30)。レポートはプレイテストのデータ回収の道具なので、
@@ -580,6 +580,68 @@ export function relicDraftToDefJson(d: RelicDraft): Record<string, unknown> {
   return j
 }
 
+/** リーダーの数値フィールド (2026-09-01 ユーザー要望「リーダーも図鑑編集」) */
+export const LEADER_TOP_FIELDS: readonly (readonly [string, string])[] = [
+  ['maxHp', '最大HP'],
+  ['drawPerTurn', '毎ターンドロー'],
+  ['energyMax', 'エナジー上限'],
+  ['rewardChoices', 'ピック候補数'],
+  ['setSlots', '伏せ枠'],
+]
+
+function leaderFieldValue(def: (typeof allLeaders)[number], key: string): number | undefined {
+  const top = (def as unknown as Record<string, unknown>)[key]
+  if (typeof top === 'number') return top
+  const pv = /^p(\d+)\.amount$/.exec(key)
+  if (pv) return def.passive[Number(pv[1])]?.amount
+  return undefined
+}
+
+function leaderFieldLabel(def: (typeof allLeaders)[number], key: string): string {
+  const top = LEADER_TOP_FIELDS.find(([k]) => k === key)
+  if (top) return top[1]
+  const pv = /^p(\d+)\.amount$/.exec(key)
+  if (pv) {
+    const e = def.passive[Number(pv[1])]
+    return e ? `パッシブ〔${e.trigger}/${e.effect}〕の量` : key
+  }
+  return key
+}
+
+/** リーダーの新規作成ドラフト。パッシブはカードと同じ EffectDraft */
+export interface LeaderDraft {
+  readonly id?: string
+  readonly name: string
+  readonly sprite?: string
+  readonly colors: readonly string[]
+  readonly maxHp: number
+  readonly drawPerTurn: number
+  readonly energyMax: number
+  readonly rewardChoices: number
+  readonly setSlots?: number
+  readonly runDeckId?: string
+  readonly description: string
+  readonly passive: readonly EffectDraft[]
+}
+
+export function leaderDraftToDefJson(d: LeaderDraft): Record<string, unknown> {
+  const j: Record<string, unknown> = {
+    id: (d.id ?? '').trim() !== '' ? d.id!.trim() : 'leader_TODO_命名',
+    name: d.name.trim() !== '' ? d.name : '（無名のリーダー）',
+    colors: d.colors,
+    maxHp: d.maxHp,
+    drawPerTurn: d.drawPerTurn,
+    energyMax: d.energyMax,
+    rewardChoices: d.rewardChoices,
+    runDeckId: (d.runDeckId ?? '').trim() !== '' ? d.runDeckId : 'run_basic',
+    sprite: (d.sprite ?? '').trim() !== '' ? d.sprite : '🎭',
+    description: d.description,
+    passive: (cardDraftToDefJson({ name: '', color: 'green', cost: 0, type: 'spell', rarity: 'common', effects: d.passive }) as { effects: unknown }).effects,
+  }
+  if (typeof d.setSlots === 'number' && d.setSlots > 1) j.setSlots = d.setSlots
+  return j
+}
+
 /** fields キー → 現行値 (defから解決)。不明キーは undefined */
 function currentFieldValue(def: (typeof allCards)[number], key: string): number | undefined {
   const eff = /^e(\d+)\.(amount|amountMax)$/.exec(key)
@@ -626,6 +688,8 @@ export interface ProposalBundle {
   readonly newEnemyDefs?: readonly EnemyDraft[]
   readonly relicMarks?: Readonly<Record<string, SimpleMark>>
   readonly newRelicDefs?: readonly RelicDraft[]
+  readonly leaderMarks?: Readonly<Record<string, SimpleMark>>
+  readonly newLeaderDefs?: readonly LeaderDraft[]
 }
 
 /** 汎用マークの節 (変更案+削除案)。敵・レリックで共用 */
@@ -790,6 +854,27 @@ export function buildProposals(bundle: ProposalBundle): string {
     ),
   )
   L.push(...newDefSections('レリック', bundle.newRelicDefs, relicDraftToDefJson as (d: never) => Record<string, unknown>))
+  const leaderHead = (id: string): string => {
+    const d = allLeaders.find((l) => l.id === id)
+    if (!d) return `**${id}**（現行データに存在しない）`
+    return `**${d.name}**（\`${id}\` ${d.colors.join('/')} HP${d.maxHp}） 現行: \`${JSON.stringify(d)}\``
+  }
+  L.push(
+    ...simpleMarkSections(
+      'リーダー',
+      bundle.leaderMarks,
+      leaderHead,
+      (id, key) => {
+        const d = allLeaders.find((l) => l.id === id)
+        return d ? leaderFieldValue(d, key) : undefined
+      },
+      (id, key) => {
+        const d = allLeaders.find((l) => l.id === id)
+        return d ? leaderFieldLabel(d, key) : key
+      },
+    ),
+  )
+  L.push(...newDefSections('リーダー', bundle.newLeaderDefs, leaderDraftToDefJson as (d: never) => Record<string, unknown>))
   if (newCards.trim() !== '') {
     L.push('### メモ（自由記述）')
     L.push(newCards.trim())
