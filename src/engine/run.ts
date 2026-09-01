@@ -6,7 +6,7 @@
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
 import { startCombatWithOptions } from './combat.ts'
-import { ACT_COUNT, BOSS_ROW, generateMap, tierFor } from './map.ts'
+import { ACT_COUNT, bossRowFor, generateMap, tierFor } from './map.ts'
 import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
@@ -121,9 +121,9 @@ export function shopUpgradePrice(run: RunState): number {
  * 敵データは15枚スターター基準の強さなので、ラン序盤は「若い個体」(マイナス強化) で登場し、
  * ボスでフルスペック近くになる (StSの「敵はだんだん強く」の再現)。
  */
-export function depthStrength(row: number): number {
+export function depthStrength(row: number, act = 1): number {
   // 若い個体補正は撤廃 (2026-08-25 人間基準化)。幕ボスのみ+1
-  return row >= BOSS_ROW ? 1 : 0
+  return row >= bossRowFor(act) ? 1 : 0
 }
 
 /**
@@ -155,8 +155,9 @@ export function difficultyScale(level: number | undefined): { readonly hp: numbe
 export function depthHpScale(row: number, act = 1): number {
   // 幕×幕内前後半の2段スケール (確定済みルール表「ランの敵強化」2026-08-29 3幕化)。
   // 各幕のプールは既にその幕の帯に校正済みなので、幕内の2段が「幕内でもだんだん強く」を再現する
-  if (row >= BOSS_ROW) return 1.0 // 幕ボスは素のHP
-  const late = row >= 7 // 15行化 (2026-09-01): 行0〜6=前半・行7〜14=後半 (旧18行では行8が境)
+  if (row >= bossRowFor(act)) return 1.0 // 幕ボスは素のHP
+  // 幕内前後半の境界 = ボス行の半分 (幕1=行7・幕2=行7・幕3=行6。15/14/13行化 2026-09-02)
+  const late = row >= Math.floor(bossRowFor(act) / 2)
   // 2026-08-31 幕2/3を+0.10。「幕2の消化試合」の最後の根 = ボスだけ幕スケールで太り
   // 通常敵が置き去り、の実測への処方。打点帯は据え置き = 危険を濃くせず長さだけ半歩戻す
   // 2026-09-01 幕2/3を+0.15 (段3新ベース検証: 完成デッキのターン火力40に対し敵HP60〜80が
@@ -284,7 +285,7 @@ export function currentNode(run: RunState): MapNode | null {
 /** マップで次に進めるノードの列リスト (開始前は行0の全ノード) */
 export function nextChoices(run: RunState): readonly number[] {
   if (run.row < 0) return run.map[0].map((_, c) => c)
-  if (run.row >= BOSS_ROW) return []
+  if (run.row >= bossRowFor(run.act)) return []
   return currentNode(run)?.next ?? []
 }
 

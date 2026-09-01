@@ -75,7 +75,7 @@ import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
-import { BOSS_ROW, GRID_COLS, MAP_ROWS } from '../engine/map.ts'
+import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
@@ -2392,7 +2392,8 @@ const MAP_NODE_R = 14
 const MAP_TRIM = MAP_NODE_R + 2 // 線を円の外側で止める量
 const MAP_HIT_R = 23 // 透明の当たり判定 (実寸 46px = タップ target 44px 以上。実測済み)
 const MAP_NAME_FONT = 10
-const MAP_VH = MAP_PAD_T + (MAP_ROWS - 1) * MAP_ROW_H + MAP_PAD_B
+// 幕別行数 (15/14/13行化 2026-09-02): 高さと座標は実マップの行数から導出する
+const mapVh = (rows: number): number => MAP_PAD_T + (rows - 1) * MAP_ROW_H + MAP_PAD_B
 
 /** 決定的ジッタ (本家StS風に格子を崩す)。Math.random は使わない = 再レンダで揺れない */
 function mapJitter(r: number, c: number, salt: number): number {
@@ -2410,9 +2411,9 @@ const mapNodeX = (r: number, c: number, row: readonly MapNode[]): number => {
   const t = col !== undefined ? (col + 0.5) / GRID_COLS : (c + 0.5) / row.length
   return MAP_PAD_L + t * MAP_INNER_W + (mapJitter(r, c, 1) - 0.5) * 10
 }
-/** 行17 (ボス) を上に、行0を下に */
-const mapNodeY = (r: number, c: number): number =>
-  MAP_PAD_T + (BOSS_ROW - r) * MAP_ROW_H + (mapJitter(r, c, 2) - 0.5) * 6
+/** ボス行を上に、行0を下に (rows = その幕のマップの行数) */
+const mapNodeY = (rows: number, r: number, c: number): number =>
+  MAP_PAD_T + (rows - 1 - r) * MAP_ROW_H + (mapJitter(r, c, 2) - 0.5) * 6
 /** 各ノードのラベル幅: 隣ノードとの実距離から決める (格子座標では隣接列がかなり近い) */
 const mapLabelWidths = (r: number, row: readonly MapNode[]): number[] => {
   const xs = row.map((_, c) => mapNodeX(r, c, row))
@@ -2526,16 +2527,17 @@ function RunMapView({
   }, [run.act, run.row, run.col])
 
   // --- 接続線 (データのエッジ1本につき <line> 1本。装飾線を足すと verify-map-ui.ts が落ちる) ---
+  const rows = run.map.length
   const edges: ReactElement[] = []
-  for (let r = 0; r < MAP_ROWS - 1; r++) {
+  for (let r = 0; r < rows - 1; r++) {
     const row = run.map[r]
     const rowNext = run.map[r + 1]
     for (let c = 0; c < row.length; c++) {
       const ax = mapNodeX(r, c, row)
-      const ay = mapNodeY(r, c)
+      const ay = mapNodeY(rows, r, c)
       for (const to of row[c].next) {
         const bx = mapNodeX(r + 1, to, rowNext)
-        const by = mapNodeY(r + 1, to)
+        const by = mapNodeY(rows, r + 1, to)
         const len = Math.hypot(bx - ax, by - ay) || 1
         const ux = ((bx - ax) / len) * MAP_TRIM
         const uy = ((by - ay) / len) * MAP_TRIM
@@ -2566,7 +2568,7 @@ function RunMapView({
   return (
     <svg
       className="map-svg"
-      viewBox={`0 0 ${MAP_VW} ${MAP_VH}`}
+      viewBox={`0 0 ${MAP_VW} ${mapVh(rows)}`}
       role="group"
       aria-label={`ランのマップ 第${run.act}幕`}
     >
@@ -2578,10 +2580,10 @@ function RunMapView({
             <text
               className={r === run.row ? 'map-rowlabel map-rowlabel-here' : 'map-rowlabel'}
               x={MAP_PAD_L - 10}
-              y={MAP_PAD_T + (BOSS_ROW - r) * MAP_ROW_H + 3}
+              y={MAP_PAD_T + (rows - 1 - r) * MAP_ROW_H + 3}
               textAnchor="end"
             >
-              {r === BOSS_ROW ? 'ボス' : `行${r + 1}`}
+              {r === rows - 1 ? 'ボス' : `行${r + 1}`}
             </text>
             {row.map((n, c) => {
               const here = r === run.row && c === run.col
@@ -2633,7 +2635,7 @@ function RunMapView({
                   key={`n${r}:${c}`}
                   ref={r === focusRow && c === focusCol ? focusRef : undefined}
                   className={cls}
-                  transform={`translate(${mapNodeX(r, c, row).toFixed(2)} ${mapNodeY(r, c).toFixed(2)})`}
+                  transform={`translate(${mapNodeX(r, c, row).toFixed(2)} ${mapNodeY(rows, r, c).toFixed(2)})`}
                   role="button"
                   aria-disabled={!clickable}
                   tabIndex={clickable ? 0 : -1}
@@ -2681,7 +2683,7 @@ function RunMapView({
         <text
           className="map-start"
           x={MAP_VW / 2}
-          y={MAP_PAD_T + (MAP_ROWS - 1) * MAP_ROW_H + 44}
+          y={MAP_PAD_T + (rows - 1) * MAP_ROW_H + 44}
           textAnchor="middle"
         >
           ▲ ここから登る

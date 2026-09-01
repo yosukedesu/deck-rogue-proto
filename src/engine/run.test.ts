@@ -1,7 +1,7 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
-import { ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, MAP_ROWS, tierFor, TREASURE_ROW } from './map.ts'
+import { bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor, TREASURE_ROW } from './map.ts'
 import { createRng } from './rng.ts'
 import {
   applyRunCommand,
@@ -296,7 +296,7 @@ describe('ラン走破 (3幕構成)', () => {
     expect(run.act).toBe(2) // 次の幕へ
     expect(run.phase).toBe('map')
     expect(run.row).toBe(-1)
-    expect(run.map[BOSS_ROW][0].encounterId).toBe('enemy_turtle') // 2幕ボス=大亀
+    expect(run.map[bossRowFor(2)][0].encounterId).toBe('enemy_turtle') // 2幕ボス=大亀
   })
 
   it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり9〜15×3 (2026-08-29 18行化+?増設)', () => {
@@ -375,7 +375,7 @@ describe('プレイテスト由来の調整 (2026-08-26)', () => {
     let checked = 0
     for (let seed = 1; seed <= 40; seed++) {
       const [map] = generateMap(createRng(seed), 2)
-      for (let r = 2; r < MAP_ROWS; r++) {
+      for (let r = 2; r < map.length; r++) {
         const ids = (row: number) =>
           map[row].map((n) => n.encounterId).filter((x): x is string => x !== null)
         for (const id of ids(r)) {

@@ -8,7 +8,7 @@
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
-import { ACT_BOSSES, BOSS_ROW, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, tierFor, TREASURE_ROW } from './map.ts'
+import { ACT_BOSSES, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, TREASURE_ROW, treasureRowFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -273,7 +273,7 @@ describe('マップ生成の構造', () => {
     const { createRng: mk } = { createRng }
     for (let act = 1; act <= 3; act++) {
       const [m] = generateMap(mk(7), act)
-      expect(m[BOSS_ROW][0].encounterId).toBe(ACT_BOSSES[act - 1])
+      expect(m[bossRowFor(act)][0].encounterId).toBe(ACT_BOSSES[act - 1])
     }
   })
 
@@ -314,3 +314,23 @@ describe('マップ生成の構造', () => {
     }
   })
 })
+
+describe('幕別の行数 (2026-09-02 ユーザー裁定「StS2式 15/14/13」)', () => {
+  it('行数は幕1=16・幕2=15・幕3=14 (部屋数15/14/13+ボス行)。宝箱行はボスの7行手前・ボス前行は全焚き火', () => {
+    expect(ACT_MAP_ROWS).toEqual([16, 15, 14])
+    for (let act = 1; act <= 3; act++) {
+      for (const seed of [11, 22, 33]) {
+        const [m] = generateMap(createRng(seed), act)
+        expect(m).toHaveLength(mapRowsFor(act))
+        const boss = bossRowFor(act)
+        expect(m[boss]).toHaveLength(1)
+        expect(m[boss][0].type).toBe('boss')
+        expect(m[boss - 1].every((n) => n.type === 'campfire')).toBe(true)
+        expect(treasureRowFor(act)).toBe(boss - 7)
+        expect(m[treasureRowFor(act)].every((n) => n.type === 'treasure')).toBe(true)
+        expect(m[0].every((n) => n.type === 'battle')).toBe(true)
+      }
+    }
+  })
+})
+

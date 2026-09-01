@@ -68,6 +68,23 @@ export type RunMap = readonly (readonly MapNode[])[]
 export const MAP_ROWS = 16
 export const BOSS_ROW = MAP_ROWS - 1
 /**
+ * 幕別の行数 (2026-09-02 ユーザー裁定「StS2式 15/14/13」): 本家StS2は部屋数15/14/13と
+ * 幕が進むほど短くし「終盤は1戦を重く」を構造で作る (docs/sts2-reference.md §1)。
+ * 行数 = 部屋数+ボス行。MAP_ROWS/BOSS_ROW/TREASURE_ROW は幕1 (最大) の値として残置
+ * (sim の配列サイズ・旧セーブ互換用)。幕を知る場所では必ず *For(act) を使うこと
+ */
+export const ACT_MAP_ROWS: readonly number[] = [16, 15, 14]
+export function mapRowsFor(act: number): number {
+  return ACT_MAP_ROWS[act - 1] ?? MAP_ROWS
+}
+export function bossRowFor(act: number): number {
+  return mapRowsFor(act) - 1
+}
+/** 宝箱行 = ボスの7行手前 (本家関係の維持: 幕1=8・幕2=7・幕3=6) */
+export function treasureRowFor(act: number): number {
+  return bossRowFor(act) - 7
+}
+/**
  * 全パスが通る強制焚き火行 (2026-08-31 本家配置化: ボス前休憩のみ = 本家15階の「最上段は全て
  * 休憩」準拠)。残りの焚き火は部屋タイプとして散布する — 旧5/11の強制行は廃止し、
  * 「どこで休むか」をルート選択に入れる (焚き火間の最大連戦保証も本家に無いので廃止)
@@ -140,7 +157,7 @@ export const ACT_COUNT = 3
 
 /** 幕とマップ行 → 敵抽選プール。ボス行は幕ボス1体 */
 export function tierFor(act: number, row: number): readonly string[] {
-  if (row >= BOSS_ROW) return [ACT_BOSSES[act - 1]]
+  if (row >= bossRowFor(act)) return [ACT_BOSSES[act - 1]]
   return ACT_POOLS[act - 1]
 }
 
@@ -157,7 +174,12 @@ export function generateMap(
   for (let attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++) {
     // 1. 本家式パスウォーク: 7列格子を6本のパスが行0→行16へ歩く。
     //    訪問したマスがノードになり、歩いた区間がエッジになる (合流 = 自然なマージ)
-    const walkRows = BOSS_ROW // 行0〜16 (ボス行はウォーク対象外)
+    // 幕別の行数 (2026-09-02 StS2式 15/14/13)
+    const mapRows = mapRowsFor(act)
+    const bossRow = mapRows - 1
+    const treasureRow = treasureRowFor(act)
+    const forcedCampfireRow = bossRow - 1 // ボス前休憩 (本家: 最上段は全て休憩)
+    const walkRows = bossRow // ボス行はウォーク対象外
     const visited: Set<number>[] = Array.from({ length: walkRows }, () => new Set<number>())
     // latEdges[y] = 格子列 → 次の行の格子列の集合 (y: 0〜15)
     const latEdges: Map<number, Set<number>>[] = Array.from(
@@ -282,7 +304,7 @@ export function generateMap(
     edges.push(colsOf[walkRows - 1].map(() => [0]))
     // 親テーブル (本家の親/兄弟制約の判定に使う)
     const parents: number[][][] = widths.map((w) => Array.from({ length: w }, (): number[] => []))
-    for (let r = 0; r < MAP_ROWS - 1; r++) {
+    for (let r = 0; r < mapRows - 1; r++) {
       for (let c = 0; c < widths[r]; c++) for (const to of edges[r][c]) parents[r + 1][to].push(c)
     }
 
@@ -300,11 +322,11 @@ export function generateMap(
     // 強制行・ボス行も最初から正しい型を持つ (親同種禁止が「行15の焚き火」を弾くために必要)
     const typeGrid: MapNodeType[][] = widths.map((w, r) =>
       Array.from({ length: w }, (): MapNodeType =>
-        r === BOSS_ROW
+        r === bossRow
           ? 'boss'
-          : FORCED_CAMPFIRE_ROWS.has(r)
+          : r === forcedCampfireRow
             ? 'campfire'
-            : r === TREASURE_ROW
+            : r === treasureRow
               ? 'treasure'
               : 'battle',
       ),
@@ -312,8 +334,8 @@ export function generateMap(
     const typeAt = (r: number, c: number): MapNodeType => typeGrid[r][c]
     // 自由ノード = 行0 (本家 floor1 は全て通常戦闘)・強制焚き火行・ボス行 を除く全ノード
     const freeNodes: (readonly [number, number])[] = []
-    for (let r = 1; r < BOSS_ROW; r++) {
-      if (FORCED_CAMPFIRE_ROWS.has(r) || r === TREASURE_ROW) continue
+    for (let r = 1; r < bossRow; r++) {
+      if (r === forcedCampfireRow || r === treasureRow) continue
       for (let c = 0; c < widths[r]; c++) freeNodes.push([r, c])
     }
     const assignable = (r: number, c: number, t: MapNodeType): boolean => {
@@ -329,14 +351,14 @@ export function generateMap(
       // 「後から親に同タイプが置かれる」経路ですり抜ける (片方向チェックのバグ)
       if (PARENT_EXCLUSIVE.has(t)) {
         if (parents[r][c].some((p) => typeAt(r - 1, p) === t)) return false
-        if (r + 1 < MAP_ROWS && edges[r][c].some((to) => typeAt(r + 1, to) === t)) return false
+        if (r + 1 < mapRows && edges[r][c].some((to) => typeAt(r + 1, to) === t)) return false
       }
       return true
     }
     /** エリート供給: 1本のパスで踏める最大数 (DP最大値) */
     const maxElites = (): number => {
       let maxE = Array.from({ length: widths[0] }, () => 0)
-      for (let r = 0; r < MAP_ROWS - 1; r++) {
+      for (let r = 0; r < mapRows - 1; r++) {
         const next = new Array<number>(widths[r + 1]).fill(-Infinity)
         for (let c = 0; c < widths[r]; c++) {
           for (const to of edges[r][c]) {
@@ -388,7 +410,7 @@ export function generateMap(
       const out: number[][] = widths.map((w) => new Array<number>(w).fill(-Infinity))
       if (forward) {
         for (let c = 0; c < widths[0]; c++) out[0][c] = gain(0, c)
-        for (let r = 0; r < MAP_ROWS - 1; r++) {
+        for (let r = 0; r < mapRows - 1; r++) {
           for (let c = 0; c < widths[r]; c++) {
             for (const to of edges[r][c]) {
               out[r + 1][to] = Math.max(out[r + 1][to], out[r][c] + gain(r + 1, to))
@@ -396,8 +418,8 @@ export function generateMap(
           }
         }
       } else {
-        out[MAP_ROWS - 1][0] = gain(MAP_ROWS - 1, 0)
-        for (let r = MAP_ROWS - 2; r >= 0; r--) {
+        out[mapRows - 1][0] = gain(mapRows - 1, 0)
+        for (let r = mapRows - 2; r >= 0; r--) {
           for (let c = 0; c < widths[r]; c++) {
             for (const to of edges[r][c]) {
               out[r][c] = Math.max(out[r][c], out[r + 1][to] + gain(r, c))
@@ -449,7 +471,7 @@ export function generateMap(
     const recentEnemies: string[][] = []
     const map: MapNode[][] = []
     const usedElites = new Set<string>()
-    for (let r = 0; r < MAP_ROWS; r++) {
+    for (let r = 0; r < mapRows; r++) {
       const rowNodes: MapNode[] = []
       const rowEnemies: string[] = []
       for (let c = 0; c < widths[r]; c++) {
@@ -480,8 +502,8 @@ export function generateMap(
         rowNodes.push({
           type,
           encounterId,
-          next: r < MAP_ROWS - 1 ? edges[r][c] : [],
-          col: r === BOSS_ROW ? Math.floor(GRID_COLS / 2) : colsOf[r][c],
+          next: r < mapRows - 1 ? edges[r][c] : [],
+          col: r === bossRow ? Math.floor(GRID_COLS / 2) : colsOf[r][c],
         })
       }
       recentEnemies.push(rowEnemies)
