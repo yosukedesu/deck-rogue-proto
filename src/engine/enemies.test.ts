@@ -387,7 +387,7 @@ describe('デバフ圧の本家水準化 (2026-09-01 第2弾。確定済みル�
     // 本家StSは幕2以降ほぼ全戦闘が何かを付与してくる。倍率でなく「割合で効く圧」は
     // 完成デッキにも自動でスケールする = 幕2の谷への構造処方 (難易度検証3本の一致所見)
     for (const act of [2, 3]) {
-      const pool = tierFor(act, 0)
+      const pool = tierFor(act, 5) // Weak帯 (幕頭2行の教師枠) を除いた本帯プール (2026-09-02 Weak帯導入に追随)
       let carriers = 0
       for (const encId of pool) {
         const members = resolveEncounter(encId)

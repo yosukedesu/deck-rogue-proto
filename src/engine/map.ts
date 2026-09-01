@@ -19,6 +19,7 @@
 // エッジは非交差 (格子空間のクランプで保証)、全ノードが開始から到達可能かつボスへ到達可能。
 // ?マスの中身はここでは決めない — 入室時に run.ts が本家式の累積確率で解決する。
 import { nextInt } from './rng.ts'
+import { resolveEncounter } from './content.ts'
 
 /** エリート個体化を禁じる編成 (盗み逃走は素の数字でだけレースが成立する) */
 /**
@@ -151,6 +152,21 @@ const ACT_POOLS: readonly (readonly string[])[] = [
   ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair', 'enemy_whetstone_colossus', 'enemy_mimic_jester', 'enemy_cinder_imp', 'enemy_rock_beetle', 'enemy_big_slime', 'enc_squire_archer'], // 2幕 (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
   ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer', 'enc_fang_twins'], // 3幕 (ソロ4/11)
 ]
+/**
+ * Weak帯 (2026-09-02 StS2式の構造保証。docs/sts2-reference.md §1「序盤に強敵が事故で出ない」):
+ * 幕頭のN行 (本家のWeak戦数と同値: 幕1=3・幕2/3=2) は教師枠の弱プールからだけ抽選する。
+ * ?→戦闘も tierFor 経由なので自動で追随。エリートは別プール (ELITE_POOLS) なので対象外
+ */
+const WEAK_ROWS: readonly number[] = [3, 2, 2]
+const WEAK_POOLS: readonly (readonly string[])[] = [
+  // 幕1: 読みの教師・手数の鏡の予習・状態異常の教師・タイマーの予習
+  ['enemy_probe', 'enemy_mimic_imp', 'enemy_slug', 'enemy_apprentice_colossus'],
+  // 幕2: 伏せ検定・固い小物の教師・手数の鏡
+  ['enemy_set_wary', 'enemy_rock_beetle', 'enemy_mimic_jester'],
+  // 幕3: 貫通の的・大技→隙の窓・伏せ罰の教師
+  ['enemy_shell_guard', 'enemy_axe_ogre', 'enemy_set_breaker'],
+]
+
 /** 幕ボス (難度順固定。確定済みルール表「マップ」) */
 export const ACT_BOSSES: readonly string[] = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
 export const ACT_COUNT = 3
@@ -158,6 +174,7 @@ export const ACT_COUNT = 3
 /** 幕とマップ行 → 敵抽選プール。ボス行は幕ボス1体 */
 export function tierFor(act: number, row: number): readonly string[] {
   if (row >= bossRowFor(act)) return [ACT_BOSSES[act - 1]]
+  if (row < (WEAK_ROWS[act - 1] ?? 0)) return WEAK_POOLS[act - 1]
   return ACT_POOLS[act - 1]
 }
 
@@ -341,6 +358,9 @@ export function generateMap(
     const assignable = (r: number, c: number, t: MapNodeType): boolean => {
       if (t === 'elite' && r < ELITE_MIN_ROW) return false
       if (t === 'campfire' && r < CAMPFIRE_MIN_ROW) return false // 本家「6階より下に休憩なし」
+      // ボス前3行に散布焚き火を置かない (2026-09-02 本家StS2「最終3行以内にRestSiteなし」。
+      // ボス前の全焚き火行と合わせ「ボス直前に休憩2連」経路を封じる = HP経済の絞りと同方向)
+      if (t === 'campfire' && r >= bossRow - 3) return false
       // 兄弟同種禁止: 同じ親を共有する同行ノードと同タイプにしない (本家は全種が対象)
       for (let c2 = 0; c2 < widths[r]; c2++) {
         if (c2 === c || typeAt(r, c2) !== t) continue
@@ -490,8 +510,14 @@ export function generateMap(
                   return fresh.length > 0 ? fresh : all
                 })()
               : basePool
-          const recent = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
-          const fresh = pool.filter((id) => !recent.includes(id))
+          // 同族連続の回避 (2026-09-02 本家GrabBagの同タグ回避に相当): ID完全一致でなく
+          // 「メンバー敵IDの交差」で判定する — 探り屋ソロ→次の行で探り屋の二人組、が素通りしていた。
+          // タグのデータ追加なしで家族関係を編成定義そのものから導出する
+          const membersOf = (encId: string): readonly string[] =>
+            resolveEncounter(encId).map((m) => m.enemyId)
+          const recentIds = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
+          const recentMembers = new Set(recentIds.flatMap(membersOf))
+          const fresh = pool.filter((id) => !membersOf(id).some((m) => recentMembers.has(m)))
           const candidates = fresh.length > 0 ? fresh : pool
           const [idx, next] = nextInt(rng, 0, candidates.length - 1)
           rng = next

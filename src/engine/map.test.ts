@@ -8,6 +8,7 @@
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
+import { resolveEncounter } from './content.ts'
 import { ACT_BOSSES, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, TREASURE_ROW, treasureRowFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
@@ -333,4 +334,61 @@ describe('幕別の行数 (2026-09-02 ユーザー裁定「StS2式 15/14/13」)'
     }
   })
 })
+
+describe('StS2式の抽選改善 (2026-09-02 全体改善)', () => {
+  it('Weak帯: 幕頭N行 (3/2/2) の戦闘は教師枠の弱プールからだけ出る', () => {
+    const weakRows = [3, 2, 2]
+    for (let act = 1; act <= 3; act++) {
+      for (const seed of [5, 15, 25, 35]) {
+        const [m] = generateMap(createRng(seed), act)
+        for (let r = 0; r < weakRows[act - 1]; r++) {
+          for (const n of m[r]) {
+            if (n.type !== 'battle' || n.encounterId === null) continue
+            expect(tierFor(act, r), `act${act} seed${seed} row${r}`).toContain(n.encounterId)
+            expect(tierFor(act, r).length).toBeLessThanOrEqual(4) // 弱プール = 小さな教師枠
+          }
+        }
+      }
+    }
+  })
+
+  it('同族連続の回避: 同じ敵をメンバーに含む編成が2行連続しない (フォールバック除く)', () => {
+    let violations = 0
+    let checked = 0
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      for (let act = 1; act <= 3; act++) {
+        const [m] = generateMap(createRng(seed * 31 + act), act)
+        const members = (id: string) => new Set(resolveEncounter(id).map((x) => x.enemyId))
+        // Weak帯は教師枠の小プールなので隣接反復は既知として除外 (プレイヤーは1行1ノードしか踏まない)
+        const weakRows = [3, 2, 2][act - 1]
+        for (let r = weakRows + 1; r < m.length; r++) {
+          for (const n of m[r]) {
+            if (n.type !== 'battle' || n.encounterId === null) continue
+            const my = members(n.encounterId)
+            for (const prev of m[r - 1]) {
+              if (prev.type !== 'battle' || prev.encounterId === null) continue
+              checked++
+              if ([...members(prev.encounterId)].some((x) => my.has(x))) violations++
+            }
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(100)
+    expect(violations / checked).toBeLessThan(0.06) // プール枯渇のフォールバックのみ許容
+  })
+
+  it('ボス前3行に散布焚き火が無い (ボス前の全焚き火行を除く)', () => {
+    for (let act = 1; act <= 3; act++) {
+      for (const seed of [3, 13, 23]) {
+        const [m] = generateMap(createRng(seed), act)
+        const boss = bossRowFor(act)
+        for (let r = boss - 3; r < boss - 1; r++) {
+          expect(m[r].every((n) => n.type !== 'campfire'), `act${act} row${r}`).toBe(true)
+        }
+      }
+    }
+  })
+})
+
 
