@@ -176,6 +176,7 @@ const KEYWORD_HELP: Record<string, string> = {
   急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
   威圧: '敵の強化を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
   応援: '味方全体の強化を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
+  装甲: '1ヒットで受けるダメージがこの値以下に頭打ちになる。多段で削るか、装甲を無視する延焼で焼くのが解答',
   とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
@@ -1616,7 +1617,7 @@ function BattleScreen({
                       </span>
                     )}
                     {enemyDef.armor !== undefined && !dead && (
-                      <span className="chip chip-strength" title="1ヒットで受けるダメージはこの値以下。延焼は装甲を無視する">🛡 装甲{enemyDef.armor}</span>
+                      <span className="chip chip-strength">🛡 {kw('装甲')}{enemyDef.armor}</span>
                     )}
                     {enemyDef.burnResist !== undefined && !dead && (
                       <span className="chip chip-strength">💧 {kw('延焼耐性')} -{enemyDef.burnResist}</span>

@@ -922,7 +922,20 @@ export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunStat
       const target = cmd.cardIndex !== undefined ? prev.deck[cmd.cardIndex] : undefined
       const hpDiff = next.hp - prev.hp
       const goldDiff = next.gold - prev.gold
+      // 何を得たかを明記 (2026-09-02 プレイテスト指摘「何を取ったのかわかんない」):
+      // レリック・カードの増分を差分から名前で出す
+      const gotRelics = next.relics.filter((id) => !prev.relics.includes(id)).map((id) => {
+        try {
+          return getRelicDef(id).name
+        } catch {
+          return id
+        }
+      })
+      const prevUidSet = new Set(prev.deck.map((c) => c.uid))
+      const gotCards = next.deck.filter((c) => !prevUidSet.has(c.uid)).map((c) => c.def.name)
       const outcome = [
+        gotRelics.length > 0 ? `獲得レリック: ${gotRelics.join('・')}` : '',
+        gotCards.length > 0 ? `獲得: ${gotCards.join('・')}` : '',
         hpDiff !== 0 ? `HP${hpDiff > 0 ? '+' : ''}${hpDiff}` : '',
         goldDiff !== 0 ? `${goldDiff > 0 ? '+' : ''}${goldDiff}G` : '',
       ].filter(Boolean).join('・')
