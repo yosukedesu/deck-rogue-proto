@@ -1128,6 +1128,10 @@ export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'bonus' 
   if (eff.some((e) => e.effect === 'gainEnergyMax') && def.cost >= 1 && !costCutViolates(def)) {
     return 'cost'
   }
+  // 成長エンジン置物 (2026-09-02 段6人間プレイ「年輪の大樹+はブロック3伸ばされましても」):
+  // カードの魂=毎T成長は単位効果で量ティアに乗らず、おまけのブロックだけが+50%されていた。
+  // コスト-1 (2E→1E) = 「軽くなって置きやすい」が成長置物の正しい伸び方
+  if (def.id === 'green_perm_growth_tree' && def.cost >= 1 && !costCutViolates(def)) return 'cost'
   if (eff.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)) return 'amount'
   // 上限参照札 (per-EnergyMax) のコスト-1強化は0Eまで落とさない (2026-08-30 裁定)。
   // 木陰の守り+ が 0E・非消滅・上限×2ブロック = 引くたびタダで盾、の退化ケースを塞ぐ。

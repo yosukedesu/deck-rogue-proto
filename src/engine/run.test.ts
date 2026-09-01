@@ -542,3 +542,20 @@ describe('チェックポイント開始 (2026-09-01 デバッグ機能)', () =>
     expect(r.combat!.enemies[0].atkScale).toBeCloseTo(1.15 * 1.35) // 幕2打点+15% × 難易度5
   })
 })
+
+describe('査定パス (2026-09-02 段6人間プレイの指摘)', () => {
+  it('年輪の大樹の鍛えるはコスト-1 (2E→1E)。成長エンジンの正しい伸び方', () => {
+    const inst = { uid: 't', def: getCardDef('green_perm_growth_tree') }
+    const up = upgradeCard(inst)
+    expect(up.def.cost).toBe(1)
+    expect(up.def.effects).toEqual(getCardDef('green_perm_growth_tree').effects) // 量は据え置き
+  })
+
+  it('毒針の囮は返し5+急所1 (帯割れの是正・上昇)', () => {
+    const def = getCardDef('green_decoy_needle')
+    expect(def.effects).toEqual([
+      { trigger: 'onAttacked', effect: 'counter', amount: 5 },
+      { trigger: 'onAttacked', effect: 'exposeEnemy', amount: 1 },
+    ])
+  })
+})

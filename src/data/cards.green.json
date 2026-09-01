@@ -636,6 +636,11 @@
         "trigger": "onAttacked",
         "effect": "counter",
         "amount": 5
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "exposeEnemy",
+        "amount": 1
       }
     ],
     "rarity": "common"

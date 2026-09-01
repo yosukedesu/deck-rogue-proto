@@ -557,3 +557,15 @@ describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名�
     }
   })
 })
+
+describe('リアクション化のブロックはpre窓 (2026-09-02 「被攻撃後にブロックは意味無い」)', () => {
+  it('防御×茨の返し: 吸収されたブロックは被攻撃前 (onAttackIncoming) に置かれる', () => {
+    const def = fuseCards(
+      { uid: 'a', def: getCardDef('green_guard') },
+      { uid: 'b', def: getCardDef('green_reaction_thorns') },
+    )
+    expect(def.type).toBe('reaction')
+    const block = def.effects.find((e) => e.effect === 'gainBlock')
+    expect(block?.trigger).toBe('onAttackIncoming')
+  })
+})

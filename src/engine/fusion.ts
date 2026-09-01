@@ -300,6 +300,12 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
       return { ...e, trigger, amount: Math.ceil((e.amount ?? 0) / 3) } as DeclarativeEffect
     }
     if (resultType === 'reaction' && srcType !== 'reaction' && !REACTION_WINDOWS.has(e.trigger)) {
+      // ブロック系は被攻撃「前」の窓へ (2026-09-02 段6人間プレイ「被攻撃後にブロックがついても
+      // 意味無い」——post窓のブロックは被弾の後で、ソロ戦ではほぼ死に価値。pre窓なら受けになる。
+      // pre窓軽減の150%上限は帯チェック側が既に見ている)
+      if (e.effect === 'gainBlock' || e.effect === 'gainIceBlock') {
+        return { ...e, trigger: 'onAttackIncoming' } as DeclarativeEffect
+      }
       return { ...e, trigger: primaryWindow } as DeclarativeEffect // onPlay効果が罠に吸収される
     }
     return { ...e } // 置物のonTurnStart・リアクションの窓・条件を保持
