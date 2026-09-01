@@ -667,4 +667,45 @@ describe('行動文法の器 (2026-09-02 StS2解析からの全体改善)', () =
   })
 })
 
+describe('正確性の修正 (2026-09-02 StS2解析ミニングで発見)', () => {
+  it('脆弱のjustAppliedガード: 敵フェーズ中に付与された脆弱は同フェーズ末に蒸発しない', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withIntent(s, {
+      kind: 'attack',
+      shownMin: 5,
+      shownMax: 5,
+      actual: 5,
+      inflict: { status: 'vulnerable', amount: 2 },
+    })
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.vulnerable).toBe(2) // 旧実装は付与→同フェーズ末-1で実効1だった
+    // 次の敵フェーズ (新規付与なし) では通常どおり1減る
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.vulnerable).toBe(1)
+  })
+
+  it('火傷は敵ターン終了後の全捨てで消える = 1回きり (捨て札を循環しない)', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withIntent(s, { kind: 'attack', shownMin: 3, shownMax: 3, actual: 3, inflict: { status: 'scald', amount: 2 } })
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    // 敵フェーズで火傷2枚が手札に注入され、次の自ターン開始時点では手札に残っている
+    const inHand = s.player.hand.filter((c) => c.def.id === 'status_scald').length
+    expect(inHand).toBe(2)
+    // 何もせずターンを回すと: 自ターン終了時に疼き→全捨てで火傷は消滅 (捨て札に行かない)
+    const hpBefore = s.player.hp
+    s = withIntent(s, { kind: 'defend', shownMin: 5, shownMax: 5, actual: 5 })
+    const scaldsUids = new Set(s.player.hand.filter((c) => c.def.id === 'status_scald').map((c) => c.uid))
+    s = { ...s, player: { ...s.player, hand: s.player.hand.filter((c) => scaldsUids.has(c.uid)) } }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(hpBefore - s.player.hp).toBe(4) // 2枚×2の疼き
+    const anywhere = [...s.player.hand, ...s.player.drawPile, ...s.player.discardPile, ...s.player.exhaustPile]
+      .filter((c) => c.def.id === 'status_scald').length
+    expect(anywhere).toBe(0)
+  })
+})
+
+
 

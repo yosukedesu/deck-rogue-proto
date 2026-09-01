@@ -15,7 +15,16 @@ export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable
 
 export function inflictSuffix(intent: EnemyIntent): string {
   if (!intent.inflict) return ''
-  return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}`
+  // カード汚染は行き先まで予告する (2026-09-02 StS2のCardDebuff意図準拠 = 対処の計画が立つ)
+  const dest =
+    intent.inflict.status === 'wound'
+      ? '(捨て札へ)'
+      : intent.inflict.status === 'junk'
+        ? '(山札へ)'
+        : intent.inflict.status === 'scald'
+          ? '(手札へ)'
+          : ''
+  return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}${dest}`
 }
 
 export function intentText(intent: EnemyIntent | null): string {

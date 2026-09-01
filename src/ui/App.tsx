@@ -1614,7 +1614,7 @@ function BattleScreen({
                     {enemy.block > 0 && (
                       <span className="chip chip-block">🛡 ブロック {enemy.block}</span>
                     )}
-                    {enemy.strength > 0 && (
+                    {enemy.strength !== 0 && (
                       <span className="chip chip-strength">💪 {kw('筋力')} +{enemy.strength}</span>
                     )}
                     {enemy.burn > 0 && (
@@ -1662,7 +1662,7 @@ function BattleScreen({
                       <span className="chip chip-strength">🕸️ {kw('重圧')}: {enemyDef.aura.cardType !== undefined ? TYPE_LABEL[enemyDef.aura.cardType] : '全'}カード+{enemyDef.aura.costUp}</span>
                     )}
                     {(enemy.stolenGold ?? 0) > 0 && !dead && (
-                      <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み</span>
+                      <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み（次の宣言で必ず逃走）</span>
                     )}
                     {enemy.fled === true && (
                       <span className="chip">
@@ -1672,17 +1672,29 @@ function BattleScreen({
                     {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
                       enemy.hp <= enemy.maxHp * 0.5 &&
                       !dead && <span className="chip chip-strength">😾 牙をむいている</span>}
+                    {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
+                      enemy.hp > enemy.maxHp * 0.5 &&
+                      !dead && <span className="chip">😾 HP半分で豹変</span>}
                     {enemyDef.enrage !== undefined && !dead && (
                       <span className="chip chip-strength">
                         😡 {kw('激昂')} +{enemyDef.enrage}
-                        {enemyDef.enrageEveryCards ? `/${enemyDef.enrageEveryCards}枚プレイ` : '/T'}
-                        {enemyDef.enrageEveryDamage !== undefined ? `・+${enemyDef.enrage}/被ダメ${enemyDef.enrageEveryDamage}` : ''}
+                        {enemyDef.enrageEveryCards ? `/${enemyDef.enrageEveryCards}枚プレイ（あと${enemyDef.enrageEveryCards - (s.player.cardsPlayedTotal % enemyDef.enrageEveryCards)}枚）` : '/T'}
+                        {enemyDef.enrageEveryDamage !== undefined ? `・+${enemyDef.enrage}/被ダメ${enemyDef.enrageEveryDamage}（あと${enemyDef.enrageEveryDamage - ((enemy.damageTakenTotal ?? 0) % enemyDef.enrageEveryDamage)}）` : ''}
                       </span>
                     )}
                   </div>
                   {!ended && !dead && (
                     <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
+                      {enemy.confusion > 0 && enemy.intent?.kind === 'attack' ? '😵仲間に向かう: ' : ''}
                       {kw(conditionalIntentText(s, i))}
+                      {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn}枚）` : ''}
+                      {(() => {
+                        const it = enemy.intent
+                        if (it?.kind !== 'attack' || enemy.confusion > 0) return null
+                        const perHit = player.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+                        const total = perHit * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
+                        return total - (player.block + player.iceBlock) >= player.hp ? ' 💀致死級' : null
+                      })()}
                     </div>
                   )}
                 </div>
@@ -1865,9 +1877,13 @@ function BattleScreen({
           let worst = 0
           s.enemies.forEach((e, i) => {
             if (e.hp <= 0) return
+            if (e.confusion > 0) return // 混乱中の攻撃は仲間に向かう = プレイヤーには届かない
             const it = effectiveIntent(s, i)
             if (it?.kind === 'attack') {
-              const perHit = player.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+              let perHit = player.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+              // 静かな鈴 (C型): 伏せ札がある間、敵の攻撃実値-N (最低1)。予測にも算入する
+              if ((s.setDamageReduction ?? 0) > 0 && player.setCards.length > 0)
+                perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
               worst += perHit * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
             }
           })

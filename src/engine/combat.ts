@@ -1222,28 +1222,32 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
       status === 'weak'
         ? { ...state.player, weak: state.player.weak + amount }
         : status === 'vulnerable'
-          ? { ...state.player, vulnerable: state.player.vulnerable + amount }
+          // 付与ガード (2026-09-02 本家StSのjustApplied準拠。ミニングで発見した1スタック蒸発の修正):
+          // 敵フェーズ中に付与された脆弱は、その同じフェーズの終了時減衰をスキップする
+          ? { ...state.player, vulnerable: state.player.vulnerable + amount, vulnerableFresh: true }
           : status === 'frail'
             ? { ...state.player, frail: state.player.frail + amount }
             : { ...state.player, restrain: state.player.restrain + amount }
     return emit({ ...state, player }, { type: 'StatusInflicted', status, amount })
   }
   if (status === 'scald') {
-    // 火傷 (2026-09-02): 手札に直接押し込む = 即時の圧。上限は負傷と同じ思想で5枚/戦闘
-    const existing = [
-      ...state.player.hand,
-      ...state.player.drawPile,
-      ...state.player.discardPile,
-    ].filter((c) => c.def.id === SCALD_DEF.id).length
+    // 火傷 (2026-09-02): 手札に直接押し込む = 即時の圧。上限5枚/戦闘は累計で数える
+    // (火傷札は1自ターンで消えるため、山のカウントでは上限が意味を失う)
+    const existing = state.player.scaldsThisCombat ?? 0
     const add = Math.min(amount, SCALD_CAP - existing)
     if (add <= 0) return state
     const scalds = Array.from({ length: add }, (_, i) => ({
       uid: `${SCALD_DEF.id}#${existing + i}_t${state.turn}`,
       def: SCALD_DEF,
+      scaldFresh: true,
     }))
     const s2: GameState = {
       ...state,
-      player: { ...state.player, hand: [...state.player.hand, ...scalds] },
+      player: {
+        ...state.player,
+        hand: [...state.player.hand, ...scalds],
+        scaldsThisCombat: existing + add,
+      },
     }
     return emit(s2, { type: 'StatusInflicted', status: 'scald', amount: add })
   }
@@ -1563,8 +1567,20 @@ function finishEnemyPhase(state: GameState): GameState {
   const ended = { type: 'EnemyPhaseEnded', turn: state.turn } as const
   let s = emit(state, ended)
   s = dispatchHooks(s, ended) // 空振り (ReactionWhiffed) の計上は方式固有
-  // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る (確定済みルール表「状態異常」)
-  s = { ...s, player: { ...s.player, vulnerable: Math.max(0, s.player.vulnerable - 1) } }
+  // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る (確定済みルール表「状態異常」)。
+  // ただしこのフェーズに付与された分は減らさない (justAppliedガード 2026-09-02 —
+  // 旧実装は「付与→同フェーズ末に即-1」で脆弱2が実効1になっていた)
+  s = {
+    ...s,
+    player: {
+      ...s.player,
+      vulnerable:
+        s.player.vulnerableFresh === true
+          ? s.player.vulnerable
+          : Math.max(0, s.player.vulnerable - 1),
+      vulnerableFresh: false,
+    },
+  }
   // 再生 (HP50%超のみ) と激昂 (確定済みルール表「再生」「激昂」)
   for (let i = 0; i < s.enemies.length; i++) {
     const e = s.enemies[i]
@@ -1604,12 +1620,22 @@ function finishEnemyPhase(state: GameState): GameState {
       s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount, reason: 'enrage-phase' })
     }
   }
+  // 火傷の生存則 (2026-09-02 修正。StS2解析ミニングで発見した二重の乖離への処方):
+  // ①このフェーズに注入された火傷 (scaldFresh) は全捨てを生き残って次の自ターンの手札を圧迫する
+  //   — 旧実装は注入→同フェーズ末の全捨てで即捨て札行きになり「手数を奪う」設計が machine 上
+  //   一度も機能していなかった ②自ターンを過ごした火傷は全捨てで消える = 1回きり
+  //   — 旧実装は捨て札を循環する本家Burn型の恒久汚染で、仕様「全捨てで消える」と乖離していた
   s = {
     ...s,
     player: {
       ...s.player,
-      hand: [],
-      discardPile: [...s.player.discardPile, ...s.player.hand],
+      hand: s.player.hand
+        .filter((c) => c.def.id === SCALD_DEF.id && c.scaldFresh === true)
+        .map((c) => ({ ...c, scaldFresh: false })),
+      discardPile: [
+        ...s.player.discardPile,
+        ...s.player.hand.filter((c) => c.def.id !== SCALD_DEF.id),
+      ],
     },
   }
   return startPlayerTurn(s, s.turn + 1)

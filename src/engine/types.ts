@@ -95,6 +95,10 @@ export interface PlayerState extends CombatantState {
   readonly weak: number
   /** 脆弱: 残りNフェーズの間、敵の攻撃ダメージ50%増 (切り捨て・威嚇適用後)。敵フェーズ終了時に1減る */
   readonly vulnerable: number
+  /** 脆弱のjustAppliedガード (2026-09-02): この敵フェーズに付与された脆弱は同フェーズ末の減衰を免除 */
+  readonly vulnerableFresh?: boolean
+  /** この戦闘で注入された火傷の累計 (上限5/戦闘の判定。火傷札は消えるので山を数えられない) */
+  readonly scaldsThisCombat?: number
   /**
    * 虚弱 (2026-09-01 本家Frail相当): 残りNターンの間、カードのプレイで得るブロック25%減
    * (切り捨て・最低1)。氷壁・リアクション・置物トリガー・パッシブ由来は対象外。自ターン終了時に1減る
@@ -688,6 +692,12 @@ export interface CardDef {
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */
 export interface CardInstance {
+  /**
+   * 火傷の鮮度 (2026-09-02): 敵フェーズに注入された直後=true。全捨てを1回だけ生き残り
+   * (次の自ターンの手札を圧迫する = 「今このターンの手数を奪う」の設計意図)、
+   * 自ターンを過ごした火傷は次の全捨てで消える = 1回きり
+   */
+  readonly scaldFresh?: boolean
   readonly uid: string
   readonly def: CardDef
   /** 召喚トークン: 敵の「トークン破壊」の対象になる (手張り置物・リーダー・レリックは対象外) */

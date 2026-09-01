@@ -253,9 +253,12 @@ function renderBattle(s: GameState, logFrom: number): string {
   let worst = 0
   s.enemies.forEach((e, i) => {
     if (e.hp <= 0) return
+    if (e.confusion > 0) return // 混乱中の攻撃は仲間に向かう
     const it = effectiveIntent(s, i)
     if (it?.kind === 'attack') {
-      const perHit = p.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+      let perHit = p.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
+      if ((s.setDamageReduction ?? 0) > 0 && p.setCards.length > 0)
+        perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
       worst += perHit * (it.mirrorHits === true ? Math.max(1, p.cardsPlayedThisTurn) : (it.hits ?? 1))
     }
   })
