@@ -2565,7 +2565,7 @@ function RunScreen({
   onRestart: (seed: number) => void
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
-  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/18)` : `行${run.row + 1}/18・${run.battlesWon}勝`}・デッキ${run.deck.length}枚・🎚${run.difficulty ?? DEFAULT_DIFFICULTY}`
+  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚・🎚${run.difficulty ?? DEFAULT_DIFFICULTY}`
   // 報酬ピックの「鍛えた姿(+)で表示」(2026-08-31 ユーザー要望。本家のアップグレードプレビュー相当)
   const [showUpgradedPick, setShowUpgradedPick] = useState(false)
   const ctx = undefined

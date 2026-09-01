@@ -109,10 +109,18 @@ describe('イベントプールの3層構造 (幕専用・祠・ワンタイム)
     const actIds = allEvents
       .filter((e) => (e.kind ?? 'act') === 'act' && (e.act === undefined || e.act === 1))
       .map((e) => e.id)
-    const seen = actIds.slice(0, -1) // 最後の1個だけ未見にする
+    // 祠・ワンタイムも全て既出にする = 25%の祠ロールがどちらに転んでも
+    // 残った幕専用1個へフォールバックする (シードの RNG 列に依存しない決定的なテスト)
+    const shrineIds = allEvents.filter((e) => e.kind === 'shrine').map((e) => e.id)
+    const onetimeIds = allEvents.filter((e) => e.kind === 'oneTime').map((e) => e.id)
+    const seen = [...actIds.slice(0, -1), ...onetimeIds] // 幕専用は最後の1個だけ未見にする
     const remaining = actIds[actIds.length - 1]
     const run = enterUnknown(
-      atUnknown(17, { unknownPity: { monster: 0, shop: 0, treasure: 0 }, seenEventIds: seen }),
+      atUnknown(17, {
+        unknownPity: { monster: 0, shop: 0, treasure: 0 },
+        seenEventIds: seen,
+        seenShrineIds: shrineIds,
+      }),
     )
     expect(run.phase).toBe('event')
     // 祠・ワンタイムがまだ無い段階では、残った幕専用の1個しか引けない

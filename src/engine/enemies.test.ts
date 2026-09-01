@@ -2,7 +2,8 @@
 // 状態異常 (弱体/脆弱/負傷)・連撃・再生・フェーズ変化・激昂・挑発。
 // 確定済みルール表「敵の設計原則」「状態異常」「連撃」「再生」「敵フェーズ変化」「激昂」を固定する。
 import { describe, expect, it } from 'vitest'
-import { allEnemies, getCardDef, getEnemyDef } from './content.ts'
+import { allEnemies, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { tierFor } from './map.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -364,5 +365,39 @@ describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解�
     expect(def.sequence).toEqual(['lick', 'acid_spit', 'tackle'])
     expect(def.moves.find((m) => m.id === 'lick')!.inflict).toEqual({ status: 'weak', amount: 2 })
     expect(def.moves.find((m) => m.id === 'acid_spit')!.inflict).toEqual({ status: 'frail', amount: 1 })
+  })
+})
+
+describe('デバフ圧の本家水準化 (2026-09-01 第2弾。確定済みルール表「状態異常」)', () => {
+  it('攻撃ライダーの4件: 樽の爆発=負傷1・砥石の断頭=虚弱1・苔の叩きつけ=虚弱1・斧鬼の大振り=弱体1', () => {
+    const pin = (enemyId: string, moveId: string, status: string, amount: number) => {
+      const m = getEnemyDef(enemyId).moves.find((x) => x.id === moveId)!
+      expect(m.inflict, `${enemyId}.${moveId}`).toEqual({ status, amount })
+    }
+    pin('enemy_bomber', 'big_boom', 'wound', 1)
+    pin('enemy_whetstone_colossus', 'guillotine', 'frail', 1)
+    pin('enemy_moss', 'slam', 'frail', 1)
+    pin('enemy_axe_ogre', 'great_swing', 'weak', 1)
+  })
+
+  it('分布の不変条件: 幕2/3の編成の6割以上が状態異常・ステータス札の付与源を持つ', () => {
+    // 本家StSは幕2以降ほぼ全戦闘が何かを付与してくる。倍率でなく「割合で効く圧」は
+    // 完成デッキにも自動でスケールする = 幕2の谷への構造処方 (難易度検証3本の一致所見)
+    for (const act of [2, 3]) {
+      const pool = tierFor(act, 0)
+      let carriers = 0
+      for (const encId of pool) {
+        const members = resolveEncounter(encId)
+        const has = members.some((mem) => {
+          const d = getEnemyDef(mem.enemyId)
+          const tables = [d.moves, d.movesVsSet ?? [], d.movesBelowHalf ?? []]
+          return tables.some((t) =>
+            t.some((m) => m.inflict !== undefined || m.setAlt?.inflict !== undefined),
+          )
+        })
+        if (has) carriers++
+      }
+      expect(carriers / pool.length, `幕${act}: ${carriers}/${pool.length}`).toBeGreaterThanOrEqual(0.6)
+    }
   })
 })

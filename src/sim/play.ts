@@ -491,7 +491,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
   // 倒した盗人 (逃走前) の抱えた金は勝利時に戻るので「盗まれ中」に数えない (2026-08-31 再検証ラン指摘①)
   const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.hp > 0 || e.fled === true ? (e.stolenGold ?? 0) : 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
-  L.push(`=== ラン: ${leader.name} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/18`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/16`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {

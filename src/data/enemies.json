@@ -402,7 +402,8 @@
         "kind": "attack",
         "min": 10,
         "max": 14,
-        "weight": 2
+        "weight": 2,
+        "inflict": { "status": "frail", "amount": 1 }
       },
       {
         "id": "moss_shell",
@@ -658,7 +659,8 @@
         "kind": "attack",
         "min": 20,
         "max": 24,
-        "weight": 1
+        "weight": 1,
+        "inflict": { "status": "wound", "amount": 1 }
       }
     ],
     "sequence": [
@@ -715,7 +717,8 @@
         "kind": "attack",
         "min": 24,
         "max": 28,
-        "weight": 1
+        "weight": 1,
+        "inflict": { "status": "weak", "amount": 1 }
       },
       {
         "id": "gasp",
@@ -890,7 +893,8 @@
         "kind": "attack",
         "min": 26,
         "max": 30,
-        "weight": 1
+        "weight": 1,
+        "inflict": { "status": "frail", "amount": 1 }
       }
     ],
     "sequence": [
