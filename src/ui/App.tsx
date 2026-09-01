@@ -1027,7 +1027,12 @@ function SetupScreen({
   const effectiveDeckId = allowedDecks.some((d) => d.id === deckId) ? deckId : allowedDecks[0].id
   return (
     <div className="app setup">
-      <h1>deck-rogue-proto</h1>
+      <h1>
+        deck-rogue-proto{' '}
+        <button className="btn" style={{ fontSize: 13, verticalAlign: 'middle' }} onClick={() => setShowCatalog(true)}>
+          📚 図鑑
+        </button>
+      </h1>
       <div className="panel">
         <div className="choice-title">採用方式: set-confirm（伏せ+発動/温存の選択）</div>
         <div className="choice-desc">
@@ -1277,7 +1282,8 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
       })()
       const bd = damageBreakdown(s, i, ef.amount!, ef.pierce === true)
       if (bd === null) continue
-      const chain = bd.steps.map((st) => `${st.label}${st.value}`).join(' → ')
+      // ラベルと走り値は = で区切る (「成長+1」+値6 が「成長+16」に見えた崩れの修正 2026-09-01)
+      const chain = bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')
       if (ef.effect === 'dealDamageRandom' && typeof ef.amountMax === 'number') {
         const bdMax = damageBreakdown(s, i, ef.amountMax, ef.pierce === true)
         lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}〜${bdMax?.hpLoss ?? bd.hpLoss}（ロール幅）`)
@@ -1469,7 +1475,7 @@ function BattleScreen({
           <div className="discard-banner">
             「{player.hand.find((c) => c.uid === activeTarget.cardUid)?.def.name}
             」の対象を選んでください（敵をタップ）{' '}
-            <button className="btn" onClick={() => setPendingTarget(null)}>
+            <button className="btn" data-hotkey="cancel" onClick={() => setPendingTarget(null)}>
               キャンセル
             </button>
           </div>
@@ -1483,6 +1489,7 @@ function BattleScreen({
               <div
                 key={i}
                 className={`enemy-card${targetable ? ' enemy-targetable' : ''}${dead ? ' enemy-dead' : ''}`}
+                {...(targetable && i < 9 ? { 'data-hotkey': `num-${i + 1}` } : {})}
                 onClick={() => {
                   if (!targetable || !activeTarget) return
                   dispatch({
@@ -1646,7 +1653,7 @@ function BattleScreen({
                     const candidates = win
                       ? player.setCards.filter((c) => reactionMatches(s, c, win))
                       : []
-                    return candidates.map((c) => (
+                    return candidates.map((c, candIdx) => (
                       <div key={c.uid} style={{ marginBottom: 8 }}>
                         「{c.def.name}」（
                         {kw(
@@ -1668,6 +1675,7 @@ function BattleScreen({
                         ）{' '}
                         <button
                           className="btn btn-primary"
+                          {...(candIdx < 9 ? { 'data-hotkey': `num-${candIdx + 1}` } : {})}
                           onClick={() => dispatch({ type: 'ConfirmReaction', fire: true, cardUid: c.uid })}
                         >
                           発動する
@@ -1688,7 +1696,7 @@ function BattleScreen({
                       </div>
                     )
                   })}
-                  <button className="btn" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
+                  <button className="btn" data-hotkey="hold" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
                     温存する
                   </button>
                 </>
@@ -1904,7 +1912,7 @@ function BattleScreen({
             消滅させるカードを選んでください（
             {(player.hand.find((c) => c.uid === activeExhaust.cardUid)?.def.exhaustCost ?? 0) - activeExhaust.chosen.length}
             枚）{' '}
-            <button className="btn" onClick={() => setPendingExhaust(null)}>
+            <button className="btn" data-hotkey="cancel" onClick={() => setPendingExhaust(null)}>
               キャンセル
             </button>
           </div>
@@ -2017,7 +2025,7 @@ function BattleScreen({
           <div className="discard-banner">
             「{player.hand.find((c) => c.uid === activeDiscard.cardUid)?.def.name}」の追加コスト:
             捨てるカードを選んでください{' '}
-            <button className="btn" onClick={() => setPendingDiscard(null)}>
+            <button className="btn" data-hotkey="cancel" onClick={() => setPendingDiscard(null)}>
               キャンセル
             </button>
           </div>
@@ -2025,7 +2033,7 @@ function BattleScreen({
         <div className="hand-row">
           <div className="hand-cards">
             {s.phase === 'player-turn' &&
-              player.hand.map((c) => {
+              player.hand.map((c, handIdx) => {
                 const modes = c.def.modes ?? []
                 const discardCost = c.def.discardCost ?? 0
                 const exhaustCostN = c.def.exhaustCost ?? 0
@@ -2167,7 +2175,12 @@ function BattleScreen({
                           ))
                         ) : (
                           isPlayableFromHand(c) && (
-                            <button className="btn" disabled={!canPlay} onClick={() => play()}>
+                            <button
+                              className="btn"
+                              disabled={!canPlay}
+                              {...(handIdx < 9 && !activeTarget ? { 'data-hotkey': `num-${handIdx + 1}` } : {})}
+                              onClick={() => play()}
+                            >
                               プレイ
                             </button>
                           )
@@ -2176,6 +2189,7 @@ function BattleScreen({
                           <button
                             className="btn"
                             disabled={!canSet}
+                            {...(handIdx < 9 && !activeTarget && !isPlayableFromHand(c) ? { 'data-hotkey': `num-${handIdx + 1}` } : {})}
                             onClick={() => dispatch({ type: 'SetCard', cardUid: c.uid })}
                           >
                             伏せる
@@ -2194,10 +2208,13 @@ function BattleScreen({
             )}
           </div>
           {s.phase === 'player-turn' && (
-            <button className="btn btn-primary btn-endturn" onClick={() => dispatch({ type: 'EndTurn' })}>
+            <button className="btn btn-primary btn-endturn" data-hotkey="end-turn" onClick={() => dispatch({ type: 'EndTurn' })}>
               ターン終了 ▶
             </button>
           )}
+          <div className="choice-desc" style={{ fontSize: 10, marginTop: 4 }} title="入力欄にフォーカスがある間は無効">
+            ⌨ 1〜9=プレイ/伏せ/対象/発動候補・E=ターン終了・F=発動・H=温存・Esc=取消
+          </div>
         </div>
       </div>
 
@@ -3856,6 +3873,7 @@ function RunScreen({
               <button
                 key={id}
                 className="choice"
+                {...(i < 9 ? { 'data-hotkey': `num-${i + 1}` } : {})}
                 onClick={() => dispatch({ type: 'PickRelic', index: i })}
               >
                 <div className="choice-title">
@@ -3870,9 +3888,10 @@ function RunScreen({
         <button
           className="btn"
           style={{ marginTop: 12 }}
+          data-hotkey="skip"
           onClick={() => dispatch({ type: 'SkipRelic' })}
         >
-          見送る
+          見送る（S）
         </button>
       </div>
     )
@@ -3945,6 +3964,11 @@ function RunScreen({
                 ctx={ctx}
                 actions={
                   <>
+                    {canUpgradeCard(c) && (
+                      <div className="choice-desc" style={{ marginBottom: 4 }}>
+                        鍛えると→ {describeUpgrade(c)}
+                      </div>
+                    )}
                     <button
                       className="btn"
                       disabled={run.gold < shopRemovalPrice(run) || run.deck.length <= 5}
@@ -4006,22 +4030,41 @@ function RunScreen({
               <div key={i} className="panel" style={{ margin: '6px 0' }}>
                 <div className="choice-title">{c.label} — 対象を選ぶ:</div>
                 <div className="hand-cards" style={{ marginTop: 8 }}>
-                  {run.deck.map((card, ci) => (
-                    <CardFrame
-                      key={card.uid}
-                      card={card}
-                      dim={false}
-                      ctx={ctx}
-                      actions={
-                        <button
-                          className="btn"
-                          onClick={() => dispatch({ type: 'EventChoice', index: i, cardIndex: ci })}
-                        >
-                          このカードを選ぶ
-                        </button>
-                      }
-                    />
-                  ))}
+                  {run.deck.map((card, ci) => {
+                    // 鍛える系の選択肢は結果をプレビューし、鍛えられない札は選べない
+                    // (2026-09-01 ユーザー指摘「鍛えた後どうなるかチェックできないイベント」)
+                    const isUpgradeChoice = c.upgradeCard === true
+                    const locked = isUpgradeChoice && !canUpgradeCard(card)
+                    return (
+                      <CardFrame
+                        key={card.uid}
+                        card={card}
+                        dim={locked}
+                        ctx={ctx}
+                        actions={
+                          <>
+                            {isUpgradeChoice && !locked && (
+                              <div className="choice-desc" style={{ marginBottom: 4 }}>
+                                鍛えると→ {describeUpgrade(card)}
+                              </div>
+                            )}
+                            {c.transformCard === true && (
+                              <div className="choice-desc" style={{ marginBottom: 4 }}>
+                                同レアリティのランダムな別カードに変わる
+                              </div>
+                            )}
+                            <button
+                              className="btn"
+                              disabled={locked}
+                              onClick={() => dispatch({ type: 'EventChoice', index: i, cardIndex: ci })}
+                            >
+                              {locked ? '鍛えられない' : 'このカードを選ぶ'}
+                            </button>
+                          </>
+                        }
+                      />
+                    )
+                  })}
                 </div>
               </div>
             )
@@ -4168,7 +4211,7 @@ function RunScreen({
                 ctx={ctx}
                 hint={showUpgradedPick && !upgradable ? '鍛えられない' : undefined}
                 actions={
-                  <button className="btn btn-primary" onClick={() => dispatch({ type: 'PickReward', index: i })}>
+                  <button className="btn btn-primary" {...(i < 9 ? { 'data-hotkey': `num-${i + 1}` } : {})} onClick={() => dispatch({ type: 'PickReward', index: i })}>
                     獲得する{showUpgradedPick && upgradable ? '（獲得は無印のまま）' : ''}
                   </button>
                 }
@@ -4176,8 +4219,8 @@ function RunScreen({
             )
           })}
         </div>
-        <button className="btn" onClick={() => dispatch({ type: 'SkipReward' })}>
-          スキップして次へ
+        <button className="btn" data-hotkey="skip" onClick={() => dispatch({ type: 'SkipReward' })}>
+          スキップして次へ（S）
         </button>{' '}
         <button className="btn" onClick={() => saveReport(run, null, history, notes)}>
           📄 状況を書き出す
@@ -4422,6 +4465,7 @@ export default function App() {
         }}
       />
       <NoteBar count={playNotes.length} onAdd={addNote} />
+      <HotkeyClicker />
       {(() => {
         // 戦闘直後の評価入力 (2026-09-01)。決着直後のフェーズの間は出続け、点数の後からメモも追記できる
         const last = runHistory[runHistory.length - 1]
@@ -4488,6 +4532,7 @@ export default function App() {
       }}
     />
     <NoteBar count={playNotes.length} onAdd={addNote} />
+    <HotkeyClicker />
     {(state.phase === 'won' || state.phase === 'lost') && (
       <BattleRatingBar
         label="この戦闘"
@@ -4582,6 +4627,40 @@ function BattleRatingBar({
  * プレイ中メモの入力バー (2026-09-01 ユーザー要望「気がついたことが揮発せずにいい」)。
  * 画面右下に常駐し、Enterで記録。記録は文脈 (幕/行/ターン/HP) 付きでレポート書き出しに同梱される
  */
+/**
+ * キーボードショートカット (2026-09-01 ユーザー要望「UI側もうちょい遊びやすく」)。
+ * data-hotkey 属性の付いた要素をクリックする方式 = 活性判定・ガードはボタン側の disabled が
+ * そのまま効く (canPlay 等のロジックを二重化しない)。文脈ごとに num-N の意味が変わる
+ * (手札プレイ/対象選択/発動候補/報酬ピック) が、同時に存在しないので衝突しない
+ */
+function HotkeyClicker() {
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return
+      const tag = (document.activeElement?.tagName ?? '').toLowerCase()
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return
+      const key = ev.key.toLowerCase()
+      const click = (sel: string): boolean => {
+        const el = document.querySelector<HTMLElement>(`[data-hotkey="${sel}"]`)
+        if (el === null) return false
+        el.click()
+        return true
+      }
+      let hit = false
+      if (key >= '1' && key <= '9') hit = click(`num-${key}`)
+      else if (key === 'e') hit = click('end-turn')
+      else if (key === 'f') hit = click('num-1') // 発動候補が1つの時の速記
+      else if (key === 'h') hit = click('hold')
+      else if (key === 's') hit = click('skip')
+      else if (key === 'escape') hit = click('cancel')
+      if (hit) ev.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+  return null
+}
+
 function NoteBar({ count, onAdd }: { count: number; onAdd: (text: string) => void }) {
   const [text, setText] = useState('')
   const [flash, setFlash] = useState(false)

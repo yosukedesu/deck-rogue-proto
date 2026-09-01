@@ -356,8 +356,12 @@ button:disabled { cursor: default; }
   flex: 1;
   line-height: 1.5;
 }
-.card-actions { display: flex; gap: 4px; }
-.card-actions .btn { flex: 1; padding: 5px 4px; font-size: 12px; }
+/* 2026-09-01 UI粗取り: プレビュー行 (choice-desc) がボタンと同じflex行に入ると
+   ボタンが1文字ずつ縦書きに潰れていた (焚き火・イベント・ショップの全カード操作列)。
+   折返しを許可し、テキスト行は全幅・ボタンは潰れない最小幅を持つ */
+.card-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.card-actions .btn { flex: 1; padding: 5px 4px; font-size: 12px; min-width: 72px; white-space: nowrap; }
+.card-actions .choice-desc { flex-basis: 100%; }
 
 /* 伏せカード (裏面) */
 .card-back {
