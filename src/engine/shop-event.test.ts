@@ -1,7 +1,7 @@
 // ゴールド・ショップ・?マス (2026-08-28 設計会議) のテスト。
 // 確定済みルール表「ゴールド」「ショップ」「?マス（イベント）」を固定する。
 import { describe, expect, it } from 'vitest'
-import { allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
+import { getEnemyDef, allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
 import { applyRunCommand, createRun, eventChoiceNeedsCard, shopRemovalPrice, shopUpgradePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
@@ -238,10 +238,11 @@ describe('?マス (イベント)', () => {
     }
   })
 
-  it('イベントプールは本家3層の員数を満たす (幕専用6個以上/幕・祠6・ワンタイム4)', () => {
+  it('イベントプールは本家3層の員数を満たす (幕専用6個以上/幕・祠7・ワンタイム5)', () => {
+    // 2026-09-02 呪いイベント+2 (黒曜の偶像=oneTime・血染めの祭壇=shrine)
     const kindOf = (e: (typeof allEvents)[number]) => e.kind ?? 'act'
-    expect(allEvents.filter((e) => kindOf(e) === 'shrine')).toHaveLength(6)
-    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(4)
+    expect(allEvents.filter((e) => kindOf(e) === 'shrine')).toHaveLength(7)
+    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(5)
     for (const act of [1, 2, 3]) {
       const pool = allEvents.filter((e) => kindOf(e) === 'act' && e.act === act)
       expect(pool.length, `幕${act}の幕専用イベント`).toBeGreaterThanOrEqual(6)
@@ -370,5 +371,22 @@ describe('イベントの新効果 (2026-08-29 本家踏襲の拡充)', () => {
     expect(next.deck.some((c) => c.def.id === WOUND_DEF.id)).toBe(false)
     // 負傷0枚でも例外にならない
     expect(() => applyRunCommand(run, { type: 'EventChoice', index: 0 })).not.toThrow()
+  })
+})
+
+describe('呪いイベント (2026-09-02 敵ギミック第1波D)', () => {
+  it('brands: 呪いの烙印がデッキに混入する (恒久・除去可能な呪い)', () => {
+    let run = createRun(7, 'set-confirm')
+    run = { ...run, phase: 'event', eventId: 'event_obsidian_idol' }
+    const after = applyRunCommand(run, { type: 'EventChoice', index: 0 }) // 金箔を剥ぐ
+    expect(after.gold).toBe(run.gold + 130)
+    expect(after.deck.filter((c) => c.def.id === 'status_brand')).toHaveLength(1)
+  })
+
+  it('岩皮の甲虫: 低HP+開幕ブロック12+守りつつ突くローテ (粉砕・貫通・延焼の的)', () => {
+    const def = getEnemyDef('enemy_rock_beetle')
+    expect(def.maxHp).toBe(30)
+    expect(def.startingBlock).toBe(12)
+    expect(def.sequence).toEqual(['horn_jab', 'harden', 'horn_jab']) // 攻撃ステップあり=膠着破り則
   })
 })

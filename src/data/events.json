@@ -705,5 +705,49 @@
         "label": "立ち去る"
       }
     ]
+  },
+  {
+    "id": "event_obsidian_idol",
+    "kind": "oneTime",
+    "name": "黒曜の偶像",
+    "sprite": "🗿",
+    "flavor": "祭壇の上で黒い偶像が微笑んでいる。金箔の下で、何かが脈打つ。",
+    "choices": [
+      {
+        "label": "金箔を剥ぐ（+130G・呪いの烙印1がデッキに）",
+        "gold": 130,
+        "brands": 1
+      },
+      {
+        "label": "瞳の宝珠を抉る（レリック1個・呪いの烙印2がデッキに）",
+        "relic": true,
+        "brands": 2
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
+  },
+  {
+    "id": "event_blood_altar",
+    "kind": "shrine",
+    "name": "血染めの祭壇",
+    "sprite": "🩸",
+    "flavor": "乾いた血の匂い。祭壇は捧げ物の大きさだけ、応えるという。",
+    "choices": [
+      {
+        "label": "供物を捧げる（最大HP+7・呪いの烙印1がデッキに）",
+        "maxHp": 7,
+        "brands": 1
+      },
+      {
+        "label": "血を捧げる（HP-10・レリック1個）",
+        "hp": -10,
+        "relic": true
+      },
+      {
+        "label": "立ち去る"
+      }
+    ]
   }
 ]

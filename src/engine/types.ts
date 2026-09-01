@@ -578,6 +578,8 @@ export interface EventChoiceDef {
   readonly maxHp?: number
   /** 負傷カードをデッキに混入する枚数 */
   readonly wounds?: number
+  /** 呪いの烙印 (2026-09-02 呪いイベント): 自ターン終了時に手札にあるとHP-1の恒久札をデッキに混入 */
+  readonly brands?: number
   /** 色プールからランダムなカードをN枚獲得 */
   readonly addRandomCards?: number
   /** レリック候補列の次の1個を獲得 (上限なら何も起きない) */

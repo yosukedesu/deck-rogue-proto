@@ -980,6 +980,36 @@
     ]
   },
   {
+    "id": "enemy_rock_beetle",
+    "name": "岩皮の甲虫",
+    "archetype": "shell",
+    "flavor": "小さな体を、身の丈に合わない岩の殻が包む。割るか、貫くか、焼くか。",
+    "maxHp": 30,
+    "startingBlock": 12,
+    "moves": [
+      {
+        "id": "harden",
+        "kind": "defend",
+        "min": 12,
+        "max": 15,
+        "weight": 1
+      },
+      {
+        "id": "horn_jab",
+        "kind": "attack",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "alsoDefend": 8
+      }
+    ],
+    "sequence": [
+      "horn_jab",
+      "harden",
+      "horn_jab"
+    ]
+  },
+  {
     "id": "enemy_elite_sergeant",
     "name": "鞭打ちの鬼軍曹",
     "archetype": "elite",

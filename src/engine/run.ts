@@ -11,6 +11,7 @@ import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
+  BRAND_DEF,
   allCards,
   allRelics,
   buildDeck,
@@ -544,7 +545,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
   }
   let next: RunState = { ...run }
   let rng = run.rng
-  const applyOutcome = (o: { gold?: number; hp?: number; hpRatio?: number; wounds?: number }): void => {
+  const applyOutcome = (o: { gold?: number; hp?: number; hpRatio?: number; wounds?: number; brands?: number }): void => {
     if (o.gold) next = { ...next, gold: Math.max(0, next.gold + o.gold) }
     if (o.hp) next = { ...next, hp: Math.min(next.maxHp, next.hp + o.hp) }
     // 最大HP比の増減 (2026-08-29)。リーダー間で最大HPが違う (80/75/65/60) ので、
@@ -558,6 +559,14 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
         def: WOUND_DEF,
       }))
       next = { ...next, deck: [...next.deck, ...wounds] }
+    }
+    if (o.brands) {
+      // 呪いの烙印 (2026-09-02): 恒久のデッキ汚染と引き換えの大報酬。焚き火・ショップで除去可能
+      const brands: CardInstance[] = Array.from({ length: o.brands }, (_, i) => ({
+        uid: `brand_a${run.act}_r${run.row}_${i}`,
+        def: BRAND_DEF,
+      }))
+      next = { ...next, deck: [...next.deck, ...brands] }
     }
   }
   applyOutcome(choice)
