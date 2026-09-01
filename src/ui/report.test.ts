@@ -3,7 +3,7 @@
 // encounterName('unknown') が例外死する」だったための回帰テスト。
 // レポートはプレイテストのデータ回収の道具なので、どんな状態でも絶対に落ちないことを固定する。
 import { describe, expect, it } from 'vitest'
-import { archiveBattle, buildCardProposals, buildReport, isEmptyMark } from './report.ts'
+import { archiveBattle, buildCardProposals, buildReport, cardDraftToDefJson, isEmptyMark } from './report.ts'
 import { createRun } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
 
@@ -83,5 +83,58 @@ describe('カード調整案の提案書 (2026-09-01 カード調整サイクル
   it('現行データに存在しないID (統合で消えた札の下書き) でも落ちない', () => {
     const text = buildCardProposals({ black_agony_strike: { change: 'コスト下げたい' } }, '')
     expect(text).toContain('現行データに存在しない')
+  })
+})
+
+describe('カードビルダー (実データとして作れるレベル 2026-09-01)', () => {
+  it('cardDraftToDefJson: 下書きが cards.*.json のエントリ形に落ちる (未使用フィールドは落とす)', () => {
+    const j = cardDraftToDefJson({
+      name: '試作の一撃',
+      color: 'green',
+      cost: 2,
+      type: 'physical',
+      rarity: 'uncommon',
+      exhaust: true,
+      discardCost: 1,
+      effects: [
+        { trigger: 'onPlay', effect: 'dealDamage', amount: 12, pierce: true, condKey: 'minActionValue', condValue: 10 },
+        { trigger: 'onPlay', effect: 'addGrowth', amount: 2 },
+      ],
+    })
+    expect(j).toEqual({
+      id: 'green_TODO_命名',
+      name: '試作の一撃',
+      cost: 2,
+      type: 'physical',
+      rarity: 'uncommon',
+      effects: [
+        { trigger: 'onPlay', effect: 'dealDamage', amount: 12, pierce: true, condition: { minActionValue: 10 } },
+        { trigger: 'onPlay', effect: 'addGrowth', amount: 2 },
+      ],
+      exhaust: true,
+      discardCost: 1,
+      color: 'green',
+    })
+  })
+
+  it('blaze条件は {blaze:true} に落ち、新カード案と差し替え定義がJSONブロックでmdに入る', () => {
+    const draft = {
+      name: '猛り火の試作',
+      color: 'red',
+      cost: 1,
+      type: 'spell',
+      rarity: 'common',
+      effects: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 8, condKey: 'blaze' }],
+    }
+    const text = buildCardProposals(
+      { green_strike: { redef: { ...draft, name: '打撃・改', color: 'green' } } },
+      '',
+      [draft],
+    )
+    expect(text).toContain('"blaze": true')
+    expect(text).toContain('## 新カード案（1件）')
+    expect(text).toContain('### 猛り火の試作')
+    expect(text).toContain('定義ごと差し替え')
+    expect(text).toContain('打撃・改')
   })
 })

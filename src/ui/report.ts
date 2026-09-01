@@ -293,6 +293,8 @@ export interface CardProposalMark {
   readonly rarity?: string // 'common' | 'uncommon' | 'rare'
   readonly exhaust?: boolean
   readonly fields?: Readonly<Record<string, number>>
+  /** 定義ごと差し替え (2026-09-01 「カード1枚が実データとして作れるレベル」)。あればこれが提案の完全形 */
+  readonly redef?: CardDraft
 }
 
 /** マークが空 (提案なし) か */
@@ -303,8 +305,77 @@ export function isEmptyMark(m: CardProposalMark): boolean {
     m.cost === undefined &&
     m.rarity === undefined &&
     m.exhaust === undefined &&
+    m.redef === undefined &&
     Object.keys(m.fields ?? {}).length === 0
   )
+}
+
+/**
+ * カードビルダーの効果1行 (2026-09-01)。実データ (DeclarativeEffect) と1:1対応。
+ * trigger/effect の語彙は現行カードから抽出したもの (新語彙は engine 実装が要るため補足で提案する)
+ */
+export interface EffectDraft {
+  readonly trigger: string
+  readonly effect: string
+  readonly amount?: number
+  readonly amountMax?: number
+  readonly target?: 'all'
+  readonly pierce?: boolean
+  readonly summonId?: string
+  /** 条件キー (hpAtOrBelowRatio / minActionValue / blaze 等)。'' = 条件なし */
+  readonly condKey?: string
+  readonly condValue?: number
+}
+
+/** カードビルダーの1枚ぶんの下書き。cardDraftToDefJson で実データ形に落ちる */
+export interface CardDraft {
+  readonly id?: string
+  readonly name: string
+  readonly color: string
+  readonly cost: number
+  readonly xCost?: boolean
+  readonly type: string
+  readonly rarity: string
+  readonly exhaust?: boolean
+  readonly exhaustCost?: number
+  readonly discardCost?: number
+  readonly necroCost?: number
+  readonly effects: readonly EffectDraft[]
+}
+
+/**
+ * 下書き → 実データ形 (cards.*.json の1エントリ)。undefined/未使用フィールドは落とす。
+ * color は実ファイルが色別なので配置時に取り除く前提で含める (どのファイルへ入れるかの指示)
+ */
+export function cardDraftToDefJson(d: CardDraft): Record<string, unknown> {
+  const effects = d.effects.map((e) => {
+    const out: Record<string, unknown> = { trigger: e.trigger, effect: e.effect }
+    if (typeof e.amount === 'number') out.amount = e.amount
+    if (typeof e.amountMax === 'number') out.amountMax = e.amountMax
+    if (e.target === 'all') out.target = 'all'
+    if (e.pierce === true) out.pierce = true
+    if ((e.summonId ?? '') !== '') out.summonId = e.summonId
+    if ((e.condKey ?? '') !== '') {
+      out.condition = e.condKey === 'blaze' ? { blaze: true } : { [e.condKey!]: e.condValue ?? 0 }
+    }
+    return out
+  })
+  const j: Record<string, unknown> = {
+    id: (d.id ?? '').trim() !== '' ? d.id!.trim() : `${d.color}_TODO_命名`,
+    name: d.name.trim() !== '' ? d.name : '（無名の下書き）',
+    cost: d.cost,
+    type: d.type,
+    rarity: d.rarity,
+    effects,
+  }
+  if (d.xCost === true) j.xCost = true
+  if (d.exhaust === true) j.exhaust = true
+  for (const k of ['exhaustCost', 'discardCost', 'necroCost'] as const) {
+    const v = d[k]
+    if (typeof v === 'number' && v > 0) j[k] = v
+  }
+  j.color = d.color
+  return j
 }
 
 /** fields キー → 現行値 (defから解決)。不明キーは undefined */
@@ -348,6 +419,7 @@ function fieldLabel(def: (typeof allCards)[number], key: string): string {
 export function buildCardProposals(
   marks: Readonly<Record<string, CardProposalMark>>,
   newCards: string,
+  newCardDefs: readonly CardDraft[] = [],
 ): string {
   const defOf = (id: string) => allCards.find((c) => c.id === id)
   const head = (id: string): string => {
@@ -374,6 +446,12 @@ export function buildCardProposals(
       out.push(`  - ${d ? fieldLabel(d, key) : key}: ${cur ?? '?'} → ${val}`)
     }
     if ((m.change ?? '').trim() !== '') out.push(`  - 補足: ${m.change!.trim()}`)
+    if (m.redef !== undefined) {
+      out.push('  - 定義ごと差し替え（下のJSONが提案の完全形）:')
+      out.push('```json')
+      out.push(JSON.stringify(cardDraftToDefJson(m.redef), null, 2))
+      out.push('```')
+    }
     return out
   }
   const entries = Object.entries(marks).filter(([, m]) => !isEmptyMark(m))
@@ -395,8 +473,18 @@ export function buildCardProposals(
     L.push(...diffLines(id, { ...m, remove: false, cost: undefined, rarity: undefined, exhaust: undefined, fields: {} }))
   }
   L.push('')
-  L.push('## 新カード案')
-  L.push(newCards.trim() === '' ? '（なし）' : newCards.trim())
+  L.push(`## 新カード案（${newCardDefs.length}件）`)
+  for (const d of newCardDefs) {
+    L.push(`### ${d.name.trim() !== '' ? d.name : '（無名の下書き）'}`)
+    L.push('```json')
+    L.push(JSON.stringify(cardDraftToDefJson(d), null, 2))
+    L.push('```')
+  }
+  if (newCards.trim() !== '') {
+    L.push('### メモ（自由記述）')
+    L.push(newCards.trim())
+  }
+  if (newCardDefs.length === 0 && newCards.trim() === '') L.push('（なし）')
   L.push('')
   L.push('※ この提案書はレビュー用。実装時は card-power.md の査定 (定価115〜135%帯・色レート・追加コスト算入) を通すこと')
   return L.join('\n')
@@ -406,6 +494,7 @@ export function buildCardProposals(
 export function saveCardProposals(
   marks: Readonly<Record<string, CardProposalMark>>,
   newCards: string,
+  newCardDefs: readonly CardDraft[] = [],
 ): void {
-  deliverText(`card-proposals-${stampNow()}.md`, buildCardProposals(marks, newCards))
+  deliverText(`card-proposals-${stampNow()}.md`, buildCardProposals(marks, newCards, newCardDefs))
 }

@@ -9,12 +9,15 @@ import {
   intentText,
   logLine,
   buildReport,
+  cardDraftToDefJson,
   isEmptyMark,
   saveCardProposals,
   saveReport,
   STATUS_LABEL,
   type BattleArchive,
+  type CardDraft,
   type CardProposalMark,
+  type EffectDraft,
   type LogLine,
   type PlayNote,
 } from './report.ts'
@@ -2454,18 +2457,227 @@ const TUNER_STORAGE_KEY = 'deckRogueCardTuner'
 interface TunerDraft {
   readonly marks: Record<string, CardProposalMark>
   readonly newCards: string
+  /** 新カード案 (構造化。2026-09-01「カード1枚が実データとして作れるレベル」) */
+  readonly newCardDefs: readonly CardDraft[]
 }
 function loadTunerDraft(): TunerDraft {
   try {
     const raw = localStorage.getItem(TUNER_STORAGE_KEY)
     if (raw !== null) {
       const d = JSON.parse(raw) as Partial<TunerDraft>
-      return { marks: d.marks ?? {}, newCards: d.newCards ?? '' }
+      return { marks: d.marks ?? {}, newCards: d.newCards ?? '', newCardDefs: d.newCardDefs ?? [] }
     }
   } catch {
     /* 壊れた下書きは捨てる */
   }
-  return { marks: {}, newCards: '' }
+  return { marks: {}, newCards: '', newCardDefs: [] }
+}
+
+/**
+ * 実データ語彙 (現行カードから抽出)。カードビルダーのドロップダウンはこの語彙に限定する —
+ * 新しい trigger/effect 名は engine 実装が要るため、機構の新設は「補足/メモ」で提案する
+ */
+const CARD_VOCAB: { triggers: readonly string[]; effects: readonly string[]; condKeys: readonly string[] } = (() => {
+  const t = new Set<string>()
+  const e = new Set<string>()
+  const c = new Set<string>()
+  for (const card of allCards) {
+    const effs = [...card.effects, ...(card.modes ?? []).flatMap((m) => m.effects)]
+    for (const ef of effs) {
+      t.add(ef.trigger)
+      e.add(ef.effect)
+      for (const k of Object.keys(ef.condition ?? {})) c.add(k)
+    }
+  }
+  return { triggers: [...t].sort(), effects: [...e].sort(), condKeys: [...c].sort() }
+})()
+
+/** 既存カード定義 → ビルダー下書き (定義ごと差し替えの初期値) */
+function defToDraft(def: CardDef): CardDraft {
+  return {
+    id: def.id,
+    name: def.name,
+    color: def.color,
+    cost: def.cost,
+    ...(def.xCost === true ? { xCost: true } : {}),
+    type: def.type,
+    rarity: def.rarity ?? 'common',
+    ...(def.exhaust === true ? { exhaust: true } : {}),
+    ...(typeof def.exhaustCost === 'number' ? { exhaustCost: def.exhaustCost } : {}),
+    ...(typeof def.discardCost === 'number' ? { discardCost: def.discardCost } : {}),
+    ...(typeof def.necroCost === 'number' ? { necroCost: def.necroCost } : {}),
+    effects: def.effects.map((e) => {
+      const [ck, cv] = Object.entries(e.condition ?? {})[0] ?? []
+      return {
+        trigger: e.trigger,
+        effect: e.effect,
+        ...(typeof e.amount === 'number' ? { amount: e.amount } : {}),
+        ...(typeof e.amountMax === 'number' ? { amountMax: e.amountMax } : {}),
+        ...(e.target === 'all' ? { target: 'all' as const } : {}),
+        ...(e.pierce === true ? { pierce: true } : {}),
+        ...(typeof e.summonId === 'string' ? { summonId: e.summonId } : {}),
+        ...(ck !== undefined ? { condKey: ck } : {}),
+        ...(typeof cv === 'number' ? { condValue: cv } : {}),
+      }
+    }),
+  }
+}
+
+const numOrUndef = (v: string): number | undefined =>
+  v === '' || !Number.isFinite(Number(v)) ? undefined : Number(v)
+
+/** 効果1行のエディタ (実データの DeclarativeEffect と1:1) */
+function EffectDraftRow({
+  value,
+  onChange,
+  onDelete,
+}: {
+  value: EffectDraft
+  onChange: (e: EffectDraft) => void
+  onDelete: () => void
+}) {
+  const S = { fontSize: 11 } as const
+  return (
+    <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap', border: '1px solid #334', borderRadius: 4, padding: 3 }}>
+      <select style={S} value={value.trigger} onChange={(ev) => onChange({ ...value, trigger: ev.target.value })}>
+        {CARD_VOCAB.triggers.map((t) => (
+          <option key={t} value={t}>{t}</option>
+        ))}
+      </select>
+      <select style={S} value={value.effect} onChange={(ev) => onChange({ ...value, effect: ev.target.value })}>
+        {CARD_VOCAB.effects.map((t) => (
+          <option key={t} value={t}>{t}</option>
+        ))}
+      </select>
+      <label style={S}>
+        量{' '}
+        <input type="number" step="any" style={{ width: 48 }} value={value.amount ?? ''} onChange={(ev) => onChange({ ...value, amount: numOrUndef(ev.target.value) })} />
+      </label>
+      <label style={S} title="ランダム火力のロール上限 (dealDamageRandom用)">
+        上限{' '}
+        <input type="number" style={{ width: 44 }} value={value.amountMax ?? ''} onChange={(ev) => onChange({ ...value, amountMax: numOrUndef(ev.target.value) })} />
+      </label>
+      <label style={S}>
+        <input type="checkbox" checked={value.target === 'all'} onChange={(ev) => onChange({ ...value, target: ev.target.checked ? 'all' : undefined })} /> 全体
+      </label>
+      <label style={S}>
+        <input type="checkbox" checked={value.pierce === true} onChange={(ev) => onChange({ ...value, pierce: ev.target.checked || undefined })} /> 貫通
+      </label>
+      <label style={S}>
+        条件{' '}
+        <select value={value.condKey ?? ''} onChange={(ev) => onChange({ ...value, condKey: ev.target.value === '' ? undefined : ev.target.value })}>
+          <option value="">なし</option>
+          {CARD_VOCAB.condKeys.map((k) => (
+            <option key={k} value={k}>{k}</option>
+          ))}
+        </select>
+      </label>
+      {(value.condKey ?? '') !== '' && value.condKey !== 'blaze' && (
+        <input type="number" step="any" style={{ width: 52 }} value={value.condValue ?? ''} onChange={(ev) => onChange({ ...value, condValue: numOrUndef(ev.target.value) })} />
+      )}
+      {value.effect === 'summonPermanent' && (
+        <input placeholder="summonId (置物カードのid)" style={{ width: 160, fontSize: 11 }} value={value.summonId ?? ''} onChange={(ev) => onChange({ ...value, summonId: ev.target.value === '' ? undefined : ev.target.value })} />
+      )}
+      <button className="chip chip-btn" onClick={onDelete} title="この効果行を削除">✕</button>
+    </div>
+  )
+}
+
+/** カード1枚のビルダー (実データとして作れるレベル)。右にゲーム内描画そのままのプレビュー */
+function CardDraftEditor({
+  value,
+  onChange,
+  onDelete,
+  deleteLabel,
+}: {
+  value: CardDraft
+  onChange: (d: CardDraft) => void
+  onDelete?: () => void
+  deleteLabel?: string
+}) {
+  const S = { fontSize: 11 } as const
+  const COLOR_JA: Record<string, string> = { green: '緑', blue: '青', red: '赤', white: '白', black: '黒' }
+  const previewDef = cardDraftToDefJson(value) as unknown as CardDef
+  return (
+    <div style={{ border: '1px solid #556', borderRadius: 6, padding: 6, marginTop: 6, display: 'flex', gap: 8, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div style={{ flex: '1 1 380px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+          <label style={S}>
+            名前 <input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} style={{ width: 110 }} />
+          </label>
+          <label style={S}>
+            id <input value={value.id ?? ''} placeholder="空=実装時に命名" onChange={(e) => onChange({ ...value, id: e.target.value === '' ? undefined : e.target.value })} style={{ width: 140 }} />
+          </label>
+          <label style={S}>
+            色{' '}
+            <select value={value.color} onChange={(e) => onChange({ ...value, color: e.target.value })}>
+              {(['green', 'blue', 'red', 'white', 'black'] as const).map((c) => (
+                <option key={c} value={c}>{COLOR_JA[c]}</option>
+              ))}
+            </select>
+          </label>
+          <label style={S}>
+            タイプ{' '}
+            <select value={value.type} onChange={(e) => onChange({ ...value, type: e.target.value })}>
+              {(Object.keys(TYPE_LABEL) as CardType[]).map((t) => (
+                <option key={t} value={t}>{TYPE_LABEL[t]}</option>
+              ))}
+            </select>
+          </label>
+          <label style={S}>
+            コスト{' '}
+            <select value={String(value.cost)} onChange={(e) => onChange({ ...value, cost: Number(e.target.value) })}>
+              {[0, 1, 2, 3, 4, 5].map((c) => (
+                <option key={c} value={String(c)}>{c}</option>
+              ))}
+            </select>
+          </label>
+          <label style={S} title="Xコスト (プレイ時に現在エナジー全払い)">
+            <input type="checkbox" checked={value.xCost === true} onChange={(e) => onChange({ ...value, xCost: e.target.checked || undefined })} /> X
+          </label>
+          <label style={S}>
+            レア{' '}
+            <select value={value.rarity} onChange={(e) => onChange({ ...value, rarity: e.target.value })}>
+              <option value="common">コモン</option>
+              <option value="uncommon">アンコ</option>
+              <option value="rare">レア</option>
+            </select>
+          </label>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <label style={S}>
+            <input type="checkbox" checked={value.exhaust === true} onChange={(e) => onChange({ ...value, exhaust: e.target.checked || undefined })} /> 消滅
+          </label>
+          <label style={S}>
+            消滅コスト <input type="number" style={{ width: 40 }} value={value.exhaustCost ?? ''} onChange={(e) => onChange({ ...value, exhaustCost: numOrUndef(e.target.value) })} />
+          </label>
+          <label style={S}>
+            捨てコスト <input type="number" style={{ width: 40 }} value={value.discardCost ?? ''} onChange={(e) => onChange({ ...value, discardCost: numOrUndef(e.target.value) })} />
+          </label>
+          <label style={S}>
+            亡骸コスト <input type="number" style={{ width: 40 }} value={value.necroCost ?? ''} onChange={(e) => onChange({ ...value, necroCost: numOrUndef(e.target.value) })} />
+          </label>
+        </div>
+        {value.effects.map((ef, i) => (
+          <EffectDraftRow
+            key={i}
+            value={ef}
+            onChange={(ne) => onChange({ ...value, effects: value.effects.map((x, j) => (j === i ? ne : x)) })}
+            onDelete={() => onChange({ ...value, effects: value.effects.filter((_, j) => j !== i) })}
+          />
+        ))}
+        <div>
+          <button className="chip chip-btn" onClick={() => onChange({ ...value, effects: [...value.effects, { trigger: 'onPlay', effect: 'dealDamage', amount: 6 }] })}>
+            ＋ 効果を追加
+          </button>{' '}
+          {onDelete && (
+            <button className="chip chip-btn" onClick={onDelete}>🗑 {deleteLabel ?? 'この下書きを削除'}</button>
+          )}
+        </div>
+      </div>
+      <CardFrame card={{ uid: `draft_${value.id ?? value.name}`, def: previewDef }} dim={false} hint="プレビュー（ゲーム内描画そのまま）" actions={null} />
+    </div>
+  )
 }
 
 /** カード図鑑 (2026-09-01 ユーザー要望「カード一覧見れるページ」)。全カードを色/タイプ/レア/検索で絞り込み。
@@ -2555,25 +2767,50 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 />{' '}
                 マーク済みのみ表示
               </label>{' '}
-              <button className="btn btn-primary" onClick={() => saveCardProposals(draft.marks, draft.newCards)}>
+              <button className="btn btn-primary" onClick={() => saveCardProposals(draft.marks, draft.newCards, draft.newCardDefs)}>
                 📄 調整案を書き出す
               </button>{' '}
               <button
                 className="btn"
                 onClick={() => {
                   if (window.confirm('調整案の下書きをすべて消しますか？')) {
-                    setDraft({ marks: {}, newCards: '' })
+                    setDraft({ marks: {}, newCards: '', newCardDefs: [] })
                   }
                 }}
               >
                 🗑 下書きを全消去
               </button>
             </div>
+            <div style={{ marginTop: 6 }}>
+              <b style={{ fontSize: 12 }}>新カード案（{draft.newCardDefs.length}件）</b>{' '}
+              <button
+                className="chip chip-btn"
+                onClick={() =>
+                  setDraft((d) => ({
+                    ...d,
+                    newCardDefs: [
+                      ...d.newCardDefs,
+                      { name: '', color: 'green', cost: 1, type: 'physical', rarity: 'common', effects: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 6 }] },
+                    ],
+                  }))
+                }
+              >
+                ＋ 新カード案を追加
+              </button>
+            </div>
+            {draft.newCardDefs.map((d, i) => (
+              <CardDraftEditor
+                key={i}
+                value={d}
+                onChange={(nd) => setDraft((s2) => ({ ...s2, newCardDefs: s2.newCardDefs.map((x, j) => (j === i ? nd : x)) }))}
+                onDelete={() => setDraft((s2) => ({ ...s2, newCardDefs: s2.newCardDefs.filter((_, j) => j !== i) }))}
+              />
+            ))}
             <textarea
               value={draft.newCards}
               onChange={(e) => setDraft((d) => ({ ...d, newCards: e.target.value }))}
-              placeholder={'新カード案 (自由記述。例: 緑1E 攻撃: 5ダメ+成長1 — ○○の穴を埋める入口コモン)'}
-              rows={3}
+              placeholder={'メモ (自由記述。新しい機構の提案・狙いの説明など、構造で表せないものはここへ)'}
+              rows={2}
               style={{ width: '100%', marginTop: 6, boxSizing: 'border-box' }}
             />
           </div>
@@ -2647,7 +2884,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
             return (
               <div
                 key={def.id}
-                style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 3, borderRadius: 6, background: dirty ? 'rgba(120,160,255,0.12)' : 'transparent' }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 3, borderRadius: 6, background: dirty ? 'rgba(120,160,255,0.12)' : 'transparent', width: mark.redef !== undefined ? '100%' : undefined }}
               >
                 {frame}
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -2689,7 +2926,21 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                     />{' '}
                     削除案
                   </label>
+                  {def.modes === undefined ? (
+                    <button
+                      className="chip chip-btn"
+                      title="効果構成ごと差し替える提案 (実データの形でフル編集)"
+                      onClick={() => setMark(def.id, { ...mark, redef: mark.redef === undefined ? defToDraft(def) : undefined })}
+                    >
+                      ✏️ {mark.redef !== undefined ? '差し替えを破棄' : '定義編集'}
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: 10, opacity: 0.6 }} title="モード札のフル編集は未対応 — 補足に書く">モード札</span>
+                  )}
                 </div>
+                {mark.redef !== undefined && (
+                  <CardDraftEditor value={mark.redef} onChange={(d) => setMark(def.id, { ...mark, redef: d })} />
+                )}
                 {numFields.map((f) => (
                   <label key={f.key} style={{ ...S, display: 'flex', gap: 4, alignItems: 'center' }}>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={f.key}>
