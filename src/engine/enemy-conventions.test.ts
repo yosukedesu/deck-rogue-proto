@@ -77,17 +77,26 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
     expect(carriers / pool.length).toBeGreaterThanOrEqual(0.1)
   })
 
-  it('タイマー敵の規約: 激昂系タイマーの罰は筋力の漸増のみ (即死・敗北条件型のタイマーは存在しない)', () => {
-    // StS2 TheInsatiable (タイマー切れ即死) 炎上の教訓 (docs/sts2-reference.md §7)。
-    // うちのタイマーは enrage 系 = 筋力+N (威圧で剥がせる・防御で受けられる) だけであることを固定。
-    // 新しい「countdown で敗北」型の kind を足すとこのテストと規約行に必ず衝突する
-    const timers = allEnemies.filter(
-      (e) => e.enrage !== undefined || e.enrageEveryCards !== undefined || e.enrageEveryDamage !== undefined,
-    )
-    expect(timers.length).toBeGreaterThan(0)
-    for (const e of timers) {
-      expect(typeof (e.enrage ?? 2)).toBe('number') // 罰は数値の筋力のみ
+  it('タイマー敵の規約: 敵定義のフィールドは既知のホワイトリストのみ (即死・敗北条件型の新機構は必ずここで衝突する)', () => {
+    // StS2 TheInsatiable (タイマー切れ即死) 炎上の教訓 (docs/sts2-reference.md §7・balance-policy.md)。
+    // 2026-09-02 レビュー是正: 旧断言 typeof(e.enrage ?? 2)==='number' は恒真で何も検証していなかった。
+    // キーのホワイトリスト走査に差し替え = 「countdownで敗北」等の新フィールドを足すと名指しで落ち、
+    // 規約 (罰は筋力の漸増か予告付き大技のみ) との突き合わせを強制する
+    const KNOWN = new Set([
+      'id', 'name', 'archetype', 'flavor', 'maxHp', 'moves', 'sequence', 'sequenceLoopFrom',
+      'movesBelowHalf', 'sequenceBelowHalf', 'sequenceBelowHalfLoopFrom',
+      'movesVsSet', 'movesVsTokens', 'movesWhenAlone', 'sequenceWhenAlone',
+      'enrage', 'enrageEveryCards', 'enrageEveryDamage', 'regen', 'regenBreak', 'burnResist',
+      'thorns', 'armor', 'startingBlock', 'angerOnBlock', 'guardian', 'bondStrength',
+      'opener', 'phaseAfterUses', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
+    ])
+    const offenders: string[] = []
+    for (const e of allEnemies) {
+      for (const k of Object.keys(e)) {
+        if (!KNOWN.has(k)) offenders.push(`${e.id}.${k}`)
+      }
     }
+    expect(offenders).toEqual([])
   })
 })
 

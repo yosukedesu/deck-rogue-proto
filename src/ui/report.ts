@@ -118,7 +118,9 @@ function renderBoard(s: GameState): string[] {
     p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.iceBlock ? `氷壁${p.iceBlock}` : '', p.aether ? `霊気${p.aether}` : '',
     p.nextCardDiscount ? `次コスト-${p.nextCardDiscount}` : '', p.weak ? `弱体${p.weak}` : '',
-    p.vulnerable ? `脆弱${p.vulnerable}` : '',
+    p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}` : '',
+    p.restrain ? `拘束${p.restrain}` : '', (p.mist ?? 0) ? `霞み${p.mist}` : '',
+    (p.slow ?? 0) ? `重り${p.slow}` : '',
   ].filter(Boolean).join(' ')
   out.push(`自分: HP ${p.hp}/${p.maxHp} ブロック${p.block} エナジー${p.energy}/${p.energyMax} ${st}`)
   out.push(`手札(${p.hand.length}): ${p.hand.map((c) => {
@@ -171,7 +173,7 @@ export function buildReport(
   if (run) {
     const leader = getLeaderDef(run.leaderId)
     L.push(`ラン ${leader.name}（${run.leaderId}） / seed ${run.seed} / mode ${run.mode} / 難易度 ${run.difficulty ?? 3}`)
-    L.push(`進行: ${run.phase} / 幕${run.act}/3 行${run.row + 1}/16・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
+    L.push(`進行: ${run.phase} / 幕${run.act}/3 行${run.row + 1}/${run.map.length}・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
     L.push(
       `マップ: ${run.map
         .map((row, r) => {

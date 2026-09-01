@@ -285,7 +285,9 @@ export function currentNode(run: RunState): MapNode | null {
 /** マップで次に進めるノードの列リスト (開始前は行0の全ノード) */
 export function nextChoices(run: RunState): readonly number[] {
   if (run.row < 0) return run.map[0].map((_, c) => c)
-  if (run.row >= bossRowFor(run.act)) return []
+  // 実マップの行数から判定する (2026-09-02 レビュー是正: 幕定数 bossRowFor だと
+  // 15/14/13行化以前の旧セーブ〔全幕16行〕が幕2/3のボス前でソフトロックする)
+  if (run.row >= run.map.length - 1) return []
   return currentNode(run)?.next ?? []
 }
 

@@ -645,6 +645,27 @@ describe('行動文法の器 (2026-09-02 StS2解析からの全体改善)', () =
     expect(s.player.restrain).toBe(0)
   })
 
+  it('拘束は亡骸プレイにも効き、焚べ (addCasts) の嵩では詰まらない (playsThisTurn参照)', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    // 詠唱数だけ盛って実プレイ0の状態: 拘束中でもプレイできる
+    s = { ...s, player: { ...s.player, restrain: 1, energy: 9, cardsPlayedThisTurn: 5 } }
+    s = withHand(s, ['green_strike'])
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })).not.toThrow()
+    // 実プレイ3枚に達したら亡骸プレイ (PlayNecro) も拒否される
+    let t = freshCombat('set-confirm', 'enemy_brute', 43)
+    t = {
+      ...t,
+      player: {
+        ...t.player,
+        restrain: 1,
+        energy: 9,
+        playsThisTurn: 3,
+        exhaustPile: [{ uid: 'n0', def: getCardDef('black_rotten_claw') }],
+      },
+    }
+    expect(() => applyCommand(t, { type: 'PlayNecro', cardUid: 'n0' })).toThrow(/拘束/)
+  })
+
   it('重圧オーラ: 敵の生存中カードのコストが上がり、倒すと即座に戻る', () => {
     applyDebugOverrides({
       enemies: [

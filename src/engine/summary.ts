@@ -111,3 +111,35 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
     ? '×Xヒット(各ヒットに成長・勢いが乗る)'
     : '×Xヒット'
 }
+
+
+// ---- 最悪被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が
+// 3通りに割れていたのを1本化。合成順は実処理 combat.ts の攻撃解決と同一 = 鈴→脆弱→重り) ----
+import { effectiveIntent } from './effects.ts'
+import type { GameState } from './types.ts'
+
+/** 敵1体の「今フェーズの最悪合計ダメージ」。攻撃以外・死亡・混乱 (仲間に向かう) は0 */
+export function worstIncomingFrom(s: GameState, enemyIndex: number): number {
+  const e = s.enemies[enemyIndex]
+  if (!e || e.hp <= 0 || e.confusion > 0) return 0
+  const it = effectiveIntent(s, enemyIndex)
+  if (it?.kind !== 'attack') return 0
+  let perHit = it.shownMax
+  // 静かな鈴 (C型): 伏せ札がある間、各ヒット-N (最低1)
+  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) {
+    perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
+  }
+  // 脆弱: +50% (切り捨て)
+  if (s.player.vulnerable > 0) perHit = Math.floor(perHit * 1.5)
+  // 重り: +10%×このターンの実プレイ枚数 (切り捨て)
+  if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) {
+    perHit = Math.floor(perHit * (1 + 0.1 * (s.player.playsThisTurn ?? 0)))
+  }
+  const hits = it.mirrorHits === true ? Math.max(1, s.player.cardsPlayedThisTurn) : (it.hits ?? 1)
+  return perHit * hits
+}
+
+/** 全敵の最悪合計 (最悪被ダメ予測の分子) */
+export function worstIncomingTotal(s: GameState): number {
+  return s.enemies.reduce((sum, _e, i) => sum + worstIncomingFrom(s, i), 0)
+}

@@ -41,7 +41,7 @@ import {
   windowFromPending,
 } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { worstIncomingFrom, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunJournal, RunState } from '../engine/run.ts'
@@ -137,6 +137,7 @@ function branchText(it: { kind: string; shownMin: number; shownMax: number; hits
     'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
     flee: '逃走(倒すか打ち消せば阻止)',
     rest: '隙だらけ',
+    hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
     mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅置き場へ。亡骸は発火する)`,
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
@@ -200,7 +201,7 @@ function intentLine(s: GameState, i: number): string {
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `筋力+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,
-    flee: '逃走(倒すか打ち消せば阻止)', rest: '隙だらけ',
+    flee: '逃走(倒すか打ち消せば阻止)', rest: '隙だらけ', hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -230,6 +231,8 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'StatusInflicted') L.push(` 状態異常:${e.status}${e.amount}`)
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)
       else if (e.type === 'ThornsReflected') L.push(` 🦔とげ反射${e.amount}(HP損失${e.hpLoss}。ブロックで吸収した分は損失に出ない)`)
+      else if (e.type === 'EnemySplit') L.push(` 🫠分裂! 倒した敵から${e.count}体が現れた`)
+      else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
       else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
@@ -241,7 +244,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
-    `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで)` : '', (p.mist ?? 0) ? `霞み${p.mist}(ドロー-2)` : '', (p.slow ?? 0) ? `重り${p.slow}(被ダメ+10%×プレイ枚数)` : '',
+    `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで・このターンあと${Math.max(0, 3 - (p.playsThisTurn ?? 0))}枚)` : '', (p.mist ?? 0) ? `霞み${p.mist}(ドロー-2)` : '', (p.slow ?? 0) ? `重り${p.slow}(被ダメ+10%×プレイ枚数。今+${(p.playsThisTurn ?? 0) * 10}%)` : '',
     p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
     // 運任せカウンタは参照札 (×N換金/onRandomPlayed) を持つデッキでだけ意味を持つ — ノイズ抑制
     p.randomPlayedThisCombat && [...p.hand, ...p.drawPile, ...p.discardPile, ...p.setCards, ...p.permanents].some((c) => c.def.effects.some((e) => e.effect === 'dealDamagePerRandomPlayed' || e.trigger === 'onRandomPlayed')) ? `運任せ札${p.randomPlayedThisCombat}枚` : '',
@@ -252,17 +255,8 @@ function renderBattle(s: GameState, logFrom: number): string {
   // 予測被ダメ (最悪値): 複数体の同時攻撃を暗算しなくて済むように総量を出す
   let worst = 0
   s.enemies.forEach((e, i) => {
-    if (e.hp <= 0) return
-    if (e.confusion > 0) return // 混乱中の攻撃は仲間に向かう
-    const it = effectiveIntent(s, i)
-    if (it?.kind === 'attack') {
-      let perHit = p.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
-      if ((s.setDamageReduction ?? 0) > 0 && p.setCards.length > 0)
-        perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
-      if ((p.slow ?? 0) > 0 && p.cardsPlayedThisTurn > 0)
-        perHit = Math.floor(perHit * (1 + 0.1 * p.cardsPlayedThisTurn))
-      worst += perHit * (it.mirrorHits === true ? Math.max(1, p.cardsPlayedThisTurn) : (it.hits ?? 1))
-    }
+    void e
+    worst += worstIncomingFrom(s, i) // 式は engine/summary.ts に1本化 (2026-09-02)
   })
   if (worst > 0) {
     const defense = p.block + p.iceBlock
@@ -502,7 +496,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
   // 倒した盗人 (逃走前) の抱えた金は勝利時に戻るので「盗まれ中」に数えない (2026-08-31 再検証ラン指摘①)
   const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.hp > 0 || e.fled === true ? (e.stolenGold ?? 0) : 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
-  L.push(`=== ラン: ${leader.name} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/16`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/${run.map.length}`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {

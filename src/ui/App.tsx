@@ -74,7 +74,7 @@ import { damageBreakdown,
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { worstIncomingFrom, worstIncomingTotal, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -556,6 +556,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.id === 'status_wound') return ['使えない（ターン終了時に捨てられる）']
   if (def.id === 'status_scald') return ['使えない。自ターン終了時に手札にあるとHP-2（この戦闘限り。捨て/消滅コストの支払いには使える）']
   if (def.id === 'status_brand') return ['使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。焚き火・ショップで除去できる）']
+  if (def.id === 'status_guilt') return ['使えない。自ターン終了時に手札にあるとHP-1（仮初の呪い。5戦すると自然に消える）']
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
   if ((def.exhaustCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.exhaustCost}枚を消滅させる`)
@@ -750,6 +751,12 @@ function CardFrame({
       <div className={`card-category type-${card.def.type}`}>{TYPE_LABEL[card.def.type]}</div>
       <div className="card-text">
         <EffectLines def={card.def} ctx={ctx} />
+        {card.expiresAfterBattles !== undefined && (
+          <>
+            <br />
+            <span style={{ color: 'var(--muted)' }}>⏳ あと{card.expiresAfterBattles}戦で自然に消える</span>
+          </>
+        )}
         {hint && (
           <>
             <br />
@@ -1705,13 +1712,9 @@ function BattleScreen({
                       {enemy.confusion > 0 && enemy.intent?.kind === 'attack' ? '😵仲間に向かう: ' : ''}
                       {kw(conditionalIntentText(s, i))}
                       {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn}枚）` : ''}
-                      {(() => {
-                        const it = enemy.intent
-                        if (it?.kind !== 'attack' || enemy.confusion > 0) return null
-                        const perHit = player.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
-                        const total = perHit * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
-                        return total - (player.block + player.iceBlock) >= player.hp ? ' 💀致死級' : null
-                      })()}
+                      {worstIncomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
+                        ? ' 💀致死級'
+                        : null}
                     </div>
                   )}
                 </div>
@@ -1891,21 +1894,9 @@ function BattleScreen({
       {/* 今フェーズの最悪被ダメ予測 (複数体の暗算を不要にする。2026-08-25 プレイテスト対応) */}
       {s.phase === 'player-turn' &&
         (() => {
-          let worst = 0
-          s.enemies.forEach((e, i) => {
-            if (e.hp <= 0) return
-            if (e.confusion > 0) return // 混乱中の攻撃は仲間に向かう = プレイヤーには届かない
-            const it = effectiveIntent(s, i)
-            if (it?.kind === 'attack') {
-              let perHit = player.vulnerable > 0 ? Math.floor(it.shownMax * 1.5) : it.shownMax
-              // 静かな鈴 (C型): 伏せ札がある間、敵の攻撃実値-N (最低1)。予測にも算入する
-              if ((s.setDamageReduction ?? 0) > 0 && player.setCards.length > 0)
-                perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
-              if ((player.slow ?? 0) > 0 && player.cardsPlayedThisTurn > 0)
-                perHit = Math.floor(perHit * (1 + 0.1 * player.cardsPlayedThisTurn))
-              worst += perHit * (it.mirrorHits === true ? Math.max(1, player.cardsPlayedThisTurn) : (it.hits ?? 1))
-            }
-          })
+          // 式は engine/summary.ts の worstIncomingTotal に1本化 (2026-09-02 レビュー是正:
+          // フッター・💀バッジ・CLIで合成順が3通りに割れていた)
+          const worst = worstIncomingTotal(s)
           if (worst <= 0) return null
           const defense = player.block + player.iceBlock
           const through = Math.max(0, worst - defense)
@@ -1988,10 +1979,10 @@ function BattleScreen({
               <span className="chip chip-strength">🌫️ {kw('霞み')} {player.mist}</span>
             )}
             {(player.slow ?? 0) > 0 && (
-              <span className="chip chip-strength">⚓ {kw('重り')} {player.slow}（今+{player.cardsPlayedThisTurn * 10}%）</span>
+              <span className="chip chip-strength">⚓ {kw('重り')} {player.slow}（今+{(player.playsThisTurn ?? 0) * 10}%）</span>
             )}
             {player.restrain > 0 && (
-              <span className="chip chip-strength">⛓️ {kw('拘束')} {player.restrain}{player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP ? '（このターンはもう出せない）' : `（あと${RESTRAIN_PLAY_CAP - player.cardsPlayedThisTurn}枚）`}</span>
+              <span className="chip chip-strength">⛓️ {kw('拘束')} {player.restrain}{(player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP ? '（このターンはもう出せない）' : `（あと${RESTRAIN_PLAY_CAP - (player.playsThisTurn ?? 0)}枚）`}</span>
             )}
           </div>
           <div className="pile-info">
@@ -2212,7 +2203,7 @@ function BattleScreen({
                   )
                 const canPlay =
                   isPlayableFromHand(c) &&
-                  !(player.restrain > 0 && player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP) &&
+                  !(player.restrain > 0 && (player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) &&
                   effCost <= player.energy &&
                   player.hand.length - 1 >= discardCost &&
                   player.hand.length - 1 >= exhaustCostN &&
@@ -4005,7 +3996,7 @@ function RunScreen({
   onReplay?: () => void
 }) {
   const isBoss = currentNode(run)?.type === 'boss'
-  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/16)` : `行${run.row + 1}/16・${run.battlesWon}勝`}・デッキ${run.deck.length}枚・🎚${run.difficulty ?? DEFAULT_DIFFICULTY}`
+  const progressChip = `幕${run.act}/3・${isBoss ? '👑 幕ボス戦' : run.currentElite ? `⚔️👑 強個体戦 (行${run.row + 1}/${run.map.length})` : `行${run.row + 1}/${run.map.length}・${run.battlesWon}勝`}・デッキ${run.deck.length}枚・🎚${run.difficulty ?? DEFAULT_DIFFICULTY}`
   // 報酬ピックの「鍛えた姿(+)で表示」(2026-08-31 ユーザー要望。本家のアップグレードプレビュー相当)
   const [showUpgradedPick, setShowUpgradedPick] = useState(false)
   const ctx = undefined

@@ -144,7 +144,7 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
         c.uid !== card.uid &&
         c.def.effects.some((e) => e.effect === 'applyBurn') &&
         effectiveCost(state, c) <= state.player.energy &&
-        !(state.player.restrain > 0 && state.player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP),
+        !(state.player.restrain > 0 && (state.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP),
     )
     if (canIgniteFirst) return false
   }

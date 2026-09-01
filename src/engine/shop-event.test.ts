@@ -390,3 +390,17 @@ describe('呪いイベント (2026-09-02 敵ギミック第1波D)', () => {
     expect(def.sequence).toEqual(['horn_jab', 'harden', 'horn_jab']) // 攻撃ステップあり=膠着破り則
   })
 })
+
+describe('イベント定義のスキーマ規約 (2026-09-02 レビュー是正: text キー事故の再発防止)', () => {
+  it('全イベントが flavor と sprite を持ち、イベントレベルの未知キーを持たない', () => {
+    const KNOWN = new Set(['id', 'kind', 'act', 'name', 'sprite', 'flavor', 'choices'])
+    for (const e of allEvents) {
+      expect(typeof e.flavor, `${e.id} に flavor が無い`).toBe('string')
+      expect(typeof e.sprite, `${e.id} に sprite が無い`).toBe('string')
+      for (const k of Object.keys(e)) {
+        expect(KNOWN.has(k), `${e.id} に未知キー ${k}`).toBe(true)
+      }
+    }
+  })
+})
+

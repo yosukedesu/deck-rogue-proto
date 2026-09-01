@@ -69,6 +69,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       momentum: 0, // 勢いは自ターン終了時リセット
       iceBlock: 0, // 氷壁は戦闘内で持ち越し
       cardsPlayedThisTurn: 0,
+      playsThisTurn: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
       healsThisCombat: 0,
@@ -394,7 +395,7 @@ function declareIntents(state: GameState): GameState {
       const [altIntent, rngC] = buildIntent(rng, reactTable[altIdx], enemy.strength, enemy.atkScale ?? 1)
       rng = rngC
       alt = altIntent
-    } else if (!belowHalf && enemy.noReactTable !== true && move.setAlt !== undefined) {
+    } else if (!belowHalf && !whenAlone && enemy.noReactTable !== true && move.setAlt !== undefined) {
       // 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
       // 伏せ札があるとこの行動が setAlt の行動に変わる。既存の条件付き意図の配管に乗せる
       const sa = move.setAlt
@@ -506,6 +507,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       energy: state.player.energyMax,
       energyMaxAtTurnStart: state.player.energyMax,
       cardsPlayedThisTurn: 0,
+      playsThisTurn: 0,
       freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
       setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
@@ -633,9 +635,10 @@ export function playCard(
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (!isPlayableFromHand(card)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
-  // 拘束 (2026-09-02): 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない
-  if (state.player.restrain > 0 && state.player.cardsPlayedThisTurn >= RESTRAIN_PLAY_CAP) {
-    throw new Error(`拘束中はこのターンあと${RESTRAIN_PLAY_CAP}枚までしかプレイできない`)
+  // 拘束 (2026-09-02): 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない。
+  // 参照は実プレイ枚数 (playsThisTurn) — 焚べ (addCasts) の嵩で拘束が早く詰まらない
+  if (state.player.restrain > 0 && (state.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) {
+    throw new Error(`拘束中は1ターンに${RESTRAIN_PLAY_CAP}枚までしかプレイできない (すでに${RESTRAIN_PLAY_CAP}枚プレイ済み)`)
   }
   // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
   const cost = effectiveCost(state, card)
@@ -821,7 +824,12 @@ export function playCard(
       // プレイ中のカードはまだ捨て札に置かない (limbo)。効果解決中のドローが捨て札を
       // 再シャッフルすると自分自身を引き直せてしまう (2026-08-31 黒Opusラン発見:
       // 闇の契約を撃った同ターンに闇の契約を引いた)。解決後に置く = StS準拠
-      discardPile: [...state.player.discardPile, ...discardedCards],
+      // 火傷は捨て札に入らない = どの経路でも捨てられたら消える (2026-09-02 レビュー是正:
+      // 「支払いに使えば疼く前に処分できる」の設計注記どおり、処分=最終処理にする)
+      discardPile: [
+        ...state.player.discardPile,
+        ...discardedCards.filter((c) => c.def.id !== SCALD_DEF.id),
+      ],
       permanents: isPermanent ? [...state.player.permanents, card] : state.player.permanents,
       // プレイした消滅札自身も limbo (効果解決後に消滅置き場へ)。2026-08-31 黒Opusラン発見:
       // 影の刃 (消滅・自傷2) が「消滅回復→自傷」の順に解決され、とばりの回復が常に満タンで無駄になっていた
@@ -921,6 +929,7 @@ export function playCard(
       ...s.player,
       cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1,
       cardsPlayedTotal: s.player.cardsPlayedTotal + 1,
+      playsThisTurn: (s.player.playsThisTurn ?? 0) + 1,
     },
   }
   s = tickCardTimers(s)
@@ -986,6 +995,7 @@ export function playCard(
       ...s.player,
       cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1,
       cardsPlayedTotal: s.player.cardsPlayedTotal + 1,
+      playsThisTurn: (s.player.playsThisTurn ?? 0) + 1,
     },
   }
   s = tickCardTimers(s)
@@ -1006,6 +1016,11 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
   if (!card) throw new Error(`消滅置き場にないカード: ${cardUid}`)
   const cost = card.def.necroCost
   if (cost === undefined) throw new Error(`${card.def.name} は亡骸プレイを持たない`)
+  // 拘束は亡骸プレイにも効く (2026-09-02 レビュー是正: プレイヤー発行のプレイは全て上限の内。
+  // 効果由来の直接プレイ〔死者再生〕はカード解決の途中なので止めない = 本家Havoc型の裁定)
+  if (state.player.restrain > 0 && (state.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) {
+    throw new Error(`拘束中は1ターンに${RESTRAIN_PLAY_CAP}枚までしかプレイできない (すでに${RESTRAIN_PLAY_CAP}枚プレイ済み)`)
+  }
   if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const aliveCount = state.enemies.filter((e) => e.hp > 0).length
   if (targetIndex !== undefined) {
@@ -1044,6 +1059,7 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
       ...s.player,
       cardsPlayedThisTurn: s.player.cardsPlayedThisTurn + 1,
       cardsPlayedTotal: s.player.cardsPlayedTotal + 1,
+      playsThisTurn: (s.player.playsThisTurn ?? 0) + 1,
     },
   }
   s = tickCardTimers(s)
@@ -1472,8 +1488,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         if (state.player.vulnerable > 0) v = Math.floor(v * 1.5)
         // 重り (2026-09-02 StS2 SlowPower式): +10%×このターンのプレイ枚数 (切り捨て)。
         // 手数の罰の被弾版 = 鏡 (ヒット数) と別の受け方を要求する
-        if ((state.player.slow ?? 0) > 0 && state.player.cardsPlayedThisTurn > 0) {
-          v = Math.floor(v * (1 + 0.1 * state.player.cardsPlayedThisTurn))
+        if ((state.player.slow ?? 0) > 0 && (state.player.playsThisTurn ?? 0) > 0) {
+          v = Math.floor(v * (1 + 0.1 * (state.player.playsThisTurn ?? 0)))
         }
         dealtTotal += v
         const blocked = Math.min(block, v)

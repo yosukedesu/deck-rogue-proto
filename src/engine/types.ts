@@ -78,6 +78,12 @@ export interface PlayerState extends CombatantState {
   readonly iceBlock: number
   /** 詠唱数 (青のストーム): このターンにプレイしたカード数。ターン開始でリセット */
   readonly cardsPlayedThisTurn: number
+  /**
+   * このターンの実プレイ枚数 (2026-09-02 レビュー是正): playCard/直接プレイ/亡骸プレイで+1。
+   * 詠唱数 (cardsPlayedThisTurn) と違い addCasts (焚べ) の嵩が乗らない = 拘束・重りの参照値。
+   * 焚べの嵩が鏡 (mirrorHits) に映るのは裁定済み・拘束/重りには映らない
+   */
+  readonly playsThisTurn?: number
   /** この戦闘でプレイしたカードの累計 (ターンを跨いでリセットされない)。時喰らい型タイマーの参照値 */
   readonly cardsPlayedTotal: number
   /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
