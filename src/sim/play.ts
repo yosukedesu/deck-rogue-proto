@@ -23,7 +23,6 @@ import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getR
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
-import { X_MAX } from '../engine/types.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
@@ -386,8 +385,8 @@ function renderBattle(s: GameState, logFrom: number): string {
         p.impulseUids.includes(c.uid) ? '衝動(このターン限り)' : '',
       ].filter(Boolean).join('・')
       const xEff = c.def.xCost === true ? c.def.effects.filter((e) => e.xHits === true && e.effect === 'dealDamage') : []
-      const xCap = Math.min(X_MAX, p.energy)
-      const xNow = xEff.length > 0 ? ` ［X=1〜${xCap}を xAmount で指定 (省略=最大)。最大なら計${xEff.reduce((a, e) => a + ((e.amount ?? 0) + p.growth + p.momentum) * xCap, 0)}${xEff.some((e) => e.target === 'all') ? '/体' : ''}］` : ''
+      const xCap = p.energy
+      const xNow = xEff.length > 0 ? ` ［X=1〜${xCap}を xAmount で指定 (省略=全部)。全部なら計${xEff.reduce((a, e) => a + ((e.amount ?? 0) + p.growth + p.momentum) * xCap, 0)}${xEff.some((e) => e.target === 'all') ? '/体' : ''}］` : ''
       L.push(` [${c.uid}] ${cardLine(c.def)} 〈${marks || 'プレイ不可'}〉${xNow}`)
     }
   }

@@ -70,14 +70,14 @@ describe('トランプルの網', () => {
   })
 })
 
-describe('Xコスト (2026-09-03 ナーフ: Xは最大4・払う量は1〜4から選ぶ)', () => {
-  it('省略時は min(4, エナジー) を払う。エナジー9なら4ヒットで5E残る (成長・勢いが各ヒットに乗る)', () => {
+describe('Xコスト (2026-09-03 本家形: 単価は1Eコモンの約80%=5、上限なし、払う量は1〜エナジーから選ぶ)', () => {
+  it('省略時は全エナジーを払う。エナジー9なら9ヒット (成長・勢いが各ヒットに乗る)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
     s = { ...s, player: { ...s.player, energy: 9, growth: 2, momentum: 1 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })
-    expect(s.player.energy).toBe(5)
-    expect(s.enemies[0].hp).toBe(hpBefore - (7 + 2 + 1) * 4)
+    expect(s.player.energy).toBe(0)
+    expect(s.enemies[0].hp).toBe(hpBefore - (5 + 2 + 1) * 9)
   })
 
   it('xAmount で少なく払える (X=2 → 2ヒット・残り1E)。範囲外は弾く', () => {
@@ -88,7 +88,7 @@ describe('Xコスト (2026-09-03 ナーフ: Xは最大4・払う量は1〜4か�
     expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry', xAmount: 0 })).toThrow()
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry', xAmount: 2 })
     expect(s.player.energy).toBe(1)
-    expect(s.enemies[0].hp).toBe(hpBefore - 7 * 2)
+    expect(s.enemies[0].hp).toBe(hpBefore - 5 * 2)
   })
 
   it('エナジー0ではプレイできない。割引 (次のカード-1) の対象外で消費もしない', () => {
@@ -144,13 +144,13 @@ describe('ビッグマナの網', () => {
 })
 
 describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃防御吐き先としてあと3種」)', () => {
-  it('蔦の連撃: 7ダメ×Xヒット (貫通なしの入口。成長が各ヒットに乗る)', () => {
+  it('蔦の連撃: 5ダメ×Xヒット (本家Whirlwind=Strikeの83%。成長が各ヒットに乗る)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
     s = { ...s, player: { ...s.player, energy: 3, growth: 1 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })
     expect(s.player.energy).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - (7 + 1) * 3)
+    expect(s.enemies[0].hp).toBe(hpBefore - (5 + 1) * 3)
   })
 
   it('樹皮の重鎧: ブロック6×X (ランプ中の無防備への吐き先)', () => {
@@ -161,14 +161,14 @@ describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃�
     expect(s.player.block).toBe(6 * 4)
   })
 
-  it('森羅の大嵐: 敵全体に5ダメ×Xヒット (全体×多段×ランプの派手枠)', () => {
+  it('森羅の大嵐: 敵全体に4ダメ×Xヒット (全体×多段×ランプの派手枠。本家形の全体単価≈80%)', () => {
     let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42), ['green_x_sylvan_tempest'])
     s = { ...s, player: { ...s.player, energy: 3, growth: 2 } }
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_sylvan_tempest' })
-    expect(s.enemies[0].hp).toBe(hp0 - (5 + 2) * 3) // 成長は対象ごと・ヒットごとに乗る
-    expect(s.enemies[1].hp).toBe(hp1 - (5 + 2) * 3)
+    expect(s.enemies[0].hp).toBe(hp0 - (4 + 2) * 3) // 成長は対象ごと・ヒットごとに乗る
+    expect(s.enemies[1].hp).toBe(hp1 - (4 + 2) * 3)
   })
 })
 

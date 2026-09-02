@@ -108,8 +108,8 @@ export function cardCostLabel(def: { cost: number; xCost?: boolean }, discounted
 export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
   if (e.xHits !== true) return ''
   return e.effect !== undefined && e.effect.startsWith('dealDamage')
-    ? '×Xヒット(Xは最大4・各ヒットに成長・勢いが乗る)'
-    : '×Xヒット(Xは最大4)'
+    ? '×Xヒット(各ヒットに成長・勢いが乗る)'
+    : '×Xヒット'
 }
 
 

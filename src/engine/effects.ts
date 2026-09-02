@@ -4,7 +4,6 @@
 
 import { getCardDef, getEnemyDef } from './content.ts'
 import { emit } from './events.ts'
-import { X_MAX } from './types.ts'
 import { setEffectsOf, setFireCost } from './setany.ts'
 import { nextInt, shuffle } from './rng.ts'
 import type {
@@ -54,9 +53,9 @@ export function auraCostUp(state: GameState, card: CardInstance): number {
 }
 
 export function effectiveCost(state: GameState, card: CardInstance): number {
-  // Xコスト: 現在のエナジーを X_MAX まで支払う (最低1 = エナジー0ではプレイ不可)。割引・オーラの対象外。
-  // 実際に払う量は PlayCard.xAmount で選べる (既定=上限まで)
-  if (card.def.xCost === true) return Math.max(1, Math.min(X_MAX, state.player.energy))
+  // Xコスト: 現在のエナジーを全て支払う (最低1 = エナジー0ではプレイ不可)。割引・オーラの対象外。
+  // 実際に払う量は PlayCard.xAmount で選べる (既定=全部)
+  if (card.def.xCost === true) return Math.max(1, state.player.energy)
   // 屍集めで戻した札はこの戦闘中0E (2026-08-31 rework。割引も消費しない。オーラも「0Eの約束」を破らない)
   if (card.freeThisCombat === true) return 0
   const up = auraCostUp(state, card)
