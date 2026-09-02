@@ -174,3 +174,5 @@ StS1の段階的導入は廃止されている。うちの敵圧監査（幕1に
 *生データ: `docs/sts2/acts.md`（幕・編成・マップ生成）/ `docs/sts2/monsters-a-l.md` /
 `docs/sts2/monsters-m-z.md`（全121体の HP・技・ローテ・ギミック）/ `docs/sts2/powers.md`
 （パワー262種の逆引き・ステータス札・呪い札・Afflictions）。*
+
+> 関連: アイアンクラッドのカードプール全数（87枚・アーキ別4役）は `docs/sts2/ironclad.md`、緑との対照監査は `docs/green-audit.md`（2026-09-02）。
