@@ -1663,7 +1663,7 @@ function BattleScreen({
                       <span className="chip chip-strength">🕯️ {kw('弔い')}+{enemyDef.mournStrength}</span>
                     )}
                     {enemyDef.turnArmor !== undefined && !dead && (
-                      <span className="chip chip-strength">🪨 {kw('ターン装甲')}{enemyDef.turnArmor}（残り{Math.max(0, enemyDef.turnArmor - (enemy.damageThisTurn ?? 0))}）</span>
+                      <span className="chip chip-strength">🪨 {kw('ターン装甲')}{enemyDef.turnArmor}（残り{Math.max(0, enemyDef.turnArmor - (enemy.damageThisTurn ?? 0))}）{enemy.hp > Math.max(0, enemyDef.turnArmor - (enemy.damageThisTurn ?? 0)) ? ' ⚠今ターン倒せない' : ''}</span>
                     )}
                     {(enemy.artifact ?? 0) > 0 && !dead && (
                       <span className="chip chip-strength">🔮 {kw('アーティファクト')} {enemy.artifact}</span>
@@ -1897,8 +1897,7 @@ function BattleScreen({
         (() => {
           // 式は engine/summary.ts の worstIncomingTotal に1本化 (2026-09-02 レビュー是正:
           // フッター・💀バッジ・CLIで合成順が3通りに割れていた)
-          const worst = worstIncomingTotal(s)
-          if (worst <= 0) return null
+          const worst = worstIncomingTotal(s) // 0でも出す (2026-09-02: 非攻撃ターンに行が消えると表示漏れと迷う)
           const defense = player.block + player.iceBlock
           const through = Math.max(0, worst - defense)
           return (

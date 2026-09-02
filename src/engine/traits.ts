@@ -97,7 +97,12 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     tags.push(`孵化(${t === 0 ? 'このフェーズで孵化!' : t !== null ? `あと${t}手` : ''}→${getEnemyDef(def.hatchInto.enemyId).name}。打ち消しで遅延可・行動値条件の打ち消しは反応しない)`)
   }
   if (def.mournStrength) tags.push(`弔い+${def.mournStrength}(仲間が倒れるたび筋力+)`)
-  if (def.turnArmor) tags.push(`ターン装甲${def.turnArmor}(1ターンのHP損失は${def.turnArmor}以下。残り${Math.max(0, def.turnArmor - (e.damageThisTurn ?? 0))}。延焼は無視)`)
+  if (def.turnArmor) {
+    const remaining = Math.max(0, def.turnArmor - (e.damageThisTurn ?? 0))
+    // 「今ターン倒せない」の予告 (2026-09-02 Opusラン: HP52>残り45 を暗算させて死因に直結。フェアネス=予告してから殺す)
+    const unkillable = e.hp > 0 && e.hp > remaining ? ` ⚠今ターン倒せない(HP${e.hp}>残り${remaining})` : ''
+    tags.push(`ターン装甲${def.turnArmor}(1ターンのHP損失は${def.turnArmor}以下。残り${remaining}。延焼は無視)${unkillable}`)
+  }
   if ((e.artifact ?? 0) > 0) tags.push(`アーティファクト${e.artifact}(デバフ付与を${e.artifact}回弾く。延焼は通る)`)
   if (def.wakeOnDamage && !e.woken && e.patternIndex < def.wakeOnDamage.resumeAt) {
     tags.push(`眠り(累計${def.wakeOnDamage.damage}ダメで目覚める。現在${e.damageTakenTotal ?? 0})`)

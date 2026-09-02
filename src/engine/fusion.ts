@@ -355,6 +355,14 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // ユーザー指示「同名カードは倍率上げて強いカードが生成されるべき」とも整合する
   const targetVp = vpOf(a.def.effects, a.def.type) + vpOf(b.def.effects, b.def.type)
   const othersArr = [...others]
+  // 効果の並び: 粉砕 (敵ブロック全壊) はダメージの前に置く (2026-09-02 Opusラン: 合成で粉砕が末尾に付き、
+  // 1ヒット目がブロックに吸われて機能しなかった)。それ以外は「ダメージ→その他」の既存順 (勢い等は次の札から乗る裁定を維持)
+  const isShatter = (e: DeclarativeEffect) => e.effect === 'shatterBlock' || e.effect === 'shatterBlockConvert'
+  const assemble = (): DeclarativeEffect[] => [
+    ...othersArr.filter(isShatter),
+    ...damageEffects,
+    ...othersArr.filter((e) => !isShatter(e)),
+  ]
   // 「量」の効果 = 予算に合わせて削れるもの。焚き火の「鍛える」が触れるのと同じ集合に揃える
   // (ドロー・成長・勢い等の単位効果と参照スケーリングには触らない)
   const BLOCKY = new Set([
@@ -401,7 +409,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 初回は**ダメージだけ**を素材の合計VPへ合わせる — 特性の伝播 (全体×2・貫通×1.25・多段) の
   // 対価をダメージ量で払わせるための手順であって、防御量まで動かす意図はない
   if (unitVp > 0) fitTo(targetVp)
-  let effects = [...damageEffects, ...othersArr]
+  let effects = assemble()
 
   // 合成札は「報酬札と同じ定価125%帯」で値付けする (2026-08-30)。
   // VP表は「カード1枚の機会費用 +2VP」を含む (ALLOW = 6×コスト + 2) ため、2枚を1枚にすると
@@ -436,7 +444,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
     } else {
       fitTo(normal)
     }
-    effects = [...damageEffects, ...othersArr]
+    effects = assemble()
     cost = Math.min(cost, costOf(effects)) // 削りすぎて安く収まるならその安い方を採る
   }
 
@@ -454,7 +462,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
       } else {
         fitTo(normal)
       }
-      effects = [...damageEffects, ...othersArr]
+      effects = assemble()
     } else {
       reactionOverCap = true // 削れる量が無いのに2Eを超える (ほぼ到達不能) = 合成不可
     }
@@ -468,7 +476,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   // 帯超過 (187.5%) を超えた分は直後の既存チェックが消滅で払わせる = 法体系は不変
   if (canScale) {
     fitTo(vpOf(effects, resultType) * FUSION_PREMIUM)
-    effects = [...damageEffects, ...othersArr]
+    effects = assemble()
   }
 
   let vp = vpOf(effects, resultType)
@@ -483,7 +491,7 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
       // 圧縮できる量が無い置物 (成長のみ等) はコストを上げて収める
       if (canScale) {
         fitTo(bandCap())
-        effects = [...damageEffects, ...othersArr]
+        effects = assemble()
         vp = vpOf(effects, resultType)
       }
       while (vp > bandCap() && cost < 5) cost++

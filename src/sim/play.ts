@@ -97,7 +97,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
     onPlay: holderType === 'permanent' ? '登場時:' : '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
     onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
-    onAttackPlayed: '攻撃プレイごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
+    onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
@@ -264,7 +264,8 @@ function renderBattle(s: GameState, logFrom: number): string {
     void e
     worst += worstIncomingFrom(s, i) // 式は engine/summary.ts に1本化 (2026-09-02)
   })
-  if (worst > 0) {
+  {
+    // 0でも行を出す (2026-09-02 Opusラン: 非攻撃ターンに行ごと消えると「表示漏れ」と迷う)
     const defense = p.block + p.iceBlock
     const through = Math.max(0, worst - defense)
     L.push(
@@ -353,7 +354,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       const playable = isPlayableFromHand(c) && cost <= p.energy
       const canSet = c.def.type === 'reaction' && p.setCards.length < p.setSlots && c.def.cost <= p.energy
       const marks = [
-        c.def.id === 'status_wound' || c.def.id === 'status_junk'
+        c.def.id.startsWith('status_') // 負傷・がらくた・火傷・烙印・仮初の烙印 (2026-09-02 Opusラン: 火傷が「エナジー不足」と誤表示)
           ? '使用不可(死に札)'
           : playable
             ? 'プレイ可'
