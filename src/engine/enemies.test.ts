@@ -859,6 +859,91 @@ describe('デバフ拡張と時限呪い (2026-09-02 全体改善・第7波)', (
   })
 })
 
+describe('敵ギミック第3波 (2026-09-02 残件議論: 量の問いの器・本家普遍の器)', () => {
+  it('ターン装甲: 1ターンのHP損失累計が上限で頭打ちになり、次の自ターンでリセットされる', () => {
+    let s = freshCombat('set-confirm', 'enemy_sludge_berserker', 42) // turnArmor 45
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })), player: { ...s.player, energy: 9 } }
+    const hp0 = s.enemies[0].hp
+    // 大蛇の丸呑み+相当の一撃を2回 (成長なし: 34ダメ×2=68 > 45)
+    s = withHand(s, ['green_serpent_gulp', 'green_serpent_gulp', 'green_strike', 'green_strike'])
+    const gulp1 = s.player.hand[0].uid
+    s = applyCommand(s, { type: 'PlayCard', cardUid: gulp1, discardUids: [s.player.hand[2].uid] })
+    const gulp2 = s.player.hand.find((c) => c.def.id === 'green_serpent_gulp')!.uid
+    const filler = s.player.hand.find((c) => c.def.id === 'green_strike')!.uid
+    s = applyCommand(s, { type: 'PlayCard', cardUid: gulp2, discardUids: [filler] })
+    expect(hp0 - s.enemies[0].hp).toBe(45) // 68 → 45 に頭打ち
+    expect(s.eventLog.some((e) => e.type === 'DamageDealt' && (e.turnArmorCut ?? 0) > 0)).toBe(true)
+    // ターンを回すと累計がリセット
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies[0].damageThisTurn ?? 0).toBe(0)
+  })
+
+  it('アーティファクト: 急所付与を弾いて1消費し、延焼は弾かない', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_giant_face', 42) // artifact 2
+    expect(s.enemies[0].artifact).toBe(2)
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_basic_bash', 'green_basic_bash'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid })
+    expect(s.enemies[0].exposed).toBe(0) // 急所+2は弾かれた
+    expect(s.enemies[0].artifact).toBe(1)
+    expect(s.eventLog.some((e) => e.type === 'ArtifactBlocked')).toBe(true)
+    // 延焼は通る
+    applyDebugOverrides({
+      enemies: [
+        {
+          id: 'test_artifact_burn',
+          name: 'テスト',
+          archetype: 'brute',
+          maxHp: 80,
+          artifact: 1,
+          moves: [{ id: 'poke', kind: 'attack', min: 3, max: 5, weight: 1 }],
+        },
+      ],
+    })
+    let t = freshCombat('set-confirm', 'test_artifact_burn', 42)
+    t = { ...t, player: { ...t.player, energy: 9 } }
+    t = withHand(t, ['red_ignite'])
+    t = applyCommand(t, { type: 'PlayCard', cardUid: t.player.hand[0].uid })
+    expect(t.enemies[0].burn).toBeGreaterThan(0)
+    expect(t.enemies[0].artifact).toBe(1) // 消費されていない
+  })
+
+  it('被弾覚醒: 鉄卵は累計20ダメで眠りの前奏を打ち切り、次の宣言が目覚め (awaken) になる', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_iron_egg', 42)
+    expect(s.enemies[0].intent?.kind).toBe('defend') // 眠り=殻を積む
+    // しきい値未満では眠り続ける
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0, damageTakenTotal: 10 })) }
+    expect(s.enemies[0].woken).toBeUndefined()
+    // 20以上のHP損失を与える (装甲22で1ヒット上限22 = 丸呑み1発で20超え)
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_serpent_gulp', 'green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid, discardUids: [s.player.hand[1].uid] })
+    expect(s.enemies[0].woken).toBe(true)
+    expect(s.enemies[0].intent?.kind).toBe('defend') // 宣言済みの意図は変わらない (宣言時固定則)
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies[0].intent?.kind).toBe('buff') // 次の宣言 = awaken
+  })
+
+  it('技の恒久成長: 巨面の圧潰は使うたび+4 (幅表示・実値の両方に乗る)', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_giant_face', 42)
+    const crushValues: number[] = []
+    for (let t = 0; t < 6 && s.phase === 'player-turn'; t++) {
+      const it = s.enemies[0].intent
+      if (it?.kind === 'attack') crushValues.push(it.shownMin)
+      s = withHand(s, [])
+      s = { ...s, player: { ...s.player, hp: 999, maxHp: 999 } }
+      s = applyCommand(s, { type: 'EndTurn' })
+    }
+    expect(crushValues.length).toBeGreaterThanOrEqual(2)
+    // 睨みの筋力+2〜3も乗るので「+4以上ずつ増える」で固定
+    for (let i = 1; i < crushValues.length; i++) {
+      expect(crushValues[i] - crushValues[i - 1]).toBeGreaterThanOrEqual(4)
+    }
+  })
+})
+
+
 
 
 

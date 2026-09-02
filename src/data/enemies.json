@@ -438,7 +438,8 @@
   ],
   "burnResist": 2,
   "regenBreak": 30,
-  "opener": "slam"
+  "opener": "slam",
+  "artifact": 1
  },
  {
   "id": "enemy_joker",
@@ -752,7 +753,8 @@
    "windup",
    "great_swing",
    "gasp"
-  ]
+  ],
+  "artifact": 1
  },
  {
   "id": "enemy_shell_guard",
@@ -1146,7 +1148,7 @@
   "id": "enemy_elite_iron_egg",
   "name": "眠れる鉄卵",
   "archetype": "elite",
-  "flavor": "眠っている間も、殻は厚くなり続ける。起こすか、削り続けるか。",
+  "flavor": "眠っている間も、殻は厚くなり続ける。殴れば目を覚ます。起こすか、育てるか。",
   "maxHp": 112,
   "armor": 22,
   "moves": [
@@ -1178,16 +1180,16 @@
   ],
   "sequence": [
    "sleep",
+   "sleep",
+   "sleep",
    "awaken",
-   "tail",
-   "tail",
-   "tail",
-   "tail",
-   "tail",
-   "tail",
-   "tail",
    "tail"
-  ]
+  ],
+  "sequenceLoopFrom": 4,
+  "wakeOnDamage": {
+   "damage": 20,
+   "resumeAt": 3
+  }
  },
  {
   "id": "enemy_elite_slaver",
@@ -1300,13 +1302,16 @@
     "kind": "attack",
     "min": 30,
     "max": 34,
-    "weight": 1
+    "weight": 1,
+    "growPerUse": 4
    }
   ],
   "sequence": [
    "glare",
    "crush"
-  ]
+  ],
+  "turnArmor": 50,
+  "artifact": 2
  },
  {
   "id": "enemy_elite_gold_raven",
@@ -1935,7 +1940,8 @@
     "kind": "attack",
     "min": 15,
     "max": 19,
-    "weight": 1
+    "weight": 1,
+    "growPerUse": 2
    },
    {
     "id": "claws",
@@ -2000,6 +2006,7 @@
    "pummel",
    "hug",
    "smother"
-  ]
+  ],
+  "turnArmor": 45
  }
 ]

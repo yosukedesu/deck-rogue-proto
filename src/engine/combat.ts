@@ -5,7 +5,7 @@
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
-import {
+import { applyWakeCheck,
   cardNeedsTarget,
   drawCards,
   effectiveCost,
@@ -172,6 +172,7 @@ export function startCombatWithOptions(
       ...(m.noReactTable === true ? { noReactTable: true } : {}),
       // とげは def からコピーして状態に持つ (effects.ts が content 参照なしで反射できる)
       ...(def.thorns !== undefined ? { thorns: def.thorns } : {}),
+      ...(def.artifact !== undefined ? { artifact: def.artifact } : {}),
       ...(def.armor !== undefined ? { armor: def.armor } : {}),
     }
   })
@@ -384,8 +385,11 @@ function declareIntents(state: GameState): GameState {
       nextKeyUses += 1
       if (nextKeyUses >= pau.uses) nextPatternIndex = 0
     }
-    const [intent, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1)
+    const usesSoFar = enemy.moveGrowth?.[move.id] ?? 0
+    const [intent, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar)
     rng = rngA
+    const growsMove = move.growPerUse !== undefined || move.growHitsPerUse !== undefined
+    const nextGrowth = growsMove ? { ...(enemy.moveGrowth ?? {}), [move.id]: usesSoFar + 1 } : enemy.moveGrowth
 
     let alt: ReturnType<typeof buildIntent>[0] | undefined
     let condOn = conditionalOn
@@ -437,6 +441,7 @@ function declareIntents(state: GameState): GameState {
             patternIndex: nextPatternIndex,
             keyMoveUses: nextKeyUses,
             lastMoveId: move.id,
+            ...(nextGrowth !== undefined ? { moveGrowth: nextGrowth } : {}),
             ...(move.once === true ? { usedOnce: [...(e.usedOnce ?? []), move.id] } : {}),
             ...(stolen > 0 ? { stolenGold: (e.stolenGold ?? 0) + stolen } : {}),
           }
@@ -454,6 +459,7 @@ function buildIntent(
   move: EnemyMove,
   strength: number,
   atkScale = 1,
+  uses = 0,
 ): readonly [
   {
     kind: EnemyMove['kind']
@@ -467,10 +473,16 @@ function buildIntent(
   },
   GameState['rng'],
 ] {
+  // 技の恒久成長 (2026-09-02): 宣言回数×growPerUse を min/max に、×growHitsPerUse をヒット数に加算
+  const grow = (move.growPerUse ?? 0) * uses
+  const growHits = (move.growHitsPerUse ?? 0) * uses
+  const gMin = move.min !== undefined ? move.min + grow : undefined
+  const gMax = move.max !== undefined ? move.max + grow : undefined
+  const gHits = move.hits !== undefined || growHits > 0 ? (move.hits ?? 1) + growHits : undefined
   let actual = 0
   let next = rng
-  if (move.min !== undefined && move.max !== undefined) {
-    ;[actual, next] = nextInt(rng, move.min, move.max)
+  if (gMin !== undefined && gMax !== undefined) {
+    ;[actual, next] = nextInt(rng, gMin, gMax)
   }
   const bonus = move.kind === 'attack' ? strength : 0
   // 打点倍率 (幕2/3+15%): 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算 =
@@ -480,10 +492,10 @@ function buildIntent(
   return [
     {
       kind: move.kind,
-      shownMin: clamp(scale(move.min ?? 0) + bonus),
-      shownMax: clamp(scale(move.max ?? 0) + bonus),
+      shownMin: clamp(scale(gMin ?? 0) + bonus),
+      shownMax: clamp(scale(gMax ?? 0) + bonus),
       actual: clamp(scale(actual) + bonus),
-      hits: move.hits,
+      hits: gHits,
       ...(move.mirrorHits === true ? { mirrorHits: true } : {}),
       inflict: move.inflict,
       alsoDefend: move.alsoDefend,
@@ -513,6 +525,8 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
     },
   }
+  // ターン装甲の累計リセット (2026-09-02): 自ターン開始〜次の自ターン開始が「1ターン」
+  s = { ...s, enemies: s.enemies.map((e) => ((e.damageThisTurn ?? 0) > 0 ? { ...e, damageThisTurn: 0 } : e)) }
   s = emit(s, { type: 'TurnStarted', turn })
   // ドローを onTurnStart 誘発より先に行う (2026-08-31 変更)。
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
@@ -569,6 +583,7 @@ function processSplits(state: GameState): GameState {
         exposed: 0,
         patternIndex: splitInto.stunned === true ? 0 : (k + 1) % (childDef.sequence?.length ?? 1),
         ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
+        ...(childDef.artifact !== undefined ? { artifact: childDef.artifact } : {}),
         ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
       }
       s = { ...s, rng: rng2, enemies: [...s.enemies, child] }
@@ -1159,6 +1174,7 @@ export function endTurn(state: GameState): GameState {
       ),
     }
     s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
+    s = applyWakeCheck(s, i) // 被弾覚醒はどの経路の被弾でも (2026-09-02)
     // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
     {
       const struck = s.enemies[i]
@@ -1639,6 +1655,9 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
                 keyMoveUses: 0,
                 lastMoveId: undefined,
                 usedOnce: [],
+                moveGrowth: {},
+                woken: false,
+                ...(newDef.artifact !== undefined ? { artifact: newDef.artifact } : { artifact: 0 }),
                 intent: null,
               }
             : e,

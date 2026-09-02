@@ -159,6 +159,14 @@ export interface EnemyState extends CombatantState {
   readonly usedOnce?: readonly string[]
   /** この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる) */
   readonly mournProcessed?: boolean
+  /** ターン装甲の累計 (このターンに受けたHP損失。自ターン開始でリセット) */
+  readonly damageThisTurn?: number
+  /** アーティファクトの残チャージ (戦闘開始時に def.artifact から) */
+  readonly artifact?: number
+  /** 技の恒久成長: moveId → 宣言回数 */
+  readonly moveGrowth?: Readonly<Record<string, number>>
+  /** 被弾覚醒が発火済みか */
+  readonly woken?: boolean
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
@@ -377,6 +385,8 @@ export type GameEvent =
       readonly enemyIndex?: number
       /** 装甲で切り捨てられた量 (2026-08-31 収穫ラン指摘「切られた量が見えないと積むのをやめる判断を学習できない」) */
       readonly armorCut?: number
+      /** ターン装甲で切り捨てられた量 (2026-09-02) */
+      readonly turnArmorCut?: number
     }
   | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number }
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
@@ -392,7 +402,9 @@ export type GameEvent =
   | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)
   | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02)
   | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02)
-  | { readonly type: 'GuardianRedirected'; readonly fromIndex: number; readonly toIndex: number } // 庇うのリダイレクト発生 (2026-09-02 検証ラン「無言で起きる」への処方) // 状態異常付与
+  | { readonly type: 'GuardianRedirected'; readonly fromIndex: number; readonly toIndex: number } // 庇うのリダイレクト発生 (2026-09-02 検証ラン「無言で起きる」への処方)
+  | { readonly type: 'ArtifactBlocked'; readonly enemyIndex: number; readonly effect: string } // アーティファクトがデバフを弾いた (2026-09-02)
+  | { readonly type: 'EnemyWoken'; readonly enemyIndex: number } // 被弾覚醒 (2026-09-02) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
@@ -806,6 +818,13 @@ export interface EnemyMove {
    */
   readonly noRepeat?: boolean
   readonly once?: boolean
+  /**
+   * 技の恒久成長 (2026-09-02 StS2 TestSubject式「戻らない恐怖」): この技を宣言するたび、以降の
+   * min/max に +growPerUse・ヒット数に +growHitsPerUse (この戦闘中ずっと)。長引くほど危険 =
+   * 速攻の理由を敵側の時間で作る (弱体・脆弱が短期戦で鳴らない問題の逆側からの受け)
+   */
+  readonly growPerUse?: number
+  readonly growHitsPerUse?: number
   readonly id: string
   readonly kind: EnemyActionKind
   readonly min?: number
@@ -955,6 +974,23 @@ export interface EnemyDef {
    * 「同時に削って同時に落とせ」= 全体攻撃が構造的な最適解になる編成の器
    */
   readonly mournStrength?: number
+  /**
+   * ターン装甲 (2026-09-02 StS2 HardenedShell式。「量の問い」の第3の器): 1ターン (自ターン開始〜次の
+   * 自ターン開始) に受けるHP損失の累計はN以下。装甲 (1ヒット上限=単発への問い) の対 = 多段・バーストへの上限。
+   * 延焼ティックは無視 (装甲と同じ裁定 = バーンが解答)。敵カードに常時表示
+   */
+  readonly turnArmor?: number
+  /**
+   * アーティファクト (2026-09-02 本家Artifact): デバフ付与 (急所・威圧・混乱) をN回無効化して1消費。
+   * 延焼は弾かない (DoTはデバフでなくダメージ = 赤の解答を殺さない、のユーザー裁定)。敵カードに常時表示
+   */
+  readonly artifact?: number
+  /**
+   * 被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失が damage 以上になったら、ローテを resumeAt へ
+   * 飛ばす (眠りの前奏を打ち切る)。宣言済みの意図はそのまま (宣言時固定則) = 次の宣言から目覚める。
+   * 「寝ている間に削る (起こすリスク) か、放置して殻を積ませるか」の本物の二択
+   */
+  readonly wakeOnDamage?: { readonly damage: number; readonly resumeAt: number }
   /**
    * 常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」):
    * この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。

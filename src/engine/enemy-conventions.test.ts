@@ -89,6 +89,7 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
       'enrage', 'enrageEveryCards', 'enrageEveryDamage', 'regen', 'regenBreak', 'burnResist',
       'thorns', 'armor', 'startingBlock', 'angerOnBlock', 'guardian', 'bondStrength',
       'opener', 'phaseAfterUses', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
+      'turnArmor', 'artifact', 'wakeOnDamage',
     ])
     const offenders: string[] = []
     for (const e of allEnemies) {

@@ -194,6 +194,10 @@ const KEYWORD_HELP: Record<string, string> = {
   残機: '倒すと次の形態で再起動する（次のHPはチップに表示）。オーバーキルのダメージは持ち越されない＝ちょうど削る計画の問い',
   孵化: '放っておくと孵化して強い姿になる。卵のうちに割るか、親から倒すかの資源配分。孵化は打ち消しで1ターン遅らせられる（ただし行動値条件つきの打ち消し〔逆巻き等〕は孵化＝行動値0に反応しない）',
   弔い: '仲間が倒れるたび筋力+N（逃走は除く）。同時に削って同時に落とすのが正解＝全体攻撃の出番',
+  ターン装甲: '1ターンに受けるHP損失の合計がこの値以下に頭打ちになる（装甲は1ヒット、こちらは1ターン）。多段・バーストの上限。延焼は無視して通る',
+  アーティファクト: 'デバフ（急所・威圧・混乱）の付与をN回弾いて1減る。延焼は弾かない',
+  眠り: '眠っている間は殻を積む。累計ダメージがしきい値に達すると目を覚まし、前奏を打ち切って本気になる。寝ている間に削るか、放置して準備するか',
+  育つ技: 'この技は使うたび威力（またはヒット数）が増え、この戦闘中は戻らない。長引くほど危険＝速攻の理由',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
   貫通: '敵のブロックを無視してダメージを与える（トランプル）',
@@ -1675,6 +1679,18 @@ function BattleScreen({
                     )}
                     {enemyDef.mournStrength !== undefined && !dead && (
                       <span className="chip chip-strength">🕯️ {kw('弔い')}+{enemyDef.mournStrength}</span>
+                    )}
+                    {enemyDef.turnArmor !== undefined && !dead && (
+                      <span className="chip chip-strength">🪨 {kw('ターン装甲')}{enemyDef.turnArmor}（残り{Math.max(0, enemyDef.turnArmor - (enemy.damageThisTurn ?? 0))}）</span>
+                    )}
+                    {(enemy.artifact ?? 0) > 0 && !dead && (
+                      <span className="chip chip-strength">🔮 {kw('アーティファクト')} {enemy.artifact}</span>
+                    )}
+                    {enemyDef.wakeOnDamage !== undefined && enemy.woken !== true && enemy.patternIndex < enemyDef.wakeOnDamage.resumeAt && !dead && (
+                      <span className="chip">😴 {kw('眠り')}: 累計{enemyDef.wakeOnDamage.damage}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
+                    )}
+                    {enemyDef.moves.some((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined) && !dead && (
+                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}/使用（現在${enemy.moveGrowth?.[m.id] ?? 0}回）`).join('・')}</span>
                     )}
                     {enemyDef.guardian === true && !dead && (
                       <span className="chip chip-strength">🛡️ {kw('庇う')}</span>

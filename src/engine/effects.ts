@@ -601,7 +601,50 @@ export function damageBreakdown(
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
   if (blocked > 0) steps.push({ label: `敵ブロック-${blocked}`, value: amount - blocked })
   if (pierce && enemy.block > 0) steps.push({ label: '貫通(ブロック無視)', value: amount })
-  return { steps, blocked, hpLoss: amount - blocked }
+  let hpLoss = amount - blocked
+  // ターン装甲 (2026-09-02): このターンのHP損失累計の上限
+  const turnArmor = getEnemyDef(enemy.enemyId).turnArmor
+  if (turnArmor !== undefined) {
+    const remaining = Math.max(0, turnArmor - (enemy.damageThisTurn ?? 0))
+    if (hpLoss > remaining) {
+      hpLoss = remaining
+      steps.push({ label: `ターン装甲(残り${remaining})`, value: hpLoss })
+    }
+  }
+  return { steps, blocked, hpLoss }
+}
+
+/**
+ * 被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失がしきい値に達したら眠りの前奏を打ち切り、
+ * ローテを resumeAt へ。宣言済みの意図は変えない (宣言時固定則) = 次の宣言から目覚める
+ */
+export function applyWakeCheck(state: GameState, enemyIndex: number): GameState {
+  const e = state.enemies[enemyIndex]
+  if (!e || e.hp <= 0 || e.woken === true) return state
+  const wake = getEnemyDef(e.enemyId).wakeOnDamage
+  if (wake === undefined) return state
+  if ((e.damageTakenTotal ?? 0) < wake.damage || e.patternIndex >= wake.resumeAt) return state
+  const enemies = state.enemies.map((x, i) =>
+    i === enemyIndex ? { ...x, patternIndex: wake.resumeAt, woken: true } : x,
+  )
+  return emit({ ...state, enemies }, { type: 'EnemyWoken', enemyIndex })
+}
+
+/**
+ * アーティファクト (2026-09-02 本家Artifact): デバフ付与をN回無効化。弾いたら true を返し、
+ * 呼び出し側は効果を解決しない。延焼は対象外 (DoTはダメージ = ユーザー裁定「延焼は弾かない」)
+ */
+export function tryArtifactBlock(
+  state: GameState,
+  enemyIndex: number,
+  effectName: string,
+): readonly [GameState, boolean] {
+  const e = state.enemies[enemyIndex]
+  if (!e || e.hp <= 0 || (e.artifact ?? 0) <= 0) return [state, false]
+  const enemies = state.enemies.map((x, i) =>
+    i === enemyIndex ? { ...x, artifact: (x.artifact ?? 0) - 1 } : x,
+  )
+  return [emit({ ...state, enemies }, { type: 'ArtifactBlocked', enemyIndex, effect: effectName }), true]
 }
 
 export function dealDamageToEnemy(
@@ -624,7 +667,18 @@ export function dealDamageToEnemy(
   const armorCut = enemy.armor !== undefined && amount > enemy.armor ? amount - enemy.armor : 0
   if (armorCut > 0) amount = enemy.armor!
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
-  const hpLoss = amount - blocked
+  let hpLoss = amount - blocked
+  // ターン装甲 (2026-09-02 StS2 HardenedShell式): このターンのHP損失累計はN以下 (装甲の対 =
+  // 多段・バーストへの量の問い)。ブロックの後・延焼は別経路で無視 (装甲と同じ裁定)
+  const turnArmor = getEnemyDef(enemy.enemyId).turnArmor
+  let turnArmorCut = 0
+  if (turnArmor !== undefined) {
+    const remaining = Math.max(0, turnArmor - (enemy.damageThisTurn ?? 0))
+    if (hpLoss > remaining) {
+      turnArmorCut = hpLoss - remaining
+      hpLoss = remaining
+    }
+  }
   const enemies = state.enemies.map((e, i) =>
     i === enemyIndex
       ? {
@@ -635,13 +689,23 @@ export function dealDamageToEnemy(
           // regenBreak の判定用 (確定済みルール表「再生」)。再生判定のたびにリセットされる
           hpLostSinceRegen: (e.hpLostSinceRegen ?? 0) + hpLoss,
           damageTakenTotal: (e.damageTakenTotal ?? 0) + hpLoss,
+          damageThisTurn: (e.damageThisTurn ?? 0) + hpLoss,
         }
       : e,
   )
   let s = emit(
     { ...state, enemies },
-    { type: 'DamageDealt', source: 'player', amount, hpLoss, enemyIndex, ...(armorCut > 0 ? { armorCut } : {}) },
+    {
+      type: 'DamageDealt',
+      source: 'player',
+      amount,
+      hpLoss,
+      enemyIndex,
+      ...(armorCut > 0 ? { armorCut } : {}),
+      ...(turnArmorCut > 0 ? { turnArmorCut } : {}),
+    },
   )
+  s = applyWakeCheck(s, enemyIndex)
   // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化。
   // 枚数トリガーの盲点 (1枚で100点出すデッキが素通しする) への処方
   {
@@ -875,6 +939,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.hp <= 0) return state
+      {
+        const [sa, blocked] = tryArtifactBlock(state, enemyIndex, 'confuse')
+        if (blocked) return sa
+      }
       const enemies = state.enemies.map((e, i) =>
         i === enemyIndex ? { ...e, confusion: e.confusion + amount } : e,
       )
@@ -888,6 +956,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.hp <= 0) return state
+      {
+        const [sa, blocked] = tryArtifactBlock(state, enemyIndex, 'weakenEnemy')
+        if (blocked) return sa
+      }
       const enemies = state.enemies.map((e, i) =>
         i === enemyIndex ? { ...e, strength: e.strength - amount } : e,
       )
@@ -1099,6 +1171,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.hp <= 0) return state
+      {
+        const [sa, blocked] = tryArtifactBlock(state, enemyIndex, 'exposeEnemy')
+        if (blocked) return sa
+      }
       const enemies = state.enemies.map((e, i) =>
         i === enemyIndex ? { ...e, exposed: e.exposed + amount } : e,
       )
