@@ -267,7 +267,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("enemyId")]
         public string EnemyId { get; init; } = default!;
         [JsonProperty("intent")]
-        public object /* union */ Intent { get; init; } = default!;
+        public EnemyIntent? Intent { get; init; }
         /// <summary>強化 (StSの筋力)。攻撃の実値と幅表示の両方に加算される</summary>
         [JsonProperty("strength")]
         public int Strength { get; init; }
@@ -427,6 +427,20 @@ namespace DeckRogue.Engine.Generated
         public string Stage { get; init; } = default!;
     }
 
+    /// <summary>GameState.lastAction のインライン型</summary>
+    public sealed record GameStateLastAction
+    {
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
+        [JsonProperty("kind")]
+        public string Kind { get; init; } = default!;
+        [JsonProperty("hpLoss")]
+        public int HpLoss { get; init; }
+        /// <summary>その行動の実値 (2026-08-31: post窓の minActionValue 判定用)</summary>
+        [JsonProperty("actual")]
+        public int Actual { get; init; }
+    }
+
     /// <summary>GameState</summary>
     public sealed record GameState
     {
@@ -444,7 +458,7 @@ namespace DeckRogue.Engine.Generated
         public IReadOnlyList<EnemyState> Enemies { get; init; } = default!;
         /// <summary>割り込み中断中の再開情報。通常は null</summary>
         [JsonProperty("pendingWindow")]
-        public object /* union */ PendingWindow { get; init; } = default!;
+        public PendingWindow? PendingWindow { get; init; }
         /// <summary>リーダーパッシブ・レリック (innate置物) の効果を解決中フラグ (2026-08-31 鬼軍曹の怒りをカード由来の守りに限定するため。遷移中のみ立つ)</summary>
         [JsonProperty("innateResolving")]
         public bool? InnateResolving { get; init; }
@@ -462,7 +476,7 @@ namespace DeckRogue.Engine.Generated
         public bool ReactionUsedThisAction { get; init; }
         /// <summary>直前に解決された敵の行動 (行動解決後リアクションの条件判定用。行動開始時にリセット)</summary>
         [JsonProperty("lastAction")]
-        public object /* union */ LastAction { get; init; } = default!;
+        public GameStateLastAction? LastAction { get; init; }
         /// <summary>発生済みイベントログ (リプレイ・シミュレーション統計の材料)</summary>
         [JsonProperty("eventLog")]
         public IReadOnlyList<GameEvent> EventLog { get; init; } = default!;
@@ -1901,7 +1915,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("cards")]
         public IReadOnlyList<ShopStateCards> Cards { get; init; } = default!;
         [JsonProperty("relicId")]
-        public object /* union */ RelicId { get; init; } = default!;
+        public string? RelicId { get; init; }
         [JsonProperty("relicPrice")]
         public int RelicPrice { get; init; }
     }
@@ -1976,14 +1990,14 @@ namespace DeckRogue.Engine.Generated
         public int UpgradeCount { get; init; }
         /// <summary>ショップの在庫 (shop フェーズ中のみ非null)</summary>
         [JsonProperty("shop")]
-        public object /* union */ Shop { get; init; } = default!;
+        public ShopState? Shop { get; init; }
         [JsonProperty("phase")]
         public string Phase { get; init; } = default!;
         [JsonProperty("combat")]
-        public object /* union */ Combat { get; init; } = default!;
+        public GameState? Combat { get; init; }
         /// <summary>報酬フェーズの提示カード (cardId)</summary>
         [JsonProperty("rewardOptions")]
-        public object /* union */ RewardOptions { get; init; } = default!;
+        public IReadOnlyList<string>? RewardOptions { get; init; }
         /// <summary>ピック履歴 (cardId。統計・結果画面用)</summary>
         [JsonProperty("picks")]
         public IReadOnlyList<string> Picks { get; init; } = default!;
@@ -1995,7 +2009,7 @@ namespace DeckRogue.Engine.Generated
         public IReadOnlyList<string> RelicQueue { get; init; } = default!;
         /// <summary>relic-reward フェーズの提示レリック</summary>
         [JsonProperty("relicOptions")]
-        public object /* union */ RelicOptions { get; init; } = default!;
+        public IReadOnlyList<string>? RelicOptions { get; init; }
         /// <summary>現在の戦闘がエリート戦か (勝利時のレリック報酬判定)</summary>
         [JsonProperty("currentElite")]
         public bool CurrentElite { get; init; }
@@ -2023,7 +2037,7 @@ namespace DeckRogue.Engine.Generated
         public bool LastRoomWasShop { get; init; }
         /// <summary>event フェーズで解決したイベントID (?は入った瞬間に中身が決まる。MapNode は持たない)</summary>
         [JsonProperty("eventId")]
-        public object /* union */ EventId { get; init; } = default!;
+        public string? EventId { get; init; }
         /// <summary>ラン通算で引いたイベント (幕専用・ワンタイムの再出現防止)</summary>
         [JsonProperty("seenEventIds")]
         public IReadOnlyList<string> SeenEventIds { get; init; } = default!;
@@ -2233,7 +2247,7 @@ namespace DeckRogue.Engine.Generated
         public string Type { get; init; } = default!;
         /// <summary>battle / elite / boss のみ。それ以外は null</summary>
         [JsonProperty("encounterId")]
-        public object /* union */ EncounterId { get; init; } = default!;
+        public string? EncounterId { get; init; }
         /// <summary>次の行のどの列 (行内の詰めた添字) へ進めるか</summary>
         [JsonProperty("next")]
         public IReadOnlyList<int> Next { get; init; } = default!;

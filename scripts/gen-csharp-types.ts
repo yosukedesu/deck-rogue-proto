@@ -69,7 +69,9 @@ function csType(node: ts.TypeNode | undefined, propName: string, owner: string):
   if (ts.isUnionTypeNode(node)) {
     const lits = literalsOf(node)
     if (lits) return 'string'
-    const nonNull = node.types.filter((t) => t.kind !== ts.SyntaxKind.UndefinedKeyword && t.kind !== ts.SyntaxKind.NullKeyword)
+    const isNullish = (t: ts.TypeNode) =>
+      t.kind === ts.SyntaxKind.UndefinedKeyword || t.kind === ts.SyntaxKind.NullKeyword || (ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword)
+    const nonNull = node.types.filter((t) => !isNullish(t))
     if (nonNull.length === 1) return csType(nonNull[0], propName, owner)
     // 判別共用体はインラインでは扱わない → object
     return 'object /* union */'
@@ -111,7 +113,11 @@ function emitRecord(name: string, members: ts.NodeArray<ts.TypeElement>, doc: st
     const optional = m.questionToken !== undefined
     const t = csType(m.type, prop, name)
     const valueType = t === 'int' || t === 'double' || t === 'bool'
-    const nullable = optional || (m.type !== undefined && ts.isUnionTypeNode(m.type) && m.type.types.some((x) => x.kind === ts.SyntaxKind.NullKeyword || x.kind === ts.SyntaxKind.UndefinedKeyword))
+    const nullable =
+      optional ||
+      (m.type !== undefined &&
+        ts.isUnionTypeNode(m.type) &&
+        m.type.types.some((x) => x.kind === ts.SyntaxKind.NullKeyword || x.kind === ts.SyntaxKind.UndefinedKeyword || (ts.isLiteralTypeNode(x) && x.literal.kind === ts.SyntaxKind.NullKeyword)))
     const jsdoc = ts.getJSDocCommentsAndTags(m).map((d) => (ts.isJSDoc(d) ? (typeof d.comment === 'string' ? d.comment : '') : '')).filter(Boolean).join(' ')
     if (jsdoc) lines.push(`        /// <summary>${jsdoc.replace(/\n/g, ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</summary>`)
     lines.push(`        [JsonProperty("${prop}")]`)
