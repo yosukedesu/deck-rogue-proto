@@ -162,7 +162,7 @@ describe('レリック効果', () => {
     const idx = run.relicOptions!.indexOf('relic_collectors_bag')
     if (idx < 0) return
     run = applyRunCommand(run, { type: 'PickRelic', index: idx })
-    expect(run.rewardOptions).toHaveLength(4 + 1) // リーダー基本4 + 鞄1
+    expect(run.rewardOptions).toHaveLength(3 + 1) // リーダー基本3 + 鞄1 (2026-09-03 曲線パッケージ)
   })
 
   it('レリック定義は全て A型 (effects) / B型 (bonus) / C型 (combatRule) のいずれかを持つ', () => {

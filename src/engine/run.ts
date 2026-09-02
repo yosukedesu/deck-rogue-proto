@@ -33,14 +33,12 @@ export const REWARD_EXCLUDED = new Set([
   // スターターのリアクション2枚 (2026-08-30。中立スターター化の追随漏れ = 既に持っている札が
   // ピックに出ていた。伏せ枠は1つなので2枚目の価値も低い)。凍結色のスターターリアクションは解凍時に追随
   'green_reaction_thorns',
-  'green_reaction_vine',
   'blue_strike',
   'blue_guard',
   'blue_counterspell', // 青スターターのリアクション2枚 (2026-08-30 中立化追随)
   'blue_frost_veil',
   // --- 2026-08-31 スターター個性注入の追随 (赤Opusランで火花が報酬に4回出た漏れ。
   // 確定済みルール「報酬プールはスターター札除外」に全色を同期) ---
-  'green_double_lash',
   'green_entangle',
   'green_vine_wedge',
   'blue_ice_lance',

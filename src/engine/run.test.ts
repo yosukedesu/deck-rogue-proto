@@ -1,7 +1,7 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
-import { ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor, TREASURE_ROW } from './map.ts'
+import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
 import {
   applyRunCommand,
@@ -109,14 +109,14 @@ describe('ラン構造 (マップ)', () => {
     expect(JSON.stringify(a1.combat)).toBe(JSON.stringify(b1.combat))
   })
 
-  it('初期デッキは run_basic の10枚 (エンジンの種入り構成)、HPは全快スタート', () => {
+  it('初期デッキは run_basic の10枚 (本家形。ビルドを決める札は入らない)、HPは全快スタート', () => {
     const run = createRun(1, 'set-confirm')
     expect(run.deck).toHaveLength(10)
-    // 2026-08-29 テンポ再校正②: 打ち据え (Bash枠=急所の乗算) がスターターに1枚入る。
-    // sim実測で通常敵平均 -1.3T の最大レバー。報酬プールには出ない基本札
     expect(run.deck.filter((c) => c.def.id === 'green_basic_bash')).toHaveLength(1)
-    // 2026-08-31 個性注入: 打撃1・二連の蔦打ち1 (多段=成長パッシブ直結)・蔦の楔1 (火花型の派生)
-    expect(run.deck.filter((c) => c.def.id === 'green_strike')).toHaveLength(1)
+    // 2026-09-03 曲線パッケージ: 打撃3・防御3。二連の蔦打ち (多段=最適解を教える札) と守りの蔓 (枠を埋める2枚目) は報酬プールへ
+    expect(run.deck.filter((c) => c.def.id === 'green_strike')).toHaveLength(3)
+    expect(run.deck.some((c) => c.def.id === 'green_double_lash')).toBe(false)
+    expect(run.deck.filter((c) => c.def.type === 'reaction')).toHaveLength(1)
     expect(run.hp).toBe(run.maxHp)
     expect(run.phase).toBe('map') // 開始はマップで行0のノードを選ぶ
     const r = intoFirstBattle(run)
@@ -143,12 +143,12 @@ describe('ラン構造 (マップ)', () => {
 })
 
 describe('報酬ピック', () => {
-  it('勝利で4枚提示 (重複なし・基本札除外)。ピックでデッキが増えてマップへ戻る', () => {
+  it('勝利で3枚提示 (2026-09-03 本家形) (重複なし・基本札除外)。ピックでデッキが増えてマップへ戻る', () => {
     let run = intoFirstBattle(createRun(11, 'set-confirm'))
     run = forceWin(run)
     expect(run.phase).toBe('reward')
-    expect(run.rewardOptions).toHaveLength(4) // 2026-08-26: 3→4枚
-    expect(new Set(run.rewardOptions!).size).toBe(4)
+    expect(run.rewardOptions).toHaveLength(3) // 2026-09-03 本家形の曲線パッケージ: 4→3枚 (2026-08-26に3→4としたのを戻す)
+    expect(new Set(run.rewardOptions!).size).toBe(3)
     expect(run.rewardOptions).not.toContain('green_strike')
     expect(run.rewardOptions).not.toContain('green_guard')
     const picked = run.rewardOptions![0]
@@ -189,9 +189,9 @@ describe('報酬ピック', () => {
 
 describe('宝箱行 (2026-08-31)', () => {
   it('宝箱行に入るとレリック3択になり、選んでもカード報酬は付かずマップへ戻る', () => {
-    let r = createRun(21, 'set-confirm')
+    let r = createDebugCheckpointRun(21, 'set-confirm', 'leader_green', { act: 2, deckId: 'run_basic' }) // 幕1に宝箱行は無い (2026-09-03) ので幕2で
     let guard = 0
-    while (r.row < TREASURE_ROW && guard++ < 120) {
+    while (r.row < treasureRowFor(2) && guard++ < 120) {
       if (r.phase === 'map') r = chooseToward(r, 'treasure')
       else if (r.phase === 'combat') r = forceWin(r)
       else if (r.phase === 'reward') r = applyRunCommand(r, { type: 'SkipReward' })
@@ -204,7 +204,7 @@ describe('宝箱行 (2026-08-31)', () => {
         r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
       } else break
     }
-    expect(r.row).toBe(TREASURE_ROW)
+    expect(r.row).toBe(treasureRowFor(2))
     expect(r.phase).toBe('relic-reward')
     const before = r.relics.length
     r = applyRunCommand(r, { type: 'PickRelic', index: 0 })
@@ -286,10 +286,12 @@ describe('ラン走破 (3幕構成)', () => {
     let run = runTo(createRun(23, 'set-confirm'), 'boss')
     expect(run.phase).toBe('combat')
     expect(currentNode(run)!.type).toBe('boss')
-    expect(currentNode(run)!.encounterId).toBe('enemy_brute') // 1幕ボス=オーガ
+    expect(currentNode(run)!.encounterId).toSatisfy((id: string) => ACT_BOSS_POOLS[0].includes(id)) // 幕1ボスは2種からシード抽選 (2026-09-02) // 1幕ボス=オーガ
     expect(run.combat!.enemies[0].strength).toBe(1)
-    const def = getEnemyDef(currentNode(run)!.encounterId!)
-    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * 1.35)) // 幕1ボス×1.35 (2026-09-02 本家最弱ボス水準)
+    // 幕1ボスは編成 (血族の儀式) のこともある: 先頭メンバーの定義と群れ補正で読む
+    const m0 = resolveEncounter(currentNode(run)!.encounterId!)[0] as { enemyId: string; hpScale?: number }
+    const def = getEnemyDef(m0.enemyId)
+    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * (m0.hpScale ?? 1) * 1.35)) // 幕1ボス×1.35 (2026-09-02 本家最弱ボス水準)
     // 被弾した状態でボスを倒す → 全回復を確認
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 12 } } }
     run = forceWin(run)
@@ -351,20 +353,20 @@ describe('レアリティ抽選 (2026-08-29。確定済みルール表「レア�
 })
 
 describe('中立スターター (2026-08-29 道の選択制を撤回。確定済みルール表「ラン初期デッキ」)', () => {
-  it('スターターは個性注入10枚 (2026-08-31: 基本札2〜4枚をパッシブ直結の個性札に差し替え)', () => {
-    // 赤のレシピの横展開: パッシブと直結する個性札が最初の戦闘から見えること。
-    // 緑=二連の蔦打ち (多段×成長)+絡み蔦 (モード)。エンジンの種 (年輪・芽吹き) は入れない方針は維持
+  it('スターターは本家形10枚 (2026-09-03 曲線パッケージ: ビルドを決める札は入れない)', () => {
+    // 2026-08-31 の個性注入 (二連の蔦打ち・守りの蔓) は、人間3本+Opus5本が例外なく多段×成長へ収束した観測で撤回。
+    // 個性はパッシブ (2ターン目から上限4) が担い、ビルドはドラフトが決める。絡み蔦 (モード) と蔦の楔 (答え札) は戦術の教材として残す
     const run = createRun(5, 'set-confirm', 'leader_green')
     expect(run.deck).toHaveLength(10)
     const count = (id: string) => run.deck.filter((c) => c.def.id === id).length
-    expect(count('green_strike')).toBe(1)
+    expect(count('green_strike')).toBe(3)
     expect(count('green_vine_wedge')).toBe(1)
     expect(count('green_basic_bash')).toBe(1)
-    expect(count('green_double_lash')).toBe(1)
+    expect(count('green_double_lash')).toBe(0)
     expect(count('green_guard')).toBe(3)
     expect(count('green_entangle')).toBe(1)
     expect(count('green_reaction_thorns')).toBe(1)
-    expect(count('green_reaction_vine')).toBe(1)
+    expect(count('green_reaction_vine')).toBe(0)
   })
 
   it('リーダーが許可しない初期デッキは拒否される (道は廃止済み)', () => {

@@ -89,6 +89,8 @@ export function bossRowFor(act: number): number {
 }
 /** 宝箱行 = ボスの7行手前 (本家関係の維持: 幕1=8・幕2=7・幕3=6) */
 export function treasureRowFor(act: number): number {
+  // 幕1に宝箱行は無い (2026-09-03 曲線パッケージ: レリック供給源の削減。人間#3は幕1で5個)。幕2/3はボスの7行手前
+  if (act <= 1) return -1
   return bossRowFor(act) - 7
 }
 /**

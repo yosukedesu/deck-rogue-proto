@@ -230,18 +230,14 @@
   {
     "id": "run_basic",
     "name": "ラン基本デッキ",
-    "description": "ドラフト連戦の出発点。打撃・打ち据え・二連の蔦打ち・防御×3・絡み蔦・蔦の楔(派生攻撃)・茨の返し・守りの蔓の10枚。アーキタイプはドラフトで発見する",
+    "description": "本家形の初期10枚 (2026-09-03): 打撃3・打ち据え・防御3・絡み蔦 (モード=決断の教材)・蔦の楔 (開幕ブロックへの答え札)・茨の返し (伏せの教材)。ビルドを決める札 (二連の蔦打ち) と枠を埋める2枚目 (守りの蔓) は報酬プールへ",
     "cards": [
       {
         "cardId": "green_strike",
-        "count": 1
+        "count": 3
       },
       {
         "cardId": "green_basic_bash",
-        "count": 1
-      },
-      {
-        "cardId": "green_double_lash",
         "count": 1
       },
       {
@@ -253,15 +249,11 @@
         "count": 1
       },
       {
-        "cardId": "green_reaction_thorns",
-        "count": 1
-      },
-      {
-        "cardId": "green_reaction_vine",
-        "count": 1
-      },
-      {
         "cardId": "green_vine_wedge",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
         "count": 1
       }
     ],

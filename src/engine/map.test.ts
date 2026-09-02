@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
 import { resolveEncounter } from './content.ts'
-import { ACT_BOSS_POOLS, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, TREASURE_ROW, treasureRowFor } from './map.ts'
+import { ACT_BOSS_POOLS, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, treasureRowFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -53,16 +53,13 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('宝箱行 (行9) は全ノード宝箱で、他の行に宝箱は無い (2026-08-31)', () => {
+  it('幕1に宝箱行は無い (2026-09-03 曲線パッケージ: レリック供給源の削減)', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
-      expect(map[TREASURE_ROW].every((n) => n.type === 'treasure'), `seed${seed}`).toBe(true)
-      map.forEach((row, r) => {
-        if (r === TREASURE_ROW) return
-        expect(row.some((n) => n.type === 'treasure'), `seed${seed} row${r} に宝箱`).toBe(false)
-      })
+      expect(map.some((row) => row.some((n) => n.type === 'treasure')), `seed${seed}`).toBe(false)
     }
   })
+
 
   it('焚き火は本家配置: 散布12%・行5未満と行15に置かれない (2026-08-31)', () => {
     for (const seed of SEEDS) {
@@ -326,8 +323,12 @@ describe('幕別の行数 (2026-09-02 ユーザー裁定「StS2式 15/14/13」)'
         expect(m[boss]).toHaveLength(1)
         expect(m[boss][0].type).toBe('boss')
         expect(m[boss - 1].every((n) => n.type === 'campfire')).toBe(true)
-        expect(treasureRowFor(act)).toBe(boss - 7)
-        expect(m[treasureRowFor(act)].every((n) => n.type === 'treasure')).toBe(true)
+        if (act === 1) {
+          expect(treasureRowFor(act)).toBe(-1) // 幕1に宝箱行は無い (2026-09-03)
+        } else {
+          expect(treasureRowFor(act)).toBe(boss - 7)
+          expect(m[treasureRowFor(act)].every((n) => n.type === 'treasure')).toBe(true)
+        }
         expect(m[0].every((n) => n.type === 'battle')).toBe(true)
       }
     }
