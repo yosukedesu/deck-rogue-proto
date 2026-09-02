@@ -102,6 +102,7 @@ goldens/                    # ゴールデンマスターJSONL（TS生成・C#�
 | フェーズ | 内容 | 目安 | ゲート |
 |---|---|---|---|
 | P0 スパイク | RNG厳密移植＋乱数列10万個一致＋戦闘1本のリプレイ一致 | 1〜2日 | **RNG部分は完了（2026-08-24）**: `goldens/rng-golden.json` 全124,100値がC#とbit-exact一致（next×10万/nextInt×1万/weightedIndex×1万/shuffle200順列）。実行: `~/.dotnet/dotnet run --project unity/EngineTests -- goldens/rng-golden.json`。戦闘リプレイ一致はP1冒頭で実施 |
+| P0.5 下地 | **済（2026-09-03）**: ゴールデンマスター基盤（`engine/golden.ts` の要約+FNV-1a・`sim/golden-driver.ts`・`npm run goldens` / `goldens:verify`・`goldens/runs/` 8本）／`types.ts`→C# record 生成（`npm run gen:csharp` → `unity/.../Generated/Types.g.cs`。record 140・定数クラス 9・判別共用体 3）／`unity/README.md` に契約を明文化。**エンジン本体の翻訳は始めない**（曲線パッケージでルールが動いている間は追随コスト） | — | 済 |
 | P1 エンジン移植 | engine全域→C#、NUnit 134件、GM全件一致 | 3〜5日 | §4の凍結チェック通過後 |
 | P2 Unity骨格 | UPM構成・JSON読込・CI（dotnet test） | 1〜2日 | P1 |
 | P3 戦闘UI | Web版と機能同等の戦闘画面（セットアップ→戦闘→勝敗） | 1〜2週 | P2 |

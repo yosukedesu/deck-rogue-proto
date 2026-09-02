@@ -339,6 +339,8 @@ npm run sim          # ヘッドレスシミュレーション (例: npm run sim
 npm run lint         # oxlint (純ロジック違反もここで検出)
 npm run typecheck    # tsc 型チェック
 npm run build        # 本番ビルド (型チェック込み)
+npm run goldens      # ゴールデンマスター生成 (goldens/runs/。Unity移植の等価性契約。goldens:verify で照合)
+npm run gen:csharp   # types.ts → unity/.../Generated/Types.g.cs (C# record を生成。手で編集しない)
 ```
 
 ### worktree 並列 (方式分岐実験が必要になった場合のみ)

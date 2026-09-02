@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="../Packages/com.deckrogue.engine/Runtime/**/*.cs" LinkBase="Engine" />
   </ItemGroup>
 
