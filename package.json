@@ -14,7 +14,8 @@
     "sim": "tsx src/sim/run.ts",
     "typecheck": "tsc -b",
     "test:variance": "VARIANCE=1 vitest run src/sim/variance.slow.test.ts",
-    "ratings": "tsx scripts/aggregate-ratings.ts"
+    "ratings": "tsx scripts/aggregate-ratings.ts",
+    "picks": "tsx scripts/aggregate-picks.ts"
   },
   "dependencies": {
     "react": "^19.2.8",
