@@ -27,6 +27,12 @@ import { resolveEncounter } from './content.ts'
  * エリートは通常敵の強個体でなく、固有のギミックを持つ専用敵 (Nob/Lagavulin/刺突の書型)。
  * ステータスは素の値で完成しているので、マップのエリート補正 (HP×1.35+強化) は掛けない
  */
+/**
+ * 幕内に必ず1回は現れる編成 (2026-09-02)。幕3=汚泥の大暴れ (ターン装甲45=多段バーストへの唯一の構造的回答)。
+ * 門番のターン装甲75と対: 「量の器」が幕3で必ず1回は問われる
+ */
+export const ACT_MUST_APPEAR: readonly (readonly string[])[] = [[], [], ['enemy_sludge_berserker']]
+
 export const ELITE_POOLS: readonly (readonly string[])[] = [
   // 各幕4種 (2026-08-31 再検証ラン「プール3種×4枠で同一個体が同一パスに2回=消化試合」への処方)
   ['enemy_elite_sergeant', 'enc_elite_sentries', 'enemy_elite_gold_raven', 'enemy_elite_devourer'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた) / 金羽の大鴉 (金レース) / 大喰らいの蟲 (山札喰い=デッキが第二のHP)
@@ -519,6 +525,7 @@ export function generateMap(
     const recentEnemies: string[][] = []
     const map: MapNode[][] = []
     const usedElites = new Set<string>()
+    const usedInAct = new Set<string>()
     for (let r = 0; r < mapRows; r++) {
       const rowNodes: MapNode[] = []
       const rowEnemies: string[] = []
@@ -546,11 +553,15 @@ export function generateMap(
           const recentIds = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
           const recentMembers = new Set(recentIds.flatMap(membersOf))
           const fresh = pool.filter((id) => !membersOf(id).some((m) => recentMembers.has(m)))
-          const candidates = fresh.length > 0 ? fresh : pool
+          // 幕内で未使用の編成を優先する (2026-09-02 人間ラン#2: 幕2が6戦で4種=走竜×2・甲虫×2。
+          // エリート抽選と同じ規則を通常戦闘にも。プールが尽きたら同族回避だけで抽選)
+          const unused = fresh.filter((id) => type === 'elite' || !usedInAct.has(id))
+          const candidates = unused.length > 0 ? unused : fresh.length > 0 ? fresh : pool
           const [idx, next] = nextInt(rng, 0, candidates.length - 1)
           rng = next
           encounterId = candidates[idx]
           if (type === 'elite') usedElites.add(encounterId)
+          if (type === 'battle') usedInAct.add(encounterId)
           rowEnemies.push(encounterId)
         }
         rowNodes.push({
@@ -562,6 +573,24 @@ export function generateMap(
       }
       recentEnemies.push(rowEnemies)
       map.push(rowNodes)
+    }
+    // 出現保証 (2026-09-02 人間ラン#2): 幕の「量の器」(ターン装甲) が21戦で一度も出なかった実測への処方。
+    // 本帯 (Weak帯より下・ボス行以外) の通常戦闘ノードに ACT_MUST_APPEAR の編成が1つも無ければ、
+    // 通常戦闘ノードを1つシードRNGで選んで差し替える (存在保証 = 全パス保証ではない。ボス側の器と対で使う)
+    for (const mustId of ACT_MUST_APPEAR[act - 1] ?? []) {
+      const present = map.some((row) => row.some((n) => n.type === 'battle' && n.encounterId === mustId))
+      if (present) continue
+      const spots: [number, number][] = []
+      for (let r = WEAK_ROWS[act - 1] ?? 0; r < bossRow; r++) {
+        map[r].forEach((n, c) => {
+          if (n.type === 'battle') spots.push([r, c])
+        })
+      }
+      if (spots.length === 0) continue
+      const [k, next2] = nextInt(rng, 0, spots.length - 1)
+      rng = next2
+      const [r, c] = spots[k]
+      map[r][c] = { ...map[r][c], encounterId: mustId }
     }
     return [map, rng]
   }
