@@ -388,5 +388,212 @@
     "patternOffset": 1
    }
   ]
+ },
+ {
+  "id": "enc_mudling_trio",
+  "name": "小泥の群れ",
+  "members": [
+   {
+    "enemyId": "enemy_mudling"
+   },
+   {
+    "enemyId": "enemy_mudling"
+   },
+   {
+    "enemyId": "enemy_mudling"
+   }
+  ]
+ },
+ {
+  "id": "enc_mimic_pair",
+  "name": "子鬼の二匹",
+  "members": [
+   {
+    "enemyId": "enemy_mimic_imp",
+    "hpScale": 0.55,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_mimic_imp",
+    "hpScale": 0.55,
+    "strength": -1,
+    "patternOffset": 1
+   }
+  ]
+ },
+ {
+  "id": "enc_squirrel_trio",
+  "name": "栗鼠の三匹",
+  "members": [
+   {
+    "enemyId": "enemy_thorn_squirrel",
+    "hpScale": 0.4,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_thorn_squirrel",
+    "hpScale": 0.4,
+    "strength": -3,
+    "patternOffset": 1,
+    "noReactTable": true
+   },
+   {
+    "enemyId": "enemy_thorn_squirrel",
+    "hpScale": 0.4,
+    "strength": -3,
+    "patternOffset": 2,
+    "noReactTable": true
+   }
+  ]
+ },
+ {
+  "id": "enc_mud_mudlings",
+  "name": "泥まとうものと小泥",
+  "members": [
+   {
+    "enemyId": "enemy_mud_lump",
+    "hpScale": 0.8
+   },
+   {
+    "enemyId": "enemy_mudling"
+   },
+   {
+    "enemyId": "enemy_mudling"
+   }
+  ]
+ },
+ {
+  "id": "enc_cultist_imp",
+  "name": "狂信者と子鬼",
+  "members": [
+   {
+    "enemyId": "enemy_cultist",
+    "hpScale": 0.6
+   },
+   {
+    "enemyId": "enemy_mimic_imp",
+    "hpScale": 0.55,
+    "strength": -1
+   }
+  ]
+ },
+ {
+  "id": "enc_beetle_trio",
+  "name": "甲虫の三匹",
+  "members": [
+   {
+    "enemyId": "enemy_rock_beetle",
+    "hpScale": 0.8,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_rock_beetle",
+    "hpScale": 0.8,
+    "strength": -3,
+    "patternOffset": 1
+   },
+   {
+    "enemyId": "enemy_rock_beetle",
+    "hpScale": 0.8,
+    "strength": -3,
+    "patternOffset": 2
+   }
+  ]
+ },
+ {
+  "id": "enc_imp_jester",
+  "name": "インプと写し道化",
+  "members": [
+   {
+    "enemyId": "enemy_cinder_imp",
+    "hpScale": 0.6,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_mimic_jester",
+    "hpScale": 0.6,
+    "strength": -1
+   }
+  ]
+ },
+ {
+  "id": "enc_wolf_hexer_drummer",
+  "name": "狼と妖術師と太鼓",
+  "members": [
+   {
+    "enemyId": "enemy_wolf",
+    "hpScale": 0.4,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_hexer",
+    "hpScale": 0.45,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_drummer",
+    "hpScale": 0.45,
+    "strength": -3
+   }
+  ]
+ },
+ {
+  "id": "enc_mourn_healer",
+  "name": "弔いの獣の番いと癒し手",
+  "members": [
+   {
+    "enemyId": "enemy_mourn_beast",
+    "hpScale": 0.42,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_mourn_beast",
+    "hpScale": 0.42,
+    "patternOffset": 1,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_moss_healer",
+    "hpScale": 0.5
+   }
+  ]
+ },
+ {
+  "id": "enc_axe_shadow",
+  "name": "斧鬼と用心棒",
+  "members": [
+   {
+    "enemyId": "enemy_axe_ogre",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_set_wary",
+    "hpScale": 0.55,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_mudling_swarm",
+  "name": "小泥の大群",
+  "members": [
+   {
+    "enemyId": "enemy_mudling",
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_mudling",
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_mudling",
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_mudling",
+    "strength": -1
+   }
+  ]
  }
 ]

@@ -344,7 +344,7 @@ describe('StS2式の抽選改善 (2026-09-02 全体改善)', () => {
           for (const n of m[r]) {
             if (n.type !== 'battle' || n.encounterId === null) continue
             expect(tierFor(act, r), `act${act} seed${seed} row${r}`).toContain(n.encounterId)
-            expect(tierFor(act, r).length).toBeLessThanOrEqual(4) // 弱プール = 小さな教師枠
+            expect(tierFor(act, r).length).toBeLessThanOrEqual(6) // 弱プール = 小さな教師枠 (2026-09-02 群れ2件を足して5)
           }
         }
       }
@@ -424,6 +424,23 @@ describe('経済・マップの裁定 (2026-09-02 残件議論)', () => {
     }
   })
 })
+
+describe('1戦闘の平均体数 (2026-09-02 本家対照。ユーザー指摘「本家と違いすぎない？」)', () => {
+  it('本帯の平均体数は幕1≥1.8・幕2≥1.7・幕3≥1.7、3体以上の編成が各幕2以上、Weak帯も平均1.4以上', () => {
+    const bodies = (id: string) => resolveEncounter(id).length
+    const targets = [1.8, 1.7, 1.7]
+    for (let act = 1; act <= 3; act++) {
+      const pool = tierFor(act, 6)
+      const bs = pool.map(bodies)
+      const avg = bs.reduce((a, b) => a + b, 0) / bs.length
+      expect(avg, `幕${act} 本帯の平均体数 (本家 2.0/1.9/1.78)`).toBeGreaterThanOrEqual(targets[act - 1])
+      expect(bs.filter((b) => b >= 3).length, `幕${act} の3体以上編成`).toBeGreaterThanOrEqual(2)
+      const weak = tierFor(act, 0).map(bodies)
+      expect(weak.reduce((a, b) => a + b, 0) / weak.length, `幕${act} Weak帯の平均体数`).toBeGreaterThanOrEqual(1.4)
+    }
+  })
+})
+
 
 
 

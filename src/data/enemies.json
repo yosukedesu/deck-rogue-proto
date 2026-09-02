@@ -2008,5 +2008,32 @@
    "smother"
   ],
   "turnArmor": 45
+ },
+ {
+  "id": "enemy_mudling",
+  "name": "小泥",
+  "archetype": "flurry",
+  "flavor": "一匹なら踏める。三匹いると、靴が重くなる。",
+  "maxHp": 14,
+  "opener": "bump",
+  "moves": [
+   {
+    "id": "bump",
+    "kind": "attack",
+    "min": 3,
+    "max": 5,
+    "weight": 2
+   },
+   {
+    "id": "slop",
+    "kind": "hex",
+    "weight": 1,
+    "noRepeat": true,
+    "inflict": {
+     "status": "wound",
+     "amount": 1
+    }
+   }
+  ]
  }
 ]
