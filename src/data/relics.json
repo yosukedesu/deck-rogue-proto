@@ -192,14 +192,5 @@
     "combatRule": {
       "setDamageReduction": 1
     }
-  },
-  {
-    "id": "relic_mirage_mask",
-    "name": "蜃気楼の面",
-    "sprite": "🎭",
-    "description": "伏せ札を伏せた瞬間から、そのターンの敵の意図の実値が公開される（伏せる前は幅表示のまま）",
-    "combatRule": {
-      "revealOnSet": true
-    }
   }
 ]

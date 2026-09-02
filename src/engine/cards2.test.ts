@@ -3,7 +3,6 @@
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
-import type { GameState } from './types.ts'
 
 describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクション撤去で緑へ移管)', () => {
   it('罠壊しに破壊されると敵全体に12ダメージが爆ぜる', () => {
@@ -133,25 +132,3 @@ describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手
   })
 })
 
-describe('茨の爆ぜ (全体返し)', () => {
-  it('被攻撃後、生存する敵全体に返しが飛ぶ', () => {
-    let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42), ['green_thorn_burst'])
-    s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_thorn_burst' })
-    let s2: GameState = {
-      ...s,
-      enemies: s.enemies.map((e, i) =>
-        i === 0
-          ? { ...e, intent: { kind: 'attack', shownMin: 5, shownMax: 5, actual: 5 } }
-          : { ...e, intent: { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 } },
-      ),
-    }
-    const hp0 = s2.enemies[0].hp
-    const hp1 = s2.enemies[1].hp
-    s2 = applyCommand(s2, { type: 'EndTurn' })
-    expect(s2.phase).toBe('awaiting-reaction')
-    s2 = applyCommand(s2, { type: 'ConfirmReaction', fire: true })
-    expect(s2.enemies[0].hp).toBe(hp0 - 8)
-    expect(s2.enemies[1].hp).toBe(hp1 - 8)
-  })
-})

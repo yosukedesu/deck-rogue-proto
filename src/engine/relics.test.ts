@@ -176,8 +176,8 @@ describe('レリック効果', () => {
   })
 
   it('在庫は18個・IDは一意 (第二弾拡充 2026-08-29)', () => {
-    expect(allRelics).toHaveLength(18)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(18)
+    expect(allRelics).toHaveLength(17) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(17)
   })
 })
 

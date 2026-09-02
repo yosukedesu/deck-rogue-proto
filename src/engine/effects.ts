@@ -428,7 +428,9 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
       ? // 見切り (2026-08-30 A2): 敵の伏せ反応は**そのターンに伏せられた札**にだけ反応する。
         // 置きっぱなしの札は「織り込み済み」= 蓋 (置くだけで攻撃が消え続ける) の対処。
         // ただし破壊 (destroy-set) は鮮度を問わない — 晒し続けた札は壊されには行かれる
-        intent.alt?.kind === 'destroy-set'
+        intent.alt?.kind === 'destroy-set' ||
+          intent.alt?.ignoreFreshness === true ||
+          getEnemyDef(state.enemies[enemyIndex].enemyId).vsSetIgnoreFreshness === true
         ? state.player.setCards.length > 0
         : state.player.setCards.some((c) => c.setFresh === true)
       : hasHuntableTokens(state)

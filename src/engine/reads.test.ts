@@ -23,7 +23,7 @@ function withSet(state: GameState): GameState {
 }
 
 describe('setAlt = 行動単位の条件分岐', () => {
-  it('大亀: 大薙ぎ (3歩目) は伏せありで浅い薙ぎ (16-22) の分岐を予告する', () => {
+  it('大亀: 大薙ぎ (3歩目) は伏せありで浅い薙ぎ (18-24+脆弱1。2026-09-03 賭け型化) の分岐を予告する', () => {
     let s = freshCombat('set-confirm', 'enemy_turtle', 42)
     // 1〜2歩目 (防御) を消化して3歩目 (大薙ぎ) の宣言まで進める
     s = toNextTurn(s)
@@ -32,9 +32,10 @@ describe('setAlt = 行動単位の条件分岐', () => {
     expect(intent.kind).toBe('attack') // 素 = 大薙ぎ24-32
     expect(intent.shownMin).toBeGreaterThanOrEqual(24)
     expect(intent.conditionalOn).toBe('set')
-    expect(intent.alt!.kind).toBe('attack') // 伏せあり = 浅い薙ぎ
-    expect(intent.alt!.shownMin).toBeGreaterThanOrEqual(16)
-    expect(intent.alt!.shownMax).toBeLessThanOrEqual(22)
+    expect(intent.alt!.kind).toBe('attack') // 伏せあり = 浅い薙ぎ (数字は下がるが脆弱1が付く=賭け)
+    expect(intent.alt!.shownMin).toBeGreaterThanOrEqual(18)
+    expect(intent.alt!.shownMax).toBeLessThanOrEqual(24)
+    expect(intent.alt!.inflict).toEqual({ status: 'vulnerable', amount: 1 })
   })
 
   it('大亀: 伏せを維持したまま大薙ぎターンを迎えると浅い薙ぎで解決される', () => {
@@ -81,13 +82,13 @@ describe('setAlt = 行動単位の条件分岐', () => {
     expect(drummer.intent!.alt!.kind).toBe('attack')
   })
 
-  it('妖術師: 泥投げは伏せありで泥呪い (攻撃せず弱体3) に変わる', () => {
+  it('妖術師: 泥投げは伏せありで泥呪い (同じ6-9で弱体3の代わりに虚弱2。2026-09-03 賭け型化) に変わる', () => {
     const s = freshCombat('set-confirm', 'enemy_hexer', 42)
     const intent = s.enemies[0].intent! // 1歩目 = mud
     expect(intent.kind).toBe('attack')
     expect(intent.conditionalOn).toBe('set')
-    expect(intent.alt!.kind).toBe('hex')
-    expect(intent.alt!.inflict).toEqual({ status: 'weak', amount: 3 }) // 2026-09-01 敵圧監査で2→3
+    expect(intent.alt!.kind).toBe('attack')
+    expect(intent.alt!.inflict).toEqual({ status: 'frail', amount: 2 }) // 旧: hex 弱体3 (攻撃せず) = 弱腰
   })
 
   it('オーガ: 3歩目の棍棒は伏せありで激怒 (強化+2) に変わる', () => {

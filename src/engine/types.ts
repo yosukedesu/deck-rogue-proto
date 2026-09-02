@@ -221,6 +221,8 @@ export interface EnemyIntent {
 
 /** 条件付き意図の分岐 (alt を再帰させないための素の形) */
 export interface EnemyIntentBranch {
+  /** 罰型 (2026-09-03): 伏せ札があれば鮮度を問わず反応する */
+  readonly ignoreFreshness?: boolean
   readonly kind: EnemyActionKind
   readonly shownMin: number
   readonly shownMax: number
@@ -885,6 +887,8 @@ export interface EnemyMove {
    * 既存の条件付き意図 (両分岐予告・行動開始時確定) の配管にそのまま乗る
    */
   readonly setAlt?: {
+    /** 罰型 (2026-09-03): 伏せ札があれば見切り (鮮度) を問わず反応する。「触らなければ弱い」の逆転を消す */
+    readonly ignoreFreshness?: boolean
     readonly kind: EnemyActionKind
     readonly min?: number
     readonly max?: number
@@ -911,6 +915,8 @@ export interface EnemyDef {
   readonly sequence?: readonly string[]
   /** プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型・挑発型)。省略時は通常行動 */
   readonly movesVsSet?: readonly EnemyMove[]
+  /** 罰型の反応テーブル (2026-09-03): 伏せ札があれば鮮度を問わず反応する (罠壊し) */
+  readonly vsSetIgnoreFreshness?: boolean
   /** プレイヤーに召喚トークンがいる時の行動テーブル (優先度: HP半分以下 > 伏せ反応 > トークン反応 > 通常) */
   readonly movesVsTokens?: readonly EnemyMove[]
   /** 延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」) */

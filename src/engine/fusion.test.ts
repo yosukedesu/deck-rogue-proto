@@ -51,6 +51,9 @@ function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
   throw new Error('runTo が収束しない')
 }
 
+/** 窮鼠の大牙 (2026-09-03 撤去) 相当の条件付きリアクション。条件違いの同種効果が別効果のまま残る規約のテスト用 */
+const cornered = () => ({ uid: 'cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } })
+
 describe('計算合成', () => {
   it('同種効果は量が合算され、コストはVPから逆算される (打撃系2枚 → 1枚)', () => {
     const def = fuseCards(inst('green_fang'), inst('green_serpent_gulp')) // 14貫通 + 20(捨て1)
@@ -78,7 +81,7 @@ describe('計算合成', () => {
     expect(fuseBlockReason(inst('green_strike', 'u1'), inst('green_strike', 'u2'))).toBeNull() // 同名=真・化
     expect(fuseBlockReason(inst('green_strike'), inst('green_flash_insight'))).toBeNull() // 物理×呪文
     expect(
-      fuseBlockReason(inst('green_reaction_thorns'), inst('green_reaction_cornered')),
+      fuseBlockReason(inst('green_reaction_thorns'), cornered()),
     ).toBeNull() // 異名リアクション同士も計算合成できる (条件は別効果のまま保持)
     expect(fuseBlockReason(inst('green_strike'), inst('green_reaction_thorns'))).toBeNull() // 物理×リアクション
     expect(fuseBlockReason(inst('green_strike'), inst('green_perm_growth_tree'))).toBeNull() // 物理×置物
@@ -246,7 +249,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアク�
   })
 
   it('異名リアクション同士: 条件の異なる同種効果は合算されない (無条件9と HP半分以下20 は別のまま)', () => {
-    const def = fuseCards(inst('green_reaction_thorns'), inst('green_reaction_cornered'))
+    const def = fuseCards(inst('green_reaction_thorns'), cornered())
     expect(def.type).toBe('reaction')
     const counters = def.effects.filter((e) => e.effect === 'counter')
     expect(counters).toHaveLength(2)

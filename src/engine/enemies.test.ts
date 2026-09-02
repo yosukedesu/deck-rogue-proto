@@ -207,13 +207,13 @@ describe('挑発 (嘲る道化)', () => {
     expect(s.enemies[0].intent!.shownMin).toBeGreaterThanOrEqual(15)
   })
 
-  it('伏せがあると用心する (movesVsSet に大振りは無い)', () => {
+  it('伏せがあると別の行動になる (2026-09-03 賭け型化: 大振りは無いが用心の一撃12-16+脆弱1で弱腰ではない)', () => {
     const def = getEnemyDef('enemy_joker')
     expect(def.movesVsSet).toBeDefined()
-    const attacks = def.movesVsSet!.filter((m) => m.kind === 'attack')
-    const maxAttack = Math.max(...attacks.map((m) => m.max ?? 0))
-    const wildMin = Math.min(...def.moves.filter((m) => m.kind === 'attack').map((m) => m.min ?? 99))
-    expect(maxAttack).toBeLessThan(wildMin) // 用心時の最大値 < 大振りの最小値
+    expect(def.movesVsSet!.some((m) => m.id === 'wild_swing')).toBe(false) // 大振り(15-19+脆弱2)は無い
+    const jab = def.movesVsSet!.find((m) => m.id === 'cautious_jab')!
+    expect([jab.min, jab.max]).toEqual([12, 16])
+    expect(jab.inflict).toEqual({ status: 'vulnerable', amount: 1 }) // 旧7-10=「1Eで押せるスイッチ」の是正
   })
 
   it('ただし、はったりを見破る手段を持つ (伏せっぱなしで完封できない)', () => {
@@ -288,7 +288,9 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
 
   it('条件を満たさない札は逃がせない (窮鼠の大牙はHP満タンでは応答候補にならない)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
-    s = withHand(s, ['green_reaction_cornered']) // HP半分以下でのみ発動可
+    // 窮鼠の大牙は 2026-09-03 に撤去。条件付きリアクションの機構は合成defで固定
+    s = withHand(s, ['green_reaction_thorns'])
+    s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } }] } }
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
     s = withIntent(s, destroySetIntent())
     s = applyCommand(s, { type: 'EndTurn' })

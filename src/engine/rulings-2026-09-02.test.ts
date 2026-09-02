@@ -51,8 +51,8 @@ describe('見切りの拡張: 同じ札の伏せ直しに敵は反応しない (
 
 describe('蜃気楼の面の作り直し: 伏せた瞬間からそのターンの実値が見える', () => {
   it('伏せる前は幅表示、伏せた後は shownMin=shownMax=actual', () => {
-    expect(getRelicDef('relic_mirage_mask').combatRule?.revealOnSet).toBe(true)
-    expect(getRelicDef('relic_mirage_mask').combatRule?.revealIntents).toBeUndefined()
+    // 2026-09-03: レリック自体は撤去 (作り直し後も確認ウィンドウを「はい」ボタンに退化させた)。機構 (revealOnSet) は残す
+    expect(() => getRelicDef('relic_mirage_mask')).toThrow()
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 14), ['green_reaction_thorns'])
     s = { ...s, revealOnSet: true }
     s = withIntent(s, { ...attackIntent(7), shownMin: 5, shownMax: 9 })

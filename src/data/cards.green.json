@@ -504,20 +504,6 @@
     "rarity": "uncommon"
   },
   {
-    "id": "green_perm_thorn_thicket",
-    "name": "茨の茂み",
-    "cost": 2,
-    "type": "permanent",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 5
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
     "id": "green_perm_herd_chief",
     "name": "大角の群長",
     "cost": 2,
@@ -557,23 +543,6 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 34
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
-    "id": "green_reaction_cornered",
-    "name": "窮鼠の大牙",
-    "cost": 1,
-    "type": "reaction",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "condition": {
-          "hpAtOrBelowRatio": 0.5
-        },
-        "effect": "counter",
-        "amount": 20
       }
     ],
     "rarity": "uncommon"
@@ -700,21 +669,6 @@
       }
     ],
     "rarity": "uncommon"
-  },
-  {
-    "id": "green_thorn_burst",
-    "name": "茨の爆ぜ",
-    "cost": 1,
-    "type": "reaction",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 8,
-        "target": "all"
-      }
-    ],
-    "rarity": "common"
   },
   {
     "id": "green_snare_root",
@@ -1187,46 +1141,6 @@
       {
         "trigger": "onReactionFired",
         "effect": "addGrowth",
-        "amount": 2
-      }
-    ]
-  },
-  {
-    "id": "green_reaction_rebound",
-    "name": "跳ね返りの蔦",
-    "cost": 1,
-    "type": "reaction",
-    "color": "green",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 6
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "addMomentum",
-        "amount": 3
-      }
-    ]
-  },
-  {
-    "id": "green_reaction_parry_stance",
-    "name": "見切りの構え",
-    "cost": 1,
-    "type": "reaction",
-    "color": "green",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 4
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "discountNext",
         "amount": 2
       }
     ]
@@ -1806,6 +1720,44 @@
         "condition": {
           "minGrowth": 5
         }
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_vine_formation",
+    "name": "蔦の陣",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 10
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_tree_warden",
+    "name": "大樹の守り手",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addGrowth",
+        "amount": 2
       }
     ]
   }

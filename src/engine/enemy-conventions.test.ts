@@ -86,7 +86,7 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
     const KNOWN = new Set([
       'id', 'name', 'archetype', 'flavor', 'maxHp', 'moves', 'sequence', 'sequenceLoopFrom',
       'movesBelowHalf', 'sequenceBelowHalf', 'sequenceBelowHalfLoopFrom',
-      'movesVsSet', 'movesVsTokens', 'movesWhenAlone', 'sequenceWhenAlone',
+      'movesVsSet', 'movesVsTokens', 'movesWhenAlone', 'sequenceWhenAlone', 'vsSetIgnoreFreshness',
       ...ENEMY_GIMMICK_KEYS, // ギミック系は traits.ts と共有 (表示網羅テストと同じ一次資料)
     ])
     const offenders: string[] = []

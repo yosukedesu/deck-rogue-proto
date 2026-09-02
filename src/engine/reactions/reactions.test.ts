@@ -1,5 +1,6 @@
 // リアクション3方式のテスト (本プロジェクトの主役)。
 // 方式ごとの挙動差と、方式共通ルール (同時1枚・空振り持続・打ち消し対象) をここで固定する。
+import { getCardDef } from '../content.ts'
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from '../state.ts'
 import {
@@ -213,7 +214,8 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
   })
 
   it('窮鼠の大牙: HPが半分を超えていると発動しない', () => {
-    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_cornered'])
+    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
+    s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } }] } }
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
     s = withIntent(s, attackIntent(5)) // 被弾後もHP45 > 25
     s = applyCommand(s, { type: 'EndTurn' })
@@ -222,7 +224,8 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
   })
 
   it('窮鼠の大牙: 被弾後にHP半分以下なら返し20が発動する', () => {
-    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_cornered'])
+    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
+    s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } }] } }
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
     s = { ...s, player: { ...s.player, hp: 30 } }
     s = withIntent(s, attackIntent(10)) // 被弾後HP20 ≤ 25

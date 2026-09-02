@@ -384,7 +384,9 @@ function renderBattle(s: GameState, logFrom: number): string {
         cardNeedsTarget(c) && s.enemies.filter((e) => e.hp > 0).length > 1 ? '要targetIndex' : '',
         p.impulseUids.includes(c.uid) ? '衝動(このターン限り)' : '',
       ].filter(Boolean).join('・')
-      L.push(` [${c.uid}] ${cardLine(c.def)} 〈${marks || 'プレイ不可'}〉`)
+      const xEff = c.def.xCost === true ? c.def.effects.filter((e) => e.xHits === true && e.effect === 'dealDamage') : []
+      const xNow = xEff.length > 0 ? ` ［今撃つならX=${p.energy}: 計${xEff.reduce((a, e) => a + ((e.amount ?? 0) + p.growth + p.momentum) * p.energy, 0)}${xEff.some((e) => e.target === 'all') ? '/体' : ''}］` : ''
+      L.push(` [${c.uid}] ${cardLine(c.def)} 〈${marks || 'プレイ不可'}〉${xNow}`)
     }
   }
   if (s.phase === 'won') L.push(`★★ 勝利 ★★  ⚔️ 戦いの記録: ${summaryLine(battleSummary(s.eventLog))}`)

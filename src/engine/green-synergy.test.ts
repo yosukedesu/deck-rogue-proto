@@ -241,17 +241,7 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
     expect(s.player.growth).toBe(0)
   })
 
-  it('跳ね返りの蔦: 返し6+勢い+3。敵フェーズに得た勢いは次の自ターンまで持続する', () => {
-    const s = fireReaction('green_reaction_rebound', false)
-    // 発動後、敵フェーズが解決し次の自ターンが始まっている (勢いは自ターン終了時にしかリセットされない)
-    expect(s.phase).toBe('player-turn')
-    expect(s.player.momentum).toBe(3)
-  })
 
-  it('見切りの構え: 返し4+次のカード-2 (読み勝ちがマナに変換され翌ターンへ持ち越せる)', () => {
-    const s = fireReaction('green_reaction_parry_stance', false)
-    expect(s.player.nextCardDiscount).toBe(2)
-  })
 })
 
 describe('倍化の増刷 (2026-08-29 ユーザー指示「成長・勢いの倍化カードを増やしてほしい」)', () => {

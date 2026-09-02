@@ -57,7 +57,9 @@ export function setCard(state: GameState, cardUid: string): GameState {
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
       // 見切りの拡張 (2026-09-02 伏せ税の処方): 一度伏せた札の伏せ直しは「新鮮」にならない = 敵は反応しない。
       // 回収→0E伏せ直しで弱分岐を毎ターン固定する蓋 (道化20→6) を閉じる。発動権・破壊判定は不変
-      setCards: [...state.player.setCards, { ...card, setFresh: card.wasSet !== true, wasSet: true }],
+      // 0Eで伏せた札 (毒針の囮・回収ターンの伏せ直し・屍集めの0E札) は「気配」にならない = 敵は反応しない
+      // (2026-09-03 ユーザー裁定。D: 0E囮+符師の懐で用心深い影・罠壊しが片務的な必勝手順になっていた)
+      setCards: [...state.player.setCards, { ...card, setFresh: card.wasSet !== true && !freeReset && setCost >= 1, wasSet: true }],
       setsThisTurn: (state.player.setsThisTurn ?? 0) + 1,
     },
   }

@@ -693,7 +693,7 @@ export function createRun(
   const [map, rngAfterMap] = generateMap(rng0, 1, true)
   // 伏せ参照レリックは、このランの報酬プールにリアクションが1枚も無い色 (赤単など) では
   // 永久の死に選択肢になるため候補列から除く (2026-08-30 Opusランで符師の懐が3択に3回連続出現)。
-  // 蜃気楼の面 (意図の実値公開) は伏せに依存しないので残す
+  // (蜃気楼の面は 2026-09-03 に撤去)
   const SET_RELICS = new Set(['relic_talisman_pouch', 'relic_quiet_bell'])
   const canSet = allCards.some(
     (c) => leader.colors.includes(c.color) && c.type === 'reaction',

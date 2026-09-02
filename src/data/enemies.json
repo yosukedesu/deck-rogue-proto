@@ -91,17 +91,10 @@
         "weight": 2
       },
       {
-        "id": "careful_slash",
+        "id": "doubt_slash",
         "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 1
-      },
-      {
-        "id": "slash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
+        "min": 16,
+        "max": 20,
         "weight": 1
       }
     ],
@@ -172,7 +165,8 @@
         "weight": 1
       }
     ],
-    "opener": "smash"
+    "opener": "smash",
+    "vsSetIgnoreFreshness": true
   },
   {
     "id": "enemy_brute",
@@ -204,7 +198,8 @@
         "setAlt": {
           "kind": "attack",
           "min": 12,
-          "max": 16
+          "max": 16,
+          "ignoreFreshness": true
         }
       }
     ],
@@ -259,8 +254,12 @@
         "weight": 1,
         "setAlt": {
           "kind": "attack",
-          "min": 16,
-          "max": 22
+          "min": 18,
+          "max": 24,
+          "inflict": {
+            "status": "vulnerable",
+            "amount": 1
+          }
         }
       }
     ],
@@ -311,10 +310,12 @@
           "amount": 3
         },
         "setAlt": {
-          "kind": "hex",
+          "kind": "attack",
+          "min": 6,
+          "max": 9,
           "inflict": {
-            "status": "weak",
-            "amount": 3
+            "status": "frail",
+            "amount": 2
           }
         }
       },
@@ -369,7 +370,7 @@
           "min": 5,
           "max": 7,
           "hits": 2,
-          "alsoBuff": 1
+          "alsoBuff": 2
         }
       },
       {
@@ -390,7 +391,11 @@
           "kind": "attack",
           "min": 4,
           "max": 6,
-          "hits": 2
+          "hits": 3,
+          "inflict": {
+            "status": "weak",
+            "amount": 1
+          }
         }
       }
     ],
@@ -471,9 +476,13 @@
       {
         "id": "cautious_jab",
         "kind": "attack",
-        "min": 7,
-        "max": 10,
-        "weight": 2
+        "min": 12,
+        "max": 16,
+        "weight": 2,
+        "inflict": {
+          "status": "vulnerable",
+          "amount": 1
+        }
       },
       {
         "id": "mock",
@@ -505,7 +514,8 @@
         "setAlt": {
           "kind": "attack",
           "min": 4,
-          "max": 6
+          "max": 6,
+          "ignoreFreshness": true
         }
       },
       {
@@ -556,7 +566,8 @@
           "inflict": {
             "status": "weak",
             "amount": 1
-          }
+          },
+          "ignoreFreshness": true
         }
       }
     ],
@@ -730,7 +741,8 @@
         "setAlt": {
           "kind": "attack",
           "min": 14,
-          "max": 18
+          "max": 18,
+          "ignoreFreshness": true
         }
       },
       {
@@ -2829,7 +2841,8 @@
         "setAlt": {
           "kind": "attack",
           "min": 3,
-          "max": 4
+          "max": 4,
+          "ignoreFreshness": true
         }
       }
     ],

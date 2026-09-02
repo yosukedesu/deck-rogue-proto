@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import { allDecks, buildDeck, deckSize, getDeckDef } from './content.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { freshCombat, withHand } from './test-helpers.ts'
 import type { GameEvent } from './types.ts'
 
 const types = (log: readonly GameEvent[]) => log.map((e) => e.type)
@@ -151,18 +151,7 @@ describe('置物 (permanent)', () => {
     expect(s.player.momentum).toBe(4)
   })
 
-  it('茨の茂み: 敵の攻撃のたび自動で返し4 (成長も乗る)。置物は場に残る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_perm_thorn_thicket'])
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_thorn_thicket' })
-    s = { ...s, player: { ...s.player, growth: 1 } }
-    const hpBefore = s.enemies[0].hp
-    s = withIntent(s, attackIntent(10))
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (5 + 1)) // 自動で返し5+成長1
-    expect(s.player.permanents).toHaveLength(1)
-    // 判断は挟まらない (set-confirm でも置物は自動発火。伏せがなければ中断しない)
-    expect(s.turn).toBe(2)
-  })
+
 })
 
 describe('消滅 (exhaust)', () => {

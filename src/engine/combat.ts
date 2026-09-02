@@ -424,7 +424,7 @@ function declareIntents(state: GameState): GameState {
       }
       const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
       rng = rngC
-      alt = altIntent
+      alt = { ...altIntent, ...(sa.ignoreFreshness === true ? { ignoreFreshness: true } : {}) }
       condOn = 'set'
     }
 
