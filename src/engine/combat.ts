@@ -5,6 +5,7 @@
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
+import { X_MAX } from './types.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
 import { applyWakeCheck,
   cardNeedsTarget,
@@ -670,6 +671,7 @@ export function playCard(
   retrieveUid?: string,
   deckUids?: readonly string[],
   handUids?: readonly string[],
+  xAmount?: number,
 ): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
@@ -688,8 +690,15 @@ export function playCard(
     card.def.xCost !== true &&
     card.freeThisCombat !== true // 屍集めの0E札は割引を消費しない (素の0Eと同じ扱い)
   if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
-  // Xコスト: 支払った量を xHits 効果の繰り返し回数として展開する (多段ヒットと同じ解決)
-  const paidX = card.def.xCost === true ? cost : 0
+  // Xコスト: 支払った量を xHits 効果の繰り返し回数として展開する (多段ヒットと同じ解決)。上限 X_MAX
+  // Xコスト (2026-09-03 ナーフ): 上限 X_MAX、払う量は 1〜min(X_MAX, エナジー) から選ぶ (省略=上限)
+  const xCap = Math.min(X_MAX, state.player.energy)
+  if (card.def.xCost === true && xAmount !== undefined) {
+    if (!Number.isInteger(xAmount) || xAmount < 1 || xAmount > xCap) {
+      throw new Error(`${card.def.name} の X は 1〜${xCap} で指定する (xAmount=${xAmount})`)
+    }
+  }
+  const paidX = card.def.xCost === true ? (xAmount ?? cost) : 0
   const expandX = (effects: readonly DeclarativeEffect[]): readonly DeclarativeEffect[] =>
     paidX === 0
       ? effects
@@ -902,7 +911,7 @@ export function playCard(
     ...state,
     player: {
       ...state.player,
-      energy: state.player.energy - cost,
+      energy: state.player.energy - (card.def.xCost === true ? paidX : cost),
       nextCardDiscount: consumesDiscount ? 0 : state.player.nextCardDiscount,
       hand: state.player.hand.filter((c) => !removed.has(c.uid)),
       // プレイ中のカードはまだ捨て札に置かない (limbo)。効果解決中のドローが捨て札を

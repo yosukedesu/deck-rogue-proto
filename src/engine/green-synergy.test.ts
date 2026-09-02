@@ -70,27 +70,36 @@ describe('トランプルの網', () => {
   })
 })
 
-describe('Xコスト: 大角の暴走 (トリプルブリッジ。確定済みルール表「Xコスト」)', () => {
-  it('現在の全エナジーを支払い、Xヒット×6の貫通で解決される (成長・勢いが各ヒットに乗る)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_turtle', 42), ['green_x_stampede'])
-    s = { ...s, player: { ...s.player, energy: 3, growth: 2, momentum: 1 } }
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 10 })) }
+describe('Xコスト (2026-09-03 ナーフ: Xは最大4・払う量は1〜4から選ぶ)', () => {
+  it('省略時は min(4, エナジー) を払う。エナジー9なら4ヒットで5E残る (成長・勢いが各ヒットに乗る)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
+    s = { ...s, player: { ...s.player, energy: 9, growth: 2, momentum: 1 } }
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_stampede' })
-    expect(s.player.energy).toBe(0) // 全部支払う
-    expect(s.enemies[0].hp).toBe(hpBefore - (6 + 2 + 1) * 3) // 9×3ヒット・貫通
-    expect(s.enemies[0].block).toBe(10)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })
+    expect(s.player.energy).toBe(5)
+    expect(s.enemies[0].hp).toBe(hpBefore - (7 + 2 + 1) * 4)
+  })
+
+  it('xAmount で少なく払える (X=2 → 2ヒット・残り1E)。範囲外は弾く', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
+    s = { ...s, player: { ...s.player, energy: 3 } }
+    const hpBefore = s.enemies[0].hp
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry', xAmount: 4 })).toThrow(/1〜3/)
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry', xAmount: 0 })).toThrow()
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry', xAmount: 2 })
+    expect(s.player.energy).toBe(1)
+    expect(s.enemies[0].hp).toBe(hpBefore - 7 * 2)
   })
 
   it('エナジー0ではプレイできない。割引 (次のカード-1) の対象外で消費もしない', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_stampede'])
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
     s = { ...s, player: { ...s.player, energy: 0 } }
-    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_stampede' })).toThrow(
+    expect(() => applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })).toThrow(
       /エナジー不足/,
     )
-    let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_stampede'])
+    let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_vine_flurry'])
     s2 = { ...s2, player: { ...s2.player, energy: 2, nextCardDiscount: 1 } }
-    s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_x_stampede' })
+    s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_x_vine_flurry' })
     expect(s2.player.energy).toBe(0) // X=2 (割引は効かない)
     expect(s2.player.nextCardDiscount).toBe(1) // 消費もしない
   })

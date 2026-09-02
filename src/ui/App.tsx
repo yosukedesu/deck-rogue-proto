@@ -3,6 +3,7 @@
 import { deckChooseKindOf } from '../engine/combat.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
+import { X_MAX } from '../engine/types.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
@@ -285,7 +286,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       // X札の見積り (2026-09-03 Opus D: 成長23・X=4の森羅の大嵐が136出た。手札段階で実ダメが分からない)
       const xNow =
         e.xHits === true && ctx?.energy !== undefined
-          ? `［今撃つならX=${ctx.energy}: 計${((e.amount ?? 0) + atkBonus) * ctx.energy}${aoe ? '/体' : ''}］`
+          ? `［最大X=${Math.min(X_MAX, ctx.energy)}: 計${((e.amount ?? 0) + atkBonus) * Math.min(X_MAX, ctx.energy)}${aoe ? '/体' : ''}］`
           : ''
       return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${xHitsSuffix(e)}${atkBreak}${xNow}`
     }
@@ -1441,6 +1442,9 @@ function BattleScreen({
     modeIndex?: number
   } | null>(null)
   const [pendingUpgrade, setPendingUpgrade] = useState<{ cardUid: string; modeIndex?: number } | null>(null)
+  const [pendingX, setPendingX] = useState<{ cardUid: string; modeIndex?: number } | null>(null)
+  const activeX =
+    pendingX && s.phase === 'player-turn' && player.hand.some((c) => c.uid === pendingX.cardUid) ? pendingX : null
   const activeUpgrade =
     pendingUpgrade && s.phase === 'player-turn' && player.hand.some((c) => c.uid === pendingUpgrade.cardUid)
       ? pendingUpgrade
@@ -1460,6 +1464,7 @@ function BattleScreen({
     retrieveUid?: string
     deckUids?: string[]
     handUids?: string[]
+    xAmount?: number
   } | null>(null)
   const activeTarget =
     pendingTarget &&
@@ -1476,12 +1481,13 @@ function BattleScreen({
     retrieveUid?: string,
     deckUids?: string[],
     handUids?: string[],
+    xAmount?: number,
   ) => {
     const card = player.hand.find((c) => c.uid === cardUid)
     if (card && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
-      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids })
+      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, xAmount })
     } else {
-      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids })
+      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, xAmount })
     }
   }
   // 追加コスト・消滅置き場選択を済ませてからプレイに進む多段フロー:
@@ -1511,6 +1517,11 @@ function BattleScreen({
           : player.drawPile.length + player.discardPile.length
     if (chooseKind !== null && choosePoolSize > 0) {
       setPendingDeckChoose({ cardUid, modeIndex })
+      return
+    }
+    // Xコスト (2026-09-03): 払うXを1〜min(4, エナジー)から選ばせる (上限1なら即プレイ)
+    if (card.def.xCost === true && Math.min(X_MAX, player.energy) > 1) {
+      setPendingX({ cardUid, modeIndex })
       return
     }
     // 手札で鍛える (研ぎ澄まし 2026-09-02): 自身以外に鍛えられる手札があれば選ばせる
@@ -2121,6 +2132,27 @@ function BattleScreen({
                 )
               })}
             </div>
+          </div>
+        )}
+        {activeX && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeX.cardUid)?.def.name}」: 払うXを選んでください（最大{Math.min(X_MAX, player.energy)}。残したエナジーは他の札や伏せに使える）{' '}
+            {Array.from({ length: Math.min(X_MAX, player.energy) }, (_, i) => i + 1).map((x) => (
+              <button
+                key={x}
+                className={x === Math.min(X_MAX, player.energy) ? 'btn btn-primary' : 'btn'}
+                {...(x <= 9 ? { 'data-hotkey': `num-${x}` } : {})}
+                onClick={() => {
+                  setPendingX(null)
+                  playOrTarget(activeX.cardUid, activeX.modeIndex, undefined, undefined, undefined, undefined, undefined, x)
+                }}
+              >
+                X={x}
+              </button>
+            ))}
+            <button className="btn" onClick={() => setPendingX(null)}>
+              キャンセル
+            </button>
           </div>
         )}
         {activeUpgrade && (

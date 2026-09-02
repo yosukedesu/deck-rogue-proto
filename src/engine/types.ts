@@ -348,6 +348,8 @@ export type Command =
       readonly deckUids?: readonly string[]
       /** upgradeInHand (研ぎ澄まし) 用: この戦闘中鍛える手札の uid (自身は選べない。鍛えられる札が無ければ省略可) */
       readonly handUids?: readonly string[]
+      /** Xコスト札用 (2026-09-03): 支払うX (1〜min(X_MAX, エナジー))。省略時は上限まで払う */
+      readonly xAmount?: number
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
@@ -714,6 +716,9 @@ export interface EventDef {
   readonly choices: readonly EventChoiceDef[]
 }
 
+/** Xコストの上限 (2026-09-03)。7×4=28/4E で1Eあたりの効率は不変、上限だけを置く */
+export const X_MAX = 4
+
 export interface CardDef {
   /**
    * レアリティ (確定済みルール表「レアリティ」2026-08-29)。報酬抽選はスロットごとに
@@ -723,6 +728,7 @@ export interface CardDef {
   /**
    * Xコスト (確定済みルール表「Xコスト」2026-08-29): プレイ時に現在のエナジーを全て支払い、
    * 支払った量Xを xHits 効果が参照する。プレイ条件はエナジー1以上。割引の対象外。
+   * **X は最大4 (X_MAX)。払う量は1〜4から選ぶ (2026-09-03 ユーザー裁定のナーフ: 5E以上のランプはX札に流れない=別の吐き先が選択肢に)**
    * cost フィールドは名目値 (カーブ集計用に1を置く)
    */
   readonly xCost?: boolean

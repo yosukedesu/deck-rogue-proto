@@ -79,8 +79,8 @@ describe('カード表示のラベル (2026-08-29 Xコスト表記のバグ修�
 
   it('xHits の効果には「×Xヒット」が付く (付けないと1マナ7ダメージに見える)', () => {
     // 成長・勢いの注記はダメージ効果だけ (2026-09-01 樹皮の重鎧の誤読対処)
-    expect(xHitsSuffix({ xHits: true, effect: 'dealDamage' })).toBe('×Xヒット(各ヒットに成長・勢いが乗る)')
-    expect(xHitsSuffix({ xHits: true, effect: 'gainBlock' })).toBe('×Xヒット')
+    expect(xHitsSuffix({ xHits: true, effect: 'dealDamage' })).toBe('×Xヒット(Xは最大4・各ヒットに成長・勢いが乗る)')
+    expect(xHitsSuffix({ xHits: true, effect: 'gainBlock' })).toBe('×Xヒット(Xは最大4)')
     expect(xHitsSuffix({})).toBe('')
     for (const def of allCards.filter((c) => c.xCost === true)) {
       expect(def.effects.some((e) => e.xHits === true), `${def.name} に xHits が無い`).toBe(true)
