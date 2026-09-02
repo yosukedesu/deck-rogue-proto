@@ -153,8 +153,8 @@ const ACT_POOLS: readonly (readonly string[])[] = [
   // うねる獣(読みなし休符)・探り屋(読みの教師)・栗鼠(とげ芸)・伏せ警戒/罠壊し/樽(固有芸)・
   // 苔の主(再生)・斧鬼(大技→隙)・石殻(甲殻)・オーガ(元ボスの再登場)
   ['enemy_wide_power', 'enemy_thorn_squirrel', 'enemy_apprentice_colossus', 'enemy_cultist', 'enemy_slug', 'enemy_mud_lump', 'enc_probe_pair', 'enc_probe_trio', 'enc_squirrel_trio', 'enc_mud_mudlings', 'enc_mudling_swarm', 'enc_cultist_imp', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast', 'enemy_gaping_maw', 'enemy_cog_construct', 'enemy_vine_walker', 'enemy_strangler_serpent', 'enc_serpent_fruit', 'enc_sporecap_fruit', 'enc_sporecap_mudlings', 'enc_serpent_mudlings', 'enc_snapfruit_trio'], // 1幕 (ソロ7/12。2026-09-01 敵圧監査+2: 狂信者=カルト型タイマー・蛞蝓=状態異常の教師〔幕1のデバフゼロを解消〕。2026-08-31 反復感への処方+2: 見習い巨像=タイマー予習・物真似の子鬼=手数の鏡予習)
-  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair', 'enemy_whetstone_colossus', 'enemy_mimic_jester', 'enemy_cinder_imp', 'enemy_rock_beetle', 'enemy_big_slime', 'enc_squire_archer', 'enc_raptor_nest', 'enemy_maw_hunter', 'enc_beetle_trio', 'enc_imp_jester'], // 2幕 (2026-09-02 本家形: 重量級ソロ=HunterKiller枠) (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
-  ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer', 'enc_fang_twins', 'enemy_brood_toad', 'enc_mourn_beasts', 'enemy_sludge_berserker', 'enc_wolf_hexer_drummer', 'enc_mourn_healer', 'enc_axe_shadow'], // 3幕 (2026-09-02 本家形: 札汚染の大物=SlimedBerserker枠) (ソロ4/11)
+  ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enc_squirrel_pair', 'enemy_whetstone_colossus', 'enemy_mimic_jester', 'enemy_cinder_imp', 'enemy_rock_beetle', 'enemy_big_slime', 'enc_squire_archer', 'enc_raptor_nest', 'enemy_maw_hunter', 'enc_beetle_trio', 'enc_imp_jester', 'enc_chomper_pair', 'enc_scald_gnat_pair'], // 2幕 (2026-09-02 本家形: 重量級ソロ=HunterKiller枠) (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
+  ['enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_wolf_pair', 'enc_moss_healer', 'enc_fang_twins', 'enemy_brood_toad', 'enc_mourn_beasts', 'enemy_sludge_berserker', 'enc_wolf_hexer_drummer', 'enc_mourn_healer', 'enc_axe_shadow', 'enc_axe_automatons', 'enemy_thunder_globe', 'enemy_frog_knight', 'enc_biting_scrolls_quad', 'enc_lost_forgotten'], // 3幕 (2026-09-02 本家形: 札汚染の大物=SlimedBerserker枠) (ソロ4/11)
 ]
 /**
  * Weak帯 (2026-09-02 StS2式の構造保証。docs/sts2-reference.md §1「序盤に強敵が事故で出ない」):
@@ -168,7 +168,7 @@ const WEAK_POOLS: readonly (readonly string[])[] = [
   // 幕2: 伏せ検定・固い小物の教師・手数の鏡
   ['enemy_set_wary', 'enemy_rock_beetle', 'enemy_mimic_jester', 'enc_beetle_trio', 'enc_imp_jester'], // 2026-09-02 本家形: 弱枠にも群れ
   // 幕3: 貫通の的・大技→隙の窓・伏せ罰の教師
-  ['enemy_shell_guard', 'enemy_axe_ogre', 'enemy_set_breaker', 'enc_axe_shadow', 'enc_wolf_hexer_drummer'], // 2026-09-02 本家形: 弱枠にも群れ
+  ['enemy_shell_guard', 'enemy_axe_ogre', 'enemy_set_breaker', 'enc_axe_shadow', 'enc_wolf_hexer_drummer', 'enemy_devoted_sculptor', 'enc_biting_scrolls_trio'], // 2026-09-02 本家形: 弱枠にも群れ
 ]
 
 /**

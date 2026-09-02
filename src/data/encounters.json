@@ -696,5 +696,100 @@
     "strength": -1
    }
   ]
+ },
+ {
+  "id": "enc_axe_automatons",
+  "name": "絡繰の斧兵・二機",
+  "members": [
+   {
+    "enemyId": "enemy_axe_automaton"
+   },
+   {
+    "enemyId": "enemy_axe_automaton"
+   }
+  ]
+ },
+ {
+  "id": "enc_biting_scrolls_trio",
+  "name": "噛みつく巻物・三巻",
+  "members": [
+   {
+    "enemyId": "enemy_biting_scroll",
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_biting_scroll",
+    "strength": -2,
+    "patternOffset": 1
+   },
+   {
+    "enemyId": "enemy_biting_scroll",
+    "strength": -2,
+    "patternOffset": 2
+   }
+  ]
+ },
+ {
+  "id": "enc_biting_scrolls_quad",
+  "name": "噛みつく巻物・四巻",
+  "members": [
+   {
+    "enemyId": "enemy_biting_scroll",
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_biting_scroll",
+    "patternOffset": 1,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_biting_scroll",
+    "patternOffset": 2,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_biting_scroll",
+    "patternOffset": 3,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_lost_forgotten",
+  "name": "失せ人と忘れ人",
+  "members": [
+   {
+    "enemyId": "enemy_lost_soul"
+   },
+   {
+    "enemyId": "enemy_forgotten_soul"
+   }
+  ]
+ },
+ {
+  "id": "enc_chomper_pair",
+  "name": "金切り顎の二匹",
+  "members": [
+   {
+    "enemyId": "enemy_chomper"
+   },
+   {
+    "enemyId": "enemy_chomper",
+    "patternOffset": 1
+   }
+  ]
+ },
+ {
+  "id": "enc_scald_gnat_pair",
+  "name": "灼き虻の二匹",
+  "members": [
+   {
+    "enemyId": "enemy_scald_gnat"
+   },
+   {
+    "enemyId": "enemy_scald_gnat",
+    "patternOffset": 2
+   }
+  ]
  }
 ]

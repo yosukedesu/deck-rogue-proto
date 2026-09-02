@@ -2317,5 +2317,405 @@
     "noRepeat": true
    }
   ]
+ },
+ {
+  "id": "enemy_axe_automaton",
+  "name": "絡繰の斧兵",
+  "archetype": "splitter",
+  "flavor": "壊しても一度は起き上がる。二機ぶんの残機を、どう数えて削り切る。",
+  "maxHp": 38,
+  "opener": "one_two",
+  "splitInto": {
+   "enemyId": "enemy_axe_automaton_reboot",
+   "count": 1,
+   "strength": 1
+  },
+  "moves": [
+   {
+    "id": "one_two",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 2,
+    "hits": 2
+   },
+   {
+    "id": "sharpen",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1,
+    "once": true
+   },
+   {
+    "id": "hammer_upper",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 2,
+    "noRepeat": true,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   }
+  ]
+ },
+ {
+  "id": "enemy_axe_automaton_reboot",
+  "name": "絡繰の斧兵・再起",
+  "archetype": "brute",
+  "flavor": "再起動の一手で殻を閉じる。起ききる前に殴るか、殻ごと叩き抜くか。",
+  "maxHp": 26,
+  "moves": [
+   {
+    "id": "boot_up",
+    "kind": "defend",
+    "min": 8,
+    "max": 8,
+    "weight": 1
+   },
+   {
+    "id": "one_two",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "hammer_upper",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   }
+  ],
+  "sequence": [
+   "boot_up",
+   "one_two",
+   "hammer_upper"
+  ],
+  "sequenceLoopFrom": 1
+ },
+ {
+  "id": "enemy_thunder_globe",
+  "name": "雷球の巨頭",
+  "archetype": "enrager",
+  "flavor": "平手、雷、帯電。三拍ごとに雷は太る——数えて、虚弱の拍に殴り、雷の拍を凌げ。",
+  "maxHp": 120,
+  "moves": [
+   {
+    "id": "shock_slap",
+    "kind": "attack",
+    "min": 11,
+    "max": 13,
+    "weight": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 2
+    }
+   },
+   {
+    "id": "thunder_strike",
+    "kind": "attack",
+    "min": 6,
+    "max": 7,
+    "weight": 1,
+    "hits": 3
+   },
+   {
+    "id": "galvanic_burst",
+    "kind": "attack",
+    "min": 15,
+    "max": 18,
+    "weight": 1,
+    "alsoBuff": 2
+   }
+  ],
+  "sequence": [
+   "shock_slap",
+   "thunder_strike",
+   "galvanic_burst"
+  ]
+ },
+ {
+  "id": "enemy_frog_knight",
+  "name": "蛙の騎士",
+  "archetype": "charger",
+  "flavor": "板金は一撃を通さない。膝をついた瞬間、女王のために一度だけ全てを賭ける——半分を切る拍は、あなたが選べ。",
+  "maxHp": 140,
+  "armor": 24,
+  "moves": [
+   {
+    "id": "tongue_lash",
+    "kind": "attack",
+    "min": 12,
+    "max": 14,
+    "weight": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 2
+    }
+   },
+   {
+    "id": "strike_down",
+    "kind": "attack",
+    "min": 18,
+    "max": 22,
+    "weight": 1
+   },
+   {
+    "id": "for_the_queen",
+    "kind": "buff",
+    "min": 2,
+    "max": 3,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "tongue_lash",
+   "strike_down",
+   "for_the_queen"
+  ],
+  "movesBelowHalf": [
+   {
+    "id": "beetle_charge",
+    "kind": "attack",
+    "min": 28,
+    "max": 30,
+    "weight": 16,
+    "once": true
+   },
+   {
+    "id": "strike_down",
+    "kind": "attack",
+    "min": 18,
+    "max": 22,
+    "weight": 2
+   },
+   {
+    "id": "tongue_lash",
+    "kind": "attack",
+    "min": 12,
+    "max": 14,
+    "weight": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 2
+    }
+   },
+   {
+    "id": "for_the_queen",
+    "kind": "buff",
+    "min": 2,
+    "max": 3,
+    "weight": 1,
+    "noRepeat": true
+   }
+  ]
+ },
+ {
+  "id": "enemy_biting_scroll",
+  "name": "噛みつく巻物",
+  "archetype": "flurry",
+  "flavor": "一巻なら紙切れ。三巻、四巻と揃えば、放っておくほど牙が増える。",
+  "maxHp": 30,
+  "opener": "chomp",
+  "moves": [
+   {
+    "id": "chomp",
+    "kind": "attack",
+    "min": 7,
+    "max": 9,
+    "weight": 1,
+    "noRepeat": true
+   },
+   {
+    "id": "chew",
+    "kind": "attack",
+    "min": 3,
+    "max": 4,
+    "weight": 2,
+    "hits": 2
+   },
+   {
+    "id": "more_teeth",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1,
+    "noRepeat": true
+   }
+  ]
+ },
+ {
+  "id": "enemy_lost_soul",
+  "name": "失せ人の霊",
+  "archetype": "hexer",
+  "flavor": "息を吸われるたび、あなたの腕は鈍り、向こうの腕は太る。",
+  "maxHp": 60,
+  "moves": [
+   {
+    "id": "debilitating_smog",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "alsoBuff": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   },
+   {
+    "id": "eye_lasers",
+    "kind": "attack",
+    "min": 5,
+    "max": 6,
+    "weight": 1,
+    "hits": 2
+   }
+  ],
+  "sequence": [
+   "debilitating_smog",
+   "eye_lasers"
+  ]
+ },
+ {
+  "id": "enemy_forgotten_soul",
+  "name": "忘れ人の霊",
+  "archetype": "hexer",
+  "flavor": "瘴気があなたの構えを溶かし、溶けた分だけ向こうの恐怖は重くなる。",
+  "maxHp": 70,
+  "moves": [
+   {
+    "id": "miasma",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "alsoDefend": 5,
+    "alsoBuff": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   },
+   {
+    "id": "dread",
+    "kind": "attack",
+    "min": 10,
+    "max": 13,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "miasma",
+   "dread"
+  ]
+ },
+ {
+  "id": "enemy_devoted_sculptor",
+  "name": "献身の彫師",
+  "archetype": "enrager",
+  "flavor": "己の身に禁呪を刻む。鑿を振るうたび腕は太り、祈りは止まらない——止めるなら、早く。",
+  "maxHp": 90,
+  "enrage": 2,
+  "moves": [
+   {
+    "id": "carve_rite",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "alsoBuff": 3
+   },
+   {
+    "id": "savage",
+    "kind": "attack",
+    "min": 9,
+    "max": 11,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "carve_rite",
+   "savage"
+  ],
+  "sequenceLoopFrom": 1
+ },
+ {
+  "id": "enemy_chomper",
+  "name": "金切り顎",
+  "archetype": "hexer",
+  "flavor": "噛んで、叫ぶ。金切り声はあなたの山札に紛れ込む——急所も脅しも、この顎には二度まで通じない。",
+  "maxHp": 60,
+  "artifact": 2,
+  "moves": [
+   {
+    "id": "clamp",
+    "kind": "attack",
+    "min": 7,
+    "max": 8,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "screech",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "junk",
+     "amount": 2
+    }
+   }
+  ],
+  "sequence": [
+   "clamp",
+   "screech"
+  ]
+ },
+ {
+  "id": "enemy_scald_gnat",
+  "name": "灼き虻",
+  "archetype": "hexer",
+  "flavor": "火傷を吐いて手札を焼き、隙に吸って太る。捌いているうちに、噛みが重くなる。",
+  "maxHp": 58,
+  "moves": [
+   {
+    "id": "scald_spit",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "scald",
+     "amount": 2
+    }
+   },
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 12,
+    "max": 14,
+    "weight": 1
+   },
+   {
+    "id": "suck",
+    "kind": "attack",
+    "min": 4,
+    "max": 5,
+    "weight": 1,
+    "alsoBuff": 2
+   }
+  ],
+  "sequence": [
+   "scald_spit",
+   "bite",
+   "suck"
+  ]
  }
 ]
