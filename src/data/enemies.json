@@ -2035,5 +2035,287 @@
     }
    }
   ]
+ },
+ {
+  "id": "enemy_gaping_maw",
+  "name": "裂け口の獣",
+  "archetype": "wide-power",
+  "flavor": "同じ手は二度続かない。咆哮は一度きり——吠えた後の一噛みは、骨まで届く。",
+  "maxHp": 95,
+  "opener": "claw",
+  "moves": [
+   {
+    "id": "claw",
+    "kind": "attack",
+    "min": 4,
+    "max": 5,
+    "weight": 1,
+    "hits": 2,
+    "noRepeat": true
+   },
+   {
+    "id": "rend",
+    "kind": "attack",
+    "min": 10,
+    "max": 12,
+    "weight": 1,
+    "noRepeat": true
+   },
+   {
+    "id": "roar",
+    "kind": "hex",
+    "weight": 1,
+    "once": true,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 2
+    }
+   }
+  ]
+ },
+ {
+  "id": "enemy_cog_construct",
+  "name": "歯車の箱兵",
+  "archetype": "enrager",
+  "flavor": "撃つたび歯車が噛み合い、次の一射が重くなる。初めの急所も威圧も、殻に弾かれる。",
+  "maxHp": 80,
+  "startingBlock": 13,
+  "artifact": 1,
+  "moves": [
+   {
+    "id": "repeater",
+    "kind": "attack",
+    "min": 5,
+    "max": 6,
+    "weight": 1,
+    "alsoBuff": 2
+   },
+   {
+    "id": "expel",
+    "kind": "attack",
+    "min": 3,
+    "max": 4,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "charge_up",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "repeater",
+   "repeater",
+   "expel",
+   "charge_up"
+  ]
+ },
+ {
+  "id": "enemy_spore_cap",
+  "name": "胞子吹きの茸",
+  "archetype": "hexer",
+  "flavor": "胞子を浴びた次のターンが本番。紫は傷を深くし、黄は鎧を緩める。",
+  "maxHp": 70,
+  "opener": "frail_spores",
+  "moves": [
+   {
+    "id": "vuln_spores",
+    "kind": "hex",
+    "weight": 3,
+    "noRepeat": true,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 2
+    }
+   },
+   {
+    "id": "frail_spores",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 2,
+    "noRepeat": true,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   },
+   {
+    "id": "smash",
+    "kind": "attack",
+    "min": 9,
+    "max": 11,
+    "weight": 1,
+    "noRepeat": true
+   }
+  ]
+ },
+ {
+  "id": "enemy_strangler_serpent",
+  "name": "巻きつく大蛇",
+  "archetype": "hexer",
+  "flavor": "巻かれて締められた次のターンは、三枚しか切れない。三枚で凌ぐか、三枚で殴り切るか。",
+  "maxHp": 80,
+  "moves": [
+   {
+    "id": "constrict",
+    "kind": "attack",
+    "min": 3,
+    "max": 4,
+    "weight": 1,
+    "inflict": {
+     "status": "restrain",
+     "amount": 1
+    }
+   },
+   {
+    "id": "lash",
+    "kind": "attack",
+    "min": 10,
+    "max": 12,
+    "weight": 1
+   },
+   {
+    "id": "thwack",
+    "kind": "attack",
+    "min": 6,
+    "max": 7,
+    "weight": 1,
+    "alsoDefend": 5
+   }
+  ],
+  "sequence": [
+   "constrict",
+   "lash",
+   "constrict",
+   "thwack"
+  ]
+ },
+ {
+  "id": "enemy_snap_fruit",
+  "name": "噛みつき果実",
+  "archetype": "enrager",
+  "flavor": "小さな口は一噛みごとに大きくなる。後回しにした分だけ、牙が伸びる。",
+  "maxHp": 45,
+  "moves": [
+   {
+    "id": "snap",
+    "kind": "attack",
+    "min": 3,
+    "max": 3,
+    "weight": 1,
+    "alsoBuff": 2
+   }
+  ]
+ },
+ {
+  "id": "enemy_vine_walker",
+  "name": "蔦纏いの歩き木",
+  "archetype": "charger",
+  "flavor": "蔦が腕に絡み、物理の一振りが一マナ重い。呪文は絡まれない。三拍目の大顎までに決めろ。",
+  "maxHp": 85,
+  "aura": {
+   "cardType": "physical",
+   "costUp": 1
+  },
+  "moves": [
+   {
+    "id": "swipe",
+    "kind": "attack",
+    "min": 4,
+    "max": 5,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "grasping_vines",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1
+   },
+   {
+    "id": "chomp",
+    "kind": "attack",
+    "min": 13,
+    "max": 15,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "swipe",
+   "grasping_vines",
+   "chomp"
+  ]
+ },
+ {
+  "id": "enemy_iron_clam",
+  "name": "鉄殻の溝貝",
+  "archetype": "shell",
+  "flavor": "殻は一撃を八までしか通さない。大振りより数で削れ。閉じて溜めた次の噴射は重い。",
+  "maxHp": 58,
+  "armor": 8,
+  "moves": [
+   {
+    "id": "jet",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 1
+   },
+   {
+    "id": "pressurize",
+    "kind": "buff",
+    "min": 3,
+    "max": 3,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "jet",
+   "pressurize"
+  ]
+ },
+ {
+  "id": "enemy_sludge_spider",
+  "name": "汚泥紡ぎの蜘蛛",
+  "archetype": "hexer",
+  "flavor": "油を浴びれば腕が鈍り、怒れば牙が育つ。同じ手は二度続けて来ない。",
+  "maxHp": 55,
+  "opener": "oil_spray",
+  "moves": [
+   {
+    "id": "oil_spray",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "noRepeat": true,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   },
+   {
+    "id": "slam",
+    "kind": "attack",
+    "min": 9,
+    "max": 11,
+    "weight": 1,
+    "noRepeat": true
+   },
+   {
+    "id": "rage",
+    "kind": "attack",
+    "min": 5,
+    "max": 6,
+    "weight": 1,
+    "alsoBuff": 2,
+    "noRepeat": true
+   }
+  ]
  }
 ]

@@ -595,5 +595,106 @@
     "strength": -1
    }
   ]
+ },
+ {
+  "id": "enc_serpent_fruit",
+  "name": "大蛇と噛みつき果実",
+  "members": [
+   {
+    "enemyId": "enemy_strangler_serpent",
+    "hpScale": 0.7,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_snap_fruit",
+    "hpScale": 0.9
+   }
+  ]
+ },
+ {
+  "id": "enc_sporecap_fruit",
+  "name": "胞子茸と噛みつき果実",
+  "members": [
+   {
+    "enemyId": "enemy_spore_cap",
+    "hpScale": 0.75,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_snap_fruit",
+    "hpScale": 0.8
+   }
+  ]
+ },
+ {
+  "id": "enc_sporecap_mudlings",
+  "name": "胞子茸と小泥",
+  "members": [
+   {
+    "enemyId": "enemy_spore_cap",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_mudling"
+   },
+   {
+    "enemyId": "enemy_mudling"
+   }
+  ]
+ },
+ {
+  "id": "enc_serpent_mudlings",
+  "name": "大蛇と小泥",
+  "members": [
+   {
+    "enemyId": "enemy_strangler_serpent",
+    "hpScale": 0.65,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_mudling"
+   },
+   {
+    "enemyId": "enemy_mudling"
+   }
+  ]
+ },
+ {
+  "id": "enc_snapfruit_trio",
+  "name": "噛みつき果実の三つ",
+  "members": [
+   {
+    "enemyId": "enemy_snap_fruit",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_snap_fruit",
+    "hpScale": 0.6,
+    "strength": -2
+   },
+   {
+    "enemyId": "enemy_snap_fruit",
+    "hpScale": 0.6,
+    "strength": -2
+   }
+  ]
+ },
+ {
+  "id": "enc_spider_fruit",
+  "name": "蜘蛛と噛みつき果実",
+  "members": [
+   {
+    "enemyId": "enemy_sludge_spider",
+    "hpScale": 0.7,
+    "strength": -1
+   },
+   {
+    "enemyId": "enemy_snap_fruit",
+    "hpScale": 0.6,
+    "strength": -1
+   }
+  ]
  }
 ]

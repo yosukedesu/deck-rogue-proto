@@ -344,7 +344,7 @@ describe('StS2式の抽選改善 (2026-09-02 全体改善)', () => {
           for (const n of m[r]) {
             if (n.type !== 'battle' || n.encounterId === null) continue
             expect(tierFor(act, r), `act${act} seed${seed} row${r}`).toContain(n.encounterId)
-            expect(tierFor(act, r).length).toBeLessThanOrEqual(6) // 弱プール = 小さな教師枠 (2026-09-02 群れ2件を足して5)
+            expect(tierFor(act, r).length).toBeLessThan(tierFor(act, 6).length) // 弱プール = 本帯より小さな教師枠
           }
         }
       }

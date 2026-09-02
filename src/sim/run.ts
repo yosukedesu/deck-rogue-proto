@@ -371,6 +371,8 @@ export function chooseCommand(s: GameState): Command {
 
   // ダメージ札自身は温存分を使ってよい
   const isPayoff = (c: CardInstance) => c.def.effects.some(isDamageEffect)
+  // 拘束 (2026-09-02 幕1新敵「巻きつく大蛇」の設計者が発見): 上限に達したら PlayCard/PlayNecro を出さない
+  if (!(s.player.restrain > 0 && (s.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP)) {
   for (const role of PLAY_PRIORITY) {
     let candidates = s.player.hand.filter((c) => {
       const budget = role === 'bighit' || isPayoff(c) ? spendable : spendable - payoffReserve
@@ -419,6 +421,7 @@ export function chooseCommand(s: GameState): Command {
       alive.length > 1 ? alive.reduce((a, b) => (b.e.hp < a.e.hp ? b : a)).i : undefined
     return { type: 'PlayNecro', cardUid: necro.uid, targetIndex: target }
   }
+  } // 拘束ガード終わり
   return { type: 'EndTurn' }
 }
 
