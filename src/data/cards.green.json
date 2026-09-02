@@ -574,23 +574,6 @@
     "rarity": "uncommon"
   },
   {
-    "id": "green_reaction_backlash",
-    "name": "逆襲の蔦",
-    "cost": 2,
-    "type": "reaction",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "condition": {
-          "minActionValue": 10
-        },
-        "effect": "counter",
-        "amount": 24
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
     "id": "green_wild_sprout",
     "name": "野生の萌芽",
     "cost": 0,
@@ -693,20 +676,6 @@
       }
     ],
     "rarity": "common"
-  },
-  {
-    "id": "green_giant_bark",
-    "name": "巨木の盾",
-    "cost": 2,
-    "type": "physical",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlockPerEnergyMax",
-        "amount": 4
-      }
-    ],
-    "rarity": "uncommon"
   },
   {
     "id": "green_snare_root",
@@ -1232,29 +1201,6 @@
     ]
   },
   {
-    "id": "green_full_bloom",
-    "name": "満開の刻",
-    "cost": 4,
-    "type": "spell",
-    "color": "green",
-    "rarity": "rare",
-    "exhaust": true,
-    "axis": [
-      "growth"
-    ],
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "doubleGrowth"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 10
-      }
-    ]
-  },
-  {
     "id": "green_gale_strike",
     "name": "疾風の一撃",
     "cost": 2,
@@ -1274,29 +1220,6 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 6
-      }
-    ]
-  },
-  {
-    "id": "green_storm_horn",
-    "name": "嵐の角笛",
-    "cost": 3,
-    "type": "spell",
-    "color": "green",
-    "rarity": "uncommon",
-    "exhaust": true,
-    "axis": [
-      "trample"
-    ],
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "addMomentum",
-        "amount": 3
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "doubleMomentum"
       }
     ]
   },
@@ -1376,27 +1299,6 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 5
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
-    "id": "green_rock_root",
-    "name": "岩砕きの根",
-    "cost": 2,
-    "type": "physical",
-    "axis": [
-      "shatter"
-    ],
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "shatterBlock"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 13
       }
     ],
     "rarity": "uncommon"

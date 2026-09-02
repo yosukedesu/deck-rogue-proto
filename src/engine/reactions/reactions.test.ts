@@ -252,8 +252,11 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
     expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
   })
 
-  it('逆襲の蔦: 受けたダメージが10未満なら発動しない、10以上なら返し24', () => {
-    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_backlash'])
+  it('行動値X以上の条件 (minActionValue): 実値が10未満なら発動しない、10以上なら返し24 (逆襲の蔦は2026-09-02撤去。機構を合成defで固定)', () => {
+    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
+    const base = s.player.hand[0]
+    const def = { ...base.def, id: 'test_backlash', name: '逆襲(テスト)', cost: 2, effects: [{ trigger: 'onAttacked' as const, condition: { minActionValue: 10 }, effect: 'counter' as const, amount: 24 }] }
+    s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_backlash', def }] } }
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_backlash' })
     const small = applyCommand(withIntent(s, attackIntent(9)), { type: 'EndTurn' })
     expect(types(small.eventLog)).not.toContain('ReactionTriggered')
