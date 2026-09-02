@@ -5,6 +5,7 @@ import { allCards, allEnemies, resolveEncounter } from './content.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 import { tierFor } from './map.ts'
+import { ENEMY_GIMMICK_KEYS } from './traits.ts'
 
 describe('敵設計規約の機械固定 (enemy-conventions)', () => {
   it('とげ持ちは防御行動を持たない (2026-08-30 裁定「とげの問いは殴らないで待つ、ではない」)', () => {
@@ -86,10 +87,7 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
       'id', 'name', 'archetype', 'flavor', 'maxHp', 'moves', 'sequence', 'sequenceLoopFrom',
       'movesBelowHalf', 'sequenceBelowHalf', 'sequenceBelowHalfLoopFrom',
       'movesVsSet', 'movesVsTokens', 'movesWhenAlone', 'sequenceWhenAlone',
-      'enrage', 'enrageEveryCards', 'enrageEveryDamage', 'regen', 'regenBreak', 'burnResist',
-      'thorns', 'armor', 'startingBlock', 'angerOnBlock', 'guardian', 'bondStrength',
-      'opener', 'phaseAfterUses', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
-      'turnArmor', 'artifact', 'wakeOnDamage',
+      ...ENEMY_GIMMICK_KEYS, // ギミック系は traits.ts と共有 (表示網羅テストと同じ一次資料)
     ])
     const offenders: string[] = []
     for (const e of allEnemies) {

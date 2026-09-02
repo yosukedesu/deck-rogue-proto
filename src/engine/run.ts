@@ -190,6 +190,8 @@ export interface RunState {
   readonly colors: readonly CardColor[]
   /** 難易度 (1〜10・既定3=現状維持。確定済みルール表「難易度」。旧セーブに無いので読み取りは difficultyScale 経由) */
   readonly difficulty: number
+  /** デバッグ: 意図を常時実値表示 (2026-09-02 退屈診断④の判定実験。仕様は変えず計測だけ。ジャーナルに記録=リプレイ再現) */
+  readonly debugRevealIntents?: boolean
   /** ラン専用RNG (敵並び・報酬・戦闘シードの決定に使う) */
   readonly rng: RngState
   /** 現在のデッキ (ピックで増える) */
@@ -329,7 +331,7 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     setDamageReduction: run.relics
       .map(getRelicDef)
       .reduce((sum, r) => sum + (r.combatRule?.setDamageReduction ?? 0), 0),
-    revealIntents: run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
+    revealIntents: run.debugRevealIntents === true || run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
   })
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
 }
@@ -672,6 +674,7 @@ export function createRun(
   leaderId = 'leader_green',
   deckId?: string,
   difficulty = DEFAULT_DIFFICULTY,
+  opts?: { readonly revealIntents?: boolean },
 ): RunState {
   const leader = getLeaderDef(leaderId)
   // 種の選択制 (確定済みルール表「ラン初期デッキ」): リーダーが許可する初期デッキのみ受け付ける
@@ -699,6 +702,7 @@ export function createRun(
     seed,
     mode,
     leaderId,
+    ...(opts?.revealIntents === true ? { debugRevealIntents: true } : {}),
     colors: leader.colors,
     // 範囲外・非数は表の端/既定へ丸めて保存 (以降の読み取りも difficultyScale が守る)
     difficulty: Number.isFinite(difficulty)
@@ -750,6 +754,8 @@ export interface ReplayOrigin {
   readonly leaderId: string
   readonly deckId?: string
   readonly difficulty?: number
+  /** デバッグの実値表示トグル (2026-09-02)。shownMin/Max の状態値が変わるので再現に必要 */
+  readonly revealIntents?: boolean
   /** kind='checkpoint' の開始オプション (createDebugCheckpointRun の引数) */
   readonly checkpoint?: {
     readonly act: number
@@ -770,7 +776,7 @@ export function replayInitialRun(origin: ReplayOrigin): RunState {
   if (origin.kind === 'checkpoint' && origin.checkpoint !== undefined) {
     return createDebugCheckpointRun(origin.seed, 'set-confirm', origin.leaderId, origin.checkpoint)
   }
-  return createRun(origin.seed, 'set-confirm', origin.leaderId, origin.deckId, origin.difficulty)
+  return createRun(origin.seed, 'set-confirm', origin.leaderId, origin.deckId, origin.difficulty, origin.revealIntents ? { revealIntents: true } : undefined)
 }
 
 /**

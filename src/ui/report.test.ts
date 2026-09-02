@@ -152,8 +152,8 @@ describe('戦闘評価のログ出力 (2026-09-01)', () => {
     const rated = { ...archiveBattle({ ...combat, phase: 'won' as const }, 1, 'enemy_probe', false, 80, 10), rating: { strength: 4, fun: 5, note: '読み合いが濃かった' } }
     const unrated = archiveBattle({ ...combat, phase: 'won' as const }, 2, 'enemy_probe', false, 75, 10)
     const text = buildReport(run, null, [rated, unrated])
-    expect(text).toContain('| 強さ | 面白さ | メモ |')
-    expect(text).toContain('| 4 | 5 | 読み合いが濃かった |')
+    expect(text).toContain('| 強さ | 面白さ | 敗因 | メモ |')
+    expect(text).toContain('| 4 | 5 |  | 読み合いが濃かった |') // 敗因列 (2026-09-02) は勝利なので空
     expect(text).toContain('/ 評価: 強さ4 面白さ5「読み合いが濃かった」')
     expect(text).toContain('|  |  |  |') // 未評価行は空欄
   })

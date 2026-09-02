@@ -34,6 +34,7 @@ export interface BattleRating {
   readonly strength?: number // 敵の強さ 1〜5
   readonly fun?: number // 面白さ 1〜5
   readonly note?: string // ひとことメモ (自由記述)
+  readonly lossFeel?: 'build' | 'unfair' // 敗北時の感触 (2026-09-02 作り直し基準の入力。build=構築の失敗 / unfair=理不尽)
 }
 
 export interface BattleArchive {
@@ -173,7 +174,7 @@ export function buildReport(
   if (run) {
     const leader = getLeaderDef(run.leaderId)
     L.push(`ラン ${leader.name}（${run.leaderId}） / seed ${run.seed} / mode ${run.mode} / 難易度 ${run.difficulty ?? 3}`)
-    L.push(`進行: ${run.phase} / 幕${run.act}/3 行${run.row + 1}/${run.map.length}・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
+    L.push(`進行: ${run.phase}${run.debugRevealIntents ? ' / 🔍実値表示モード' : ''} / 幕${run.act}/3 行${run.row + 1}/${run.map.length}・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
     L.push(
       `マップ: ${run.map
         .map((row, r) => {
@@ -211,11 +212,11 @@ export function buildReport(
   if (history.length > 0) {
     L.push(`## これまでの戦闘（${history.length}戦）`)
     L.push('')
-    L.push('| # | 敵 | 結果 | ターン | HP | 強さ | 面白さ | メモ |')
-    L.push('|---|---|---|---|---|---|---|---|')
+    L.push('| # | 敵 | 結果 | ターン | HP | 強さ | 面白さ | 敗因 | メモ |')
+    L.push('|---|---|---|---|---|---|---|---|---|')
     for (const h of history) {
       L.push(
-        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} | ${h.rating?.strength ?? ''} | ${h.rating?.fun ?? ''} | ${(h.rating?.note ?? '').trim().replace(/\|/g, '｜')} |`,
+        `| ${h.battleNo} | ${safeEncounterName(h.enemyId)}${h.elite ? '（強個体）' : ''} | ${h.result === 'won' ? '勝利' : '敗北'} | ${h.turns} | ${h.hpBefore}→${h.hpAfter} | ${h.rating?.strength ?? ''} | ${h.rating?.fun ?? ''} | ${h.rating?.lossFeel === 'build' ? '構築の失敗' : h.rating?.lossFeel === 'unfair' ? '理不尽' : ''} | ${(h.rating?.note ?? '').trim().replace(/\|/g, '｜')} |`,
       )
     }
     L.push('')

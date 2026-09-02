@@ -165,71 +165,7 @@ const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 
 
 // ---- キーワード能力のツールチップ ----
 
-/** キーワード能力の用語解説 (カーソルを当てると吹き出しで表示) */
-const KEYWORD_HELP: Record<string, string> = {
-  憤怒: '赤の受け: 被弾を次の攻撃の燃料に変える（例: 被攻撃後に勢い+2、受けたダメージ×2で殴り返す）',
-  爆熱: '対象の延焼×Nのダメージを与え、延焼を全て失わせる。継続ダメージと焼き切りを手放してバーストに換金する',
-  処刑: '対象のHPが最大の25%以下なら、ダメージが跳ね上がる',
-  弱体: '与えるダメージが25%減る（切り捨て）。自分のターン終了時に1減る',
-  脆弱: '敵の攻撃で受けるダメージが50%増える（切り捨て）。敵の行動フェーズ終了時に1減る',
-  虚弱: 'カードのプレイで得るブロックが25%減る（切り捨て・最低1）。氷壁・リアクション・置物由来は減らない。自分のターン終了時に1減る',
-  火傷: '使えない死に札。自ターン終了時に手札にあるとHP-2。戦闘終了で消える。捨てコスト・消滅コストの支払いには使える',
-  呪いの烙印: '使えない死に札。自ターン終了時に手札にあるとHP-1。ランのデッキに残り続ける（焚き火・ショップで除去可能）',
-  負傷: '使えない死に札。手札に来ても何もできず、ターン終了時に捨てられる（1戦闘で最大5枚まで）',
-  再生: '敵フェーズ終了時にHPが回復する。HP半分以下になると止まる',
-  激昂: '自動で筋力が増えるタイマー。「/T」は敵フェーズごと、「/N枚プレイ」はカードをN枚プレイするたび、「/被ダメN」はこの敵が受けた累計ダメージがNの倍数を跨ぐたび',
-  混乱: '混乱した敵の攻撃は、プレイヤーでなく他の生存敵（いなければ自分自身）に向かう。攻撃1回ごとに1減る',
-  急所: 'その敵が次に受けるダメージN回が+50%（切り捨て）。1回ダメージを与えるごとに1減る',
-  威圧: '敵の筋力を下げる（攻撃の実値と幅表示が下がる。攻撃は最低1）',
-  応援: '味方全体の筋力を増やす。応援役を先に倒すか、無視して本体を叩くかの選択',
-  分裂: '倒すと小型の敵に分かれて場に残る。分裂体はその敵フェーズから行動する。全体攻撃・延焼・オーバーキルの一撃が解答',
-  装甲: '1ヒットで受けるダメージがこの値以下に頭打ちになる。多段で削るか、装甲を無視する延焼で焼くのが解答',
-  とげ: '攻撃ヒット1回ごとに反射ダメージを受ける（ブロックで防げる）。そのヒットで倒せば反射しない',
-  庇う: 'この敵が生きている間、あなたの単体対象カードは他の敵を選べずこの敵に向かう。全体攻撃と延焼の毎ターンダメージは素通し',
-  連携: '他の仲間が1体でも生きている間、この敵の攻撃に+N（宣言時に判定。仲間を倒せば次の宣言から素に戻る）',
-  拘束: '残りNターンの間、1ターンにプレイできるカードは3枚まで。伏せる・リアクション発動は制限されない',
-  霞み: '残りNターンの間、ターン開始のドローが2枚減る（最低3枚）',
-  重り: '残りNフェーズの間、敵の攻撃ダメージ+10%×このターンのプレイ枚数。手数を出すほど重く受ける',
-  重圧: 'この敵が生きている間、あなたのカードのコストが増える。倒せば即座に元に戻る（キル順の圧）',
-  残機: '倒すと次の形態で再起動する（次のHPはチップに表示）。オーバーキルのダメージは持ち越されない＝ちょうど削る計画の問い',
-  孵化: '放っておくと孵化して強い姿になる。卵のうちに割るか、親から倒すかの資源配分。孵化は打ち消しで1ターン遅らせられる（ただし行動値条件つきの打ち消し〔逆巻き等〕は孵化＝行動値0に反応しない）',
-  弔い: '仲間が倒れるたび筋力+N（逃走は除く）。同時に削って同時に落とすのが正解＝全体攻撃の出番',
-  ターン装甲: '1ターンに受けるHP損失の合計がこの値以下に頭打ちになる（装甲は1ヒット、こちらは1ターン）。多段・バーストの上限。延焼は無視して通る',
-  アーティファクト: 'デバフ（急所・威圧・混乱）の付与をN回弾いて1減る。延焼は弾かない',
-  眠り: '眠っている間は殻を積む。累計ダメージがしきい値に達すると目を覚まし、前奏を打ち切って本気になる。寝ている間に削るか、放置して準備するか',
-  育つ技: 'この技は使うたび威力（またはヒット数）が増え、この戦闘中は戻らない。長引くほど危険＝速攻の理由',
-  従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
-  延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
-  貫通: '敵のブロックを無視してダメージを与える（トランプル）',
-  勢い: 'このターンの以降の攻撃ダメージに加算。自分のターン終了時に0に戻る',
-  成長: 'この戦闘の間、与えるダメージすべてに加算される（戦闘ごとにリセット）',
-  消滅: '使用後、この戦闘から取り除かれる（再シャッフルされない）。消滅置き場は黒の墓地参照・回収の燃料になる',
-  消滅コスト: 'プレイするために手札をN枚消滅させる。捨てより重いが、消滅置き場の燃料が増える',
-  墓地: '消滅置き場のこと。忘却・消滅コスト・消滅札・衝動の失効で増え、戦闘中は減らない（回収を除く）',
-  忘却の刻: '消滅置き場が7枚以上のとき、このカードの効果が強化される。屍集めや死者再生で墓地を使うと刻が割れることもある',
-  ドレイン: 'ダメージを与え、その半分（切り捨て）だけHPが回復する（黒の専売）',
-  直接プレイ: '消滅置き場のカードをコストを支払わずプレイする。プレイ後もカードは消滅置き場に残る（置物は場に出る）',
-  置物: 'プレイすると場に残り、戦闘中ずっと効果を発揮する（破壊されない）',
-  打ち消す: '敵の行動1回を完全に無効化する（攻撃・防御・伏せ破壊・筋力上げすべて対象）',
-  返し: '攻撃してきた敵にダメージを与える（敵の攻撃自体は受ける）',
-  被攻撃前: '敵の攻撃でダメージを受ける直前に発動できる（軽減向き）',
-  被攻撃後: '敵の攻撃でダメージを受けた後に発動できる（返し向き）',
-  敵強化時: '敵が筋力を上げた直後に発動できる',
-  敵防御時: '敵がブロックを得た直後に発動できる',
-  敵行動時: '敵の行動が確定した直後（実行前）に発動できる。打ち消し向き',
-  毎ターン開始時: '自分のターン開始時に自動で発動する',
-  攻撃プレイ後: '攻撃カードをプレイするたび自動で発動する（そのカード自身には乗らない）',
-  追加コスト: 'プレイするためにエナジーとは別に支払うコスト',
-  エナジー上限: '毎ターン開始時に回復するエナジーの量。戦闘ごとに3へリセット',
-  筋力: '以降の攻撃の実値と幅表示に加算される（敵のバフ。打ち消しで無効化できる）',
-  伏せ破壊: '伏せているカードを破壊して捨て札に送る',
-  氷壁: 'このブロックはターン開始で消えず持ち越される。通常ブロックを使い切った後に消費される',
-  詠唱数: 'このターンにプレイしたカードの枚数（そのカード自身は数えない）。ターン開始でリセット',
-  霊気: '妨害やリアクションの成功で溜まるエネルギー（戦闘中持続）。霊気放出で一気に叩きつける',
-  延焼: '敵に蓄積する継続ダメージ。毎敵ターン開始時に延焼値ぶんのダメージ（ブロック無視）を与えて1減る',
-  衝動: '山札の上からめくった「このターン限り」の手札。使わずにターンを終えると消滅する',
-  粉砕: '敵のブロックを全て破壊する（無視ではなく叩き割る）',
-}
+import { KEYWORD_HELP } from './keywordHelp.ts'
 
 const KW_PATTERN = new RegExp(
   `(${Object.keys(KEYWORD_HELP)
@@ -1038,7 +974,7 @@ function SetupScreen({
   onStartCheckpoint,
 }: {
   onStart: (cfg: Config) => void
-  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number) => void
+  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number, revealIntents?: boolean) => void
   /** 「続きから」(localStorageバックアップにランがある時だけ非null) */
   resume?: { label: string; onResume: () => void } | null
   /** セーブファイル (.json) の読み込み */
@@ -1052,6 +988,7 @@ function SetupScreen({
   const [leaderId, setLeaderId] = useState(allLeaders[0].id)
   // 難易度 (確定済みルール表「難易度」): 1〜10・既定3=現状維持
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
+  const [revealIntents, setRevealIntents] = useState(false) // 判定実験: 意図を常時実値表示 (2026-09-02)
   const leader = getLeaderDef(leaderId)
   const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
   const [deckId, setDeckId] = useState(allowedDecks[0].id)
@@ -1174,7 +1111,7 @@ function SetupScreen({
                 <button
                   key={deckId}
                   className="choice"
-                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty)}
+                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty, revealIntents)}
                 >
                   <div className="choice-title">{leader.sprite} {deck?.name ?? deckId}で開始</div>
                   <div className="choice-desc">{deck?.description}</div>
@@ -1186,7 +1123,7 @@ function SetupScreen({
           <button
             className="btn btn-primary"
             style={{ marginTop: 8 }}
-            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty)}
+            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty, revealIntents)}
           >
             {leader.sprite} {leader.name}でランを開始
           </button>
@@ -1300,7 +1237,12 @@ function SetupScreen({
           <DeckBuilder colors={leader.colors} deck={customDeck} setDeck={setCustomDeck} />
           <FusionLab />
           {onStartCheckpoint !== undefined && (
-            <CheckpointPanel leaderId={leaderId} difficulty={difficulty} onStart={onStartCheckpoint} />
+            <>
+              <label className="hint" style={{ display: 'block', marginTop: 8 }} title="退屈診断④の判定実験: 幅あり意図（例: 攻撃6〜12）を常時実値にして遊び、幅表示の有無で体感がどう変わるかを比べる。仕様は変えず計測だけ（レポートに記録される）">
+                <input type="checkbox" checked={revealIntents} onChange={(e) => setRevealIntents(e.target.checked)} /> 🔍 意図を常時実値表示（幅あり意図の判定実験）
+              </label>
+              <CheckpointPanel leaderId={leaderId} difficulty={difficulty} onStart={onStartCheckpoint} />
+            </>
           )}
         </>
       )}
@@ -4770,6 +4712,8 @@ export default function App() {
             rated={last.rating ?? null}
             onRate={patchRating}
             onNote={(note) => patchRating({ note })}
+            lost={last.result === 'lost'}
+            onLossFeel={(feel) => patchRating({ lossFeel: feel })}
           />
         )
       })()}
@@ -4798,12 +4742,12 @@ export default function App() {
         setChoiceLog([])
         setJournal({ origin: { kind: 'checkpoint', seed: opts.seed, leaderId: opts.leaderId, checkpoint: { act: opts.act, deckId: opts.deckId, relicIds: opts.relicIds, hpRatio: opts.hpRatio, gold: opts.gold, difficulty: opts.difficulty } }, commands: [] })
         setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
-      }} onStartRun={(seed, leaderId, runDeckId, difficulty) => {
+      }} onStartRun={(seed, leaderId, runDeckId, difficulty, revealIntents) => {
         setRunHistory([])
         setPlayNotes([])
         setChoiceLog([])
-        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty }, commands: [] })
-        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty))
+        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty, ...(revealIntents ? { revealIntents: true } : {}) }, commands: [] })
+        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty, revealIntents ? { revealIntents: true } : undefined))
       }} />
   }
   return (
@@ -4830,6 +4774,8 @@ export default function App() {
           setBattleRated(r)
         }}
         onNote={(note) => addNote(`[戦闘メモ] ${note}`)}
+        lost={state.phase === 'lost'}
+        onLossFeel={(feel) => addNote(`[敗因] ${feel === 'build' ? '構築の失敗' : '理不尽'}`)}
       />
     )}
     </>
@@ -4846,13 +4792,19 @@ function BattleRatingBar({
   rated,
   onRate,
   onNote,
+  lost,
+  onLossFeel,
 }: {
   label: string
   /** すでに記録済みの評価 (この戦闘のフェーズ内なら表示してメモ追記を受け付ける) */
   rated: BattleRating | null
   onRate: (r: BattleRating) => void
   onNote: (note: string) => void
+  /** 敗北時だけ出る「敗因の感触」2択 (2026-09-02 作り直し基準の入力: 構築の失敗 / 理不尽) */
+  lost?: boolean
+  onLossFeel?: (feel: 'build' | 'unfair') => void
 }) {
+  const [lossFeel, setLossFeel] = useState<'build' | 'unfair' | null>(rated?.lossFeel ?? null)
   const [strength, setStrength] = useState<number | null>(rated?.strength ?? null)
   const [fun, setFun] = useState<number | null>(rated?.fun ?? null)
   const [note, setNote] = useState(rated?.note ?? '')
@@ -4898,6 +4850,24 @@ function BattleRatingBar({
       <span style={{ fontSize: 12 }}>⚔️ {label} の評価{committed ? ' ✅' : ''}</span>
       {row('強さ', 'strength', strength)}
       {row('面白さ', 'fun', fun)}
+      {lost && (
+        <span style={{ display: 'inline-flex', gap: 2, alignItems: 'center', fontSize: 12 }} title="負けた理由の感触。理不尽が独立2本一致したら数値でなく構造を作り直す（balance-policy.md）">
+          敗因
+          {(['build', 'unfair'] as const).map((f) => (
+            <button
+              key={f}
+              className="chip chip-btn"
+              style={{ padding: '1px 6px', background: lossFeel === f ? 'rgba(255,120,120,0.45)' : undefined }}
+              onClick={() => {
+                setLossFeel(f)
+                onLossFeel?.(f)
+              }}
+            >
+              {f === 'build' ? '構築の失敗' : '理不尽'}
+            </button>
+          ))}
+        </span>
+      )}
       <input
         value={note}
         onChange={(e) => setNote(e.target.value)}

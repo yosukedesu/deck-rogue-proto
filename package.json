@@ -12,7 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "sim": "tsx src/sim/run.ts",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test:variance": "VARIANCE=1 vitest run src/sim/variance.slow.test.ts",
+    "ratings": "tsx scripts/aggregate-ratings.ts"
   },
   "dependencies": {
     "react": "^19.2.8",

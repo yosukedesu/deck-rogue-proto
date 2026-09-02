@@ -41,7 +41,8 @@ import {
   windowFromPending,
 } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { turnsUntilHatch, worstIncomingFrom, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { worstIncomingFrom, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
 import type { RunCommand, RunJournal, RunState } from '../engine/run.ts'
@@ -274,10 +275,8 @@ function renderBattle(s: GameState, logFrom: number): string {
     const tags = [
       e.block ? `ブロック${e.block}` : '', e.strength ? `筋力${e.strength > 0 ? '+' : ''}${e.strength}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
-      def.burnResist ? `延焼耐性${def.burnResist}` : '', def.thorns ? `とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)` : '', def.armor ? `装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)` : '', def.splitInto ? (def.splitInto.count === 1 ? `残機(倒すと${getEnemyDef(def.splitInto.enemyId).name}HP${getEnemyDef(def.splitInto.enemyId).maxHp}で再起動)` : `分裂(倒すと${def.splitInto.count}体に${def.splitInto.stunned ? '。出現ターンは動かない' : ''})`) : '', def.guardian ? '庇う(生存中は単体対象がこの敵に向かう。全体・延焼は素通し)' : '', (!def.guardian && s.enemies.some((g) => g.hp > 0 && getEnemyDef(g.enemyId).guardian === true)) ? '⛔庇われ中(単体対象はこの敵を選べない)' : '', def.bondStrength ? `連携+${def.bondStrength}(仲間が生きている間、攻撃+${def.bondStrength})` : '', def.aura ? `重圧(生存中、${def.aura.cardType ?? '全'}カードのコスト+${def.aura.costUp})` : '', def.hatchInto ? (() => { const t = turnsUntilHatch(s, i); return `孵化(${t === 0 ? 'このフェーズで孵化!' : t !== null ? `あと${t}手` : ''}→${getEnemyDef(def.hatchInto!.enemyId).name}。打ち消しで遅延可・行動値条件の打ち消しは反応しない)` })() : '', def.mournStrength ? `弔い+${def.mournStrength}(仲間が倒れるたび筋力+)` : '', def.turnArmor ? `ターン装甲${def.turnArmor}(1ターンのHP損失は${def.turnArmor}以下。残り${Math.max(0, def.turnArmor - (e.damageThisTurn ?? 0))}。延焼は無視)` : '', (e.artifact ?? 0) > 0 ? `アーティファクト${e.artifact}(デバフ付与を${e.artifact}回弾く。延焼は通る)` : '', def.wakeOnDamage && !e.woken && e.patternIndex < def.wakeOnDamage.resumeAt ? `眠り(累計${def.wakeOnDamage.damage}ダメで目覚める。現在${e.damageTakenTotal ?? 0})` : '', def.moves.some((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined) ? `育つ技(${def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}・現在${e.moveGrowth?.[m.id] ?? 0}回`).join('/')})` : '', def.angerOnBlock ? `ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)` : '',
+      ...enemyTraitTags(s, i),
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
-      def.regen && e.hp > e.maxHp * 0.5 ? `再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}` : '',
-      def.enrage ? (def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ${def.enrageEveryDamage !== undefined ? `・+${def.enrage}/被ダメ${def.enrageEveryDamage}` : ''}` : `激昂+${def.enrage}/T`) : '',
     ].filter(Boolean).join(' ')
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
   })
@@ -604,7 +603,7 @@ function currentLogLength(sf: SaveFile): number {
 const [, , mode, ...args] = process.argv
 if (mode === 'new-run') {
   const [leaderId, seed, file, deckId, difficulty] = args
-  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined)
+  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined, process.argv[8] === 'reveal' ? { revealIntents: true } : undefined)
   const journal: RunJournal = {
     origin: {
       kind: 'run',

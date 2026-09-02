@@ -317,8 +317,9 @@ describe('ラン走破 (3幕構成)', () => {
       }
     }
     expect(run.phase).toBe('won')
-    // 行0〜16の17行 − 強制焚き火3 = 14 が戦闘可能枠。下限8保証と ?→戦闘の化けで幅がある
-    expect(run.battlesWon).toBeGreaterThanOrEqual(27)
+    // 15/14/13行化 (2026-09-02) + ショップ固定3 + 到達保証で非戦闘ノードが増えた = ボットの経路で
+    // 幕あたり7〜15戦。戦闘数の保証は本家準拠で撤廃済みなので下限は緩く
+    expect(run.battlesWon).toBeGreaterThanOrEqual(21)
     expect(run.battlesWon).toBeLessThanOrEqual(45)
   })
 })
