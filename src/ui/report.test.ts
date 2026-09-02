@@ -7,6 +7,8 @@ import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildR
 import { getEnemyDef } from '../engine/content.ts'
 import { applyRunCommand, createRun, nextChoices } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
+import { metricsExport, toBattleRows, type BattleArchive } from './report.ts'
+import { formatAnalysis } from '../engine/analysis.ts'
 
 describe('レポートは絶対に落ちない', () => {
   it('未知の敵ID (旧バックアップの unknown 等) を含む履歴でも buildReport が throw しない', () => {
@@ -347,5 +349,32 @@ describe('選択履歴 (2026-09-01「何をピックしたか・鍛錬の結果�
     expect(text).toContain('鍛えた 打撃 → 打撃+')
     const sf = JSON.parse(buildRunSaveFile(run, [], [], null, choices))
     expect(sf.choices).toHaveLength(1)
+  })
+})
+
+describe('計測ブロック (2026-09-03 機械可読エクスポート)', () => {
+  const arch = (battleNo: number, act: number, turns: number, boss = false): BattleArchive => ({
+    battleNo, act, boss, enemyId: 'enemy_prober', elite: false, result: 'won', turns,
+    hpBefore: 80, hpAfter: 70, deckSize: 12, lines: [],
+    metrics: {
+      turns, t1Damage: 20, totalDealt: 40, totalTaken: 10, maxTurnDamage: 20, sets: 1, fires: 1, holds: 0,
+      perTurn: Array.from({ length: turns }, (_, i) => ({ turn: i + 1, dealt: i === 0 ? 20 : 0, counter: 0, taken: 10, plays: 3, sets: i === 0 ? 1 : 0, fires: i === 1 ? 1 : 0, holds: 0 })),
+    },
+  })
+  it('旧アーカイブ (metrics/act 無し) を混ぜても落ちず、幕別サマリーは act 0 に寄せる', () => {
+    const legacy: BattleArchive = { battleNo: 1, enemyId: 'enemy_prober', elite: false, result: 'won', turns: 3, hpBefore: 80, hpAfter: 75, deckSize: 10, lines: [] }
+    const exp = metricsExport(null, [legacy, arch(2, 1, 5), arch(3, 1, 8, true)])
+    expect(exp.schema).toBe('deck-rogue-metrics/1')
+    expect(exp.acts.map((a) => a.act)).toEqual([0, 1])
+    expect(exp.acts[1]).toMatchObject({ battles: 2, normalTurnsAvg: 5, bossTurns: 8, sets: 2, fires: 2 })
+    expect(JSON.parse(JSON.stringify(exp)).battles).toHaveLength(3)
+  })
+  it('formatAnalysis は物差し比較・幕別・戦闘別の3表を出す', () => {
+    const rows = toBattleRows([arch(1, 1, 2), arch(2, 1, 5), arch(3, 1, 7, true)])
+    const text = formatAnalysis({ schema: 'deck-rogue-metrics/1', battles: rows, acts: [] })
+    expect(text).toContain('## 物差しとの比較')
+    expect(text).toContain('≤2T 1 (50%)')
+    expect(text).toContain('うち2ターン目以降の発動 3 (100%)')
+    expect(text).toContain('| 3 | 1 | enemy_prober | ボス |')
   })
 })

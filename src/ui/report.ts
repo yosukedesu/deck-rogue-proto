@@ -1,3 +1,4 @@
+import { actSummaries, battleMetrics, type BattleMetrics, type BattleRow } from '../engine/analysis.ts'
 import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 
 /**
@@ -5,7 +6,7 @@ import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef
  * 未知のID (旧バージョンが残した 'unknown'、将来のID変更など) で絶対に例外死させない。
  * localStorage のバックアップには古いデータが残り続けるため、恒久的に必要な防御
  */
-function safeEncounterName(id: string): string {
+export function safeEncounterName(id: string): string {
   try {
     return encounterName(id)
   } catch {
@@ -39,6 +40,12 @@ export interface BattleRating {
 
 export interface BattleArchive {
   readonly battleNo: number
+  /** 幕 (2026-09-03 計測ブロック用。旧アーカイブは undefined) */
+  readonly act?: number
+  /** 幕ボス戦か */
+  readonly boss?: boolean
+  /** ターン別の与ダメ/被ダメ/伏せ/発動 (engine/analysis.ts。旧アーカイブは undefined) */
+  readonly metrics?: BattleMetrics
   readonly enemyId: string
   readonly elite: boolean
   readonly result: 'won' | 'lost'
@@ -73,10 +80,13 @@ export function archiveBattle(
   elite: boolean,
   hpBefore: number,
   deckSize: number,
+  ctx?: { readonly act: number; readonly boss: boolean },
 ): BattleArchive {
   const all = combat.eventLog.map(reportLine).filter((x): x is string => x !== null)
   return {
     battleNo,
+    ...(ctx ? { act: ctx.act, boss: ctx.boss } : {}),
+    metrics: battleMetrics(combat.eventLog),
     enemyId,
     elite,
     result: combat.phase === 'won' ? 'won' : 'lost',
@@ -85,6 +95,34 @@ export function archiveBattle(
     hpAfter: combat.player.hp,
     deckSize,
     lines: all.length > ARCHIVE_LINES_CAP ? all.slice(-ARCHIVE_LINES_CAP) : all,
+  }
+}
+
+/** 戦闘アーカイブ → 分析行 (engine/analysis.ts の BattleRow)。旧アーカイブ (metrics 無し) は null を持つ */
+export function toBattleRows(history: readonly BattleArchive[]): BattleRow[] {
+  return history.map((h) => ({
+    battleNo: h.battleNo,
+    act: h.act ?? 0,
+    enemyId: h.enemyId,
+    elite: h.elite,
+    boss: h.boss ?? false,
+    result: h.result,
+    hpBefore: h.hpBefore,
+    hpAfter: h.hpAfter,
+    metrics: h.metrics ?? null,
+    ...(h.rating ? { rating: h.rating } : {}),
+  }))
+}
+
+/** レポート末尾の「計測（機械可読）」ブロックの中身。スクリプト (scripts/analyze-run.ts) と共有する契約 */
+export function metricsExport(run: RunState | null, history: readonly BattleArchive[]) {
+  const battles = toBattleRows(history)
+  return {
+    schema: 'deck-rogue-metrics/1',
+    fingerprint: dataFingerprint(),
+    run: run ? { act: run.act, battlesWon: run.battlesWon, hp: run.hp, deckSize: run.deck.length } : null,
+    battles,
+    acts: actSummaries(battles),
   }
 }
 
@@ -240,6 +278,13 @@ export function buildReport(
     L.push('## 盤面')
     L.push('（進行中の戦闘なし）')
   }
+  L.push('')
+  L.push('## 計測（機械可読）')
+  L.push('戦闘ごとのターン別 与ダメ/返し/被ダメ/伏せ/発動 と幕別サマリー (engine/analysis.ts)。')
+  L.push('`npm run analyze -- <このmd>` で表に展開できる。物差し: 良いデッキで通常戦4〜6T・ボス6〜10T。')
+  L.push('```json')
+  L.push(JSON.stringify(metricsExport(run, history)))
+  L.push('```')
   L.push('')
   L.push('## 再開用スナップショット（sim/play.ts 互換。`npx tsx src/sim/play.ts show` で開ける）')
   L.push('```json')

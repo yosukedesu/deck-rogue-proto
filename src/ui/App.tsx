@@ -4765,6 +4765,7 @@ export default function App() {
         run.currentElite,
         run.hp,
         run.deck.length,
+        { act: run.act, boss: currentNode(run)?.type === 'boss' },
       )
       // 同じ戦闘を二度積まない (再入や二重実行への保険)
       setRunHistory((h) => (h.some((a) => a.battleNo === archived.battleNo) ? h : [...h, archived]))
