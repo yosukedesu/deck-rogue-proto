@@ -1,6 +1,7 @@
 // engine/analysis.ts — 戦闘ログとラン履歴の計測 (純関数)。プレイレポートの「機械可読ブロック」と scripts/analyze-run.ts が使う。
 // 2026-09-03 ユーザー質問「md はあなたが分析しやすい形式か」→ 集計値を書き出し時に同梱し、レポートごとに regex で再導出しない。
 import type { GameEvent } from './types.ts'
+import { currentNode, replayStates, type RunJournal, type RunState } from './run.ts'
 
 export interface TurnMetrics {
   readonly turn: number
@@ -187,4 +188,36 @@ export function formatAnalysis(exp: MetricsExport, nameOf: (id: string) => strin
     L.push(`| ${r.battleNo} | ${r.act || '?'} | ${nameOf(r.enemyId)} | ${r.boss ? 'ボス' : r.elite ? 'エリート' : '通常'} | ${r.result === 'won' ? '勝' : '敗'} | ${m?.turns ?? '-'} | ${m?.t1Damage ?? '-'} | ${m?.maxTurnDamage ?? '-'} | ${m ? `${m.totalDealt - counter}/${counter}/${m.totalTaken}` : '-'} | ${r.hpBefore}→${r.hpAfter} | ${m ? `${m.sets}/${m.fires}/${m.holds}` : '-'} | ${r.rating?.strength ?? ''} | ${r.rating?.fun ?? ''} | ${r.rating?.lossFeel ?? ''} | ${(r.rating?.note ?? '').replace(/\|/g, '/')} |`)
   }
   return L.join('\n')
+}
+
+/**
+ * リプレイ・ジャーナルから戦闘行を復元する (CLI/Opusランの状態ファイル用。2026-09-03)。
+ * ブラウザは決着時に BattleArchive を積むが、CLIは history を持たない——決定性 (同じシード+同じコマンド列)
+ * で全状態を再生し、combat の phase が won/lost に変わった瞬間を拾う。UI (App.tsx) の archiveBattle と同じ判定。
+ * データ変更で再現が分岐した場合は途中までの行と error を返す (throwしない)
+ */
+export function battleRowsFromJournal(journal: RunJournal): { rows: BattleRow[]; error: string | null } {
+  const { states, error } = replayStates(journal)
+  const rows: BattleRow[] = []
+  for (let i = 1; i < states.length; i++) {
+    const prev: RunState = states[i - 1]
+    const next: RunState = states[i]
+    const c = next.combat
+    if (!c) continue
+    const ended = c.phase === 'won' || c.phase === 'lost'
+    if (!ended || !prev.combat || prev.combat.phase === c.phase) continue
+    const started = c.eventLog.find((e) => e.type === 'CombatStarted')
+    rows.push({
+      battleNo: prev.battlesWon + 1,
+      act: prev.act,
+      enemyId: (started?.type === 'CombatStarted' ? started.enemyId : null) ?? currentNode(prev)?.encounterId ?? 'unknown',
+      elite: prev.currentElite,
+      boss: currentNode(prev)?.type === 'boss',
+      result: c.phase === 'won' ? 'won' : 'lost',
+      hpBefore: prev.hp,
+      hpAfter: c.player.hp,
+      metrics: battleMetrics(c.eventLog),
+    })
+  }
+  return { rows, error }
 }
