@@ -314,7 +314,7 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
         ? 1
         : depthHpScale(run.row, run.act) *
           // 幕1ボス×1.25 (2026-08-29 ユーザー体感「ボスが弱い」。幕2/3は3幕走破ランで校正済みのため据え置き)
-          (node.type === 'boss' ? [1.35, 1.6, 2.4][run.act - 1] : 1)) * diff.hp, // 幕1 1.25→1.35 (2026-09-02 オーガ実効175.5=本家最弱ボス水準。打点・強化は不変=激昂・第2形態が見える確率を上げる)
+          (node.type === 'boss' ? [1.35, 2.3, 2.4][run.act - 1] : 1)) * diff.hp, // 幕1 1.25→1.35・幕2 1.6→2.3 (2026-09-02 本家対照: 大亀実効224は本家幕2ボス帯321〜408に▲100の大穴だった。322=本家下端へ。門番372は本家幅内で据え置き)
     enemyStrength:
       (node.type === 'boss' ? [1, 1, 2][run.act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
     // 幕2/3の通常敵は打点+15% (2026-09-01 ユーザー裁定。HP経済ラン2本連続「幕2で被ダメ0の

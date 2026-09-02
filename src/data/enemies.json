@@ -20,7 +20,8 @@
     "max": 9,
     "weight": 1
    }
-  ]
+  ],
+  "opener": "surge"
  },
  {
   "id": "enemy_probe",
@@ -170,7 +171,8 @@
     "max": 15,
     "weight": 1
    }
-  ]
+  ],
+  "opener": "smash"
  },
  {
   "id": "enemy_brute",
@@ -435,7 +437,8 @@
    }
   ],
   "burnResist": 2,
-  "regenBreak": 30
+  "regenBreak": 30,
+  "opener": "slam"
  },
  {
   "id": "enemy_joker",
@@ -483,7 +486,8 @@
     "kind": "destroy-set",
     "weight": 1
    }
-  ]
+  ],
+  "opener": "wild_swing"
  },
  {
   "id": "enemy_drummer",
@@ -860,12 +864,14 @@
   "moves": [
    {
     "id": "lick",
-    "kind": "hex",
+    "kind": "attack",
     "weight": 1,
     "inflict": {
      "status": "weak",
      "amount": 2
-    }
+    },
+    "min": 3,
+    "max": 4
    },
    {
     "id": "acid_spit",
@@ -1046,7 +1052,8 @@
     "max": 9,
     "weight": 1
    }
-  ]
+  ],
+  "opener": "slam"
  },
  {
   "id": "enemy_moss_slime",
@@ -1508,7 +1515,7 @@
   "name": "盾持ちの従士",
   "archetype": "guardian",
   "flavor": "主を守るのが仕事。守る相手を失った盾は、ただの鈍器になる。",
-  "maxHp": 70,
+  "maxHp": 105,
   "guardian": true,
   "startingBlock": 6,
   "moves": [
@@ -1645,13 +1652,21 @@
     "min": 6,
     "max": 9,
     "weight": 1
+   },
+   {
+    "id": "mud_toss",
+    "kind": "attack",
+    "min": 3,
+    "max": 5,
+    "weight": 1,
+    "alsoDefend": 8
    }
   ],
   "sequence": [
    "slop",
    "mud_guard",
    "slam",
-   "mud_guard"
+   "mud_toss"
   ]
  },
  {
@@ -1789,7 +1804,7 @@
   "name": "抱卵の走竜",
   "archetype": "guardian",
   "flavor": "巣を守る母は、巣立ちの時間を稼ぐ。",
-  "maxHp": 66,
+  "maxHp": 85,
   "guardian": true,
   "moves": [
    {
@@ -1847,13 +1862,13 @@
   "name": "走竜の仔",
   "archetype": "flurry",
   "flavor": "孵ったばかりで腹ぺこ。",
-  "maxHp": 22,
+  "maxHp": 40,
   "moves": [
    {
     "id": "peck",
     "kind": "attack",
-    "min": 7,
-    "max": 9,
+    "min": 10,
+    "max": 13,
     "weight": 1
    }
   ],
@@ -1896,6 +1911,95 @@
    "bite",
    "leap",
    "lick"
+  ]
+ },
+ {
+  "id": "enemy_maw_hunter",
+  "name": "大顎の狩人",
+  "archetype": "flurry",
+  "flavor": "糸で搦めてから、ゆっくり喰う。急ぐ理由が、向こうには無い。",
+  "maxHp": 110,
+  "sequenceLoopFrom": 1,
+  "moves": [
+   {
+    "id": "web",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "slow",
+     "amount": 2
+    }
+   },
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 15,
+    "max": 19,
+    "weight": 1
+   },
+   {
+    "id": "claws",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "hits": 3
+   }
+  ],
+  "sequence": [
+   "web",
+   "bite",
+   "claws"
+  ]
+ },
+ {
+  "id": "enemy_sludge_berserker",
+  "name": "汚泥の大暴れ",
+  "archetype": "brute",
+  "flavor": "泥を撒き、泥ごと殴る。あなたのデッキも、もう綺麗ではいられない。",
+  "maxHp": 190,
+  "moves": [
+   {
+    "id": "vomit",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "wound",
+     "amount": 3
+    }
+   },
+   {
+    "id": "pummel",
+    "kind": "attack",
+    "min": 5,
+    "max": 6,
+    "weight": 1,
+    "hits": 4
+   },
+   {
+    "id": "hug",
+    "kind": "attack",
+    "min": 8,
+    "max": 10,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 2
+    }
+   },
+   {
+    "id": "smother",
+    "kind": "attack",
+    "min": 26,
+    "max": 30,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "vomit",
+   "pummel",
+   "hug",
+   "smother"
   ]
  }
 ]

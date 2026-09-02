@@ -770,7 +770,7 @@ describe('ギミック変種 (2026-09-02 全体改善・第6波)', () => {
     s = withHand(s, [])
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.enemies[eggIdx].enemyId).toBe('enemy_raptor_chick')
-    expect(s.enemies[eggIdx].hp).toBe(22)
+    expect(s.enemies[eggIdx].hp).toBe(40) // 2026-09-02 本家形: 孵化後>親の締切 (22→40)
     // sequenceLoopFrom=2: もう1つの卵も以降の宣言は常に孵化 (打ち消し遅延が1ターン単位になる根拠)
   })
 
