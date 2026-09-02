@@ -171,13 +171,22 @@ const WEAK_POOLS: readonly (readonly string[])[] = [
   ['enemy_shell_guard', 'enemy_axe_ogre', 'enemy_set_breaker', 'enc_axe_shadow', 'enc_wolf_hexer_drummer'], // 2026-09-02 本家形: 弱枠にも群れ
 ]
 
-/** 幕ボス (難度順固定。確定済みルール表「マップ」) */
-export const ACT_BOSSES: readonly string[] = ['enemy_brute', 'enemy_turtle', 'enemy_warden']
+/**
+ * 幕ボスのプール (2026-09-02 本家形: 各幕に複数のボスを持ち、ランごとにシードで1体を抽選。
+ * 本家StS2は各幕3体+未撃破優先ローテ。うちはラン間の撃破記録を engine が持たないので純抽選)。
+ * ACT_BOSSES は各幕の代表 (先頭) = 旧テスト・CLI表示の互換用
+ */
+export const ACT_BOSS_POOLS: readonly (readonly string[])[] = [
+  ['enemy_brute'],
+  ['enemy_turtle'],
+  ['enemy_warden'],
+]
+export const ACT_BOSSES: readonly string[] = ACT_BOSS_POOLS.map((p) => p[0])
 export const ACT_COUNT = 3
 
 /** 幕とマップ行 → 敵抽選プール。ボス行は幕ボス1体 */
 export function tierFor(act: number, row: number): readonly string[] {
-  if (row >= bossRowFor(act)) return [ACT_BOSSES[act - 1]]
+  if (row >= bossRowFor(act)) return ACT_BOSS_POOLS[act - 1]
   if (row < (WEAK_ROWS[act - 1] ?? 0)) return WEAK_POOLS[act - 1]
   return ACT_POOLS[act - 1]
 }

@@ -9,7 +9,7 @@
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
 import { resolveEncounter } from './content.ts'
-import { ACT_BOSSES, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, TREASURE_ROW, treasureRowFor } from './map.ts'
+import { ACT_BOSS_POOLS, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, TREASURE_ROW, treasureRowFor } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -273,7 +273,7 @@ describe('マップ生成の構造', () => {
     const { createRng: mk } = { createRng }
     for (let act = 1; act <= 3; act++) {
       const [m] = generateMap(mk(7), act)
-      expect(m[bossRowFor(act)][0].encounterId).toBe(ACT_BOSSES[act - 1])
+      expect(ACT_BOSS_POOLS[act - 1]).toContain(m[bossRowFor(act)][0].encounterId) // 2026-09-02 各幕のボスプールから抽選
     }
   })
 

@@ -4,7 +4,7 @@
 // 重いので既定のテストからは外し、VARIANCE=1 で明示実行する: `npm run test:variance`
 import { describe, expect, it } from 'vitest'
 import { allDecks } from '../engine/content.ts'
-import { ACT_BOSSES, ELITE_POOLS } from '../engine/map.ts'
+import { ACT_BOSS_POOLS, ELITE_POOLS } from '../engine/map.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import { chooseCommand } from './run.ts'
 
@@ -21,7 +21,7 @@ const SEEDS = [11, 22, 33, 44]
 describe.skipIf(!process.env.VARIANCE)('アーキ別勝率の分散監視 (VARIANCE=1)', () => {
   it('理想形デッキ×ボス/エリートで勝率0%のセルは KNOWN_STRUCTURAL_HOLES に載っている', () => {
     const decks = allDecks.filter((d) => d.id.startsWith('deck_'))
-    const enemies = [...ACT_BOSSES, ...ELITE_POOLS.flat()]
+    const enemies = [...ACT_BOSS_POOLS.flat(), ...ELITE_POOLS.flat()]
     const zeroCells: string[] = []
     const summary: string[] = []
     for (const deck of decks) {
