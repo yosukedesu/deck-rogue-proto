@@ -134,6 +134,11 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardsDiscarded': return { text: `コストとして捨てた: ${e.cardIds.map(cardName).join('、')}`, cls: 'log-line' }
     case 'EnergyMaxGained': return { text: `エナジー上限+${e.amount}`, cls: 'log-line' }
     case 'GrowthAdded': return { text: `成長+${e.amount}`, cls: 'log-good' }
+    case 'SetSlotGained': return { text: `🃏 伏せ枠+${e.amount}（この戦闘中）`, cls: 'log-good' }
+    case 'CardsMovedToHand': return { text: `${e.from === 'draw' ? '🔍 サーチ' : '🌱 回収'}: ${e.cardIds.map(cardName).join('・')}を手札に加えた`, cls: 'log-good' }
+    case 'CardCopied': return { text: `🌿 ${cardName(e.cardId)}のコピー${e.count}枚を捨て札に加えた`, cls: 'log-line' }
+    case 'CardGrew': return { text: `📈 ${cardName(e.cardId)}が育った（与ダメ+${e.bonus}）`, cls: 'log-good' }
+    case 'CardUpgradedInHand': return { text: `🔨 ${cardName(e.cardId)}を鍛えた（この戦闘中）`, cls: 'log-good' }
     case 'ReactionTriggered': return { text: `リアクション発動: ${cardName(e.cardId)}`, cls: 'log-good' }
     case 'ReactionWhiffed': return { text: `空振り: ${cardName(e.cardId)}`, cls: 'log-line' }
     case 'ReactionHeld':

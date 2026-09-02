@@ -4,6 +4,7 @@
 // state.ts が方式コマンド処理後に continueAfterWindow() で再開する。
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
+import { canUpgradeCard, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
 import { applyWakeCheck,
   cardNeedsTarget,
@@ -23,7 +24,7 @@ import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
-import type { DeclarativeEffect,
+import type { CardDef, DeclarativeEffect,
   CardInstance,
   EnemyDef,
   EnemyIntent,
@@ -641,6 +642,16 @@ export function checkCombatEnd(state: GameState): GameState {
  * - 手札捨てコスト (discardCost) は discardUids で指定した手札を追加コストとして捨てる
  * - 攻撃カテゴリのプレイ後は置物の onAttackPlayed が発火する (そのカード自身には乗らない)
  */
+/** 山札/捨て札から選ぶ効果の種別 (引導・回収・サーチ)。1枚の札は1種だけ持てる */
+export function deckChooseKindOf(
+  def: CardDef,
+): 'exhaustFromDeckChoose' | 'retrieveFromDiscard' | 'searchDeck' | null {
+  for (const k of ['exhaustFromDeckChoose', 'retrieveFromDiscard', 'searchDeck'] as const) {
+    if (def.effects.some((e) => e.effect === k && e.trigger === 'onPlay')) return k
+  }
+  return null
+}
+
 export function playCard(
   state: GameState,
   cardUid: string,
@@ -650,6 +661,7 @@ export function playCard(
   exhaustUids?: readonly string[],
   retrieveUid?: string,
   deckUids?: readonly string[],
+  handUids?: readonly string[],
 ): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
@@ -698,6 +710,20 @@ export function playCard(
           ),
         },
       }
+    }
+  }
+
+  // 育つ札 (growSelf 2026-09-02 Rampage型): この戦闘で積み上げた加算を dealDamage に注入する
+  if ((card.growBonus ?? 0) > 0) {
+    const g = card.growBonus ?? 0
+    effCard = {
+      ...effCard,
+      def: {
+        ...effCard.def,
+        effects: effCard.def.effects.map((e) =>
+          e.effect === 'dealDamage' && e.trigger === 'onPlay' ? { ...e, amount: (e.amount ?? 0) + g } : e,
+        ),
+      },
     }
   }
 
@@ -775,23 +801,49 @@ export function playCard(
 
   // 引導 (2026-08-31): 山札か捨て札から選んで消滅させる札 (deckUids) の検証。
   // 両山が空なら選択なしでプレイできる (残りの効果だけ解決 = 空撃ちを禁止しない)
+  // 2026-09-02 汎用化: 回収 (retrieveFromDiscard=捨て札) / サーチ (searchDeck=山札) も同じ deckUids 欄で選ぶ。
+  // 1枚の札はこの3種のうち1つしか持てない (cardrules.test で機械固定)
+  const chooseKind = deckChooseKindOf(card.def)
   const deckChooseN = card.def.effects
-    .filter((e) => e.effect === 'exhaustFromDeckChoose')
+    .filter((e) => e.effect === chooseKind)
     .reduce((a, e) => a + (e.amount ?? 1), 0)
-  const deckPool = [...state.player.drawPile, ...state.player.discardPile]
+  const deckPool =
+    chooseKind === 'retrieveFromDiscard'
+      ? state.player.discardPile
+      : chooseKind === 'searchDeck'
+        ? state.player.drawPile
+        : [...state.player.drawPile, ...state.player.discardPile]
+  const poolLabel =
+    chooseKind === 'retrieveFromDiscard' ? '捨て札' : chooseKind === 'searchDeck' ? '山札' : '山札か捨て札'
   const deckChooseUids = deckChooseN > 0 ? (deckUids ?? []) : []
   if (deckChooseN > 0) {
     const need = Math.min(deckChooseN, deckPool.length)
     if (deckChooseUids.length !== need) {
-      throw new Error(`${card.def.name} は山札か捨て札から${need}枚の指定 (deckUids) が必要`)
+      throw new Error(`${card.def.name} は${poolLabel}から${need}枚の指定 (deckUids) が必要`)
     }
     if (new Set(deckChooseUids).size !== deckChooseUids.length) {
       throw new Error('deckUids の指定が重複している')
     }
     for (const uid of deckChooseUids) {
       if (!deckPool.some((c) => c.uid === uid)) {
-        throw new Error(`山札にも捨て札にも無いカード: ${uid}`)
+        throw new Error(`${poolLabel}に無いカード: ${uid}`)
       }
+    }
+  }
+  // 手札で鍛える (upgradeInHand 2026-09-02 Armaments型): 自身以外の鍛えられる手札から選ぶ。候補が無ければ省略可
+  const upgradeN = card.def.effects
+    .filter((e) => e.effect === 'upgradeInHand' && e.trigger === 'onPlay')
+    .reduce((a, e) => a + (e.amount ?? 1), 0)
+  const upgradable = upgradeN > 0 ? state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeCard(c)) : []
+  const upgradeUids = upgradeN > 0 ? (handUids ?? []) : []
+  if (upgradeN > 0) {
+    const need = Math.min(upgradeN, upgradable.length)
+    if (upgradeUids.length !== need) {
+      throw new Error(`${card.def.name} は手札から${need}枚の指定 (handUids) が必要`)
+    }
+    if (new Set(upgradeUids).size !== upgradeUids.length) throw new Error('handUids の指定が重複している')
+    for (const uid of upgradeUids) {
+      if (!upgradable.some((c) => c.uid === uid)) throw new Error(`鍛えられる手札に無いカード: ${uid}`)
     }
   }
 
@@ -884,7 +936,34 @@ export function playCard(
   // 引導 (黒 2026-08-31): 山札か捨て札から選んだ札を消滅させる。効果解決の前に行う =
   // 直後のドロー効果が選んだ札を手札へ引き込む競合を防ぐ。亡骸・onCardExhausted は発火する
   // (プレイ以外の経路)。反復 (echo) されても選択消滅は1回 (選んだ札は1枚しか無い)
-  if (deckChooseUids.length > 0) {
+  if (deckChooseUids.length > 0 && chooseKind !== 'exhaustFromDeckChoose') {
+    // 回収 (捨て札→手札) / サーチ (山札→手札)。効果解決の前に手札へ = 直後のドロー・参照と競合しない。
+    // 山札の並びは崩さない (抜くだけ) = 引き順は伏せたまま
+    const chosenSet = new Set(deckChooseUids)
+    const fromDraw = chooseKind === 'searchDeck'
+    const source = fromDraw ? s.player.drawPile : s.player.discardPile
+    const moved = source.filter((c) => chosenSet.has(c.uid))
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        drawPile: fromDraw ? s.player.drawPile.filter((c) => !chosenSet.has(c.uid)) : s.player.drawPile,
+        discardPile: fromDraw ? s.player.discardPile : s.player.discardPile.filter((c) => !chosenSet.has(c.uid)),
+        hand: [...s.player.hand, ...moved],
+      },
+    }
+    s = emit(s, { type: 'CardsMovedToHand', cardIds: moved.map((c) => c.def.id), from: fromDraw ? 'draw' : 'discard' })
+  }
+  if (upgradeUids.length > 0) {
+    // 手札で鍛える: 焚き火と同じ upgradeCard を手札のインスタンスに適用 (この戦闘限り = 戦闘終了で作り直される)
+    const set = new Set(upgradeUids)
+    s = {
+      ...s,
+      player: { ...s.player, hand: s.player.hand.map((c) => (set.has(c.uid) ? upgradeCard(c) : c)) },
+    }
+    for (const c of s.player.hand.filter((c) => set.has(c.uid))) s = emit(s, { type: 'CardUpgradedInHand', cardId: c.def.id })
+  }
+  if (deckChooseUids.length > 0 && chooseKind === 'exhaustFromDeckChoose') {
     const chosenSet = new Set(deckChooseUids)
     const chosenCards = [...s.player.drawPile, ...s.player.discardPile].filter((c) =>
       chosenSet.has(c.uid),
@@ -961,14 +1040,38 @@ export function playCard(
     },
   }
   s = tickCardTimers(s)
+  // 増殖 (addCopyToDiscard 2026-09-02 Anger型): このカードのコピーを捨て札に加える (この戦闘限りのトークン扱い)
+  const hasCardOps = card.def.effects.some((e) => e.effect === 'addCopyToDiscard' || e.effect === 'growSelf')
+  const copies = !hasCardOps
+    ? 0
+    : card.def.effects
+        .filter((e) => e.effect === 'addCopyToDiscard' && e.trigger === 'onPlay')
+        .reduce((a, e) => a + (e.amount ?? 1), 0)
+  if (copies > 0) {
+    const made: CardInstance[] = Array.from({ length: copies }, (_, i) => ({
+      uid: `copy_${s.eventLog.length}_${i}_${card.def.id}`,
+      def: card.def,
+      token: true,
+    }))
+    s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, ...made] } }
+    s = emit(s, { type: 'CardCopied', cardId: card.def.id, count: copies })
+  }
+  // 育つ札 (growSelf): 解決後に加算を積む。捨て札へ置くインスタンスに乗せる = 次にプレイした時に注入される
+  const grow = !hasCardOps
+    ? 0
+    : card.def.effects
+        .filter((e) => e.effect === 'growSelf' && e.trigger === 'onPlay')
+        .reduce((a, e) => a + (e.amount ?? 0), 0)
+  const landed: CardInstance = grow > 0 ? { ...card, growBonus: (card.growBonus ?? 0) + grow } : card
+  if (grow > 0) s = emit(s, { type: 'CardGrew', cardId: card.def.id, bonus: landed.growBonus ?? 0 })
   // limbo からの着地: プレイし終えたカードをここで捨て札 (消滅札は消滅置き場) へ置く。
   // 消滅の誘発も解決後 = 「使用後、この戦闘から除外」の語義どおり (2026-08-31 順序是正)
   if (isExhaust) {
-    s = { ...s, player: { ...s.player, exhaustPile: [...s.player.exhaustPile, card] } }
+    s = { ...s, player: { ...s.player, exhaustPile: [...s.player.exhaustPile, landed] } }
     s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     s = fireExhaustTriggers(s, 1, enemyIndex)
   } else if (!isPermanent) {
-    s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, card] } }
+    s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, landed] } }
   }
   // 屍集め: 消滅置き場から手札へ戻す (墓地燃料が減る代わりの再利用。確定済みルール表「コスト再利用」)。
   // 戻した札はこの戦闘中0E (2026-08-31 rework。亡骸に役割を吸われ一度もプレイされなかった実測への処方

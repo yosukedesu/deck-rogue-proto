@@ -494,7 +494,15 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
   const net = effects
     .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
     .reduce((acc, e) => acc + (e.amount ?? 0), 0)
-  if (net - cost >= 0 && effects.some((e) => REFILL.has(e.effect))) exhaust = true
+  if (net - cost >= 0 && effects.some((e) => REFILL.has(e.effect))) {
+    if (resultType !== 'permanent') exhaust = true
+    else {
+      // 置物は消滅で払えない (2026-09-02 芽守り×大樹の脈 = 毎Tドロー+割引の置物が1Eで出ていた)。
+      // コストを上げて「正味の値段が0以下」を外す。5Eでも外れなければ合成不可
+      while (net - cost >= 0 && cost < 5) cost++
+      if (net - cost >= 0) overBand = true
+    }
+  }
 
   const PERM_SUFFIX: Record<string, string> = { red: '炉', blue: '泉', white: '祭壇', black: '柩' }
   const suffix =

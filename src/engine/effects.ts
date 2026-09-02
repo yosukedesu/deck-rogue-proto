@@ -407,6 +407,7 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
       return false
     }
     if (c.blaze === true && !isBlazing(state)) return false
+    if (c.minGrowth !== undefined && state.player.growth < c.minGrowth) return false
     return true
   })
 }
@@ -832,7 +833,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'addMomentum': {
       const amount = effect.amount ?? 0
       const next = { ...state, player: { ...state.player, momentum: state.player.momentum + amount } }
-      return emit(next, { type: 'MomentumAdded', amount })
+      const emitted = emit(next, { type: 'MomentumAdded', amount })
+      return amount > 0 ? fireGainTrigger(emitted, 'onMomentumGained', enemyIndex) : emitted
     }
     case 'gainBlock': {
       const amount = effect.amount ?? 0
@@ -1122,6 +1124,19 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'exhaustFromDeckChoose':
       // 引導 (黒): 山札か捨て札から選んで消滅。選択は combat.ts の playCard が deckUids で解決する
       return state
+    case 'retrieveFromDiscard':
+    case 'searchDeck':
+    case 'upgradeInHand':
+    case 'addCopyToDiscard':
+    case 'growSelf':
+      // 緑のカード操作 (2026-09-02): いずれも「プレイした札そのもの」を知る必要があるので combat.ts の playCard が解決する
+      return state
+    case 'gainSetSlot': {
+      // 伏せ枠+X (罠師の茂み 2026-09-02): 戦闘中の伏せ枠を増やす (かすみの setSlots と同じ器)
+      const amount = effect.amount ?? 1
+      const next: GameState = { ...state, player: { ...state.player, setSlots: state.player.setSlots + amount } }
+      return emit(next, { type: 'SetSlotGained', amount })
+    }
     case 'addCardToHand': {
       // 骨刃 (黒 2026-09-01): summonId のトークン札を手札に加える (この戦闘限り)。
       // uid は eventLog 長ベース = 単調増加なので衝突せず、シードから決定的
@@ -1291,20 +1306,22 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'addGrowth': {
       const amount = effect.amount ?? 0
       const next = { ...state, player: { ...state.player, growth: state.player.growth + amount } }
-      return emit(next, { type: 'GrowthAdded', amount })
+      const emitted = emit(next, { type: 'GrowthAdded', amount })
+      return amount > 0 ? fireGainTrigger(emitted, 'onGrowthGained', enemyIndex) : emitted
     }
     case 'doubleMomentum': {
       // トランプルの倍加 (2026-08-29): 現在の勢いを2倍にする (開花の儀の勢い版。消滅前提)
       const amount = state.player.momentum
       if (amount === 0) return state
-      return { ...state, player: { ...state.player, momentum: state.player.momentum * 2 } }
+      const doubled: GameState = { ...state, player: { ...state.player, momentum: state.player.momentum * 2 } }
+      return fireGainTrigger(doubled, 'onMomentumGained', enemyIndex)
     }
     case 'doubleGrowth': {
       // 成長スタックのシグネチャー: 現在の成長カウンターを2倍にする
       const amount = state.player.growth
       if (amount === 0) return state
       const next = { ...state, player: { ...state.player, growth: state.player.growth * 2 } }
-      return emit(next, { type: 'GrowthAdded', amount })
+      return fireGainTrigger(emit(next, { type: 'GrowthAdded', amount }), 'onGrowthGained', enemyIndex)
     }
     case 'drawCards':
       return drawCards(state, effect.amount ?? 0)
@@ -1347,7 +1364,26 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
  * eligibleReactionEffects 側で同じ判定をしている
  */
 export function blazeConditionMet(state: GameState, effect: DeclarativeEffect): boolean {
-  return effect.condition?.blaze !== true || isBlazing(state)
+  if (effect.condition?.blaze === true && !isBlazing(state)) return false
+  // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
+  if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
+  return true
+}
+
+/**
+ * 成長/勢いの獲得誘発 (2026-09-02 緑の接着剤)。誘発の中で得た成長/勢いは再誘発しない (1段で止める =
+ * 「成長を得るたび成長+1」の自己増殖ループを構造的に禁止。cardrules.test でも機械固定)
+ */
+function fireGainTrigger(
+  state: GameState,
+  trigger: 'onGrowthGained' | 'onMomentumGained',
+  enemyIndex: number,
+): GameState {
+  if (state.resolvingGainTrigger === true) return state
+  if (!state.player.permanents.some((p) => p.def.effects.some((e) => e.trigger === trigger))) return state
+  let s: GameState = { ...state, resolvingGainTrigger: true }
+  s = runPermanentTriggers(s, trigger, enemyIndex)
+  return { ...s, resolvingGainTrigger: false }
 }
 
 /** カードの onPlay 効果を順に解決 (target:'all' は全体解決) */

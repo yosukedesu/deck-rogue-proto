@@ -1,5 +1,6 @@
 // ui/ は状態を読んでコマンドを投げるだけの薄い層。ゲームロジックを書かない (CLAUDE.md)。
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
+import { deckChooseKindOf } from '../engine/combat.ts'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import {
@@ -232,6 +233,8 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onCardSet: 'カードを伏せるたび: ',
   onReactionFired: 'リアクションが発動するたび: ',
   onSelfExhausted: '亡骸 (この札がプレイ以外で消滅した時): ',
+  onGrowthGained: '成長を得るたび: ',
+  onMomentumGained: '勢いを得るたび: ',
 }
 
 /** 誘発の追加条件の表示 */
@@ -244,6 +247,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.maxActionValue !== undefined) parts.push(`敵の行動の値が${c.maxActionValue}以下`)
   if (c.minActionValue !== undefined) parts.push(`敵の行動の値が${c.minActionValue}以上`)
   if (c.blaze === true) parts.push(`🔥猛り火(延焼合計${BLAZE_THRESHOLD}以上)`)
+  if (c.minGrowth !== undefined) parts.push(`🌱成長${c.minGrowth}以上`)
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
@@ -361,6 +365,18 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🕳 山札の上${e.amount}枚を消滅させる`
     case 'exhaustFromDeckChoose':
       return `${trigger}⚰️ 山札か捨て札から好きな${e.amount ?? 1}枚を選んで消滅させる（亡骸は発火する）`
+    case 'retrieveFromDiscard':
+      return `${trigger}🌱 捨て札から好きな${e.amount ?? 1}枚を手札に戻す`
+    case 'searchDeck':
+      return `${trigger}🔍 山札から好きな${e.amount ?? 1}枚を手札に加える（引き順は伏せたまま）`
+    case 'addCopyToDiscard':
+      return `${trigger}🌿 このカードのコピー${e.amount ?? 1}枚を捨て札に加える（この戦闘限り）`
+    case 'growSelf':
+      return `${trigger}📈 プレイするたび、この札の与ダメージがこの戦闘中+${e.amount}`
+    case 'upgradeInHand':
+      return `${trigger}🔨 手札の${e.amount ?? 1}枚をこの戦闘中鍛える（自身は選べない）`
+    case 'gainSetSlot':
+      return `${trigger}🃏 この戦闘中、伏せ枠+${e.amount ?? 1}`
     case 'dealDamagePerExhaust':
       return ctx
         ? `${trigger}⚔️ ${aoe}消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
@@ -691,6 +707,11 @@ function CardFrame({
       <div className={`card-category type-${card.def.type}`}>{TYPE_LABEL[card.def.type]}</div>
       <div className="card-text">
         <EffectLines def={card.def} ctx={ctx} />
+        {(card.growBonus ?? 0) > 0 && (
+          <div style={{ fontSize: 11, marginTop: 2 }}>
+            <span style={{ color: 'var(--good, #8fd)' }}>📈 育ち: 与ダメ+{card.growBonus}（この戦闘中）</span>
+          </div>
+        )}
         {card.expiresAfterBattles !== undefined && (
           <>
             <br />
@@ -1416,6 +1437,11 @@ function BattleScreen({
     cardUid: string
     modeIndex?: number
   } | null>(null)
+  const [pendingUpgrade, setPendingUpgrade] = useState<{ cardUid: string; modeIndex?: number } | null>(null)
+  const activeUpgrade =
+    pendingUpgrade && s.phase === 'player-turn' && player.hand.some((c) => c.uid === pendingUpgrade.cardUid)
+      ? pendingUpgrade
+      : null
   const activeDeckChoose =
     pendingDeckChoose &&
     s.phase === 'player-turn' &&
@@ -1430,6 +1456,7 @@ function BattleScreen({
     exhaustUids?: string[]
     retrieveUid?: string
     deckUids?: string[]
+    handUids?: string[]
   } | null>(null)
   const activeTarget =
     pendingTarget &&
@@ -1445,12 +1472,13 @@ function BattleScreen({
     exhaustUids?: string[],
     retrieveUid?: string,
     deckUids?: string[],
+    handUids?: string[],
   ) => {
     const card = player.hand.find((c) => c.uid === cardUid)
     if (card && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
-      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids })
+      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids })
     } else {
-      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids })
+      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids })
     }
   }
   // 追加コスト・消滅置き場選択を済ませてからプレイに進む多段フロー:
@@ -1470,12 +1498,24 @@ function BattleScreen({
       setPendingRetrieve({ cardUid, modeIndex })
       return
     }
-    // 引導: 山札か捨て札が空でなければ消滅させる札を選ばせる (両方空なら選択なしでプレイ)
-    if (
-      card.def.effects.some((e) => e.effect === 'exhaustFromDeckChoose') &&
-      player.drawPile.length + player.discardPile.length > 0
-    ) {
+    // 引導/回収/サーチ: 選ぶ山が空でなければ札を選ばせる (空なら選択なしでプレイ)
+    const chooseKind = deckChooseKindOf(card.def)
+    const choosePoolSize =
+      chooseKind === 'retrieveFromDiscard'
+        ? player.discardPile.length
+        : chooseKind === 'searchDeck'
+          ? player.drawPile.length
+          : player.drawPile.length + player.discardPile.length
+    if (chooseKind !== null && choosePoolSize > 0) {
       setPendingDeckChoose({ cardUid, modeIndex })
+      return
+    }
+    // 手札で鍛える (研ぎ澄まし 2026-09-02): 自身以外に鍛えられる手札があれば選ばせる
+    if (
+      card.def.effects.some((e) => e.effect === 'upgradeInHand') &&
+      player.hand.some((c) => c.uid !== cardUid && canUpgradeCard(c))
+    ) {
+      setPendingUpgrade({ cardUid, modeIndex })
       return
     }
     playOrTarget(cardUid, modeIndex)
@@ -2080,10 +2120,57 @@ function BattleScreen({
             </div>
           </div>
         )}
+        {activeUpgrade && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeUpgrade.cardUid)?.def.name}」: この戦闘中鍛える手札を選んでください（自身は選べない）{' '}
+            <button className="btn" onClick={() => setPendingUpgrade(null)}>
+              キャンセル
+            </button>
+          </div>
+        )}
+        {activeUpgrade && (
+          <div className="hand-row">
+            <div className="hand-cards">
+              {player.hand
+                .filter((c) => c.uid !== activeUpgrade.cardUid)
+                .map((c) => {
+                  const ok = canUpgradeCard(c)
+                  return (
+                    <CardFrame
+                      key={c.uid}
+                      card={c}
+                      dim={!ok}
+                      hint={ok ? `鍛えると→ ${upgradeCard(c).def.name}` : '鍛えられない'}
+                      actions={
+                        ok && (
+                          <button
+                            className="btn"
+                            onClick={() => {
+                              setPendingUpgrade(null)
+                              playOrTarget(activeUpgrade.cardUid, activeUpgrade.modeIndex, undefined, undefined, undefined, undefined, [c.uid])
+                            }}
+                          >
+                            鍛える
+                          </button>
+                        )
+                      }
+                    />
+                  )
+                })}
+            </div>
+          </div>
+        )}
         {activeDeckChoose && (
           <div className="discard-banner">
             「{player.hand.find((c) => c.uid === activeDeckChoose.cardUid)?.def.name}」:
-            山札か捨て札から消滅させるカードを選んでください（山札は並び替え表示＝引き順は伏せたまま）{' '}
+            {(() => {
+              const k = deckChooseKindOf(player.hand.find((c) => c.uid === activeDeckChoose.cardUid)?.def ?? { effects: [] } as unknown as CardDef)
+              return k === 'retrieveFromDiscard'
+                ? '捨て札から手札に戻すカードを選んでください'
+                : k === 'searchDeck'
+                  ? '山札から手札に加えるカードを選んでください（並び替え表示＝引き順は伏せたまま）'
+                  : '山札か捨て札から消滅させるカードを選んでください（山札は並び替え表示＝引き順は伏せたまま）'
+            })()}{' '}
             <button className="btn" onClick={() => setPendingDeckChoose(null)}>
               キャンセル
             </button>
@@ -2092,15 +2179,16 @@ function BattleScreen({
         {activeDeckChoose && (
           <div className="hand-row">
             <div className="hand-cards">
-              {[
-                ...[...player.drawPile]
-                  .sort(
-                    (a, b) =>
-                      a.def.cost - b.def.cost || a.def.name.localeCompare(b.def.name, 'ja'),
-                  )
-                  .map((c) => ({ c, src: '山札' })),
-                ...player.discardPile.map((c) => ({ c, src: '捨て札' })),
-              ].map(({ c, src }) => (
+              {(() => {
+                const k = deckChooseKindOf(player.hand.find((c) => c.uid === activeDeckChoose.cardUid)?.def ?? ({ effects: [] } as unknown as CardDef))
+                const drawSorted = [...player.drawPile]
+                  .sort((a, b) => a.def.cost - b.def.cost || a.def.name.localeCompare(b.def.name, 'ja'))
+                  .map((c) => ({ c, src: '山札' }))
+                const disc = player.discardPile.map((c) => ({ c, src: '捨て札' }))
+                const verb = k === 'retrieveFromDiscard' ? '手札に戻す' : k === 'searchDeck' ? '手札に加える' : '消滅させる'
+                const items = k === 'retrieveFromDiscard' ? disc : k === 'searchDeck' ? drawSorted : [...drawSorted, ...disc]
+                return items.map(({ c, src }) => ({ c, src, verb }))
+              })().map(({ c, src, verb }) => (
                 <CardFrame
                   key={c.uid}
                   card={c}
@@ -2121,7 +2209,7 @@ function BattleScreen({
                         )
                       }}
                     >
-                      消滅させる（{src}）
+                      {verb}（{src}）
                     </button>
                   }
                 />
@@ -3132,6 +3220,8 @@ const EFFECT_JA: Record<string, string> = {
   retrieveFromExhaust: '消滅置き場から回収', playFromExhaust: '消滅置き場から直接プレイ',
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
+  gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
+  addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
 }
 function effectJa(e: string): string {
   return EFFECT_JA[e] ?? e
@@ -3144,6 +3234,7 @@ const COND_JA: Record<string, string> = {
   minActionValue: '敵の行動値が値以上',
   maxActionValue: '敵の行動値が値以下',
   minDamageTaken: '被ダメが値以上',
+  minGrowth: '成長が値以上',
 }
 function condJa(k: string): string {
   return COND_JA[k] ?? k
@@ -4823,6 +4914,8 @@ function BattleRatingBar({
     if (st !== null && fn !== null) onRate({ strength: st, fun: fn, ...(note.trim() !== '' ? { note: note.trim() } : {}) })
   }
   const committed = rated !== null && rated.strength !== undefined && rated.fun !== undefined
+  // 入力導線 (2026-09-02 人間ラン#2: 21戦とも未入力=主観データ0への処方)。任意のまま、未入力の間だけ一言促す
+  const nudge = !committed ? <span style={{ fontSize: 11, color: 'var(--accent, #fc6)' }}>◀ 次へ進む前に1タップ（任意・調整の材料になります）</span> : null
   const row = (title: string, kind: 'strength' | 'fun', val: number | null) => (
     <span style={{ display: 'inline-flex', gap: 2, alignItems: 'center', fontSize: 12 }}>
       {title}
@@ -4850,6 +4943,7 @@ function BattleRatingBar({
       <span style={{ fontSize: 12 }}>⚔️ {label} の評価{committed ? ' ✅' : ''}</span>
       {row('強さ', 'strength', strength)}
       {row('面白さ', 'fun', fun)}
+      {nudge}
       {lost && (
         <span style={{ display: 'inline-flex', gap: 2, alignItems: 'center', fontSize: 12 }} title="負けた理由の感触。理不尽が独立2本一致したら数値でなく構造を作り直す（balance-policy.md）">
           敗因

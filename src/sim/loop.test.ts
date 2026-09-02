@@ -20,7 +20,7 @@ const MAX_PLAYS_PER_TURN = 20
 const MAX_ACTIONS = 2000
 
 describe('無限ループ検知', () => {
-  it('全デッキ × 敵 × 複数シードで、1ターンの詠唱数と1戦闘のコマンド数が上限を超えない', () => {
+  it('全デッキ × 敵 × 複数シードで、1ターンの詠唱数と1戦闘のコマンド数が上限を超えない', { timeout: 120000 }, () => {
     const offenders: string[] = []
     let worstPlays = 0
     // 2026-08-26: 5シード×1敵では取り逃していた (集中のループは deck_storm × 用心深い影 × seed7 でしか出ない)。

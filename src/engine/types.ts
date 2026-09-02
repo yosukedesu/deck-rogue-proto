@@ -251,6 +251,11 @@ export interface EffectCondition {
    */
   readonly minActionValue?: number
   /**
+   * 成長がこの値以上なら解決/発動可 (緑 2026-09-02 床パッケージ: 成長しきい値。忘却の刻の緑版。
+   * onPlay・置物トリガー・リアクション窓のすべてで「解決の時点」に判定する)
+   */
+  readonly minGrowth?: number
+  /**
    * 猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上**
    * なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝
    * 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、
@@ -281,6 +286,8 @@ export interface GameState {
   readonly innateResolving?: boolean
   /** カードの onPlay 効果を解決中フラグ (2026-09-01 虚弱を「カードのプレイで得るブロック」に限定するため。遷移中のみ立つ) */
   readonly resolvingCardPlay?: boolean
+  /** 成長/勢いの獲得誘発 (onGrowthGained/onMomentumGained) を解決中フラグ (2026-09-02)。誘発の中の加算は再誘発しない = 1段で止める */
+  readonly resolvingGainTrigger?: boolean
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
   readonly negateNextAction: boolean
   /** 敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」) */
@@ -329,8 +336,10 @@ export type Command =
       readonly exhaustUids?: readonly string[]
       /** retrieveFromExhaust / playFromExhaust 用: 消滅置き場から選ぶカードの uid */
       readonly retrieveUid?: string
-      /** exhaustFromDeckChoose (引導) 用: 山札か捨て札から選んで消滅させるカードの uid */
+      /** exhaustFromDeckChoose (引導) 用: 山札か捨て札から選んで消滅させるカードの uid。retrieveFromDiscard (捨て札から) / searchDeck (山札から) も同じ欄で選ぶ */
       readonly deckUids?: readonly string[]
+      /** upgradeInHand (研ぎ澄まし) 用: この戦闘中鍛える手札の uid (自身は選べない。鍛えられる札が無ければ省略可) */
+      readonly handUids?: readonly string[]
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
@@ -428,6 +437,11 @@ export type GameEvent =
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
   | { readonly type: 'EnergyMaxGained'; readonly amount: number }
   | { readonly type: 'GrowthAdded'; readonly amount: number }
+  | { readonly type: 'SetSlotGained'; readonly amount: number } // 伏せ枠+X (罠師の茂み)
+  | { readonly type: 'CardsMovedToHand'; readonly cardIds: readonly string[]; readonly from: 'discard' | 'draw' } // 回収・サーチ
+  | { readonly type: 'CardCopied'; readonly cardId: string; readonly count: number } // 増殖: コピーを捨て札へ
+  | { readonly type: 'CardGrew'; readonly cardId: string; readonly bonus: number } // 育つ札: 累計加算
+  | { readonly type: 'CardUpgradedInHand'; readonly cardId: string } // 手札で鍛える
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
   | { readonly type: 'HpHealed'; readonly amount: number } // 回復 (白)
   | { readonly type: 'CardsMilled'; readonly count: number; readonly cardIds?: readonly string[] } // 忘却=山札からの消滅 (黒)。cardIds=何が墓地へ行ったか (2026-08-31 可視化)
@@ -513,6 +527,8 @@ export interface DeclarativeEffect {
     | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
     | 'onCardSet' // カードを伏せるたび (レリック: 符師の懐。set-confirmシナジー)
     | 'onReactionFired' // リアクションが発動するたび (置物。緑: 狩人の眼光=読み勝ちの換金。自己誘発・全方式共通)
+    | 'onGrowthGained' // 成長を得るたび (緑の接着剤 2026-09-02: 棘葉の茂み。addGrowth/doubleGrowth の加算のたび。再入は1段で止める)
+    | 'onMomentumGained' // 勢いを得るたび (緑の接着剤 2026-09-02: 風渡り。addMomentum/doubleMomentum の加算のたび)
     | 'onSelfExhausted' // 亡骸効果 (黒 2026-08-31): この札が「プレイ以外の経路」(ミル・消滅コスト・衝動失効) で消滅した時。プレイして消滅した場合は発火しない (onPlayが仕事を終えているため)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
@@ -550,6 +566,12 @@ export interface DeclarativeEffect {
     | 'dealDamagePerPermanent' // 集結 (白): 置物の数×Xダメージ (従者の横並び参照)
     | 'dealDamageDrain' // ドレイン (黒の専売): Xダメージを与え、floor(X/2)回復
     | 'exhaustFromDeck' // 忘却 (黒): 山札の上X枚を消滅させる (捨て札はリシャッフルで空になるため消滅を墓地とする)
+    | 'gainSetSlot' // 伏せ枠+X (緑 2026-09-02: 罠師の茂み。置物の登場時効果で戦闘中の伏せ枠を増やす)
+    | 'retrieveFromDiscard' // 回収 (緑 2026-09-02 Regrowth): 捨て札から好きなX枚を手札に戻す (PlayCard.deckUids で選択)
+    | 'searchDeck' // サーチ (緑 2026-09-02 Tutor): 山札から好きなX枚を手札に加える (PlayCard.deckUids。山札の順は伏せたまま)
+    | 'addCopyToDiscard' // 増殖 (緑 2026-09-02 Anger型): このカードのコピーX枚を捨て札に加える (この戦闘限り)
+    | 'growSelf' // 育つ札 (緑 2026-09-02 Rampage型): プレイするたび、この札の与ダメがこの戦闘中+X (CardInstance.growBonus)
+    | 'upgradeInHand' // 手札で鍛える (緑 2026-09-02 Armaments型): 手札のX枚をこの戦闘中鍛える (PlayCard.handUids で選択)
     | 'exhaustFromDeckChoose' // 引導 (黒 2026-08-31): 山札か捨て札から好きなX枚を選んで消滅させる (combat.ts が deckUids で解決。亡骸・onCardExhausted は発火 = 狙い撃ちの起爆と燃料化)
     | 'addCardToHand' // 骨刃 (黒 2026-09-01): summonId のトークン札X枚を手札に加える (この戦闘限り。ラン層のデッキには入らない)
     | 'empowerShivs' // 骨刃の強化 (黒): 【常在】shivToken 札の与ダメ+X (プレイ時に注入。急所読み=StS Accuracy)
@@ -746,6 +768,11 @@ export interface CardInstance {
    * 戦闘終了で消える (ラン層のデッキには残らない = インスタンスは戦闘ごとに作り直されるため)
    */
   readonly freeThisCombat?: boolean
+  /**
+   * 育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。
+   * プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)
+   */
+  readonly growBonus?: number
   /**
    * 伏せの鮮度 (2026-08-30 見切り)。このターンに伏せられた札だけ true。
    * 敵の伏せ反応 (setAlt/movesVsSet) は**新しい札にだけ**反応する — 置きっぱなしの札は

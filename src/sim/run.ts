@@ -12,6 +12,7 @@
 //   - 割り込み: set-confirm は常に「発動」、hold-manual は発動可能な先頭カードを常に発動
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
+import { canUpgradeCard } from '../engine/upgrade.ts'
 import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
 import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
@@ -45,6 +46,8 @@ function botRole(def: CardDef): BotRole {
   if (effects.some(isDamageEffect)) return def.cost >= 3 ? 'bighit' : 'attack'
   // 純延焼 (火の粉の雨) と混乱 (幻惑の囁き) は攻撃系として運用する
   if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
+  // 緑のカード操作 (2026-09-02): 回収・サーチ・手札で鍛えるはカードアドバンテージ系としてドロー枠で早めに撃つ
+  if (has('retrieveFromDiscard', 'searchDeck', 'upgradeInHand')) return 'draw'
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
@@ -304,6 +307,32 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
     )
     deckUids = pool.slice(0, Math.min(deckChooseN, pool.length)).map((c) => c.uid)
   }
+  // 回収 (捨て札) / サーチ (山札): 最もコストの高い非ステータス札を選ぶ (2026-09-02 緑のカード操作)
+  const pickBest = (pool: readonly (typeof state.player.drawPile)[number][], n: number): string[] =>
+    [...pool]
+      .filter((c) => !c.def.id.startsWith('status_'))
+      .sort((a, b) => b.def.cost - a.def.cost)
+      .slice(0, n)
+      .map((c) => c.uid)
+  const retrieveN = card.def.effects.filter((e) => e.effect === 'retrieveFromDiscard').reduce((a, e) => a + (e.amount ?? 1), 0)
+  if (retrieveN > 0) {
+    const picked = pickBest(state.player.discardPile, retrieveN)
+    const need = Math.min(retrieveN, state.player.discardPile.length)
+    deckUids = picked.length >= need ? picked : state.player.discardPile.slice(0, need).map((c) => c.uid)
+  }
+  const searchN = card.def.effects.filter((e) => e.effect === 'searchDeck').reduce((a, e) => a + (e.amount ?? 1), 0)
+  if (searchN > 0) {
+    const picked = pickBest(state.player.drawPile, searchN)
+    const need = Math.min(searchN, state.player.drawPile.length)
+    deckUids = picked.length >= need ? picked : state.player.drawPile.slice(0, need).map((c) => c.uid)
+  }
+  // 手札で鍛える: 自身以外で最もコストの高い鍛えられる札
+  let handUids: string[] | undefined
+  const upgradeN = card.def.effects.filter((e) => e.effect === 'upgradeInHand').reduce((a, e) => a + (e.amount ?? 1), 0)
+  if (upgradeN > 0) {
+    const cands = state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeCard(c)).sort((a, b) => b.def.cost - a.def.cost)
+    handUids = cands.slice(0, Math.min(upgradeN, cands.length)).map((c) => c.uid)
+  }
   // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)
   let targetIndex: number | undefined
   let bestHp = Infinity
@@ -314,7 +343,7 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
       targetIndex = i
     }
   }
-  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, targetIndex }
+  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, targetIndex }
 }
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */

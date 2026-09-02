@@ -28,6 +28,13 @@ const VP_PER: Record<string, number> = {
   dischargeAether: 2.5, // 霊気典型2.5 × 倍率amount (全消費の手放し対価込み)
   dischargeAetherDraw: 3.0 * 2.5,
   dealDamagePerHandCard: 1.0 * 5,
+  // 緑のカード操作 (2026-09-02 床パッケージ)。本家アンカー: Headbutt/Armaments/Anger/Rampage を緑レートに直した典型値
+  retrieveFromDiscard: 4.0, // 選べるドロー1枚 = ドロー3 + 選択の精度1
+  searchDeck: 4.5, // 山札からの選択 = 回収より少し高い (未知の札を確定で手に入れる)
+  addCopyToDiscard: 2.0, // コピー1枚 = 次の周回で1プレイ増える (捨て札行きなので即時性は無い)
+  growSelf: 1.0, // 量N = 1戦闘の追加プレイ典型1回 × N
+  upgradeInHand: 4.0, // 手札1枚の+50% ≈ 1E札の量+4相当。戦闘中は繰り返し効く
+  gainSetSlot: 6.0, // 伏せ枠+1 = リアクション1枚ぶんの席 (置物レンズ×3の中で数える)
   gainIceBlockPerHandCard: 1.3 * 5,
   addSpellEcho: 9.0, // 反復1トークン ≈ 典型的な1〜2E呪文のコピー価値9 (StS Burst=1E準拠)
   addCasts: 2.5, // 焚べる: 詠唱+1 ≈ 参照×2〜3の増分

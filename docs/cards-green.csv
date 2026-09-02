@@ -1,58 +1,97 @@
 ﻿id,名前,レアリティ,コスト,タイプ,消滅,効果,特記,機械VP,許容VP,定価%,査定メモ
-green_decoy_needle,毒針の囮,コモン,0,リアクション,消滅,[被攻撃後]返し5,,5.0,4,,リアクション=条件係数の手動査定
-green_wild_sprout,野生の萌芽,コモン,0,呪文,消滅,成長+1,,4.0,4,100,
-green_canopy_shade,木陰の守り,コモン,1,呪文,,上限×2ブロック,,,8,,参照スケール/倍加=典型値の手動査定要
-green_double_lash,二連の蔦打ち,コモン,1,物理,,ダメージ5 + ダメージ5,軸:growth,10.0,8,125,
-green_entangle,絡み蔦,コモン,1,物理,,《A》ブロック7 ／ 《B》ダメージ7,モード選択,7.0,8,88,モード=高い側のVP
-green_flash_insight,緑の閃き,コモン,1,呪文,,4ドロー,捨てコスト1,12.0,8,150,捨てコスト補正別途
-green_growth_ring,年輪,コモン,1,呪文,,成長+2,,8.0,8,100,
-green_guard,防御,コモン,1,物理,,ブロック5,,5.0,8,62,
-green_horn_stance,荒角の構え,コモン,1,物理,,ブロック6 + 勢い+3,,10.5,8,131,
-green_horn_strike,荒角の一撃,コモン,1,物理,,ダメージ8(貫通),,10.0,8,125,
-green_ramp_sprout,芽吹き,コモン,1,呪文,消滅,上限+1 + ブロック2,,8.0,8,100,
-green_reaction_thorns,茨の返し,コモン,1,リアクション,,[被攻撃後]返し10,,10.0,8,,リアクション=条件係数の手動査定
-green_reaction_vine,守りの蔓,コモン,1,リアクション,,[被攻撃前]ブロック12,,12.0,8,,リアクション=条件係数の手動査定
-green_ritual_surge,自然の奔流,コモン,1,呪文,消滅,一時マナ+2,,10.0,8,125,
-green_strike,打撃,コモン,1,物理,,ダメージ6,,6.0,8,75,
-green_trample_charge,突進の助走,コモン,1,物理,,ダメージ6 + 勢い+3,,10.5,8,131,
-green_bark_armor,樹皮の鎧,コモン,2,物理,,ブロック14 + 成長+1,,18.0,14,129,
-green_mode_verdict,森の裁定,コモン,2,物理,,《A》ダメージ14 ／ 《B》ブロック14,モード選択,14.0,14,100,モード=高い側のVP
-green_ramp_deep_roots,深根,コモン,2,呪文,消滅,上限+2 + ブロック2,,14.0,14,100,
-green_sweep,薙ぎ払い,コモン,2,物理,,ダメージ7(全体) + 成長+1,,18.0,14,129,
-green_thorn_burst,茨の爆ぜ,コモン,2,リアクション,,[被攻撃後]返し8(全体),,16.0,14,,リアクション=条件係数の手動査定
-green_triple_horn,三連の角,コモン,2,物理,,ダメージ5(貫通) + ダメージ5(貫通) + ダメージ5(貫通),,18.8,14,134,
-green_trunk_blow,幹撃,コモン,2,物理,,上限×4ダメ,,,14,,参照スケール/倍加=典型値の手動査定要
-green_x_vine_flurry,蔦の連撃,コモン,X,物理,,ダメージ4,Xコスト/軸:ramp,,8,,X参照=査定不能
-green_mode_crossroads,道行きの選択,アンコモン,1,呪文,,《A》勢い+3+ダメージ3 ／ 《B》成長+2,モード選択,8.0,8,100,モード=高い側のVP
-green_reaction_cornered,窮鼠の大牙,アンコモン,1,リアクション,,[被攻撃後]返し20〈条件:{'hpAtOrBelowRatio': 0.5}〉,,20.0,8,,リアクション=条件係数の手動査定
-green_reaction_resonance,共鳴する茨,アンコモン,1,リアクション,,[敵強化時]成長+4,,16.0,8,,リアクション=条件係数の手動査定
-green_reaction_root_pierce,根穿ち,アンコモン,1,リアクション,,[敵防御時]返し12(貫通),,15.0,8,,リアクション=条件係数の手動査定
-green_weak_point,急所突き,アンコモン,1,物理,,ダメージ6 + 急所2,,10.0,8,125,
-green_bloom_lash,開花の蔦,アンコモン,2,呪文,,成長×4ダメ全消費,,,14,,参照スケール/倍加=典型値の手動査定要
-green_fang,牙の一撃,アンコモン,2,物理,,ダメージ17(貫通),,21.2,14,152,
-green_giant_bark,巨木の盾,アンコモン,2,物理,,上限×4ブロック,,,14,,参照スケール/倍加=典型値の手動査定要
-green_perm_growth_tree,年輪の大樹,アンコモン,2,置物,,[毎T開始]成長+1 + ブロック5,,,14,,置物=生涯価値×3で手動査定
-green_perm_herd_chief,大角の群長,アンコモン,2,置物,,[攻撃プレイ時]勢い+2,,,14,,置物=生涯価値×3で手動査定
-green_perm_thorn_thicket,茨の茂み,アンコモン,2,置物,,[被攻撃後]返し5,,,14,,置物=生涯価値×3で手動査定
-green_ramp_sunlight,陽光の恵み,アンコモン,2,呪文,,《A》上限+1+1ドロー ／ 《B》1ドロー+成長+2,モード選択,11.0,14,79,モード=高い側のVP
-green_reaction_backlash,逆襲の蔦,アンコモン,2,リアクション,,[被攻撃後]返し24〈条件:{'minDamageTaken': 10}〉,,24.0,14,,リアクション=条件係数の手動査定
-green_snare_root,絡め捕る根,アンコモン,2,物理,,威圧1 + ブロック12,,17.0,14,121,
-green_surge_thrust,怒涛の突き上げ,アンコモン,2,物理,,勢い×3ダメ,,,14,,参照スケール/倍加=典型値の手動査定要
-green_mode_great_fork,大樹の岐路,アンコモン,3,呪文,,《A》上限+1+2ドロー ／ 《B》成長+3+ブロック6,モード選択,18.0,20,90,モード=高い側のVP
-green_reaction_root_weave,根の紡ぎ,アンコモン,3,リアクション,,[敵行動時]打ち消し + [敵行動時]成長+3,,24.0,20,,リアクション=条件係数の手動査定
-green_serpent_gulp,大蛇の丸呑み,アンコモン,3,物理,,ダメージ34,捨てコスト1,34.0,20,170,捨てコスト補正別途
-green_sig_canopy,天蓋の実り,アンコモン,3,呪文,消滅,上限+2 + 2ドロー + ブロック4,,22.0,20,110,
-green_sig_trample,踏み荒らし,アンコモン,3,物理,,ダメージ16(貫通) + 勢い+3,,24.5,20,123,
-green_finisher_wrath,大樹の怒り,アンコモン,4,物理,,ダメージ36 + 成長+1,,40.0,26,154,
-green_sig_stampede,巨象の突進,アンコモン,4,物理,,ダメージ32(貫通),,40.0,26,154,
-green_x_bark_armor,樹皮の重鎧,アンコモン,X,呪文,,ブロック6,Xコスト/軸:ramp,,8,,X参照=査定不能
-green_x_stampede,大角の暴走,アンコモン,X,物理,,ダメージ6(貫通),Xコスト/軸:ramp,,8,,X参照=査定不能
-green_horn_flare,昂ぶる角笛,レア,1,呪文,消滅,勢い+2 + 勢い2倍,,,8,,参照スケール/倍加=典型値の手動査定要
-green_perm_tree_pulse,大樹の脈,レア,2,置物,,[毎T開始]次のカード-1,軸:ramp,,14,,置物=生涯価値×3で手動査定
-green_perm_wild_call,荒野の呼び声,レア,2,置物,,[毎T開始]勢い+3,,,14,,置物=生涯価値×3で手動査定
-green_sig_rite_of_bloom,開花の儀,レア,2,呪文,消滅,成長2倍,,,14,,参照スケール/倍加=典型値の手動査定要
-green_sig_vine_dance,蔦の乱舞,レア,3,物理,,ダメージ2 + ダメージ2 + ダメージ2 + ダメージ2 + ダメージ2,軸:growth,10.0,20,50,
-green_trunk_stance,大幹の構え,レア,3,物理,,上限×3ダメ + 上限×3ブロック,,,20,,参照スケール/倍加=典型値の手動査定要
-green_sig_overgrowth,森の大爆発,レア,4,呪文,消滅,上限×6ダメ(全体),,,26,,参照スケール/倍加=典型値の手動査定要
-green_finisher_stomp,巨獣の踏みつけ,レア,5,物理,,ダメージ50,軸:ramp,50.0,32,156,
-green_x_sylvan_tempest,森羅の大嵐,レア,X,呪文,,ダメージ3(全体),Xコスト/軸:ramp,,8,,X参照=査定不能
+green_ramp_sprout,芽吹き,コモン,1,呪文,消滅,gainEnergyMax1 gainBlock2,,,8,,
+green_ramp_deep_roots,深根,コモン,2,呪文,消滅,gainEnergyMax2 gainBlock4,,,14,,
+green_ramp_sunlight,陽光の恵み,アンコモン,2,呪文,,『陽光』gainEnergyMax1+drawCards1 / 『萌芽』drawCards1+addGrowth2,,,14,,
+green_strike,打撃,コモン,1,物理,,dealDamage6,,6.0,8,75,
+green_double_lash,二連の蔦打ち,コモン,1,物理,,dealDamage5 dealDamage5,,10.0,8,125,
+green_fang,牙の一撃,アンコモン,2,物理,,dealDamage17(貫通),,21.3,14,152,
+green_guard,防御,コモン,1,物理,,gainBlock5,,5.0,8,63,
+green_bark_armor,樹皮の鎧,コモン,2,物理,,gainBlock14 addGrowth1,,18.0,14,129,
+green_entangle,絡み蔦,コモン,1,物理,,『ブロック7』gainBlock7 / 『7ダメージ』dealDamage7,,7.0,8,88,
+green_finisher_wrath,大樹の怒り,アンコモン,4,物理,,dealDamage36 addGrowth1,,40.0,26,154,
+green_finisher_stomp,巨獣の踏みつけ,レア,5,物理,,dealDamage50,,50.0,32,156,
+green_reaction_thorns,茨の返し,コモン,1,リアクション,,[onAttacked]counter10,リアクション=条件係数の手動査定,10.0,8,125,
+green_reaction_vine,守りの蔓,コモン,1,リアクション,,[onAttackIncoming]gainBlock12,リアクション=条件係数の手動査定,12.0,8,150,
+green_reaction_root_weave,根の紡ぎ,アンコモン,2,リアクション,,[onEnemyAction]negate [onEnemyAction]addGrowth2,リアクション=条件係数の手動査定,20.0,14,143,
+green_growth_ring,年輪,コモン,1,呪文,,addGrowth2,,8.0,8,100,
+green_sig_canopy,天蓋の実り,アンコモン,3,呪文,消滅,gainEnergyMax2 drawCards2 gainBlock4,,,20,,
+green_sig_overgrowth,森の大爆発,レア,4,呪文,消滅,dealDamagePerEnergyMax6@all,,,26,,
+green_sig_rite_of_bloom,開花の儀,レア,2,呪文,消滅,doubleGrowth,,,14,,
+green_sig_vine_dance,蔦の乱舞,レア,3,物理,,dealDamage2 dealDamage2 dealDamage2 dealDamage2 dealDamage2,,10.0,20,50,
+green_sig_trample,踏み荒らし,アンコモン,3,物理,,dealDamage16(貫通) addMomentum3,,24.5,20,123,
+green_sig_stampede,巨象の突進,アンコモン,4,物理,,dealDamage32(貫通),,40.0,26,154,
+green_trample_charge,突進の助走,コモン,1,物理,,dealDamage6 addMomentum3,,10.5,8,131,
+green_ritual_surge,自然の奔流,コモン,1,呪文,消滅,gainEnergy2,,10.0,8,125,
+green_perm_growth_tree,年輪の大樹,アンコモン,2,置物,,[onTurnStart]addGrowth1 gainBlock5,置物=生涯×3レンズで読む,17.0,14,121,
+green_perm_thorn_thicket,茨の茂み,アンコモン,2,置物,,[onAttacked]counter5,置物=生涯×3レンズで読む,15.0,14,107,
+green_perm_herd_chief,大角の群長,アンコモン,2,置物,,[onAttackPlayed]addMomentum2,置物=生涯×3レンズで読む,9.0,14,64,
+green_flash_insight,緑の閃き,コモン,1,呪文,,drawCards4,捨て1,10.5,8,131,
+green_serpent_gulp,大蛇の丸呑み,アンコモン,3,物理,,dealDamage34,捨て1,32.5,20,163,
+green_reaction_cornered,窮鼠の大牙,アンコモン,1,リアクション,,[onAttacked]counter20,リアクション=条件係数の手動査定,12.0,8,150,
+green_reaction_resonance,共鳴する茨,アンコモン,1,リアクション,,[onEnemyBuffed]addGrowth4,リアクション=条件係数の手動査定,16.0,8,200,
+green_reaction_root_pierce,根穿ち,アンコモン,1,リアクション,,[onEnemyDefended]counter12(貫通),リアクション=条件係数の手動査定,15.0,8,188,
+green_reaction_backlash,逆襲の蔦,アンコモン,2,リアクション,,[onAttacked]counter24,リアクション=条件係数の手動査定,14.4,14,103,
+green_wild_sprout,野生の萌芽,コモン,0,呪文,消滅,addGrowth1,,4.0,2,80,
+green_sweep,薙ぎ払い,コモン,2,物理,,dealDamage7@all addGrowth1,,18.0,14,129,
+green_decoy_needle,毒針の囮,コモン,0,リアクション,消滅,[onAttacked]counter5 [onAttacked]exposeEnemy1,リアクション=条件係数の手動査定,7.0,2,140,
+green_bloom_lash,開花の蔦,アンコモン,2,呪文,,dischargeGrowth2@all,,20.0,14,143,
+green_weak_point,急所突き,アンコモン,1,物理,,dealDamage6 exposeEnemy2,,10.0,8,125,
+green_thorn_burst,茨の爆ぜ,コモン,1,リアクション,,[onAttacked]counter8@all,リアクション=条件係数の手動査定,16.0,8,200,
+green_giant_bark,巨木の盾,アンコモン,2,物理,,gainBlockPerEnergyMax4,,,14,,
+green_snare_root,絡め捕る根,アンコモン,2,物理,,weakenEnemy1 gainBlock12,,17.0,14,121,
+green_horn_strike,荒角の一撃,コモン,1,物理,,dealDamage8(貫通),,10.0,8,125,
+green_perm_wild_call,荒野の呼び声,レア,2,置物,,[onTurnStart]addMomentum3,置物=生涯×3レンズで読む,13.5,14,96,
+green_triple_horn,三連の角,コモン,2,物理,,dealDamage5(貫通) dealDamage5(貫通) dealDamage5(貫通),,18.8,14,134,
+green_surge_thrust,怒涛の突き上げ,アンコモン,2,物理,,dealDamagePerMomentum3,,,14,,
+green_horn_flare,昂ぶる角笛,レア,1,呪文,消滅,addMomentum2 doubleMomentum,,,8,,
+green_trunk_blow,幹撃,コモン,2,物理,,dealDamagePerEnergyMax4,,,14,,
+green_sapling_strike,若幹の一撃,コモン,1,物理,,dealDamagePerEnergyMax2,,,8,,
+green_trunk_guard,幹の構え,コモン,1,物理,,dealDamagePerEnergyMax1 gainBlockPerEnergyMax1,,,8,,
+green_trunk_stance,大幹の構え,レア,3,物理,,dealDamagePerEnergyMax3 gainBlockPerEnergyMax3,,,20,,
+green_perm_tree_pulse,大樹の脈,レア,2,置物,,[onTurnStart]discountNext1,置物=生涯×3レンズで読む,7.5,14,54,
+green_canopy_shade,木陰の守り,コモン,1,呪文,,gainBlockPerEnergyMax2,,,8,,
+green_horn_stance,荒角の構え,コモン,1,物理,,gainBlock6 addMomentum3,,10.5,8,131,
+green_x_stampede,大角の暴走,アンコモン,X,物理,,dealDamage6(貫通),Xコスト,22.5,20,113,
+green_x_vine_flurry,蔦の連撃,コモン,X,物理,,dealDamage7,Xコスト,21.0,20,105,
+green_x_bark_armor,樹皮の重鎧,アンコモン,X,呪文,,gainBlock6,Xコスト,18.0,20,90,
+green_x_sylvan_tempest,森羅の大嵐,レア,X,呪文,,dealDamage5@all,Xコスト,30.0,20,150,
+green_mode_verdict,森の裁定,コモン,2,物理,,『牙』dealDamage14 / 『殻』gainBlock14,,14.0,14,100,
+green_mode_crossroads,道行きの選択,アンコモン,1,呪文,,『野生』addMomentum3+dealDamage3 / 『育成』addGrowth2,,8.0,8,100,
+green_mode_great_fork,大樹の岐路,アンコモン,3,呪文,,『天光』gainEnergyMax1+drawCards2 / 『豊穣』addGrowth3+gainBlock6,,,20,,
+green_basic_bash,打ち据え,コモン,1,物理,,dealDamage4 exposeEnemy2,,8.0,8,100,
+green_perm_hunters_gaze,狩人の眼光,アンコモン,2,置物,,[onReactionFired]addGrowth2,置物=生涯×3レンズで読む,24.0,14,171,
+green_reaction_rebound,跳ね返りの蔦,コモン,1,リアクション,,[onAttacked]counter6 [onAttacked]addMomentum3,リアクション=条件係数の手動査定,10.5,8,131,
+green_reaction_parry_stance,見切りの構え,アンコモン,1,リアクション,,[onAttacked]counter4 [onAttacked]discountNext2,リアクション=条件係数の手動査定,9.0,8,113,
+green_division,株分け,アンコモン,3,呪文,消滅,doubleGrowth gainBlock6,,,20,,
+green_full_bloom,満開の刻,レア,4,呪文,消滅,doubleGrowth dealDamage10,,,26,,
+green_gale_strike,疾風の一撃,アンコモン,2,物理,消滅,doubleMomentum dealDamage6,,,14,,
+green_storm_horn,嵐の角笛,アンコモン,3,呪文,消滅,addMomentum3 doubleMomentum,,,20,,
+green_thorn_repay,茨の報い,コモン,1,物理,,dealDamage5 dealDamagePerDamageTaken1,,9.0,8,113,
+green_perm_pain_root,痛みを喰う根,アンコモン,2,置物,,[onTurnStart]dealDamage2 [onTurnStart]dealDamagePerDamageTaken1,置物=生涯×3レンズで読む,18.0,14,129,
+green_vine_wedge,蔦の楔,コモン,1,物理,,shatterBlock dealDamage5,,9.0,8,113,
+green_devour_vine,根喰らいの蔓,アンコモン,2,物理,,shatterBlockConvert dealDamage5,,15.0,14,107,
+green_rock_root,岩砕きの根,アンコモン,2,物理,,shatterBlock dealDamage13,,17.0,14,121,
+green_reaction_preempt,先制の蔦槍,アンコモン,1,リアクション,,[onAttackIncoming]dealDamage12,リアクション=条件係数の手動査定,12.0,8,150,
+green_reaction_powder_pod,弾け実の罠,アンコモン,1,リアクション,,[onAttacked]counter3 [onSetDestroyed]dealDamage12@all,リアクション=条件係数の手動査定,27.0,8,338,
+green_sapling_reap,若枝の盾張り,コモン,2,物理,,gainBlock3 dischargeGrowthBlock3,,18.0,14,129,
+green_harvest_strike,実りの一撃,コモン,2,物理,,dealDamage6 dischargeGrowth2,,16.0,14,114,
+green_cycle_harvest,巡りの収穫,アンコモン,2,呪文,,dischargeGrowth3 addGrowth1,,19.0,14,136,
+green_grand_harvest,大収穫の儀,レア,3,呪文,,dischargeGrowth6 drawCards1,,33.0,20,165,
+green_leaf_strike,若葉の一撃,コモン,1,物理,,dealDamage5(貫通) drawCards1,,9.3,8,116,
+green_dappled_light,木漏れ日,コモン,1,呪文,,gainBlock7 drawCards1,,10.0,8,125,
+green_twin_fang_vine,双牙の蔦,コモン,1,物理,,dealDamage4(貫通) dealDamage4(貫通),,10.0,8,125,
+green_leaf_blade,落ち葉の刃,コモン,0,物理,,dealDamage7,捨て1,5.5,2,110,
+green_vine_spring,蔓の跳ね,アンコモン,0,呪文,,addGrowth1 gainBlock3,捨て1,5.5,2,110,
+green_perm_thorn_vine,棘の蔓,コモン,1,置物,,[onAttackPlayed]gainBlock2,置物=生涯×3レンズで読む,6.0,8,75,
+green_perm_wind_runner,風渡り,アンコモン,1,置物,,[onMomentumGained]drawCards1,置物=生涯×3レンズで読む,9.0,8,113,
+green_perm_sprout_keeper,芽守り,アンコモン,1,置物,,[onTurnStart]drawCards1,置物=生涯×3レンズで読む,5.4,8,68,
+green_perm_thorn_leaves,棘葉の茂み,コモン,1,置物,,[onGrowthGained]dealDamage2,置物=生涯×3レンズで読む,6.0,8,75,
+green_sweeping_horn,薙ぎ角,コモン,2,物理,,dealDamage6@all(貫通) addMomentum2,,18.0,14,129,
+green_earth_roar,大地の唸り,アンコモン,2,呪文,,dealDamagePerEnergyMax2@all,,,14,,
+green_perm_trapper_grove,罠師の茂み,アンコモン,2,置物,,gainSetSlot1 gainBlock4,置物=生涯×3レンズで読む,10.0,14,71,
+green_regrowth_root,若返りの根,アンコモン,1,呪文,,retrieveFromDiscard1 gainBlock5,,9.0,8,113,
+green_forest_guidance,森の導き,アンコモン,1,呪文,,searchDeck1 addGrowth1,,8.5,8,106,
+green_spreading_vine,増える蔦,コモン,0,物理,,dealDamage4 addCopyToDiscard1,,6.0,2,120,
+green_growing_fang,育つ牙,アンコモン,1,物理,,dealDamage6 growSelf4,,10.0,8,125,
+green_honing,研ぎ澄まし,コモン,1,呪文,,gainBlock5 upgradeInHand1,,9.0,8,113,
+green_verdant_hour,深緑の刻,コモン,1,物理,,dealDamage6 dealDamage6,,9.6,8,120,
