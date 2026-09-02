@@ -21,7 +21,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
-import { canUpgradeCard } from '../engine/upgrade.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
 function cname(cardId: string): string {
