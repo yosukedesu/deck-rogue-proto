@@ -22,14 +22,19 @@ import type { GameState } from './types.ts'
 
 /** 現在の戦闘を外科的に「全滅寸前」にして薙ぎ払い (全体攻撃) で勝つ (プレイヤーHPは維持される) */
 function forceWin(run: RunState): RunState {
-  const c = run.combat!
-  let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
-  surgical = withIntent(withHand(surgical, ['green_sweep']), defendIntent(0))
-  surgical = { ...surgical, player: { ...surgical.player, energy: 9 } }
-  return applyRunCommand(
-    { ...run, combat: surgical },
-    { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } },
-  )
+  // 分裂・残機・孵化で戦闘が続く敵 (蘇る合成獣など) は全滅→再出現を繰り返すので、決着まで薙ぎ払いを反復する (2026-09-02)
+  let r = run
+  for (let guard = 0; guard < 6 && r.phase === 'combat' && r.combat !== null; guard++) {
+    const c = r.combat
+    let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
+    surgical = withIntent(withHand(surgical, ['green_sweep']), defendIntent(0))
+    surgical = { ...surgical, player: { ...surgical.player, energy: 9 } }
+    r = applyRunCommand(
+      { ...r, combat: surgical },
+      { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } },
+    )
+  }
+  return r
 }
 
 /** 目的タイプのノードに入るまでラン進行を回す (途中の戦闘は forceWin・報酬等はスキップ) */

@@ -10,14 +10,19 @@ import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIn
 import type { GameState } from './types.ts'
 
 function forceWin(run: RunState): RunState {
-  const c = run.combat!
-  let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
-  surgical = withIntent(withHand(surgical, ['green_sweep']), defendIntent(0))
-  surgical = { ...surgical, player: { ...surgical.player, energy: 9 } }
-  return applyRunCommand(
-    { ...run, combat: surgical },
-    { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } },
-  )
+  // 分裂・残機・孵化で戦闘が続く敵 (蘇る合成獣など) は全滅→再出現を繰り返すので、決着まで薙ぎ払いを反復する (2026-09-02)
+  let r = run
+  for (let guard = 0; guard < 6 && r.phase === 'combat' && r.combat !== null; guard++) {
+    const c = r.combat
+    let surgical: GameState = { ...c, enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
+    surgical = withIntent(withHand(surgical, ['green_sweep']), defendIntent(0))
+    surgical = { ...surgical, player: { ...surgical.player, energy: 9 } }
+    r = applyRunCommand(
+      { ...r, combat: surgical },
+      { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } },
+    )
+  }
+  return r
 }
 
 /** 最初のエリートノードに入るまで進める (途中の戦闘は forceWin、非戦闘はスキップ) */
