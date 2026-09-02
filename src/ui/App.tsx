@@ -2,6 +2,8 @@
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
 import { deckChooseKindOf } from '../engine/combat.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
+import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
+import { canSetCard } from '../engine/reactions/set-base.ts'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import {
@@ -61,20 +63,8 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { damageBreakdown,
-  BLAZE_THRESHOLD,
-  cardNeedsTarget,
-  playerCanSet,
-  effectiveIntent,
-  reactionMatches,
-  setBranchFlipRisks,
-  windowFromPending,
-  effectiveCost,
-  isDamageEffect,
-  isPlayableFromHand,
-} from '../engine/effects.ts'
+import { usableSetCards, damageBreakdown, BLAZE_THRESHOLD, cardNeedsTarget, playerCanSet, effectiveIntent, setBranchFlipRisks, windowFromPending, effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -997,7 +987,7 @@ function SetupScreen({
   onStartCheckpoint,
 }: {
   onStart: (cfg: Config) => void
-  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number, revealIntents?: boolean) => void
+  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number, revealIntents?: boolean, setAnyCards?: boolean) => void
   /** 「続きから」(localStorageバックアップにランがある時だけ非null) */
   resume?: { label: string; onResume: () => void } | null
   /** セーブファイル (.json) の読み込み */
@@ -1012,6 +1002,7 @@ function SetupScreen({
   // 難易度 (確定済みルール表「難易度」): 1〜10・既定3=現状維持
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
   const [revealIntents, setRevealIntents] = useState(false) // 判定実験: 意図を常時実値表示 (2026-09-02)
+  const [setAnyCards, setSetAnyCards] = useState(false) // 実験: 全カード伏せ可 (2026-09-02)
   const leader = getLeaderDef(leaderId)
   const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
   const [deckId, setDeckId] = useState(allowedDecks[0].id)
@@ -1134,7 +1125,7 @@ function SetupScreen({
                 <button
                   key={deckId}
                   className="choice"
-                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty, revealIntents)}
+                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty, revealIntents, setAnyCards)}
                 >
                   <div className="choice-title">{leader.sprite} {deck?.name ?? deckId}で開始</div>
                   <div className="choice-desc">{deck?.description}</div>
@@ -1146,7 +1137,7 @@ function SetupScreen({
           <button
             className="btn btn-primary"
             style={{ marginTop: 8 }}
-            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty, revealIntents)}
+            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty, revealIntents, setAnyCards)}
           >
             {leader.sprite} {leader.name}でランを開始
           </button>
@@ -1264,6 +1255,9 @@ function SetupScreen({
               <label className="hint" style={{ display: 'block', marginTop: 8 }} title="退屈診断④の判定実験: 幅あり意図（例: 攻撃6〜12）を常時実値にして遊び、幅表示の有無で体感がどう変わるかを比べる。仕様は変えず計測だけ（レポートに記録される）">
                 <input type="checkbox" checked={revealIntents} onChange={(e) => setRevealIntents(e.target.checked)} /> 🔍 意図を常時実値表示（幅あり意図の判定実験）
               </label>
+              <label className="hint" style={{ display: 'block', marginTop: 4 }} title="実験 (2026-09-02): 攻撃・防御の通常カードも1Eで伏せられる。誘発したら印字コストを敵ターンに持ち越したエナジーから払って発動。専用リアクションは従来どおり伏せ時に支払い・発動無料">
+                <input type="checkbox" checked={setAnyCards} onChange={(e) => setSetAnyCards(e.target.checked)} /> 🃏 全カード伏せ可（通常カードは1Eで伏せ、発動時に印字コスト）
+              </label>
               <CheckpointPanel leaderId={leaderId} difficulty={difficulty} onStart={onStartCheckpoint} />
             </>
           )}
@@ -1339,7 +1333,6 @@ function BattleScreen({
   run?: RunState | null
 }) {
   const player = s.player
-  const system = getReactionSystem(s.reactionMode)
   const isSetMode = s.reactionMode !== 'hold-manual'
   const ended = s.phase === 'won' || s.phase === 'lost'
   const aliveCount = s.enemies.filter((e) => e.hp > 0).length
@@ -1738,6 +1731,9 @@ function BattleScreen({
                   <div className="set-slot-label">
                     {c.def.name}
                     {c.setFresh !== true && <span title="敵はこの札に反応しない (織り込み済み)">（見切られ）</span>}
+                    {c.def.type !== 'reaction' && (
+                      <span title="通常カードの伏せ (実験): 誘発したら印字コストを払って発動">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
+                    )}
                   </div>
                   {s.phase === 'player-turn' && (
                     <button
@@ -1796,9 +1792,7 @@ function BattleScreen({
                   {(() => {
                     // 伏せ2枚 (かすみ): 窓に合致する伏せ札ごとに発動ボタンを出す
                     const win = windowFromPending(s)
-                    const candidates = win
-                      ? player.setCards.filter((c) => reactionMatches(s, c, win))
-                      : []
+                    const candidates = win ? usableSetCards(s, win) : []
                     return candidates.map((c, candIdx) => (
                       <div key={c.uid} style={{ marginBottom: 8 }}>
                         「{c.def.name}」（
@@ -1824,7 +1818,7 @@ function BattleScreen({
                           {...(candIdx < 9 ? { 'data-hotkey': `num-${candIdx + 1}` } : {})}
                           onClick={() => dispatch({ type: 'ConfirmReaction', fire: true, cardUid: c.uid })}
                         >
-                          発動する
+                          {setFireCost(c) > 0 ? `発動する（${setFireCost(c)}E・残り${player.energy}E）` : '発動する'}
                         </button>
                       </div>
                     ))
@@ -2258,7 +2252,8 @@ function BattleScreen({
                   player.hand.length - 1 >= discardCost &&
                   player.hand.length - 1 >= exhaustCostN &&
                   pileOk
-                const canSet = isSetMode && system.canHandle(s, { type: 'SetCard', cardUid: c.uid })
+                const settable = c.def.type === 'reaction' || (s.setAnyCards === true && canSetAsNormal(c.def))
+                const canSet = isSetMode && settable && canSetCard(s, c.uid)
                 const heldReaction = !isSetMode && c.def.type === 'reaction'
                 // 消滅コスト選択中: 手札は「消滅させる」対象として振る舞う (複数枚は順に選ぶ)
                 if (activeExhaust) {
@@ -2383,14 +2378,15 @@ function BattleScreen({
                             </button>
                           )
                         )}
-                        {isSetMode && c.def.type === 'reaction' && (
+                        {isSetMode && settable && (
                           <button
                             className="btn"
                             disabled={!canSet}
+                            title={c.def.type !== 'reaction' ? `1Eで伏せる。被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に誘発し、発動時に${c.def.cost}Eを払う` : undefined}
                             {...(handIdx < 9 && !activeTarget && !isPlayableFromHand(c) ? { 'data-hotkey': `num-${handIdx + 1}` } : {})}
                             onClick={() => dispatch({ type: 'SetCard', cardUid: c.uid })}
                           >
-                            伏せる
+                            {c.def.type !== 'reaction' ? '伏せる(1E)' : '伏せる'}
                           </button>
                         )}
                       </>
@@ -4834,12 +4830,12 @@ export default function App() {
         setChoiceLog([])
         setJournal({ origin: { kind: 'checkpoint', seed: opts.seed, leaderId: opts.leaderId, checkpoint: { act: opts.act, deckId: opts.deckId, relicIds: opts.relicIds, hpRatio: opts.hpRatio, gold: opts.gold, difficulty: opts.difficulty } }, commands: [] })
         setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
-      }} onStartRun={(seed, leaderId, runDeckId, difficulty, revealIntents) => {
+      }} onStartRun={(seed, leaderId, runDeckId, difficulty, revealIntents, setAnyCards) => {
         setRunHistory([])
         setPlayNotes([])
         setChoiceLog([])
-        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty, ...(revealIntents ? { revealIntents: true } : {}) }, commands: [] })
-        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty, revealIntents ? { revealIntents: true } : undefined))
+        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty, ...(revealIntents ? { revealIntents: true } : {}), ...(setAnyCards ? { setAnyCards: true } : {}) }, commands: [] })
+        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty, { ...(revealIntents ? { revealIntents: true } : {}), ...(setAnyCards ? { setAnyCards: true } : {}) }))
       }} />
   }
   return (

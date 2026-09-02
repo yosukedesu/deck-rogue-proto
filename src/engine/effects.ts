@@ -4,6 +4,7 @@
 
 import { getCardDef, getEnemyDef } from './content.ts'
 import { emit } from './events.ts'
+import { setEffectsOf, setFireCost } from './setany.ts'
 import { nextInt, shuffle } from './rng.ts'
 import type {
   CardInstance,
@@ -377,7 +378,8 @@ export type ReactionWindow =
 
 /** この誘発窓でカードが発動できるか (トリガー一致 + 追加条件) */
 export function reactionMatches(state: GameState, card: CardInstance, win: ReactionWindow): boolean {
-  return card.def.effects.some((e) => {
+  // 全カード伏せ可 (実験): 通常カードはトリガーを窓に差し替えた効果列で照合する
+  return setEffectsOf(card).some((e) => {
     const triggerMatches =
       win.stage === 'pre'
         ? e.trigger === 'onEnemyAction' ||
@@ -499,7 +501,10 @@ export function usableSetCards(
   state: GameState,
   win: ReactionWindow,
 ): readonly CardInstance[] {
-  const matched = state.player.setCards.filter((c) => reactionMatches(state, c, win))
+  // 全カード伏せ可 (実験): 通常カードは発動時に印字コストを払うので、払えない札は候補に出さない (窓も開かない)
+  const matched = state.player.setCards.filter(
+    (c) => reactionMatches(state, c, win) && setFireCost(c) <= state.player.energy,
+  )
   return state.player.hp <= 0 ? matched.filter((c) => canSaveFromLethal(c, state)) : matched
 }
 
@@ -1416,13 +1421,14 @@ const REACTION_TRIGGERS = new Set([
  */
 export function resolveReactionEffects(state: GameState, card: CardInstance, enemyIndex: number): GameState {
   let s = emit(state, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
-  for (const effect of card.def.effects) {
+  for (const effect of setEffectsOf(card)) {
     if (REACTION_TRIGGERS.has(effect.trigger)) {
       // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   }
   // 読み勝ちの換金 (確定済みルール表「読み勝ちの換金」2026-08-29): リアクション発動に反応する置物。
-  // 3方式共通の解決経路なので方式非依存。ブラフで伏せただけでは誘発しない = 本当に読み勝った時だけ
-  return runPermanentTriggers(s, 'onReactionFired', enemyIndex)
+  // 3方式共通の解決経路なので方式非依存。ブラフで伏せただけでは誘発しない = 本当に読み勝った時だけ。
+  // 全カード伏せ可 (実験): 通常カードの伏せ発動は「リアクションの発動」ではない = 換金 (狩人の眼光) は専用札の特権
+  return card.def.type === 'reaction' ? runPermanentTriggers(s, 'onReactionFired', enemyIndex) : s
 }

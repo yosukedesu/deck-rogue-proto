@@ -4,6 +4,17 @@
 import { emit } from '../events.ts'
 import { fireExhaustTriggers, resolveReactionEffects, runPermanentTriggers } from '../effects.ts'
 import type { CardInstance, GameState } from '../types.ts'
+import { SET_ANY_FEE, canSetAsNormal, setFireCost } from '../setany.ts'
+
+/** 伏せる時のコスト: 専用リアクションは印字 (屍集めの0E札は0)、通常カードは実験の固定手数料 */
+function setCostOf(card: CardInstance): number {
+  if (card.def.type !== 'reaction') return SET_ANY_FEE
+  return card.freeThisCombat === true ? 0 : card.def.cost
+}
+/** この札を伏せ対象にできるか (型の判定。エナジー・枠は別) */
+function settableType(state: GameState, card: CardInstance): boolean {
+  return card.def.type === 'reaction' || (state.setAnyCards === true && canSetAsNormal(card.def))
+}
 
 /** SetCard の可否判定 (UI のボタン活性にも使う) */
 export function canSetCard(state: GameState, cardUid: string): boolean {
@@ -12,8 +23,8 @@ export function canSetCard(state: GameState, cardUid: string): boolean {
   if (state.player.setCards.length >= state.player.setSlots) return false
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) return false
-  if (card.def.type !== 'reaction') return false // 伏せ対象は reaction タイプのみ
-  return (card.freeThisCombat === true ? 0 : card.def.cost) <= state.player.energy
+  if (!settableType(state, card)) return false // 伏せ対象は reaction タイプ (実験中は通常カードも)
+  return setCostOf(card) <= state.player.energy
 }
 
 /** SetCard: コスト事前払いで手札から伏せる */
@@ -24,10 +35,17 @@ export function setCard(state: GameState, cardUid: string): GameState {
   }
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
-  if (card.def.type !== 'reaction') throw new Error(`${card.def.name} は伏せられない (リアクションタイプのみ)`)
+  if (!settableType(state, card)) {
+    throw new Error(
+      state.setAnyCards === true
+        ? `${card.def.name} は伏せられない (X・モード・追加コスト・ドロー/マナ系は対象外)`
+        : `${card.def.name} は伏せられない (リアクションタイプのみ)`,
+    )
+  }
   // 回収ターンの伏せ直しは0E (2026-08-30。回収1E+伏せ直しコストの二重払いが「常に攻撃2枚に負ける」
-  // 死に機構だった実測への処方 = 実質「1Eで伏せ替え」)。屍集めで戻した札 (freeThisCombat) も0E
-  const setCost = card.freeThisCombat === true ? 0 : card.def.cost
+  // 死に機構だった実測への処方 = 実質「1Eで伏せ替え」)。屍集めで戻した札 (freeThisCombat) も0E。
+  // 通常カード (実験) は固定1E
+  const setCost = setCostOf(card)
   const freeReset = state.player.freeResetUid === card.uid
   if (!freeReset && setCost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const s: GameState = {
@@ -105,11 +123,15 @@ export function retrieveSetCard(state: GameState, cardUid: string): GameState {
  * (毒針の囮)。消滅の誘発 (亡者の合唱など) もこの経路では発火していなかった。 */
 export function fireSetCard(state: GameState, card: CardInstance, enemyIndex: number): GameState {
   const exhausts = card.def.exhaust === true
+  // 全カード伏せ可 (実験): 通常カードは発動時に印字コストを持ち越しエナジーから払う。足りなければ発動しない
+  const fireCost = setFireCost(card)
+  if (fireCost > state.player.energy) return state
   let s: GameState = {
     ...state,
     reactionUsedThisAction: true,
     player: {
       ...state.player,
+      energy: state.player.energy - fireCost,
       setCards: state.player.setCards.filter((c) => c.uid !== card.uid),
       discardPile: exhausts ? state.player.discardPile : [...state.player.discardPile, card],
       exhaustPile: exhausts ? [...state.player.exhaustPile, card] : state.player.exhaustPile,

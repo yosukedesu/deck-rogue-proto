@@ -123,6 +123,8 @@ export interface CombatOptions {
   readonly revealIntents?: boolean
   /** C型レリック (蜃気楼の面): 伏せた瞬間からそのターンの実値を公開 */
   readonly revealOnSet?: boolean
+  /** 実験: 全カード伏せ可 */
+  readonly setAnyCards?: boolean
 }
 
 /** 戦闘開始の実体: デッキシャッフル・敵配置をして第1ターンを開始する */
@@ -199,6 +201,7 @@ export function startCombatWithOptions(
     ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
     ...(options.revealIntents ? { revealIntents: true } : {}),
     ...(options.revealOnSet ? { revealOnSet: true } : {}),
+    ...(options.setAnyCards ? { setAnyCards: true } : {}),
   }
   state = emit(state, { type: 'CombatStarted', enemyId })
   let s = startPlayerTurn(state, 1)

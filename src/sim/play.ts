@@ -22,6 +22,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
+import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
+import { canSetCard } from '../engine/reactions/set-base.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
 function cname(cardId: string): string {
@@ -31,16 +33,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import {
-  cardNeedsTarget,
-  effectiveCost,
-  playerCanSet,
-  effectiveIntent,
-  isPlayableFromHand,
-  reactionMatches,
-  setBranchFlipRisks,
-  windowFromPending,
-} from '../engine/effects.ts'
+import { usableSetCards, cardNeedsTarget, effectiveCost, playerCanSet, effectiveIntent, isPlayableFromHand, setBranchFlipRisks, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { worstIncomingFrom, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -310,7 +303,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`手札で鍛える候補(handUids): ${cands.join(' ') || 'なし(省略可)'}`)
   }
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
@@ -324,8 +317,8 @@ function renderBattle(s: GameState, logFrom: number): string {
     const it = effectiveIntent(s, s.pendingWindow.enemyIndex)
     L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it) : '---'}」実値=${it?.actual}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
     const win = windowFromPending(s)
-    const cands = win ? p.setCards.filter((c) => reactionMatches(s, c, win)) : []
-    L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}`).join(' / ') || 'なし'}`)
+    const cands = win ? usableSetCards(s, win) : []
+    L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
     // post窓の誤認防止 (2026-08-29 検証ラン: 瀕死時に返し札を「防御」と誤認して発動→敗死の報告)。
     // 文言は攻撃窓のみ (2026-08-31 再検証ラン指摘②: 敵強化時の窓に「被弾は取り消せない」が出ていた)
     if (s.pendingWindow.stage === 'post') {
@@ -354,7 +347,8 @@ function renderBattle(s: GameState, logFrom: number): string {
     for (const c of p.hand) {
       const cost = effectiveCost(s, c)
       const playable = isPlayableFromHand(c) && cost <= p.energy
-      const canSet = c.def.type === 'reaction' && p.setCards.length < p.setSlots && c.def.cost <= p.energy
+      const settable = c.def.type === 'reaction' || (s.setAnyCards === true && canSetAsNormal(c.def))
+      const canSet = settable && canSetCard(s, c.uid)
       const marks = [
         c.def.id.startsWith('status_') // 負傷・がらくた・火傷・烙印・仮初の烙印 (2026-09-02 Opusラン: 火傷が「エナジー不足」と誤表示)
           ? '使用不可(死に札)'
@@ -379,7 +373,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           ? '要handUids(下の候補から)'
           : '',
         canSet
-          ? '伏せ可'
+          ? (c.def.type !== 'reaction' ? `伏せ可(1E・発動時に${c.def.cost}E)` : '伏せ可')
           : c.def.type === 'reaction'
             ? p.setCards.length >= p.setSlots
               ? '伏せ枠が満杯(回収{"type":"RetrieveSetCard"}で空く)'
@@ -517,7 +511,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   // 盗まれ中の額をヘッダに出す (2026-08-30 白ラン指摘「今いくら残っているか分からない」)
   // 倒した盗人 (逃走前) の抱えた金は勝利時に戻るので「盗まれ中」に数えない (2026-08-31 再検証ラン指摘①)
   const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.hp > 0 || e.fled === true ? (e.stolenGold ?? 0) : 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
-  L.push(`=== ラン: ${leader.name} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/${run.map.length}`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(`=== ラン: ${leader.name}${run.setAnyCards === true ? ' | 🃏全カード伏せ可(実験)' : ''} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/${run.map.length}`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
@@ -622,7 +616,13 @@ function currentLogLength(sf: SaveFile): number {
 const [, , mode, ...args] = process.argv
 if (mode === 'new-run') {
   const [leaderId, seed, file, deckId, difficulty] = args
-  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined, process.argv[8] === 'reveal' ? { revealIntents: true } : undefined)
+  // フラグ: 6番目以降に 'reveal' (実値常時表示) / 'set-any' (全カード伏せ可の実験) を任意の順で置ける
+  const flags = new Set(process.argv.slice(8))
+  const runOpts = {
+    ...(flags.has('reveal') ? { revealIntents: true } : {}),
+    ...(flags.has('set-any') ? { setAnyCards: true } : {}),
+  }
+  const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined, runOpts)
   const journal: RunJournal = {
     origin: {
       kind: 'run',
@@ -630,6 +630,7 @@ if (mode === 'new-run') {
       leaderId,
       ...(deckId ? { deckId } : {}),
       ...(difficulty ? { difficulty: Number(difficulty) } : {}),
+      ...runOpts,
     },
     commands: [],
   }

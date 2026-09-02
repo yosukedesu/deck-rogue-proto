@@ -310,6 +310,8 @@ export interface GameState {
   readonly revealIntents?: boolean
   /** C型レリック (蜃気楼の面 2026-09-02 作り直し): 伏せた瞬間からそのターンの実値を公開 */
   readonly revealOnSet?: boolean
+  /** 実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts) */
+  readonly setAnyCards?: boolean
 }
 
 // ============================================================
