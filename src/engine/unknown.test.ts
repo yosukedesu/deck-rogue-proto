@@ -78,6 +78,22 @@ describe('?マスの解決 (本家 pity)', () => {
     expect(run.phase).not.toBe('shop')
   })
 
+  it('次の行に進める固定ショップがあるなら ?→ショップ は起きない (2026-09-03 先読みの2連続禁止)', () => {
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const run = atUnknown(seed, {
+        map: [
+          [{ type: 'event', encounterId: null, next: [0, 1] }],
+          [{ type: 'battle', encounterId: 'enemy_probe', next: [] }, { type: 'shop', encounterId: null, next: [] }],
+        ],
+        unknownPity: { monster: 0, shop: 100, treasure: 0 },
+      })
+      expect(enterUnknown(run).phase).not.toBe('shop')
+    }
+    // 対照: 次の行にショップが無ければ shop 100% で必ずショップ
+    const ctrl = atUnknown(1, { unknownPity: { monster: 0, shop: 100, treasure: 0 } })
+    expect(enterUnknown(ctrl).phase).toBe('shop')
+  })
+
   it('ショップに入ると lastRoomWasShop が立ち、他の部屋では下りる', () => {
     const shop = enterUnknown(atUnknown(9, { unknownPity: { monster: 0, shop: 100, treasure: 0 } }))
     expect(shop.phase).toBe('shop')

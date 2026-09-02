@@ -405,7 +405,11 @@ function openTreasure(run: RunState): RunState {
  */
 function resolveUnknown(run: RunState): RunState {
   const pity = run.unknownPity ?? UNKNOWN_PITY_BASE
-  const shopPct = (run.lastRoomWasShop ?? false) ? 0 : pity.shop
+  // 本家のショップ2連続禁止は「直前」だけ見るが、うちは固定ショップが次の行に見えているので先読みも要る
+  // (2026-09-03 Opusラン G: ?→ショップの直後に本物のショップが並び、2軒目は23Gで何も買えない事故)
+  const node = currentNode(run)
+  const nextHasShop = (node?.next ?? []).some((i) => run.map[run.row + 1]?.[i]?.type === 'shop')
+  const shopPct = (run.lastRoomWasShop ?? false) || nextHasShop ? 0 : pity.shop
   const [roll, rng] = nextInt(run.rng, 0, 99)
   const bump = (hit: 'monster' | 'shop' | 'treasure' | 'event') => ({
     monster: hit === 'monster' ? UNKNOWN_PITY_BASE.monster : pity.monster + UNKNOWN_PITY_BASE.monster,

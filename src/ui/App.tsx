@@ -4480,6 +4480,11 @@ function RunScreen({
             鍛えた姿（+）で表示
           </label>
         </div>
+        {run.currentElite && run.combat?.enemies.some((e) => e.fled === true) && (
+          <div style={{ color: '#e6b422', margin: '6px 0' }}>
+            ⚠ 逃走されたため、エリートのレア確定枠を失いました（レリック3択は残ります）
+          </div>
+        )}
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {(run.rewardOptions ?? []).map((cardId, i) => {
             const inst = { uid: `opt${i}`, def: getCardDef(cardId) }

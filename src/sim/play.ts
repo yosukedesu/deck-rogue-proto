@@ -388,7 +388,18 @@ function renderBattle(s: GameState, logFrom: number): string {
       const xEff = c.def.xCost === true ? c.def.effects.filter((e) => e.xHits === true && e.effect === 'dealDamage') : []
       const xCap = p.energy
       const xNow = xEff.length > 0 ? ` ［X=1〜${xCap}を xAmount で指定 (省略=全部)。全部なら計${xEff.reduce((a, e) => a + ((e.amount ?? 0) + p.growth + p.momentum) * xCap, 0)}${xEff.some((e) => e.target === 'all') ? '/体' : ''}］` : ''
-      L.push(` [${c.uid}] ${cardLine(c.def)} 〈${marks || 'プレイ不可'}〉${xNow}`)
+      // 印字コストと実コストが違う時だけ注記 (2026-09-03 Opusラン G: 重圧で2E消費なのに「1E」表示のまま手順を組んで滑った)
+      const costNote =
+        c.def.xCost === true || cost === c.def.cost
+          ? ''
+          : ` ⚠実コスト${cost}E(印字${c.def.cost}E${cost > c.def.cost ? '・重圧' : '・割引/無料'})`
+      // 上限参照はターン開始時のスナップショットを読む (T1は素の上限)。その場の実値を出す (同ラン指摘②)
+      const capEff = c.def.effects.filter((e) => e.effect === 'dealDamagePerEnergyMax' || e.effect === 'gainBlockPerEnergyMax')
+      const capNow =
+        capEff.length > 0
+          ? ` ［上限参照=今${p.energyMaxAtTurnStart}: ${capEff.map((e) => `${e.effect === 'dealDamagePerEnergyMax' ? 'ダメ' : 'ブロック'}${(e.amount ?? 0) * p.energyMaxAtTurnStart}`).join('/')}］`
+          : ''
+      L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}`)
     }
   }
   if (s.phase === 'won') L.push(`★★ 勝利 ★★  ⚔️ 戦いの記録: ${summaryLine(battleSummary(s.eventLog))}`)
@@ -521,6 +532,9 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   } else if (run.phase === 'reward' && run.rewardOptions) {
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
     L.push('報酬ピック (1枚選ぶ or スキップ):')
+    if (run.currentElite && run.combat?.enemies.some((e) => e.fled === true)) {
+      L.push('⚠ 逃走されたため、エリートのレア確定枠を失った (レリック3択は残る)')
+    }
     const RARITY_TAG: Record<string, string> = { common: '', uncommon: '◆', rare: '★レア ' }
     run.rewardOptions.forEach((id, i) => {
       const def = getCardDef(id)
