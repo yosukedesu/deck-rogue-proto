@@ -943,6 +943,44 @@ describe('敵ギミック第3波 (2026-09-02 残件議論: 量の問いの器・
   })
 })
 
+describe('代替ボス3体 (2026-09-02 本家同等バリエーション: TheKin/KaiserCrab/TestSubject型)', () => {
+  it('血族の儀式: 踊り手が全滅すると司祭は単独時ローテ (祈りをやめて毎ターン殴る) へ転職する', () => {
+    let s = freshCombat('set-confirm', 'enc_kin_ritual', 42)
+    expect(s.enemies).toHaveLength(3)
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? e : { ...e, hp: 0 })) }
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    const def = getEnemyDef('enemy_kin_priest')
+    const aloneIds = new Set((def.movesWhenAlone ?? []).map((m) => m.id))
+    expect(aloneIds.size).toBeGreaterThan(0)
+    expect(aloneIds.has(s.enemies[0].lastMoveId ?? '')).toBe(true)
+  })
+
+  it('双腕の巨蟹: 片腕を倒すと残る腕が弔い+3', () => {
+    let s = freshCombat('set-confirm', 'enc_kaiser_crab', 42)
+    const str0 = s.enemies[1].strength
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, hp: 1, block: 0 } : e)) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 0 })
+    expect(s.enemies[1].strength).toBe(str0 + 3)
+  })
+
+  it('蘇る合成獣: 残機チェーンはボス係数など親のHP倍率を継承する (実効の合計を3回に分けて払わせる)', () => {
+    let s = freshCombat('set-confirm', 'enemy_chimera_1', 42)
+    // 幕3ボス係数×2.4を模して親のmaxHpを倍率化した状態から倒す
+    const def1 = getEnemyDef('enemy_chimera_1')
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, maxHp: def1.maxHp * 2, hp: 1, block: 0 })) }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
+    const second = s.enemies.find((e) => e.enemyId === 'enemy_chimera_2' && e.hp > 0)
+    expect(second).toBeDefined()
+    expect(second!.maxHp).toBe(getEnemyDef('enemy_chimera_2').maxHp * 2) // 倍率2を継承
+    expect(second!.strength).toBe(2)
+    expect(second!.intent?.kind).toBe('rest') // 蘇生ターンは隙 (予告してから殺す)
+  })
+})
+
+
 
 
 

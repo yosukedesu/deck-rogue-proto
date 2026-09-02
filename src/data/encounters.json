@@ -791,5 +791,33 @@
     "patternOffset": 2
    }
   ]
+ },
+ {
+  "id": "enc_kin_ritual",
+  "name": "血族の儀式",
+  "members": [
+   {
+    "enemyId": "enemy_kin_priest"
+   },
+   {
+    "enemyId": "enemy_kin_follower"
+   },
+   {
+    "enemyId": "enemy_kin_follower",
+    "patternOffset": 2
+   }
+  ]
+ },
+ {
+  "id": "enc_kaiser_crab",
+  "name": "双腕の巨蟹",
+  "members": [
+   {
+    "enemyId": "enemy_crab_crusher"
+   },
+   {
+    "enemyId": "enemy_crab_cannon"
+   }
+  ]
  }
 ]

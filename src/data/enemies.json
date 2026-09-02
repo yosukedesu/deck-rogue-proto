@@ -2717,5 +2717,340 @@
    "bite",
    "suck"
   ]
+ },
+ {
+  "id": "enemy_kin_priest",
+  "name": "血族の司祭",
+  "archetype": "hexer",
+  "flavor": "従者の祈りで儀式を進める。祈り手を失えば、祈りは血に変わる——本気になる。",
+  "maxHp": 85,
+  "mournStrength": 1,
+  "moves": [
+   {
+    "id": "orb_frail",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "inflict": {
+     "status": "frail",
+     "amount": 1
+    }
+   },
+   {
+    "id": "orb_weak",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   },
+   {
+    "id": "beam",
+    "kind": "attack",
+    "min": 2,
+    "max": 2,
+    "weight": 1,
+    "hits": 3
+   },
+   {
+    "id": "ritual",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "orb_frail",
+   "orb_weak",
+   "beam",
+   "ritual"
+  ],
+  "movesWhenAlone": [
+   {
+    "id": "judgment_orb",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "inflict": {
+     "status": "weak",
+     "amount": 1
+    }
+   },
+   {
+    "id": "blood_beam",
+    "kind": "attack",
+    "min": 2,
+    "max": 2,
+    "weight": 1,
+    "hits": 3
+   }
+  ],
+  "sequenceWhenAlone": [
+   "judgment_orb",
+   "blood_beam"
+  ]
+ },
+ {
+  "id": "enemy_kin_follower",
+  "name": "血族の踊り手",
+  "archetype": "flurry",
+  "flavor": "踊るほど刃が冴える。伏せ札を見せれば踊りをやめて斬りかかる——釣り出すか、踊らせるか。",
+  "maxHp": 25,
+  "moves": [
+   {
+    "id": "slash",
+    "kind": "attack",
+    "min": 3,
+    "max": 4,
+    "weight": 1
+   },
+   {
+    "id": "boomerang",
+    "kind": "attack",
+    "min": 1,
+    "max": 2,
+    "weight": 1,
+    "hits": 2
+   },
+   {
+    "id": "dance",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1,
+    "setAlt": {
+     "kind": "attack",
+     "min": 3,
+     "max": 4
+    }
+   }
+  ],
+  "sequence": [
+   "slash",
+   "boomerang",
+   "dance"
+  ]
+ },
+ {
+  "id": "enemy_crab_crusher",
+  "name": "巨蟹の砕き腕",
+  "archetype": "brute",
+  "flavor": "胴は壁の向こう、届くのは二本の腕だけ。左腕は砕き、刺し、膨れ、殻に籠る。",
+  "maxHp": 75,
+  "mournStrength": 3,
+  "moves": [
+   {
+    "id": "thrash",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1
+   },
+   {
+    "id": "swell_strike",
+    "kind": "attack",
+    "min": 2,
+    "max": 4,
+    "weight": 1,
+    "growPerUse": 3
+   },
+   {
+    "id": "bug_sting",
+    "kind": "attack",
+    "min": 2,
+    "max": 3,
+    "weight": 1,
+    "hits": 2,
+    "inflict": {
+     "status": "weak",
+     "amount": 2
+    }
+   },
+   {
+    "id": "adapt",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1
+   },
+   {
+    "id": "guarded_strike",
+    "kind": "attack",
+    "min": 6,
+    "max": 8,
+    "weight": 1,
+    "alsoDefend": 15
+   }
+  ],
+  "sequence": [
+   "thrash",
+   "swell_strike",
+   "bug_sting",
+   "adapt",
+   "guarded_strike"
+  ]
+ },
+ {
+  "id": "enemy_crab_cannon",
+  "name": "巨蟹の撃ち腕",
+  "archetype": "charger",
+  "flavor": "右腕は照準し、撃ち、充填し、薙ぐ。五拍目の休みが唯一の隙——片腕を失えば、残る腕が猛る。",
+  "maxHp": 70,
+  "mournStrength": 3,
+  "moves": [
+   {
+    "id": "reticle",
+    "kind": "attack",
+    "min": 2,
+    "max": 3,
+    "weight": 1,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 1
+    }
+   },
+   {
+    "id": "precision_beam",
+    "kind": "attack",
+    "min": 6,
+    "max": 10,
+    "weight": 1
+   },
+   {
+    "id": "charge",
+    "kind": "buff",
+    "min": 2,
+    "max": 2,
+    "weight": 1
+   },
+   {
+    "id": "laser",
+    "kind": "attack",
+    "min": 16,
+    "max": 20,
+    "weight": 1
+   },
+   {
+    "id": "recharge",
+    "kind": "rest",
+    "weight": 1
+   }
+  ],
+  "sequence": [
+   "reticle",
+   "precision_beam",
+   "charge",
+   "laser",
+   "recharge"
+  ]
+ },
+ {
+  "id": "enemy_chimera_1",
+  "name": "蘇る合成獣・一の相",
+  "archetype": "splitter",
+  "flavor": "古の塔の実験体。殺しても終わらない。一の相は噛み、頭突きで急所を晒す。",
+  "maxHp": 50,
+  "splitInto": {
+   "enemyId": "enemy_chimera_2",
+   "count": 1,
+   "stunned": true,
+   "strength": 2
+  },
+  "moves": [
+   {
+    "id": "bite",
+    "kind": "attack",
+    "min": 14,
+    "max": 18,
+    "weight": 1
+   },
+   {
+    "id": "skull_bash",
+    "kind": "attack",
+    "min": 9,
+    "max": 12,
+    "weight": 1,
+    "inflict": {
+     "status": "vulnerable",
+     "amount": 1
+    }
+   }
+  ],
+  "sequence": [
+   "bite",
+   "skull_bash"
+  ]
+ },
+ {
+  "id": "enemy_chimera_2",
+  "name": "蘇る合成獣・二の相",
+  "archetype": "splitter",
+  "flavor": "二度目の目覚め。爪は振るうたび一本ずつ増える——長引かせるほど、戻らない。",
+  "maxHp": 55,
+  "splitInto": {
+   "enemyId": "enemy_chimera_3",
+   "count": 1,
+   "stunned": true,
+   "strength": 3
+  },
+  "moves": [
+   {
+    "id": "swelling_claws",
+    "kind": "attack",
+    "min": 4,
+    "max": 6,
+    "weight": 1,
+    "hits": 3,
+    "growHitsPerUse": 1
+   }
+  ],
+  "sequence": [
+   "swelling_claws"
+  ]
+ },
+ {
+  "id": "enemy_chimera_3",
+  "name": "蘇る合成獣・三の相",
+  "archetype": "brute",
+  "flavor": "三度目の躯。裂き、跳び、燃える唸りで手札を焼く。これが最後の命。",
+  "maxHp": 70,
+  "moves": [
+   {
+    "id": "lacerate",
+    "kind": "attack",
+    "min": 5,
+    "max": 7,
+    "weight": 1,
+    "hits": 3
+   },
+   {
+    "id": "pounce",
+    "kind": "attack",
+    "min": 30,
+    "max": 34,
+    "weight": 1,
+    "alsoBuff": 2
+   },
+   {
+    "id": "burning_growl",
+    "kind": "hex",
+    "weight": 1,
+    "inflict": {
+     "status": "scald",
+     "amount": 3
+    }
+   }
+  ],
+  "sequence": [
+   "lacerate",
+   "pounce",
+   "burning_growl"
+  ]
  }
 ]

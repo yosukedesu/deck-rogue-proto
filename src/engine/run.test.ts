@@ -1,7 +1,7 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
-import { bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor, TREASURE_ROW } from './map.ts'
+import { ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor, TREASURE_ROW } from './map.ts'
 import { createRng } from './rng.ts'
 import {
   applyRunCommand,
@@ -296,7 +296,7 @@ describe('ラン走破 (3幕構成)', () => {
     expect(run.act).toBe(2) // 次の幕へ
     expect(run.phase).toBe('map')
     expect(run.row).toBe(-1)
-    expect(run.map[bossRowFor(2)][0].encounterId).toBe('enemy_turtle') // 2幕ボス=大亀
+    expect(ACT_BOSS_POOLS[1]).toContain(run.map[bossRowFor(2)][0].encounterId) // 2026-09-02 幕2ボスは大亀/巨蟹の抽選 // 2幕ボス=大亀
   })
 
   it('3幕すべてのボスを倒すとラン走破。戦闘数は幕あたり9〜15×3 (2026-08-29 18行化+?増設)', () => {
@@ -307,7 +307,7 @@ describe('ラン走破 (3幕構成)', () => {
     for (let act = 1; act <= ACT_COUNT; act++) {
       expect(run.act).toBe(act)
       run = runTo(run, 'boss')
-      const def = getEnemyDef(currentNode(run)!.encounterId!)
+      const def = getEnemyDef(resolveEncounter(currentNode(run)!.encounterId!)[0].enemyId) // 編成ボス (血族/巨蟹) は先頭メンバーで検証
       expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * bossHpScale[act - 1]))
       expect(run.combat!.enemies[0].strength).toBe(bossStr[act - 1])
       run = forceWin(run)

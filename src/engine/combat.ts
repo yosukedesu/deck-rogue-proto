@@ -558,6 +558,11 @@ function processSplits(state: GameState): GameState {
     s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, split: true } : x)) }
     s = emit(s, { type: 'EnemySplit', enemyIndex: i, into: splitInto.enemyId, count: splitInto.count })
     const childDef = getEnemyDef(splitInto.enemyId)
+    // HPスケール継承 (2026-09-02 代替ボス「蘇る合成獣」で発見): 分裂体が素のHPで出ると、ボス係数
+    // (×2.4) や幕・難易度倍率を受けた親の後継が桁違いに軟らかくなる。親の実効倍率 (maxHp/素)
+    // を子にも掛ける = 残機チェーンの合計HPが幕係数どおりに払われる
+    const hpRatio = def.maxHp > 0 ? e.maxHp / def.maxHp : 1
+    const scaledChildHp = Math.max(1, Math.round(childDef.maxHp * hpRatio))
     for (let k = 0; k < splitInto.count; k++) {
       const moveId = childDef.sequence?.[k % (childDef.sequence.length || 1)]
       const move = childDef.moves.find((m) => m.id === moveId) ?? childDef.moves[0]
@@ -572,8 +577,8 @@ function processSplits(state: GameState): GameState {
           : buildIntent(s.rng, move, childStrength, e.atkScale ?? 1)
       const child = {
         enemyId: splitInto.enemyId,
-        hp: childDef.maxHp,
-        maxHp: childDef.maxHp,
+        hp: scaledChildHp,
+        maxHp: scaledChildHp,
         block: childDef.startingBlock ?? 0,
         intent,
         strength: childStrength,
@@ -1640,6 +1645,9 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       const into = def.hatchInto
       if (into === undefined) return markResolved(state, 0)
       const newDef = getEnemyDef(into.enemyId)
+      // HPスケール継承 (分裂体と同じ裁定 2026-09-02): 卵の実効倍率を孵化後にも掛ける
+      const hatchRatio = def.maxHp > 0 ? enemy.maxHp / def.maxHp : 1
+      const hatchedHp = Math.max(1, Math.round(newDef.maxHp * hatchRatio))
       let s: GameState = {
         ...state,
         enemies: state.enemies.map((e, j) =>
@@ -1647,8 +1655,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
             ? {
                 ...e,
                 enemyId: into.enemyId,
-                hp: newDef.maxHp,
-                maxHp: newDef.maxHp,
+                hp: hatchedHp,
+                maxHp: hatchedHp,
                 block: 0,
                 strength: 0,
                 patternIndex: 0,
