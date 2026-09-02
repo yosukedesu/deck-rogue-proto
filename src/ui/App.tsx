@@ -74,7 +74,7 @@ import { damageBreakdown,
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { getReactionSystem } from '../engine/reactions/index.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { worstIncomingFrom, worstIncomingTotal, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -191,8 +191,8 @@ const KEYWORD_HELP: Record<string, string> = {
   霞み: '残りNターンの間、ターン開始のドローが2枚減る（最低3枚）',
   重り: '残りNフェーズの間、敵の攻撃ダメージ+10%×このターンのプレイ枚数。手数を出すほど重く受ける',
   重圧: 'この敵が生きている間、あなたのカードのコストが増える。倒せば即座に元に戻る（キル順の圧）',
-  残機: '倒すと次の形態で再起動する。オーバーキルのダメージは持ち越されない＝小分けに倒すしかない',
-  孵化: '放っておくと孵化して強い姿になる。卵のうちに割るか、親から倒すかの資源配分。孵化は打ち消しで1ターン遅らせられる',
+  残機: '倒すと次の形態で再起動する（次のHPはチップに表示）。オーバーキルのダメージは持ち越されない＝ちょうど削る計画の問い',
+  孵化: '放っておくと孵化して強い姿になる。卵のうちに割るか、親から倒すかの資源配分。孵化は打ち消しで1ターン遅らせられる（ただし行動値条件つきの打ち消し〔逆巻き等〕は孵化＝行動値0に反応しない）',
   弔い: '仲間が倒れるたび筋力+N（逃走は除く）。同時に削って同時に落とすのが正解＝全体攻撃の出番',
   従者狩り: '敵が召喚トークンまたは従者（生き物の置物）1体をランダムに破壊する。道具・オーラ系の置物・リーダーの能力・レリックは対象外',
   延焼耐性: 'この敵の延焼は毎フェーズ追加で減っていく（バーンが効きにくい）',
@@ -1663,12 +1663,15 @@ function BattleScreen({
                     {enemyDef.splitInto !== undefined && !dead && (
                       <span className="chip chip-strength">
                         {enemyDef.splitInto.count === 1
-                          ? <>♻️ {kw('残機')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}として再起動</>
+                          ? <>♻️ {kw('残機')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}（HP{getEnemyDef(enemyDef.splitInto.enemyId).maxHp}）で再起動</>
                           : <>🫠 {kw('分裂')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}×{enemyDef.splitInto.count}{enemyDef.splitInto.stunned === true ? '（出現ターンは動かない）' : ''}</>}
                       </span>
                     )}
                     {enemyDef.hatchInto !== undefined && !dead && (
-                      <span className="chip chip-strength">🥚 {kw('孵化')}: {getEnemyDef(enemyDef.hatchInto.enemyId).name}になる</span>
+                      <span className="chip chip-strength">🥚 {kw('孵化')}: {getEnemyDef(enemyDef.hatchInto.enemyId).name}になる{(() => {
+                        const t = turnsUntilHatch(s, i)
+                        return t === null ? '' : t === 0 ? '（このフェーズで孵化！）' : `（あと${t}手）`
+                      })()}</span>
                     )}
                     {enemyDef.mournStrength !== undefined && !dead && (
                       <span className="chip chip-strength">🕯️ {kw('弔い')}+{enemyDef.mournStrength}</span>

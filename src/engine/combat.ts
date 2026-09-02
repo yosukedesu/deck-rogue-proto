@@ -801,11 +801,15 @@ export function playCard(
   }
   // 庇う (2026-09-02): 護衛が生存中、単体対象は護衛に向かう (対象ごとリダイレクト =
   // ダメージ以外の単体効果 [延焼・急所等] も護衛が受ける。全体攻撃は targetIndex を使わないので素通し)
+  let redirectedFrom: number | undefined
   if (targetIndex !== undefined) {
     const t = state.enemies[targetIndex]
     if (t && getEnemyDef(t.enemyId).guardian !== true) {
       const g = state.enemies.findIndex((e) => e.hp > 0 && getEnemyDef(e.enemyId).guardian === true)
-      if (g >= 0) targetIndex = g
+      if (g >= 0 && g !== targetIndex) {
+        redirectedFrom = targetIndex
+        targetIndex = g
+      }
     }
   }
   const enemyIndex = targetIndex ?? state.enemies.findIndex((e) => e.hp > 0)
@@ -840,6 +844,10 @@ export function playCard(
     s = emit(s, { type: 'CardsDiscarded', cardIds: discardedCards.map((c) => c.def.id) })
   }
   s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
+  if (redirectedFrom !== undefined) {
+    // 庇う (2026-09-02 検証ラン「リダイレクトが無言で起きる」への処方): 発生を必ずログに残す
+    s = emit(s, { type: 'GuardianRedirected', fromIndex: redirectedFrom, toIndex: enemyIndex })
+  }
   if (isPermanent) {
     s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
     // 置物登場の誘発 (白の接着剤)。自身の登場にも誘発する (確定済みルール表「消滅の誘発」系)

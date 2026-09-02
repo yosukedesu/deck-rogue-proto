@@ -391,7 +391,8 @@ export type GameEvent =
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
   | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)
   | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02)
-  | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02) // 状態異常付与
+  | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02)
+  | { readonly type: 'GuardianRedirected'; readonly fromIndex: number; readonly toIndex: number } // 庇うのリダイレクト発生 (2026-09-02 検証ラン「無言で起きる」への処方) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕

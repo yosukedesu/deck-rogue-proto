@@ -116,6 +116,7 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
 // ---- 最悪被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が
 // 3通りに割れていたのを1本化。合成順は実処理 combat.ts の攻撃解決と同一 = 鈴→脆弱→重り) ----
 import { effectiveIntent } from './effects.ts'
+import { getEnemyDef as getEnemyDefForSummary } from './content.ts'
 import type { GameState } from './types.ts'
 
 /** 敵1体の「今フェーズの最悪合計ダメージ」。攻撃以外・死亡・混乱 (仲間に向かう) は0 */
@@ -142,4 +143,25 @@ export function worstIncomingFrom(s: GameState, enemyIndex: number): number {
 /** 全敵の最悪合計 (最悪被ダメ予測の分子) */
 export function worstIncomingTotal(s: GameState): number {
   return s.enemies.reduce((sum, _e, i) => sum + worstIncomingFrom(s, i), 0)
+}
+
+/**
+ * 孵化までの残り手数 (2026-09-02 検証ラン「カウントダウンが無い」への処方)。
+ * 0=宣言済みの意図が孵化 (このフェーズで孵化する)・N=あとN回の宣言で孵化・null=孵化を持たない。
+ * patternOffset で卵ごとに非対称になる = この敵の一番面白い部分を常時可視化する
+ */
+export function turnsUntilHatch(s: GameState, enemyIndex: number): number | null {
+  const e = s.enemies[enemyIndex]
+  if (!e || e.hp <= 0) return null
+  const def = getEnemyDefForSummary(e.enemyId)
+  if (def.hatchInto === undefined || def.sequence === undefined) return null
+  if (e.intent?.kind === 'hatch') return 0
+  const len = def.sequence.length
+  const loopFrom = def.sequenceLoopFrom ?? 0
+  const idxAt = (k: number): number => (k < len ? k : loopFrom + ((k - loopFrom) % (len - loopFrom)))
+  for (let d = 0; d < len + 2; d++) {
+    const moveId = def.sequence[idxAt(e.patternIndex + d)]
+    if (def.moves.find((m) => m.id === moveId)?.kind === 'hatch') return d + 1
+  }
+  return null
 }

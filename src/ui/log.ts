@@ -98,6 +98,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'BurnTick': return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
     case 'EnemySplit': return { text: `🫠 分裂！ 倒した敵から${e.count}体が現れた`, cls: 'log-bad' }
     case 'EnemyHatched': return { text: '🐣 孵化した！', cls: 'log-bad' }
+    case 'GuardianRedirected': return { text: '🛡️ 庇われた！ 単体対象は護衛に向かった', cls: 'log-info' }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':
       return { text: e.status === 'wound' ? `負傷${e.amount}枚が捨て札に混入した` : e.status === 'scald' ? `火傷${e.amount}枚が手札に押し込まれた（ターン終了時に手札にあるとHP-2）` : `${STATUS_LABEL[e.status]}${e.amount}を付与された`, cls: 'log-bad' }
