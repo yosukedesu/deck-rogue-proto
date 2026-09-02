@@ -15,7 +15,9 @@
     "typecheck": "tsc -b",
     "test:variance": "VARIANCE=1 vitest run src/sim/variance.slow.test.ts",
     "ratings": "tsx scripts/aggregate-ratings.ts",
-    "picks": "tsx scripts/aggregate-picks.ts"
+    "picks": "tsx scripts/aggregate-picks.ts",
+    "goldens": "tsx scripts/dump-goldens.ts",
+    "goldens:verify": "tsx scripts/verify-goldens.ts"
   },
   "dependencies": {
     "react": "^19.2.8",
