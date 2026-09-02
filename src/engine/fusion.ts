@@ -534,6 +534,8 @@ function computeFusion(a: CardInstance, b: CardInstance): FusionOutcome {
 
     effects,
     ...(exhaust && resultType !== 'permanent' ? { exhaust: true } : {}),
+    // 保持 (retain 2026-09-03): どちらかが保持なら結果も保持 (人間ラン#3「大樹の怒りを合成したら保持が消える」)
+    ...((a.def.retain === true || b.def.retain === true) && resultType !== 'permanent' ? { retain: true } : {}),
     ...(a.def.discardCost || b.def.discardCost
       ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) }
       : {}),

@@ -1618,7 +1618,7 @@ function BattleScreen({
                       <span className="chip chip-block">🛡 ブロック {enemy.block}</span>
                     )}
                     {enemy.strength !== 0 && (
-                      <span className="chip chip-strength">💪 {kw('筋力')} +{enemy.strength}</span>
+                      <span className="chip chip-strength">💪 {kw('筋力')} {enemy.strength >= 0 ? '+' : ''}{enemy.strength}</span>
                     )}
                     {enemy.burn > 0 && (
                       <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>

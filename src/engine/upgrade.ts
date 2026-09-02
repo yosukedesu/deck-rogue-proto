@@ -217,6 +217,18 @@ export function upgradeCard(card: CardInstance): CardInstance {
               }
             : {}
   let def: CardDef = { ...card.def, name: `${card.def.name}+`, ...patch }
+  // 選択式 (modes) は各モードを独立に鍛える (2026-09-03 人間ラン#3「道行きの選択+ が片方しか強化されない」)。
+  // 量ティアで量が伸びなかったモード (成長+2 だけ等) には単位+1 を当てる = 両モードが必ず1段上がる
+  if (tier === 'amount' && def.modes !== undefined) {
+    def = {
+      ...def,
+      modes: def.modes.map((m) =>
+        m.effects.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)
+          ? m
+          : { ...m, effects: m.effects.map(boostUnit) },
+      ),
+    }
+  }
   // 正味エナジー増の規約 (確定済みルール表「正味エナジー増」) を強化後の派生にも守らせる
   // (2026-08-31 青Opusラン発見: 水鏡の書庫+ = 5ドロー+一時マナ2 = 正味0マナの補充札が
   // 非消滅で生成され「毎ターン実質タダで5ドロー」の壊れ性能だった)。

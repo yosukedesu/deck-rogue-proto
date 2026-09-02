@@ -2738,7 +2738,7 @@
     "archetype": "hexer",
     "flavor": "従者の祈りで儀式を進める。祈り手を失えば、祈りは血に変わる——本気になる。",
     "maxHp": 85,
-    "mournStrength": 1,
+    "mournStrength": 2,
     "moves": [
       {
         "id": "orb_frail",
