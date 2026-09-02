@@ -83,15 +83,14 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('部屋タイプの員数: 工房=幕1は1個・ショップは総ノードの5%・?は18〜26%・エリートちょうど4', () => {
+  it('部屋タイプの員数: 工房=幕1は1個・ショップは固定3・?は18〜26%・エリートちょうど4', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)
       const all = map.flat()
       const total = all.length
-      const expected5 = Math.round(total * 0.05)
       // 工房: 幕1 (mapFor の既定) はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」)
       expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(1)
-      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(expected5)
+      expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(3) // 固定3/幕 (2026-09-02 StS2式)
       expect(all.filter((n) => n.type === 'elite'), `seed${seed}`).toHaveLength(4)
       // ?は本家の22%を員数式にしたもの (自由ノードにだけ配るので実測は21.7%)
       const eventRatio = all.filter((n) => n.type === 'event').length / total
@@ -283,7 +282,7 @@ describe('マップ生成の構造', () => {
       const [m] = generateMap(createRng(seed), 1, false)
       const all = m.flat()
       expect(all.filter((n) => n.type === 'workshop')).toHaveLength(0)
-      expect(all.filter((n) => n.type === 'shop')).toHaveLength(Math.round(all.length * 0.05))
+      expect(all.filter((n) => n.type === 'shop')).toHaveLength(3) // 固定3/幕 (2026-09-02 StS2式))
       // ?は色で非対称にならない (旧実装は緑ランだけ?が1個に縮退していた)
       const ratio = all.filter((n) => n.type === 'event').length / all.length
       expect(ratio, `seed${seed}`).toBeGreaterThanOrEqual(0.18)
@@ -390,5 +389,41 @@ describe('StS2式の抽選改善 (2026-09-02 全体改善)', () => {
     }
   })
 })
+
+describe('経済・マップの裁定 (2026-09-02 残件議論)', () => {
+  it('ショップは固定3/幕で、行0のどの開始ノードからもショップを踏める経路が存在する', () => {
+    for (let act = 1; act <= 3; act++) {
+      for (const seed of [8, 18, 28, 38, 48]) {
+        const [m] = generateMap(createRng(seed), act)
+        const shops = m.flat().filter((n) => n.type === 'shop').length
+        expect(shops, `act${act} seed${seed}`).toBe(3)
+        // 到達保証: 各開始ノードから前向きに辿ってショップに届くか
+        for (let c = 0; c < m[0].length; c++) {
+          let frontier = new Set([c])
+          let found = false
+          for (let r = 0; r < m.length - 1 && !found; r++) {
+            const next = new Set<number>()
+            for (const i of frontier) {
+              if (m[r][i].type === 'shop') found = true
+              for (const to of m[r][i].next) next.add(to)
+            }
+            frontier = next
+          }
+          expect(found, `act${act} seed${seed} start${c} からショップに届かない`).toBe(true)
+        }
+      }
+    }
+  })
+
+  it('幕1のエリートは行4以降 (幕2/3は行2以降)', () => {
+    for (const seed of [8, 18, 28, 38]) {
+      const [m1] = generateMap(createRng(seed), 1)
+      m1.forEach((row, r) => row.forEach((n) => { if (n.type === 'elite') expect(r).toBeGreaterThanOrEqual(4) }))
+      const [m2] = generateMap(createRng(seed), 2)
+      m2.forEach((row, r) => row.forEach((n) => { if (n.type === 'elite') expect(r).toBeGreaterThanOrEqual(2) }))
+    }
+  })
+})
+
 
 

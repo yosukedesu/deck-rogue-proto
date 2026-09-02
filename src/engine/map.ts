@@ -117,8 +117,12 @@ const CAMPFIRE_MIN_ROW = 5
 const CAMPFIRE_PATH_MAX = 4
 /** エリートだけは員数固定。重み8%だと幕3個=1パス1.31体でレリック供給が-28%になるため */
 const ELITE_COUNT = 4
+/** ショップは固定3/幕 (2026-09-02 StS2 NumOfShops=3 準拠。ユーザー裁定) */
+const SHOP_COUNT = 3
 /** エリートを置ける最小行。本家は floor1〜5 禁止だが、序盤のレリック供給を守るため行2から */
 const ELITE_MIN_ROW = 2
+/** 幕別のエリート下限行 (2026-09-02 ユーザー裁定): 幕1は行4 = スターターデッキが立つ前の事故待ち配置を避ける。幕2/3はWeak帯2行の直後=行2 */
+const ELITE_MIN_ROW_BY_ACT: readonly number[] = [4, 2, 2]
 /**
  * 「エリートを狙うパス」で踏める最低数 (2026-08-31 パスウォーク化に伴う保証)。
  * 広い盤面ではエリート4個が散り、実測で中央値2 (最低1) しか1本のパスで拾えなくなった
@@ -332,7 +336,7 @@ export function generateMap(
       // 工房: 幕1はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」= 供給集中を
       // 避けつつ合成の楽しみを前倒し)。幕2/3は重み5%。allowWorkshop=false は全面禁止 (テスト用)
       ['workshop', !allowWorkshop ? 0 : act === 1 ? 1 : Math.round(total * ROOM_WEIGHTS.workshop)],
-      ['shop', Math.round(total * ROOM_WEIGHTS.shop)],
+      ['shop', SHOP_COUNT], // 固定3/幕 (2026-09-02 StS2式。重み5%は総ノード数で3〜4に揺れ、ゴールドシンク量がシード次第だった)
       ['event', Math.round(total * ROOM_WEIGHTS.event)],
     ]
     // 型グリッド: 文字列キーのMapだと床ガードのDP (数千回) が文字列連結で律速する。
@@ -356,7 +360,7 @@ export function generateMap(
       for (let c = 0; c < widths[r]; c++) freeNodes.push([r, c])
     }
     const assignable = (r: number, c: number, t: MapNodeType): boolean => {
-      if (t === 'elite' && r < ELITE_MIN_ROW) return false
+      if (t === 'elite' && r < (ELITE_MIN_ROW_BY_ACT[act - 1] ?? ELITE_MIN_ROW)) return false
       if (t === 'campfire' && r < CAMPFIRE_MIN_ROW) return false // 本家「6階より下に休憩なし」
       // ボス前3行に散布焚き火を置かない (2026-09-02 本家StS2「最終3行以内にRestSiteなし」。
       // ボス前の全焚き火行と合わせ「ボス直前に休憩2連」経路を封じる = HP経済の絞りと同方向)
@@ -486,6 +490,21 @@ export function generateMap(
       if (placementFailed) break
     }
     if (placementFailed) continue
+    // 3c. ショップ到達保証 (2026-09-02 ユーザー裁定「固定3+到達保証」): 行0のどの開始ノードからも
+    // ショップを1回踏める経路が存在する = 「最初の1手でショップの可能性が消える」事故を封じる
+    // (2026-08-28 到達事故・幕2継続ランの557G死蔵の機械封じ)。満たさなければ配置ごとやり直し
+    {
+      const F = typeMaxDP(true, 'shop')
+      const B = typeMaxDP(false, 'shop')
+      let ok = true
+      for (let c = 0; c < widths[0]; c++) {
+        if (F[0][c] + B[0][c] < 1) {
+          ok = false
+          break
+        }
+      }
+      if (!ok) continue
+    }
 
     // 5. ノードの実体化 (直前2行と同じ敵は避ける)。?の中身は持たせない (入室時に決まる)
     const recentEnemies: string[][] = []
