@@ -971,7 +971,7 @@
     "xCost": true,
     "type": "physical",
     "color": "green",
-    "rarity": "common",
+    "rarity": "uncommon",
     "axis": [
       "ramp"
     ],

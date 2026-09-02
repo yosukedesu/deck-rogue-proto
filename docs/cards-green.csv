@@ -52,7 +52,7 @@ green_perm_tree_pulse,大樹の脈,レア,2,置物,,[onTurnStart]discountNext1,�
 green_canopy_shade,木陰の守り,コモン,1,呪文,,gainBlockPerEnergyMax2,,,8,,
 green_horn_stance,荒角の構え,コモン,1,物理,,gainBlock6 addMomentum3,,10.5,8,131,
 green_x_stampede,大角の暴走,アンコモン,X,物理,,dealDamage6(貫通),Xコスト,22.5,20,113,
-green_x_vine_flurry,蔦の連撃,コモン,X,物理,,dealDamage7,Xコスト,21.0,20,105,
+green_x_vine_flurry,蔦の連撃,アンコモン,X,物理,,dealDamage7,Xコスト,21.0,20,105,
 green_x_bark_armor,樹皮の重鎧,アンコモン,X,呪文,,gainBlock6,Xコスト,18.0,20,90,
 green_x_sylvan_tempest,森羅の大嵐,レア,X,呪文,,dealDamage5@all,Xコスト,30.0,20,150,
 green_mode_verdict,森の裁定,コモン,2,物理,,『牙』dealDamage14 / 『殻』gainBlock14,,14.0,14,100,
