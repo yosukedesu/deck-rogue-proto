@@ -21,6 +21,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
+import { canUpgradeCard } from '../engine/upgrade.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
 function cname(cardId: string): string {
@@ -40,7 +41,7 @@ import {
   setBranchFlipRisks,
   windowFromPending,
 } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { worstIncomingFrom, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -291,12 +292,20 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`亡骸プレイ可(消滅置き場): ${necroList.map((c) => `[${c.uid}] ${c.def.name}(${c.def.necroCost}E)`).join(' / ')} ※{"type":"PlayNecro","cardUid":"..."} 一度きり・ゲームから消える`)
   }
   // 引導 (exhaustFromDeckChoose): 手札に選択消滅札がある時だけ候補を出す。山札は名前順=引き順は伏せたまま
-  if (p.hand.some((c) => c.def.effects.some((e) => e.effect === 'exhaustFromDeckChoose'))) {
-    const draw = [...p.drawPile]
-      .sort((a, b) => a.def.name.localeCompare(b.def.name, 'ja'))
-      .map((c) => `[${c.uid}]${c.def.name}(山)`)
-    const disc = p.discardPile.map((c) => `[${c.uid}]${c.def.name}(捨)`)
-    L.push(`引導の選択候補(deckUids): ${[...draw, ...disc].join(' ') || 'なし'} ※山札は名前順表示`)
+  const hasFx = (k: string) => p.hand.some((c) => c.def.effects.some((e) => e.effect === k))
+  const drawList = () =>
+    [...p.drawPile].sort((a, b) => a.def.name.localeCompare(b.def.name, 'ja')).map((c) => `[${c.uid}]${c.def.name}(山)`)
+  const discList = () => p.discardPile.map((c) => `[${c.uid}]${c.def.name}(捨)`)
+  if (hasFx('exhaustFromDeckChoose')) {
+    L.push(`引導の選択候補(deckUids): ${[...drawList(), ...discList()].join(' ') || 'なし'} ※山札は名前順表示`)
+  }
+  // 緑のカード操作 (2026-09-02): 回収=捨て札から / サーチ=山札から / 手札で鍛える=自身以外の鍛えられる手札
+  if (hasFx('retrieveFromDiscard')) L.push(`回収の選択候補(deckUids・捨て札): ${discList().join(' ') || 'なし'}`)
+  if (hasFx('searchDeck')) L.push(`サーチの選択候補(deckUids・山札): ${drawList().join(' ') || 'なし'} ※名前順表示`)
+  if (hasFx('upgradeInHand')) {
+    const src = p.hand.filter((c) => c.def.effects.some((e) => e.effect === 'upgradeInHand')).map((c) => c.uid)
+    const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeCard(c)).map((c) => `[${c.uid}]${c.def.name}`)
+    L.push(`手札で鍛える候補(handUids): ${cands.join(' ') || 'なし(省略可)'}`)
   }
   if (p.setCards.length > 0 || p.setSlots > 1) {
     L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
@@ -360,6 +369,12 @@ function renderBattle(s: GameState, logFrom: number): string {
         c.def.effects.some((e) => e.effect === 'exhaustFromDeckChoose') &&
         p.drawPile.length + p.discardPile.length > 0
           ? '要deckUids(下の選択候補から)'
+          : '',
+        c.def.effects.some((e) => e.effect === 'retrieveFromDiscard') && p.discardPile.length > 0 ? '要deckUids(捨て札から)' : '',
+        c.def.effects.some((e) => e.effect === 'searchDeck') && p.drawPile.length > 0 ? '要deckUids(山札から)' : '',
+        c.def.effects.some((e) => e.effect === 'upgradeInHand') &&
+        p.hand.some((h) => h.uid !== c.uid && canUpgradeCard(h))
+          ? '要handUids(下の候補から)'
           : '',
         canSet
           ? '伏せ可'
@@ -619,6 +634,23 @@ if (mode === 'new-run') {
   const sf: SaveFile = { kind: 'run', run, logIndex: 0, journal }
   save(file, sf)
   console.log(renderRun(run, 0))
+} else if (mode === 'new-checkpoint') {
+  // チェックポイント開始 (2026-09-02): 幕2/3から代表デッキ+レリックで開始。UIの🚩と同じ createDebugCheckpointRun。
+  // 使い方: new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds(カンマ区切り)]
+  const [leaderId, seed, file, act, deckId, hpRatio, gold, difficulty, relicCsv] = args
+  const checkpoint = {
+    act: Number(act),
+    deckId,
+    ...(relicCsv ? { relicIds: relicCsv.split(',').filter(Boolean) } : {}),
+    ...(hpRatio ? { hpRatio: Number(hpRatio) } : {}),
+    ...(gold ? { gold: Number(gold) } : {}),
+    ...(difficulty ? { difficulty: Number(difficulty) } : {}),
+  }
+  const run = createDebugCheckpointRun(Number(seed), 'set-confirm', leaderId, checkpoint)
+  const journal: RunJournal = { origin: { kind: 'checkpoint', seed: Number(seed), leaderId, checkpoint }, commands: [] }
+  const sf: SaveFile = { kind: 'run', run, logIndex: 0, journal }
+  save(file, sf)
+  console.log(renderRun(run, 0))
 } else if (mode === 'new-battle') {
   const [deckId, enemyId, seed, file] = args
   let s = createInitialState(Number(seed), 'set-confirm')
@@ -695,5 +727,5 @@ if (mode === 'new-run') {
       : renderBattle(sf.battle!, tail(sf.battle)),
   )
 } else {
-  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
+  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
 }

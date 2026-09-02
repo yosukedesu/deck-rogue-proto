@@ -2100,5 +2100,76 @@
         "count": 2
       }
     ]
+  },
+  {
+    "id": "run_xramp_check",
+    "name": "X多段×ランプ (検証用)",
+    "description": "人間ラン#2 (2026-09-02 seed1620409730) の完成デッキ相当。幕3チェックポイント検証用 (工房産の茨の砦・大牙の乱撃・真・防御は素材で代替)",
+    "cards": [
+      {
+        "cardId": "green_x_vine_flurry",
+        "count": 4
+      },
+      {
+        "cardId": "green_x_sylvan_tempest",
+        "count": 1
+      },
+      {
+        "cardId": "green_triple_horn",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_deep_roots",
+        "count": 2
+      },
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sunlight",
+        "count": 1
+      },
+      {
+        "cardId": "green_horn_stance",
+        "count": 2
+      },
+      {
+        "cardId": "green_mode_crossroads",
+        "count": 1
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 1
+      },
+      {
+        "cardId": "green_flash_insight",
+        "count": 2
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_vine_wedge",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      }
+    ]
   }
 ]
