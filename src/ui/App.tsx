@@ -66,7 +66,7 @@ import {
 import { usableSetCards, damageBreakdown, BLAZE_THRESHOLD, cardNeedsTarget, playerCanSet, effectiveIntent, setBranchFlipRisks, windowFromPending, effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -560,7 +560,8 @@ function conditionalIntentText(s: GameState, i: number): string {
   if (intentText({ ...intent.alt }) === baseOnly) {
     return `${baseOnly}（伏せると実値が${intent.alt.actual > intent.actual ? '上がる' : '下がる'}）`
   }
-  const cond = intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
+  const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
+  const cond = intent.conditionalOn === 'set' ? `伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
   return `【${cond}】${intentText({ ...intent.alt })}${isAlt ? '◀今これ' : ''} ／【なし】${intentText({ ...intent, conditionalOn: undefined, alt: undefined })}${isAlt ? '' : '◀今これ'}`

@@ -35,7 +35,7 @@ function cname(cardId: string): string {
 }
 import { usableSetCards, cardNeedsTarget, effectiveCost, playerCanSet, effectiveIntent, isPlayableFromHand, setBranchFlipRisks, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
-import { worstIncomingFrom, battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
@@ -74,7 +74,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
     dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
     gainSetSlot: `伏せ枠+${a}(この戦闘中)`, retrieveFromDiscard: `捨て札から${a}枚を選んで手札へ(要deckUids)`, searchDeck: `山札から${a}枚を選んで手札へ(要deckUids)`,
-    addCopyToDiscard: `このカードのコピー${a}枚を捨て札へ`, growSelf: `プレイするたび与ダメ+${a}(この戦闘中)`, upgradeInHand: `手札の${a}枚をこの戦闘中鍛える(要handUids)`,
+    addCopyToDiscard: `このカードのコピー${a}枚を捨て札へ`, growSelf: `プレイするたび、この札自身の与ダメ+${a}(この戦闘中。他の札には乗らない)`, upgradeInHand: `手札の${a}枚をこの戦闘中鍛える(要handUids)`,
     exhaustFromDeck: `山札の上${a}枚を消滅`, exhaustFromDeckChoose: `山札か捨て札から好きな${a}枚を選んで消滅(亡骸は発火。要deckUids)`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     recycleExhaust: `消滅置き場を全て山札に還して混ぜ、還した枚数×${a}ダメ(刻・消滅数参照は0に戻る)`, dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerHeal: `この戦闘で回復した回数×${a}ダメ(過剰回復も数える)`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
@@ -170,7 +170,8 @@ function intentLine(s: GameState, i: number): string {
     return `${branchText(e.intent)}(伏せると実値が${dir})`
   }
   if (e.intent.conditionalOn && e.intent.alt) {
-    const cond = e.intent.conditionalOn === 'set' ? '伏せ札あり' : '従者あり'
+    const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
+    const cond = e.intent.conditionalOn === 'set' ? `伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
     const now = effectiveIntent(s, i)!
     // 破壊分岐は見切り (setFresh) を無視して発動する既存則。汎用の「伏せ直せば変わる」を
     // 破壊分岐に出すと嘘になる (2026-08-31 HP経済ラン指摘①: 伏せ場の「敵は反応しない」と矛盾表示)

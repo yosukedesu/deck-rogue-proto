@@ -1077,7 +1077,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     case 'StartRun':
       return createRun(command.seed, run.mode, run.leaderId)
     case 'Combat': {
-      if (run.phase !== 'combat' || run.combat === null) throw new Error('戦闘中ではない')
+      if (run.phase !== 'combat' || run.combat === null) throw new Error('戦闘中ではない（直前の戦闘は決着済み＝残りの手札は打てない。次はランのコマンド）')
       if (command.command.type === 'StartCombat') throw new Error('ラン中の戦闘開始はランが管理する')
       const combat = applyCommand(run.combat, command.command)
       if (combat.phase === 'lost') return { ...run, combat, hp: 0, phase: 'lost' }

@@ -1,8 +1,8 @@
 // 撃破サマリー (2026-08-29 面白さ5への処方③: ピーク体験) と ボスの第2形態のテスト。
 // 確定済みルール表「敵フェーズ変化」(ボス3体への適用) を固定する。
 import { describe, expect, it } from 'vitest'
-import { battleSummary, cardCostLabel, summaryLine, xHitsSuffix } from './summary.ts'
-import { allCards, getCardDef, getEnemyDef } from './content.ts'
+import { battleSummary, cardCostLabel, setBranchNote, summaryLine, xHitsSuffix } from './summary.ts'
+import { allCards, getCardDef, getEnemyDef, allEnemies } from './content.ts'
 import { createRun } from './run.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
@@ -30,7 +30,7 @@ describe('撃破サマリー (battleSummary)', () => {
     expect(s.perfectBlocks).toBe(1)
     expect(s.negates).toBe(1)
     expect(summaryLine(s)).toContain('読み勝ち1回')
-    expect(summaryLine(s)).toContain('完全に凌いだ1回')
+    expect(summaryLine(s)).toContain('敵の攻撃1回を完全に凌いだ')
   })
 })
 
@@ -115,5 +115,19 @@ describe('撃破サマリーの被ダメ集計 (2026-08-30 計測ランで発覚
       { type: 'ThornsReflected', enemyIndex: 0, amount: 2, hpLoss: 0 },
     ]
     expect(battleSummary(log).hpLost).toBe(0)
+  })
+})
+
+describe('setBranchNote: 伏せ分岐の型の注記 (2026-09-03 Opusラン F 指摘)', () => {
+  it('固定ローテ+重み抽選の反応テーブルを持つ敵 (探り屋) にだけ「順番を崩す」が付く', () => {
+    expect(setBranchNote(getEnemyDef('enemy_probe'))).toContain('順番を崩す')
+    const noted = allEnemies.filter((d) => setBranchNote(d) !== null).map((d) => d.id)
+    expect(noted).toContain('enemy_probe')
+    // 判定は「sequence あり × movesVsSet 2件以上」だけで決まる (setAlt 型・単一置換の敵は対象外)
+    for (const d of allEnemies) {
+      const expected = (d.sequence?.length ?? 0) > 0 && (d.movesVsSet?.length ?? 0) >= 2
+      expect(setBranchNote(d) !== null, d.id).toBe(expected)
+    }
+    expect(setBranchNote({ ...getEnemyDef('enemy_probe'), movesVsSet: undefined })).toBeNull()
   })
 })

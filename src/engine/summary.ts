@@ -2,7 +2,7 @@
 // eventLog の純関数集計なので engine に置く (UI/CLI が共用。DOM依存なし)。
 // 「俺の戦いだった」を1行で見せる: 最大ターン火力・読み勝ち・完全に凌いだ回数。
 
-import type { GameEvent } from './types.ts'
+import type { GameEvent, EnemyDef } from './types.ts'
 
 export interface BattleSummary {
   /** かかったターン数 */
@@ -80,7 +80,7 @@ export function summaryLine(s: BattleSummary): string {
     `総与ダメ${s.totalDealt}${s.bestTurnDealt > 0 ? `（最大ターン${s.bestTurnDealt}）` : ''}`,
     `被ダメ${s.hpLost}`,
     s.reactionsFired > 0 ? `読み勝ち${s.reactionsFired}回` : '',
-    s.perfectBlocks > 0 ? `完全に凌いだ${s.perfectBlocks}回` : '',
+    s.perfectBlocks > 0 ? `敵の攻撃${s.perfectBlocks}回を完全に凌いだ` : '',
     s.negates > 0 ? `打ち消し${s.negates}回` : '',
   ]
   return parts.filter(Boolean).join(' / ')
@@ -164,4 +164,16 @@ export function turnsUntilHatch(s: GameState, enemyIndex: number): number | null
     if (def.moves.find((m) => m.id === moveId)?.kind === 'hatch') return d + 1
   }
   return null
+}
+
+/**
+ * 伏せ分岐の「型」の注記 (2026-09-03 Opusラン F 指摘: 探り屋の分岐がターンごとに向きが反転して見え、
+ * 「伏せると殴られる敵」と1回で誤学習する)。反応テーブル (movesVsSet) が重み抽選で、素の行動が固定ローテの敵は
+ * 「伏せを見ると順番を崩す＝どちらが出るかは毎ターン変わる」を予告に添える。
+ * setAlt (行動単位の分岐) の敵は向きが固定なので注記しない。表示専用の純関数 (CLI/UI共用)
+ */
+export function setBranchNote(def: EnemyDef): string | null {
+  if (!def.sequence || def.sequence.length === 0) return null
+  if (!def.movesVsSet || def.movesVsSet.length < 2) return null
+  return '順番を崩す=向きは毎ターン変わる'
 }
