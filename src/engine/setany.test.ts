@@ -57,6 +57,7 @@ describe('攻撃札の伏せ: 1Eで伏せ、被攻撃後に印字コストを払
     expect(s.phase).toBe('player-turn') // 窓は開かず敵フェーズが完走
     expect(s.player.setCards).toHaveLength(1) // 温存されたまま
     expect(types(s.eventLog)).not.toContain('ReactionTriggered')
+    expect(types(s.eventLog)).toContain('ReactionUnaffordable') // 理由がログに残る
   })
   it('通常札の伏せ発動は onReactionFired を誘発しない (狩人の眼光の換金は専用リアクションの特権)', () => {
     let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 24), ['green_perm_hunters_gaze', 'green_strike']))

@@ -188,7 +188,7 @@ function intentLine(s: GameState, i: number): string {
   const it = e.intent
   const hits =
     it.mirrorHits === true
-      ? `×手数(あなたが今ターンプレイした枚数ぶん。現在${Math.max(1, s.player.cardsPlayedThisTurn)}${s.player.cardsPlayedThisTurn === 0 ? '=最低値' : ''})`
+      ? `×手数(あなたが今ターンプレイした枚数+伏せた枚数ぶん。現在${Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0))}${s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0) === 0 ? '=最低値' : ''})`
       : (it.hits ?? 1) > 1
         ? `×${it.hits}回`
         : ''

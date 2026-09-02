@@ -508,6 +508,13 @@ export function usableSetCards(
   return state.player.hp <= 0 ? matched.filter((c) => canSaveFromLethal(c, state)) : matched
 }
 
+/** 窓に合致するが発動コストを払えない伏せ札 (全カード伏せ可の通常札)。窓が開かない理由の可視化用 */
+export function unaffordableSetCards(state: GameState, win: ReactionWindow): readonly CardInstance[] {
+  return state.player.setCards.filter(
+    (c) => reactionMatches(state, c, win) && setFireCost(c) > state.player.energy,
+  )
+}
+
 /** 現在の中断状態 (pendingWindow) から誘発窓を復元する */
 // 威嚇 (延焼による攻撃弱体) は 2026-08-25 に撤去: 延焼は純DoTに戻し、赤の受けは憤怒 (被弾の換金) が担う
 /**

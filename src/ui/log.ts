@@ -141,6 +141,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardUpgradedInHand': return { text: `🔨 ${cardName(e.cardId)}を鍛えた（この戦闘中）`, cls: 'log-good' }
     case 'ReactionTriggered': return { text: `リアクション発動: ${cardName(e.cardId)}`, cls: 'log-good' }
     case 'ReactionWhiffed': return { text: `空振り: ${cardName(e.cardId)}`, cls: 'log-line' }
+    case 'ReactionUnaffordable': return { text: `⚠ 伏せ札「${cardName(e.cardId)}」は発動に${e.cost}E必要だが残り${e.energy}E＝窓は開かず温存`, cls: 'log-bad' }
     case 'ReactionHeld':
       return {
         text: `温存: ${e.candidateIds.map(cardName).join('、')}（敵${e.enemyIndex + 1}の${KIND_LABEL[e.kind] ?? e.kind} ${e.stage}窓 / 実値${e.value}）`,

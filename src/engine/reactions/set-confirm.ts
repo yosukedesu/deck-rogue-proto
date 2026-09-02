@@ -3,7 +3,18 @@
 // pre窓 (行動確定時・実行前: 打ち消し・軽減) と post窓 (行動解決後: 返し系) の両方で確認が入る。
 // 温存した伏せは場に残り続ける → 伏せ警戒型へのブラフが意図的に打てる。
 
-import { effectiveIntent, usableSetCards, windowFromPending } from '../effects.ts'
+import { effectiveIntent, unaffordableSetCards, usableSetCards, windowFromPending } from '../effects.ts'
+import { setFireCost } from '../setany.ts'
+import type { ReactionWindow } from '../effects.ts'
+
+/** 全カード伏せ可 (実験): 合致したのにエナジー不足で窓が開かなかった伏せ札を記録する (Opusラン E: 何も出ず事故と区別できない) */
+function noteUnaffordable(state: GameState, win: ReactionWindow): GameState {
+  let s = state
+  for (const c of unaffordableSetCards(state, win)) {
+    s = emit(s, { type: 'ReactionUnaffordable', cardId: c.def.id, cost: setFireCost(c), energy: state.player.energy })
+  }
+  return s
+}
 import { emit } from '../events.ts'
 import type { Command, GameEvent, GameState, ReactionSystem } from '../types.ts'
 import { emitWhiffForRemainingSet, fireSetCard, setCard } from './set-base.ts'
@@ -74,7 +85,7 @@ export const setConfirmSystem: ReactionSystem = {
             pendingWindow: { enemyIndex: event.enemyIndex, stage: 'pre' },
           }
         }
-        return state
+        return noteUnaffordable(state, win)
       }
       case 'EnemyActionResolved': {
         if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
@@ -86,7 +97,7 @@ export const setConfirmSystem: ReactionSystem = {
             pendingWindow: { enemyIndex: event.enemyIndex, stage: 'post' },
           }
         }
-        return state
+        return noteUnaffordable(state, win)
       }
       case 'EnemyPhaseEnded':
         // 温存も「そのターン発動しなかった伏せ」として空振り計上する (統計の定義を3方式で揃える)

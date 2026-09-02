@@ -454,6 +454,7 @@ export type GameEvent =
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
+  | { readonly type: 'ReactionUnaffordable'; readonly cardId: string; readonly cost: number; readonly energy: number } // 全カード伏せ可: 合致したがエナジー不足で窓が開かなかった
   /**
    * set-confirm で「温存」を選んだ記録 (2026-08-26)。
    * 発動/温存の判断こそがこの方式の主題なのに、温存だけが一切ログに残っていなかった。
