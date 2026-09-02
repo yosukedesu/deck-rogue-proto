@@ -332,6 +332,7 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
       .map(getRelicDef)
       .reduce((sum, r) => sum + (r.combatRule?.setDamageReduction ?? 0), 0),
     revealIntents: run.debugRevealIntents === true || run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
+    revealOnSet: run.relics.some((id) => getRelicDef(id).combatRule?.revealOnSet === true),
   })
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
 }

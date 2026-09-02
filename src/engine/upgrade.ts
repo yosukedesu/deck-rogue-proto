@@ -239,3 +239,13 @@ export function upgradeCard(card: CardInstance): CardInstance {
   }
   return { ...card, def }
 }
+
+/**
+ * 手札で鍛える (研ぎ澄まし 2026-09-02 ユーザー裁定): レアと工房産 (fused_/fusion_) は対象外。
+ * Opusラン A で「森の導き(サーチ)+研ぎ澄まし(一時強化)+工房の一点物」が1枚コンボに収束したため、一点物への一時強化を切る
+ */
+export function canUpgradeInHand(card: CardInstance): boolean {
+  if (card.def.rarity === 'rare') return false
+  if (card.def.id.startsWith('fused_') || card.def.id.startsWith('fusion_')) return false
+  return canUpgradeCard(card)
+}

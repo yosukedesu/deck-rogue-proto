@@ -136,7 +136,7 @@ export function worstIncomingFrom(s: GameState, enemyIndex: number): number {
   if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) {
     perHit = Math.floor(perHit * (1 + 0.1 * (s.player.playsThisTurn ?? 0)))
   }
-  const hits = it.mirrorHits === true ? Math.max(1, s.player.cardsPlayedThisTurn) : (it.hits ?? 1)
+  const hits = it.mirrorHits === true ? Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0)) : (it.hits ?? 1)
   return perHit * hits
 }
 

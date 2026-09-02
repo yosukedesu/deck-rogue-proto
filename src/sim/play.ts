@@ -21,6 +21,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
+import { canUpgradeInHand } from '../engine/upgrade.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
 function cname(cardId: string): string {
@@ -111,6 +112,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
 function cardLine(def: CardDef): string {
   const extras = [
     def.exhaust ? '消滅' : '',
+    def.retain ? '保持(全捨てで手札に残る)' : '',
     def.discardCost ? `捨てコスト${def.discardCost}` : '',
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
@@ -304,7 +306,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   if (hasFx('searchDeck')) L.push(`サーチの選択候補(deckUids・山札): ${drawList().join(' ') || 'なし'} ※名前順表示`)
   if (hasFx('upgradeInHand')) {
     const src = p.hand.filter((c) => c.def.effects.some((e) => e.effect === 'upgradeInHand')).map((c) => c.uid)
-    const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeCard(c)).map((c) => `[${c.uid}]${c.def.name}`)
+    const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeInHand(c)).map((c) => `[${c.uid}]${c.def.name}`)
     L.push(`手札で鍛える候補(handUids): ${cands.join(' ') || 'なし(省略可)'}`)
   }
   if (p.setCards.length > 0 || p.setSlots > 1) {
@@ -373,7 +375,7 @@ function renderBattle(s: GameState, logFrom: number): string {
         c.def.effects.some((e) => e.effect === 'retrieveFromDiscard') && p.discardPile.length > 0 ? '要deckUids(捨て札から)' : '',
         c.def.effects.some((e) => e.effect === 'searchDeck') && p.drawPile.length > 0 ? '要deckUids(山札から)' : '',
         c.def.effects.some((e) => e.effect === 'upgradeInHand') &&
-        p.hand.some((h) => h.uid !== c.uid && canUpgradeCard(h))
+        p.hand.some((h) => h.uid !== c.uid && canUpgradeInHand(h))
           ? '要handUids(下の候補から)'
           : '',
         canSet

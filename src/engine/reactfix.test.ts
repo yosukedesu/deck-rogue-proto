@@ -201,7 +201,7 @@ describe('回収ターンの伏せ直し0E (2026-08-30 死に機構への処方)
     s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_reaction_thorns' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     expect(s.player.energy).toBe(e0 - 1) // 回収の1Eだけ。伏せ直しは無料
-    expect(s.player.setCards[0].setFresh).toBe(true) // 伏せ直しは「新しい札」= 敵は反応する
+    expect(s.player.setCards[0].setFresh).toBe(false) // 2026-09-02 見切りの拡張: 伏せ直しは新鮮ではない (敵は反応しない)。0E伏せ直し自体は不変 // 伏せ直しは「新しい札」= 敵は反応する
   })
 })
 

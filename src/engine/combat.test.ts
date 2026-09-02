@@ -48,10 +48,14 @@ describe('ターン構造 (StS準拠)', () => {
     const handUids = s1.player.hand.map((c) => c.uid)
     const s2 = applyCommand(s1, { type: 'EndTurn' })
     expect(s2.turn).toBe(2)
-    expect(s2.player.hand).toHaveLength(5)
-    // 前ターンの手札は捨て札にある
+    // 保持 (retain 2026-09-02) の札だけは全捨てを生き残る (スターターに巨獣の踏みつけ・大樹の怒りがある)
+    const retained = s2.player.hand.filter((c) => c.def.retain === true).length
+    expect(s2.player.hand).toHaveLength(5 + retained)
+    // 前ターンの手札は捨て札にある (保持は手札に残る)
     for (const uid of handUids) {
-      expect(s2.player.discardPile.some((c) => c.uid === uid)).toBe(true)
+      const card = s1.player.hand.find((c) => c.uid === uid)
+      if (card?.def.retain === true) expect(s2.player.hand.some((c) => c.uid === uid)).toBe(true)
+      else expect(s2.player.discardPile.some((c) => c.uid === uid)).toBe(true)
     }
   })
 
@@ -82,7 +86,7 @@ describe('ターン構造 (StS準拠)', () => {
     const p = s.player
     const total = p.hand.length + p.drawPile.length + p.discardPile.length + p.setCards.length
     expect(total).toBe(15)
-    expect(p.hand).toHaveLength(5)
+    expect(p.hand.filter((c) => c.def.retain !== true)).toHaveLength(5) // 保持札は上乗せで残る
   })
 })
 

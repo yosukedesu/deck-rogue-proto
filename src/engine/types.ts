@@ -84,6 +84,8 @@ export interface PlayerState extends CombatantState {
    * 焚べの嵩が鏡 (mirrorHits) に映るのは裁定済み・拘束/重りには映らない
    */
   readonly playsThisTurn?: number
+  /** このターンに伏せた枚数 (2026-09-02)。手数の鏡 (mirrorHits) は cardsPlayedThisTurn + setsThisTurn を読む = 伏せは抜け道にならない */
+  readonly setsThisTurn?: number
   /** この戦闘でプレイしたカードの累計 (ターンを跨いでリセットされない)。時喰らい型タイマーの参照値 */
   readonly cardsPlayedTotal: number
   /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
@@ -304,8 +306,10 @@ export interface GameState {
   readonly eventLog: readonly GameEvent[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional */
   readonly setDamageReduction?: number
-  /** C型レリック (蜃気楼の面): 意図の実値を常時公開。旧セーブに無いので optional */
+  /** デバッグ (2026-09-02): 意図の実値を常時公開 (計測実験)。旧セーブに無いので optional */
   readonly revealIntents?: boolean
+  /** C型レリック (蜃気楼の面 2026-09-02 作り直し): 伏せた瞬間からそのターンの実値を公開 */
+  readonly revealOnSet?: boolean
 }
 
 // ============================================================
@@ -599,7 +603,7 @@ export interface DeclarativeEffect {
     | 'dischargeAetherDraw' // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出の第二の出口)
     | 'dealDamagePerNegStrength' // 威圧の換金 (白): 対象の強化がマイナスなら その絶対値×X の追加ダメージ (断罪の槌)
     | 'gainBlockPerPermanent' // 隊列の盾 (白): 置物の数×X ブロック
-    | 'gainBlockPerEnergyMax' // 巨木の盾 (緑): エナジー上限×X ブロック (ランプ中の無防備を受けるスケーリング防御)
+    | 'gainBlockPerEnergyMax' // 木陰の守り (緑): エナジー上限×X ブロック (ランプ中の無防備を受けるスケーリング防御)
     | 'gainBlockPerExhaust' // 亡者の壁 (黒): 消滅した枚数×X ブロック (墓地型のタイマー耐性)
     | 'dischargeGrowthBlock' // 守りの刈り (緑 2026-08-31): 成長×Nブロックを得て成長を全て失う (収穫の性格付け)
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
@@ -736,6 +740,8 @@ export interface CardDef {
   readonly modes?: readonly CardMode[]
   /** 消滅: 使用後この戦闘から除外される */
   readonly exhaust?: boolean
+  /** 保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする */
+  readonly retain?: boolean
   /** 亡骸プレイ (黒 2026-08-31): 消滅置き場からNエナジーで一度だけプレイできる。プレイ後はゲームから完全に取り除かれる (刻の燃料も減る)。割引 (discountNext) の対象外 */
   readonly necroCost?: number
   /** 追加コスト: 手札を N 枚捨てる */
@@ -780,6 +786,8 @@ export interface CardInstance {
    * 鮮度を問わない = 晒し続けた札は壊されには行かれる。自ターン開始時に false へ
    */
   readonly setFresh?: boolean
+  /** この戦闘で一度伏せられた札 (2026-09-02 伏せ税の処方)。再伏せは setFresh にならない = 敵は同じ札の伏せ直しに反応しない */
+  readonly wasSet?: boolean
   /**
    * 生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。
    * 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない
@@ -1090,8 +1098,10 @@ export interface RelicDef {
   readonly combatRule?: {
     /** 伏せ札がある間、敵の攻撃実値-N (最低1クランプ。静かな鈴) */
     readonly setDamageReduction?: number
-    /** 敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。蜃気楼の面) */
+    /** 敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用) */
     readonly revealIntents?: boolean
+    /** 伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す) */
+    readonly revealOnSet?: boolean
   }
 }
 

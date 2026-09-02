@@ -210,7 +210,8 @@
         "amount": 1
       }
     ],
-    "rarity": "uncommon"
+    "rarity": "uncommon",
+    "retain": true
   },
   {
     "id": "green_finisher_stomp",
@@ -227,7 +228,8 @@
     "axis": [
       "ramp"
     ],
-    "rarity": "rare"
+    "rarity": "rare",
+    "retain": true
   },
   {
     "id": "green_reaction_thorns",
@@ -328,7 +330,8 @@
       }
     ],
     "exhaust": true,
-    "rarity": "rare"
+    "rarity": "rare",
+    "retain": true
   },
   {
     "id": "green_sig_rite_of_bloom",
@@ -352,8 +355,8 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 2
+        "effect": "addGrowth",
+        "amount": 1
       },
       {
         "trigger": "onPlay",
@@ -362,13 +365,38 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 2
+        "effect": "addGrowth",
+        "amount": 1
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
       },
       {
         "trigger": "onPlay",
@@ -389,14 +417,14 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 16,
-        "pierce": true
+        "effect": "addMomentum",
+        "amount": 3
       },
       {
         "trigger": "onPlay",
-        "effect": "addMomentum",
-        "amount": 3
+        "effect": "dealDamage",
+        "amount": 16,
+        "pierce": true
       }
     ],
     "rarity": "uncommon"
@@ -414,7 +442,8 @@
         "pierce": true
       }
     ],
-    "rarity": "uncommon"
+    "rarity": "uncommon",
+    "retain": true
   },
   {
     "id": "green_trample_charge",
@@ -424,13 +453,18 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 6
+        "effect": "addMomentum",
+        "amount": 3
       },
       {
         "trigger": "onPlay",
-        "effect": "addMomentum",
-        "amount": 3
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
       }
     ],
     "rarity": "common"
@@ -583,6 +617,11 @@
       {
         "trigger": "onPlay",
         "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
         "amount": 1
       }
     ],
@@ -763,7 +802,22 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerMomentum",
+        "effect": "addMomentum",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
         "amount": 3
       }
     ],
@@ -1298,7 +1352,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5
+        "amount": 8
       }
     ],
     "rarity": "uncommon"
@@ -1659,7 +1713,7 @@
     "name": "森の導き",
     "cost": 1,
     "type": "spell",
-    "rarity": "uncommon",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onPlay",

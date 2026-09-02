@@ -433,7 +433,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(Math.ceil(((2 * 5 + 34) * 1.25) / 5)) // 11×5 (大型バニラプレミアム+合成プレミアム後)
+    expect(dmgs[0].amount).toBe(12) // 12×5 (2026-09-02 蔦の乱舞の定義札化=成長+1×5のVPが素材側に乗った。旧11)
     expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
   })
 
@@ -517,7 +517,7 @@ describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名�
     const def = fuseCards(inst('green_sig_vine_dance', 'u1'), inst('green_sig_vine_dance', 'u2'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(5) // (10+10)×1.25/5
+    expect(dmgs[0].amount).toBe(7) // 2026-09-02 定義札化後 (成長+1×5が合算されるぶん量も伸びる。旧5=(10+10)×1.25/5)
   })
 
   it('同名リアクションも合成できる (茨の返し×2 → 返し25。トリガー・条件が同一なので安全)', () => {

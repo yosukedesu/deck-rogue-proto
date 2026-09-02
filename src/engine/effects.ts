@@ -1107,7 +1107,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return gainPlayerBlock(state, amount, enemyIndex)
     }
     case 'gainBlockPerEnergyMax': {
-      // 巨木の盾 (緑): エナジー上限×X ブロック (ランプの投資が守りにも変換される)
+      // 木陰の守り (緑): エナジー上限×X ブロック (ランプの投資が守りにも変換される)
       const amount =
         (effect.amount ?? 0) * (state.player.energyMaxAtTurnStart ?? state.player.energyMax)
       return gainPlayerBlock(state, amount, enemyIndex)

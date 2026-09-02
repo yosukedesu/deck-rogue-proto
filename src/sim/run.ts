@@ -12,7 +12,7 @@
 //   - 割り込み: set-confirm は常に「発動」、hold-manual は発動可能な先頭カードを常に発動
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
-import { canUpgradeCard } from '../engine/upgrade.ts'
+import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
 import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
@@ -330,7 +330,7 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
   let handUids: string[] | undefined
   const upgradeN = card.def.effects.filter((e) => e.effect === 'upgradeInHand').reduce((a, e) => a + (e.amount ?? 1), 0)
   if (upgradeN > 0) {
-    const cands = state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeCard(c)).sort((a, b) => b.def.cost - a.def.cost)
+    const cands = state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeInHand(c)).sort((a, b) => b.def.cost - a.def.cost)
     handUids = cands.slice(0, Math.min(upgradeN, cands.length)).map((c) => c.uid)
   }
   // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)

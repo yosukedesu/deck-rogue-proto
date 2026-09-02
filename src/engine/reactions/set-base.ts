@@ -37,12 +37,35 @@ export function setCard(state: GameState, cardUid: string): GameState {
       energy: state.player.energy - (freeReset ? 0 : setCost),
       ...(freeReset ? { freeResetUid: undefined } : {}),
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
-      setCards: [...state.player.setCards, { ...card, setFresh: true }],
+      // 見切りの拡張 (2026-09-02 伏せ税の処方): 一度伏せた札の伏せ直しは「新鮮」にならない = 敵は反応しない。
+      // 回収→0E伏せ直しで弱分岐を毎ターン固定する蓋 (道化20→6) を閉じる。発動権・破壊判定は不変
+      setCards: [...state.player.setCards, { ...card, setFresh: card.wasSet !== true, wasSet: true }],
+      setsThisTurn: (state.player.setsThisTurn ?? 0) + 1,
     },
   }
+  // 蜃気楼の面 (2026-09-02 作り直し): 伏せた瞬間からこのターンの意図の実値を公開する。
+  // 「幅を見て伏せる」前半の読みは残し、伏せた後の発動/温存だけが実値で決められる
+  const revealed: GameState = s.revealOnSet === true
+    ? {
+        ...s,
+        enemies: s.enemies.map((e) =>
+          e.intent
+            ? {
+                ...e,
+                intent: {
+                  ...e.intent,
+                  shownMin: e.intent.actual,
+                  shownMax: e.intent.actual,
+                  ...(e.intent.alt ? { alt: { ...e.intent.alt, shownMin: e.intent.alt.actual, shownMax: e.intent.alt.actual } } : {}),
+                },
+              }
+            : e,
+        ),
+      }
+    : s
   // 伏せに反応する置物 (レリック: 符師の懐=伏せるたび1ドロー)
   return runPermanentTriggers(
-    emit(s, { type: 'CardSet', cardId: card.def.id }),
+    emit(revealed, { type: 'CardSet', cardId: card.def.id }),
     'onCardSet',
     Math.max(0, s.enemies.findIndex((e) => e.hp > 0)),
   )

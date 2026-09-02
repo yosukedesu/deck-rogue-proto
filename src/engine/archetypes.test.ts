@@ -39,7 +39,7 @@ describe('シグネチャー効果', () => {
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_trample' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 16) // ブロック14を無視して素通し (踏み荒らし 3E化で16)
+    expect(s.enemies[0].hp).toBe(hpBefore - 19) // ブロック14を無視して素通し (2026-09-02 勢い+3を先出し: 16+3=19)
     expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
   })
 
@@ -72,7 +72,9 @@ describe('シグネチャー効果', () => {
     s = { ...s, player: { ...s.player, energy: 3, growth: 4 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_vine_dance' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (2 + 4) * 5)
+    // 2026-09-02 定義札化: 各ヒットの前に成長+1 → (2+5)+(2+6)+(2+7)+(2+8)+(2+9) = 45。成長は4→9
+    expect(s.enemies[0].hp).toBe(hpBefore - 45)
+    expect(s.player.growth).toBe(9)
   })
 })
 
@@ -84,10 +86,10 @@ describe('勢い (トランプル再設計)', () => {
     ])
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trample_charge' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6) // 助走自身には勢いは乗らない (効果順: ダメージ→勢い+3)
+    expect(s.enemies[0].hp).toBe(hpBefore - 10) // 2026-09-02 節の入替: 勢い+3を先出し → (2+3)×2 = 10 (自分にも乗る)
     expect(s.player.momentum).toBe(3)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - (6 + 3)) // 打撃に勢い+3が乗る
+    expect(s.enemies[0].hp).toBe(hpBefore - 10 - (6 + 3)) // 打撃に勢い+3が乗る
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.momentum).toBe(0) // ターン終了でリセット
   })

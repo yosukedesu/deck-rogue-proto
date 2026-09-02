@@ -34,14 +34,14 @@ describe('トランプルの網', () => {
     expect(s.enemies[0].block).toBe(10)
   })
 
-  it('怒涛の突き上げ: 勢い×3ダメージ (勢いは消費せず、自身にも勢いが乗る)', () => {
+  it('怒涛の突き上げ (2026-09-02 作り直し): 勢い+3を先に解決してから3ダメ×3 = 自分の勢いが3回乗る', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_surge_thrust'])
     s = { ...s, player: { ...s.player, momentum: 4 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_surge_thrust' })
-    // 基礎 = 勢い4×3 = 12、そこに勢い4の加算も乗る = 16
-    expect(s.enemies[0].hp).toBe(hpBefore - (4 * 3 + 4))
-    expect(s.player.momentum).toBe(4) // 消費しない (ターン終了で自然に消える)
+    // 勢い4+3=7 が3ヒットに乗る: (3+7)×3 = 30
+    expect(s.enemies[0].hp).toBe(hpBefore - 30)
+    expect(s.player.momentum).toBe(7)
   })
 
   it('昂ぶる角笛: 勢い+2してから2倍・消滅 (2026-08-29 検証ランで空振り腐りが出たため+2を前置)', () => {
@@ -339,6 +339,6 @@ describe('赤からの移管: 被弾の換金と粉砕', () => {
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_devour_vine' })
     expect(s.enemies[0].block).toBe(0)
-    expect(s.enemies[0].hp).toBe(hpBefore - 15) // 破壊値10 + 基礎5
+    expect(s.enemies[0].hp).toBe(hpBefore - 18 /* 2026-09-02 +5→+8 */) // 破壊値10 + 基礎5
   })
 })

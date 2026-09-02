@@ -4,7 +4,7 @@
 // state.ts が方式コマンド処理後に continueAfterWindow() で再開する。
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
-import { canUpgradeCard, upgradeCard } from './upgrade.ts'
+import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
 import { applyWakeCheck,
   cardNeedsTarget,
@@ -70,6 +70,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       momentum: 0, // 勢いは自ターン終了時リセット
       iceBlock: 0, // 氷壁は戦闘内で持ち越し
       cardsPlayedThisTurn: 0,
+      setsThisTurn: 0,
       playsThisTurn: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
@@ -118,8 +119,10 @@ export interface CombatOptions {
   readonly relicPermanents?: readonly CardInstance[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N */
   readonly setDamageReduction?: number
-  /** C型レリック (蜃気楼の面): 意図の実値を常時公開 */
+  /** デバッグ: 意図の実値を常時公開 */
   readonly revealIntents?: boolean
+  /** C型レリック (蜃気楼の面): 伏せた瞬間からそのターンの実値を公開 */
+  readonly revealOnSet?: boolean
 }
 
 /** 戦闘開始の実体: デッキシャッフル・敵配置をして第1ターンを開始する */
@@ -195,6 +198,7 @@ export function startCombatWithOptions(
     // C型レリック。revealIntents は第1ターンの意図宣言 (startPlayerTurn) より前に立てる必要がある
     ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
     ...(options.revealIntents ? { revealIntents: true } : {}),
+    ...(options.revealOnSet ? { revealOnSet: true } : {}),
   }
   state = emit(state, { type: 'CombatStarted', enemyId })
   let s = startPlayerTurn(state, 1)
@@ -520,6 +524,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       energy: state.player.energyMax,
       energyMaxAtTurnStart: state.player.energyMax,
       cardsPlayedThisTurn: 0,
+      setsThisTurn: 0,
       playsThisTurn: 0,
       freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
@@ -834,7 +839,7 @@ export function playCard(
   const upgradeN = card.def.effects
     .filter((e) => e.effect === 'upgradeInHand' && e.trigger === 'onPlay')
     .reduce((a, e) => a + (e.amount ?? 1), 0)
-  const upgradable = upgradeN > 0 ? state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeCard(c)) : []
+  const upgradable = upgradeN > 0 ? state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeInHand(c)) : []
   const upgradeUids = upgradeN > 0 ? (handUids ?? []) : []
   if (upgradeN > 0) {
     const need = Math.min(upgradeN, upgradable.length)
@@ -1601,9 +1606,10 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       // 各ヒットに脆弱を補正し、通常ブロック→氷壁の順で消費する
       // 手数の鏡 (物真似 2026-08-31): 実行時のヒット数 = このターンにプレイした枚数 (最低1)。
       // 敵フェーズ中は cardsPlayedThisTurn がまだこのターンの値を保持している
+      // 伏せも手数に数える (2026-09-02 ユーザー裁定: 「伏せ+置物で鏡を最小化」が最適解になった抜け道を閉じる)
       const hits =
         intent.mirrorHits === true
-          ? Math.max(1, state.player.cardsPlayedThisTurn)
+          ? Math.max(1, state.player.cardsPlayedThisTurn + (state.player.setsThisTurn ?? 0))
           : (intent.hits ?? 1)
       let block = state.player.block
       let iceBlock = state.player.iceBlock
@@ -1914,12 +1920,13 @@ function finishEnemyPhase(state: GameState): GameState {
     ...s,
     player: {
       ...s.player,
+      // 保持 (retain 2026-09-02): 全捨てで手札に残る
       hand: s.player.hand
-        .filter((c) => c.def.id === SCALD_DEF.id && c.scaldFresh === true)
-        .map((c) => ({ ...c, scaldFresh: false })),
+        .filter((c) => (c.def.id === SCALD_DEF.id && c.scaldFresh === true) || c.def.retain === true)
+        .map((c) => (c.scaldFresh === true ? { ...c, scaldFresh: false } : c)),
       discardPile: [
         ...s.player.discardPile,
-        ...s.player.hand.filter((c) => c.def.id !== SCALD_DEF.id),
+        ...s.player.hand.filter((c) => c.def.id !== SCALD_DEF.id && c.def.retain !== true),
       ],
     },
   }

@@ -1,6 +1,7 @@
 // ui/ は状態を読んでコマンドを投げるだけの薄い層。ゲームロジックを書かない (CLAUDE.md)。
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
 import { deckChooseKindOf } from '../engine/combat.ts'
+import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import {
@@ -374,7 +375,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'growSelf':
       return `${trigger}📈 プレイするたび、この札の与ダメージがこの戦闘中+${e.amount}`
     case 'upgradeInHand':
-      return `${trigger}🔨 手札の${e.amount ?? 1}枚をこの戦闘中鍛える（自身は選べない）`
+      return `${trigger}🔨 手札の${e.amount ?? 1}枚をこの戦闘中鍛える（自身・レア・工房産は選べない）`
     case 'gainSetSlot':
       return `${trigger}🃏 この戦闘中、伏せ枠+${e.amount ?? 1}`
     case 'dealDamagePerExhaust':
@@ -522,6 +523,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
     lines.push(...effectItems(def.effects, ctx, def.type))
   }
   if (def.exhaust) lines.push('消滅')
+  if (def.retain) lines.push('保持（ターン終了時に手札に残る）')
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
   return lines
 }
@@ -1513,7 +1515,7 @@ function BattleScreen({
     // 手札で鍛える (研ぎ澄まし 2026-09-02): 自身以外に鍛えられる手札があれば選ばせる
     if (
       card.def.effects.some((e) => e.effect === 'upgradeInHand') &&
-      player.hand.some((c) => c.uid !== cardUid && canUpgradeCard(c))
+      player.hand.some((c) => c.uid !== cardUid && canUpgradeInHand(c))
     ) {
       setPendingUpgrade({ cardUid, modeIndex })
       return
@@ -1712,7 +1714,7 @@ function BattleScreen({
                     <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
                       {enemy.confusion > 0 && enemy.intent?.kind === 'attack' ? '😵仲間に向かう: ' : ''}
                       {kw(conditionalIntentText(s, i))}
-                      {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn}枚）` : ''}
+                      {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn + (player.setsThisTurn ?? 0)}枚。伏せも数える）` : ''}
                       {worstIncomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
                         ? ' 💀致死級'
                         : null}
@@ -2133,13 +2135,13 @@ function BattleScreen({
               {player.hand
                 .filter((c) => c.uid !== activeUpgrade.cardUid)
                 .map((c) => {
-                  const ok = canUpgradeCard(c)
+                  const ok = canUpgradeInHand(c)
                   return (
                     <CardFrame
                       key={c.uid}
                       card={c}
                       dim={!ok}
-                      hint={ok ? `鍛えると→ ${upgradeCard(c).def.name}` : '鍛えられない'}
+                      hint={ok ? `鍛えると→ ${upgradeCard(c).def.name}` : c.def.rarity === 'rare' || c.def.id.startsWith('fus') ? 'レア・工房産は鍛えられない' : '鍛えられない'}
                       actions={
                         ok && (
                           <button
