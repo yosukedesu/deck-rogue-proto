@@ -388,10 +388,11 @@ describe('呪いイベント (2026-09-02 敵ギミック第1波D)', () => {
     expect(after.deck.filter((c) => c.def.id === 'status_brand')).toHaveLength(1)
   })
 
-  it('岩皮の甲虫: 低HP+開幕ブロック12+守りつつ突くローテ (粉砕・貫通・延焼の的)', () => {
+  it('岩皮の甲虫: 低HP+潜伏の殻12+守りつつ突くローテ (粉砕・貫通の的。2026-09-03 開幕ブロック→潜伏へ昇格)', () => {
     const def = getEnemyDef('enemy_rock_beetle')
     expect(def.maxHp).toBe(30)
-    expect(def.startingBlock).toBe(12)
+    expect(def.burrow?.block).toBe(12)
+    expect(def.moves.some((m) => m.id === def.burrow?.bite)).toBe(true)
     expect(def.sequence).toEqual(['horn_jab', 'harden', 'horn_jab']) // 攻撃ステップあり=膠着破り則
   })
 })

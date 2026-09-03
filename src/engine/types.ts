@@ -169,6 +169,10 @@ export interface EnemyState extends CombatantState {
   readonly moveGrowth?: Readonly<Record<string, number>>
   /** 被弾覚醒が発火済みか */
   readonly woken?: boolean
+  /** 潜伏中 (殻が残っている間 true。割れたら false) */
+  readonly burrowActive?: boolean
+  /** 殻が敵フェーズ中に割れた: 次の宣言を噛みつきに差し替える */
+  readonly biteNext?: boolean
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
@@ -412,6 +416,10 @@ export type GameEvent =
       readonly armorCut?: number
       /** ターン装甲で切り捨てられた量 (2026-09-02) */
       readonly turnArmorCut?: number
+      /** 潜伏の殻で捨てられた超過ぶん */
+      readonly burrowCut?: number
+      /** 因縁 (無形ターン) で1に固定されて消えたぶん */
+      readonly nemesisCut?: number
     }
   | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number }
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
@@ -429,6 +437,7 @@ export type GameEvent =
   | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02)
   | { readonly type: 'GuardianRedirected'; readonly fromIndex: number; readonly toIndex: number } // 庇うのリダイレクト発生 (2026-09-02 検証ラン「無言で起きる」への処方)
   | { readonly type: 'ArtifactBlocked'; readonly enemyIndex: number; readonly effect: string } // アーティファクトがデバフを弾いた (2026-09-02)
+  | { readonly type: 'BurrowBroken'; readonly enemyIndex: number } // 潜伏の殻が割れた (次の行動が噛みつきに)
   | { readonly type: 'EnemyWoken'; readonly enemyIndex: number } // 被弾覚醒 (2026-09-02) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
@@ -1045,6 +1054,17 @@ export interface EnemyDef {
    * 「寝ている間に削る (起こすリスク) か、放置して殻を積ませるか」の本物の二択
    */
   readonly wakeOnDamage?: { readonly damage: number; readonly resumeAt: number }
+  /**
+   * 潜伏 (2026-09-03 本家StS2 Burrowed): 戦闘開始時に block だけの殻を持ち、殻が尽きるまでHPにダメージが通らない
+   * (超過ぶんは捨てる。貫通は通る・粉砕は殻を割る)。殻が割れた瞬間、次の行動が bite (moves の id) に差し替わる。
+   * 通常戦の最短ターンを構造で決める器 (2T決着への処方。HPを盛らない)
+   */
+  readonly burrow?: { readonly block: number; readonly bite: string }
+  /**
+   * 因縁 (2026-09-03 本家 Nemesis): 奇数ターン (1,3,5…) は無形=1ヒットのHP損失が1に固定。偶数ターンに実体化。
+   * 延焼は通る (装甲と同じ裁定)。「殴るターン/備えるターン」のリズムを作り、T1爆発を構造的に半減する
+   */
+  readonly nemesis?: boolean
   /**
    * 常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」):
    * この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。

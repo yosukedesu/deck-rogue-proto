@@ -78,7 +78,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ActionNegated': return { text: '敵の行動は打ち消された！', cls: 'log-good' }
     case 'DamageDealt':
       return e.source === 'player'
-        ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
+        ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
         : { text: `敵の攻撃${e.amount} → HP減 ${e.hpLoss}`, cls: 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': {
@@ -100,6 +100,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'EnemyHatched': return { text: '🐣 孵化した！', cls: 'log-bad' }
     case 'GuardianRedirected': return { text: '🛡️ 庇われた！ 単体対象は護衛に向かった', cls: 'log-info' }
     case 'ArtifactBlocked': return { text: '🔮 アーティファクトがデバフを弾いた（チャージ-1）', cls: 'log-bad' }
+    case 'BurrowBroken': return { text: '🪺 潜伏の殻が割れた！ 次の行動は噛みつき', cls: 'log-bad' }
     case 'EnemyWoken': return { text: '👁️ 目を覚ました！ 眠りの前奏が打ち切られた', cls: 'log-bad' }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':

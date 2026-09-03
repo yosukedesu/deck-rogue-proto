@@ -11,7 +11,7 @@ export const ENEMY_GIMMICK_KEYS = [
   'enrage', 'enrageEveryCards', 'enrageEveryDamage', 'regen', 'regenBreak', 'burnResist',
   'thorns', 'armor', 'startingBlock', 'angerOnBlock', 'guardian', 'bondStrength',
   'opener', 'phaseAfterUses', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
-  'turnArmor', 'artifact', 'wakeOnDamage',
+  'turnArmor', 'artifact', 'wakeOnDamage', 'burrow', 'nemesis',
 ] as const
 export type EnemyGimmickKey = (typeof ENEMY_GIMMICK_KEYS)[number]
 
@@ -41,6 +41,8 @@ export const GIMMICK_KEYWORDS: Record<EnemyGimmickKey, string | null> = {
   turnArmor: 'ターン装甲',
   artifact: 'アーティファクト',
   wakeOnDamage: '眠り',
+  burrow: '潜伏',
+  nemesis: '因縁',
 }
 
 /** 定義だけで決まる特性タグ (状態非依存) */
@@ -50,6 +52,8 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
   if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
+  if (def.burrow) tags.push(`潜伏(殻${def.burrow.block}が尽きるまでHPにダメージが通らない。超過は捨てる・貫通は通る・粉砕は殻を割る。割れた瞬間に噛みつき)`)
+  if (def.nemesis) tags.push('因縁(奇数ターンは無形=1ヒットのHP損失が1固定。偶数ターンに実体化。延焼は通る)')
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
     tags.push(
@@ -78,6 +82,18 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
   if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
+  if (def.burrow) {
+    tags.push(
+      e.burrowActive === true
+        ? `潜伏中(殻${e.block}。尽きるまでHPにダメージが通らない・超過は捨てる。貫通は通る・粉砕で割れる。割れた瞬間に噛みつき)`
+        : '潜伏(殻は割れた=以後は普通に通る)',
+    )
+  }
+  if (def.nemesis) {
+    tags.push(
+      `因縁(${s.turn % 2 === 1 ? '今ターンは無形=1ヒットのHP損失が1固定' : '今ターンは実体=普通に通る'}。奇数ターン無形・偶数ターン実体。延焼は通る)`,
+    )
+  }
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
     // 予告HPは親のHP倍率 (幕・ボス係数・難易度) を継承した実値で出す (2026-09-03 Opusラン K:

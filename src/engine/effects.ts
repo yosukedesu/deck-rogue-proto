@@ -648,6 +648,23 @@ export function damageBreakdown(
  * 被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失がしきい値に達したら眠りの前奏を打ち切り、
  * ローテを resumeAt へ。宣言済みの意図は変えない (宣言時固定則) = 次の宣言から目覚める
  */
+/** 因縁 (Nemesis) の無形ターンか: 奇数ターン (1,3,5…) は無形、偶数ターンに実体化 */
+export function isIntangibleTurn(state: GameState): boolean {
+  return state.turn % 2 === 1
+}
+
+/**
+ * 潜伏 (Burrowed) の殻が割れたか: 殻 (block) が0になった瞬間に潜伏を解き、次の行動を噛みつきに差し替える。
+ * 自ターン中に割れたら combat.ts の applyPendingBites がその場で意図を差し替える (プレイヤーの行動が原因なので
+ * 「窓が嘘をつかない」)。敵フェーズ中 (返し等) に割れたら次の宣言で噛みつく
+ */
+export function breakBurrowIfCracked(state: GameState, enemyIndex: number): GameState {
+  const e = state.enemies[enemyIndex]
+  if (!e || e.burrowActive !== true || e.block > 0 || e.hp <= 0) return state
+  const enemies = state.enemies.map((x, i) => (i === enemyIndex ? { ...x, burrowActive: false, biteNext: true } : x))
+  return emit({ ...state, enemies }, { type: 'BurrowBroken', enemyIndex })
+}
+
 export function applyWakeCheck(state: GameState, enemyIndex: number): GameState {
   const e = state.enemies[enemyIndex]
   if (!e || e.hp <= 0 || e.woken === true) return state
@@ -697,7 +714,16 @@ export function dealDamageToEnemy(
   const armorCut = enemy.armor !== undefined && amount > enemy.armor ? amount - enemy.armor : 0
   if (armorCut > 0) amount = enemy.armor!
   const blocked = pierce ? 0 : Math.min(enemy.block, amount)
-  let hpLoss = amount - blocked
+  // 潜伏 (2026-09-03 本家 Burrowed): 殻 (block) が尽きるまでHPにダメージが通らない。超過ぶんは捨てる。貫通は通る
+  const burrowed = enemy.burrowActive === true && !pierce && enemy.block > 0
+  let hpLoss = burrowed ? 0 : amount - blocked
+  const burrowCut = burrowed ? amount - blocked : 0
+  // 因縁 (2026-09-03 本家 Nemesis): 無形ターンは1ヒットのHP損失が1に固定 (延焼は別経路で通る)
+  let nemesisCut = 0
+  if (getEnemyDef(enemy.enemyId).nemesis === true && isIntangibleTurn(state) && hpLoss > 1) {
+    nemesisCut = hpLoss - 1
+    hpLoss = 1
+  }
   // ターン装甲 (2026-09-02 StS2 HardenedShell式): このターンのHP損失累計はN以下 (装甲の対 =
   // 多段・バーストへの量の問い)。ブロックの後・延焼は別経路で無視 (装甲と同じ裁定)
   const turnArmor = getEnemyDef(enemy.enemyId).turnArmor
@@ -733,9 +759,12 @@ export function dealDamageToEnemy(
       enemyIndex,
       ...(armorCut > 0 ? { armorCut } : {}),
       ...(turnArmorCut > 0 ? { turnArmorCut } : {}),
+      ...(burrowCut > 0 ? { burrowCut } : {}),
+      ...(nemesisCut > 0 ? { nemesisCut } : {}),
     },
   )
   s = applyWakeCheck(s, enemyIndex)
+  s = breakBurrowIfCracked(s, enemyIndex)
   // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化。
   // 枚数トリガーの盲点 (1枚で100点出すデッキが素通しする) への処方
   {
@@ -1287,14 +1316,15 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return s
     }
     case 'shatterBlock': {
-      // 粉砕 (赤): 敵のブロックを全て破壊する
+      // 粉砕 (赤): 敵のブロックを全て破壊する (潜伏の殻も割れる = 噛みつきが来る)
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.block === 0) return state
       const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, block: 0 } : e))
-      return emit(
+      const s2 = emit(
         { ...state, enemies },
         { type: 'BlockShattered', enemyIndex, amount: enemy.block },
       )
+      return breakBurrowIfCracked(s2, enemyIndex)
     }
     case 'dealDamageRandom': {
       // ランダム火力 (赤): amount〜amountMax のロール (シードRNG)

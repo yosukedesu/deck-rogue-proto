@@ -1688,6 +1688,12 @@ function BattleScreen({
                     {(enemy.artifact ?? 0) > 0 && !dead && (
                       <span className="chip chip-strength">🔮 {kw('アーティファクト')} {enemy.artifact}</span>
                     )}
+                    {enemyDef.burrow !== undefined && !dead && (
+                      <span className="chip chip-block">🪺 {kw('潜伏')}{enemy.burrowActive === true ? `（殻${enemy.block}。割れると噛みつき）` : '（殻は割れた）'}</span>
+                    )}
+                    {enemyDef.nemesis === true && !dead && (
+                      <span className="chip chip-strength">👻 {kw('因縁')}: {s.turn % 2 === 1 ? '今ターンは無形（被ダメ1固定）' : '今ターンは実体'}</span>
+                    )}
                     {enemyDef.wakeOnDamage !== undefined && enemy.woken !== true && enemy.patternIndex < enemyDef.wakeOnDamage.resumeAt && !dead && (
                       <span className="chip">😴 {kw('眠り')}: 累計{enemyDef.wakeOnDamage.damage}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
                     )}

@@ -221,7 +221,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   if (events.length > 0) {
     L.push('--- 直近の出来事 ---')
     for (const e of events) {
-      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`)
+      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`)
       else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)
@@ -242,6 +242,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
       else if (e.type === 'ArtifactBlocked') L.push(' 🔮アーティファクトがデバフを弾いた(チャージ-1)')
+      else if (e.type === 'BurrowBroken') L.push(' 🪺潜伏の殻が割れた! 次の行動は噛みつきに差し替わる')
       else if (e.type === 'EnemyWoken') L.push(' 👁️目を覚ました! 眠りの前奏が打ち切られた')
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)

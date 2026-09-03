@@ -1017,9 +1017,8 @@
     "id": "enemy_rock_beetle",
     "name": "岩皮の甲虫",
     "archetype": "shell",
-    "flavor": "小さな体を、身の丈に合わない岩の殻が包む。割るか、貫くか、焼くか。",
+    "flavor": "小さな体を、身の丈に合わない岩の殻が包む。殻が残るうちは中身に届かない。割るか、貫くか——割った瞬間に噛みつかれる。",
     "maxHp": 30,
-    "startingBlock": 12,
     "moves": [
       {
         "id": "harden",
@@ -1035,13 +1034,24 @@
         "max": 9,
         "weight": 1,
         "alsoDefend": 8
+      },
+      {
+        "id": "bite",
+        "kind": "attack",
+        "min": 10,
+        "max": 13,
+        "weight": 1
       }
     ],
     "sequence": [
       "horn_jab",
       "harden",
       "horn_jab"
-    ]
+    ],
+    "burrow": {
+      "block": 12,
+      "bite": "bite"
+    }
   },
   {
     "id": "enemy_big_slime",
@@ -3067,6 +3077,79 @@
       "lacerate",
       "pounce",
       "burning_growl"
+    ]
+  },
+  {
+    "id": "enemy_burrow_worm",
+    "name": "潜行する大地虫",
+    "archetype": "shell",
+    "flavor": "土の下から地面ごと揺らす。殻が尽きるまで刃は届かず、割れた瞬間に大顎が来る。",
+    "maxHp": 120,
+    "burrow": {
+      "block": 30,
+      "bite": "bite"
+    },
+    "opener": "tremor",
+    "moves": [
+      {
+        "id": "tremor",
+        "kind": "attack",
+        "min": 9,
+        "max": 12,
+        "hits": 2,
+        "weight": 2
+      },
+      {
+        "id": "bite",
+        "kind": "attack",
+        "min": 18,
+        "max": 22,
+        "weight": 1
+      },
+      {
+        "id": "burrow_down",
+        "kind": "defend",
+        "min": 12,
+        "max": 15,
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "enemy_nemesis_wraith",
+    "name": "因縁の亡霊",
+    "archetype": "shell",
+    "flavor": "ひとつ数えるたびに実体を失い、ふたつ数えるたびに戻ってくる。殴れる夜と、備える夜。",
+    "maxHp": 130,
+    "nemesis": true,
+    "opener": "claw",
+    "moves": [
+      {
+        "id": "claw",
+        "kind": "attack",
+        "min": 14,
+        "max": 18,
+        "weight": 2
+      },
+      {
+        "id": "curse_touch",
+        "kind": "attack",
+        "min": 8,
+        "max": 11,
+        "weight": 1,
+        "inflict": {
+          "status": "weak",
+          "amount": 1
+        }
+      },
+      {
+        "id": "scythe",
+        "kind": "attack",
+        "min": 22,
+        "max": 26,
+        "weight": 1,
+        "noRepeat": true
+      }
     ]
   }
 ]

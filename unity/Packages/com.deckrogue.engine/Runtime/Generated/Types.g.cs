@@ -100,6 +100,16 @@ namespace DeckRogue.Engine.Generated
         public const string Slow = "slow";
     }
 
+    public static class RelicRaritys
+    {
+        public const string Common = "common";
+        public const string Uncommon = "uncommon";
+        public const string Rare = "rare";
+        public const string Boss = "boss";
+        public const string Shop = "shop";
+        public const string Event = "event";
+    }
+
     public static class RunPhases
     {
         public const string Map = "map";
@@ -112,6 +122,22 @@ namespace DeckRogue.Engine.Generated
         public const string Reward = "reward";
         public const string Won = "won";
         public const string Lost = "lost";
+    }
+
+    public static class RelicSources
+    {
+        public const string Chest = "chest";
+        public const string Elite = "elite";
+        public const string Boss = "boss";
+        public const string Shop = "shop";
+        public const string Event = "event";
+    }
+
+    public static class RelicTiers
+    {
+        public const string Common = "common";
+        public const string Uncommon = "uncommon";
+        public const string Rare = "rare";
     }
 
     public static class MapNodeTypes
@@ -307,6 +333,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>被弾覚醒が発火済みか</summary>
         [JsonProperty("woken")]
         public bool? Woken { get; init; }
+        /// <summary>潜伏中 (殻が残っている間 true。割れたら false)</summary>
+        [JsonProperty("burrowActive")]
+        public bool? BurrowActive { get; init; }
+        /// <summary>殻が敵フェーズ中に割れた: 次の宣言を噛みつきに差し替える</summary>
+        [JsonProperty("biteNext")]
+        public bool? BiteNext { get; init; }
         /// <summary>編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」)</summary>
         [JsonProperty("noReactTable")]
         public bool? NoReactTable { get; init; }
@@ -492,6 +524,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts)</summary>
         [JsonProperty("setAnyCards")]
         public bool? SetAnyCards { get; init; }
+        /// <summary>C型レリック (回収の紐 2026-09-03): 回収が0E</summary>
+        [JsonProperty("retrieveFree")]
+        public bool? RetrieveFree { get; init; }
+        /// <summary>C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N</summary>
+        [JsonProperty("energyMaxRefBonus")]
+        public int? EnergyMaxRefBonus { get; init; }
+        /// <summary>C型レリック (収穫の鎌 2026-09-03): 成長放出のあと成長がN残る</summary>
+        [JsonProperty("harvestKeep")]
+        public int? HarvestKeep { get; init; }
     }
 
     /// <summary>判別共用体 Command (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -545,7 +586,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>upgradeInHand (研ぎ澄まし) 用: この戦闘中鍛える手札の uid (自身は選べない。鍛えられる札が無ければ省略可)</summary>
         [JsonProperty("handUids")]
         public IReadOnlyList<string>? HandUids { get; init; }
-        /// <summary>Xコスト札用 (2026-09-03): 支払うX (1〜min(X_MAX, エナジー))。省略時は上限まで払う</summary>
+        /// <summary>Xコスト札用 (2026-09-03): 支払うX (1〜現在のエナジー)。省略時は全部払う</summary>
         [JsonProperty("xAmount")]
         public int? XAmount { get; init; }
     }
@@ -747,6 +788,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ターン装甲で切り捨てられた量 (2026-09-02)</summary>
         [JsonProperty("turnArmorCut")]
         public int? TurnArmorCut { get; init; }
+        /// <summary>潜伏の殻で捨てられた超過ぶん</summary>
+        [JsonProperty("burrowCut")]
+        public int? BurrowCut { get; init; }
+        /// <summary>因縁 (無形ターン) で1に固定されて消えたぶん</summary>
+        [JsonProperty("nemesisCut")]
+        public int? NemesisCut { get; init; }
     }
 
     /// <summary>GameEvent: type="BlockGained"</summary>
@@ -897,6 +944,14 @@ namespace DeckRogue.Engine.Generated
         public int EnemyIndex { get; init; }
         [JsonProperty("effect")]
         public string Effect { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="BurrowBroken"</summary>
+    public sealed record GameEvent_BurrowBroken : GameEvent
+    {
+        public const string TypeTag = "BurrowBroken";
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
     }
 
     /// <summary>GameEvent: type="EnemyWoken"</summary>
@@ -1430,7 +1485,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>レアリティ (確定済みルール表「レアリティ」2026-08-29)。報酬抽選はスロットごとに コモン60%/アンコモン37%/レア3%の本家比率。未指定はコモン扱い (凍結色は解凍時に割当)</summary>
         [JsonProperty("rarity")]
         public string? Rarity { get; init; }
-        /// <summary>Xコスト (確定済みルール表「Xコスト」2026-08-29): プレイ時に現在のエナジーを全て支払い、 支払った量Xを xHits 効果が参照する。プレイ条件はエナジー1以上。割引の対象外。 **X は最大4 (X_MAX)。払う量は1〜4から選ぶ (2026-09-03 ユーザー裁定のナーフ: 5E以上のランプはX札に流れない=別の吐き先が選択肢に)** cost フィールドは名目値 (カーブ集計用に1を置く)</summary>
+        /// <summary>Xコスト (確定済みルール表「Xコスト」2026-08-29): プレイ時に現在のエナジーを全て支払い、 支払った量Xを xHits 効果が参照する。プレイ条件はエナジー1以上。割引の対象外。 **払う量 X は 1〜現在のエナジーから選ぶ (PlayCard.xAmount。省略=全部)。上限は無い (2026-09-03 一時置いた上限4は同日撤廃=本家形: 効率を本家の比率〔1Eコモンの約80%〕に合わせ、X の大きさで制限しない)** cost フィールドは名目値 (カーブ集計用に1を置く)</summary>
         [JsonProperty("xCost")]
         public bool? XCost { get; init; }
         /// <summary>猛り火 (延焼合計8以上) の間、このカードのコストがこの値だけ下がる (2026-08-30)</summary>
@@ -1629,6 +1684,15 @@ namespace DeckRogue.Engine.Generated
         public int ResumeAt { get; init; }
     }
 
+    /// <summary>EnemyDef.burrow のインライン型</summary>
+    public sealed record EnemyDefBurrow
+    {
+        [JsonProperty("block")]
+        public int Block { get; init; }
+        [JsonProperty("bite")]
+        public string Bite { get; init; } = default!;
+    }
+
     /// <summary>EnemyDef.aura のインライン型</summary>
     public sealed record EnemyDefAura
     {
@@ -1740,6 +1804,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失が damage 以上になったら、ローテを resumeAt へ 飛ばす (眠りの前奏を打ち切る)。宣言済みの意図はそのまま (宣言時固定則) = 次の宣言から目覚める。 「寝ている間に削る (起こすリスク) か、放置して殻を積ませるか」の本物の二択</summary>
         [JsonProperty("wakeOnDamage")]
         public EnemyDefWakeOnDamage? WakeOnDamage { get; init; }
+        /// <summary>潜伏 (2026-09-03 本家StS2 Burrowed): 戦闘開始時に block だけの殻を持ち、殻が尽きるまでHPにダメージが通らない (超過ぶんは捨てる。貫通は通る・粉砕は殻を割る)。殻が割れた瞬間、次の行動が bite (moves の id) に差し替わる。 通常戦の最短ターンを構造で決める器 (2T決着への処方。HPを盛らない)</summary>
+        [JsonProperty("burrow")]
+        public EnemyDefBurrow? Burrow { get; init; }
+        /// <summary>因縁 (2026-09-03 本家 Nemesis): 奇数ターン (1,3,5…) は無形=1ヒットのHP損失が1に固定。偶数ターンに実体化。 延焼は通る (装甲と同じ裁定)。「殴るターン/備えるターン」のリズムを作り、T1爆発を構造的に半減する</summary>
+        [JsonProperty("nemesis")]
+        public bool? Nemesis { get; init; }
         /// <summary>常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」): この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。 敵を倒せば即解除 = キル順の圧。打ち消し不可 (行動でなく存在)。敵カードに常時表示</summary>
         [JsonProperty("aura")]
         public EnemyDefAura? Aura { get; init; }
@@ -1795,6 +1865,36 @@ namespace DeckRogue.Engine.Generated
         /// <summary>焚き火の「鍛える」の追加回数 (鍛冶の砥石=+1で計2枚)</summary>
         [JsonProperty("campfireForge")]
         public int? CampfireForge { get; init; }
+        /// <summary>焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper)</summary>
+        [JsonProperty("noRest")]
+        public bool? NoRest { get; init; }
+        /// <summary>宝箱・?のレリックを取るたび烙印をN枚受け取る (呪いの鍵=本家 Cursed Key)</summary>
+        [JsonProperty("brandOnChestRelic")]
+        public int? BrandOnChestRelic { get; init; }
+        /// <summary>勝利時に無条件でHP+N (薬草袋。狩人の恵みの条件つき回復とは別口)</summary>
+        [JsonProperty("victoryHealFlat")]
+        public int? VictoryHealFlat { get; init; }
+        /// <summary>ショップの鍛える −N G (砥石の欠片)</summary>
+        [JsonProperty("shopUpgradeDiscount")]
+        public int? ShopUpgradeDiscount { get; init; }
+        /// <summary>焚き火で休むたび最大HP+N (薬研)</summary>
+        [JsonProperty("restMaxHp")]
+        public int? RestMaxHp { get; init; }
+        /// <summary>エリート勝利のゴールド+N (戦利品袋)</summary>
+        [JsonProperty("eliteGoldBonus")]
+        public int? EliteGoldBonus { get; init; }
+        /// <summary>工房の合成 −N G (大工の道具)</summary>
+        [JsonProperty("fusionDiscount")]
+        public int? FusionDiscount { get; init; }
+        /// <summary>ショップの全価格に掛ける倍率 (会員証=0.5。複数は積)</summary>
+        [JsonProperty("shopPriceRatio")]
+        public double? ShopPriceRatio { get; init; }
+        /// <summary>戦闘勝利のゴールドに掛ける倍率 (金の靴=1.5。盗みの精算より前)</summary>
+        [JsonProperty("goldMultiplier")]
+        public double? GoldMultiplier { get; init; }
+        /// <summary>ショップ除去の逓増幅に加算 (除去の鑿=-25 で +50→+25)</summary>
+        [JsonProperty("removalStepDelta")]
+        public int? RemovalStepDelta { get; init; }
     }
 
     /// <summary>RelicDef.combatRule のインライン型</summary>
@@ -1806,12 +1906,21 @@ namespace DeckRogue.Engine.Generated
         /// <summary>敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用)</summary>
         [JsonProperty("revealIntents")]
         public bool? RevealIntents { get; init; }
+        /// <summary>回収 (RetrieveSetCard) が0E (回収の紐 2026-09-03)</summary>
+        [JsonProperty("retrieveFree")]
+        public bool? RetrieveFree { get; init; }
+        /// <summary>上限参照札が読む値 (energyMaxAtTurnStart) に+N (大樹の心 2026-09-03)</summary>
+        [JsonProperty("energyMaxRefBonus")]
+        public int? EnergyMaxRefBonus { get; init; }
+        /// <summary>成長放出のあと成長がN残る (収穫の鎌 2026-09-03)</summary>
+        [JsonProperty("harvestKeep")]
+        public int? HarvestKeep { get; init; }
         /// <summary>伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す)</summary>
         [JsonProperty("revealOnSet")]
         public bool? RevealOnSet { get; init; }
     }
 
-    /// <summary>レリック定義。A型=フック効果 (effects。リーダーパッシブと同じ置物注入機構) / B型=ラン定数 (bonus。取得時に RunState を書き換える)</summary>
+    /// <summary>RelicDef</summary>
     public sealed record RelicDef
     {
         [JsonProperty("id")]
@@ -1822,6 +1931,14 @@ namespace DeckRogue.Engine.Generated
         public string Sprite { get; init; } = default!;
         [JsonProperty("description")]
         public string Description { get; init; } = default!;
+        [JsonProperty("rarity")]
+        public string? Rarity { get; init; }
+        /// <summary>A型効果をエリート・ボス戦にだけ注入する (鎖の首輪=本家 Slaver's Collar)</summary>
+        [JsonProperty("eliteBossOnly")]
+        public bool? EliteBossOnly { get; init; }
+        /// <summary>この幕までしか候補に出ない (経済レリック=幕1〜2。終盤の外れ枠にしない 2026-09-03 ユーザー裁定)</summary>
+        [JsonProperty("actMax")]
+        public int? ActMax { get; init; }
         /// <summary>A型: 戦闘開始時に不可視の置物として注入される宣言的効果</summary>
         [JsonProperty("effects")]
         public IReadOnlyList<DeclarativeEffect>? Effects { get; init; }

@@ -171,7 +171,8 @@ export function startCombatWithOptions(
       hp: maxHp,
       maxHp,
       // 開幕ブロック (2026-08-30 静的性質の配布): 甲羅・門・抱えた樽はT1から見える問い
-      block: def.startingBlock ?? 0,
+      block: def.burrow?.block ?? def.startingBlock ?? 0, // 潜伏の殻は開幕ブロックと同じ器 (2026-09-03)
+      ...(def.burrow ? { burrowActive: true } : {}),
       intent: null,
       strength: (options.enemyStrength ?? 0) + (m.strength ?? 0),
       ...(options.enemyAtkScale !== undefined && options.enemyAtkScale !== 1
@@ -297,6 +298,14 @@ function declareIntents(state: GameState): GameState {
       id: 'forced_flee',
       kind: 'flee' as const,
       weight: 1,
+    }
+    // 潜伏の殻が敵フェーズ中に割れていたら、この宣言は噛みつき (2026-09-03 Burrowed)
+    const biteMove = def.burrow ? def.moves.find((m) => m.id === def.burrow!.bite) : undefined
+    if (enemy.biteNext === true && biteMove) {
+      const [biteIntent, rngB] = buildIntent(s.rng, biteMove, enemy.strength, enemy.atkScale ?? 1)
+      const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false } : e))
+      s = emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
+      continue
     }
     if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
       const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
@@ -597,7 +606,8 @@ function processSplits(state: GameState): GameState {
         enemyId: splitInto.enemyId,
         hp: scaledChildHp,
         maxHp: scaledChildHp,
-        block: childDef.startingBlock ?? 0,
+        block: childDef.burrow?.block ?? childDef.startingBlock ?? 0,
+        ...(childDef.burrow ? { burrowActive: true } : {}),
         intent,
         strength: childStrength,
         ...(e.atkScale !== undefined ? { atkScale: e.atkScale } : {}),
@@ -640,7 +650,33 @@ function processMourning(state: GameState): GameState {
   return s
 }
 
+/**
+ * 潜伏の殻が自ターン中に割れた敵の意図をその場で噛みつきに差し替える (2026-09-03 本家 Burrowed
+ * 「割れた瞬間に潜行攻撃へ移行」)。プレイヤーの行動が原因で、差し替え後の意図は自ターン中に見える =
+ * 宣言時固定則の例外だが「窓が嘘をつかない」は保たれる
+ */
+export function applyPendingBites(state: GameState): GameState {
+  if (state.phase !== 'player-turn') return state
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) {
+    const e = s.enemies[i]
+    if (e.hp <= 0 || e.biteNext !== true) continue
+    const def = getEnemyDef(e.enemyId)
+    const bite = def.burrow ? def.moves.find((m) => m.id === def.burrow!.bite) : undefined
+    if (!bite) continue
+    const [intent, rng] = buildIntent(s.rng, bite, e.strength, e.atkScale ?? 1)
+    s = {
+      ...s,
+      rng,
+      enemies: s.enemies.map((x, j) => (j === i ? { ...x, intent, biteNext: false } : x)),
+    }
+    s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: i, intent })
+  }
+  return s
+}
+
 export function checkCombatEnd(state: GameState): GameState {
+  state = applyPendingBites(state)
   if (state.phase === 'won' || state.phase === 'lost') return state
   state = processSplits(state)
   state = processMourning(state)

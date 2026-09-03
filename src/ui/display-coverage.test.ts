@@ -31,6 +31,8 @@ const SAMPLE: Record<string, Partial<EnemyDef>> = {
   turnArmor: { turnArmor: 30 },
   artifact: { artifact: 1 },
   wakeOnDamage: { wakeOnDamage: { damage: 10, resumeAt: 2 }, sequence: ['poke', 'poke', 'poke'] },
+  burrow: { burrow: { block: 8, bite: 'poke' } },
+  nemesis: { nemesis: true },
 }
 
 describe('予告表示の網羅性 (display-coverage)', () => {
