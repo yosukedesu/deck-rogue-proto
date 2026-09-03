@@ -108,16 +108,33 @@ const SHOP_UPGRADE_STEP = 50
 /** 現在の除去サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
 /** 工房の合成1回の価格 (2026-09-03 ユーザー裁定「工房合成時にお金がいるように」。強化100Gと同額=圧縮+強化の対価) */
 export const WORKSHOP_FUSE_PRICE = 100
-export function workshopFusePrice(_run: RunState): number {
-  return WORKSHOP_FUSE_PRICE
+export function workshopFusePrice(run: RunState): number {
+  return Math.max(0, WORKSHOP_FUSE_PRICE - relicBonusSum(run, 'fusionDiscount')) // 大工の道具
 }
 
+/** B型レリックの数値ボーナスの合計 (所持レリックから毎回導出 = RunState にフィールドを増やさない) */
+export function relicBonusSum(
+  run: RunState,
+  key: 'victoryHealFlat' | 'shopUpgradeDiscount' | 'restMaxHp' | 'eliteGoldBonus' | 'fusionDiscount' | 'removalStepDelta',
+): number {
+  return run.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.[key] ?? 0), 0)
+}
+/** ショップの価格倍率 (会員証=0.5。複数所持は積) */
+export function shopPriceRatio(run: RunState): number {
+  return run.relics.reduce((a, id) => a * (getRelicDef(id).bonus?.shopPriceRatio ?? 1), 1)
+}
+/** 勝利ゴールドの倍率 (金の靴=1.5) */
+function goldMultiplier(run: RunState): number {
+  return run.relics.reduce((a, id) => a * (getRelicDef(id).bonus?.goldMultiplier ?? 1), 1)
+}
 export function shopRemovalPrice(run: RunState): number {
-  return SHOP_REMOVAL_BASE + SHOP_REMOVAL_STEP * (run.removalCount ?? 0)
+  const step = Math.max(0, SHOP_REMOVAL_STEP + relicBonusSum(run, 'removalStepDelta')) // 除去の鑿
+  return Math.floor((SHOP_REMOVAL_BASE + step * (run.removalCount ?? 0)) * shopPriceRatio(run))
 }
 /** 現在の強化サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
 export function shopUpgradePrice(run: RunState): number {
-  return SHOP_UPGRADE_BASE + SHOP_UPGRADE_STEP * (run.upgradeCount ?? 0)
+  const base = Math.max(0, SHOP_UPGRADE_BASE - relicBonusSum(run, 'shopUpgradeDiscount')) // 砥石の欠片
+  return Math.floor((base + SHOP_UPGRADE_STEP * (run.upgradeCount ?? 0)) * shopPriceRatio(run))
 }
 
 /**
@@ -341,6 +358,9 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
       .reduce((sum, r) => sum + (r.combatRule?.setDamageReduction ?? 0), 0),
     revealIntents: run.debugRevealIntents === true || run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
     revealOnSet: run.relics.some((id) => getRelicDef(id).combatRule?.revealOnSet === true),
+    retrieveFree: run.relics.some((id) => getRelicDef(id).combatRule?.retrieveFree === true),
+    energyMaxRefBonus: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.energyMaxRefBonus ?? 0), 0),
+    harvestKeep: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.harvestKeep ?? 0), 0),
     ...(run.setAnyCards === true ? { setAnyCards: true } : {}),
   })
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
@@ -535,7 +555,7 @@ function openShop(run: RunState): RunState {
     const pricedCost = def.xCost === true ? 3 : def.cost
     const [roll, r2] = nextInt(rng, 0, 10)
     rng = r2
-    cards.push({ id: def.id, price: 40 + pricedCost * 10 + roll })
+    cards.push({ id: def.id, price: Math.floor((40 + pricedCost * 10 + roll) * shopPriceRatio(run)) })
   }
   // レア枠 (2026-08-31 ゴールドシンク): 品揃えの6枠目はレア確定・高額 (120+コスト×10 ≈ 150G)。
   // 「金は貯まるが使い道が選択にならない」実測への処方 = 高額の一点物を置く
@@ -554,7 +574,7 @@ function openShop(run: RunState): RunState {
   const shop: ShopState = {
     cards,
     relicId,
-    relicPrice: SHOP_RELIC_PRICE,
+    relicPrice: Math.floor(SHOP_RELIC_PRICE * shopPriceRatio(run)), // 会員証
   }
   return { ...run, rng, shop, phase: 'shop', combat: null, rewardOptions: null }
 }
@@ -1024,7 +1044,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   // 絞りと正面衝突していた。「あと1発」の帯だけを救助し、30〜50%の緊張は残す)
   const rescueHeal =
     combat.player.hp <= run.maxHp * 0.3 ? run.victoryHealBonus : 0
-  const hp = isBoss ? run.maxHp : Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal)
+  const hp = isBoss ? run.maxHp : Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal + relicBonusSum(run, 'victoryHealFlat')) // 薬草袋 (2026-09-03)
   // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G。確定済みルール表「ゴールド」)
   let rng = run.rng
   const [base, r1] = nextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX)
@@ -1042,6 +1062,9 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   }
   // 商人の秤 (B型レリック): 戦闘勝利のゴールド加算
   gained += run.goldPerVictoryBonus ?? 0
+  // 戦利品袋 (2026-09-03): エリート勝利+N / 金の靴: 倍率 (盗みの精算より前)
+  if (run.currentElite) gained += relicBonusSum(run, 'eliteGoldBonus')
+  gained = Math.floor(gained * goldMultiplier(run))
   // 盗みの精算 (確定済みルール表「盗みと逃走」): 逃走した盗人が抱えた額を失い (合計は最低0)、
   // 逃げる前に倒した盗人は全額戻る (ゴールドは一度も減っていない) + 懸賞金
   const fledLoss = combat.enemies
@@ -1194,11 +1217,12 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
       // 休めないレリック (古根の杯=本家 Coffee Dripper 2026-09-03): 休むは回復なしの立ち去り
       const noRest = run.relics.some((id) => getRelicDef(id).bonus?.noRest === true)
-      const hp =
-        (run.campfireUpgradesUsed ?? 0) > 0 || noRest
-          ? run.hp
-          : Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
-      return { ...run, hp, phase: 'map' }
+      const rested = (run.campfireUpgradesUsed ?? 0) === 0 && !noRest
+      // 薬研 (2026-09-03): 実際に休んだ時だけ最大HP+N (現在HPも+N)
+      const grow = rested ? relicBonusSum(run, 'restMaxHp') : 0
+      const maxHp = run.maxHp + grow
+      const hp = rested ? Math.min(maxHp, run.hp + grow + Math.floor(run.maxHp * run.campfireRatio)) : run.hp
+      return { ...run, hp, maxHp, phase: 'map' }
     }
     case 'CampfireUpgrade': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')

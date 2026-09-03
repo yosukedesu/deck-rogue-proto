@@ -100,7 +100,8 @@ export function retrieveSetCard(state: GameState, cardUid: string): GameState {
   if (state.phase !== 'player-turn') throw new Error('回収は自ターンのみ')
   const card = state.player.setCards.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`伏せ場にないカード: ${cardUid}`)
-  if (state.player.energy < 1) throw new Error('エナジー不足: 回収には1E必要')
+  const cost = state.retrieveFree === true ? 0 : 1 // 回収の紐 (2026-09-03): 回収が0E
+  if (state.player.energy < cost) throw new Error('エナジー不足: 回収には1E必要')
   const restored = { ...card }
   delete (restored as { setFresh?: boolean }).setFresh
   return emit(
@@ -108,7 +109,7 @@ export function retrieveSetCard(state: GameState, cardUid: string): GameState {
       ...state,
       player: {
         ...state.player,
-        energy: state.player.energy - 1,
+        energy: state.player.energy - cost,
         setCards: state.player.setCards.filter((c) => c.uid !== cardUid),
         hand: [...state.player.hand, restored],
         freeResetUid: cardUid, // このターン中の伏せ直しは0E

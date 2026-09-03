@@ -314,6 +314,12 @@ export interface GameState {
   readonly revealOnSet?: boolean
   /** 実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts) */
   readonly setAnyCards?: boolean
+  /** C型レリック (回収の紐 2026-09-03): 回収が0E */
+  readonly retrieveFree?: boolean
+  /** C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N */
+  readonly energyMaxRefBonus?: number
+  /** C型レリック (収穫の鎌 2026-09-03): 成長放出のあと成長がN残る */
+  readonly harvestKeep?: number
 }
 
 // ============================================================
@@ -1116,6 +1122,22 @@ export interface RelicDef {
     readonly noRest?: boolean
     /** 宝箱・?のレリックを取るたび烙印をN枚受け取る (呪いの鍵=本家 Cursed Key) */
     readonly brandOnChestRelic?: number
+    /** 勝利時に無条件でHP+N (薬草袋。狩人の恵みの条件つき回復とは別口) */
+    readonly victoryHealFlat?: number
+    /** ショップの鍛える −N G (砥石の欠片) */
+    readonly shopUpgradeDiscount?: number
+    /** 焚き火で休むたび最大HP+N (薬研) */
+    readonly restMaxHp?: number
+    /** エリート勝利のゴールド+N (戦利品袋) */
+    readonly eliteGoldBonus?: number
+    /** 工房の合成 −N G (大工の道具) */
+    readonly fusionDiscount?: number
+    /** ショップの全価格に掛ける倍率 (会員証=0.5。複数は積) */
+    readonly shopPriceRatio?: number
+    /** 戦闘勝利のゴールドに掛ける倍率 (金の靴=1.5。盗みの精算より前) */
+    readonly goldMultiplier?: number
+    /** ショップ除去の逓増幅に加算 (除去の鑿=-25 で +50→+25) */
+    readonly removalStepDelta?: number
   }
   /**
    * C型: 戦闘ルールの改変 (少数精鋭)。launchCombat が所持レリックから集計して
@@ -1126,6 +1148,12 @@ export interface RelicDef {
     readonly setDamageReduction?: number
     /** 敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用) */
     readonly revealIntents?: boolean
+    /** 回収 (RetrieveSetCard) が0E (回収の紐 2026-09-03) */
+    readonly retrieveFree?: boolean
+    /** 上限参照札が読む値 (energyMaxAtTurnStart) に+N (大樹の心 2026-09-03) */
+    readonly energyMaxRefBonus?: number
+    /** 成長放出のあと成長がN残る (収穫の鎌 2026-09-03) */
+    readonly harvestKeep?: number
     /** 伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す) */
     readonly revealOnSet?: boolean
   }

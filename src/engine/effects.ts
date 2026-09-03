@@ -1239,7 +1239,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 与ダメ全てへの加算で自分自身を二重に数えない (2026-08-31 収穫再走で「表記×3が実効×4」の
       // 隠れ倍率と実測され、攻めの刈りと守りの刈りの実レートが2倍差に開いていた是正)
       const spent = state.player.growth
-      let s: GameState = { ...state, player: { ...state.player, growth: 0 } }
+      // 収穫の鎌 (2026-09-03 レア): 放出のあと成長がN残る (放出量は全量で計算)
+      const keep = Math.min(spent, state.harvestKeep ?? 0)
+      let s: GameState = { ...state, player: { ...state.player, growth: keep } }
       s = dealDamageToEnemy(s, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
       return emit(s, { type: 'GrowthDischarged', spent })
     }
@@ -1405,6 +1407,11 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect): 
   if (effect.condition?.blaze === true && !isBlazing(state)) return false
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
+  // HP割合条件 (2026-09-03 不動の根=HP50%以下で開幕ブロック。リアクション窓と同じ判定を置物/onPlay にも)
+  if (
+    effect.condition?.hpAtOrBelowRatio !== undefined &&
+    state.player.hp > state.player.maxHp * effect.condition.hpAtOrBelowRatio
+  ) return false
   return true
 }
 

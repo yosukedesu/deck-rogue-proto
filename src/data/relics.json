@@ -281,5 +281,181 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "relic_whetstone_chip",
+    "name": "砥石の欠片",
+    "sprite": "🪨",
+    "description": "ショップの「鍛える」が25G安くなる",
+    "rarity": "common",
+    "bonus": {
+      "shopUpgradeDiscount": 25
+    }
+  },
+  {
+    "id": "relic_herb_pouch",
+    "name": "薬草袋",
+    "sprite": "🌿",
+    "description": "戦闘に勝利するたびHP+3",
+    "rarity": "common",
+    "bonus": {
+      "victoryHealFlat": 3
+    }
+  },
+  {
+    "id": "relic_old_purse",
+    "name": "古い財布",
+    "sprite": "👛",
+    "description": "戦闘勝利のゴールド+4",
+    "rarity": "common",
+    "bonus": {
+      "goldPerVictory": 4
+    }
+  },
+  {
+    "id": "relic_momentum_whip",
+    "name": "勢いの鞭",
+    "sprite": "🪢",
+    "description": "勢いを得るたび、敵に1ダメージ",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onMomentumGained",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_reading_glasses",
+    "name": "読みの眼鏡",
+    "sprite": "👓",
+    "description": "伏せ札が発動するたび、次のカード-1",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onReactionFired",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_retrieve_cord",
+    "name": "回収の紐",
+    "sprite": "🧵",
+    "description": "伏せ札の回収が0Eになる",
+    "rarity": "uncommon",
+    "combatRule": {
+      "retrieveFree": true
+    }
+  },
+  {
+    "id": "relic_mortar",
+    "name": "薬研",
+    "sprite": "⚗️",
+    "description": "焚き火で休むたび最大HP+2",
+    "rarity": "uncommon",
+    "bonus": {
+      "restMaxHp": 2
+    }
+  },
+  {
+    "id": "relic_loot_bag",
+    "name": "戦利品袋",
+    "sprite": "🎒",
+    "description": "エリート撃破のゴールド+20",
+    "rarity": "uncommon",
+    "bonus": {
+      "eliteGoldBonus": 20
+    }
+  },
+  {
+    "id": "relic_carpenter_tools",
+    "name": "大工の道具",
+    "sprite": "🧰",
+    "description": "工房の合成が50G安くなる",
+    "rarity": "uncommon",
+    "bonus": {
+      "fusionDiscount": 50
+    }
+  },
+  {
+    "id": "relic_great_tree_heart",
+    "name": "大樹の心",
+    "sprite": "🌳",
+    "description": "上限参照のカード（幹撃・木陰の守りなど）が読む上限に+1",
+    "rarity": "rare",
+    "combatRule": {
+      "energyMaxRefBonus": 1
+    }
+  },
+  {
+    "id": "relic_steadfast_root",
+    "name": "不動の根",
+    "sprite": "🌱",
+    "description": "戦闘開始時、HPが半分以下ならブロック10",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainBlock",
+        "amount": 10,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_harvest_sickle",
+    "name": "収穫の鎌",
+    "sprite": "🌾",
+    "description": "成長放出のあと、成長が2残る",
+    "rarity": "rare",
+    "combatRule": {
+      "harvestKeep": 2
+    }
+  },
+  {
+    "id": "relic_membership_card",
+    "name": "会員証",
+    "sprite": "🪪",
+    "description": "ショップの全価格が半額",
+    "rarity": "shop",
+    "bonus": {
+      "shopPriceRatio": 0.5
+    }
+  },
+  {
+    "id": "relic_golden_boots",
+    "name": "金の靴",
+    "sprite": "👢",
+    "description": "戦闘勝利のゴールド×1.5",
+    "rarity": "shop",
+    "bonus": {
+      "goldMultiplier": 1.5
+    }
+  },
+  {
+    "id": "relic_removal_chisel",
+    "name": "除去の鑿",
+    "sprite": "🔩",
+    "description": "ショップ除去の値上がり幅が+50→+25",
+    "rarity": "shop",
+    "bonus": {
+      "removalStepDelta": -25
+    }
+  },
+  {
+    "id": "relic_witch_scale",
+    "name": "魔女の秤",
+    "sprite": "⚖️",
+    "description": "報酬カードの提示+2。最大HP-10",
+    "rarity": "boss",
+    "bonus": {
+      "rewardChoices": 2,
+      "maxHp": -10
+    }
   }
 ]

@@ -2,7 +2,7 @@
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
 import { allRelics, buildRelicPermanent, getCardDef, getEventDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, currentNode, drawRelicOptions } from './run.ts'
+import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
@@ -175,9 +175,9 @@ describe('レリック効果', () => {
     }
   })
 
-  it('在庫は21個・IDは一意 (第二弾拡充 2026-08-29・ボスレリック 2026-09-03)', () => {
-    expect(allRelics).toHaveLength(21) // 2026-09-03 ボスレリック+4 (王冠の欠片・呪いの鍵・賢者の石・鎖の首輪) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(21)
+  it('在庫は37個・IDは一意 (第二弾拡充 2026-08-29・ボスレリック 2026-09-03)', () => {
+    expect(allRelics).toHaveLength(37) // 2026-09-03 ボスレリック+4 (王冠の欠片・呪いの鍵・賢者の石・鎖の首輪) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(37)
   })
 })
 
@@ -442,5 +442,61 @@ describe('古根の杯=ボスレリック化 (2026-09-03 本家 Coffee Dripper �
     expect(rested.phase).toBe('map')
     const forged = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
     expect(forged.deck.some((c) => c.def.name.endsWith('+'))).toBe(true)
+  })
+})
+
+describe('在庫拡充 第1波 (2026-09-03 docs/relic-redesign-proposal.md §3-3。既存の仕組みで作れる15個)', () => {
+  it('ショップ系: 会員証=半額・砥石の欠片=鍛える-25・除去の鑿=逓増+25・大工の道具=合成-50', () => {
+    const base = createRun(3, 'set-confirm')
+    expect(shopRemovalPrice({ ...base, relics: ['relic_membership_card'] })).toBe(25)
+    expect(shopUpgradePrice({ ...base, relics: ['relic_membership_card'] })).toBe(50)
+    expect(shopUpgradePrice({ ...base, relics: ['relic_whetstone_chip'] })).toBe(75)
+    expect(shopRemovalPrice({ ...base, relics: ['relic_removal_chisel'], removalCount: 2 })).toBe(100)
+    expect(workshopFusePrice({ ...base, relics: ['relic_carpenter_tools'] })).toBe(50)
+  })
+  it('薬研: 実際に休んだ時だけ最大HP+2 (古根の杯で休めない時は増えない)', () => {
+    const run = { ...intoCampfire({ ...createRun(11, 'set-confirm'), relics: ['relic_mortar'] }), hp: 40 }
+    const rested = applyRunCommand(run, { type: 'CampfireRest' })
+    expect(rested.maxHp).toBe(run.maxHp + 2)
+    expect(rested.hp).toBe(Math.min(rested.maxHp, 40 + 2 + Math.floor(run.maxHp * run.campfireRatio)))
+    const blocked = applyRunCommand({ ...run, relics: ['relic_mortar', 'relic_oldroot_cup'] }, { type: 'CampfireRest' })
+    expect(blocked.maxHp).toBe(run.maxHp)
+  })
+  it('金の靴と戦利品袋: エリート勝利のゴールドが (基礎+20)×1.5 になる', () => {
+    const run = intoFirstElite(11)
+    const plain = forceWin(run)
+    const boosted = forceWin({ ...run, relics: ['relic_golden_boots', 'relic_loot_bag'] })
+    expect(boosted.gold - run.gold).toBe(Math.floor((plain.gold - run.gold + 20) * 1.5))
+  })
+  it('回収の紐: 回収が0E。大樹の心: 上限参照が読む値+1。収穫の鎌: 放出後に成長2が残る', () => {
+    const cord = injectedIntoBattle('relic_retrieve_cord', 11).combat!
+    expect(cord.retrieveFree).toBe(true)
+    let c = withHand({ ...freshCombat('set-confirm', 'enemy_probe', 1), retrieveFree: true }, ['green_reaction_thorns'])
+    const uid = c.player.hand[0].uid
+    c = applyCommand(c, { type: 'SetCard', cardUid: uid })
+    const e0 = c.player.energy
+    c = applyCommand(c, { type: 'RetrieveSetCard', cardUid: uid })
+    expect(c.player.energy).toBe(e0)
+    const heart = injectedIntoBattle('relic_great_tree_heart', 11).combat!
+    const control = intoBattle(createRun(11, 'set-confirm')).combat!
+    // このはのパッシブは energyMax を即時に+1するが、参照値 (ターン開始スナップショット) はT1は素の3。心はそこに+1
+    expect(heart.player.energyMaxAtTurnStart).toBe(control.player.energyMaxAtTurnStart + 1)
+    const sickle = injectedIntoBattle('relic_harvest_sickle', 11).combat!
+    expect(sickle.harvestKeep).toBe(2)
+  })
+  it('不動の根: HP半分以下で始めた戦闘だけ開幕ブロック10', () => {
+    const low = intoBattle({ ...createRun(11, 'set-confirm'), relics: ['relic_steadfast_root'], hp: 30 })
+    expect(low.combat!.player.block).toBe(10)
+    const full = injectedIntoBattle('relic_steadfast_root', 11)
+    expect(full.combat!.player.block).toBe(0)
+  })
+  it('魔女の秤: 提示+2・最大HP-10 (現在HPも-10)', () => {
+    let run = createRun(7, 'set-confirm')
+    const hp0 = run.hp
+    run = { ...run, phase: 'relic-reward', relicOptions: ['relic_witch_scale'], combat: null }
+    run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
+    expect(run.rewardChoicesBonus).toBe(2)
+    expect(run.maxHp).toBe(80 - 10)
+    expect(run.hp).toBe(hp0 - 10)
   })
 })

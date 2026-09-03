@@ -125,6 +125,12 @@ export interface CombatOptions {
   readonly revealOnSet?: boolean
   /** 実験: 全カード伏せ可 */
   readonly setAnyCards?: boolean
+  /** C型レリック (回収の紐): 回収が0E */
+  readonly retrieveFree?: boolean
+  /** C型レリック (大樹の心): 上限参照札が読む値に+N */
+  readonly energyMaxRefBonus?: number
+  /** C型レリック (収穫の鎌): 成長放出のあと成長がN残る */
+  readonly harvestKeep?: number
 }
 
 /** 戦闘開始の実体: デッキシャッフル・敵配置をして第1ターンを開始する */
@@ -149,7 +155,7 @@ export function startCombatWithOptions(
         drawPerTurn: leader.drawPerTurn,
         energy: leader.energyMax,
         energyMax: leader.energyMax,
-        energyMaxAtTurnStart: leader.energyMax,
+        energyMaxAtTurnStart: leader.energyMax + (options.energyMaxRefBonus ?? 0), // 大樹の心 (2026-09-03)
         setSlots: leader.setSlots ?? 1,
         permanents: [buildLeaderPassive(leader)],
       },
@@ -199,6 +205,9 @@ export function startCombatWithOptions(
     enemies,
     // C型レリック。revealIntents は第1ターンの意図宣言 (startPlayerTurn) より前に立てる必要がある
     ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
+    ...(options.retrieveFree ? { retrieveFree: true } : {}),
+    ...(options.energyMaxRefBonus ? { energyMaxRefBonus: options.energyMaxRefBonus } : {}),
+    ...(options.harvestKeep ? { harvestKeep: options.harvestKeep } : {}),
     ...(options.revealIntents ? { revealIntents: true } : {}),
     ...(options.revealOnSet ? { revealOnSet: true } : {}),
     ...(options.setAnyCards ? { setAnyCards: true } : {}),
@@ -525,7 +534,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       ...state.player,
       block: 0,
       energy: state.player.energyMax,
-      energyMaxAtTurnStart: state.player.energyMax,
+      energyMaxAtTurnStart: state.player.energyMax + (state.energyMaxRefBonus ?? 0), // 大樹の心: 上限参照札が読む値に+N
       cardsPlayedThisTurn: 0,
       setsThisTurn: 0,
       playsThisTurn: 0,
