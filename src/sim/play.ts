@@ -315,7 +315,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       ? '【見切られ中。ただし罰型の' + stalePun.join('・') + 'は伏せ札がある限り反応する。破壊は来る】'
       : '【見切られ=敵は反応しない。破壊は来る】'
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : '${staleTag}'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : staleTag}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
