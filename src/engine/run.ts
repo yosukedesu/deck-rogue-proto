@@ -1043,7 +1043,8 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   const isBoss = currentNode(run)?.type === 'boss'
   // 3幕目のボス撃破 = ラン走破
   if (isBoss && run.act >= ACT_COUNT) {
-    return { ...run, combat, battlesWon: run.battlesWon + 1, phase: 'won' }
+    // 走破画面のHPは戦闘終了時の値 (2026-09-03 Opusラン K: 戦闘前の値のままだった)
+    return { ...run, combat, hp: combat.player.hp, battlesWon: run.battlesWon + 1, phase: 'won' }
   }
   // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復 (確定済みルール表「マップ」)。
   // 2026-08-29 Meat on the Bone式: 救助に限定して満タン維持を防ぐ。

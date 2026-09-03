@@ -54,7 +54,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
     const child = getEnemyDef(def.splitInto.enemyId)
     tags.push(
       def.splitInto.count === 1
-        ? `残機(倒すと${child.name}HP${child.maxHp}で再起動)`
+        ? `残機(倒すと${child.name}HP${child.maxHp}で再起動。素の値=実戦では親の倍率を継承)`
         : `分裂(倒すと${child.name}×${def.splitInto.count}に${def.splitInto.stunned ? '。出現ターンは動かない' : ''})`,
     )
   }
@@ -80,9 +80,13 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
+    // 予告HPは親のHP倍率 (幕・ボス係数・難易度) を継承した実値で出す (2026-09-03 Opusラン K:
+    // 「二の相HP55」の予告に対し実際は132で出ていた)
+    const ratio = def.maxHp > 0 ? e.maxHp / def.maxHp : 1
+    const childHp = Math.max(1, Math.round(child.maxHp * ratio))
     tags.push(
       def.splitInto.count === 1
-        ? `残機(倒すと${child.name}HP${child.maxHp}で再起動)`
+        ? `残機(倒すと${child.name}HP${childHp}で再起動)`
         : `分裂(倒すと${child.name}×${def.splitInto.count}に${def.splitInto.stunned ? '。出現ターンは動かない' : ''})`,
     )
   }
