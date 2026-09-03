@@ -4,6 +4,7 @@
     "name": "茨の冠",
     "sprite": "👑",
     "description": "被攻撃後、攻撃してきた敵に3ダメージ",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onAttacked",
@@ -17,6 +18,7 @@
     "name": "賢者の巻物",
     "sprite": "📜",
     "description": "戦闘開始時、1枚ドロー",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onCombatStart",
@@ -30,6 +32,7 @@
     "name": "早駆けの靴",
     "sprite": "👢",
     "description": "戦闘開始時、このターンのエナジー+1",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onCombatStart",
@@ -43,6 +46,7 @@
     "name": "大盾の欠片",
     "sprite": "🛡️",
     "description": "毎ターン開始時、ブロック+2",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -56,6 +60,7 @@
     "name": "先手の盾",
     "sprite": "⛨",
     "description": "戦闘開始時、ブロック+5",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onCombatStart",
@@ -69,6 +74,7 @@
     "name": "鉄の心臓",
     "sprite": "🫀",
     "description": "取得時、最大HP+8",
+    "rarity": "common",
     "bonus": {
       "maxHp": 8
     }
@@ -78,6 +84,7 @@
     "name": "狩人の恵み",
     "sprite": "🏹",
     "description": "勝利時、HPが30%以下なら+8回復",
+    "rarity": "uncommon",
     "bonus": {
       "victoryHeal": 8
     }
@@ -87,6 +94,7 @@
     "name": "収集家の鞄",
     "sprite": "🎒",
     "description": "報酬ピックの候補+1枚",
+    "rarity": "common",
     "bonus": {
       "rewardChoices": 1
     }
@@ -96,6 +104,7 @@
     "name": "深呼吸の香",
     "sprite": "🕯️",
     "description": "焚き火の回復が最大HPの35%に増える",
+    "rarity": "common",
     "bonus": {
       "campfireRatio": 0.35
     }
@@ -105,6 +114,7 @@
     "name": "成長の種",
     "sprite": "🌱",
     "description": "戦闘開始時、成長+1",
+    "rarity": "common",
     "effects": [
       {
         "trigger": "onCombatStart",
@@ -118,6 +128,7 @@
     "name": "韋駄天の帯",
     "sprite": "🎽",
     "description": "毎ターン開始時、勢い+1（勢いはそのターンの攻撃ダメージすべてに加算される——どの色でも乗る）",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onTurnStart",
@@ -131,6 +142,7 @@
     "name": "古根の杯",
     "sprite": "🏆",
     "description": "戦闘開始時、エナジー上限+1（次のターンから）",
+    "rarity": "rare",
     "effects": [
       {
         "trigger": "onCombatStart",
@@ -144,6 +156,7 @@
     "name": "猛禽の眼",
     "sprite": "👁️",
     "description": "戦闘開始時、敵全体に急所1",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onCombatStart",
@@ -158,6 +171,7 @@
     "name": "商人の秤",
     "sprite": "⚖️",
     "description": "戦闘勝利のゴールド+8",
+    "rarity": "rare",
     "bonus": {
       "goldPerVictory": 8
     }
@@ -167,6 +181,7 @@
     "name": "鍛冶の砥石",
     "sprite": "🪨",
     "description": "焚き火の「鍛える」を2枚まで使える",
+    "rarity": "rare",
     "bonus": {
       "campfireForge": 1
     }
@@ -176,6 +191,7 @@
     "name": "符師の懐",
     "sprite": "👝",
     "description": "カードを伏せるたび、1枚ドロー",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onCardSet",
@@ -189,8 +205,78 @@
     "name": "静かな鈴",
     "sprite": "🔔",
     "description": "伏せ札がある間、敵の攻撃ダメージ-1（最低1）",
+    "rarity": "uncommon",
     "combatRule": {
       "setDamageReduction": 1
     }
+  },
+  {
+    "id": "relic_crown_shard",
+    "name": "王冠の欠片",
+    "sprite": "👑",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。報酬カードの提示が1枚減る",
+    "rarity": "boss",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ],
+    "bonus": {
+      "rewardChoices": -1
+    }
+  },
+  {
+    "id": "relic_cursed_key",
+    "name": "呪いの鍵",
+    "sprite": "🗝️",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。宝箱や?でレリックを取るたび、呪いの烙印を1枚受け取る",
+    "rarity": "boss",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ],
+    "bonus": {
+      "brandOnChestRelic": 1
+    }
+  },
+  {
+    "id": "relic_philosopher_stone",
+    "name": "賢者の石",
+    "sprite": "💎",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。敵全員が筋力+1で始まる",
+    "rarity": "boss",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      },
+      {
+        "trigger": "onCombatStart",
+        "effect": "strengthenEnemy",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "relic_slaver_collar",
+    "name": "鎖の首輪",
+    "sprite": "⛓️",
+    "description": "エリート・ボス戦のみ: 戦闘開始時、エナジー上限+1（次のターンから）",
+    "rarity": "boss",
+    "eliteBossOnly": true,
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ]
   }
 ]

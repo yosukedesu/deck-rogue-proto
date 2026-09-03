@@ -66,7 +66,7 @@ import {
 import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -436,6 +436,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}🛡 置物の数×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.permanents}]`
         : `${trigger}🛡 置物の数×${e.amount}ブロック`
+    case 'strengthenEnemy':
+      return `${trigger}💪 敵の筋力+${e.amount}`
     case 'weakenEnemy':
       return `${trigger}${aoe}威圧${e.amount}（敵の筋力-${e.amount}）`
     case 'dealDamagePerBlock':
@@ -3270,7 +3272,7 @@ const EFFECT_JA: Record<string, string> = {
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
   gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
-  addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
+  strengthenEnemy: '敵の筋力+N', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
 }
 function effectJa(e: string): string {
   return EFFECT_JA[e] ?? e
@@ -4170,6 +4172,7 @@ function RunScreen({
                 <div className="choice-title">
                   <span className="choice-sprite">{r.sprite}</span>
                   {r.name}
+                  {relicRarityTag(r) && <span className="chip" style={{ marginLeft: 6 }}>{relicRarityTag(r)}</span>}
                 </div>
                 <div className="choice-desc">{r.description}</div>
               </button>

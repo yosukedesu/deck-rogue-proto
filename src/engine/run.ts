@@ -22,7 +22,7 @@ import {
 } from './content.ts'
 import { createRng, nextInt, shuffle } from './rng.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, GameState, ReactionMode, RngState } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, GameState, ReactionMode, RngState, RelicRarity } from './types.ts'
 
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 export const REWARD_EXCLUDED = new Set([
@@ -332,6 +332,8 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     relicPermanents: run.relics
       .map(getRelicDef)
       .filter((r) => (r.effects?.length ?? 0) > 0)
+      // 鎖の首輪 (2026-09-03 本家 Slaver's Collar): エリート・ボス戦にだけ注入
+      .filter((r) => r.eliteBossOnly !== true || elite || node.type === 'boss')
       .map(buildRelicPermanent),
     // C型レリック: 所持レリックの combatRule を集計して戦闘ルールに渡す
     setDamageReduction: run.relics
@@ -384,21 +386,53 @@ function enterNodeInner(run: RunState): RunState {
  * 旧・候補列の先頭3枚固定は、断ったレリックが以後の全提示に再登場し続け、
  * 幕1の5提示中「砥石5回・鉄の心臓4回」の反復を生んでいた (Opusマップ検証の指摘)
  */
-function drawRelicOptions(run: RunState): readonly [readonly string[], RngState] {
+export type RelicSource = 'chest' | 'elite' | 'boss' | 'shop' | 'event'
+type RelicTier = 'common' | 'uncommon' | 'rare'
+const relicRarity = (id: string) => getRelicDef(id).rarity ?? 'common'
+
+/**
+ * レリック抽選 (2026-09-03 本家式の層×供給源。docs/relic-redesign-proposal.md §3-1)。
+ * - chest / elite / event: スロットごとに C/U/R を 50/33/17 でロールし、その層の残候補から1つ (空なら隣の層へ)
+ * - boss: boss 層のみ (尽きたら rare→uncommon→common)
+ * - shop: 先頭1枠は shop 層 (無ければ C/U/R ロール)
+ * boss / shop 層は他の供給源には決して出ない。候補列 (relicQueue) はシード決定の全レリック順で、
+ * 抽選はその中からシードRNGで引く = 決定的
+ */
+export function drawRelicOptions(
+  run: RunState,
+  source: RelicSource,
+  count = 3,
+): readonly [readonly string[], RngState] {
   const pool = run.relicQueue.filter((id) => !run.relics.includes(id))
   let rng = run.rng
   const picked: string[] = []
-  while (picked.length < 3 && pool.length > 0) {
-    const [i, next] = nextInt(rng, 0, pool.length - 1)
+  const take = (tier: RelicRarity): boolean => {
+    const cands = pool.filter((id) => relicRarity(id) === tier && !picked.includes(id))
+    if (cands.length === 0) return false
+    const [i, next] = nextInt(rng, 0, cands.length - 1)
     rng = next
-    picked.push(pool.splice(i, 1)[0])
+    picked.push(cands[i])
+    return true
+  }
+  for (let n = 0; n < count; n++) {
+    if (source === 'boss') {
+      if (take('boss') || take('rare') || take('uncommon') || take('common')) continue
+      break
+    }
+    if (source === 'shop' && n === 0 && take('shop')) continue
+    const [roll, r1] = nextInt(rng, 0, 99)
+    rng = r1
+    const tier: RelicTier = roll < 50 ? 'common' : roll < 83 ? 'uncommon' : 'rare'
+    const order: readonly RelicTier[] =
+      tier === 'common' ? ['common', 'uncommon', 'rare'] : tier === 'uncommon' ? ['uncommon', 'common', 'rare'] : ['rare', 'uncommon', 'common']
+    if (!order.some(take)) break
   }
   return [picked, rng]
 }
 
 /** 宝箱: レリック3択 (スキップ可)。候補列が尽きていれば素通りで map へ戻る */
 function openTreasure(run: RunState): RunState {
-  const [options, rng] = drawRelicOptions(run)
+  const [options, rng] = drawRelicOptions(run, 'chest')
   const base = { ...run, rng, combat: null, rewardOptions: null }
   if (options.length === 0) return { ...base, phase: 'map' as const }
   return { ...base, phase: 'relic-reward' as const, relicOptions: options }
@@ -513,7 +547,10 @@ function openShop(run: RunState): RunState {
     const pricedCost = def.xCost === true ? 3 : def.cost
     cards.push({ id: def.id, price: 120 + pricedCost * 10 })
   }
-  const relicId = run.relicQueue.find((id) => !run.relics.includes(id)) ?? null
+  // ショップのレリック: shop 層を優先し、無ければ C/U/R (2026-09-03 本家式)
+  const [shopRelics, rngS] = drawRelicOptions({ ...run, rng }, 'shop', 1)
+  rng = rngS
+  const relicId = shopRelics[0] ?? null
   const shop: ShopState = {
     cards,
     relicId,
@@ -611,7 +648,10 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     }
   }
   if (choice.relic) {
-    const relicId = run.relicQueue.find((id) => !next.relics.includes(id))
+    // イベントのレリックは C/U/R から抽選 (2026-09-03 本家式。boss/shop 層は出ない)
+    const [drawn, rE] = drawRelicOptions({ ...next, rng }, 'event', 1)
+    rng = rE
+    const relicId = drawn[0]
     if (relicId !== undefined) {
       next = applyRelicBonus({ ...next, relics: [...next.relics, relicId] }, relicId)
     }
@@ -937,7 +977,7 @@ function rollRewards(run: RunState): RunState {
   const remaining = [...pool]
   const picked: string[] = []
   let rng = run.rng
-  const want = leader.rewardChoices + run.rewardChoicesBonus
+  const want = Math.max(1, leader.rewardChoices + run.rewardChoicesBonus) // 王冠の欠片 (提示-1) でも最低1枚
   const rarityOf = (c: CardDef) => c.rarity ?? 'common'
   while (picked.length < want && remaining.length > 0) {
     const [roll, r1] = nextInt(rng, 0, 99)
@@ -1030,7 +1070,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   }
   // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
   if (run.currentElite || isBoss) {
-    const [options, rng2] = drawRelicOptions(next)
+    const [options, rng2] = drawRelicOptions(next, isBoss ? 'boss' : 'elite')
     if (options.length > 0) {
       return { ...next, rng: rng2, phase: 'relic-reward', relicOptions: options }
     }
@@ -1127,7 +1167,20 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       next = applyRelicBonus(next, relicId)
       // ?マスの宝箱はレリックのみでカード報酬は付かない (2026-08-29)。
       // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (afterVictory は必ず combat を渡す)
-      if (run.combat === null) return { ...next, relicOptions: null, phase: 'map' }
+      if (run.combat === null) {
+        // 呪いの鍵 (2026-09-03 本家 Cursed Key): 宝箱・?のレリックを取るたび烙印。取得前に持っていた鍵だけが数える
+        const brands = run.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.brandOnChestRelic ?? 0), 0)
+        if (brands > 0) {
+          next = {
+            ...next,
+            deck: [
+              ...next.deck,
+              ...Array.from({ length: brands }, (_, i) => ({ uid: `brand_key_a${run.act}_r${run.row}_${i}`, def: BRAND_DEF })),
+            ],
+          }
+        }
+        return { ...next, relicOptions: null, phase: 'map' }
+      }
       return rollRewards(next)
     }
     case 'SkipRelic': {
@@ -1139,8 +1192,10 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       // 休む = 最大HPの30% (campfireRatio) を回復して次へ。鍛える/除去とは排他 (2026-08-29 復帰)。
       // 砥石で「鍛える」を使った後は回復なしの立ち去りになる (選べるのは1種類の原則)
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      // 休めないレリック (古根の杯=本家 Coffee Dripper 2026-09-03): 休むは回復なしの立ち去り
+      const noRest = run.relics.some((id) => getRelicDef(id).bonus?.noRest === true)
       const hp =
-        (run.campfireUpgradesUsed ?? 0) > 0
+        (run.campfireUpgradesUsed ?? 0) > 0 || noRest
           ? run.hp
           : Math.min(run.maxHp, run.hp + Math.floor(run.maxHp * run.campfireRatio))
       return { ...run, hp, phase: 'map' }

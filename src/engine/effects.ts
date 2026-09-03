@@ -982,6 +982,15 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'gainHp':
       // 回復 (白の専売。確定済みルール表「回復」)。実回復>0 なら onHealed 置物が誘発する
       return healPlayer(state, effect.amount ?? 0, enemyIndex)
+    case 'strengthenEnemy': {
+      // 敵の筋力+N (2026-09-03 ボスレリック「賢者の石」の代償=本家 Philosopher's Stone)。
+      // 威圧の逆。自軍への強化なのでアーティファクトは弾かない
+      const amount = effect.amount ?? 0
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || amount === 0) return state
+      const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, strength: e.strength + amount } : e))
+      return emit({ ...state, enemies }, { type: 'StrengthGained', enemyIndex, amount })
+    }
     case 'weakenEnemy': {
       // 威圧 (白): 敵の強化を下げる (確定済みルール表「威圧（白）」)
       const amount = effect.amount ?? 0

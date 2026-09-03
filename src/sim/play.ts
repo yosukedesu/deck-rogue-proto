@@ -35,7 +35,7 @@ function cname(cardId: string): string {
 }
 import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
@@ -71,7 +71,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)${e.spendBlock === true ? '。解決後にブロックを全て失う' : ''}`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`, dealDamagePerCardPlayedTotal: `${all}この戦闘の累計プレイ数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
-    dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
+    strengthenEnemy: `敵の筋力+${a}`, dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
     dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍',
     gainSetSlot: `伏せ枠+${a}(この戦闘中)`, retrieveFromDiscard: `捨て札から${a}枚を選んで手札へ(要deckUids)`, searchDeck: `山札から${a}枚を選んで手札へ(要deckUids)`,
     addCopyToDiscard: `このカードのコピー${a}枚を捨て札へ`, growSelf: `プレイするたび、この札自身の与ダメ+${a}(この戦闘中。他の札には乗らない)`, upgradeInHand: `手札の${a}枚をこの戦闘中鍛える(要handUids)`,
@@ -614,7 +614,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     run.shop.cards.forEach((item, i) => L.push(item.sold === true ? ` [${i}] 〔売切〕` : ` [${i}] ${item.price}G: ${SHOP_RARITY[getCardDef(item.id).rarity ?? 'common']}${cardLine(getCardDef(item.id))}`))
     if (run.shop.relicId !== null) {
       const r = getRelicDef(run.shop.relicId)
-      L.push(` レリック ${run.shop.relicPrice}G: ${r.name} (${r.description})`)
+      L.push(` レリック ${run.shop.relicPrice}G: ${relicRarityTag(r) ? `${relicRarityTag(r)} ` : ''}${r.name} (${r.description})`)
     }
     L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+50G)`)
     L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
@@ -649,7 +649,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
     run.relicOptions.forEach((id, i) => {
       const def = getRelicDef(id)
-      L.push(` [${i}] ${def.name}: ${def.description}`)
+      L.push(` [${i}] ${relicRarityTag(def) ? `${relicRarityTag(def)} ` : ''}${def.name}: ${def.description}`)
     })
     L.push('→ {"type":"PickRelic","index":N} か {"type":"SkipRelic"}')
   } else if (run.phase === 'won') L.push('★★★ ラン走破！ ★★★')

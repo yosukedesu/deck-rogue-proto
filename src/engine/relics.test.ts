@@ -2,7 +2,7 @@
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
 import { allRelics, buildRelicPermanent, getCardDef, getEventDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, currentNode } from './run.ts'
+import { applyRunCommand, createRun, currentNode, drawRelicOptions } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
@@ -175,9 +175,9 @@ describe('レリック効果', () => {
     }
   })
 
-  it('在庫は18個・IDは一意 (第二弾拡充 2026-08-29)', () => {
-    expect(allRelics).toHaveLength(17) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(17)
+  it('在庫は21個・IDは一意 (第二弾拡充 2026-08-29・ボスレリック 2026-09-03)', () => {
+    expect(allRelics).toHaveLength(21) // 2026-09-03 ボスレリック+4 (王冠の欠片・呪いの鍵・賢者の石・鎖の首輪) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(21)
   })
 })
 
@@ -368,5 +368,65 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
     const { campfireUpgradesUsed: _u2, campfireForgeBonus: _c2, ...campRest } = camp
     const upgraded = applyRunCommand(campRest as RunState, { type: 'CampfireUpgrade', index: 0 })
     expect(upgraded.phase).toBe('map')
+  })
+})
+
+describe('レリックの層×供給源 (2026-09-03 本家式。docs/relic-redesign-proposal.md §3-1)', () => {
+  const TIERS = new Set(['common', 'uncommon', 'rare', 'boss', 'shop', 'event'])
+  it('全レリックが既知の層を持ち、boss 層に少なくとも4つある', () => {
+    for (const r of allRelics) expect(TIERS.has(r.rarity ?? 'common'), r.id).toBe(true)
+    expect(allRelics.filter((r) => r.rarity === 'boss').length).toBeGreaterThanOrEqual(4)
+  })
+  it('宝箱/エリート/イベントの抽選に boss・shop 層は決して混ざらず、ボスの3択は boss 層だけ', () => {
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+      const run = createRun(seed, 'set-confirm')
+      for (const src of ['chest', 'elite', 'event'] as const) {
+        const [opts] = drawRelicOptions(run, src)
+        expect(opts.length).toBe(3)
+        for (const id of opts) expect(['boss', 'shop']).not.toContain(getRelicDef(id).rarity ?? 'common')
+      }
+      const [boss] = drawRelicOptions(run, 'boss')
+      expect(boss.length).toBe(3)
+      for (const id of boss) expect(getRelicDef(id).rarity).toBe('boss')
+    }
+  })
+  it('決定性: 同じ状態なら同じ提示。所持済みは出ない', () => {
+    const run = createRun(5, 'set-confirm')
+    expect(drawRelicOptions(run, 'chest')[0]).toEqual(drawRelicOptions(run, 'chest')[0])
+    const owned = { ...run, relics: run.relicQueue.slice(0, 5) }
+    for (const id of drawRelicOptions(owned, 'elite')[0]) expect(owned.relics).not.toContain(id)
+  })
+  it('王冠の欠片: 報酬提示-1 (最低1枚のクランプ)', () => {
+    let run = createRun(7, 'set-confirm')
+    run = { ...run, phase: 'relic-reward', relicOptions: ['relic_crown_shard'], combat: null }
+    run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
+    expect(run.rewardChoicesBonus).toBe(-1)
+    expect(run.relics).toContain('relic_crown_shard')
+  })
+  it('呪いの鍵: 持っている状態で宝箱のレリックを取ると烙印が1枚増える (鍵を取った瞬間は増えない)', () => {
+    let run = createRun(7, 'set-confirm')
+    run = { ...run, phase: 'relic-reward', relicOptions: ['relic_cursed_key'], combat: null }
+    run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
+    const brands = (r: RunState) => r.deck.filter((c) => c.def.id === 'status_brand').length
+    expect(brands(run)).toBe(0)
+    run = { ...run, phase: 'relic-reward', relicOptions: ['relic_iron_heart'], combat: null }
+    run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
+    expect(brands(run)).toBe(1)
+  })
+  it('鎖の首輪: 通常戦には注入されず、エリート戦には注入される', () => {
+    const normal = injectedIntoBattle('relic_slaver_collar', 11)
+    expect(normal.combat!.player.permanents.some((p) => p.uid === 'relic_relic_slaver_collar')).toBe(false)
+    let run = intoFirstElite(11)
+    run = { ...run, relics: ['relic_slaver_collar'] }
+    // エリートノードに入り直す (intoFirstElite は戦闘中なので、同じノードで launchCombat を再現)
+    const node = currentNode(run)!
+    expect(node.type).toBe('elite')
+    const again = applyRunCommand({ ...run, phase: 'map', combat: null, row: run.row - 1, col: 0, map: run.map }, { type: 'ChooseNode', col: run.col })
+    expect(again.combat!.player.permanents.some((p) => p.uid === 'relic_relic_slaver_collar')).toBe(true)
+  })
+  it('賢者の石: 敵全員が筋力+1で始まる', () => {
+    const base = intoBattle(createRun(11, 'set-confirm'))
+    const withStone = injectedIntoBattle('relic_philosopher_stone', 11)
+    withStone.combat!.enemies.forEach((e, i) => expect(e.strength).toBe(base.combat!.enemies[i].strength + 1))
   })
 })

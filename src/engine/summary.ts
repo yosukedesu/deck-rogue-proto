@@ -2,7 +2,7 @@
 // eventLog の純関数集計なので engine に置く (UI/CLI が共用。DOM依存なし)。
 // 「俺の戦いだった」を1行で見せる: 最大ターン火力・読み勝ち・完全に凌いだ回数。
 
-import type { GameEvent, EnemyDef } from './types.ts'
+import type { GameEvent, EnemyDef, RelicDef } from './types.ts'
 
 export interface BattleSummary {
   /** かかったターン数 */
@@ -176,4 +176,16 @@ export function setBranchNote(def: EnemyDef): string | null {
   if (!def.sequence || def.sequence.length === 0) return null
   if (!def.movesVsSet || def.movesVsSet.length < 2) return null
   return '順番を崩す=向きは毎ターン変わる'
+}
+
+/** レリックの層の表示タグ (2026-09-03 本家式の層。CLI/UI共用。common は無印) */
+export function relicRarityTag(def: RelicDef): string {
+  switch (def.rarity ?? 'common') {
+    case 'uncommon': return '◆アンコモン'
+    case 'rare': return '★レア'
+    case 'boss': return '👑ボス'
+    case 'shop': return '🛒店売り'
+    case 'event': return '❓イベント'
+    default: return ''
+  }
 }

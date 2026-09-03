@@ -573,6 +573,7 @@ export interface DeclarativeEffect {
     | 'exposeEnemy' // 急所+X: その敵が次に受けるプレイヤーダメージX回が+50% (敵版脆弱)
     | 'gainHp' // 回復 (白の専売): 最大HPまで回復
     | 'weakenEnemy' // 威圧 (白): 敵の強化を-X (攻撃は最低1クランプの既存則)
+    | 'strengthenEnemy' // 敵の筋力+X (2026-09-03 ボスレリック「賢者の石」の代償。威圧の逆。アーティファクトは弾かない)
     | 'dealDamagePerBlock' // 要塞型ペイオフ: 現在のブロック×Xダメージ (ボディスラム型)
     | 'dealDamagePerPermanent' // 集結 (白): 置物の数×Xダメージ (従者の横並び参照)
     | 'dealDamageDrain' // ドレイン (黒の専売): Xダメージを与え、floor(X/2)回復
@@ -1085,11 +1086,20 @@ export interface EncounterDef {
  * レリック定義。A型=フック効果 (effects。リーダーパッシブと同じ置物注入機構) /
  * B型=ラン定数 (bonus。取得時に RunState を書き換える)
  */
+/**
+ * レリックの層 (2026-09-03 本家式。供給源と一体: 宝箱/エリート=C/U/R 50/33/17・幕ボス=boss のみ・ショップ=shop 1個+C/U/R・?=event)。
+ * 省略時は common。docs/relic-redesign-proposal.md
+ */
+export type RelicRarity = 'common' | 'uncommon' | 'rare' | 'boss' | 'shop' | 'event'
+
 export interface RelicDef {
   readonly id: string
   readonly name: string
   readonly sprite: string
   readonly description: string
+  readonly rarity?: RelicRarity
+  /** A型効果をエリート・ボス戦にだけ注入する (鎖の首輪=本家 Slaver's Collar) */
+  readonly eliteBossOnly?: boolean
   /** A型: 戦闘開始時に不可視の置物として注入される宣言的効果 */
   readonly effects?: readonly DeclarativeEffect[]
   /** B型: ラン定数の恒久変更 */
@@ -1102,6 +1112,10 @@ export interface RelicDef {
     readonly goldPerVictory?: number
     /** 焚き火の「鍛える」の追加回数 (鍛冶の砥石=+1で計2枚) */
     readonly campfireForge?: number
+    /** 焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper) */
+    readonly noRest?: boolean
+    /** 宝箱・?のレリックを取るたび烙印をN枚受け取る (呪いの鍵=本家 Cursed Key) */
+    readonly brandOnChestRelic?: number
   }
   /**
    * C型: 戦闘ルールの改変 (少数精鋭)。launchCombat が所持レリックから集計して
