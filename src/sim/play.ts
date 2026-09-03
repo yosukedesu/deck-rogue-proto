@@ -448,7 +448,19 @@ function renderBattle(s: GameState, logFrom: number): string {
               })
               .join(' ／ ')}］`
           : ''
-      L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}`)
+      // 素のダメージ札の実値注記 (2026-09-03 Opusラン L: 弱体1+成長5で巨象の突進が27になり「貫通のバグ」と誤読)。
+      // 補正 (成長・勢い・弱体・急所・装甲・潜伏・因縁・敵ブロック) が1つでも掛かる時だけ、先頭のダメージ効果の敵ごとの実値を出す
+      const plainDmg = c.def.xCost === true ? undefined : c.def.effects.find((e) => e.trigger === 'onPlay' && e.effect === 'dealDamage' && e.amount !== undefined)
+      const dmgNow = (() => {
+        if (!plainDmg) return ''
+        const base = (plainDmg.amount ?? 0) + (plainDmg.growthMultiplier !== undefined ? p.growth * (plainDmg.growthMultiplier - 1) : 0)
+        const per = s.enemies
+          .map((en, ei) => ({ en, ei, b: damageBreakdown(s, ei, base, plainDmg.pierce === true) }))
+          .filter((x) => x.b !== null && x.b!.steps.length > 1)
+          .map((x) => `敵${x.ei}:${x.b!.hpLoss}(${x.b!.steps.slice(1).map((st) => st.label).join('・')})`)
+        return per.length > 0 ? ` ［実値: ${per.join(' / ')}${c.def.effects.filter((e) => e.effect === 'dealDamage').length > 1 ? '。先頭ヒット基準' : ''}］` : ''
+      })()
+      L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}${dmgNow}`)
     }
   }
   if (s.phase === 'won') L.push(`★★ 勝利 ★★  ⚔️ 戦いの記録: ${summaryLine(battleSummary(s.eventLog))}`)
