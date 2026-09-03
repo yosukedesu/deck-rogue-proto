@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
 import { getCardDef } from './content.ts'
+import { effectiveCost } from './effects.ts'
 import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
@@ -311,22 +312,31 @@ describe('ランプ即時利用の廃止が上限参照札にも効く (2026-08-
 // ユーザー判断「逆上は緑のカラーパイ / 粉砕は緑に渡したい」。逆上は素のまま渡すと
 // 中立スターターで中央値2ダメ・57%が2以下と分散が極端なので、固定5の床を付けて渡した。
 describe('赤からの移管: 被弾の換金と粉砕', () => {
-  it('茨の報い: 固定5 + 直前の敵フェーズで受けたダメージ×1', () => {
+  it('棘の返礼 (2026-09-03 茨の報いを守り成功参照へ作り直し): 直前の敵フェーズを完全に凌いでいたら 4+8', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = { ...s, player: { ...s.player, block: 30 } }
     s = withIntent(s, attackIntent(8))
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.damageTakenLastEnemyPhase).toBe(8)
+    expect(s.player.perfectBlockLastPhase).toBe(true)
     s = withHand(s, ['green_thorn_repay'])
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 13) // 床5 + 被弾8
+    expect(s.enemies[0].hp).toBe(hpBefore - 12)
   })
 
-  it('茨の報い: 被弾0のターンでも床の5は出る (緑のスターターで腐らせない)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_thorn_repay'])
-    const hpBefore = s.enemies[0].hp
+  it('棘の返礼: 被弾していたら床の4だけ。T1 (直前の敵フェーズが無い) も4', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    s = withIntent(s, attackIntent(8))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.perfectBlockLastPhase).toBe(false)
+    s = withHand(s, ['green_thorn_repay'])
+    let hp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 5)
+    expect(s.enemies[0].hp).toBe(hp - 4)
+    let t1 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_thorn_repay'])
+    hp = t1.enemies[0].hp
+    t1 = applyCommand(t1, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
+    expect(t1.enemies[0].hp).toBe(hp - 4)
   })
 
   it('根喰らいの蔓: 破壊した値をダメージに換金する', () => {
@@ -339,5 +349,87 @@ describe('赤からの移管: 被弾の換金と粉砕', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_devour_vine' })
     expect(s.enemies[0].block).toBe(0)
     expect(s.enemies[0].hp).toBe(hpBefore - 18 /* 2026-09-02 +5→+8 */) // 破壊値10 + 基礎5
+  })
+})
+
+describe('参照シナジー (2026-09-03 本家6型。docs/green-synergy-proposal.md)', () => {
+  it('見切り撃ち: 対象の意図が攻撃なら+1ドロー+成長+1、防御なら5貫通だけ', () => {
+    let s = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), attackIntent(8))
+    const hand0 = s.player.hand.length
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
+    expect(s.player.growth).toBe(1)
+    expect(s.player.hand.length).toBe(hand0) // 1枚減って1枚引く
+    let d = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), defendIntent(5))
+    d = applyCommand(d, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
+    expect(d.player.growth).toBe(0)
+    expect(d.player.hand.length).toBe(0)
+  })
+  it('年輪: 手札の他の札がすべて物理なら0E (本家 Clash)', () => {
+    const phys = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_growth_ring', 'green_strike'])
+    expect(effectiveCost(phys, phys.player.hand[0])).toBe(0)
+    const mixed = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_growth_ring', 'green_flash_insight'])
+    expect(effectiveCost(mixed, mixed.player.hand[0])).toBe(1)
+  })
+  it('樹液: 急所を持つ敵がいれば消滅しない (本家 Dropkick 型)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_ritual_surge'])
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, exposed: 1 })) }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ritual_surge' })
+    expect(s.player.discardPile.map((c) => c.def.id)).toContain('green_ritual_surge')
+    let t = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_ritual_surge'])
+    t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_ritual_surge' })
+    expect(t.player.exhaustPile.map((c) => c.def.id)).toContain('green_ritual_surge')
+  })
+  it('双牙の蔦: 対象が急所持ちなら3ヒット (プレイ開始時点で判定=前のヒットが急所を消費しても成立)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_twin_fang_vine'])
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, exposed: 1 })) }
+    const n0 = s.eventLog.filter((e) => e.type === 'DamageDealt' && e.source === 'player').length
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_twin_fang_vine', targetIndex: 0 })
+    expect(s.eventLog.filter((e) => e.type === 'DamageDealt' && e.source === 'player').length - n0).toBe(3)
+    let t = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_twin_fang_vine'])
+    t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_twin_fang_vine', targetIndex: 0 })
+    expect(t.eventLog.filter((e) => e.type === 'DamageDealt' && e.source === 'player').length).toBe(2)
+  })
+  it('大牙: 成長が3倍で乗る (成長2 → 8+6=14)。放出しない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_harvest_strike'])
+    s = { ...s, player: { ...s.player, growth: 2 } }
+    const hp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_harvest_strike', targetIndex: 0 })
+    expect(hp - s.enemies[0].hp).toBe(14)
+    expect(s.player.growth).toBe(2)
+  })
+  it('根張り: 攻撃を完全に凌ぐたび成長+2。被弾したら乗らない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_perm_pain_root'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_pain_root' })
+    s = { ...s, player: { ...s.player, block: 30 } }
+    s = withIntent(s, attackIntent(8))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.growth).toBe(2)
+    s = { ...s, player: { ...s.player, block: 0 } }
+    s = withHand(s, [])
+    s = withIntent(s, attackIntent(8))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.growth).toBe(2)
+  })
+  it('薙ぎ払い: 全体4 + このターンに先にプレイした攻撃×2 (自身は数えない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_strike', 'green_sweep'])
+    const hp = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 0 })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_sweep' })
+    expect(hp - s.enemies[0].hp).toBe(6 + 4 + 2)
+  })
+  it('獲物: とどめなら成長+3', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_prey_strike'])
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 5, block: 0 })) }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_prey_strike', targetIndex: 0 })
+    expect(s.player.growth).toBe(3)
+    let t = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_prey_strike'])
+    t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_prey_strike', targetIndex: 0 })
+    expect(t.player.growth).toBe(0)
+  })
+  it('データ: 芽守りはしきい値3・狩人の眼光は1E・若枝の盾張りは1E・毒針の囮は撤去', () => {
+    expect(getCardDef('green_perm_sprout_keeper').effects[0].condition?.minGrowth).toBe(3)
+    expect(getCardDef('green_perm_hunters_gaze').cost).toBe(1)
+    expect(getCardDef('green_sapling_reap').cost).toBe(1)
+    expect(() => getCardDef('green_decoy_needle')).toThrow()
   })
 })

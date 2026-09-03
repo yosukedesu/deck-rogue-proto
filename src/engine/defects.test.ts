@@ -3,7 +3,7 @@
 // 既存テストの網の外にあった (だから long-lived になっていた)。
 import { describe, expect, it } from 'vitest'
 import { startCombatWithOptions } from './combat.ts'
-import { buildDeck, getCardDef } from './content.ts'
+import { applyDebugOverrides, buildDeck, clearDebugOverrides, getCardDef } from './content.ts'
 import { countedPermanents } from './effects.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
@@ -69,16 +69,22 @@ describe('従者狩り (destroy-token) が到達不能だった件', () => {
 })
 
 describe('伏せ札の消滅が黙殺されていた件', () => {
-  it('消滅を持つリアクション (毒針の囮) は、発動後に捨て札でなく消滅置き場へ行く', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
-      'green_decoy_needle',
-    ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_decoy_needle' })
-    s = withIntent(s, attackIntent(6))
-    s = applyCommand(s, { type: 'EndTurn' })
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_decoy_needle' })
-    expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['green_decoy_needle'])
-    expect(s.player.discardPile.map((c) => c.def.id)).not.toContain('green_decoy_needle')
+  it('消滅を持つリアクションは、発動後に捨て札でなく消滅置き場へ行く (毒針の囮は2026-09-03撤去=合成定義で検証)', () => {
+    applyDebugOverrides({
+      cards: [{ id: 'test_exhaust_reaction', name: 'テスト罠', cost: 0, type: 'reaction', color: 'green', exhaust: true,
+        effects: [{ trigger: 'onAttacked', effect: 'counter', amount: 5 }] }],
+    })
+    try {
+      let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), ['test_exhaust_reaction'])
+      s = applyCommand(s, { type: 'SetCard', cardUid: 't0_test_exhaust_reaction' })
+      s = withIntent(s, attackIntent(6))
+      s = applyCommand(s, { type: 'EndTurn' })
+      s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_test_exhaust_reaction' })
+      expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['test_exhaust_reaction'])
+      expect(s.player.discardPile.map((c) => c.def.id)).not.toContain('test_exhaust_reaction')
+    } finally {
+      clearDebugOverrides()
+    }
   })
 })
 

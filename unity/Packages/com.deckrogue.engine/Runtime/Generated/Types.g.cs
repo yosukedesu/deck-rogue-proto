@@ -282,6 +282,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット)</summary>
         [JsonProperty("damageTakenLastEnemyPhase")]
         public int DamageTakenLastEnemyPhase { get; init; }
+        /// <summary>このターンにプレイした攻撃カードの枚数 (自身の解決後に加算=攻撃数参照はそのカード自身を数えない。2026-09-03)</summary>
+        [JsonProperty("attacksPlayedThisTurn")]
+        public int? AttacksPlayedThisTurn { get; init; }
+        /// <summary>この敵フェーズに受けた攻撃行動の回数 (完全に凌いだ判定用)</summary>
+        [JsonProperty("attacksReceivedThisPhase")]
+        public int? AttacksReceivedThisPhase { get; init; }
+        /// <summary>直前の敵フェーズで攻撃を1回以上受け、HP損失が0だった (棘の返礼の参照値。敵フェーズ終了時に確定)</summary>
+        [JsonProperty("perfectBlockLastPhase")]
+        public bool? PerfectBlockLastPhase { get; init; }
         /// <summary>反復トークン (青: 呪文コピー)。次に唱える呪文の効果を2回解決する。自ターン終了時にリセット (勢いと同じ持続則 = 敵フェーズに得た分は次の自ターンまで持つ)</summary>
         [JsonProperty("spellEchoes")]
         public int SpellEchoes { get; init; }
@@ -448,6 +457,21 @@ namespace DeckRogue.Engine.Generated
         /// <summary>猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上** なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝ 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、 時間依存でなく**しきい値依存**に置き換える機構</summary>
         [JsonProperty("blaze")]
         public bool? Blaze { get; init; }
+        /// <summary>対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness)</summary>
+        [JsonProperty("enemyIntent")]
+        public string? EnemyIntent { get; init; }
+        /// <summary>対象の敵が急所を持っていれば (カードのプレイ開始時点で判定=同じカードの前のヒットが急所を消費しても成立。双牙の蔦=本家 Dismantle)</summary>
+        [JsonProperty("enemyExposed")]
+        public bool? EnemyExposed { get; init; }
+        /// <summary>直前の敵フェーズで攻撃を受け、HP損失が0だったら (棘の返礼=本家 Flame Barrier/Rage 系の「守り成功」参照)</summary>
+        [JsonProperty("perfectBlockLastPhase")]
+        public bool? PerfectBlockLastPhase { get; init; }
+        /// <summary>対象の敵がこの解決の時点で倒れていれば (同じカードの前の効果でとどめ。獲物=本家 Feed)</summary>
+        [JsonProperty("targetDead")]
+        public bool? TargetDead { get; init; }
+        /// <summary>直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り)</summary>
+        [JsonProperty("lastActionNoHpLoss")]
+        public bool? LastActionNoHpLoss { get; init; }
     }
 
     /// <summary>'awaiting-reaction' 中断中の再開情報。 stage 'pre' = 行動の実行前 (打ち消し・軽減の窓)、'post' = 行動の解決後 (返し系の窓)</summary>
@@ -527,6 +551,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>C型レリック (回収の紐 2026-09-03): 回収が0E</summary>
         [JsonProperty("retrieveFree")]
         public bool? RetrieveFree { get; init; }
+        /// <summary>カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット)</summary>
+        [JsonProperty("resolvingExposedAtStart")]
+        public IReadOnlyList<int>? ResolvingExposedAtStart { get; init; }
         /// <summary>C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N</summary>
         [JsonProperty("energyMaxRefBonus")]
         public int? EnergyMaxRefBonus { get; init; }
@@ -1340,6 +1367,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針)</summary>
         [JsonProperty("condition")]
         public EffectCondition? Condition { get; init; }
+        /// <summary>ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03)</summary>
+        [JsonProperty("growthMultiplier")]
+        public double? GrowthMultiplier { get; init; }
         [JsonProperty("effect")]
         public string Effect { get; init; } = default!;
         [JsonProperty("amount")]
@@ -1517,6 +1547,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする</summary>
         [JsonProperty("retain")]
         public bool? Retain { get; init; }
+        /// <summary>手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03)</summary>
+        [JsonProperty("freeIfHandAllPhysical")]
+        public bool? FreeIfHandAllPhysical { get; init; }
+        /// <summary>急所を持つ敵が生存していれば消滅しない (樹液=本家 Dropkick 型。exhaust と併用)</summary>
+        [JsonProperty("exhaustUnlessExposedEnemy")]
+        public bool? ExhaustUnlessExposedEnemy { get; init; }
         /// <summary>亡骸プレイ (黒 2026-08-31): 消滅置き場からNエナジーで一度だけプレイできる。プレイ後はゲームから完全に取り除かれる (刻の燃料も減る)。割引 (discountNext) の対象外</summary>
         [JsonProperty("necroCost")]
         public int? NecroCost { get; init; }

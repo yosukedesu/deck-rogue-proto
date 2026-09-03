@@ -543,11 +543,12 @@ describe('査定パス (2026-09-02 段6人間プレイの指摘)', () => {
     expect(up.def.effects).toEqual(getCardDef('green_perm_growth_tree').effects) // 量は据え置き
   })
 
-  it('毒針の囮は返し5+急所1 (帯割れの是正・上昇)', () => {
-    const def = getCardDef('green_decoy_needle')
+  it('獲物 (2026-09-03 毒針の囮の後継=本家 Feed 型): 8ダメ、とどめなら成長+3', () => {
+    const def = getCardDef('green_prey_strike')
+    expect(def.cost).toBe(1)
     expect(def.effects).toEqual([
-      { trigger: 'onAttacked', effect: 'counter', amount: 5 },
-      { trigger: 'onAttacked', effect: 'exposeEnemy', amount: 1 },
+      { trigger: 'onPlay', effect: 'dealDamage', amount: 8 },
+      { trigger: 'onPlay', effect: 'addGrowth', amount: 3, condition: { targetDead: true } },
     ])
   })
 })

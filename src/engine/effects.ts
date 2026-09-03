@@ -59,6 +59,11 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
   // 屍集めで戻した札はこの戦闘中0E (2026-08-31 rework。割引も消費しない。オーラも「0Eの約束」を破らない)
   if (card.freeThisCombat === true) return 0
   const up = auraCostUp(state, card)
+  // 手札参照 (年輪=本家 Clash): 手札の他の札がすべて物理なら0E (重圧の上乗せは残る)
+  if (
+    card.def.freeIfHandAllPhysical === true &&
+    state.player.hand.every((c) => c.uid === card.uid || c.def.type === 'physical')
+  ) return up
   // 素のコスト0のカードは割引と無縁 (消費しない既存則) — オーラの重さはそのまま払う
   // (0マナ手数への圧が重圧オーラの狙い)
   if (card.def.cost === 0) return up
@@ -84,6 +89,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerCardPlayed',
     'dealDamagePerCardPlayedTotal',
     'dealDamagePerEnergyMax',
+    'dealDamagePerAttackPlayed',
     'dealDamagePerMomentum',
     'dealDamagePerHeal',
     'recycleExhaust',
@@ -185,7 +191,7 @@ export function runPermanentTriggers(
   )
   for (const permanent of state.player.permanents) {
     for (const effect of permanent.def.effects) {
-      if (effect.trigger === trigger && blazeConditionMet(s, effect)) {
+      if (effect.trigger === trigger && blazeConditionMet(s, effect, enemyIndex)) {
         const boosted =
           anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined
             ? { ...effect, amount: effect.amount + anthem }
@@ -848,7 +854,16 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
   }
   switch (effect.effect) {
     case 'dealDamage':
-      return dealDamageToEnemy(state, enemyIndex, effect.amount ?? 0, effect.pierce)
+      // growthMultiplier (大牙=Heavy Blade): 基礎に成長×(N-1) を足す (dealDamageToEnemy が成長を1回乗せる) = 成長×N
+      return dealDamageToEnemy(
+        state,
+        enemyIndex,
+        (effect.amount ?? 0) + (effect.growthMultiplier !== undefined ? state.player.growth * (effect.growthMultiplier - 1) : 0),
+        effect.pierce,
+      )
+    case 'dealDamagePerAttackPlayed':
+      // 攻撃数参照 (薙ぎ払い=Conflagration): このターンにプレイした攻撃 (自身は数えない) × amount
+      return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.attacksPlayedThisTurn ?? 0), effect.pierce)
     case 'dealDamagePerHeal':
       // 回復の換金 (黒 2026-09-01): この戦闘で回復した回数×X (滾る血汐。過剰回復も数える)
       return dealDamageToEnemy(
@@ -1433,8 +1448,24 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
  * 猛り火の条件を満たすか (onPlay・置物トリガー用)。リアクション窓は
  * eligibleReactionEffects 側で同じ判定をしている
  */
-export function blazeConditionMet(state: GameState, effect: DeclarativeEffect): boolean {
+export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, enemyIndex?: number): boolean {
   if (effect.condition?.blaze === true && !isBlazing(state)) return false
+  const c = effect.condition
+  if (c) {
+    // 参照シナジー (緑 2026-09-03 本家6型): 意図・急所・守り成功・とどめ・完全に凌いだ
+    const e = enemyIndex !== undefined ? state.enemies[enemyIndex] : undefined
+    if (c.enemyIntent !== undefined) {
+      const kind = enemyIndex !== undefined ? effectiveIntent(state, enemyIndex)?.kind : undefined
+      if (kind !== c.enemyIntent) return false
+    }
+    if (c.enemyExposed === true) {
+      const exposed = enemyIndex !== undefined ? (state.resolvingExposedAtStart?.[enemyIndex] ?? e?.exposed ?? 0) : 0
+      if (exposed <= 0) return false
+    }
+    if (c.perfectBlockLastPhase === true && state.player.perfectBlockLastPhase !== true) return false
+    if (c.targetDead === true && !(e !== undefined && e.hp <= 0)) return false
+    if (c.lastActionNoHpLoss === true && !(state.lastAction !== null && state.lastAction.kind === 'attack' && state.lastAction.hpLoss === 0)) return false
+  }
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
   // HP割合条件 (2026-09-03 不動の根=HP50%以下で開幕ブロック。リアクション窓と同じ判定を置物/onPlay にも)
@@ -1466,14 +1497,16 @@ export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemy
   // 虚弱 (2026-09-01) の判定用フラグ:「カードのプレイで得るブロック」だけを25%減の対象にする。
   // ネストしたカードプレイ (死者再生→直接プレイ) があるので前の値を退避して復元する
   const prev = state.resolvingCardPlay === true
-  let s: GameState = { ...state, resolvingCardPlay: true }
+  const prevExposed = state.resolvingExposedAtStart
+  // 急所参照はプレイ開始時点の値で判定 (同じカードの前のヒットが急所を消費しても成立 = 本家 Dismantle の読み)
+  let s: GameState = { ...state, resolvingCardPlay: true, resolvingExposedAtStart: state.enemies.map((e) => e.exposed) }
   for (const effect of card.def.effects) {
     // 猛り火は「解決の時点」で判定する = 同じカードの前の効果 (着火など) で点いたら乗る
-    if (effect.trigger === 'onPlay' && blazeConditionMet(s, effect)) {
+    if (effect.trigger === 'onPlay' && blazeConditionMet(s, effect, enemyIndex)) {
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   }
-  return { ...s, resolvingCardPlay: prev }
+  return { ...s, resolvingCardPlay: prev, resolvingExposedAtStart: prevExposed }
 }
 
 const REACTION_TRIGGERS = new Set([

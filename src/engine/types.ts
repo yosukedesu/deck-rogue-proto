@@ -136,6 +136,12 @@ export interface PlayerState extends CombatantState {
   readonly randomPlayedThisCombat: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
   readonly damageTakenLastEnemyPhase: number
+  /** このターンにプレイした攻撃カードの枚数 (自身の解決後に加算=攻撃数参照はそのカード自身を数えない。2026-09-03) */
+  readonly attacksPlayedThisTurn?: number
+  /** この敵フェーズに受けた攻撃行動の回数 (完全に凌いだ判定用) */
+  readonly attacksReceivedThisPhase?: number
+  /** 直前の敵フェーズで攻撃を1回以上受け、HP損失が0だった (棘の返礼の参照値。敵フェーズ終了時に確定) */
+  readonly perfectBlockLastPhase?: boolean
   /** 反復トークン (青: 呪文コピー)。次に唱える呪文の効果を2回解決する。自ターン終了時にリセット (勢いと同じ持続則 = 敵フェーズに得た分は次の自ターンまで持つ) */
   readonly spellEchoes: number
 }
@@ -270,6 +276,16 @@ export interface EffectCondition {
    * 時間依存でなく**しきい値依存**に置き換える機構
    */
   readonly blaze?: boolean
+  /** 対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness) */
+  readonly enemyIntent?: EnemyActionKind
+  /** 対象の敵が急所を持っていれば (カードのプレイ開始時点で判定=同じカードの前のヒットが急所を消費しても成立。双牙の蔦=本家 Dismantle) */
+  readonly enemyExposed?: boolean
+  /** 直前の敵フェーズで攻撃を受け、HP損失が0だったら (棘の返礼=本家 Flame Barrier/Rage 系の「守り成功」参照) */
+  readonly perfectBlockLastPhase?: boolean
+  /** 対象の敵がこの解決の時点で倒れていれば (同じカードの前の効果でとどめ。獲物=本家 Feed) */
+  readonly targetDead?: boolean
+  /** 直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り) */
+  readonly lastActionNoHpLoss?: boolean
 }
 
 /**
@@ -320,6 +336,8 @@ export interface GameState {
   readonly setAnyCards?: boolean
   /** C型レリック (回収の紐 2026-09-03): 回収が0E */
   readonly retrieveFree?: boolean
+  /** カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット) */
+  readonly resolvingExposedAtStart?: readonly number[]
   /** C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N */
   readonly energyMaxRefBonus?: number
   /** C型レリック (収穫の鎌 2026-09-03): 成長放出のあと成長がN残る */
@@ -558,6 +576,8 @@ export interface DeclarativeEffect {
     | 'onSelfExhausted' // 亡骸効果 (黒 2026-08-31): この札が「プレイ以外の経路」(ミル・消滅コスト・衝動失効) で消滅した時。プレイして消滅した場合は発火しない (onPlayが仕事を終えているため)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
+  /** ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03) */
+  readonly growthMultiplier?: number
   readonly effect:
     | 'dealDamage'
     | 'gainBlock'
@@ -582,6 +602,7 @@ export interface DeclarativeEffect {
     | 'doubleGrowth' // 成長スタックのシグネチャー: 成長カウンターを2倍にする
     | 'addMomentum' // トランプルの核: 勢い+X (同一ターン中の以降の攻撃に加算)
     | 'dealDamagePerEnergyMax' // ビッグマナのシグネチャー: エナジー上限 × amount のダメージ
+    | 'dealDamagePerAttackPlayed' // 攻撃数参照 (緑 2026-09-03 薙ぎ払い=本家 Conflagration): このターンにプレイした攻撃 (自身を除く) × amount
     | 'counter'
     | 'negate'
     | 'confuse' // 混乱+X: 敵の攻撃が他の生存敵 (いなければ自分) に向かう (青の精神攻撃)
@@ -766,6 +787,10 @@ export interface CardDef {
   readonly exhaust?: boolean
   /** 保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする */
   readonly retain?: boolean
+  /** 手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03) */
+  readonly freeIfHandAllPhysical?: boolean
+  /** 急所を持つ敵が生存していれば消滅しない (樹液=本家 Dropkick 型。exhaust と併用) */
+  readonly exhaustUnlessExposedEnemy?: boolean
   /** 亡骸プレイ (黒 2026-08-31): 消滅置き場からNエナジーで一度だけプレイできる。プレイ後はゲームから完全に取り除かれる (刻の燃料も減る)。割引 (discountNext) の対象外 */
   readonly necroCost?: number
   /** 追加コスト: 手札を N 枚捨てる */

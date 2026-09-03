@@ -26,6 +26,8 @@ import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts
 import { canSetCard } from '../engine/reactions/set-base.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
+const INTENT_KIND_JA: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化' }
+
 function cname(cardId: string): string {
   try {
     return getCardDef(cardId).name
@@ -59,7 +61,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に増える`}〕`
     : ''
   const base: Record<string, string> = {
-    dealDamage: `${all}${a}ダメージ${e.pierce === true ? '(貫通)' : ''}${xHitsSuffix(e)}`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
+    dealDamage: `${all}${a}ダメージ${e.pierce === true ? '(貫通)' : ''}${e.growthMultiplier !== undefined ? `(成長が×${e.growthMultiplier}で乗る)` : ''}${xHitsSuffix(e)}`, dealDamagePerAttackPlayed: `${all}このターンにプレイした攻撃×${a}ダメ`, gainBlock: `ブロック${a}${xHitsSuffix(e)}`, gainIceBlock: `氷壁${a}(持ち越し)`,
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
@@ -97,7 +99,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}]`
     : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }

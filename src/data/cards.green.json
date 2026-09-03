@@ -289,7 +289,8 @@
         "amount": 2
       }
     ],
-    "rarity": "common"
+    "rarity": "common",
+    "freeIfHandAllPhysical": true
   },
   {
     "id": "green_sig_canopy",
@@ -471,7 +472,7 @@
   },
   {
     "id": "green_ritual_surge",
-    "name": "自然の奔流",
+    "name": "樹液",
     "cost": 1,
     "type": "spell",
     "effects": [
@@ -482,7 +483,8 @@
       }
     ],
     "exhaust": true,
-    "rarity": "common"
+    "rarity": "common",
+    "exhaustUnlessExposedEnemy": true
   },
   {
     "id": "green_perm_growth_tree",
@@ -599,39 +601,20 @@
   {
     "id": "green_sweep",
     "name": "薙ぎ払い",
-    "cost": 2,
+    "cost": 1,
     "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 7,
+        "amount": 4,
         "target": "all"
       },
       {
         "trigger": "onPlay",
-        "effect": "addGrowth",
-        "amount": 1
-      }
-    ],
-    "rarity": "common"
-  },
-  {
-    "id": "green_decoy_needle",
-    "name": "毒針の囮",
-    "cost": 0,
-    "type": "reaction",
-    "exhaust": true,
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 5
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "exposeEnemy",
-        "amount": 1
+        "effect": "dealDamagePerAttackPlayed",
+        "amount": 2,
+        "target": "all"
       }
     ],
     "rarity": "common"
@@ -1112,7 +1095,7 @@
   {
     "id": "green_perm_hunters_gaze",
     "name": "狩人の眼光",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "color": "green",
     "rarity": "uncommon",
@@ -1172,38 +1155,39 @@
   },
   {
     "id": "green_thorn_repay",
-    "name": "茨の報い",
+    "name": "棘の返礼",
     "cost": 1,
     "type": "physical",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5
+        "amount": 4
       },
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerDamageTaken",
-        "amount": 1
+        "effect": "dealDamage",
+        "amount": 8,
+        "condition": {
+          "perfectBlockLastPhase": true
+        }
       }
     ],
     "rarity": "common"
   },
   {
     "id": "green_perm_pain_root",
-    "name": "痛みを喰う根",
-    "cost": 2,
+    "name": "根張り",
+    "cost": 1,
     "type": "permanent",
     "effects": [
       {
-        "trigger": "onTurnStart",
-        "effect": "dealDamage",
-        "amount": 2
-      },
-      {
-        "trigger": "onTurnStart",
-        "effect": "dealDamagePerDamageTaken",
-        "amount": 1
+        "trigger": "onAttacked",
+        "effect": "addGrowth",
+        "amount": 2,
+        "condition": {
+          "lastActionNoHpLoss": true
+        }
       }
     ],
     "rarity": "uncommon"
@@ -1287,25 +1271,25 @@
   {
     "id": "green_sapling_reap",
     "name": "若枝の盾張り",
-    "cost": 2,
+    "cost": 1,
     "type": "physical",
     "rarity": "common",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 3
+        "amount": 4
       },
       {
         "trigger": "onPlay",
         "effect": "dischargeGrowthBlock",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
   {
     "id": "green_harvest_strike",
-    "name": "実りの一撃",
+    "name": "大牙",
     "cost": 2,
     "type": "physical",
     "rarity": "common",
@@ -1313,12 +1297,8 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dischargeGrowth",
-        "amount": 2
+        "amount": 8,
+        "growthMultiplier": 3
       }
     ]
   },
@@ -1362,7 +1342,7 @@
   },
   {
     "id": "green_leaf_strike",
-    "name": "若葉の一撃",
+    "name": "見切り撃ち",
     "cost": 1,
     "type": "physical",
     "rarity": "common",
@@ -1376,7 +1356,18 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 1
+        "amount": 1,
+        "condition": {
+          "enemyIntent": "attack"
+        }
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1,
+        "condition": {
+          "enemyIntent": "attack"
+        }
       }
     ]
   },
@@ -1413,14 +1404,23 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4,
+        "amount": 3,
         "pierce": true
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4,
+        "amount": 3,
         "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
+        "pierce": true,
+        "condition": {
+          "enemyExposed": true
+        }
       }
     ]
   },
@@ -1505,7 +1505,7 @@
         "effect": "drawCards",
         "amount": 1,
         "condition": {
-          "minGrowth": 4
+          "minGrowth": 3
         }
       }
     ]
@@ -1737,6 +1737,29 @@
         "trigger": "onAttackIncoming",
         "effect": "addGrowth",
         "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_prey_strike",
+    "name": "獲物",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 3,
+        "condition": {
+          "targetDead": true
+        }
       }
     ]
   }

@@ -167,6 +167,8 @@ const KW_PATTERN = new RegExp(
 )
 
 /** テキスト中のキーワード能力を吹き出し付き <span> に置き換える */
+const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化' }
+
 function kw(text: string): React.ReactNode {
   return text.split(KW_PATTERN).map((part, i) =>
     KEYWORD_HELP[part] ? (
@@ -241,6 +243,11 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.minActionValue !== undefined) parts.push(`敵の行動の値が${c.minActionValue}以上`)
   if (c.blaze === true) parts.push(`🔥猛り火(延焼合計${BLAZE_THRESHOLD}以上)`)
   if (c.minGrowth !== undefined) parts.push(`🌱成長${c.minGrowth}以上`)
+  if (c.enemyIntent !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntent] ?? c.enemyIntent}`)
+  if (c.enemyExposed === true) parts.push('🎯対象が急所持ち')
+  if (c.perfectBlockLastPhase === true) parts.push('🛡直前の敵フェーズを完全に凌いだ')
+  if (c.targetDead === true) parts.push('💀とどめ')
+  if (c.lastActionNoHpLoss === true) parts.push('🛡完全に凌いだ時')
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
@@ -287,7 +294,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         e.xHits === true && ctx?.energy !== undefined
           ? `［全部払うとX=${ctx.energy}: 計${((e.amount ?? 0) + atkBonus) * ctx.energy}${aoe ? '/体' : ''}］`
           : ''
-      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${xHitsSuffix(e)}${atkBreak}${xNow}`
+      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${e.growthMultiplier !== undefined ? `（成長が×${e.growthMultiplier}で乗る）` : ''}${xHitsSuffix(e)}${atkBreak}${xNow}`
     }
     case 'dealDamagePerEnergyMax':
       return ctx
@@ -436,6 +443,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}🛡 置物の数×${e.amount}ブロック [現在${(e.amount ?? 0) * ctx.permanents}]`
         : `${trigger}🛡 置物の数×${e.amount}ブロック`
+    case 'dealDamagePerAttackPlayed':
+      return `${trigger}⚔️ ${e.target === 'all' ? '敵全体に' : ''}このターンにプレイした攻撃×${e.amount}ダメージ（このカード自身は数えない）`
     case 'strengthenEnemy':
       return `${trigger}💪 敵の筋力+${e.amount}`
     case 'weakenEnemy':
@@ -3281,7 +3290,7 @@ const EFFECT_JA: Record<string, string> = {
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
   gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
-  strengthenEnemy: '敵の筋力+N', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
+  strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
 }
 function effectJa(e: string): string {
   return EFFECT_JA[e] ?? e
@@ -3295,6 +3304,11 @@ const COND_JA: Record<string, string> = {
   maxActionValue: '敵の行動値が値以下',
   minDamageTaken: '被ダメが値以上',
   minGrowth: '成長が値以上',
+  enemyIntent: '対象の意図が値の種別',
+  enemyExposed: '対象が急所持ち',
+  perfectBlockLastPhase: '直前の敵フェーズを完全に凌いだ',
+  targetDead: 'とどめ',
+  lastActionNoHpLoss: '完全に凌いだ時',
 }
 function condJa(k: string): string {
   return COND_JA[k] ?? k

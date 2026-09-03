@@ -424,17 +424,8 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
     expect(dmgs[0].amount).toBe(6) // 価値保存×プレミアム1.25: ヒットが増えた上で per-hit も戻る (成長の乗り先が3回に)
   })
 
-  it('全体×貫通: 薙ぎ払い(全体6)×牙の一撃(14貫通) → 全体・貫通の一撃', () => {
-    const def = fuseCards(inst('green_sweep'), inst('green_fang'))
-    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
-    expect(dmg.target).toBe('all')
-    expect(dmg.pierce).toBe(true)
-    // 価値保存 (2026-08-30): 全体×2と貫通×1.25が無料で乗っていたのを是正 (24→14)。
-    // 素材コスト合計 (2E+2E) への圧縮で11 → 合成プレミアム×1.25 (2026-09-01) で14へ復帰
-    expect(def.cost).toBe(4)
-    expect(dmg.amount).toBe(14)
-    // 薙ぎ払いの成長+1も引き継がれる
-    expect(def.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
+  it('全体×貫通: 薙ぎ払い (2026-09-03 攻撃数参照へ作り直し) は査定不能で合成不可', () => {
+    expect(fuseBlockReason(inst('green_sweep'), inst('green_fang'))).not.toBeNull()
   })
 
   it('多段×大打点: 蔦の乱舞(2×5)×大蛇の丸呑み(20) → 5ヒットに按分 (成長が5回乗る)', () => {

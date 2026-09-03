@@ -72,6 +72,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       cardsPlayedThisTurn: 0,
       setsThisTurn: 0,
       playsThisTurn: 0,
+      attacksPlayedThisTurn: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
       healsThisCombat: 0,
@@ -547,6 +548,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       cardsPlayedThisTurn: 0,
       setsThisTurn: 0,
       playsThisTurn: 0,
+      attacksPlayedThisTurn: 0,
       freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
       setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
@@ -947,7 +949,10 @@ export function playCard(
   }
   const enemyIndex = targetIndex ?? state.enemies.findIndex((e) => e.hp > 0)
   const isPermanent = card.def.type === 'permanent'
-  const isExhaust = card.def.exhaust === true
+  // 樹液 (2026-09-03 本家 Dropkick 型): 急所を持つ敵が生存していれば消滅しない
+  const isExhaust =
+    card.def.exhaust === true &&
+    !(card.def.exhaustUnlessExposedEnemy === true && state.enemies.some((e) => e.hp > 0 && e.exposed > 0))
   const removed = new Set([cardUid, ...discards, ...exhausts])
   const discardedCards = state.player.hand.filter((c) => discards.includes(c.uid))
   const exhaustedCards = state.player.hand.filter((c) => exhausts.includes(c.uid))
@@ -1065,6 +1070,8 @@ export function playCard(
   // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
   const resolvedEffects = chosenMode ? chosenMode.effects : effCard.def.effects.filter((e) => e.trigger === 'onPlay')
   if (resolvedEffects.some(isDamageEffect)) {
+    // 攻撃数参照 (2026-09-03): 自身の解決後に加算 = 薙ぎ払いは「自分より前にプレイした攻撃」を数える
+    s = { ...s, player: { ...s.player, attacksPlayedThisTurn: (s.player.attacksPlayedThisTurn ?? 0) + 1 } }
     s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
     s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
   }
@@ -1317,7 +1324,7 @@ export function endTurn(state: GameState): GameState {
   // 敵ブロックはこのタイミングで失効 (前の敵ターンの防御は自ターンの攻撃を受け止めたら役目を終える)
   s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }
   // 憤怒 (逆上) の参照値はフェーズ単位: 敵フェーズ開始時にリセットして受け直す
-  s = { ...s, player: { ...s.player, damageTakenLastEnemyPhase: 0 } }
+  s = { ...s, player: { ...s.player, damageTakenLastEnemyPhase: 0, attacksReceivedThisPhase: 0 } }
   // 延焼: 敵フェーズ開始時にダメージ (ブロック無視) を受けて1減る。
   // 延焼耐性 (burnResist): 追加でN減る (確定済みルール表「敵の耐性」)
   for (let i = 0; i < s.enemies.length; i++) {
@@ -1702,6 +1709,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           hp: state.player.hp - hpLoss,
           // 憤怒 (逆上) の参照値: このフェーズで受けた攻撃ダメージを累積する
           damageTakenLastEnemyPhase: state.player.damageTakenLastEnemyPhase + hpLoss,
+          attacksReceivedThisPhase: (state.player.attacksReceivedThisPhase ?? 0) + 1,
         },
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex })
@@ -1920,6 +1928,14 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
 function finishEnemyPhase(state: GameState): GameState {
   const ended = { type: 'EnemyPhaseEnded', turn: state.turn } as const
   let s = emit(state, ended)
+  // 守り成功参照 (棘の返礼 2026-09-03): この敵フェーズに攻撃を1回以上受け、HP損失が0なら「完全に凌いだ」
+  s = {
+    ...s,
+    player: {
+      ...s.player,
+      perfectBlockLastPhase: (s.player.attacksReceivedThisPhase ?? 0) > 0 && s.player.damageTakenLastEnemyPhase === 0,
+    },
+  }
   s = dispatchHooks(s, ended) // 空振り (ReactionWhiffed) の計上は方式固有
   // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る (確定済みルール表「状態異常」)。
   // ただしこのフェーズに付与された分は減らさない (justAppliedガード 2026-09-02 —
