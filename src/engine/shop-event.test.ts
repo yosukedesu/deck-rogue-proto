@@ -110,7 +110,7 @@ describe('ショップ', () => {
     expect(rare.price).toBe(120 + (rareDef.xCost === true ? 3 : rareDef.cost) * 10)
     expect(run.shop!.relicId).not.toBeNull()
     expect(run.shop!.relicPrice).toBe(150)
-    expect(shopRemovalPrice(run)).toBe(75)
+    expect(shopRemovalPrice(run)).toBe(50)
     expect(shopUpgradePrice(run)).toBe(100)
   })
 
@@ -144,11 +144,11 @@ describe('ショップ', () => {
     run = { ...run, gold: 300 }
     const before = run.deck.length
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
-    expect(run.gold).toBe(300 - 75)
+    expect(run.gold).toBe(300 - 50)
     expect(run.deck).toHaveLength(before - 1)
-    expect(shopRemovalPrice(run)).toBe(125) // 逓増
+    expect(shopRemovalPrice(run)).toBe(100) // 逓増
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
-    expect(run.gold).toBe(300 - 75 - 125)
+    expect(run.gold).toBe(300 - 50 - 100)
     expect(run.deck).toHaveLength(before - 2)
   })
 
@@ -173,10 +173,10 @@ describe('ショップ', () => {
     delete legacy.removalCount
     delete legacy.upgradeCount
     run = legacy as unknown as RunState
-    expect(shopRemovalPrice(run)).toBe(75)
+    expect(shopRemovalPrice(run)).toBe(50)
     expect(shopUpgradePrice(run)).toBe(100)
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
-    expect(run.gold).toBe(300 - 75)
+    expect(run.gold).toBe(300 - 50)
     expect(Number.isNaN(run.gold)).toBe(false)
     expect(run.removalCount).toBe(1)
     // 個性注入 (2026-08-31) で打撃は1枚になったため、除去で消えていない防御を対象にする

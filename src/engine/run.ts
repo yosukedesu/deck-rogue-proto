@@ -98,7 +98,7 @@ const SHRINE_CHANCE_PERCENT = 25
 const SHOP_CARD_COUNT = 5
 const SHOP_RELIC_PRICE = 150
 /** 除去サービス: 回数無制限・使うたびラン通算で+25G (本家Purge式。2026-08-29) */
-const SHOP_REMOVAL_BASE = 75
+const SHOP_REMOVAL_BASE = 50 // 2026-09-03 75→50 (ユーザー裁定。Opus F/G: 幕1のショップは78〜113Gで除去75Gが一度も選べない。逓増+50は維持)
 // 逓増を強化 (2026-08-31 ゴールドシンク: 502Gで強化2+除去2が同時に買えて選択になっていない実測)
 const SHOP_REMOVAL_STEP = 50
 /** 強化サービス: 回数無制限・使うたびラン通算で+30G (2026-08-29 ユーザー指示) */
