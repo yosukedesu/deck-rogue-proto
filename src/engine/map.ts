@@ -123,6 +123,8 @@ const CAMPFIRE_MIN_ROW = 5
  * 焚き火ハシゴルートが成立していた (200シード実測: 3=17/4=140/5=42/6=1)
  */
 const CAMPFIRE_PATH_MAX = 4
+/** どのパスも工房は1幕に最大1回 (2026-09-03 ユーザー裁定「工房は全ルート1幕1回のみ」) */
+const WORKSHOP_PATH_MAX = 1
 /** エリートだけは員数固定。重み8%だと幕3個=1パス1.31体でレリック供給が-28%になるため */
 const ELITE_COUNT = 4
 /** ショップは固定3/幕 (2026-09-02 StS2 NumOfShops=3 準拠。ユーザー裁定) */
@@ -352,7 +354,7 @@ export function generateMap(
       ['campfire', Math.round(total * ROOM_WEIGHTS.campfire)], // 本家Rest: 散布される休憩
       // 工房: 幕1はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」= 供給集中を
       // 避けつつ合成の楽しみを前倒し)。幕2/3は重み5%。allowWorkshop=false は全面禁止 (テスト用)
-      ['workshop', !allowWorkshop ? 0 : 1], // 2026-09-03 ユーザー裁定「工房は1幕1回のみ」: 全幕ちょうど1個 (旧: 幕2/3は重み5%=3〜4個)
+      ['workshop', !allowWorkshop ? 0 : act === 1 ? 1 : Math.round(total * ROOM_WEIGHTS.workshop)], // 員数は据え置き。2026-09-03 裁定「全ルートで1幕に最大1回」は配置ガード (WORKSHOP_PATH_MAX) で保証
       ['shop', SHOP_COUNT], // 固定3/幕 (2026-09-02 StS2式。重み5%は総ノード数で3〜4に揺れ、ゴールドシンク量がシード次第だった)
       ['event', Math.round(total * ROOM_WEIGHTS.event)],
     ]
@@ -483,14 +485,19 @@ export function generateMap(
                 const B = typeMaxDP(false, 'campfire')
                 return (r: number, c: number) => F[r][c] + B[r][c] + 1 <= CAMPFIRE_PATH_MAX
               })()
-            : t === 'workshop' // 2026-09-03 全幕1個になったので配置保証も全幕へ
+            : t === 'workshop'
               ? (() => {
-                  // 幕1の工房は「エリートも踏める経路の上」に置く (2026-08-31 HP経済ラン:
-                  // 工房・エリート・4焚き火が同一分岐に固まり「工房を取ると幕1エリート全滅」の
-                  // 事故ルート化。工房は幕1に1個しか無いので、両取りの経路の存在を保証する)
-                  const F = typeMaxDP(true, 'elite')
-                  const B = typeMaxDP(false, 'elite')
-                  return (r: number, c: number) => F[r][c] + B[r][c] >= 1
+                  // 2026-09-03 ユーザー裁定「工房は全ルートで1幕に最大1回」: 置いた後もどのパスも工房を
+                  // 2回踏めない位置に限る (焚き火の上限4と同じ max-DP。員数は幕1=1・幕2/3=5%のまま)。
+                  // 幕1はさらに「エリートも踏める経路の上」(2026-08-31 HP経済ラン: 工房・エリート・4焚き火が
+                  // 同一分岐に固まり「工房を取ると幕1エリート全滅」の事故ルート化への処方)
+                  const Fw = typeMaxDP(true, 'workshop')
+                  const Bw = typeMaxDP(false, 'workshop')
+                  const Fe = act === 1 ? typeMaxDP(true, 'elite') : null
+                  const Be = act === 1 ? typeMaxDP(false, 'elite') : null
+                  return (r: number, c: number) =>
+                    Fw[r][c] + Bw[r][c] + 1 <= WORKSHOP_PATH_MAX &&
+                    (Fe === null || Be === null || Fe[r][c] + Be[r][c] >= 1)
                 })()
               : () => true
         const cand = freeNodes.filter(

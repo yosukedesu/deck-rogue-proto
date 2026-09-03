@@ -80,12 +80,28 @@ describe('マップ生成の構造', () => {
     }
   })
 
-  it('工房は全幕ちょうど1個 (2026-09-03 ユーザー裁定「工房は1幕1回のみ」)', () => {
-    for (const act of [2, 3]) {
-      for (const seed of SEEDS.slice(0, 20)) {
-        const [m] = generateMap(createRng(seed), act, true)
-        expect(m.flat().filter((n) => n.type === 'workshop'), `act${act} seed${seed}`).toHaveLength(1)
+  it('どのパスも工房は1幕に最大1回 (2026-09-03 ユーザー裁定「工房は全ルート1幕1回のみ」。員数は幕2/3=5%のまま)', () => {
+    // 前向きDP: 各ノードまでのパスが踏める工房の最大数
+    const maxWorkshopsOnAnyPath = (m: RunMap): number => {
+      const best: number[][] = m.map((row) => row.map(() => -Infinity))
+      for (let c = 0; c < m[0].length; c++) best[0][c] = m[0][c].type === 'workshop' ? 1 : 0
+      for (let r = 0; r < m.length - 1; r++) {
+        for (let c = 0; c < m[r].length; c++) {
+          for (const to of m[r][c].next) {
+            best[r + 1][to] = Math.max(best[r + 1][to], best[r][c] + (m[r + 1][to].type === 'workshop' ? 1 : 0))
+          }
+        }
       }
+      return Math.max(...best[m.length - 1])
+    }
+    for (const act of [1, 2, 3]) {
+      let total = 0
+      for (const seed of SEEDS.slice(0, 30)) {
+        const [m] = generateMap(createRng(seed), act, true)
+        expect(maxWorkshopsOnAnyPath(m), `act${act} seed${seed}`).toBeLessThanOrEqual(1)
+        total += m.flat().filter((n) => n.type === 'workshop').length
+      }
+      if (act >= 2) expect(total / 30, `act${act} の工房員数`).toBeGreaterThanOrEqual(2) // 員数は据え置き (5%≈3〜4)
     }
   })
 
