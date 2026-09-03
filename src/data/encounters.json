@@ -231,6 +231,28 @@
   ]
  },
  {
+  "id": "enc_joker_hexer_drummer",
+  "name": "道化と妖術師と太鼓",
+  "members": [
+   {
+    "enemyId": "enemy_joker",
+    "hpScale": 0.45,
+    "strength": -3
+   },
+   {
+    "enemyId": "enemy_hexer",
+    "hpScale": 0.45,
+    "strength": -3,
+    "patternOffset": 1
+   },
+   {
+    "enemyId": "enemy_drummer",
+    "hpScale": 0.45,
+    "strength": -3
+   }
+  ]
+ },
+ {
   "id": "enc_wary_bomber",
   "name": "影と火薬樽",
   "members": [
@@ -243,24 +265,6 @@
     "enemyId": "enemy_bomber",
     "hpScale": 0.65,
     "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_wolf_pair",
-  "name": "狼の二頭",
-  "members": [
-   {
-    "enemyId": "enemy_wolf",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_wolf",
-    "hpScale": 0.6,
-    "strength": -2,
-    "patternOffset": 1,
-    "noReactTable": true
    }
   ]
  },
@@ -291,24 +295,6 @@
    {
     "enemyId": "enemy_drummer",
     "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_squirrel_pair",
-  "name": "栗鼠の二匹",
-  "members": [
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.9,
-    "strength": 0
-   },
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.9,
-    "strength": 0,
-    "patternOffset": 1,
-    "noReactTable": true
    }
   ]
  },
@@ -405,23 +391,6 @@
   ]
  },
  {
-  "id": "enc_mimic_pair",
-  "name": "子鬼の二匹",
-  "members": [
-   {
-    "enemyId": "enemy_mimic_imp",
-    "hpScale": 0.55,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_mimic_imp",
-    "hpScale": 0.55,
-    "strength": -1,
-    "patternOffset": 1
-   }
-  ]
- },
- {
   "id": "enc_squirrel_trio",
   "name": "栗鼠の三匹",
   "members": [
@@ -478,25 +447,18 @@
   ]
  },
  {
-  "id": "enc_beetle_trio",
-  "name": "甲虫の三匹",
+  "id": "enc_beetle_wary",
+  "name": "甲虫と用心深い影",
   "members": [
    {
     "enemyId": "enemy_rock_beetle",
-    "hpScale": 0.8,
-    "strength": -3
+    "hpScale": 0.6,
+    "strength": -1
    },
    {
-    "enemyId": "enemy_rock_beetle",
-    "hpScale": 0.8,
-    "strength": -3,
-    "patternOffset": 1
-   },
-   {
-    "enemyId": "enemy_rock_beetle",
-    "hpScale": 0.8,
-    "strength": -3,
-    "patternOffset": 2
+    "enemyId": "enemy_set_wary",
+    "hpScale": 0.6,
+    "strength": -1
    }
   ]
  },
