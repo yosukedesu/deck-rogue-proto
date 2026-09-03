@@ -2970,7 +2970,7 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
   return out
 }
 
-const RELIC_BONUS_JA: Record<string, string> = { maxHp: '最大HP+', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数' }
+const RELIC_BONUS_JA: Record<string, string> = { maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数' }
 
 function relicTunerFields(def: RelicDef): { key: string; label: string; cur: number }[] {
   const out: { key: string; label: string; cur: number }[] = []

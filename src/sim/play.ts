@@ -33,7 +33,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { usableSetCards, cardNeedsTarget, effectiveCost, playerCanSet, effectiveIntent, isPlayableFromHand, setBranchFlipRisks, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -183,7 +183,7 @@ function intentLine(s: GameState, i: number): string {
       ? ''
       : e.intent.alt.kind === 'destroy-set'
         ? ' (破壊分岐は見切りを無視する=置きっぱなしでも壊しに来る)'
-        : ' (伏せ札は見切られ中=このターン伏せ直せば変わる)'
+        : ' (伏せ札は見切られ中=まだ伏せたことのない別の札を1E以上で伏せれば変わる。同じ札の伏せ直しは見切られたまま)'
     return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」${stale}`
   }
   const it = e.intent
@@ -397,7 +397,18 @@ function renderBattle(s: GameState, logFrom: number): string {
       const capEff = c.def.effects.filter((e) => e.effect === 'dealDamagePerEnergyMax' || e.effect === 'gainBlockPerEnergyMax')
       const capNow =
         capEff.length > 0
-          ? ` ［上限参照=今${p.energyMaxAtTurnStart}: ${capEff.map((e) => `${e.effect === 'dealDamagePerEnergyMax' ? 'ダメ' : 'ブロック'}${(e.amount ?? 0) * p.energyMaxAtTurnStart}`).join('/')}］`
+          ? ` ［上限参照=今${p.energyMaxAtTurnStart}: ${capEff
+              .map((e) => {
+                const base = (e.amount ?? 0) * p.energyMaxAtTurnStart
+                if (e.effect !== 'dealDamagePerEnergyMax') return `ブロック${base}`
+                // 弱体・成長・急所・装甲・敵ブロックを実処理と同じ手順で通す (2026-09-03 Opusラン H: 注記が弱体を通していなかった)
+                const per = s.enemies
+                  .map((en, i) => ({ en, i, b: damageBreakdown(s, i, base, e.pierce === true) }))
+                  .filter((x) => x.b !== null)
+                  .map((x) => `敵${x.i}:${x.b!.hpLoss}${x.b!.steps.length > 1 ? `(${x.b!.steps.slice(1).map((st) => st.label).join('・')})` : ''}`)
+                return `ダメ基礎${base}${per.length > 0 ? ` → ${per.join(' / ')}` : ''}`
+              })
+              .join(' ／ ')}］`
           : ''
       L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}`)
     }
@@ -530,6 +541,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
+    if (run.combat?.phase === 'won') L.push('🏆 戦闘に勝利 (残りの手札は打てない)')
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
     L.push('報酬ピック (1枚選ぶ or スキップ):')
     if (run.currentElite && run.combat?.enemies.some((e) => e.fled === true)) {

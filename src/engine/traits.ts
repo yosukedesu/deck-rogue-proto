@@ -48,7 +48,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   const tags: string[] = []
   if (def.burnResist) tags.push(`延焼耐性${def.burnResist}`)
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
-  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)`)
+  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
@@ -76,7 +76,7 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   const tags: string[] = []
   if (def.burnResist) tags.push(`延焼耐性${def.burnResist}`)
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
-  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。延焼は無視)`)
+  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
