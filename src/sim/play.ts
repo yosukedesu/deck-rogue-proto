@@ -35,7 +35,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -69,7 +69,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     applyBurn: `${all}延焼+${a}`, shatterBlock: '敵ブロック全破壊', shatterBlockConvert: '敵ブロック全破壊+破壊値ダメ',
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
-    confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(敵の筋力-${a})`,
+    confuse: `混乱+${a}`, exposeEnemy: `急所+${a}`, gainHp: `HP回復${a}`, weakenEnemy: `威圧${a}(次の${a}回の攻撃行動の与ダメ-25%)`,
     dealDamagePerBlock: `ブロック×${a}ダメ(急所は乗らない)${e.spendBlock === true ? '。解決後にブロックを全て失う' : ''}`, dealDamagePerPermanent: `${all}置物数×${a}ダメ`, gainBlockPerPermanent: `置物数×${a}ブロック`,
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`, dealDamagePerCardPlayedTotal: `${all}この戦闘の累計プレイ数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
@@ -86,7 +86,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`,
     addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者の効果+${a}`,
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
-    dealDamagePerNegStrength: `下げた敵の筋力×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
+    dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
   }
   const trig: Record<string, string> = {
@@ -120,13 +120,13 @@ function cardLine(def: CardDef): string {
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
-function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number }): string {
+function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number }, weak = 0): string {
   const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}${guard}${buff}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${weak > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, weak)}〜${applyEnemyWeak(it.shownMax, weak)}` : ''}${hits}${guard}${buff}`,
     defend: `防御${it.shownMin}〜${it.shownMax}${buff}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
@@ -149,22 +149,22 @@ function intentLine(s: GameState, i: number): string {
   // 条件付き意図: 両分岐を予告する (プレイヤーが自ターン中にどちらを選ばせるか決められる)
   if (e.intent.conditionalOn === 'set' && e.intent.alt && !playerCanSet(s)) {
     // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)
-    return branchText(e.intent) // branchText は素の値だけを読む
+    return branchText(e.intent, e.weak ?? 0) // branchText は素の値だけを読む
   }
   if (
     e.intent.conditionalOn &&
     e.intent.alt &&
-    branchText(e.intent.alt) === branchText(e.intent) &&
+    branchText(e.intent.alt, e.weak ?? 0) === branchText(e.intent, e.weak ?? 0) &&
     e.intent.alt.actual === e.intent.actual
   ) {
     // 表示も実値も同じ時だけ完全に畳む (2026-08-31 黒ラン: 幅が同じで実値だけ違う分岐を畳むと
     // 「伏せると実値が上がる」損分岐が不可視になっていた。実値が違えば分岐予告を残す)
-    return branchText(e.intent)
+    return branchText(e.intent, e.weak ?? 0)
   }
   if (
     e.intent.conditionalOn &&
     e.intent.alt &&
-    branchText(e.intent.alt) === branchText(e.intent)
+    branchText(e.intent.alt, e.weak ?? 0) === branchText(e.intent, e.weak ?? 0)
   ) {
     // 表示が同値で実値だけ違う: 2分岐の予告はノイズ (探り屋のローテ替え等) なので1行+注記。
     // どちら向きに変わるかは判断材料なので添える (2026-08-31 HP経済ラン指摘④)
@@ -175,7 +175,7 @@ function intentLine(s: GameState, i: number): string {
     const why = enemyPunishesSet(def)
       ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
       : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
-    return `${branchText(e.intent)}(伏せ札ありでも今回は同じ行動・実値は${dir}${why})`
+    return `${branchText(e.intent, e.weak ?? 0)}(伏せ札ありでも今回は同じ行動・実値は${dir}${why})`
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
@@ -194,7 +194,7 @@ function intentLine(s: GameState, i: number): string {
         : setReactionIgnoresFreshness(s, i)
           ? ' (この敵は罰型=見切りを無視する。伏せ札がある限りこの分岐)'
           : ' (伏せ札は見切られ中=まだ伏せたことのない別の札を1E以上で伏せれば変わる。同じ札の伏せ直しは見切られたまま)'
-    return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」${stale}`
+    return `【${cond}】${branchText(e.intent.alt, e.weak ?? 0)} ／【なし】${branchText(e.intent, e.weak ?? 0)} → 今は「${branchText(now, e.weak ?? 0)}」${stale}`
   }
   const it = e.intent
   const hits =
@@ -284,7 +284,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const def = getEnemyDef(e.enemyId)
     const tags = [
       e.block ? `ブロック${e.block}` : '', e.strength ? `筋力${e.strength > 0 ? '+' : ''}${e.strength}` : '',
-      e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '',
+      e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '', (e.weak ?? 0) > 0 ? `威圧${e.weak}(次の${e.weak}回の攻撃-25%)` : '',
       ...enemyTraitTags(s, i),
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
     ].filter(Boolean).join(' ')

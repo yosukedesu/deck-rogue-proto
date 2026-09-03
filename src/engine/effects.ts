@@ -90,6 +90,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerCardPlayedTotal',
     'dealDamagePerEnergyMax',
     'dealDamagePerAttackPlayed',
+    'dealDamagePerWeak',
     'dealDamagePerMomentum',
     'dealDamagePerHeal',
     'recycleExhaust',
@@ -654,6 +655,11 @@ export function damageBreakdown(
  * 被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失がしきい値に達したら眠りの前奏を打ち切り、
  * ローテを resumeAt へ。宣言済みの意図は変えない (宣言時固定則) = 次の宣言から目覚める
  */
+/** 威圧 (敵版弱体 2026-09-03): スタックがあれば与ダメ-25% (切り捨て・最低1)。engine の解決と表示 (意図・最悪予測) が同じ式を使う */
+export function applyEnemyWeak(value: number, weak: number | undefined): number {
+  return (weak ?? 0) > 0 ? Math.max(1, Math.floor(value * 0.75)) : value
+}
+
 /** 因縁 (Nemesis) の無形ターンか: 奇数ターン (1,3,5…) は無形、偶数ターンに実体化 */
 export function isIntangibleTurn(state: GameState): boolean {
   return state.turn % 2 === 1
@@ -1044,8 +1050,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         const [sa, blocked] = tryArtifactBlock(state, enemyIndex, 'weakenEnemy')
         if (blocked) return sa
       }
+      // 2026-09-03 本家 Weak 化 (案B): 筋力を下げるのでなく、次の amount 回の攻撃行動の与ダメ-25% のスタックを積む
       const enemies = state.enemies.map((e, i) =>
-        i === enemyIndex ? { ...e, strength: e.strength - amount } : e,
+        i === enemyIndex ? { ...e, weak: (e.weak ?? 0) + amount } : e,
       )
       return emit({ ...state, enemies }, { type: 'EnemyWeakened', enemyIndex, amount })
     }
@@ -1114,11 +1121,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       }
       return s
     }
-    case 'dealDamagePerNegStrength': {
-      // 威圧の換金 (白): 対象の強化がマイナスなら絶対値×X の追加ダメージ (断罪の槌)
+    case 'dealDamagePerNegStrength':
+    case 'dealDamagePerWeak': {
+      // 威圧の換金 (白 断罪の槌): 対象の威圧スタック×X の追加ダメージ (2026-09-03 Weak化。旧名は別名として残置)
       const enemy = state.enemies[enemyIndex]
-      if (!enemy || enemy.hp <= 0 || enemy.strength >= 0) return state
-      return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * -enemy.strength, effect.pierce)
+      if (!enemy || enemy.hp <= 0 || (enemy.weak ?? 0) <= 0) return state
+      return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (enemy.weak ?? 0), effect.pierce)
     }
     case 'dischargeBurn': {
       // 爆熱 (赤): 対象の延焼×amount のダメージを与え、延焼を全て失わせる。

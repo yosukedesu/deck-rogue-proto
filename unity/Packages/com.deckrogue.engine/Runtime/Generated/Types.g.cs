@@ -342,6 +342,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>被弾覚醒が発火済みか</summary>
         [JsonProperty("woken")]
         public bool? Woken { get; init; }
+        /// <summary>威圧 (2026-09-03 本家 Weak 化=案B): 次のN回の攻撃行動の与ダメ-25% (切り捨て・最低1)。攻撃行動を実行するたび1減る。旧セーブは undefined=0</summary>
+        [JsonProperty("weak")]
+        public int? Weak { get; init; }
         /// <summary>潜伏中 (殻が残っている間 true。割れたら false)</summary>
         [JsonProperty("burrowActive")]
         public bool? BurrowActive { get; init; }

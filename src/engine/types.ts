@@ -175,6 +175,8 @@ export interface EnemyState extends CombatantState {
   readonly moveGrowth?: Readonly<Record<string, number>>
   /** 被弾覚醒が発火済みか */
   readonly woken?: boolean
+  /** 威圧 (2026-09-03 本家 Weak 化=案B): 次のN回の攻撃行動の与ダメ-25% (切り捨て・最低1)。攻撃行動を実行するたび1減る。旧セーブは undefined=0 */
+  readonly weak?: number
   /** 潜伏中 (殻が残っている間 true。割れたら false) */
   readonly burrowActive?: boolean
   /** 殻が敵フェーズ中に割れた: 次の宣言を噛みつきに差し替える */
@@ -608,7 +610,8 @@ export interface DeclarativeEffect {
     | 'confuse' // 混乱+X: 敵の攻撃が他の生存敵 (いなければ自分) に向かう (青の精神攻撃)
     | 'exposeEnemy' // 急所+X: その敵が次に受けるプレイヤーダメージX回が+50% (敵版脆弱)
     | 'gainHp' // 回復 (白の専売): 最大HPまで回復
-    | 'weakenEnemy' // 威圧 (白): 敵の強化を-X (攻撃は最低1クランプの既存則)
+    | 'weakenEnemy' // 威圧 (白): 2026-09-03 本家 Weak 化 (案B)。対象の次のX回の攻撃行動の与ダメ-25% (旧: 強化-X)
+    | 'dealDamagePerWeak' // 威圧の換金 (白 断罪の槌): 対象の威圧スタック×amount の追加ダメージ (旧 dealDamagePerNegStrength は別名として残置)
     | 'strengthenEnemy' // 敵の筋力+X (2026-09-03 ボスレリック「賢者の石」の代償。威圧の逆。アーティファクトは弾かない)
     | 'dealDamagePerBlock' // 要塞型ペイオフ: 現在のブロック×Xダメージ (ボディスラム型)
     | 'dealDamagePerPermanent' // 集結 (白): 置物の数×Xダメージ (従者の横並び参照)

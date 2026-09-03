@@ -115,7 +115,7 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
 
 // ---- 最悪被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が
 // 3通りに割れていたのを1本化。合成順は実処理 combat.ts の攻撃解決と同一 = 鈴→脆弱→重り) ----
-import { effectiveIntent } from './effects.ts'
+import { effectiveIntent, applyEnemyWeak } from './effects.ts'
 import { getEnemyDef as getEnemyDefForSummary } from './content.ts'
 import type { GameState } from './types.ts'
 
@@ -126,6 +126,8 @@ export function worstIncomingFrom(s: GameState, enemyIndex: number): number {
   const it = effectiveIntent(s, enemyIndex)
   if (it?.kind !== 'attack') return 0
   let perHit = it.shownMax
+  // 威圧 (2026-09-03 Weak化): -25% (切り捨て・最低1)
+  perHit = applyEnemyWeak(perHit, e.weak)
   // 静かな鈴 (C型): 伏せ札がある間、各ヒット-N (最低1)
   if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) {
     perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))

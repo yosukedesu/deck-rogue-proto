@@ -63,7 +63,7 @@ describe('置物登場の誘発 (白の接着剤)', () => {
 })
 
 describe('威圧の換金 (断罪の槌)', () => {
-  it('威圧で下げた強化×3の追加ダメージ。強化0以上なら追加なし', () => {
+  it('対象の威圧スタック×3の追加ダメージ。威圧なしなら追加なし (2026-09-03 Weak化: dealDamagePerWeak)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_menace',
       'white_verdict_hammer',
@@ -126,7 +126,8 @@ describe('白の新リアクション', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].strength).toBe(3 - 2)
+    expect(s.enemies[0].weak).toBe(2) // 2026-09-03 Weak化: 筋力でなく威圧スタック
+    expect(s.enemies[0].strength).toBe(3)
     // ブロック8は敵フェーズ内で有効 (次の自ターン開始でリセットされるためイベントで確認)
     expect(
       s.eventLog.some((e) => e.type === 'BlockGained' && e.target === 'player' && e.amount === 8),

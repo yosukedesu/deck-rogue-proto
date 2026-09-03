@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
@@ -445,10 +445,12 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         : `${trigger}🛡 置物の数×${e.amount}ブロック`
     case 'dealDamagePerAttackPlayed':
       return `${trigger}⚔️ ${e.target === 'all' ? '敵全体に' : ''}このターンにプレイした攻撃×${e.amount}ダメージ（このカード自身は数えない）`
+    case 'dealDamagePerWeak':
+      return `${trigger}⚔️ 対象の威圧×${e.amount}の追加ダメージ`
     case 'strengthenEnemy':
       return `${trigger}💪 敵の筋力+${e.amount}`
     case 'weakenEnemy':
-      return `${trigger}${aoe}威圧${e.amount}（敵の筋力-${e.amount}）`
+      return `${trigger}${aoe}威圧${e.amount}（次の${e.amount}回の攻撃行動の与ダメ-25%）`
     case 'dealDamagePerBlock':
       return ctx2Block(e, ctx, trigger, pierce)
     case 'dealDamagePerPermanent':
@@ -555,6 +557,13 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
 
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
 function conditionalIntentText(s: GameState, i: number): string {
+  const text = conditionalIntentTextRaw(s, i)
+  const w = s.enemies[i]?.weak ?? 0
+  const it = s.enemies[i]?.intent
+  // 威圧 (2026-09-03 Weak化): 攻撃なら-25%後の幅を添える (engine と同じ式)
+  return w > 0 && it?.kind === 'attack' ? `${text}（威圧-25%: ${applyEnemyWeak(it.shownMin, w)}〜${applyEnemyWeak(it.shownMax, w)}）` : text
+}
+function conditionalIntentTextRaw(s: GameState, i: number): string {
   const intent = s.enemies[i]?.intent
   if (!intent) return '---'
   if (!intent.conditionalOn || !intent.alt) return intentText(intent)
@@ -583,12 +592,12 @@ function conditionalIntentText(s: GameState, i: number): string {
 }
 
 /** 誘発確認ウィンドウ用: 敵の行動は確定済みなので実値を公開する (確定済みルール「誘発確認時の情報」) */
-function confirmedIntentText(intent: EnemyIntent | null): string {
+function confirmedIntentText(intent: EnemyIntent | null, weak = 0): string {
   if (!intent) return '---'
   switch (intent.kind) {
     case 'attack': {
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      return `⚔️ 攻撃 ${intent.actual}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}）${inflictSuffix(intent)}`
+      return `⚔️ 攻撃 ${applyEnemyWeak(intent.actual, weak)}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${weak > 0 ? '・威圧-25%' : ''}）${inflictSuffix(intent)}`
     }
     case 'defend':
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
@@ -1646,6 +1655,9 @@ function BattleScreen({
                     {enemy.strength !== 0 && (
                       <span className="chip chip-strength">💪 {kw('筋力')} {enemy.strength >= 0 ? '+' : ''}{enemy.strength}</span>
                     )}
+                    {(enemy.weak ?? 0) > 0 && (
+                      <span className="chip chip-block">😩 {kw('威圧')} {enemy.weak}（次の{enemy.weak}回の攻撃-25%）</span>
+                    )}
                     {enemy.burn > 0 && (
                       <span className="chip chip-strength">🔥 {kw('延焼')} {enemy.burn}</span>
                     )}
@@ -1829,7 +1841,7 @@ function BattleScreen({
                 {s.enemies.length > 1 && windowEnemy && (
                   <>{getEnemyDef(windowEnemy.enemyId).name}の </>
                 )}
-                {kw(confirmedIntentText(s.pendingWindow ? effectiveIntent(s, s.pendingWindow.enemyIndex) : (windowEnemy?.intent ?? null)))}
+                {kw(confirmedIntentText(s.pendingWindow ? effectiveIntent(s, s.pendingWindow.enemyIndex) : (windowEnemy?.intent ?? null), s.pendingWindow ? (s.enemies[s.pendingWindow.enemyIndex]?.weak ?? 0) : 0))}
               </div>
               {s.pendingWindow?.stage === 'post' && (
                 <div className="hint" style={{ marginBottom: 8 }}>
@@ -3290,7 +3302,7 @@ const EFFECT_JA: Record<string, string> = {
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
   gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
-  strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
+  strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', dealDamagePerWeak: '対象の威圧×N追加ダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
 }
 function effectJa(e: string): string {
   return EFFECT_JA[e] ?? e

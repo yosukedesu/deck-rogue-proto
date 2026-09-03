@@ -1693,3 +1693,14 @@ retrieveFromDiscard 4.0／searchDeck 4.5／addCopyToDiscard 2.0／growSelf 量×
 エンジン: 条件 enemyIntent / enemyExposed（プレイ開始時点で判定）/ perfectBlockLastPhase / targetDead / lastActionNoHpLoss、
 効果 dealDamagePerAttackPlayed（自身は数えない）、修飾 growthMultiplier、コスト規則 freeIfHandAllPhysical、条件付き消滅 exhaustUnlessExposedEnemy。
 検証: green-synergy.test。合格基準: 次の計測2本で「提示3回以上・0ピック」16→8以下。ロールバック: 条件を満たせず腐る報告が独立2本一致したら条件を緩める。
+
+## §58 威圧の本家 Weak 化（2026-09-03 ユーザー裁定「b」）
+
+旧: 威圧N＝敵の筋力−N（永続・最低1クランプ）。査定は威圧1＝5VP。実測は通常3〜4ターン・1ターン1〜2回の攻撃で総効果−4〜−8、
+ボスの大技24〜32には−1が誤差＝「弱くね？」（ユーザー）。
+新: **威圧N＝対象の次のN回の攻撃行動の与ダメ−25%（切り捨て・最低1）**。攻撃行動を実行するたび1減る（多段は1行動で1消費）。
+延焼と同じく engine と表示（意図の幅・確認ウィンドウの実値・最悪被ダメ予測）が同じ式 `applyEnemyWeak` を読む。アーティファクトは弾く。
+- 断罪の槌: 「下げた筋力×3」→「対象の威圧スタック×3」（dealDamagePerWeak。旧 dealDamagePerNegStrength は別名として残置）。8＋威圧2×3＝14 は不変。
+- 査定: 威圧1＝「次の1行動を−25%」＝敵の1行動の期待値×0.25。幕1通常（8〜12）で2〜3VP、幕2/3（12〜20）で3〜5VP、ボス大技（24〜32）で6〜8VP＝**上振れがボス側に付く**（旧は逆）。
+  カードの数値（白1E帯=1〜2・2E帯=2・各色の1枚=1）は据え置き＝実質は「弱い相手に弱く、強い相手に強く」への形の変更。
+- 監視: 多段の敵（狼3連・書4段）への効きは旧（ヒットごと−N）より弱くなる。狼・書が刺さりすぎる報告が出たら威圧の数値で受ける。

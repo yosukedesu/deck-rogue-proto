@@ -44,13 +44,15 @@ describe('回復 (白の専売)', () => {
 })
 
 describe('威圧 (敵弱体化)', () => {
-  it('威圧の聖印: 敵の強化が-2され、以降の攻撃宣言が下がる (最低1)', () => {
+  it('威圧の聖印 (2026-09-03 本家 Weak 化): 威圧2=次の2回の攻撃行動が-25%。筋力は触らない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_menace',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
+    const str0 = s.enemies[0].strength
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_menace' })
-    expect(s.enemies[0].strength).toBe(-2)
+    expect(s.enemies[0].weak).toBe(2)
+    expect(s.enemies[0].strength).toBe(str0)
     expect(s.player.block).toBe(6) // 2026-08-27 4→6
   })
 })

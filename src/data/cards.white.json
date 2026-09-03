@@ -553,7 +553,7 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerNegStrength",
+        "effect": "dealDamagePerWeak",
         "amount": 3
       }
     ],

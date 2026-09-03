@@ -6,20 +6,7 @@
 
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
-import { applyWakeCheck,
-  cardNeedsTarget,
-  drawCards,
-  effectiveCost,
-  effectiveIntent,
-  fireExhaustTriggers,
-  fireNecroEffects,
-  hasHuntableTokens,
-  isDamageEffect,
-  isPlayableFromHand,
-  millPlayerDeck,
-  resolveEffectTargeted,
-  resolveOnPlayEffects,
-} from './effects.ts'
+import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireExhaustTriggers, fireNecroEffects, hasHuntableTokens, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -1681,6 +1668,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       for (let h = 0; h < hits; h++) {
         // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
         let v = intent.actual
+        // 威圧 (2026-09-03 本家 Weak 化): スタックがあれば各ヒット-25% (切り捨て・最低1)。行動が終わると1減る
+        v = applyEnemyWeak(v, state.enemies[enemyIndex]?.weak)
         // 静かな鈴 (C型レリック): 伏せ札がある間、各ヒット-N (最低1クランプは威圧と同則)
         if ((state.setDamageReduction ?? 0) > 0 && state.player.setCards.length > 0) {
           v = Math.max(1, v - (state.setDamageReduction ?? 0))
@@ -1735,6 +1724,11 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           ),
         }
         s = emit(s, { type: 'StrengthGained', enemyIndex, amount: intent.alsoBuff })
+      }
+      // 威圧の消費: 攻撃行動を1回実行するたび1減る (多段は1行動で1)
+      s = {
+        ...s,
+        enemies: s.enemies.map((e, j) => (j === enemyIndex && (e.weak ?? 0) > 0 ? { ...e, weak: e.weak! - 1 } : e)),
       }
       return markResolved(s, hpLoss)
     }
