@@ -446,12 +446,12 @@ describe('古根の杯=ボスレリック化 (2026-09-03 本家 Coffee Dripper �
 })
 
 describe('在庫拡充 第1波 (2026-09-03 docs/relic-redesign-proposal.md §3-3。既存の仕組みで作れる15個)', () => {
-  it('ショップ系: 会員証=半額・砥石の欠片=鍛える-25・除去の鑿=逓増+25・大工の道具=合成-50', () => {
+  it('ショップ系: 会員証=半額・砥石の欠片=鍛える-25・除去の鑿=逓増なし・大工の道具=合成-50', () => {
     const base = createRun(3, 'set-confirm')
     expect(shopRemovalPrice({ ...base, relics: ['relic_membership_card'] })).toBe(25)
     expect(shopUpgradePrice({ ...base, relics: ['relic_membership_card'] })).toBe(50)
     expect(shopUpgradePrice({ ...base, relics: ['relic_whetstone_chip'] })).toBe(75)
-    expect(shopRemovalPrice({ ...base, relics: ['relic_removal_chisel'], removalCount: 2 })).toBe(100)
+    expect(shopRemovalPrice({ ...base, relics: ['relic_removal_chisel'], removalCount: 2 })).toBe(50) // 逓増なし (2026-09-03 +25化に伴い作り直し)
     expect(workshopFusePrice({ ...base, relics: ['relic_carpenter_tools'] })).toBe(50)
   })
   it('薬研: 実際に休んだ時だけ最大HP+2 (古根の杯で休めない時は増えない)', () => {
@@ -498,5 +498,18 @@ describe('在庫拡充 第1波 (2026-09-03 docs/relic-redesign-proposal.md §3-3
     expect(run.rewardChoicesBonus).toBe(2)
     expect(run.maxHp).toBe(80 - 10)
     expect(run.hp).toBe(hp0 - 10)
+  })
+})
+
+describe('経済レリックの供給は幕1〜2まで (2026-09-03 ユーザー裁定)', () => {
+  it('actMax=2 の3種は幕3の抽選に出ない (幕1では出うる)', () => {
+    const eco = ['relic_loot_bag', 'relic_whetstone_chip', 'relic_old_purse']
+    for (const id of eco) expect(getRelicDef(id).actMax).toBe(2)
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const run = { ...createRun(seed, 'set-confirm'), act: 3 }
+      for (const src of ['chest', 'elite', 'shop', 'event'] as const) {
+        for (const id of drawRelicOptions(run, src, 5)[0]) expect(eco).not.toContain(id)
+      }
+    }
   })
 })

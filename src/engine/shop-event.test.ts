@@ -146,9 +146,9 @@ describe('ショップ', () => {
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
     expect(run.gold).toBe(300 - 50)
     expect(run.deck).toHaveLength(before - 1)
-    expect(shopRemovalPrice(run)).toBe(100) // 逓増
+    expect(shopRemovalPrice(run)).toBe(75) // 逓増 (+25。2026-09-03)
     run = applyRunCommand(run, { type: 'ShopRemove', index: 0 })
-    expect(run.gold).toBe(300 - 50 - 100)
+    expect(run.gold).toBe(300 - 50 - 75)
     expect(run.deck).toHaveLength(before - 2)
   })
 

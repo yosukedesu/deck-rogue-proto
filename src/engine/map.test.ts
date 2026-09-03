@@ -110,8 +110,9 @@ describe('マップ生成の構造', () => {
       const map = mapFor(seed)
       const all = map.flat()
       const total = all.length
-      // 工房: 幕1 (mapFor の既定) はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」)
+      // 工房: 幕1 (mapFor の既定) はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」)。行5以降 (2026-09-03)
       expect(all.filter((n) => n.type === 'workshop'), `seed${seed}`).toHaveLength(1)
+      map.forEach((row, r) => row.forEach((n) => { if (n.type === 'workshop') expect(r, `seed${seed} 工房の行`).toBeGreaterThanOrEqual(5) }))
       expect(all.filter((n) => n.type === 'shop'), `seed${seed}`).toHaveLength(3) // 固定3/幕 (2026-09-02 StS2式)
       expect(all.filter((n) => n.type === 'elite'), `seed${seed}`).toHaveLength(4)
       // ?は本家の22%を員数式にしたもの (自由ノードにだけ配るので実測は21.7%)

@@ -1106,6 +1106,8 @@ export interface RelicDef {
   readonly rarity?: RelicRarity
   /** A型効果をエリート・ボス戦にだけ注入する (鎖の首輪=本家 Slaver's Collar) */
   readonly eliteBossOnly?: boolean
+  /** この幕までしか候補に出ない (経済レリック=幕1〜2。終盤の外れ枠にしない 2026-09-03 ユーザー裁定) */
+  readonly actMax?: number
   /** A型: 戦闘開始時に不可視の置物として注入される宣言的効果 */
   readonly effects?: readonly DeclarativeEffect[]
   /** B型: ラン定数の恒久変更 */

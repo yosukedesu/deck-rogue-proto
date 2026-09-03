@@ -117,6 +117,8 @@ const ROOM_WEIGHTS: Readonly<Record<'shop' | 'workshop' | 'event' | 'campfire', 
 }
 /** 焚き火を置ける最小行 (本家「6階より下に休憩なし」= index 5 以降) */
 const CAMPFIRE_MIN_ROW = 5
+/** 幕1の工房は行5以降 (2026-09-03 ユーザー裁定。Opus J/K: 行3の工房は所持金79G/73Gで合成100Gが払えない) */
+const WORKSHOP_MIN_ROW_ACT1 = 5
 /**
  * 1本のパスで踏める焚き火の上限 (ボス前の全焚き火行の1回を含む。2026-08-31 ユーザー裁定
  * 「最良ルートで3〜4個に制限できていればok」)。ガード無しだと21.5%のマップで5個以上の
@@ -381,6 +383,7 @@ export function generateMap(
     const assignable = (r: number, c: number, t: MapNodeType): boolean => {
       if (t === 'elite' && r < (ELITE_MIN_ROW_BY_ACT[act - 1] ?? ELITE_MIN_ROW)) return false
       if (t === 'campfire' && r < CAMPFIRE_MIN_ROW) return false // 本家「6階より下に休憩なし」
+      if (t === 'workshop' && act === 1 && r < WORKSHOP_MIN_ROW_ACT1) return false // 5戦ぶんの金が貯まってから
       // ボス前3行に散布焚き火を置かない (2026-09-02 本家StS2「最終3行以内にRestSiteなし」。
       // ボス前の全焚き火行と合わせ「ボス直前に休憩2連」経路を封じる = HP経済の絞りと同方向)
       if (t === 'campfire' && r >= bossRow - 3) return false

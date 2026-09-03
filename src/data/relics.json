@@ -290,7 +290,8 @@
     "rarity": "common",
     "bonus": {
       "shopUpgradeDiscount": 25
-    }
+    },
+    "actMax": 2
   },
   {
     "id": "relic_herb_pouch",
@@ -310,7 +311,8 @@
     "rarity": "common",
     "bonus": {
       "goldPerVictory": 4
-    }
+    },
+    "actMax": 2
   },
   {
     "id": "relic_momentum_whip",
@@ -368,7 +370,8 @@
     "rarity": "uncommon",
     "bonus": {
       "eliteGoldBonus": 20
-    }
+    },
+    "actMax": 2
   },
   {
     "id": "relic_carpenter_tools",
@@ -441,7 +444,7 @@
     "id": "relic_removal_chisel",
     "name": "除去の鑿",
     "sprite": "🔩",
-    "description": "ショップ除去の値上がり幅が+50→+25",
+    "description": "ショップ除去の値上がりが無くなる（毎回50G）",
     "rarity": "shop",
     "bonus": {
       "removalStepDelta": -25

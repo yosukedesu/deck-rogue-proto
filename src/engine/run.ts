@@ -100,7 +100,7 @@ const SHOP_RELIC_PRICE = 150
 /** 除去サービス: 回数無制限・使うたびラン通算で+25G (本家Purge式。2026-08-29) */
 const SHOP_REMOVAL_BASE = 50 // 2026-09-03 75→50 (ユーザー裁定。Opus F/G: 幕1のショップは78〜113Gで除去75Gが一度も選べない。逓増+50は維持)
 // 逓増を強化 (2026-08-31 ゴールドシンク: 502Gで強化2+除去2が同時に買えて選択になっていない実測)
-const SHOP_REMOVAL_STEP = 50
+const SHOP_REMOVAL_STEP = 25 // 2026-09-03 ユーザー裁定 +50→+25 (Opus K: 2回目が買えない／J: 汚染系イベントの対価が実質永久)
 /** 強化サービス: 回数無制限・使うたびラン通算で+30G (2026-08-29 ユーザー指示) */
 const SHOP_UPGRADE_BASE = 100
 const SHOP_UPGRADE_STEP = 50
@@ -423,7 +423,8 @@ export function drawRelicOptions(
   source: RelicSource,
   count = 3,
 ): readonly [readonly string[], RngState] {
-  const pool = run.relicQueue.filter((id) => !run.relics.includes(id))
+  // actMax (2026-09-03): 経済レリックは幕1〜2にしか出ない (終盤に引くと外れ枠)
+  const pool = run.relicQueue.filter((id) => !run.relics.includes(id) && run.act <= (getRelicDef(id).actMax ?? 99))
   let rng = run.rng
   const picked: string[] = []
   const take = (tier: RelicRarity): boolean => {
