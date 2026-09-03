@@ -420,6 +420,22 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
  * 反応テーブルを持つ敵は宣言時に両分岐を確定しており、**実行時の盤面**でどちらになるかが決まる。
  * これによりプレイヤーは自ターン中に「伏せて弱腰にさせる / 出さずに殴らせる」を選べる。
  */
+/**
+ * この敵の伏せ分岐が見切り (setFresh) を無視するか = 破壊分岐・罰型 (setAlt.ignoreFreshness / EnemyDef.vsSetIgnoreFreshness)。
+ * effectiveIntent の判定と表示層 (CLI/UI の「見切られ」タグ) が同じ述語を読む
+ * (2026-09-03 Opusラン I: 罰型の敵に「見切られ=敵は反応しない」と出ていた矛盾の処方)
+ */
+export function setReactionIgnoresFreshness(state: GameState, enemyIndex: number): boolean {
+  const enemy = state.enemies[enemyIndex]
+  const intent = enemy?.intent
+  if (!enemy || !intent || intent.conditionalOn !== 'set' || !intent.alt) return false
+  return (
+    intent.alt.kind === 'destroy-set' ||
+    intent.alt.ignoreFreshness === true ||
+    getEnemyDef(enemy.enemyId).vsSetIgnoreFreshness === true
+  )
+}
+
 export function effectiveIntent(state: GameState, enemyIndex: number): EnemyIntent | null {
   const intent = state.enemies[enemyIndex]?.intent
   if (!intent) return null
@@ -429,9 +445,7 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
       ? // 見切り (2026-08-30 A2): 敵の伏せ反応は**そのターンに伏せられた札**にだけ反応する。
         // 置きっぱなしの札は「織り込み済み」= 蓋 (置くだけで攻撃が消え続ける) の対処。
         // ただし破壊 (destroy-set) は鮮度を問わない — 晒し続けた札は壊されには行かれる
-        intent.alt?.kind === 'destroy-set' ||
-          intent.alt?.ignoreFreshness === true ||
-          getEnemyDef(state.enemies[enemyIndex].enemyId).vsSetIgnoreFreshness === true
+        setReactionIgnoresFreshness(state, enemyIndex)
         ? state.player.setCards.length > 0
         : state.player.setCards.some((c) => c.setFresh === true)
       : hasHuntableTokens(state)

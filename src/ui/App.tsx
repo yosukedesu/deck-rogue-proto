@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { usableSetCards, damageBreakdown, BLAZE_THRESHOLD, cardNeedsTarget, playerCanSet, effectiveIntent, setBranchFlipRisks, windowFromPending, effectiveCost, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
+import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
@@ -1749,7 +1749,19 @@ function BattleScreen({
                   <div className="card card-back">伏</div>
                   <div className="set-slot-label">
                     {c.def.name}
-                    {c.setFresh !== true && <span title="敵はこの札に反応しない (織り込み済み)">（見切られ）</span>}
+                    {c.setFresh !== true &&
+                      (() => {
+                        // 罰型 (見切り無視) の敵が生存中なら「反応しない」は嘘になる (2026-09-03 Opusラン I 指摘)
+                        const pun = s.enemies
+                          .map((en, ei) => ({ en, ei }))
+                          .filter((x) => x.en.hp > 0 && setReactionIgnoresFreshness(s, x.ei) && x.en.intent?.alt?.kind !== 'destroy-set')
+                          .map((x) => getEnemyDef(x.en.enemyId).name)
+                        return pun.length > 0 ? (
+                          <span title={`罰型の敵は見切りを無視する: ${pun.join('・')}`}>（見切られ・{pun.join('・')}は反応）</span>
+                        ) : (
+                          <span title="敵はこの札に反応しない (織り込み済み)">（見切られ）</span>
+                        )
+                      })()}
                     {c.def.type !== 'reaction' && (
                       <span title="通常カードの伏せ (実験): 誘発したら印字コストを払って発動">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
                     )}

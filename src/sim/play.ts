@@ -33,7 +33,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -183,7 +183,9 @@ function intentLine(s: GameState, i: number): string {
       ? ''
       : e.intent.alt.kind === 'destroy-set'
         ? ' (破壊分岐は見切りを無視する=置きっぱなしでも壊しに来る)'
-        : ' (伏せ札は見切られ中=まだ伏せたことのない別の札を1E以上で伏せれば変わる。同じ札の伏せ直しは見切られたまま)'
+        : setReactionIgnoresFreshness(s, i)
+          ? ' (この敵は罰型=見切りを無視する。伏せ札がある限りこの分岐)'
+          : ' (伏せ札は見切られ中=まだ伏せたことのない別の札を1E以上で伏せれば変わる。同じ札の伏せ直しは見切られたまま)'
     return `【${cond}】${branchText(e.intent.alt)} ／【なし】${branchText(e.intent)} → 今は「${branchText(now)}」${stale}`
   }
   const it = e.intent
@@ -303,8 +305,17 @@ function renderBattle(s: GameState, logFrom: number): string {
     const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeInHand(c)).map((c) => `[${c.uid}]${c.def.name}`)
     L.push(`手札で鍛える候補(handUids): ${cands.join(' ') || 'なし(省略可)'}`)
   }
+  // 罰型 (見切り無視) の敵が生存中なら「敵は反応しない」は嘘になる (2026-09-03 Opusラン I 指摘)
+  const stalePun = s.enemies
+    .map((en, ei) => ({ en, ei }))
+    .filter((x) => x.en.hp > 0 && setReactionIgnoresFreshness(s, x.ei) && x.en.intent?.alt?.kind !== 'destroy-set')
+    .map((x) => getEnemyDef(x.en.enemyId).name)
+  const staleTag =
+    stalePun.length > 0
+      ? '【見切られ中。ただし罰型の' + stalePun.join('・') + 'は伏せ札がある限り反応する。破壊は来る】'
+      : '【見切られ=敵は反応しない。破壊は来る】'
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : '【見切られ=敵は反応しない。破壊は来る】'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : '${staleTag}'}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
@@ -387,7 +398,21 @@ function renderBattle(s: GameState, logFrom: number): string {
       ].filter(Boolean).join('・')
       const xEff = c.def.xCost === true ? c.def.effects.filter((e) => e.xHits === true && e.effect === 'dealDamage') : []
       const xCap = p.energy
-      const xNow = xEff.length > 0 ? ` ［X=1〜${xCap}を xAmount で指定 (省略=全部)。全部なら計${xEff.reduce((a, e) => a + ((e.amount ?? 0) + p.growth + p.momentum) * xCap, 0)}${xEff.some((e) => e.target === 'all') ? '/体' : ''}］` : ''
+      // 全部払った時の見積り: engine の damageBreakdown で敵ごとの1ヒット実値 (成長・勢い・弱体・急所・装甲・敵ブロック) ×X
+      // (2026-09-03 Opusラン I: 旧表示は成長・勢いしか乗せておらず急所×1.5が抜けていた)
+      const xNow =
+        xEff.length > 0
+          ? (() => {
+              const per = s.enemies
+                .map((en, ei) => ({ en, ei }))
+                .filter((x) => x.en.hp > 0)
+                .map((x) => {
+                  const hit = xEff.reduce((a, e) => a + (damageBreakdown(s, x.ei, e.amount ?? 0, e.pierce === true)?.hpLoss ?? 0), 0)
+                  return `敵${x.ei}:${hit}×${xCap}=${hit * xCap}`
+                })
+              return ` ［X=1〜${xCap}を xAmount で指定 (省略=全部)。全部なら ${per.join(' / ')}${xEff.some((e) => e.target === 'all') ? '(全体)' : '(単体=対象1体)'}。先頭ヒット基準=急所・敵ブロックは1ヒット目にだけ乗る］`
+            })()
+          : ''
       // 印字コストと実コストが違う時だけ注記 (2026-09-03 Opusラン G: 重圧で2E消費なのに「1E」表示のまま手順を組んで滑った)
       const costNote =
         c.def.xCost === true || cost === c.def.cost
