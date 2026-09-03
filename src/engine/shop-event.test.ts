@@ -183,7 +183,7 @@ describe('ショップ', () => {
     run = { ...run, act: 2 } // 幕1の強化サービス封鎖 (2026-08-31) を跨ぐ
     const idx = run.deck.findIndex((c) => c.def.id === 'green_guard')
     run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
-    expect(run.gold).toBe(300 - 75 - 100)
+    expect(run.gold).toBe(300 - 50 - 100)
     expect(run.upgradeCount).toBe(1)
   })
 
