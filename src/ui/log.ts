@@ -36,7 +36,7 @@ export function intentText(intent: EnemyIntent | null): string {
       const buff = intent.alsoBuff !== undefined ? `+💪${intent.alsoBuff}` : ''
       return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${buff}${inflictSuffix(intent)}`
     }
-    case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}${buff}`
+    case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
     case 'destroy-set': return '💥 伏せ破壊'
     case 'destroy-token': return '🪓 従者狩り'
     case 'buff': return `💪 筋力 +${intent.shownMin}〜${intent.shownMax}`
