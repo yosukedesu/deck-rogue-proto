@@ -560,7 +560,11 @@ function conditionalIntentText(s: GameState, i: number): string {
   // 表示が同値で実値だけ違う: 2分岐で予告するとノイズ (探り屋のローテ替え等) なので1行+注記に
   // (2026-08-31 再検証ラン指摘③)。どちら向きかは判断材料なので添える (同日HP経済ラン指摘④)
   if (intentText({ ...intent.alt }) === baseOnly) {
-    return `${baseOnly}（伏せると実値が${intent.alt.actual > intent.actual ? '上がる' : '下がる'}）`
+    const def = getEnemyDef(s.enemies[i].enemyId)
+    const why = enemyPunishesSet(def)
+      ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
+      : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
+    return `${baseOnly}（伏せ札ありでも今回は同じ行動・実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
   }
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
   const cond = intent.conditionalOn === 'set' ? `伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
@@ -4158,6 +4162,10 @@ function RunScreen({
         {run.combat?.phase === 'won' && (
           <p className="hint">⚔️ 戦いの記録: {summaryLine(battleSummary(run.combat.eventLog))}</p>
         )}
+        {(() => {
+          const lost = (run.combat?.enemies ?? []).filter((e) => e.fled === true).reduce((a, e) => a + (e.stolenGold ?? 0), 0)
+          return lost > 0 ? <p className="hint">💸 逃走した盗人に {lost}G 持ち逃げされました（所持金から精算済み）</p> : null
+        })()}
         <div className="choice-row" style={{ marginTop: 12 }}>
           {(run.relicOptions ?? []).map((id, i) => {
             const r = getRelicDef(id)
@@ -4491,6 +4499,10 @@ function RunScreen({
             鍛えた姿（+）で表示
           </label>
         </div>
+        {(() => {
+          const lost = (run.combat?.enemies ?? []).filter((e) => e.fled === true).reduce((a, e) => a + (e.stolenGold ?? 0), 0)
+          return lost > 0 ? <div className="hint" style={{ margin: '6px 0' }}>💸 逃走した盗人に {lost}G 持ち逃げされました（所持金から精算済み）</div> : null
+        })()}
         {run.currentElite && run.combat?.enemies.some((e) => e.fled === true) && (
           <div style={{ color: '#e6b422', margin: '6px 0' }}>
             ⚠ 逃走されたため、エリートのレア確定枠を失いました（レリック3択は残ります）

@@ -167,7 +167,13 @@ function intentLine(s: GameState, i: number): string {
     // 表示が同値で実値だけ違う: 2分岐の予告はノイズ (探り屋のローテ替え等) なので1行+注記。
     // どちら向きに変わるかは判断材料なので添える (2026-08-31 HP経済ラン指摘④)
     const dir = e.intent.alt.actual > e.intent.actual ? '上がる' : '下がる'
-    return `${branchText(e.intent)}(伏せると実値が${dir})`
+    // 罰型 (罠壊し等) や順番崩し (探り屋) は「今回たまたま同じ行動を引いた」だけ (2026-09-03 Opusラン K:
+    // 「伏せると下がる」が旧弱腰型の文言に見えた)。別のターンは伏せ破壊や大技に化けることを添える
+    const def = getEnemyDef(e.enemyId)
+    const why = enemyPunishesSet(def)
+      ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
+      : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
+    return `${branchText(e.intent)}(伏せ札ありでも今回は同じ行動・実値は${dir}${why})`
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
@@ -363,7 +369,11 @@ function renderBattle(s: GameState, logFrom: number): string {
       const canSet = settable && canSetCard(s, c.uid)
       const marks = [
         c.def.id.startsWith('status_') // 負傷・がらくた・火傷・烙印・仮初の烙印 (2026-09-02 Opusラン: 火傷が「エナジー不足」と誤表示)
-          ? '使用不可(死に札)'
+          ? c.def.id === 'status_scald'
+            ? '使用不可(死に札)・自ターン終了時に手札にあるとHP-2'
+            : c.def.id === 'status_brand' || c.def.id === 'status_guilt'
+              ? '使用不可(死に札)・自ターン終了時に手札にあるとHP-1'
+              : '使用不可(死に札)'
           : playable
             ? 'プレイ可'
             : c.def.type === 'reaction'
@@ -567,6 +577,11 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
     if (run.combat?.phase === 'won') L.push('🏆 戦闘に勝利 (残りの手札は打てない)')
+    {
+      // 逃走した盗人の持ち逃げ額 (2026-09-03 Opusラン K: 「56G盗まれた→55G」の並びが取り返せたように見えた)
+      const lost = (run.combat?.enemies ?? []).filter((e) => e.fled === true).reduce((a, e) => a + (e.stolenGold ?? 0), 0)
+      if (lost > 0) L.push(`💸 逃走した盗人に ${lost}G 持ち逃げされた (所持金から精算済み。逃げる前に倒せば戻っていた)`)
+    }
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
     L.push('報酬ピック (1枚選ぶ or スキップ):')
     if (run.currentElite && run.combat?.enemies.some((e) => e.fled === true)) {
@@ -740,6 +755,7 @@ if (mode === 'new-run') {
         const def = fuseCards(a, b)
         const recipe = def.id.startsWith('fusion_') ? '⭐レシピ発見! ' : ''
         console.log(`プレビュー: ${recipe}${cardLine(def)} (素材は消費されていない)`)
+        if (sf.run!.gold < workshopFusePrice(sf.run!)) console.log(`※所持金不足: 合成${workshopFusePrice(sf.run!)}G / 所持${sf.run!.gold}G (確定は拒否される)`)
         console.log('  ※コストはVP査定からの逆算 (素材コストの単純合算ではない)')
       }
     }
