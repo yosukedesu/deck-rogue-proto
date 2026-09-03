@@ -63,10 +63,10 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
@@ -1755,9 +1755,8 @@ function BattleScreen({
                       (() => {
                         // 罰型 (見切り無視) の敵が生存中なら「反応しない」は嘘になる (2026-09-03 Opusラン I 指摘)
                         const pun = s.enemies
-                          .map((en, ei) => ({ en, ei }))
-                          .filter((x) => x.en.hp > 0 && setReactionIgnoresFreshness(s, x.ei) && x.en.intent?.alt?.kind !== 'destroy-set')
-                          .map((x) => getEnemyDef(x.en.enemyId).name)
+                          .filter((en) => en.hp > 0 && enemyPunishesSet(getEnemyDef(en.enemyId)))
+                          .map((en) => getEnemyDef(en.enemyId).name)
                         return pun.length > 0 ? (
                           <span title={`罰型の敵は見切りを無視する: ${pun.join('・')}`}>（見切られ・{pun.join('・')}は反応）</span>
                         ) : (

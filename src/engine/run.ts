@@ -538,8 +538,10 @@ function openShop(run: RunState): RunState {
   const leader = getLeaderDef(run.leaderId)
   const canRamp = run.colors.includes('green')
   const costCap = leader.energyMax + (canRamp ? 2 : 0)
+  // 保持 (retain) つきの大型は +1 まで (2026-09-03 Opusラン J: 上限4に5E保持のレア確定=撃てず手札を恒久的に埋める罠)
+  const capFor = (c: CardDef): number => (c.retain === true ? leader.energyMax + (canRamp ? 1 : 0) : costCap)
   const pool = allCards.filter(
-    (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+    (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= capFor(c),
   )
   let rng = run.rng
   const cards: { id: string; price: number }[] = []
@@ -583,12 +585,14 @@ function openShop(run: RunState): RunState {
  * ランの報酬プール (色アイデンティティ・基本札除外・リーダーのコスト上限)。
  * イベントのランダム獲得・変成と共用する
  */
-function rewardPool(run: RunState): readonly CardDef[] {
+export function rewardPool(run: RunState): readonly CardDef[] {
   const leader = getLeaderDef(run.leaderId)
   const canRamp = run.colors.includes('green')
   const costCap = leader.energyMax + (canRamp ? 2 : 0)
+  // 保持 (retain) つきの大型は +1 まで (2026-09-03 Opusラン J: 上限4に5E保持のレア確定=撃てず手札を恒久的に埋める罠)
+  const capFor = (c: CardDef): number => (c.retain === true ? leader.energyMax + (canRamp ? 1 : 0) : costCap)
   return allCards.filter(
-    (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+    (c) => run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= capFor(c),
   )
 }
 
@@ -986,10 +990,12 @@ function rollRewards(run: RunState): RunState {
   // 緑はランプで上限を伸ばせるので +2 まで許容する
   const canRamp = run.colors.includes('green')
   const costCap = leader.energyMax + (canRamp ? 2 : 0)
+  // 保持 (retain) つきの大型は +1 まで (2026-09-03 Opusラン J: 上限4に5E保持のレア確定=撃てず手札を恒久的に埋める罠)
+  const capFor = (c: CardDef): number => (c.retain === true ? leader.energyMax + (canRamp ? 1 : 0) : costCap)
   const pool = allCards
     .filter(
       (c) =>
-        run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= costCap,
+        run.colors.includes(c.color) && !REWARD_EXCLUDED.has(c.id) && c.cost <= capFor(c),
     )
   // レアリティ抽選 (確定済みルール表「レアリティ」2026-08-29): スロットごとに
   // コモン60% / アンコモン37% / レア3% の本家比率でレアリティを決め、その帯から一様に引く。

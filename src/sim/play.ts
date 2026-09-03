@@ -35,7 +35,7 @@ function cname(cardId: string): string {
 }
 import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
@@ -306,10 +306,10 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`手札で鍛える候補(handUids): ${cands.join(' ') || 'なし(省略可)'}`)
   }
   // 罰型 (見切り無視) の敵が生存中なら「敵は反応しない」は嘘になる (2026-09-03 Opusラン I 指摘)
+  // 静的判定 (敵定義) にする: 動的判定だと確認ウィンドウで意図が確定した後に「反応しない」へ戻り矛盾した (Opusラン J)
   const stalePun = s.enemies
-    .map((en, ei) => ({ en, ei }))
-    .filter((x) => x.en.hp > 0 && setReactionIgnoresFreshness(s, x.ei) && x.en.intent?.alt?.kind !== 'destroy-set')
-    .map((x) => getEnemyDef(x.en.enemyId).name)
+    .filter((en) => en.hp > 0 && enemyPunishesSet(getEnemyDef(en.enemyId)))
+    .map((en) => getEnemyDef(en.enemyId).name)
   const staleTag =
     stalePun.length > 0
       ? '【見切られ中。ただし罰型の' + stalePun.join('・') + 'は伏せ札がある限り反応する。破壊は来る】'

@@ -189,3 +189,14 @@ export function relicRarityTag(def: RelicDef): string {
     default: return ''
   }
 }
+
+/**
+ * この敵は「伏せ札があれば見切りを無視して反応する」行動を持つか (静的。表示用 2026-09-03 Opusラン J:
+ * 動的判定 (今の意図) だと確認ウィンドウで意図が確定した後にタグが「反応しない」へ戻り、自ターンの表示と矛盾した)。
+ * 罰型 = EnemyDef.vsSetIgnoreFreshness か、どこかの行動の setAlt.ignoreFreshness
+ */
+export function enemyPunishesSet(def: EnemyDef): boolean {
+  if (def.vsSetIgnoreFreshness === true) return true
+  const tables = [def.moves, def.movesBelowHalf ?? [], def.movesVsSet ?? [], def.movesVsTokens ?? [], def.movesWhenAlone ?? []]
+  return tables.some((t) => t.some((m) => m.setAlt?.ignoreFreshness === true))
+}

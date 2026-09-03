@@ -1,3 +1,4 @@
+import { relicRarityTag } from '../engine/summary.ts'
 import { actSummaries, battleMetrics, type BattleMetrics, type BattleRow } from '../engine/analysis.ts'
 import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 
@@ -974,7 +975,7 @@ export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunStat
       // レリック・カードの増分を差分から名前で出す
       const gotRelics = next.relics.filter((id) => !prev.relics.includes(id)).map((id) => {
         try {
-          return getRelicDef(id).name
+          return `${relicRarityTag(getRelicDef(id)) ? `${relicRarityTag(getRelicDef(id))} ` : ''}${getRelicDef(id).name}`
         } catch {
           return id
         }

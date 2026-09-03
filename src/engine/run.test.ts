@@ -3,19 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
 import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
-import {
-  applyRunCommand,
-  createDebugCheckpointRun,
-  createRun,
-  currentNode,
-  DEFAULT_DIFFICULTY,
-  depthHpScale,
-  depthStrength,
-  DIFFICULTY_TABLE,
-  difficultyScale,
-  isUpgraded,
-  upgradeCard,
-} from './run.ts'
+import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, isUpgraded, upgradeCard, rewardPool } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -561,5 +549,19 @@ describe('査定パス (2026-09-02 段6人間プレイの指摘)', () => {
       { trigger: 'onAttacked', effect: 'counter', amount: 5 },
       { trigger: 'onAttacked', effect: 'exposeEnemy', amount: 1 },
     ])
+  })
+})
+
+describe('報酬プールのコスト上限 (2026-09-03 Opusラン J: 上限4に5E保持のレア確定)', () => {
+  it('保持 (retain) つきの札は リーダー上限+1 まで、それ以外は緑なら +2 まで', () => {
+    const run = createRun(5, 'set-confirm')
+    const cap = 3 // このは: energyMax 3 (2ターン目から4はパッシブ)
+    for (const c of rewardPool(run)) {
+      if (c.retain === true) expect(c.cost, c.id).toBeLessThanOrEqual(cap + 1)
+      else expect(c.cost, c.id).toBeLessThanOrEqual(cap + 2)
+    }
+    // 5E保持 (巨獣の踏みつけ等) は緑でも出ない。4E保持 (大樹の怒り等) は出る
+    const ids = rewardPool(run).map((c) => c.id)
+    expect(ids.some((id) => id === 'green_beast_stomp' || id.includes('stomp'))).toBe(false)
   })
 })
