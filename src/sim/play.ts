@@ -588,8 +588,10 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     }
     // 上限クランプ後の実回復量を表示する (2026-08-30 Opusラン指摘: 満タンでも+41と出ていた)
     const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
+    const noRest = run.relics.some((id) => getRelicDef(id).bonus?.noRest === true)
     L.push(
-      (run.campfireUpgradesUsed ?? 0) > 0 ? '  休む (CampfireRest) → 鍛えた後なので回復なしの立ち去り (1種類の原則)'
+      noRest ? '  休む (CampfireRest) → 休めない (古根の杯)。回復なしの立ち去り'
+      : (run.campfireUpgradesUsed ?? 0) > 0 ? '  休む (CampfireRest) → 鍛えた後なので回復なしの立ち去り (1種類の原則)'
       : heal <= 0 ? '  休む (CampfireRest) → HP満タンなので回復なしの立ち去り'
       : `  休む (CampfireRest) → HP+${heal} 回復して次へ`)
     // 鍛えるが使えない焚き火 (幕1のラン通算1回を使用済み等) では強化UIを丸ごと畳む

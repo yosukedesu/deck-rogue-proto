@@ -430,3 +430,17 @@ describe('レリックの層×供給源 (2026-09-03 本家式。docs/relic-redes
     withStone.combat!.enemies.forEach((e, i) => expect(e.strength).toBe(base.combat!.enemies[i].strength + 1))
   })
 })
+
+describe('古根の杯=ボスレリック化 (2026-09-03 本家 Coffee Dripper 型の代償)', () => {
+  it('層は boss、焚き火で休んでも回復しない (鍛えるは使える)', () => {
+    expect(getRelicDef('relic_oldroot_cup').rarity).toBe('boss')
+    expect(getRelicDef('relic_oldroot_cup').bonus?.noRest).toBe(true)
+    let run = intoCampfire({ ...createRun(11, 'set-confirm'), relics: ['relic_oldroot_cup'] })
+    run = { ...run, hp: 30 }
+    const rested = applyRunCommand(run, { type: 'CampfireRest' })
+    expect(rested.hp).toBe(30)
+    expect(rested.phase).toBe('map')
+    const forged = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
+    expect(forged.deck.some((c) => c.def.name.endsWith('+'))).toBe(true)
+  })
+})

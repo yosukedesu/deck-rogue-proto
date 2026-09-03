@@ -141,15 +141,18 @@
     "id": "relic_oldroot_cup",
     "name": "古根の杯",
     "sprite": "🏆",
-    "description": "戦闘開始時、エナジー上限+1（次のターンから）",
-    "rarity": "rare",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。焚き火で休めない（休むは回復なしの立ち去り）",
+    "rarity": "boss",
     "effects": [
       {
         "trigger": "onCombatStart",
         "effect": "gainEnergyMax",
         "amount": 1
       }
-    ]
+    ],
+    "bonus": {
+      "noRest": true
+    }
   },
   {
     "id": "relic_raptor_eye",

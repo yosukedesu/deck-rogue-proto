@@ -4378,6 +4378,8 @@ function RunScreen({
   if (run.phase === 'campfire') {
     // 上限クランプ後の実回復量 (満タンで+41と表示される誤解を防ぐ 2026-08-30)
     const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
+    // 休めないレリック (古根の杯 2026-09-03): 休むは回復なしの立ち去り
+    const noRest = run.relics.some((id) => getRelicDef(id).bonus?.noRest === true)
     // 鍛えるが使えない焚き火 (この焚き火で使用済み) では強化UIを丸ごと畳む
     // (2026-08-31 再検証ラン指摘④)。幕1の通算制限は撤廃 (2026-09-01 ユーザー指示)
     const canForgeHere = 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0) > 0
@@ -4385,7 +4387,7 @@ function RunScreen({
       <div className="app setup">
         <h1>🔥 焚き火</h1>
         <p className="hint">
-          「休む」「鍛える」「取り除く」から1つを選ぶ（本家式の排他三択。2026-08-29復帰）。
+          「休む」「鍛える」から1つを選ぶ（除去はショップのみ。2026-09-03）。
           {(run.campfireForgeBonus ?? 0) > 0 &&
             Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)) > 0 &&
             ` 🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0))}枚（休む・除去とは併用不可）。`}
@@ -4397,7 +4399,9 @@ function RunScreen({
               {(run.campfireUpgradesUsed ?? 0) > 0 || heal <= 0 ? '立ち去る' : '休む'}
             </div>
             <div className="choice-desc">
-              {(run.campfireUpgradesUsed ?? 0) > 0
+              {noRest
+                ? `休めない（古根の杯）。回復なしで先へ（現在 ${run.hp}/${run.maxHp}）`
+                : (run.campfireUpgradesUsed ?? 0) > 0
                 ? 'すでに鍛えたので回復はなし'
                 : heal <= 0
                   ? `HP満タンなので回復はなし（現在 ${run.hp}/${run.maxHp}）`
