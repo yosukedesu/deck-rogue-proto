@@ -352,7 +352,7 @@ export function generateMap(
       ['campfire', Math.round(total * ROOM_WEIGHTS.campfire)], // 本家Rest: 散布される休憩
       // 工房: 幕1はちょうど1個 (2026-08-31 ユーザー指示「合成1幕に1個つけて」= 供給集中を
       // 避けつつ合成の楽しみを前倒し)。幕2/3は重み5%。allowWorkshop=false は全面禁止 (テスト用)
-      ['workshop', !allowWorkshop ? 0 : act === 1 ? 1 : Math.round(total * ROOM_WEIGHTS.workshop)],
+      ['workshop', !allowWorkshop ? 0 : 1], // 2026-09-03 ユーザー裁定「工房は1幕1回のみ」: 全幕ちょうど1個 (旧: 幕2/3は重み5%=3〜4個)
       ['shop', SHOP_COUNT], // 固定3/幕 (2026-09-02 StS2式。重み5%は総ノード数で3〜4に揺れ、ゴールドシンク量がシード次第だった)
       ['event', Math.round(total * ROOM_WEIGHTS.event)],
     ]
@@ -483,7 +483,7 @@ export function generateMap(
                 const B = typeMaxDP(false, 'campfire')
                 return (r: number, c: number) => F[r][c] + B[r][c] + 1 <= CAMPFIRE_PATH_MAX
               })()
-            : t === 'workshop' && act === 1
+            : t === 'workshop' // 2026-09-03 全幕1個になったので配置保証も全幕へ
               ? (() => {
                   // 幕1の工房は「エリートも踏める経路の上」に置く (2026-08-31 HP経済ラン:
                   // 工房・エリート・4焚き火が同一分岐に固まり「工房を取ると幕1エリート全滅」の

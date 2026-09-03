@@ -351,7 +351,7 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
     let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1, act: 2 }
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
     expect(run.phase).toBe('campfire') // 1枚目の後も留まる
-    expect(() => applyRunCommand(run, { type: 'CampfireRemove', index: 1 })).toThrow('すでに鍛えている')
+    expect(() => applyRunCommand(run, { type: 'CampfireRemove', index: 1 })).toThrow('除去できない') // 2026-09-03 焚き火の除去は廃止
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })
     expect(run.phase).toBe('map') // 2枚目で出る
     expect(run.deck.filter((c) => c.def.name.endsWith('+'))).toHaveLength(2)

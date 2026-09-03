@@ -80,6 +80,15 @@ describe('マップ生成の構造', () => {
     }
   })
 
+  it('工房は全幕ちょうど1個 (2026-09-03 ユーザー裁定「工房は1幕1回のみ」)', () => {
+    for (const act of [2, 3]) {
+      for (const seed of SEEDS.slice(0, 20)) {
+        const [m] = generateMap(createRng(seed), act, true)
+        expect(m.flat().filter((n) => n.type === 'workshop'), `act${act} seed${seed}`).toHaveLength(1)
+      }
+    }
+  })
+
   it('部屋タイプの員数: 工房=幕1は1個・ショップは固定3・?は18〜26%・エリートちょうど4', () => {
     for (const seed of SEEDS) {
       const map = mapFor(seed)

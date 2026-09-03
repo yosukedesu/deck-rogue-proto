@@ -1695,10 +1695,19 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       const enemies = state.enemies.map((e, i) =>
         i === enemyIndex ? { ...e, block: e.block + intent.actual } : e,
       )
-      return markResolved(
-        emit({ ...state, enemies }, { type: 'BlockGained', target: 'enemy', amount: intent.actual }),
-        0,
-      )
+      let s = emit({ ...state, enemies }, { type: 'BlockGained', target: 'enemy', amount: intent.actual })
+      // 防御と同時の強化 (2026-09-03 用心深い影「隠れる」: 今守らせる代わりに次の斬撃が重くなる = 伏せ分岐を
+      // 「押せるスイッチ」から交換に変える。攻撃の alsoBuff と同じく打ち消せば強化ごと消える)
+      if (intent.alsoBuff !== undefined && s.enemies[enemyIndex] && s.enemies[enemyIndex].hp > 0) {
+        s = {
+          ...s,
+          enemies: s.enemies.map((e, j) =>
+            j === enemyIndex ? { ...e, strength: e.strength + intent.alsoBuff! } : e,
+          ),
+        }
+        s = emit(s, { type: 'StrengthGained', enemyIndex, amount: intent.alsoBuff })
+      }
+      return markResolved(s, 0)
     }
     case 'buff': {
       // 強化 (StSの筋力): 以降の攻撃宣言に加算される

@@ -257,16 +257,12 @@ describe('HP持ち越しと焚き火', () => {
     expect(r2.phase).toBe('map')
   })
 
-  it('焚き火でカード除去を選ぶと回復は受け取れない (排他三択。2026-08-29 復帰)', () => {
-    let run = runTo(createRun(17, 'set-confirm'), 'campfire')
+  it('焚き火の「取り除く」は廃止 (2026-09-03 ユーザー裁定。除去はショップ専売): コマンドは拒否されデッキは変わらない', () => {
+    const run = runTo(createRun(17, 'set-confirm'), 'campfire')
     const before = run.deck.length
-    const removed = run.deck[0].uid
-    const hpBefore = run.hp
-    run = applyRunCommand(run, { type: 'CampfireRemove', index: 0 })
-    expect(run.deck).toHaveLength(before - 1)
-    expect(run.deck.some((c) => c.uid === removed)).toBe(false)
-    expect(run.hp).toBe(hpBefore) // 除去を選んだので回復なし
-    expect(run.phase).toBe('map')
+    expect(() => applyRunCommand(run, { type: 'CampfireRemove', index: 0 })).toThrow('除去できない')
+    expect(run.deck).toHaveLength(before)
+    expect(run.phase).toBe('campfire')
   })
 
   it('敗北でランは終了する', () => {

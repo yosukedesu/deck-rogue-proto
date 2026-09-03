@@ -106,6 +106,12 @@ const SHOP_UPGRADE_BASE = 100
 const SHOP_UPGRADE_STEP = 50
 
 /** 現在の除去サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
+/** 工房の合成1回の価格 (2026-09-03 ユーザー裁定「工房合成時にお金がいるように」。強化100Gと同額=圧縮+強化の対価) */
+export const WORKSHOP_FUSE_PRICE = 100
+export function workshopFusePrice(_run: RunState): number {
+  return WORKSHOP_FUSE_PRICE
+}
+
 export function shopRemovalPrice(run: RunState): number {
   return SHOP_REMOVAL_BASE + SHOP_REMOVAL_STEP * (run.removalCount ?? 0)
 }
@@ -827,7 +833,7 @@ export function createDebugCheckpointRun(
 ): RunState {
   const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY)
   const act = Math.min(ACT_COUNT, Math.max(1, Math.round(opts.act)))
-  const [map, rng] = generateMap(base.rng, act, act === 1)
+  const [map, rng] = generateMap(base.rng, act, true) // 2026-09-03 修正: 旧 act===1 は幕2/3のチェックポイントに工房が無かった
   let run: RunState = {
     ...base,
     act,
@@ -1168,11 +1174,13 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (a === undefined || b === undefined) throw new Error('不正な合成指定')
       const reason = fuseBlockReason(a, b)
       if (reason !== null) throw new Error(`合成できない: ${reason}`)
+      const price = workshopFusePrice(run)
+      if (run.gold < price) throw new Error(`ゴールドが足りない (合成${price}G・所持${run.gold}G)`)
       const fusedDef = fuseCards(a, b)
       const fused: CardInstance = { uid: `fused_a${run.act}_r${run.row}_${fusedDef.id}`, def: fusedDef }
-      // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる
+      // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる (2026-09-03 から有料)
       const deck = run.deck.filter((_, i) => i !== command.indexA && i !== command.indexB)
-      return { ...run, deck: [...deck, fused], phase: 'map' }
+      return { ...run, deck: [...deck, fused], gold: run.gold - price, phase: 'map' }
     }
     case 'WorkshopSkip': {
       if (run.phase !== 'workshop') throw new Error('工房フェーズではない')
@@ -1180,13 +1188,9 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     }
     case 'CampfireRemove': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
-      // 砥石で焚き火に留まっていても「鍛える/取り除く/何もしない から1つ選ぶ」の原則は崩さない
-      if ((run.campfireUpgradesUsed ?? 0) > 0) throw new Error('この焚き火ではすでに鍛えている (選べるのは1種類)')
-      const card = run.deck[command.index]
-      if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
-      // デッキが痩せすぎないよう最低5枚は残す
-      if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
-      return { ...run, deck: run.deck.filter((_, i) => i !== command.index), phase: 'map' }
+      // 2026-09-03 ユーザー裁定「焚き火での除去を削除」: 除去はショップ専売 (50G+逓増) = ゴールドシンクへ一本化。
+      // コマンド型は旧セーブ/ジャーナル互換のため残し、常に拒否する
+      throw new Error('焚き火では除去できない (除去はショップのみ。焚き火は 休む/鍛える の二択)')
     }
     case 'ShopBuyCard': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')

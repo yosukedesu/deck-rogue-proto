@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEventDef } from './content.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
-import { applyRunCommand, createRun, upgradeCard, upgradeTier } from './run.ts'
+import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { CardInstance, GameState } from './types.ts'
@@ -146,8 +146,13 @@ describe('工房ノード (マップの選択ノード)', () => {
       }
     }
     expect(pair).not.toBeNull()
+    // 合成は有料 (2026-09-03 ユーザー裁定): 100G。足りなければ拒否、払えば減る
+    const poor = { ...run, gold: workshopFusePrice(run) - 1 }
+    expect(() => applyRunCommand(poor, { type: 'WorkshopFuse', indexA: pair![0], indexB: pair![1] })).toThrow('ゴールドが足りない')
+    run = { ...run, gold: 300 }
     run = applyRunCommand(run, { type: 'WorkshopFuse', indexA: pair![0], indexB: pair![1] })
     expect(run.deck).toHaveLength(before - 1) // 2枚消えて1枚入る
+    expect(run.gold).toBe(300 - workshopFusePrice(run))
     expect(run.phase).toBe('map')
   })
 

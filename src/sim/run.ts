@@ -555,18 +555,8 @@ function simulateRuns(count: number, baseSeed: number): void {
           continue
         }
         if (run.phase === 'campfire') {
-          // 回復は自動なので、常に「鍛える or 除去」を取りに行く (2026-08-26)。
-          // 基本札が3枚以上あるうちは抜いて濃度を上げ、それ以降は伸びしろの大きい札を鍛える
-          const basics = run.deck.filter(
-            (c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'),
-          ).length
-          const trimIdx =
-            basics >= 3
-              ? run.deck.findIndex((c) => c.def.id.endsWith('_strike') || c.def.id.endsWith('_guard'))
-              : -1
-          if (trimIdx >= 0 && run.deck.length > 5) {
-            run = applyRunCommand(run, { type: 'CampfireRemove', index: trimIdx })
-          } else {
+          // 焚き火は 休む/鍛える の二択 (2026-09-03 除去はショップ専売)。伸びしろの大きい札を鍛える
+          {
             let best = -1
             let bestAmount = 0
             run.deck.forEach((c, i2) => {

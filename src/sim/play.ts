@@ -34,7 +34,7 @@ function cname(cardId: string): string {
   }
 }
 import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -125,7 +125,7 @@ function branchText(it: { kind: string; shownMin: number; shownMax: number; hits
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
   const kinds: Record<string, string> = {
     attack: `攻撃${it.shownMin}〜${it.shownMax}${hits}${guard}${buff}`,
-    defend: `防御${it.shownMin}〜${it.shownMax}`,
+    defend: `防御${it.shownMin}〜${it.shownMax}${buff}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
     buff: `筋力+${it.shownMin}〜${it.shownMax}`,
@@ -600,13 +600,13 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
         ? '  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)'
         : '  強化 (CampfireUpgrade) はこの焚き火では使えない (使用済み)',
     )
-    L.push('  除去 (CampfireRemove) → デッキから1枚を永久に取り除く')
+    L.push('  除去はショップのみ (2026-09-03 焚き火の「取り除く」は廃止。休む/鍛えるの二択)')
     run.deck.forEach((c, i) => {
       const mark =
         forgeLeftHere <= 0 ? '' : canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
       L.push(`   [${i}] ${cardLine(c.def)}${mark}`)
     })
-    L.push(`→ ${forgeLeftHere > 0 ? '{"type":"CampfireUpgrade","index":N} / ' : ''}{"type":"CampfireRemove","index":N} / {"type":"CampfireRest"}(休む=回復して次へ)`)
+    L.push(`→ ${forgeLeftHere > 0 ? '{"type":"CampfireUpgrade","index":N} / ' : ''}{"type":"CampfireRest"}(休む=回復して次へ)`)
   } else if (run.phase === 'shop' && run.shop) {
     L.push(`🛒 ショップ (所持 ${run.gold}G。買わずに出てもよい)`)
     // レア表記は報酬ピックと同じ (2026-08-31 検証ラン指摘: 6枠目がレア確定枠だと分からない)
@@ -634,6 +634,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'workshop') {
+    L.push(`🔨 工房 (合成1回 ${workshopFusePrice(run)}G・所持 ${run.gold}G${run.gold < workshopFusePrice(run) ? '=ゴールド不足で合成不可' : ''})`)
     L.push('🔨 工房: デッキの2枚を合成して1枚の新カードにできる (同名2枚は「真・」強化版。素材は消える)。見送りも可')
     L.push(
       '   タイプ跨ぎも可: 結果は持続する側 (置物＞リアクション＞呪文＞物理)。置物化は量÷3で毎ターン化',

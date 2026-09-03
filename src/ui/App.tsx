@@ -65,7 +65,7 @@ import {
 } from '../engine/content.ts'
 import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -576,7 +576,7 @@ function confirmedIntentText(intent: EnemyIntent | null): string {
       return `⚔️ 攻撃 ${intent.actual}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}）${inflictSuffix(intent)}`
     }
     case 'defend':
-      return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
+      return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
     case 'destroy-set':
       return '💥 伏せ破壊'
     case 'destroy-token':
@@ -4404,8 +4404,8 @@ function RunScreen({
         </div>
         <div className="setup-section-title" style={{ marginTop: 20 }}>
           {canForgeHere
-            ? `デッキの1枚を「鍛える」か「取り除く」（デッキ${run.deck.length}枚・最低5枚は残る）`
-            : `デッキの1枚を「取り除く」（鍛えるはこの焚き火では使用済み。デッキ${run.deck.length}枚・最低5枚は残る）`}
+            ? `デッキの1枚を「鍛える」（デッキ${run.deck.length}枚。除去はショップのみ）`
+            : '鍛えるはこの焚き火では使用済み（除去はショップのみ）'}
         </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {run.deck.map((c, i) => (
@@ -4421,13 +4421,6 @@ function RunScreen({
                       鍛えると→ {describeUpgrade(c)}
                     </div>
                   )}
-                  <button
-                    className="btn"
-                    disabled={run.deck.length <= 5}
-                    onClick={() => dispatch({ type: 'CampfireRemove', index: i })}
-                  >
-                    取り除く
-                  </button>{' '}
                   {canForgeHere && (
                     <button
                       className="btn btn-primary"
@@ -5286,14 +5279,18 @@ function WorkshopScreen({
           />
         ))}
       </div>
+      <div className="choice-desc" style={{ margin: '6px 0' }}>
+        合成1回 {workshopFusePrice(run)}G（所持 {run.gold}G）
+        {run.gold < workshopFusePrice(run) ? '＝ゴールド不足で合成できません' : ''}
+      </div>
       <button
         className="btn btn-primary"
-        disabled={!preview}
+        disabled={!preview || run.gold < workshopFusePrice(run)}
         onClick={() =>
           dispatch({ type: 'WorkshopFuse', indexA: selected[0], indexB: selected[1] })
         }
       >
-        合成する
+        合成する（{workshopFusePrice(run)}G）
       </button>{' '}
       <button className="btn" onClick={() => dispatch({ type: 'WorkshopSkip' })}>
         見送る
