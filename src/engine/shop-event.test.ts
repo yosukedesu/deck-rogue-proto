@@ -426,8 +426,8 @@ describe('会員証 (shopPriceRatio) の適用範囲 (2026-09-05 Opusラン Q �
     expect(rareA.id).toBe(rareB.id) // 同じシード=同じ在庫
     expect(rareA.price).toBe(Math.floor(rareB.price * ratio))
     // 同じ店で会員証を買う: 未売の在庫がその場で値下がりする
-    let run2 = { ...plain, gold: 999, shop: { ...plain.shop!, relicId: member.id } }
-    const before = run2.shop.cards.map((c) => c.price)
+    let run2: RunState = { ...plain, gold: 999, shop: { ...plain.shop!, relicId: member.id } }
+    const before = run2.shop!.cards.map((c) => c.price)
     run2 = applyRunCommand(run2, { type: 'ShopBuyRelic' })
     run2.shop!.cards.forEach((c, i) => expect(c.price).toBe(Math.floor(before[i] * ratio)))
   })
