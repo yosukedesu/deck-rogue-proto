@@ -226,7 +226,8 @@
    {
     "enemyId": "enemy_hexer",
     "hpScale": 0.55,
-    "strength": -2
+    "strength": -2,
+    "patternOffset": 1
    }
   ]
  },

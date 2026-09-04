@@ -997,3 +997,11 @@ describe('鼓吹きコボルトの伏せ分岐 (2026-09-04 弱腰型の取りこ
     expect(drum.setAlt).toMatchObject({ kind: 'attack', min: 7, max: 10, ignoreFreshness: true })
   })
 })
+
+describe('道化と妖術師 (2026-09-04 案A: T1の弱体3+脆弱2の重なりを解く)', () => {
+  it('妖術師は patternOffset 1 で呪いから始まる (泥=弱体3は3ターン目)', () => {
+    const enc = resolveEncounter('enc_joker_hexer')
+    const hexer = enc.find((m) => m.enemyId === 'enemy_hexer')!
+    expect(hexer.patternOffset).toBe(1)
+  })
+})
