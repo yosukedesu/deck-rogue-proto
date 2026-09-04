@@ -93,14 +93,17 @@ describe('効果の合体 (2026-09-05 ユーザー裁定「工房は全て合成
     expect(tail.freeIfMomentumAtLeast).toBe(5) // 条件の0E化も引き継ぐ
   })
 
-  it('選択式: 相手の効果は共通部 (effects) に入り、モードは残る。X札はX参照を保つ', () => {
+  it('選択式: 相手の効果は共通部 (effects) に入り、モードは残る。X札は片方だけならX=3に畳み、両方Xなら残る (机上レビュー S 提案1)', () => {
     const mode = fuseCards(inst('green_mode_crossroads'), inst('green_strike'))
     expect(mode.modes?.length).toBe(2)
     expect(mode.effects.some((e) => e.effect === 'dealDamage' && e.amount === 6)).toBe(true)
-    const x = fuseCards(inst('green_x_vine_flurry'), inst('green_strike'))
-    expect(x.xCost).toBe(true)
-    expect(x.effects.some((e) => e.xHits === true)).toBe(true)
-    expect(x.effects.some((e) => e.effect === 'dealDamage' && e.xHits !== true && e.amount === 6)).toBe(true)
+    const x = fuseCards(inst('green_x_vine_flurry'), inst('green_strike')) // 蔦の連撃(X 5×X) × 打撃
+    expect(x.xCost).not.toBe(true)
+    expect(x.cost).toBe(3) // X=3 として 3+1−1
+    expect(x.effects.filter((e) => e.effect === 'dealDamage' && e.amount === 5)).toHaveLength(3)
+    const xx = fuseCards(inst('green_x_vine_flurry'), inst('green_x_bark_armor'))
+    expect(xx.xCost).toBe(true)
+    expect(xx.effects.some((e) => e.xHits === true)).toBe(true)
   })
 
   it('選択式の共通部はモードを問わず解決される (engine)', () => {
@@ -163,10 +166,18 @@ describe('タイプ跨ぎ合成 = 支配順位 (置物＞リアクション＞�
     expect(def.effects.some((e) => e.trigger === 'onTurnStart' && e.effect === 'addGrowth' && e.amount === 1)).toBe(true)
   })
 
-  it('置物化: 量の無い効果 (打ち消し) は登場時に1回 (根の紡ぎ×年輪の大樹)', () => {
+  it('置物化: 参照量0で死ぬ効果 (打ち消し) は落ち、3未満の量は登場時に1回 (根の紡ぎ×年輪の大樹 → 登場時 成長+2)', () => {
     const def = fuseCards(inst('green_reaction_root_weave'), inst('green_perm_growth_tree'))
     expect(def.type).toBe('permanent')
-    expect(def.effects.some((e) => e.effect === 'negate' && e.trigger === 'onPlay')).toBe(true)
+    expect(def.effects.some((e) => e.effect === 'negate')).toBe(false)
+    expect(def.effects.some((e) => e.effect === 'addGrowth' && e.trigger === 'onPlay' && e.amount === 2)).toBe(true)
+  })
+
+  it('置物化の÷3は同種の合計に掛ける (蔦の乱舞×年輪の大樹 → 成長+1×5=5 → 毎T+1、2ダメ×5=10 → 毎T3)', () => {
+    const def = fuseCards(inst('green_sig_vine_dance'), inst('green_perm_growth_tree'))
+    const growth = def.effects.filter((e) => e.effect === 'addGrowth' && e.trigger === 'onTurnStart').reduce((a, e) => a + (e.amount ?? 0), 0)
+    expect(growth).toBe(1 + 1) // 乱舞ぶん floor(5/3)=1 + 年輪の大樹の1
+    expect(def.effects.find((e) => e.effect === 'dealDamage' && e.trigger === 'onTurnStart')?.amount).toBe(3)
   })
 
   it('置物化で誘発できない窓は onTurnStart に落ちる (共鳴する茨 onEnemyBuffed 成長4 → 毎T成長2)', () => {
@@ -177,30 +188,47 @@ describe('タイプ跨ぎ合成 = 支配順位 (置物＞リアクション＞�
 })
 
 describe('特性の掛け合わせ (多段合算・貫通・全体の伝播)', () => {
-  it('多段×貫通: 二連の蔦打ち(5×2)×追い風(6貫通) → 貫通3ヒット、合計16を按分', () => {
+  it('ダメージ行は混ぜずに並べる (机上レビュー S 提案3: 全体・貫通の無償伝播を止める): 二連の蔦打ち(5×2)×追い風(6貫) → 5・5・6貫の3行', () => {
     const def = fuseCards(inst('green_double_lash'), inst('green_tailwind'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
-    expect(dmgs).toHaveLength(3)
-    expect(dmgs.every((e) => e.pierce === true)).toBe(true)
-    expect(dmgs[0].amount).toBe(Math.ceil(16 / 3))
+    expect(dmgs.map((e) => e.amount)).toEqual([5, 5, 6])
+    expect(dmgs.filter((e) => e.pierce === true)).toHaveLength(1)
     expect(def.name.endsWith('乱撃')).toBe(true)
   })
 
-  it('全体×貫通: 薙ぎ払い×牙の一撃 → 全体貫通 (攻撃数参照は共通部に残る)', () => {
+  it('全体は全体のまま、単体は単体のまま: 薙ぎ払い×牙の一撃 → 全体4 + 17貫通 (打撃×薙ぎ払いが1E全体10にならない)', () => {
     const def = fuseCards(inst('green_sweep'), inst('green_fang'))
-    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
-    expect(dmg.target).toBe('all')
-    expect(dmg.pierce).toBe(true)
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
+    expect(dmgs.some((e) => e.target === 'all' && e.amount === 4)).toBe(true)
+    expect(dmgs.some((e) => e.target !== 'all' && e.pierce === true && e.amount === 17)).toBe(true)
     expect(def.effects.some((e) => e.effect === 'dealDamagePerAttackPlayed')).toBe(true)
     expect(def.name.endsWith('嵐')).toBe(true)
+    const sweep = fuseCards(inst('green_strike'), inst('green_sweep'))
+    expect(sweep.effects.filter((e) => e.effect === 'dealDamage' && e.target === 'all').reduce((a, e) => a + (e.amount ?? 0), 0)).toBe(4)
   })
 
-  it('多段×大打点: 蔦の乱舞(2×5)×大蛇の丸呑み(34) → 5ヒットに按分 (成長が5回乗る)。追加コストは引き継ぐ', () => {
+  it('多段×大打点: 蔦の乱舞(2×5)×大蛇の丸呑み(34) → 2×5 と 34 の6行 (成長が6回乗る)。追加コストは引き継ぐ', () => {
     const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
-    expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(Math.ceil(44 / 5))
+    expect(dmgs).toHaveLength(6)
     expect(def.discardCost).toBe(1)
+  })
+
+  it('リアクション2E上限は出力で払う (提案2): 巨獣の踏みつけ(5E 50)×先制の蔦槍(1E 12) → 2E罠、50−18=32', () => {
+    const def = fuseCards(inst('green_finisher_stomp'), inst('green_reaction_preempt'))
+    expect(def.type).toBe('reaction')
+    expect(def.cost).toBe(2)
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage').map((e) => e.amount)
+    expect(Math.max(...(dmgs as number[]))).toBe(32)
+  })
+
+  it('リアクション化で敵フェーズに死ぬ効果 (ドロー・一時マナ) と playCard専用効果 (サーチ等) は落ちる (提案5)', () => {
+    const def = fuseCards(inst('green_flash_insight'), inst('green_reaction_thorns')) // 緑の閃き(4ドロー) × 茨の返し
+    expect(def.type).toBe('reaction')
+    expect(def.effects.some((e) => e.effect === 'drawCards')).toBe(false)
+    const guide = fuseCards(inst('green_forest_guidance'), inst('green_reaction_thorns')) // 森の導き(サーチ+成長1)
+    expect(guide.effects.some((e) => e.effect === 'searchDeck')).toBe(false)
+    expect(guide.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
   })
 })
 
@@ -224,9 +252,16 @@ describe('同名合成 =「真・」化', () => {
     expect(def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(4)
   })
 
-  it('選択式の同名合成: モードが連結され、共通部は空のまま', () => {
+  it('選択式の同名合成: 各モードを対で合算 (真・道行きの選択 = 勢い+6+6ダメ / 成長+4)', () => {
     const def = fuseCards(inst('green_mode_crossroads', 'a'), inst('green_mode_crossroads', 'b'))
-    expect(def.modes?.length).toBe(4)
+    expect(def.modes?.length).toBe(2)
+    expect(def.modes?.[0].effects.find((e) => e.effect === 'addMomentum')?.amount).toBe(6)
+    expect(def.modes?.[1].effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(4)
+  })
+
+  it('量を持たない同種効果を畳んだ分は最大の量効果へ振る (真・根の紡ぎ: 打ち消し1つ + 成長4→… VP12ぶん)', () => {
+    const def = fuseCards(inst('green_reaction_root_weave', 'a'), inst('green_reaction_root_weave', 'b'))
+    expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
   })
 })
 
