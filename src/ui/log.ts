@@ -101,6 +101,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'GuardianRedirected': return { text: '🛡️ 庇われた！ 単体対象は護衛に向かった', cls: 'log-info' }
     case 'ArtifactBlocked': return { text: `🔮 アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた（チャージ-1・この効果は消えた）`, cls: 'log-bad' }
     case 'BurrowBroken': return { text: '🪺 潜伏の殻が割れた！ 次の行動は噛みつき', cls: 'log-bad' }
+    case 'EnemyStaggered': return { text: '🌀 完全に防いだ！ 敵は体勢を崩し、次の行動は隙', cls: 'log-good' }
     case 'EnemyWoken': return { text: '👁️ 目を覚ました！ 眠りの前奏が打ち切られた', cls: 'log-bad' }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':

@@ -1,786 +1,801 @@
 [
- {
-  "id": "enc_probe_pair",
-  "name": "探り屋の二人組",
-  "members": [
-   {
-    "enemyId": "enemy_probe",
-    "hpScale": 0.5,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_probe",
-    "hpScale": 0.5,
-    "strength": -2,
-    "patternOffset": 1,
-    "noReactTable": true
-   }
-  ]
- },
- {
-  "id": "enc_probe_trio",
-  "name": "探り屋の三人組",
-  "members": [
-   {
-    "enemyId": "enemy_probe",
-    "hpScale": 0.38,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_probe",
-    "hpScale": 0.38,
-    "strength": -3,
-    "patternOffset": 1,
-    "noReactTable": true
-   },
-   {
-    "enemyId": "enemy_probe",
-    "hpScale": 0.38,
-    "strength": -3,
-    "patternOffset": 2,
-    "noReactTable": true
-   }
-  ]
- },
- {
-  "id": "enc_hexer_shadow",
-  "name": "妖術師と用心棒",
-  "members": [
-   {
-    "enemyId": "enemy_hexer",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_set_wary",
-    "hpScale": 0.55,
-    "strength": -3
-   }
-  ]
- },
- {
-  "id": "enc_joker_drummer",
-  "name": "道化と太鼓",
-  "members": [
-   {
-    "enemyId": "enemy_joker",
-    "hpScale": 0.65,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_drummer",
-    "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_wolf_drummer",
-  "name": "狼と太鼓",
-  "members": [
-   {
-    "enemyId": "enemy_wolf",
-    "hpScale": 0.65,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_drummer",
-    "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_breaker_hexer",
-  "name": "罠壊しと妖術師",
-  "members": [
-   {
-    "enemyId": "enemy_set_breaker",
-    "hpScale": 0.6,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_hexer",
-    "hpScale": 0.55,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_thief_pair",
-  "name": "こそ泥の二人組",
-  "members": [
-   {
-    "enemyId": "enemy_thief",
-    "hpScale": 0.75,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_thief",
-    "hpScale": 0.75,
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_bomber_healer",
-  "name": "火薬樽と癒し手",
-  "members": [
-   {
-    "enemyId": "enemy_bomber",
-    "hpScale": 0.65,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_moss_healer",
-    "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_axe_drummer",
-  "name": "斧鬼と太鼓",
-  "members": [
-   {
-    "enemyId": "enemy_axe_ogre",
-    "hpScale": 0.65,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_drummer",
-    "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_shell_hexer",
-  "name": "石殻と妖術師",
-  "members": [
-   {
-    "enemyId": "enemy_shell_guard",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_hexer",
-    "hpScale": 0.55,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_squirrel_probe",
-  "name": "栗鼠と探り屋",
-  "members": [
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.6,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_probe",
-    "hpScale": 0.6,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_beast_pair",
-  "name": "獣と栗鼠",
-  "members": [
-   {
-    "enemyId": "enemy_wide_power",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.6,
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_thief_beast",
-  "name": "こそ泥と獣",
-  "members": [
-   {
-    "enemyId": "enemy_thief",
-    "hpScale": 0.7,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_wide_power",
-    "hpScale": 0.6,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_joker_hexer",
-  "name": "道化と妖術師",
-  "members": [
-   {
-    "enemyId": "enemy_joker",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_hexer",
-    "hpScale": 0.55,
-    "strength": -2,
-    "patternOffset": 1
-   }
-  ]
- },
- {
-  "id": "enc_joker_hexer_drummer",
-  "name": "道化と妖術師と太鼓",
-  "members": [
-   {
-    "enemyId": "enemy_joker",
-    "hpScale": 0.45,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_hexer",
-    "hpScale": 0.45,
-    "strength": -3,
-    "patternOffset": 1
-   },
-   {
-    "enemyId": "enemy_drummer",
-    "hpScale": 0.45,
-    "strength": -3
-   }
-  ]
- },
- {
-  "id": "enc_wary_bomber",
-  "name": "影と火薬樽",
-  "members": [
-   {
-    "enemyId": "enemy_set_wary",
-    "hpScale": 0.55,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_bomber",
-    "hpScale": 0.65,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_moss_healer",
-  "name": "苔の主と癒し手",
-  "members": [
-   {
-    "enemyId": "enemy_moss",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_moss_healer",
-    "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_bomber_drummer",
-  "name": "火薬樽と太鼓",
-  "members": [
-   {
-    "enemyId": "enemy_bomber",
-    "hpScale": 0.65,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_drummer",
-    "hpScale": 0.7
-   }
-  ]
- },
- {
-  "id": "enc_elite_sentries",
-  "name": "歩哨の双子",
-  "members": [
-   {
-    "enemyId": "enemy_elite_sentry"
-   },
-   {
-    "enemyId": "enemy_elite_sentry",
-    "patternOffset": 1
-   },
-   {
-    "enemyId": "enemy_elite_sentry",
-    "patternOffset": 2
-   }
-  ]
- },
- {
-  "id": "enc_squire_archer",
-  "name": "従士と射手",
-  "members": [
-   {
-    "enemyId": "enemy_shield_squire",
-    "hpScale": 0.75
-   },
-   {
-    "enemyId": "enemy_crossbow_archer",
-    "hpScale": 0.75
-   }
-  ]
- },
- {
-  "id": "enc_fang_twins",
-  "name": "双牙の狼",
-  "members": [
-   {
-    "enemyId": "enemy_bond_wolf",
-    "hpScale": 0.55
-   },
-   {
-    "enemyId": "enemy_bond_wolf",
-    "hpScale": 0.55,
-    "patternOffset": 1
-   }
-  ]
- },
- {
-  "id": "enc_raptor_nest",
-  "name": "抱卵の走竜",
-  "members": [
-   {
-    "enemyId": "enemy_brood_raptor"
-   },
-   {
-    "enemyId": "enemy_raptor_egg"
-   },
-   {
-    "enemyId": "enemy_raptor_egg",
-    "patternOffset": 1
-   }
-  ]
- },
- {
-  "id": "enc_mourn_beasts",
-  "name": "弔いの獣の番い",
-  "members": [
-   {
-    "enemyId": "enemy_mourn_beast",
-    "hpScale": 0.55
-   },
-   {
-    "enemyId": "enemy_mourn_beast",
-    "hpScale": 0.55,
-    "patternOffset": 1
-   }
-  ]
- },
- {
-  "id": "enc_mudling_trio",
-  "name": "小泥の群れ",
-  "members": [
-   {
-    "enemyId": "enemy_mudling"
-   },
-   {
-    "enemyId": "enemy_mudling"
-   },
-   {
-    "enemyId": "enemy_mudling"
-   }
-  ]
- },
- {
-  "id": "enc_squirrel_trio",
-  "name": "栗鼠の三匹",
-  "members": [
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.4,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.4,
-    "strength": -3,
-    "patternOffset": 1,
-    "noReactTable": true
-   },
-   {
-    "enemyId": "enemy_thorn_squirrel",
-    "hpScale": 0.4,
-    "strength": -3,
-    "patternOffset": 2,
-    "noReactTable": true
-   }
-  ]
- },
- {
-  "id": "enc_mud_mudlings",
-  "name": "泥まとうものと小泥",
-  "members": [
-   {
-    "enemyId": "enemy_mud_lump",
-    "hpScale": 0.8
-   },
-   {
-    "enemyId": "enemy_mudling"
-   },
-   {
-    "enemyId": "enemy_mudling"
-   }
-  ]
- },
- {
-  "id": "enc_cultist_imp",
-  "name": "狂信者と子鬼",
-  "members": [
-   {
-    "enemyId": "enemy_cultist",
-    "hpScale": 0.6
-   },
-   {
-    "enemyId": "enemy_mimic_imp",
-    "hpScale": 0.55,
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_beetle_wary",
-  "name": "甲虫と用心深い影",
-  "members": [
-   {
-    "enemyId": "enemy_rock_beetle",
-    "hpScale": 0.6,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_set_wary",
-    "hpScale": 0.6,
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_imp_jester",
-  "name": "インプと写し道化",
-  "members": [
-   {
-    "enemyId": "enemy_cinder_imp",
-    "hpScale": 0.6,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_mimic_jester",
-    "hpScale": 0.6,
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_wolf_hexer_drummer",
-  "name": "狼と妖術師と太鼓",
-  "members": [
-   {
-    "enemyId": "enemy_wolf",
-    "hpScale": 0.4,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_hexer",
-    "hpScale": 0.45,
-    "strength": -3
-   },
-   {
-    "enemyId": "enemy_drummer",
-    "hpScale": 0.45,
-    "strength": -3
-   }
-  ]
- },
- {
-  "id": "enc_mourn_healer",
-  "name": "弔いの獣の番いと癒し手",
-  "members": [
-   {
-    "enemyId": "enemy_mourn_beast",
-    "hpScale": 0.42,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_mourn_beast",
-    "hpScale": 0.42,
-    "patternOffset": 1,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_moss_healer",
-    "hpScale": 0.5
-   }
-  ]
- },
- {
-  "id": "enc_axe_shadow",
-  "name": "斧鬼と用心棒",
-  "members": [
-   {
-    "enemyId": "enemy_axe_ogre",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_set_wary",
-    "hpScale": 0.55,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_mudling_swarm",
-  "name": "小泥の大群",
-  "members": [
-   {
-    "enemyId": "enemy_mudling",
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_mudling",
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_mudling",
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_mudling",
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_serpent_fruit",
-  "name": "大蛇と噛みつき果実",
-  "members": [
-   {
-    "enemyId": "enemy_strangler_serpent",
-    "hpScale": 0.7,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_snap_fruit",
-    "hpScale": 0.9
-   }
-  ]
- },
- {
-  "id": "enc_sporecap_fruit",
-  "name": "胞子茸と噛みつき果実",
-  "members": [
-   {
-    "enemyId": "enemy_spore_cap",
-    "hpScale": 0.75,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_snap_fruit",
-    "hpScale": 0.8
-   }
-  ]
- },
- {
-  "id": "enc_sporecap_mudlings",
-  "name": "胞子茸と小泥",
-  "members": [
-   {
-    "enemyId": "enemy_spore_cap",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_mudling"
-   },
-   {
-    "enemyId": "enemy_mudling"
-   }
-  ]
- },
- {
-  "id": "enc_serpent_mudlings",
-  "name": "大蛇と小泥",
-  "members": [
-   {
-    "enemyId": "enemy_strangler_serpent",
-    "hpScale": 0.65,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_mudling"
-   },
-   {
-    "enemyId": "enemy_mudling"
-   }
-  ]
- },
- {
-  "id": "enc_snapfruit_trio",
-  "name": "噛みつき果実の三つ",
-  "members": [
-   {
-    "enemyId": "enemy_snap_fruit",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_snap_fruit",
-    "hpScale": 0.6,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_snap_fruit",
-    "hpScale": 0.6,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_spider_fruit",
-  "name": "蜘蛛と噛みつき果実",
-  "members": [
-   {
-    "enemyId": "enemy_sludge_spider",
-    "hpScale": 0.7,
-    "strength": -1
-   },
-   {
-    "enemyId": "enemy_snap_fruit",
-    "hpScale": 0.6,
-    "strength": -1
-   }
-  ]
- },
- {
-  "id": "enc_axe_automatons",
-  "name": "絡繰の斧兵・二機",
-  "members": [
-   {
-    "enemyId": "enemy_axe_automaton"
-   },
-   {
-    "enemyId": "enemy_axe_automaton"
-   }
-  ]
- },
- {
-  "id": "enc_biting_scrolls_trio",
-  "name": "噛みつく巻物・三巻",
-  "members": [
-   {
-    "enemyId": "enemy_biting_scroll",
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_biting_scroll",
-    "strength": -2,
-    "patternOffset": 1
-   },
-   {
-    "enemyId": "enemy_biting_scroll",
-    "strength": -2,
-    "patternOffset": 2
-   }
-  ]
- },
- {
-  "id": "enc_biting_scrolls_quad",
-  "name": "噛みつく巻物・四巻",
-  "members": [
-   {
-    "enemyId": "enemy_biting_scroll",
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_biting_scroll",
-    "patternOffset": 1,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_biting_scroll",
-    "patternOffset": 2,
-    "strength": -2
-   },
-   {
-    "enemyId": "enemy_biting_scroll",
-    "patternOffset": 3,
-    "strength": -2
-   }
-  ]
- },
- {
-  "id": "enc_lost_forgotten",
-  "name": "失せ人と忘れ人",
-  "members": [
-   {
-    "enemyId": "enemy_lost_soul"
-   },
-   {
-    "enemyId": "enemy_forgotten_soul"
-   }
-  ]
- },
- {
-  "id": "enc_chomper_pair",
-  "name": "金切り顎の二匹",
-  "members": [
-   {
-    "enemyId": "enemy_chomper"
-   },
-   {
-    "enemyId": "enemy_chomper",
-    "patternOffset": 1
-   }
-  ]
- },
- {
-  "id": "enc_scald_gnat_pair",
-  "name": "灼き虻の二匹",
-  "members": [
-   {
-    "enemyId": "enemy_scald_gnat"
-   },
-   {
-    "enemyId": "enemy_scald_gnat",
-    "patternOffset": 2
-   }
-  ]
- },
- {
-  "id": "enc_kin_ritual",
-  "name": "血族の儀式",
-  "members": [
-   {
-    "enemyId": "enemy_kin_priest"
-   },
-   {
-    "enemyId": "enemy_kin_follower"
-   },
-   {
-    "enemyId": "enemy_kin_follower",
-    "patternOffset": 2
-   }
-  ]
- },
- {
-  "id": "enc_kaiser_crab",
-  "name": "双腕の巨蟹",
-  "members": [
-   {
-    "enemyId": "enemy_crab_crusher"
-   },
-   {
-    "enemyId": "enemy_crab_cannon"
-   }
-  ]
- }
+  {
+    "id": "enc_probe_pair",
+    "name": "探り屋の二人組",
+    "members": [
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.5,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.5,
+        "strength": -2,
+        "patternOffset": 1,
+        "noReactTable": true
+      }
+    ]
+  },
+  {
+    "id": "enc_probe_trio",
+    "name": "探り屋の三人組",
+    "members": [
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.38,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.38,
+        "strength": -3,
+        "patternOffset": 1,
+        "noReactTable": true
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.38,
+        "strength": -3,
+        "patternOffset": 2,
+        "noReactTable": true
+      }
+    ]
+  },
+  {
+    "id": "enc_hexer_shadow",
+    "name": "妖術師と用心棒",
+    "members": [
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_set_wary",
+        "hpScale": 0.55,
+        "strength": -3
+      }
+    ]
+  },
+  {
+    "id": "enc_joker_drummer",
+    "name": "道化と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_joker",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_bowlbug_drummer",
+    "name": "岩虫と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_bowl_bug",
+        "hpScale": 0.85
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.85,
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_wolf_drummer",
+    "name": "狼と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_wolf",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_breaker_hexer",
+    "name": "罠壊しと妖術師",
+    "members": [
+      {
+        "enemyId": "enemy_set_breaker",
+        "hpScale": 0.6,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.55,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_thief_pair",
+    "name": "こそ泥の二人組",
+    "members": [
+      {
+        "enemyId": "enemy_thief",
+        "hpScale": 0.75,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_thief",
+        "hpScale": 0.75,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_bomber_healer",
+    "name": "火薬樽と癒し手",
+    "members": [
+      {
+        "enemyId": "enemy_bomber",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_moss_healer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_axe_drummer",
+    "name": "斧鬼と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_axe_ogre",
+        "hpScale": 0.65,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_shell_hexer",
+    "name": "石殻と妖術師",
+    "members": [
+      {
+        "enemyId": "enemy_shell_guard",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.55,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_squirrel_probe",
+    "name": "栗鼠と探り屋",
+    "members": [
+      {
+        "enemyId": "enemy_thorn_squirrel",
+        "hpScale": 0.6,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_probe",
+        "hpScale": 0.6,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_beast_pair",
+    "name": "獣と栗鼠",
+    "members": [
+      {
+        "enemyId": "enemy_wide_power",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_thorn_squirrel",
+        "hpScale": 0.6,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_thief_beast",
+    "name": "こそ泥と獣",
+    "members": [
+      {
+        "enemyId": "enemy_thief",
+        "hpScale": 0.7,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_wide_power",
+        "hpScale": 0.6,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_joker_hexer",
+    "name": "道化と妖術師",
+    "members": [
+      {
+        "enemyId": "enemy_joker",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.55,
+        "strength": -2,
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_joker_hexer_drummer",
+    "name": "道化と妖術師と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_joker",
+        "hpScale": 0.45,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.45,
+        "strength": -3,
+        "patternOffset": 1
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.45,
+        "strength": -3
+      }
+    ]
+  },
+  {
+    "id": "enc_wary_bomber",
+    "name": "影と火薬樽",
+    "members": [
+      {
+        "enemyId": "enemy_set_wary",
+        "hpScale": 0.55,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_bomber",
+        "hpScale": 0.65,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_moss_healer",
+    "name": "苔の主と癒し手",
+    "members": [
+      {
+        "enemyId": "enemy_moss",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_moss_healer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_bomber_drummer",
+    "name": "火薬樽と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_bomber",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_elite_sentries",
+    "name": "歩哨の双子",
+    "members": [
+      {
+        "enemyId": "enemy_elite_sentry"
+      },
+      {
+        "enemyId": "enemy_elite_sentry",
+        "patternOffset": 1
+      },
+      {
+        "enemyId": "enemy_elite_sentry",
+        "patternOffset": 2
+      }
+    ]
+  },
+  {
+    "id": "enc_squire_archer",
+    "name": "従士と射手",
+    "members": [
+      {
+        "enemyId": "enemy_shield_squire",
+        "hpScale": 0.75
+      },
+      {
+        "enemyId": "enemy_crossbow_archer",
+        "hpScale": 0.75
+      }
+    ]
+  },
+  {
+    "id": "enc_fang_twins",
+    "name": "双牙の狼",
+    "members": [
+      {
+        "enemyId": "enemy_bond_wolf",
+        "hpScale": 0.55
+      },
+      {
+        "enemyId": "enemy_bond_wolf",
+        "hpScale": 0.55,
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_raptor_nest",
+    "name": "抱卵の走竜",
+    "members": [
+      {
+        "enemyId": "enemy_brood_raptor"
+      },
+      {
+        "enemyId": "enemy_raptor_egg"
+      },
+      {
+        "enemyId": "enemy_raptor_egg",
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_mourn_beasts",
+    "name": "弔いの獣の番い",
+    "members": [
+      {
+        "enemyId": "enemy_mourn_beast",
+        "hpScale": 0.55
+      },
+      {
+        "enemyId": "enemy_mourn_beast",
+        "hpScale": 0.55,
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_mudling_trio",
+    "name": "小泥の群れ",
+    "members": [
+      {
+        "enemyId": "enemy_mudling"
+      },
+      {
+        "enemyId": "enemy_mudling"
+      },
+      {
+        "enemyId": "enemy_mudling"
+      }
+    ]
+  },
+  {
+    "id": "enc_squirrel_trio",
+    "name": "栗鼠の三匹",
+    "members": [
+      {
+        "enemyId": "enemy_thorn_squirrel",
+        "hpScale": 0.4,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_thorn_squirrel",
+        "hpScale": 0.4,
+        "strength": -3,
+        "patternOffset": 1,
+        "noReactTable": true
+      },
+      {
+        "enemyId": "enemy_thorn_squirrel",
+        "hpScale": 0.4,
+        "strength": -3,
+        "patternOffset": 2,
+        "noReactTable": true
+      }
+    ]
+  },
+  {
+    "id": "enc_mud_mudlings",
+    "name": "泥まとうものと小泥",
+    "members": [
+      {
+        "enemyId": "enemy_mud_lump",
+        "hpScale": 0.8
+      },
+      {
+        "enemyId": "enemy_mudling"
+      },
+      {
+        "enemyId": "enemy_mudling"
+      }
+    ]
+  },
+  {
+    "id": "enc_cultist_imp",
+    "name": "狂信者と子鬼",
+    "members": [
+      {
+        "enemyId": "enemy_cultist",
+        "hpScale": 0.6
+      },
+      {
+        "enemyId": "enemy_mimic_imp",
+        "hpScale": 0.55,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_beetle_wary",
+    "name": "甲虫と用心深い影",
+    "members": [
+      {
+        "enemyId": "enemy_rock_beetle",
+        "hpScale": 0.6,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_set_wary",
+        "hpScale": 0.6,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_imp_jester",
+    "name": "インプと写し道化",
+    "members": [
+      {
+        "enemyId": "enemy_cinder_imp",
+        "hpScale": 0.6,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_mimic_jester",
+        "hpScale": 0.6,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_wolf_hexer_drummer",
+    "name": "狼と妖術師と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_wolf",
+        "hpScale": 0.4,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.45,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.45,
+        "strength": -3
+      }
+    ]
+  },
+  {
+    "id": "enc_mourn_healer",
+    "name": "弔いの獣の番いと癒し手",
+    "members": [
+      {
+        "enemyId": "enemy_mourn_beast",
+        "hpScale": 0.42,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_mourn_beast",
+        "hpScale": 0.42,
+        "patternOffset": 1,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_moss_healer",
+        "hpScale": 0.5
+      }
+    ]
+  },
+  {
+    "id": "enc_axe_shadow",
+    "name": "斧鬼と用心棒",
+    "members": [
+      {
+        "enemyId": "enemy_axe_ogre",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_set_wary",
+        "hpScale": 0.55,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_mudling_swarm",
+    "name": "小泥の大群",
+    "members": [
+      {
+        "enemyId": "enemy_mudling",
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_mudling",
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_mudling",
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_mudling",
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_serpent_fruit",
+    "name": "大蛇と噛みつき果実",
+    "members": [
+      {
+        "enemyId": "enemy_strangler_serpent",
+        "hpScale": 0.7,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_snap_fruit",
+        "hpScale": 0.9
+      }
+    ]
+  },
+  {
+    "id": "enc_sporecap_fruit",
+    "name": "胞子茸と噛みつき果実",
+    "members": [
+      {
+        "enemyId": "enemy_spore_cap",
+        "hpScale": 0.75,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_snap_fruit",
+        "hpScale": 0.8
+      }
+    ]
+  },
+  {
+    "id": "enc_sporecap_mudlings",
+    "name": "胞子茸と小泥",
+    "members": [
+      {
+        "enemyId": "enemy_spore_cap",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_mudling"
+      },
+      {
+        "enemyId": "enemy_mudling"
+      }
+    ]
+  },
+  {
+    "id": "enc_serpent_mudlings",
+    "name": "大蛇と小泥",
+    "members": [
+      {
+        "enemyId": "enemy_strangler_serpent",
+        "hpScale": 0.65,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_mudling"
+      },
+      {
+        "enemyId": "enemy_mudling"
+      }
+    ]
+  },
+  {
+    "id": "enc_snapfruit_trio",
+    "name": "噛みつき果実の三つ",
+    "members": [
+      {
+        "enemyId": "enemy_snap_fruit",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_snap_fruit",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_snap_fruit",
+        "hpScale": 0.6,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_spider_fruit",
+    "name": "蜘蛛と噛みつき果実",
+    "members": [
+      {
+        "enemyId": "enemy_sludge_spider",
+        "hpScale": 0.7,
+        "strength": -1
+      },
+      {
+        "enemyId": "enemy_snap_fruit",
+        "hpScale": 0.6,
+        "strength": -1
+      }
+    ]
+  },
+  {
+    "id": "enc_axe_automatons",
+    "name": "絡繰の斧兵・二機",
+    "members": [
+      {
+        "enemyId": "enemy_axe_automaton"
+      },
+      {
+        "enemyId": "enemy_axe_automaton"
+      }
+    ]
+  },
+  {
+    "id": "enc_biting_scrolls_trio",
+    "name": "噛みつく巻物・三巻",
+    "members": [
+      {
+        "enemyId": "enemy_biting_scroll",
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_biting_scroll",
+        "strength": -2,
+        "patternOffset": 1
+      },
+      {
+        "enemyId": "enemy_biting_scroll",
+        "strength": -2,
+        "patternOffset": 2
+      }
+    ]
+  },
+  {
+    "id": "enc_biting_scrolls_quad",
+    "name": "噛みつく巻物・四巻",
+    "members": [
+      {
+        "enemyId": "enemy_biting_scroll",
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_biting_scroll",
+        "patternOffset": 1,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_biting_scroll",
+        "patternOffset": 2,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_biting_scroll",
+        "patternOffset": 3,
+        "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_lost_forgotten",
+    "name": "失せ人と忘れ人",
+    "members": [
+      {
+        "enemyId": "enemy_lost_soul"
+      },
+      {
+        "enemyId": "enemy_forgotten_soul"
+      }
+    ]
+  },
+  {
+    "id": "enc_chomper_pair",
+    "name": "金切り顎の二匹",
+    "members": [
+      {
+        "enemyId": "enemy_chomper"
+      },
+      {
+        "enemyId": "enemy_chomper",
+        "patternOffset": 1
+      }
+    ]
+  },
+  {
+    "id": "enc_scald_gnat_pair",
+    "name": "灼き虻の二匹",
+    "members": [
+      {
+        "enemyId": "enemy_scald_gnat"
+      },
+      {
+        "enemyId": "enemy_scald_gnat",
+        "patternOffset": 2
+      }
+    ]
+  },
+  {
+    "id": "enc_kin_ritual",
+    "name": "血族の儀式",
+    "members": [
+      {
+        "enemyId": "enemy_kin_priest"
+      },
+      {
+        "enemyId": "enemy_kin_follower"
+      },
+      {
+        "enemyId": "enemy_kin_follower",
+        "patternOffset": 2
+      }
+    ]
+  },
+  {
+    "id": "enc_kaiser_crab",
+    "name": "双腕の巨蟹",
+    "members": [
+      {
+        "enemyId": "enemy_crab_crusher"
+      },
+      {
+        "enemyId": "enemy_crab_cannon"
+      }
+    ]
+  }
 ]

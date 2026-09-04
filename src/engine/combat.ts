@@ -296,6 +296,14 @@ function declareIntents(state: GameState): GameState {
       s = emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
       continue
     }
+    // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (2026-09-04。ローテは進めない=次のターンに再開)
+    if (enemy.staggeredNext === true) {
+      const staggerMove = { id: 'stagger', kind: 'rest' as const, weight: 1 }
+      const [restIntent, rngS] = buildIntent(s.rng, staggerMove, enemy.strength, enemy.atkScale ?? 1)
+      const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false } : e))
+      s = emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
+      continue
+    }
     if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
       const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
       const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
@@ -1705,6 +1713,11 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         },
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex })
+      // バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる
+      if (getEnemyDef(s.enemies[enemyIndex].enemyId).imbalanced === true && hpLoss === 0 && dealtTotal > 0) {
+        s = { ...s, enemies: s.enemies.map((e, i) => (i === enemyIndex ? { ...e, staggeredNext: true } : e)) }
+        s = emit(s, { type: 'EnemyStaggered', enemyIndex })
+      }
       // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る (確定済みルール表「攻防一体・隙」)
       if (intent.alsoDefend !== undefined && intent.alsoDefend > 0) {
         s = {

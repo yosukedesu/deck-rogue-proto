@@ -183,6 +183,8 @@ export interface EnemyState extends CombatantState {
   readonly burrowActive?: boolean
   /** 殻が敵フェーズ中に割れた: 次の宣言を噛みつきに差し替える */
   readonly biteNext?: boolean
+  /** バランス崩し: 直前の攻撃を完全に防がれた = 次の宣言は隙 */
+  readonly staggeredNext?: boolean
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
@@ -463,6 +465,7 @@ export type GameEvent =
   | { readonly type: 'GuardianRedirected'; readonly fromIndex: number; readonly toIndex: number } // 庇うのリダイレクト発生 (2026-09-02 検証ラン「無言で起きる」への処方)
   | { readonly type: 'ArtifactBlocked'; readonly enemyIndex: number; readonly effect: string } // アーティファクトがデバフを弾いた (2026-09-02)
   | { readonly type: 'BurrowBroken'; readonly enemyIndex: number } // 潜伏の殻が割れた (次の行動が噛みつきに)
+  | { readonly type: 'EnemyStaggered'; readonly enemyIndex: number } // バランス崩し (2026-09-04)
   | { readonly type: 'EnemyWoken'; readonly enemyIndex: number } // 被弾覚醒 (2026-09-02) // 状態異常付与
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
@@ -1105,6 +1108,8 @@ export interface EnemyDef {
    * 延焼は通る (装甲と同じ裁定)。「殴るターン/備えるターン」のリズムを作り、T1爆発を構造的に半減する
    */
   readonly nemesis?: boolean
+  /** バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と次の宣言が隙になる */
+  readonly imbalanced?: boolean
   /**
    * 常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」):
    * この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。

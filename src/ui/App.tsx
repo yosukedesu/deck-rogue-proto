@@ -1725,6 +1725,9 @@ function BattleScreen({
                     {enemyDef.nemesis === true && !dead && (
                       <span className="chip chip-strength">👻 {kw('因縁')}: {s.turn % 2 === 1 ? '今ターンは無形（被ダメ1固定）' : '今ターンは実体'}</span>
                     )}
+                    {enemyDef.imbalanced === true && !dead && (
+                      <span className="chip chip-block">🌀 {kw('バランス崩し')}{enemy.staggeredNext === true ? '（体勢を崩した！次の行動は隙）' : '（完全に防ぐと次の行動が隙）'}</span>
+                    )}
                     {enemyDef.wakeOnDamage !== undefined && enemy.woken !== true && enemy.patternIndex < enemyDef.wakeOnDamage.resumeAt && !dead && (
                       <span className="chip">😴 {kw('眠り')}: 累計{enemyDef.wakeOnDamage.damage}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
                     )}

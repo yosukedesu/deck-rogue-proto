@@ -1010,7 +1010,7 @@
     "id": "enemy_rock_beetle",
     "name": "岩皮の甲虫",
     "archetype": "shell",
-    "flavor": "小さな体を、身の丈に合わない岩の殻が包む。殻が残るうちは中身に届かない。割るか、貫くか——割った瞬間に噛みつかれる。",
+    "flavor": "小さな体を、身の丈に合わない岩の殻が包む。殻が残るうちは中身に届かない。貫いても殻に吸われる——割るしかなく、割った瞬間に噛みつかれる。",
     "maxHp": 30,
     "moves": [
       {
@@ -3109,21 +3109,47 @@
     ]
   },
   {
+    "id": "enemy_bowl_bug",
+    "name": "転がる岩虫",
+    "archetype": "wide-power",
+    "flavor": "岩ごと転がって突っ込んでくる。受け止め切れば、勢い余って自分が転ぶ。",
+    "maxHp": 78,
+    "imbalanced": true,
+    "opener": "roll",
+    "moves": [
+      {
+        "id": "roll",
+        "kind": "attack",
+        "min": 15,
+        "max": 18,
+        "weight": 2,
+        "noRepeat": true
+      },
+      {
+        "id": "tackle",
+        "kind": "attack",
+        "min": 6,
+        "max": 8,
+        "hits": 2,
+        "weight": 1
+      },
+      {
+        "id": "curl",
+        "kind": "defend",
+        "min": 8,
+        "max": 11,
+        "weight": 1
+      }
+    ]
+  },
+  {
     "id": "enemy_nemesis_wraith",
     "name": "因縁の亡霊",
     "archetype": "shell",
-    "flavor": "ひとつ数えるたびに実体を失い、ふたつ数えるたびに戻ってくる。殴れる夜と、備える夜。",
-    "maxHp": 130,
+    "flavor": "ひとつ数えるたびに実体を失い、ふたつ数えるたびに戻ってくる。無形の夜は呪いで撫で、実体の夜に鎌を振る。",
+    "maxHp": 100,
     "nemesis": true,
-    "opener": "claw",
     "moves": [
-      {
-        "id": "claw",
-        "kind": "attack",
-        "min": 14,
-        "max": 18,
-        "weight": 2
-      },
       {
         "id": "curse_touch",
         "kind": "attack",
@@ -3140,9 +3166,12 @@
         "kind": "attack",
         "min": 22,
         "max": 26,
-        "weight": 1,
-        "noRepeat": true
+        "weight": 1
       }
+    ],
+    "sequence": [
+      "curse_touch",
+      "scythe"
     ]
   }
 ]

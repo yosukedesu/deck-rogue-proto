@@ -33,6 +33,7 @@ const SAMPLE: Record<string, Partial<EnemyDef>> = {
   wakeOnDamage: { wakeOnDamage: { damage: 10, resumeAt: 2 }, sequence: ['poke', 'poke', 'poke'] },
   burrow: { burrow: { block: 8, bite: 'poke' } },
   nemesis: { nemesis: true },
+  imbalanced: { imbalanced: true },
 }
 
 describe('予告表示の網羅性 (display-coverage)', () => {

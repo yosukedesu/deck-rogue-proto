@@ -730,9 +730,11 @@ export function dealDamageToEnemy(
   // 急所・勢い・成長の全補正の後に適用 = どれだけ盛っても1ヒットは装甲を超えない)
   const armorCut = enemy.armor !== undefined && amount > enemy.armor ? amount - enemy.armor : 0
   if (armorCut > 0) amount = enemy.armor!
-  const blocked = pierce ? 0 : Math.min(enemy.block, amount)
-  // 潜伏 (2026-09-03 本家 Burrowed): 殻 (block) が尽きるまでHPにダメージが通らない。超過ぶんは捨てる。貫通は通る
-  const burrowed = enemy.burrowActive === true && !pierce && enemy.block > 0
+  // 潜伏 (2026-09-03 本家 Burrowed): 殻 (block) が尽きるまでHPにダメージが通らない。超過ぶんは捨てる。
+  // 殻は土であってブロックではない = 貫通も殻に吸われる (2026-09-04 ユーザー裁定A。Opusラン O: 貫通が素通しすると緑では「割る」決断が出ない)
+  const shellUp = enemy.burrowActive === true && enemy.block > 0
+  const blocked = pierce && !shellUp ? 0 : Math.min(enemy.block, amount)
+  const burrowed = shellUp
   let hpLoss = burrowed ? 0 : amount - blocked
   const burrowCut = burrowed ? amount - blocked : 0
   // 因縁 (2026-09-03 本家 Nemesis): 無形ターンは1ヒットのHP損失が1に固定 (延焼は別経路で通る)
