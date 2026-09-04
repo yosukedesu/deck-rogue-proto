@@ -1,7 +1,7 @@
 // 潜伏 (Burrowed) と因縁 (Nemesis) — 2026-09-03 本家StS2 敵専用ギミックの移植 (ユーザー裁定「ok」)。
 import { describe, expect, it } from 'vitest'
 import { getEnemyDef } from './content.ts'
-import { dealDamageToEnemy, isIntangibleTurn } from './effects.ts'
+import { damageBreakdown, dealDamageToEnemy, isIntangibleTurn } from './effects.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 
@@ -50,6 +50,19 @@ describe('潜伏の殻はターンをまたいで残る (2026-09-04 Opusラン O
     const t = dealDamageToEnemy(s, 0, s.enemies[0].block + 5)
     expect(t.enemies[0].burrowActive).toBe(false)
     expect(t.enemies[0].hp).toBe(hp0)
+  })
+})
+
+describe('表示の内訳 (damageBreakdown) は潜伏・因縁を実処理と同じ手順で通す (2026-09-05 Opusラン Q: 表示10/実0)', () => {
+  it('潜伏中: 貫通も非貫通も殻に吸われてHP損失0', () => {
+    const s = withHand(freshCombat('set-confirm', 'enemy_rock_beetle', 5), [])
+    expect(damageBreakdown(s, 0, 10, true)?.hpLoss).toBe(0)
+    expect(damageBreakdown(s, 0, 20, false)?.hpLoss).toBe(0)
+    expect(damageBreakdown(s, 0, 20, false)?.steps.some((st) => st.label.startsWith('潜伏の殻'))).toBe(true)
+  })
+  it('因縁の無形ターン: HP損失は1固定', () => {
+    const s = freshCombat('set-confirm', 'enemy_nemesis_wraith', 7)
+    expect(damageBreakdown(s, 0, 20, true)?.hpLoss).toBe(1)
   })
 })
 

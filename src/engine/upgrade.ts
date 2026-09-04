@@ -178,7 +178,7 @@ function applyV2(effects: readonly DeclarativeEffect[], def: CardDef): readonly 
         done = true
         return { ...e, amount: e.amount + (e.effect === 'addMomentum' ? 2 : 1) }
       }
-      return boost50(e, 5)
+      return boost50(e, 4) // 量4以上は同時に+50% (2026-09-05 Opusラン Q: 打ち据え+が4ダメのまま=打撃6より低い、の是正。本家 Bash+ は両方伸びる)
     })
   }
   if (tier === 'threshold') {

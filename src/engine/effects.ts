@@ -640,10 +640,18 @@ export function damageBreakdown(
     amount = enemy.armor
     steps.push({ label: `装甲上限${enemy.armor}`, value: amount })
   }
-  const blocked = pierce ? 0 : Math.min(enemy.block, amount)
-  if (blocked > 0) steps.push({ label: `敵ブロック-${blocked}`, value: amount - blocked })
-  if (pierce && enemy.block > 0) steps.push({ label: '貫通(ブロック無視)', value: amount })
-  let hpLoss = amount - blocked
+  // 潜伏 (2026-09-05 Opusラン Q: 表示が殻を見ていなかった=「表示10/実0」): 殻は貫通も吸い、尽きるまでHPに通らない
+  const shellUp = enemy.burrowActive === true && enemy.block > 0
+  const blocked = pierce && !shellUp ? 0 : Math.min(enemy.block, amount)
+  if (shellUp) steps.push({ label: `潜伏の殻-${blocked}(HPには通らない)`, value: 0 })
+  else if (blocked > 0) steps.push({ label: `敵ブロック-${blocked}`, value: amount - blocked })
+  if (!shellUp && pierce && enemy.block > 0) steps.push({ label: '貫通(ブロック無視)', value: amount })
+  let hpLoss = shellUp ? 0 : amount - blocked
+  // 因縁 (無形ターン): 1ヒットのHP損失が1に固定
+  if (getEnemyDef(enemy.enemyId).nemesis === true && isIntangibleTurn(state) && hpLoss > 1) {
+    hpLoss = 1
+    steps.push({ label: '無形=1固定', value: 1 })
+  }
   // ターン装甲 (2026-09-02): このターンのHP損失累計の上限
   const turnArmor = getEnemyDef(enemy.enemyId).turnArmor
   if (turnArmor !== undefined) {

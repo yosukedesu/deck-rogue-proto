@@ -666,7 +666,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   } else if (run.phase === 'map') {
     L.push(fullMap ? renderMap(run) : renderMapBrief(run))
   } else if (run.phase === 'campfire') {
-    L.push(`🔥 焚き火: 「休む/鍛える/除去」から1つ選ぶ (排他三択。現在 ${run.hp}/${run.maxHp})`)
+    L.push(`🔥 焚き火: 「休む/鍛える」から1つ選ぶ (二択。除去はショップ専売。現在 ${run.hp}/${run.maxHp})`)
     if ((run.campfireForgeBonus ?? 0) > 0) {
       const forgeLeft = Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0))
       if (forgeLeft > 0) L.push(`  🪨鍛冶の砥石: 鍛えるはあと${forgeLeft}枚 (休む・除去とは併用不可)`)

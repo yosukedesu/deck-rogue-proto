@@ -535,7 +535,7 @@ function pickEvent(run: RunState, rng0: RngState): readonly [string, RngState] {
 }
 
 /** ショップの在庫をシードから決定して開店する */
-function openShop(run: RunState): RunState {
+export function openShop(run: RunState): RunState { // export はテスト用 (会員証の適用範囲 2026-09-05)
   const leader = getLeaderDef(run.leaderId)
   const canRamp = run.colors.includes('green')
   const costCap = leader.energyMax + (canRamp ? 2 : 0)
@@ -568,7 +568,7 @@ function openShop(run: RunState): RunState {
     rng = r3
     const def = rarePool[ri]
     const pricedCost = def.xCost === true ? 3 : def.cost
-    cards.push({ id: def.id, price: 120 + pricedCost * 10 })
+    cards.push({ id: def.id, price: Math.floor((120 + pricedCost * 10) * shopPriceRatio(run)) }) // 会員証はレア枠にも効く (2026-09-05 Opusラン Q の指摘)
   }
   // ショップのレリック: shop 層を優先し、無ければ C/U/R (2026-09-03 本家式)
   const [shopRelics, rngS] = drawRelicOptions({ ...run, rng }, 'shop', 1)
@@ -1316,6 +1316,14 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         shop: { ...run.shop, relicId: null },
       }
       next = applyRelicBonus(next, relicId)
+      // 会員証をその店で買ったら、まだ売れていない在庫もその場で値下げする (2026-09-05 Opusラン Q: 「全価格が半額」の文言と在庫据え置きの矛盾)
+      const ratio = getRelicDef(relicId).bonus?.shopPriceRatio
+      if (ratio !== undefined && ratio !== 1 && next.shop !== null) {
+        next = {
+          ...next,
+          shop: { ...next.shop, cards: next.shop.cards.map((c) => (c.sold === true ? c : { ...c, price: Math.floor(c.price * ratio) })) },
+        }
+      }
       return withRelicGainBrands(next, run)
     }
     case 'ShopRemove': {

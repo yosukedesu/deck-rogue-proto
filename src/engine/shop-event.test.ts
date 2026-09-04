@@ -410,3 +410,25 @@ describe('イベント定義のスキーマ規約 (2026-09-02 レビュー是正
   })
 })
 
+
+describe('会員証 (shopPriceRatio) の適用範囲 (2026-09-05 Opusラン Q の指摘)', () => {
+  it('レア枠の価格にも会員証が効き、同じ店で買った瞬間に未売の在庫が値下がりする', async () => {
+    const { allRelics } = await import('./content.ts')
+    const { openShop } = await import('./run.ts')
+    const member = allRelics.find((r) => (r.bonus?.shopPriceRatio ?? 1) < 1)
+    if (!member) throw new Error('会員証が無い')
+    const ratio = member.bonus!.shopPriceRatio!
+    // 会員証を持って店に入る: レア枠 (最後の商品) にも比率が掛かる
+    const withCard = openShop({ ...createRun(21, 'set-confirm'), relics: [member.id] })
+    const plain = openShop(createRun(21, 'set-confirm'))
+    const rareA = withCard.shop!.cards[withCard.shop!.cards.length - 1]
+    const rareB = plain.shop!.cards[plain.shop!.cards.length - 1]
+    expect(rareA.id).toBe(rareB.id) // 同じシード=同じ在庫
+    expect(rareA.price).toBe(Math.floor(rareB.price * ratio))
+    // 同じ店で会員証を買う: 未売の在庫がその場で値下がりする
+    let run2 = { ...plain, gold: 999, shop: { ...plain.shop!, relicId: member.id } }
+    const before = run2.shop.cards.map((c) => c.price)
+    run2 = applyRunCommand(run2, { type: 'ShopBuyRelic' })
+    run2.shop!.cards.forEach((c, i) => expect(c.price).toBe(Math.floor(before[i] * ratio)))
+  })
+})
