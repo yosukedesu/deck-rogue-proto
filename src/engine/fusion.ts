@@ -145,11 +145,10 @@ function dominance(a: CardInstance, b: CardInstance): [CardInstance, CardInstanc
  *    工房産の誘発ごと置物は鍛え不可（upgrade.ts）。「合成不可」は同じ札・色違いだけ
  */
 function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
-  // 引数の順序に依存しない (id順に正規化 = 決定性。効果の並びと名前の語順が入れ替わらない)
+  // 引数の順序に依存しない (id順に正規化 = 決定性)
   const [a0, b0] = x.def.id <= y.def.id ? [x, y] : [y, x]
   const sameName = a0.def.id === b0.def.id
-  // X札は「両方がX」の時だけXのまま。片方だけなら典型X=3の固定量に畳む (2026-09-05 机上レビュー S 提案1:
-  // 非X素材の印字コストがXに消えて「1Eで5E札」になっていた。巨獣の踏みつけ×蔦の連撃=1Eで55ダメの実測)
+  // X札は「両方がX」の時だけXのまま。片方だけなら典型X=3の固定量に畳む (机上レビュー S 提案1)
   const bothX = a0.def.xCost === true && b0.def.xCost === true
   const materialize = (c: CardInstance): CardInstance =>
     c.def.xCost === true && !bothX
@@ -157,7 +156,22 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       : c
   const a = materialize(a0)
   const b = materialize(b0)
-  const [domi, sub] = dominance(a, b)
+  const [domi0, sub0] = dominance(a, b)
+
+  // --- コスト: 合計−1 (最低1・上限5)。0E素材は値引きにならない (Opusラン R)。X同士はXのまま ---
+  const costAsMaterial = (d: CardDef) => (d.xCost === true ? 3 : d.cost)
+  const ca = costAsMaterial(a.def)
+  const cb = costAsMaterial(b.def)
+  const rawSumUncapped = ca === 0 || cb === 0 ? Math.max(ca, cb) : Math.max(1, ca + cb - 1)
+  const rawSum = Math.min(5, rawSumUncapped)
+  // 重い札は罠に収まらない (机上レビュー S2 提案2): 合計−1 が 2E を超えるならリアクション化せず、
+  // 相手側のタイプで出してリアクションの効果をプレイ時へ変換する (旧「切り下げ分を量で払う」は量の無い効果の罠が無償で2Eになる穴)
+  let domi = domi0
+  let sub = sub0
+  if (domi0.def.type === 'reaction' && sub0.def.type !== 'reaction' && !bothX && rawSum > 2) {
+    domi = sub0
+    sub = domi0
+  }
   const resultType = domi.def.type
   const keepModes = TYPE_RANK[resultType] <= TYPE_RANK.spell
 
@@ -165,28 +179,30 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     resultType === 'reaction'
       ? (domi.def.effects.find((e) => REACTION_WINDOWS.has(e.trigger))?.trigger ?? 'onAttacked')
       : 'onPlay'
-  // playCard 経路でしか解決できない効果 (山札/捨て札/手札の選択が要る): 置物なら登場時、リアクションでは落とす (提案5-1)
-  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'addCopyToDiscard', 'growSelf', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot'])
-  // 敵フェーズでは死ぬ効果 (全捨て・全回復で消える): リアクションでは落とす (提案5-2)
+  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot'])
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
-  // 置物では参照量が0で死ぬ効果 (打ち消しは窓が無い・倍化/放出は登場時に参照0): 落とす (提案5-3)
   const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
+  // 落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)
+  const DROP_VP: Record<string, number> = { gainEnergy: 5, drawCards: 3, impulseDraw: 2, addCasts: 2.5, negate: 12, doubleGrowth: 8, doubleMomentum: 6, growSelf: 4, searchDeck: 6, retrieveFromDiscard: 5, upgradeInHand: 6, addCopyToDiscard: 3, exhaustFromDeckChoose: 3, retrieveFromExhaust: 5, playFromExhaust: 8, gainSetSlot: 6, momentumCarryHalf: 8 }
+  let droppedVp = 0
+  const drop = (e: DeclarativeEffect) => { droppedVp += (DROP_VP[e.effect] ?? 4) * (e.amount !== undefined && DROP_VP[e.effect] !== undefined && ['gainEnergy', 'drawCards', 'impulseDraw', 'addCasts'].includes(e.effect) ? e.amount : 1) }
 
-  /** 素材1枚の効果を結果タイプへ変換する。置物化は同種を合算してから÷3 (切り捨て。0なら登場時に1回) (提案4) */
+  /** 素材1枚の効果列を結果タイプへ変換する (列の内部順序は保つ = 蔦の乱舞の交互構造を畳まない) */
   const convertAll = (c: CardInstance): DeclarativeEffect[] => {
-    const src = keepModes ? c.def.effects : [...c.def.effects, ...(c.def.modes ?? []).flatMap((m) => m.effects)]
+    // モードを畳む時 (置物/リアクション化) は最初のモードだけ採る (S2: 「選ぶ」が「両方」になっていた)
+    const src = keepModes ? c.def.effects : [...c.def.effects, ...(c.def.modes?.[0]?.effects ?? [])]
     if (resultType === 'permanent' && c.def.type !== 'permanent') {
       const agg: DeclarativeEffect[] = []
       for (const e of src) {
-        if (DEAD_ON_PERMANENT.has(e.effect)) continue
+        if (DEAD_ON_PERMANENT.has(e.effect)) { drop(e); continue }
         const twin = agg.find((m) => m.effect === e.effect && m.target === e.target && m.pierce === e.pierce && m.summonId === e.summonId && JSON.stringify(m.condition) === JSON.stringify(e.condition) && m.growthMultiplier === e.growthMultiplier && m.momentumMultiplier === e.momentumMultiplier)
         if (twin && twin.amount !== undefined && e.amount !== undefined) agg[agg.indexOf(twin)] = { ...twin, amount: twin.amount + e.amount }
         else if (!(twin && twin.amount === undefined && e.amount === undefined)) agg.push({ ...e })
       }
       return agg.map((e) => {
-        if (e.amount === undefined || PLAYCARD_ONLY.has(e.effect)) return { ...e, trigger: PERM_WINDOWS.has(e.trigger) ? e.trigger : 'onPlay' } as DeclarativeEffect // 登場時に1回
+        if (e.amount === undefined || PLAYCARD_ONLY.has(e.effect)) return { ...e, trigger: PERM_WINDOWS.has(e.trigger) ? e.trigger : 'onPlay' } as DeclarativeEffect
         const third = Math.floor(e.amount / 3)
-        if (third <= 0) return { ...e, trigger: PERM_WINDOWS.has(e.trigger) ? e.trigger : 'onPlay' } as DeclarativeEffect // 3未満は毎ターン化せず登場時に1回
+        if (third <= 0) return { ...e, trigger: PERM_WINDOWS.has(e.trigger) ? e.trigger : 'onPlay' } as DeclarativeEffect
         const trigger = PERM_WINDOWS.has(e.trigger) ? e.trigger : 'onTurnStart'
         return { ...e, trigger, amount: third, ...(e.amountMax !== undefined ? { amountMax: Math.max(third, Math.floor(e.amountMax / 3)) } : {}) } as DeclarativeEffect
       })
@@ -195,52 +211,69 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       const out: DeclarativeEffect[] = []
       for (const e of src) {
         if (REACTION_WINDOWS.has(e.trigger)) { out.push({ ...e }); continue }
-        if (PLAYCARD_ONLY.has(e.effect) || DIES_IN_WINDOW.has(e.effect) || e.effect === 'growSelf') continue
+        if (PLAYCARD_ONLY.has(e.effect) || DIES_IN_WINDOW.has(e.effect) || e.effect === 'growSelf' || e.effect === 'momentumCarryHalf') { drop(e); continue }
         if (e.effect === 'gainBlock' || e.effect === 'gainIceBlock') out.push({ ...e, trigger: 'onAttackIncoming' } as DeclarativeEffect)
         else out.push({ ...e, trigger: primaryWindow } as DeclarativeEffect)
+      }
+      return out
+    }
+    if (resultType !== 'reaction' && c.def.type === 'reaction') {
+      // 重い札に吸われたリアクション: 窓の効果をプレイ時へ (返し→ダメージ・窓ブロック→ブロック・打ち消しは意味が無いので落とす)
+      const out: DeclarativeEffect[] = []
+      for (const e of src) {
+        if (e.effect === 'negate') { drop(e); continue }
+        if (e.effect === 'counter') { out.push({ ...e, effect: 'dealDamage', trigger: 'onPlay' } as DeclarativeEffect); continue }
+        out.push({ ...e, trigger: 'onPlay', condition: undefined } as DeclarativeEffect)
       }
       return out
     }
     return src.map((e) => ({ ...e }))
   }
 
-  // --- 合体: 効果は混ぜずに並べる (提案3。特性の伝播=全体/貫通の無償配布は旧・価値保存モデルの名残) ---
+  // --- 合体: 列は素材の内部順序を保ち、ブロック単位で並べる。「準備 (成長・勢い・急所等) だけの札」を先に置く
+  //     (S2: id順で勢いがダメージ行の後ろに落ち、素材より弱い合成品が183件) ---
+  const blocks = [convertAll(domi), convertAll(sub)]
+  const hasDamage = (list: readonly DeclarativeEffect[]) => list.some((e) => e.effect === 'dealDamage' && e.trigger === 'onPlay')
+  const ordered = blocks[1].length > 0 && !hasDamage(blocks[1]) && hasDamage(blocks[0]) ? [blocks[1], blocks[0]] : blocks
   const merged: DeclarativeEffect[] = []
-  const twinOf = (raw: DeclarativeEffect) =>
-    merged.find(
-      (m) =>
+  const ownerOf: number[] = []
+  const twinOf = (raw: DeclarativeEffect, block: number) =>
+    merged.findIndex(
+      (m, k) =>
+        ownerOf[k] !== block && // 同じ素材の中では畳まない (交互構造を保つ)
         m.trigger === raw.trigger && m.effect === raw.effect && m.target === raw.target && m.pierce === raw.pierce &&
         m.summonId === raw.summonId && JSON.stringify(m.condition) === JSON.stringify(raw.condition) &&
         m.growthMultiplier === raw.growthMultiplier && m.momentumMultiplier === raw.momentumMultiplier && m.xHits === raw.xHits,
     )
-  let collapsedFlatVp = 0 // 量を持たない同種効果を1つに畳んだ分は最大の量効果へ振る (提案5-5)
+  let collapsedFlatVp = 0
   const FLAT_VP: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
-  const pushMerged = (raw: DeclarativeEffect) => {
-    // ダメージ行は行のまま並べる (多段の旨味=成長が回数ぶん乗る、は残る)
-    if (raw.effect === 'dealDamage' && raw.trigger !== 'onTurnStart') { merged.push(raw); return }
-    const twin = twinOf(raw)
-    if (twin && twin.amount !== undefined && raw.amount !== undefined) {
-      merged[merged.indexOf(twin)] = { ...twin, amount: twin.amount + raw.amount, ...(twin.amountMax !== undefined && raw.amountMax !== undefined ? { amountMax: twin.amountMax + raw.amountMax } : {}) }
-    } else if (twin && twin.amount === undefined && raw.amount === undefined) {
-      collapsedFlatVp += FLAT_VP[raw.effect] ?? 0
-    } else {
-      merged.push(raw)
-    }
-  }
-  for (const e of convertAll(domi)) pushMerged(e)
-  // 同名合成 (真・化) はダメージ行も対で合算する = 2枚ぶんの量を1枚に圧縮 (真・打撃=12、真・二連=10×2)。異名は行のまま並べる
   let dmgSeen = 0
-  for (const e of convertAll(sub)) {
-    if (sameName && e.effect === 'dealDamage' && e.trigger !== 'onTurnStart') {
-      const rows = merged.map((m, i) => [m, i] as const).filter(([m]) => m.effect === 'dealDamage' && m.trigger === e.trigger)
-      const hit = rows[dmgSeen++]
-      if (hit && hit[0].pierce === e.pierce && hit[0].target === e.target && hit[0].amount !== undefined && e.amount !== undefined) {
-        merged[hit[1]] = { ...hit[0], amount: hit[0].amount + e.amount }
-        continue
+  ordered.forEach((list, block) => {
+    // ダメージ行を持つ札の効果は他方へ畳まない (交互構造・「ダメージの前に成長」の意味を保つ)。準備だけの札は相手の同種へ合算する
+    const canMerge = !hasDamage(list)
+    for (const raw of list) {
+      if (raw.effect === 'dealDamage' && raw.trigger !== 'onTurnStart') {
+        if (sameName && block === 1) {
+          // 同名合成 (真・化) はダメージ行を対で合算 = 2枚ぶんを圧縮 (真・打撃12・真・二連10×2)
+          const rows = merged.map((m, k) => [m, k] as const).filter(([m]) => m.effect === 'dealDamage' && m.trigger === raw.trigger)
+          const hit = rows[dmgSeen++]
+          if (hit && hit[0].pierce === raw.pierce && hit[0].target === raw.target && hit[0].amount !== undefined && raw.amount !== undefined) {
+            merged[hit[1]] = { ...hit[0], amount: hit[0].amount + raw.amount }
+            continue
+          }
+        }
+        merged.push(raw); ownerOf.push(block); continue
+      }
+      const t = canMerge ? twinOf(raw, block) : -1
+      if (t >= 0 && merged[t].amount !== undefined && raw.amount !== undefined) {
+        merged[t] = { ...merged[t], amount: (merged[t].amount ?? 0) + raw.amount, ...(merged[t].amountMax !== undefined && raw.amountMax !== undefined ? { amountMax: (merged[t].amountMax ?? 0) + raw.amountMax } : {}) }
+      } else if (t >= 0 && merged[t].amount === undefined && raw.amount === undefined) {
+        collapsedFlatVp += FLAT_VP[raw.effect] ?? 0
+      } else {
+        merged.push(raw); ownerOf.push(block)
       }
     }
-    pushMerged(e)
-  }
+  })
   const isShatter = (e: DeclarativeEffect) => e.effect === 'shatterBlock' || e.effect === 'shatterBlockConvert'
   const QUANTITY = new Set(['dealDamage', 'counter', 'gainBlock', 'gainIceBlock', 'gainHp', 'applyBurn', 'dealDamageDrain'])
   const boostLargest = (list: DeclarativeEffect[], delta: number): void => {
@@ -249,9 +282,14 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     if (best >= 0) list[best] = { ...list[best], amount: Math.max(1, (list[best].amount ?? 0) + delta) }
   }
   const effects: DeclarativeEffect[] = [...merged.filter(isShatter), ...merged.filter((e) => !isShatter(e))]
-  if (collapsedFlatVp > 0) boostLargest(effects, Math.round(collapsedFlatVp))
+  if (collapsedFlatVp + droppedVp > 0) boostLargest(effects, Math.round(collapsedFlatVp + droppedVp))
+  // 5E上限で切った分は量を比例縮小して払う (S2: 真・巨獣の踏みつけ=5Eで100ダメ)
+  if (!bothX && rawSumUncapped > 5) {
+    const ratio = 5 / rawSumUncapped
+    for (let i = 0; i < effects.length; i++) if (QUANTITY.has(effects[i].effect) && effects[i].amount !== undefined) effects[i] = { ...effects[i], amount: Math.max(1, Math.floor((effects[i].amount ?? 0) * ratio)) }
+  }
 
-  // モード: 同名は各モードを対で合算 (真・化の趣旨)、異なる選択式同士は連結 (提案5-4)
+  // モード: 同名は各モードを対で合算、異なる選択式同士は連結。片方だけ選択式なら相手の効果は共通部に入る (上で並べ済み)
   let modes: CardDef['modes'] | undefined
   if (keepModes && (domi.def.modes?.length || sub.def.modes?.length)) {
     if (sameName && a.def.modes) {
@@ -265,23 +303,14 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     } else modes = [...(domi.def.modes ?? []), ...(sub.def.modes ?? [])]
   }
 
-  // --- コスト: 合計−1 (最低1・上限5)。両方0Eなら0E。X同士はXのまま ---
-  const costAsMaterial = (d: CardDef) => (d.xCost === true ? 3 : d.cost)
-  // 0E素材は値引きにならない (2026-09-05 Opusラン R: 「一番安い札×一番強い札」が常に最善手＝0E札が万能クーポンになっていた)。
-  // −1 は両方が1E以上の時だけ。片方0Eなら高い方のコスト、両方0Eなら0E
-  const ca = costAsMaterial(a.def)
-  const cb = costAsMaterial(b.def)
-  const rawSum = ca === 0 || cb === 0 ? Math.max(ca, cb) : Math.min(5, Math.max(1, ca + cb - 1))
   let cost = bothX ? 1 : rawSum
-  if (resultType === 'reaction' && !bothX && cost > 2) {
-    // リアクションのコスト上限2E: 切り下げた1Eにつき最大の量効果を−6 (=1E相当) して出力で払う (提案2)
-    for (let cut = cost - 2; cut > 0; cut--) boostLargest(effects, -6)
-    cost = 2
-  }
+  if (resultType === 'reaction' && !bothX) cost = Math.min(2, cost) // 重い側は上で非リアクション化済みなので、ここは2E以内の確認
 
   // --- 歯止め (現行のまま) ---
   const all = [...effects, ...(modes ?? []).flatMap((m) => m.effects)]
-  let exhaust = a.def.exhaust === true || b.def.exhaust === true
+  // 消滅の継承: 効果が1つも残らなかった素材の消滅は引き継がない (S2: 茨の返し×樹液=茨の返し+消滅の劣化)
+  const contributed = (c: CardInstance) => convertAll(c).length > 0
+  let exhaust = (a.def.exhaust === true && contributed(a)) || (b.def.exhaust === true && contributed(b))
   const necroCost = a.def.necroCost !== undefined || b.def.necroCost !== undefined ? Math.min(a.def.necroCost ?? 99, b.def.necroCost ?? 99) : undefined
   if (necroCost !== undefined) exhaust = true
   if (all.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleMomentum')) exhaust = true
@@ -291,7 +320,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const refills = all.some((e) => REFILL.has(e.effect))
   const freeIfPhysical = a.def.freeIfHandAllPhysical === true || b.def.freeIfHandAllPhysical === true
   const freeIfMomentum = [a.def.freeIfMomentumAtLeast, b.def.freeIfMomentumAtLeast].filter((v): v is number => v !== undefined)
-  const conditionalFree = freeIfPhysical || freeIfMomentum.length > 0 // 条件0Eは消滅判定では0Eとして数える (提案6)
+  const conditionalFree = freeIfPhysical || freeIfMomentum.length > 0
   if (!bothX && refills && (net - cost >= 0 || conditionalFree)) {
     if (resultType !== 'permanent') exhaust = true
     else while (net - cost >= 0 && cost < 5) cost++
@@ -301,7 +330,6 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const PERM_SUFFIX: Record<string, string> = { red: '炉', blue: '泉', white: '祭壇', black: '柩' }
   const suffix =
     resultType === 'permanent' ? (PERM_SUFFIX[a.def.color ?? ''] ?? '大樹') : resultType === 'reaction' ? '罠' : suffixOf(effects)
-  // 工房産を素材にした時は、その名前の語幹を引き継いで語を足す (2026-09-05 Opusラン R: 素材「角牙の嵐+」と結果「角牙の嵐」が同名になる衝突)
   const stemOf = (d: CardDef): string =>
     d.id.startsWith('fused_') || d.id.startsWith('fusion_') ? d.name.replace(/^真・/, '').replace(/\+$/, '').split('の')[0].slice(0, 3) : wordOf(d)
   const wa = stemOf(a.def)

@@ -117,14 +117,17 @@ describe('効果の合体 (2026-09-05 ユーザー裁定「工房は全て合成
     expect(s.player.growth).toBe(2)
   })
 
-  it('歯止め: 倍化を含めば消滅、0E+補充なら消滅、リアクションは2E上限', () => {
+  it('歯止め: 倍化を含めば消滅、0E+補充なら消滅。重い札は罠に収まらない (合計−1が2Eを超えるなら相手側のタイプで出る)', () => {
     const bloom = fuseCards(inst('green_sig_rite_of_bloom'), inst('green_strike'))
     expect(bloom.exhaust).toBe(true)
     const draw = fuseCards(inst('green_sprint'), inst('green_wild_sprout')) // 0E勢い3 × 0E成長1+1ドロー(消滅)
     expect(draw.exhaust).toBe(true)
-    const trap = fuseCards(inst('green_reaction_tree_warden'), inst('green_fang')) // 2E反応 × 2E攻撃 → 3にならない
-    expect(trap.type).toBe('reaction')
-    expect(trap.cost).toBeLessThanOrEqual(2)
+    const heavy = fuseCards(inst('green_reaction_tree_warden'), inst('green_fang')) // 2E反応 × 2E攻撃 → 3E は罠に収まらない → 物理
+    expect(heavy.type).toBe('physical')
+    expect(heavy.cost).toBe(3)
+    expect(heavy.effects.some((e) => e.effect === 'gainBlock' && e.trigger === 'onPlay' && e.amount === 12)).toBe(true)
+    const light = fuseCards(inst('green_reaction_thorns'), inst('green_strike')) // 1E反応 × 1E → 1E の罠
+    expect(light.type).toBe('reaction')
   })
 
   it('スモーク: 緑×緑の全ペアが合成でき、不変条件 (0E+補充=消滅・倍化=消滅・コスト0〜5) が守られる', () => {
@@ -215,18 +218,52 @@ describe('特性の掛け合わせ (多段合算・貫通・全体の伝播)', (
     expect(def.discardCost).toBe(1)
   })
 
-  it('リアクション2E上限は出力で払う (提案2): 巨獣の踏みつけ(5E 50)×先制の蔦槍(1E 12) → 2E罠、50−18=32', () => {
+  it('重い札は罠に収まらない (S2 提案2): 巨獣の踏みつけ(5E 50)×先制の蔦槍(1E 被攻撃前12) → 5Eの物理 50+12 (窓の効果はプレイ時へ)', () => {
     const def = fuseCards(inst('green_finisher_stomp'), inst('green_reaction_preempt'))
-    expect(def.type).toBe('reaction')
-    expect(def.cost).toBe(2)
-    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage').map((e) => e.amount)
-    expect(Math.max(...(dmgs as number[]))).toBe(32)
+    expect(def.type).toBe('physical')
+    expect(def.cost).toBe(5)
+    expect(def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger === 'onPlay').map((e) => e.amount).sort()).toEqual([12, 50])
   })
 
-  it('リアクション化で敵フェーズに死ぬ効果 (ドロー・一時マナ) と playCard専用効果 (サーチ等) は落ちる (提案5)', () => {
+  it('効果の順序は意味で決める (S2): 準備だけの札 (疾駆=勢い+3) はダメージ行の前に置かれる', () => {
+    const def = fuseCards(inst('green_double_lash'), inst('green_sprint'))
+    expect(def.effects[0].effect).toBe('addMomentum')
+    expect(def.cost).toBe(1) // 0E素材は値引きにならない
+  })
+
+  it('素材の内部順序は保つ (S2): 蔦の乱舞×年輪 → 成長+2 の後に 乱舞の交互構造 (成長1→2ダメ) がそのまま', () => {
+    const def = fuseCards(inst('green_sig_vine_dance'), inst('green_growth_ring'))
+    const kinds = def.effects.map((e) => e.effect)
+    expect(kinds[0]).toBe('addGrowth') // 年輪 (準備だけ) が先
+    expect(def.effects[0].amount).toBe(2)
+    expect(kinds.slice(1, 5)).toEqual(['addGrowth', 'dealDamage', 'addGrowth', 'dealDamage'])
+  })
+
+  it('5E上限で切った分は量を比例縮小 (S2): 真・巨獣の踏みつけ = 5E・100→55', () => {
+    const def = fuseCards(inst('green_finisher_stomp', 'a'), inst('green_finisher_stomp', 'b'))
+    expect(def.cost).toBe(5)
+    expect(def.effects.find((e) => e.effect === 'dealDamage')?.amount).toBe(Math.floor(100 * 5 / 9))
+  })
+
+  it('落とした効果の価値は最大の量効果へ振り、効果が全部落ちた素材の消滅は継承しない (S2: 茨の返し×樹液)', () => {
+    const def = fuseCards(inst('green_reaction_thorns'), inst('green_ritual_surge')) // 茨の返し(返し10) × 樹液(1E 一時マナ+2・消滅)
+    expect(def.type).toBe('reaction')
+    expect(def.exhaust).not.toBe(true)
+    expect(def.effects.find((e) => e.effect === 'counter')?.amount).toBeGreaterThan(10)
+  })
+
+  it('モードを畳む時は最初のモードだけ採る (S2: 「選ぶ」が「両方」になっていた): 絡み蔦×守りの蔓', () => {
+    const def = fuseCards(inst('green_entangle'), inst('green_reaction_vine'))
+    expect(def.type).toBe('reaction')
+    expect(def.effects.some((e) => e.effect === 'dealDamage')).toBe(false) // 第2モード (7ダメ) は採らない
+    expect(def.effects.find((e) => e.effect === 'gainBlock' && e.trigger === 'onAttackIncoming')?.amount).toBe(7 + 12)
+  })
+
+  it('リアクション化で敵フェーズに死ぬ効果 (ドロー・一時マナ) と playCard専用効果 (サーチ等) は落ち、価値は返しへ振られる (提案5)', () => {
     const def = fuseCards(inst('green_flash_insight'), inst('green_reaction_thorns')) // 緑の閃き(4ドロー) × 茨の返し
     expect(def.type).toBe('reaction')
     expect(def.effects.some((e) => e.effect === 'drawCards')).toBe(false)
+    expect(def.effects.find((e) => e.effect === 'counter')?.amount).toBe(10 + 12) // 4ドロー×3VP を返しへ
     const guide = fuseCards(inst('green_forest_guidance'), inst('green_reaction_thorns')) // 森の導き(サーチ+成長1)
     expect(guide.effects.some((e) => e.effect === 'searchDeck')).toBe(false)
     expect(guide.effects.some((e) => e.effect === 'addGrowth')).toBe(true)
