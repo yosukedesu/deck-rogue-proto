@@ -1311,7 +1311,8 @@ export function endTurn(state: GameState): GameState {
     s = fireNecroEffects(s, expired, aliveIdx)
   }
   // 敵ブロックはこのタイミングで失効 (前の敵ターンの防御は自ターンの攻撃を受け止めたら役目を終える)
-  s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0 })) }
+  // 潜伏の殻 (burrowActive) はブロックの器を借りているだけで失効しない (2026-09-04 Opusラン O: 殻30が敵フェーズ開始の掃除で消え「潜伏中(殻0)」の矛盾)
+  s = { ...s, enemies: s.enemies.map((e) => (e.burrowActive === true ? e : { ...e, block: 0 })) }
   // 憤怒 (逆上) の参照値はフェーズ単位: 敵フェーズ開始時にリセットして受け直す
   s = { ...s, player: { ...s.player, damageTakenLastEnemyPhase: 0, attacksReceivedThisPhase: 0 } }
   // 延焼: 敵フェーズ開始時にダメージ (ブロック無視) を受けて1減る。

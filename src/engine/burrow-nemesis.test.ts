@@ -37,6 +37,22 @@ describe('潜伏 (burrow)', () => {
   })
 })
 
+describe('潜伏の殻はターンをまたいで残る (2026-09-04 Opusラン O のバグ修正)', () => {
+  it('敵フェーズ開始のブロック失効に巻き込まれず、割れるまで殻が残る', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_rock_beetle', 5), [])
+    expect(s.enemies[0].block).toBe(12)
+    s = applyCommand(s, { type: 'EndTurn' })
+    // 殻12は残り、甲虫自身の防御 (攻防一体) が上に積まれる
+    expect(s.enemies[0].block).toBeGreaterThanOrEqual(12)
+    expect(s.enemies[0].burrowActive).toBe(true)
+    // 殻を超える非貫通ダメージで割れる (超過は捨てる=HPは減らない)
+    const hp0 = s.enemies[0].hp
+    const t = dealDamageToEnemy(s, 0, s.enemies[0].block + 5)
+    expect(t.enemies[0].burrowActive).toBe(false)
+    expect(t.enemies[0].hp).toBe(hp0)
+  })
+})
+
 describe('因縁 (nemesis)', () => {
   it('奇数ターンは1ヒットのHP損失が1に固定され、偶数ターンは普通に通る', () => {
     let s = freshCombat('set-confirm', 'enemy_nemesis_wraith', 7)
