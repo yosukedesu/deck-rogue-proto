@@ -60,6 +60,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       setsThisTurn: 0,
       playsThisTurn: 0,
       attacksPlayedThisTurn: 0,
+      weakFreshThisPhase: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
       healsThisCombat: 0,
@@ -536,6 +537,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       setsThisTurn: 0,
       playsThisTurn: 0,
       attacksPlayedThisTurn: 0,
+      weakFreshThisPhase: 0,
       freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
       setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
@@ -1514,7 +1516,7 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
   if (status === 'weak' || status === 'vulnerable' || status === 'frail' || status === 'restrain') {
     const player =
       status === 'weak'
-        ? { ...state.player, weak: state.player.weak + amount }
+        ? { ...state.player, weak: state.player.weak + amount, weakFreshThisPhase: (state.player.weakFreshThisPhase ?? 0) + amount } // 敵行動由来の付与のみ通る経路。同フェーズの返しには乗らない (自ターン開始でリセット)
         : status === 'vulnerable'
           // 付与ガード (2026-09-02 本家StSのjustApplied準拠。ミニングで発見した1スタック蒸発の修正):
           // 敵フェーズ中に付与された脆弱は、その同じフェーズの終了時減衰をスキップする

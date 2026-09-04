@@ -581,7 +581,9 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
  */
 export function playerDamageAfterModifiers(state: GameState, baseAmount: number): number {
   const amount = baseAmount + state.player.growth + state.player.momentum
-  if (state.player.weak <= 0 || amount <= 0) return amount
+  // 敵フェーズ中に付いた弱体は、その同じフェーズの返しには乗らない (次の自ターンから。2026-09-04 Opusラン N)
+  const weak = state.phase === 'player-turn' ? state.player.weak : state.player.weak - (state.player.weakFreshThisPhase ?? 0)
+  if (weak <= 0 || amount <= 0) return amount
   // 弱体は25%減 (切り捨て)。ただし1以上の攻撃が0にはならない
   // (2026-08-25 プレイテストで発見: 1ダメのリーダーパッシブが弱体1つで完全に消えていた)
   return Math.max(1, Math.floor(amount * 0.75))

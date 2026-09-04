@@ -1713,7 +1713,7 @@ function BattleScreen({
                       <span className="chip chip-strength">🔮 {kw('アーティファクト')} {enemy.artifact}</span>
                     )}
                     {enemyDef.burrow !== undefined && !dead && (
-                      <span className="chip chip-block">🪺 {kw('潜伏')}{enemy.burrowActive === true ? `（殻${enemy.block}。割れると噛みつき）` : '（殻は割れた）'}</span>
+                      <span className="chip chip-block">🪺 {kw('潜伏')}{enemy.burrowActive === true ? `（殻${enemy.block}。割れると次の行動が噛みつき）` : '（殻は割れた）'}</span>
                     )}
                     {enemyDef.nemesis === true && !dead && (
                       <span className="chip chip-strength">👻 {kw('因縁')}: {s.turn % 2 === 1 ? '今ターンは無形（被ダメ1固定）' : '今ターンは実体'}</span>

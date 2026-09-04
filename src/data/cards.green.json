@@ -1350,7 +1350,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5,
+        "amount": 6,
         "pierce": true
       },
       {

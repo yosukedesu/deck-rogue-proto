@@ -136,6 +136,8 @@ export interface PlayerState extends CombatantState {
   readonly randomPlayedThisCombat: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
   readonly damageTakenLastEnemyPhase: number
+  /** この敵フェーズ中に付与された弱体の量 (2026-09-04 Opusラン N: 同じ攻撃で付いた弱体が被攻撃後の返しを食っていた)。敵フェーズ中の返しはこの分を差し引き、次の自ターンから全量が効く */
+  readonly weakFreshThisPhase?: number
   /** このターンにプレイした攻撃カードの枚数 (自身の解決後に加算=攻撃数参照はそのカード自身を数えない。2026-09-03) */
   readonly attacksPlayedThisTurn?: number
   /** この敵フェーズに受けた攻撃行動の回数 (完全に凌いだ判定用) */

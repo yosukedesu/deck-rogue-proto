@@ -120,6 +120,23 @@ function cardLine(def: CardDef): string {
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
 
+/** ?イベントの結果を1行に (2026-09-04 Opusラン N: 「朽ちた霊廟」の結果が見えなかった)。レリック・獲得札・HP・金の差分 */
+function describeEventOutcome(prev: RunState, next: RunState): string | null {
+  const relics = next.relics.filter((id) => !prev.relics.includes(id)).map((id) => { const d = getRelicDef(id); return `${relicRarityTag(d) ? `${relicRarityTag(d)} ` : ''}${d.name}` })
+  const prevUids = new Set(prev.deck.map((c) => c.uid))
+  const gained = next.deck.filter((c) => !prevUids.has(c.uid)).map((c) => c.def.name)
+  const lost = prev.deck.filter((c) => !next.deck.some((d) => d.uid === c.uid)).map((c) => c.def.name)
+  const parts = [
+    relics.length > 0 ? `レリック獲得: ${relics.join('・')}` : '',
+    gained.length > 0 ? `デッキに追加: ${gained.join('・')}` : '',
+    lost.length > 0 ? `デッキから除去: ${lost.join('・')}` : '',
+    next.hp !== prev.hp ? `HP${next.hp - prev.hp > 0 ? '+' : ''}${next.hp - prev.hp}` : '',
+    next.maxHp !== prev.maxHp ? `最大HP${next.maxHp - prev.maxHp > 0 ? '+' : ''}${next.maxHp - prev.maxHp}` : '',
+    next.gold !== prev.gold ? `${next.gold - prev.gold > 0 ? '+' : ''}${next.gold - prev.gold}G` : '',
+  ].filter(Boolean)
+  return parts.length > 0 ? `イベントの結果: ${parts.join('・')}` : 'イベントの結果: 変化なし'
+}
+
 function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number }, weak = 0): string {
   const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
@@ -243,7 +260,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'EnemySplit') L.push(` 🫠分裂! 倒した敵から${e.count}体が現れた`)
       else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
-      else if (e.type === 'ArtifactBlocked') L.push(' 🔮アーティファクトがデバフを弾いた(チャージ-1)')
+      else if (e.type === 'ArtifactBlocked') L.push(` 🔮アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた(チャージ-1)=この効果は消えた`)
       else if (e.type === 'BurrowBroken') L.push(' 🪺潜伏の殻が割れた! 次の行動は噛みつきに差し替わる')
       else if (e.type === 'EnemyWoken') L.push(' 👁️目を覚ました! 眠りの前奏が打ち切られた')
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
@@ -784,10 +801,14 @@ if (mode === 'new-run') {
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
+    let choiceLine: string | null = null
     try {
+      const prevRun = sf.run!
       sf.run = applyRunCommand(sf.run!, runCmd)
       // リプレイ記録 (成功したコマンドだけ。旧ファイル=journal無しは記録しない)
       if (sf.journal !== undefined) sf.journal = { ...sf.journal, commands: [...sf.journal.commands, runCmd] }
+      // ランの意思決定 (イベント・ピック・レリック等) は結果を1行で明示 (2026-09-04 Opusラン N: ?イベントの結果が見えなかった)
+      if (runCmd.type === 'EventChoice') choiceLine = describeEventOutcome(prevRun, sf.run)
     } catch (err) {
       // 不正なコマンドはスタックトレースでなく1行のエラーで返し、exit 1 にする
       // (2026-08-31 検証ラン指摘: exit 0 だとスクリプト/LLMがエラーを検知できず計算がずれる)
@@ -796,6 +817,7 @@ if (mode === 'new-run') {
     }
     sf.logIndex = currentLogLength(sf)
     save(file, sf)
+    if (choiceLine) console.log(`📜 ${choiceLine}`)
     console.log(renderRun(sf.run, logFrom))
   } else {
     try {

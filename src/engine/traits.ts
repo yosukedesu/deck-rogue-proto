@@ -52,7 +52,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
   if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
-  if (def.burrow) tags.push(`潜伏(殻${def.burrow.block}が尽きるまでHPにダメージが通らない。超過は捨てる・貫通は通る・粉砕は殻を割る。割れた瞬間に噛みつき)`)
+  if (def.burrow) tags.push(`潜伏(殻${def.burrow.block}が尽きるまでHPにダメージが通らない。超過は捨てる・貫通は通る・粉砕は殻を割る。割れると次の行動が噛みつきに変わる=割ったターンのうちに倒せば来ない)`)
   if (def.nemesis) tags.push('因縁(奇数ターンは無形=1ヒットのHP損失が1固定。偶数ターンに実体化。延焼は通る)')
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
@@ -85,7 +85,7 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   if (def.burrow) {
     tags.push(
       e.burrowActive === true
-        ? `潜伏中(殻${e.block}。尽きるまでHPにダメージが通らない・超過は捨てる。貫通は通る・粉砕で割れる。割れた瞬間に噛みつき)`
+        ? `潜伏中(殻${e.block}。尽きるまでHPにダメージが通らない・超過は捨てる。貫通は通る・粉砕で割れる。割れると次の行動が噛みつきに変わる=割ったターンのうちに倒せば来ない)`
         : '潜伏(殻は割れた=以後は普通に通る)',
     )
   }

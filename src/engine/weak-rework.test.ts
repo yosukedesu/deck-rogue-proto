@@ -51,3 +51,21 @@ describe('威圧 (敵版弱体)', () => {
     expect(s.enemies[0].artifact).toBe(0)
   })
 })
+
+describe('プレイヤー側の弱体の鮮度 (2026-09-04 Opusラン N)', () => {
+  it('敵の攻撃で付いた弱体は、その敵フェーズの返し (茨の返し) には乗らず、次の自ターンの攻撃には乗る', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_reaction_thorns'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = withIntent(s, { ...attackIntent(5), inflict: { status: 'weak', amount: 1 } })
+    const hp0 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_thorns' })
+    expect(s.player.weak).toBe(1)
+    expect(hp0 - s.enemies[0].hp).toBe(10) // 返し10が-25%されない
+    // 次の自ターン: 弱体1が普通に効く (6→4)
+    s = withHand(s, ['green_strike'])
+    const hp1 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 0 })
+    expect(hp1 - s.enemies[0].hp).toBe(4)
+  })
+})
