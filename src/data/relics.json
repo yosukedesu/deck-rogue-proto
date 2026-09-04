@@ -234,7 +234,7 @@
     "id": "relic_cursed_key",
     "name": "呪いの鍵",
     "sprite": "🗝️",
-    "description": "戦闘開始時、エナジー上限+1（次のターンから）。宝箱や?でレリックを取るたび、呪いの烙印を1枚受け取る",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。以後レリックを取るたび（宝箱・エリート・ボス・ショップ・イベント）、呪いの烙印を1枚受け取る",
     "rarity": "boss",
     "effects": [
       {
@@ -244,7 +244,7 @@
       }
     ],
     "bonus": {
-      "brandOnChestRelic": 1
+      "brandOnRelic": 1
     }
   },
   {

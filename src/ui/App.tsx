@@ -3017,7 +3017,7 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
   return out
 }
 
-const RELIC_BONUS_JA: Record<string, string> = { noRest: '焚き火で休めない', brandOnChestRelic: '宝箱のレリックで烙印', victoryHealFlat: '勝利時HP+', shopUpgradeDiscount: 'ショップ鍛える-G', restMaxHp: '休むと最大HP+', eliteGoldBonus: 'エリート金+', fusionDiscount: '合成-G', shopPriceRatio: 'ショップ価格×', goldMultiplier: '勝利金×', removalStepDelta: '除去の逓増幅', maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数' }
+const RELIC_BONUS_JA: Record<string, string> = { noRest: '焚き火で休めない', brandOnRelic: 'レリック取得ごとに烙印', victoryHealFlat: '勝利時HP+', shopUpgradeDiscount: 'ショップ鍛える-G', restMaxHp: '休むと最大HP+', eliteGoldBonus: 'エリート金+', fusionDiscount: '合成-G', shopPriceRatio: 'ショップ価格×', goldMultiplier: '勝利金×', removalStepDelta: '除去の逓増幅', maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数' }
 
 function relicTunerFields(def: RelicDef): { key: string; label: string; cur: number }[] {
   const out: { key: string; label: string; cur: number }[] = []

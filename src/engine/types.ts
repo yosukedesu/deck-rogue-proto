@@ -1174,8 +1174,8 @@ export interface RelicDef {
     readonly campfireForge?: number
     /** 焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper) */
     readonly noRest?: boolean
-    /** 宝箱・?のレリックを取るたび烙印をN枚受け取る (呪いの鍵=本家 Cursed Key) */
-    readonly brandOnChestRelic?: number
+    /** レリックを取るたび (供給源を問わず: 宝箱・?・エリート・ボス・ショップ・イベント) 烙印をN枚受け取る (呪いの鍵。2026-09-04 ユーザー裁定: 旧「宝箱のみ」は降りられる代償=実質ノーコストだった) */
+    readonly brandOnRelic?: number
     /** 勝利時に無条件でHP+N (薬草袋。狩人の恵みの条件つき回復とは別口) */
     readonly victoryHealFlat?: number
     /** ショップの鍛える −N G (砥石の欠片) */

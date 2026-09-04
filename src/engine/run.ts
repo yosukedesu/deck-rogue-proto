@@ -678,7 +678,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     rng = rE
     const relicId = drawn[0]
     if (relicId !== undefined) {
-      next = applyRelicBonus({ ...next, relics: [...next.relics, relicId] }, relicId)
+      next = withRelicGainBrands(applyRelicBonus({ ...next, relics: [...next.relics, relicId] }, relicId), run)
     }
   }
   if (choice.removeCard) {
@@ -1136,6 +1136,22 @@ import { canUpgradeCard, isUpgraded, upgradeCard, upgradeTier } from './upgrade.
 export { canUpgradeCard, isUpgraded, upgradeCard, upgradeTier }
 
 /** B型レリックの取得時効果を適用する */
+/**
+ * 呪いの鍵 (2026-09-04 供給源を問わず): レリックを取るたび、取得前に持っていた鍵の数だけ烙印を受け取る。
+ * before = 取得前の RunState (鍵自身を取った瞬間は数えない)
+ */
+function withRelicGainBrands(next: RunState, before: RunState): RunState {
+  const brands = before.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.brandOnRelic ?? 0), 0)
+  if (brands <= 0) return next
+  return {
+    ...next,
+    deck: [
+      ...next.deck,
+      ...Array.from({ length: brands }, (_, i) => ({ uid: `brand_key_a${next.act}_r${next.row}_${next.relics.length}_${i}`, def: BRAND_DEF })),
+    ],
+  }
+}
+
 function applyRelicBonus(run: RunState, relicId: string): RunState {
   const def = getRelicDef(relicId)
   const b = def.bonus
@@ -1198,20 +1214,8 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       next = applyRelicBonus(next, relicId)
       // ?マスの宝箱はレリックのみでカード報酬は付かない (2026-08-29)。
       // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (afterVictory は必ず combat を渡す)
-      if (run.combat === null) {
-        // 呪いの鍵 (2026-09-03 本家 Cursed Key): 宝箱・?のレリックを取るたび烙印。取得前に持っていた鍵だけが数える
-        const brands = run.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.brandOnChestRelic ?? 0), 0)
-        if (brands > 0) {
-          next = {
-            ...next,
-            deck: [
-              ...next.deck,
-              ...Array.from({ length: brands }, (_, i) => ({ uid: `brand_key_a${run.act}_r${run.row}_${i}`, def: BRAND_DEF })),
-            ],
-          }
-        }
-        return { ...next, relicOptions: null, phase: 'map' }
-      }
+      next = withRelicGainBrands(next, run)
+      if (run.combat === null) return { ...next, relicOptions: null, phase: 'map' }
       return rollRewards(next)
     }
     case 'SkipRelic': {
@@ -1310,7 +1314,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         shop: { ...run.shop, relicId: null },
       }
       next = applyRelicBonus(next, relicId)
-      return next
+      return withRelicGainBrands(next, run)
     }
     case 'ShopRemove': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')

@@ -403,7 +403,7 @@ describe('レリックの層×供給源 (2026-09-03 本家式。docs/relic-redes
     expect(run.rewardChoicesBonus).toBe(-1)
     expect(run.relics).toContain('relic_crown_shard')
   })
-  it('呪いの鍵: 持っている状態で宝箱のレリックを取ると烙印が1枚増える (鍵を取った瞬間は増えない)', () => {
+  it('呪いの鍵 (2026-09-04 供給源を問わず): 持っている状態でレリックを取ると烙印が1枚増える (鍵を取った瞬間は増えない。エリート勝利の3択・ショップも同じ)', () => {
     let run = createRun(7, 'set-confirm')
     run = { ...run, phase: 'relic-reward', relicOptions: ['relic_cursed_key'], combat: null }
     run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
@@ -412,6 +412,10 @@ describe('レリックの層×供給源 (2026-09-03 本家式。docs/relic-redes
     run = { ...run, phase: 'relic-reward', relicOptions: ['relic_iron_heart'], combat: null }
     run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
     expect(brands(run)).toBe(1)
+    // ショップのレリック購入でも
+    run = { ...run, phase: 'shop', gold: 500, shop: { cards: [], relicId: 'relic_herb_pouch', relicPrice: 150 } }
+    run = applyRunCommand(run, { type: 'ShopBuyRelic' })
+    expect(brands(run)).toBe(2)
   })
   it('鎖の首輪: 通常戦には注入されず、エリート戦には注入される', () => {
     const normal = injectedIntoBattle('relic_slaver_collar', 11)
