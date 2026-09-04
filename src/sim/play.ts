@@ -115,9 +115,11 @@ function cardLine(def: CardDef): string {
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
     def.retainer ? '従者' : '',
   ].filter(Boolean).join('・')
+  // 選択式の共通部 (工房「効果の合体」で相手の効果が入る場所) はモードの前に描く (2026-09-05 Opusラン R: 合成の目玉が不可視だった)
+  const common = def.effects.map((e) => fx(e, def.type)).join('、')
   const body = def.modes?.length
-    ? def.modes.map((m, i) => `選択${i}:${m.effects.map((e) => fx(e, def.type)).join('+')}`).join(' / ')
-    : def.effects.map((e) => fx(e, def.type)).join('、')
+    ? `${common ? `${common}、` : ''}${def.modes.map((m, i) => `選択${i}:${m.effects.map((e) => fx(e, def.type)).join('+')}`).join(' / ')}`
+    : common
   const costLabel = cardCostLabel(def)
   return `${def.name}(${costLabel}E/${def.type})${extras ? `【${extras}】` : ''} ${body}`
 }
@@ -128,7 +130,12 @@ function describeEventOutcome(prev: RunState, next: RunState): string | null {
   const prevUids = new Set(prev.deck.map((c) => c.uid))
   const gained = next.deck.filter((c) => !prevUids.has(c.uid)).map((c) => c.def.name)
   const lost = prev.deck.filter((c) => !next.deck.some((d) => d.uid === c.uid)).map((c) => c.def.name)
+  // 同じ札が変わった (鍛える・変容): 研ぎの祠が鍛えに成功しているのに「変化なし」と出ていた (2026-09-05 Opusラン R)
+  const changed = next.deck
+    .map((c) => { const p = prev.deck.find((d) => d.uid === c.uid); return p && (p.def.name !== c.def.name || p.def.id !== c.def.id) ? `${p.def.name} → ${c.def.name}` : null })
+    .filter((x): x is string => x !== null)
   const parts = [
+    changed.length > 0 ? `札が変わった: ${changed.join('・')}` : '',
     relics.length > 0 ? `レリック獲得: ${relics.join('・')}` : '',
     gained.length > 0 ? `デッキに追加: ${gained.join('・')}` : '',
     lost.length > 0 ? `デッキから除去: ${lost.join('・')}` : '',
@@ -729,7 +736,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
-    L.push('   (同じ色同士。同名2枚は「真・」化=2枚ぶんを圧縮した強化版。コストはVP査定からの逆算=素材コストの単純合算ではない)')
+    L.push('   (同じ色同士。効果の合体=2枚の効果を全部持つ札。コストは合計−1〔最低1・上限5。0E素材は値引きにならない〕。同名2枚は量を合算した「真・」化)')
     L.push('   特定の組み合わせは手書きレシピ(⭐)にヒットし、計算値より少し強い一品になる')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
@@ -828,7 +835,7 @@ if (mode === 'new-run') {
         const recipe = def.id.startsWith('fusion_') ? '⭐レシピ発見! ' : ''
         console.log(`プレビュー: ${recipe}${cardLine(def)} (素材は消費されていない)`)
         if (sf.run!.gold < workshopFusePrice(sf.run!)) console.log(`※所持金不足: 合成${workshopFusePrice(sf.run!)}G / 所持${sf.run!.gold}G (確定は拒否される)`)
-        console.log('  ※コストはVP査定からの逆算 (素材コストの単純合算ではない)')
+        console.log('  ※効果の合体: コストは合計−1 (0E素材は値引きにならない)。同名は量を合算')
       }
     }
     process.exit(0)

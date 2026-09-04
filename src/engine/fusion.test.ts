@@ -75,8 +75,9 @@ describe('効果の合体 (2026-09-05 ユーザー裁定「工房は全て合成
     expect(def.name).toBe('蔦車輪')
   })
 
-  it('両方0Eなら0E、1E×1Eは1E、3E×3Eは5E (上限)', () => {
+  it('両方0Eなら0E、片方0Eなら高い方 (0E素材は値引きにならない)、1E×1Eは1E、3E×3Eは5E (上限)', () => {
     expect(fuseCards(inst('green_sprint'), inst('green_twig_strike')).cost).toBe(0)
+    expect(fuseCards(inst('green_sprint'), inst('green_fang')).cost).toBe(2) // 疾駆(0E)×牙の一撃(2E) = 2E (クーポンにならない)
     expect(fuseCards(inst('green_strike'), inst('green_guard')).cost).toBe(1)
     expect(fuseCards(inst('green_sig_trample'), inst('green_charging_horn')).cost).toBe(5)
   })
@@ -257,6 +258,13 @@ describe('同名合成 =「真・」化', () => {
     expect(def.modes?.length).toBe(2)
     expect(def.modes?.[0].effects.find((e) => e.effect === 'addMomentum')?.amount).toBe(6)
     expect(def.modes?.[1].effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(4)
+  })
+
+  it('工房産を素材にしても名前が素材と衝突しない (角牙の嵐×落ち葉の刃)', () => {
+    const first = fuseCards(inst('green_twin_fang_vine'), inst('green_sweeping_horn'))
+    const second = fuseCards({ uid: 'f', def: first }, inst('green_leaf_blade'))
+    expect(second.name).not.toBe(first.name)
+    expect(second.name.replace(/\+$/, '')).not.toBe(first.name.replace(/\+$/, ''))
   })
 
   it('量を持たない同種効果を畳んだ分は最大の量効果へ振る (真・根の紡ぎ: 打ち消し1つ + 成長4→… VP12ぶん)', () => {

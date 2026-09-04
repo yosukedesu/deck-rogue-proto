@@ -548,6 +548,8 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
   if ((def.exhaustCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.exhaustCost}枚を消滅させる`)
   if (def.modes && def.modes.length > 0) {
+    // 共通部 (工房「効果の合体」で相手の効果が入る場所) はモードを問わず解決される = モードの前に出す (2026-09-05 Opusラン R)
+    if (def.effects.length > 0) lines.push(...effectItems(def.effects, ctx, def.type))
     def.modes.forEach((m, i) => lines.push(`選択${i + 1}: ${effectItems(m.effects, ctx).join('、')}`))
   } else {
     lines.push(...effectItems(def.effects, ctx, def.type))
@@ -5422,7 +5424,7 @@ function WorkshopScreen({
       <p className="hint">
         デッキの2枚を選んで合成する（同名2枚は「真・」強化版になる）。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
         タイプの違う2枚も可 — 結果は持続する側（置物＞リアクション＞呪文＞物理）になり、置物化は量÷3で毎ターン化する。
-        コストはVP査定からの逆算（素材コストの単純合算ではない）。特定の組み合わせは手書きレシピ⭐にヒットし、計算値より少し強い一品になる。
+        効果の合体＝2枚の効果を全部持つ札。コストは合計−1（最低1・上限5。0E素材は値引きにならない）。同名2枚は量を合算した「真・」化。特定の組み合わせは手書きレシピ⭐にヒットする。
       </p>
       {preview && (
         <div className="panel">

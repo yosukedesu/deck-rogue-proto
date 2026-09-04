@@ -170,7 +170,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   // 敵フェーズでは死ぬ効果 (全捨て・全回復で消える): リアクションでは落とす (提案5-2)
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
   // 置物では参照量が0で死ぬ効果 (打ち消しは窓が無い・倍化/放出は登場時に参照0): 落とす (提案5-3)
-  const DEAD_ON_PERMANENT = new Set(['negate', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
+  const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
 
   /** 素材1枚の効果を結果タイプへ変換する。置物化は同種を合算してから÷3 (切り捨て。0なら登場時に1回) (提案4) */
   const convertAll = (c: CardInstance): DeclarativeEffect[] => {
@@ -195,7 +195,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       const out: DeclarativeEffect[] = []
       for (const e of src) {
         if (REACTION_WINDOWS.has(e.trigger)) { out.push({ ...e }); continue }
-        if (PLAYCARD_ONLY.has(e.effect) || DIES_IN_WINDOW.has(e.effect)) continue
+        if (PLAYCARD_ONLY.has(e.effect) || DIES_IN_WINDOW.has(e.effect) || e.effect === 'growSelf') continue
         if (e.effect === 'gainBlock' || e.effect === 'gainIceBlock') out.push({ ...e, trigger: 'onAttackIncoming' } as DeclarativeEffect)
         else out.push({ ...e, trigger: primaryWindow } as DeclarativeEffect)
       }
@@ -267,8 +267,12 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
 
   // --- コスト: 合計−1 (最低1・上限5)。両方0Eなら0E。X同士はXのまま ---
   const costAsMaterial = (d: CardDef) => (d.xCost === true ? 3 : d.cost)
-  const rawSum = Math.min(5, Math.max(1, costAsMaterial(a.def) + costAsMaterial(b.def) - 1))
-  let cost = bothX ? 1 : a.def.cost === 0 && b.def.cost === 0 ? 0 : rawSum
+  // 0E素材は値引きにならない (2026-09-05 Opusラン R: 「一番安い札×一番強い札」が常に最善手＝0E札が万能クーポンになっていた)。
+  // −1 は両方が1E以上の時だけ。片方0Eなら高い方のコスト、両方0Eなら0E
+  const ca = costAsMaterial(a.def)
+  const cb = costAsMaterial(b.def)
+  const rawSum = ca === 0 || cb === 0 ? Math.max(ca, cb) : Math.min(5, Math.max(1, ca + cb - 1))
+  let cost = bothX ? 1 : rawSum
   if (resultType === 'reaction' && !bothX && cost > 2) {
     // リアクションのコスト上限2E: 切り下げた1Eにつき最大の量効果を−6 (=1E相当) して出力で払う (提案2)
     for (let cut = cost - 2; cut > 0; cut--) boostLargest(effects, -6)
@@ -297,9 +301,12 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const PERM_SUFFIX: Record<string, string> = { red: '炉', blue: '泉', white: '祭壇', black: '柩' }
   const suffix =
     resultType === 'permanent' ? (PERM_SUFFIX[a.def.color ?? ''] ?? '大樹') : resultType === 'reaction' ? '罠' : suffixOf(effects)
-  const wa = wordOf(a.def)
-  const wb = wordOf(b.def)
-  const stem = wa === wb ? `大${wa}` : `${wa}${wb}`
+  // 工房産を素材にした時は、その名前の語幹を引き継いで語を足す (2026-09-05 Opusラン R: 素材「角牙の嵐+」と結果「角牙の嵐」が同名になる衝突)
+  const stemOf = (d: CardDef): string =>
+    d.id.startsWith('fused_') || d.id.startsWith('fusion_') ? d.name.replace(/^真・/, '').replace(/\+$/, '').split('の')[0].slice(0, 3) : wordOf(d)
+  const wa = stemOf(a.def)
+  const wb = stemOf(b.def)
+  const stem = wa === wb ? `大${wa}` : `${wa}${wb}`.slice(0, 4)
   const name = sameName ? `真・${a.def.name}` : `${stem}の${suffix}`
   const ids = [a0.def.id, b0.def.id]
   const def: CardDef = {
