@@ -1345,6 +1345,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // target:'all' は最初の呼び出しで生存全体へ一括解決する (外側の敵ループの2体目以降は勢い0で no-op)
       const spent = state.player.momentum
       if (spent <= 0) return state
+      // 放出が空振りする (対象が既に倒れている=本体のヒットでオーバーキル) 時は勢いを消費しない
+      // (2026-09-04 Opusラン P: 勢い14でHP12の敵に撃つと本体22で撃破→放出28が発生せず勢いだけ0に消えた)
+      const anyTarget = effect.target === 'all' ? state.enemies.some((e) => e.hp > 0) : (state.enemies[enemyIndex]?.hp ?? 0) > 0
+      if (!anyTarget) return state
       const dmg = spent * (effect.amount ?? 0)
       let s: GameState = { ...state, player: { ...state.player, momentum: 0 } }
       s = emit(s, { type: 'MomentumDischarged', spent })

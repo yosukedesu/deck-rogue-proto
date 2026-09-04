@@ -471,15 +471,49 @@ function renderBattle(s: GameState, logFrom: number): string {
       // 素のダメージ札の実値注記 (2026-09-03 Opusラン L: 弱体1+成長5で巨象の突進が27になり「貫通のバグ」と誤読)。
       // 補正 (成長・勢い・弱体・急所・装甲・潜伏・因縁・敵ブロック) が1つでも掛かる時だけ、先頭のダメージ効果の敵ごとの実値を出す
       const plainDmg = c.def.xCost === true ? undefined : c.def.effects.find((e) => e.trigger === 'onPlay' && e.effect === 'dealDamage' && e.amount !== undefined)
+      // この札が自分で付ける勢い (先行する addMomentum/doubleMomentum) を数える (2026-09-04 Opusラン P: 踏み荒らし 表示16/実際19)
+      const momentumBefore = (idx: number): number => {
+        let m = p.momentum
+        for (let i = 0; i < idx; i++) {
+          const e = c.def.effects[i]
+          if (e.trigger !== 'onPlay') continue
+          if (e.effect === 'addMomentum') m += e.amount ?? 0
+          if (e.effect === 'doubleMomentum') m *= 2
+        }
+        return m
+      }
       const dmgNow = (() => {
         if (!plainDmg) return ''
-        const base = (plainDmg.amount ?? 0) + (plainDmg.growthMultiplier !== undefined ? p.growth * (plainDmg.growthMultiplier - 1) : 0)
+        const idx = c.def.effects.indexOf(plainDmg)
+        const mom = momentumBefore(idx)
+        const sm: GameState = mom === p.momentum ? s : { ...s, player: { ...s.player, momentum: mom } }
+        // 倍率 (成長×N・勢い×N) は実処理と同じく (N-1) 倍を基礎に足す (P: 猛進の角 表示17/実際20)
+        const base =
+          (plainDmg.amount ?? 0) +
+          (plainDmg.growthMultiplier !== undefined ? p.growth * (plainDmg.growthMultiplier - 1) : 0) +
+          (plainDmg.momentumMultiplier !== undefined ? mom * (plainDmg.momentumMultiplier - 1) : 0)
         const per = s.enemies
           // 粉砕を持つ札は自分の粉砕で敵ブロックが消えてからダメージが入る (2026-09-04 Opusラン M: 蔦の楔が常に0表示)
-          .map((en, ei) => ({ en, ei, b: damageBreakdown(s, ei, base, plainDmg.pierce === true || c.def.effects.some((e) => e.effect === 'shatterBlock')) }))
+          .map((en, ei) => ({ en, ei, b: damageBreakdown(sm, ei, base, plainDmg.pierce === true || c.def.effects.some((e) => e.effect === 'shatterBlock')) }))
           .filter((x) => x.b !== null && x.b!.steps.length > 1)
           .map((x) => `敵${x.ei}:${x.b!.hpLoss}(${x.b!.steps.slice(1).map((st) => st.label).join('・')})`)
-        return per.length > 0 ? ` ［実値: ${per.join(' / ')}${c.def.effects.filter((e) => e.effect === 'dealDamage').length > 1 ? '。先頭ヒット基準' : ''}］` : ''
+        // 放出分 (勢い×N・勢い加算は乗らない) を別立てで出す (P: 角の一突き 表示22/実際50)
+        const dis = c.def.effects.find((e) => e.trigger === 'onPlay' && e.effect === 'dischargeMomentumDamage')
+        let disNote = ''
+        if (dis) {
+          const dm = momentumBefore(c.def.effects.indexOf(dis))
+          const dd = dm * (dis.amount ?? 0)
+          if (dd > 0) {
+            const s0: GameState = { ...s, player: { ...s.player, momentum: 0 } }
+            const perD = s.enemies
+              .map((_en, ei) => ({ ei, b: damageBreakdown(s0, ei, dd, dis.pierce === true) }))
+              .filter((x) => x.b !== null)
+              .map((x) => `敵${x.ei}:${x.b!.hpLoss}`)
+            disNote = `［放出: 勢い${dm}×${dis.amount}=${dd}${dis.target === 'all' ? '(全体)' : ''} → ${perD.join(' / ')}。本体で倒すと放出は空振り=勢いは消費しない］`
+          }
+        }
+        const selfNote = mom !== p.momentum ? `(この札の勢い加算込み=勢い${mom})` : ''
+        return (per.length > 0 ? ` ［実値: ${per.join(' / ')}${selfNote}${c.def.effects.filter((e) => e.effect === 'dealDamage').length > 1 ? '。先頭ヒット基準' : ''}］` : '') + disNote
       })()
       L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}${dmgNow}`)
     }

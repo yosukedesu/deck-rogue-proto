@@ -22,6 +22,15 @@ describe('勢いの網 (緑)', () => {
     expect(s.eventLog.some((e) => e.type === 'MomentumDischarged' && e.spent === 4)).toBe(true)
   })
 
+  it('本体のヒットで倒した (放出が空振り) なら勢いは消費しない (2026-09-04 Opusラン P のオーバーキル蒸発の是正)', () => {
+    let s = withMomentum(withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_horn_thrust']), 14)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 12 })) }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_thrust', targetIndex: 0 })
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(0)
+    expect(s.player.momentum).toBe(14)
+    expect(s.eventLog.some((e) => e.type === 'MomentumDischarged')).toBe(false)
+  })
+
   it('勢い0で角の一突きを撃っても放出は起きない (8貫通だけ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_horn_thrust'])
     const hp0 = s.enemies[0].hp

@@ -292,11 +292,16 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
   switch (e.effect) {
     case 'dealDamage': {
       // X札の見積り (2026-09-03 Opus D: 成長23・X=4の森羅の大嵐が136出た。手札段階で実ダメが分からない)
+      // 倍率 (成長×N・勢い×N) は実処理と同じく (N-1) 倍を足す (2026-09-04 Opusラン P: 猛進の角 表示17/実際20)
+      const mult = ctx
+        ? (e.growthMultiplier !== undefined ? ctx.growth * (e.growthMultiplier - 1) : 0) +
+          (e.momentumMultiplier !== undefined ? ctx.momentum * (e.momentumMultiplier - 1) : 0)
+        : 0
       const xNow =
         e.xHits === true && ctx?.energy !== undefined
-          ? `［全部払うとX=${ctx.energy}: 計${((e.amount ?? 0) + atkBonus) * ctx.energy}${aoe ? '/体' : ''}］`
+          ? `［全部払うとX=${ctx.energy}: 計${((e.amount ?? 0) + atkBonus + mult) * ctx.energy}${aoe ? '/体' : ''}］`
           : ''
-      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${e.growthMultiplier !== undefined ? `（成長が×${e.growthMultiplier}で乗る）` : ''}${e.momentumMultiplier !== undefined ? `（勢いが×${e.momentumMultiplier}で乗る）` : ''}${xHitsSuffix(e)}${atkBreak}${xNow}`
+      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus + mult}ダメージ${pierce}${e.growthMultiplier !== undefined ? `（成長が×${e.growthMultiplier}で乗る）` : ''}${e.momentumMultiplier !== undefined ? `（勢いが×${e.momentumMultiplier}で乗る）` : ''}${xHitsSuffix(e)}${atkBreak}${xNow}`
     }
     case 'dealDamagePerEnergyMax':
       return ctx
@@ -512,13 +517,19 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
 function effectItems(effects: readonly DeclarativeEffect[], ctx?: EffectCtx, holderType?: string): string[] {
   const lines: string[] = []
   const counts: number[] = []
+  // この札が自分で付ける勢い (addMomentum/doubleMomentum) は後続の効果の実値に乗る (2026-09-04 Opusラン P: 踏み荒らし 表示16/実際19)
+  let runCtx = ctx
   for (const e of effects) {
-    const text = renderEffectItem(e, ctx, holderType)
+    const text = renderEffectItem(e, runCtx, holderType)
     if (lines.length > 0 && lines[lines.length - 1] === text) {
       counts[counts.length - 1] += 1
     } else {
       lines.push(text)
       counts.push(1)
+    }
+    if (runCtx && e.trigger === 'onPlay') {
+      if (e.effect === 'addMomentum') runCtx = { ...runCtx, momentum: runCtx.momentum + (e.amount ?? 0) }
+      if (e.effect === 'doubleMomentum') runCtx = { ...runCtx, momentum: runCtx.momentum * 2 }
     }
   }
   return lines.map((l, i) => (counts[i] > 1 ? `${l} ×${counts[i]}` : l))
@@ -1313,6 +1324,18 @@ function SetupScreen({
 /** ホバー内訳の対象になる「基礎値=amountのダメージ効果」 */
 const TIP_DAMAGE_EFFECTS = new Set(['dealDamage', 'dealDamageDrain', 'dealDamageCleave', 'dealDamageExecute', 'dealDamageRandom'])
 
+/** この札の idx 番目の効果が解決される時点の勢い (先行する addMomentum/doubleMomentum を数える) */
+function momentumBeforeEffect(effects: readonly DeclarativeEffect[], idx: number, current: number): number {
+  let m = current
+  for (let i = 0; i < idx; i++) {
+    const e = effects[i]
+    if (e.trigger !== 'onPlay') continue
+    if (e.effect === 'addMomentum') m += e.amount ?? 0
+    if (e.effect === 'doubleMomentum') m *= 2
+  }
+  return m
+}
+
 /**
  * カードホバー時のダメージ内訳 (2026-09-01 ユーザー要望)。engineの damageBreakdown (実処理と同手順の
  * 純関数) を生存敵ごとに評価する。多段カード (効果の繰り返し) は各行を独立に見積もる =
@@ -1336,18 +1359,41 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
       })()
       // 粉砕を持つ札は自分の粉砕で敵ブロックが消えてからダメージが入る (2026-09-04 Opusラン M: 蔦の楔が常に0表示)
       const ignoreBlock = ef.pierce === true || c.def.effects.some((x) => x.effect === 'shatterBlock')
-      const bd = damageBreakdown(s, i, ef.amount!, ignoreBlock)
+      // 倍率 (成長×N・勢い×N) と自札の勢い加算を実処理と同じ手順で通す (2026-09-04 Opusラン P の表示の嘘2件)
+      const mom = momentumBeforeEffect(c.def.effects, c.def.effects.indexOf(ef), s.player.momentum)
+      const sm: GameState = mom === s.player.momentum ? s : { ...s, player: { ...s.player, momentum: mom } }
+      const base =
+        ef.amount! +
+        (ef.growthMultiplier !== undefined ? s.player.growth * (ef.growthMultiplier - 1) : 0) +
+        (ef.momentumMultiplier !== undefined ? mom * (ef.momentumMultiplier - 1) : 0)
+      const bd = damageBreakdown(sm, i, base, ignoreBlock)
       if (bd === null) continue
       // ラベルと走り値は = で区切る (「成長+1」+値6 が「成長+16」に見えた崩れの修正 2026-09-01)
       const chain = bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')
       if (ef.effect === 'dealDamageRandom' && typeof ef.amountMax === 'number') {
-        const bdMax = damageBreakdown(s, i, ef.amountMax, ignoreBlock)
+        const bdMax = damageBreakdown(sm, i, ef.amountMax, ignoreBlock)
         lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}〜${bdMax?.hpLoss ?? bd.hpLoss}（ロール幅）`)
       } else {
         lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}`)
       }
     }
   })
+  // 放出 (勢い×N・勢い加算は乗らない) は別立てで見積もる (2026-09-04 Opusラン P: 角の一突き 表示22/実際50)
+  for (const dis of c.def.effects.filter((e) => e.trigger === 'onPlay' && e.effect === 'dischargeMomentumDamage')) {
+    const dm = momentumBeforeEffect(c.def.effects, c.def.effects.indexOf(dis), s.player.momentum)
+    const dd = dm * (dis.amount ?? 0)
+    if (dd <= 0) {
+      lines.push('放出: 勢い0なので発生しない（勢いも消費しない）')
+      continue
+    }
+    const s0: GameState = { ...s, player: { ...s.player, momentum: 0 } }
+    for (const [enemy, i] of alive) {
+      const bd = damageBreakdown(s0, i, dd, dis.pierce === true)
+      if (bd === null) continue
+      const name = (() => { try { return getEnemyDef(enemy.enemyId).name } catch { return enemy.enemyId } })()
+      lines.push(`放出 勢い${dm}×${dis.amount}=${dd}${dis.target === 'all' ? '（全体）' : ''}${alive.length > 1 ? ` ${name}` : ''}: ${bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')} ⇒ HP減 ${bd.hpLoss}（勢い加算は乗らない。本体で倒すと空振り＝勢いは消費しない）`)
+    }
+  }
   if (dmgEffects.length > 1) lines.push('※多段は各行独立の見積り（急所・敵ブロックの消費は先頭ヒット基準）')
   return lines
 }
