@@ -2163,5 +2163,52 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "run_weak_check",
+    "name": "威圧検証（幕2開始用）",
+    "description": "2026-09-04 威圧Weak化の検証チェックポイント: 中立スターター10枚+絡め捕る根×2+二連の蔦打ち+木漏れ日+牙の一撃",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 3
+      },
+      {
+        "cardId": "green_basic_bash",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 3
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_vine_wedge",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_snare_root",
+        "count": 2
+      },
+      {
+        "cardId": "green_double_lash",
+        "count": 1
+      },
+      {
+        "cardId": "green_dappled_light",
+        "count": 1
+      },
+      {
+        "cardId": "green_fang",
+        "count": 1
+      }
+    ]
   }
 ]

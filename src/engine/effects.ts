@@ -1462,9 +1462,10 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
   if (c) {
     // 参照シナジー (緑 2026-09-03 本家6型): 意図・急所・守り成功・とどめ・完全に凌いだ
     const e = enemyIndex !== undefined ? state.enemies[enemyIndex] : undefined
-    if (c.enemyIntent !== undefined) {
+    if (c.enemyIntent !== undefined || c.enemyIntentNot !== undefined) {
       const kind = enemyIndex !== undefined ? effectiveIntent(state, enemyIndex)?.kind : undefined
-      if (kind !== c.enemyIntent) return false
+      if (c.enemyIntent !== undefined && kind !== c.enemyIntent) return false
+      if (c.enemyIntentNot !== undefined && (kind === undefined || kind === c.enemyIntentNot)) return false
     }
     if (c.enemyExposed === true) {
       const exposed = enemyIndex !== undefined ? (state.resolvingExposedAtStart?.[enemyIndex] ?? e?.exposed ?? 0) : 0

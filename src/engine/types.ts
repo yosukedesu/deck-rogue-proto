@@ -280,6 +280,8 @@ export interface EffectCondition {
   readonly blaze?: boolean
   /** 対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness) */
   readonly enemyIntent?: EnemyActionKind
+  /** 対象の敵の意図がこの種別**以外**なら (2026-09-04 見切り撃ちの反転: 敵はだいたい攻撃するので「攻撃以外=隙を突く」が稀な条件になる) */
+  readonly enemyIntentNot?: EnemyActionKind
   /** 対象の敵が急所を持っていれば (カードのプレイ開始時点で判定=同じカードの前のヒットが急所を消費しても成立。双牙の蔦=本家 Dismantle) */
   readonly enemyExposed?: boolean
   /** 直前の敵フェーズで攻撃を受け、HP損失が0だったら (棘の返礼=本家 Flame Barrier/Rage 系の「守り成功」参照) */

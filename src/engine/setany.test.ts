@@ -59,7 +59,7 @@ describe('攻撃札の伏せ: 1Eで伏せ、被攻撃後に印字コストを払
     expect(types(s.eventLog)).not.toContain('ReactionTriggered')
     expect(types(s.eventLog)).toContain('ReactionUnaffordable') // 理由がログに残る
   })
-  it('通常札の伏せ発動は onReactionFired を誘発しない (狩人の眼光の換金は専用リアクションの特権)', () => {
+  it('通常札の伏せ発動は onReactionFired を誘発しない (2026-09-04 以降の狩人の眼光は伏せるたび成長+1なので、伏せ時の+1は許容し発動で増えないことを見る)', () => {
     let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 24), ['green_perm_hunters_gaze', 'green_strike']))
     s = { ...s, player: { ...s.player, energy: 5 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_hunters_gaze' })

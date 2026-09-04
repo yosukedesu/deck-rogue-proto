@@ -3,10 +3,16 @@
 // トランプル/ビッグマナの網 (エンジン→倍加→刈り取り→換金) 8枚と新効果2つを固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
-import { getCardDef } from './content.ts'
+import { applyDebugOverrides, getCardDef } from './content.ts'
 import { effectiveCost } from './effects.ts'
 import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
+
+// 狩人の眼光は 2026-09-04 に「伏せるたび成長+1」へ作り直したため、読み勝ちの換金 (onReactionFired) の機構検証には合成の置物を使う
+applyDebugOverrides({
+  cards: [{ id: 'test_reaction_payoff', name: 'テスト眼光', cost: 1, type: 'permanent', color: 'green',
+    effects: [{ trigger: 'onReactionFired', effect: 'addGrowth', amount: 2 }] }],
+})
 
 function withEnergy(s: GameState, energy: number): GameState {
   return { ...s, player: { ...s.player, energy } }
@@ -219,7 +225,7 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
         ...s.player,
         setCards: [{ uid: 'set0', def: getCardDef(setCardId) }],
         permanents: withGaze
-          ? [...s.player.permanents, { uid: 'perm0', def: getCardDef('green_perm_hunters_gaze') }]
+          ? [...s.player.permanents, { uid: 'perm0', def: getCardDef('test_reaction_payoff') }]
           : s.player.permanents,
       },
     }
@@ -242,7 +248,7 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
       player: {
         ...s.player,
         setCards: [{ uid: 'set0', def: getCardDef('green_reaction_thorns') }],
-        permanents: [...s.player.permanents, { uid: 'perm0', def: getCardDef('green_perm_hunters_gaze') }],
+        permanents: [...s.player.permanents, { uid: 'perm0', def: getCardDef('test_reaction_payoff') }],
       },
     }
     s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 } } : e)) }
@@ -353,16 +359,25 @@ describe('赤からの移管: 被弾の換金と粉砕', () => {
 })
 
 describe('参照シナジー (2026-09-03 本家6型。docs/green-synergy-proposal.md)', () => {
-  it('見切り撃ち: 対象の意図が攻撃なら+1ドロー+成長+1、防御なら5貫通だけ', () => {
-    let s = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), attackIntent(8))
-    const hand0 = s.player.hand.length
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
-    expect(s.player.growth).toBe(1)
-    expect(s.player.hand.length).toBe(hand0) // 1枚減って1枚引く
+  it('見切り撃ち (2026-09-04 反転): 対象の意図が攻撃以外なら+1ドロー+成長+1、攻撃なら5貫通だけ', () => {
     let d = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), defendIntent(5))
+    const hand0 = d.player.hand.length
     d = applyCommand(d, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
-    expect(d.player.growth).toBe(0)
-    expect(d.player.hand.length).toBe(0)
+    expect(d.player.growth).toBe(1)
+    expect(d.player.hand.length).toBe(hand0) // 1枚減って1枚引く
+    let s = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), attackIntent(8))
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
+    expect(s.player.growth).toBe(0)
+    expect(s.player.hand.length).toBe(0)
+  })
+  it('狩人の眼光 (2026-09-04): 伏せるたび成長+1 (伏せる理由を作る)。大牙・深緑の刻はアンコモン', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 1), ['green_perm_hunters_gaze', 'green_reaction_thorns'])
+    s = { ...s, player: { ...s.player, energy: 5 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_hunters_gaze' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_green_reaction_thorns' })
+    expect(s.player.growth).toBe(1)
+    expect(getCardDef('green_harvest_strike').rarity).toBe('uncommon')
+    expect(getCardDef('green_verdant_hour').rarity).toBe('uncommon')
   })
   it('年輪: 手札の他の札がすべて物理なら0E (本家 Clash)', () => {
     const phys = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_growth_ring', 'green_strike'])

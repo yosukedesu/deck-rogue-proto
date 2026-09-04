@@ -244,6 +244,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.blaze === true) parts.push(`🔥猛り火(延焼合計${BLAZE_THRESHOLD}以上)`)
   if (c.minGrowth !== undefined) parts.push(`🌱成長${c.minGrowth}以上`)
   if (c.enemyIntent !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntent] ?? c.enemyIntent}`)
+  if (c.enemyIntentNot !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntentNot] ?? c.enemyIntentNot}以外`)
   if (c.enemyExposed === true) parts.push('🎯対象が急所持ち')
   if (c.perfectBlockLastPhase === true) parts.push('🛡直前の敵フェーズを完全に凌いだ')
   if (c.targetDead === true) parts.push('💀とどめ')
@@ -3319,6 +3320,7 @@ const COND_JA: Record<string, string> = {
   minDamageTaken: '被ダメが値以上',
   minGrowth: '成長が値以上',
   enemyIntent: '対象の意図が値の種別',
+  enemyIntentNot: '対象の意図が値の種別以外',
   enemyExposed: '対象が急所持ち',
   perfectBlockLastPhase: '直前の敵フェーズを完全に凌いだ',
   targetDead: 'とどめ',

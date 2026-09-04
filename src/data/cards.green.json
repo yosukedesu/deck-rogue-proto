@@ -1101,9 +1101,9 @@
     "rarity": "uncommon",
     "effects": [
       {
-        "trigger": "onReactionFired",
+        "trigger": "onCardSet",
         "effect": "addGrowth",
-        "amount": 2
+        "amount": 1
       }
     ]
   },
@@ -1292,7 +1292,7 @@
     "name": "大牙",
     "cost": 2,
     "type": "physical",
-    "rarity": "common",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -1358,7 +1358,7 @@
         "effect": "drawCards",
         "amount": 1,
         "condition": {
-          "enemyIntent": "attack"
+          "enemyIntentNot": "attack"
         }
       },
       {
@@ -1366,7 +1366,7 @@
         "effect": "addGrowth",
         "amount": 1,
         "condition": {
-          "enemyIntent": "attack"
+          "enemyIntentNot": "attack"
         }
       }
     ]
@@ -1682,7 +1682,7 @@
     "name": "深緑の刻",
     "cost": 1,
     "type": "physical",
-    "rarity": "common",
+    "rarity": "uncommon",
     "axis": [
       "growth"
     ],
