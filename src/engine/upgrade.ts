@@ -160,11 +160,17 @@ function applyV2(effects: readonly DeclarativeEffect[], def: CardDef): readonly 
       ? { ...e, amount: Math.ceil(e.amount * 1.5), ...(e.amountMax !== undefined ? { amountMax: Math.ceil(e.amountMax * 1.5) } : {}) }
       : e
   if (tier === 'mult') {
+    // ×1 の参照を含む札は先頭の参照だけ+1 (×1→×2 は+100%。幹の構え=上限×1ダメ+×1ブロックの両方を倍にすると
+    // 1Eで200%になる。本家 Body Slam+ が ×2 でなくコスト0なのと同じく「倍にしない」側で揃える)
+    const onlyFirst = effects.some((e) => MULT_EFFECTS.has(e.effect) && e.amount === 1)
+    let done = false
     return effects.map((e) => {
+      if (onlyFirst && done) return e
       let n = e
       if (MULT_EFFECTS.has(e.effect) && e.amount !== undefined) n = { ...n, amount: e.amount + 1 }
       if (e.growthMultiplier !== undefined) n = { ...n, growthMultiplier: e.growthMultiplier + 1 }
       if (e.momentumMultiplier !== undefined) n = { ...n, momentumMultiplier: e.momentumMultiplier + 1 }
+      if (n !== e) done = true
       return n
     })
   }

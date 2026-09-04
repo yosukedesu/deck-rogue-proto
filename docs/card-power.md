@@ -1732,7 +1732,7 @@ retrieveFromDiscard 4.0／searchDeck 4.5／addCopyToDiscard 2.0／growSelf 量×
 
 StS2 507枚の OnUpgrade 集計（量+1が最多185・ダメ102〔帯ごとに+2/+3/+4/+6/+10＝中央値+30%〕・コスト-1はパワー/スキル52・ブロック+3が52・キーワード41・参照札は倍率そのもの）。
 うちは「量+50%が先頭」だったため、アイデンティティが参照・単位側にある札は小さな素の数字だけが伸びていた（突進の助走+=3×2で勢い据え置き、大牙+=12で成長×3据え置き等）。
-**新順位（`engine/upgrade.ts` V2・id が green_ の札）**: ①参照倍率+1（×N→×N+1。上限参照・放出・攻撃数・成長/勢い倍率）→ ②単位+1（ドロー・成長・霊気・詠唱・一時マナ・急所・威圧・召喚・手札強化。勢いは+2）と量≥5の+50%（本家「ダメ+量」）→ ③しきい値-1（成長N以上・勢いN以上・勢い条件の0E）と量+50% → ④量+50% → ⑤コスト-1（上限ランプは従来どおり先頭でコスト-1＝複利安全弁）。選択式は各モードを独立に判定。正味エナジー増の消滅自動付与は不変。
+**新順位（`engine/upgrade.ts` V2・id が green_ の札）**: ①参照倍率+1（×N→×N+1。上限参照・放出・攻撃数・成長/勢い倍率。×1を含む札は先頭の参照だけ＝×1→×2の+100%を1つに限る）→ ②単位+1（ドロー・成長・霊気・詠唱・一時マナ・急所・威圧・召喚・手札強化。勢いは+2）と量≥5の+50%（本家「ダメ+量」）→ ③しきい値-1（成長N以上・勢いN以上・勢い条件の0E）と量+50% → ④量+50% → ⑤コスト-1（上限ランプは従来どおり先頭でコスト-1＝複利安全弁）。選択式は各モードを独立に判定。正味エナジー増の消滅自動付与は不変。
 
 ### 緑95種の鍛え結果（ティア別）
 
@@ -1815,18 +1815,18 @@ StS2 507枚の OnUpgrade 集計（量+1が最多185・ダメ102〔帯ごとに+2
 - 開花の蔦(2E): dischargeGrowth 2→3
 - 幹撃(2E): dealDamagePerEnergyMax 4→5
 - 若幹の一撃(1E): dealDamagePerEnergyMax 2→3
-- 幹の構え(1E): dealDamagePerEnergyMax 1→2 / gainBlockPerEnergyMax 1→2
+- 幹の構え(1E): dealDamagePerEnergyMax 1→2
 - 大幹の構え(3E): dealDamagePerEnergyMax 3→4 / gainBlockPerEnergyMax 3→4
 - 木陰の守り(1E): gainBlockPerEnergyMax 2→3
 - 若枝の盾張り(1E): dischargeGrowthBlock 2→3
-- 大牙(2E): (変化なし)
+- 大牙(2E): 成長×3→×4
 - 巡りの収穫(2E): dischargeGrowth 3→4
 - 大収穫の儀(3E): dischargeGrowth 6→7
 - 大地の唸り(2E): dealDamagePerEnergyMax 2→3
 - 角の一突き(2E): dischargeMomentumDamage 2→3
 - 嵐の角(2E): dischargeMomentumDamage 1→2
 - 風の壁(1E): dischargeMomentumBlock 1→2
-- 猛進の角(3E): (変化なし)
+- 猛進の角(3E): 勢い×2→×3
 
 **cost (7)**
 - 芽吹き(1E): コスト1→0
@@ -1838,5 +1838,5 @@ StS2 507枚の OnUpgrade 集計（量+1が最多185・ダメ102〔帯ごとに+2
 - 大樹の岐路(3E): コスト3→2
 
 **threshold (2)**
-- 深緑の刻(1E): dealDamage 6→9 / dealDamage 6→9
-- 追い風(1E): dealDamage 6→9
+- 深緑の刻(1E): dealDamage 6→9 / dealDamage 6→9 / 成長しきい値3→2
+- 追い風(1E): dealDamage 6→9 / 0E条件 勢い5→4
