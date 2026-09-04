@@ -207,12 +207,13 @@ describe('挑発 (嘲る道化)', () => {
     expect(s.enemies[0].intent!.shownMin).toBeGreaterThanOrEqual(15)
   })
 
-  it('伏せがあると別の行動になる (2026-09-03 賭け型化: 大振りは無いが用心の一撃12-16+脆弱1で弱腰ではない)', () => {
+  it('伏せがあると別の行動になる (2026-09-03 賭け型化。2026-09-04 嘲り防御を撤去=弱腰の取りこぼし是正・用心の一撃13-17)', () => {
     const def = getEnemyDef('enemy_joker')
     expect(def.movesVsSet).toBeDefined()
     expect(def.movesVsSet!.some((m) => m.id === 'wild_swing')).toBe(false) // 大振り(15-19+脆弱2)は無い
     const jab = def.movesVsSet!.find((m) => m.id === 'cautious_jab')!
-    expect([jab.min, jab.max]).toEqual([12, 16])
+    expect([jab.min, jab.max]).toEqual([13, 17])
+    expect(def.movesVsSet!.some((m) => m.kind === 'defend')).toBe(false) // 嘲り防御=1Eで大技を消すスイッチだった (Opusラン M)
     expect(jab.inflict).toEqual({ status: 'vulnerable', amount: 1 }) // 旧7-10=「1Eで押せるスイッチ」の是正
   })
 
@@ -988,3 +989,11 @@ describe('代替ボス3体 (2026-09-02 本家同等バリエーション: TheKin
 
 
 
+
+describe('鼓吹きコボルトの伏せ分岐 (2026-09-04 弱腰型の取りこぼし是正)', () => {
+  it('太鼓は伏せを見ると応援でなく殴りに来る (7-10・見切り無視) = 応援を止める代わりに1発受ける賭け', () => {
+    const def = getEnemyDef('enemy_drummer')
+    const drum = def.moves.find((m) => m.id === 'war_drum')!
+    expect(drum.setAlt).toMatchObject({ kind: 'attack', min: 7, max: 10, ignoreFreshness: true })
+  })
+})

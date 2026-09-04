@@ -1697,7 +1697,7 @@
         "effect": "dealDamage",
         "amount": 6,
         "condition": {
-          "minGrowth": 5
+          "minGrowth": 3
         }
       }
     ]

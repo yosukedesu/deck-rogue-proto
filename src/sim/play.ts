@@ -455,7 +455,8 @@ function renderBattle(s: GameState, logFrom: number): string {
         if (!plainDmg) return ''
         const base = (plainDmg.amount ?? 0) + (plainDmg.growthMultiplier !== undefined ? p.growth * (plainDmg.growthMultiplier - 1) : 0)
         const per = s.enemies
-          .map((en, ei) => ({ en, ei, b: damageBreakdown(s, ei, base, plainDmg.pierce === true) }))
+          // 粉砕を持つ札は自分の粉砕で敵ブロックが消えてからダメージが入る (2026-09-04 Opusラン M: 蔦の楔が常に0表示)
+          .map((en, ei) => ({ en, ei, b: damageBreakdown(s, ei, base, plainDmg.pierce === true || c.def.effects.some((e) => e.effect === 'shatterBlock')) }))
           .filter((x) => x.b !== null && x.b!.steps.length > 1)
           .map((x) => `敵${x.ei}:${x.b!.hpLoss}(${x.b!.steps.slice(1).map((st) => st.label).join('・')})`)
         return per.length > 0 ? ` ［実値: ${per.join(' / ')}${c.def.effects.filter((e) => e.effect === 'dealDamage').length > 1 ? '。先頭ヒット基準' : ''}］` : ''

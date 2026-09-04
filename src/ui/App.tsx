@@ -1326,12 +1326,14 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
           return enemy.enemyId
         }
       })()
-      const bd = damageBreakdown(s, i, ef.amount!, ef.pierce === true)
+      // 粉砕を持つ札は自分の粉砕で敵ブロックが消えてからダメージが入る (2026-09-04 Opusラン M: 蔦の楔が常に0表示)
+      const ignoreBlock = ef.pierce === true || c.def.effects.some((x) => x.effect === 'shatterBlock')
+      const bd = damageBreakdown(s, i, ef.amount!, ignoreBlock)
       if (bd === null) continue
       // ラベルと走り値は = で区切る (「成長+1」+値6 が「成長+16」に見えた崩れの修正 2026-09-01)
       const chain = bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')
       if (ef.effect === 'dealDamageRandom' && typeof ef.amountMax === 'number') {
-        const bdMax = damageBreakdown(s, i, ef.amountMax, ef.pierce === true)
+        const bdMax = damageBreakdown(s, i, ef.amountMax, ignoreBlock)
         lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}〜${bdMax?.hpLoss ?? bd.hpLoss}（ロール幅）`)
       } else {
         lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}`)
