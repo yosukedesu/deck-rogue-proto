@@ -476,6 +476,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}⚔️ ${e.target === 'all' ? '敵全体に' : ''}勢い×${e.amount}ダメージを与え、勢いを全て失う${e.pierce === true ? '（貫通）' : ''}${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 0)}]` : ''}`
     case 'dischargeMomentumVolley':
       return `${trigger}⚔️ 勢い×${e.amount ?? 1}ダメージを${e.volleyHits ?? 3}回与え、勢いを全て失う${e.pierce === true ? '（貫通）' : ''}${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 1)}×${e.volleyHits ?? 3}]` : ''}`
+    case 'momentumCarryHalf':
+      return 'この置物がある間、ターン終了時に勢いの半分（切り捨て）を次のターンへ持ち越す'
     case 'dischargeMomentumGrowth':
       return `${trigger}🌱 勢いを全て失い、その1/${e.amount ?? 2}（切り上げ）を成長に変える${ctx && ctx.momentum > 0 ? ` [現在 成長+${Math.ceil(ctx.momentum / Math.max(1, e.amount ?? 2))}]` : ''}`
     case 'dealDamageCleave':
@@ -3357,7 +3359,7 @@ const EFFECT_JA: Record<string, string> = {
   gainEnergy: '一時マナ+N', gainEnergyMax: 'エナジー上限+N', discountNext: '次のカード-N',
   addGrowth: '成長+N', doubleGrowth: '成長2倍', dischargeGrowth: '成長放出(×Nダメ全消費)', dischargeGrowthBlock: '成長×Nブロック(全消費)',
   addMomentum: '勢い+N', doubleMomentum: '勢い2倍', dischargeMomentumBlock: '勢い×Nブロック(全消費)', dischargeMomentumBurn: '勢い×N延焼(全消費)',
-  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)',
+  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',

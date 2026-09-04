@@ -176,8 +176,8 @@ describe('レリック効果', () => {
   })
 
   it('在庫は37個・IDは一意 (第二弾拡充 2026-08-29・ボスレリック 2026-09-03)', () => {
-    expect(allRelics).toHaveLength(37) // 2026-09-03 ボスレリック+4 (王冠の欠片・呪いの鍵・賢者の石・鎖の首輪) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(37)
+    expect(allRelics).toHaveLength(36) // 2026-09-05 大工の道具を撤去 (1幕1回・100Gの下で死に枠) // 2026-09-03 ボスレリック+4 (王冠の欠片・呪いの鍵・賢者の石・鎖の首輪) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(36)
   })
 })
 
@@ -449,14 +449,17 @@ describe('古根の杯=ボスレリック化 (2026-09-03 本家 Coffee Dripper �
   })
 })
 
+const allRelicsHas = (id: string) => allRelics.some((r) => r.id === id)
+
 describe('在庫拡充 第1波 (2026-09-03 docs/relic-redesign-proposal.md §3-3。既存の仕組みで作れる15個)', () => {
-  it('ショップ系: 会員証=半額・砥石の欠片=鍛える-25・除去の鑿=逓増なし・大工の道具=合成-50', () => {
+  it('ショップ系: 会員証=半額・砥石の欠片=鍛える-25・除去の鑿=逓増なし (大工の道具は2026-09-05 撤去: 1幕1回・100Gの下で死に枠)', () => {
     const base = createRun(3, 'set-confirm')
     expect(shopRemovalPrice({ ...base, relics: ['relic_membership_card'] })).toBe(25)
     expect(shopUpgradePrice({ ...base, relics: ['relic_membership_card'] })).toBe(50)
     expect(shopUpgradePrice({ ...base, relics: ['relic_whetstone_chip'] })).toBe(75)
     expect(shopRemovalPrice({ ...base, relics: ['relic_removal_chisel'], removalCount: 2 })).toBe(50) // 逓増なし (2026-09-03 +25化に伴い作り直し)
-    expect(workshopFusePrice({ ...base, relics: ['relic_carpenter_tools'] })).toBe(50)
+    expect(workshopFusePrice(base)).toBe(100)
+    expect(allRelicsHas('relic_carpenter_tools')).toBe(false)
   })
   it('薬研: 実際に休んだ時だけ最大HP+2 (古根の杯で休めない時は増えない)', () => {
     const run = { ...intoCampfire({ ...createRun(11, 'set-confirm'), relics: ['relic_mortar'] }), hp: 40 }

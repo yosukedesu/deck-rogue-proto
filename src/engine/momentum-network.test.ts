@@ -102,3 +102,30 @@ describe('勢いの網 (緑)', () => {
     expect(s.player.discardPile.some((c) => c.def.id === 'green_sprint')).toBe(true)
   })
 })
+
+describe('緑レア+3 (2026-09-05 ユーザー裁定「レアを増やす（各軸+1）」: 方針定義札)', () => {
+  it('疾風の王: ターン終了時に勢いの半分を持ち越し、毎ターン開始時に勢い+1', () => {
+    let s = withMomentum(withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_perm_gale_king']), 0)
+    s = { ...s, player: { ...s.player, energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_gale_king' })
+    s = { ...s, player: { ...s.player, momentum: 7 } }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.momentum).toBe(3 + 1) // floor(7/2)=3 持ち越し + 開始時+1
+  })
+  it('棘葉の大樹: 成長を得るたび敵全体に2ダメ', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_perm_thorn_canopy', 'green_growth_ring'])
+    s = { ...s, player: { ...s.player, energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_thorn_canopy' })
+    const hp0 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_growth_ring' })
+    expect(hp0 - s.enemies[0].hp).toBe(2 + 2) // 基礎2 + 直前に得た成長2 (成長は与ダメ全てに乗る)
+  })
+  it('根源の泉: 次のターン開始時から一時マナ+1 (上限は増えない)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_perm_root_spring'])
+    s = { ...s, player: { ...s.player, energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_root_spring' })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.energyMax).toBe(3)
+    expect(s.player.energy).toBe(4)
+  })
+})

@@ -1285,11 +1285,13 @@ export function endTurn(state: GameState): GameState {
   let s = emit(state, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
   // 弱体・虚弱もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
+  // 疾風の王 (緑レア置物 2026-09-05): 勢いの半分 (切り捨て) を次のターンへ持ち越す = 勢いを「溶ける雪だるま」にする方針定義札
+  const carryHalf = s.player.permanents.some((p) => p.def.effects.some((e) => e.effect === 'momentumCarryHalf'))
   s = {
     ...s,
     player: {
       ...s.player,
-      momentum: 0,
+      momentum: carryHalf ? Math.floor(s.player.momentum / 2) : 0,
       spellEchoes: 0,
       weak: Math.max(0, s.player.weak - 1),
       frail: Math.max(0, s.player.frail - 1),

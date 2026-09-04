@@ -65,7 +65,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
-    dischargeAether: `${all}霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeGrowthBlock: `成長×${a}ブロック(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`, dischargeMomentumDamage: `${all}勢い×${a}ダメ(全消費)${e.pierce === true ? '(貫通)' : ''}`, dischargeMomentumGrowth: `勢いを全て失い1/${a}(切り上げ)を成長に`, dischargeMomentumVolley: `勢い×${a}ダメを${e.volleyHits ?? 3}回(全消費)${e.pierce === true ? '(貫通)' : ''}`,
+    dischargeAether: `${all}霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeGrowthBlock: `成長×${a}ブロック(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`, dischargeMomentumDamage: `${all}勢い×${a}ダメ(全消費)${e.pierce === true ? '(貫通)' : ''}`, dischargeMomentumGrowth: `勢いを全て失い1/${a}(切り上げ)を成長に`, dischargeMomentumVolley: `勢い×${a}ダメを${e.volleyHits ?? 3}回(全消費)${e.pierce === true ? '(貫通)' : ''}`, momentumCarryHalf: 'ターン終了時に勢いの半分を持ち越す(常在)',
     applyBurn: `${all}延焼+${a}`, shatterBlock: '敵ブロック全破壊', shatterBlockConvert: '敵ブロック全破壊+破壊値ダメ',
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,

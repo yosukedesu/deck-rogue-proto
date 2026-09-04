@@ -374,16 +374,6 @@
     "actMax": 2
   },
   {
-    "id": "relic_carpenter_tools",
-    "name": "大工の道具",
-    "sprite": "🧰",
-    "description": "工房の合成が50G安くなる",
-    "rarity": "uncommon",
-    "bonus": {
-      "fusionDiscount": 50
-    }
-  },
-  {
     "id": "relic_great_tree_heart",
     "name": "大樹の心",
     "sprite": "🌳",

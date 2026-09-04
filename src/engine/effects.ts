@@ -1384,6 +1384,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       }
       return s
     }
+    case 'momentumCarryHalf':
+      return state // 常在の印。ターン終了時の勢いリセット (combat.ts) が置物の有無を見る
     case 'dischargeMomentumGrowth': {
       // 根付く勢い (緑 2026-09-04): 勢いを全て失い、その 1/amount (切り上げ) を成長に変える = 刹那の資源を永続へ還元 (グルールの橋)
       const spent = state.player.momentum

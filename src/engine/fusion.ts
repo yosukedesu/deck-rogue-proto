@@ -170,7 +170,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   // 敵フェーズでは死ぬ効果 (全捨て・全回復で消える): リアクションでは落とす (提案5-2)
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
   // 置物では参照量が0で死ぬ効果 (打ち消しは窓が無い・倍化/放出は登場時に参照0): 落とす (提案5-3)
-  const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
+  const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
 
   /** 素材1枚の効果を結果タイプへ変換する。置物化は同種を合算してから÷3 (切り捨て。0なら登場時に1回) (提案4) */
   const convertAll = (c: CardInstance): DeclarativeEffect[] => {

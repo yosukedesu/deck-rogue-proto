@@ -198,7 +198,7 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
       const rare = pool.filter((c) => c.rarity === 'rare').length
       // レア = デッキの方針を一枚で定義する札。全体の1〜2割に収める
       expect(rare / pool.length, `${color} のレア比率`).toBeGreaterThanOrEqual(0.1)
-      expect(rare / pool.length, `${color} のレア比率`).toBeLessThanOrEqual(0.22)
+      expect(rare / pool.length, `${color} のレア比率`).toBeLessThanOrEqual(0.25) // 2026-09-05 緑レア+3 (各軸の方針定義札。本家StS2は31%)
     }
   })
 

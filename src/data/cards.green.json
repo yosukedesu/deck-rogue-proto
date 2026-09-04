@@ -1731,5 +1731,61 @@
         "pierce": true
       }
     ]
+  },
+  {
+    "id": "green_perm_thorn_canopy",
+    "name": "棘葉の大樹",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onGrowthGained",
+        "effect": "dealDamage",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "green_perm_gale_king",
+    "name": "疾風の王",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "momentumCarryHalf"
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "addMomentum",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_perm_root_spring",
+    "name": "根源の泉",
+    "cost": 3,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
   }
 ]
