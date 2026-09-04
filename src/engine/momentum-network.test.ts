@@ -82,6 +82,19 @@ describe('勢いの網 (緑)', () => {
     expect(s.player.exhaustPile.some((c) => c.def.id === 'green_gale_horn')).toBe(true)
   })
 
+  it('連なる角 (裁定B 2026-09-04): 勢い×1を3回に分けて放つ = 装甲25の下でも勢い15が3発全部通る (単発なら25で頭打ち)', () => {
+    let s = withMomentum(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_volley']), 15)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: 25, hp: 200, maxHp: 200 })) }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_volley', targetIndex: 0 })
+    expect(200 - s.enemies[0].hp).toBe(45)
+    expect(s.player.momentum).toBe(0)
+    // 比較: 角の一突きの放出 (勢い15×2=30) は装甲25で頭打ち
+    let t = withMomentum(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_thrust']), 15)
+    t = { ...t, enemies: t.enemies.map((e) => ({ ...e, armor: 25, hp: 200, maxHp: 200 })) }
+    t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_horn_thrust', targetIndex: 0 })
+    expect(200 - t.enemies[0].hp).toBe(23 + 25) // 8+15=23 (装甲内) + 放出30→25
+  })
+
   it('疾駆: 0E・勢い+3・消滅しない (0E規約: 手札もエナジーも増やさない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_sprint'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sprint' })

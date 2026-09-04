@@ -1926,5 +1926,25 @@
         "pierce": true
       }
     ]
+  },
+  {
+    "id": "green_horn_volley",
+    "name": "連なる角",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "rarity": "uncommon",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumVolley",
+        "amount": 1,
+        "volleyHits": 3,
+        "pierce": true
+      }
+    ]
   }
 ]

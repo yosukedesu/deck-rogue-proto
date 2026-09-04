@@ -1360,6 +1360,22 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       }
       return dealDamageToEnemy(s, enemyIndex, dmg, effect.pierce)
     }
+    case 'dischargeMomentumVolley': {
+      // 連なる角 (緑 2026-09-04 ユーザー裁定B): 勢いを全て失い、勢い×amount のダメージを volleyHits 回に分けて放つ。
+      // 装甲 (1ヒット上限) の下でも各ヒットが独立に通る = 単発一辺倒だった勢いの吐き先にボス (装甲持ち3体) への答えを与える。
+      // 放出に勢い加算は乗らない (先に0)・対象が既に倒れていれば空振り=勢いは消費しない (角の一突きと同じ裁定)
+      const spent = state.player.momentum
+      if (spent <= 0) return state
+      if ((state.enemies[enemyIndex]?.hp ?? 0) <= 0) return state
+      const per = spent * (effect.amount ?? 1)
+      let s: GameState = { ...state, player: { ...state.player, momentum: 0 } }
+      s = emit(s, { type: 'MomentumDischarged', spent })
+      for (let h = 0; h < (effect.volleyHits ?? 3); h++) {
+        if ((s.enemies[enemyIndex]?.hp ?? 0) <= 0) break
+        s = dealDamageToEnemy(s, enemyIndex, per, effect.pierce)
+      }
+      return s
+    }
     case 'dischargeMomentumGrowth': {
       // 根付く勢い (緑 2026-09-04): 勢いを全て失い、その 1/amount (切り上げ) を成長に変える = 刹那の資源を永続へ還元 (グルールの橋)
       const spent = state.player.momentum

@@ -65,7 +65,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
-    dischargeAether: `${all}霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeGrowthBlock: `成長×${a}ブロック(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`, dischargeMomentumDamage: `${all}勢い×${a}ダメ(全消費)${e.pierce === true ? '(貫通)' : ''}`, dischargeMomentumGrowth: `勢いを全て失い1/${a}(切り上げ)を成長に`,
+    dischargeAether: `${all}霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeGrowthBlock: `成長×${a}ブロック(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`, dischargeMomentumDamage: `${all}勢い×${a}ダメ(全消費)${e.pierce === true ? '(貫通)' : ''}`, dischargeMomentumGrowth: `勢いを全て失い1/${a}(切り上げ)を成長に`, dischargeMomentumVolley: `勢い×${a}ダメを${e.volleyHits ?? 3}回(全消費)${e.pierce === true ? '(貫通)' : ''}`,
     applyBurn: `${all}延焼+${a}`, shatterBlock: '敵ブロック全破壊', shatterBlockConvert: '敵ブロック全破壊+破壊値ダメ',
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
     impulseDraw: `衝動${a}枚(このターン限り)`, loseHp: `自分HP-${a}`, discountNext: `次のカード-${a}`,
@@ -498,18 +498,18 @@ function renderBattle(s: GameState, logFrom: number): string {
           .filter((x) => x.b !== null && x.b!.steps.length > 1)
           .map((x) => `敵${x.ei}:${x.b!.hpLoss}(${x.b!.steps.slice(1).map((st) => st.label).join('・')})`)
         // 放出分 (勢い×N・勢い加算は乗らない) を別立てで出す (P: 角の一突き 表示22/実際50)
-        const dis = c.def.effects.find((e) => e.trigger === 'onPlay' && e.effect === 'dischargeMomentumDamage')
+        const dis = c.def.effects.find((e) => e.trigger === 'onPlay' && (e.effect === 'dischargeMomentumDamage' || e.effect === 'dischargeMomentumVolley'))
         let disNote = ''
         if (dis) {
           const dm = momentumBefore(c.def.effects.indexOf(dis))
-          const dd = dm * (dis.amount ?? 0)
+          const dd = dm * (dis.amount ?? (dis.effect === 'dischargeMomentumVolley' ? 1 : 0))
           if (dd > 0) {
             const s0: GameState = { ...s, player: { ...s.player, momentum: 0 } }
             const perD = s.enemies
               .map((_en, ei) => ({ ei, b: damageBreakdown(s0, ei, dd, dis.pierce === true) }))
               .filter((x) => x.b !== null)
               .map((x) => `敵${x.ei}:${x.b!.hpLoss}`)
-            disNote = `［放出: 勢い${dm}×${dis.amount}=${dd}${dis.target === 'all' ? '(全体)' : ''} → ${perD.join(' / ')}。本体で倒すと放出は空振り=勢いは消費しない］`
+            disNote = `［放出: 勢い${dm}×${dis.amount ?? 1}=${dd}${dis.effect === 'dischargeMomentumVolley' ? `×${dis.volleyHits ?? 3}回(各ヒット独立=装甲は1発ごと)` : ''}${dis.target === 'all' ? '(全体)' : ''} → ${perD.join(' / ')}${dis.effect === 'dischargeMomentumVolley' ? '/発' : ''}。本体で倒すと放出は空振り=勢いは消費しない］`
           }
         }
         const selfNote = mom !== p.momentum ? `(この札の勢い加算込み=勢い${mom})` : ''

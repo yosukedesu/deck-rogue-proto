@@ -591,6 +591,8 @@ export interface DeclarativeEffect {
   readonly growthMultiplier?: number
   /** 勢いが×Nで乗る (猛進の角=大牙の勢い版。緑 勢いの網 2026-09-04)。dealDamage 専用 */
   readonly momentumMultiplier?: number
+  /** dischargeMomentumVolley のヒット数 (既定3) */
+  readonly volleyHits?: number
   readonly effect:
     | 'dealDamage'
     | 'gainBlock'
@@ -669,6 +671,7 @@ export interface DeclarativeEffect {
     | 'dischargeMomentumBlock' // 余勢の構え (赤): 勢い×amount のブロックを得て、勢いを全て失う (攻めの勢いが守りになる)
     | 'dischargeMomentumDamage' // 角の一突き (緑 2026-09-04): 勢い×amount のダメージを与え、勢いを全て失う (放出に勢い加算は乗らない。target:'all' は一括解決)
     | 'dischargeMomentumGrowth' // 根付く勢い (緑 2026-09-04): 勢いを全て失い、その 1/amount (切り上げ) を成長に変える (勢い→成長の還元=グルールの橋)
+    | 'dischargeMomentumVolley' // 連なる角 (緑 2026-09-04 裁定B): 勢いを全て失い、勢い×amount のダメージを volleyHits 回 (装甲=1ヒット上限への勢いの答え)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
     | 'script'

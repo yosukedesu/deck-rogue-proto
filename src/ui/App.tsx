@@ -474,6 +474,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🛡️ 勢い×${e.amount}のブロックを得て、勢いを全て失う`
     case 'dischargeMomentumDamage':
       return `${trigger}⚔️ ${e.target === 'all' ? '敵全体に' : ''}勢い×${e.amount}ダメージを与え、勢いを全て失う${e.pierce === true ? '（貫通）' : ''}${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 0)}]` : ''}`
+    case 'dischargeMomentumVolley':
+      return `${trigger}⚔️ 勢い×${e.amount ?? 1}ダメージを${e.volleyHits ?? 3}回与え、勢いを全て失う${e.pierce === true ? '（貫通）' : ''}${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 1)}×${e.volleyHits ?? 3}]` : ''}`
     case 'dischargeMomentumGrowth':
       return `${trigger}🌱 勢いを全て失い、その1/${e.amount ?? 2}（切り上げ）を成長に変える${ctx && ctx.momentum > 0 ? ` [現在 成長+${Math.ceil(ctx.momentum / Math.max(1, e.amount ?? 2))}]` : ''}`
     case 'dealDamageCleave':
@@ -1379,7 +1381,7 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
     }
   })
   // 放出 (勢い×N・勢い加算は乗らない) は別立てで見積もる (2026-09-04 Opusラン P: 角の一突き 表示22/実際50)
-  for (const dis of c.def.effects.filter((e) => e.trigger === 'onPlay' && e.effect === 'dischargeMomentumDamage')) {
+  for (const dis of c.def.effects.filter((e) => e.trigger === 'onPlay' && (e.effect === 'dischargeMomentumDamage' || e.effect === 'dischargeMomentumVolley'))) {
     const dm = momentumBeforeEffect(c.def.effects, c.def.effects.indexOf(dis), s.player.momentum)
     const dd = dm * (dis.amount ?? 0)
     if (dd <= 0) {
@@ -1391,7 +1393,8 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
       const bd = damageBreakdown(s0, i, dd, dis.pierce === true)
       if (bd === null) continue
       const name = (() => { try { return getEnemyDef(enemy.enemyId).name } catch { return enemy.enemyId } })()
-      lines.push(`放出 勢い${dm}×${dis.amount}=${dd}${dis.target === 'all' ? '（全体）' : ''}${alive.length > 1 ? ` ${name}` : ''}: ${bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')} ⇒ HP減 ${bd.hpLoss}（勢い加算は乗らない。本体で倒すと空振り＝勢いは消費しない）`)
+      const volley = dis.effect === 'dischargeMomentumVolley' ? `×${dis.volleyHits ?? 3}回（各ヒット独立＝装甲の上限は1発ごと）` : ''
+      lines.push(`放出 勢い${dm}×${dis.amount ?? 1}=${dd}${volley}${dis.target === 'all' ? '（全体）' : ''}${alive.length > 1 ? ` ${name}` : ''}: ${bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')} ⇒ HP減 ${bd.hpLoss}${volley ? '/発' : ''}（勢い加算は乗らない。本体で倒すと空振り＝勢いは消費しない）`)
     }
   }
   if (dmgEffects.length > 1) lines.push('※多段は各行独立の見積り（急所・敵ブロックの消費は先頭ヒット基準）')
@@ -3352,7 +3355,7 @@ const EFFECT_JA: Record<string, string> = {
   gainEnergy: '一時マナ+N', gainEnergyMax: 'エナジー上限+N', discountNext: '次のカード-N',
   addGrowth: '成長+N', doubleGrowth: '成長2倍', dischargeGrowth: '成長放出(×Nダメ全消費)', dischargeGrowthBlock: '成長×Nブロック(全消費)',
   addMomentum: '勢い+N', doubleMomentum: '勢い2倍', dischargeMomentumBlock: '勢い×Nブロック(全消費)', dischargeMomentumBurn: '勢い×N延焼(全消費)',
-  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)',
+  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',

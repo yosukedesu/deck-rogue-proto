@@ -45,6 +45,7 @@ const VP_PER: Record<string, number> = {
   dischargeMomentumBlock: 6.0, // 勢いの典型6 × 1.0
   dischargeMomentumDamage: 6.0, // 勢いの典型6 × 1.0 (緑 勢いの網 2026-09-04)
   dischargeMomentumGrowth: 12.0, // 勢い6 ÷ 2 = 成長3 × 4.0
+  dischargeMomentumVolley: 18.0, // 勢い6 × 1 × 3ヒット (連なる角 2026-09-04)
   dischargeBurn: 6.0, // 放出時の延焼の典型6 × 1.0 (DoTを手放す対価込み)
   dischargeGrowth: 5.0, // 放出時の典型成長5 (2026-08-31 収穫軸化)
   dischargeGrowthBlock: 5.0,

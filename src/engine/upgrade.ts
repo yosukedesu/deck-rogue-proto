@@ -130,7 +130,7 @@ const MULT_EFFECTS = new Set([
   'dealDamagePerEnergyMax', 'gainBlockPerEnergyMax', 'dealDamagePerAttackPlayed',
   'dealDamagePerWeak', 'dealDamagePerNegStrength', 'dealDamagePerDamageTaken', 'applyBurnPerDamageTaken',
   'dealDamagePerRandomPlayed', 'dealDamagePerHandCard', 'gainIceBlockPerHandCard',
-  'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn',
+  'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumVolley',
   'dealDamagePerCardPlayed', 'dealDamagePerExhaust', 'dealDamageDrainPerExhaust', 'gainBlockPerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerHeal',
 ])
 const UNIT_EFFECTS_V2 = new Set([

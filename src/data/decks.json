@@ -2215,7 +2215,7 @@
     "id": "deck_momentum",
     "name": "勢いの道",
     "color": "green",
-    "description": "勢いの理想形（2026-09-04 勢いの網）。軽く積む→倍にする→一突きで吐く、の順序パズル。18枚（sim初版15枚は幕3級に0%＝受けを樹皮の鎧2と群長で補強）",
+    "description": "勢いの理想形（2026-09-04 勢いの網）。軽く積む→倍にする→一突きで吐く、の順序パズル。18枚（sim初版15枚は幕3級に0%＝受けを樹皮の鎧2と群長で補強）＋連なる角（装甲への答え）",
     "cards": [
       {
         "cardId": "green_sprint",
@@ -2259,6 +2259,10 @@
       },
       {
         "cardId": "green_perm_herd_chief",
+        "count": 1
+      },
+      {
+        "cardId": "green_horn_volley",
         "count": 1
       }
     ]
