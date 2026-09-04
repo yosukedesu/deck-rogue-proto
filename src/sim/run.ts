@@ -38,6 +38,8 @@ function botRole(def: CardDef): BotRole {
   if (has('summonPermanent')) return 'permanent'
   // ブロック参照の換金札は「壁を積んでから」なので最後に回す (2026-08-26)
   if (has('dealDamagePerBlock')) return 'payoff'
+  // 勢いの放出 (緑 2026-09-04・赤の変換器): 積んでから吐く = 他の攻撃・防御の後に回す
+  if (has('dischargeMomentumDamage', 'dischargeMomentumGrowth', 'dischargeMomentumBlock', 'dischargeMomentumBurn')) return 'payoff'
   // 抱え込み (青 2026-08-31): 手札参照は「手札が厚いうちに」= ドローの直後・手札を減らす前に撃つ
   if (has('dealDamagePerHandCard', 'gainIceBlockPerHandCard')) return 'handpayoff'
   // 反復 (青): トークンは大呪文の直前に立てる (bighit/attack より先)
