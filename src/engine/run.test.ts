@@ -424,17 +424,17 @@ describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () =>
 })
 
 describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Heavy Blade ×3→×5 の文法)', () => {
-  it('木陰の守り+ は上限×2→×3。コストは1のまま (0E化はしない)', () => {
-    const up = upgradeCard({ uid: 't', def: getCardDef('green_canopy_shade') })
+  it('若幹の一撃+ は上限×2→×3。コストは1のまま (0E化はしない。木陰の守り・幹撃は2026-09-05 撤去)', () => {
+    const up = upgradeCard({ uid: 't', def: getCardDef('green_sapling_strike') })
     expect(up.def.cost).toBe(1)
-    expect(up.def.effects.some((e) => e.effect === 'gainBlockPerEnergyMax' && e.amount === 3)).toBe(true)
-    expect(up.def.effects.some((e) => e.effect === 'gainBlock')).toBe(false) // 旧おまけ表は使わない
+    expect(up.def.effects.some((e) => e.effect === 'dealDamagePerEnergyMax' && e.amount === 3)).toBe(true)
+    expect(up.def.effects.some((e) => e.effect === 'dealDamage')).toBe(false) // 旧おまけ表は使わない
   })
 
-  it('幹撃+ は上限×4→×5。コストは2のまま', () => {
-    const up = upgradeCard({ uid: 't', def: getCardDef('green_trunk_blow') })
+  it('大地の唸り+ は全体 上限×2→×3。コストは2のまま', () => {
+    const up = upgradeCard({ uid: 't', def: getCardDef('green_earth_roar') })
     expect(up.def.cost).toBe(2)
-    expect(up.def.effects.some((e) => e.effect === 'dealDamagePerEnergyMax' && e.amount === 5)).toBe(true)
+    expect(up.def.effects.some((e) => e.effect === 'dealDamagePerEnergyMax' && e.amount === 3)).toBe(true)
   })
 
   it('大牙+ は成長×3→×4 (素の8は据え置き=本家 Heavy Blade と同型)', () => {

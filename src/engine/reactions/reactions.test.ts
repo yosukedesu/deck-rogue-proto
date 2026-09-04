@@ -245,15 +245,6 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
     expect(s.player.growth).toBe(4)
   })
 
-  it('根穿ち: 敵の防御に反応して貫通12 (得たブロックを素通しする)', () => {
-    let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_root_pierce'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_pierce' })
-    s = withIntent(s, defendIntent(14))
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(types(s.eventLog)).toContain('ReactionTriggered')
-    expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 12) // 貫通なのでブロック無視
-    expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
-  })
 
   it('行動値X以上の条件 (minActionValue): 実値が10未満なら発動しない、10以上なら返し24 (逆襲の蔦は2026-09-02撤去。機構を合成defで固定)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])

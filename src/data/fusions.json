@@ -95,7 +95,7 @@
   },
   {
     "a": "green_trample_charge",
-    "b": "green_horn_strike",
+    "b": "green_tailwind",
     "result": {
       "id": "fusion_wild_stampede",
       "name": "暴走する荒角",

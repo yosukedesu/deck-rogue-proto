@@ -51,13 +51,13 @@ describe('シグネチャー効果', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - (6 - 4))
   })
 
-  it('森の大爆発: エナジー上限×6の全体ダメージ (成長も乗る。2026-08-29 花火化)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_sig_overgrowth'])
+  it('大地の唸り: エナジー上限×2の全体ダメージ (成長も乗る。森の大爆発は2026-09-05 80枚化で撤去)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_earth_roar'])
     s = { ...s, player: { ...s.player, energy: 6, energyMax: 6, energyMaxAtTurnStart: 6, growth: 1 } }
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: undefined })) } // 装甲を外してコンボの素値を測る
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_overgrowth' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (6 * 6 + 1))
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_earth_roar' })
+    expect(s.enemies[0].hp).toBe(hpBefore - (6 * 2 + 1))
   })
 
   it('開花の儀: 成長カウンターを2倍にする', () => {
@@ -155,12 +155,12 @@ describe('置物 (permanent)', () => {
 })
 
 describe('消滅 (exhaust)', () => {
-  it('森の大爆発は使用後この戦闘から除外され、捨て札に行かない', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_sig_overgrowth'])
+  it('芽吹き (消滅) は使用後この戦闘から除外され、捨て札に行かない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_ramp_sprout'])
     s = { ...s, player: { ...s.player, energy: 5 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_overgrowth' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sprout' })
     expect(s.player.exhaustPile).toHaveLength(1)
-    expect(s.player.discardPile.some((c) => c.uid === 't0_green_sig_overgrowth')).toBe(false)
+    expect(s.player.discardPile.some((c) => c.uid === 't0_green_ramp_sprout')).toBe(false)
     expect(types(s.eventLog)).toContain('CardExhausted')
   })
 })

@@ -41,15 +41,6 @@ describe('トランプルの網', () => {
     expect(s.enemies[0].block).toBe(10)
   })
 
-  it('怒涛の突き上げ (2026-09-02 作り直し): 勢い+3を先に解決してから3ダメ×3 = 自分の勢いが3回乗る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_surge_thrust'])
-    s = { ...s, player: { ...s.player, momentum: 4 } }
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_surge_thrust' })
-    // 勢い4+3=7 が3ヒットに乗る: (3+7)×3 = 30
-    expect(s.enemies[0].hp).toBe(hpBefore - 30)
-    expect(s.player.momentum).toBe(7)
-  })
 
   it('昂ぶる角笛: 勢い+2してから2倍・消滅 (2026-08-29 検証ランで空振り腐りが出たため+2を前置)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_flare'])
@@ -113,12 +104,12 @@ describe('Xコスト (2026-09-03 本家形: 単価は1Eコモンの約80%=5、�
 })
 
 describe('ビッグマナの網', () => {
-  it('幹撃: エナジー上限×4ダメージ (中型ペイオフ。2026-08-29 ×3→×4 典型上限5裁定)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_trunk_blow'])
+  it('若幹の一撃: エナジー上限×2ダメージ (上限参照の1E入口。幹撃・幹の構え・木陰の守りは2026-09-05 80枚化で撤去)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_sapling_strike'])
     s = { ...s, player: { ...s.player, energyMax: 5, energyMaxAtTurnStart: 5, energy: 5 } }
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_trunk_blow' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 5 * 4)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sapling_strike' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 5 * 2)
   })
 
   it('大幹の構え: 上限×3ダメ+上限×3ブロックの攻防一体 (2026-08-29 ×2→×3 典型上限5裁定)', () => {
@@ -142,12 +133,6 @@ describe('ビッグマナの網', () => {
     expect(s.player.nextCardDiscount).toBe(1) // 次の自ターン開始時に割引1
   })
 
-  it('木陰の守り: 上限×2ブロック (巨木の盾の小型ラダー)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_canopy_shade'])
-    s = { ...s, player: { ...s.player, energyMax: 4, energyMaxAtTurnStart: 4, energy: 4 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_canopy_shade' })
-    expect(s.player.block).toBe(4 * 2)
-  })
 })
 
 describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃防御吐き先としてあと3種」)', () => {
@@ -180,16 +165,6 @@ describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃�
 })
 
 describe('モード札増刷 (2026-08-29 ユーザー指示「モード系は魅力的なのでもっと刷っていい」)', () => {
-  it('森の裁定: 《牙》14ダメ /《殻》ブロック14 (絡み蔦のラダー)', () => {
-    const mk = () => {
-      let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_mode_verdict'])
-      return { ...s, player: { ...s.player, energy: 3 } }
-    }
-    const fang = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_verdict', modeIndex: 0 })
-    expect(fang.enemies[0].hp).toBe(mk().enemies[0].hp - 14)
-    const shell = applyCommand(mk(), { type: 'PlayCard', cardUid: 't0_green_mode_verdict', modeIndex: 1 })
-    expect(shell.player.block).toBe(14)
-  })
 
   it('道行きの選択: 《野生》勢い+3+3ダメ /《育成》成長+2 (アーキ分岐)', () => {
     const mk = () => withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_mode_crossroads'])
@@ -260,31 +235,6 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
 
 })
 
-describe('倍化の増刷 (2026-08-29 ユーザー指示「成長・勢いの倍化カードを増やしてほしい」)', () => {
-  it('株分け: 成長2倍+ブロック6・消滅 (守りながら倍加)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_division'])
-    s = { ...s, player: { ...s.player, growth: 4, energy: 3 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_division' })
-    expect(s.player.growth).toBe(8)
-    expect(s.player.block).toBe(6)
-    expect(s.player.exhaustPile.map((c) => c.def.id)).toContain('green_division')
-  })
-
-  it('疾風の一撃: 勢い2倍→6ダメ (倍化後の勢いが乗る。勢い0でも6ダメ保証=空振りしない)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_gale_strike'])
-    s = { ...s, player: { ...s.player, momentum: 4, energy: 3 } }
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_gale_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (6 + 8))
-    let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_gale_strike'])
-    s2 = { ...s2, player: { ...s2.player, energy: 3 } }
-    const hp2 = s2.enemies[0].hp
-    s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_gale_strike' })
-    expect(s2.enemies[0].hp).toBe(hp2 - 6)
-  })
-
-})
-
 describe('ランプ即時利用の廃止が上限参照札にも効く (2026-08-30 仕様違反の修正)', () => {
   // 計測ラン(seed3000)で発覚: ルール表は「上限増加は次の自ターンから」だが、実装は
   // エナジー補充にしか効いておらず、幹撃等が同ターンのランプを即座に数えていた。
@@ -292,14 +242,14 @@ describe('ランプ即時利用の廃止が上限参照札にも効く (2026-08-
   it('同ターンに撃ったランプは上限参照札に乗らない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [
       'green_ramp_sprout',
-      'green_trunk_blow',
+      'green_sapling_strike',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_ramp_sprout' })
     expect(s.player.energyMax).toBe(4) // 上限自体は上がっている
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_trunk_blow' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 3 * 4) // ターン開始時の上限3で計算 (4×4=16ではない)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_sapling_strike' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 3 * 2) // ターン開始時の上限3で計算 (4×2=8ではない)
   })
 
   it('次の自ターンからは新しい上限で数える', () => {
@@ -318,32 +268,7 @@ describe('ランプ即時利用の廃止が上限参照札にも効く (2026-08-
 // ユーザー判断「逆上は緑のカラーパイ / 粉砕は緑に渡したい」。逆上は素のまま渡すと
 // 中立スターターで中央値2ダメ・57%が2以下と分散が極端なので、固定5の床を付けて渡した。
 describe('赤からの移管: 被弾の換金と粉砕', () => {
-  it('棘の返礼 (2026-09-03 茨の報いを守り成功参照へ作り直し): 直前の敵フェーズを完全に凌いでいたら 4+8', () => {
-    let s = freshCombat('set-confirm', 'enemy_brute', 42)
-    s = { ...s, player: { ...s.player, block: 30 } }
-    s = withIntent(s, attackIntent(8))
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.perfectBlockLastPhase).toBe(true)
-    s = withHand(s, ['green_thorn_repay'])
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 12)
-  })
 
-  it('棘の返礼: 被弾していたら床の4だけ。T1 (直前の敵フェーズが無い) も4', () => {
-    let s = freshCombat('set-confirm', 'enemy_brute', 42)
-    s = withIntent(s, attackIntent(8))
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.perfectBlockLastPhase).toBe(false)
-    s = withHand(s, ['green_thorn_repay'])
-    let hp = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
-    expect(s.enemies[0].hp).toBe(hp - 4)
-    let t1 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_thorn_repay'])
-    hp = t1.enemies[0].hp
-    t1 = applyCommand(t1, { type: 'PlayCard', cardUid: 't0_green_thorn_repay' })
-    expect(t1.enemies[0].hp).toBe(hp - 4)
-  })
 
   it('根喰らいの蔓: 破壊した値をダメージに換金する', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [])
@@ -441,10 +366,10 @@ describe('参照シナジー (2026-09-03 本家6型。docs/green-synergy-proposa
     t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_prey_strike', targetIndex: 0 })
     expect(t.player.growth).toBe(0)
   })
-  it('データ: 芽守りはしきい値3・狩人の眼光は1E・若枝の盾張りは1E・毒針の囮は撤去', () => {
+  it('データ: 芽守りはしきい値3・狩人の眼光は1E・毒針の囮は撤去 (若枝の盾張りは2026-09-05 撤去)', () => {
     expect(getCardDef('green_perm_sprout_keeper').effects[0].condition?.minGrowth).toBe(3)
     expect(getCardDef('green_perm_hunters_gaze').cost).toBe(1)
-    expect(getCardDef('green_sapling_reap').cost).toBe(1)
+    expect(() => getCardDef('green_sapling_reap')).toThrow()
     expect(() => getCardDef('green_decoy_needle')).toThrow()
   })
 })

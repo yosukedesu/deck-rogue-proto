@@ -52,9 +52,7 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_aether_torrent: [{ trigger: 'onPlay', effect: 'addAether', amount: 2 }],
   // 木陰の守り+: 固定ブロック+4を追加 (上限参照のコスト-1は0Eに落とさない裁定の受け皿。
   // 倍率には触れない安全弁を守りつつ、上限5で 10→14 ≈ 量+50%相当)
-  green_canopy_shade: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
   // ---- per-Xダメージ参照のコスト強化封じ (2026-08-31) の受け皿: 同軸のおまけを足す ----
-  green_surge_thrust: [{ trigger: 'onPlay', effect: 'addMomentum', amount: 3 }], // 換金前に勢い+3
   blue_storm_lash: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 5 }], // 固定の初撃5
   // 抱え込み (2026-08-31): ドローは手札=弾を増やす同軸のおまけ
   blue_weight_of_wisdom: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
@@ -78,7 +76,6 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   black_seething_blood: [{ trigger: 'onPlay', effect: 'dealDamageDrain', amount: 4 }],
   // 上限参照の1E札はコストを0Eへ落とさない裁定 (2026-08-30) の受け皿
   green_sapling_strike: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 4 }],
-  green_trunk_guard: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
 }
 
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */

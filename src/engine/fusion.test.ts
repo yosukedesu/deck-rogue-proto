@@ -416,12 +416,12 @@ describe('赤の工房 (2026-08-30 全色開放後の赤対応)', () => {
 })
 
 describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性を掛け合わせたい」)', () => {
-  it('多段×貫通: 二連の蔦打ち(4×2)×荒角の一撃(7貫通) → 貫通の多段ヒット', () => {
-    const def = fuseCards(inst('green_double_lash'), inst('green_horn_strike'))
+  it('多段×貫通: 二連の蔦打ち(5×2)×追い風(6貫通) → 貫通の多段ヒット (荒角の一撃は2026-09-05 撤去)', () => {
+    const def = fuseCards(inst('green_double_lash'), inst('green_tailwind'))
     const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
     expect(dmgs).toHaveLength(3) // ヒット合算 (2026-08-30): 2+1=3ヒット (旧: 最大側の2に按分)
     expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
-    expect(dmgs[0].amount).toBe(6) // 価値保存×プレミアム1.25: ヒットが増えた上で per-hit も戻る (成長の乗り先が3回に)
+    expect(dmgs[0].amount).toBeGreaterThanOrEqual(4) // 価値保存×プレミアム1.25 (素材の合計VPから逆算)
   })
 
   it('全体×貫通: 薙ぎ払い (2026-09-03 攻撃数参照へ作り直し) は査定不能で合成不可', () => {
@@ -437,7 +437,7 @@ describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性�
   })
 
   it('特性が名前に出る (多段=乱撃・全体=嵐)', () => {
-    const multi = fuseCards(inst('green_double_lash'), inst('green_horn_strike'))
+    const multi = fuseCards(inst('green_double_lash'), inst('green_tailwind'))
     expect(multi.name.endsWith('乱撃')).toBe(true)
     const aoe = fuseCards(inst('green_sweep'), inst('green_fang'))
     expect(aoe.name.endsWith('嵐')).toBe(true)

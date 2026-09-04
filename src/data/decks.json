@@ -89,8 +89,12 @@
         "count": 2
       },
       {
-        "cardId": "green_sig_overgrowth",
-        "count": 2
+        "cardId": "green_earth_roar",
+        "count": 1
+      },
+      {
+        "cardId": "green_x_sylvan_tempest",
+        "count": 1
       },
       {
         "cardId": "green_finisher_stomp",
@@ -121,8 +125,12 @@
         "count": 2
       },
       {
-        "cardId": "green_canopy_shade",
-        "count": 2
+        "cardId": "green_x_bark_armor",
+        "count": 1
+      },
+      {
+        "cardId": "green_sapling_strike",
+        "count": 1
       },
       {
         "cardId": "green_reaction_vine",
@@ -1974,7 +1982,7 @@
         "count": 1
       },
       {
-        "cardId": "green_sapling_reap",
+        "cardId": "green_prey_strike",
         "count": 2
       },
       {
@@ -1982,7 +1990,7 @@
         "count": 2
       },
       {
-        "cardId": "green_cycle_harvest",
+        "cardId": "green_bloom_lash",
         "count": 2
       },
       {

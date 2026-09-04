@@ -17,7 +17,7 @@ describe('保持 (retain): 4E以上の大型は全捨てで手札に残る', () 
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hand.some((c) => c.def.id === 'green_finisher_stomp')).toBe(true)
     expect(s.player.discardPile.some((c) => c.def.id === 'green_strike')).toBe(true)
-    for (const id of ['green_finisher_wrath', 'green_sig_stampede', 'green_sig_overgrowth']) {
+    for (const id of ['green_finisher_wrath', 'green_sig_stampede']) {
       expect(getCardDef(id).retain, id).toBe(true)
     }
   })
@@ -82,15 +82,15 @@ describe('データ裁定 (撤去5・レア化・作り直し・締切)', () => 
     expect(getCardDef('green_forest_guidance').rarity).toBe('rare')
   })
 
-  it('勢い先出し: 突進の助走・踏み荒らし・怒涛の突き上げは勢いが自分のダメージに乗る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 15), ['green_trample_charge', 'green_surge_thrust'])
+  it('勢い先出し: 突進の助走・踏み荒らしは勢いが自分のダメージに乗る (怒涛の突き上げは2026-09-05 撤去)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 15), ['green_trample_charge', 'green_sig_trample'])
     s = { ...s, player: { ...s.player, energy: 9 } }
     const h0 = s.enemies[0].hp
     s = play(s, 't0_green_trample_charge') // 勢い3 → (2+3)×2 = 10
     expect(h0 - s.enemies[0].hp).toBe(10)
     const h1 = s.enemies[0].hp
-    s = play(s, 't1_green_surge_thrust') // 勢い3+3=6 → (3+6)×3 = 27
-    expect(h1 - s.enemies[0].hp).toBe(27)
+    s = play(s, 't1_green_sig_trample') // 勢い3+3=6 → 16+6 = 22 (貫通)
+    expect(h1 - s.enemies[0].hp).toBe(22)
     const trample = getCardDef('green_sig_trample')
     expect(trample.effects[0].effect).toBe('addMomentum')
   })

@@ -315,24 +315,7 @@
       }
     ],
     "exhaust": true,
-    "rarity": "uncommon"
-  },
-  {
-    "id": "green_sig_overgrowth",
-    "name": "森の大爆発",
-    "cost": 4,
-    "type": "spell",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerEnergyMax",
-        "amount": 6,
-        "target": "all"
-      }
-    ],
-    "exhaust": true,
-    "rarity": "rare",
-    "retain": true
+    "rarity": "rare"
   },
   {
     "id": "green_sig_rite_of_bloom",
@@ -443,7 +426,7 @@
         "pierce": true
       }
     ],
-    "rarity": "uncommon",
+    "rarity": "rare",
     "retain": true
   },
   {
@@ -503,7 +486,7 @@
         "amount": 5
       }
     ],
-    "rarity": "uncommon"
+    "rarity": "rare"
   },
   {
     "id": "green_perm_herd_chief",
@@ -517,7 +500,7 @@
         "amount": 2
       }
     ],
-    "rarity": "uncommon"
+    "rarity": "rare"
   },
   {
     "id": "green_flash_insight",
@@ -559,21 +542,6 @@
         "trigger": "onEnemyBuffed",
         "effect": "addGrowth",
         "amount": 4
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
-    "id": "green_reaction_root_pierce",
-    "name": "根穿ち",
-    "cost": 1,
-    "type": "reaction",
-    "effects": [
-      {
-        "trigger": "onEnemyDefended",
-        "effect": "counter",
-        "amount": 12,
-        "pierce": true
       }
     ],
     "rarity": "uncommon"
@@ -673,21 +641,6 @@
     "rarity": "uncommon"
   },
   {
-    "id": "green_horn_strike",
-    "name": "荒角の一撃",
-    "cost": 1,
-    "type": "physical",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 8,
-        "pierce": true
-      }
-    ],
-    "rarity": "common"
-  },
-  {
     "id": "green_perm_wild_call",
     "name": "荒野の呼び声",
     "cost": 2,
@@ -731,36 +684,6 @@
     "rarity": "common"
   },
   {
-    "id": "green_surge_thrust",
-    "name": "怒涛の突き上げ",
-    "cost": 2,
-    "type": "physical",
-    "color": "green",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "addMomentum",
-        "amount": 3
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 3
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 3
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 3
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
     "id": "green_horn_flare",
     "name": "昂ぶる角笛",
     "cost": 1,
@@ -781,21 +704,6 @@
     "rarity": "rare"
   },
   {
-    "id": "green_trunk_blow",
-    "name": "幹撃",
-    "cost": 2,
-    "type": "physical",
-    "color": "green",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerEnergyMax",
-        "amount": 4
-      }
-    ],
-    "rarity": "common"
-  },
-  {
     "id": "green_sapling_strike",
     "name": "若幹の一撃",
     "cost": 1,
@@ -807,26 +715,6 @@
         "trigger": "onPlay",
         "effect": "dealDamagePerEnergyMax",
         "amount": 2
-      }
-    ]
-  },
-  {
-    "id": "green_trunk_guard",
-    "name": "幹の構え",
-    "cost": 1,
-    "type": "physical",
-    "color": "green",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerEnergyMax",
-        "amount": 1
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlockPerEnergyMax",
-        "amount": 1
       }
     ]
   },
@@ -867,21 +755,6 @@
       }
     ],
     "rarity": "rare"
-  },
-  {
-    "id": "green_canopy_shade",
-    "name": "木陰の守り",
-    "cost": 1,
-    "type": "spell",
-    "color": "green",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlockPerEnergyMax",
-        "amount": 2
-      }
-    ],
-    "rarity": "common"
   },
   {
     "id": "green_horn_stance",
@@ -961,37 +834,6 @@
         "amount": 4,
         "target": "all",
         "xHits": true
-      }
-    ]
-  },
-  {
-    "id": "green_mode_verdict",
-    "name": "森の裁定",
-    "cost": 2,
-    "type": "physical",
-    "color": "green",
-    "rarity": "common",
-    "effects": [],
-    "modes": [
-      {
-        "name": "牙",
-        "effects": [
-          {
-            "trigger": "onPlay",
-            "effect": "dealDamage",
-            "amount": 14
-          }
-        ]
-      },
-      {
-        "name": "殻",
-        "effects": [
-          {
-            "trigger": "onPlay",
-            "effect": "gainBlock",
-            "amount": 14
-          }
-        ]
       }
     ]
   },
@@ -1108,74 +950,6 @@
     ]
   },
   {
-    "id": "green_division",
-    "name": "株分け",
-    "cost": 3,
-    "type": "spell",
-    "color": "green",
-    "rarity": "uncommon",
-    "exhaust": true,
-    "axis": [
-      "growth"
-    ],
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "doubleGrowth"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 6
-      }
-    ]
-  },
-  {
-    "id": "green_gale_strike",
-    "name": "疾風の一撃",
-    "cost": 2,
-    "type": "physical",
-    "color": "green",
-    "rarity": "uncommon",
-    "exhaust": true,
-    "axis": [
-      "trample"
-    ],
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "doubleMomentum"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 6
-      }
-    ]
-  },
-  {
-    "id": "green_thorn_repay",
-    "name": "棘の返礼",
-    "cost": 1,
-    "type": "physical",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 4
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 8,
-        "condition": {
-          "perfectBlockLastPhase": true
-        }
-      }
-    ],
-    "rarity": "common"
-  },
-  {
     "id": "green_perm_pain_root",
     "name": "根張り",
     "cost": 1,
@@ -1269,25 +1043,6 @@
     ]
   },
   {
-    "id": "green_sapling_reap",
-    "name": "若枝の盾張り",
-    "cost": 1,
-    "type": "physical",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 4
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dischargeGrowthBlock",
-        "amount": 2
-      }
-    ]
-  },
-  {
     "id": "green_harvest_strike",
     "name": "大牙",
     "cost": 2,
@@ -1299,25 +1054,6 @@
         "effect": "dealDamage",
         "amount": 8,
         "growthMultiplier": 3
-      }
-    ]
-  },
-  {
-    "id": "green_cycle_harvest",
-    "name": "巡りの収穫",
-    "cost": 2,
-    "type": "spell",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dischargeGrowth",
-        "amount": 3
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "addGrowth",
-        "amount": 1
       }
     ]
   },
@@ -1478,7 +1214,7 @@
     "name": "風渡り",
     "cost": 1,
     "type": "permanent",
-    "rarity": "uncommon",
+    "rarity": "rare",
     "axis": [
       "trample"
     ],
@@ -1943,6 +1679,55 @@
         "effect": "dischargeMomentumVolley",
         "amount": 1,
         "volleyHits": 3,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_perm_bark_bud",
+    "name": "樹皮の芽",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_perm_wind_thorn",
+    "name": "風の棘",
+    "cost": 1,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onMomentumGained",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_twig_strike",
+    "name": "小枝の一打",
+    "cost": 0,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
         "pierce": true
       }
     ]

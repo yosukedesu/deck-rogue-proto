@@ -59,15 +59,6 @@ describe('敵の耐性 (延焼耐性)', () => {
   })
 })
 
-describe('木陰の守り (ビッグマナのスケーリング防御。巨木の盾は2026-09-02 撤去=幕3で敵打点を追い越した本体)', () => {
-  it('エナジー上限×2のブロックを得る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_canopy_shade'])
-    s = { ...s, player: { ...s.player, energyMax: 5, energyMaxAtTurnStart: 5, energy: 9 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_canopy_shade' })
-    expect(s.player.block).toBe(10)
-  })
-})
-
 describe('開花の儀の消滅化', () => {
   it('使用後は消滅置き場へ行き、再シャッフルされない', () => {
     expect(getCardDef('green_sig_rite_of_bloom').exhaust).toBe(true)
