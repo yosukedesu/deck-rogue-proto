@@ -382,8 +382,12 @@ export function chooseCommand(s: GameState): Command {
   // (ドロー・ミル系エンジンがエナジーを食い尽くして攻撃が一度も飛ばない病の防止。
   //  ストーム温存の一般化: 墓地型で顕在化した 2026-08-25)
   // 蓄積型ペイオフ (詠唱数/消滅数参照) があればその最安コストを、なければ最安攻撃札のコストを温存
+  // 温存するのは「今のエナジーで撃てる」札のぶんだけ (2026-09-04 sim実測: 保持で手札に残った4E以上の攻撃札を
+  // 最安攻撃と見なして3Eを温存し続け、ランプも防御も撃たずに50ターン棒立ち = ビッグマナ理想形が小泥に23%)
+  const castable = (c: CardInstance) => effectiveCost(s, c) <= s.player.energy
   const burstCosts = s.player.hand
     .filter((c) =>
+      castable(c) &&
       c.def.effects.some((e) =>
         [
           'dealDamagePerCardPlayed',
@@ -393,10 +397,10 @@ export function chooseCommand(s: GameState): Command {
         ].includes(e.effect),
       ),
     )
-    .map((c) => c.def.cost)
+    .map((c) => effectiveCost(s, c))
   const attackCosts = s.player.hand
-    .filter((c) => isPlayableFromHand(c) && c.def.effects.some(isDamageEffect))
-    .map((c) => c.def.cost)
+    .filter((c) => isPlayableFromHand(c) && castable(c) && c.def.effects.some(isDamageEffect))
+    .map((c) => effectiveCost(s, c))
   const payoffReserve =
     burstCosts.length > 0
       ? Math.min(...burstCosts)
