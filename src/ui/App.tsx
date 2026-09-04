@@ -243,6 +243,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.minActionValue !== undefined) parts.push(`敵の行動の値が${c.minActionValue}以上`)
   if (c.blaze === true) parts.push(`🔥猛り火(延焼合計${BLAZE_THRESHOLD}以上)`)
   if (c.minGrowth !== undefined) parts.push(`🌱成長${c.minGrowth}以上`)
+  if (c.minMomentum !== undefined) parts.push(`💨勢い${c.minMomentum}以上`)
   if (c.enemyIntent !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntent] ?? c.enemyIntent}`)
   if (c.enemyIntentNot !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntentNot] ?? c.enemyIntentNot}以外`)
   if (c.enemyExposed === true) parts.push('🎯対象が急所持ち')
@@ -295,7 +296,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         e.xHits === true && ctx?.energy !== undefined
           ? `［全部払うとX=${ctx.energy}: 計${((e.amount ?? 0) + atkBonus) * ctx.energy}${aoe ? '/体' : ''}］`
           : ''
-      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${e.growthMultiplier !== undefined ? `（成長が×${e.growthMultiplier}で乗る）` : ''}${xHitsSuffix(e)}${atkBreak}${xNow}`
+      return `${trigger}⚔️ ${aoe}${(e.amount ?? 0) + atkBonus}ダメージ${pierce}${e.growthMultiplier !== undefined ? `（成長が×${e.growthMultiplier}で乗る）` : ''}${e.momentumMultiplier !== undefined ? `（勢いが×${e.momentumMultiplier}で乗る）` : ''}${xHitsSuffix(e)}${atkBreak}${xNow}`
     }
     case 'dealDamagePerEnergyMax':
       return ctx
@@ -466,6 +467,10 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🔥 勢い×${e.amount}の延焼を与え、勢いを全て失う`
     case 'dischargeMomentumBlock':
       return `${trigger}🛡️ 勢い×${e.amount}のブロックを得て、勢いを全て失う`
+    case 'dischargeMomentumDamage':
+      return `${trigger}⚔️ ${e.target === 'all' ? '敵全体に' : ''}勢い×${e.amount}ダメージを与え、勢いを全て失う${e.pierce === true ? '（貫通）' : ''}${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 0)}]` : ''}`
+    case 'dischargeMomentumGrowth':
+      return `${trigger}🌱 勢いを全て失い、その1/${e.amount ?? 2}（切り上げ）を成長に変える${ctx && ctx.momentum > 0 ? ` [現在 成長+${Math.ceil(ctx.momentum / Math.max(1, e.amount ?? 2))}]` : ''}`
     case 'dealDamageCleave':
       return `${trigger}⚔️ ${(e.amount ?? 0) + atkBonus}ダメージ${atkBreak}。倒したら別の敵にも同値`
     case 'dealDamageRandom':
@@ -536,6 +541,8 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   }
   if (def.exhaust) lines.push('消滅')
   if (def.retain) lines.push('保持（ターン終了時に手札に残る）')
+  if (def.freeIfHandAllPhysical === true) lines.push('手札の他の札がすべて物理ならコスト0')
+  if (def.freeIfMomentumAtLeast !== undefined) lines.push(`勢いが${def.freeIfMomentumAtLeast}以上ならコスト0`)
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
   return lines
 }
@@ -3296,6 +3303,7 @@ const EFFECT_JA: Record<string, string> = {
   gainEnergy: '一時マナ+N', gainEnergyMax: 'エナジー上限+N', discountNext: '次のカード-N',
   addGrowth: '成長+N', doubleGrowth: '成長2倍', dischargeGrowth: '成長放出(×Nダメ全消費)', dischargeGrowthBlock: '成長×Nブロック(全消費)',
   addMomentum: '勢い+N', doubleMomentum: '勢い2倍', dischargeMomentumBlock: '勢い×Nブロック(全消費)', dischargeMomentumBurn: '勢い×N延焼(全消費)',
+  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
@@ -3319,6 +3327,7 @@ const COND_JA: Record<string, string> = {
   maxActionValue: '敵の行動値が値以下',
   minDamageTaken: '被ダメが値以上',
   minGrowth: '成長が値以上',
+  minMomentum: '勢いが値以上',
   enemyIntent: '対象の意図が値の種別',
   enemyIntentNot: '対象の意図が値の種別以外',
   enemyExposed: '対象が急所持ち',

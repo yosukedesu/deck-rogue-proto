@@ -1762,5 +1762,169 @@
         }
       }
     ]
+  },
+  {
+    "id": "green_sprint",
+    "name": "疾駆",
+    "cost": 0,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_gale_horn",
+    "name": "疾風の号砲",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "doubleMomentum"
+      }
+    ]
+  },
+  {
+    "id": "green_horn_thrust",
+    "name": "角の一突き",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumDamage",
+        "amount": 2,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_horn_storm",
+    "name": "嵐の角",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all",
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumDamage",
+        "amount": 1,
+        "target": "all",
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_wind_wall",
+    "name": "風の壁",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_rooting_rush",
+    "name": "根付く勢い",
+    "cost": 2,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumGrowth",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_charging_horn",
+    "name": "猛進の角",
+    "cost": 3,
+    "type": "physical",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 14,
+        "pierce": true,
+        "momentumMultiplier": 2
+      }
+    ]
+  },
+  {
+    "id": "green_tailwind",
+    "name": "追い風",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "freeIfMomentumAtLeast": 5,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "pierce": true
+      }
+    ]
   }
 ]

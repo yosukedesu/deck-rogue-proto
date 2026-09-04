@@ -43,6 +43,8 @@ const VP_PER: Record<string, number> = {
   dealDamagePerRandomPlayed: 3.0, // 乱数札の典型3枚 × 1.0
   dischargeMomentumBurn: 9.0, // 勢いの典型6 × 延焼1.5
   dischargeMomentumBlock: 6.0, // 勢いの典型6 × 1.0
+  dischargeMomentumDamage: 6.0, // 勢いの典型6 × 1.0 (緑 勢いの網 2026-09-04)
+  dischargeMomentumGrowth: 12.0, // 勢い6 ÷ 2 = 成長3 × 4.0
   dischargeBurn: 6.0, // 放出時の延焼の典型6 × 1.0 (DoTを手放す対価込み)
   dischargeGrowth: 5.0, // 放出時の典型成長5 (2026-08-31 収穫軸化)
   dischargeGrowthBlock: 5.0,

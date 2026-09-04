@@ -2210,5 +2210,53 @@
         "count": 1
       }
     ]
+  },
+  {
+    "id": "deck_momentum",
+    "name": "勢いの道",
+    "color": "green",
+    "description": "勢いの理想形（2026-09-04 勢いの網）。軽く積む→倍にする→一突きで吐く、の順序パズル",
+    "cards": [
+      {
+        "cardId": "green_sprint",
+        "count": 2
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 2
+      },
+      {
+        "cardId": "green_horn_stance",
+        "count": 2
+      },
+      {
+        "cardId": "green_tailwind",
+        "count": 2
+      },
+      {
+        "cardId": "green_horn_thrust",
+        "count": 2
+      },
+      {
+        "cardId": "green_horn_storm",
+        "count": 1
+      },
+      {
+        "cardId": "green_wind_wall",
+        "count": 1
+      },
+      {
+        "cardId": "green_charging_horn",
+        "count": 1
+      },
+      {
+        "cardId": "green_gale_horn",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      }
+    ]
   }
 ]

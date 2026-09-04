@@ -64,6 +64,8 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
     card.def.freeIfHandAllPhysical === true &&
     state.player.hand.every((c) => c.uid === card.uid || c.def.type === 'physical')
   ) return up
+  // 勢い参照 (追い風): 勢いがN以上なら0E (緑 勢いの網 2026-09-04。「軽く積める勢い」をテンポに還元する口)
+  if (card.def.freeIfMomentumAtLeast !== undefined && state.player.momentum >= card.def.freeIfMomentumAtLeast) return up
   // 素のコスト0のカードは割引と無縁 (消費しない既存則) — オーラの重さはそのまま払う
   // (0マナ手数への圧が重圧オーラの狙い)
   if (card.def.cost === 0) return up
@@ -418,6 +420,7 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     }
     if (c.blaze === true && !isBlazing(state)) return false
     if (c.minGrowth !== undefined && state.player.growth < c.minGrowth) return false
+    if (c.minMomentum !== undefined && state.player.momentum < c.minMomentum) return false
     return true
   })
 }
@@ -866,7 +869,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return dealDamageToEnemy(
         state,
         enemyIndex,
-        (effect.amount ?? 0) + (effect.growthMultiplier !== undefined ? state.player.growth * (effect.growthMultiplier - 1) : 0),
+        (effect.amount ?? 0) +
+          (effect.growthMultiplier !== undefined ? state.player.growth * (effect.growthMultiplier - 1) : 0) +
+          // momentumMultiplier (猛進の角): 勢い×(N-1) を足す (勢いも dealDamageToEnemy が1回乗せる) = 勢い×N
+          (effect.momentumMultiplier !== undefined ? state.player.momentum * (effect.momentumMultiplier - 1) : 0),
         effect.pierce,
       )
     case 'dealDamagePerAttackPlayed':
@@ -1331,6 +1337,33 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       s = emit(s, { type: 'BlockGained', target: 'player', amount: block })
       return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
+    case 'dischargeMomentumDamage': {
+      // 角の一突き・嵐の角 (緑 勢いの網 2026-09-04): 勢い×amount のダメージを与え、勢いを全て失う。
+      // 放出に勢い加算は乗らない (成長放出と同じ裁定: 放出は自分自身を二重に数えない) = 先に0にしてから解決。
+      // target:'all' は最初の呼び出しで生存全体へ一括解決する (外側の敵ループの2体目以降は勢い0で no-op)
+      const spent = state.player.momentum
+      if (spent <= 0) return state
+      const dmg = spent * (effect.amount ?? 0)
+      let s: GameState = { ...state, player: { ...state.player, momentum: 0 } }
+      s = emit(s, { type: 'MomentumDischarged', spent })
+      if (effect.target === 'all') {
+        for (let i = 0; i < s.enemies.length; i++) {
+          if (s.enemies[i].hp > 0) s = dealDamageToEnemy(s, i, dmg, effect.pierce)
+        }
+        return s
+      }
+      return dealDamageToEnemy(s, enemyIndex, dmg, effect.pierce)
+    }
+    case 'dischargeMomentumGrowth': {
+      // 根付く勢い (緑 2026-09-04): 勢いを全て失い、その 1/amount (切り上げ) を成長に変える = 刹那の資源を永続へ還元 (グルールの橋)
+      const spent = state.player.momentum
+      if (spent <= 0) return state
+      const gained = Math.ceil(spent / Math.max(1, effect.amount ?? 2))
+      let s: GameState = { ...state, player: { ...state.player, momentum: 0, growth: state.player.growth + gained } }
+      s = emit(s, { type: 'MomentumDischarged', spent })
+      s = emit(s, { type: 'GrowthAdded', amount: gained })
+      return gained > 0 ? fireGainTrigger(s, 'onGrowthGained', enemyIndex) : s
+    }
     case 'dealDamageCleave': {
       // キル連鎖: 対象にXダメージ。倒れたら別の生存敵に同値 (確定済みルール表「キル連鎖」)
       let s = dealDamageToEnemy(state, enemyIndex, effect.amount ?? 0, effect.pierce)
@@ -1479,6 +1512,7 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
   }
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
+  if (effect.condition?.minMomentum !== undefined && state.player.momentum < effect.condition.minMomentum) return false
   // HP割合条件 (2026-09-03 不動の根=HP50%以下で開幕ブロック。リアクション窓と同じ判定を置物/onPlay にも)
   if (
     effect.condition?.hpAtOrBelowRatio !== undefined &&

@@ -273,6 +273,7 @@ export interface EffectCondition {
    * onPlay・置物トリガー・リアクション窓のすべてで「解決の時点」に判定する)
    */
   readonly minGrowth?: number
+  readonly minMomentum?: number // 勢いしきい値 (緑 勢いの網 2026-09-04。解決時の勢いがN以上)
   /**
    * 猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上**
    * なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝
@@ -492,6 +493,7 @@ export type GameEvent =
   | { readonly type: 'CardGrew'; readonly cardId: string; readonly bonus: number } // 育つ札: 累計加算
   | { readonly type: 'CardUpgradedInHand'; readonly cardId: string } // 手札で鍛える
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
+  | { readonly type: 'MomentumDischarged'; readonly spent: number } // 勢い放出 (角の一突き・根付く勢い。緑 2026-09-04)
   | { readonly type: 'HpHealed'; readonly amount: number } // 回復 (白)
   | { readonly type: 'CardsMilled'; readonly count: number; readonly cardIds?: readonly string[] } // 忘却=山札からの消滅 (黒)。cardIds=何が墓地へ行ったか (2026-08-31 可視化)
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
@@ -584,6 +586,8 @@ export interface DeclarativeEffect {
   readonly condition?: EffectCondition
   /** ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03) */
   readonly growthMultiplier?: number
+  /** 勢いが×Nで乗る (猛進の角=大牙の勢い版。緑 勢いの網 2026-09-04)。dealDamage 専用 */
+  readonly momentumMultiplier?: number
   readonly effect:
     | 'dealDamage'
     | 'gainBlock'
@@ -660,6 +664,8 @@ export interface DeclarativeEffect {
     | 'dischargeGrowth' // 成長放出: 成長×Xダメージを与え、成長を全て失う (緑)
     | 'dischargeMomentumBurn' // 火移し (赤): 勢い×amount の延焼を与え、勢いを全て失う (手数→猛り火の橋)
     | 'dischargeMomentumBlock' // 余勢の構え (赤): 勢い×amount のブロックを得て、勢いを全て失う (攻めの勢いが守りになる)
+    | 'dischargeMomentumDamage' // 角の一突き (緑 2026-09-04): 勢い×amount のダメージを与え、勢いを全て失う (放出に勢い加算は乗らない。target:'all' は一括解決)
+    | 'dischargeMomentumGrowth' // 根付く勢い (緑 2026-09-04): 勢いを全て失い、その 1/amount (切り上げ) を成長に変える (勢い→成長の還元=グルールの橋)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCards'
     | 'script'
@@ -796,6 +802,8 @@ export interface CardDef {
   readonly retain?: boolean
   /** 手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03) */
   readonly freeIfHandAllPhysical?: boolean
+  /** 勢いがN以上ならこのカードは0E (追い風。緑 勢いの網 2026-09-04。重圧の上乗せは残る) */
+  readonly freeIfMomentumAtLeast?: number
   /** 急所を持つ敵が生存していれば消滅しない (樹液=本家 Dropkick 型。exhaust と併用) */
   readonly exhaustUnlessExposedEnemy?: boolean
   /** 亡骸プレイ (黒 2026-08-31): 消滅置き場からNエナジーで一度だけプレイできる。プレイ後はゲームから完全に取り除かれる (刻の燃料も減る)。割引 (discountNext) の対象外 */

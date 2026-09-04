@@ -83,6 +83,11 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
     const hasFlat = card.def.effects.some((e) => e.effect === 'dealDamage')
     return state.player.growth >= (hasFlat ? 2 : 4)
   }
+  // 勢い放出 (緑 勢いの網 2026-09-04): 固定ダメージ持ちは勢い2以上、純放出は3以上で撃つ (0で撃つと空振り)
+  if (card.def.effects.some((e) => e.effect === 'dischargeMomentumDamage' || e.effect === 'dischargeMomentumGrowth')) {
+    const hasFlat = card.def.effects.some((e) => e.effect === 'dealDamage')
+    return state.player.momentum >= (hasFlat ? 2 : 3)
+  }
   // 自傷カードはHPに余裕がないと自殺 (loseHp合計+5のマージン)
   const selfHarm = card.def.effects
     .filter((e) => e.effect === 'loseHp')
