@@ -1056,6 +1056,11 @@ export function playCard(
     if (chosenMode) {
       // 虚弱の判定用フラグ (resolveOnPlayEffects と同じ扱い。モード効果もカードのプレイ)
       s = { ...s, resolvingCardPlay: true }
+      // 共通部 (2026-09-05 工房「効果の合体」: 選択式に相手の効果を足す時の置き場) はモードを問わず先に解決する。
+      // 現行の選択式は effects が空なので挙動は不変
+      for (const effect of effCard.def.effects) {
+        if (effect.trigger === 'onPlay') s = resolveEffectTargeted(s, effect, enemyIndex)
+      }
       for (const effect of chosenMode.effects) {
         s = resolveEffectTargeted(s, effect, enemyIndex)
       }
@@ -1065,7 +1070,7 @@ export function playCard(
     }
   }
   // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
-  const resolvedEffects = chosenMode ? chosenMode.effects : effCard.def.effects.filter((e) => e.trigger === 'onPlay')
+  const resolvedEffects = chosenMode ? [...effCard.def.effects.filter((e) => e.trigger === 'onPlay'), ...chosenMode.effects] : effCard.def.effects.filter((e) => e.trigger === 'onPlay')
   if (resolvedEffects.some(isDamageEffect)) {
     // 攻撃数参照 (2026-09-03): 自身の解決後に加算 = 薙ぎ払いは「自分より前にプレイした攻撃」を数える
     s = { ...s, player: { ...s.player, attacksPlayedThisTurn: (s.player.attacksPlayedThisTurn ?? 0) + 1 } }

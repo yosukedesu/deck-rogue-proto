@@ -4,7 +4,8 @@ import { allCards, getCardDef, getEventDef } from './content.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice } from './run.ts'
 import type { RunState } from './run.ts'
-import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
+import { applyCommand } from './state.ts'
+import { chooseToward, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { CardInstance, GameState } from './types.ts'
 
 const inst = (id: string, uid = `t_${id}`): CardInstance => ({ uid, def: getCardDef(id) })
@@ -52,84 +53,180 @@ function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
 }
 
 /** 窮鼠の大牙 (2026-09-03 撤去) 相当の条件付きリアクション。条件違いの同種効果が別効果のまま残る規約のテスト用 */
-const cornered = () => ({ uid: 'cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } })
 
-describe('計算合成', () => {
-  it('同種効果は量が合算され、コストはVPから逆算される (打撃系2枚 → 1枚)', () => {
-    const def = fuseCards(inst('green_fang'), inst('green_serpent_gulp')) // 14貫通 + 20(捨て1)
-    expect(def.effects.some((e) => e.effect === 'dealDamage')).toBe(true)
-    expect(def.cost).toBeGreaterThanOrEqual(1)
-    expect(def.cost).toBeLessThanOrEqual(5) // 2026-08-30: 3E頭打ちを5Eへ開放 (価値保存とセット)
-    expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
-    expect(def.color).toBe('green')
+describe('効果の合体 (2026-09-05 ユーザー裁定「工房は全て合成できるようにしたい」→ ask_user A/A/A/A)', () => {
+  it('2枚の効果を全部持ち、コストは合計−1: 牙の一撃(2E 17貫)×荒角の構え(1E ブロック6+勢い3) → 2E', () => {
+    const def = fuseCards(inst('green_fang'), inst('green_horn_stance'))
+    expect(def.cost).toBe(2)
+    expect(def.effects.find((e) => e.effect === 'dealDamage')?.amount).toBe(17)
+    expect(def.effects.find((e) => e.effect === 'dealDamage')?.pierce).toBe(true)
+    expect(def.effects.find((e) => e.effect === 'gainBlock')?.amount).toBe(6)
+    expect(def.effects.find((e) => e.effect === 'addMomentum')?.amount).toBe(3)
   })
 
   it('決定的: 同じ素材からは常に同じ結果 (順序も問わない)', () => {
-    const ab = fuseCards(inst('green_fang'), inst('green_bark_armor'))
-    const ab2 = fuseCards(inst('green_fang'), inst('green_bark_armor'))
-    expect(JSON.stringify(ab)).toBe(JSON.stringify(ab2))
+    const x = fuseCards(inst('green_strike'), inst('green_growth_ring'))
+    const y = fuseCards(inst('green_growth_ring'), inst('green_strike'))
+    expect(JSON.stringify(x)).toBe(JSON.stringify(y))
   })
 
   it('レシピが最優先される (年輪×二連の蔦打ち → 蔦車輪)', () => {
     const def = fuseCards(inst('green_growth_ring'), inst('green_double_lash'))
-    expect(def.id).toBe('fusion_vine_wheel')
-    const rev = fuseCards(inst('green_double_lash'), inst('green_growth_ring'))
-    expect(rev.id).toBe('fusion_vine_wheel') // 順序を問わない
+    expect(def.name).toBe('蔦車輪')
   })
 
-  it('タイプ跨ぎ合成は許可される (2026-08-28 支配順位で解禁。旧仕様の同タイプ制限は撤廃)', () => {
-    expect(fuseBlockReason(inst('green_strike', 'u1'), inst('green_strike', 'u2'))).toBeNull() // 同名=真・化
-    expect(fuseBlockReason(inst('green_strike'), inst('green_flash_insight'))).toBeNull() // 物理×呪文
-    expect(
-      fuseBlockReason(inst('green_reaction_thorns'), cornered()),
-    ).toBeNull() // 異名リアクション同士も計算合成できる (条件は別効果のまま保持)
-    expect(fuseBlockReason(inst('green_strike'), inst('green_reaction_thorns'))).toBeNull() // 物理×リアクション
-    expect(fuseBlockReason(inst('green_strike'), inst('green_perm_growth_tree'))).toBeNull() // 物理×置物
+  it('両方0Eなら0E、1E×1Eは1E、3E×3Eは5E (上限)', () => {
+    expect(fuseCards(inst('green_sprint'), inst('green_twig_strike')).cost).toBe(0)
+    expect(fuseCards(inst('green_strike'), inst('green_guard')).cost).toBe(1)
+    expect(fuseCards(inst('green_sig_trample'), inst('green_charging_horn')).cost).toBe(5)
   })
 
-  it('選択式 (modes) と機械査定できない効果は引き続き合成不可', () => {
-    expect(fuseBlockReason(inst('green_strike'), inst('green_ramp_sprout'))).not.toBeNull() // gainEnergyMax
+  it('査定できなかった効果も合成できる: 薙ぎ払い(攻撃数参照)×牙の一撃・大牙(成長×3)×打撃・追い風(条件0E)×打撃', () => {
+    for (const [x, y] of [['green_sweep', 'green_fang'], ['green_harvest_strike', 'green_strike'], ['green_tailwind', 'green_strike']]) {
+      expect(fuseBlockReason(inst(x), inst(y))).toBeNull()
+      const def = fuseCards(inst(x), inst(y))
+      expect(def.effects.length).toBeGreaterThan(0)
+    }
+    const heavy = fuseCards(inst('green_harvest_strike'), inst('green_strike'))
+    expect(heavy.effects.find((e) => e.growthMultiplier !== undefined)?.growthMultiplier).toBe(3) // 倍率は引き継ぐ
+    const tail = fuseCards(inst('green_tailwind'), inst('green_strike'))
+    expect(tail.freeIfMomentumAtLeast).toBe(5) // 条件の0E化も引き継ぐ
   })
 
-  it('スモーク: 緑×緑の全組み合わせで不変条件が守られる', () => {
-    const greens = allCards.filter((c) => c.color === 'green')
-    const REFILL = new Set([
-      'drawCards', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'impulseDraw',
-      'retrieveFromExhaust', 'playFromExhaust',
-    ])
-    let fusable = 0
-    for (let i = 0; i < greens.length; i++) {
-      for (let j = i + 1; j < greens.length; j++) {
-        const a = { uid: `a${i}`, def: greens[i] }
-        const b = { uid: `b${j}`, def: greens[j] }
-        if (fuseBlockReason(a, b) !== null) continue
-        fusable++
+  it('選択式: 相手の効果は共通部 (effects) に入り、モードは残る。X札はX参照を保つ', () => {
+    const mode = fuseCards(inst('green_mode_crossroads'), inst('green_strike'))
+    expect(mode.modes?.length).toBe(2)
+    expect(mode.effects.some((e) => e.effect === 'dealDamage' && e.amount === 6)).toBe(true)
+    const x = fuseCards(inst('green_x_vine_flurry'), inst('green_strike'))
+    expect(x.xCost).toBe(true)
+    expect(x.effects.some((e) => e.xHits === true)).toBe(true)
+    expect(x.effects.some((e) => e.effect === 'dealDamage' && e.xHits !== true && e.amount === 6)).toBe(true)
+  })
+
+  it('選択式の共通部はモードを問わず解決される (engine)', () => {
+    const def = fuseCards(inst('green_mode_crossroads'), inst('green_strike'))
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [])
+    s = { ...s, player: { ...s.player, hand: [{ uid: 'f0', def }], energy: 3 } }
+    const hp0 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 'f0', modeIndex: 1, targetIndex: 0 }) // 育成モード (成長+2) を選んでも共通部の6ダメが出る
+    expect(hp0 - s.enemies[0].hp).toBe(6)
+    expect(s.player.growth).toBe(2)
+  })
+
+  it('歯止め: 倍化を含めば消滅、0E+補充なら消滅、リアクションは2E上限', () => {
+    const bloom = fuseCards(inst('green_sig_rite_of_bloom'), inst('green_strike'))
+    expect(bloom.exhaust).toBe(true)
+    const draw = fuseCards(inst('green_sprint'), inst('green_wild_sprout')) // 0E勢い3 × 0E成長1+1ドロー(消滅)
+    expect(draw.exhaust).toBe(true)
+    const trap = fuseCards(inst('green_reaction_tree_warden'), inst('green_fang')) // 2E反応 × 2E攻撃 → 3にならない
+    expect(trap.type).toBe('reaction')
+    expect(trap.cost).toBeLessThanOrEqual(2)
+  })
+
+  it('スモーク: 緑×緑の全ペアが合成でき、不変条件 (0E+補充=消滅・倍化=消滅・コスト0〜5) が守られる', () => {
+    const pool = allCards.filter((c) => c.color === 'green' && !c.id.endsWith('_token'))
+    const REFILL = new Set(['drawCards', 'impulseDraw', 'retrieveFromExhaust', 'playFromExhaust', 'drawCardsPerCardPlayed'])
+    for (let i = 0; i < pool.length; i++) {
+      for (let j = i; j < pool.length; j++) {
+        const a = inst(pool[i].id, `a${i}`)
+        const b = inst(pool[j].id, `b${j}`)
+        expect(fuseBlockReason(a, b), `${pool[i].name}×${pool[j].name}`).toBeNull()
         const def = fuseCards(a, b)
-        // コストは1〜5E (2026-08-30: 3E頭打ちだと「7E相当の素材が3Eで出る」効率2.3倍が
-        // 構造的に発生していた。レシピは手書き裁定なので別枠)
-        const isRecipe = def.id.startsWith('fusion_')
-        if (!isRecipe) {
-          expect(def.cost, def.id).toBeGreaterThanOrEqual(1)
-          expect(def.cost, def.id).toBeLessThanOrEqual(5)
-          // 派手枠は3効果まで (多段ヒットのダメージ群は1つと数える)
-          const dmgCount = def.effects.filter((e) => e.effect === 'dealDamage').length
-          const conceptual = def.effects.length - dmgCount + (dmgCount > 0 ? 1 : 0)
-          expect(conceptual, def.id).toBeLessThanOrEqual(3)
+        const all = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+        expect(def.cost).toBeGreaterThanOrEqual(0)
+        expect(def.cost).toBeLessThanOrEqual(5)
+        if (def.type !== 'permanent' && def.xCost !== true) {
+          const net = all.filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext').reduce((acc, e) => acc + (e.amount ?? 0), 0)
+          if (net - def.cost >= 0 && all.some((e) => REFILL.has(e.effect))) expect(def.exhaust, `${def.name}: 0E+補充`).toBe(true)
+          if (all.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleMomentum')) expect(def.exhaust, `${def.name}: 倍化`).toBe(true)
         }
-        // 無限ループ規約: 正味の値段が0以上 + 補充 → 消滅必須
-        const net = def.effects
-          .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
-          .reduce((acc, e) => acc + (e.amount ?? 0), 0)
-        if (net - def.cost >= 0 && def.effects.some((e) => REFILL.has(e.effect))) {
-          expect(def.exhaust, `${def.id} はループ規約により消滅必須`).toBe(true)
-        }
-        // gainEnergyMax を持つなら消滅必須
-        if (def.effects.some((e) => e.effect === 'gainEnergyMax')) {
-          expect(def.exhaust, def.id).toBe(true)
-        }
+        if (def.type === 'reaction') expect(def.cost).toBeLessThanOrEqual(2)
       }
     }
-    expect(fusable).toBeGreaterThan(100) // 合成可能な組が十分にある
+  })
+})
+
+describe('タイプ跨ぎ合成 = 支配順位 (置物＞リアクション＞呪文＞物理)', () => {
+  it('物理×リアクション → 罠に吸収: 打撃×茨の返し = 被攻撃後6ダメ+返し10 (1E)', () => {
+    const def = fuseCards(inst('green_strike'), inst('green_reaction_thorns'))
+    expect(def.type).toBe('reaction')
+    expect(def.cost).toBe(1)
+    expect(def.effects.some((e) => e.trigger === 'onAttacked' && e.effect === 'dealDamage' && e.amount === 6)).toBe(true)
+    expect(def.effects.some((e) => e.trigger === 'onAttacked' && e.effect === 'counter' && e.amount === 10)).toBe(true)
+  })
+
+  it('置物化: 打撃6×年輪の大樹 → 毎ターン2ダメ (÷3切り上げ) + 成長1 + 登場時ブロック5。コストは2E (1+2−1)', () => {
+    const def = fuseCards(inst('green_strike'), inst('green_perm_growth_tree'))
+    expect(def.type).toBe('permanent')
+    expect(def.cost).toBe(2)
+    expect(def.effects.some((e) => e.trigger === 'onTurnStart' && e.effect === 'dealDamage' && e.amount === 2)).toBe(true)
+    expect(def.effects.some((e) => e.trigger === 'onTurnStart' && e.effect === 'addGrowth' && e.amount === 1)).toBe(true)
+  })
+
+  it('置物化: 量の無い効果 (打ち消し) は登場時に1回 (根の紡ぎ×年輪の大樹)', () => {
+    const def = fuseCards(inst('green_reaction_root_weave'), inst('green_perm_growth_tree'))
+    expect(def.type).toBe('permanent')
+    expect(def.effects.some((e) => e.effect === 'negate' && e.trigger === 'onPlay')).toBe(true)
+  })
+
+  it('置物化で誘発できない窓は onTurnStart に落ちる (共鳴する茨 onEnemyBuffed 成長4 → 毎T成長2)', () => {
+    const def = fuseCards(inst('green_reaction_resonance'), inst('green_perm_growth_tree'))
+    const g = def.effects.filter((e) => e.effect === 'addGrowth' && e.trigger === 'onTurnStart')
+    expect(g.length).toBeGreaterThan(0)
+  })
+})
+
+describe('特性の掛け合わせ (多段合算・貫通・全体の伝播)', () => {
+  it('多段×貫通: 二連の蔦打ち(5×2)×追い風(6貫通) → 貫通3ヒット、合計16を按分', () => {
+    const def = fuseCards(inst('green_double_lash'), inst('green_tailwind'))
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
+    expect(dmgs).toHaveLength(3)
+    expect(dmgs.every((e) => e.pierce === true)).toBe(true)
+    expect(dmgs[0].amount).toBe(Math.ceil(16 / 3))
+    expect(def.name.endsWith('乱撃')).toBe(true)
+  })
+
+  it('全体×貫通: 薙ぎ払い×牙の一撃 → 全体貫通 (攻撃数参照は共通部に残る)', () => {
+    const def = fuseCards(inst('green_sweep'), inst('green_fang'))
+    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
+    expect(dmg.target).toBe('all')
+    expect(dmg.pierce).toBe(true)
+    expect(def.effects.some((e) => e.effect === 'dealDamagePerAttackPlayed')).toBe(true)
+    expect(def.name.endsWith('嵐')).toBe(true)
+  })
+
+  it('多段×大打点: 蔦の乱舞(2×5)×大蛇の丸呑み(34) → 5ヒットに按分 (成長が5回乗る)。追加コストは引き継ぐ', () => {
+    const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
+    expect(dmgs).toHaveLength(5)
+    expect(dmgs[0].amount).toBe(Math.ceil(44 / 5))
+    expect(def.discardCost).toBe(1)
+  })
+})
+
+describe('同名合成 =「真・」化', () => {
+  it('打撃×打撃 → 真・打撃 12ダメ・1E (量は合算、コストは合計−1)', () => {
+    const def = fuseCards(inst('green_strike', 'a'), inst('green_strike', 'b'))
+    expect(def.name).toBe('真・打撃')
+    expect(def.cost).toBe(1)
+    expect(def.effects.find((e) => e.effect === 'dealDamage')?.amount).toBe(12)
+  })
+
+  it('茨の返し×2 → 返し20 (同名リアクションも合成できる)', () => {
+    const def = fuseCards(inst('green_reaction_thorns', 'a'), inst('green_reaction_thorns', 'b'))
+    expect(def.type).toBe('reaction')
+    expect(def.effects.find((e) => e.effect === 'counter')?.amount).toBe(20)
+  })
+
+  it('量を持たない同種効果は重複しない (根の紡ぎ×2 → 打ち消しは1つ・成長は合算)', () => {
+    const def = fuseCards(inst('green_reaction_root_weave', 'a'), inst('green_reaction_root_weave', 'b'))
+    expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
+    expect(def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(4)
+  })
+
+  it('選択式の同名合成: モードが連結され、共通部は空のまま', () => {
+    const def = fuseCards(inst('green_mode_crossroads', 'a'), inst('green_mode_crossroads', 'b'))
+    expect(def.modes?.length).toBe(4)
   })
 })
 
@@ -233,217 +330,6 @@ describe('強化の3段仕様 (2026-08-27 仕様会議)', () => {
   })
 })
 
-describe('タイプ跨ぎ合成 = 支配順位 (2026-08-28。置物＞リアクション＞呪文＞物理)', () => {
-  it('物理×呪文 → 呪文 (魔力が混ざれば呪文。確定済み定義と整合)', () => {
-    const def = fuseCards(inst('green_strike'), inst('green_growth_ring'))
-    expect(def.type).toBe('spell')
-    expect(def.effects.find((e) => e.effect === 'dealDamage')!.trigger).toBe('onPlay')
-    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(2)
-  })
-
-  it('物理×リアクション → 罠に吸収: 打撃×茨の返し = 被攻撃後10ダメ+返し10 (onPlay効果が残らない)', () => {
-    const def = fuseCards(inst('green_strike'), inst('green_reaction_thorns'))
-    expect(def.type).toBe('reaction')
-    expect(def.name.endsWith('の罠')).toBe(true)
-    // 全効果がリアクション窓 = 伏せて発動する札として合法 (onPlayが残ると設定できない札になる)
-    expect(def.effects.every((e) => e.trigger !== 'onPlay')).toBe(true)
-    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
-    expect(dmg.trigger).toBe('onAttacked') // 支配側 (茨の返し) の主窓に吸収
-    expect(dmg.amount).toBe(10) // 合成プレミアム×1.25 (2026-09-01) で 6→10
-    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(10)
-  })
-
-  it('異名リアクション同士: 条件の異なる同種効果は合算されない (無条件9と HP半分以下20 は別のまま)', () => {
-    const def = fuseCards(inst('green_reaction_thorns'), cornered())
-    expect(def.type).toBe('reaction')
-    const counters = def.effects.filter((e) => e.effect === 'counter')
-    expect(counters).toHaveLength(2)
-    // 2026-08-30: コストは素材の合計 (1E+1E) を超えない。条件付きは期待値係数0.6で
-    // 数えるため圧縮が浅くなる。条件違いが**別の効果のまま**であることは不変。
-    // 合成プレミアム×1.25 (2026-09-01) で 8→10 / 16→20
-    expect(def.cost).toBe(2)
-    expect(counters.some((e) => e.amount === 10 && e.condition === undefined)).toBe(true)
-    expect(counters.some((e) => e.amount === 20 && e.condition?.hpAtOrBelowRatio === 0.5)).toBe(true)
-  })
-
-  it('置物化: 打撃6×年輪の大樹 → 毎ターンダメ (÷3切り上げ) + 成長1。窓の変換則を固定', () => {
-    const def = fuseCards(inst('green_strike'), inst('green_perm_growth_tree'))
-    expect(def.type).toBe('permanent')
-    expect(def.name.endsWith('の大樹')).toBe(true)
-    const dmg = def.effects.find((e) => e.effect === 'dealDamage')!
-    expect(dmg.trigger).toBe('onTurnStart')
-    expect(dmg.amount).toBe(4) // ceil(6/3)=2 に合成プレミアム×1.25 (2026-09-01。プレミアムはスケール可能な量へ集中配分される)
-    const growth = def.effects.find((e) => e.effect === 'addGrowth')!
-    expect(growth.trigger).toBe('onTurnStart')
-    expect(growth.amount).toBe(1) // 置物側は既に毎ターン型なので÷3しない
-    expect(def.exhaust).toBeUndefined() // 置物に消滅は付かない
-    expect(def.cost).toBeGreaterThanOrEqual(2) // 寿命込み (×3) の値付けで安売りしない
-  })
-
-  it('置物の値付けは寿命込み: 真・年輪の大樹 (毎ターン成長+2) は4E (一回きり価格の穴を塞いだ)', () => {
-    const def = fuseCards(
-      inst('green_perm_growth_tree', 'u1'),
-      inst('green_perm_growth_tree', 'u2'),
-    )
-    expect(def.name).toBe('真・年輪の大樹')
-    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(2) // 1+1 (÷3の二重割引なし)
-    expect(def.cost).toBe(4) // (4VP×2×寿命3)×0.85 → 4E (2026-08-30 コスト上限の開放で頭打ちが外れた)
-  })
-
-  it('置物化の帯超過は「合成不可」でなく量の圧縮で解消される (2026-08-30 価値保存)', () => {
-    // 旧実装は 巨獣の踏みつけ×年輪の大樹 を「置物に収まらない」で弾いていた。
-    // 価値保存で素材VPの85%に収まるよう量を逆算するので、弾かずに成立する
-    // (ユーザー方針: 合成不可は増やさない)
-    expect(fuseBlockReason(inst('green_finisher_stomp'), inst('green_perm_growth_tree'))).toBeNull()
-    const def = fuseCards(inst('green_finisher_stomp'), inst('green_perm_growth_tree'))
-    expect(def.type).toBe('permanent')
-    expect(def.exhaust).toBeUndefined() // 置物に消滅は付かない
-    expect(def.cost).toBeLessThanOrEqual(5)
-  })
-
-  it('置物化の禁則②: 量を持たない効果 (negate) は毎ターン化できず合成不可 (根の紡ぎ×年輪の大樹)', () => {
-    expect(
-      fuseBlockReason(inst('green_reaction_root_weave'), inst('green_perm_growth_tree')),
-    ).toContain('置物化できない')
-  })
-
-  it('置物化で誘発できない窓は onTurnStart に落ちる (共鳴する茨 onEnemyBuffed は置物で誘発しない)', () => {
-    const def = fuseCards(inst('green_reaction_vine'), inst('green_perm_growth_tree'))
-    // 守りの蔓 (onAttackIncoming ブロック12) → 置物はこの窓で誘発できるので窓を保持し÷3
-    const blk = def.effects.find((e) => e.effect === 'gainBlock' && e.trigger === 'onAttackIncoming')!
-    expect(blk.amount).toBe(4) // ceil(12/3)=4 → 素材合計3Eへの圧縮で3 → プレミアム×1.25で4へ復帰
-    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(1) // 置物側は据え置き
-  })
-
-  it('スモーク: 緑×緑の全組み合わせでタイプ跨ぎの不変条件が守られる', () => {
-    const greens = allCards.filter((c) => c.color === 'green')
-    const RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
-    // 置物にディスパッチされないトリガー = 置物結果が持っていたら死に効果
-    // (onPlay はプレイ時に解決されるので置物でも生きている。2026-08-29 大樹の登場時ブロック対応)
-    const PERM_DEAD = new Set(['onEnemyAction', 'onEnemyBuffed', 'onEnemyDefended'])
-    // 予算に合わせて削れる「量」の効果 (engine/fusion.ts の BLOCKY + ダメージ)
-    const SCALABLE = new Set([
-      'dealDamage',
-      'gainBlock',
-      'gainIceBlock',
-      'counter',
-      'gainHp',
-      'applyBurn',
-      'dealDamageDrain',
-      'dealDamageRandom',
-    ])
-    for (let i = 0; i < greens.length; i++) {
-      for (let j = i + 1; j < greens.length; j++) {
-        const a = { uid: `a${i}`, def: greens[i] }
-        const b = { uid: `b${j}`, def: greens[j] }
-        if (fuseBlockReason(a, b) !== null) continue
-        const def = fuseCards(a, b)
-        if (def.id.startsWith('fusion_')) continue // レシピは手書き裁定
-        // 結果タイプ = 支配順位の高い側
-        expect(RANK[def.type], def.id).toBe(Math.max(RANK[greens[i].type], RANK[greens[j].type]))
-        // リアクション結果に onPlay 効果が残らない (伏せ札の合法性)
-        if (def.type === 'reaction') {
-          expect(def.effects.every((e) => e.trigger !== 'onPlay'), def.id).toBe(true)
-        }
-        // 置物結果は死に効果 (置物にディスパッチされないトリガー) と消滅を持たない
-        if (def.type === 'permanent') {
-          expect(def.effects.every((e) => !PERM_DEAD.has(e.trigger)), def.id).toBe(true)
-          expect(def.exhaust, def.id).toBeUndefined()
-        }
-        // 圧縮なのに重くなる、を禁じる (2026-08-30)。削れる「量」を持つ合成はコストが
-        // 素材コストの合計を超えない (超える分は出力を削って払う)
-        // 置物は除く: 値付けが寿命込み (×3) なので、素材より重くなるのが正しい姿
-        if (def.type !== 'permanent' && def.effects.some((e) => SCALABLE.has(e.effect))) {
-          const sum = Math.max(1, greens[i].cost + greens[j].cost) // 0E同士は下限1E
-          expect(def.cost, def.id).toBeLessThanOrEqual(sum)
-        }
-      }
-    }
-  })
-})
-
-describe('赤の工房 (2026-08-30 全色開放後の赤対応)', () => {
-  it('猛り火条件付きダメージは条件ごと引き継がれる (平坦化しない)', () => {
-    // 猛り火の一撃 (5 + {猛}7) × 火弾 (6): 無条件分だけが合算され、{猛}7は条件のまま残る
-    const def = fuseCards(inst('red_blaze_strike'), inst('red_strike'))
-    const uncond = def.effects.filter((e) => e.effect === 'dealDamage' && e.condition === undefined)
-    const blaze = def.effects.filter((e) => e.effect === 'dealDamage' && e.condition?.blaze === true)
-    expect(uncond.length).toBeGreaterThan(0)
-    expect(blaze).toHaveLength(1)
-    expect(blaze[0].amount).toBe(7)
-  })
-
-  it('乱数札は平均値で値付けされる (最小値査定の350%価値漏れの再発防止)', () => {
-    // 火運の賭け (乱2〜16 = 平均9) × とどめの一撃 (処刑10〜28 = 平均19)
-    const def = fuseCards(inst('red_gamble'), inst('red_final_blow'))
-    expect(def.cost).toBeGreaterThanOrEqual(3) // 旧実装は最小値査定で1Eになっていた
-  })
-
-  it('今日の新効果 (火移し・一擲乾坤・業腹) が合成可能 (VP表に典型参照量で登録)', () => {
-    expect(fuseBlockReason(inst('red_fire_shift'), inst('red_strike'))).toBeNull()
-    expect(fuseBlockReason(inst('red_all_in'), inst('red_strike'))).toBeNull()
-    expect(fuseBlockReason(inst('red_spite'), inst('red_strike'))).toBeNull()
-  })
-
-  it('名前に赤語彙が出る (緑v1の 樹/牙 だけにならない)', () => {
-    const def = fuseCards(inst('red_ignite'), inst('red_ember'))
-    expect(def.name).toContain('焔') // 着火×くすぶる残り火 = 延焼が主役
-  })
-
-  it('赤×赤の全組み合わせでコスト契約と支配順位が守られる', () => {
-    const reds = allCards.filter((c) => c.color === 'red')
-    const RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
-    for (let i = 0; i < reds.length; i++) {
-      for (let j = i + 1; j < reds.length; j++) {
-        const a = { uid: `a${i}`, def: reds[i] }
-        const b = { uid: `b${j}`, def: reds[j] }
-        if (fuseBlockReason(a, b) !== null) continue
-        const def = fuseCards(a, b)
-        if (def.id.startsWith('fusion_')) continue
-        expect(RANK[def.type], def.id).toBe(Math.max(RANK[reds[i].type], RANK[reds[j].type]))
-        if (def.type === 'reaction') {
-          expect(def.effects.every((e) => e.trigger !== 'onPlay'), def.id).toBe(true)
-        }
-        // 圧縮なのに重くなる、を禁じる (置物は寿命込み値付けなので除外)
-        const SCALABLE = new Set(['dealDamage', 'gainBlock', 'gainIceBlock', 'counter', 'gainHp', 'applyBurn', 'dealDamageDrain', 'dealDamageRandom'])
-        if (def.type !== 'permanent' && def.effects.some((e) => SCALABLE.has(e.effect))) {
-          const sum = Math.max(1, reds[i].cost + reds[j].cost)
-          expect(def.cost, def.id).toBeLessThanOrEqual(sum)
-        }
-      }
-    }
-  })
-})
-
-describe('特性の掛け合わせ (2026-08-27。「合成なんだから特性を掛け合わせたい」)', () => {
-  it('多段×貫通: 二連の蔦打ち(5×2)×追い風(6貫通) → 貫通の多段ヒット (荒角の一撃は2026-09-05 撤去)', () => {
-    const def = fuseCards(inst('green_double_lash'), inst('green_tailwind'))
-    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
-    expect(dmgs).toHaveLength(3) // ヒット合算 (2026-08-30): 2+1=3ヒット (旧: 最大側の2に按分)
-    expect(dmgs.every((e) => e.pierce === true)).toBe(true) // 貫通が全ヒットへ伝播
-    expect(dmgs[0].amount).toBeGreaterThanOrEqual(4) // 価値保存×プレミアム1.25 (素材の合計VPから逆算)
-  })
-
-  it('全体×貫通: 薙ぎ払い (2026-09-03 攻撃数参照へ作り直し) は査定不能で合成不可', () => {
-    expect(fuseBlockReason(inst('green_sweep'), inst('green_fang'))).not.toBeNull()
-  })
-
-  it('多段×大打点: 蔦の乱舞(2×5)×大蛇の丸呑み(20) → 5ヒットに按分 (成長が5回乗る)', () => {
-    const def = fuseCards(inst('green_sig_vine_dance'), inst('green_serpent_gulp'))
-    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
-    expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(12) // 12×5 (2026-09-02 蔦の乱舞の定義札化=成長+1×5のVPが素材側に乗った。旧11)
-    expect(def.discardCost).toBe(1) // 追加コストは引き継ぐ
-  })
-
-  it('特性が名前に出る (多段=乱撃・全体=嵐)', () => {
-    const multi = fuseCards(inst('green_double_lash'), inst('green_tailwind'))
-    expect(multi.name.endsWith('乱撃')).toBe(true)
-    const aoe = fuseCards(inst('green_sweep'), inst('green_fang'))
-    expect(aoe.name.endsWith('嵐')).toBe(true)
-  })
-})
-
 describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LLM両テスターが報告)', () => {
   // イベントログは cardId しか持たず、描画側が静的カード表 (getCardDef) だけを引いていたため
   // 「未定義カード: fused_*」で UI 全体がクラッシュしていた。resolveFusedDef で復元する。
@@ -501,64 +387,6 @@ describe('焚き火の全カード解放 (2026-08-28。旧: 芽吹きは拒否�
     expect(after.deck[idx].def.name).toBe('芽吹き+')
     expect(after.deck[idx].def.cost).toBe(0)
     expect(after.deck[idx].def.effects[0].amount).toBe(1) // 上限量は据え置き
-  })
-})
-
-describe('同名合成 =「真・」化 (2026-08-28 ユーザー指示「同名カードは倍率上げて強いカードが生成されるべき」)', () => {
-  it('打撃×打撃 → 真・打撃 (量が2枚ぶんに圧縮され、コストはVP逆算で1E)', () => {
-    const def = fuseCards(inst('green_strike', 'u1'), inst('green_strike', 'u2'))
-    expect(def.name).toBe('真・打撃')
-    expect(def.effects.find((e) => e.effect === 'dealDamage')!.amount).toBe(15) // (6+6)×プレミアム1.25
-    expect(def.cost).toBe(1) // コストはプレミアム前のVPから逆算 = 据え置き (工房の目玉)
-  })
-
-  it('蔦の乱舞×蔦の乱舞 → 5ヒットのまま量が倍 (4×5)', () => {
-    const def = fuseCards(inst('green_sig_vine_dance', 'u1'), inst('green_sig_vine_dance', 'u2'))
-    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage')
-    expect(dmgs).toHaveLength(5)
-    expect(dmgs[0].amount).toBe(7) // 2026-09-02 定義札化後 (成長+1×5が合算されるぶん量も伸びる。旧5=(10+10)×1.25/5)
-  })
-
-  it('同名リアクションも合成できる (茨の返し×2 → 返し25。トリガー・条件が同一なので安全)', () => {
-    const a = inst('green_reaction_thorns', 'u1')
-    const b = inst('green_reaction_thorns', 'u2')
-    expect(fuseBlockReason(a, b)).toBeNull()
-    const def = fuseCards(a, b)
-    expect(def.type).toBe('reaction')
-    expect(def.effects.find((e) => e.effect === 'counter')!.amount).toBe(25) // (10+10)×1.25
-    expect(def.name).toBe('真・茨の返し')
-  })
-
-  it('量を持たない同種効果は重複しない (根の紡ぎ×2 → 打ち消しは1つ・成長は合算)', () => {
-    const def = fuseCards(inst('green_reaction_root_weave', 'u1'), inst('green_reaction_root_weave', 'u2'))
-    expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
-    expect(def.effects.find((e) => e.effect === 'addGrowth')!.amount).toBe(4) // 根の紡ぎ2E化 (2026-08-29) で3+3→2+2
-  })
-
-  it('選択式カードは同名でも合成不可 (モード構造を計算合成で作れないため)', () => {
-    expect(fuseBlockReason(inst('green_ramp_sunlight', 'u1'), inst('green_ramp_sunlight', 'u2'))).not.toBeNull()
-  })
-
-  it('スモーク: 緑全カードの同名合成で不変条件が守られる', () => {
-    const greens = allCards.filter((c) => c.color === 'green')
-    for (const g of greens) {
-      const a = { uid: 'sa', def: g }
-      const b = { uid: 'sb', def: g }
-      if (fuseBlockReason(a, b) !== null) continue
-      const def = fuseCards(a, b)
-      expect(def.cost, def.id).toBeGreaterThanOrEqual(1)
-      expect(def.cost, def.id).toBeLessThanOrEqual(5) // 2026-08-30 コスト上限の開放
-      if (def.effects.some((e) => e.effect === 'gainEnergyMax')) {
-        expect(def.exhaust, def.id).toBe(true)
-      }
-      const net = def.effects
-        .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
-        .reduce((acc, e) => acc + (e.amount ?? 0), 0)
-      const REFILL2 = ['drawCards', 'impulseDraw', 'drawCardsPerCardPlayed']
-      if (net - def.cost >= 0 && def.effects.some((e) => REFILL2.includes(e.effect))) {
-        expect(def.exhaust, def.id).toBe(true)
-      }
-    }
   })
 })
 
