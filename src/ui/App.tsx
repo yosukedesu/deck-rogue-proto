@@ -5079,6 +5079,11 @@ function BattleRatingBar({
     if (st !== null && fn !== null) onRate({ strength: st, fun: fn, ...(note.trim() !== '' ? { note: note.trim() } : {}) })
   }
   const committed = rated !== null && rated.strength !== undefined && rated.fun !== undefined
+  // 決着直後は1回だけダイアログで聞く (2026-09-05 ユーザー案「戦闘ごとの評価をダイアログみたいに表示」。
+  // 人間ラン#4が24戦とも未入力=バーは見られていなかった)。決定かスキップで閉じ、以後は従来のバー (追記可) に戻る
+  const [dismissedFor, setDismissedFor] = useState<string | null>(null) // 閉じた戦闘のラベル (戦闘が変われば自動で再表示)
+  const dismissed = dismissedFor === label
+  const showDialog = !committed && !dismissed
   // 入力導線 (2026-09-02 人間ラン#2: 21戦とも未入力=主観データ0への処方)。任意のまま、未入力の間だけ一言促す
   const nudge = !committed ? <span style={{ fontSize: 11, color: 'var(--accent, #fc6)' }}>◀ 次へ進む前に1タップ（任意・調整の材料になります）</span> : null
   const row = (title: string, kind: 'strength' | 'fun', val: number | null) => (
@@ -5096,6 +5101,60 @@ function BattleRatingBar({
       ))}
     </span>
   )
+  if (showDialog) {
+    const canCommit = strength !== null && fun !== null
+    const commit = () => {
+      if (!canCommit) return
+      onRate({ strength: strength!, fun: fun!, ...(note.trim() !== '' ? { note: note.trim() } : {}) })
+      if (note.trim() !== '') onNote(note.trim())
+      setDismissedFor(label)
+    }
+    return (
+      <div className="viewer-overlay" style={{ zIndex: 70, display: 'flex', alignItems: 'center' }} onKeyDown={(e) => { if (e.key === 'Escape') setDismissedFor(label) }}>
+        <div className="viewer-panel" style={{ maxWidth: 520, width: '100%' }} role="dialog" aria-label="戦闘の評価">
+          <div className="viewer-head">
+            <span className="viewer-title">⚔️ {label} はどうでしたか？</span>
+            <span style={{ fontSize: 11, opacity: 0.7 }}>1タップずつ・スキップ可</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+            {row('敵の強さ', 'strength', strength)}
+            {row('面白さ', 'fun', fun)}
+            {lost && (
+              <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center', fontSize: 12 }}>
+                敗因の感触
+                {(['build', 'unfair'] as const).map((f) => (
+                  <button
+                    key={f}
+                    className="chip chip-btn"
+                    style={{ padding: '1px 6px', background: lossFeel === f ? 'rgba(255,120,120,0.45)' : undefined }}
+                    onClick={() => {
+                      setLossFeel(f)
+                      onLossFeel?.(f)
+                    }}
+                  >
+                    {f === 'build' ? '構築の失敗' : '理不尽'}
+                  </button>
+                ))}
+              </span>
+            )}
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && canCommit) commit()
+              }}
+              placeholder="ひとことメモ（任意。理不尽だった瞬間・退屈だった理由など）"
+              style={{ width: '100%', fontSize: 12 }}
+            />
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button className="btn" onClick={() => setDismissedFor(label)}>スキップ</button>
+              <button className="btn btn-primary" disabled={!canCommit} onClick={commit}>決定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div
       style={{
