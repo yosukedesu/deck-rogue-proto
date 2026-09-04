@@ -173,11 +173,11 @@ describe('強化の3段仕様 (2026-08-27 仕様会議)', () => {
     expect(up.def.name).toBe('打撃+')
   })
 
-  it('②コスト-1: 年輪 (成長+2) は 1E→0E になり、量は据え置き', () => {
-    expect(upgradeTier(getCardDef('green_growth_ring'))).toBe('cost')
+  it('②(2026-09-04 本家形) 年輪 (成長+2) は単位+1で成長+3。コストは1のまま', () => {
+    expect(upgradeTier(getCardDef('green_growth_ring'))).toBe('unit')
     const up = upgradeCard(inst('green_growth_ring'))
-    expect(up.def.cost).toBe(0)
-    expect(up.def.effects[0].amount).toBe(2)
+    expect(up.def.cost).toBe(1)
+    expect(up.def.effects[0].amount).toBe(3)
   })
 
   it('③単位+1: 緑の閃き (0E化すると補充規約違反) はドロー4→5', () => {

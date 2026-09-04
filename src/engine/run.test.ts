@@ -404,11 +404,12 @@ describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () =>
     expect(guard.def.effects[0].amount).toBe(8) // StS の Defend+ と同値
   })
 
-  it('「単位」の効果と参照スケーリングは強化しない (engineの倍率に触れない安全弁)', () => {
+  it('上限ランプの量は強化しない (複利安全弁)。単位効果は本家形で+1 (2026-09-04)', () => {
     const sprout = upgradeCard({ uid: 'u3', def: getCardDef('green_ramp_sprout') }) // 上限+1
-    expect(sprout.def.effects[0].amount).toBe(1) // gainEnergyMax は据え置き
+    expect(sprout.def.effects[0].amount).toBe(1) // gainEnergyMax は据え置き (コスト-1で強化)
     const ring = upgradeCard({ uid: 'u4', def: getCardDef('green_growth_ring') }) // 成長+2
-    expect(ring.def.effects[0].amount).toBe(2) // addGrowth は据え置き
+    expect(ring.def.effects[0].amount).toBe(3) // 本家形: 単位+1 (本家の量+1が最多185枚)
+    expect(ring.def.cost).toBe(1)
   })
 
   it('焚き火で鍛えるとデッキのその1枚だけが強くなる (同じ札は1回だけ)', () => {
@@ -422,17 +423,25 @@ describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () =>
   })
 })
 
-describe('上限参照札の強化は0Eに落とさない (2026-08-30 裁定)', () => {
-  it('木陰の守り+ はコスト1のまま固定ブロック+4が付く (0E・タダ盾の退化ケースを塞ぐ)', () => {
+describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Heavy Blade ×3→×5 の文法)', () => {
+  it('木陰の守り+ は上限×2→×3。コストは1のまま (0E化はしない)', () => {
     const up = upgradeCard({ uid: 't', def: getCardDef('green_canopy_shade') })
-    expect(up.def.cost).toBe(1) // 0Eにならない
-    expect(up.def.effects.some((e) => e.effect === 'gainBlock' && e.amount === 4)).toBe(true)
-    expect(up.def.effects.some((e) => e.effect === 'gainBlockPerEnergyMax' && e.amount === 2)).toBe(true)
+    expect(up.def.cost).toBe(1)
+    expect(up.def.effects.some((e) => e.effect === 'gainBlockPerEnergyMax' && e.amount === 3)).toBe(true)
+    expect(up.def.effects.some((e) => e.effect === 'gainBlock')).toBe(false) // 旧おまけ表は使わない
   })
 
-  it('2E以上の上限参照札 (幹撃) は従来どおりコスト-1', () => {
+  it('幹撃+ は上限×4→×5。コストは2のまま', () => {
     const up = upgradeCard({ uid: 't', def: getCardDef('green_trunk_blow') })
-    expect(up.def.cost).toBe(1)
+    expect(up.def.cost).toBe(2)
+    expect(up.def.effects.some((e) => e.effect === 'dealDamagePerEnergyMax' && e.amount === 5)).toBe(true)
+  })
+
+  it('大牙+ は成長×3→×4 (素の8は据え置き=本家 Heavy Blade と同型)', () => {
+    const up = upgradeCard({ uid: 't', def: getCardDef('green_harvest_strike') }) // 大牙 (id は旧名の名残)
+    const d = up.def.effects.find((e) => e.effect === 'dealDamage')!
+    expect(d.growthMultiplier).toBe(4)
+    expect(d.amount).toBe(8)
   })
 })
 
@@ -536,11 +545,12 @@ describe('チェックポイント開始 (2026-09-01 デバッグ機能)', () =>
 })
 
 describe('査定パス (2026-09-02 段6人間プレイの指摘)', () => {
-  it('年輪の大樹の鍛えるはコスト-1 (2E→1E)。成長エンジンの正しい伸び方', () => {
+  it('年輪の大樹の鍛えるは毎T成長+1→+2 (2026-09-04 本家形: パワーはスタック+1)。コストは据え置き', () => {
     const inst = { uid: 't', def: getCardDef('green_perm_growth_tree') }
     const up = upgradeCard(inst)
-    expect(up.def.cost).toBe(1)
-    expect(up.def.effects).toEqual(getCardDef('green_perm_growth_tree').effects) // 量は据え置き
+    expect(up.def.cost).toBe(2)
+    const base = getCardDef('green_perm_growth_tree').effects.find((e) => e.effect === 'addGrowth')?.amount ?? 0
+    expect(up.def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(base + 1)
   })
 
   it('獲物 (2026-09-03 毒針の囮の後継=本家 Feed 型): 8ダメ、とどめなら成長+3', () => {

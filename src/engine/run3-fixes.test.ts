@@ -5,12 +5,13 @@ import { fuseCards } from './fusion.ts'
 import { upgradeCard } from './upgrade.ts'
 
 describe('選択式カードの鍛える: 両モードが上がる', () => {
-  it('道行きの選択+: 野生は3ダメ→5、育成は成長+2→+3 (量の無いモードは単位+1)', () => {
+  it('道行きの選択+: 野生は勢い+3→+5 (単位=勢いは+2。3ダメは小さなおまけなので据え置き)、育成は成長+2→+3', () => {
     const up = upgradeCard({ uid: 'x', def: getCardDef('green_mode_crossroads') })
     const modes = up.def.modes!
     const wild = modes[0].effects
     const grow = modes[1].effects
-    expect(wild.find((e) => e.effect === 'dealDamage')?.amount).toBe(5)
+    expect(wild.find((e) => e.effect === 'addMomentum')?.amount).toBe(5)
+    expect(wild.find((e) => e.effect === 'dealDamage')?.amount).toBe(3)
     expect(grow.find((e) => e.effect === 'addGrowth')?.amount).toBe(3)
   })
 })

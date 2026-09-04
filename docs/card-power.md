@@ -1727,3 +1727,116 @@ retrieveFromDiscard 4.0／searchDeck 4.5／addCopyToDiscard 2.0／growSelf 量×
 | 追い風 | C1E | 6貫通=7.5VP=94%／勢い5以上で0E | 条件の0E化は手札の型でなく自分で満たしにいける条件（層①） |
 
 理想形 deck_momentum（勢いの道）。監視: 追い風×荒野の呼び声（毎T+3）＋荒角の構えで0E攻撃が毎ターン立つ手数化／根付く勢いが勢いを成長に流して多段へ再収束しないか（グルールでは意図どおり）。
+
+## §60 鍛えるの本家形（2026-09-04 ユーザー裁定「ok」。緑で先行・他色は解凍時に切替）
+
+StS2 507枚の OnUpgrade 集計（量+1が最多185・ダメ102〔帯ごとに+2/+3/+4/+6/+10＝中央値+30%〕・コスト-1はパワー/スキル52・ブロック+3が52・キーワード41・参照札は倍率そのもの）。
+うちは「量+50%が先頭」だったため、アイデンティティが参照・単位側にある札は小さな素の数字だけが伸びていた（突進の助走+=3×2で勢い据え置き、大牙+=12で成長×3据え置き等）。
+**新順位（`engine/upgrade.ts` V2・id が green_ の札）**: ①参照倍率+1（×N→×N+1。上限参照・放出・攻撃数・成長/勢い倍率）→ ②単位+1（ドロー・成長・霊気・詠唱・一時マナ・急所・威圧・召喚・手札強化。勢いは+2）と量≥5の+50%（本家「ダメ+量」）→ ③しきい値-1（成長N以上・勢いN以上・勢い条件の0E）と量+50% → ④量+50% → ⑤コスト-1（上限ランプは従来どおり先頭でコスト-1＝複利安全弁）。選択式は各モードを独立に判定。正味エナジー増の消滅自動付与は不変。
+
+### 緑95種の鍛え結果（ティア別）
+
+**unit (35)**
+- 樹皮の鎧(2E): gainBlock 14→21 / addGrowth 1→2
+- 大樹の怒り(4E): dealDamage 36→54 / addGrowth 1→2
+- 根の紡ぎ(2E反): addGrowth 2→3
+- 年輪(1E): addGrowth 2→3
+- 蔦の乱舞(3E): addGrowth 1→2
+- 踏み荒らし(3E): addMomentum 3→5 / dealDamage 16→24
+- 突進の助走(1E): addMomentum 3→5
+- 樹液(1E): gainEnergy 2→3
+- 年輪の大樹(2E置): addGrowth 1→2 / gainBlock 5→8
+- 大角の群長(2E置): addMomentum 2→4
+- 緑の閃き(1E): drawCards 4→5
+- 共鳴する茨(1E反): addGrowth 4→5
+- 野生の萌芽(0E): addGrowth 1→2
+- 急所突き(1E): dealDamage 6→9 / exposeEnemy 2→3
+- 絡め捕る根(2E): weakenEnemy 1→2 / gainBlock 12→18
+- 荒野の呼び声(2E置): addMomentum 3→5
+- 怒涛の突き上げ(2E): addMomentum 3→5
+- 昂ぶる角笛(1E): addMomentum 2→4
+- 荒角の構え(1E): gainBlock 6→9 / addMomentum 3→5
+- 道行きの選択(1E): addMomentum 3→5 / addGrowth 2→3
+- 打ち据え(1E): exposeEnemy 2→3
+- 狩人の眼光(1E置): addGrowth 1→2
+- 根張り(1E置): addGrowth 2→3
+- 見切り撃ち(1E): dealDamage 6→9 / drawCards 1→2
+- 木漏れ日(1E): gainBlock 7→11 / drawCards 1→2
+- 蔓の跳ね(0E): addGrowth 1→2
+- 風渡り(1E置): drawCards 1→2
+- 芽守り(1E置): drawCards 1→2
+- 薙ぎ角(2E): dealDamage 6→9 / addMomentum 2→4
+- 森の導き(1E): addGrowth 1→2
+- 研ぎ澄まし(1E): gainBlock 5→8 / upgradeInHand 1→2
+- 大樹の守り手(2E反): gainBlock 12→18 / addGrowth 2→3
+- 獲物(1E): dealDamage 8→12 / addGrowth 3→4
+- 疾駆(0E): addMomentum 3→5
+- 疾風の号砲(1E): addMomentum 1→3
+
+**amount (34)**
+- 打撃(1E): dealDamage 6→9
+- 二連の蔦打ち(1E): dealDamage 5→8 / dealDamage 5→8
+- 牙の一撃(2E): dealDamage 17→26
+- 防御(1E): gainBlock 5→8
+- 絡み蔦(1E): gainBlock 7→11 / dealDamage 7→11
+- 巨獣の踏みつけ(5E): dealDamage 50→75
+- 茨の返し(1E反): counter 10→15
+- 守りの蔓(1E反): gainBlock 12→18
+- 巨象の突進(4E): dealDamage 32→48
+- 大蛇の丸呑み(3E): dealDamage 34→51
+- 根穿ち(1E反): counter 12→18
+- 荒角の一撃(1E): dealDamage 8→12
+- 三連の角(2E): dealDamage 5→8 / dealDamage 5→8 / dealDamage 5→8
+- 蔦の連撃(1E): dealDamage 5→8
+- 樹皮の重鎧(1E): gainBlock 6→9
+- 森羅の大嵐(1E): dealDamage 4→6
+- 森の裁定(2E): dealDamage 14→21 / gainBlock 14→21
+- 株分け(3E): gainBlock 6→9
+- 疾風の一撃(2E): dealDamage 6→9
+- 棘の返礼(1E): dealDamage 4→6 / dealDamage 8→12
+- 蔦の楔(1E): dealDamage 5→8
+- 根喰らいの蔓(2E): dealDamage 8→12
+- 先制の蔦槍(1E反): dealDamage 12→18
+- 弾け実の罠(1E反): counter 3→5 / dealDamage 12→18
+- 双牙の蔦(1E): dealDamage 3→5 / dealDamage 3→5 / dealDamage 3→5
+- 落ち葉の刃(0E): dealDamage 7→11
+- 棘の蔓(1E置): gainBlock 2→3
+- 棘葉の茂み(1E置): dealDamage 2→3
+- 罠師の茂み(2E置): gainBlock 4→6
+- 若返りの根(1E): gainBlock 5→8
+- 増える蔦(0E): dealDamage 4→6
+- 育つ牙(1E): dealDamage 6→9 / growSelf 4→6
+- 蔦の陣(2E反): gainBlock 10→15 / counter 8→12
+- 根付く勢い(2E): dealDamage 6→9
+
+**mult (17)**
+- 森の大爆発(4E): dealDamagePerEnergyMax 6→7
+- 薙ぎ払い(1E): dealDamagePerAttackPlayed 2→3
+- 開花の蔦(2E): dischargeGrowth 2→3
+- 幹撃(2E): dealDamagePerEnergyMax 4→5
+- 若幹の一撃(1E): dealDamagePerEnergyMax 2→3
+- 幹の構え(1E): dealDamagePerEnergyMax 1→2 / gainBlockPerEnergyMax 1→2
+- 大幹の構え(3E): dealDamagePerEnergyMax 3→4 / gainBlockPerEnergyMax 3→4
+- 木陰の守り(1E): gainBlockPerEnergyMax 2→3
+- 若枝の盾張り(1E): dischargeGrowthBlock 2→3
+- 大牙(2E): (変化なし)
+- 巡りの収穫(2E): dischargeGrowth 3→4
+- 大収穫の儀(3E): dischargeGrowth 6→7
+- 大地の唸り(2E): dealDamagePerEnergyMax 2→3
+- 角の一突き(2E): dischargeMomentumDamage 2→3
+- 嵐の角(2E): dischargeMomentumDamage 1→2
+- 風の壁(1E): dischargeMomentumBlock 1→2
+- 猛進の角(3E): (変化なし)
+
+**cost (7)**
+- 芽吹き(1E): コスト1→0
+- 深根(2E): コスト2→1
+- 陽光の恵み(2E): コスト2→1
+- 天蓋の実り(3E): コスト3→2
+- 開花の儀(2E): コスト2→1
+- 大樹の脈(2E置): コスト2→1
+- 大樹の岐路(3E): コスト3→2
+
+**threshold (2)**
+- 深緑の刻(1E): dealDamage 6→9 / dealDamage 6→9
+- 追い風(1E): dealDamage 6→9

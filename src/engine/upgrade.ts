@@ -116,8 +116,100 @@ function costCutViolates(def: CardDef): boolean {
  * 「量を強化しない」形で維持)。現行データでは全カードがいずれかのティアに落ちる
  * (テストで機械固定)。'none' は将来のデータ追加への防衛用に残す
  */
-export function upgradeTier(def: CardDef): 'amount' | 'cost' | 'unit' | 'bonus' | 'none' {
+export type UpgradeTier = 'amount' | 'cost' | 'unit' | 'bonus' | 'none' | 'mult' | 'threshold'
+
+/**
+ * 本家形の鍛える (2026-09-04 ユーザー裁定「ok」。StS2 507枚の OnUpgrade 集計: 量+1が最多185・ダメ102・
+ * コスト-1はパワー/スキル52・参照札は倍率そのもの〔Heavy Blade ×3→×5・Rampage +5→+8〕)。
+ * その札のアイデンティティの数字を伸ばす: ①参照倍率+1 → ②単位+1 (勢いは+2) と量≥5の+50% →
+ * ③しきい値-1 と量+50% → ④量+50% → ⑤コスト-1 (置物・呪文で数字の無い札)。
+ * 緑で先行 (id が green_)。他色は解凍時に切り替える = 旧3段仕様のまま
+ */
+const MULT_EFFECTS = new Set([
+  'dealDamagePerBlock', 'dealDamagePerPermanent', 'gainBlockPerPermanent',
+  'dealDamagePerEnergyMax', 'gainBlockPerEnergyMax', 'dealDamagePerAttackPlayed',
+  'dealDamagePerWeak', 'dealDamagePerNegStrength', 'dealDamagePerDamageTaken', 'applyBurnPerDamageTaken',
+  'dealDamagePerRandomPlayed', 'dealDamagePerHandCard', 'gainIceBlockPerHandCard',
+  'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn',
+  'dealDamagePerCardPlayed', 'dealDamagePerExhaust', 'dealDamageDrainPerExhaust', 'gainBlockPerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerHeal',
+])
+const UNIT_EFFECTS_V2 = new Set([
+  'drawCards', 'impulseDraw', 'addGrowth', 'addMomentum', 'addAether', 'addCasts', 'gainEnergy',
+  'exposeEnemy', 'weakenEnemy', 'summonPermanent', 'upgradeInHand', 'addCardToHand', 'empowerShivs', 'exhaustFromDeck',
+])
+const AMOUNT_V2 = new Set([...UPGRADABLE_EFFECTS, 'growSelf'])
+const hasMult = (e: DeclarativeEffect) =>
+  (MULT_EFFECTS.has(e.effect) && e.amount !== undefined) || e.growthMultiplier !== undefined || e.momentumMultiplier !== undefined
+const hasThreshold = (e: DeclarativeEffect) => e.condition?.minGrowth !== undefined || e.condition?.minMomentum !== undefined
+const isGreenRule = (def: CardDef) => def.id.startsWith('green_')
+
+/** 効果列1つぶんの本家形ティア (モードごとにも使う) */
+function tierV2(effects: readonly DeclarativeEffect[], def?: CardDef): 'mult' | 'unit' | 'threshold' | 'amount' | 'none' {
+  if (effects.some(hasMult)) return 'mult'
+  if (effects.some((e) => UNIT_EFFECTS_V2.has(e.effect) && e.amount !== undefined)) return 'unit'
+  if (effects.some(hasThreshold) || def?.freeIfMomentumAtLeast !== undefined) return 'threshold'
+  if (effects.some((e) => AMOUNT_V2.has(e.effect) && e.amount !== undefined)) return 'amount'
+  return 'none'
+}
+
+/** 効果列に本家形の強化を当てる (ティアは列ごとに判定 = 選択式は各モードが独立に上がる) */
+function applyV2(effects: readonly DeclarativeEffect[], def: CardDef): readonly DeclarativeEffect[] {
+  const tier = tierV2(effects, def)
+  const boost50 = (e: DeclarativeEffect, min: number): DeclarativeEffect =>
+    AMOUNT_V2.has(e.effect) && e.amount !== undefined && e.amount >= min
+      ? { ...e, amount: Math.ceil(e.amount * 1.5), ...(e.amountMax !== undefined ? { amountMax: Math.ceil(e.amountMax * 1.5) } : {}) }
+      : e
+  if (tier === 'mult') {
+    return effects.map((e) => {
+      let n = e
+      if (MULT_EFFECTS.has(e.effect) && e.amount !== undefined) n = { ...n, amount: e.amount + 1 }
+      if (e.growthMultiplier !== undefined) n = { ...n, growthMultiplier: e.growthMultiplier + 1 }
+      if (e.momentumMultiplier !== undefined) n = { ...n, momentumMultiplier: e.momentumMultiplier + 1 }
+      return n
+    })
+  }
+  if (tier === 'unit') {
+    let done = false
+    return effects.map((e) => {
+      if (!done && UNIT_EFFECTS_V2.has(e.effect) && e.amount !== undefined) {
+        done = true
+        return { ...e, amount: e.amount + (e.effect === 'addMomentum' ? 2 : 1) }
+      }
+      return boost50(e, 5)
+    })
+  }
+  if (tier === 'threshold') {
+    return effects.map((e) => {
+      const c = e.condition
+      const n =
+        c !== undefined && (c.minGrowth !== undefined || c.minMomentum !== undefined)
+          ? {
+              ...e,
+              condition: {
+                ...c,
+                ...(c.minGrowth !== undefined ? { minGrowth: Math.max(1, c.minGrowth - 1) } : {}),
+                ...(c.minMomentum !== undefined ? { minMomentum: Math.max(1, c.minMomentum - 1) } : {}),
+              },
+            }
+          : e
+      return boost50(n, 1)
+    })
+  }
+  if (tier === 'amount') return effects.map((e) => boost50(e, 1))
+  return effects
+}
+
+export function upgradeTier(def: CardDef): UpgradeTier {
   const eff = allEffectsOf(def)
+  if (isGreenRule(def)) {
+    // 上限ランプはコスト-1が正史 (複利安全弁: gainEnergyMax の量は増えない)
+    if (eff.some((e) => e.effect === 'gainEnergyMax') && def.cost >= 1 && !costCutViolates(def)) return 'cost'
+    const t = tierV2(eff, def)
+    if (t !== 'none') return t
+    if (def.cost >= 1 && !costCutViolates(def)) return 'cost'
+    if (BONUS_UPGRADES[def.id] !== undefined) return 'bonus'
+    return 'none'
+  }
   // 上限ランプはコスト-1が正史 (確定済みルール表「焚き火」)。2026-08-29 品質パスで
   // ランプ札に副次効果 (ブロック等) が付いたため、amount ティアに吸われて
   // 「0E化の当たり枠」が「副次+50%のハズレ枠」に化けるのを防ぐ
@@ -168,6 +260,19 @@ export function canUpgradeCard(card: CardInstance): boolean {
  */
 export function upgradeCard(card: CardInstance): CardInstance {
   const tier = upgradeTier(card.def)
+  if (isGreenRule(card.def) && tier !== 'cost' && tier !== 'bonus' && tier !== 'none') {
+    const base = card.def
+    let def: CardDef = {
+      ...base,
+      name: `${base.name}+`,
+      effects: applyV2(base.effects, base),
+      ...(base.modes !== undefined ? { modes: base.modes.map((m) => ({ ...m, effects: applyV2(m.effects, base) })) } : {}),
+      ...(base.freeIfMomentumAtLeast !== undefined && tierV2(base.effects, base) === 'threshold'
+        ? { freeIfMomentumAtLeast: Math.max(1, base.freeIfMomentumAtLeast - 1) }
+        : {}),
+    }
+    return { ...card, def: legalizeUpgrade(def) }
+  }
   const boostAmount = (e: DeclarativeEffect): DeclarativeEffect => {
     if (!UPGRADABLE_EFFECTS.has(e.effect) || e.amount === undefined) return e
     return {
@@ -217,10 +322,14 @@ export function upgradeCard(card: CardInstance): CardInstance {
               }
             : {}
   let def: CardDef = { ...card.def, name: `${card.def.name}+`, ...patch }
-  // 選択式 (modes) は各モードを独立に鍛える (2026-09-03 人間ラン#3「道行きの選択+ が片方しか強化されない」)。
-  // 量ティアで量が伸びなかったモード (成長+2 だけ等) には単位+1 を当てる = 両モードが必ず1段上がる
+  def = legalizeUpgradeModes(def, tier, boostUnit)
+  return { ...card, def: legalizeUpgrade(def) }
+}
+
+/** 選択式 (modes) の旧3段仕様: 量ティアで量が伸びなかったモードには単位+1 (2026-09-03 人間ラン#3) */
+function legalizeUpgradeModes(def: CardDef, tier: UpgradeTier, boostUnit: (e: DeclarativeEffect) => DeclarativeEffect): CardDef {
   if (tier === 'amount' && def.modes !== undefined) {
-    def = {
+    return {
       ...def,
       modes: def.modes.map((m) =>
         m.effects.some((e) => UPGRADABLE_EFFECTS.has(e.effect) && e.amount !== undefined)
@@ -229,6 +338,12 @@ export function upgradeCard(card: CardInstance): CardInstance {
       ),
     }
   }
+  return def
+}
+
+/** 正味エナジー増の規約を強化後の派生にも守らせる (違反したら消滅を自動付与) */
+function legalizeUpgrade(def0: CardDef): CardDef {
+  let def = def0
   // 正味エナジー増の規約 (確定済みルール表「正味エナジー増」) を強化後の派生にも守らせる
   // (2026-08-31 青Opusラン発見: 水鏡の書庫+ = 5ドロー+一時マナ2 = 正味0マナの補充札が
   // 非消滅で生成され「毎ターン実質タダで5ドロー」の壊れ性能だった)。
@@ -249,7 +364,7 @@ export function upgradeCard(card: CardInstance): CardInstance {
   if (netGain - def.cost >= 0 && refills && def.exhaust !== true) {
     def = { ...def, exhaust: true }
   }
-  return { ...card, def }
+  return def
 }
 
 /**
