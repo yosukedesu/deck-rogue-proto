@@ -15,6 +15,10 @@ export interface TurnMetrics {
   readonly sets: number
   readonly fires: number
   readonly holds: number
+  /** ターン開始時の手札 (保持で残った札+ドロー。2026-09-05 ログ拡充。旧ログは undefined) */
+  readonly hand?: readonly string[]
+  /** ターン終了時に手札に残った札 = 使わなかった札 */
+  readonly unplayed?: readonly string[]
 }
 
 export interface BattleMetrics {
@@ -31,9 +35,10 @@ export interface BattleMetrics {
 }
 
 export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
-  const turns = new Map<number, { dealt: number; counter: number; taken: number; plays: number; sets: number; fires: number; holds: number }>()
+  const turns = new Map<number, { dealt: number; counter: number; taken: number; plays: number; sets: number; fires: number; holds: number; hand?: string[]; unplayed?: string[] }>()
   let cur = 0
   let enemyPhase = false
+  let awaitingDraw = false
   const at = (t: number) => {
     let m = turns.get(t)
     if (!m) turns.set(t, (m = { dealt: 0, counter: 0, taken: 0, plays: 0, sets: 0, fires: 0, holds: 0 }))
@@ -41,8 +46,21 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
   }
   for (const e of log) {
     switch (e.type) {
-      case 'TurnStarted': cur = e.turn; enemyPhase = false; at(cur); break
-      case 'TurnEnded': enemyPhase = true; break
+      case 'TurnStarted': {
+        cur = e.turn; enemyPhase = false
+        const m = at(cur)
+        if (e.hand !== undefined) { m.hand = [...e.hand]; awaitingDraw = true }
+        break
+      }
+      case 'CardsDrawn':
+        // ターン開始直後の最初のドローが手札の残り (保持) と合わせて「ターン開始時の手札」になる
+        if (awaitingDraw && e.cards !== undefined) { at(cur).hand = [...(at(cur).hand ?? []), ...e.cards]; awaitingDraw = false }
+        break
+      case 'TurnEnded':
+        enemyPhase = true
+        awaitingDraw = false
+        if (e.unplayed !== undefined) at(cur).unplayed = [...e.unplayed]
+        break
       case 'DamageDealt':
         if (e.source === 'player') {
           if (enemyPhase) at(cur).counter += e.hpLoss
@@ -56,8 +74,8 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
       default: break
     }
   }
-  const perTurn = [...turns.entries()].sort((a, b) => a[0] - b[0]).map(([turn, m]) => ({ turn, ...m }))
-  const sum = (k: keyof TurnMetrics) => perTurn.reduce((a, m) => a + (m[k] as number), 0)
+  const perTurn: TurnMetrics[] = [...turns.entries()].sort((a, b) => a[0] - b[0]).map(([turn, m]) => ({ turn, ...m }))
+  const sum = (k: 'dealt' | 'counter' | 'taken' | 'plays' | 'sets' | 'fires' | 'holds') => perTurn.reduce((a, m) => a + m[k], 0)
   return {
     turns: perTurn.length,
     t1Damage: perTurn[0]?.dealt ?? 0,
@@ -186,6 +204,20 @@ export function formatAnalysis(exp: MetricsExport, nameOf: (id: string) => strin
     const m = r.metrics
     const counter = m ? m.perTurn.reduce((a, t) => a + t.counter, 0) : 0
     L.push(`| ${r.battleNo} | ${r.act || '?'} | ${nameOf(r.enemyId)} | ${r.boss ? 'ボス' : r.elite ? 'エリート' : '通常'} | ${r.result === 'won' ? '勝' : '敗'} | ${m?.turns ?? '-'} | ${m?.t1Damage ?? '-'} | ${m?.maxTurnDamage ?? '-'} | ${m ? `${m.totalDealt - counter}/${counter}/${m.totalTaken}` : '-'} | ${r.hpBefore}→${r.hpAfter} | ${m ? `${m.sets}/${m.fires}/${m.holds}` : '-'} | ${r.rating?.strength ?? ''} | ${r.rating?.fun ?? ''} | ${r.rating?.lossFeel ?? ''} | ${(r.rating?.note ?? '').replace(/\|/g, '/')} |`)
+  }
+  // 未使用札の順位 (2026-09-05 ログ拡充): ターン終了時に手札に残った回数 = 引いたのに撃たれなかった札。退屈指数の戦闘内版
+  const unplayed = new Map<string, number>()
+  let handTurns = 0
+  for (const b of exp.battles) {
+    for (const t of b.metrics?.perTurn ?? []) {
+      if (t.hand !== undefined) handTurns++
+      for (const n of t.unplayed ?? []) unplayed.set(n, (unplayed.get(n) ?? 0) + 1)
+    }
+  }
+  if (unplayed.size > 0) {
+    L.push('')
+    L.push(`## 未使用札（ターン終了時に手札に残った回数。手札記録のあるターン ${handTurns}）`)
+    for (const [n, c] of [...unplayed.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12)) L.push(`- ${n}: ${c}回`)
   }
   return L.join('\n')
 }

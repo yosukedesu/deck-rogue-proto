@@ -849,7 +849,7 @@ export function drawCards(state: GameState, n: number): GameState {
     rng,
     player: { ...state.player, drawPile, discardPile, hand: [...state.player.hand, ...drawn] },
   }
-  return drawn.length > 0 ? emit(next, { type: 'CardsDrawn', count: drawn.length }) : next
+  return drawn.length > 0 ? emit(next, { type: 'CardsDrawn', count: drawn.length, cards: drawn.map((c) => c.def.name) }) : next
 }
 
 /**

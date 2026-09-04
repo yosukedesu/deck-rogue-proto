@@ -406,9 +406,9 @@ export type Command =
 
 export type GameEvent =
   | { readonly type: 'CombatStarted'; readonly enemyId: string }
-  | { readonly type: 'TurnStarted'; readonly turn: number }
-  | { readonly type: 'TurnEnded'; readonly turn: number }
-  | { readonly type: 'CardsDrawn'; readonly count: number }
+  | { readonly type: 'TurnStarted'; readonly turn: number; readonly hand?: readonly string[] } // hand=ドロー前に手札に残っていた札 (保持・火傷。2026-09-05 ログ拡充)
+  | { readonly type: 'TurnEnded'; readonly turn: number; readonly unplayed?: readonly string[] } // unplayed=ターン終了時に手札に残った札 (死に札の計測)
+  | { readonly type: 'CardsDrawn'; readonly count: number; readonly cards?: readonly string[] } // cards=引いた札の名前 (2026-09-05 ログ拡充)
   | { readonly type: 'CardPlayed'; readonly cardId: string }
   | { readonly type: 'CardSet'; readonly cardId: string }
   | { readonly type: 'SetCardRetrieved'; readonly cardId: string }

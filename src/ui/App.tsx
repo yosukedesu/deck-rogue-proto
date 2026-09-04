@@ -4144,7 +4144,7 @@ function ChoiceLogChip({ choices }: { choices: readonly RunChoice[] }) {
               {choices.length === 0 && <p className="hint">（このランの記録はまだありません。今のランがジャーナル記録前に始まった場合も空になります）</p>}
               {choices.map((c, i) => (
                 <div key={i} className="choice-desc" style={{ fontSize: 12 }}>
-                  <span style={{ opacity: 0.6 }}>[{c.at}]</span> {c.text}
+                  <span style={{ opacity: 0.6 }}>[{c.at}]</span> {c.text}{c.ctx ? <span style={{ opacity: 0.5 }}>（HP {c.ctx.hp}/{c.ctx.maxHp}・デッキ{c.ctx.deck}枚・{c.ctx.gold}G）</span> : null}
                 </div>
               ))}
             </div>
@@ -4243,7 +4243,7 @@ function RunScreen({
           <RunMapView run={run} onChoose={(col) => dispatch({ type: 'ChooseNode', col })} />
         </div>
         <div style={{ marginTop: 12 }}>
-          <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [])}>📄 状況を書き出す</button>{' '}
+          <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [], journal ?? null)}>📄 状況を書き出す</button>{' '}
           <button className="btn" onClick={() => saveRunFile(run, history, notes, journal ?? null, choices ?? [])}>💾 セーブを書き出す</button>{' '}
           <button className="btn" onClick={onExit}>ランを放棄（自動保存は残る）</button>
         </div>
@@ -4553,7 +4553,7 @@ function RunScreen({
   if (run.phase === 'combat' && run.combat) {
     return (
       <BattleScreen
-        onExport={() => saveReport(run, null, history, notes, choices ?? [])}
+        onExport={() => saveReport(run, null, history, notes, choices ?? [], journal ?? null)}
         state={run.combat}
         config={{
           mode: run.mode,
@@ -4629,7 +4629,7 @@ function RunScreen({
         <button className="btn" data-hotkey="skip" onClick={() => dispatch({ type: 'SkipReward' })}>
           スキップして次へ（S）
         </button>{' '}
-        <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [])}>
+        <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [], journal ?? null)}>
           📄 状況を書き出す
         </button>
         {run.picks.length > 0 && (
@@ -4659,7 +4659,7 @@ function RunScreen({
         </div>
       </div>
       <div style={{ marginTop: 16 }}>
-        <button className="btn btn-primary" onClick={() => saveReport(run, null, history, notes, choices ?? [])}>
+        <button className="btn btn-primary" onClick={() => saveReport(run, null, history, notes, choices ?? [], journal ?? null)}>
           📄 状況を書き出す
         </button>{' '}
         <button className="btn" onClick={() => onRestart(Date.now() % 2 ** 32)}>
@@ -4714,7 +4714,7 @@ export default function App() {
       deckRogueReport?: () => string
       deckRogueRecoverReport?: () => string
     }
-    w.deckRogueReport = () => buildReport(run, state, runHistory, '', playNotes, choiceLog)
+    w.deckRogueReport = () => buildReport(run, state, runHistory, '', playNotes, choiceLog, journal)
     w.deckRogueRecoverReport = () => {
       try {
         const raw = localStorage.getItem('deckRogueBackup')
@@ -4724,8 +4724,10 @@ export default function App() {
           state: GameState | null
           history: BattleArchive[]
           playNotes?: PlayNote[]
+          journal?: RunJournal | null
+          choices?: RunChoice[]
         }
-        return buildReport(b.run ?? null, b.state ?? null, b.history ?? [], '', b.playNotes ?? [])
+        return buildReport(b.run ?? null, b.state ?? null, b.history ?? [], '', b.playNotes ?? [], b.choices ?? [], b.journal ?? null)
       } catch (e) {
         return `(復元失敗: ${String(e)})`
       }
@@ -4868,7 +4870,7 @@ export default function App() {
       return
     }
     // リプレイ記録 (成功したコマンドだけ。journal が無いラン=旧セーブ由来は記録しない)
-    setJournal((j) => (j === null ? j : { ...j, commands: [...j.commands, command] }))
+    setJournal((j) => (j === null ? j : { ...j, commands: [...j.commands, command], times: [...(j.times ?? []), Date.now()] }))
     // 選択履歴 (戦闘外の意思決定だけが1行になる)
     {
       const line = describeRunChoice(run, command, next)
@@ -5222,7 +5224,7 @@ function ReplayScreen({
             if (window.confirm('この地点から操作を引き継ぎますか？（以降のリプレイは破棄され、ここからの続きが新しい記録になります）')) {
               onTakeover(
                 run,
-                { origin: journal.origin, commands: journal.commands.slice(0, cur) },
+                { origin: journal.origin, commands: journal.commands.slice(0, cur), ...(journal.times !== undefined ? { times: journal.times.slice(0, cur) } : {}) },
                 choiceEntries.filter((e) => e.index <= cur).map((e) => e.choice),
               )
             }

@@ -36,3 +36,19 @@ describe('幕ごとの集計 (actSummaries)', () => {
     expect(a.funAvg).toBe(3)
   })
 })
+
+describe('ログ拡充 (2026-09-05 ユーザー「入れたほうが役立つもの」): ターン開始時の手札と未使用札', () => {
+  it('perTurn に手札 (保持+ドロー) と未使用札 (ターン終了時の手札) が名前で入る', async () => {
+    const { freshCombat, withHand } = await import('./test-helpers.ts')
+    const { applyCommand } = await import('./state.ts')
+    let s = freshCombat('set-confirm', 'enemy_probe', 42)
+    const m0 = battleMetrics(s.eventLog)
+    expect(m0.perTurn[0].hand?.length).toBe(5) // 初手5枚
+    s = withHand(s, ['green_strike', 'green_guard'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike', targetIndex: 0 })
+    s = applyCommand(s, { type: 'EndTurn' })
+    const m1 = battleMetrics(s.eventLog)
+    expect(m1.perTurn[0].unplayed).toEqual(['防御'])
+    expect(m1.perTurn[1]?.hand?.length).toBeGreaterThanOrEqual(5)
+  })
+})

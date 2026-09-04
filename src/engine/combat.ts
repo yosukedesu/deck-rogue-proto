@@ -553,7 +553,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   }
   // ターン装甲の累計リセット (2026-09-02): 自ターン開始〜次の自ターン開始が「1ターン」
   s = { ...s, enemies: s.enemies.map((e) => ((e.damageThisTurn ?? 0) > 0 ? { ...e, damageThisTurn: 0 } : e)) }
-  s = emit(s, { type: 'TurnStarted', turn })
+  s = emit(s, { type: 'TurnStarted', turn, hand: s.player.hand.map((c) => c.def.name) })
   // ドローを onTurnStart 誘発より先に行う (2026-08-31 変更)。
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
   // 泉 (onTurnStart ドロー) 等は順序が変わっても合計枚数は同じ = 既存挙動と等価
@@ -1265,7 +1265,7 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
 /** EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する */
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
-  let s = emit(state, { type: 'TurnEnded', turn: state.turn })
+  let s = emit(state, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
   // 弱体・虚弱もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
   s = {

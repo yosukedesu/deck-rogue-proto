@@ -849,6 +849,8 @@ export interface ReplayOrigin {
 export interface RunJournal {
   readonly origin: ReplayOrigin
   readonly commands: readonly RunCommand[]
+  /** 各コマンドの記録時刻 (epoch ms。commands と同じ長さ。UI/CLI が付ける・engine は読まない。2026-09-05 判断時間の計測) */
+  readonly times?: readonly number[]
 }
 
 /** origin からラン初期状態を再現する */

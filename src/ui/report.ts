@@ -139,6 +139,33 @@ export function dataFingerprint(): string {
 
 const LOG_CAP = 600
 
+/**
+ * 判断時間 (2026-09-05 ログ拡充): ジャーナルの記録時刻の差から「どこで長考したか」を出す。
+ * 合計・戦闘内/戦闘外の平均・長考トップ8。時刻の無い旧ジャーナルは空
+ */
+export function decisionTimeLines(journal: RunJournal | null): string[] {
+  if (!journal || journal.times === undefined || journal.times.length < 2) return []
+  const t = journal.times
+  const gaps: { i: number; ms: number; label: string }[] = []
+  for (let i = 1; i < t.length && i < journal.commands.length + 1; i++) {
+    const cmd = journal.commands[i]
+    if (!cmd) break
+    const label = cmd.type === 'Combat' ? `戦闘: ${cmd.command.type}${'cardUid' in cmd.command ? ` ${String(cmd.command.cardUid)}` : ''}` : cmd.type
+    gaps.push({ i, ms: t[i] - t[i - 1], label })
+  }
+  if (gaps.length === 0) return []
+  const total = t[t.length - 1] - t[0]
+  const inCombat = gaps.filter((g) => g.label.startsWith('戦闘'))
+  const outCombat = gaps.filter((g) => !g.label.startsWith('戦闘'))
+  const avg = (xs: { ms: number }[]) => (xs.length ? (xs.reduce((a, x) => a + x.ms, 0) / xs.length / 1000).toFixed(1) : '-')
+  const L = [
+    `- 合計 ${(total / 60000).toFixed(1)}分・コマンド${journal.commands.length}件（1手あたり 戦闘内${avg(inCombat)}秒／戦闘外${avg(outCombat)}秒）`,
+    '- 長考トップ8（直前の手からの経過秒 → 決めた手）:',
+    ...[...gaps].sort((a, b) => b.ms - a.ms).slice(0, 8).map((g) => `  - ${(g.ms / 1000).toFixed(1)}秒 → [${g.i}] ${g.label}`),
+  ]
+  return L
+}
+
 const names = (cs: readonly CardInstance[]) => (cs.length ? cs.map((c) => c.def.name).join('、') : '（なし）')
 
 
@@ -148,6 +175,8 @@ const names = (cs: readonly CardInstance[]) => (cs.length ? cs.map((c) => c.def.
  */
 function reportLine(e: GameEvent): string | null {
   if (e.type === 'EnemyPhaseEnded') return '敵フェーズ終了'
+  if (e.type === 'CardsDrawn') return `ドロー${e.count}枚${e.cards ? `: ${e.cards.join('・')}` : ''}`
+  if (e.type === 'TurnEnded') return `ターン終了${e.unplayed !== undefined ? `（未使用: ${e.unplayed.length > 0 ? e.unplayed.join('・') : 'なし'}）` : ''}`
   return logLine(e)?.text ?? null
 }
 
@@ -202,6 +231,7 @@ export function buildReport(
   note = '',
   playNotes: readonly PlayNote[] = [],
   choices: readonly RunChoice[] = [],
+  journal: RunJournal | null = null,
 ): string {
   const s = run ? run.combat : state
   const L: string[] = []
@@ -243,9 +273,15 @@ export function buildReport(
     for (const n of playNotes) L.push(`- [${n.at.slice(11, 16)} ${n.context}] ${n.text}`)
     L.push('')
   }
+  const dt = decisionTimeLines(journal)
+  if (dt.length > 0) {
+    L.push('## 判断時間（ジャーナルの記録時刻から。長考＝悩みの密度の代理指標）')
+    L.push(...dt)
+    L.push('')
+  }
   if (choices.length > 0) {
     L.push(`## 選択履歴（${choices.length}件・ピック/鍛錬/合成/購入/イベントの意思決定）`)
-    for (const c of choices) L.push(`- [${c.at}] ${c.text}`)
+    for (const c of choices) L.push(`- [${c.at}] ${c.text}${c.ctx ? `（HP ${c.ctx.hp}/${c.ctx.maxHp}・デッキ${c.ctx.deck}枚・${c.ctx.gold}G）` : ''}`)
     L.push('')
   }
   if (history.length > 0) {
@@ -339,8 +375,9 @@ export function saveReport(
   history: readonly BattleArchive[] = [],
   playNotes: readonly PlayNote[] = [],
   choices: readonly RunChoice[] = [],
+  journal: RunJournal | null = null,
 ): void {
-  deliverText(`play-${stampNow()}.md`, buildReport(run, state, history, '', playNotes, choices))
+  deliverText(`play-${stampNow()}.md`, buildReport(run, state, history, '', playNotes, choices, journal))
 }
 
 // ---- カード調整サイクル (2026-09-01 ユーザー要望) ----
@@ -852,6 +889,8 @@ export function buildOverrideDefs(bundle: ProposalBundle): {
 export interface RunChoice {
   readonly at: string // 「幕N 行M」
   readonly text: string
+  /** 選択時の文脈 (2026-09-05 ログ拡充: 見送りの理由を推測する材料) */
+  readonly ctx?: { readonly hp: number; readonly maxHp: number; readonly deck: number; readonly gold: number }
 }
 
 const NODE_LABEL: Record<string, string> = {
@@ -864,6 +903,12 @@ const NODE_LABEL: Record<string, string> = {
  * 「何を選び、何を見送ったか」を言語化する。戦闘操作 (Combat) は対象外 (戦闘ログが担当)
  */
 export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunState): RunChoice | null {
+  const core = describeRunChoiceCore(prev, cmd, next)
+  if (core === null) return core
+  return { ...core, ctx: { hp: next.hp, maxHp: next.maxHp, deck: next.deck.length, gold: next.gold } }
+}
+
+function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState): RunChoice | null {
   const at = `幕${next.act} 行${next.row + 1}`
   const names = (ids: readonly string[]) => ids.map(cardName).join('・')
   switch (cmd.type) {

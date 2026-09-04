@@ -843,7 +843,7 @@ if (mode === 'new-run') {
       const prevRun = sf.run!
       sf.run = applyRunCommand(sf.run!, runCmd)
       // リプレイ記録 (成功したコマンドだけ。旧ファイル=journal無しは記録しない)
-      if (sf.journal !== undefined) sf.journal = { ...sf.journal, commands: [...sf.journal.commands, runCmd] }
+      if (sf.journal !== undefined) sf.journal = { ...sf.journal, commands: [...sf.journal.commands, runCmd], times: [...(sf.journal.times ?? []), Date.now()] }
       // ランの意思決定 (イベント・ピック・レリック等) は結果を1行で明示 (2026-09-04 Opusラン N: ?イベントの結果が見えなかった)
       if (runCmd.type === 'EventChoice') choiceLine = describeEventOutcome(prevRun, sf.run)
     } catch (err) {
