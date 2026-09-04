@@ -202,7 +202,18 @@ function applyV2(effects: readonly DeclarativeEffect[], def: CardDef): readonly 
   return effects
 }
 
+/**
+ * 工房産の「誘発ごとに量が出る置物」は鍛えられない (2026-09-05 ユーザー裁定「ok」。Opusラン Q: 真・棘の蔓+=攻撃ごとブロック8が
+ * 幕2の被ダメを一桁に固定し、手数の鏡系の問いを数学的に無効化)。毎ターン固定出力 (onTurnStart) と登場時 (onPlay) の置物は対象のまま
+ */
+export function isFusedPerTriggerPermanent(def: CardDef): boolean {
+  if (def.type !== 'permanent') return false
+  if (!def.id.startsWith('fused_') && !def.id.startsWith('fusion_')) return false
+  return def.effects.some((e) => e.trigger !== 'onPlay' && e.trigger !== 'onTurnStart')
+}
+
 export function upgradeTier(def: CardDef): UpgradeTier {
+  if (isFusedPerTriggerPermanent(def)) return 'none'
   const eff = allEffectsOf(def)
   if (isGreenRule(def)) {
     // 上限ランプはコスト-1が正史 (複利安全弁: gainEnergyMax の量は増えない)

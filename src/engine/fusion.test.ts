@@ -573,3 +573,16 @@ describe('リアクション化のブロックはpre窓 (2026-09-02 「被攻撃
     expect(block?.trigger).toBe('onAttackIncoming')
   })
 })
+
+describe('工房産の誘発ごと置物は鍛えられない (2026-09-05 ユーザー裁定。Opusラン Q: 真・棘の蔓+が手数の鏡を無効化)', () => {
+  it('棘の蔓×棘の蔓 (攻撃ごとブロック) の合成品は鍛え不可、年輪の大樹×年輪の大樹 (毎T固定) は鍛え可', () => {
+    const thorn = fuseCards(inst('green_perm_thorn_vine'), inst('green_perm_thorn_vine'))
+    expect(thorn.type).toBe('permanent')
+    expect(upgradeTier(thorn)).toBe('none')
+    const tree = fuseCards(inst('green_perm_growth_tree'), inst('green_perm_growth_tree'))
+    expect(tree.type).toBe('permanent')
+    expect(upgradeTier(tree)).not.toBe('none')
+    // 素の棘の蔓 (工房産でない) は従来どおり鍛えられる
+    expect(upgradeTier(getCardDef('green_perm_thorn_vine'))).not.toBe('none')
+  })
+})
