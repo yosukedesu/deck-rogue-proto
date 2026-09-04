@@ -4,7 +4,7 @@ import { allCards, getCardDef, getEventDef } from './content.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice } from './run.ts'
 import type { RunState } from './run.ts'
-import { applyCommand } from './state.ts'
+import { applyCommand, createInitialState } from './state.ts'
 import { chooseToward, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import type { CardInstance, GameState } from './types.ts'
 
@@ -412,5 +412,16 @@ describe('工房産の誘発ごと置物は鍛えられない (2026-09-05 ユー
     expect(upgradeTier(tree)).not.toBe('none')
     // 素の棘の蔓 (工房産でない) は従来どおり鍛えられる
     expect(upgradeTier(getCardDef('green_perm_thorn_vine'))).not.toBe('none')
+  })
+})
+
+describe('検証ハーネス: StartCombat.cardIds で工房産を含む任意のデッキから単発戦闘を始められる (2026-09-05)', () => {
+  it('fused_<a>__<b> の id が resolveFusedDef で復元され、デッキに入る', () => {
+    const fused = fuseCards(inst('green_fang'), inst('green_horn_stance'))
+    let s = createInitialState(3, 'set-confirm')
+    s = applyCommand(s, { type: 'StartCombat', seed: 3, enemyId: 'enemy_probe', cardIds: ['green_strike', 'green_guard', fused.id, 'green_strike', 'green_guard'] })
+    const all = [...s.player.hand, ...s.player.drawPile]
+    expect(all.some((c) => c.def.id === fused.id && c.def.name === fused.name)).toBe(true)
+    expect(all).toHaveLength(5)
   })
 })

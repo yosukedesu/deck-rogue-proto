@@ -365,6 +365,8 @@ export type Command =
       readonly enemyId: string
       /** 使用デッキ (data/decks.json の id)。省略時は 'starter' */
       readonly deckId?: string
+      /** 検証用: カードIDの並びからデッキを組む (deckId より優先。工房産 fused_ / fusion_ の id も可。2026-09-05 工房検証ハーネス) */
+      readonly cardIds?: readonly string[]
       /** リーダー (data/leaders.json の id)。省略時はリーダーなしの素のルール */
       readonly leaderId?: string
     }

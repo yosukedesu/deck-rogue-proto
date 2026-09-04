@@ -2,7 +2,7 @@
 //
 // 使い方 (状態はJSONファイルに保存され、1コマンド=1プロセスで進める):
 //   npx tsx src/sim/play.ts new-run <leaderId> <seed> <stateFile> [deckId] [difficulty]  (deckId省略時はリーダー既定。difficulty=1〜10・省略時3=現状)
-//   npx tsx src/sim/play.ts new-battle <deckId> <enemyId> <seed> <stateFile>
+//   npx tsx src/sim/play.ts new-battle <deckId|cards:id,id,...> <enemyId> <seed> <stateFile>  (cards: はカードIDの並び。工房産 fused_<a>__<b> も可)
 //   npx tsx src/sim/play.ts cmd <stateFile> '<コマンドJSON>'
 //   npx tsx src/sim/play.ts show <stateFile>
 //
@@ -800,7 +800,9 @@ if (mode === 'new-run') {
 } else if (mode === 'new-battle') {
   const [deckId, enemyId, seed, file] = args
   let s = createInitialState(Number(seed), 'set-confirm')
-  s = applyCommand(s, { type: 'StartCombat', seed: Number(seed), enemyId, deckId })
+  // deckId の代わりに cards:<id,id,...> でカードIDの並びを直接指定できる (工房産 fused_ の id も可 = 合成品の単発検証)
+  const cardIds = deckId.startsWith('cards:') ? deckId.slice(6).split(',').map((x) => x.trim()).filter(Boolean) : undefined
+  s = applyCommand(s, { type: 'StartCombat', seed: Number(seed), enemyId, ...(cardIds ? { cardIds } : { deckId }) })
   const sf: SaveFile = { kind: 'battle', battle: s, logIndex: 0 }
   save(file, sf)
   console.log(renderBattle(s, 0))

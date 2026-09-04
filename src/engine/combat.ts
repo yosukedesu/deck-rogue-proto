@@ -5,7 +5,8 @@
 // 方式固有の if 分岐をここに書いてはならない (フックは dispatchHooks 経由)。
 
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
-import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF } from './content.ts'
+import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
+import { resolveFusedDef } from './fusion.ts'
 import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireExhaustTriggers, fireNecroEffects, hasHuntableTokens, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
@@ -216,8 +217,19 @@ export function startCombat(
   enemyId: string,
   deckId = 'starter',
   leaderId?: string,
+  cardIds?: readonly string[],
 ): GameState {
-  return startCombatWithOptions(seed, reactionMode, enemyId, { deck: buildDeck(deckId), leaderId })
+  const deck = cardIds !== undefined && cardIds.length > 0 ? buildDeckFromIds(cardIds) : buildDeck(deckId)
+  return startCombatWithOptions(seed, reactionMode, enemyId, { deck, leaderId })
+}
+
+/** 検証用: カードIDの並びからデッキを組む (工房産 fused_ / fusion_ の id は resolveFusedDef で復元。2026-09-05 工房検証ハーネス) */
+export function buildDeckFromIds(ids: readonly string[]): CardInstance[] {
+  return ids.map((id, i) => {
+    const def = id.startsWith('fused_') || id.startsWith('fusion_') ? resolveFusedDef(id) : getCardDef(id)
+    if (!def) throw new Error(`未定義カード: ${id}`)
+    return { uid: `${id}#${i}`, def }
+  })
 }
 
 /**

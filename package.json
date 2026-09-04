@@ -19,7 +19,8 @@
     "analyze": "tsx scripts/analyze-run.ts",
     "goldens": "tsx scripts/dump-goldens.ts",
     "goldens:verify": "tsx scripts/verify-goldens.ts",
-    "gen:csharp": "tsx scripts/gen-csharp-types.ts"
+    "gen:csharp": "tsx scripts/gen-csharp-types.ts",
+    "fusion:table": "tsx scripts/fusion-table.ts"
   },
   "dependencies": {
     "react": "^19.2.8",
