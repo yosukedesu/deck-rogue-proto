@@ -219,6 +219,10 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       }
       return out
     }
+    if (resultType === 'reaction' && c.def.type === 'reaction' && c !== domi) {
+      // 従属側のリアクションの窓は支配側の主窓へ揃える (T2: 敵行動時に撃った罠に被攻撃前の効果も乗っていた)
+      return src.map((e) => (REACTION_WINDOWS.has(e.trigger) ? ({ ...e, trigger: primaryWindow } as DeclarativeEffect) : { ...e }))
+    }
     if (resultType !== 'reaction' && c.def.type === 'reaction') {
       // 重い札に吸われたリアクション: 窓の効果をプレイ時へ (返し→ダメージ・窓ブロック→ブロック・打ち消しは意味が無いので落とす)
       const out: DeclarativeEffect[] = []
@@ -306,7 +310,25 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     else { merged.unshift(bonus); ownerOf.unshift(-1) }
   }
   const effects: DeclarativeEffect[] = [...merged.filter(isShatter), ...merged.filter((e) => !isShatter(e))]
-  if (collapsedFlatVp + droppedVp > 0) boostLargest(effects, Math.round(collapsedFlatVp + droppedVp))
+  let unpaidVp = collapsedFlatVp + droppedVp
+  let costCut = 0
+  if (unpaidVp > 0) {
+    if (resultType === 'permanent') {
+      // 置物の補償: 登場時 (onPlay) の量効果へ等倍。無ければコストで返し (下限=素材の高い方。T2: 打ち消しが消えてコストだけ上がる下位互換)、
+      // 余りは登場時ブロックで返す (毎トリガー効果には乗せない。T3: 棘の蔓の毎攻撃ブロック2が6になっていた)
+      const onPlayQ = effects.findIndex((e) => e.trigger === 'onPlay' && QUANTITY.has(e.effect) && e.amount !== undefined)
+      if (onPlayQ >= 0) { effects[onPlayQ] = { ...effects[onPlayQ], amount: (effects[onPlayQ].amount ?? 0) + Math.round(unpaidVp) }; unpaidVp = 0 }
+      else {
+        const slack = bothX ? 0 : Math.max(0, rawSum - Math.max(ca, cb))
+        costCut = Math.min(slack, Math.floor(unpaidVp / 6))
+        unpaidVp -= costCut * 6
+        if (unpaidVp >= 3) { effects.push({ trigger: 'onPlay', effect: 'gainBlock', amount: Math.round(unpaidVp) } as DeclarativeEffect) }
+        unpaidVp = 0
+      }
+    } else if (effects.some((e) => QUANTITY.has(e.effect) && e.amount !== undefined)) {
+      boostLargest(effects, Math.round(unpaidVp)); unpaidVp = 0
+    }
+  }
   // 5E上限で切った分は量を比例縮小して払う (S2: 真・巨獣の踏みつけ=5Eで100ダメ)
   if (!bothX && rawSumUncapped > 5) {
     const ratio = 5 / rawSumUncapped
@@ -328,7 +350,14 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   }
 
   let cost = bothX ? 1 : rawSum
-  if (resultType === 'reaction' && !bothX) cost = Math.min(2, cost) // 重い側は上で非リアクション化済みなので、ここは2E以内の確認
+  if (resultType === 'reaction' && !bothX && cost > 2) {
+    // リアクション同士で2Eを超えた分は出力で払う (切り下げ1Eにつき最大の量効果−6)
+    for (let cut = cost - 2; cut > 0; cut--) boostLargest(effects, -6)
+    cost = 2
+  }
+  // 補償先の量効果が無い時はコストで返す (T2: 打ち消しが跡形もなく消えてコストだけ上がる下位互換)。下限は素材の高い方のコスト
+  if (unpaidVp >= 6 && !bothX) cost = Math.max(Math.max(ca, cb), cost - Math.floor(unpaidVp / 6))
+  if (costCut > 0) cost = Math.max(Math.max(ca, cb), cost - costCut)
 
   // --- 歯止め (現行のまま) ---
   const all = [...effects, ...(modes ?? []).flatMap((m) => m.effects)]
@@ -358,7 +387,9 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     d.id.startsWith('fused_') || d.id.startsWith('fusion_') ? d.name.replace(/^真・/, '').replace(/\+$/, '').split('の')[0].slice(0, 3) : wordOf(d)
   const wa = stemOf(a.def)
   const wb = stemOf(b.def)
-  const stem = wa === wb ? `大${wa}` : `${wa}${wb}`.slice(0, 4)
+  const uniq = [...new Set([...wa, ...wb])].join('')
+  // 語の重複は畳む (T1: 角牙牙の乱撃)。相手の語が何も足さない時は「大」を冠して素材と同名になるのを避ける (角牙の嵐×落ち葉の刃=大角牙の嵐)
+  const stem = (wa === wb || uniq === wa || uniq === wb ? `大${uniq}` : uniq).slice(0, 4)
   const name = sameName ? `真・${a.def.name}` : `${stem}の${suffix}`
   const ids = [a0.def.id, b0.def.id]
   const def: CardDef = {
@@ -388,6 +419,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
 export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null {
   if (a.uid === b.uid) return '同じカードは選べない'
   if (recipeFor(a.def, b.def)) return null
+  if (a.def.id.startsWith('status_') || b.def.id.startsWith('status_')) return '負傷・呪い・火傷は合成できない (使えない札)' // T1: 「色違い」と出ていた
   if (a.def.color !== b.def.color) return '合成は同じ色のカード同士のみ'
   return null
 }
@@ -397,19 +429,45 @@ export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null
  * 手書きレシピ (data/fusions.json) が最優先。純関数・決定的 (素材2枚の def だけから結果が決まる)
  */
 export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
-  const recipe = recipeFor(a.def, b.def)
-  if (recipe) return recipe
-  // 鍛えの引き継ぎ (2026-09-05 ユーザー裁定 C): 素材のどちらかが鍛え済み (+) なら、素の定義で合体してから結果を1回鍛える
-  // = 鍛えが結果全体に乗る (素材の鍛えが合成で消える損を無くし、焚き火と工房を噛み合わせる)。二重に鍛えないよう素材は素に戻す
-  const baseOf = (c: CardInstance): CardInstance => {
-    if (!isUpgraded(c)) return c
-    const base = c.def.id.startsWith('fused_') || c.def.id.startsWith('fusion_') ? resolveFusedDef(c.def.id) : getCardDef(c.def.id)
-    return base ? { ...c, def: base } : c
-  }
+  // 鍛えの引き継ぎ (2026-09-05 ユーザー裁定 C。T3 で作り直し): 素材のどちらかが鍛え済み (+) なら、
+  // 鍛えていない方の素材を先に鍛えてから合体し、結果を鍛え済み (+) として出す = 鍛えた値は消えず、鍛えが結果全体に乗る。
+  // (旧「素に戻して結果を1回鍛える」は結果のティアが倍率/単位を拾うとダメージ行が素に戻る穴 = T3 不具合b)
   const anyUpgraded = isUpgraded(a) || isUpgraded(b)
-  const merged = mergeFusion(baseOf(a), baseOf(b))
-  if (anyUpgraded && upgradeTier(merged) !== 'none') return upgradeCard({ uid: 'fused', def: merged }).def
-  return merged
+  const lift = (c: CardInstance): CardInstance => (anyUpgraded && !isUpgraded(c) && upgradeTier(c.def) !== 'none' ? upgradeCard(c) : c)
+  const recipe = recipeFor(a.def, b.def)
+  if (recipe) {
+    // レシピ産にも鍛えを引き継ぐ (T3 不具合a: 守りの蔓+×茨の返し=茨の砦が素材1枚より弱かった)
+    return anyUpgraded && upgradeTier(recipe) !== 'none' ? upgradeCard({ uid: 'recipe', def: recipe }).def : recipe
+  }
+  const merged = mergeFusion(lift(a), lift(b))
+  if (!anyUpgraded) return merged
+  return merged.name.endsWith('+') ? merged : { ...merged, name: `${merged.name}+` }
+}
+
+/**
+ * 合成の注記 (2026-09-05 T2/T3: 「効果の合体」と言いつつ量が黙って変わる・軸一致がなぜ乗ったか分からない)。
+ * CLI の FusePreview と UI の工房プレビューが同じ文言を出す
+ */
+export function fusionNotes(a: CardInstance, b: CardInstance): string[] {
+  const notes: string[] = []
+  if (recipeFor(a.def, b.def)) notes.push('⭐レシピ: 手書きの一品')
+  const shared = axesOf(a.def).find((ax) => axesOf(b.def).includes(ax))
+  const AXIS_JA: Record<string, string> = { growth: '成長+1', trample: '勢い+2', ramp: '次のカード-1', burn: '延焼+2', ice: '氷壁+2', aether: '霊気+1', storm: '詠唱+1', heal: '回復+2', fortress: 'ブロック+3', retinue: 'ブロック+2', graveyard: 'ミル1' }
+  if (shared && AXIS_JA[shared]) notes.push(`軸一致 (${shared}): ${AXIS_JA[shared]} のおまけ`)
+  if (isUpgraded(a) || isUpgraded(b)) notes.push('鍛えの引き継ぎ: 鍛えていない側の素材も鍛えてから合体 (結果は+)')
+  const ca = a.def.xCost === true ? 3 : a.def.cost
+  const cb = b.def.xCost === true ? 3 : b.def.cost
+  if ((a.def.xCost === true) !== (b.def.xCost === true)) notes.push('X札は片方だけなら X=3 の固定量に畳む')
+  if (ca === 0 || cb === 0) notes.push('0E素材は値引きにならない (高い方のコスト)')
+  if (ca + cb - 1 > 5 && ca > 0 && cb > 0) notes.push('5E上限: 超えた分だけ量を比例縮小')
+  const types = [a.def.type, b.def.type]
+  if ((a.def.modes?.length || b.def.modes?.length) && (types.includes('permanent') || types.includes('reaction'))) notes.push('選択式は置物化・罠化では最初のモードだけを採る')
+  if (types.includes('permanent') && !(a.def.type === 'permanent' && b.def.type === 'permanent')) notes.push('置物化: 量は同種を合計して÷3で毎ターン化 (3未満は登場時1回)。打ち消し・倍化・放出は落ちて価値を振り替え')
+  if (types.includes('reaction') && !(a.def.type === 'reaction' && b.def.type === 'reaction')) {
+    notes.push(ca + cb - 1 > 2 ? '重い札は罠に収まらない: 合計−1が2Eを超えるので相手側のタイプで出る (返し→ダメージ・窓ブロック→ブロック)' : 'リアクション化: 相手の効果は罠の窓で解決 (ドロー・一時マナ・サーチは落ちて価値を振り替え)')
+  }
+  if (a.def.type === 'reaction' && b.def.type === 'reaction') notes.push('罠同士: 窓は支配側の主窓に揃う。2Eを超える分は量で払う')
+  return notes
 }
 
 /**

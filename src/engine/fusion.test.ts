@@ -1,7 +1,7 @@
 // カード合成 (工房) のテスト。確定済みルール表「カード合成（工房）」「工房ノード」を固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEventDef } from './content.ts'
-import { fuseBlockReason, fuseCards } from './fusion.ts'
+import { fuseBlockReason, fuseCards, fusionNotes } from './fusion.ts'
 import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand, createInitialState } from './state.ts'
@@ -528,5 +528,52 @@ describe('合成の魅力の型 (2026-09-05 ユーザー裁定: 軸一致ボー�
     // 鍛えていない素材同士なら鍛えられない
     const plain = fuseCards(inst('green_strike'), inst('green_guard'))
     expect(plain.name.endsWith('+')).toBe(false)
+  })
+})
+
+describe('Opusラン T2/T3 の答え合わせ (2026-09-05)', () => {
+  it('鍛えの引き継ぎはレシピ産にも効く (守りの蔓+ × 茨の返し → 茨の砦+ = ブロック18以上)', () => {
+    const up = upgradeCard(inst('green_reaction_vine'))
+    const def = fuseCards(up, inst('green_reaction_thorns'))
+    expect(def.id.startsWith('fusion_')).toBe(true)
+    expect(def.name.endsWith('+')).toBe(true)
+    expect(def.effects.find((e) => e.effect === 'gainBlock')?.amount).toBeGreaterThanOrEqual(18)
+  })
+
+  it('鍛えた素材のダメージ行は素に戻らない (三連の角+ 8×3 × 双牙の蔦 → 8貫通が残り、双牙側も鍛えられる)', () => {
+    const up = upgradeCard(inst('green_triple_horn'))
+    const def = fuseCards(up, inst('green_twin_fang_vine'))
+    const dmgs = def.effects.filter((e) => e.effect === 'dealDamage').map((e) => e.amount)
+    expect(dmgs.filter((x) => x === 8)).toHaveLength(3)
+    expect(def.name.endsWith('+')).toBe(true)
+  })
+
+  it('置物化の補償は毎トリガー効果に直乗りしない (棘の蔓 × 育つ牙: 攻撃ごとブロック2 のまま)', () => {
+    const def = fuseCards(inst('green_perm_thorn_vine'), inst('green_growing_fang'))
+    expect(def.type).toBe('permanent')
+    expect(def.effects.find((e) => e.trigger === 'onAttackPlayed' && e.effect === 'gainBlock')?.amount).toBe(2)
+    expect(def.effects.some((e) => e.trigger === 'onPlay' && e.effect === 'gainBlock')).toBe(true) // 落とした growSelf の価値は登場時ブロックで返る
+  })
+
+  it('罠同士は窓が支配側の主窓に揃う (1回の発動で全窓が解決される抜け道を塞ぐ)', () => {
+    const def = fuseCards(inst('green_reaction_tree_warden'), inst('green_reaction_root_weave'))
+    expect(def.type).toBe('reaction')
+    const windows = new Set(def.effects.map((e) => e.trigger))
+    expect(windows.size).toBe(1)
+    expect(def.cost).toBeLessThanOrEqual(2)
+  })
+
+  it('補償先の量効果が無い時はコストで返す (根の紡ぎ × 荒野の呼び声 → 3Eにならず素材の高い方=2E)', () => {
+    const def = fuseCards(inst('green_reaction_root_weave'), inst('green_perm_wild_call'))
+    expect(def.type).toBe('permanent')
+    expect(def.cost).toBe(2)
+  })
+
+  it('fusionNotes: 軸一致・鍛え引き継ぎ・置物化の注記が出る', () => {
+    const notes = fusionNotes(inst('green_bark_armor'), inst('green_growth_ring'))
+    expect(notes.some((n) => n.startsWith('軸一致'))).toBe(true)
+    const notes2 = fusionNotes(upgradeCard(inst('green_strike')), inst('green_perm_growth_tree'))
+    expect(notes2.some((n) => n.startsWith('鍛えの引き継ぎ'))).toBe(true)
+    expect(notes2.some((n) => n.startsWith('置物化'))).toBe(true)
   })
 })

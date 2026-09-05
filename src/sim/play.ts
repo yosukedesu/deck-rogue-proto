@@ -20,7 +20,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
-import { fuseBlockReason, fuseCards, resolveFusedDef } from '../engine/fusion.ts'
+import { fuseBlockReason, fuseCards, fusionNotes, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
@@ -231,8 +231,9 @@ function intentLine(s: GameState, i: number): string {
         : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
+  const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : '' // T3: 噛みつき果実 (育つ砲台) の同時強化が落ちていた
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}${buff}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `筋力+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,
@@ -835,7 +836,8 @@ if (mode === 'new-run') {
         const recipe = def.id.startsWith('fusion_') ? '⭐レシピ発見! ' : ''
         console.log(`プレビュー: ${recipe}${cardLine(def)} (素材は消費されていない)`)
         if (sf.run!.gold < workshopFusePrice(sf.run!)) console.log(`※所持金不足: 合成${workshopFusePrice(sf.run!)}G / 所持${sf.run!.gold}G (確定は拒否される)`)
-        console.log('  ※効果の合体: コストは合計−1 (0E素材は値引きにならない)。同名は量を合算')
+        for (const n of fusionNotes(a, b)) console.log(`  ※${n}`)
+        console.log('  ※効果の合体: コストは合計−1 (最低1・上限5)。同名は量を合算')
       }
     }
     process.exit(0)

@@ -69,7 +69,7 @@ import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, c
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
-import { fuseBlockReason, fuseCards } from '../engine/fusion.ts'
+import { fusionNotes, fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import { RESTRAIN_PLAY_CAP, startCombatWithOptions } from '../engine/combat.ts'
@@ -5437,6 +5437,11 @@ function WorkshopScreen({
           <div className="hand-cards" style={{ marginTop: 8 }}>
             <CardFrame card={{ uid: 'fusion_preview', def: preview }} dim={false} ctx={ctx} actions={null} />
           </div>
+          {a && b && fusionNotes(a, b).length > 0 && (
+            <ul className="hint" style={{ marginTop: 6 }}>
+              {fusionNotes(a, b).map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          )}
         </div>
       )}
       {a && b && reason && (

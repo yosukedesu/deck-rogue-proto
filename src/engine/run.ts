@@ -7,7 +7,7 @@
 
 import { startCombatWithOptions } from './combat.ts'
 import { ACT_COUNT, bossRowFor, generateMap, tierFor } from './map.ts'
-import { allEvents, getEventDef, WOUND_DEF } from './content.ts'
+import { allEvents, getEventDef, WOUND_DEF , resolveEncounter } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
@@ -478,8 +478,17 @@ function resolveUnknown(run: RunState): RunState {
     treasure: hit === 'treasure' ? UNKNOWN_PITY_BASE.treasure : pity.treasure + UNKNOWN_PITY_BASE.treasure,
   })
   if (roll < pity.monster) {
-    // ?→戦闘: 敵はその行の帯から解決時に抽選する (生成時の直前2行回避は効かない)
-    const pool = tierFor(run.act, run.row)
+    // ?→戦闘: 敵はその行の帯から解決時に抽選する。直前2行の戦闘ノードとメンバーを共有する編成は避ける
+    // (2026-09-05 Opusラン T2: 用心深い影が4戦で3回 = ?→戦闘が同族回避を通っていなかった)。空なら全プール
+    const fullPool = tierFor(run.act, run.row)
+    const recent = new Set<string>()
+    for (const r of [run.row - 1, run.row - 2]) {
+      for (const node of run.map[r] ?? []) {
+        if ((node.type === 'battle' || node.type === 'elite') && node.encounterId) for (const m of resolveEncounter(node.encounterId)) recent.add(m.enemyId)
+      }
+    }
+    const filtered = fullPool.filter((encId) => !resolveEncounter(encId).some((m) => recent.has(m.enemyId)))
+    const pool = filtered.length > 0 ? filtered : fullPool
     const [i, r2] = nextInt(rng, 0, pool.length - 1)
     return launchCombat({ ...run, rng: r2, unknownPity: bump('monster'), eventId: null }, false, pool[i])
   }
