@@ -716,3 +716,76 @@ button:disabled { cursor: not-allowed; }
 .lab-effects { max-width: 520px; }
 .lab-notes { max-width: 220px; color: var(--muted); }
 .lab-detail { width: 380px; flex: none; }
+
+/* ---------- 工房: 追従する合成結果パネル (2026-09-05 人間ラン#5 のスクロール往復への処方) ----------
+   デッキ(左)をどこまでスクロールしても、素材・合成結果・合成ボタン(右)が常に見える。
+   スマホは右パネルを画面下のシートに畳む */
+
+.setup.workshop-screen { max-width: 1100px; }
+.workshop-layout { display: flex; gap: 12px; align-items: flex-start; }
+.workshop-grid { flex: 1; min-width: 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.workshop-pick { cursor: pointer; border-radius: 10px; }
+.workshop-pick-on .card { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dark); }
+.workshop-side {
+  position: sticky;
+  top: 8px;
+  width: 260px;
+  flex-shrink: 0;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+}
+.workshop-materials { display: flex; flex-direction: column; gap: 4px; }
+.workshop-material {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel2);
+}
+.workshop-material-empty { color: var(--muted); border-style: dashed; background: transparent; }
+.workshop-material-cost {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--energy);
+  color: #222;
+  font-weight: bold;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.workshop-material-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workshop-material-x { padding: 1px 6px; font-size: 11px; }
+/* 合成結果は枠いっぱいに広げて長い効果文を折り返す (148px 幅では効果の長い合成札が縦に伸びすぎる) */
+.workshop-preview .card { width: 100%; }
+.workshop-notes { margin: 6px 0 0; padding-left: 18px; }
+.workshop-buttons { display: flex; flex-direction: column; gap: 6px; }
+.workshop-buttons .btn { width: 100%; }
+
+@media (max-width: 700px) {
+  .workshop-layout { display: block; }
+  /* 下部シートに隠れないぶんの余白 */
+  .workshop-grid { padding-bottom: 46vh; }
+  .workshop-side {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: 44vh;
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    z-index: 20;
+    /* 右下の📝メモバー (fixed・高さ約36px+余白12px) にボタンが隠れないぶんの底上げ */
+    padding-bottom: 56px;
+  }
+  .workshop-materials { flex-direction: row; }
+  .workshop-material { flex: 1; min-width: 0; }
+  .workshop-preview .card { width: 100%; min-height: 0; }
+  .workshop-buttons { flex-direction: row; }
+}

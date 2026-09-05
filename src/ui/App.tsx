@@ -5338,7 +5338,11 @@ function NoteBar({ count, onAdd }: { count: number; onAdd: (text: string) => voi
   )
 }
 
-/** 工房: 異なる2枚を選んで合成する (確定済みルール表「カード合成（工房）」) */
+/** 工房: 異なる2枚を選んで合成する (確定済みルール表「カード合成（工房）」)
+ *  2026-09-05 人間ラン#5「30枚デッキだと下までスクロールして選び、上に戻って結果を確認し、
+ *  また別の札を選んで…が手間」への処方: 合成結果・素材・合成ボタンを追従パネル (sticky) に出し、
+ *  デッキをどこまでスクロールしても常に見えるようにする (スマホは画面下のシート)。
+ *  判断時間の「工房が長考トップ」はこのスクロールを含んでいた＝悩みの密度ではなかった */
 function WorkshopScreen({
   run,
   dispatch,
@@ -5349,74 +5353,123 @@ function WorkshopScreen({
   ctx?: EffectCtx
 }) {
   const [selected, setSelected] = useState<number[]>([])
+  // 3枚目を選んだら先に選んだ方が入れ替わる (選び直しのために一度外す手間を省く)
   const toggle = (i: number) =>
     setSelected((prev) =>
-      prev.includes(i) ? prev.filter((x) => x !== i) : prev.length < 2 ? [...prev, i] : prev,
+      prev.includes(i) ? prev.filter((x) => x !== i) : prev.length < 2 ? [...prev, i] : [prev[1], i],
     )
   const a = selected.length === 2 ? run.deck[selected[0]] : null
   const b = selected.length === 2 ? run.deck[selected[1]] : null
   const reason = a && b ? fuseBlockReason(a, b) : null
   const preview = a && b && reason === null ? fuseCards(a, b) : null
+  const price = workshopFusePrice(run)
+  const notes = a && b ? fusionNotes(a, b) : []
   return (
-    <div className="app setup">
+    <div className="app setup workshop-screen">
       <h1>🔨 工房</h1>
       <p className="hint">
-        デッキの2枚を選んで合成する（同名2枚は「真・」強化版になる）。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
-        タイプの違う2枚も可 — 結果は持続する側（置物＞リアクション＞呪文＞物理）になり、置物化は量÷3で毎ターン化する。
-        効果の合体＝2枚の効果を全部持つ札。コストは合計−1（最低1・上限5。0E素材は値引きにならない）。同名2枚は量を合算した「真・」化。特定の組み合わせは手書きレシピ⭐にヒットする。
+        デッキの2枚を選んで合成する。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
+        効果の合体＝2枚の効果を全部持つ札。コストは合計−1（最低1・上限5。0E素材は値引きにならない）。
+        同名2枚は量を合算した「真・」化。タイプの違う2枚も可 — 結果は持続する側（置物＞リアクション＞呪文＞物理）になり、置物化は量÷3で毎ターン化する。
+        特定の組み合わせは手書きレシピ⭐にヒットする。結果は右の枠に常に出る（3枚目を選ぶと先に選んだ方と入れ替わる）。
       </p>
-      {preview && (
-        <div className="panel">
+      <div className="workshop-layout">
+        <div className="workshop-grid">
+          {run.deck.map((c, i) => (
+            <div
+              key={c.uid}
+              className={`workshop-pick${selected.includes(i) ? ' workshop-pick-on' : ''}`}
+              onClick={() => toggle(i)}
+            >
+              <CardFrame
+                card={c}
+                dim={selected.length === 2 && !selected.includes(i)}
+                ctx={ctx}
+                actions={
+                  <button
+                    className={selected.includes(i) ? 'btn btn-primary' : 'btn'}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      toggle(i)
+                    }}
+                  >
+                    {selected.includes(i) ? '選択中' : '選ぶ'}
+                  </button>
+                }
+              />
+            </div>
+          ))}
+        </div>
+        <aside className="workshop-side panel">
+          <div className="setup-section-title" style={{ marginTop: 0 }}>
+            素材（{selected.length}/2）
+          </div>
+          <div className="workshop-materials">
+            {[0, 1].map((k) => {
+              const idx = selected[k]
+              const c = idx === undefined ? null : run.deck[idx]
+              return c ? (
+                <div key={k} className="workshop-material">
+                  <span className="workshop-material-cost">{cardCostLabel(c.def)}</span>
+                  <span className="workshop-material-name">{c.def.name}</span>
+                  <button
+                    className="btn workshop-material-x"
+                    title="この素材を外す"
+                    onClick={() => setSelected((prev) => prev.filter((x) => x !== idx))}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div key={k} className="workshop-material workshop-material-empty">
+                  {k === 0 ? '1枚目を選ぶ' : '2枚目を選ぶ'}
+                </div>
+              )
+            })}
+          </div>
           <div className="setup-section-title">
-            {preview.id.startsWith('fusion_') ? '⭐ レシピ発見！ ' : ''}
-            合成結果プレビュー{preview.exhaust ? '（消滅つき）' : ''}
+            {preview
+              ? `${preview.id.startsWith('fusion_') ? '⭐ レシピ発見！ ' : ''}合成結果${preview.exhaust ? '（消滅つき）' : ''}`
+              : '合成結果'}
           </div>
-          <div className="hand-cards" style={{ marginTop: 8 }}>
-            <CardFrame card={{ uid: 'fusion_preview', def: preview }} dim={false} ctx={ctx} actions={null} />
-          </div>
-          {a && b && fusionNotes(a, b).length > 0 && (
-            <ul className="hint" style={{ marginTop: 6 }}>
-              {fusionNotes(a, b).map((n, i) => <li key={i}>{n}</li>)}
+          {preview ? (
+            <div className="workshop-preview">
+              <CardFrame card={{ uid: 'fusion_preview', def: preview }} dim={false} ctx={ctx} actions={null} />
+            </div>
+          ) : reason ? (
+            <div>
+              <span className="chip">⚠ {reason}</span>
+            </div>
+          ) : (
+            <div className="hint" style={{ margin: 0 }}>
+              2枚選ぶと、ここに合成後の札が出る。
+            </div>
+          )}
+          {notes.length > 0 && (
+            <ul className="hint workshop-notes">
+              {notes.map((n, i) => (
+                <li key={i}>{n}</li>
+              ))}
             </ul>
           )}
-        </div>
-      )}
-      {a && b && reason && (
-        <div className="panel">
-          <span className="chip">⚠ {reason}</span>
-        </div>
-      )}
-      <div className="hand-cards" style={{ margin: '12px 0' }}>
-        {run.deck.map((c, i) => (
-          <CardFrame
-            key={c.uid}
-            card={c}
-            dim={selected.length === 2 && !selected.includes(i)}
-            ctx={ctx}
-            actions={
-              <button className={selected.includes(i) ? 'btn btn-primary' : 'btn'} onClick={() => toggle(i)}>
-                {selected.includes(i) ? '選択中' : '選ぶ'}
-              </button>
-            }
-          />
-        ))}
+          <div className="choice-desc" style={{ margin: '8px 0 6px' }}>
+            合成1回 {price}G（所持 {run.gold}G）
+            {run.gold < price ? '＝ゴールド不足で合成できません' : ''}
+          </div>
+          <div className="workshop-buttons">
+            <button
+              className="btn btn-primary"
+              disabled={!preview || run.gold < price}
+              onClick={() => dispatch({ type: 'WorkshopFuse', indexA: selected[0], indexB: selected[1] })}
+            >
+              合成する（{price}G）
+            </button>
+            <button className="btn" onClick={() => dispatch({ type: 'WorkshopSkip' })}>
+              見送る
+            </button>
+          </div>
+        </aside>
       </div>
-      <div className="choice-desc" style={{ margin: '6px 0' }}>
-        合成1回 {workshopFusePrice(run)}G（所持 {run.gold}G）
-        {run.gold < workshopFusePrice(run) ? '＝ゴールド不足で合成できません' : ''}
-      </div>
-      <button
-        className="btn btn-primary"
-        disabled={!preview || run.gold < workshopFusePrice(run)}
-        onClick={() =>
-          dispatch({ type: 'WorkshopFuse', indexA: selected[0], indexB: selected[1] })
-        }
-      >
-        合成する（{workshopFusePrice(run)}G）
-      </button>{' '}
-      <button className="btn" onClick={() => dispatch({ type: 'WorkshopSkip' })}>
-        見送る
-      </button>
     </div>
   )
 }
