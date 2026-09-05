@@ -15,7 +15,7 @@ function rng(seed: number) { let s = seed >>> 0; return () => { s = (s * 1664525
 const JA: Record<string, string> = {
   dealDamage: 'ダメ', gainBlock: 'ブロック', counter: '返し', addGrowth: '成長+', addMomentum: '勢い+', drawCards: 'ドロー', gainEnergy: '一時マナ+', gainEnergyMax: '上限+',
   exposeEnemy: '急所', weakenEnemy: '威圧', negate: '打ち消し', doubleGrowth: '成長2倍', doubleMomentum: '勢い2倍', dischargeGrowth: '成長×Nダメ', dischargeGrowthBlock: '成長×Nブロック',
-  dischargeMomentumDamage: '勢い×Nダメ', dischargeMomentumBlock: '勢い×Nブロック', dischargeMomentumGrowth: '勢い→成長', dischargeMomentumVolley: '勢い×N×3回', dealDamagePerEnergyMax: '上限×Nダメ', gainBlockPerEnergyMax: '上限×Nブロック',
+  dischargeMomentumDamage: '勢い×Nダメ', dischargeMomentumBlock: '勢い×Nブロック', dischargeMomentumGrowth: '勢い→成長', dischargeMomentumVolley: '勢い×N×3回', momentumCarryHalf: '勢い半分持ち越し(常在)', dealDamagePerEnergyMax: '上限×Nダメ', gainBlockPerEnergyMax: '上限×Nブロック',
   dealDamagePerAttackPlayed: '攻撃数×Nダメ', shatterBlock: '粉砕', shatterBlockConvert: '粉砕換金', impulseDraw: '衝動', searchDeck: 'サーチ', retrieveFromDiscard: '回収', upgradeInHand: '手札を鍛える', growSelf: 'プレイごと+', addCopyToDiscard: 'コピー', gainSetSlot: '伏せ枠+',
 }
 const TR: Record<string, string> = { onPlay: '', onTurnStart: '毎T:', onAttackPlayed: '攻撃ごと:', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:', onEnemyBuffed: '敵強化時:', onEnemyDefended: '敵防御時:', onGrowthGained: '成長ごと:', onMomentumGained: '勢いごと:', onCardSet: '伏せるたび:', onSetDestroyed: '伏せ破壊時:' }
