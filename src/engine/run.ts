@@ -264,6 +264,8 @@ export interface RunState {
   readonly campfireForgeBonus: number
   /** この焚き火で「鍛える」を使った回数 (焚き火進入時にリセット) */
   readonly campfireUpgradesUsed: number
+  /** 鍛冶の砥石 (campfireForge) の追加回数を使った幕。1幕に1回だけ (2026-09-05 ユーザー裁定「砥石の調整」) */
+  readonly forgeBonusUsedAct?: number
   /** 幕1で焚き火の「鍛える」を使った通算回数 (供給を後ろへ 2026-08-31: 幕1は1回まで) */
   // ---- ?マスの本家式解決 (2026-08-29)。すべて旧セーブに無いので使用側は ?? ガード ----
   /** ?マスの累積確率 (整数パーセントポイント。幕頭で基礎値へリセット) */
@@ -1187,6 +1189,17 @@ function applyRelicBonus(run: RunState, relicId: string): RunState {
   }
 }
 
+/**
+ * この焚き火で鍛えられる枚数 (1 + 砥石の追加回数)。砥石の追加回数は1幕に1回だけ有効
+ * (2026-09-05 ユーザー裁定「砥石の調整」: 毎回2枚だと幕ボス全回復と組んで「休む」が競合しない)。
+ * UI/CLI/engine が同じ式を読む (表示の嘘を作らない)
+ */
+export function campfireForgeAllowed(run: RunState): number {
+  const bonus = run.campfireForgeBonus ?? 0
+  const usable = bonus > 0 && run.forgeBonusUsedAct !== run.act
+  return 1 + (usable ? bonus : 0)
+}
+
 export function applyRunCommand(run: RunState, command: RunCommand): RunState {
   switch (command.type) {
     case 'StartRun':
@@ -1267,12 +1280,15 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       // 幕1の「鍛える1回」制限は撤廃 (2026-09-01 ユーザー指示「幕に対しての制限不要」。
       // 旧・供給集中対策 2026-08-31 は工房の幕1×1個化と焚き火の希少化で役目を終えた)
       // 鍛冶の砥石 (B型レリック): 追加回数のぶん焚き火に留まり、もう1枚鍛えられる
+      // 砥石の追加回数は1幕に1回だけ (2026-09-05 ユーザー裁定。人間#6: 砥石取得後の焚き火7回すべて鍛える×2・休む0/9
+      // = 幕ボス全回復と組んで「休む」が一度も競合しなかった)。使った幕を forgeBonusUsedAct に記録し、同じ幕では1枚
       const used = (run.campfireUpgradesUsed ?? 0) + 1
-      const allowed = 1 + (run.campfireForgeBonus ?? 0)
+      const allowed = campfireForgeAllowed(run)
       return {
         ...run,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
         campfireUpgradesUsed: used,
+        forgeBonusUsedAct: used > 1 ? run.act : run.forgeBonusUsedAct,
         phase: used < allowed ? 'campfire' : 'map',
       }
     }

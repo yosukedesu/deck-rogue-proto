@@ -36,7 +36,7 @@ function cname(cardId: string): string {
   }
 }
 import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -682,8 +682,11 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   } else if (run.phase === 'campfire') {
     L.push(`🔥 焚き火: 「休む/鍛える」から1つ選ぶ (二択。除去はショップ専売。現在 ${run.hp}/${run.maxHp})`)
     if ((run.campfireForgeBonus ?? 0) > 0) {
-      const forgeLeft = Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0))
-      if (forgeLeft > 0) L.push(`  🪨鍛冶の砥石: 鍛えるはあと${forgeLeft}枚 (休む・除去とは併用不可)`)
+      if (campfireForgeAllowed(run) <= 1) L.push('  🪨鍛冶の砥石はこの幕では使用済み (1幕に1回)')
+      else {
+        const forgeLeft = Math.max(0, campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0))
+        if (forgeLeft > 0) L.push(`  🪨鍛冶の砥石: 鍛えるはあと${forgeLeft}枚 (休む・除去とは併用不可。砥石は1幕に1回)`)
+      }
     }
     // 上限クランプ後の実回復量を表示する (2026-08-30 Opusラン指摘: 満タンでも+41と出ていた)
     const heal = Math.min(Math.floor(run.maxHp * run.campfireRatio), run.maxHp - run.hp)
@@ -695,7 +698,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       : `  休む (CampfireRest) → HP+${heal} 回復して次へ`)
     // 鍛えるが使えない焚き火 (幕1のラン通算1回を使用済み等) では強化UIを丸ごと畳む
     // (2026-08-31 再検証ラン指摘④「残り0と書いてあるのに全カードの鍛えるプレビューが並ぶ」)
-    const forgeLeftHere = Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0))
+    const forgeLeftHere = Math.max(0, campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0))
     L.push(
       forgeLeftHere > 0
         ? '  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)'

@@ -2,7 +2,7 @@
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
 import { allRelics, buildRelicPermanent, getCardDef, getEventDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice } from './run.ts'
+import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice, campfireForgeAllowed } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
@@ -355,6 +355,26 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
     run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })
     expect(run.phase).toBe('map') // 2枚目で出る
     expect(run.deck.filter((c) => c.def.name.endsWith('+'))).toHaveLength(2)
+  })
+
+  it('鍛冶の砥石は1幕に1回だけ2枚 (2026-09-05 ユーザー裁定「砥石の調整」: 人間#6 焚き火9回・休む0回)', () => {
+    let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1, act: 2 }
+    expect(campfireForgeAllowed(run)).toBe(2)
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })
+    expect(run.phase).toBe('map')
+    expect(run.forgeBonusUsedAct).toBe(2)
+    // 同じ幕の次の焚き火は1枚で出る
+    let again: RunState = { ...run, phase: 'campfire', campfireUpgradesUsed: 0 }
+    expect(campfireForgeAllowed(again)).toBe(1)
+    again = applyRunCommand(again, { type: 'CampfireUpgrade', index: 2 })
+    expect(again.phase).toBe('map')
+    expect(again.forgeBonusUsedAct).toBe(2) // 1枚だけでは記録が動かない
+    // 次の幕では再び2枚
+    const nextAct: RunState = { ...again, phase: 'campfire', campfireUpgradesUsed: 0, act: 3 }
+    expect(campfireForgeAllowed(nextAct)).toBe(2)
+    // 砥石なしなら幕に関係なく1枚
+    expect(campfireForgeAllowed({ ...nextAct, campfireForgeBonus: 0 })).toBe(1)
   })
 
   it('旧セーブ互換: 新フィールドが無いランでも勝利ゴールドと焚き火強化が壊れない (NaN汚染防止)', () => {

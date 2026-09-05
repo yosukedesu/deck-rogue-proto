@@ -183,7 +183,7 @@
     "id": "relic_smith_whetstone",
     "name": "鍛冶の砥石",
     "sprite": "🪨",
-    "description": "焚き火の「鍛える」を2枚まで使える",
+    "description": "焚き火の「鍛える」を2枚まで使える（1幕に1回だけ）",
     "rarity": "rare",
     "bonus": {
       "campfireForge": 1

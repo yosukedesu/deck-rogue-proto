@@ -65,7 +65,7 @@ import {
 } from '../engine/content.ts'
 import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -3040,7 +3040,7 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
   return out
 }
 
-const RELIC_BONUS_JA: Record<string, string> = { noRest: '焚き火で休めない', brandOnRelic: 'レリック取得ごとに烙印', victoryHealFlat: '勝利時HP+', shopUpgradeDiscount: 'ショップ鍛える-G', restMaxHp: '休むと最大HP+', eliteGoldBonus: 'エリート金+', fusionDiscount: '合成-G', shopPriceRatio: 'ショップ価格×', goldMultiplier: '勝利金×', removalStepDelta: '除去の逓増幅', maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数' }
+const RELIC_BONUS_JA: Record<string, string> = { noRest: '焚き火で休めない', brandOnRelic: 'レリック取得ごとに烙印', victoryHealFlat: '勝利時HP+', shopUpgradeDiscount: 'ショップ鍛える-G', restMaxHp: '休むと最大HP+', eliteGoldBonus: 'エリート金+', fusionDiscount: '合成-G', shopPriceRatio: 'ショップ価格×', goldMultiplier: '勝利金×', removalStepDelta: '除去の逓増幅', maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数（1幕に1回）' }
 
 function relicTunerFields(def: RelicDef): { key: string; label: string; cur: number }[] {
   const out: { key: string; label: string; cur: number }[] = []
@@ -4450,15 +4450,17 @@ function RunScreen({
     const noRest = run.relics.some((id) => getRelicDef(id).bonus?.noRest === true)
     // 鍛えるが使えない焚き火 (この焚き火で使用済み) では強化UIを丸ごと畳む
     // (2026-08-31 再検証ラン指摘④)。幕1の通算制限は撤廃 (2026-09-01 ユーザー指示)
-    const canForgeHere = 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0) > 0
+    const canForgeHere = campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0) > 0
     return (
       <div className="app setup">
         <h1>🔥 焚き火</h1>
         <p className="hint">
           「休む」「鍛える」から1つを選ぶ（除去はショップのみ。2026-09-03）。
           {(run.campfireForgeBonus ?? 0) > 0 &&
-            Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0)) > 0 &&
-            ` 🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, 1 + (run.campfireForgeBonus ?? 0) - (run.campfireUpgradesUsed ?? 0))}枚（休む・除去とは併用不可）。`}
+            (campfireForgeAllowed(run) > 1
+              ? Math.max(0, campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0)) > 0 &&
+                ` 🪨鍛冶の砥石: 鍛えるはあと${Math.max(0, campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0))}枚（休む・除去とは併用不可。砥石は1幕に1回）。`
+              : ' 🪨鍛冶の砥石はこの幕では使用済み（1幕に1回）。')}
         </p>
         <div className="choice-row" style={{ marginTop: 12 }}>
           <button className="choice" onClick={() => dispatch({ type: 'CampfireRest' })}>
