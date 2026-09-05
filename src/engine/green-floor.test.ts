@@ -2,7 +2,7 @@
 // 新効果 (成長しきい値・獲得誘発・伏せ枠+1・回収・サーチ・増殖・育つ札・手札で鍛える) の挙動と、
 // 「基礎体力の床」(0〜1E率・キャントリップ・全体・1E置物) の退行防止、幕3のターン装甲出現保証。
 import { describe, expect, it } from 'vitest'
-import { allCards, getCardDef, getEnemyDef } from './content.ts'
+import { allCards, allEnemies, getCardDef, getEnemyDef } from './content.ts'
 import { ACT_MUST_APPEAR, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
 import { REWARD_EXCLUDED } from './run.ts'
@@ -227,5 +227,15 @@ describe('幕3の量の器 (人間ラン#2: ターン装甲が21戦で一度も�
         expect(dup.length, `act${act} seed${seed}: ${dup.join(',')}`).toBeLessThanOrEqual(Math.max(0, ids.length - poolSize) + 6)
       }
     }
+  })
+})
+
+describe('幕3の量の装置の配布拡大 (2026-09-05 人間ラン#5: 合成後の幕3通常戦が2.67T。ユーザー裁定「ok」)', () => {
+  it('幕3の通常ソロ3体 (雷球の巨頭・献身の彫師・罠壊し) がターン装甲30〜35を持つ', () => {
+    expect(getEnemyDef('enemy_thunder_globe').turnArmor).toBe(35)
+    const sculptor = allEnemies.find((e) => e.name === '献身の彫師')!
+    const breaker = allEnemies.find((e) => e.name === '罠壊し')!
+    expect(sculptor.turnArmor).toBe(30)
+    expect(breaker.turnArmor).toBe(35)
   })
 })

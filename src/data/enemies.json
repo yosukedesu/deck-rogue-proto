@@ -167,7 +167,8 @@
       }
     ],
     "opener": "smash",
-    "vsSetIgnoreFreshness": true
+    "vsSetIgnoreFreshness": true,
+    "turnArmor": 35
   },
   {
     "id": "enemy_brute",
@@ -2461,7 +2462,8 @@
       "shock_slap",
       "thunder_strike",
       "galvanic_burst"
-    ]
+    ],
+    "turnArmor": 35
   },
   {
     "id": "enemy_frog_knight",
@@ -2667,7 +2669,8 @@
       "carve_rite",
       "savage"
     ],
-    "sequenceLoopFrom": 1
+    "sequenceLoopFrom": 1,
+    "turnArmor": 30
   },
   {
     "id": "enemy_chomper",
