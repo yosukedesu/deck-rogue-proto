@@ -464,13 +464,20 @@ function openTreasure(run: RunState): RunState {
  * 戦闘/ショップ/宝箱/イベントへ分岐し、累積確率を更新する。
  * 出た種別だけ基礎値へリセット、出なかった種別は基礎値ぶん加算 (上限なし)。幕頭で全リセット。
  */
+/** ?→ショップが起きる所持金の下限 (除去の初回価格と同じ。これ未満では店で何も買えない) */
+export const UNKNOWN_SHOP_MIN_GOLD = 50
+
 function resolveUnknown(run: RunState): RunState {
   const pity = run.unknownPity ?? UNKNOWN_PITY_BASE
   // 本家のショップ2連続禁止は「直前」だけ見るが、うちは固定ショップが次の行に見えているので先読みも要る
   // (2026-09-03 Opusラン G: ?→ショップの直後に本物のショップが並び、2軒目は23Gで何も買えない事故)
   const node = currentNode(run)
   const nextHasShop = (node?.next ?? []).some((i) => run.map[run.row + 1]?.[i]?.type === 'shop')
-  const shopPct = (run.lastRoomWasShop ?? false) || nextHasShop ? 0 : pity.shop
+  // 所持金が最安帯 (除去の初回50G・0E札40〜50G) に届かないなら ?→ショップ は起きない
+  // (2026-09-05 Opusラン U: 幕3終盤の?→ショップが43Gで発生し全商品50G以上=「立ち去る」しか無い死にノード)。
+  // 累積確率は据え置き = 次の?で当たりやすくなる (金が貯まった頃に来る)
+  const tooPoor = run.gold < UNKNOWN_SHOP_MIN_GOLD
+  const shopPct = (run.lastRoomWasShop ?? false) || nextHasShop || tooPoor ? 0 : pity.shop
   const [roll, rng] = nextInt(run.rng, 0, 99)
   const bump = (hit: 'monster' | 'shop' | 'treasure' | 'event') => ({
     monster: hit === 'monster' ? UNKNOWN_PITY_BASE.monster : pity.monster + UNKNOWN_PITY_BASE.monster,

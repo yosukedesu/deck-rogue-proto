@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
+import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
@@ -608,7 +608,8 @@ function conditionalIntentTextRaw(s: GameState, i: number): string {
     const why = enemyPunishesSet(def)
       ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
       : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
-    return `${baseOnly}（伏せ札ありでも今回は同じ行動・実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
+    // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
+    return `${baseOnly}（伏せ札ありでも今回は同じ行動。ただしロールは別で、伏せると実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
   }
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
   const cond = intent.conditionalOn === 'set' ? `伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
@@ -728,6 +729,24 @@ function uiCardRole(def: CardDef): 'attack' | 'defend' | 'other' {
     ['gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed'].includes(e.effect),
   )
   return hasDef ? 'defend' : 'other'
+}
+
+/**
+ * 場の置物の誘発ダメージに、いま誘発したら何点になるか (成長・勢い・弱体込み) を添える
+ * (2026-09-05 Opusラン U: 風の棘「2ダメージ」が実測15〜17。成長は与ダメ全てに加算の規則どおりだが
+ *  文面と実出力が離れて強さが読めなかった)。playerDamageAfterModifiers と同じ式 = 表示の嘘を作らない。
+ * 敵側の装甲・ブロックは対象が決まらないので含めない。基礎値と同じなら何も出さない
+ */
+function permanentLiveDamage(state: GameState, def: CardDef): string | null {
+  const vals: string[] = []
+  for (const e of def.effects) {
+    if (e.effect !== 'dealDamage' || e.trigger === 'onPlay' || e.amount === undefined) continue
+    const live = playerDamageAfterModifiers(state, e.amount)
+    if (live !== e.amount) vals.push(`${e.amount}→${live}`)
+  }
+  if (vals.length === 0) return null
+  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', state.player.momentum > 0 ? `勢い+${state.player.momentum}` : '', state.player.weak > 0 ? '弱体-25%' : ''].filter(Boolean)
+  return `いま誘発したら ${vals.join('・')}ダメ（${parts.join('・')}）`
 }
 
 function CardFrame({
@@ -1827,6 +1846,9 @@ function BattleScreen({
               {player.permanents.map((c) => (
                 <div key={c.uid} className="permanent">
                   <b>{c.def.name}</b>
+                  {permanentLiveDamage(s, c.def) && (
+                    <div style={{ color: 'var(--muted)', fontSize: 11 }}>{permanentLiveDamage(s, c.def)}</div>
+                  )}
                   <EffectLines
                     def={c.def}
                     ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}

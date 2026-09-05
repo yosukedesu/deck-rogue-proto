@@ -94,6 +94,16 @@ describe('?マスの解決 (本家 pity)', () => {
     expect(enterUnknown(ctrl).phase).toBe('shop')
   })
 
+  it('所持金が50G未満なら ?→ショップ は起きない (2026-09-05 Opusラン U: 43Gで全商品50G以上の死にノード)', () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const poor = atUnknown(seed, { unknownPity: { monster: 0, shop: 100, treasure: 0 }, gold: 43 })
+      expect(enterUnknown(poor).phase).not.toBe('shop')
+      // 累積確率はショップ側が据え置き (bumpされない) で当たりの種別だけリセットされる
+      const boundary = atUnknown(seed, { unknownPity: { monster: 0, shop: 100, treasure: 0 }, gold: 50 })
+      expect(enterUnknown(boundary).phase).toBe('shop')
+    }
+  })
+
   it('ショップに入ると lastRoomWasShop が立ち、他の部屋では下りる', () => {
     const shop = enterUnknown(atUnknown(9, { unknownPity: { monster: 0, shop: 100, treasure: 0 } }))
     expect(shop.phase).toBe('shop')

@@ -35,7 +35,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -201,7 +201,8 @@ function intentLine(s: GameState, i: number): string {
     const why = enemyPunishesSet(def)
       ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
       : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
-    return `${branchText(e.intent, e.weak ?? 0)}(伏せ札ありでも今回は同じ行動・実値は${dir}${why})`
+    // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
+    return `${branchText(e.intent, e.weak ?? 0)}(伏せ札ありでも今回は同じ行動。ただしロールは別で、伏せると実値は${dir}${why})`
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
@@ -357,7 +358,12 @@ function renderBattle(s: GameState, logFrom: number): string {
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
     const anthem = p.permanents.reduce((a, c) => a + c.def.effects.filter((e) => e.effect === 'blessRetainers').reduce((x, e) => x + (e.amount ?? 0), 0), 0)
-    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=量つき効果に加算】` : ''}`).join(' / ')}`)
+    // 誘発ダメージの実値 (成長・勢い・弱体込み。2026-09-05 Opusラン U: 風の棘「2ダメ」が実測15〜17で強さが読めなかった)
+    const live = (c: (typeof p.permanents)[number]): string => {
+      const v = c.def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger !== 'onPlay' && e.amount !== undefined).map((e) => `${e.amount}→${playerDamageAfterModifiers(s, e.amount!)}`).filter((t) => !/^(\d+)→\1$/.test(t))
+      return v.length > 0 ? `【いま誘発したら${v.join('・')}ダメ=成長・勢い込み】` : ''
+    }
+    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=量つき効果に加算】` : ''}${live(c)}`).join(' / ')}`)
     if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者の量つき効果すべてに加算)`)
   }
   if (s.phase === 'awaiting-reaction' && s.pendingWindow) {
