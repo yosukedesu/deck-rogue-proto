@@ -182,7 +182,10 @@ export function runPermanentTriggers(
     state.enemies[enemyIndex] && state.enemies[enemyIndex].hp > 0
       ? enemyIndex
       : state.enemies.findIndex((e) => e.hp > 0)
-  let s = state
+  // カードのプレイ中に誘発した置物 (攻撃ごと・成長/勢いを得るたび…) の効果は「カードのプレイ」ではない:
+  // 虚弱の25%減も勢いの加算も受けない (2026-09-05。旧実装は親のプレイのフラグが立ったままだった)
+  const prevCardPlay = state.resolvingCardPlay === true
+  let s: GameState = { ...state, resolvingCardPlay: false }
   // アンセム (白 2026-08-31): blessRetainers 持ち置物の合計ぶん、従者 (retainer) の量つき効果を底上げする
   const anthem = state.player.permanents.reduce(
     (a, p) =>
@@ -213,7 +216,7 @@ export function runPermanentTriggers(
       }
     }
   }
-  return s
+  return { ...s, resolvingCardPlay: prevCardPlay }
 }
 
 /**
@@ -583,7 +586,11 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
  * (2026-08-25 プレイテスト発見: 弱体で13ダメに減ったのに回復は素の18基準のままだった)
  */
 export function playerDamageAfterModifiers(state: GameState, baseAmount: number): number {
-  const amount = baseAmount + state.player.growth + state.player.momentum
+  // 成長は与ダメ全てに乗る (確定済みルール表「成長カウンター」)。勢いは「以降の攻撃ダメージ」= カードのプレイで
+  // 与えるダメージだけに乗り、置物トリガー・リアクション・パッシブ由来には乗らない
+  // (2026-09-05 ユーザー裁定。Opusラン U: 風の棘「勢いを得るたび2ダメ」が勢い込みで15〜17 = 自己増殖の芽)
+  const momentum = state.resolvingCardPlay === true ? state.player.momentum : 0
+  const amount = baseAmount + state.player.growth + momentum
   // 敵フェーズ中に付いた弱体は、その同じフェーズの返しには乗らない (次の自ターンから。2026-09-04 Opusラン N)
   const weak = state.phase === 'player-turn' ? state.player.weak : state.player.weak - (state.player.weakFreshThisPhase ?? 0)
   if (weak <= 0 || amount <= 0) return amount
@@ -621,6 +628,7 @@ export function damageBreakdown(
     amount += p.growth
     steps.push({ label: `成長+${p.growth}`, value: amount })
   }
+  // 手札のホバー = カードのプレイの見積り。勢いはカードプレイのダメージだけに乗る (置物・リアクションには乗らない 2026-09-05)
   if (p.momentum > 0) {
     amount += p.momentum
     steps.push({ label: `勢い+${p.momentum}`, value: amount })
@@ -1600,7 +1608,9 @@ const REACTION_TRIGGERS = new Set([
  * 呼び出し側 (ReactionSystem 実装) が行う。
  */
 export function resolveReactionEffects(state: GameState, card: CardInstance, enemyIndex: number): GameState {
-  let s = emit(state, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
+  // リアクション (自己誘発で自ターン中に発動する場合も) は「カードのプレイ」ではない = 虚弱・勢いの対象外 (2026-09-05)
+  const prevCardPlay = state.resolvingCardPlay === true
+  let s = emit({ ...state, resolvingCardPlay: false }, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
   for (const effect of setEffectsOf(card)) {
     if (REACTION_TRIGGERS.has(effect.trigger)) {
       // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
@@ -1610,5 +1620,6 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   // 読み勝ちの換金 (確定済みルール表「読み勝ちの換金」2026-08-29): リアクション発動に反応する置物。
   // 3方式共通の解決経路なので方式非依存。ブラフで伏せただけでは誘発しない = 本当に読み勝った時だけ。
   // 全カード伏せ可 (実験): 通常カードの伏せ発動は「リアクションの発動」ではない = 換金 (狩人の眼光) は専用札の特権
-  return card.def.type === 'reaction' ? runPermanentTriggers(s, 'onReactionFired', enemyIndex) : s
+  const out = card.def.type === 'reaction' ? runPermanentTriggers(s, 'onReactionFired', enemyIndex) : s
+  return { ...out, resolvingCardPlay: prevCardPlay }
 }

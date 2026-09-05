@@ -361,7 +361,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     // 誘発ダメージの実値 (成長・勢い・弱体込み。2026-09-05 Opusラン U: 風の棘「2ダメ」が実測15〜17で強さが読めなかった)
     const live = (c: (typeof p.permanents)[number]): string => {
       const v = c.def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger !== 'onPlay' && e.amount !== undefined).map((e) => `${e.amount}→${playerDamageAfterModifiers(s, e.amount!)}`).filter((t) => !/^(\d+)→\1$/.test(t))
-      return v.length > 0 ? `【いま誘発したら${v.join('・')}ダメ=成長・勢い込み】` : ''
+      return v.length > 0 ? `【いま誘発したら${v.join('・')}ダメ=成長込み・勢いは乗らない】` : ''
     }
     L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=量つき効果に加算】` : ''}${live(c)}`).join(' / ')}`)
     if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者の量つき効果すべてに加算)`)

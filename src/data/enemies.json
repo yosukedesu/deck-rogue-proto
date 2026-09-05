@@ -113,7 +113,8 @@
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 2
+        "weight": 2,
+        "growPerUse": 3
       },
       {
         "id": "toss_junk",
@@ -149,7 +150,8 @@
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 1
+        "weight": 1,
+        "growPerUse": 3
       }
     ],
     "movesVsTokens": [
@@ -163,7 +165,8 @@
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 1
+        "weight": 1,
+        "growPerUse": 3
       }
     ],
     "opener": "smash",

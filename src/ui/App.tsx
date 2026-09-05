@@ -734,7 +734,8 @@ function uiCardRole(def: CardDef): 'attack' | 'defend' | 'other' {
 /**
  * 場の置物の誘発ダメージに、いま誘発したら何点になるか (成長・勢い・弱体込み) を添える
  * (2026-09-05 Opusラン U: 風の棘「2ダメージ」が実測15〜17。成長は与ダメ全てに加算の規則どおりだが
- *  文面と実出力が離れて強さが読めなかった)。playerDamageAfterModifiers と同じ式 = 表示の嘘を作らない。
+ *  文面と実出力が離れて強さが読めなかった。同日裁定で勢いは置物トリガーに乗らなくなった)。
+ *  playerDamageAfterModifiers と同じ式 (UI描画中はカードプレイ外 = 勢いは自動で除外) = 表示の嘘を作らない。
  * 敵側の装甲・ブロックは対象が決まらないので含めない。基礎値と同じなら何も出さない
  */
 function permanentLiveDamage(state: GameState, def: CardDef): string | null {
@@ -745,8 +746,9 @@ function permanentLiveDamage(state: GameState, def: CardDef): string | null {
     if (live !== e.amount) vals.push(`${e.amount}→${live}`)
   }
   if (vals.length === 0) return null
-  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', state.player.momentum > 0 ? `勢い+${state.player.momentum}` : '', state.player.weak > 0 ? '弱体-25%' : ''].filter(Boolean)
-  return `いま誘発したら ${vals.join('・')}ダメ（${parts.join('・')}）`
+  // 勢いは置物トリガーには乗らない (2026-09-05 裁定) = 成長と弱体だけ
+  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', state.player.weak > 0 ? '弱体-25%' : ''].filter(Boolean)
+  return `いま誘発したら ${vals.join('・')}ダメ（${parts.join('・')}。勢いは乗らない）`
 }
 
 function CardFrame({
