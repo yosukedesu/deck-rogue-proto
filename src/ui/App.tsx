@@ -5042,7 +5042,8 @@ function BattleRatingBar({
     </span>
   )
   if (showDialog) {
-    const canCommit = strength !== null && fun !== null
+    // 敗北時は敗因の2択も必須 (2026-09-05 人間ラン#5: 20戦の評価は入ったが敗因だけ押されなかった。作り直し基準の入力なので落とさない)
+    const canCommit = strength !== null && fun !== null && (!lost || lossFeel !== null)
     const commit = () => {
       if (!canCommit) return
       onRate({ strength: strength!, fun: fun!, ...(note.trim() !== '' ? { note: note.trim() } : {}) })
@@ -5061,7 +5062,7 @@ function BattleRatingBar({
             {row('面白さ', 'fun', fun)}
             {lost && (
               <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center', fontSize: 12 }}>
-                敗因の感触
+                敗因の感触<span style={{ color: 'var(--accent, #fc6)' }}>（敗北時は必須）</span>
                 {(['build', 'unfair'] as const).map((f) => (
                   <button
                     key={f}

@@ -1,12 +1,12 @@
 {
- "generatedAt": "2026-09-04",
+ "generatedAt": "2026-09-05",
  "seeds": [
   11,
   22,
   33,
   44
  ],
- "note": "アーキ別勝率の分散監視の既知0%セル (理想形デッキ×ボス/エリート・素の値・simボット)。新しい0%セルはここに理由つきで足す1手を強制する。ボットの床値を含む (収穫・ストーム・反復・抱え込み・軍団はボットが最も下手な操作=既知) 2026-09-02追補: 代替ボス3体(血族/巨蟹/合成獣)のゼロセルを追加。 2026-09-04追補: ボットの温存修正(今撃てる攻撃札ぶんだけ)で解消した23 セルを外し、新規2 セル(deck_recycle|enemy_turtle deck_momentum|enemy_elite_giant_face=温存修正後のボット床値。コスト再利用型は大亀のブロック積みに対し放出タイミングをボットが計れない)を追加。勢いの道(deck_momentum)を追加。",
+ "note": "アーキ別勝率の分散監視の既知0%セル (理想形デッキ×ボス/エリート・素の値・simボット)。新しい0%セルはここに理由つきで足す1手を強制する。ボットの床値を含む (収穫・ストーム・反復・抱え込み・軍団はボットが最も下手な操作=既知) 2026-09-02追補: 代替ボス3体(血族/巨蟹/合成獣)のゼロセルを追加。 2026-09-04追補: ボットの温存修正(今撃てる攻撃札ぶんだけ)で解消した23 セルを外し、新規2 セル(deck_recycle|enemy_turtle deck_momentum|enemy_elite_giant_face=温存修正後のボット床値。コスト再利用型は大亀のブロック積みに対し放出タイミングをボットが計れない)を追加。勢いの道(deck_momentum)を追加。 2026-09-05追補②: 幕3ターン装甲の配布拡大(雷球/罠壊し/彫師)後。収穫型の解消6セルを外し、新規1セル(deck_momentum|enemy_elite_stab_book)を追加。",
  "zeroCells": [
   "deck_bloodfeast|enemy_elite_deathless",
   "deck_bloodfeast|enemy_elite_doom_chanter",
@@ -48,18 +48,12 @@
   "deck_grimoire|enemy_turtle",
   "deck_grimoire|enemy_warden",
   "deck_harvest|enc_elite_sentries",
-  "deck_harvest|enc_kaiser_crab",
-  "deck_harvest|enc_kin_ritual",
-  "deck_harvest|enemy_brute",
   "deck_harvest|enemy_chimera_1",
   "deck_harvest|enemy_elite_deathless",
   "deck_harvest|enemy_elite_doom_chanter",
   "deck_harvest|enemy_elite_giant_face",
-  "deck_harvest|enemy_elite_husk_3",
   "deck_harvest|enemy_elite_iron_egg",
-  "deck_harvest|enemy_elite_slaver",
   "deck_harvest|enemy_elite_stab_book",
-  "deck_harvest|enemy_turtle",
   "deck_harvest|enemy_warden",
   "deck_horde|enemy_elite_doom_chanter",
   "deck_horde|enemy_elite_giant_face",
@@ -100,6 +94,7 @@
   "deck_storm|enemy_warden",
   "deck_trample|enemy_elite_giant_face",
   "deck_recycle|enemy_turtle",
-  "deck_momentum|enemy_elite_giant_face"
+  "deck_momentum|enemy_elite_giant_face",
+  "deck_momentum|enemy_elite_stab_book"
  ]
 }
