@@ -19,7 +19,7 @@
 // エッジは非交差 (格子空間のクランプで保証)、全ノードが開始から到達可能かつボスへ到達可能。
 // ?マスの中身はここでは決めない — 入室時に run.ts が本家式の累積確率で解決する。
 import { nextInt } from './rng.ts'
-import { resolveEncounter } from './content.ts'
+import { getEnemyDef, resolveEncounter } from './content.ts'
 
 /** エリート個体化を禁じる編成 (盗み逃走は素の数字でだけレースが成立する) */
 /**
@@ -32,6 +32,13 @@ import { resolveEncounter } from './content.ts'
  * 門番のターン装甲75と対: 「量の器」が幕3で必ず1回は問われる
  */
 export const ACT_MUST_APPEAR: readonly (readonly string[])[] = [[], [], ['enemy_sludge_berserker']]
+/**
+ * 量の器の経路保証 (2026-09-05 ユーザー裁定。人間#5/#6: 幕3の通常戦が幕2より短い直接原因は、ターン装甲持ちの
+ * 通常敵が経路上に1体も無かったこと = 存在保証 (ACT_MUST_APPEAR) では経路次第だった)。
+ * 幕ごとに「本帯の通常戦闘を K 戦以上踏む経路は、器 (ターン装甲持ちの編成) を1回は踏む」の K。0 = 保証なし。
+ * 通常戦闘が K 未満の経路 (?・ショップ・焚き火で抜ける回避ルート) は本家原則「何回戦うかを選べる」のまま自由
+ */
+export const TURN_ARMOR_PATH_MIN: readonly number[] = [0, 0, 1]
 
 export const ELITE_POOLS: readonly (readonly string[])[] = [
   // 各幕4種 (2026-08-31 再検証ラン「プール3種×4枠で同一個体が同一パスに2回=消化試合」への処方)
@@ -166,7 +173,7 @@ const ACT_POOLS: readonly (readonly string[])[] = [
   // 苔の主(再生)・斧鬼(大技→隙)・石殻(甲殻)・オーガ(元ボスの再登場)
   ['enemy_wide_power', 'enemy_thorn_squirrel', 'enemy_apprentice_colossus', 'enemy_cultist', 'enemy_slug', 'enemy_mud_lump', 'enc_probe_pair', 'enc_probe_trio', 'enc_squirrel_trio', 'enc_mud_mudlings', 'enc_mudling_swarm', 'enc_cultist_imp', 'enc_thief_pair', 'enc_squirrel_probe', 'enc_beast_pair', 'enc_thief_beast', 'enemy_gaping_maw', 'enemy_cog_construct', 'enemy_vine_walker', 'enemy_strangler_serpent', 'enc_serpent_fruit', 'enc_sporecap_fruit', 'enc_sporecap_mudlings', 'enc_serpent_mudlings', 'enc_snapfruit_trio'], // 1幕 (ソロ7/12。2026-09-01 敵圧監査+2: 狂信者=カルト型タイマー・蛞蝓=状態異常の教師〔幕1のデバフゼロを解消〕。2026-08-31 反復感への処方+2: 見習い巨像=タイマー予習・物真似の子鬼=手数の鏡予習)
   ['enemy_set_wary', 'enemy_set_breaker', 'enemy_bomber', 'enc_probe_trio', 'enc_joker_drummer', 'enc_bomber_healer', 'enc_hexer_shadow', 'enc_joker_hexer', 'enc_joker_hexer_drummer', 'enc_wary_bomber', 'enc_bomber_drummer', 'enemy_whetstone_colossus', 'enemy_mimic_jester', 'enemy_cinder_imp', 'enemy_rock_beetle', 'enemy_big_slime', 'enc_squire_archer', 'enc_raptor_nest', 'enemy_maw_hunter', 'enemy_bowl_bug', 'enc_bowlbug_drummer', 'enc_imp_jester', 'enc_chomper_pair', 'enc_scald_gnat_pair'], // 2幕 (2026-09-02 本家形: 重量級ソロ=HunterKiller枠) (2026-08-31 緊張不足への処方+2: 砥石の巨像=タイマー・物真似の道化=手数の鏡) (ソロ3/11。2026-08-31 非伏せ系+2=伏せ反応の密度を薄める〔伏せ無し赤で読み合いゼロ戦闘が過密だった実測〕)
-  ['enemy_burrow_worm', 'enemy_nemesis_wraith', 'enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_moss_healer', 'enc_fang_twins', 'enemy_brood_toad', 'enc_mourn_beasts', 'enemy_sludge_berserker', 'enc_wolf_hexer_drummer', 'enc_mourn_healer', 'enc_axe_shadow', 'enc_axe_automatons', 'enemy_thunder_globe', 'enemy_frog_knight', 'enc_biting_scrolls_quad', 'enc_lost_forgotten'], // 3幕 (2026-09-02 本家形: 札汚染の大物=SlimedBerserker枠) (ソロ4/11)
+  ['enemy_burrow_worm', 'enemy_nemesis_wraith', 'enemy_brute', 'enemy_moss', 'enemy_axe_ogre', 'enemy_shell_guard', 'enemy_set_breaker', 'enemy_devoted_sculptor', 'enc_globe_drummer', 'enc_sculptor_shadow', 'enc_wolf_drummer', 'enc_hexer_shadow', 'enc_breaker_hexer', 'enc_axe_drummer', 'enc_shell_hexer', 'enc_moss_healer', 'enc_fang_twins', 'enemy_brood_toad', 'enc_mourn_beasts', 'enemy_sludge_berserker', 'enc_wolf_hexer_drummer', 'enc_mourn_healer', 'enc_axe_shadow', 'enc_axe_automatons', 'enemy_thunder_globe', 'enemy_frog_knight', 'enc_biting_scrolls_quad', 'enc_lost_forgotten'], // 3幕 (2026-09-02 本家形: 札汚染の大物=SlimedBerserker枠) (ソロ4/11)
 ]
 /**
  * Weak帯 (2026-09-02 StS2式の構造保証。docs/sts2-reference.md §1「序盤に強敵が事故で出ない」):
@@ -603,6 +610,76 @@ export function generateMap(
       rng = next2
       const [r, c] = spots[k]
       map[r][c] = { ...map[r][c], encounterId: mustId }
+    }
+    // 量の器の経路保証 (TURN_ARMOR_PATH_MIN): 「本帯の通常戦闘を1回でも踏むパスは、器 (ターン装甲持ちの編成) を
+    // needVessels 回は踏む」。前向き/後ろ向きの min-DP で「そこを通るパスの最小の器数が足りない」本帯の通常戦闘ノードを
+    // 見つけ、1つずつシードRNGで器の編成に差し替える (差し替えたノードを通る全パスが同時に満たされる)。
+    // 通常戦闘を一度も踏まない経路 (?・ショップ・焚き火だけで抜ける) は本家原則「何回戦うかを選べる」のまま自由 =
+    // 実測で幕3マップの約1/4にそういう経路があり、部屋タイプを変えずに全パス保証にするのは不可能だった。
+    // Weak帯・?・エリート・焚き火は触らない。差し替え先は幕内未使用 → 隣の行と同族でない → 器なら何でも、の順
+    const minBattles = TURN_ARMOR_PATH_MIN[act - 1] ?? 0
+    if (minBattles > 0) {
+      const isVessel = (encId: string | null): boolean =>
+        encId !== null && resolveEncounter(encId).some((m) => getEnemyDef(m.enemyId).turnArmor !== undefined)
+      const vesselPool = ACT_POOLS[act - 1].filter((id) => isVessel(id))
+      const weakRows = WEAK_ROWS[act - 1] ?? 0
+      const membersOf = (encId: string | null): readonly string[] => (encId === null ? [] : resolveEncounter(encId).map((m) => m.enemyId))
+      const last = map.length - 1
+      // 器を通らない経路だけを辿り、その経路上の本帯の通常戦闘数の最大を前向き/後ろ向きに求める
+      // (-Infinity = 器を通らずにそこへ着けない)。非器の通常戦闘 X について F+B-自身 ≥ K なら「K戦以上戦うのに器を踏まない経路」がある
+      const maxBattlesDP = (vessel: (r: number, c: number) => boolean): readonly [number[][], number[][]] => {
+        const battle = (r: number, c: number): number => (r >= weakRows && r < last && map[r][c].type === 'battle' ? 1 : 0)
+        const F: number[][] = map.map((row) => new Array<number>(row.length).fill(-Infinity))
+        const B: number[][] = map.map((row) => new Array<number>(row.length).fill(-Infinity))
+        map[0].forEach((_, c) => { if (!vessel(0, c)) F[0][c] = battle(0, c) })
+        for (let r = 0; r < last; r++) {
+          map[r].forEach((node, c) => {
+            if (F[r][c] === -Infinity) return
+            for (const to of node.next) if (!vessel(r + 1, to)) F[r + 1][to] = Math.max(F[r + 1][to], F[r][c] + battle(r + 1, to))
+          })
+        }
+        map[last].forEach((_, c) => { if (!vessel(last, c)) B[last][c] = battle(last, c) })
+        for (let r = last - 1; r >= 0; r--) {
+          map[r].forEach((node, c) => {
+            if (vessel(r, c)) return
+            for (const to of node.next) if (B[r + 1][to] !== -Infinity) B[r][c] = Math.max(B[r][c], B[r + 1][to] + battle(r, c))
+          })
+        }
+        return [F, B]
+      }
+      const deficient = (vessel: (r: number, c: number) => boolean): [number, number][] => {
+        const [F, B] = maxBattlesDP(vessel)
+        const out: [number, number][] = []
+        for (let r = weakRows; r < last; r++) {
+          map[r].forEach((node, c) => {
+            if (node.type === 'battle' && !vessel(r, c) && F[r][c] !== -Infinity && B[r][c] !== -Infinity && F[r][c] + B[r][c] - 1 >= minBattles) out.push([r, c])
+          })
+        }
+        return out
+      }
+      for (let iter = 0; iter < 80 && vesselPool.length > 0; iter++) {
+        const vesselNow = (r: number, c: number): boolean => map[r][c].type === 'battle' && isVessel(map[r][c].encounterId)
+        const spots = deficient(vesselNow)
+        if (spots.length === 0) break
+        // 差し替え先は「そこを器にした時に残る不足ノードが最少」のノード (貪欲 = 多くの経路が合流する節を選ぶ →
+        // 差し替え回数が最少 → 幕内の編成重複を増やさない)。同点はシードRNG
+        const scored = spots.map(([rr, cc]) => [deficient((r2, c2) => (r2 === rr && c2 === cc) || vesselNow(r2, c2)).length, rr, cc] as const)
+        const best = Math.min(...scored.map((x) => x[0]))
+        const bestSpots = scored.filter((x) => x[0] === best).map((x) => [x[1], x[2]] as [number, number])
+        const [k, next2] = nextInt(rng, 0, bestSpots.length - 1)
+        rng = next2
+        const [r, c] = bestSpots[k]
+        // 幕内未使用 → 隣の行と同族でない → 器なら何でも (幕内の編成重複を増やさない・同族連続回避と同じ発想)
+        const usedNow = new Set(map.flatMap((row) => row.filter((node) => node.type === 'battle').map((node) => node.encounterId)))
+        const near = new Set([...(map[r - 1] ?? []), ...(map[r + 1] ?? [])].flatMap((node) => membersOf(node.encounterId)))
+        const fresh = vesselPool.filter((id) => !membersOf(id).some((m) => near.has(m)))
+        const unusedFresh = fresh.filter((id) => !usedNow.has(id))
+        const unusedAny = vesselPool.filter((id) => !usedNow.has(id))
+        const cands = unusedFresh.length > 0 ? unusedFresh : unusedAny.length > 0 ? unusedAny : fresh.length > 0 ? fresh : vesselPool
+        const [v, next3] = nextInt(rng, 0, cands.length - 1)
+        rng = next3
+        map[r][c] = { ...map[r][c], encounterId: cands[v] }
+      }
     }
     return [map, rng]
   }

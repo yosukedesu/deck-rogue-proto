@@ -95,9 +95,11 @@ describe('勢いの網 (緑)', () => {
     expect(200 - t.enemies[0].hp).toBe(23 + 25) // 8+15=23 (装甲内) + 放出30→25
   })
 
-  it('疾駆: 0E・勢い+3・消滅しない (0E規約: 手札もエナジーも増やさない)', () => {
+  it('疾駆: 0E・2貫通ダメージ＋勢い+3・消滅しない (0E規約: 手札もエナジーも増やさない。2026-09-05 素の体=ダメージを先に解決し自分には勢いが乗らない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_sprint'])
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sprint' })
+    const hp0 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sprint', targetIndex: 0 })
+    expect(hp0 - s.enemies[0].hp).toBe(2)
     expect(s.player.momentum).toBe(3)
     expect(s.player.discardPile.some((c) => c.def.id === 'green_sprint')).toBe(true)
   })

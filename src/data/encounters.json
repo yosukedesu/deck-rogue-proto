@@ -797,5 +797,36 @@
         "enemyId": "enemy_crab_cannon"
       }
     ]
+  },
+  {
+    "id": "enc_globe_drummer",
+    "name": "雷球と太鼓",
+    "members": [
+      {
+        "enemyId": "enemy_thunder_globe",
+        "hpScale": 0.65,
+        "strength": -3
+      },
+      {
+        "enemyId": "enemy_drummer",
+        "hpScale": 0.7
+      }
+    ]
+  },
+  {
+    "id": "enc_sculptor_shadow",
+    "name": "彫師と用心棒",
+    "members": [
+      {
+        "enemyId": "enemy_devoted_sculptor",
+        "hpScale": 0.7,
+        "strength": -2
+      },
+      {
+        "enemyId": "enemy_set_wary",
+        "hpScale": 0.55,
+        "strength": -2
+      }
+    ]
   }
 ]

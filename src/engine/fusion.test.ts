@@ -225,10 +225,11 @@ describe('特性の掛け合わせ (多段合算・貫通・全体の伝播)', (
     expect(def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger === 'onPlay').map((e) => e.amount).sort()).toEqual([12, 50])
   })
 
-  it('効果の順序は意味で決める (S2): 準備だけの札 (疾駆=勢い+3) はダメージ行の前に置かれる', () => {
-    const def = fuseCards(inst('green_double_lash'), inst('green_sprint'))
+  it('効果の順序は意味で決める (S2): 準備だけの札 (疾風の号砲=勢い+1→2倍) はダメージ行の前に置かれる', () => {
+    // 疾駆は 2026-09-05 に素の体 (2貫通) を得てダメージ行を持つので、準備だけの札の例は号砲へ
+    const def = fuseCards(inst('green_double_lash'), inst('green_gale_horn'))
     expect(def.effects[0].effect).toBe('addMomentum')
-    expect(def.cost).toBe(1) // 0E素材は値引きにならない
+    expect(def.cost).toBe(1) // 1E+1E-1
   })
 
   it('素材の内部順序は保つ (S2): 蔦の乱舞×年輪 → 成長+2 の後に 乱舞の交互構造 (成長1→2ダメ) がそのまま', () => {

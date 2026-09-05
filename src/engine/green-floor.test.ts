@@ -224,7 +224,9 @@ describe('幕3の量の器 (人間ラン#2: ターン装甲が21戦で一度も�
         // 未使用優先でも、同族回避 (直前2行) と組むとプール末尾で数件の重複は残る。
         // 実測 (240マップ): 超過ぶんを除いた重複 0件=83%・最悪5件。旧実装 (直前2行のみ) は幕2が6戦で4種。
         // 上限を「プール超過ぶん+6」に固定 = 退行 (毎マップ数件の重複) だけを止める
-        expect(dup.length, `act${act} seed${seed}: ${dup.join(',')}`).toBeLessThanOrEqual(Math.max(0, ids.length - poolSize) + 6)
+        // 幕3は量の器の経路保証 (2026-09-05) で器5編成が本帯戦闘の約4割を占め、重複が平均1.6件・最大8件増える (設計上の代償)
+        const slack = act === 3 ? 6 + 8 : 6
+        expect(dup.length, `act${act} seed${seed}: ${dup.join(',')}`).toBeLessThanOrEqual(Math.max(0, ids.length - poolSize) + slack)
       }
     }
   })

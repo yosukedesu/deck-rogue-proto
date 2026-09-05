@@ -8,8 +8,8 @@
 // - エッジは全ノード到達可能 (開始から到達でき、ボスへ到達できる)
 import { describe, expect, it } from 'vitest'
 import { createRng } from './rng.ts'
-import { resolveEncounter } from './content.ts'
-import { ACT_BOSS_POOLS, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, treasureRowFor } from './map.ts'
+import {resolveEncounter, getEnemyDef } from './content.ts'
+import {ACT_BOSS_POOLS, ACT_MAP_ROWS, BOSS_ROW, bossRowFor, ELITE_POOLS, FORCED_CAMPFIRE_ROWS, generateMap, MAP_ROWS, mapRowsFor, tierFor, treasureRowFor, TURN_ARMOR_PATH_MIN } from './map.ts'
 import type { RunMap } from './map.ts'
 
 const SEEDS = Array.from({ length: 40 }, (_, i) => i + 1)
@@ -468,6 +468,62 @@ describe('1戦闘の平均体数 (2026-09-02 本家対照。ユーザー指摘�
   })
 })
 
+describe('量の器の経路保証 (2026-09-05 ユーザー裁定: 幕3はどのパスもターン装甲持ちの通常戦闘を1回は踏む)', () => {
+  const isVessel = (id: string | null): boolean =>
+    id !== null && resolveEncounter(id).some((m) => getEnemyDef(m.enemyId).turnArmor !== undefined)
+  /**
+   * 「本帯の通常戦闘を1回でも踏むパスは器を1回は踏む」の検査: 器でない本帯の通常戦闘ノード X について、
+   * X を通るパスの最小の器数 (前向き最小 + 後ろ向き最小) が 0 なら違反 (= 戦闘はするのに器を踏まずに抜けられる)
+   */
+  const violations = (m: ReturnType<typeof generateMap>[0], weakRows: number): number => {
+    const gain = (r: number, c: number): number => (m[r][c].type === 'battle' && isVessel(m[r][c].encounterId) ? 1 : 0)
+    const F: number[][] = m.map((row) => row.map(() => Infinity))
+    const B: number[][] = m.map((row) => row.map(() => Infinity))
+    m[0].forEach((_, c) => { F[0][c] = gain(0, c) })
+    for (let r = 0; r < m.length - 1; r++) m[r].forEach((n, c) => { for (const to of n.next) F[r + 1][to] = Math.min(F[r + 1][to], F[r][c] + gain(r + 1, to)) })
+    const last = m.length - 1
+    m[last].forEach((_, c) => { B[last][c] = gain(last, c) })
+    for (let r = last - 1; r >= 0; r--) m[r].forEach((n, c) => { for (const to of n.next) B[r][c] = Math.min(B[r][c], B[r + 1][to] + gain(r, c)) })
+    let bad = 0
+    for (let r = weakRows; r < last; r++) m[r].forEach((n, c) => { if (n.type === 'battle' && !isVessel(n.encounterId) && F[r][c] + B[r][c] < 1) bad++ })
+    return bad
+  }
 
+  it('幕3: 200シードで「通常戦闘を踏むのに器を踏まずにボスへ着ける」パスが無い (戦闘ゼロの経路は自由)', () => {
+    let fails = 0
+    let zeroBattleRoutes = 0
+    for (let seed = 1; seed <= 200; seed++) {
+      const [m] = generateMap(createRng(seed), 3)
+      if (violations(m, 2) > 0) fails++
+      // 参考: 本帯の通常戦闘を一度も踏まない経路があるマップ (部屋タイプを変えない限り器は置けない)
+      const Z: boolean[][] = m.map((row) => row.map(() => false))
+      Z[m.length - 1][0] = true
+      for (let r = m.length - 2; r >= 0; r--) m[r].forEach((n, c) => { Z[r][c] = !(r >= 2 && n.type === 'battle') && n.next.some((to) => Z[r + 1][to]) })
+      if (m[0].some((_, c) => Z[0][c])) zeroBattleRoutes++
+    }
+    expect(fails).toBe(0)
+    expect(zeroBattleRoutes).toBeLessThan(80) // 実測 約51/200。跳ね上がったらマップ生成側の変化を疑う
+  })
 
+  it('幕3: 器は本帯の通常戦闘の約4割・幕内の編成重複は平均2件以下 (200シード。貪欲な節選びの退行検知)', () => {
+    let vessels = 0
+    let battles = 0
+    let dups = 0
+    for (let seed = 1; seed <= 200; seed++) {
+      const [m] = generateMap(createRng(seed), 3)
+      const ids = m.slice(2, m.length - 1).flatMap((row) => row.filter((n) => n.type === 'battle').map((n) => n.encounterId ?? ''))
+      battles += ids.length
+      vessels += ids.filter((id) => isVessel(id)).length
+      dups += ids.length - new Set(ids).size
+    }
+    // 実測 (2026-09-05・器5編成): 器5.46/戦闘13.24=41%・重複1.57件/マップ (保証なし: 17%・0.01件)
+    expect(vessels / battles).toBeGreaterThan(0.3)
+    expect(vessels / battles).toBeLessThan(0.55)
+    expect(dups / 200).toBeLessThan(2.5)
+  })
+
+  it('幕1・幕2は保証なし (TURN_ARMOR_PATH_MIN=0) = 器の差し替えは起きない', () => {
+    expect(TURN_ARMOR_PATH_MIN).toEqual([0, 0, 1])
+  })
+})
 
