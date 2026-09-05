@@ -61,7 +61,7 @@ describe('効果の合体 (2026-09-05 ユーザー裁定「工房は全て合成
     expect(def.effects.find((e) => e.effect === 'dealDamage')?.amount).toBe(17)
     expect(def.effects.find((e) => e.effect === 'dealDamage')?.pierce).toBe(true)
     expect(def.effects.find((e) => e.effect === 'gainBlock')?.amount).toBe(6)
-    expect(def.effects.find((e) => e.effect === 'addMomentum')?.amount).toBe(3)
+    expect(def.effects.find((e) => e.effect === 'addMomentum')?.amount).toBe(3 + 2) // 勢い軸同士の軸一致ボーナス+2
   })
 
   it('決定的: 同じ素材からは常に同じ結果 (順序も問わない)', () => {
@@ -174,7 +174,7 @@ describe('タイプ跨ぎ合成 = 支配順位 (置物＞リアクション＞�
     const def = fuseCards(inst('green_reaction_root_weave'), inst('green_perm_growth_tree'))
     expect(def.type).toBe('permanent')
     expect(def.effects.some((e) => e.effect === 'negate')).toBe(false)
-    expect(def.effects.some((e) => e.effect === 'addGrowth' && e.trigger === 'onPlay' && e.amount === 2)).toBe(true)
+    expect(def.effects.some((e) => e.effect === 'addGrowth' && e.trigger === 'onPlay' && e.amount === 2 + 1)).toBe(true) // +1 は成長軸同士のボーナス
   })
 
   it('置物化の÷3は同種の合計に掛ける (蔦の乱舞×年輪の大樹 → 成長+1×5=5 → 毎T+1、2ダメ×5=10 → 毎T3)', () => {
@@ -235,7 +235,7 @@ describe('特性の掛け合わせ (多段合算・貫通・全体の伝播)', (
     const def = fuseCards(inst('green_sig_vine_dance'), inst('green_growth_ring'))
     const kinds = def.effects.map((e) => e.effect)
     expect(kinds[0]).toBe('addGrowth') // 年輪 (準備だけ) が先
-    expect(def.effects[0].amount).toBe(2)
+    expect(def.effects[0].amount).toBe(2 + 1) // 成長軸同士の軸一致ボーナス+1
     expect(kinds.slice(1, 5)).toEqual(['addGrowth', 'dealDamage', 'addGrowth', 'dealDamage'])
   })
 
@@ -287,7 +287,7 @@ describe('同名合成 =「真・」化', () => {
   it('量を持たない同種効果は重複しない (根の紡ぎ×2 → 打ち消しは1つ・成長は合算)', () => {
     const def = fuseCards(inst('green_reaction_root_weave', 'a'), inst('green_reaction_root_weave', 'b'))
     expect(def.effects.filter((e) => e.effect === 'negate')).toHaveLength(1)
-    expect(def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(4)
+    expect(def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(4 + 1) // 成長軸同士の軸一致ボーナス+1
   })
 
   it('選択式の同名合成: 各モードを対で合算 (真・道行きの選択 = 勢い+6+6ダメ / 成長+4)', () => {
@@ -503,5 +503,30 @@ describe('検証ハーネス: StartCombat.cardIds で工房産を含む任意の
     const all = [...s.player.hand, ...s.player.drawPile]
     expect(all.some((c) => c.def.id === fused.id && c.def.name === fused.name)).toBe(true)
     expect(all).toHaveLength(5)
+  })
+})
+
+describe('合成の魅力の型 (2026-09-05 ユーザー裁定: 軸一致ボーナスと鍛えの引き継ぎ。「2つの結果から選ぶ」は不採用)', () => {
+  it('軸一致ボーナス: 成長×成長は成長+1、勢い×勢いは勢い+2、ランプ×ランプは次のカード-1。軸が違えば無し', () => {
+    const g = fuseCards(inst('green_bark_armor'), inst('green_growth_ring')) // 成長軸同士 (年輪×二連はレシピなので避ける)
+    expect(g.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(2 + 1 + 1) // 年輪2 + 樹皮の鎧1 + ボーナス1
+    const t = fuseCards(inst('green_sprint'), inst('green_trample_charge')) // 勢い軸同士
+    expect(t.effects.filter((e) => e.effect === 'addMomentum').reduce((a, e) => a + (e.amount ?? 0), 0)).toBe(3 + 3 + 2) // 助走の行は畳まれず別行のまま (ダメージ行を持つ札の順序は保つ)
+    const r = fuseCards(inst('green_ramp_sprout'), inst('green_ramp_deep_roots')) // ランプ同士
+    expect(r.effects.some((e) => e.effect === 'discountNext' && e.amount === 1)).toBe(true)
+    const none = fuseCards(inst('green_strike'), inst('green_guard')) // 軸なし
+    expect(none.effects.some((e) => ['addGrowth', 'addMomentum', 'discountNext'].includes(e.effect))).toBe(false)
+  })
+
+  it('鍛えの引き継ぎ: 打撃+ × 防御 → 素で合体してから結果を1回鍛える (9ダメ+ブロック8・名前に+)', () => {
+    const up = upgradeCard(inst('green_strike'))
+    expect(up.def.name).toBe('打撃+')
+    const def = fuseCards(up, inst('green_guard'))
+    expect(def.name.endsWith('+')).toBe(true)
+    expect(def.effects.find((e) => e.effect === 'dealDamage')?.amount).toBe(9)
+    expect(def.effects.find((e) => e.effect === 'gainBlock')?.amount).toBe(8)
+    // 鍛えていない素材同士なら鍛えられない
+    const plain = fuseCards(inst('green_strike'), inst('green_guard'))
+    expect(plain.name.endsWith('+')).toBe(false)
   })
 })

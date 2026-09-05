@@ -4,6 +4,8 @@
 // (リプレイ / Unity 移植に安全。RNG も時刻も使わない)。
 import fusionsJson from '../data/fusions.json'
 import { getCardDef } from './content.ts'
+import { axesOf } from './run.ts'
+import { isUpgraded, upgradeCard, upgradeTier } from './upgrade.ts'
 import type { CardDef, CardInstance, DeclarativeEffect } from './types.ts'
 
 interface FusionRecipe {
@@ -281,6 +283,28 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     for (let i = 0; i < list.length; i++) if (QUANTITY.has(list[i].effect) && list[i].amount !== undefined && (best < 0 || (list[i].amount ?? 0) > (list[best].amount ?? 0))) best = i
     if (best >= 0) list[best] = { ...list[best], amount: Math.max(1, (list[best].amount ?? 0) + delta) }
   }
+  // 軸一致ボーナス (2026-09-05 ユーザー裁定 A): 同じ軸の札同士を溶かすと、その軸の小さなおまけが乗る =
+  // 「何と何を溶かすか」にデッキの軸の型が出る (S2: 得の95%が「1E札を重い札にタダで貼る」1パターンだった)
+  const AXIS_BONUS: Record<string, DeclarativeEffect> = {
+    growth: { trigger: 'onPlay', effect: 'addGrowth', amount: 1 },
+    trample: { trigger: 'onPlay', effect: 'addMomentum', amount: 2 },
+    ramp: { trigger: 'onPlay', effect: 'discountNext', amount: 1 },
+    burn: { trigger: 'onPlay', effect: 'applyBurn', amount: 2 },
+    ice: { trigger: 'onPlay', effect: 'gainIceBlock', amount: 2 },
+    aether: { trigger: 'onPlay', effect: 'addAether', amount: 1 },
+    storm: { trigger: 'onPlay', effect: 'addCasts', amount: 1 },
+    heal: { trigger: 'onPlay', effect: 'gainHp', amount: 2 },
+    fortress: { trigger: 'onPlay', effect: 'gainBlock', amount: 3 },
+    retinue: { trigger: 'onPlay', effect: 'gainBlock', amount: 2 },
+    graveyard: { trigger: 'onPlay', effect: 'exhaustFromDeck', amount: 1 },
+  }
+  const sharedAxis = axesOf(a.def).find((ax) => axesOf(b.def).includes(ax) && AXIS_BONUS[ax] !== undefined)
+  if (sharedAxis !== undefined) {
+    const bonus = { ...AXIS_BONUS[sharedAxis], trigger: resultType === 'reaction' ? primaryWindow : 'onPlay' } as DeclarativeEffect
+    const k = merged.findIndex((m) => m.trigger === bonus.trigger && m.effect === bonus.effect && m.condition === undefined && m.target === undefined && m.amount !== undefined)
+    if (k >= 0) merged[k] = { ...merged[k], amount: (merged[k].amount ?? 0) + (bonus.amount ?? 0) }
+    else { merged.unshift(bonus); ownerOf.unshift(-1) }
+  }
   const effects: DeclarativeEffect[] = [...merged.filter(isShatter), ...merged.filter((e) => !isShatter(e))]
   if (collapsedFlatVp + droppedVp > 0) boostLargest(effects, Math.round(collapsedFlatVp + droppedVp))
   // 5E上限で切った分は量を比例縮小して払う (S2: 真・巨獣の踏みつけ=5Eで100ダメ)
@@ -375,7 +399,17 @@ export function fuseBlockReason(a: CardInstance, b: CardInstance): string | null
 export function fuseCards(a: CardInstance, b: CardInstance): CardDef {
   const recipe = recipeFor(a.def, b.def)
   if (recipe) return recipe
-  return mergeFusion(a, b)
+  // 鍛えの引き継ぎ (2026-09-05 ユーザー裁定 C): 素材のどちらかが鍛え済み (+) なら、素の定義で合体してから結果を1回鍛える
+  // = 鍛えが結果全体に乗る (素材の鍛えが合成で消える損を無くし、焚き火と工房を噛み合わせる)。二重に鍛えないよう素材は素に戻す
+  const baseOf = (c: CardInstance): CardInstance => {
+    if (!isUpgraded(c)) return c
+    const base = c.def.id.startsWith('fused_') || c.def.id.startsWith('fusion_') ? resolveFusedDef(c.def.id) : getCardDef(c.def.id)
+    return base ? { ...c, def: base } : c
+  }
+  const anyUpgraded = isUpgraded(a) || isUpgraded(b)
+  const merged = mergeFusion(baseOf(a), baseOf(b))
+  if (anyUpgraded && upgradeTier(merged) !== 'none') return upgradeCard({ uid: 'fused', def: merged }).def
+  return merged
 }
 
 /**

@@ -138,7 +138,7 @@ const AMOUNT_V2 = new Set([...UPGRADABLE_EFFECTS, 'growSelf'])
 const hasMult = (e: DeclarativeEffect) =>
   (MULT_EFFECTS.has(e.effect) && e.amount !== undefined) || e.growthMultiplier !== undefined || e.momentumMultiplier !== undefined
 const hasThreshold = (e: DeclarativeEffect) => e.condition?.minGrowth !== undefined || e.condition?.minMomentum !== undefined
-const isGreenRule = (def: CardDef) => def.id.startsWith('green_')
+const isGreenRule = (def: CardDef) => def.id.startsWith('green_') || def.color === 'green' // 工房産 (fused_*) も色で判定
 
 /** 効果列1つぶんの本家形ティア (モードごとにも使う) */
 function tierV2(effects: readonly DeclarativeEffect[], def?: CardDef): 'mult' | 'unit' | 'threshold' | 'amount' | 'none' {
