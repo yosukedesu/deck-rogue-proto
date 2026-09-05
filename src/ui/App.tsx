@@ -69,6 +69,7 @@ import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, c
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
+import { FusionLabPage } from './FusionLab.tsx'
 import { fusionNotes, fuseBlockReason, fuseCards } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -865,83 +866,6 @@ function DeckBuilder({
   )
 }
 
-/** 合成ラボ: 任意の2枚の合成結果をその場で確かめる (工房の計算を検証するため) */
-function FusionLab() {
-  const [aId, setAId] = useState<string | null>(null)
-  const [bId, setBId] = useState<string | null>(null)
-  const [filter, setFilter] = useState('')
-  const pool = allCards.filter(
-    (c) => c.id !== 'status_wound' && c.id !== 'status_junk' && (filter === '' || c.name.includes(filter)),
-  )
-  const a = aId !== null ? { uid: 'lab_a', def: getCardDef(aId) } : null
-  const b = bId !== null ? { uid: 'lab_b', def: getCardDef(bId) } : null
-  let reason: string | null = null
-  let result: CardDef | null = null
-  if (a && b) {
-    reason = fuseBlockReason(a, b)
-    if (reason === null) {
-      try {
-        result = fuseCards(a, b)
-      } catch (e) {
-        reason = e instanceof Error ? e.message : String(e)
-      }
-    }
-  }
-  const pick = (label: string, cur: string | null, set: (v: string | null) => void) => (
-    <div style={{ flex: 1, minWidth: 0 }}>
-      <div className="setup-section-title">{label}</div>
-      <select
-        value={cur ?? ''}
-        onChange={(ev) => set(ev.target.value === '' ? null : ev.target.value)}
-        style={{ width: '100%' }}
-      >
-        <option value="">（選んでください）</option>
-        {pool.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.color} {c.name} ({cardCostLabel(c)}E)
-          </option>
-        ))}
-      </select>
-    </div>
-  )
-  return (
-    <div className="panel" style={{ marginTop: 12 }}>
-      <div className="setup-section-title">🔬 合成ラボ</div>
-      <div className="choice-desc">
-        任意の2枚を選んで工房の合成結果をその場で確かめる（同じ色同士のみ。ランを回さずに検算できる）。
-      </div>
-      <div style={{ margin: '8px 0' }}>
-        <input
-          value={filter}
-          onChange={(ev) => setFilter(ev.target.value)}
-          placeholder="カード名で絞り込み"
-          size={18}
-        />
-      </div>
-      <div style={{ display: 'flex', gap: 8 }}>
-        {pick('素材A', aId, setAId)}
-        {pick('素材B', bId, setBId)}
-      </div>
-      {reason !== null && (
-        <div className="choice-desc" style={{ marginTop: 8 }}>
-          ❌ 合成できない: {reason}
-        </div>
-      )}
-      {result && (
-        <div style={{ marginTop: 8 }}>
-          <div className="choice-desc">
-            {result.id.startsWith('fusion_') ? '⭐ レシピ発見！ ' : ''}
-            素材コスト {a!.def.cost}E + {b!.def.cost}E → <b>{result.cost}E</b>
-            {result.exhaust ? '（消滅つき）' : ''}
-          </div>
-          <div className="hand-cards" style={{ marginTop: 8 }}>
-            <CardFrame card={{ uid: 'lab_result', def: result }} dim={false} actions={null} />
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 /** デッキ構成の1行サマリ (例: 年輪×4 開花の儀×2 …) */
 function deckComposition(deckId: string): string {
@@ -1069,6 +993,7 @@ function SetupScreen({
   const [customDeck, setCustomDeck] = useState<readonly string[]>([])
   const [showDebug, setShowDebug] = useState(false)
   const [showCatalog, setShowCatalog] = useState(false)
+  const [showLab, setShowLab] = useState(() => typeof location !== 'undefined' && location.hash === '#lab') // #lab で直接開く (2026-09-05 合成ラボ単独ページ)
   const parseSeed = () =>
     /^\d+$/.test(seedInput) ? Number(seedInput) >>> 0 : Date.now() % 2 ** 32
   // リーダー変更で使用可能デッキ外を選んでいたら先頭に戻す
@@ -1297,6 +1222,13 @@ function SetupScreen({
         </button>
       </div>
       {showCatalog && <CardCatalogOverlay onClose={() => setShowCatalog(false)} />}
+      {showLab && (
+        <FusionLabPage
+          onClose={() => { setShowLab(false); if (location.hash === '#lab') history.replaceState(null, '', location.pathname) }}
+          renderCard={(def) => <CardFrame key={def.id + def.name} card={{ uid: `lab_${def.id}`, def }} dim={false} actions={null} />}
+          effectText={(def) => effectText(def)}
+        />
+      )}
 
       <div className="setup-section-title" style={{ marginTop: 24 }}>
         ── 開発者ツール ──{' '}
@@ -1307,7 +1239,11 @@ function SetupScreen({
       {showDebug && (
         <>
           <DeckBuilder colors={leader.colors} deck={customDeck} setDeck={setCustomDeck} />
-          <FusionLab />
+          <div className="panel" style={{ marginTop: 12 }}>
+            <div className="setup-section-title">🔬 合成ラボ（一覧）</div>
+            <div className="choice-desc">工房の合成結果を一覧で検分する単独ページ（基準1枚×全カード／同名／デッキ内／全ペア、フィルタと注記、mdコピー）。URL に #lab を付けると直接開く。</div>
+            <button className="btn" style={{ marginTop: 6 }} onClick={() => setShowLab(true)}>開く</button>
+          </div>
           {onStartCheckpoint !== undefined && (
             <>
               <label className="hint" style={{ display: 'block', marginTop: 8 }} title="退屈診断④の判定実験: 幅あり意図（例: 攻撃6〜12）を常時実値にして遊び、幅表示の有無で体感がどう変わるかを比べる。仕様は変えず計測だけ（レポートに記録される）">

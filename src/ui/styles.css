@@ -697,3 +697,22 @@ button:disabled { cursor: not-allowed; }
   72% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* 合成ラボ (単独ページ) 2026-09-05 */
+.lab-page { max-width: 1500px; }
+.lab-controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 8px; font-size: 12px; }
+.lab-controls label { display: inline-flex; gap: 4px; align-items: center; }
+.lab-tabs { display: inline-flex; gap: 4px; }
+.lab-stats { margin-top: 6px; }
+.lab-body { display: flex; gap: 12px; margin-top: 10px; align-items: flex-start; }
+.lab-table-wrap { flex: 1; min-width: 0; max-height: 72vh; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+.lab-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.lab-table th { position: sticky; top: 0; background: var(--panel); text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.lab-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.lab-table tbody tr { cursor: pointer; }
+.lab-table tbody tr:hover { background: rgba(120, 160, 255, 0.10); }
+.lab-row-selected { background: rgba(120, 160, 255, 0.22) !important; }
+.lab-row-blocked { opacity: 0.6; }
+.lab-effects { max-width: 520px; }
+.lab-notes { max-width: 220px; color: var(--muted); }
+.lab-detail { width: 380px; flex: none; }
