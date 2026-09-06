@@ -78,7 +78,7 @@ namespace DeckRogue.Game
             return outp;
         }
 
-        static TMP_InputField MakeSeedField(GameRoot g, Transform parent)
+        public static TMP_InputField MakeSeedField(GameRoot g, Transform parent)
         {
             var pan = UiKit.Pan(parent, UiKit.ColPanel2, "seedField");
             UiKit.Le(pan, 150f, 30f, 150f, 30f);

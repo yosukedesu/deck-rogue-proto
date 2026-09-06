@@ -4,6 +4,7 @@
 // Claude Code が Read で見る＝「画面を確認できる目」。エンジンには触れない (状態を読んでコマンドを投げるだけ)。
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -78,6 +79,7 @@ namespace DeckRogue.Game
                     case "battle":
                         yield return Battle(g);
                         break;
+                    case "run": yield return RunTour(g); break;
                     case "tour":
                     default:
                         yield return Tour(g);
@@ -174,6 +176,150 @@ namespace DeckRogue.Game
             }
             yield return WaitPresentation();
             yield return Shot("battle-turn2");
+        }
+
+        /// <summary>ラン画面の走査 (M3): タイトル→マップ→戦闘は自動で勝つ→報酬/焚き火/店/工房/?/レリックを踏んだ順に撮る。最後に敗北画面</summary>
+        IEnumerator RunTour(GameRoot g)
+        {
+            g.SetSeed(_seed);
+            yield return Shot("title");
+            g.StartRun();
+            yield return Shot("map");
+            var seen = new HashSet<string>();
+            var wish = new List<string> { MapNodeTypes.Event, MapNodeTypes.Shop, MapNodeTypes.Workshop, MapNodeTypes.Campfire, MapNodeTypes.Treasure, MapNodeTypes.Elite, MapNodeTypes.Battle };
+            for (int step = 0; step < 60 && g.Rs != null; step++)
+            {
+                var rs = g.Rs;
+                if (rs.Phase == RunPhases.Map)
+                {
+                    var choices = DeckRogue.Engine.Run.NextChoices(rs);
+                    if (choices.Count == 0) break;
+                    int pick = choices[0];
+                    int bestRank = 999;
+                    int nextRow = rs.Row + 1;
+                    for (int i = 0; i < choices.Count; i++)
+                    {
+                        if (nextRow < 0 || nextRow >= rs.Map.Count || choices[i] >= rs.Map[nextRow].Count) continue;
+                        string type = rs.Map[nextRow][choices[i]].Type;
+                        int rank = wish.IndexOf(type);
+                        if (rank < 0) rank = 50;
+                        if (seen.Contains(type)) rank += 100;
+                        if (rank < bestRank) { bestRank = rank; pick = choices[i]; }
+                    }
+                    if (nextRow >= 0 && nextRow < rs.Map.Count && pick < rs.Map[nextRow].Count) seen.Add(rs.Map[nextRow][pick].Type);
+                    g.Do(new RunCommand_ChooseNode { Col = pick });
+                    continue;
+                }
+                if (rs.Phase == RunPhases.Combat) { yield return AutoBattle(g); continue; }
+                string ph = rs.Phase;
+                if (!seen.Contains("shot:" + ph))
+                {
+                    seen.Add("shot:" + ph);
+                    yield return Shot(ph);
+                    if (ph == RunPhases.Campfire) { g.SubMode = "forge"; g.Rebuild(); yield return Shot("campfire-forge"); g.SubMode = null; g.Rebuild(); }
+                    if (ph == RunPhases.Shop) { g.ShopMode = "upgrade"; g.Rebuild(); yield return Shot("shop-upgrade"); g.ShopMode = null; g.Rebuild(); }
+                    if (ph == RunPhases.Workshop && rs.Deck.Count >= 2)
+                    {
+                        g.WorkshopA = 0; g.WorkshopB = 1;
+                        for (int i = 1; i < rs.Deck.Count; i++) if (rs.Deck[i].Def.Id != rs.Deck[0].Def.Id) { g.WorkshopB = i; break; }
+                        g.Rebuild(); yield return Shot("workshop-preview"); g.WorkshopA = -1; g.WorkshopB = -1; g.Rebuild();
+                    }
+                    if (ph == RunPhases.Map) { }
+                    g.ViewDeck = true; g.Rebuild();
+                    if (ph == RunPhases.Reward) yield return Shot("reward-deck");
+                    g.ViewDeck = false; g.Rebuild();
+                }
+                switch (ph)
+                {
+                    case RunPhases.Reward: g.Do(new RunCommand_PickReward { Index = 0 }); break;
+                    case RunPhases.RelicReward: g.Do(new RunCommand_PickRelic { Index = 0 }); break;
+                    case RunPhases.Campfire: g.Do(new RunCommand_CampfireRest()); break;
+                    case RunPhases.Shop: g.Do(new RunCommand_ShopLeave()); break;
+                    case RunPhases.Workshop: g.Do(new RunCommand_WorkshopSkip()); break;
+                    case RunPhases.Event:
+                    {
+                        EventDef def = null;
+                        try { def = Content.GetEventDef(rs.EventId); } catch (Exception) { }
+                        int last = def != null ? def.Choices.Count - 1 : 0;
+                        g.Do(new RunCommand_EventChoice { Index = last });
+                        break;
+                    }
+                    case RunPhases.Won:
+                    case RunPhases.Lost:
+                        step = 999; break;
+                    default: step = 999; break;
+                }
+                bool all = seen.Contains("shot:" + RunPhases.Reward) && seen.Contains("shot:" + RunPhases.Campfire) && seen.Contains("shot:" + RunPhases.Shop)
+                    && seen.Contains("shot:" + RunPhases.Event) && seen.Contains("shot:" + RunPhases.Workshop) && seen.Contains("shot:" + RunPhases.RelicReward);
+                if (all) break;
+            }
+            // 経路上に無かった画面は状態を差し替えて撮る (工房はデッキだけあれば描ける)
+            if (g.Rs != null && !seen.Contains("shot:" + RunPhases.Workshop) && g.Rs.Phase != RunPhases.Combat)
+            {
+                var keep = g.Rs;
+                g.Rs = g.Rs with { Phase = RunPhases.Workshop, Combat = null };
+                g.WorkshopA = 0; g.WorkshopB = 1;
+                for (int i = 1; i < g.Rs.Deck.Count; i++) if (g.Rs.Deck[i].Def.Id != g.Rs.Deck[0].Def.Id) { g.WorkshopB = i; break; }
+                g.Rebuild();
+                yield return Shot("workshop-forced");
+                g.WorkshopA = -1; g.WorkshopB = -1;
+                g.Rs = keep;
+            }
+            if (g.Rs != null && g.Rs.Phase != RunPhases.Lost && g.Rs.Phase != RunPhases.Won)
+            {
+                g.Rs = g.Rs with { Phase = RunPhases.Lost, Combat = null };
+                g.Rebuild();
+                yield return Shot("lost");
+            }
+            Debug.Log("[Autopilot] run tour: " + string.Join(",", seen));
+        }
+
+        /// <summary>戦闘を自動で進める: 使える攻撃札を撃ち、ターン終了。リアクション確認は温存。20ターンで諦める</summary>
+        IEnumerator AutoBattle(GameRoot g)
+        {
+            for (int turn = 0; turn < 20 && g.Rs != null && g.Rs.Phase == RunPhases.Combat; turn++)
+            {
+                var skip = new HashSet<string>();
+                for (int guard = 0; guard < 30 && g.Rs != null && g.Rs.Phase == RunPhases.Combat; guard++)
+                {
+                    var st = g.Rs.Combat;
+                    if (st.Phase != CombatPhases.PlayerTurn) break;
+                    CardInstance pick = null;
+                    int target = -1;
+                    for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { target = i; break; }
+                    foreach (var c in st.Player.Hand)
+                    {
+                        if (skip.Contains(c.Uid) || c.Def.Type == "reaction") continue;
+                        if (c.Def.Modes != null && c.Def.Modes.Count > 0) continue;
+                        if (c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue) continue;
+                        int cost = c.Def.Cost;
+                        try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
+                        if (!Effects.IsPlayableFromHand(c) || cost > st.Player.Energy) continue;
+                        bool dmg = c.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay");
+                        if (pick == null || (dmg && !pick.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay"))) pick = c;
+                    }
+                    if (pick == null) break;
+                    g.PreferredTarget = target;
+                    g.BeginPlay(pick, null);
+                    if (g.Pending != null) { g.CancelPending(); skip.Add(pick.Uid); continue; }
+                    if (g.Error != null) { skip.Add(pick.Uid); g.Error = null; }
+                    yield return null;
+                }
+                if (g.Rs == null || g.Rs.Phase != RunPhases.Combat) break;
+                if (g.Rs.Combat.Phase == CombatPhases.PlayerTurn) g.DoCombat(new Command_EndTurn());
+                yield return WaitPresentation();
+                for (int k = 0; k < 6 && g.Rs != null && g.Rs.Phase == RunPhases.Combat && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction; k++)
+                {
+                    g.DoCombat(new Command_ConfirmReaction { Fire = false });
+                    yield return WaitPresentation();
+                }
+                yield return WaitPresentation();
+            }
+            if (g.Rs != null && g.Rs.Phase == RunPhases.Combat)
+            {
+                // 勝てなかった: 戦闘を打ち切って負け扱いにはせず、マップに戻れないので走査を終える
+                Debug.Log("[Autopilot] auto battle gave up");
+            }
         }
 
         /// <summary>セットアップ→ラン開始→マップ→最初のノード→戦闘 (ターン終了×2)。戦闘以外に入ったらその画面も撮る</summary>

@@ -45,9 +45,11 @@ namespace DeckRogue.Game
 
         // ---- 背景 ----
 
-        public static void BuildBackground(RectTransform root, RunState run)
+        public static void BuildBackground(RectTransform root, RunState run) { BuildBackground(root, run.Act); }
+
+        public static void BuildBackground(RectTransform root, int act)
         {
-            var art = Theme.Art("bg", "act" + run.Act);
+            var art = Theme.Art("bg", "act" + act);
             var bg = UiKit.Pan(root, Theme.Bg, "bg");
             UiKit.Stretch(bg.rectTransform, 0f, 0f, 0f, 0f);
             bg.raycastTarget = false;
@@ -59,13 +61,13 @@ namespace DeckRogue.Game
                 return;
             }
             // プレースホルダー: 上が暗い夜空 (グラデーション)、下が地面の帯、周辺はビネットで落とす (幕ごとに色相を変える)
-            float hue = run.Act == 1 ? 0.36f : run.Act == 2 ? 0.55f : 0.02f;
+            float hue = act == 1 ? 0.36f : act == 2 ? 0.55f : 0.02f;
             var sky = UiKit.Pan(root, Color.white, "sky");
-            sky.sprite = ThemeFx.Gradient("sky" + run.Act, Color.HSVToRGB(hue, 0.45f, 0.16f), Color.HSVToRGB(hue, 0.35f, 0.06f));
+            sky.sprite = ThemeFx.Gradient("sky" + act, Color.HSVToRGB(hue, 0.45f, 0.16f), Color.HSVToRGB(hue, 0.35f, 0.06f));
             UiKit.Anchor(sky.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
             sky.raycastTarget = false;
             var ground = UiKit.Pan(root, Color.white, "ground");
-            ground.sprite = ThemeFx.Gradient("ground" + run.Act, Color.HSVToRGB(hue, 0.4f, 0.2f), Color.HSVToRGB(hue, 0.45f, 0.09f));
+            ground.sprite = ThemeFx.Gradient("ground" + act, Color.HSVToRGB(hue, 0.4f, 0.2f), Color.HSVToRGB(hue, 0.45f, 0.09f));
             UiKit.Anchor(ground.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), Vector2.zero, Vector2.zero);
             ground.raycastTarget = false;
             var horizon = UiKit.Pan(root, Color.HSVToRGB(hue, 0.3f, 0.3f), "horizon");
@@ -149,7 +151,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>縦レイアウトの中に、横いっぱいに伸びない中央寄せのボタンを置く</summary>
-        static Button CenteredButton(Transform parent, string label, Action onClick, int size, float w, float h, Color? bg = null)
+        public static Button CenteredButton(Transform parent, string label, Action onClick, int size, float w, float h, Color? bg = null)
         {
             var row = UiKit.NewRect("btnrow", parent);
             UiKit.Le(row, -1f, h, -1f, h);
@@ -162,7 +164,7 @@ namespace DeckRogue.Game
             return b;
         }
 
-        static void SetSize(Component c, float w, float h)
+        public static void SetSize(Component c, float w, float h)
         {
             var le = c.GetComponent<LayoutElement>();
             if (le == null) le = c.gameObject.AddComponent<LayoutElement>();
@@ -798,7 +800,7 @@ namespace DeckRogue.Game
 
         // ---- モーダル: 確認ウィンドウ (set-confirm) ----
 
-        static RectTransform Modal(RectTransform root, float w, float h, string name)
+        public static RectTransform Modal(RectTransform root, float w, float h, string name)
         {
             var backdrop = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.7f), name + "-backdrop");
             UiKit.Stretch(backdrop.rectTransform, 0f, 0f, 0f, 0f);

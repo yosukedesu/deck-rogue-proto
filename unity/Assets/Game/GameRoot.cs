@@ -83,6 +83,10 @@ namespace DeckRogue.Game
         public string ModeChoiceUid;
         /// <summary>山札/捨て札/消滅の一覧を開いているか ("draw"|"discard"|"exhaust"|null)</summary>
         public string ViewPile;
+        /// <summary>ラン画面のデッキ一覧モーダル (M3)</summary>
+        public bool ViewDeck;
+        /// <summary>ラン画面の下位モード (焚き火の「鍛える」一覧など)。フェーズが変わると消える</summary>
+        public string SubMode;
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
         public BattleView Battle;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
@@ -173,6 +177,8 @@ namespace DeckRogue.Game
             Pending = null;
             ModeChoiceUid = null;
             ViewPile = null;
+            ViewDeck = false;
+            SubMode = null;
             if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Play(Rs.Phase == RunPhases.Lost ? "lose" : "win", 0.8f, 0f);
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
@@ -187,7 +193,7 @@ namespace DeckRogue.Game
                 return;
             }
             Rebuild();
-            if (Rs != null && Rs.Combat != null) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
+            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
         }
 
         public void DoCombat(Command cmd)
@@ -370,6 +376,8 @@ namespace DeckRogue.Game
             if (ScreenRoot != null && !inCombat)
             {
                 if (Battle != null) { Battle.Destroy(); Battle = null; }
+                Tooltip.Hide();
+                if (FxLayer != null) for (int i = FxLayer.childCount - 1; i >= 0; i--) Destroy(FxLayer.GetChild(i).gameObject);
                 for (int i = ScreenRoot.childCount - 1; i >= 0; i--)
                 {
                     var c = ScreenRoot.GetChild(i);
@@ -396,6 +404,30 @@ namespace DeckRogue.Game
             {
                 BattleScreen.Build(this, ScreenRoot);
                 return;
+            }
+            // タイトルとマップも新画面 (M3)
+            if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); return; }
+            if (Content.IsLoaded)
+            {
+                bool built = true;
+                switch (Rs.Phase)
+                {
+                    case RunPhases.Reward: RewardScreen.Reward(this, ScreenRoot); break;
+                    case RunPhases.RelicReward: RewardScreen.Relic(this, ScreenRoot); break;
+                    case RunPhases.Campfire: CampfireScreen.Build(this, ScreenRoot); break;
+                    case RunPhases.Workshop: WorkshopScreen.Build(this, ScreenRoot); break;
+                    case RunPhases.Shop: ShopScreen.Build(this, ScreenRoot); break;
+                    case RunPhases.Event: EventScreen.Build(this, ScreenRoot); break;
+                    case RunPhases.Won: EndScreen.Build(this, ScreenRoot, true); break;
+                    case RunPhases.Lost: EndScreen.Build(this, ScreenRoot, false); break;
+                    default: built = false; break;
+                }
+                if (built)
+                {
+                    if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
+                    return;
+                }
             }
             var bg = UiKit.Pan(_root, UiKit.ColBg, "bg");
             bg.raycastTarget = false;

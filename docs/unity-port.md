@@ -198,3 +198,16 @@ Theme（9スライスのボタン枠・16px アイコン13種）、Tween（移�
 → ユーザー「cc0」: OpenGameArt を CC0 縛りで検索し、各ページのライセンス欄で CC0 を確認した10曲を同梱（title=Town Theme RPG／map1=8-bit Forest Theme／map2=Cave Theme／map3=Dark Forest Theme／
 battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1-2／boss1=Great Boss／boss2=Junkala Boss Fight／boss3=8-bit Slay The Evil。約22MB）。Junkala の Action パックは WAV 49MB なので見送り。
 
+
+**M3 ラン画面（2026-09-07・ユーザー「m3」）**: 戦闘以外の画面を戦闘と同じ文法（`ScreenRoot` 直下 1920×1080・`Theme`/`CardView`/`Tween`/`Audio`）で作り直した。
+`TitleScreen`（15人のリーダーを 5×3 の立ち絵カードで並べ、右に説明・初期デッキ・シード・難易度・開始）／`MapScreen`（本家式の縦スクロール地図。
+7列格子にノードを置き線で結ぶ。進める道＝緑の光る線＋ノードの発光、通ってきた道＝金、現在地＝リーダーの小さな絵、種別のアイコン8種と凡例、ホバーで中身の説明）／
+`RewardScreen`（カード報酬＝大きなカード3枚＋「取る」、レリック＝紋章・名前・レア度・説明のパネル）／`CampfireScreen`（「休む」「鍛える」の二択の大札→鍛えるはデッキのグリッド、
+ホバーで「鍛えると→」）／`ShopScreen`（棚にカードと値札、右列にレリックと除去/鍛えるのサービス、選ぶとデッキのグリッド）／`WorkshopScreen`（左にデッキのグリッド＝選ぶ/外す、
+右に素材2枠＋合成結果のカード＋注記＝ブラウザ版の追従パネルと同形）／`EventScreen`（中央のパネルに題・物語・選択肢。効果のヒントを小さく添える。カード指定の選択肢はグリッドへ）／
+`EndScreen`（走破/敗北・戦績・レリック・最終デッキ）。共通部品 `RunUi`（上部バー＝幕/行・HP・G・デッキ一覧ボタン・レリック帯、デッキ一覧モーダル、カードのグリッド、下部ボタン、通知行）。
+レリックの絵は `ThemeFx.RelicGlyph`（id のハッシュから左右対称の紋章。`Resources/Art/relics/<id>` があればそれ）。地図のアイコン（骸骨・王冠・槌・？・宝箱・旗）を `Theme` に追加。
+自動操縦 `shots run <seed>`＝戦闘を自動で勝ち（使える攻撃札を撃ってターン終了・確認は温存）ながら経路上の画面を撮り、踏まなかった工房は状態を差し替えて撮る。
+学び: 戦闘→報酬の遷移で `Presenter` が戦闘のバナーを重ねていた（戦闘フェーズ以外では演出を止め FX 層を掃除する）／`CenteredButton` は行の入れ物付きなので固定位置には向かない（`RunUi.BottomButton`）／
+絵文字（レリックの sprite・✕）は Noto Sans JP に無く豆腐になる＝文字でなく絵で出す／`GridLayoutGroup` の一覧は `Scroll` の縦レイアウトを外してから付ける。
+旧 `RunScreens.cs` はシード入力欄の生成（`MakeSeedField`）だけが残り、画面としては使われない（次の整理で削る）。残: 設定（音量）、続きから、マップのパン操作の手触り、PixelLab の絵の差し替え。
