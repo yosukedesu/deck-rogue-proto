@@ -50,7 +50,7 @@ scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGolde
 scripts/unity-win.sh play      # 同期 → PlaySmoke (プレイモードでセットアップ→ラン開始→進路→戦闘3ターンを GameRoot の API で回し、例外・エラーログ・空画面を検出)
 scripts/unity-win.sh setup-tmp # TextMeshPro の必須リソース (一度だけ。取り込めなければ unitypackage を直接展開して Assets/TextMesh Pro に置く)
 scripts/unity-win.sh build     # Windows プレイヤー (作業コピーの Build/DeckRogue.exe)。シーンが無ければ Assets/Scenes/Main.unity を作って登録
-scripts/unity-win.sh shots [tour] [seed]  # プレイヤーを自動操縦 (Assets/Game/Autopilot.cs) で起動し、各画面の PNG を unity/Shots/ に回収 (git 管理外)
+scripts/unity-win.sh shots [tour|battle] [seed]  # プレイヤーを自動操縦 (Assets/Game/Autopilot.cs) で起動し、各画面の PNG を unity/Shots/ に回収 (git 管理外)。battle はシード6が全状態を踏む
 scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開いて手で触る時)
 ```
 

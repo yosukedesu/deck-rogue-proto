@@ -81,6 +81,8 @@ namespace DeckRogue.Game
         public bool ShowLog;
         /// <summary>選択式カードのモード選択中 (手札の uid)</summary>
         public string ModeChoiceUid;
+        /// <summary>山札/捨て札/消滅の一覧を開いているか ("draw"|"discard"|"exhaust"|null)</summary>
+        public string ViewPile;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
         /// <summary>画面の組み立てが演出の的 (敵パネル・自分の欄) を登録する。Rebuild ごとに消える</summary>
         public void RegisterAnchor(string name, RectTransform rt) { _anchors[name] = rt; }
@@ -167,6 +169,7 @@ namespace DeckRogue.Game
             }
             Pending = null;
             ModeChoiceUid = null;
+            ViewPile = null;
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;

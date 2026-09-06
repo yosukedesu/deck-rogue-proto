@@ -58,7 +58,9 @@ namespace DeckRogue.Game
                 bg.color = new Color(0.9f, 0.95f, 0.9f, 0.98f);
                 bg.raycastTarget = false;
                 _text = UiKit.Txt(_panel, "", 16, UiKit.ColText, TextAnchor.UpperLeft);
-                UiKit.Stretch(_text.rectTransform, 16f, 16f, 12f, 12f);
+                _text.rectTransform.anchorMin = _text.rectTransform.anchorMax = new Vector2(0f, 1f);
+                _text.rectTransform.pivot = new Vector2(0f, 1f);
+                _text.rectTransform.anchoredPosition = new Vector2(16f, -12f);
                 var cg = _panel.gameObject.AddComponent<CanvasGroup>();
                 cg.blocksRaycasts = false;
                 cg.interactable = false;
@@ -66,11 +68,13 @@ namespace DeckRogue.Game
             _panel.SetAsLastSibling();
             _panel.gameObject.SetActive(true);
             _text.text = text;
+            _text.rectTransform.sizeDelta = new Vector2(488f, 2000f);
             _text.ForceMeshUpdate();
             float w = Mathf.Clamp(_text.preferredWidth + 32f, 220f, 520f);
-            _text.rectTransform.sizeDelta = new Vector2(w - 32f, 0f);
+            _text.rectTransform.sizeDelta = new Vector2(w - 32f, 2000f);
             _text.ForceMeshUpdate();
             float h = _text.preferredHeight + 24f;
+            _text.rectTransform.sizeDelta = new Vector2(w - 32f, h - 24f);
             _panel.sizeDelta = new Vector2(w, h);
             Vector2 local;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(_layer, screenPos, null, out local);
@@ -82,6 +86,7 @@ namespace DeckRogue.Game
             if (x + w > half) x = local.x - 18f - w;
             if (y - h < -halfH) y = local.y + 18f + h;
             _panel.anchoredPosition = new Vector2(x, y);
+            if (Application.isBatchMode || System.Environment.GetCommandLineArgs().Length > 1) Debug.Log("[Tooltip] show " + text.Length + "字 @" + x.ToString("F0") + "," + y.ToString("F0") + " size " + w.ToString("F0") + "x" + h.ToString("F0"));
         }
 
         public static void Hide()

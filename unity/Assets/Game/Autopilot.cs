@@ -121,6 +121,24 @@ namespace DeckRogue.Game
             yield return Shot("battle-log");
             g.ShowLog = false; g.Rebuild();
 
+            // 敵ホバー (ツールチップ)。Rebuild 直後は古いパネルが破棄待ちで残るので、登録された的から辿る
+            yield return null;
+            var enemyRt = g.Anchor("enemy0");
+            var enemy0 = enemyRt != null ? enemyRt.gameObject : null;
+            if (enemy0 != null)
+            {
+                var pd2 = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current);
+                var ert = enemy0.GetComponent<RectTransform>();
+                pd2.position = RectTransformUtility.WorldToScreenPoint(null, ert.TransformPoint(ert.rect.center));
+                Debug.Log("[Autopilot] hover " + enemy0.name + " (" + (g.Rs.Combat.Enemies.Count > 0 ? g.Rs.Combat.Enemies[0].EnemyId : "?") + ")");
+                UnityEngine.EventSystems.ExecuteEvents.Execute(enemy0, pd2, UnityEngine.EventSystems.ExecuteEvents.pointerEnterHandler);
+                yield return Shot("battle-enemy-tip");
+                UnityEngine.EventSystems.ExecuteEvents.Execute(enemy0, pd2, UnityEngine.EventSystems.ExecuteEvents.pointerExitHandler);
+            }
+            g.ViewPile = "draw"; g.Rebuild();
+            yield return Shot("battle-pile");
+            g.ViewPile = null; g.Rebuild();
+
             var st = g.Rs.Combat;
             CardInstance modeCard = null, dmgCard = null, reactionCard = null;
             foreach (var c in st.Player.Hand)

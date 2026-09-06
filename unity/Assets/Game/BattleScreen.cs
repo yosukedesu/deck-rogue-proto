@@ -161,7 +161,7 @@ namespace DeckRogue.Game
         {
             var le = c.GetComponent<LayoutElement>();
             if (le == null) le = c.gameObject.AddComponent<LayoutElement>();
-            le.minWidth = w; le.preferredWidth = w; le.minHeight = h; le.preferredHeight = h; le.flexibleWidth = 0f;
+            le.minWidth = w; le.preferredWidth = w; le.minHeight = h; le.preferredHeight = h; le.flexibleWidth = 0f; le.flexibleHeight = 0f;
         }
 
         // ---- 敵 ----
@@ -443,10 +443,11 @@ namespace DeckRogue.Game
 
             // 資源・状態のチップ (右側に縦積み)
             var col = UiKit.NewRect("chips", area);
-            UiKit.Anchor(col, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(250f, 130f), new Vector2(0f, 330f));
-            var vg = UiKit.Vert(col, 6, 0);
-            vg.childAlignment = TextAnchor.LowerLeft;
+            UiKit.Anchor(col, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(10f, 26f), new Vector2(0f, 58f));
+            var vg = UiKit.Horz(col, 6, 0);
+            vg.childAlignment = TextAnchor.MiddleLeft;
             vg.childForceExpandWidth = false;
+            vg.childForceExpandHeight = false;
             var res = new List<KeyValuePair<string, string>>();
             if (p.Growth > 0) res.Add(new KeyValuePair<string, string>("growth", "成長 " + p.Growth));
             if (p.Momentum > 0) res.Add(new KeyValuePair<string, string>("momentum", "勢い " + p.Momentum));
@@ -707,13 +708,23 @@ namespace DeckRogue.Game
         static void BuildPiles(GameRoot g, RectTransform root, GameState st)
         {
             var p = st.Player;
-            Pile(root, new Vector2(0f, 0f), new Vector2(24f, 24f), "draw", "山札", p.DrawPile.Count);
-            Pile(root, new Vector2(1f, 0f), new Vector2(-150f, 24f), "exhaust", "捨て札 / 消滅", p.DiscardPile.Count, p.ExhaustPile.Count);
+            Pile(root, new Vector2(0f, 0f), new Vector2(24f, 24f), "draw", "山札", p.DrawPile.Count, -1, delegate { g.ViewPile = "draw"; g.Rebuild(); });
+            Pile(root, new Vector2(1f, 0f), new Vector2(-150f, 24f), "exhaust", "捨て札 / 消滅", p.DiscardPile.Count, p.ExhaustPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); });
+            if (g.ViewPile != null) BuildPileViewer(g, root, st);
         }
 
-        static void Pile(RectTransform root, Vector2 anchor, Vector2 offset, string icon, string label, int count, int count2 = -1)
+        static void Pile(RectTransform root, Vector2 anchor, Vector2 offset, string icon, string label, int count, int count2 = -1, Action onClick = null)
         {
             var rt = UiKit.NewRect("pile-" + icon, root);
+            if (onClick != null)
+            {
+                var hit = rt.gameObject.AddComponent<Image>();
+                hit.color = new Color(0f, 0f, 0f, 0f);
+                var pb = rt.gameObject.AddComponent<Button>();
+                pb.targetGraphic = hit;
+                pb.transition = Selectable.Transition.None;
+                pb.onClick.AddListener(delegate { onClick(); });
+            }
             UiKit.Anchor(rt, anchor, anchor, offset, offset + new Vector2(126f, 96f));
             var frame = UiKit.Frame(rt, Theme.Panel, Color.white, "frame", 3f);
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
@@ -724,6 +735,51 @@ namespace DeckRogue.Game
             UiKit.Anchor(cnt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(54f, -52f), new Vector2(-6f, -8f));
             var lb = UiKit.Txt(rt, label, 13, UiKit.ColDim, TextAnchor.LowerLeft);
             UiKit.Anchor(lb.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(12f, 8f), new Vector2(-6f, 34f));
+        }
+
+        /// <summary>山札 (名前順=引き順は伏せたまま) / 捨て札 / 消滅置き場の一覧モーダル</summary>
+        static void BuildPileViewer(GameRoot g, RectTransform root, GameState st)
+        {
+            var inner = Modal(root, 1500f, 800f, "pileViewer");
+            var tabs = UiKit.NewRect("tabs", inner);
+            var tle = UiKit.Le(tabs, -1f, 48f, -1f, 48f);
+            tle.flexibleHeight = 0f;
+            var tg = UiKit.Horz(tabs, 10, 0);
+            tg.childAlignment = TextAnchor.MiddleLeft;
+            tg.childForceExpandWidth = false;
+            tg.childForceExpandHeight = false;
+            string[] kinds = { "draw", "discard", "exhaust" };
+            string[] labels = { "山札 " + st.Player.DrawPile.Count, "捨て札 " + st.Player.DiscardPile.Count, "消滅 " + st.Player.ExhaustPile.Count };
+            for (int i = 0; i < kinds.Length; i++)
+            {
+                string k = kinds[i];
+                var b = UiKit.Btn(tabs, labels[i], delegate { g.ViewPile = k; g.Rebuild(); }, 18, true, g.ViewPile == k ? UiKit.Hex("#cfeacc") : Color.white);
+                SetSize(b, 200f, 44f);
+            }
+            IReadOnlyList<CardInstance> pile = g.ViewPile == "discard" ? st.Player.DiscardPile : g.ViewPile == "exhaust" ? st.Player.ExhaustPile : st.Player.DrawPile;
+            var list = new List<CardInstance>(pile);
+            if (g.ViewPile == "draw") list.Sort((a, b) => string.CompareOrdinal(a.Def.Name, b.Def.Name)); // 引き順は伏せたまま
+            var content = UiKit.Scroll(inner, true, new Color(0f, 0f, 0f, 0.25f), 12, 12);
+            UiKit.Le(UiKit.ScrollRoot(content), -1f, 300f, -1f, 300f, -1f, 1f);
+            var vg = content.GetComponent<VerticalLayoutGroup>();
+            if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
+            var grid = content.gameObject.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(CardView.W * 0.8f, CardView.H * 0.8f);
+            grid.spacing = new Vector2(14f, 14f);
+            grid.padding = new RectOffset(12, 12, 12, 12);
+            grid.childAlignment = TextAnchor.UpperLeft;
+            if (list.Count == 0)
+            {
+                var none = UiKit.Txt(inner, "（空）", 18, UiKit.ColDim, TextAnchor.MiddleCenter);
+                UiKit.Le(none, -1f, 40f, -1f, 40f);
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                var cell = UiKit.NewRect("cell", content);
+                var cv = CardView.Build(cell, list[i], st, true, false, "pile-card");
+                cv.localScale = Vector3.one * 0.8f;
+            }
+            CenteredButton(inner, "閉じる", delegate { g.ViewPile = null; g.Rebuild(); }, 18, 260f, 50f);
         }
 
         static void BuildEndTurn(GameRoot g, RectTransform root, GameState st)
