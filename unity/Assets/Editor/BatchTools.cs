@@ -257,3 +257,75 @@ namespace DeckRogue.EditorTools
         }
     }
 }
+
+namespace DeckRogue.EditorTools
+{
+    /// <summary>
+    /// URP セットアップ (2026-09-07): Built-in Render Pipeline が Unity 6.5 で非推奨になった (6.7 で終了) ため、
+    /// URP アセットを作って Graphics/Quality に割り当てる。uGUI のオーバーレイ描画だけなのでパイプライン差は無い。
+    /// 起動: Unity.exe -batchmode -nographics -quit -projectPath ... -executeMethod DeckRogue.EditorTools.UrpSetup.Run
+    /// (manifest に com.unity.render-pipelines.universal が入っていること)
+    /// </summary>
+    public static class UrpSetup
+    {
+        public static void Run()
+        {
+            int code = 0;
+            try
+            {
+                const string dir = "Assets/Settings";
+                const string assetPath = dir + "/URP-Default.asset";
+                if (!AssetDatabase.IsValidFolder(dir)) AssetDatabase.CreateFolder("Assets", "Settings");
+                var existing = AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.RenderPipelineAsset>(assetPath);
+                UnityEngine.Rendering.RenderPipelineAsset asset = existing;
+                // レンダラーデータ (URP 17 の Create() は m_RendererDataList を空のまま作る＝実行時に「Default Renderer が無い」)。
+                // メニューの「URP Universal Renderer」と同じ手順: CreateInstance → パッケージのシェーダー参照を埋める → 保存
+                const string rendererPath = dir + "/URP-Renderer.asset";
+                var renderer = AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRendererData>(rendererPath);
+                if (renderer == null)
+                {
+                    renderer = ScriptableObject.CreateInstance<UnityEngine.Rendering.Universal.UniversalRendererData>();
+                    UnityEngine.Rendering.ResourceReloader.ReloadAllNullIn(renderer, UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset.packagePath);
+                    AssetDatabase.CreateAsset(renderer, rendererPath);
+                }
+                if (asset == null)
+                {
+                    asset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset.Create(renderer);
+                    AssetDatabase.CreateAsset(asset, assetPath);
+                }
+                // 既存アセット (GUID を保つ) のレンダラー欄を SerializedObject で埋める
+                {
+                    var so = new SerializedObject(asset);
+                    var list = so.FindProperty("m_RendererDataList");
+                    if (list != null)
+                    {
+                        if (list.arraySize < 1) list.arraySize = 1;
+                        list.GetArrayElementAtIndex(0).objectReferenceValue = renderer;
+                    }
+                    var idx = so.FindProperty("m_DefaultRendererIndex");
+                    if (idx != null) idx.intValue = 0;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                    EditorUtility.SetDirty(asset);
+                }
+                UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline = asset;
+                var names = QualitySettings.names;
+                for (int i = 0; i < names.Length; i++)
+                {
+                    QualitySettings.SetQualityLevel(i, false);
+                    QualitySettings.renderPipeline = asset;
+                }
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                var check = new SerializedObject(asset).FindProperty("m_RendererDataList");
+                Debug.Log($"[DeckRogue] URP レンダラー: {(check != null && check.arraySize > 0 && check.GetArrayElementAtIndex(0).objectReferenceValue != null ? check.GetArrayElementAtIndex(0).objectReferenceValue.name : "なし")}");
+                Debug.Log($"[DeckRogue] URP を設定: {assetPath} / defaultRenderPipeline={(UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline != null ? UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.name : "null")} / quality levels={names.Length}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[DeckRogue] URP 設定で例外: " + e);
+                code = 1;
+            }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+    }
+}

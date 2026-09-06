@@ -40,8 +40,9 @@ JSON は `Assets/StreamingAssets/data/`（`npm run unity:sync` で `src/data` �
 ## WSL からのバッチ実行（2026-09-07・`scripts/unity-win.sh`）
 
 Windows 側の Unity Editor（Hub が入れた `C:\Program Files\Unity\Hub\Editor\<version>\Editor\Unity.exe`）を WSL から直接叩く。
-正本はこのリポジトリの `unity/`。`\\wsl$` の UNC パスを Unity が扱えないので、`C:\Users\yosuke\deck-rogue-unity` へ rsync した
-使い捨ての作業コピー（`Library/` はそこに溜まる）で動かす。
+正本はこのリポジトリの `unity/`。`\\wsl$` の UNC パスを Unity が扱えないので、`C:\Users\yosuke\deck-rogue-unity-batch` へ rsync した
+使い捨ての作業コピー（`Library/` はそこに溜まる）で動かす。**Hub で開く GUI 用のコピーは別フォルダ `C:\Users\yosuke\deck-rogue-unity`**
+（同じプロジェクトを2つの Unity は開けないため。`WIN_DIR=/mnt/c/Users/yosuke/deck-rogue-unity scripts/unity-win.sh sync` で更新する）。
 
 ```bash
 scripts/unity-win.sh compile   # 同期 → -batchmode -nographics -quit → error CS... を要約
@@ -53,6 +54,12 @@ scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開い�
 ログは `C:\Users\yosuke\deck-rogue-unity\unity-batch.log`。初回はパッケージ解決で数分かかる。作業コピー側で Unity が書き換えた
 `ProjectSettings/ProjectVersion.txt` はスクリプトが正本へ戻す。Hub の GUI で開く時も同じ作業コピーを Add する（手で直した
 `Assets/` の変更はリポジトリへ手動で戻すこと＝作業コピーは常に上書きされる）。
+
+## レンダーパイプライン（2026-09-07）
+
+Built-in は Unity 6.5 で非推奨（6.7 で終了）なので **URP 17.6.0**（`Packages/manifest.json`）。`Assets/Settings/URP-Default.asset`（パイプライン）と
+`URP-Renderer.asset`（Universal Renderer）を `scripts/unity-win.sh setup-urp` が生成し、Graphics と Quality 全6段に割り当てる（`ProjectSettings/*.asset` はリポジトリに入れた）。
+uGUI のオーバーレイ描画だけなのでパイプライン差は無い。2D ライトが要る段階になったら Renderer2DData に差し替える。
 
 Android はまだ（StreamingAssets を `File` で読んでいる＝Editor/デスクトップ向け。実機は UnityWebRequest 読込に切り替える）。
 
