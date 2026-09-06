@@ -48,12 +48,21 @@ Windows 側の Unity Editor（Hub が入れた `C:\Program Files\Unity\Hub\Edito
 scripts/unity-win.sh compile   # 同期 → -batchmode -nographics -quit → error CS... を要約
 scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGoldens (Unity 内でゴールデン8本を照合)
 scripts/unity-win.sh play      # 同期 → PlaySmoke (プレイモードでセットアップ→ラン開始→進路→戦闘3ターンを GameRoot の API で回し、例外・エラーログ・空画面を検出)
+scripts/unity-win.sh setup-tmp # TextMeshPro の必須リソース (一度だけ。取り込めなければ unitypackage を直接展開して Assets/TextMesh Pro に置く)
+scripts/unity-win.sh build     # Windows プレイヤー (作業コピーの Build/DeckRogue.exe)。シーンが無ければ Assets/Scenes/Main.unity を作って登録
+scripts/unity-win.sh shots [tour] [seed]  # プレイヤーを自動操縦 (Assets/Game/Autopilot.cs) で起動し、各画面の PNG を unity/Shots/ に回収 (git 管理外)
 scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開いて手で触る時)
 ```
 
 ログは `C:\Users\yosuke\deck-rogue-unity\unity-batch.log`。初回はパッケージ解決で数分かかる。作業コピー側で Unity が書き換えた
 `ProjectSettings/ProjectVersion.txt` はスクリプトが正本へ戻す。Hub の GUI で開く時も同じ作業コピーを Add する（手で直した
 `Assets/` の変更はリポジトリへ手動で戻すこと＝作業コピーは常に上書きされる）。
+
+## 目（スクショ）と見た目の土台（2026-09-07 M1）
+
+`shots` で撮った PNG を Claude Code が Read で見る＝画面を確認しながら UI を作る導線。文字は TextMeshPro（`Assets/Resources/Fonts` の Noto Sans JP から動的 SDF）、
+枠・アイコンは `Assets/Game/Theme.cs` がコードで生成するドット絵のプレースホルダー（`Assets/Resources/Art/<種別>/<id>.png` を置くと差し替わる。`Assets/Editor/ArtImporter.cs` が Point・非圧縮を自動設定）。
+動きは `Tween.cs`、演出は `Presenter.cs`（イベントログの差分→浮き文字・揺れ）。基準解像度は 1920×1080（旧画面は 1.5 倍の入れ物に組んで見た目を維持）。
 
 ## レンダーパイプライン（2026-09-07）
 

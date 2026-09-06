@@ -129,6 +129,10 @@ namespace DeckRogue.Game
             { "addCopyToDiscard", "コピーN枚を捨て札へ" },
             { "growSelf", "プレイするたび与ダメ+N(この戦闘中)" },
             { "upgradeInHand", "手札のN枚をこの戦闘中鍛える" },
+            { "upgradeAllInHand", "手札の全てをこの戦闘中鍛える" },
+            { "gainMaxHp", "最大HP+N(戦闘後も残る)" },
+            { "gainBlockPerMomentum", "勢い×Nブロック(失わない)" },
+            { "addGrowthPerMomentum", "勢い2につき成長+N(失わない)" },
         };
 
         static readonly Dictionary<string, string> IntentKindJa = new Dictionary<string, string>

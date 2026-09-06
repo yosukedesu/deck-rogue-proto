@@ -90,6 +90,7 @@ namespace DeckRogue.Game
             bool alive = e.Hp > 0;
             bool aimed = g.PreferredTarget == index || (g.Pending != null && g.Pending.TargetIndex.HasValue && g.Pending.TargetIndex.Value == index);
             var pan = UiKit.Pan(parent, alive ? (aimed ? UiKit.ColPanel2 : UiKit.ColPanel) : new Color(0.09f, 0.1f, 0.1f, 0.8f), "enemy");
+            g.RegisterAnchor("enemy" + index, pan.rectTransform);
             UiKit.Le(pan, 258f, -1f, 258f, -1f);
             UiKit.Vert(pan.transform, 3, 8);
 
@@ -193,6 +194,7 @@ namespace DeckRogue.Game
         static void BuildStatus(GameRoot g, Transform parent, GameState st)
         {
             var pan = UiKit.Pan(parent, UiKit.ColPanel, "status");
+            g.RegisterAnchor("player", pan.rectTransform);
             UiKit.Le(pan, -1f, 78f, -1f, 78f);
             UiKit.Horz(pan.transform, 8, 6);
 

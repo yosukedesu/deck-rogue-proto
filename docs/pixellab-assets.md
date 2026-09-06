@@ -1,0 +1,221 @@
+# PixelLab 素材一覧（発注書）
+
+`npx tsx scripts/pixellab-sheet.ts` で `src/data` から生成。**置き場と名前は `Assets/Resources/Art/<種別>/<id>.png`**。
+寸法はドット絵の実寸（画面には整数倍で置く。基準解像度 1920×1080 では 3〜4 倍）。背景は透過 PNG。パレットは種別ごとに揃える。
+プレースホルダー（コード生成）が同じ名前で出ているので、1枚ずつ差し替えて見比べられる。
+
+## 寸法と枚数の要約
+
+| 種別 | フォルダ | 実寸 (px) | 枚数 | 備考 |
+|---|---|---|---|---|
+| 敵（通常） | enemies | 96×96 | 63 | 待機2コマ（`<id>.png` と `<id>_2.png`）。被弾は白フラッシュで代用 |
+| 敵（エリート） | enemies | 128×128 | 13 | 同上 |
+| 敵（幕ボス） | enemies | 160×160 | 8 | 同上。第2形態は色替えで代用 |
+| リーダー（戦闘内ちび） | leaders | 96×96 | 15 | 頭身低め（確定済みルール表「絵柄の頭身」）。立ち絵は人間の絵師へ外注 |
+| リーダー（アイコン） | leaders | 32×32 | 15 | `<id>_icon.png`。セットアップ・ラン画面用 |
+| レリック | relics | 32×32 | 38 | |
+| カード枠 | ui | 64×96 | 4タイプ×5色＋共通 | `card_<type>_<color>.png`。9スライス（角12px） |
+| レア度の宝石 | ui | 12×12 | 3 | `gem_common/uncommon/rare.png` |
+| コスト玉 | ui | 20×20 | 1 | `cost_orb.png`（数字は文字で乗せる） |
+| 状態アイコン（16px） | icons | 16×16 | 下表 | インライン用（カード文面・意図・バフ欄） |
+| 意図アイコン | icons | 24×24 | 13 | `intent_<kind>.png` |
+| マップのノード | map | 32×32 | 8 | `node_<type>.png`（battle/elite/boss/shop/campfire/workshop/unknown/treasure） |
+| 背景（幕） | bg | 480×270 | 3 | `act1/act2/act3.png`。4倍で 1920×1080 |
+| 焚き火・工房・ショップの情景 | scenes | 240×135 | 4 | `campfire/workshop/shop/event.png` |
+| UI 部品 | ui | 各種 | 約10 | パネル9スライス（`panel.png` 24×24 角6）・ボタン3態（`btn_normal/hover/pressed.png` 24×24 角6）・HPバー枠 |
+
+## 状態アイコン（icons/16px）
+
+| 名前 | 用途 |
+|---|---|
+| sword | ダメージ／攻撃 |
+| shield | ブロック |
+| heart | HP・回復 |
+| energy | エナジー |
+| draw | ドロー |
+| growth | 成長 |
+| momentum | 勢い |
+| pierce | 貫通 |
+| burn | 延焼 |
+| ice | 氷壁 |
+| aether | 霊気 |
+| exposed | 急所 |
+| weak | 弱体 |
+| frail | 虚弱 |
+| vulnerable | 脆弱 |
+| restrain | 拘束 |
+| haze | 霞み |
+| weight | 重り |
+| strength | 筋力 |
+| armor | 装甲 |
+| thorns | とげ |
+| regen | 再生 |
+| artifact | アーティファクト |
+| exhaust | 消滅 |
+| retain | 保持 |
+| set | 伏せ |
+| gold | ゴールド |
+| cast | 詠唱数 |
+| permanent | 置物 |
+| reaction | リアクション |
+
+## 意図アイコン（icons/24px・`intent_<kind>.png`）
+
+attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / steal-gold / flee / mill / rest / hatch
+
+## 敵（enemies/）
+
+| id | 名前 | 区分 | 寸法 |
+|---|---|---|---|
+| enemy_wide_power | うねる獣 | 通常 | 96×96 |
+| enemy_probe | 探り屋 | 通常 | 96×96 |
+| enemy_set_wary | 用心深い影 | 通常 | 96×96 |
+| enemy_set_breaker | 罠壊し | 通常 | 96×96 |
+| enemy_brute | 脳筋オーガ | 幕ボス | 160×160 |
+| enemy_turtle | 眠たがりの大亀 | 幕ボス | 160×160 |
+| enemy_hexer | 泥投げの妖術師 | 通常 | 96×96 |
+| enemy_wolf | 牙嵐の狼 | 通常 | 96×96 |
+| enemy_moss | 苔まといの主 | 通常 | 96×96 |
+| enemy_joker | 嘲る道化 | 通常 | 96×96 |
+| enemy_drummer | 鼓吹きコボルト | 通常 | 96×96 |
+| enemy_warden | 刻限の門番 | 幕ボス | 160×160 |
+| enemy_thorn_squirrel | 針毛の栗鼠 | 通常 | 96×96 |
+| enemy_thief | こそ泥ゴブリン | 通常 | 96×96 |
+| enemy_bomber | 火薬樽かつぎ | 通常 | 96×96 |
+| enemy_moss_healer | 苔の癒し手 | 通常 | 96×96 |
+| enemy_axe_ogre | 大振りの斧鬼 | 通常 | 96×96 |
+| enemy_shell_guard | 石殻の番人 | 通常 | 96×96 |
+| enemy_apprentice_colossus | 見習い巨像 | 通常 | 96×96 |
+| enemy_mimic_imp | 物真似の子鬼 | 通常 | 96×96 |
+| enemy_cultist | 囁きの狂信者 | 通常 | 96×96 |
+| enemy_slug | 酸吐きの蛞蝓 | 通常 | 96×96 |
+| enemy_whetstone_colossus | 砥石の巨像 | 通常 | 96×96 |
+| enemy_mimic_jester | 物真似の道化 | 通常 | 96×96 |
+| enemy_cinder_imp | 焚きつけのインプ | 通常 | 96×96 |
+| enemy_rock_beetle | 岩皮の甲虫 | 通常 | 96×96 |
+| enemy_big_slime | 大苔スライム | 通常 | 96×96 |
+| enemy_moss_slime | 苔スライム | 通常 | 96×96 |
+| enemy_elite_sergeant | 鞭打ちの鬼軍曹 | エリート | 128×128 |
+| enemy_elite_sentry | 歩哨 | エリート | 128×128 |
+| enemy_elite_iron_egg | 眠れる鉄卵 | エリート | 128×128 |
+| enemy_elite_slaver | 鎖持ちの奴隷商 | エリート | 128×128 |
+| enemy_elite_stab_book | 刺突の書 | エリート | 128×128 |
+| enemy_elite_giant_face | 巨面 | エリート | 128×128 |
+| enemy_elite_gold_raven | 金羽の大鴉 | エリート | 128×128 |
+| enemy_elite_mirror_djinn | 写し身の魔人 | エリート | 128×128 |
+| enemy_elite_doom_chanter | 終焉の唱い手 | エリート | 128×128 |
+| enemy_elite_devourer | 大喰らいの蟲 | エリート | 128×128 |
+| enemy_elite_owl | 読み手の梟 | エリート | 128×128 |
+| enemy_elite_deathless | 不滅の騎士 | エリート | 128×128 |
+| enemy_shield_squire | 盾持ちの従士 | 通常 | 96×96 |
+| enemy_crossbow_archer | 弩弓の射手 | 通常 | 96×96 |
+| enemy_bond_wolf | 双牙の狼 | 通常 | 96×96 |
+| enemy_mud_lump | 泥まとうもの | 通常 | 96×96 |
+| enemy_elite_husk_3 | 不滅の骸兵・参 | エリート | 128×128 |
+| enemy_elite_husk_2 | 不滅の骸兵・弐 | 通常 | 96×96 |
+| enemy_elite_husk_1 | 不滅の骸兵・壱 | 通常 | 96×96 |
+| enemy_brood_toad | 蟲抱えの蛙鬼 | 通常 | 96×96 |
+| enemy_broodling | 蠢く幼体 | 通常 | 96×96 |
+| enemy_brood_raptor | 抱卵の走竜 | 通常 | 96×96 |
+| enemy_raptor_egg | 走竜の卵 | 通常 | 96×96 |
+| enemy_raptor_chick | 走竜の仔 | 通常 | 96×96 |
+| enemy_mourn_beast | 弔いの獣 | 通常 | 96×96 |
+| enemy_maw_hunter | 大顎の狩人 | 通常 | 96×96 |
+| enemy_sludge_berserker | 汚泥の大暴れ | 通常 | 96×96 |
+| enemy_mudling | 小泥 | 通常 | 96×96 |
+| enemy_gaping_maw | 裂け口の獣 | 通常 | 96×96 |
+| enemy_cog_construct | 歯車の箱兵 | 通常 | 96×96 |
+| enemy_spore_cap | 胞子吹きの茸 | 通常 | 96×96 |
+| enemy_strangler_serpent | 巻きつく大蛇 | 通常 | 96×96 |
+| enemy_snap_fruit | 噛みつき果実 | 通常 | 96×96 |
+| enemy_vine_walker | 蔦纏いの歩き木 | 通常 | 96×96 |
+| enemy_iron_clam | 鉄殻の溝貝 | 通常 | 96×96 |
+| enemy_sludge_spider | 汚泥紡ぎの蜘蛛 | 通常 | 96×96 |
+| enemy_axe_automaton | 絡繰の斧兵 | 通常 | 96×96 |
+| enemy_axe_automaton_reboot | 絡繰の斧兵・再起 | 通常 | 96×96 |
+| enemy_thunder_globe | 雷球の巨頭 | 通常 | 96×96 |
+| enemy_frog_knight | 蛙の騎士 | 通常 | 96×96 |
+| enemy_biting_scroll | 噛みつく巻物 | 通常 | 96×96 |
+| enemy_lost_soul | 失せ人の霊 | 通常 | 96×96 |
+| enemy_forgotten_soul | 忘れ人の霊 | 通常 | 96×96 |
+| enemy_devoted_sculptor | 献身の彫師 | 通常 | 96×96 |
+| enemy_chomper | 金切り顎 | 通常 | 96×96 |
+| enemy_scald_gnat | 灼き虻 | 通常 | 96×96 |
+| enemy_kin_priest | 血族の司祭 | 幕ボス | 160×160 |
+| enemy_kin_follower | 血族の踊り手 | 幕ボス | 160×160 |
+| enemy_crab_crusher | 巨蟹の砕き腕 | 幕ボス | 160×160 |
+| enemy_crab_cannon | 巨蟹の撃ち腕 | 幕ボス | 160×160 |
+| enemy_chimera_1 | 蘇る合成獣・一の相 | 幕ボス | 160×160 |
+| enemy_chimera_2 | 蘇る合成獣・二の相 | 通常 | 96×96 |
+| enemy_chimera_3 | 蘇る合成獣・三の相 | 通常 | 96×96 |
+| enemy_burrow_worm | 潜行する大地虫 | 通常 | 96×96 |
+| enemy_bowl_bug | 転がる岩虫 | 通常 | 96×96 |
+| enemy_nemesis_wraith | 因縁の亡霊 | 通常 | 96×96 |
+
+## リーダー（leaders/）
+
+| id | 名前 | 色 |
+|---|---|---|
+| leader_green | このは | green |
+| leader_blue | みぞれ | blue |
+| leader_red | ひばな | red |
+| leader_izzet | らいこ | blue+red |
+| leader_white | ひなた | white |
+| leader_black | とばり | black |
+| leader_azorius | なぎ | white+blue |
+| leader_rakdos | あかね | black+red |
+| leader_gruul | いぶき | red+green |
+| leader_selesnya | わかば | green+white |
+| leader_orzhov | あかり | white+black |
+| leader_golgari | くろは | black+green |
+| leader_boros | あさひ | red+white |
+| leader_simic | しずく | green+blue |
+| leader_dimir | かすみ | blue+black |
+
+## レリック（relics/ 32×32）
+
+| id | 名前 | 現在の絵文字 |
+|---|---|---|
+| relic_thorn_crown | 茨の冠 | 👑 |
+| relic_sage_scroll | 賢者の巻物 | 📜 |
+| relic_swift_boots | 早駆けの靴 | 👢 |
+| relic_shield_shard | 大盾の欠片 | 🛡️ |
+| relic_vanguard_shield | 先手の盾 | ⛨ |
+| relic_iron_heart | 鉄の心臓 | 🫀 |
+| relic_hunters_boon | 狩人の恵み | 🏹 |
+| relic_collectors_bag | 収集家の鞄 | 🎒 |
+| relic_deep_breath | 深呼吸の香 | 🕯️ |
+| relic_growth_seed | 成長の種 | 🌱 |
+| relic_swift_sash | 韋駄天の帯 | 🎽 |
+| relic_oldroot_cup | 古根の杯 | 🏆 |
+| relic_raptor_eye | 猛禽の眼 | 👁️ |
+| relic_merchant_scale | 商人の秤 | ⚖️ |
+| relic_smith_whetstone | 鍛冶の砥石 | 🪨 |
+| relic_talisman_pouch | 符師の懐 | 👝 |
+| relic_quiet_bell | 静かな鈴 | 🔔 |
+| relic_crown_shard | 王冠の欠片 | 👑 |
+| relic_cursed_key | 呪いの鍵 | 🗝️ |
+| relic_philosopher_stone | 賢者の石 | 💎 |
+| relic_slaver_collar | 鎖の首輪 | ⛓️ |
+| relic_whetstone_chip | 砥石の欠片 | 🪨 |
+| relic_herb_pouch | 薬草袋 | 🌿 |
+| relic_old_purse | 古い財布 | 👛 |
+| relic_momentum_whip | 勢いの鞭 | 🪢 |
+| relic_reading_glasses | 読みの眼鏡 | 👓 |
+| relic_retrieve_cord | 回収の紐 | 🧵 |
+| relic_mortar | 薬研 | ⚗️ |
+| relic_loot_bag | 戦利品袋 | 🎒 |
+| relic_great_tree_heart | 大樹の心 | 🌳 |
+| relic_steadfast_root | 不動の根 | 🌱 |
+| relic_harvest_sickle | 収穫の鎌 | 🌾 |
+| relic_membership_card | 会員証 | 🪪 |
+| relic_golden_boots | 金の靴 | 👢 |
+| relic_removal_chisel | 除去の鑿 | 🔩 |
+| relic_witch_scale | 魔女の秤 | ⚖️ |
+| relic_black_star | 黒星の欠片 | 🌟 |
+| relic_tiny_house | 小さな家 | 🏠 |
+
+## カード（絵は後回し）
+
+カードは 412 種。1枚ずつのイラストは最後（ゲートを越えてから）。それまでは枠＋タイプアイコン＋名前で成立させる。
+タイプ別の枠色: 物理=茶／呪文=紫／リアクション=青緑／置物=金。色（緑青赤白黒）は枠の縁取り。

@@ -6,6 +6,9 @@
 #   scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGoldens (エンジンの実機ゴールデン照合)
 #   scripts/unity-win.sh play      # 同期 → BatchTools.PlaySmoke (プレイモードに入り、セットアップ→ラン開始→進路→戦闘を UI 経由で回す)
 #   scripts/unity-win.sh setup-urp # URP アセットを作って割り当てる (一度だけ)
+#   scripts/unity-win.sh setup-tmp # TextMeshPro の必須リソースを取り込む (一度だけ)
+#   scripts/unity-win.sh build     # Windows プレイヤー (Build/DeckRogue.exe) をビルド
+#   scripts/unity-win.sh shots [tour] [seed]  # プレイヤーを自動操縦で起動して各画面の PNG を unity/Shots/ に回収
 #   scripts/unity-win.sh sync      # 同期だけ
 # ログ: C:\Users\yosuke\deck-rogue-unity\unity-batch.log (WSL からは $WIN_DIR/unity-batch.log)
 set -u
@@ -20,7 +23,7 @@ mkdir -p "$WIN_DIR"
 # 作業コピーへ同期 (Library/Temp/Logs/obj/bin は作業コピー側の生成物なので触らない)
 rsync -a --delete \
   --exclude 'Library/' --exclude 'Temp/' --exclude 'Logs/' --exclude 'UserSettings/' --exclude 'obj/' --exclude 'bin/' \
-  --exclude 'EngineTests/' --exclude '*.csproj' --exclude '*.sln' --exclude 'unity-batch.log' --exclude 'goldens/' \
+  --exclude 'EngineTests/' --exclude '*.csproj' --exclude '*.sln' --exclude 'unity-batch.log' --exclude 'goldens/' --exclude 'Build/' --exclude 'Shots/' --exclude 'player.log' \
   "$REPO/unity/" "$WIN_DIR/"
 mkdir -p "$WIN_DIR/goldens"
 rsync -a --delete "$REPO/goldens/" "$WIN_DIR/goldens/"
@@ -37,6 +40,23 @@ case "$MODE" in
   # play は -quit を付けない (プレイモードに入るため)。スモーク側が EditorApplication.Exit で必ず終わる。保険で timeout
   play) ARGS+=(-executeMethod DeckRogue.EditorTools.PlaySmoke.Run) ;;
   setup-urp) ARGS+=(-quit -executeMethod DeckRogue.EditorTools.UrpSetup.Run) ;;   # URP アセット生成→Graphics/Quality へ割当 (2026-09-07)
+  setup-tmp) ARGS+=(-quit -executeMethod DeckRogue.EditorTools.BuildTools.SetupTmp) ;;   # TMP Essential Resources の取り込み (一度だけ)
+  build) ARGS+=(-quit -buildTarget Win64 -executeMethod DeckRogue.EditorTools.BuildTools.BuildWindows) ;;   # Build/DeckRogue.exe
+  shots)
+    # 自動操縦スクショ: ビルド済みプレイヤーを起動し、PNG を unity/Shots/ (git 管理外) へ回収する
+    EXE="$WIN_DIR/Build/DeckRogue.exe"
+    if [ ! -f "$EXE" ]; then echo "ビルドが無い: $EXE (先に scripts/unity-win.sh build)"; exit 2; fi
+    SCENARIO="${2:-tour}"; SEED="${3:-4242}"
+    rm -rf "$WIN_DIR/Shots"; mkdir -p "$WIN_DIR/Shots"
+    timeout -k 5 180 "$EXE" -autopilot "$SCENARIO" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" \
+      -screen-width 1920 -screen-height 1080 -screen-fullscreen 0 -logFile "$(wslpath -w "$WIN_DIR/player.log")"
+    PCODE=$?
+    mkdir -p "$REPO/unity/Shots"; rm -f "$REPO/unity/Shots"/*.png
+    cp "$WIN_DIR/Shots"/*.png "$REPO/unity/Shots/" 2>/dev/null
+    echo "player exit=$PCODE shots: $(ls "$REPO/unity/Shots" 2>/dev/null | tr '\n' ' ')"
+    grep -E "\[Autopilot\]|Exception|error" "$WIN_DIR/player.log" 2>/dev/null | cut -c1-200 | head -20
+    exit $PCODE
+    ;;
   *) echo "unknown mode: $MODE"; exit 2 ;;
 esac
 echo "run: Unity ${ARGS[*]}"
@@ -47,7 +67,7 @@ echo "exit code: $CODE"
 # 作業コピー側で Unity が書き換えた ProjectSettings (ProjectVersion のリビジョン・Graphics/Quality の URP 割当 等) と
 # Assets/Settings (URP アセット。.meta の GUID ごと) を正本へ戻す。作業コピーは次の同期で上書きされるため
 rsync -a "$WIN_DIR/ProjectSettings/" "$REPO/unity/ProjectSettings/"
-if [ -d "$WIN_DIR/Assets/Settings" ]; then rsync -a "$WIN_DIR/Assets/Settings/" "$REPO/unity/Assets/Settings/"; [ -f "$WIN_DIR/Assets/Settings.meta" ] && cp "$WIN_DIR/Assets/Settings.meta" "$REPO/unity/Assets/Settings.meta"; fi
+for d in Settings Scenes "TextMesh Pro"; do if [ -d "$WIN_DIR/Assets/$d" ]; then rsync -a "$WIN_DIR/Assets/$d/" "$REPO/unity/Assets/$d/"; [ -f "$WIN_DIR/Assets/$d.meta" ] && cp "$WIN_DIR/Assets/$d.meta" "$REPO/unity/Assets/$d.meta"; fi; done
 if [ -f "$LOG" ]; then
   echo "---- errors ----"
   grep -E "error CS|Scripts have compiler errors|Assembly .* will not be loaded|License|license|Aborting batchmode|Exception|\[DeckRogue\]" "$LOG" | grep -v "^  at " | sort -u | head -60

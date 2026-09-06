@@ -1,7 +1,8 @@
-// UiKit.cs — コードだけで uGUI を組む最小の道具箱。
-// プレハブ・シーン・TextMeshPro は使わない (このマシンに Unity Editor が無いため、
-// すべてスクリプトから生成する)。API は uGUI の枯れたものだけ。
+// UiKit.cs — コードだけで uGUI を組む道具箱 (2026-09-07 M1: TextMeshPro + Noto Sans JP + テーマの9スライスへ)。
+// プレハブ・シーンは使わず全てスクリプトから生成する (UI技術の裁定: uGUI・コード生成＋テーマ)。
+// 文字は TextMeshPro (Resources/Fonts の Noto Sans JP から動的 SDF フォントを作る)。枠は Theme の生成スプライト。
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,11 @@ namespace DeckRogue.Game
 {
     public static class UiKit
     {
-        // ---- ダークテーマ ----
+        // ---- ダークテーマ (Theme.cs のパレットと揃える) ----
         public static readonly Color ColBg = Hex("#131917");
         public static readonly Color ColPanel = Hex("#1c2422");
         public static readonly Color ColPanel2 = Hex("#243230");
-        public static readonly Color ColText = Hex("#d9e2da");
+        public static readonly Color ColText = Hex("#e6ecdf");
         public static readonly Color ColDim = Hex("#8a9a90");
         public static readonly Color ColAccent = Hex("#6abf69");
         public static readonly Color ColHp = Hex("#c94f4f");
@@ -22,7 +23,9 @@ namespace DeckRogue.Game
         public static readonly Color ColBad = Hex("#e06c6c");
         public static readonly Color ColClear = new Color(0f, 0f, 0f, 0f);
 
-        static Font _font;
+        static TMP_FontAsset _fontRegular;
+        static TMP_FontAsset _fontBold;
+        static bool _fontTried;
 
         public static Color Hex(string s)
         {
@@ -31,18 +34,38 @@ namespace DeckRogue.Game
             return Color.magenta;
         }
 
-        /// <summary>日本語が出るフォント。OS フォントが取れなければ組み込みへフォールバック</summary>
-        public static Font GetFont()
+        /// <summary>
+        /// 日本語フォント (Noto Sans JP・OFL)。Resources/Fonts の OTF から動的 SDF フォントアセットを作る
+        /// (静的アトラスは製品版の最適化で。動的なら未使用の漢字を焼かずに済む)。失敗したら TMP の既定フォント (英数のみ)。
+        /// </summary>
+        public static TMP_FontAsset FontRegular { get { EnsureFonts(); return _fontRegular; } }
+        public static TMP_FontAsset FontBold { get { EnsureFonts(); return _fontBold ?? _fontRegular; } }
+
+        static void EnsureFonts()
         {
-            if (_font != null) return _font;
+            if (_fontTried) return;
+            _fontTried = true;
+            _fontRegular = MakeFont("NotoSansJP-Regular");
+            _fontBold = MakeFont("NotoSansJP-Bold");
+            if (_fontRegular == null) Debug.LogWarning("[UiKit] Noto Sans JP を作れなかった。TMP の既定フォントで描く (日本語は豆腐)");
+        }
+
+        static TMP_FontAsset MakeFont(string resourceName)
+        {
             try
             {
-                _font = Font.CreateDynamicFontFromOSFont(
-                    new string[] { "Yu Gothic UI", "Meiryo UI", "Meiryo", "MS Gothic", "Noto Sans CJK JP", "Hiragino Sans" }, 20);
+                var font = Resources.Load<Font>("Fonts/" + resourceName);
+                if (font == null) return null;
+                var fa = TMP_FontAsset.CreateFontAsset(font, 40, 6, UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
+                if (fa == null) return null;
+                fa.name = resourceName;
+                return fa;
             }
-            catch { _font = null; }
-            if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            return _font;
+            catch (Exception e)
+            {
+                Debug.LogWarning("[UiKit] フォント生成に失敗: " + resourceName + " / " + e.Message);
+                return null;
+            }
         }
 
         // ---- 生成 ----
@@ -65,20 +88,51 @@ namespace DeckRogue.Game
             return img;
         }
 
-        /// <summary>テキスト (legacy Text)。既定でレイキャスト対象外＝下のボタンを塞がない</summary>
-        public static Text Txt(Transform parent, string text, int size, Color color, TextAnchor anchor = TextAnchor.UpperLeft)
+        /// <summary>9スライスの枠付きパネル (Theme.Panel)。color は枠の色味 (乗算)</summary>
+        public static Image Frame(Transform parent, Sprite sprite, Color tint, string name = "frame", float scale = 3f)
+        {
+            var rt = NewRect(name, parent);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = sprite;
+            img.type = Image.Type.Sliced;
+            img.pixelsPerUnitMultiplier = 1f / scale;
+            img.color = tint;
+            return img;
+        }
+
+        static TextAlignmentOptions MapAnchor(TextAnchor a)
+        {
+            switch (a)
+            {
+                case TextAnchor.UpperLeft: return TextAlignmentOptions.TopLeft;
+                case TextAnchor.UpperCenter: return TextAlignmentOptions.Top;
+                case TextAnchor.UpperRight: return TextAlignmentOptions.TopRight;
+                case TextAnchor.MiddleLeft: return TextAlignmentOptions.Left;
+                case TextAnchor.MiddleCenter: return TextAlignmentOptions.Center;
+                case TextAnchor.MiddleRight: return TextAlignmentOptions.Right;
+                case TextAnchor.LowerLeft: return TextAlignmentOptions.BottomLeft;
+                case TextAnchor.LowerCenter: return TextAlignmentOptions.Bottom;
+                case TextAnchor.LowerRight: return TextAlignmentOptions.BottomRight;
+            }
+            return TextAlignmentOptions.TopLeft;
+        }
+
+        /// <summary>テキスト (TextMeshPro)。既定でレイキャスト対象外＝下のボタンを塞がない。リッチテキスト可 (色・スプライトタグ)</summary>
+        public static TMP_Text Txt(Transform parent, string text, int size, Color color, TextAnchor anchor = TextAnchor.UpperLeft, bool bold = false)
         {
             var rt = NewRect("text", parent);
-            var t = rt.gameObject.AddComponent<Text>();
-            t.font = GetFont();
+            var t = rt.gameObject.AddComponent<TextMeshProUGUI>();
+            var f = bold ? FontBold : FontRegular;
+            if (f != null) t.font = f;
             t.fontSize = size;
             t.color = color;
             t.text = text == null ? "" : text;
-            t.alignment = anchor;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
-            t.verticalOverflow = VerticalWrapMode.Overflow;
-            t.supportRichText = false;
+            t.alignment = MapAnchor(anchor);
+            t.textWrappingMode = TextWrappingModes.Normal;
+            t.overflowMode = TextOverflowModes.Overflow;
+            t.richText = true;
             t.raycastTarget = false;
+            if (Theme.Icons != null) t.spriteAsset = Theme.Icons;
             return t;
         }
 
@@ -86,23 +140,34 @@ namespace DeckRogue.Game
         {
             var rt = NewRect("button", parent);
             var img = rt.gameObject.AddComponent<Image>();
-            img.color = bg.HasValue ? bg.Value : ColPanel2;
+            var sp = Theme.Button;
+            if (sp != null)
+            {
+                img.sprite = sp;
+                img.type = Image.Type.Sliced;
+                img.pixelsPerUnitMultiplier = 1f / 3f;
+                img.color = bg.HasValue ? bg.Value : Color.white;
+            }
+            else
+            {
+                img.color = bg.HasValue ? bg.Value : ColPanel2;
+            }
             var btn = rt.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
             var cb = btn.colors;
             cb.normalColor = Color.white;
-            cb.highlightedColor = new Color(0.82f, 1f, 0.82f, 1f);
-            cb.pressedColor = new Color(0.65f, 0.9f, 0.65f, 1f);
+            cb.highlightedColor = new Color(1f, 1f, 0.9f, 1f);
+            cb.pressedColor = new Color(0.75f, 0.85f, 0.75f, 1f);
             cb.selectedColor = Color.white;
-            cb.disabledColor = new Color(0.45f, 0.45f, 0.45f, 0.7f);
+            cb.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.6f);
             cb.colorMultiplier = 1f;
             cb.fadeDuration = 0.05f;
             btn.colors = cb;
             btn.interactable = interactable;
             if (onClick != null) btn.onClick.AddListener(delegate { onClick(); });
             var t = Txt(rt, label, size, ColText, TextAnchor.MiddleCenter);
-            Stretch(t.rectTransform, 6f, 6f, 2f, 2f);
-            Le(rt, -1f, size + 14f, -1f, size + 14f);
+            Stretch(t.rectTransform, 8f, 8f, 2f, 2f);
+            Le(rt, -1f, size + 16f, -1f, size + 16f);
             return btn;
         }
 
@@ -232,7 +297,7 @@ namespace DeckRogue.Game
             fill.offsetMin = Vector2.zero;
             fill.offsetMax = Vector2.zero;
 
-            var t = Txt(row, caption, 13, ColText, TextAnchor.MiddleCenter);
+            var t = Txt(row, caption, 13, ColText, TextAnchor.MiddleCenter, true);
             Stretch(t.rectTransform, 4f, 4f, 0f, 0f);
         }
 
@@ -250,11 +315,24 @@ namespace DeckRogue.Game
         }
 
         /// <summary>見出し1行</summary>
-        public static Text Head(Transform parent, string text, int size = 18)
+        public static TMP_Text Head(Transform parent, string text, int size = 18)
         {
-            var t = Txt(parent, text, size, ColAccent);
+            var t = Txt(parent, text, size, ColAccent, TextAnchor.UpperLeft, true);
             Le(t, -1f, size + 8f, -1f, size + 8f);
             return t;
+        }
+
+        /// <summary>アイコン (Theme のプレースホルダー or Resources/Art の差し替え)。size はキャンバス単位</summary>
+        public static Image Icon(Transform parent, string name, float size, Color? tint = null)
+        {
+            var rt = NewRect("icon-" + name, parent);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = Theme.Icon(name);
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+            img.color = tint.HasValue ? tint.Value : Color.white;
+            Le(rt, size, size, size, size);
+            return img;
         }
     }
 }

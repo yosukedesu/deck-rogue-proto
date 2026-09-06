@@ -40,3 +40,7 @@ unity/Build/
 unity/*.csproj
 unity/*.sln
 unity/.vs/
+
+# Unity 自動操縦スクショ (scripts/unity-win.sh shots の回収先)
+unity/Shots/
+unity/Build/

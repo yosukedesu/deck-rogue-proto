@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
 
@@ -61,7 +62,7 @@ namespace DeckRogue.Game
         public string LeaderId = "leader_green";
         public int Seed = 1;
         public int Difficulty = DeckRogue.Engine.Run.DEFAULT_DIFFICULTY;
-        InputField _seedField;
+        TMP_InputField _seedField;
 
         // ---- 画面の一時状態 ----
         public PendingPlay Pending;
@@ -72,6 +73,12 @@ namespace DeckRogue.Game
         public int EventChoiceIndex = -1;   // カード指定待ちの選択肢
 
         RectTransform _root;
+        /// <summary>演出レイヤー (浮き文字など)。基準 1920×1080 の座標系・最前面・レイキャストを塞がない</summary>
+        public RectTransform FxLayer;
+        readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
+        /// <summary>画面の組み立てが演出の的 (敵パネル・自分の欄) を登録する。Rebuild ごとに消える</summary>
+        public void RegisterAnchor(string name, RectTransform rt) { _anchors[name] = rt; }
+        public RectTransform Anchor(string name) { RectTransform rt; return _anchors.TryGetValue(name, out rt) && rt != null ? rt : null; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -94,7 +101,7 @@ namespace DeckRogue.Game
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280f, 720f);
+            scaler.referenceResolution = new Vector2(1920f, 1080f); // 本家と同じ基準 (2026-09-07 裁定)
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
@@ -111,8 +118,18 @@ namespace DeckRogue.Game
 #endif
             }
 
+            // 旧画面 (1280×720 で設計) は 1.5 倍の入れ物に組む＝見た目を変えずに基準を 1920×1080 へ移す。
+            // M2 以降の新画面はこの入れ物を使わず、キャンバス直下 (1920×1080) に組む
             _root = UiKit.NewRect("root", canvasGo.transform);
-            UiKit.Stretch(_root, 0f, 0f, 0f, 0f);
+            _root.anchorMin = _root.anchorMax = new Vector2(0.5f, 0.5f);
+            _root.sizeDelta = new Vector2(1280f, 720f);
+            _root.anchoredPosition = Vector2.zero;
+            _root.localScale = Vector3.one * 1.5f;
+            FxLayer = UiKit.NewRect("fx", canvasGo.transform);
+            UiKit.Stretch(FxLayer, 0f, 0f, 0f, 0f);
+            var fxCg = FxLayer.gameObject.AddComponent<CanvasGroup>();
+            fxCg.blocksRaycasts = false;
+            fxCg.interactable = false;
 
             try
             {
@@ -147,6 +164,8 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Event) EventChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
             Rebuild();
+            // 演出キュー: 新しいイベントを浮き文字・揺れに変える (画面の組み立て後＝的が登録された後)
+            if (Rs != null && Rs.Combat != null) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
         }
 
         public void DoCombat(Command cmd)
@@ -191,7 +210,7 @@ namespace DeckRogue.Game
             Rebuild();
         }
 
-        public void RegisterSeedField(InputField f) { _seedField = f; }
+        public void RegisterSeedField(TMP_InputField f) { _seedField = f; }
 
         // ---- カードプレイの組み立て ----
 
@@ -291,6 +310,7 @@ namespace DeckRogue.Game
         public void Rebuild()
         {
             if (_root == null) return;
+            _anchors.Clear();
             for (int i = _root.childCount - 1; i >= 0; i--)
             {
                 var c = _root.GetChild(i);

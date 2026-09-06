@@ -172,16 +172,16 @@ namespace DeckRogue.EditorTools
                             if (_frames > 1500) Finish(1, "GameRoot が起動しない");
                             return;
                         }
-                        Debug.Log($"[DeckRogue] boot ok: Content.IsLoaded={Content.IsLoaded} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)} error={g.Error ?? "なし"}");
+                        Debug.Log($"[DeckRogue] boot ok: Content.IsLoaded={Content.IsLoaded} texts={CountUnder<TMPro.TMP_Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)} error={g.Error ?? "なし"}");
                         if (!Content.IsLoaded || g.Error != null) { Finish(1, "データ読込に失敗"); return; }
-                        if (CountUnder<UnityEngine.UI.Text>(g) == 0) { Finish(1, "セットアップ画面が空"); return; }
+                        if (CountUnder<TMPro.TMP_Text>(g) == 0) { Finish(1, "セットアップ画面が空"); return; }
                         _step = 1; _frames = 0;
                         return;
                     case 1:
                         if (_frames < 5) return;
                         g.Seed = 4242;
                         g.StartRun();
-                        Debug.Log($"[DeckRogue] StartRun: phase={g.Rs?.Phase ?? "null"} error={g.Error ?? "なし"} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
+                        Debug.Log($"[DeckRogue] StartRun: phase={g.Rs?.Phase ?? "null"} error={g.Error ?? "なし"} texts={CountUnder<TMPro.TMP_Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
                         if (g.Rs == null || g.Error != null || g.Rs.Phase != RunPhases.Map) { Finish(1, "ラン開始に失敗"); return; }
                         _step = 2; _frames = 0;
                         return;
@@ -218,7 +218,7 @@ namespace DeckRogue.EditorTools
                         }
                         g.Do(cmd);
                         _transitions++;
-                        Debug.Log($"[DeckRogue] 遷移{_transitions}: {cmd.Type} → phase={g.Rs?.Phase} error={g.Error ?? "なし"} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
+                        Debug.Log($"[DeckRogue] 遷移{_transitions}: {cmd.Type} → phase={g.Rs?.Phase} error={g.Error ?? "なし"} texts={CountUnder<TMPro.TMP_Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
                         _frames = 0;
                         return;
                     }
@@ -239,7 +239,7 @@ namespace DeckRogue.EditorTools
                             g.DoCombat(new Command_EndTurn());
                             _turns++;
                             var c = g.Rs?.Combat;
-                            Debug.Log($"[DeckRogue] ターン終了{_turns}: run.phase={g.Rs?.Phase} combat.phase={c?.Phase} hp={c?.Player?.Hp} error={g.Error ?? "なし"} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
+                            Debug.Log($"[DeckRogue] ターン終了{_turns}: run.phase={g.Rs?.Phase} combat.phase={c?.Phase} hp={c?.Player?.Hp} error={g.Error ?? "なし"} texts={CountUnder<TMPro.TMP_Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
                         }
                         _frames = 0;
                         return;
@@ -323,6 +323,91 @@ namespace DeckRogue.EditorTools
             catch (Exception e)
             {
                 Debug.LogError("[DeckRogue] URP 設定で例外: " + e);
+                code = 1;
+            }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+    }
+}
+
+namespace DeckRogue.EditorTools
+{
+    /// <summary>
+    /// Windows プレイヤーのビルド (2026-09-07 M1「目を作る」): シーンが無ければ既定のカメラ入りの空シーンを作って登録し、
+    /// Build/DeckRogue.exe を出す。出来た exe は scripts/unity-win.sh shots が自動操縦 (Autopilot) で起動してスクショを撮る。
+    /// </summary>
+    public static class BuildTools
+    {
+        const string ScenePath = "Assets/Scenes/Main.unity";
+
+        public static void EnsureScene()
+        {
+            if (System.IO.File.Exists(ScenePath)) return;
+            if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
+            var scene = UnityEditor.SceneManagement.EditorSceneManager.NewScene(
+                UnityEditor.SceneManagement.NewSceneSetup.DefaultGameObjects, UnityEditor.SceneManagement.NewSceneMode.Single);
+            var cam = UnityEngine.Object.FindFirstObjectByType<Camera>();
+            if (cam != null)
+            {
+                cam.clearFlags = CameraClearFlags.SolidColor;
+                cam.backgroundColor = new Color(0.075f, 0.098f, 0.09f, 1f);
+                cam.orthographic = true;
+            }
+            UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, ScenePath);
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+            Debug.Log("[DeckRogue] シーンを作成: " + ScenePath);
+        }
+
+        public static void BuildWindows()
+        {
+            int code = 0;
+            try
+            {
+                EnsureScene();
+                EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+                var opts = new BuildPlayerOptions
+                {
+                    scenes = new[] { ScenePath },
+                    locationPathName = "Build/DeckRogue.exe",
+                    target = BuildTarget.StandaloneWindows64,
+                    options = BuildOptions.None,
+                };
+                var report = BuildPipeline.BuildPlayer(opts);
+                var s = report.summary;
+                Debug.Log($"[DeckRogue] build: result={s.result} errors={s.totalErrors} warnings={s.totalWarnings} size={s.totalSize / (1024 * 1024)}MB time={s.totalTime.TotalSeconds:F0}s → {s.outputPath}");
+                if (s.result != UnityEditor.Build.Reporting.BuildResult.Succeeded) code = 1;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[DeckRogue] build で例外: " + e);
+                code = 1;
+            }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+
+        /// <summary>TextMeshPro の必須リソース (TMP Settings・既定フォント・シェーダー) をパッケージから取り込む (一度だけ)</summary>
+        public static void SetupTmp()
+        {
+            int code = 0;
+            try
+            {
+                if (AssetDatabase.IsValidFolder("Assets/TextMesh Pro"))
+                {
+                    Debug.Log("[DeckRogue] TMP Essential Resources は取り込み済み");
+                }
+                else
+                {
+                    var pkg = System.IO.Path.GetFullPath("Packages/com.unity.ugui/Package Resources/TMP Essential Resources.unitypackage");
+                    if (!System.IO.File.Exists(pkg)) throw new System.IO.FileNotFoundException(pkg);
+                    AssetDatabase.ImportPackage(pkg, false);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                    Debug.Log("[DeckRogue] TMP Essential Resources を取り込んだ: " + (AssetDatabase.IsValidFolder("Assets/TextMesh Pro") ? "ok" : "フォルダ未確認 (非同期の可能性)"));
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[DeckRogue] TMP 取り込みで例外: " + e);
                 code = 1;
             }
             if (Application.isBatchMode) EditorApplication.Exit(code);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
 
@@ -77,16 +78,21 @@ namespace DeckRogue.Game
             return outp;
         }
 
-        static InputField MakeSeedField(GameRoot g, Transform parent)
+        static TMP_InputField MakeSeedField(GameRoot g, Transform parent)
         {
             var pan = UiKit.Pan(parent, UiKit.ColPanel2, "seedField");
             UiKit.Le(pan, 150f, 30f, 150f, 30f);
-            var txt = UiKit.Txt(pan.transform, "", 15, UiKit.ColText, TextAnchor.MiddleLeft);
-            UiKit.Stretch(txt.rectTransform, 8f, 8f, 2f, 2f);
-            var field = pan.gameObject.AddComponent<InputField>();
+            // TMP_InputField は textViewport (RectMask2D 付きの入れ物) を要る
+            var viewport = UiKit.NewRect("viewport", pan.transform);
+            UiKit.Stretch(viewport, 8f, 8f, 2f, 2f);
+            viewport.gameObject.AddComponent<RectMask2D>();
+            var txt = UiKit.Txt(viewport, "", 15, UiKit.ColText, TextAnchor.MiddleLeft);
+            UiKit.Stretch(txt.rectTransform, 0f, 0f, 0f, 0f);
+            var field = pan.gameObject.AddComponent<TMP_InputField>();
+            field.textViewport = viewport;
             field.textComponent = txt;
             field.targetGraphic = pan;
-            field.contentType = InputField.ContentType.IntegerNumber;
+            field.contentType = TMP_InputField.ContentType.IntegerNumber;
             field.characterLimit = 9;
             field.text = g.Seed.ToString();
             field.onValueChanged.AddListener(delegate (string v)

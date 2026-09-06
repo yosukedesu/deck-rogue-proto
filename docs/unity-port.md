@@ -151,3 +151,27 @@ goldens/                    # ゴールデンマスターJSONL（TS生成・C#�
 - P3 最小: `Assets/Game/`（GameRoot / UiKit / CardText / CombatScreen / RunScreens・約2,400行）。シーン・プレハブ無しで空シーンの Play から起動し、セットアップ→マップ→戦闘→報酬/レリック/焚き火/工房/ショップ/イベント→勝敗が動く設計。Unity API のスタブで dotnet コンパイル 0 error、CardText 全410札とヘッドレス走行で例外ゼロ。**実機コンパイルは Windows 側が初**。
 - 次: Claude Code から Unity をバッチ起動できる環境（`Unity.exe -batchmode` でコンパイル・テスト・スクショ）を作ってから、画面1つ＝1タスクで積む。TextMeshPro＋Noto Sans JP・Android IL2CPP（反射の link.xml）は製品段階の前に。
 
+## 12. 製品版UIの計画（2026-09-07 ユーザー「製品版並みのプレイしやすいUX/UIが欲しい」→ ask_user 裁定）
+
+裁定: **uGUI・コード生成＋テーマ**（UI Toolkit・プレハブ手組みは不採用）／解像度の基準は**本家と同じ**（1920×1080 の16:9基準・ドット絵は整数倍）／
+画像は **PixelLab のドット絵を最終形**とし、**プレースホルダー先行→後で差し替え**（`Assets/Resources/Art/<種別>/<id>.png`・発注書 `docs/pixellab-assets.md`）／
+着手は **M1 から、発注書は並行**。
+
+構造の柱＝**演出キュー**: エンジンの状態は一瞬で確定し、画面は eventLog（CardPlayed・DamageDealt・BlockGained…）を順に取り出してトゥイーンで見せる
+（StS のアクションキューと同型）。純ロジックのまま「カードが飛ぶ・数字が弾ける・敵が揺れる」を足せる。
+
+| 段 | 中身 | 目安 |
+|---|---|---|
+| M1 目を作る | Windows プレイヤーを自動操縦で起動して各画面の PNG を吐く（`scripts/unity-win.sh build` → `shots`。`Assets/Game/Autopilot.cs`）。TextMeshPro＋Noto Sans JP（`Assets/Resources/Fonts`・OFL）。テーマ（配色・9スライス枠・カード枠・アイコンをコードで生成＝PixelLab と同名同寸のプレースホルダー）。トゥイーン基盤と演出キューの骨格 | 1〜2日 |
+| M2 戦闘画面 | 手札の扇とホバー拡大、ドラッグで対象指定＋矢印、敵カードと意図アイコン、ダメージ数字・シェイク・フラッシュ、ターン開始/終了バナー、伏せ・確認ウィンドウの見せ方、キーワードのツールチップ、SE のフック | 1〜2週 |
+| M3 ラン画面 | マップ（パン・経路ハイライト）、報酬ピック、ショップ、焚き火、工房、イベント、レリック帯、デッキ閲覧、設定と続きから | 1週 |
+| M4 仕上げ | 画面遷移、SE/BGM（フリー素材）、チュートリアル、Android のタッチ、性能 | 随時 |
+
+作法: 画面ごとに「作る → `shots` で自己検証（Claude が PNG を見る） → ユーザーが Hub で Play して手触りを採点」を1サイクルにする。エンジンは触らない（ゴールデン8本が守る）。
+
+**M1 済（2026-09-07）**: `build`→`shots` で7枚の PNG（セットアップ／マップ／戦闘3ターン）を Claude が読めた。TextMeshPro＋Noto Sans JP（動的 SDF）で日本語が出る。
+Theme（9スライスのボタン枠・16px アイコン13種）、Tween（移動・拡縮・フェード・パンチ・浮き文字）、Presenter（イベントログ差分→ダメージ/ブロック/回復の浮き文字とパンチ。
+レイアウト確定後に的の座標を読む・LayoutGroup の子は位置でなく拡縮で揺らす・連続演出は0.12秒ずつずらす）。基準解像度 1920×1080（旧画面は 1.5 倍の入れ物）。
+学び: Rebuild 直後は LayoutGroup 未計算＝的が原点にいる（`Canvas.ForceUpdateCanvases()`）／実行時生成の `TMP_SpriteAsset` は旧形式の移行処理で落ちる（版と表を先に用意）／
+スモークの空画面判定は TMP_Text を数える。残: インラインアイコンの検証（M2 の最初の実機ランで）。
+
