@@ -7,6 +7,21 @@ namespace DeckRogue.EditorTools
 {
     public class ArtImporter : AssetPostprocessor
     {
+        /// <summary>BGM は長いのでストリーミング (Decompress On Load だと1曲で数十MBのメモリ)。効果音は圧縮のままメモリへ</summary>
+        void OnPreprocessAudio()
+        {
+            var path = assetPath.Replace('\\', '/');
+            if (!path.Contains("/Resources/Audio/")) return;
+            var imp = (AudioImporter)assetImporter;
+            var st = imp.defaultSampleSettings;
+            bool bgm = path.Contains("/Audio/bgm/");
+            st.loadType = bgm ? AudioClipLoadType.Streaming : AudioClipLoadType.CompressedInMemory;
+            st.compressionFormat = AudioCompressionFormat.Vorbis;
+            st.quality = bgm ? 0.6f : 0.7f;
+            imp.defaultSampleSettings = st;
+            imp.forceToMono = !bgm;
+        }
+
         void OnPreprocessTexture()
         {
             if (!assetPath.Replace('\\', '/').Contains("/Resources/Art/")) return;

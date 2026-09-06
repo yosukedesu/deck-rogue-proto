@@ -73,6 +73,8 @@ scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開い�
 **Asset Store の素材を使う手順**: Editor（Hub で開いた `deck-rogue-unity`）の Package Manager → My Assets → Download/Import で `Assets/<パック名>/` に入る →
 WSL で `scripts/unity-win.sh pull "Assets/<パック名>"` でリポジトリへ回収（作業コピーは同期で上書きされるので必須）→ 使う音を `Resources/Audio/sfx/<name>` へコピーするか `Audio.Map` で対応付ける。
 CC0 の素材集（Kenney）は URL から直接落とせるので、効果音はそれを同梱している（`Assets/Resources/Audio/sfx/LICENSE-kenney.txt`）。
+BGM も CC0（OpenGameArt: cynicmusic / Wolfgang_ / HaelDB / Juhani Junkala / Spring Spring / HydroGene）を `Assets/Resources/Audio/bgm/` に同梱（`CREDITS.md`）。合成は素材が無い名前のフォールバック。
+BGM の import は Editor の `ArtImporter` がストリーミングに設定する（Decompress On Load だと1曲で数十MB）。
 
 ## レンダーパイプライン（2026-09-07）
 
