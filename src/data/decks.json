@@ -1508,6 +1508,90 @@
     ]
   },
   {
+    "id": "deck_horde_v2",
+    "name": "従者ホード（解凍版）",
+    "color": "white",
+    "description": "白の解凍（2026-09-06）の検証用: ばらまき・倍加・対価・号令と本家型の条件札を揃えた幕2開始のチェックポイント用デッキ",
+    "cards": [
+      {
+        "cardId": "white_perm_squire",
+        "count": 2
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 1
+      },
+      {
+        "cardId": "white_page_rank",
+        "count": 2
+      },
+      {
+        "cardId": "white_holy_procession",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_warcry",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_martyr_vow",
+        "count": 1
+      },
+      {
+        "cardId": "white_march_order",
+        "count": 1
+      },
+      {
+        "cardId": "white_miracle_division",
+        "count": 1
+      },
+      {
+        "cardId": "white_rank_thrust",
+        "count": 1
+      },
+      {
+        "cardId": "white_rally",
+        "count": 1
+      },
+      {
+        "cardId": "white_shield_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_mending",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_fortress",
+        "count": 1
+      },
+      {
+        "cardId": "white_light_arrow",
+        "count": 1
+      },
+      {
+        "cardId": "white_blade_prayer",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_retribution",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_band",
+        "count": 1
+      }
+    ]
+  },
+  {
     "id": "run_basic_golgari",
     "name": "くろはの初期デッキ",
     "color": "black",
