@@ -246,7 +246,9 @@ export function healPlayer(state: GameState, amount: number, enemyIndex: number)
       ...state.player,
       hp: state.player.hp + Math.max(0, healed),
       healsThisCombat: state.player.healsThisCombat + 1, // 過剰回復も1回 (onHealedと同じ回数論)
-      healsThisTurn: (state.player.healsThisTurn ?? 0) + 1, // 白の回復参照 (healedThisTurn 2026-09-06)
+      // 白の回復参照 (healedThisTurn 2026-09-06): カードのプレイによる回復だけを数える。置物 (修道士・聖歌隊) や
+      // パッシブの自動回復を数えると「回復札→守り札の順番」の決断が置物1枚で恒久的に消える (Opusラン W: 12/12 自動成立)
+      healsThisTurn: (state.player.healsThisTurn ?? 0) + (state.resolvingCardPlay === true ? 1 : 0),
     },
   }
   s = emit(s, { type: 'HpHealed', amount: healed })
@@ -302,7 +304,12 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
 function angerGuardWatchers(state: GameState): GameState {
   // パッシブ・レリック由来の守り (innate解決中) には怒らない = プレイヤーに止める手段が無いため
   if (state.innateResolving === true) return state
-  let s = state
+  // 2026-09-06 ユーザー裁定 (Opusラン W: 盾の乙女・聖なる鐘の自動ブロックで筋力+13・被ダメ48): 怒るのは
+  // **カードのプレイ由来のブロックだけ** (置物のターン開始/誘発・リアクション・パッシブは怒らない = 虚弱・勢いと同じ線引き)。
+  // さらに1枚のプレイで1回だけ (修繕の祈り=ブロック6+条件ブロック6 が2回怒らせ、文面から読めなかった)
+  if (state.resolvingCardPlay !== true || state.angerFiredThisPlay === true) return state
+  if (!state.enemies.some((e) => e.hp > 0 && getEnemyDef(e.enemyId).angerOnBlock !== undefined)) return state
+  let s: GameState = { ...state, angerFiredThisPlay: true }
   for (let i = 0; i < s.enemies.length; i++) {
     const anger = getEnemyDef(s.enemies[i].enemyId).angerOnBlock
     if (s.enemies[i].hp > 0 && anger !== undefined) {
@@ -1634,7 +1641,7 @@ export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemy
   const prev = state.resolvingCardPlay === true
   const prevExposed = state.resolvingExposedAtStart
   // 急所参照はプレイ開始時点の値で判定 (同じカードの前のヒットが急所を消費しても成立 = 本家 Dismantle の読み)
-  let s: GameState = { ...state, resolvingCardPlay: true, resolvingExposedAtStart: state.enemies.map((e) => e.exposed) }
+  let s: GameState = { ...state, resolvingCardPlay: true, angerFiredThisPlay: false, resolvingExposedAtStart: state.enemies.map((e) => e.exposed) }
   for (const effect of card.def.effects) {
     // 猛り火は「解決の時点」で判定する = 同じカードの前の効果 (着火など) で点いたら乗る
     if (effect.trigger === 'onPlay' && blazeConditionMet(s, effect, enemyIndex)) {

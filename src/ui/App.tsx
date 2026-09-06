@@ -251,7 +251,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.perfectBlockLastPhase === true) parts.push('🛡直前の敵フェーズを完全に凌いだ')
   if (c.targetDead === true) parts.push('💀とどめ')
   if (c.lastActionNoHpLoss === true) parts.push('🛡完全に凌いだ時')
-  if (c.healedThisTurn === true) parts.push('💚このターンに回復していたら')
+  if (c.healedThisTurn === true) parts.push('💚このターンにカードで回復していたら')
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
@@ -413,7 +413,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'playFromExhaust':
       return `${trigger}⚰️ 消滅置き場のカード1枚（リアクション以外）をコストを支払わず直接プレイ（そのカードは消滅置き場に残る）`
     case 'summonPermanent':
-      return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す`
+      return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す${e.condition?.targetDead === true ? '（戦闘が続いていれば。最後の1体を倒した時は何も起きない）' : ''}`
     case 'duplicateRetainers':
       return `${trigger}🏳️ 場の従者1体につき、同じ従者を1体場に出す（複製は複製を産まない。登場誘発は全部起きる）`
     case 'sacrificeRetainer':
@@ -3400,7 +3400,7 @@ const COND_JA: Record<string, string> = {
   perfectBlockLastPhase: '直前の敵フェーズを完全に凌いだ',
   targetDead: 'とどめ',
   lastActionNoHpLoss: '完全に凌いだ時',
-  healedThisTurn: 'このターンに回復していたら',
+  healedThisTurn: 'このターンにカードで回復していたら(置物・パッシブの自動回復は数えない)',
 }
 function condJa(k: string): string {
   return COND_JA[k] ?? k

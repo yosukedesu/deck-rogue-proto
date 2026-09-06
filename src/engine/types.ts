@@ -92,7 +92,7 @@ export interface PlayerState extends CombatantState {
   readonly aether: number
   /** この戦闘で回復した回数 (過剰回復も数える = onHealed と同じ回数論。滾る血汐の参照) */
   readonly healsThisCombat: number
-  /** このターンに回復した回数 (過剰回復も数える。自ターン開始でリセット。白の回復参照 healedThisTurn 2026-09-06) */
+  /** このターンにカードのプレイで回復した回数 (過剰回復も数える・置物やパッシブの自動回復は数えない。自ターン開始でリセット。白の回復参照 healedThisTurn 2026-09-06) */
   readonly healsThisTurn?: number
   /**
    * マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。
@@ -297,7 +297,7 @@ export interface EffectCondition {
   readonly targetDead?: boolean
   /** 直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り) */
   readonly lastActionNoHpLoss?: boolean
-  /** このターンに回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn>0。過剰回復も数える) */
+  /** このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn>0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W) */
   readonly healedThisTurn?: boolean
 }
 
@@ -337,6 +337,8 @@ export interface GameState {
     /** その行動の実値 (2026-08-31: post窓の minActionValue 判定用) */
     readonly actual: number
   } | null
+  /** 鬼軍曹の怒り (angerOnBlock) がこのカードのプレイで既に1回発火したか (2026-09-06 裁定: 1枚のプレイで1回だけ。修繕の祈り=ブロック6+条件ブロック6 が2回怒らせていた) */
+  readonly angerFiredThisPlay?: boolean
   /** 直前に場に出た置物の uid (駆けつけ=ひなた 2026-09-06: onPermanentEntered の解決中に「誰が出たか」を読む) */
   readonly lastEnteredPermanentUid?: string
   /** 発生済みイベントログ (リプレイ・シミュレーション統計の材料) */

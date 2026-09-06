@@ -1313,14 +1313,15 @@
     "id": "white_march_order",
     "name": "進軍の号令",
     "type": "spell",
-    "cost": 2,
+    "cost": 1,
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "triggerRetainersNow"
       }
-    ]
+    ],
+    "requiresRetainer": true
   },
   {
     "id": "white_war_horn",

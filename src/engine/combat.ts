@@ -422,7 +422,18 @@ function declareIntents(state: GameState): GameState {
       if (nextKeyUses >= pau.uses) nextPatternIndex = 0
     }
     const usesSoFar = enemy.moveGrowth?.[move.id] ?? 0
-    const [intent, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar)
+    const [intentRaw, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar)
+    // 潜伏中は殻が育たない (2026-09-06 ユーザー裁定。Opusラン W: 甲虫の攻防一体で殻12→33、「割る」が「殻レースに勝つ」に化けた):
+    // 殻は土であって盾ではない = 攻防一体のブロックは宣言から外す (表示と実処理を一致させる。割れた後の宣言からは普通に得る)
+    // 防御行動そのものも潜伏中は殻を育てない = 宣言時に「隙」に置き換える (「🛡️防御」と見せて何も起きない嘘を作らない)
+    const intent =
+      enemy.burrowActive !== true
+        ? intentRaw
+        : intentRaw.kind === 'defend'
+          ? { ...intentRaw, kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0, alsoBuff: undefined }
+          : intentRaw.alsoDefend !== undefined
+            ? { ...intentRaw, alsoDefend: undefined }
+            : intentRaw
     rng = rngA
     const growsMove = move.growPerUse !== undefined || move.growHitsPerUse !== undefined
     const nextGrowth = growsMove ? { ...(enemy.moveGrowth ?? {}), [move.id]: usesSoFar + 1 } : enemy.moveGrowth
@@ -1090,7 +1101,7 @@ export function playCard(
   for (let echoPass = 0; echoPass < (echoed ? 2 : 1); echoPass++) {
     if (chosenMode) {
       // 虚弱の判定用フラグ (resolveOnPlayEffects と同じ扱い。モード効果もカードのプレイ)
-      s = { ...s, resolvingCardPlay: true }
+      s = { ...s, resolvingCardPlay: true, angerFiredThisPlay: false }
       // 共通部 (2026-09-05 工房「効果の合体」: 選択式に相手の効果を足す時の置き場) はモードを問わず先に解決する。
       // 現行の選択式は effects が空なので挙動は不変
       for (const effect of effCard.def.effects) {
@@ -1761,8 +1772,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         s = { ...s, enemies: s.enemies.map((e, i) => (i === enemyIndex ? { ...e, staggeredNext: true } : e)) }
         s = emit(s, { type: 'EnemyStaggered', enemyIndex })
       }
-      // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る (確定済みルール表「攻防一体・隙」)
-      if (intent.alsoDefend !== undefined && intent.alsoDefend > 0) {
+      // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る (確定済みルール表「攻防一体・隙」)。潜伏中は得ない (殻は育たない)
+      if (intent.alsoDefend !== undefined && intent.alsoDefend > 0 && s.enemies[enemyIndex]?.burrowActive !== true) {
         s = {
           ...s,
           enemies: s.enemies.map((e, i) =>
@@ -1798,8 +1809,10 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       return markResolved(s, 0)
     }
     case 'defend': {
+      // 潜伏中は殻が育たない (2026-09-06 裁定): 防御行動でもブロックを得ない (殻持ちは防御行動を持たない規約と対)
+      const shellUp = state.enemies[enemyIndex]?.burrowActive === true
       const enemies = state.enemies.map((e, i) =>
-        i === enemyIndex ? { ...e, block: e.block + intent.actual } : e,
+        i === enemyIndex && !shellUp ? { ...e, block: e.block + intent.actual } : e,
       )
       let s = emit({ ...state, enemies }, { type: 'BlockGained', target: 'enemy', amount: intent.actual })
       // 防御と同時の強化 (2026-09-03 用心深い影「隠れる」: 今守らせる代わりに次の斬撃が重くなる = 伏せ分岐を

@@ -43,6 +43,14 @@ describe('白の参照シナジー (本家6型の条件札7)', () => {
     expect(s.player.block).toBe(12)
     const t = play(energy(fresh(['white_mending']), 3), 't0_white_mending')
     expect(t.player.block).toBe(6)
+    // 置物の自動回復 (修道士を進軍の号令で今すぐ動かす) は「カードで回復」ではない = 条件は成立しない (Opusラン W の是正)
+    let u = energy(fresh(['white_perm_monk', 'white_march_order', 'white_mending']), 9)
+    u = { ...u, player: { ...u.player, hp: 50 } }
+    u = play(u, 't0_white_perm_monk')
+    u = play(u, 't1_white_march_order')
+    expect(u.player.hp).toBe(51)
+    u = play(u, 't2_white_mending')
+    expect(u.player.block).toBe(6)
   })
 
   it('癒しの光: 回復6。HPが半分以下ならさらに4', () => {
@@ -167,7 +175,10 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     expect(s.eventLog.some((e) => e.type === 'RetainersTriggered' && e.count === 2)).toBe(true)
   })
 
-  it('進軍の号令: 従者だけを再誘発 (盾の乙女=ブロック・少年=ダメ)。innate 置物は対象外', () => {
+  it('進軍の号令: 従者だけを再誘発 (盾の乙女=ブロック・少年=ダメ)。innate 置物は対象外。従者0では空撃ちできない (Opusラン W)', () => {
+    const none = energy(fresh(['white_march_order']), 9)
+    expect(retainerRequirementMet(none, none.player.hand[0])).toBe(false)
+    expect(() => play(none, 't0_white_march_order')).toThrow('従者が1体以上')
     let s = energy(fresh(['white_perm_squire', 'white_perm_shieldmaiden', 'white_march_order']), 9)
     s = play(s, 't0_white_perm_squire')
     s = play(s, 't1_white_perm_shieldmaiden')
@@ -215,6 +226,39 @@ describe('ひなたのパッシブ「駆けつけ」(2026-09-06 ユーザー裁�
     const s = withHand(hinata(), ['white_mending'])
     const t = play(s, 't0_white_mending')
     expect(t.player.block).toBe(6)
+  })
+})
+
+describe('Opusラン W の裁定 (2026-09-06)', () => {
+  it('進軍の号令は素で1E (2Eは従者3体で1E札相当の損。1E化は鍛えるで得られる設計だったが素で候補に上がらない)', () => {
+    expect(getCardDef('white_march_order').cost).toBe(1)
+    expect(getCardDef('white_march_order').requiresRetainer).toBe(true)
+  })
+
+  it('鬼軍曹の怒りはカードのプレイ由来のブロックだけ・1枚のプレイで1回: 修繕の祈り(ブロック6+条件6)=+1、従者の自動ブロック=+0', () => {
+    const start = (): GameState => {
+      const s = withHand(freshCombat('set-confirm', 'enemy_elite_sergeant', 42, 'starter_white'), [])
+      return energy(s, 9)
+    }
+    // 修繕の祈り: 癒しの光で条件を立ててから撃つ = ブロック12 だが怒りは+1
+    let s = withHand(start(), ['white_heal', 'white_mending'])
+    const str0 = s.enemies[0].strength
+    s = play(s, 't0_white_heal')
+    s = play(s, 't1_white_mending')
+    expect(s.player.block).toBe(12)
+    expect(s.enemies[0].strength).toBe(str0 + 1)
+    // 盾の乙女を出して (駆けつけ無し=ひなた不在) 進軍の号令で今すぐ動かす: 置物由来のブロックは怒らない
+    let t = withHand(start(), ['white_perm_shieldmaiden', 'white_march_order'])
+    const str1 = t.enemies[0].strength
+    t = play(t, 't0_white_perm_shieldmaiden')
+    t = play(t, 't1_white_march_order')
+    expect(t.player.block).toBe(2)
+    expect(t.enemies[0].strength).toBe(str1)
+    // 白盾 (1効果) は従来どおり+1
+    let u = withHand(start(), ['white_guard'])
+    const str2 = u.enemies[0].strength
+    u = play(u, 't0_white_guard')
+    expect(u.enemies[0].strength).toBe(str2 + 1)
   })
 })
 

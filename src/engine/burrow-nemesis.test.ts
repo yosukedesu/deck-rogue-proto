@@ -23,6 +23,29 @@ describe('潜伏 (burrow)', () => {
     t = dealDamageToEnemy(t, 0, 5, true)
     expect(t.enemies[0].hp).toBe(hp0 - 5)
   })
+  it('潜伏中は殻が育たない (2026-09-06 裁定): 攻防一体のブロックは宣言から外れ、防御行動は隙になる。割れた後は普通に得る', () => {
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      let s = freshCombat('set-confirm', 'enemy_rock_beetle', seed)
+      const it0 = s.enemies[0].intent!
+      expect(it0.kind, `seed ${seed}`).not.toBe('defend')
+      expect(it0.alsoDefend, `seed ${seed}`).toBeUndefined()
+      // 何もせずターンを渡しても殻 (ブロック12) は増えない
+      s = applyCommand(s, { type: 'EndTurn' })
+      expect(s.enemies[0].block, `seed ${seed}`).toBeLessThanOrEqual(12)
+    }
+    // 殻が割れた後の宣言では攻防一体・防御が戻る (少なくとも1シードで確認)
+    let broke = false
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      let s = freshCombat('set-confirm', 'enemy_rock_beetle', seed)
+      s = dealDamageToEnemy(s, 0, 12)
+      expect(s.enemies[0].burrowActive).toBe(false)
+      s = applyCommand(s, { type: 'EndTurn' })
+      const it1 = s.enemies[0].intent!
+      if (it1.kind === 'defend' || it1.alsoDefend !== undefined) broke = true
+    }
+    expect(broke).toBe(true)
+  })
+
   it('自ターン中に粉砕で殻が割れると、その場で意図が噛みつきに差し替わる', () => {
     let s = freshCombat('set-confirm', 'enemy_rock_beetle', 5)
     s = withHand(s, ['green_vine_wedge']) // 蔦の楔: 粉砕+5
