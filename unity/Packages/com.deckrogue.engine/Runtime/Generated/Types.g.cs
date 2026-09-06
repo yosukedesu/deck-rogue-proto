@@ -183,6 +183,12 @@ namespace DeckRogue.Engine.Generated
     /// <summary>PlayerState</summary>
     public sealed record PlayerState
     {
+        [JsonProperty("hp")]
+        public int Hp { get; init; }
+        [JsonProperty("maxHp")]
+        public int MaxHp { get; init; }
+        [JsonProperty("block")]
+        public int Block { get; init; }
         [JsonProperty("energy")]
         public int Energy { get; init; }
         [JsonProperty("energyMax")]
@@ -305,6 +311,12 @@ namespace DeckRogue.Engine.Generated
     /// <summary>EnemyState</summary>
     public sealed record EnemyState
     {
+        [JsonProperty("hp")]
+        public int Hp { get; init; }
+        [JsonProperty("maxHp")]
+        public int MaxHp { get; init; }
+        [JsonProperty("block")]
+        public int Block { get; init; }
         [JsonProperty("enemyId")]
         public string EnemyId { get; init; } = default!;
         [JsonProperty("intent")]
@@ -1601,7 +1613,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record EventChoiceDefGamble
     {
         [JsonProperty("chance")]
-        public int Chance { get; init; }
+        public double Chance { get; init; }
         [JsonProperty("win")]
         public EventOutcome Win { get; init; } = default!;
         [JsonProperty("lose")]
