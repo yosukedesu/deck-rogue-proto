@@ -895,7 +895,7 @@ namespace DeckRogue.Engine
             { "addGrowth", "growth" }, { "doubleGrowth", "growth" }, { "dischargeGrowth", "growth" }, { "dischargeGrowthBlock", "growth" },
             { "gainEnergyMax", "ramp" }, { "dealDamagePerEnergyMax", "ramp" }, { "gainBlockPerEnergyMax", "ramp" },
             { "addMomentum", "trample" }, { "dealDamagePerMomentum", "trample" }, { "doubleMomentum", "trample" },
-            { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" },
+            { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" }, { "gainBlockPerMomentum", "trample" }, { "addGrowthPerMomentum", "trample" },
             { "applyBurn", "burn" }, { "dischargeBurn", "burn" },
             { "addAether", "aether" }, { "dischargeAether", "aether" }, { "dischargeAetherDraw", "aether" },
             { "gainIceBlock", "ice" }, { "dealDamagePerIceBlock", "ice" }, { "gainIceBlockPerCardPlayed", "ice" },
@@ -1012,13 +1012,15 @@ namespace DeckRogue.Engine
             if (isBoss && run.Act >= MapGen.ACT_COUNT)
             {
                 // 走破画面のHPは戦闘終了時の値
-                return run with { Combat = combat, Hp = combat.Player.Hp, BattlesWon = run.BattlesWon + 1, Phase = RunPhases.Won };
+                return run with { Combat = combat, Hp = combat.Player.Hp, MaxHp = Math.Max(run.MaxHp, combat.Player.MaxHp), BattlesWon = run.BattlesWon + 1, Phase = RunPhases.Won };
             }
             // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復
             int rescueHeal = combat.Player.Hp <= run.MaxHp * 0.3 ? run.VictoryHealBonus : 0;
+            // 獲物 (gainMaxHp=Feed 2026-09-07): 戦闘中に増えた最大HPはランへ残す
+            int maxHp = Math.Max(run.MaxHp, combat.Player.MaxHp);
             int hp = isBoss
-                ? run.MaxHp
-                : Math.Min(run.MaxHp, combat.Player.Hp + VICTORY_HEAL + rescueHeal + RelicBonusSum(run, "victoryHealFlat")); // 薬草袋
+                ? maxHp
+                : Math.Min(maxHp, combat.Player.Hp + VICTORY_HEAL + rescueHeal + RelicBonusSum(run, "victoryHealFlat")); // 薬草袋
             // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G)
             var rng = run.Rng;
             var (baseGold, r1) = Rng.NextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX);
@@ -1057,6 +1059,7 @@ namespace DeckRogue.Engine
                 Combat = combat,
                 Hp = hp,
                 Deck = deckAfterCurses,
+                MaxHp = maxHp,
                 BattlesWon = run.BattlesWon + 1,
                 // 盗みの喪失で負になりうるので0でクランプ
                 Gold = Math.Max(0, run.Gold + gained),

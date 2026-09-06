@@ -449,6 +449,9 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     if (c.blaze === true && !isBlazing(state)) return false
     if (c.minGrowth !== undefined && state.player.growth < c.minGrowth) return false
     if (c.minMomentum !== undefined && state.player.momentum < c.minMomentum) return false
+    if (c.minEnergyMax !== undefined && (state.player.energyMaxAtTurnStart ?? state.player.energyMax) < c.minEnergyMax) return false
+    // 行動種別の条件 (共鳴する茨 2026-09-07): 強化・応援だけを打ち消す限定リアクション
+    if (c.actionKinds !== undefined && !c.actionKinds.includes(win.kind)) return false
     if (c.healedThisTurn === true && (state.player.healsThisTurn ?? 0) <= 0) return false
     return true
   })
@@ -1308,10 +1311,34 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'retrieveFromDiscard':
     case 'searchDeck':
     case 'upgradeInHand':
+    case 'upgradeAllInHand':
     case 'addCopyToDiscard':
     case 'growSelf':
       // 緑のカード操作 (2026-09-02): いずれも「プレイした札そのもの」を知る必要があるので combat.ts の playCard が解決する
       return state
+    case 'gainMaxHp': {
+      // 獲物 (緑 2026-09-07=本家 Feed): 最大HPとHPを+X。戦闘の PlayerState に持ち、勝利時に run.maxHp へ同期する (run.ts afterVictory)
+      const amount = effect.amount ?? 0
+      if (amount <= 0) return state
+      const next: GameState = { ...state, player: { ...state.player, maxHp: state.player.maxHp + amount, hp: state.player.hp + amount } }
+      return emit(next, { type: 'MaxHpGained', amount })
+    }
+    case 'gainBlockPerMomentum': {
+      // 風の壁 (緑 2026-09-07 ピック監査): 勢い×amount のブロック。勢いは失わない (放出の非消費化。勢いは以降の攻撃にも乗り続ける)
+      const block = state.player.momentum * (effect.amount ?? 0)
+      if (block <= 0) return state
+      let s: GameState = { ...state, player: { ...state.player, block: state.player.block + block } }
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block })
+      return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
+    }
+    case 'addGrowthPerMomentum': {
+      // 根付く勢い (緑 2026-09-07): 勢い2につき成長+amount (切り捨て)。勢いは失わない = 刹那→永続の橋を非消費で
+      const gained = Math.floor(state.player.momentum / 2) * (effect.amount ?? 1)
+      if (gained <= 0) return state
+      let s: GameState = { ...state, player: { ...state.player, growth: state.player.growth + gained } }
+      s = emit(s, { type: 'GrowthAdded', amount: gained })
+      return fireGainTrigger(s, 'onGrowthGained', enemyIndex)
+    }
     case 'gainSetSlot': {
       // 伏せ枠+X (罠師の茂み 2026-09-02): 戦闘中の伏せ枠を増やす (かすみの setSlots と同じ器)
       const amount = effect.amount ?? 1
@@ -1618,6 +1645,8 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
   if (effect.condition?.minMomentum !== undefined && state.player.momentum < effect.condition.minMomentum) return false
+  // 上限しきい値 (緑 2026-09-07 若幹の一撃・大地の唸り): ターン開始時の上限を読む (ランプ即時利用の廃止と同じ則)
+  if (effect.condition?.minEnergyMax !== undefined && (state.player.energyMaxAtTurnStart ?? state.player.energyMax) < effect.condition.minEnergyMax) return false
   // 回復参照 (白 2026-09-06 修繕の祈り): このターンに1回でも回復していたら (過剰回復も数える)
   if (effect.condition?.healedThisTurn === true && (state.player.healsThisTurn ?? 0) <= 0) return false
   // HP割合条件 (2026-09-03 不動の根=HP50%以下で開幕ブロック。リアクション窓と同じ判定を置物/onPlay にも)

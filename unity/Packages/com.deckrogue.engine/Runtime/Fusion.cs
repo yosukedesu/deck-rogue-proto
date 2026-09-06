@@ -203,7 +203,7 @@ namespace DeckRogue.Engine
 
         private static readonly HashSet<string> PLAYCARD_ONLY = new HashSet<string>
         {
-            "searchDeck", "retrieveFromDiscard", "upgradeInHand", "addCopyToDiscard", "exhaustFromDeckChoose",
+            "searchDeck", "retrieveFromDiscard", "upgradeInHand", "upgradeAllInHand", "gainMaxHp", "addCopyToDiscard", "exhaustFromDeckChoose",
             "retrieveFromExhaust", "playFromExhaust", "gainSetSlot", "sacrificeRetainer", "duplicateRetainers", "triggerRetainersNow",
         };
 
@@ -224,7 +224,7 @@ namespace DeckRogue.Engine
         {
             ["gainEnergy"] = 5, ["drawCards"] = 3, ["impulseDraw"] = 2, ["addCasts"] = 2.5, ["negate"] = 12,
             ["doubleGrowth"] = 8, ["doubleMomentum"] = 6, ["growSelf"] = 4, ["searchDeck"] = 6,
-            ["retrieveFromDiscard"] = 5, ["upgradeInHand"] = 6, ["addCopyToDiscard"] = 3, ["exhaustFromDeckChoose"] = 3,
+            ["retrieveFromDiscard"] = 5, ["upgradeInHand"] = 6, ["upgradeAllInHand"] = 9, ["gainMaxHp"] = 6, ["addCopyToDiscard"] = 3, ["exhaustFromDeckChoose"] = 3,
             ["retrieveFromExhaust"] = 5, ["playFromExhaust"] = 8, ["gainSetSlot"] = 6, ["momentumCarryHalf"] = 8,
         };
 

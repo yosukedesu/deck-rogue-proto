@@ -5,7 +5,7 @@ import { applyCommand } from './state.ts'
 import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクション撤去で緑へ移管)', () => {
-  it('罠壊しに破壊されると敵全体に12ダメージが爆ぜる', () => {
+  it('罠壊しに破壊されると敵全体に14ダメージが爆ぜる (2026-09-07 12→14・返し3→10)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), [
       'green_reaction_powder_pod',
     ])
@@ -13,7 +13,7 @@ describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクシ
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' }) // 2026-08-30 逃がし廃止: 窓は開かず破壊が素直に通る
-    expect(s.enemies[0].hp).toBe(hpBefore - 12)
+    expect(s.enemies[0].hp).toBe(hpBefore - 14)
     expect(s.player.setCards).toHaveLength(0)
     expect(s.player.discardPile.some((c) => c.def.id === 'green_reaction_powder_pod')).toBe(true)
   })
@@ -44,7 +44,7 @@ describe('自己誘発リアクション', () => {
 })
 
 describe('急所 (敵版脆弱)', () => {
-  it('急所突き: 6ダメージ+急所2。次の2回のダメージが+50%', () => {
+  it('急所突き: 8ダメージ+急所2 (2026-09-07 6→8)。次の2回のダメージが+50%', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [
       'green_weak_point',
       'green_strike',
@@ -54,16 +54,16 @@ describe('急所 (敵版脆弱)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_weak_point' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6)
+    expect(s.enemies[0].hp).toBe(hpBefore - 8)
     expect(s.enemies[0].exposed).toBe(2)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 9) // 6×1.5
+    expect(s.enemies[0].hp).toBe(hpBefore - 8 - 9) // 6×1.5
     expect(s.enemies[0].exposed).toBe(1)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 9 - 9)
+    expect(s.enemies[0].hp).toBe(hpBefore - 8 - 9 - 9)
     expect(s.enemies[0].exposed).toBe(0)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't3_green_strike' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 6 - 9 - 9 - 6) // 急所切れで通常
+    expect(s.enemies[0].hp).toBe(hpBefore - 8 - 9 - 9 - 6) // 急所切れで通常
   })
 })
 
@@ -101,7 +101,7 @@ describe('キル連鎖 (玉突き)', () => {
 })
 
 describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手の炎を緑へ移管)', () => {
-  it('pre窓で10ダメージ。攻撃自体はそのまま受ける (倒せなければ)', () => {
+  it('pre窓で16貫通ダメージ (2026-09-07 12→16)。攻撃自体はそのまま受ける (倒せなければ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
       'green_reaction_preempt',
     ])
@@ -112,7 +112,7 @@ describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].hp).toBe(enemyHp - 12) // 先制の蔦槍 (pre窓の150%上限ちょうど)
+    expect(s.enemies[0].hp).toBe(enemyHp - 16) // 先制の蔦槍 (2026-09-07 ピック監査で16貫通)
     expect(s.player.hp).toBe(playerHp - 10) // 威嚇は撤去済み: 素の10を受ける
   })
 

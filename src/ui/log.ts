@@ -142,6 +142,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'EnergyMaxGained': return { text: `エナジー上限+${e.amount}`, cls: 'log-line' }
     case 'GrowthAdded': return { text: `成長+${e.amount}`, cls: 'log-good' }
     case 'SetSlotGained': return { text: `🃏 伏せ枠+${e.amount}（この戦闘中）`, cls: 'log-good' }
+    case 'MaxHpGained': return { text: `💗 最大HP+${e.amount}（この戦闘後も残る）`, cls: 'log-good' }
     case 'CardsMovedToHand': return { text: `${e.from === 'draw' ? '🔍 サーチ' : '🌱 回収'}: ${e.cardIds.map(cardName).join('・')}を手札に加えた`, cls: 'log-good' }
     case 'CardCopied': return { text: `🌿 ${cardName(e.cardId)}のコピー${e.count}枚を捨て札に加えた`, cls: 'log-line' }
     case 'CardGrew': return { text: `📈 ${cardName(e.cardId)}が育った（与ダメ+${e.bonus}）`, cls: 'log-good' }

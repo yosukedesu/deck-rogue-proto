@@ -160,6 +160,7 @@ namespace DeckRogue.Engine
             "dealDamagePerWeak", "dealDamagePerNegStrength", "dealDamagePerDamageTaken", "applyBurnPerDamageTaken",
             "dealDamagePerRandomPlayed", "dealDamagePerHandCard", "gainIceBlockPerHandCard",
             "dischargeGrowth", "dischargeGrowthBlock", "dischargeMomentumDamage", "dischargeMomentumBlock", "dischargeMomentumBurn", "dischargeMomentumVolley",
+            "gainBlockPerMomentum", "addGrowthPerMomentum",
             "dealDamagePerCardPlayed", "dealDamagePerExhaust", "dealDamageDrainPerExhaust", "gainBlockPerExhaust", "dealDamagePerSelfHpLost", "dealDamagePerHeal",
         };
 

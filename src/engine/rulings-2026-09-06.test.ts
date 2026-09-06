@@ -87,7 +87,8 @@ describe('金羽の大鴉の作り直し (2026-09-06 ユーザー「そもそも
 
 describe('ドキュメントの空ファイル化を止める (2026-09-06 スクリプト事故で CLAUDE.md と unity-port.md が空になった)', () => {
   it('CLAUDE.md と docs/unity-port.md は100行以上ある', async () => {
-    const { readFileSync } = await import('node:fs')
+    // src の tsconfig は node の型を持たないので、モジュール名を実行時に組み立てて型解決を避ける (vitest は node で動く)
+    const { readFileSync } = (await import(/* @vite-ignore */ 'node:' + 'fs')) as { readFileSync: (p: string, enc: string) => string }
     expect(readFileSync('CLAUDE.md', 'utf-8').split('\n').length).toBeGreaterThan(100)
     expect(readFileSync('docs/unity-port.md', 'utf-8').split('\n').length).toBeGreaterThan(100)
   })

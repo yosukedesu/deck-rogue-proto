@@ -245,6 +245,8 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.blaze === true) parts.push(`🔥猛り火(延焼合計${BLAZE_THRESHOLD}以上)`)
   if (c.minGrowth !== undefined) parts.push(`🌱成長${c.minGrowth}以上`)
   if (c.minMomentum !== undefined) parts.push(`💨勢い${c.minMomentum}以上`)
+  if (c.minEnergyMax !== undefined) parts.push(`⚡ターン開始時の上限${c.minEnergyMax}以上`)
+  if (c.actionKinds !== undefined) parts.push(`敵の行動が${c.actionKinds.map((k) => INTENT_KIND_JA_COND[k] ?? k).join('/')}`)
   if (c.enemyIntent !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntent] ?? c.enemyIntent}`)
   if (c.enemyIntentNot !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntentNot] ?? c.enemyIntentNot}以外`)
   if (c.enemyExposed === true) parts.push('🎯対象が急所持ち')
@@ -482,6 +484,14 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🔥 勢い×${e.amount}の延焼を与え、勢いを全て失う`
     case 'dischargeMomentumBlock':
       return `${trigger}🛡️ 勢い×${e.amount}のブロックを得て、勢いを全て失う`
+    case 'gainBlockPerMomentum':
+      return `${trigger}🛡️ 勢い×${e.amount}のブロック（勢いは失わない）${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 0)}]` : ''}`
+    case 'addGrowthPerMomentum':
+      return `${trigger}🌱 勢い2につき成長+${e.amount ?? 1}（切り捨て。勢いは失わない）${ctx && ctx.momentum > 0 ? ` [現在 成長+${Math.floor(ctx.momentum / 2) * (e.amount ?? 1)}]` : ''}`
+    case 'gainMaxHp':
+      return `${trigger}💗 最大HP+${e.amount}（この戦闘後も残る）`
+    case 'upgradeAllInHand':
+      return `${trigger}🔨 手札の全てのカードをこの戦闘中鍛える（自身・レア・工房産は除く）`
     case 'dischargeMomentumDamage':
       return `${trigger}⚔️ ${e.target === 'all' ? '敵全体に' : ''}勢い×${e.amount}ダメージを与え、勢いを全て失う${e.pierce === true ? '（貫通）' : ''}${ctx && ctx.momentum > 0 ? ` [現在${ctx.momentum * (e.amount ?? 0)}]` : ''}`
     case 'dischargeMomentumVolley':
@@ -3390,7 +3400,7 @@ const EFFECT_JA: Record<string, string> = {
   gainEnergy: '一時マナ+N', gainEnergyMax: 'エナジー上限+N', discountNext: '次のカード-N',
   addGrowth: '成長+N', doubleGrowth: '成長2倍', dischargeGrowth: '成長放出(×Nダメ全消費)', dischargeGrowthBlock: '成長×Nブロック(全消費)',
   addMomentum: '勢い+N', doubleMomentum: '勢い2倍', dischargeMomentumBlock: '勢い×Nブロック(全消費)', dischargeMomentumBurn: '勢い×N延焼(全消費)',
-  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)',
+  dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)', gainBlockPerMomentum: '勢い×Nブロック(失わない)', addGrowthPerMomentum: '勢い2につき成長+N(失わない)', gainMaxHp: '最大HP+N(戦闘後も残る)', upgradeAllInHand: '手札の全てをこの戦闘中鍛える',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
@@ -3416,6 +3426,8 @@ const COND_JA: Record<string, string> = {
   minDamageTaken: '被ダメが値以上',
   minGrowth: '成長が値以上',
   minMomentum: '勢いが値以上',
+  minEnergyMax: 'ターン開始時のエナジー上限が値以上',
+  actionKinds: '敵の行動が指定の種別の時(リアクション窓)',
   enemyIntent: '対象の意図が値の種別',
   enemyIntentNot: '対象の意図が値の種別以外',
   enemyExposed: '対象が急所持ち',

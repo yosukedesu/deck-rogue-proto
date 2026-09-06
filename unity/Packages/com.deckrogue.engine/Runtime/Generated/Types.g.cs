@@ -480,6 +480,9 @@ namespace DeckRogue.Engine.Generated
         public int? MinGrowth { get; init; }
         [JsonProperty("minMomentum")]
         public int? MinMomentum { get; init; }
+        /// <summary>ターン開始時のエナジー上限がN以上なら (緑 上限参照のしきい値化 2026-09-07 ピック監査: 若幹の一撃・大地の唸り。 「上限×2」は人間に読まれないので「上限5以上ならさらに」の形に。ランプ即時利用の廃止と同じくターン開始スナップショットを読む)</summary>
+        [JsonProperty("minEnergyMax")]
+        public int? MinEnergyMax { get; init; }
         /// <summary>猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上** なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝ 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、 時間依存でなく**しきい値依存**に置き換える機構</summary>
         [JsonProperty("blaze")]
         public bool? Blaze { get; init; }
@@ -498,6 +501,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>対象の敵がこの解決の時点で倒れていれば (同じカードの前の効果でとどめ。獲物=本家 Feed)</summary>
         [JsonProperty("targetDead")]
         public bool? TargetDead { get; init; }
+        /// <summary>リアクション窓専用: 敵の行動の種別がこの中にある時だけ発動できる (緑 共鳴する茨 2026-09-07 ピック監査: 「強化・応援だけを打ち消す1E」= 根の紡ぎ2Eの限定ラダー。条件付きリアクションの罠を避けるため、通常戦の4割で満たす種別に限る)</summary>
+        [JsonProperty("actionKinds")]
+        public IReadOnlyList<string>? ActionKinds { get; init; }
         /// <summary>直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り)</summary>
         [JsonProperty("lastActionNoHpLoss")]
         public bool? LastActionNoHpLoss { get; init; }
@@ -1358,6 +1364,15 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "SetSlotGained";
         public GameEvent_SetSlotGained() { Type = TypeTag; }
+        [JsonProperty("amount")]
+        public int Amount { get; init; }
+    }
+
+    /// <summary>GameEvent: type="MaxHpGained"</summary>
+    public sealed record GameEvent_MaxHpGained : GameEvent
+    {
+        public const string TypeTag = "MaxHpGained";
+        public GameEvent_MaxHpGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }

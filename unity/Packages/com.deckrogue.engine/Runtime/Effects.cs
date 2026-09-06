@@ -499,6 +499,9 @@ namespace DeckRogue.Engine
                 if (c.Blaze == true && !IsBlazing(state)) continue;
                 if (c.MinGrowth != null && state.Player.Growth < c.MinGrowth.Value) continue;
                 if (c.MinMomentum != null && state.Player.Momentum < c.MinMomentum.Value) continue;
+                if (c.MinEnergyMax != null && state.Player.EnergyMaxAtTurnStart < c.MinEnergyMax.Value) continue;
+                // 行動種別の条件 (共鳴する茨 2026-09-07): 強化・応援だけを打ち消す限定リアクション
+                if (c.ActionKinds != null && !c.ActionKinds.Contains(win.Kind)) continue;
                 if (c.HealedThisTurn == true && (state.Player.HealsThisTurn ?? 0) <= 0) continue;
                 return true;
             }
@@ -1333,10 +1336,37 @@ namespace DeckRogue.Engine
                 case "retrieveFromDiscard":
                 case "searchDeck":
                 case "upgradeInHand":
+                case "upgradeAllInHand":
                 case "addCopyToDiscard":
                 case "growSelf":
                     // 緑のカード操作 (2026-09-02): 「プレイした札そのもの」が要るので playCard が解決する
                     return state;
+                case "gainMaxHp":
+                {
+                    // 獲物 (緑 2026-09-07=本家 Feed): 最大HPとHPを+X。勝利時に run.maxHp へ同期する (Run.AfterVictory)
+                    int amount = effect.Amount ?? 0;
+                    if (amount <= 0) return state;
+                    GameState next = state with { Player = state.Player with { MaxHp = state.Player.MaxHp + amount, Hp = state.Player.Hp + amount } };
+                    return Events.Emit(next, new GameEvent_MaxHpGained { Amount = amount });
+                }
+                case "gainBlockPerMomentum":
+                {
+                    // 風の壁 (緑 2026-09-07): 勢い×amount のブロック。勢いは失わない
+                    int block = state.Player.Momentum * (effect.Amount ?? 0);
+                    if (block <= 0) return state;
+                    GameState s = state with { Player = state.Player with { Block = state.Player.Block + block } };
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block });
+                    return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
+                }
+                case "addGrowthPerMomentum":
+                {
+                    // 根付く勢い (緑 2026-09-07): 勢い2につき成長+amount (切り捨て)。勢いは失わない
+                    int gained = (state.Player.Momentum / 2) * (effect.Amount ?? 1);
+                    if (gained <= 0) return state;
+                    GameState s = state with { Player = state.Player with { Growth = state.Player.Growth + gained } };
+                    s = Events.Emit(s, new GameEvent_GrowthAdded { Amount = gained });
+                    return FireGainTrigger(s, "onGrowthGained", enemyIndex);
+                }
                 case "gainSetSlot":
                 {
                     // 伏せ枠+X (罠師の茂み 2026-09-02)
@@ -1675,6 +1705,8 @@ namespace DeckRogue.Engine
             // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
             if (effect.Condition?.MinGrowth != null && state.Player.Growth < effect.Condition.MinGrowth.Value) return false;
             if (effect.Condition?.MinMomentum != null && state.Player.Momentum < effect.Condition.MinMomentum.Value) return false;
+            // 上限しきい値 (緑 2026-09-07 若幹の一撃・大地の唸り): ターン開始時の上限を読む
+            if (effect.Condition?.MinEnergyMax != null && state.Player.EnergyMaxAtTurnStart < effect.Condition.MinEnergyMax.Value) return false;
             // 回復参照 (白 2026-09-06 修繕の祈り): このターンに1回でも回復していたら (過剰回復も数える)
             if (effect.Condition?.HealedThisTurn == true && (state.Player.HealsThisTurn ?? 0) <= 0) return false;
             // HP割合条件 (2026-09-03 不動の根)

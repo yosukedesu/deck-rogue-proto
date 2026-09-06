@@ -402,12 +402,12 @@
       {
         "trigger": "onPlay",
         "effect": "addMomentum",
-        "amount": 3
+        "amount": 5
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 16,
+        "amount": 18,
         "pierce": true
       }
     ],
@@ -539,9 +539,25 @@
     "type": "reaction",
     "effects": [
       {
-        "trigger": "onEnemyBuffed",
+        "trigger": "onEnemyAction",
+        "effect": "negate",
+        "condition": {
+          "actionKinds": [
+            "buff",
+            "rally"
+          ]
+        }
+      },
+      {
+        "trigger": "onEnemyAction",
         "effect": "addGrowth",
-        "amount": 4
+        "amount": 3,
+        "condition": {
+          "actionKinds": [
+            "buff",
+            "rally"
+          ]
+        }
       }
     ],
     "rarity": "uncommon"
@@ -611,7 +627,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 8
       },
       {
         "trigger": "onPlay",
@@ -713,8 +729,16 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerEnergyMax",
-        "amount": 2
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "condition": {
+          "minEnergyMax": 5
+        }
       }
     ]
   },
@@ -946,6 +970,11 @@
         "trigger": "onCardSet",
         "effect": "addGrowth",
         "amount": 1
+      },
+      {
+        "trigger": "onCardSet",
+        "effect": "drawCards",
+        "amount": 1
       }
     ]
   },
@@ -1018,7 +1047,8 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "dealDamage",
-        "amount": 12
+        "amount": 16,
+        "pierce": true
       }
     ]
   },
@@ -1032,12 +1062,12 @@
       {
         "trigger": "onAttacked",
         "effect": "counter",
-        "amount": 3
+        "amount": 10
       },
       {
         "trigger": "onSetDestroyed",
         "effect": "dealDamage",
-        "amount": 12,
+        "amount": 14,
         "target": "all"
       }
     ]
@@ -1140,19 +1170,19 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3,
+        "amount": 4,
         "pierce": true
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3,
+        "amount": 4,
         "pierce": true
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3,
+        "amount": 4,
         "pierce": true,
         "condition": {
           "enemyExposed": true
@@ -1171,7 +1201,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 7
+        "amount": 9
       }
     ]
   },
@@ -1293,9 +1323,18 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerEnergyMax",
-        "amount": 2,
+        "effect": "dealDamage",
+        "amount": 6,
         "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "target": "all",
+        "condition": {
+          "minEnergyMax": 5
+        }
       }
     ]
   },
@@ -1361,7 +1400,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4
+        "amount": 6
       },
       {
         "trigger": "onPlay",
@@ -1403,8 +1442,7 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "upgradeInHand",
-        "amount": 1
+        "effect": "upgradeAllInHand"
       }
     ]
   },
@@ -1477,7 +1515,7 @@
     "cost": 1,
     "type": "physical",
     "color": "green",
-    "rarity": "common",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -1486,13 +1524,14 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "addGrowth",
+        "effect": "gainMaxHp",
         "amount": 3,
         "condition": {
           "targetDead": true
         }
       }
-    ]
+    ],
+    "exhaust": true
   },
   {
     "id": "green_sprint",
@@ -1527,7 +1566,7 @@
       {
         "trigger": "onPlay",
         "effect": "addMomentum",
-        "amount": 1
+        "amount": 3
       },
       {
         "trigger": "onPlay",
@@ -1547,13 +1586,8 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 8,
-        "pierce": true
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dischargeMomentumDamage",
-        "amount": 2,
-        "pierce": true
+        "pierce": true,
+        "momentumMultiplier": 2
       }
     ]
   },
@@ -1568,16 +1602,10 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 4,
+        "amount": 5,
         "target": "all",
-        "pierce": true
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dischargeMomentumDamage",
-        "amount": 1,
-        "target": "all",
-        "pierce": true
+        "pierce": true,
+        "momentumMultiplier": 2
       }
     ]
   },
@@ -1595,11 +1623,11 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 4
+        "amount": 5
       },
       {
         "trigger": "onPlay",
-        "effect": "dischargeMomentumBlock",
+        "effect": "gainBlockPerMomentum",
         "amount": 1
       }
     ]
@@ -1619,8 +1647,8 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "dischargeMomentumGrowth",
-        "amount": 2
+        "effect": "addGrowthPerMomentum",
+        "amount": 1
       }
     ]
   },
@@ -1667,19 +1695,30 @@
   {
     "id": "green_horn_volley",
     "name": "連なる角",
-    "cost": 2,
+    "cost": 1,
     "type": "physical",
     "color": "green",
-    "rarity": "uncommon",
+    "rarity": "common",
     "axis": [
       "trample"
     ],
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dischargeMomentumVolley",
-        "amount": 1,
-        "volleyHits": 3,
+        "effect": "dealDamage",
+        "amount": 2,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2,
         "pierce": true
       }
     ]
@@ -1700,8 +1739,8 @@
     ]
   },
   {
-    "id": "green_perm_wind_thorn",
-    "name": "風の棘",
+    "id": "green_perm_gale_vine",
+    "name": "疾風の蔓",
     "cost": 1,
     "type": "permanent",
     "color": "green",
@@ -1711,9 +1750,49 @@
     ],
     "effects": [
       {
-        "trigger": "onMomentumGained",
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_wind_dash",
+    "name": "風駆け",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_wind_cutter",
+    "name": "風切りの一撃",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 2
+        "amount": 4,
+        "pierce": true,
+        "momentumMultiplier": 2
       }
     ]
   },

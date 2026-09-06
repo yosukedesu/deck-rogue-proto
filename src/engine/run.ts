@@ -950,7 +950,7 @@ const EFFECT_AXIS: Record<string, string> = {
   addGrowth: 'growth', doubleGrowth: 'growth', dischargeGrowth: 'growth', dischargeGrowthBlock: 'growth',
   gainEnergyMax: 'ramp', dealDamagePerEnergyMax: 'ramp', gainBlockPerEnergyMax: 'ramp',
   addMomentum: 'trample', dealDamagePerMomentum: 'trample', doubleMomentum: 'trample',
-  dischargeMomentumBurn: 'burn', dischargeMomentumBlock: 'trample',
+  dischargeMomentumBurn: 'burn', dischargeMomentumBlock: 'trample', gainBlockPerMomentum: 'trample', addGrowthPerMomentum: 'trample',
   applyBurn: 'burn', dischargeBurn: 'burn',
   addAether: 'aether', dischargeAether: 'aether', dischargeAetherDraw: 'aether',
   gainIceBlock: 'ice', dealDamagePerIceBlock: 'ice', gainIceBlockPerCardPlayed: 'ice',
@@ -1067,7 +1067,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   // 3幕目のボス撃破 = ラン走破
   if (isBoss && run.act >= ACT_COUNT) {
     // 走破画面のHPは戦闘終了時の値 (2026-09-03 Opusラン K: 戦闘前の値のままだった)
-    return { ...run, combat, hp: combat.player.hp, battlesWon: run.battlesWon + 1, phase: 'won' }
+    return { ...run, combat, hp: combat.player.hp, maxHp: Math.max(run.maxHp, combat.player.maxHp), battlesWon: run.battlesWon + 1, phase: 'won' }
   }
   // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復 (確定済みルール表「マップ」)。
   // 2026-08-29 Meat on the Bone式: 救助に限定して満タン維持を防ぐ。
@@ -1075,7 +1075,9 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   // 絞りと正面衝突していた。「あと1発」の帯だけを救助し、30〜50%の緊張は残す)
   const rescueHeal =
     combat.player.hp <= run.maxHp * 0.3 ? run.victoryHealBonus : 0
-  const hp = isBoss ? run.maxHp : Math.min(run.maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal + relicBonusSum(run, 'victoryHealFlat')) // 薬草袋 (2026-09-03)
+  // 獲物 (gainMaxHp=Feed 2026-09-07): 戦闘中に増えた最大HPはランへ残す (戦闘の maxHp は run.maxHp から始まるので差分が増分)
+  const maxHp = Math.max(run.maxHp, combat.player.maxHp)
+  const hp = isBoss ? maxHp : Math.min(maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal + relicBonusSum(run, 'victoryHealFlat')) // 薬草袋 (2026-09-03)
   // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G。確定済みルール表「ゴールド」)
   let rng = run.rng
   const [base, r1] = nextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX)
@@ -1117,6 +1119,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     rng,
     combat,
     hp,
+    maxHp,
     deck: deckAfterCurses,
     battlesWon: run.battlesWon + 1,
     // 盗みの喪失で負になりうるので0でクランプ

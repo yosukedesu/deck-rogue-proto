@@ -234,15 +234,15 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
     expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 20)
   })
 
-  it('共鳴する茨: 敵の強化に反応して成長+4', () => {
+  it('共鳴する茨 (2026-09-07 限定打ち消しへ): 敵の強化・応援を打ち消して成長+3。強化は通らない', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_resonance'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_resonance' })
     // 2026-08-30 T1は club になったので、雄叫び (buff) を意図に細工して検証する
     s = withIntent(s, { kind: 'buff', shownMin: 2, shownMax: 4, actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(types(s.eventLog)).toContain('StrengthGained') // 強化自体は通る
+    expect(types(s.eventLog)).not.toContain('StrengthGained') // 打ち消される
     expect(types(s.eventLog)).toContain('ReactionTriggered')
-    expect(s.player.growth).toBe(4)
+    expect(s.player.growth).toBe(3)
   })
 
 

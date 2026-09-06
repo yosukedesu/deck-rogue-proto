@@ -115,7 +115,7 @@ describe('カード操作 (回収・サーチ・増殖・育つ札・手札で�
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 7), [idOf('増える蔦')])
     const h0 = hp(s)
     s = play(s, `t0_${idOf('増える蔦')}`)
-    expect(h0 - hp(s)).toBe(4)
+    expect(h0 - hp(s)).toBe(6) // 2026-09-07 4→6 (本家 Anger と同値)
     const copies = s.player.discardPile.filter((c) => c.def.id === idOf('増える蔦'))
     expect(copies).toHaveLength(2)
     expect(copies.filter((c) => c.token === true)).toHaveLength(1)
@@ -135,10 +135,9 @@ describe('カード操作 (回収・サーチ・増殖・育つ札・手札で�
     expect(s.player.discardPile.find((c) => c.def.id === idOf('育つ牙'))?.growBonus).toBe(8)
   })
 
-  it('研ぎ澄まし: 手札の1枚をこの戦闘中鍛える (handUids)。鍛えられる札が無ければ省略できる', () => {
+  it('研ぎ澄まし (2026-09-07 本家 Armaments+): 手札の全てをこの戦闘中鍛える (選択不要)。鍛えられる札が無くてもプレイできる', () => {
     const s = withHand(freshCombat('set-confirm', 'enemy_probe', 9), [idOf('研ぎ澄まし'), 'green_strike'])
-    expect(() => play(s, `t0_${idOf('研ぎ澄まし')}`)).toThrow(/handUids/)
-    const t = play(s, `t0_${idOf('研ぎ澄まし')}`, { handUids: ['t1_green_strike'] })
+    const t = play(s, `t0_${idOf('研ぎ澄まし')}`)
     const strike = t.player.hand.find((c) => c.uid === 't1_green_strike')
     expect(strike?.def.name).toBe('打撃+')
     expect(strike?.def.effects[0].amount).toBe(9)

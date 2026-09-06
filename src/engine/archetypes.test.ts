@@ -39,7 +39,7 @@ describe('シグネチャー効果', () => {
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_trample' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 19) // ブロック14を無視して素通し (2026-09-02 勢い+3を先出し: 16+3=19)
+    expect(s.enemies[0].hp).toBe(hpBefore - 23) // ブロック14を無視して素通し (2026-09-07 勢い+5を先出し: 18+5=23)
     expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
   })
 
@@ -51,13 +51,19 @@ describe('シグネチャー効果', () => {
     expect(s.enemies[0].hp).toBe(hpBefore - (6 - 4))
   })
 
-  it('大地の唸り: エナジー上限×2の全体ダメージ (成長も乗る。森の大爆発は2026-09-05 80枚化で撤去)', () => {
+  it('大地の唸り (2026-09-07 しきい値型): 全体6、ターン開始時の上限5以上ならさらに全体6 (成長は各ヒットに乗る)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_earth_roar'])
     s = { ...s, player: { ...s.player, energy: 6, energyMax: 6, energyMaxAtTurnStart: 6, growth: 1 } }
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, armor: undefined })) } // 装甲を外してコンボの素値を測る
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_earth_roar' })
-    expect(s.enemies[0].hp).toBe(hpBefore - (6 * 2 + 1))
+    expect(s.enemies[0].hp).toBe(hpBefore - ((6 + 1) + (6 + 1)))
+    let t = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_earth_roar'])
+    t = { ...t, player: { ...t.player, energy: 4, energyMax: 4, energyMaxAtTurnStart: 4 } }
+    t = { ...t, enemies: t.enemies.map((e) => ({ ...e, armor: undefined })) }
+    const hp2 = t.enemies[0].hp
+    t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_earth_roar' })
+    expect(t.enemies[0].hp).toBe(hp2 - 6)
   })
 
   it('開花の儀: 成長カウンターを2倍にする', () => {

@@ -218,11 +218,11 @@ describe('特性の掛け合わせ (多段合算・貫通・全体の伝播)', (
     expect(def.discardCost).toBe(1)
   })
 
-  it('重い札は罠に収まらない (S2 提案2): 巨獣の踏みつけ(5E 50)×先制の蔦槍(1E 被攻撃前12) → 5Eの物理 50+12 (窓の効果はプレイ時へ)', () => {
+  it('重い札は罠に収まらない (S2 提案2): 巨獣の踏みつけ(5E 50)×先制の蔦槍(1E 被攻撃前16) → 5Eの物理 50+16 (窓の効果はプレイ時へ)', () => {
     const def = fuseCards(inst('green_finisher_stomp'), inst('green_reaction_preempt'))
     expect(def.type).toBe('physical')
     expect(def.cost).toBe(5)
-    expect(def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger === 'onPlay').map((e) => e.amount).sort()).toEqual([12, 50])
+    expect(def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger === 'onPlay').map((e) => e.amount).sort()).toEqual([16, 50])
   })
 
   it('効果の順序は意味で決める (S2): 準備だけの札 (疾風の号砲=勢い+1→2倍) はダメージ行の前に置かれる', () => {

@@ -5,7 +5,7 @@
 // 出力: 札 | 提示 | ピック | 見送り | ピック率 (提示回数の多い順・率の低い順)。★=3回以上提示で0ピック
 import { readFileSync } from 'node:fs'
 import { allCards } from '../src/engine/content.ts'
-import { replayStates } from '../src/engine/run.ts'
+import { axesOf, replayStates } from '../src/engine/run.ts'
 import type { RunJournal } from '../src/engine/run.ts'
 import { describeRunChoice } from '../src/ui/report.ts'
 
@@ -88,3 +88,29 @@ for (const r of rows) {
   const flag = r.o >= 3 && r.p === 0 ? '★' : ''
   console.log(`| ${flag}${r.name} | ${r.rarity} | ${r.cost} | ${r.o} | ${r.p} | ${r.o - r.p} | ${Math.round(r.rate * 100)}% |`)
 }
+
+// 軸別・コスト帯別・タイプ別の集計 (どのアーキタイプ/帯が選ばれていないかの物差し。1枚が複数軸なら各軸に数える)
+function groupTable(title: string, keyOf: (c: (typeof allCards)[number]) => readonly string[]): void {
+  const go = new Map<string, number>()
+  const gp = new Map<string, number>()
+  for (const r of rows) {
+    const c = nameToCard.get(r.name)
+    if (!c) continue
+    const keys = keyOf(c)
+    for (const k of keys.length ? keys : ['(なし)']) {
+      go.set(k, (go.get(k) ?? 0) + r.o)
+      gp.set(k, (gp.get(k) ?? 0) + r.p)
+    }
+  }
+  console.log(`\n## ${title}`)
+  console.log('| 区分 | 提示 | ピック | ピック率 |')
+  console.log('|---|---|---|---|')
+  for (const [k, o] of [...go.entries()].sort((a, b) => b[1] - a[1])) {
+    const p = gp.get(k) ?? 0
+    console.log(`| ${k} | ${o} | ${p} | ${Math.round((p / o) * 100)}% |`)
+  }
+}
+groupTable('軸別', (c) => axesOf(c))
+groupTable('コスト別', (c) => [c.xCost ? 'X' : `${c.cost}E`])
+groupTable('タイプ別', (c) => [c.type])
+groupTable('レア度別', (c) => [c.rarity ?? '?'])

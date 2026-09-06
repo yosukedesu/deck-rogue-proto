@@ -1153,6 +1153,13 @@ namespace DeckRogue.Engine
                 s = s with { Player = s.Player with { Hand = s.Player.Hand.Select(c => set.Contains(c.Uid) ? Upgrade.UpgradeCard(c) : c).ToList() } };
                 foreach (var c in s.Player.Hand.Where(c => set.Contains(c.Uid)).ToList()) s = Events.Emit(s, new GameEvent_CardUpgradedInHand { CardId = c.Def.Id });
             }
+            if (card.Def.Effects.Any(e => e.Effect == "upgradeAllInHand" && e.Trigger == "onPlay"))
+            {
+                // 研ぎ澄まし (2026-09-07 本家 Armaments+): 自身以外の鍛えられる手札を全部、この戦闘中鍛える (選択なし)
+                var all = new HashSet<string>(s.Player.Hand.Where(c => c.Uid != card.Uid && Upgrade.CanUpgradeInHand(c)).Select(c => c.Uid));
+                s = s with { Player = s.Player with { Hand = s.Player.Hand.Select(c => all.Contains(c.Uid) ? Upgrade.UpgradeCard(c) : c).ToList() } };
+                foreach (var c in s.Player.Hand.Where(c => all.Contains(c.Uid)).ToList()) s = Events.Emit(s, new GameEvent_CardUpgradedInHand { CardId = c.Def.Id });
+            }
             if (deckChooseUids.Count > 0 && chooseKind == "exhaustFromDeckChoose")
             {
                 var chosenSet = new HashSet<string>(deckChooseUids);

@@ -424,17 +424,17 @@ describe('焚き火の強化 (2026-08-26。StSの休憩所 Smith 相当)', () =>
 })
 
 describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Heavy Blade ×3→×5 の文法)', () => {
-  it('若幹の一撃+ は上限×2→×3。コストは1のまま (0E化はしない。木陰の守り・幹撃は2026-09-05 撤去)', () => {
+  it('若幹の一撃+ (2026-09-07 しきい値型): 6→9・上限5以上でさらに6→9。コストは1のまま', () => {
     const up = upgradeCard({ uid: 't', def: getCardDef('green_sapling_strike') })
     expect(up.def.cost).toBe(1)
-    expect(up.def.effects.some((e) => e.effect === 'dealDamagePerEnergyMax' && e.amount === 3)).toBe(true)
-    expect(up.def.effects.some((e) => e.effect === 'dealDamage')).toBe(false) // 旧おまけ表は使わない
+    expect(up.def.effects.map((e) => e.amount)).toEqual([9, 9])
+    expect(up.def.effects[1].condition?.minEnergyMax).toBe(5)
   })
 
-  it('大地の唸り+ は全体 上限×2→×3。コストは2のまま', () => {
+  it('大地の唸り+ (2026-09-07 しきい値型): 全体6→9・上限5以上でさらに6→9。コストは2のまま', () => {
     const up = upgradeCard({ uid: 't', def: getCardDef('green_earth_roar') })
     expect(up.def.cost).toBe(2)
-    expect(up.def.effects.some((e) => e.effect === 'dealDamagePerEnergyMax' && e.amount === 3)).toBe(true)
+    expect(up.def.effects.map((e) => e.amount)).toEqual([9, 9])
   })
 
   it('打ち据え+ は 6ダメ+急所3 (単位+1と量4以上の+50%を同時に。本家 Bash+ と同型)', () => {
@@ -452,14 +452,13 @@ describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Hea
 })
 
 describe('スターター札は報酬プールに出ない (2026-08-30 中立スターター化の追随)', () => {
-  it('報酬候補にスターター5種 (打撃/打ち据え/防御/茨の返し/守りの蔓) が出ない', () => {
+  it('報酬候補にスターター4種 (打撃/打ち据え/防御/茨の返し) が出ない (守りの蔓は2026-09-03 本家形の初期デッキで報酬プールへ戻した)', () => {
     // 40戦ぶんの報酬を回して1枚も出ないことを確認する
     const STARTERS = [
       'green_strike',
       'green_basic_bash',
       'green_guard',
       'green_reaction_thorns',
-      'green_reaction_vine',
     ]
     for (let seed = 1; seed <= 10; seed++) {
       let run = intoFirstBattle(createRun(seed, 'set-confirm'))
@@ -559,12 +558,14 @@ describe('査定パス (2026-09-02 段6人間プレイの指摘)', () => {
     expect(up.def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(base + 1)
   })
 
-  it('獲物 (2026-09-03 毒針の囮の後継=本家 Feed 型): 8ダメ、とどめなら成長+3', () => {
+  it('獲物 (2026-09-03 毒針の囮の後継。2026-09-07 本家 Feed 型へ): 8ダメ、とどめなら最大HP+3。消滅・アンコモン', () => {
     const def = getCardDef('green_prey_strike')
     expect(def.cost).toBe(1)
+    expect(def.exhaust).toBe(true)
+    expect(def.rarity).toBe('uncommon')
     expect(def.effects).toEqual([
       { trigger: 'onPlay', effect: 'dealDamage', amount: 8 },
-      { trigger: 'onPlay', effect: 'addGrowth', amount: 3, condition: { targetDead: true } },
+      { trigger: 'onPlay', effect: 'gainMaxHp', amount: 3, condition: { targetDead: true } },
     ])
   })
 })

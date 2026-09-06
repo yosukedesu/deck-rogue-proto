@@ -279,6 +279,11 @@ export interface EffectCondition {
   readonly minGrowth?: number
   readonly minMomentum?: number // 勢いしきい値 (緑 勢いの網 2026-09-04。解決時の勢いがN以上)
   /**
+   * ターン開始時のエナジー上限がN以上なら (緑 上限参照のしきい値化 2026-09-07 ピック監査: 若幹の一撃・大地の唸り。
+   * 「上限×2」は人間に読まれないので「上限5以上ならさらに」の形に。ランプ即時利用の廃止と同じくターン開始スナップショットを読む)
+   */
+  readonly minEnergyMax?: number
+  /**
    * 猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上**
    * なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝
    * 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、
@@ -295,6 +300,11 @@ export interface EffectCondition {
   readonly perfectBlockLastPhase?: boolean
   /** 対象の敵がこの解決の時点で倒れていれば (同じカードの前の効果でとどめ。獲物=本家 Feed) */
   readonly targetDead?: boolean
+  /**
+   * リアクション窓専用: 敵の行動の種別がこの中にある時だけ発動できる (緑 共鳴する茨 2026-09-07 ピック監査:
+   * 「強化・応援だけを打ち消す1E」= 根の紡ぎ2Eの限定ラダー。条件付きリアクションの罠を避けるため、通常戦の4割で満たす種別に限る)
+   */
+  readonly actionKinds?: readonly EnemyActionKind[]
   /** 直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り) */
   readonly lastActionNoHpLoss?: boolean
   /** このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn>0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W) */
@@ -507,6 +517,7 @@ export type GameEvent =
   | { readonly type: 'EnergyMaxGained'; readonly amount: number }
   | { readonly type: 'GrowthAdded'; readonly amount: number }
   | { readonly type: 'SetSlotGained'; readonly amount: number } // 伏せ枠+X (罠師の茂み)
+  | { readonly type: 'MaxHpGained'; readonly amount: number } // 最大HP+X (獲物=Feed。2026-09-07)
   | { readonly type: 'CardsMovedToHand'; readonly cardIds: readonly string[]; readonly from: 'discard' | 'draw' } // 回収・サーチ
   | { readonly type: 'CardCopied'; readonly cardId: string; readonly count: number } // 増殖: コピーを捨て札へ
   | { readonly type: 'CardGrew'; readonly cardId: string; readonly bonus: number } // 育つ札: 累計加算
@@ -652,6 +663,8 @@ export interface DeclarativeEffect {
     | 'addCopyToDiscard' // 増殖 (緑 2026-09-02 Anger型): このカードのコピーX枚を捨て札に加える (この戦闘限り)
     | 'growSelf' // 育つ札 (緑 2026-09-02 Rampage型): プレイするたび、この札の与ダメがこの戦闘中+X (CardInstance.growBonus)
     | 'upgradeInHand' // 手札で鍛える (緑 2026-09-02 Armaments型): 手札のX枚をこの戦闘中鍛える (PlayCard.handUids で選択)
+    | 'upgradeAllInHand' // 研ぎ澄まし (緑 2026-09-07 ピック監査=本家 Armaments+): 手札の全て (自身・レア・工房産を除く) をこの戦闘中鍛える。選択なし
+    | 'gainMaxHp' // 獲物 (緑 2026-09-07=本家 Feed): 最大HPとHPを+X (この戦闘後も残る。勝利時に run.maxHp へ同期)
     | 'exhaustFromDeckChoose' // 引導 (黒 2026-08-31): 山札か捨て札から好きなX枚を選んで消滅させる (combat.ts が deckUids で解決。亡骸・onCardExhausted は発火 = 狙い撃ちの起爆と燃料化)
     | 'addCardToHand' // 骨刃 (黒 2026-09-01): summonId のトークン札X枚を手札に加える (この戦闘限り。ラン層のデッキには入らない)
     | 'empowerShivs' // 骨刃の強化 (黒): 【常在】shivToken 札の与ダメ+X (プレイ時に注入。急所読み=StS Accuracy)
@@ -691,6 +704,8 @@ export interface DeclarativeEffect {
     | 'dischargeMomentumBlock' // 余勢の構え (赤): 勢い×amount のブロックを得て、勢いを全て失う (攻めの勢いが守りになる)
     | 'dischargeMomentumDamage' // 角の一突き (緑 2026-09-04): 勢い×amount のダメージを与え、勢いを全て失う (放出に勢い加算は乗らない。target:'all' は一括解決)
     | 'dischargeMomentumGrowth' // 根付く勢い (緑 2026-09-04): 勢いを全て失い、その 1/amount (切り上げ) を成長に変える (勢い→成長の還元=グルールの橋)
+    | 'gainBlockPerMomentum' // 風の壁 (緑 2026-09-07 ピック監査): 勢い×amount のブロック。勢いは失わない (放出の非消費化=値を参照してバフ)
+    | 'addGrowthPerMomentum' // 根付く勢い (緑 2026-09-07): 勢い2につき成長+amount (切り捨て)。勢いは失わない
     | 'dischargeMomentumVolley' // 連なる角 (緑 2026-09-04 裁定B): 勢いを全て失い、勢い×amount のダメージを volleyHits 回 (装甲=1ヒット上限への勢いの答え)
     | 'momentumCarryHalf' // 疾風の王 (緑レア置物 2026-09-05): この置物がある間、自ターン終了時に勢いの半分 (切り捨て) を次のターンへ持ち越す (常在。トリガー解決では何もしない)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値

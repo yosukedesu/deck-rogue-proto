@@ -1072,6 +1072,13 @@ export function playCard(
     }
     for (const c of s.player.hand.filter((c) => set.has(c.uid))) s = emit(s, { type: 'CardUpgradedInHand', cardId: c.def.id })
   }
+  if (card.def.effects.some((e) => e.effect === 'upgradeAllInHand' && e.trigger === 'onPlay')) {
+    // 研ぎ澄まし (2026-09-07 ピック監査=本家 Armaments+): 自身以外の鍛えられる手札を全部、この戦闘中鍛える (選択なし)
+    const targets = s.player.hand.filter((c) => c.uid !== card.uid && canUpgradeInHand(c))
+    const all = new Set(targets.map((c) => c.uid))
+    s = { ...s, player: { ...s.player, hand: s.player.hand.map((c) => (all.has(c.uid) ? upgradeCard(c) : c)) } }
+    for (const c of s.player.hand.filter((c) => all.has(c.uid))) s = emit(s, { type: 'CardUpgradedInHand', cardId: c.def.id })
+  }
   if (deckChooseUids.length > 0 && chooseKind === 'exhaustFromDeckChoose') {
     const chosenSet = new Set(deckChooseUids)
     const chosenCards = [...s.player.drawPile, ...s.player.discardPile].filter((c) =>

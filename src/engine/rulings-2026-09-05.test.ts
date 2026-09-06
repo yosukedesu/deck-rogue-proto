@@ -6,14 +6,15 @@ import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 
 describe('置物トリガーのダメージと勢い (2026-09-05 裁定)', () => {
-  it('風の棘 (勢いを得るたび2ダメ) には成長は乗るが勢いは乗らない。カードのヒットには両方乗る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_perm_wind_thorn', 'green_trample_charge'])
-    s = { ...s, player: { ...s.player, growth: 2 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_wind_thorn' })
+  it('置物トリガーのダメージ (棘葉の茂み=成長を得るたび2ダメ) には成長は乗るが勢いは乗らない。カードのヒットには両方乗る (風の棘は2026-09-07に疾風の蔓へ作り直し)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_perm_thorn_leaves', 'green_growth_ring', 'green_strike'])
+    s = { ...s, player: { ...s.player, momentum: 3, energy: 5 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_thorn_leaves' })
     const hp0 = s.enemies[0].hp
-    // 突進の助走: 勢い+3 → 風の棘 2+成長2 (勢いは乗らない) = 4 / 2ダメ×2 は 2+成長2+勢い3 = 7 ずつ
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_trample_charge', targetIndex: 0 })
-    expect(hp0 - s.enemies[0].hp).toBe(4 + 7 + 7)
+    // 年輪: 成長+2 → 棘葉の茂み 2+成長2 (勢い3は乗らない) = 4 / 打撃は 6+成長2+勢い3 = 11
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_growth_ring' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_strike', targetIndex: 0 })
+    expect(hp0 - s.enemies[0].hp).toBe(4 + 11)
     expect(s.player.momentum).toBe(3)
   })
 
