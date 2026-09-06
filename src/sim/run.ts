@@ -429,6 +429,7 @@ export function chooseCommand(s: GameState): Command {
       return (
         botRole(c.def) === role &&
         isPlayableFromHand(c) &&
+        retainerRequirementMet(s, c) && // 殉教の誓い・進軍の号令は従者がいる時だけ (2026-09-06)
         effectiveCost(s, c) <= budget &&
         isWorthPlaying(s, c)
       )
