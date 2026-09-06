@@ -275,6 +275,22 @@ namespace DeckRogue.Game
             btn.transition = Selectable.Transition.None;
             int captured = index;
             btn.onClick.AddListener(delegate { g.OnEnemyClicked(captured); });
+            if (alive)
+            {
+                string tipName = nm;
+                Tooltip.Attach(pan.gameObject, delegate
+                {
+                    var cur = g.Rs != null ? g.Rs.Combat : null;
+                    if (cur == null || captured >= cur.Enemies.Count) return null;
+                    var ce = cur.Enemies[captured];
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append("<b>").Append(tipName).Append("</b>  HP ").Append(ce.Hp).Append(" / ").Append(ce.MaxHp);
+                    if (ce.Block > 0) sb.Append("  ブロック").Append(ce.Block);
+                    sb.Append("\n意図: ").Append(CardText.IntentText(cur, captured));
+                    if (traits.Length > 0) sb.Append("\n特性: ").Append(traits);
+                    return sb.ToString();
+                });
+            }
         }
 
         static void SmallChip(Transform parent, string icon, string text, Color color)
@@ -282,7 +298,8 @@ namespace DeckRogue.Game
             var row = UiKit.NewRect("chip", parent);
             var bg = row.gameObject.AddComponent<Image>();
             bg.color = new Color(0f, 0f, 0f, 0.5f);
-            bg.raycastTarget = false;
+            bg.raycastTarget = true;
+            Tooltip.Attach(row.gameObject, delegate { return text; });
             var hg = UiKit.Horz(row, 3, 4);
             hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandHeight = false;
@@ -492,6 +509,10 @@ namespace DeckRogue.Game
             UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-700f, HandY), new Vector2(700f, HandY + CardView.H * CardScale + 40f));
             int n = hand.Count;
             if (n == 0) return;
+            // 予測の対象: 狙いを付けた敵、無ければ生存が1体の時だけその敵
+            int alive = 0, firstAlive = -1;
+            for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { alive++; if (firstAlive < 0) firstAlive = i; }
+            CardView.PreviewEnemy = g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? g.PreferredTarget : (alive == 1 ? firstAlive : -1);
             float spacing = Mathf.Min(CardView.W * CardScale + 12f, 1180f / n);
             float center = (n - 1) / 2f;
             bool myTurn = st.Phase == CombatPhases.PlayerTurn;
@@ -513,7 +534,20 @@ namespace DeckRogue.Game
                 rt.localScale = Vector3.one * CardScale;
                 rt.localRotation = Quaternion.Euler(0f, 0f, rot);
                 HookHandCard(g, rt, c, playable, settable, basePos, rot);
+                var cardRef = c;
+                Tooltip.Attach(rt.gameObject, delegate { return KeywordsOnly(CardText.Body(cardRef.Def) + " " + CardText.Notes(cardRef.Def)); }, false);
             }
+            CardView.PreviewEnemy = -1;
+        }
+
+        /// <summary>カードの吹き出し: 本文は見えているので用語解説だけ (無ければ出さない)</summary>
+        static string KeywordsOnly(string text)
+        {
+            var terms = KeywordHelp.FindIn(text);
+            if (terms.Count == 0) return null;
+            var lines = new List<string>();
+            for (int i = 0; i < terms.Count && i < 4; i++) lines.Add("<color=#8fd08c><b>" + terms[i] + "</b></color> " + KeywordHelp.Terms[terms[i]]);
+            return string.Join("\n", lines.ToArray());
         }
 
         static bool _dragging;

@@ -21,7 +21,8 @@
     "goldens:verify": "tsx scripts/verify-goldens.ts",
     "unity:sync": "tsx scripts/sync-unity-data.ts",
     "gen:csharp": "tsx scripts/gen-csharp-types.ts",
-    "fusion:table": "tsx scripts/fusion-table.ts"
+    "fusion:table": "tsx scripts/fusion-table.ts",
+    "gen:keywords": "tsx scripts/gen-keyword-help.ts"
   },
   "dependencies": {
     "react": "^19.2.8",

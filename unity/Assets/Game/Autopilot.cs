@@ -45,6 +45,13 @@ namespace DeckRogue.Game
             StartCoroutine(Run());
         }
 
+        /// <summary>順送りの演出 (Presenter.PlaySequenced の入力ブロック) が終わるまで待つ (最大6秒)</summary>
+        IEnumerator WaitPresentation()
+        {
+            float t0 = Time.realtimeSinceStartup;
+            while (GameObject.Find("inputblock") != null && Time.realtimeSinceStartup - t0 < 6f) yield return null;
+        }
+
         IEnumerator Shot(string name)
         {
             // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)
@@ -88,7 +95,7 @@ namespace DeckRogue.Game
         /// <summary>戦闘画面の状態を一通り撮る: 素・手札ホバー・ログ・モード選択・対象選択・伏せ→確認ウィンドウ・ターン後</summary>
         IEnumerator Battle(GameRoot g)
         {
-            g.Seed = _seed;
+            g.SetSeed(_seed);
             g.StartRun();
             for (int i = 0; i < 8 && g.Rs != null && g.Rs.Phase != RunPhases.Combat; i++)
             {
@@ -136,13 +143,18 @@ namespace DeckRogue.Game
                 yield return Shot("battle-set");
             }
             g.DoCombat(new Command_EndTurn());
+            yield return new WaitForSeconds(0.7f);
+            yield return Shot("battle-enemy-phase");
+            yield return WaitPresentation();
             yield return Shot("battle-after-end");
             if (g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction)
             {
                 yield return Shot("battle-confirm");
                 g.DoCombat(new Command_ConfirmReaction { Fire = false });
+                yield return WaitPresentation();
                 yield return Shot("battle-held");
             }
+            yield return WaitPresentation();
             yield return Shot("battle-turn2");
         }
 
@@ -150,7 +162,7 @@ namespace DeckRogue.Game
         IEnumerator Tour(GameRoot g)
         {
             yield return Shot("setup");
-            g.Seed = _seed;
+            g.SetSeed(_seed);
             g.StartRun();
             yield return Shot("map");
             for (int i = 0; i < 8 && g.Rs != null && g.Rs.Phase != RunPhases.Combat; i++)
@@ -188,6 +200,7 @@ namespace DeckRogue.Game
                         yield return Shot("combat-confirm");
                     }
                     g.DoCombat(new Command_EndTurn());
+                    yield return WaitPresentation();
                     yield return Shot("combat-after-end" + (turn + 1));
                 }
             }

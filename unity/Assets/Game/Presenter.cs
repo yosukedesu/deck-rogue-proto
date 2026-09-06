@@ -18,6 +18,54 @@ namespace DeckRogue.Game
 
         public static void Reset() { _seen = 0; _seenCombat = null; }
 
+        /// <summary>このコマンドで敵の行動 (TurnEnded 以降) が起きたか = 古い盤面の上で順に見せる価値がある</summary>
+        public static bool HasEnemyPhase(GameState combat)
+        {
+            if (combat == null) return false;
+            var log = combat.EventLog;
+            for (int i = Math.Min(_seen, log.Count); i < log.Count; i++) if (log[i] is GameEvent_TurnEnded) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 順送りの演出: 新しいイベントを 0.12〜0.4 秒ずつずらして古い盤面 (的が生きている) の上で見せ、終わってから onDone (=Rebuild)。
+        /// その間は入力を塞ぐ。イベントの種類ごとの間: 攻撃 0.4 / バナー 0.6 / その他 0.12
+        /// </summary>
+        public static void PlaySequenced(GameRoot g, GameState combat, Action onDone)
+        {
+            var log = combat.EventLog;
+            var fx = g.FxLayer;
+            Canvas.ForceUpdateCanvases();
+            var block = UiKit.NewRect("inputblock", fx);
+            UiKit.Stretch(block, 0f, 0f, 0f, 0f);
+            var bimg = block.gameObject.AddComponent<Image>();
+            bimg.color = new Color(0f, 0f, 0f, 0f);
+            bimg.raycastTarget = true;
+            var blockCg = fx.GetComponent<CanvasGroup>();
+            if (blockCg != null) blockCg.blocksRaycasts = true;
+            float delay = 0f;
+            for (int i = Math.Min(_seen, log.Count); i < log.Count; i++)
+            {
+                var ev = log[i];
+                float gap;
+                if (ev is GameEvent_DamageDealt) gap = 0.4f;
+                else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
+                else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
+                else continue;
+                var captured = ev;
+                Tween.After(delay, () => { try { Show(g, fx, captured); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
+                delay += gap;
+            }
+            _seen = log.Count;
+            _seenCombat = combat;
+            Tween.After(Mathf.Min(delay, 6f), () =>
+            {
+                if (block != null) UnityEngine.Object.Destroy(block.gameObject);
+                if (blockCg != null) blockCg.blocksRaycasts = false;
+                onDone?.Invoke();
+            });
+        }
+
         /// <summary>コマンド適用後に呼ぶ。新しいイベントを演出に変換する</summary>
         public static void Play(GameRoot g, GameState combat)
         {

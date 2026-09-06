@@ -15,6 +15,9 @@ namespace DeckRogue.Game
         public const float H = 290f;
 
         /// <summary>カードを作る。root は W×H (pivot 中央・アンカー中央)。frame Image が raycast の的</summary>
+        /// <summary>手札の予測に使う対象の敵 (BattleScreen が組み立て前に設定。-1 = 予測なし)</summary>
+        public static int PreviewEnemy = -1;
+
         public static RectTransform Build(Transform parent, CardInstance c, GameState st, bool playable, bool interactable, string name = "card")
         {
             var root = UiKit.NewRect(name, parent);
@@ -67,6 +70,13 @@ namespace DeckRogue.Game
             var body = UiKit.Txt(root, CardText.Body(c.Def), 15, playable ? UiKit.ColText : UiKit.ColDim, TextAnchor.UpperLeft);
             UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(18f, 40f), new Vector2(-18f, -78f));
 
+            // ダメージ予測 (成長・勢い・弱体・急所・装甲・敵ブロックを実処理と同じ手順で)
+            string preview = Preview(c, st);
+            if (preview != null)
+            {
+                var pv = UiKit.Txt(root, preview, 14, UiKit.ColEnergy, TextAnchor.LowerLeft, true);
+                UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 40f), new Vector2(-18f, 64f));
+            }
             // 注記 (消滅・保持・追加コスト)
             var notes = CardText.Notes(c.Def);
             if (notes.Length > 0)
@@ -75,6 +85,28 @@ namespace DeckRogue.Game
                 UiKit.Anchor(nt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(16f, 14f), new Vector2(-16f, 40f));
             }
             return root;
+        }
+
+        /// <summary>対象が決まっている時、ダメージ効果の実値を見積もる。補正が無ければ null</summary>
+        static string Preview(CardInstance c, GameState st)
+        {
+            if (st == null || PreviewEnemy < 0 || PreviewEnemy >= st.Enemies.Count) return null;
+            var parts = new System.Collections.Generic.List<string>();
+            bool changed = false;
+            for (int i = 0; i < c.Def.Effects.Count; i++)
+            {
+                var e = c.Def.Effects[i];
+                if (e.Trigger != "onPlay" || e.Effect != "dealDamage" || !e.Amount.HasValue) continue;
+                int baseAmt = e.Amount.Value + (c.GrowBonus ?? 0);
+                DamageBreakdown bd = null;
+                try { bd = Effects.DamageBreakdownOf(st, PreviewEnemy, baseAmt, e.Pierce == true); } catch (Exception) { }
+                if (bd == null || bd.Steps.Count == 0) continue;
+                int final = bd.HpLoss;
+                if (final != baseAmt) changed = true;
+                parts.Add(final.ToString());
+            }
+            if (!changed || parts.Count == 0) return null;
+            return "→ 実ダメ " + string.Join("+", parts.ToArray());
         }
     }
 }

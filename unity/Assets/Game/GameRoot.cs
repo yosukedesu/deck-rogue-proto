@@ -172,8 +172,14 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
             if (Rs == null || Rs.Phase != RunPhases.Event) EventChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
+            // 演出キュー: 敵フェーズを含むコマンドは古い盤面の上で順に見せてから組み直す。それ以外は即組み直して差分を浮き文字に
+            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasEnemyPhase(Rs.Combat))
+            {
+                var snapshot = Rs.Combat;
+                Presenter.PlaySequenced(this, snapshot, delegate { if (Rs != null && ReferenceEquals(Rs.Combat, snapshot)) Rebuild(); });
+                return;
+            }
             Rebuild();
-            // 演出キュー: 新しいイベントを浮き文字・揺れに変える (画面の組み立て後＝的が登録された後)
             if (Rs != null && Rs.Combat != null) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
         }
 
@@ -220,6 +226,13 @@ namespace DeckRogue.Game
         }
 
         public void RegisterSeedField(TMP_InputField f) { _seedField = f; }
+
+        /// <summary>シードを決めて入力欄にも反映する (StartRun は入力欄を優先して読むため)</summary>
+        public void SetSeed(int seed)
+        {
+            Seed = Mathf.Abs(seed);
+            if (_seedField != null) _seedField.SetTextWithoutNotify(Seed.ToString());
+        }
 
         // ---- カードプレイの組み立て ----
 
