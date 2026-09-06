@@ -164,9 +164,9 @@ namespace DeckRogue.Engine.Generated
     public sealed record RngState
     {
         [JsonProperty("seed")]
-        public int Seed { get; init; }
+        public long Seed { get; init; } = default!;
         [JsonProperty("counter")]
-        public int Counter { get; init; }
+        public long Counter { get; init; } = default!;
     }
 
     /// <summary>CombatantState</summary>
@@ -241,6 +241,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>この戦闘で回復した回数 (過剰回復も数える = onHealed と同じ回数論。滾る血汐の参照)</summary>
         [JsonProperty("healsThisCombat")]
         public int HealsThisCombat { get; init; }
+        /// <summary>このターンにカードのプレイで回復した回数 (過剰回復も数える・置物やパッシブの自動回復は数えない。自ターン開始でリセット。白の回復参照 healedThisTurn 2026-09-06)</summary>
+        [JsonProperty("healsThisTurn")]
+        public int? HealsThisTurn { get; init; }
         /// <summary>マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し</summary>
         [JsonProperty("nextCardDiscount")]
         public int NextCardDiscount { get; init; }
@@ -282,6 +285,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット)</summary>
         [JsonProperty("damageTakenLastEnemyPhase")]
         public int DamageTakenLastEnemyPhase { get; init; }
+        /// <summary>この敵フェーズ中に付与された弱体の量 (2026-09-04 Opusラン N: 同じ攻撃で付いた弱体が被攻撃後の返しを食っていた)。敵フェーズ中の返しはこの分を差し引き、次の自ターンから全量が効く</summary>
+        [JsonProperty("weakFreshThisPhase")]
+        public int? WeakFreshThisPhase { get; init; }
         /// <summary>このターンにプレイした攻撃カードの枚数 (自身の解決後に加算=攻撃数参照はそのカード自身を数えない。2026-09-03)</summary>
         [JsonProperty("attacksPlayedThisTurn")]
         public int? AttacksPlayedThisTurn { get; init; }
@@ -351,6 +357,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>殻が敵フェーズ中に割れた: 次の宣言を噛みつきに差し替える</summary>
         [JsonProperty("biteNext")]
         public bool? BiteNext { get; init; }
+        /// <summary>バランス崩し: 直前の攻撃を完全に防がれた = 次の宣言は隙</summary>
+        [JsonProperty("staggeredNext")]
+        public bool? StaggeredNext { get; init; }
         /// <summary>編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」)</summary>
         [JsonProperty("noReactTable")]
         public bool? NoReactTable { get; init; }
@@ -457,12 +466,17 @@ namespace DeckRogue.Engine.Generated
         /// <summary>成長がこの値以上なら解決/発動可 (緑 2026-09-02 床パッケージ: 成長しきい値。忘却の刻の緑版。 onPlay・置物トリガー・リアクション窓のすべてで「解決の時点」に判定する)</summary>
         [JsonProperty("minGrowth")]
         public int? MinGrowth { get; init; }
+        [JsonProperty("minMomentum")]
+        public int? MinMomentum { get; init; }
         /// <summary>猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上** なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝ 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、 時間依存でなく**しきい値依存**に置き換える機構</summary>
         [JsonProperty("blaze")]
         public bool? Blaze { get; init; }
         /// <summary>対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness)</summary>
         [JsonProperty("enemyIntent")]
         public string? EnemyIntent { get; init; }
+        /// <summary>対象の敵の意図がこの種別**以外**なら (2026-09-04 見切り撃ちの反転: 敵はだいたい攻撃するので「攻撃以外=隙を突く」が稀な条件になる)</summary>
+        [JsonProperty("enemyIntentNot")]
+        public string? EnemyIntentNot { get; init; }
         /// <summary>対象の敵が急所を持っていれば (カードのプレイ開始時点で判定=同じカードの前のヒットが急所を消費しても成立。双牙の蔦=本家 Dismantle)</summary>
         [JsonProperty("enemyExposed")]
         public bool? EnemyExposed { get; init; }
@@ -475,6 +489,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り)</summary>
         [JsonProperty("lastActionNoHpLoss")]
         public bool? LastActionNoHpLoss { get; init; }
+        /// <summary>このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn&gt;0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W)</summary>
+        [JsonProperty("healedThisTurn")]
+        public bool? HealedThisTurn { get; init; }
     }
 
     /// <summary>'awaiting-reaction' 中断中の再開情報。 stage 'pre' = 行動の実行前 (打ち消し・軽減の窓)、'post' = 行動の解決後 (返し系の窓)</summary>
@@ -536,6 +553,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>直前に解決された敵の行動 (行動解決後リアクションの条件判定用。行動開始時にリセット)</summary>
         [JsonProperty("lastAction")]
         public GameStateLastAction? LastAction { get; init; }
+        /// <summary>鬼軍曹の怒り (angerOnBlock) がこのカードのプレイで既に1回発火したか (2026-09-06 裁定: 1枚のプレイで1回だけ。修繕の祈り=ブロック6+条件ブロック6 が2回怒らせていた)</summary>
+        [JsonProperty("angerFiredThisPlay")]
+        public bool? AngerFiredThisPlay { get; init; }
+        /// <summary>直前に場に出た置物の uid (駆けつけ=ひなた 2026-09-06: onPermanentEntered の解決中に「誰が出たか」を読む)</summary>
+        [JsonProperty("lastEnteredPermanentUid")]
+        public string? LastEnteredPermanentUid { get; init; }
         /// <summary>発生済みイベントログ (リプレイ・シミュレーション統計の材料)</summary>
         [JsonProperty("eventLog")]
         public IReadOnlyList<GameEvent> EventLog { get; init; } = default!;
@@ -576,6 +599,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_StartCombat : Command
     {
         public const string TypeTag = "StartCombat";
+        public Command_StartCombat() { Type = TypeTag; }
         [JsonProperty("seed")]
         public int Seed { get; init; }
         /// <summary>敵ID (ソロ編成) または encounters.json の編成ID。編成IDが優先</summary>
@@ -584,6 +608,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>使用デッキ (data/decks.json の id)。省略時は 'starter'</summary>
         [JsonProperty("deckId")]
         public string? DeckId { get; init; }
+        /// <summary>検証用: カードIDの並びからデッキを組む (deckId より優先。工房産 fused_ / fusion_ の id も可。2026-09-05 工房検証ハーネス)</summary>
+        [JsonProperty("cardIds")]
+        public IReadOnlyList<string>? CardIds { get; init; }
         /// <summary>リーダー (data/leaders.json の id)。省略時はリーダーなしの素のルール</summary>
         [JsonProperty("leaderId")]
         public string? LeaderId { get; init; }
@@ -593,6 +620,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_PlayCard : Command
     {
         public const string TypeTag = "PlayCard";
+        public Command_PlayCard() { Type = TypeTag; }
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
         /// <summary>選択式カード (modes) 用: 選んだモードの添字。modes を持つカードでは必須</summary>
@@ -619,12 +647,16 @@ namespace DeckRogue.Engine.Generated
         /// <summary>Xコスト札用 (2026-09-03): 支払うX (1〜現在のエナジー)。省略時は全部払う</summary>
         [JsonProperty("xAmount")]
         public int? XAmount { get; init; }
+        /// <summary>sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid</summary>
+        [JsonProperty("permanentUid")]
+        public string? PermanentUid { get; init; }
     }
 
     /// <summary>Command: type="SetCard"</summary>
     public sealed record Command_SetCard : Command
     {
         public const string TypeTag = "SetCard";
+        public Command_SetCard() { Type = TypeTag; }
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
     }
@@ -633,6 +665,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_RetrieveSetCard : Command
     {
         public const string TypeTag = "RetrieveSetCard";
+        public Command_RetrieveSetCard() { Type = TypeTag; }
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
     }
@@ -641,6 +674,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_PlayNecro : Command
     {
         public const string TypeTag = "PlayNecro";
+        public Command_PlayNecro() { Type = TypeTag; }
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
         [JsonProperty("targetIndex")]
@@ -651,6 +685,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_ReactManual : Command
     {
         public const string TypeTag = "ReactManual";
+        public Command_ReactManual() { Type = TypeTag; }
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
     }
@@ -659,6 +694,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_ConfirmReaction : Command
     {
         public const string TypeTag = "ConfirmReaction";
+        public Command_ConfirmReaction() { Type = TypeTag; }
         [JsonProperty("fire")]
         public bool Fire { get; init; }
         /// <summary>伏せ2枚 (かすみ) 用: 発動する伏せ札の uid。窓に合致する伏せが複数ある時に指定。省略時は先頭の合致札</summary>
@@ -670,6 +706,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record Command_EndTurn : Command
     {
         public const string TypeTag = "EndTurn";
+        public Command_EndTurn() { Type = TypeTag; }
     }
 
     /// <summary>判別共用体 GameEvent (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -683,6 +720,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CombatStarted : GameEvent
     {
         public const string TypeTag = "CombatStarted";
+        public GameEvent_CombatStarted() { Type = TypeTag; }
         [JsonProperty("enemyId")]
         public string EnemyId { get; init; } = default!;
     }
@@ -691,30 +729,40 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_TurnStarted : GameEvent
     {
         public const string TypeTag = "TurnStarted";
+        public GameEvent_TurnStarted() { Type = TypeTag; }
         [JsonProperty("turn")]
         public int Turn { get; init; }
+        [JsonProperty("hand")]
+        public IReadOnlyList<string>? Hand { get; init; }
     }
 
     /// <summary>GameEvent: type="TurnEnded"</summary>
     public sealed record GameEvent_TurnEnded : GameEvent
     {
         public const string TypeTag = "TurnEnded";
+        public GameEvent_TurnEnded() { Type = TypeTag; }
         [JsonProperty("turn")]
         public int Turn { get; init; }
+        [JsonProperty("unplayed")]
+        public IReadOnlyList<string>? Unplayed { get; init; }
     }
 
     /// <summary>GameEvent: type="CardsDrawn"</summary>
     public sealed record GameEvent_CardsDrawn : GameEvent
     {
         public const string TypeTag = "CardsDrawn";
+        public GameEvent_CardsDrawn() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
+        [JsonProperty("cards")]
+        public IReadOnlyList<string>? Cards { get; init; }
     }
 
     /// <summary>GameEvent: type="CardPlayed"</summary>
     public sealed record GameEvent_CardPlayed : GameEvent
     {
         public const string TypeTag = "CardPlayed";
+        public GameEvent_CardPlayed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -723,6 +771,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardSet : GameEvent
     {
         public const string TypeTag = "CardSet";
+        public GameEvent_CardSet() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -731,6 +780,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_SetCardRetrieved : GameEvent
     {
         public const string TypeTag = "SetCardRetrieved";
+        public GameEvent_SetCardRetrieved() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -739,6 +789,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyIntentDeclared : GameEvent
     {
         public const string TypeTag = "EnemyIntentDeclared";
+        public GameEvent_EnemyIntentDeclared() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("intent")]
@@ -749,6 +800,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyActionExecuting : GameEvent
     {
         public const string TypeTag = "EnemyActionExecuting";
+        public GameEvent_EnemyActionExecuting() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("kind")]
@@ -759,6 +811,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyActionResolved : GameEvent
     {
         public const string TypeTag = "EnemyActionResolved";
+        public GameEvent_EnemyActionResolved() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("kind")]
@@ -773,6 +826,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ActionNegated : GameEvent
     {
         public const string TypeTag = "ActionNegated";
+        public GameEvent_ActionNegated() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
     }
@@ -781,6 +835,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyConfused : GameEvent
     {
         public const string TypeTag = "EnemyConfused";
+        public GameEvent_EnemyConfused() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -791,6 +846,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ConfusedAttack : GameEvent
     {
         public const string TypeTag = "ConfusedAttack";
+        public GameEvent_ConfusedAttack() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("targetIndex")]
@@ -803,6 +859,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_DamageDealt : GameEvent
     {
         public const string TypeTag = "DamageDealt";
+        public GameEvent_DamageDealt() { Type = TypeTag; }
         [JsonProperty("source")]
         public string Source { get; init; } = default!;
         [JsonProperty("amount")]
@@ -830,6 +887,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_BlockGained : GameEvent
     {
         public const string TypeTag = "BlockGained";
+        public GameEvent_BlockGained() { Type = TypeTag; }
         [JsonProperty("target")]
         public string Target { get; init; } = default!;
         [JsonProperty("amount")]
@@ -840,6 +898,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_IceBlockGained : GameEvent
     {
         public const string TypeTag = "IceBlockGained";
+        public GameEvent_IceBlockGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -848,6 +907,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_AetherGained : GameEvent
     {
         public const string TypeTag = "AetherGained";
+        public GameEvent_AetherGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -856,6 +916,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_SpellEchoed : GameEvent
     {
         public const string TypeTag = "SpellEchoed";
+        public GameEvent_SpellEchoed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -864,6 +925,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_NecroFired : GameEvent
     {
         public const string TypeTag = "NecroFired";
+        public GameEvent_NecroFired() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -872,6 +934,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_NecroPlayed : GameEvent
     {
         public const string TypeTag = "NecroPlayed";
+        public GameEvent_NecroPlayed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -880,6 +943,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_AetherDischarged : GameEvent
     {
         public const string TypeTag = "AetherDischarged";
+        public GameEvent_AetherDischarged() { Type = TypeTag; }
         [JsonProperty("spent")]
         public int Spent { get; init; }
     }
@@ -888,6 +952,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_DiscountGained : GameEvent
     {
         public const string TypeTag = "DiscountGained";
+        public GameEvent_DiscountGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -896,6 +961,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_BurnApplied : GameEvent
     {
         public const string TypeTag = "BurnApplied";
+        public GameEvent_BurnApplied() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -906,6 +972,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_BurnTick : GameEvent
     {
         public const string TypeTag = "BurnTick";
+        public GameEvent_BurnTick() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -916,6 +983,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_StatusInflicted : GameEvent
     {
         public const string TypeTag = "StatusInflicted";
+        public GameEvent_StatusInflicted() { Type = TypeTag; }
         [JsonProperty("status")]
         public string Status { get; init; } = default!;
         [JsonProperty("amount")]
@@ -926,6 +994,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ScaldTick : GameEvent
     {
         public const string TypeTag = "ScaldTick";
+        public GameEvent_ScaldTick() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
         [JsonProperty("amount")]
@@ -936,6 +1005,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemySplit : GameEvent
     {
         public const string TypeTag = "EnemySplit";
+        public GameEvent_EnemySplit() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("into")]
@@ -948,6 +1018,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyHatched : GameEvent
     {
         public const string TypeTag = "EnemyHatched";
+        public GameEvent_EnemyHatched() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("fromId")]
@@ -960,6 +1031,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_GuardianRedirected : GameEvent
     {
         public const string TypeTag = "GuardianRedirected";
+        public GameEvent_GuardianRedirected() { Type = TypeTag; }
         [JsonProperty("fromIndex")]
         public int FromIndex { get; init; }
         [JsonProperty("toIndex")]
@@ -970,6 +1042,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ArtifactBlocked : GameEvent
     {
         public const string TypeTag = "ArtifactBlocked";
+        public GameEvent_ArtifactBlocked() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("effect")]
@@ -980,6 +1053,16 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_BurrowBroken : GameEvent
     {
         public const string TypeTag = "BurrowBroken";
+        public GameEvent_BurrowBroken() { Type = TypeTag; }
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
+    }
+
+    /// <summary>GameEvent: type="EnemyStaggered"</summary>
+    public sealed record GameEvent_EnemyStaggered : GameEvent
+    {
+        public const string TypeTag = "EnemyStaggered";
+        public GameEvent_EnemyStaggered() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
     }
@@ -988,6 +1071,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyWoken : GameEvent
     {
         public const string TypeTag = "EnemyWoken";
+        public GameEvent_EnemyWoken() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
     }
@@ -996,6 +1080,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_RegenTicked : GameEvent
     {
         public const string TypeTag = "RegenTicked";
+        public GameEvent_RegenTicked() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1006,6 +1091,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_RegenBroken : GameEvent
     {
         public const string TypeTag = "RegenBroken";
+        public GameEvent_RegenBroken() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
     }
@@ -1014,6 +1100,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_BlockShattered : GameEvent
     {
         public const string TypeTag = "BlockShattered";
+        public GameEvent_BlockShattered() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1024,6 +1111,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ImpulseDrawn : GameEvent
     {
         public const string TypeTag = "ImpulseDrawn";
+        public GameEvent_ImpulseDrawn() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
     }
@@ -1032,6 +1120,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_HpLost : GameEvent
     {
         public const string TypeTag = "HpLost";
+        public GameEvent_HpLost() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1040,6 +1129,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_StrengthGained : GameEvent
     {
         public const string TypeTag = "StrengthGained";
+        public GameEvent_StrengthGained() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1052,6 +1142,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnergyGained : GameEvent
     {
         public const string TypeTag = "EnergyGained";
+        public GameEvent_EnergyGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1060,6 +1151,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_MomentumAdded : GameEvent
     {
         public const string TypeTag = "MomentumAdded";
+        public GameEvent_MomentumAdded() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1068,6 +1160,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_PermanentPlayed : GameEvent
     {
         public const string TypeTag = "PermanentPlayed";
+        public GameEvent_PermanentPlayed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1076,6 +1169,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardExhausted : GameEvent
     {
         public const string TypeTag = "CardExhausted";
+        public GameEvent_CardExhausted() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1084,6 +1178,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardsAddedToHand : GameEvent
     {
         public const string TypeTag = "CardsAddedToHand";
+        public GameEvent_CardsAddedToHand() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
         [JsonProperty("count")]
@@ -1094,6 +1189,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ExhaustRecycled : GameEvent
     {
         public const string TypeTag = "ExhaustRecycled";
+        public GameEvent_ExhaustRecycled() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
     }
@@ -1102,6 +1198,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_BurnDischarged : GameEvent
     {
         public const string TypeTag = "BurnDischarged";
+        public GameEvent_BurnDischarged() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1112,6 +1209,43 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_TokenDestroyed : GameEvent
     {
         public const string TypeTag = "TokenDestroyed";
+        public GameEvent_TokenDestroyed() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="RetainerSacrificed"</summary>
+    public sealed record GameEvent_RetainerSacrificed : GameEvent
+    {
+        public const string TypeTag = "RetainerSacrificed";
+        public GameEvent_RetainerSacrificed() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="RetainersDuplicated"</summary>
+    public sealed record GameEvent_RetainersDuplicated : GameEvent
+    {
+        public const string TypeTag = "RetainersDuplicated";
+        public GameEvent_RetainersDuplicated() { Type = TypeTag; }
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
+    /// <summary>GameEvent: type="RetainersTriggered"</summary>
+    public sealed record GameEvent_RetainersTriggered : GameEvent
+    {
+        public const string TypeTag = "RetainersTriggered";
+        public GameEvent_RetainersTriggered() { Type = TypeTag; }
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
+    /// <summary>GameEvent: type="RetainerRushed"</summary>
+    public sealed record GameEvent_RetainerRushed : GameEvent
+    {
+        public const string TypeTag = "RetainerRushed";
+        public GameEvent_RetainerRushed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1120,6 +1254,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ThornsReflected : GameEvent
     {
         public const string TypeTag = "ThornsReflected";
+        public GameEvent_ThornsReflected() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1132,6 +1267,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_GoldStolen : GameEvent
     {
         public const string TypeTag = "GoldStolen";
+        public GameEvent_GoldStolen() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1142,6 +1278,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyFled : GameEvent
     {
         public const string TypeTag = "EnemyFled";
+        public GameEvent_EnemyFled() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
     }
@@ -1150,6 +1287,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyHealed : GameEvent
     {
         public const string TypeTag = "EnemyHealed";
+        public GameEvent_EnemyHealed() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("targetIndex")]
@@ -1162,6 +1300,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardRetrieved : GameEvent
     {
         public const string TypeTag = "CardRetrieved";
+        public GameEvent_CardRetrieved() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1170,6 +1309,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardPlayedFromExhaust : GameEvent
     {
         public const string TypeTag = "CardPlayedFromExhaust";
+        public GameEvent_CardPlayedFromExhaust() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1178,6 +1318,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardsDiscarded : GameEvent
     {
         public const string TypeTag = "CardsDiscarded";
+        public GameEvent_CardsDiscarded() { Type = TypeTag; }
         [JsonProperty("cardIds")]
         public IReadOnlyList<string> CardIds { get; init; } = default!;
     }
@@ -1186,6 +1327,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnergyMaxGained : GameEvent
     {
         public const string TypeTag = "EnergyMaxGained";
+        public GameEvent_EnergyMaxGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1194,6 +1336,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_GrowthAdded : GameEvent
     {
         public const string TypeTag = "GrowthAdded";
+        public GameEvent_GrowthAdded() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1202,6 +1345,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_SetSlotGained : GameEvent
     {
         public const string TypeTag = "SetSlotGained";
+        public GameEvent_SetSlotGained() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1210,6 +1354,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardsMovedToHand : GameEvent
     {
         public const string TypeTag = "CardsMovedToHand";
+        public GameEvent_CardsMovedToHand() { Type = TypeTag; }
         [JsonProperty("cardIds")]
         public IReadOnlyList<string> CardIds { get; init; } = default!;
         [JsonProperty("from")]
@@ -1220,6 +1365,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardCopied : GameEvent
     {
         public const string TypeTag = "CardCopied";
+        public GameEvent_CardCopied() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
         [JsonProperty("count")]
@@ -1230,6 +1376,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardGrew : GameEvent
     {
         public const string TypeTag = "CardGrew";
+        public GameEvent_CardGrew() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
         [JsonProperty("bonus")]
@@ -1240,6 +1387,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardUpgradedInHand : GameEvent
     {
         public const string TypeTag = "CardUpgradedInHand";
+        public GameEvent_CardUpgradedInHand() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1248,6 +1396,16 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_GrowthDischarged : GameEvent
     {
         public const string TypeTag = "GrowthDischarged";
+        public GameEvent_GrowthDischarged() { Type = TypeTag; }
+        [JsonProperty("spent")]
+        public int Spent { get; init; }
+    }
+
+    /// <summary>GameEvent: type="MomentumDischarged"</summary>
+    public sealed record GameEvent_MomentumDischarged : GameEvent
+    {
+        public const string TypeTag = "MomentumDischarged";
+        public GameEvent_MomentumDischarged() { Type = TypeTag; }
         [JsonProperty("spent")]
         public int Spent { get; init; }
     }
@@ -1256,6 +1414,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_HpHealed : GameEvent
     {
         public const string TypeTag = "HpHealed";
+        public GameEvent_HpHealed() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1264,6 +1423,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CardsMilled : GameEvent
     {
         public const string TypeTag = "CardsMilled";
+        public GameEvent_CardsMilled() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
         [JsonProperty("cardIds")]
@@ -1274,6 +1434,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyWeakened : GameEvent
     {
         public const string TypeTag = "EnemyWeakened";
+        public GameEvent_EnemyWeakened() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1284,6 +1445,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ExposedApplied : GameEvent
     {
         public const string TypeTag = "ExposedApplied";
+        public GameEvent_ExposedApplied() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1294,6 +1456,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ReactionTriggered : GameEvent
     {
         public const string TypeTag = "ReactionTriggered";
+        public GameEvent_ReactionTriggered() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
         [JsonProperty("mode")]
@@ -1304,6 +1467,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ReactionUnaffordable : GameEvent
     {
         public const string TypeTag = "ReactionUnaffordable";
+        public GameEvent_ReactionUnaffordable() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
         [JsonProperty("cost")]
@@ -1316,6 +1480,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ReactionHeld : GameEvent
     {
         public const string TypeTag = "ReactionHeld";
+        public GameEvent_ReactionHeld() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("stage")]
@@ -1334,6 +1499,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_ReactionWhiffed : GameEvent
     {
         public const string TypeTag = "ReactionWhiffed";
+        public GameEvent_ReactionWhiffed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1342,6 +1508,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_SetCardDestroyed : GameEvent
     {
         public const string TypeTag = "SetCardDestroyed";
+        public GameEvent_SetCardDestroyed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
     }
@@ -1350,6 +1517,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_EnemyPhaseEnded : GameEvent
     {
         public const string TypeTag = "EnemyPhaseEnded";
+        public GameEvent_EnemyPhaseEnded() { Type = TypeTag; }
         [JsonProperty("turn")]
         public int Turn { get; init; }
     }
@@ -1358,6 +1526,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record GameEvent_CombatEnded : GameEvent
     {
         public const string TypeTag = "CombatEnded";
+        public GameEvent_CombatEnded() { Type = TypeTag; }
         [JsonProperty("result")]
         public string Result { get; init; } = default!;
     }
@@ -1373,6 +1542,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03)</summary>
         [JsonProperty("growthMultiplier")]
         public double? GrowthMultiplier { get; init; }
+        /// <summary>勢いが×Nで乗る (猛進の角=大牙の勢い版。緑 勢いの網 2026-09-04)。dealDamage 専用</summary>
+        [JsonProperty("momentumMultiplier")]
+        public double? MomentumMultiplier { get; init; }
+        /// <summary>dischargeMomentumVolley のヒット数 (既定3)</summary>
+        [JsonProperty("volleyHits")]
+        public int? VolleyHits { get; init; }
         [JsonProperty("effect")]
         public string Effect { get; init; } = default!;
         [JsonProperty("amount")]
@@ -1553,6 +1728,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03)</summary>
         [JsonProperty("freeIfHandAllPhysical")]
         public bool? FreeIfHandAllPhysical { get; init; }
+        /// <summary>手札の他の札がすべてこのタイプなら0E (freeIfHandAllPhysical の一般化。白の大城壁='spell' 2026-09-06。判定は自身を除く手札)</summary>
+        [JsonProperty("freeIfHandAll")]
+        public string? FreeIfHandAll { get; init; }
+        /// <summary>プレイ条件: 場に従者 (retainer・innate除く) が1体以上 (殉教の誓い 2026-09-06。xCost のエナジー1以上と同じ playability)</summary>
+        [JsonProperty("requiresRetainer")]
+        public bool? RequiresRetainer { get; init; }
+        /// <summary>勢いがN以上ならこのカードは0E (追い風。緑 勢いの網 2026-09-04。重圧の上乗せは残る)</summary>
+        [JsonProperty("freeIfMomentumAtLeast")]
+        public int? FreeIfMomentumAtLeast { get; init; }
         /// <summary>急所を持つ敵が生存していれば消滅しない (樹液=本家 Dropkick 型。exhaust と併用)</summary>
         [JsonProperty("exhaustUnlessExposedEnemy")]
         public bool? ExhaustUnlessExposedEnemy { get; init; }
@@ -1849,6 +2033,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>因縁 (2026-09-03 本家 Nemesis): 奇数ターン (1,3,5…) は無形=1ヒットのHP損失が1に固定。偶数ターンに実体化。 延焼は通る (装甲と同じ裁定)。「殴るターン/備えるターン」のリズムを作り、T1爆発を構造的に半減する</summary>
         [JsonProperty("nemesis")]
         public bool? Nemesis { get; init; }
+        /// <summary>バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と次の宣言が隙になる</summary>
+        [JsonProperty("imbalanced")]
+        public bool? Imbalanced { get; init; }
         /// <summary>常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」): この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。 敵を倒せば即解除 = キル順の圧。打ち消し不可 (行動でなく存在)。敵カードに常時表示</summary>
         [JsonProperty("aura")]
         public EnemyDefAura? Aura { get; init; }
@@ -1907,9 +2094,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper)</summary>
         [JsonProperty("noRest")]
         public bool? NoRest { get; init; }
-        /// <summary>宝箱・?のレリックを取るたび烙印をN枚受け取る (呪いの鍵=本家 Cursed Key)</summary>
-        [JsonProperty("brandOnChestRelic")]
-        public int? BrandOnChestRelic { get; init; }
+        /// <summary>レリックを取るたび (供給源を問わず: 宝箱・?・エリート・ボス・ショップ・イベント) 烙印をN枚受け取る (呪いの鍵。2026-09-04 ユーザー裁定: 旧「宝箱のみ」は降りられる代償=実質ノーコストだった)</summary>
+        [JsonProperty("brandOnRelic")]
+        public int? BrandOnRelic { get; init; }
         /// <summary>勝利時に無条件でHP+N (薬草袋。狩人の恵みの条件つき回復とは別口)</summary>
         [JsonProperty("victoryHealFlat")]
         public int? VictoryHealFlat { get; init; }
@@ -2125,7 +2312,7 @@ namespace DeckRogue.Engine.Generated
         public int Act { get; init; }
         /// <summary>現在の幕のマップ (幕開始時にシードから確定。全体可視)</summary>
         [JsonProperty("map")]
-        public RunMap Map { get; init; } = default!;
+        public IReadOnlyList<IReadOnlyList<MapNode>> Map { get; init; } = default!;
         /// <summary>現在いる行 (-1 = 開始前。行0のノードを選ぶ)</summary>
         [JsonProperty("row")]
         public int Row { get; init; }
@@ -2185,6 +2372,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>この焚き火で「鍛える」を使った回数 (焚き火進入時にリセット)</summary>
         [JsonProperty("campfireUpgradesUsed")]
         public int CampfireUpgradesUsed { get; init; }
+        /// <summary>鍛冶の砥石 (campfireForge) の追加回数を使った幕。1幕に1回だけ (2026-09-05 ユーザー裁定「砥石の調整」)</summary>
+        [JsonProperty("forgeBonusUsedAct")]
+        public int? ForgeBonusUsedAct { get; init; }
         /// <summary>?マスの累積確率 (整数パーセントポイント。幕頭で基礎値へリセット)</summary>
         [JsonProperty("unknownPity")]
         public RunStateUnknownPity UnknownPity { get; init; } = default!;
@@ -2213,6 +2403,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_StartRun : RunCommand
     {
         public const string TypeTag = "StartRun";
+        public RunCommand_StartRun() { Type = TypeTag; }
         [JsonProperty("seed")]
         public int Seed { get; init; }
     }
@@ -2221,6 +2412,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_Combat : RunCommand
     {
         public const string TypeTag = "Combat";
+        public RunCommand_Combat() { Type = TypeTag; }
         [JsonProperty("command")]
         public Command Command { get; init; } = default!;
     }
@@ -2229,6 +2421,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_PickReward : RunCommand
     {
         public const string TypeTag = "PickReward";
+        public RunCommand_PickReward() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2237,12 +2430,14 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_SkipReward : RunCommand
     {
         public const string TypeTag = "SkipReward";
+        public RunCommand_SkipReward() { Type = TypeTag; }
     }
 
     /// <summary>RunCommand: type="ChooseNode"</summary>
     public sealed record RunCommand_ChooseNode : RunCommand
     {
         public const string TypeTag = "ChooseNode";
+        public RunCommand_ChooseNode() { Type = TypeTag; }
         [JsonProperty("col")]
         public int Col { get; init; }
     }
@@ -2251,6 +2446,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_PickRelic : RunCommand
     {
         public const string TypeTag = "PickRelic";
+        public RunCommand_PickRelic() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2259,18 +2455,21 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_SkipRelic : RunCommand
     {
         public const string TypeTag = "SkipRelic";
+        public RunCommand_SkipRelic() { Type = TypeTag; }
     }
 
     /// <summary>RunCommand: type="CampfireRest"</summary>
     public sealed record RunCommand_CampfireRest : RunCommand
     {
         public const string TypeTag = "CampfireRest";
+        public RunCommand_CampfireRest() { Type = TypeTag; }
     }
 
     /// <summary>RunCommand: type="CampfireRemove"</summary>
     public sealed record RunCommand_CampfireRemove : RunCommand
     {
         public const string TypeTag = "CampfireRemove";
+        public RunCommand_CampfireRemove() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2279,6 +2478,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_CampfireUpgrade : RunCommand
     {
         public const string TypeTag = "CampfireUpgrade";
+        public RunCommand_CampfireUpgrade() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2287,6 +2487,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_WorkshopFuse : RunCommand
     {
         public const string TypeTag = "WorkshopFuse";
+        public RunCommand_WorkshopFuse() { Type = TypeTag; }
         [JsonProperty("indexA")]
         public int IndexA { get; init; }
         [JsonProperty("indexB")]
@@ -2297,12 +2498,14 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_WorkshopSkip : RunCommand
     {
         public const string TypeTag = "WorkshopSkip";
+        public RunCommand_WorkshopSkip() { Type = TypeTag; }
     }
 
     /// <summary>RunCommand: type="ShopBuyCard"</summary>
     public sealed record RunCommand_ShopBuyCard : RunCommand
     {
         public const string TypeTag = "ShopBuyCard";
+        public RunCommand_ShopBuyCard() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2311,12 +2514,14 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_ShopBuyRelic : RunCommand
     {
         public const string TypeTag = "ShopBuyRelic";
+        public RunCommand_ShopBuyRelic() { Type = TypeTag; }
     }
 
     /// <summary>RunCommand: type="ShopRemove"</summary>
     public sealed record RunCommand_ShopRemove : RunCommand
     {
         public const string TypeTag = "ShopRemove";
+        public RunCommand_ShopRemove() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2325,6 +2530,7 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_ShopUpgrade : RunCommand
     {
         public const string TypeTag = "ShopUpgrade";
+        public RunCommand_ShopUpgrade() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
     }
@@ -2333,12 +2539,14 @@ namespace DeckRogue.Engine.Generated
     public sealed record RunCommand_ShopLeave : RunCommand
     {
         public const string TypeTag = "ShopLeave";
+        public RunCommand_ShopLeave() { Type = TypeTag; }
     }
 
     /// <summary>RunCommand: type="EventChoice"</summary>
     public sealed record RunCommand_EventChoice : RunCommand
     {
         public const string TypeTag = "EventChoice";
+        public RunCommand_EventChoice() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
         [JsonProperty("cardIndex")]
@@ -2393,6 +2601,9 @@ namespace DeckRogue.Engine.Generated
         public ReplayOrigin Origin { get; init; } = default!;
         [JsonProperty("commands")]
         public IReadOnlyList<RunCommand> Commands { get; init; } = default!;
+        /// <summary>各コマンドの記録時刻 (epoch ms。commands と同じ長さ。UI/CLI が付ける・engine は読まない。2026-09-05 判断時間の計測)</summary>
+        [JsonProperty("times")]
+        public IReadOnlyList<int>? Times { get; init; }
     }
 
     // ==== src/engine/map.ts ====

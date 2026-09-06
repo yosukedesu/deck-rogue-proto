@@ -26,6 +26,8 @@ const isDouble = (name: string): boolean => /ratio|scale|multiplier|premium|atkS
 const literalUnions = new Map<string, string[]>()
 /** 判別共用体 (type フィールドで分岐) */
 const taggedUnions = new Map<string, ts.TypeLiteralNode[]>()
+/** 配列などへの型別名 (RunMap = readonly (readonly MapNode[])[] 等) → 参照箇所で展開する */
+const typeAliases = new Map<string, ts.TypeNode>()
 /** 生成したレコード名 (重複防止) */
 const emitted = new Set<string>()
 const out: string[] = []
@@ -50,7 +52,8 @@ function csType(node: ts.TypeNode | undefined, propName: string, owner: string):
   if (ts.isParenthesizedTypeNode(node)) return csType(node.type, propName, owner)
   switch (node.kind) {
     case ts.SyntaxKind.StringKeyword: return 'string'
-    case ts.SyntaxKind.NumberKeyword: return isDouble(propName) ? 'double' : 'int'
+    // RngState の seed は JS の >>>0 (uint32) なので int に収まらない = long (counter も揃える)
+    case ts.SyntaxKind.NumberKeyword: return owner === 'RngState' ? 'long' : isDouble(propName) ? 'double' : 'int'
     case ts.SyntaxKind.BooleanKeyword: return 'bool'
     case ts.SyntaxKind.UnknownKeyword:
     case ts.SyntaxKind.AnyKeyword: return 'object'
@@ -89,6 +92,7 @@ function csType(node: ts.TypeNode | undefined, propName: string, owner: string):
     if (name === 'Record') return `IReadOnlyDictionary<${csType(args[0], propName, owner)}, ${csType(args[1], propName, owner)}>`
     if (name === 'Set') return `IReadOnlyList<${csType(args[0], propName, owner)}>`
     if (literalUnions.has(name)) return 'string'
+    if (typeAliases.has(name)) return csType(typeAliases.get(name), propName, owner) // 配列などへの型別名は展開
     return name // 他の interface / alias
   }
   if (ts.isFunctionTypeNode(node)) return 'object /* function */'
@@ -105,6 +109,8 @@ function emitRecord(name: string, members: ts.NodeArray<ts.TypeElement>, doc: st
   lines.push('    {')
   if (extra?.discriminator !== undefined) {
     lines.push(`        public const string TypeTag = "${extra.discriminator}";`)
+    // 生成時に Type を埋める = 移植側は new GameEvent_X { ... } と書くだけで type が入る (JSON 読込時も同じ)
+    lines.push(`        public ${name}() { Type = TypeTag; }`)
   }
   for (const m of members) {
     if (!ts.isPropertySignature(m) || !m.name) continue
@@ -142,7 +148,10 @@ for (const file of SOURCES) {
     if (ts.isUnionTypeNode(node.type) && node.type.types.every((t) => ts.isTypeLiteralNode(t) || ts.isParenthesizedTypeNode(t))) {
       const members = node.type.types.map((t) => (ts.isParenthesizedTypeNode(t) ? t.type : t)).filter(ts.isTypeLiteralNode)
       if (members.every((m) => m.members.some((x) => ts.isPropertySignature(x) && x.name.getText() === 'type'))) taggedUnions.set(node.name.text, members)
+      return
     }
+    // 配列・タプルへの別名 (RunMap 等) は record にできないので参照側で展開する
+    if (ts.isArrayTypeNode(node.type) || ts.isTypeOperatorNode(node.type) || ts.isTupleTypeNode(node.type)) typeAliases.set(node.name.text, node.type)
   })
 }
 
