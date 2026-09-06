@@ -66,7 +66,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   }
   if (def.guardian) tags.push('庇う(生存中は単体対象がこの敵に向かう。全体・延焼は素通し)')
   if (def.bondStrength) tags.push(`連携+${def.bondStrength}(仲間が生きている間、攻撃+${def.bondStrength})`)
-  if (def.aura) tags.push(`重圧(生存中、${def.aura.cardType ?? '全'}カードのコスト+${def.aura.costUp})`)
+  if (def.aura) tags.push(`重圧(生存中、${def.aura.attacksOnly === true ? '攻撃' : (def.aura.cardType ?? '全')}カードのコスト+${def.aura.costUp})`)
   if (def.mournStrength) tags.push(`弔い+${def.mournStrength}(仲間が倒れるたび筋力+)`)
   if (def.angerOnBlock) tags.push(`ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)`)
   if (def.enrage) tags.push(def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ${def.enrageEveryDamage !== undefined ? `・+${def.enrage}/被ダメ${def.enrageEveryDamage}` : ''}` : `激昂+${def.enrage}/T`)
@@ -116,7 +116,7 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     tags.push('⛔庇われ中(単体対象はこの敵を選べない)')
   }
   if (def.bondStrength) tags.push(`連携+${def.bondStrength}(仲間が生きている間、攻撃+${def.bondStrength})`)
-  if (def.aura) tags.push(`重圧(生存中、${def.aura.cardType ?? '全'}カードのコスト+${def.aura.costUp})`)
+  if (def.aura) tags.push(`重圧(生存中、${def.aura.attacksOnly === true ? '攻撃' : (def.aura.cardType ?? '全')}カードのコスト+${def.aura.costUp})`)
   if (def.hatchInto) {
     const t = turnsUntilHatch(s, i)
     tags.push(`孵化(${t === 0 ? 'このフェーズで孵化!' : t !== null ? `あと${t}手` : ''}→${getEnemyDef(def.hatchInto.enemyId).name}。打ち消しで遅延可・行動値条件の打ち消しは反応しない)`)

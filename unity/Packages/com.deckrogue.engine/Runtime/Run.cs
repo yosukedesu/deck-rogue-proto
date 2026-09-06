@@ -158,6 +158,7 @@ namespace DeckRogue.Engine
                     "eliteGoldBonus" => b.EliteGoldBonus,
                     "fusionDiscount" => b.FusionDiscount,
                     "removalStepDelta" => b.RemovalStepDelta,
+                    "eliteRelicPicks" => b.EliteRelicPicks, // 黒星の欠片 (2026-09-06)
                     _ => null,
                 };
                 a += v ?? 0;
@@ -1066,7 +1067,9 @@ namespace DeckRogue.Engine
                 var (options, rng2) = DrawRelicOptions(next, isBoss ? RelicSources.Boss : RelicSources.Elite);
                 if (options.Count > 0)
                 {
-                    return next with { Rng = rng2, Phase = RunPhases.RelicReward, RelicOptions = options };
+                    // 黒星の欠片 (2026-09-06): 強個体の3択から 1+N 個取れる
+                    int picks = run.CurrentElite && !isBoss ? 1 + RelicBonusSum(next, "eliteRelicPicks") : 1;
+                    return next with { Rng = rng2, Phase = RunPhases.RelicReward, RelicOptions = options, RelicPicksLeft = picks > 1 ? picks : (int?)null };
                 }
             }
             return RollRewards(next);
@@ -1127,7 +1130,27 @@ namespace DeckRogue.Engine
                 CampfireRatio = b.CampfireRatio ?? run.CampfireRatio,
                 GoldPerVictoryBonus = run.GoldPerVictoryBonus + (b.GoldPerVictory ?? 0),
                 CampfireForgeBonus = run.CampfireForgeBonus + (b.CampfireForge ?? 0),
+                Gold = run.Gold + (b.GoldOnPickup ?? 0), // 小さな家 (2026-09-06)
             };
+        }
+
+        /// <summary>小さな家 (2026-09-06): 取った時にデッキの鍛えられる札からランダムにN枚鍛える (ラン RNG を消費)</summary>
+        private static RunState ApplyRandomUpgradesOnPickup(RunState run, string relicId)
+        {
+            int n = Content.GetRelicDef(relicId).Bonus?.UpgradeRandomOnPickup ?? 0;
+            var next = run;
+            for (int k = 0; k < n; k++)
+            {
+                var cands = new List<int>();
+                for (int i = 0; i < next.Deck.Count; i++) if (Upgrade.CanUpgradeCard(next.Deck[i])) cands.Add(i);
+                if (cands.Count == 0) break;
+                var (j, rng) = Rng.NextInt(next.Rng, 0, cands.Count - 1);
+                int idx = cands[j];
+                var deck = new List<CardInstance>(next.Deck.Count);
+                for (int i = 0; i < next.Deck.Count; i++) deck.Add(i == idx ? Upgrade.UpgradeCard(next.Deck[i]) : next.Deck[i]);
+                next = next with { Rng = rng, Deck = deck };
+            }
+            return next;
         }
 
         /// <summary>
@@ -1197,18 +1220,25 @@ namespace DeckRogue.Engine
                     if (relicId == null) throw new InvalidOperationException($"不正なレリック指定: {c.Index}");
                     RunState next = run with { Relics = Append(run.Relics, relicId), RelicOptions = null };
                     next = ApplyRelicBonus(next, relicId);
+                    next = ApplyRandomUpgradesOnPickup(next, relicId);
                     // ?マスの宝箱はレリックのみでカード報酬は付かない
                     // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (AfterVictory は必ず combat を渡す)
                     next = WithRelicGainBrands(next, run);
+                    // 黒星の欠片 (2026-09-06): 強個体の3択から残りをもう1つ選べる (RelicPicksLeft は AfterVictory が立てる)
+                    int picksLeft = (run.RelicPicksLeft ?? 1) - 1;
+                    var remaining = new List<string>();
+                    foreach (var id in run.RelicOptions) if (id != relicId) remaining.Add(id);
+                    if (run.Combat != null && run.CurrentElite && picksLeft > 0 && remaining.Count > 0)
+                        return next with { Phase = RunPhases.RelicReward, RelicOptions = remaining, RelicPicksLeft = picksLeft };
                     if (run.Combat == null) return next with { RelicOptions = null, Phase = RunPhases.Map };
-                    return RollRewards(next);
+                    return RollRewards(next with { RelicPicksLeft = null });
                 }
 
                 case RunCommand_SkipRelic:
                 {
                     if (run.Phase != RunPhases.RelicReward) throw new InvalidOperationException("レリック報酬フェーズではない");
                     if (run.Combat == null) return run with { RelicOptions = null, Phase = RunPhases.Map };
-                    return RollRewards(run with { RelicOptions = null });
+                    return RollRewards(run with { RelicOptions = null, RelicPicksLeft = null });
                 }
 
                 case RunCommand_CampfireRest:

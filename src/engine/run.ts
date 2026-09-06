@@ -116,7 +116,7 @@ export function workshopFusePrice(run: RunState): number {
 /** B型レリックの数値ボーナスの合計 (所持レリックから毎回導出 = RunState にフィールドを増やさない) */
 export function relicBonusSum(
   run: RunState,
-  key: 'victoryHealFlat' | 'shopUpgradeDiscount' | 'restMaxHp' | 'eliteGoldBonus' | 'fusionDiscount' | 'removalStepDelta',
+  key: 'victoryHealFlat' | 'shopUpgradeDiscount' | 'restMaxHp' | 'eliteGoldBonus' | 'fusionDiscount' | 'removalStepDelta' | 'eliteRelicPicks',
 ): number {
   return run.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.[key] ?? 0), 0)
 }
@@ -253,6 +253,8 @@ export interface RunState {
   readonly relicQueue: readonly string[]
   /** relic-reward フェーズの提示レリック */
   readonly relicOptions: readonly string[] | null
+  /** 強個体のレリック3択から取れる残り個数 (黒星の欠片 2026-09-06)。省略=1 */
+  readonly relicPicksLeft?: number
   /** 現在の戦闘がエリート戦か (勝利時のレリック報酬判定) */
   readonly currentElite: boolean
   /** B型レリックの恒久ボーナス */
@@ -1124,7 +1126,9 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   if (run.currentElite || isBoss) {
     const [options, rng2] = drawRelicOptions(next, isBoss ? 'boss' : 'elite')
     if (options.length > 0) {
-      return { ...next, rng: rng2, phase: 'relic-reward', relicOptions: options }
+      // 黒星の欠片 (2026-09-06): 強個体の3択から 1+N 個取れる
+      const picks = run.currentElite && !isBoss ? 1 + relicBonusSum(next, 'eliteRelicPicks') : 1
+      return { ...next, rng: rng2, phase: 'relic-reward', relicOptions: options, relicPicksLeft: picks > 1 ? picks : undefined }
     }
   }
   return rollRewards(next)
@@ -1187,7 +1191,22 @@ function applyRelicBonus(run: RunState, relicId: string): RunState {
     // ?? 0 二段: 旧セーブは RunState 側のフィールド自体が無い (NaN汚染防止。shop-event.test.ts の前例)
     goldPerVictoryBonus: (run.goldPerVictoryBonus ?? 0) + (b.goldPerVictory ?? 0),
     campfireForgeBonus: (run.campfireForgeBonus ?? 0) + (b.campfireForge ?? 0),
+    gold: run.gold + (b.goldOnPickup ?? 0), // 小さな家 (2026-09-06)
   }
+}
+
+/** 小さな家 (2026-09-06 ボスレリックの代償なし枠): 取った時にデッキの鍛えられる札からランダムにN枚鍛える (ラン RNG を消費) */
+function applyRandomUpgradesOnPickup(run: RunState, relicId: string): RunState {
+  const n = getRelicDef(relicId).bonus?.upgradeRandomOnPickup ?? 0
+  let next = run
+  for (let k = 0; k < n; k++) {
+    const cands = next.deck.map((c, i) => (canUpgradeCard(c) ? i : -1)).filter((i) => i >= 0)
+    if (cands.length === 0) break
+    const [j, rng] = nextInt(next.rng, 0, cands.length - 1)
+    const idx = cands[j]
+    next = { ...next, rng, deck: next.deck.map((c, i) => (i === idx ? upgradeCard(c) : c)) }
+  }
+  return next
 }
 
 /**
@@ -1244,16 +1263,23 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (relicId === undefined) throw new Error(`不正なレリック指定: ${command.index}`)
       let next: RunState = { ...run, relics: [...run.relics, relicId], relicOptions: null }
       next = applyRelicBonus(next, relicId)
+      next = applyRandomUpgradesOnPickup(next, relicId)
       // ?マスの宝箱はレリックのみでカード報酬は付かない (2026-08-29)。
       // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (afterVictory は必ず combat を渡す)
       next = withRelicGainBrands(next, run)
+      // 黒星の欠片 (2026-09-06): 強個体の3択から残りをもう1つ選べる (relicPicksLeft は afterVictory が立てる)
+      const picksLeft = (run.relicPicksLeft ?? 1) - 1
+      const remaining = run.relicOptions.filter((id) => id !== relicId)
+      if (run.combat !== null && run.currentElite && picksLeft > 0 && remaining.length > 0) {
+        return { ...next, phase: 'relic-reward', relicOptions: remaining, relicPicksLeft: picksLeft }
+      }
       if (run.combat === null) return { ...next, relicOptions: null, phase: 'map' }
-      return rollRewards(next)
+      return rollRewards({ ...next, relicPicksLeft: undefined })
     }
     case 'SkipRelic': {
       if (run.phase !== 'relic-reward') throw new Error('レリック報酬フェーズではない')
       if (run.combat === null) return { ...run, relicOptions: null, phase: 'map' }
-      return rollRewards({ ...run, relicOptions: null })
+      return rollRewards({ ...run, relicOptions: null, relicPicksLeft: undefined })
     }
     case 'CampfireRest': {
       // 休む = 最大HPの30% (campfireRatio) を回復して次へ。鍛える/除去とは排他 (2026-08-29 復帰)。

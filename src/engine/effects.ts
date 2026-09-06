@@ -11,8 +11,7 @@ import type {
   DeclarativeEffect,
   EnemyActionKind,
   EnemyIntent,
-  GameState,
-} from './types.ts'
+  GameState, CardDef } from './types.ts'
 
 /**
  * 猛り火のしきい値 (確定済みルール表「猛り火」)。全札で単一の8。
@@ -40,6 +39,11 @@ export function isBlazing(state: GameState): boolean {
  * 常在オーラ (2026-09-02 StS2 Afflictions式): 生存する敵の aura による同タイプのコスト増の合計。
  * 敵を倒せば即0 = キル順の圧。割引 (discountNext) はオーラ増加分にも効く (増えた分を割で相殺できる)
  */
+/** ダメージを与える効果を1つでも持つ札か (モードの中も見る)。重圧 attacksOnly の判定 */
+function cardHasDamage(def: CardDef): boolean {
+  return def.effects.some(isDamageEffect) || (def.modes ?? []).some((m) => m.effects.some(isDamageEffect))
+}
+
 export function auraCostUp(state: GameState, card: CardInstance): number {
   let up = 0
   for (const e of state.enemies) {
@@ -47,6 +51,8 @@ export function auraCostUp(state: GameState, card: CardInstance): number {
     const aura = getEnemyDef(e.enemyId).aura
     if (aura === undefined) continue
     if (aura.cardType !== undefined && aura.cardType !== card.def.type) continue
+    // 攻撃札だけの重圧 (2026-09-06 人間ラン#7a のメモ「攻撃カードだけコスト増加は？」): ダメージ効果を持つ札 (モード含む) のみ
+    if (aura.attacksOnly === true && !cardHasDamage(card.def)) continue
     up += aura.costUp
   }
   return up

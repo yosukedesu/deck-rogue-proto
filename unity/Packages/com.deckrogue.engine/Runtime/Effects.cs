@@ -93,6 +93,14 @@ namespace DeckRogue.Engine
         /// 常在オーラ (2026-09-02 StS2 Afflictions式): 生存する敵の aura による同タイプのコスト増の合計。
         /// 敵を倒せば即0 = キル順の圧。割引 (discountNext) はオーラ増加分にも効く
         /// </summary>
+        /// <summary>ダメージを与える効果を1つでも持つ札か (モードの中も見る)。重圧 attacksOnly の判定</summary>
+        private static bool CardHasDamage(CardDef def)
+        {
+            foreach (var e in def.Effects) if (IsDamageEffect(e)) return true;
+            if (def.Modes != null) foreach (var m in def.Modes) foreach (var e in m.Effects) if (IsDamageEffect(e)) return true;
+            return false;
+        }
+
         public static int AuraCostUp(GameState state, CardInstance card)
         {
             int up = 0;
@@ -102,6 +110,8 @@ namespace DeckRogue.Engine
                 var aura = Content.GetEnemyDef(e.EnemyId).Aura;
                 if (aura == null) continue;
                 if (aura.CardType != null && aura.CardType != card.Def.Type) continue;
+                // 攻撃札だけの重圧 (2026-09-06): ダメージ効果を持つ札 (モード含む) のみ
+                if (aura.AttacksOnly == true && !CardHasDamage(card.Def)) continue;
                 up += aura.CostUp;
             }
             return up;

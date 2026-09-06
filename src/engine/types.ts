@@ -1143,7 +1143,7 @@ export interface EnemyDef {
    * この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。
    * 敵を倒せば即解除 = キル順の圧。打ち消し不可 (行動でなく存在)。敵カードに常時表示
    */
-  readonly aura?: { readonly cardType?: CardType; readonly costUp: number }
+  readonly aura?: { readonly cardType?: CardType; readonly costUp: number; readonly attacksOnly?: boolean } // attacksOnly=ダメージを与える札だけ (歩き木 2026-09-06 ユーザー裁定: 防御札まで重いと他色で1枚しか撃てない)
   /**
    * 装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。
    * 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・
@@ -1213,6 +1213,12 @@ export interface RelicDef {
     readonly goldPerVictory?: number
     /** 焚き火の「鍛える」の追加回数 (鍛冶の砥石=+1で計2枚) */
     readonly campfireForge?: number
+    /** 取った時に金+N (小さな家 2026-09-06 ボスレリックの代償なし枠) */
+    readonly goldOnPickup?: number
+    /** 取った時にデッキの鍛えられる札からランダムにN枚鍛える (小さな家。ラン RNG を消費) */
+    readonly upgradeRandomOnPickup?: number
+    /** 強個体撃破のレリック3択から追加でN個取れる (黒星の欠片 2026-09-06) */
+    readonly eliteRelicPicks?: number
     /** 焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper) */
     readonly noRest?: boolean
     /** レリックを取るたび (供給源を問わず: 宝箱・?・エリート・ボス・ショップ・イベント) 烙印をN枚受け取る (呪いの鍵。2026-09-04 ユーザー裁定: 旧「宝箱のみ」は降りられる代償=実質ノーコストだった) */

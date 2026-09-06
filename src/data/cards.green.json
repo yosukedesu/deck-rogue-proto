@@ -1302,7 +1302,7 @@
   {
     "id": "green_perm_trapper_grove",
     "name": "罠師の茂み",
-    "cost": 2,
+    "cost": 1,
     "type": "permanent",
     "rarity": "uncommon",
     "effects": [
@@ -1310,11 +1310,6 @@
         "trigger": "onPlay",
         "effect": "gainSetSlot",
         "amount": 1
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 4
       }
     ]
   },

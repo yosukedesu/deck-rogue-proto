@@ -1935,6 +1935,8 @@ namespace DeckRogue.Engine.Generated
         public string? CardType { get; init; }
         [JsonProperty("costUp")]
         public int CostUp { get; init; }
+        [JsonProperty("attacksOnly")]
+        public bool? AttacksOnly { get; init; }
     }
 
     /// <summary>EnemyDef</summary>
@@ -2103,6 +2105,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>焚き火の「鍛える」の追加回数 (鍛冶の砥石=+1で計2枚)</summary>
         [JsonProperty("campfireForge")]
         public int? CampfireForge { get; init; }
+        /// <summary>取った時に金+N (小さな家 2026-09-06 ボスレリックの代償なし枠)</summary>
+        [JsonProperty("goldOnPickup")]
+        public int? GoldOnPickup { get; init; }
+        /// <summary>取った時にデッキの鍛えられる札からランダムにN枚鍛える (小さな家。ラン RNG を消費)</summary>
+        [JsonProperty("upgradeRandomOnPickup")]
+        public int? UpgradeRandomOnPickup { get; init; }
+        /// <summary>強個体撃破のレリック3択から追加でN個取れる (黒星の欠片 2026-09-06)</summary>
+        [JsonProperty("eliteRelicPicks")]
+        public int? EliteRelicPicks { get; init; }
         /// <summary>焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper)</summary>
         [JsonProperty("noRest")]
         public bool? NoRest { get; init; }
@@ -2365,6 +2376,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>relic-reward フェーズの提示レリック</summary>
         [JsonProperty("relicOptions")]
         public IReadOnlyList<string>? RelicOptions { get; init; }
+        /// <summary>強個体のレリック3択から取れる残り個数 (黒星の欠片 2026-09-06)。省略=1</summary>
+        [JsonProperty("relicPicksLeft")]
+        public int? RelicPicksLeft { get; init; }
         /// <summary>現在の戦闘がエリート戦か (勝利時のレリック報酬判定)</summary>
         [JsonProperty("currentElite")]
         public bool CurrentElite { get; init; }
