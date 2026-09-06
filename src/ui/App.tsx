@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
+import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
@@ -251,6 +251,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.perfectBlockLastPhase === true) parts.push('🛡直前の敵フェーズを完全に凌いだ')
   if (c.targetDead === true) parts.push('💀とどめ')
   if (c.lastActionNoHpLoss === true) parts.push('🛡完全に凌いだ時')
+  if (c.healedThisTurn === true) parts.push('💚このターンに回復していたら')
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
@@ -413,6 +414,12 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}⚰️ 消滅置き場のカード1枚（リアクション以外）をコストを支払わず直接プレイ（そのカードは消滅置き場に残る）`
     case 'summonPermanent':
       return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す`
+    case 'duplicateRetainers':
+      return `${trigger}🏳️ 場の従者1体につき、同じ従者を1体場に出す（複製は複製を産まない。登場誘発は全部起きる）`
+    case 'sacrificeRetainer':
+      return `${trigger}🕯️ 場の従者1体を選んで破壊する`
+    case 'triggerRetainersNow':
+      return `${trigger}📯 従者すべてのターン開始効果を今すぐ解決する（アンセム込み。リーダーパッシブ・レリックは対象外）`
     case 'addCardToHand':
       return `${trigger}🗡️ ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚手札に加える（この戦闘限り）`
     case 'empowerShivs':
@@ -559,7 +566,9 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   }
   if (def.exhaust) lines.push('消滅')
   if (def.retain) lines.push('保持（ターン終了時に手札に残る）')
-  if (def.freeIfHandAllPhysical === true) lines.push('手札の他の札がすべて物理ならコスト0')
+  if (def.freeIfHandAllPhysical === true || def.freeIfHandAll === 'physical') lines.push('手札の他の札がすべて物理ならコスト0')
+  if (def.freeIfHandAll === 'spell') lines.push('手札の他の札がすべて呪文ならコスト0')
+  if (def.requiresRetainer === true) lines.push('プレイ条件: 場に従者が1体以上')
   if (def.freeIfMomentumAtLeast !== undefined) lines.push(`勢いが${def.freeIfMomentumAtLeast}以上ならコスト0`)
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
   return lines
@@ -1509,7 +1518,14 @@ function BattleScreen({
     deckUids?: string[]
     handUids?: string[]
     xAmount?: number
+    permanentUid?: string
   } | null>(null)
+  // 殉教の誓い (白 2026-09-06): 破壊する従者を場から選んでいる状態
+  const [pendingSacrifice, setPendingSacrifice] = useState<{ cardUid: string; modeIndex?: number } | null>(null)
+  const activeSacrifice =
+    pendingSacrifice && s.phase === 'player-turn' && player.hand.some((c) => c.uid === pendingSacrifice.cardUid)
+      ? pendingSacrifice
+      : null
   const activeTarget =
     pendingTarget &&
     s.phase === 'player-turn' &&
@@ -1526,12 +1542,13 @@ function BattleScreen({
     deckUids?: string[],
     handUids?: string[],
     xAmount?: number,
+    permanentUid?: string,
   ) => {
     const card = player.hand.find((c) => c.uid === cardUid)
     if (card && aliveCount > 1 && cardNeedsTarget(card, modeIndex)) {
-      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, xAmount })
+      setPendingTarget({ cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, xAmount, permanentUid })
     } else {
-      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, xAmount })
+      dispatch({ type: 'PlayCard', cardUid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, xAmount, permanentUid })
     }
   }
   // 追加コスト・消滅置き場選択を済ませてからプレイに進む多段フロー:
@@ -1574,6 +1591,11 @@ function BattleScreen({
       player.hand.some((c) => c.uid !== cardUid && canUpgradeInHand(c))
     ) {
       setPendingUpgrade({ cardUid, modeIndex })
+      return
+    }
+    // 殉教の誓い (白 2026-09-06): 破壊する従者を場から選ばせる (従者がいなければ engine が拒否する = ボタン側で先に畳む)
+    if (card.def.effects.some((e) => e.effect === 'sacrificeRetainer')) {
+      setPendingSacrifice({ cardUid, modeIndex })
       return
     }
     playOrTarget(cardUid, modeIndex)
@@ -1651,6 +1673,7 @@ function BattleScreen({
                     discardUids: activeTarget.discardUids,
                     exhaustUids: activeTarget.exhaustUids,
                     retrieveUid: activeTarget.retrieveUid,
+                    permanentUid: activeTarget.permanentUid,
                     deckUids: activeTarget.deckUids,
                     targetIndex: i,
                   })
@@ -1846,8 +1869,23 @@ function BattleScreen({
             <div className="permanents">
               <div className="stat-label">置物</div>
               {player.permanents.map((c) => (
-                <div key={c.uid} className="permanent">
+                <div key={c.uid} className={`permanent${activeSacrifice && c.def.retainer === true && c.innate !== true ? ' permanent-selectable' : ''}`}>
                   <b>{c.def.name}</b>
+                  {activeSacrifice && c.def.retainer === true && c.innate !== true && (
+                    <div style={{ marginTop: 4 }}>
+                      <button
+                        className="btn btn-primary"
+                        style={{ padding: '2px 8px', fontSize: 11 }}
+                        onClick={() => {
+                          const sac = activeSacrifice
+                          setPendingSacrifice(null)
+                          playOrTarget(sac.cardUid, sac.modeIndex, undefined, undefined, undefined, undefined, undefined, undefined, c.uid)
+                        }}
+                      >
+                        🕯️ この従者を捧げる
+                      </button>
+                    </div>
+                  )}
                   {permanentLiveDamage(s, c.def) && (
                     <div style={{ color: 'var(--muted)', fontSize: 11 }}>{permanentLiveDamage(s, c.def)}</div>
                   )}
@@ -2225,6 +2263,14 @@ function BattleScreen({
             </button>
           </div>
         )}
+        {activeSacrifice && (
+          <div className="discard-banner">
+            「{player.hand.find((c) => c.uid === activeSacrifice.cardUid)?.def.name}」: 破壊する従者を場（置物ゾーン）から選んでください{' '}
+            <button className="btn" onClick={() => setPendingSacrifice(null)}>
+              キャンセル
+            </button>
+          </div>
+        )}
         {activeUpgrade && (
           <div className="discard-banner">
             「{player.hand.find((c) => c.uid === activeUpgrade.cardUid)?.def.name}」: この戦闘中鍛える手札を選んでください（自身は選べない）{' '}
@@ -2357,6 +2403,7 @@ function BattleScreen({
                   )
                 const canPlay =
                   isPlayableFromHand(c) &&
+                  retainerRequirementMet(s, c) && // 殉教の誓い: 従者がいなければプレイ不可 (白 2026-09-06)
                   !(player.restrain > 0 && (player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) &&
                   effCost <= player.energy &&
                   player.hand.length - 1 >= discardCost &&
@@ -3327,6 +3374,7 @@ const EFFECT_JA: Record<string, string> = {
   exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
   retrieveFromExhaust: '消滅置き場から回収', playFromExhaust: '消滅置き場から直接プレイ',
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
+  duplicateRetainers: '場の従者を1体ずつ複製', sacrificeRetainer: '従者1体を選んで破壊', triggerRetainersNow: '従者のターン開始効果を今すぐ解決',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
   gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
   strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', dealDamagePerWeak: '対象の威圧×N追加ダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
@@ -3350,6 +3398,7 @@ const COND_JA: Record<string, string> = {
   perfectBlockLastPhase: '直前の敵フェーズを完全に凌いだ',
   targetDead: 'とどめ',
   lastActionNoHpLoss: '完全に凌いだ時',
+  healedThisTurn: 'このターンに回復していたら',
 }
 function condJa(k: string): string {
   return COND_JA[k] ?? k

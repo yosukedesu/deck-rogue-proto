@@ -88,6 +88,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
+    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '従者のターン開始効果を今すぐ解決(アンセム込み)',
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
@@ -99,7 +100,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターンに回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}]`
     : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
@@ -108,7 +109,9 @@ function cardLine(def: CardDef): string {
   const extras = [
     def.exhaust ? '消滅' : '',
     def.retain ? '保持(全捨てで手札に残る)' : '',
-    def.freeIfHandAllPhysical === true ? '手札の他の札がすべて物理なら0E' : '',
+    def.freeIfHandAllPhysical === true || def.freeIfHandAll === 'physical' ? '手札の他の札がすべて物理なら0E' : '',
+    def.freeIfHandAll === 'spell' ? '手札の他の札がすべて呪文なら0E' : '',
+    def.requiresRetainer === true ? 'プレイ条件: 場に従者が1体以上' : '',
     def.freeIfMomentumAtLeast !== undefined ? `勢い${def.freeIfMomentumAtLeast}以上なら0E` : '',
     def.discardCost ? `捨てコスト${def.discardCost}` : '',
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
@@ -261,6 +264,9 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'NecroPlayed') L.push(` 💀亡骸プレイ:${cname(e.cardId)}(ゲームから消えた)`)
       else if (e.type === 'SpellEchoed') L.push(` 🔁反復:${cname(e.cardId)}の効果が2回解決`)
       else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${cname(e.cardId)}が倒された`)
+      else if (e.type === 'RetainerSacrificed') L.push(` 🕯️殉教: ${cname(e.cardId)}を自ら失った`)
+      else if (e.type === 'RetainersDuplicated') L.push(` 🏳️分列: 従者${e.count}体が複製された`)
+      else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 従者${e.count}体のターン開始効果を今すぐ解決`)
       else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${cname(e.cardId)}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
       else if (e.type === 'HpHealed') L.push(e.amount > 0 ? ` 回復${e.amount}` : ' 回復0(満タン。onHealedは誘発)')
@@ -338,6 +344,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   // 緑のカード操作 (2026-09-02): 回収=捨て札から / サーチ=山札から / 手札で鍛える=自身以外の鍛えられる手札
   if (hasFx('retrieveFromDiscard')) L.push(`回収の選択候補(deckUids・捨て札): ${discList().join(' ') || 'なし'}`)
   if (hasFx('searchDeck')) L.push(`サーチの選択候補(deckUids・山札): ${drawList().join(' ') || 'なし'} ※名前順表示`)
+  if (hasFx('sacrificeRetainer')) L.push(`殉教の対象候補(permanentUid・場の従者): ${p.permanents.filter((c) => c.def.retainer === true && c.innate !== true).map((c) => `[${c.uid}] ${c.def.name}`).join(' ') || 'なし(従者がいないとプレイ不可)'}`)
   if (hasFx('upgradeInHand')) {
     const src = p.hand.filter((c) => c.def.effects.some((e) => e.effect === 'upgradeInHand')).map((c) => c.uid)
     const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeInHand(c)).map((c) => `[${c.uid}]${c.def.name}`)
@@ -427,6 +434,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           : '',
         c.def.effects.some((e) => e.effect === 'retrieveFromDiscard') && p.discardPile.length > 0 ? '要deckUids(捨て札から)' : '',
         c.def.effects.some((e) => e.effect === 'searchDeck') && p.drawPile.length > 0 ? '要deckUids(山札から)' : '',
+        c.def.effects.some((e) => e.effect === 'sacrificeRetainer') ? '要permanentUid(下の従者候補から)' : '',
         c.def.effects.some((e) => e.effect === 'upgradeInHand') &&
         p.hand.some((h) => h.uid !== c.uid && canUpgradeInHand(h))
           ? '要handUids(下の候補から)'

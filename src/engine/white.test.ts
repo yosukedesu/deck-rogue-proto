@@ -68,7 +68,7 @@ describe('要塞型 (ブロック変換)', () => {
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_bodyslam' })
     // 2026-08-26: 効果順を [ブロック3 → ダメージ] にしたので自前のブロックも自分に乗る
-    expect(s.enemies[0].hp).toBe(hpBefore - 19) // (大城壁16 + 自前3) × 1 (2026-08-27)
+    expect(s.enemies[0].hp).toBe(hpBefore - 17) // (大城壁14 + 自前3) × 1 (2026-09-06 白の解凍: 大城壁は U・14・手札が呪文だけなら0E)
   })
 })
 

@@ -128,6 +128,9 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ExhaustRecycled': return { text: `♻️ 輪廻: 消滅置き場${e.count}枚が山札へ還った`, cls: 'log-good' }
     case 'BurnDischarged': return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
     case 'TokenDestroyed': return { text: `従者狩り: ${cardName(e.cardId)}が倒された`, cls: 'log-line' }
+    case 'RetainerSacrificed': return { text: `🕯️ 殉教: ${cardName(e.cardId)}を自ら失った`, cls: 'log-line' }
+    case 'RetainersDuplicated': return { text: `🏳️ 分列: 従者${e.count}体が複製された`, cls: 'log-line' }
+    case 'RetainersTriggered': return { text: `📯 号令: 従者${e.count}体のターン開始効果を今すぐ解決`, cls: 'log-line' }
     case 'ThornsReflected': return { text: `🦔 とげ反射: ${e.amount}（HP-${e.hpLoss}）`, cls: 'log-damage' }
     case 'GoldStolen': return { text: `💰 盗みを宣言して${e.amount}Gを先取りされた（宣言と同時に成立する。逃がす前に倒せば取り返せる）`, cls: 'log-damage' }
     case 'EnemyFled': return { text: '🏃 敵が逃走した', cls: 'log-line' }

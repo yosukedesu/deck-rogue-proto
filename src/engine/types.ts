@@ -92,6 +92,8 @@ export interface PlayerState extends CombatantState {
   readonly aether: number
   /** この戦闘で回復した回数 (過剰回復も数える = onHealed と同じ回数論。滾る血汐の参照) */
   readonly healsThisCombat: number
+  /** このターンに回復した回数 (過剰回復も数える。自ターン開始でリセット。白の回復参照 healedThisTurn 2026-09-06) */
+  readonly healsThisTurn?: number
   /**
    * マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。
    * 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し
@@ -295,6 +297,8 @@ export interface EffectCondition {
   readonly targetDead?: boolean
   /** 直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り) */
   readonly lastActionNoHpLoss?: boolean
+  /** このターンに回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn>0。過剰回復も数える) */
+  readonly healedThisTurn?: boolean
 }
 
 /**
@@ -389,6 +393,8 @@ export type Command =
       readonly handUids?: readonly string[]
       /** Xコスト札用 (2026-09-03): 支払うX (1〜現在のエナジー)。省略時は全部払う */
       readonly xAmount?: number
+      /** sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid */
+      readonly permanentUid?: string
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
   | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
@@ -483,6 +489,9 @@ export type GameEvent =
   | { readonly type: 'ExhaustRecycled'; readonly count: number } // 輪廻: 消滅置き場を山札へ還した
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
   | { readonly type: 'TokenDestroyed'; readonly cardId: string } // トークン破壊 (敵メカニクス)
+  | { readonly type: 'RetainerSacrificed'; readonly cardId: string } // 殉教の誓い (白 2026-09-06): 自分で従者を1体破壊
+  | { readonly type: 'RetainersDuplicated'; readonly count: number } // 分列の奇跡 (白 2026-09-06)
+  | { readonly type: 'RetainersTriggered'; readonly count: number } // 進軍の号令 (白 2026-09-06)
   | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
   | { readonly type: 'GoldStolen'; readonly enemyIndex: number; readonly amount: number } // 盗み (精算は勝利時)
   | { readonly type: 'EnemyFled'; readonly enemyIndex: number } // 逃走 (戦闘離脱)
@@ -649,6 +658,9 @@ export interface DeclarativeEffect {
     | 'retrieveFromExhaust' // コスト再利用 (黒): 消滅置き場から1枚選んで手札に戻す (屍集め。combat.ts が retrieveUid で解決)
     | 'playFromExhaust' // コスト再利用 (黒): 消滅置き場のリアクション以外1枚をコストを支払わず直接プレイ (死者再生)
     | 'summonPermanent' // 召喚 (白): summonId の置物トークンを amount 体場に出す (従者の横並び=トークン再現)
+    | 'duplicateRetainers' // 分列の奇跡 (白 2026-09-06): 場の従者1体につき同じ従者を1体召喚 (解決開始時のスナップショット=複製は複製を産まない。登場誘発は全部起きる)
+    | 'sacrificeRetainer' // 殉教の誓い (白 2026-09-06): PlayCard.permanentUid で選んだ従者1体を破壊 (combat.ts の playCard が解決。自分の従者狩り=罠壊しの罰は発火しない)
+    | 'triggerRetainersNow' // 進軍の号令 (白 2026-09-06): 従者 (innate除く) のターン開始効果を今すぐ1回解決 (アンセム込み)
     | 'dischargeBurn' // 爆熱 (赤): 対象の延焼×amount のダメージを与え、延焼を全て失わせる (DoT+焼き切りを手放す緊張)
     | 'shatterBlockConvert' // 破城槌 (赤): 敵のブロックを全て破壊し、破壊した値と同じダメージを与える
     | 'dealDamageExecute' // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ
@@ -811,6 +823,10 @@ export interface CardDef {
   readonly retain?: boolean
   /** 手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03) */
   readonly freeIfHandAllPhysical?: boolean
+  /** 手札の他の札がすべてこのタイプなら0E (freeIfHandAllPhysical の一般化。白の大城壁='spell' 2026-09-06。判定は自身を除く手札) */
+  readonly freeIfHandAll?: 'physical' | 'spell'
+  /** プレイ条件: 場に従者 (retainer・innate除く) が1体以上 (殉教の誓い 2026-09-06。xCost のエナジー1以上と同じ playability) */
+  readonly requiresRetainer?: boolean
   /** 勢いがN以上ならこのカードは0E (追い風。緑 勢いの網 2026-09-04。重圧の上乗せは残る) */
   readonly freeIfMomentumAtLeast?: number
   /** 急所を持つ敵が生存していれば消滅しない (樹液=本家 Dropkick 型。exhaust と併用) */

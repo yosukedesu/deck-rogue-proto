@@ -59,10 +59,12 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
   // 屍集めで戻した札はこの戦闘中0E (2026-08-31 rework。割引も消費しない。オーラも「0Eの約束」を破らない)
   if (card.freeThisCombat === true) return 0
   const up = auraCostUp(state, card)
-  // 手札参照 (年輪=本家 Clash): 手札の他の札がすべて物理なら0E (重圧の上乗せは残る)
+  // 手札参照 (年輪=本家 Clash): 手札の他の札がすべて物理なら0E (重圧の上乗せは残る)。
+  // 2026-09-06 白の解凍で一般化 (freeIfHandAll='spell'=大城壁: 回復・召喚・威圧=呪文を握る守り手)。判定は自身を除く手札
+  const freeType = card.def.freeIfHandAll ?? (card.def.freeIfHandAllPhysical === true ? 'physical' : undefined)
   if (
-    card.def.freeIfHandAllPhysical === true &&
-    state.player.hand.every((c) => c.uid === card.uid || c.def.type === 'physical')
+    freeType !== undefined &&
+    state.player.hand.every((c) => c.uid === card.uid || c.def.type === freeType)
   ) return up
   // 勢い参照 (追い風): 勢いがN以上なら0E (緑 勢いの網 2026-09-04。「軽く積める勢い」をテンポに還元する口)
   if (card.def.freeIfMomentumAtLeast !== undefined && state.player.momentum >= card.def.freeIfMomentumAtLeast) return up
@@ -71,6 +73,12 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
   if (card.def.cost === 0) return up
   const blaze = card.def.blazeDiscount !== undefined && isBlazing(state) ? card.def.blazeDiscount : 0
   return Math.max(0, card.def.cost + up - blaze - state.player.nextCardDiscount)
+}
+
+/** 従者を要求する札 (殉教の誓い 2026-09-06) のプレイ条件: 場に従者 (retainer・innate除く) が1体以上。要求しない札は常に true */
+export function retainerRequirementMet(state: GameState, card: CardInstance): boolean {
+  if (card.def.requiresRetainer !== true) return true
+  return state.player.permanents.some((p) => p.def.retainer === true && p.innate !== true)
 }
 
 /** 自ターンにプレイ可能なカードか。リアクションタイプは false。置物・選択式は常にプレイ可能 */
@@ -176,6 +184,8 @@ export function runPermanentTriggers(
   state: GameState,
   trigger: DeclarativeEffect['trigger'],
   enemyIndex: number,
+  /** 誘発させる置物を絞る (進軍の号令=従者だけ。省略=全置物) */
+  only?: (permanent: CardInstance) => boolean,
 ): GameState {
   // 対象の敵が倒れていたら先頭の生存敵に読み替える (誘発ダメージの空撃ち防止)
   const alive =
@@ -196,6 +206,7 @@ export function runPermanentTriggers(
     0,
   )
   for (const permanent of state.player.permanents) {
+    if (only !== undefined && !only(permanent)) continue
     for (const effect of permanent.def.effects) {
       if (effect.trigger === trigger && blazeConditionMet(s, effect, enemyIndex)) {
         const boosted =
@@ -235,6 +246,7 @@ export function healPlayer(state: GameState, amount: number, enemyIndex: number)
       ...state.player,
       hp: state.player.hp + Math.max(0, healed),
       healsThisCombat: state.player.healsThisCombat + 1, // 過剰回復も1回 (onHealedと同じ回数論)
+      healsThisTurn: (state.player.healsThisTurn ?? 0) + 1, // 白の回復参照 (healedThisTurn 2026-09-06)
     },
   }
   s = emit(s, { type: 'HpHealed', amount: healed })
@@ -424,6 +436,7 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     if (c.blaze === true && !isBlazing(state)) return false
     if (c.minGrowth !== undefined && state.player.growth < c.minGrowth) return false
     if (c.minMomentum !== undefined && state.player.momentum < c.minMomentum) return false
+    if (c.healedThisTurn === true && (state.player.healsThisTurn ?? 0) <= 0) return false
     return true
   })
 }
@@ -1129,6 +1142,30 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'playFromExhaust':
       // コスト再利用 (黒): 消滅置き場からの選択は combat.ts の playCard が retrieveUid で解決する
       return state
+    case 'duplicateRetainers': {
+      // 分列の奇跡 (白 2026-09-06 本家 Loop/開花の儀の従者版): 場の従者1体につき同じ従者を1体召喚。
+      // 走査は解決開始時のスナップショット = 複製が複製を産まない。登場誘発 (軍楽隊=ドロー) は全部起きる
+      const snapshot = state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true)
+      let s = state
+      for (const src of snapshot) {
+        const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${src.def.id}`, def: src.def, token: true }
+        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
+        s = emit(s, { type: 'PermanentPlayed', cardId: src.def.id })
+        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+      }
+      return emit(s, { type: 'RetainersDuplicated', count: snapshot.length })
+    }
+    case 'sacrificeRetainer':
+      // 殉教の誓い (白 2026-09-06): 破壊する従者は PlayCard.permanentUid で選び、combat.ts の playCard が解決する
+      // (引導・回収と同じ「選択は playCard」の配管)。置物トリガー・工房産の他経路では何もしない
+      return state
+    case 'triggerRetainersNow': {
+      // 進軍の号令 (白 2026-09-06 本家 Multi-Cast): 従者 (innate除く) のターン開始効果を今すぐ1回解決 (アンセム込み)
+      const isRetainer = (p: CardInstance): boolean => p.def.retainer === true && p.innate !== true
+      const n = state.player.permanents.filter(isRetainer).length
+      const s = runPermanentTriggers(state, 'onTurnStart', enemyIndex, isRetainer)
+      return emit(s, { type: 'RetainersTriggered', count: n })
+    }
     case 'summonPermanent': {
       // 召喚 (白): summonId の置物トークンを amount 体場に出す (確定済みルール表「召喚」)。
       // uid は置物数ベース (置物は場を離れないため単調増加 = 衝突しない)
@@ -1553,6 +1590,8 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
   if (effect.condition?.minMomentum !== undefined && state.player.momentum < effect.condition.minMomentum) return false
+  // 回復参照 (白 2026-09-06 修繕の祈り): このターンに1回でも回復していたら (過剰回復も数える)
+  if (effect.condition?.healedThisTurn === true && (state.player.healsThisTurn ?? 0) <= 0) return false
   // HP割合条件 (2026-09-03 不動の根=HP50%以下で開幕ブロック。リアクション窓と同じ判定を置物/onPlay にも)
   if (
     effect.condition?.hpAtOrBelowRatio !== undefined &&
@@ -1612,7 +1651,9 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   const prevCardPlay = state.resolvingCardPlay === true
   let s = emit({ ...state, resolvingCardPlay: false }, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
   for (const effect of setEffectsOf(card)) {
-    if (REACTION_TRIGGERS.has(effect.trigger)) {
+    // 効果ごとの条件 (2026-09-06 白 報復の光=返し10+「完全に防いでいたら」+10 の混在): 発動可否は eligible 側が
+    // 見るが、条件つきの効果だけを落とすのはここ。窓専用条件 (minActionValue 等) は blazeConditionMet が見ないので通る
+    if (REACTION_TRIGGERS.has(effect.trigger) && blazeConditionMet(s, effect, enemyIndex)) {
       // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }

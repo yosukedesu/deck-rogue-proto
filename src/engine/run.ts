@@ -27,6 +27,7 @@ import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, GameSta
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 export const REWARD_EXCLUDED = new Set([
   'black_shiv_token', // 骨のナイフ: 生成トークン (この戦闘限り) = 報酬・ショップに出さない
+  'white_perm_page', // 見習い (白 2026-09-06): 見習いの列が召喚する従者トークン = 報酬・ショップに出さない
   'green_strike',
   'green_guard',
   'green_basic_bash', // 打ち据え (2026-08-29 テンポ再校正②: スターターのBash枠)

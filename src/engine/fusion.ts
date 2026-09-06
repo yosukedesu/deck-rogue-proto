@@ -181,7 +181,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     resultType === 'reaction'
       ? (domi.def.effects.find((e) => REACTION_WINDOWS.has(e.trigger))?.trigger ?? 'onAttacked')
       : 'onPlay'
-  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot'])
+  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow'])
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
   const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
   // 落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)
@@ -372,8 +372,10 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const net = all.filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext').reduce((acc, e) => acc + (e.amount ?? 0), 0)
   const refills = all.some((e) => REFILL.has(e.effect))
   const freeIfPhysical = a.def.freeIfHandAllPhysical === true || b.def.freeIfHandAllPhysical === true
+  // 手札参照の0E (年輪=物理／大城壁=呪文 2026-09-06)。両方が違うタイプを要求するなら先頭 (id順) の型
+  const freeIfHandAll = a.def.freeIfHandAll ?? b.def.freeIfHandAll ?? (freeIfPhysical ? 'physical' : undefined)
   const freeIfMomentum = [a.def.freeIfMomentumAtLeast, b.def.freeIfMomentumAtLeast].filter((v): v is number => v !== undefined)
-  const conditionalFree = freeIfPhysical || freeIfMomentum.length > 0
+  const conditionalFree = freeIfHandAll !== undefined || freeIfMomentum.length > 0
   if (!bothX && refills && (net - cost >= 0 || conditionalFree)) {
     if (resultType !== 'permanent') exhaust = true
     else while (net - cost >= 0 && cost < 5) cost++
@@ -407,6 +409,8 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     ...(a.def.exhaustCost || b.def.exhaustCost ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) } : {}),
     ...(necroCost !== undefined ? { necroCost } : {}),
     ...(freeIfPhysical ? { freeIfHandAllPhysical: true } : {}),
+    ...(freeIfHandAll !== undefined ? { freeIfHandAll } : {}),
+    ...(a.def.requiresRetainer === true || b.def.requiresRetainer === true ? { requiresRetainer: true } : {}),
     ...(freeIfMomentum.length > 0 ? { freeIfMomentumAtLeast: Math.min(...freeIfMomentum) } : {}),
     ...(a.def.blazeDiscount !== undefined || b.def.blazeDiscount !== undefined ? { blazeDiscount: Math.max(a.def.blazeDiscount ?? 0, b.def.blazeDiscount ?? 0) } : {}),
     ...(a.def.exhaustUnlessExposedEnemy === true || b.def.exhaustUnlessExposedEnemy === true ? { exhaustUnlessExposedEnemy: true } : {}),

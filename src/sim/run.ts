@@ -14,7 +14,7 @@
 
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
-import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand } from '../engine/effects.ts'
+import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, isUpgraded, nextChoices } from '../engine/run.ts'
@@ -38,6 +38,8 @@ function botRole(def: CardDef): BotRole {
   if (has('summonPermanent')) return 'permanent'
   // ブロック参照の換金札は「壁を積んでから」なので最後に回す (2026-08-26)
   if (has('dealDamagePerBlock')) return 'payoff'
+  // 従者の倍加・即時誘発 (白 2026-09-06): 従者を並べてから撃つ = 置物の後・攻撃の前
+  if (has('duplicateRetainers', 'triggerRetainersNow')) return 'payoff'
   // 勢いの放出 (緑 2026-09-04・赤の変換器): 積んでから吐く = 他の攻撃・防御の後に回す
   if (has('dischargeMomentumDamage', 'dischargeMomentumGrowth', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumVolley')) return 'payoff'
   // 抱え込み (青 2026-08-31): 手札参照は「手札が厚いうちに」= ドローの直後・手札を減らす前に撃つ
@@ -350,7 +352,15 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
       targetIndex = i
     }
   }
-  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, targetIndex }
+  // 殉教の誓い (白 2026-09-06): 破壊する従者は最弱 (コスト昇順・トークン優先=見習い>少年) を選ぶ
+  let permanentUid: string | undefined
+  if (card.def.effects.some((e) => e.effect === 'sacrificeRetainer')) {
+    const rets = state.player.permanents
+      .filter((p) => p.def.retainer === true && p.innate !== true)
+      .sort((a, b) => a.def.cost - b.def.cost || (a.token === true ? -1 : 0) - (b.token === true ? -1 : 0))
+    permanentUid = rets[0]?.uid
+  }
+  return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, targetIndex, permanentUid }
 }
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */
@@ -384,7 +394,7 @@ export function chooseCommand(s: GameState): Command {
   // 蓄積型ペイオフ (詠唱数/消滅数参照) があればその最安コストを、なければ最安攻撃札のコストを温存
   // 温存するのは「今のエナジーで撃てる」札のぶんだけ (2026-09-04 sim実測: 保持で手札に残った4E以上の攻撃札を
   // 最安攻撃と見なして3Eを温存し続け、ランプも防御も撃たずに50ターン棒立ち = ビッグマナ理想形が小泥に23%)
-  const castable = (c: CardInstance) => effectiveCost(s, c) <= s.player.energy
+  const castable = (c: CardInstance) => effectiveCost(s, c) <= s.player.energy && retainerRequirementMet(s, c) // 殉教の誓いは従者がいる時だけ
   const burstCosts = s.player.hand
     .filter((c) =>
       castable(c) &&

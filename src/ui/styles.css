@@ -789,3 +789,6 @@ button:disabled { cursor: not-allowed; }
   .workshop-preview .card { width: 100%; min-height: 0; }
   .workshop-buttons { flex-direction: row; }
 }
+
+/* 殉教の誓い (白 2026-09-06): 破壊する従者を選んでいる間、選べる従者を強調 */
+.permanent-selectable { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dark); }

@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireExhaustTriggers, fireNecroEffects, hasHuntableTokens, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak } from './effects.ts'
+import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireExhaustTriggers, fireNecroEffects, hasHuntableTokens, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -61,6 +61,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       setsThisTurn: 0,
       playsThisTurn: 0,
       attacksPlayedThisTurn: 0,
+      healsThisTurn: 0,
       weakFreshThisPhase: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
@@ -557,6 +558,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       setsThisTurn: 0,
       playsThisTurn: 0,
       attacksPlayedThisTurn: 0,
+      healsThisTurn: 0,
       weakFreshThisPhase: 0,
       freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
@@ -727,11 +729,14 @@ export function playCard(
   deckUids?: readonly string[],
   handUids?: readonly string[],
   xAmount?: number,
+  permanentUid?: string,
 ): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (!isPlayableFromHand(card)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
+  // 殉教の誓い (白 2026-09-06): 従者が場にいる時だけプレイできる (xCost のエナジー1以上と同じ playability)
+  if (!retainerRequirementMet(state, card)) throw new Error(`${card.def.name} は場に従者が1体以上いる時だけプレイできる`)
   // 拘束 (2026-09-02): 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない。
   // 参照は実プレイ枚数 (playsThisTurn) — 焚べ (addCasts) の嵩で拘束が早く詰まらない
   if (state.player.restrain > 0 && (state.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) {
@@ -919,6 +924,16 @@ export function playCard(
     }
   }
 
+  // 殉教の誓い (白 2026-09-06): 破壊する従者を permanentUid で選ぶ。従者 (retainer・innate除く) 以外は選べない
+  const sacrificeN = card.def.effects.filter((e) => e.effect === 'sacrificeRetainer' && e.trigger === 'onPlay').length
+  let sacrificed: CardInstance | null = null
+  if (sacrificeN > 0) {
+    if (permanentUid === undefined) throw new Error(`${card.def.name} は破壊する従者 (permanentUid) の指定が必要`)
+    const t = state.player.permanents.find((p) => p.uid === permanentUid)
+    if (!t || t.def.retainer !== true || t.innate === true) throw new Error(`従者ではない、または場に無い置物: ${permanentUid}`)
+    sacrificed = t
+  }
+
   // StS式ターゲティング (確定済みルール表「ターゲティング」):
   // 生存2体以上で単体対象カードは targetIndex 必須。生存1体なら自動。対象不要カードは無視
   const aliveCount = state.enemies.filter((e) => e.hp > 0).length
@@ -999,6 +1014,13 @@ export function playCard(
     s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
     // 置物登場の誘発 (白の接着剤)。自身の登場にも誘発する (確定済みルール表「消滅の誘発」系)
     s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+  }
+  if (sacrificed !== null) {
+    // 殉教 (白 2026-09-06): 選んだ従者を場から除く。自分で壊す従者狩り = 敵の destroy-token と同じ結果で、
+    // 伏せ破壊の罰系 (onSetDestroyed) とは無関係。置物が出た直後 (登場誘発の後)・効果解決の前に行う
+    const gone = sacrificed
+    s = { ...s, player: { ...s.player, permanents: s.player.permanents.filter((p) => p.uid !== gone.uid) } }
+    s = emit(s, { type: 'RetainerSacrificed', cardId: gone.def.id })
   }
   // 消滅コストの支払い: 支払い専用誘発 (闇市の帳簿) → 消滅誘発 (亡者の合唱) の順で1枚ごとに発火
   for (const paid of exhaustedCards) {

@@ -78,21 +78,14 @@
         "trigger": "onPlay",
         "effect": "gainHp",
         "amount": 6
-      }
-    ],
-    "rarity": "common"
-  },
-  {
-    "id": "white_flash_heal",
-    "name": "祈りの残光",
-    "cost": 1,
-    "type": "spell",
-    "exhaust": true,
-    "effects": [
+      },
       {
         "trigger": "onPlay",
         "effect": "gainHp",
-        "amount": 6
+        "amount": 4,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
       }
     ],
     "rarity": "common"
@@ -179,13 +172,14 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 16
+        "amount": 14
       }
     ],
     "axis": [
       "fortress"
     ],
-    "rarity": "common"
+    "rarity": "uncommon",
+    "freeIfHandAll": "spell"
   },
   {
     "id": "white_perm_squire",
@@ -303,8 +297,11 @@
       },
       {
         "trigger": "onAttacked",
-        "effect": "gainHp",
-        "amount": 4
+        "effect": "counter",
+        "amount": 10,
+        "condition": {
+          "lastActionNoHpLoss": true
+        }
       }
     ],
     "rarity": "uncommon"
@@ -480,20 +477,6 @@
     "rarity": "uncommon"
   },
   {
-    "id": "white_perm_pilgrim_bell",
-    "name": "巡礼の鈴",
-    "cost": 1,
-    "type": "permanent",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onHealed",
-        "effect": "gainBlock",
-        "amount": 2
-      }
-    ]
-  },
-  {
     "id": "white_service",
     "name": "奉仕の心",
     "cost": 1,
@@ -650,8 +633,11 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "gainHp",
-        "amount": 2
+        "effect": "gainBlock",
+        "amount": 6,
+        "condition": {
+          "healedThisTurn": true
+        }
       }
     ],
     "rarity": "common"
@@ -760,27 +746,8 @@
     ]
   },
   {
-    "id": "white_radiant_hammer",
-    "name": "燦光の槌",
-    "cost": 2,
-    "type": "physical",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 10
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainHp",
-        "amount": 4
-      }
-    ]
-  },
-  {
     "id": "white_blade_prayer",
-    "name": "白刃の祈り",
+    "name": "祈りの刃",
     "cost": 1,
     "type": "physical",
     "rarity": "common",
@@ -793,7 +760,10 @@
       {
         "trigger": "onPlay",
         "effect": "gainHp",
-        "amount": 2
+        "amount": 6,
+        "condition": {
+          "perfectBlockLastPhase": true
+        }
       }
     ]
   },
@@ -911,6 +881,15 @@
         "trigger": "onPlay",
         "effect": "dealDamagePerPermanent",
         "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 1,
+        "condition": {
+          "targetDead": true
+        }
       }
     ]
   },
@@ -949,6 +928,14 @@
         "trigger": "onPlay",
         "effect": "weakenEnemy",
         "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1,
+        "condition": {
+          "enemyIntentNot": "attack"
+        }
       }
     ]
   },
@@ -1075,25 +1062,6 @@
         "trigger": "onPlay",
         "effect": "dealDamage",
         "amount": 6
-      }
-    ]
-  },
-  {
-    "id": "white_gate_bar",
-    "name": "城門の閂",
-    "cost": 2,
-    "type": "physical",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 8
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerBlock",
-        "amount": 1
       }
     ]
   },
@@ -1253,6 +1221,126 @@
         "trigger": "onPlay",
         "effect": "drawCards",
         "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_page",
+    "name": "見習い",
+    "type": "permanent",
+    "cost": 1,
+    "rarity": "common",
+    "token": true,
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_page_rank",
+    "name": "見習いの列",
+    "type": "spell",
+    "cost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_page",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_holy_procession",
+    "name": "聖なる行列",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_shieldmaiden",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_miracle_division",
+    "name": "分列の奇跡",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "rare",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "duplicateRetainers"
+      }
+    ]
+  },
+  {
+    "id": "white_perm_martyr_vow",
+    "name": "殉教の誓い",
+    "type": "permanent",
+    "cost": 1,
+    "rarity": "uncommon",
+    "requiresRetainer": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "sacrificeRetainer",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "blessRetainers",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_march_order",
+    "name": "進軍の号令",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "triggerRetainersNow"
+      }
+    ]
+  },
+  {
+    "id": "white_war_horn",
+    "name": "聖戦の号砲",
+    "type": "physical",
+    "cost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerAttackPlayed",
+        "amount": 2,
+        "target": "all"
       }
     ]
   }
