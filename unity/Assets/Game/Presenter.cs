@@ -53,7 +53,7 @@ namespace DeckRogue.Game
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
                 else continue;
                 var captured = ev;
-                Tween.After(delay, () => { try { Show(g, fx, captured); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
+                Tween.After(delay, () => { try { Show(g, fx, captured, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
             }
             _seen = log.Count;
@@ -77,14 +77,16 @@ namespace DeckRogue.Game
             var fx = g.FxLayer;
             // Rebuild 直後は LayoutGroup が未計算 (全て原点) なので、的の座標を読む前にレイアウトを確定させる
             Canvas.ForceUpdateCanvases();
+            // カードが敵へ飛ぶ 0.2 秒に着弾を合わせる
             float delay = 0f;
+            for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = 0.2f; break; }
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded)) continue;
                 var captured = ev;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
-                Tween.After(delay, () => { try { Show(g, fx, captured); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
+                Tween.After(delay, () => { try { Show(g, fx, captured, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += 0.12f;
             }
             _seen = log.Count;
@@ -108,7 +110,7 @@ namespace DeckRogue.Game
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
-        static void Show(GameRoot g, RectTransform fx, GameEvent ev)
+        static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp)
         {
             switch (ev)
             {
@@ -122,6 +124,7 @@ namespace DeckRogue.Game
                         var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-30f, 30f), 20f);
                         Tween.Float(fx, pos, d.Amount.ToString(), d.Amount > 0 ? UiKit.Hex("#ffd36b") : UiKit.ColDim, d.Amount >= 20 ? 46 : 36);
                         if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f));
+                        if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(d.EnemyIndex ?? 0, -d.HpLoss);
                     }
                     else
                     {
@@ -133,6 +136,7 @@ namespace DeckRogue.Game
                         var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
                         Tween.Float(fx, pos, "-" + d.Amount, d.Amount > 0 ? UiKit.ColBad : UiKit.ColDim, d.Amount >= 15 ? 46 : 36);
                         if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.1f, 0.03f + d.Amount * 0.004f));
+                        if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgePlayerHp(-d.HpLoss);
                     }
                     break;
                 }

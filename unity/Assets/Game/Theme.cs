@@ -383,3 +383,193 @@ namespace DeckRogue.Game
         }
     }
 }
+
+namespace DeckRogue.Game
+{
+    /// <summary>見た目の追加パーツ (2026-09-07 M2 見た目のパス): 背景のグラデーション・ビネット・足元の影・コスト玉・カードの紋章・レア度の宝石</summary>
+    public static class ThemeFx
+    {
+        static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
+
+        /// <summary>縦グラデーション (上 top → 下 bottom)。バイリニアで滑らかに</summary>
+        public static Sprite Gradient(string key, Color top, Color bottom)
+        {
+            Sprite s;
+            if (_cache.TryGetValue("grad:" + key, out s)) return s;
+            const int h = 64;
+            var tex = new Texture2D(1, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[h];
+            for (int y = 0; y < h; y++) px[y] = Color.Lerp(bottom, top, (float)y / (h - 1));
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, 1, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _cache["grad:" + key] = s;
+            return s;
+        }
+
+        /// <summary>ビネット (周辺が暗くなる)。alpha だけの黒</summary>
+        public static Sprite Vignette()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("vignette", out s)) return s;
+            const int n = 96;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = (x + 0.5f) / n * 2f - 1f;
+                    float dy = (y + 0.5f) / n * 2f - 1f;
+                    float d = Mathf.Sqrt(dx * dx * 0.9f + dy * dy * 1.2f);
+                    float a = Mathf.Clamp01((d - 0.55f) / 0.7f);
+                    px[y * n + x] = new Color(0f, 0f, 0f, a * a * 0.85f);
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _cache["vignette"] = s;
+            return s;
+        }
+
+        /// <summary>足元の影 (楕円)</summary>
+        public static Sprite Shadow()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("shadow", out s)) return s;
+            const int w = 64, h = 24;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    float dx = (x + 0.5f) / w * 2f - 1f;
+                    float dy = (y + 0.5f) / h * 2f - 1f;
+                    float d = dx * dx + dy * dy;
+                    float a = Mathf.Clamp01(1f - d) * 0.55f;
+                    px[y * w + x] = new Color(0f, 0f, 0f, a);
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _cache["shadow"] = s;
+            return s;
+        }
+
+        /// <summary>コスト玉 (16px のドット絵の球。差し替えは Art/ui/cost_orb.png)</summary>
+        public static Sprite CostOrb()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("orb", out s)) return s;
+            s = Theme.Art("ui", "cost_orb");
+            if (s == null)
+            {
+                const int n = 16;
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[n * n];
+                var c0 = UiKit.Hex("#f0c33c"); var c1 = UiKit.Hex("#9a6d12"); var edge = UiKit.Hex("#2a1d05");
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        float dx = (x + 0.5f) / n * 2f - 1f;
+                        float dy = (y + 0.5f) / n * 2f - 1f;
+                        float d = Mathf.Sqrt(dx * dx + dy * dy);
+                        Color c = new Color(0f, 0f, 0f, 0f);
+                        if (d < 1f)
+                        {
+                            c = d > 0.85f ? edge : Color.Lerp(c0, c1, Mathf.Clamp01((dx + dy) * 0.5f + 0.5f));
+                            if (dx < -0.2f && dy > 0.25f && d < 0.7f) c = Color.Lerp(c, Color.white, 0.5f);
+                        }
+                        px[y * n + x] = c;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["orb"] = s;
+            return s;
+        }
+
+        /// <summary>レア度の宝石 (8px)。C=灰 U=青 R=金</summary>
+        public static Sprite Gem(string rarity)
+        {
+            string key = "gem:" + rarity;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            s = Theme.Art("ui", "gem_" + rarity);
+            if (s == null)
+            {
+                const int n = 8;
+                var main = rarity == "rare" ? UiKit.Hex("#e0b84a") : rarity == "uncommon" ? UiKit.Hex("#5aa0e0") : UiKit.Hex("#9aa39c");
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        int m = Math.Abs(x - 3) + Math.Abs(y - 3) + (x > 3 ? 1 : 0) + (y > 3 ? 1 : 0);
+                        px[y * n + x] = m <= 3 ? (m == 3 ? Color.Lerp(main, Color.black, 0.5f) : (x < 4 && y > 3 ? Color.Lerp(main, Color.white, 0.4f) : main)) : new Color(0, 0, 0, 0);
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>カードの紋章 (絵の代わり): id のハッシュから 24×16 の左右対称の模様。差し替えは Art/cards/<id>.png</summary>
+        public static Sprite CardArt(string cardId, Color tint)
+        {
+            string key = "cardart:" + cardId;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            s = Theme.Art("cards", cardId);
+            if (s == null)
+            {
+                const int w = 24, h = 16;
+                uint hh = 2166136261u;
+                foreach (var ch in cardId) { hh ^= ch; hh *= 16777619u; }
+                var rng = new System.Random((int)(hh & 0x7fffffff));
+                var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[w * h];
+                var dark = Color.Lerp(tint, Color.black, 0.55f);
+                var light = Color.Lerp(tint, Color.white, 0.35f);
+                var mask = new bool[w / 2, h];
+                for (int y = 1; y < h - 1; y++)
+                    for (int x = 0; x < w / 2; x++)
+                    {
+                        float cx = (x + 0.5f) / (w / 2f);
+                        float cy = 1f - Mathf.Abs((y - h / 2f) / (h / 2f));
+                        mask[x, y] = rng.NextDouble() < 0.08f + 0.5f * cx * cy;
+                    }
+                bool At(int x, int y) { if (x < 0 || y < 0 || y >= h || x >= w) return false; int mx = x < w / 2 ? x : w - 1 - x; return mask[mx, y]; }
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        Color c = Color.Lerp(dark, Color.black, 0.6f);
+                        if (At(x, y))
+                        {
+                            bool edge = !At(x - 1, y) || !At(x + 1, y) || !At(x, y - 1) || !At(x, y + 1);
+                            c = edge ? dark : (y > h / 2 ? light : tint);
+                        }
+                        px[y * w + x] = c;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache[key] = s;
+            return s;
+        }
+    }
+}

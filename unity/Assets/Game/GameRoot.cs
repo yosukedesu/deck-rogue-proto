@@ -83,6 +83,8 @@ namespace DeckRogue.Game
         public string ModeChoiceUid;
         /// <summary>山札/捨て札/消滅の一覧を開いているか ("draw"|"discard"|"exhaust"|null)</summary>
         public string ViewPile;
+        /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
+        public BattleView Battle;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
         /// <summary>画面の組み立てが演出の的 (敵パネル・自分の欄) を登録する。Rebuild ごとに消える</summary>
         public void RegisterAnchor(string name, RectTransform rt) { _anchors[name] = rt; }
@@ -295,6 +297,7 @@ namespace DeckRogue.Game
             if (Pending.NextNeed() != null) { Rebuild(); return; }
 
             var p = Pending;
+            if (Battle != null) { Battle.LastPlayedUid = p.Card.Uid; Battle.LastPlayedTarget = p.TargetIndex.HasValue ? p.TargetIndex.Value : PreferredTarget; }
             var cmd = new Command_PlayCard
             {
                 CardUid = p.Card.Uid,
@@ -342,8 +345,10 @@ namespace DeckRogue.Game
                 c.SetParent(null, false);
                 Destroy(c.gameObject);
             }
-            if (ScreenRoot != null)
+            bool inCombat = Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null;
+            if (ScreenRoot != null && !inCombat)
             {
+                if (Battle != null) { Battle.Destroy(); Battle = null; }
                 for (int i = ScreenRoot.childCount - 1; i >= 0; i--)
                 {
                     var c = ScreenRoot.GetChild(i);

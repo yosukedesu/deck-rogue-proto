@@ -15,37 +15,37 @@ namespace DeckRogue.Game
 {
     public static class BattleScreen
     {
-        const float TopH = 72f;
-        const float HandY = 30f;        // 手札の下端 (キャンバス下からの距離)
-        const float CardScale = 0.92f;
+        public const float TopH = 72f;
+        public const float HandY = 30f;        // 手札の下端 (キャンバス下からの距離)
+        public const float CardScale = 0.92f;
 
         public static void Build(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
             var st = run.Combat;
+            var v = BattleView.Ensure(g, root);
+            v.SyncField(g, st);
+            v.ClearUi();
+            var ui = v.UiLayer;
+            BuildPiles(g, ui, st);
+            BuildEndTurn(g, ui, st);
+            BuildTopBar(g, ui, run, st);
+            if (g.ShowLog) BuildLogDrawer(g, ui, st);
+            v.SyncHand(g, st, true);
 
-            BuildBackground(root, run);
-            BuildEnemies(g, root, st);
-            BuildPlayer(g, root, st);
-            BuildHand(g, root, st);
-            BuildPiles(g, root, st);
-            BuildEndTurn(g, root, st);
-            BuildTopBar(g, root, run, st);
-            if (g.ShowLog) BuildLogDrawer(g, root, st);
-
-            if (st.Phase == CombatPhases.AwaitingReaction) BuildReactionWindow(g, root, st);
+            if (st.Phase == CombatPhases.AwaitingReaction) BuildReactionWindow(g, ui, st);
             else if (g.Pending != null)
             {
                 var need = g.Pending.NextNeed();
-                if (need == "target") BuildTargetBanner(g, root);
-                else if (need != null) BuildPicker(g, root, st, need);
+                if (need == "target") BuildTargetBanner(g, ui);
+                else if (need != null) BuildPicker(g, ui, st, need);
             }
-            else if (g.ModeChoiceUid != null) BuildModeChooser(g, root, st);
+            else if (g.ModeChoiceUid != null) BuildModeChooser(g, ui, st);
         }
 
         // ---- 背景 ----
 
-        static void BuildBackground(RectTransform root, RunState run)
+        public static void BuildBackground(RectTransform root, RunState run)
         {
             var art = Theme.Art("bg", "act" + run.Act);
             var bg = UiKit.Pan(root, Theme.Bg, "bg");
@@ -58,17 +58,23 @@ namespace DeckRogue.Game
                 bg.preserveAspect = false;
                 return;
             }
-            // プレースホルダー: 上が暗い夜空、下が地面の帯 (幕ごとに色相を変える)
+            // プレースホルダー: 上が暗い夜空 (グラデーション)、下が地面の帯、周辺はビネットで落とす (幕ごとに色相を変える)
             float hue = run.Act == 1 ? 0.36f : run.Act == 2 ? 0.55f : 0.02f;
-            var sky = UiKit.Pan(root, Color.HSVToRGB(hue, 0.35f, 0.10f), "sky");
+            var sky = UiKit.Pan(root, Color.white, "sky");
+            sky.sprite = ThemeFx.Gradient("sky" + run.Act, Color.HSVToRGB(hue, 0.45f, 0.16f), Color.HSVToRGB(hue, 0.35f, 0.06f));
             UiKit.Anchor(sky.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
             sky.raycastTarget = false;
-            var ground = UiKit.Pan(root, Color.HSVToRGB(hue, 0.4f, 0.16f), "ground");
+            var ground = UiKit.Pan(root, Color.white, "ground");
+            ground.sprite = ThemeFx.Gradient("ground" + run.Act, Color.HSVToRGB(hue, 0.4f, 0.2f), Color.HSVToRGB(hue, 0.45f, 0.09f));
             UiKit.Anchor(ground.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), Vector2.zero, Vector2.zero);
             ground.raycastTarget = false;
-            var horizon = UiKit.Pan(root, Color.HSVToRGB(hue, 0.3f, 0.26f), "horizon");
+            var horizon = UiKit.Pan(root, Color.HSVToRGB(hue, 0.3f, 0.3f), "horizon");
             UiKit.Anchor(horizon.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.34f), new Vector2(0f, -3f), new Vector2(0f, 3f));
             horizon.raycastTarget = false;
+            var vig = UiKit.Pan(root, Color.white, "vignette");
+            vig.sprite = ThemeFx.Vignette();
+            UiKit.Stretch(vig.rectTransform, 0f, 0f, 0f, 0f);
+            vig.raycastTarget = false;
         }
 
         // ---- 上部バー ----
@@ -96,9 +102,8 @@ namespace DeckRogue.Game
             hg.childAlignment = TextAnchor.MiddleCenter;
             hg.childForceExpandHeight = false;
             var p = st.Player;
-            Chip(mid, "heart", p.Hp + " / " + p.MaxHp, UiKit.ColHp, 22);
-            Chip(mid, "energy", p.Energy + " / " + p.EnergyMax, UiKit.ColEnergy, 22);
-            Chip(mid, "gold", run.Gold + " G", Theme.Gold, 20);
+            Chip(mid, "heart", p.Hp + " / " + p.MaxHp, UiKit.ColHp, 24);
+            Chip(mid, "gold", run.Gold + " G", Theme.Gold, 22);
 
             // 右: レリック・デッキ・ログ
             var right = UiKit.NewRect("right", bar.transform);
@@ -135,7 +140,7 @@ namespace DeckRogue.Game
             var hg = UiKit.Horz(row, 6, 0);
             hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandHeight = false;
-            UiKit.Icon(row, icon, size + 6);
+            UiKit.Icon(row, icon, 32);
             var t = UiKit.Txt(row, text, size, color, TextAnchor.MiddleLeft, true);
             UiKit.Le(t, 40f, size + 8f, -1f, size + 8f);
             var fit = row.gameObject.AddComponent<ContentSizeFitter>();
@@ -166,32 +171,13 @@ namespace DeckRogue.Game
 
         // ---- 敵 ----
 
-        static void BuildEnemies(GameRoot g, RectTransform root, GameState st)
-        {
-            var area = UiKit.NewRect("enemies", root);
-            UiKit.Anchor(area, new Vector2(0.40f, 0.31f), new Vector2(0.99f, 0.94f), Vector2.zero, Vector2.zero);
-            var hg = UiKit.Horz(area, 28, 0);
-            hg.childAlignment = TextAnchor.LowerCenter;
-            hg.childForceExpandWidth = false;
-            hg.childForceExpandHeight = true;
-            hg.childControlWidth = true;
-            int n = Math.Max(1, st.Enemies.Count);
-            float w = Mathf.Min(330f, 1100f / n);
-            for (int i = 0; i < st.Enemies.Count; i++) EnemyPanel(g, area, st, i, w);
-        }
-
-        static void EnemyPanel(GameRoot g, Transform parent, GameState st, int index, float width)
+        /// <summary>敵パネルの中身 (入れ物 pan は BattleView が持ち越す)。shownHp は演出で先に減らした表示値 (実値と違えば滑らせる)</summary>
+        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp)
         {
             var e = st.Enemies[index];
             bool alive = e.Hp > 0;
             bool aimed = g.PreferredTarget == index || (g.Pending != null && g.Pending.TargetIndex.HasValue && g.Pending.TargetIndex.Value == index);
             bool targeting = g.Pending != null && g.Pending.NextNeed() == "target";
-
-            var pan = UiKit.NewRect("enemy" + index, parent);
-            UiKit.Le(pan, width, -1f, width, -1f);
-            var hit = pan.gameObject.AddComponent<Image>();
-            hit.color = new Color(0f, 0f, 0f, 0f);
-            hit.raycastTarget = alive;
             if (targeting && alive)
             {
                 var glow = UiKit.Frame(pan, Theme.Panel, new Color(1f, 0.85f, 0.3f, 0.5f), "glow", 3f);
@@ -215,7 +201,7 @@ namespace DeckRogue.Game
                 ig.childForceExpandHeight = false;
                 if (it != null)
                 {
-                    UiKit.Icon(intentRow, IntentIcon(it.Kind), 40, IntentColor(it.Kind));
+                    UiKit.Icon(intentRow, IntentIcon(it.Kind), 48, IntentColor(it.Kind));
                     var itT = UiKit.Txt(intentRow, IntentShort(it), 26, IntentColor(it.Kind), TextAnchor.MiddleLeft, true);
                     itT.outlineWidth = 0.2f; itT.outlineColor = Color.black;
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
@@ -226,7 +212,13 @@ namespace DeckRogue.Game
                 UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 340f), new Vector2(20f, 398f));
             }
 
-            // スプライト
+            // 足元の影とスプライト
+            var sh = UiKit.NewRect("shadow", pan);
+            UiKit.Anchor(sh, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-96f, 118f), new Vector2(96f, 148f));
+            var shImg = sh.gameObject.AddComponent<Image>();
+            shImg.sprite = ThemeFx.Shadow();
+            shImg.raycastTarget = false;
+            shImg.color = alive ? Color.white : new Color(1f, 1f, 1f, 0.3f);
             var spr = UiKit.NewRect("sprite", pan);
             UiKit.Anchor(spr, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 130f), new Vector2(100f, 330f));
             var img = spr.gameObject.AddComponent<Image>();
@@ -245,7 +237,8 @@ namespace DeckRogue.Game
             var nameT = UiKit.Txt(pan, nm + (alive ? "" : (e.Fled == true ? "（逃走）" : "（撃破）")), 20, alive ? UiKit.ColText : UiKit.ColDim, TextAnchor.MiddleCenter, true);
             nameT.outlineWidth = 0.18f; nameT.outlineColor = Color.black;
             UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 92f), new Vector2(0f, 122f));
-            HpBar(pan, new Vector2(0.08f, 0f), new Vector2(0.92f, 0f), 62f, 88f, e.Hp, e.MaxHp, e.Block);
+            HpBar(pan, new Vector2(0.08f, 0f), new Vector2(0.92f, 0f), 62f, 88f, shownHp, e.MaxHp, e.Block);
+            if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
 
             // 状態チップ
             var chips = new List<KeyValuePair<string, string>>();
@@ -269,28 +262,23 @@ namespace DeckRogue.Game
                 UiKit.Anchor(tr.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 0f), new Vector2(10f, 24f));
             }
 
-            var btn = pan.gameObject.AddComponent<Button>();
-            btn.targetGraphic = hit;
-            btn.interactable = alive;
-            btn.transition = Selectable.Transition.None;
-            int captured = index;
-            btn.onClick.AddListener(delegate { g.OnEnemyClicked(captured); });
-            if (alive)
-            {
-                string tipName = nm;
-                Tooltip.Attach(pan.gameObject, delegate
-                {
-                    var cur = g.Rs != null ? g.Rs.Combat : null;
-                    if (cur == null || captured >= cur.Enemies.Count) return null;
-                    var ce = cur.Enemies[captured];
-                    var sb = new System.Text.StringBuilder();
-                    sb.Append("<b>").Append(tipName).Append("</b>  HP ").Append(ce.Hp).Append(" / ").Append(ce.MaxHp);
-                    if (ce.Block > 0) sb.Append("  ブロック").Append(ce.Block);
-                    sb.Append("\n意図: ").Append(CardText.IntentText(cur, captured));
-                    if (traits.Length > 0) sb.Append("\n特性: ").Append(traits);
-                    return sb.ToString();
-                });
-            }
+        }
+
+        /// <summary>敵の吹き出し (名前・HP・意図・特性)。用語解説は Tooltip 側が足す</summary>
+        public static string EnemyTip(GameRoot g, int index)
+        {
+            var cur = g.Rs != null ? g.Rs.Combat : null;
+            if (cur == null || index >= cur.Enemies.Count) return null;
+            var ce = cur.Enemies[index];
+            EnemyDef def = null;
+            try { def = Content.GetEnemyDef(ce.EnemyId); } catch (Exception) { }
+            var sb = new System.Text.StringBuilder();
+            sb.Append("<b>").Append(def != null ? def.Name : ce.EnemyId).Append("</b>  HP ").Append(ce.Hp).Append(" / ").Append(ce.MaxHp);
+            if (ce.Block > 0) sb.Append("  ブロック").Append(ce.Block);
+            if (ce.Hp > 0) sb.Append("\n意図: ").Append(CardText.IntentText(cur, index));
+            string traits = CardText.EnemyTraits(def);
+            if (traits.Length > 0) sb.Append("\n特性: ").Append(traits);
+            return sb.ToString();
         }
 
         static void SmallChip(Transform parent, string icon, string text, Color color)
@@ -303,12 +291,34 @@ namespace DeckRogue.Game
             var hg = UiKit.Horz(row, 3, 4);
             hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandHeight = false;
-            UiKit.Icon(row, icon, 18);
-            var t = UiKit.Txt(row, text, 13, color, TextAnchor.MiddleLeft, true);
-            UiKit.Le(t, 20f, 20f, -1f, 20f);
+            UiKit.Icon(row, icon, 32);
+            var t = UiKit.Txt(row, text, 14, color, TextAnchor.MiddleLeft, true);
+            UiKit.Le(t, 20f, 24f, -1f, 24f);
             var fit = row.gameObject.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        /// <summary>HP バーの値 (演出で滑らせるために持つ)</summary>
+        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public RectTransform Fill; public TMP_Text Label; }
+
+        /// <summary>入れ物の中の HP バーを target まで滑らせる (無ければ何もしない)</summary>
+        public static void TweenHpBar(RectTransform container, int target)
+        {
+            if (container == null) return;
+            var info = container.GetComponentInChildren<HpBarInfo>();
+            if (info == null || info.Fill == null) return;
+            int from = info.Value;
+            info.Value = target;
+            float r0 = info.Max > 0 ? Mathf.Clamp01((float)from / info.Max) : 0f;
+            float r1 = info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f;
+            var fill = info.Fill; var label = info.Label; int max = info.Max;
+            Tween.Run(0.35f, k =>
+            {
+                if (fill == null) return;
+                fill.anchorMax = new Vector2(Mathf.Lerp(r0, r1, k), 1f);
+                if (label != null) label.text = Mathf.RoundToInt(Mathf.Lerp(from, target, k)) + " / " + max;
+            }, Ease.OutCubic);
         }
 
         static void HpBar(RectTransform parent, Vector2 aMin, Vector2 aMax, float yMin, float yMax, int hp, int max, int block)
@@ -327,6 +337,8 @@ namespace DeckRogue.Game
             var t = UiKit.Txt(bar, hp + " / " + max, 16, Color.white, TextAnchor.MiddleCenter, true);
             t.outlineWidth = 0.2f; t.outlineColor = Color.black;
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
+            var info = bar.gameObject.AddComponent<HpBarInfo>();
+            info.Max = max; info.Value = hp; info.Fill = fill; info.Label = t;
             if (block > 0)
             {
                 var b = UiKit.NewRect("block", bar);
@@ -411,19 +423,22 @@ namespace DeckRogue.Game
 
         // ---- リーダー・伏せ場・置物 ----
 
-        static void BuildPlayer(GameRoot g, RectTransform root, GameState st)
+        /// <summary>リーダー欄の中身 (入れ物 area は BattleView が持ち越す)</summary>
+        public static void FillPlayerPanel(GameRoot g, RectTransform area, GameState st, int shownHp)
         {
             var p = st.Player;
-            var area = UiKit.NewRect("player", root);
-            UiKit.Anchor(area, new Vector2(0.02f, 0.31f), new Vector2(0.38f, 0.94f), Vector2.zero, Vector2.zero);
-            g.RegisterAnchor("player", area);
 
             string leaderId = g.Rs.LeaderId;
             string leaderName = leaderId;
             try { var ld = Content.GetLeaderDef(leaderId); leaderName = ld.Name; } catch (Exception) { }
 
+            var lsh = UiKit.NewRect("shadow", area);
+            UiKit.Anchor(lsh, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(10f, 118f), new Vector2(250f, 150f));
+            var lshImg = lsh.gameObject.AddComponent<Image>();
+            lshImg.sprite = ThemeFx.Shadow();
+            lshImg.raycastTarget = false;
             var spr = UiKit.NewRect("sprite", area);
-            UiKit.Anchor(spr, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(20f, 130f), new Vector2(220f, 330f));
+            UiKit.Anchor(spr, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(10f, 130f), new Vector2(250f, 370f));
             var img = spr.gameObject.AddComponent<Image>();
             img.sprite = Creature.Get("leaders", leaderId, true);
             img.preserveAspect = true;
@@ -431,10 +446,11 @@ namespace DeckRogue.Game
 
             var nameT = UiKit.Txt(area, leaderName, 20, UiKit.ColText, TextAnchor.MiddleCenter, true);
             nameT.outlineWidth = 0.18f; nameT.outlineColor = Color.black;
-            UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 92f), new Vector2(240f, 122f));
+            UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 92f), new Vector2(260f, 122f));
             var hpRt = UiKit.NewRect("hpwrap", area);
-            UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(30f, 62f), new Vector2(230f, 88f));
-            HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, p.Hp, p.MaxHp, p.Block);
+            UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(40f, 62f), new Vector2(250f, 88f));
+            HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, shownHp, p.MaxHp, p.Block);
+            if (shownHp != p.Hp) TweenHpBar(area, p.Hp);
             if (p.IceBlock > 0)
             {
                 var ice = UiKit.Txt(area, "氷壁 " + p.IceBlock, 15, UiKit.Hex("#9fd8ff"), TextAnchor.MiddleLeft, true);
@@ -464,13 +480,14 @@ namespace DeckRogue.Game
 
             // 伏せ場 (リーダーの右上)
             var setArea = UiKit.NewRect("setzone", area);
-            UiKit.Anchor(setArea, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -190f), new Vector2(0f, -10f));
+            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(300f, 110f), new Vector2(0f, 290f));
             var setLabel = UiKit.Txt(setArea, "伏せ場 " + p.SetCards.Count + " / " + p.SetSlots, 15, UiKit.ColAccent, TextAnchor.UpperLeft, true);
             UiKit.Anchor(setLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -22f), new Vector2(0f, 0f));
             for (int i = 0; i < p.SetSlots; i++)
             {
                 var slot = UiKit.NewRect("slot" + i, setArea);
                 UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * 120f, 0f), new Vector2(i * 120f + 104f, 150f));
+                g.RegisterAnchor("setslot" + i, slot);
                 var sImg = UiKit.Frame(slot, Theme.Panel, i < p.SetCards.Count ? UiKit.Hex("#3f8c86") : new Color(1f, 1f, 1f, 0.35f), "slotframe", 3f);
                 UiKit.Stretch(sImg.rectTransform, 0f, 0f, 0f, 0f);
                 sImg.raycastTarget = false;
@@ -503,46 +520,8 @@ namespace DeckRogue.Game
 
         // ---- 手札 (扇) ----
 
-        static void BuildHand(GameRoot g, RectTransform root, GameState st)
-        {
-            var hand = st.Player.Hand;
-            var area = UiKit.NewRect("hand", root);
-            UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-700f, HandY), new Vector2(700f, HandY + CardView.H * CardScale + 40f));
-            int n = hand.Count;
-            if (n == 0) return;
-            // 予測の対象: 狙いを付けた敵、無ければ生存が1体の時だけその敵
-            int alive = 0, firstAlive = -1;
-            for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { alive++; if (firstAlive < 0) firstAlive = i; }
-            CardView.PreviewEnemy = g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? g.PreferredTarget : (alive == 1 ? firstAlive : -1);
-            float spacing = Mathf.Min(CardView.W * CardScale + 12f, 1180f / n);
-            float center = (n - 1) / 2f;
-            bool myTurn = st.Phase == CombatPhases.PlayerTurn;
-            for (int i = 0; i < n; i++)
-            {
-                var c = hand[i];
-                int cost = 0;
-                try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { cost = c.Def.Cost; }
-                bool playable = myTurn && Effects.IsPlayableFromHand(c) && cost <= st.Player.Energy && Effects.RetainerRequirementMet(st, c);
-                bool settable = myTurn && SetBase.CanSetCard(st, c.Uid);
-                var rt = CardView.Build(area, c, st, playable, true, "hand" + i);
-                float dx = (i - center) * spacing;
-                float dy = -Mathf.Abs(i - center) * 10f;
-                float rot = -(i - center) * 3f;
-                // CardView のアンカーは親の中央。エリアの下端にカードの下端を合わせる
-                float areaH = CardView.H * CardScale + 40f;
-                var basePos = new Vector2(dx, -areaH / 2f + CardView.H * CardScale / 2f + dy);
-                rt.anchoredPosition = basePos;
-                rt.localScale = Vector3.one * CardScale;
-                rt.localRotation = Quaternion.Euler(0f, 0f, rot);
-                HookHandCard(g, rt, c, playable, settable, basePos, rot);
-                var cardRef = c;
-                Tooltip.Attach(rt.gameObject, delegate { return KeywordsOnly(CardText.Body(cardRef.Def) + " " + CardText.Notes(cardRef.Def)); }, false);
-            }
-            CardView.PreviewEnemy = -1;
-        }
-
         /// <summary>カードの吹き出し: 本文は見えているので用語解説だけ (無ければ出さない)</summary>
-        static string KeywordsOnly(string text)
+        public static string KeywordsOnly(string text)
         {
             var terms = KeywordHelp.FindIn(text);
             if (terms.Count == 0) return null;
@@ -553,14 +532,15 @@ namespace DeckRogue.Game
 
         static bool _dragging;
 
-        static void HookHandCard(GameRoot g, RectTransform rt, CardInstance c, bool playable, bool settable, Vector2 basePos, float baseRot)
+        public static void HookHandCard(GameRoot g, BattleView.HandCard hc, CardInstance c)
         {
+            var rt = hc.Rt;
             var et = rt.gameObject.AddComponent<EventTrigger>();
             // ドラッグ: カードを持ち上げて敵に落とすと対象指定して即プレイ、戦場に落とすとプレイ、手札に戻すと取り消し
             var beginDrag = new EventTrigger.Entry { eventID = EventTriggerType.BeginDrag };
             beginDrag.callback.AddListener(delegate
             {
-                if (!playable) return;
+                if (!hc.Playable) return;
                 _dragging = true;
                 rt.SetAsLastSibling();
                 rt.localRotation = Quaternion.identity;
@@ -588,18 +568,18 @@ namespace DeckRogue.Game
                 if (c.Def.Modes != null && c.Def.Modes.Count > 0)
                 {
                     if (overField) { g.PreferredTarget = enemyIdx; g.ModeChoiceUid = c.Uid; g.Rebuild(); }
-                    else { Tween.Move(rt, basePos, 0.15f); Tween.Scale(rt, Vector3.one * CardScale, 0.15f); rt.localRotation = Quaternion.Euler(0f, 0f, baseRot); RestoreOrder(rt); }
+                    else { Tween.Move(rt, hc.BasePos, 0.15f); Tween.Scale(rt, Vector3.one * CardScale, 0.15f); rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot); RestoreOrder(rt); }
                     return;
                 }
                 if (enemyIdx >= 0 || overField)
                 {
                     if (enemyIdx >= 0) g.PreferredTarget = enemyIdx;
-                    PlayWithGhost(g, rt, c, null);
+                    PlayCard(g, c, null);
                     return;
                 }
-                Tween.Move(rt, basePos, 0.15f);
+                Tween.Move(rt, hc.BasePos, 0.15f);
                 Tween.Scale(rt, Vector3.one * CardScale, 0.15f);
-                rt.localRotation = Quaternion.Euler(0f, 0f, baseRot);
+                rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
                 RestoreOrder(rt);
             });
             et.triggers.Add(endDrag);
@@ -609,7 +589,7 @@ namespace DeckRogue.Game
                 if (_dragging) return;
                 rt.SetAsLastSibling();
                 Tween.Scale(rt, Vector3.one * 1.18f, 0.12f, Ease.OutQuad);
-                Tween.Move(rt, basePos + new Vector2(0f, 70f), 0.12f, Ease.OutQuad);
+                Tween.Move(rt, hc.BasePos + new Vector2(0f, 70f), 0.12f, Ease.OutQuad);
                 rt.localRotation = Quaternion.identity;
             });
             et.triggers.Add(enter);
@@ -618,8 +598,8 @@ namespace DeckRogue.Game
             {
                 if (_dragging) return;
                 Tween.Scale(rt, Vector3.one * CardScale, 0.12f, Ease.OutQuad);
-                Tween.Move(rt, basePos, 0.12f, Ease.OutQuad);
-                rt.localRotation = Quaternion.Euler(0f, 0f, baseRot);
+                Tween.Move(rt, hc.BasePos, 0.12f, Ease.OutQuad);
+                rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
                 RestoreOrder(rt);
             });
             et.triggers.Add(exit);
@@ -629,18 +609,18 @@ namespace DeckRogue.Game
                 var pd = d as PointerEventData;
                 if (pd != null && pd.button == PointerEventData.InputButton.Right)
                 {
-                    if (settable) g.DoCombat(new Command_SetCard { CardUid = c.Uid });
+                    if (hc.Settable) g.DoCombat(new Command_SetCard { CardUid = c.Uid });
                     return;
                 }
                 if (pd != null && pd.dragging) return;
                 if (c.Def.Modes != null && c.Def.Modes.Count > 0) { g.ModeChoiceUid = c.Uid; g.Rebuild(); return; }
-                if (playable) PlayWithGhost(g, rt, c, null);
-                else if (settable) { g.ModeChoiceUid = c.Uid; g.Rebuild(); }
+                if (hc.Playable) PlayCard(g, c, null);
+                else if (hc.Settable) { g.ModeChoiceUid = c.Uid; g.Rebuild(); }
             });
             et.triggers.Add(click);
 
             // 伏せられる札には「伏せる」ボタン (ホバー中だけ・カードの足元)
-            if (settable)
+            if (hc.Settable)
             {
                 var sb = UiKit.Btn(rt, "伏せる", delegate { g.DoCombat(new Command_SetCard { CardUid = c.Uid }); }, 15, true, UiKit.Hex("#bfe3dc"));
                 var sle = sb.GetComponent<LayoutElement>();
@@ -674,25 +654,10 @@ namespace DeckRogue.Game
             return -1;
         }
 
-        /// <summary>カードの残像を戦場へ飛ばしてからプレイする (プレイ後の Rebuild で元のカードは消えるため、先に位置を控える)</summary>
-        public static void PlayWithGhost(GameRoot g, RectTransform cardRt, CardInstance c, int? modeIndex)
+        /// <summary>カードをプレイする。行き先の演出 (敵へ飛ぶ→捨て札) は GameRoot.SubmitIfReady が LastPlayed を記録し BattleView.SyncHand が行う</summary>
+        public static void PlayCard(GameRoot g, CardInstance c, int? modeIndex)
         {
-            var fx = g.FxLayer;
-            Vector2 from = Tween.CenterIn(cardRt, fx);
-            var st = g.Rs != null ? g.Rs.Combat : null;
             g.BeginPlay(c, modeIndex);
-            if (g.Pending != null || st == null) return; // 追加の選択待ち = まだ撃っていない
-            var ghost = CardView.Build(fx, c, st, true, false, "ghost");
-            ghost.anchoredPosition = from;
-            ghost.localScale = Vector3.one * 0.8f;
-            var cg = ghost.gameObject.AddComponent<CanvasGroup>();
-            cg.blocksRaycasts = false;
-            Vector2 to = new Vector2(0f, 120f);
-            var target = g.PreferredTarget >= 0 ? g.Anchor("enemy" + g.PreferredTarget) : null;
-            if (target != null) to = Tween.CenterIn(target, fx) + new Vector2(0f, 60f);
-            Tween.Move(ghost, to, 0.22f, Ease.OutCubic);
-            Tween.Scale(ghost, Vector3.one * 0.55f, 0.22f, Ease.OutQuad);
-            Tween.Run(0.3f, k => { if (cg != null) cg.alpha = k < 0.5f ? 1f : 1f - (k - 0.5f) * 2f; }, Ease.Linear, () => { if (ghost != null) UnityEngine.Object.Destroy(ghost.gameObject); });
         }
 
         static void RestoreOrder(RectTransform rt)
@@ -708,14 +673,15 @@ namespace DeckRogue.Game
         static void BuildPiles(GameRoot g, RectTransform root, GameState st)
         {
             var p = st.Player;
-            Pile(root, new Vector2(0f, 0f), new Vector2(24f, 24f), "draw", "山札", p.DrawPile.Count, -1, delegate { g.ViewPile = "draw"; g.Rebuild(); });
-            Pile(root, new Vector2(1f, 0f), new Vector2(-150f, 24f), "exhaust", "捨て札 / 消滅", p.DiscardPile.Count, p.ExhaustPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); });
+            Pile(g, root, new Vector2(0f, 0f), new Vector2(24f, 24f), "draw", "山札", p.DrawPile.Count, -1, delegate { g.ViewPile = "draw"; g.Rebuild(); }, "pile-draw");
+            Pile(g, root, new Vector2(1f, 0f), new Vector2(-150f, 24f), "exhaust", "捨て札 / 消滅", p.DiscardPile.Count, p.ExhaustPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); }, "pile-discard");
             if (g.ViewPile != null) BuildPileViewer(g, root, st);
         }
 
-        static void Pile(RectTransform root, Vector2 anchor, Vector2 offset, string icon, string label, int count, int count2 = -1, Action onClick = null)
+        static void Pile(GameRoot g, RectTransform root, Vector2 anchor, Vector2 offset, string icon, string label, int count, int count2 = -1, Action onClick = null, string anchorName = null)
         {
             var rt = UiKit.NewRect("pile-" + icon, root);
+            if (anchorName != null) g.RegisterAnchor(anchorName, rt);
             if (onClick != null)
             {
                 var hit = rt.gameObject.AddComponent<Image>();
@@ -789,8 +755,20 @@ namespace DeckRogue.Game
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-300f, 136f), new Vector2(-24f, 216f));
-            var energy = UiKit.Txt(root, "E " + st.Player.Energy + " / " + st.Player.EnergyMax, 18, UiKit.ColEnergy, TextAnchor.MiddleCenter, true);
-            UiKit.Anchor(energy.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-300f, 222f), new Vector2(-24f, 250f));
+            // エナジー玉 (手札の左)
+            var orb = UiKit.NewRect("energyOrb", root);
+            UiKit.Anchor(orb, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(190f, 150f), new Vector2(290f, 250f));
+            var orbImg = orb.gameObject.AddComponent<Image>();
+            orbImg.sprite = ThemeFx.CostOrb();
+            orbImg.preserveAspect = true;
+            orbImg.raycastTarget = false;
+            orbImg.color = st.Player.Energy > 0 ? Color.white : new Color(0.55f, 0.55f, 0.55f, 1f);
+            var et = UiKit.Txt(orb, st.Player.Energy + "/" + st.Player.EnergyMax, 30, Color.white, TextAnchor.MiddleCenter, true);
+            et.outlineWidth = 0.3f; et.outlineColor = Color.black;
+            UiKit.Stretch(et.rectTransform, 0f, 0f, 0f, 0f);
+            var el = UiKit.Txt(root, "エナジー", 14, UiKit.ColDim, TextAnchor.MiddleCenter);
+            UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(170f, 126f), new Vector2(310f, 150f));
+            g.RegisterAnchor("energy", orb);
         }
 
         // ---- ログの引き出し ----
@@ -865,7 +843,7 @@ namespace DeckRogue.Game
             var hg = UiKit.Horz(row, 24, 0);
             hg.childAlignment = TextAnchor.MiddleCenter;
             hg.childForceExpandHeight = false;
-            hg.childControlWidth = false; hg.childControlHeight = false;
+            hg.childForceExpandWidth = false;
             for (int i = 0; i < usable.Count; i++)
             {
                 var c = usable[i];
@@ -934,12 +912,12 @@ namespace DeckRogue.Game
                 {
                     int mi = m;
                     string label = (m + 1) + ": " + CardText.Short(ModeText(card.Def.Modes[m]), 18);
-                    UiKit.Btn(inner, label, delegate { g.ModeChoiceUid = null; g.BeginPlay(card, mi); }, 16, playable);
+                    UiKit.Btn(inner, label, delegate { g.ModeChoiceUid = null; PlayCard(g, card, mi); }, 16, playable);
                 }
             }
             else
             {
-                UiKit.Btn(inner, "プレイ", delegate { g.ModeChoiceUid = null; g.BeginPlay(card, null); }, 16, playable);
+                UiKit.Btn(inner, "プレイ", delegate { g.ModeChoiceUid = null; PlayCard(g, card, null); }, 16, playable);
             }
             if (SetBase.CanSetCard(st, card.Uid)) UiKit.Btn(inner, "伏せる", delegate { g.ModeChoiceUid = null; g.DoCombat(new Command_SetCard { CardUid = card.Uid }); }, 16);
             UiKit.Btn(inner, "やめる", delegate { g.ModeChoiceUid = null; g.Rebuild(); }, 16);
@@ -982,7 +960,7 @@ namespace DeckRogue.Game
             var content = UiKit.Scroll(inner, false, new Color(0f, 0f, 0f, 0.25f), 16, 12);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, 360f, -1f, 360f, -1f, 1f);
             var lg = content.GetComponent<HorizontalLayoutGroup>();
-            if (lg != null) { lg.childControlWidth = false; lg.childControlHeight = false; lg.childAlignment = TextAnchor.MiddleLeft; }
+            if (lg != null) { lg.childForceExpandWidth = false; lg.childForceExpandHeight = false; lg.childAlignment = TextAnchor.MiddleLeft; }
             if (pool.Count == 0)
             {
                 var none = UiKit.Txt(content, "（候補がありません）", 16, UiKit.ColDim);
