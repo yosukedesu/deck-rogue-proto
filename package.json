@@ -19,6 +19,7 @@
     "analyze": "tsx scripts/analyze-run.ts",
     "goldens": "tsx scripts/dump-goldens.ts && tsx scripts/dump-goldens.ts 1 9101 leader_blue,leader_black,leader_red,leader_white",
     "goldens:verify": "tsx scripts/verify-goldens.ts",
+    "unity:sync": "tsx scripts/sync-unity-data.ts",
     "gen:csharp": "tsx scripts/gen-csharp-types.ts",
     "fusion:table": "tsx scripts/fusion-table.ts"
   },

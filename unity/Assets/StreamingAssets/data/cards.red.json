@@ -1,0 +1,1601 @@
+[
+  {
+    "id": "red_strike",
+    "name": "火弾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "red_spark",
+    "name": "火花",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      }
+    ],
+    "axis": [
+      "impulse"
+    ]
+  },
+  {
+    "id": "red_ember_slash",
+    "name": "熾火の一閃",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 2
+      }
+    ],
+    "axis": [
+      "impulse"
+    ]
+  },
+  {
+    "id": "red_guard",
+    "name": "灰の盾",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_ignite",
+    "name": "着火",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_spreading_fire",
+    "name": "延焼弾",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_inferno",
+    "name": "業火",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_perm_brazier",
+    "name": "火鉢",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_perm_ember",
+    "name": "残り火",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_ritual",
+    "name": "猛火の儀式",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_impulse",
+    "name": "火中の取り出し",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_big_impulse",
+    "name": "燃え上がる着想",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ],
+    "exhaust": true
+  },
+  {
+    "id": "red_gamble",
+    "name": "火運の賭け",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 16
+      }
+    ],
+    "axis": [
+      "chaos"
+    ]
+  },
+  {
+    "id": "red_chaos_bolt",
+    "name": "大博打",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 10,
+        "amountMax": 38
+      }
+    ],
+    "axis": [
+      "chaos"
+    ]
+  },
+  {
+    "id": "red_reckless",
+    "name": "捨て身の一撃",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 14
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_flame_wave",
+    "name": "炎の波",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_fire_rain",
+    "name": "火の粉の雨",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 8,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_billiard",
+    "name": "玉突き",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageCleave",
+        "amount": 10
+      }
+    ]
+  },
+  {
+    "id": "red_burst_release",
+    "name": "爆熱の解放",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_perm_furnace",
+    "name": "業火の炉",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "applyBurn",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_sea_of_fire",
+    "name": "火の海",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 11,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_ember",
+    "name": "くすぶる残り火",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_perm_rage_mask",
+    "name": "憤怒の仮面",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "addMomentum",
+        "amount": 4
+      }
+    ],
+    "axis": [
+      "wrath"
+    ]
+  },
+  {
+    "id": "red_perm_instant_flame",
+    "name": "刹那の焔",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onImpulsePlayed",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_scorching_insight",
+    "name": "灼熱の閃き",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ],
+    "exhaust": true
+  },
+  {
+    "id": "red_burn_it_all",
+    "name": "全てを燃やせ",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_final_blow",
+    "name": "とどめの一撃",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageExecute",
+        "amount": 10,
+        "amountMax": 28
+      }
+    ]
+  },
+  {
+    "id": "red_grand_fireworks",
+    "name": "大花火",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 9,
+        "amountMax": 25,
+        "target": "all"
+      }
+    ],
+    "axis": [
+      "chaos"
+    ]
+  },
+  {
+    "id": "red_heat_screen",
+    "name": "熱幕",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_fang_breaker",
+    "name": "砕牙",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      }
+    ]
+  },
+  {
+    "id": "red_wrath_flame",
+    "name": "怒り火",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_wrath_roar",
+    "name": "憤怒の咆哮",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 11,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_hearth_shield",
+    "name": "火床の盾",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 7
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_strike",
+    "name": "猛り火の一撃",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_blade",
+    "name": "焔纏いの刃",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "blazeDiscount": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_guard",
+    "name": "燃え盛る守り",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "gainBlock",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_devour",
+    "name": "火喰らい",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_pillar",
+    "name": "火柱",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "exposeEnemy",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_sweep",
+    "name": "紅蓮の薙ぎ",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 6,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_path",
+    "name": "火は道を開く",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "blazeDiscount": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_cloak",
+    "name": "灰の外套",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "gainBlock",
+        "amount": 9
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_roar",
+    "name": "業炎の咆哮",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "applyBurn",
+        "amount": 5,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_awaken",
+    "name": "紅蓮の目覚め",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "applyBurn",
+        "amount": 2,
+        "target": "all"
+      },
+      {
+        "trigger": "onTurnStart",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "addMomentum",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "red_wildfire",
+    "name": "燎原の火",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 5,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_leaping_flame",
+    "name": "飛び火",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_iron_will",
+    "name": "鉄火の意志",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_bomb",
+    "name": "火薬玉",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 8,
+        "amountMax": 24
+      }
+    ]
+  },
+  {
+    "id": "red_finishing_flame",
+    "name": "燼の一突き",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageExecute",
+        "amount": 5,
+        "amountMax": 15
+      }
+    ]
+  },
+  {
+    "id": "red_frenzy",
+    "name": "狂騒",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_perm_ward",
+    "name": "業火の護符",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_flurry",
+    "name": "灼熱の連打",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_spark",
+    "name": "爆ぜる火花",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_ritual",
+    "name": "火継ぎの儀",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "applyBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_pursuit",
+    "name": "紅蓮の追撃",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_wall",
+    "name": "火壁",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 10
+      },
+      {
+        "trigger": "onPlay",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "gainBlock",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "red_perm_blaze_heart",
+    "name": "燠火の心臓",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "condition": {
+          "blaze": true
+        },
+        "effect": "dealDamage",
+        "amount": 6,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_smoke",
+    "name": "煙幕",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_double_tap",
+    "name": "二連の火弾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_perm_forge",
+    "name": "鍛冶の炉",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "impulseDraw",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_blaze_storm",
+    "name": "紅蓮の嵐",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_meteor",
+    "name": "隕火",
+    "cost": 3,
+    "type": "physical",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 30
+      }
+    ]
+  },
+  {
+    "id": "red_cataclysm",
+    "name": "業火の顎",
+    "cost": 4,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 27,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_last_day",
+    "name": "紅蓮の終焉",
+    "cost": 5,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 33,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "red_perm_gambler",
+    "name": "賭博師の焔",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onRandomPlayed",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_all_in",
+    "name": "一擲乾坤",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerRandomPlayed",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "red_long_shot",
+    "name": "山師の勘",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_streak_bet",
+    "name": "続け賭け",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerRandomPlayed",
+        "amount": 3
+      }
+    ],
+    "axis": [
+      "chaos"
+    ]
+  },
+  {
+    "id": "red_perm_ledger",
+    "name": "焔の目録",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onImpulsePlayed",
+        "effect": "addMomentum",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_perm_runfire",
+    "name": "走り火",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onImpulsePlayed",
+        "effect": "dealDamage",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_spite",
+    "name": "業腹",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurnPerDamageTaken",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_perm_pyre",
+    "name": "火だるま",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 2
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurnPerDamageTaken",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_fire_shift",
+    "name": "火移し",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBurn",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_ember_stance",
+    "name": "余勢の構え",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_mode_crossroad",
+    "name": "焚の岐路",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [],
+    "modes": [
+      {
+        "name": "延焼5",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "applyBurn",
+            "amount": 5
+          }
+        ]
+      },
+      {
+        "name": "勢い+3と3ダメージ",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addMomentum",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "red_mode_firecontrol",
+    "name": "火加減",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [],
+    "modes": [
+      {
+        "name": "8ダメージ",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8
+          }
+        ]
+      },
+      {
+        "name": "ブロック6",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "gainBlock",
+            "amount": 6
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "red_mode_deadline",
+    "name": "刻限の炎",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [],
+    "modes": [
+      {
+        "name": "衝動4と一時マナ+1",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "impulseDraw",
+            "amount": 4
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "gainEnergy",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "name": "延焼6と1ドロー",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "applyBurn",
+            "amount": 6
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "red_charcoal_guard",
+    "name": "炭火の備え",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_afterheat_mail",
+    "name": "余熱の鎧",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_perm_flarecoat",
+    "name": "火纏い",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_perm_thorn_flame",
+    "name": "棘火の帳",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_fluke_spark",
+    "name": "まぐれ火",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 9
+      }
+    ]
+  },
+  {
+    "id": "red_double_dice",
+    "name": "二連の賭け矢",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 2,
+        "amountMax": 8
+      }
+    ]
+  },
+  {
+    "id": "red_leap_arrow",
+    "name": "跳ね火の矢",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 4,
+        "amountMax": 16
+      }
+    ]
+  },
+  {
+    "id": "red_double_down",
+    "name": "倍賭け",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamageRandom",
+        "amount": 6,
+        "amountMax": 28
+      }
+    ]
+  }
+]

@@ -1,0 +1,1347 @@
+[
+  {
+    "id": "white_strike",
+    "name": "聖光の一撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_shield_strike",
+    "name": "聖盾の一撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_wall_jab",
+    "name": "城壁の一突き",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 1
+      }
+    ],
+    "axis": [
+      "fortress"
+    ]
+  },
+  {
+    "id": "white_guard",
+    "name": "白盾",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_heal",
+    "name": "癒しの光",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 4,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_mass_heal",
+    "name": "大いなる癒し",
+    "cost": 3,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 18
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_menace",
+    "name": "威圧の聖印",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_decree",
+    "name": "勅令",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 5
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_bodyslam",
+    "name": "城壁砕き",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 1
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_fortress",
+    "name": "大城壁",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 14
+      }
+    ],
+    "axis": [
+      "fortress"
+    ],
+    "rarity": "uncommon",
+    "freeIfHandAll": "nonphysical"
+  },
+  {
+    "id": "white_perm_squire",
+    "name": "従者の少年",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ],
+    "retainer": true,
+    "rarity": "common"
+  },
+  {
+    "id": "white_perm_shieldmaiden",
+    "name": "盾の乙女",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ],
+    "retainer": true,
+    "rarity": "common"
+  },
+  {
+    "id": "white_perm_choir",
+    "name": "聖歌隊",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 2
+      }
+    ],
+    "retainer": true,
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_perm_banneret",
+    "name": "旗手",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ],
+    "retainer": true,
+    "rarity": "common"
+  },
+  {
+    "id": "white_rally",
+    "name": "集結",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 4
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_grand_charge",
+    "name": "大行進",
+    "cost": 3,
+    "type": "physical",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 6
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_reaction_ward",
+    "name": "護りの聖印",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 12
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_reaction_retribution",
+    "name": "報復の光",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 10
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 10,
+        "condition": {
+          "lastActionNoHpLoss": true
+        }
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_reaction_sanctuary",
+    "name": "聖域",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 16,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainHp",
+        "amount": 4,
+        "condition": {
+          "hpAtOrBelowRatio": 0.5
+        }
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_judgment",
+    "name": "裁きの光",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 14
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 2
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_muster",
+    "name": "一斉召集",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 2
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_shield_call",
+    "name": "盾持ちの呼び声",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_shieldmaiden",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 8
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_perm_band",
+    "name": "軍楽隊",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onPermanentEntered",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ],
+    "retainer": true,
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_perm_banner",
+    "name": "白銀の軍旗",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onPermanentEntered",
+        "effect": "dealDamage",
+        "amount": 2,
+        "target": "all"
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_knight_charge",
+    "name": "聖騎士団の突撃",
+    "cost": 3,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 4,
+        "target": "all"
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_rank_shield",
+    "name": "隊列の盾",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerPermanent",
+        "amount": 2
+      }
+    ],
+    "axis": [
+      "fortress"
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_perm_hound",
+    "name": "猟犬の従者",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ],
+    "retainer": true,
+    "rarity": "common"
+  },
+  {
+    "id": "white_perm_bell",
+    "name": "聖なる鐘",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_service",
+    "name": "奉仕の心",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_reaction_martyr",
+    "name": "殉教者の盾",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "gainHp",
+        "amount": 8
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_perm_spring",
+    "name": "生命の泉",
+    "cost": 3,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 3
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_verdict_hammer",
+    "name": "断罪の槌",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerWeak",
+        "amount": 3
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_cowering_light",
+    "name": "萎縮の光",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 3
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_reaction_holy_wall",
+    "name": "聖罰の障壁",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyBuffed",
+        "effect": "weakenEnemy",
+        "amount": 2
+      },
+      {
+        "trigger": "onEnemyBuffed",
+        "effect": "gainBlock",
+        "amount": 8
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_shield_bash",
+    "name": "大盾の反撃",
+    "cost": 2,
+    "type": "physical",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 2,
+        "spendBlock": true
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_gate_close",
+    "name": "城門閉鎖",
+    "cost": 3,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 14
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 1
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_mending",
+    "name": "修繕の祈り",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6,
+        "condition": {
+          "healedThisTurn": true
+        }
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_reaction_bright_wall",
+    "name": "白光の壁",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainHp",
+        "amount": 4
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "white_reaction_chant",
+    "name": "光盾の詠唱",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "gainBlock",
+        "amount": 9
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "white_perm_ballista",
+    "name": "城壁の弩",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onBlockGained",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "white_perm_warcry",
+    "name": "白銀の号令",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "blessRetainers",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_perm_anthem",
+    "name": "栄光の頌歌",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "blessRetainers",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_chalice",
+    "name": "光の聖杯",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_apostle",
+    "name": "恵光の使徒",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onHealed",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_blade_prayer",
+    "name": "祈りの刃",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 6,
+        "condition": {
+          "perfectBlockLastPhase": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "white_mercy_staff",
+    "name": "慈愛の杖",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "white_perm_archer",
+    "name": "従者の射手",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "white_perm_monk",
+    "name": "従者の修道士",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_rampart_riposte",
+    "name": "塁壁の反撃",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 10
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_seal_light",
+    "name": "聖印の光",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "white_calling",
+    "name": "呼び声",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "amount": 1,
+        "summonId": "white_perm_squire"
+      }
+    ]
+  },
+  {
+    "id": "white_rank_thrust",
+    "name": "隊列の突き",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 1,
+        "condition": {
+          "targetDead": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "white_healing_verse",
+    "name": "癒しの詩",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_light_arrow",
+    "name": "白光の矢",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1,
+        "condition": {
+          "enemyIntentNot": "attack"
+        }
+      }
+    ]
+  },
+  {
+    "id": "white_shield_prayer",
+    "name": "大盾の祈祷",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_candle",
+    "name": "燭光の従者",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainHp",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_hymn_wall",
+    "name": "聖歌の壁",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "gainHp",
+        "amount": 6
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "gainBlock",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "white_hound_whistle",
+    "name": "猟犬の呼び笛",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "amount": 1,
+        "summonId": "white_perm_hound"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "white_holy_maul",
+    "name": "聖罰の大槌",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "white_perm_bandleader",
+    "name": "軍楽長",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onPermanentEntered",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_glory_chain",
+    "name": "威光の鎖",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "white_perm_pavilion",
+    "name": "白亜の天幕",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "white_holy_oil",
+    "name": "聖油",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_maiden_prayer",
+    "name": "乙女の祈り",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "amount": 1,
+        "summonId": "white_perm_shieldmaiden"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "white_praise_chorus",
+    "name": "讃美の合唱",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerPermanent",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_oath_shield",
+    "name": "誓いの盾",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 8
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainHp",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_cathedral",
+    "name": "大聖堂",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainHp",
+        "amount": 2
+      },
+      {
+        "trigger": "onHealed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_grand_rally",
+    "name": "白銀の大号令",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "amount": 3,
+        "summonId": "white_perm_squire"
+      }
+    ]
+  },
+  {
+    "id": "white_perm_war_banner",
+    "name": "聖戦の旗印",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "dealDamage",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "white_miracle_light",
+    "name": "奇跡の光",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHp",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_perm_page",
+    "name": "見習い",
+    "type": "permanent",
+    "cost": 1,
+    "rarity": "common",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_page_rank",
+    "name": "見習いの列",
+    "type": "spell",
+    "cost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_page",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_holy_procession",
+    "name": "聖なる行列",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_shieldmaiden",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_miracle_division",
+    "name": "分列の奇跡",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "rare",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "duplicateRetainers"
+      }
+    ]
+  },
+  {
+    "id": "white_perm_martyr_vow",
+    "name": "殉教の誓い",
+    "type": "permanent",
+    "cost": 1,
+    "rarity": "uncommon",
+    "requiresRetainer": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "sacrificeRetainer",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "blessRetainers",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_march_order",
+    "name": "進軍の号令",
+    "type": "spell",
+    "cost": 1,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "triggerRetainersNow"
+      }
+    ],
+    "requiresRetainer": true
+  },
+  {
+    "id": "white_war_horn",
+    "name": "聖戦の号砲",
+    "type": "physical",
+    "cost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerAttackPlayed",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  }
+]

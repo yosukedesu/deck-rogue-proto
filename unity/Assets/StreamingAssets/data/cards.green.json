@@ -1,0 +1,1797 @@
+[
+  {
+    "id": "green_ramp_sprout",
+    "name": "芽吹き",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ],
+    "exhaust": true,
+    "rarity": "common"
+  },
+  {
+    "id": "green_ramp_deep_roots",
+    "name": "深根",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergyMax",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ],
+    "exhaust": true,
+    "rarity": "common"
+  },
+  {
+    "id": "green_ramp_sunlight",
+    "name": "陽光の恵み",
+    "cost": 2,
+    "type": "spell",
+    "effects": [],
+    "modes": [
+      {
+        "name": "陽光",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "gainEnergyMax",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "name": "萌芽",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 2
+          }
+        ]
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_strike",
+    "name": "打撃",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_double_lash",
+    "name": "二連の蔦打ち",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ],
+    "axis": [
+      "growth"
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_fang",
+    "name": "牙の一撃",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 17,
+        "pierce": true
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_guard",
+    "name": "防御",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_bark_armor",
+    "name": "樹皮の鎧",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 14
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_entangle",
+    "name": "絡み蔦",
+    "cost": 1,
+    "type": "physical",
+    "effects": [],
+    "modes": [
+      {
+        "name": "ブロック7",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "gainBlock",
+            "amount": 7
+          }
+        ]
+      },
+      {
+        "name": "7ダメージ",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 7
+          }
+        ]
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_finisher_wrath",
+    "name": "大樹の怒り",
+    "cost": 4,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 36
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ],
+    "rarity": "uncommon",
+    "retain": true
+  },
+  {
+    "id": "green_finisher_stomp",
+    "name": "巨獣の踏みつけ",
+    "cost": 5,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 50
+      }
+    ],
+    "axis": [
+      "ramp"
+    ],
+    "rarity": "rare",
+    "retain": true
+  },
+  {
+    "id": "green_reaction_thorns",
+    "name": "茨の返し",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 10
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_reaction_vine",
+    "name": "守りの蔓",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 12
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_reaction_root_weave",
+    "name": "根の紡ぎ",
+    "cost": 2,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addGrowth",
+        "amount": 2
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_growth_ring",
+    "name": "年輪",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 2
+      }
+    ],
+    "rarity": "common",
+    "freeIfHandAllPhysical": true
+  },
+  {
+    "id": "green_sig_canopy",
+    "name": "天蓋の実り",
+    "cost": 3,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergyMax",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ],
+    "exhaust": true,
+    "rarity": "rare"
+  },
+  {
+    "id": "green_sig_rite_of_bloom",
+    "name": "開花の儀",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "doubleGrowth"
+      }
+    ],
+    "exhaust": true,
+    "rarity": "rare"
+  },
+  {
+    "id": "green_sig_vine_dance",
+    "name": "蔦の乱舞",
+    "cost": 3,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ],
+    "axis": [
+      "growth"
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_sig_trample",
+    "name": "踏み荒らし",
+    "cost": 3,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 16,
+        "pierce": true
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_sig_stampede",
+    "name": "巨象の突進",
+    "cost": 4,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 32,
+        "pierce": true
+      }
+    ],
+    "rarity": "rare",
+    "retain": true
+  },
+  {
+    "id": "green_trample_charge",
+    "name": "突進の助走",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_ritual_surge",
+    "name": "樹液",
+    "cost": 1,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ],
+    "exhaust": true,
+    "rarity": "common",
+    "exhaustUnlessExposedEnemy": true
+  },
+  {
+    "id": "green_perm_growth_tree",
+    "name": "年輪の大樹",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_perm_herd_chief",
+    "name": "大角の群長",
+    "cost": 2,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 2
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_flash_insight",
+    "name": "緑の閃き",
+    "cost": 1,
+    "type": "spell",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 4
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_serpent_gulp",
+    "name": "大蛇の丸呑み",
+    "cost": 3,
+    "type": "physical",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 34
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_reaction_resonance",
+    "name": "共鳴する茨",
+    "cost": 1,
+    "type": "reaction",
+    "effects": [
+      {
+        "trigger": "onEnemyBuffed",
+        "effect": "addGrowth",
+        "amount": 4
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_wild_sprout",
+    "name": "野生の萌芽",
+    "cost": 0,
+    "type": "spell",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_sweep",
+    "name": "薙ぎ払い",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerAttackPlayed",
+        "amount": 2,
+        "target": "all"
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_bloom_lash",
+    "name": "開花の蔦",
+    "cost": 2,
+    "type": "spell",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 2,
+        "target": "all"
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_weak_point",
+    "name": "急所突き",
+    "cost": 1,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "exposeEnemy",
+        "amount": 2
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_snare_root",
+    "name": "絡め捕る根",
+    "cost": 2,
+    "type": "physical",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 12
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_perm_wild_call",
+    "name": "荒野の呼び声",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_triple_horn",
+    "name": "三連の角",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "pierce": true
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_horn_flare",
+    "name": "昂ぶる角笛",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "doubleMomentum"
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_sapling_strike",
+    "name": "若幹の一撃",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_trunk_stance",
+    "name": "大幹の構え",
+    "cost": 3,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerEnergyMax",
+        "amount": 3
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_perm_tree_pulse",
+    "name": "大樹の脈",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ],
+    "rarity": "rare"
+  },
+  {
+    "id": "green_horn_stance",
+    "name": "荒角の構え",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_x_vine_flurry",
+    "name": "蔦の連撃",
+    "cost": 1,
+    "xCost": true,
+    "type": "physical",
+    "color": "green",
+    "rarity": "uncommon",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5,
+        "xHits": true
+      }
+    ]
+  },
+  {
+    "id": "green_x_bark_armor",
+    "name": "樹皮の重鎧",
+    "cost": 1,
+    "xCost": true,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 6,
+        "xHits": true
+      }
+    ]
+  },
+  {
+    "id": "green_x_sylvan_tempest",
+    "name": "森羅の大嵐",
+    "cost": 1,
+    "xCost": true,
+    "type": "spell",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all",
+        "xHits": true
+      }
+    ]
+  },
+  {
+    "id": "green_mode_crossroads",
+    "name": "道行きの選択",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [],
+    "modes": [
+      {
+        "name": "野生",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addMomentum",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          }
+        ]
+      },
+      {
+        "name": "育成",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "green_mode_great_fork",
+    "name": "大樹の岐路",
+    "cost": 3,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [],
+    "modes": [
+      {
+        "name": "天光",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "gainEnergyMax",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 2
+          }
+        ]
+      },
+      {
+        "name": "豊穣",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "gainBlock",
+            "amount": 6
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "green_basic_bash",
+    "name": "打ち据え",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "exposeEnemy",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_perm_hunters_gaze",
+    "name": "狩人の眼光",
+    "cost": 1,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onCardSet",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_perm_pain_root",
+    "name": "根張り",
+    "cost": 1,
+    "type": "permanent",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "addGrowth",
+        "amount": 2,
+        "condition": {
+          "lastActionNoHpLoss": true
+        }
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_vine_wedge",
+    "name": "蔦の楔",
+    "cost": 1,
+    "type": "physical",
+    "axis": [
+      "shatter"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlock"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ],
+    "rarity": "common"
+  },
+  {
+    "id": "green_devour_vine",
+    "name": "根喰らいの蔓",
+    "cost": 2,
+    "type": "physical",
+    "axis": [
+      "shatter"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlockConvert"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      }
+    ],
+    "rarity": "uncommon"
+  },
+  {
+    "id": "green_reaction_preempt",
+    "name": "先制の蔦槍",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "dealDamage",
+        "amount": 12
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_powder_pod",
+    "name": "弾け実の罠",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 3
+      },
+      {
+        "trigger": "onSetDestroyed",
+        "effect": "dealDamage",
+        "amount": 12,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "green_harvest_strike",
+    "name": "大牙",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
+        "growthMultiplier": 3
+      }
+    ]
+  },
+  {
+    "id": "green_grand_harvest",
+    "name": "大収穫の儀",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeGrowth",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_leaf_strike",
+    "name": "見切り撃ち",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1,
+        "condition": {
+          "enemyIntentNot": "attack"
+        }
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1,
+        "condition": {
+          "enemyIntentNot": "attack"
+        }
+      }
+    ]
+  },
+  {
+    "id": "green_dappled_light",
+    "name": "木漏れ日",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 7
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_twin_fang_vine",
+    "name": "双牙の蔦",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "axis": [
+      "growth",
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
+        "pierce": true,
+        "condition": {
+          "enemyExposed": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "green_leaf_blade",
+    "name": "落ち葉の刃",
+    "cost": 0,
+    "type": "physical",
+    "rarity": "common",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "green_vine_spring",
+    "name": "蔓の跳ね",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "uncommon",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_perm_thorn_vine",
+    "name": "棘の蔓",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_perm_wind_runner",
+    "name": "風渡り",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "rare",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onMomentumGained",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_perm_sprout_keeper",
+    "name": "芽守り",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "axis": [
+      "growth"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "drawCards",
+        "amount": 1,
+        "condition": {
+          "minGrowth": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "green_perm_thorn_leaves",
+    "name": "棘葉の茂み",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "common",
+    "axis": [
+      "growth"
+    ],
+    "effects": [
+      {
+        "trigger": "onGrowthGained",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_sweeping_horn",
+    "name": "薙ぎ角",
+    "cost": 2,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "target": "all",
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_earth_roar",
+    "name": "大地の唸り",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerEnergyMax",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "green_perm_trapper_grove",
+    "name": "罠師の茂み",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainSetSlot",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "green_regrowth_root",
+    "name": "若返りの根",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "retrieveFromDiscard",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "green_forest_guidance",
+    "name": "森の導き",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "searchDeck",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_spreading_vine",
+    "name": "増える蔦",
+    "cost": 0,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCopyToDiscard",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_growing_fang",
+    "name": "育つ牙",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "growSelf",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "green_honing",
+    "name": "研ぎ澄まし",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "upgradeInHand",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_verdant_hour",
+    "name": "深緑の刻",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "uncommon",
+    "axis": [
+      "growth"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "condition": {
+          "minGrowth": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_vine_formation",
+    "name": "蔦の陣",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 10
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "counter",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "green_reaction_tree_warden",
+    "name": "大樹の守り手",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addGrowth",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_prey_strike",
+    "name": "獲物",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 3,
+        "condition": {
+          "targetDead": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "green_sprint",
+    "name": "疾駆",
+    "cost": 0,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "green_gale_horn",
+    "name": "疾風の号砲",
+    "cost": 1,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "doubleMomentum"
+      }
+    ]
+  },
+  {
+    "id": "green_horn_thrust",
+    "name": "角の一突き",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumDamage",
+        "amount": 2,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_horn_storm",
+    "name": "嵐の角",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all",
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumDamage",
+        "amount": 1,
+        "target": "all",
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_wind_wall",
+    "name": "風の壁",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_rooting_rush",
+    "name": "根付く勢い",
+    "cost": 2,
+    "type": "spell",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumGrowth",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_charging_horn",
+    "name": "猛進の角",
+    "cost": 3,
+    "type": "physical",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 14,
+        "pierce": true,
+        "momentumMultiplier": 2
+      }
+    ]
+  },
+  {
+    "id": "green_tailwind",
+    "name": "追い風",
+    "cost": 1,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "freeIfMomentumAtLeast": 5,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_horn_volley",
+    "name": "連なる角",
+    "cost": 2,
+    "type": "physical",
+    "color": "green",
+    "rarity": "uncommon",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeMomentumVolley",
+        "amount": 1,
+        "volleyHits": 3,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_perm_bark_bud",
+    "name": "樹皮の芽",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_perm_wind_thorn",
+    "name": "風の棘",
+    "cost": 1,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "common",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onMomentumGained",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "green_twig_strike",
+    "name": "小枝の一打",
+    "cost": 0,
+    "type": "physical",
+    "color": "green",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "green_perm_thorn_canopy",
+    "name": "棘葉の大樹",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onGrowthGained",
+        "effect": "dealDamage",
+        "amount": 2,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "green_perm_gale_king",
+    "name": "疾風の王",
+    "cost": 2,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "trample"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "momentumCarryHalf"
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "addMomentum",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "green_perm_root_spring",
+    "name": "根源の泉",
+    "cost": 3,
+    "type": "permanent",
+    "color": "green",
+    "rarity": "rare",
+    "axis": [
+      "ramp"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  }
+]

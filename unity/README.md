@@ -25,3 +25,17 @@
 - ルール変更のフロー: TS で変更 → `npm run goldens`（8本再生成）→ C# へ追随 → `dotnet run -- verify` で全一致（`docs/unity-port.md` §3）。
 - `summary.ts` / `traits.ts` / `analysis.ts`（UI・計測用）と sim ボットは翻訳しない。NUnit へのテスト翻訳は未着手（ゴールデンが当面の安全網）。
 - まだやらないこと: Unity プロジェクト本体（P2 骨格・P3 戦闘UI）。エンジンは `noEngineReferences` の純 C# として使える状態。
+
+## Unity で開く（P2 骨格・2026-09-06）
+
+`unity/` がそのまま Unity プロジェクトのルート（`Assets/` `Packages/` `ProjectSettings/`）。エンジンは `Packages/com.deckrogue.engine`（埋め込みパッケージ＝manifest への記載不要）、
+JSON は `Assets/StreamingAssets/data/`（`npm run unity:sync` で `src/data` から複製。`npm run unity:sync check` で同期確認）。
+
+1. Windows 側にリポジトリを clone する（`\\wsl$\...` の UNC パスは Unity が扱えないので、WSL の作業ツリーを直接開かない）。
+2. Unity Hub → Add → `unity/` を選ぶ。`ProjectSettings/ProjectVersion.txt` は Unity 6（6000.0 系）を指している。手元のバージョンで開いてよい（アップグレード確認は許可）。
+3. 初回はパッケージ解決（Newtonsoft Json 3.2.1・uGUI・Input System）を待つ。Input System の有効化を聞かれたら「Yes」（`Assets/Game` は `ENABLE_INPUT_SYSTEM` の有無で入力モジュールを切り替える）。
+4. 空のシーンのまま **Play**。`Assets/Game/GameRoot.cs` が `RuntimeInitializeOnLoadMethod` で画面を組み立てる（シーン・プレハブ不要）。セットアップ→ラン開始→マップ→戦闘…がブラウザ版と同じエンジンで動く。
+5. うまく行かない時: Console のエラーをそのまま貼って報告（Assets/Game はこのマシンでコンパイルできないので、最初のコンパイルは Unity 側）。
+
+Android はまだ（StreamingAssets を `File` で読んでいる＝Editor/デスクトップ向け。実機は UnityWebRequest 読込に切り替える）。
+

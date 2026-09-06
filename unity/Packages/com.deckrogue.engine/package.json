@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "displayName": "DeckRogue Engine",
   "description": "デッキ構築ローグライクの純ロジックエンジン (TS版 src/engine/ のC#移植)。UnityEngine非依存。",
-  "unity": "2022.3"
+  "unity": "2022.3",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
 }

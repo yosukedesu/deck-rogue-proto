@@ -30,3 +30,13 @@ unity/Library/
 unity/Temp/
 unity/Logs/
 unity/UserSettings/
+# Unity プロジェクト (unity/) の生成物
+unity/Library/
+unity/Temp/
+unity/Logs/
+unity/UserSettings/
+unity/Obj/
+unity/Build/
+unity/*.csproj
+unity/*.sln
+unity/.vs/
