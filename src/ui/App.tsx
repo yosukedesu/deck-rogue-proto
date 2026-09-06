@@ -770,6 +770,7 @@ function CardFrame({
   hint,
   ctx,
   displayCost,
+  hotkey,
 }: {
   card: CardInstance
   dim: boolean
@@ -778,6 +779,8 @@ function CardFrame({
   ctx?: EffectCtx
   /** マナ軽減適用後の実効コスト (素のコストと違う時だけ渡す) */
   displayCost?: number
+  /** キーボードの番号 (手札の1〜9)。右上に小さなキー札として出す (2026-09-06 UI整理: 凡例テキストの代わり) */
+  hotkey?: string
 }) {
   // Xコスト札は割引の対象外なので「割引済み」表示にもしない
   const discounted =
@@ -787,6 +790,7 @@ function CardFrame({
       <div className={`card-cost${discounted ? ' card-cost-discounted' : ''}`}>
         {cardCostLabel(card.def, displayCost)}
       </div>
+      {hotkey !== undefined && <div className="card-hotkey" title="キーボードで選ぶ番号">{hotkey}</div>}
       <div className="card-name">{card.def.name}</div>
       <div className={`card-category type-${card.def.type}`}>{TYPE_LABEL[card.def.type]}</div>
       <div className="card-text">
@@ -1525,6 +1529,8 @@ function BattleScreen({
   } | null>(null)
   // 殉教の誓い (白 2026-09-06): 破壊する従者を場から選んでいる状態
   const [pendingSacrifice, setPendingSacrifice] = useState<{ cardUid: string; modeIndex?: number } | null>(null)
+  // キーボード操作の凡例 (2026-09-06 UI整理: 手札行の常設テキストが領域を取っていたので ⌨ ボタンで折りたたみ)
+  const [showKeys, setShowKeys] = useState(false)
   const activeSacrifice =
     pendingSacrifice && s.phase === 'player-turn' && player.hand.some((c) => c.uid === pendingSacrifice.cardUid)
       ? pendingSacrifice
@@ -1631,6 +1637,9 @@ function BattleScreen({
           <span className="chip">seed {config.seed}</span>
         </span>
         <span>
+          <button className="btn" title="キーボード操作の凡例" aria-expanded={showKeys} onClick={() => setShowKeys((v) => !v)}>
+            ⌨
+          </button>{' '}
           <button className="btn" onClick={onExport}>
             📄 状況を書き出す
           </button>{' '}
@@ -1638,6 +1647,21 @@ function BattleScreen({
             {backLabel ?? '設定に戻る'}
           </button>
         </span>
+        {showKeys && (
+          <div className="keyhelp">
+            <div className="keyhelp-title">キーボード操作 <span className="pile-info">（入力欄にフォーカスがある間は無効）</span></div>
+            <table>
+              <tbody>
+                <tr><td><span className="keycap">1</span>〜<span className="keycap">9</span></td><td>手札をプレイ／伏せる・対象を選ぶ・発動候補・報酬ピック（各カードの右上の数字）</td></tr>
+                <tr><td><span className="keycap">E</span></td><td>ターン終了</td></tr>
+                <tr><td><span className="keycap">F</span></td><td>発動（候補が1つの時）</td></tr>
+                <tr><td><span className="keycap">H</span></td><td>温存</td></tr>
+                <tr><td><span className="keycap">S</span></td><td>報酬を見送る</td></tr>
+                <tr><td><span className="keycap">Esc</span></td><td>取消</td></tr>
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* 敵ゾーン (1〜3体)。ターゲット選択中は敵をタップして対象決定 */}
@@ -1683,6 +1707,7 @@ function BattleScreen({
                   setPendingTarget(null)
                 }}
               >
+                {targetable && i < 9 && <span className="keycap keycap-float">{i + 1}</span>}
                 <div className="float-layer">{floatsFor(i)}</div>
                 <div className="enemy-sprite">{enemy.fled ? '🏃' : dead ? '💀' : ARCHETYPE_SPRITE[enemyDef.archetype]}</div>
                 <div className="enemy-info">
@@ -1949,6 +1974,7 @@ function BattleScreen({
                           onClick={() => dispatch({ type: 'ConfirmReaction', fire: true, cardUid: c.uid })}
                         >
                           {setFireCost(c) > 0 ? `発動する（${setFireCost(c)}E・残り${player.energy}E）` : '発動する'}
+                          {candIdx < 9 && <span className="keycap">{candIdx === 0 ? 'F' : String(candIdx + 1)}</span>}
                         </button>
                       </div>
                     ))
@@ -1967,7 +1993,7 @@ function BattleScreen({
                     )
                   })}
                   <button className="btn" data-hotkey="hold" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
-                    温存する
+                    温存する<span className="keycap">H</span>
                   </button>
                 </>
               ) : (
@@ -2018,21 +2044,6 @@ function BattleScreen({
       </div>
 
       {/* プレイヤーステータス */}
-      {/* 今フェーズの最悪被ダメ予測 (複数体の暗算を不要にする。2026-08-25 プレイテスト対応) */}
-      {s.phase === 'player-turn' &&
-        (() => {
-          // 式は engine/summary.ts の worstIncomingTotal に1本化 (2026-09-02 レビュー是正:
-          // フッター・💀バッジ・CLIで合成順が3通りに割れていた)
-          const worst = worstIncomingTotal(s) // 0でも出す (2026-09-02: 非攻撃ターンに行が消えると表示漏れと迷う)
-          const defense = player.block + player.iceBlock
-          const through = Math.max(0, worst - defense)
-          return (
-            <div className={`panel forecast${through >= player.hp ? ' forecast-danger' : ''}`}>
-              ⚠️ 最悪被ダメ {worst} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
-            </div>
-          )
-        })()}
-
       <div className="panel area-player" style={{ position: 'relative' }}>
         <div className="float-layer">{floatsFor('player')}</div>
         <div className="player-row">
@@ -2051,6 +2062,19 @@ function BattleScreen({
                 </div>
               )
             })()}
+            {/* 今フェーズの最悪被ダメ予測 (複数体の暗算を不要にする。2026-08-25)。式は engine/summary.ts の worstIncomingTotal に1本化。
+                2026-09-06 UI整理: 画面下に流れていた独立パネルをHPの直下へ (0でも出す=非攻撃ターンに行が消えると迷う) */}
+            {s.phase === 'player-turn' &&
+              (() => {
+                const worst = worstIncomingTotal(s)
+                const defense = player.block + player.iceBlock
+                const through = Math.max(0, worst - defense)
+                return (
+                  <div className={`forecast-inline${through >= player.hp ? ' forecast-danger' : through > 0 ? ' forecast-warn' : ''}`}>
+                    ⚠️ 最悪被ダメ {worst} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
+                  </div>
+                )
+              })()}
           </div>
           <div>
             <div className="stat-label">エナジー</div>
@@ -2174,6 +2198,15 @@ function BattleScreen({
                   )
                 })}
           </div>
+        </div>
+        <div className="turn-controls">
+          {s.phase === 'player-turn' ? (
+            <button className="btn btn-primary btn-endturn" data-hotkey="end-turn" onClick={() => dispatch({ type: 'EndTurn' })}>
+              ターン終了 ▶<span className="keycap">E</span>
+            </button>
+          ) : s.phase === 'awaiting-reaction' ? (
+            <span className="pile-info">敵の行動に割り込み中…（上のパネルで選択）</span>
+          ) : null}
         </div>
       </div>
 
@@ -2510,6 +2543,7 @@ function BattleScreen({
                     card={c}
                     ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                     displayCost={effCost}
+                    hotkey={handIdx < 9 && !activeTarget && s.phase === 'player-turn' ? String(handIdx + 1) : undefined}
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={
                       player.impulseUids.includes(c.uid)
@@ -2555,19 +2589,6 @@ function BattleScreen({
                   </div>
                 )
               })}
-            {s.phase === 'awaiting-reaction' && (
-              <div className="pile-info" style={{ alignSelf: 'center' }}>
-                敵の行動に割り込み中…（上のパネルで選択）
-              </div>
-            )}
-          </div>
-          {s.phase === 'player-turn' && (
-            <button className="btn btn-primary btn-endturn" data-hotkey="end-turn" onClick={() => dispatch({ type: 'EndTurn' })}>
-              ターン終了 ▶
-            </button>
-          )}
-          <div className="choice-desc" style={{ fontSize: 10, marginTop: 4 }} title="入力欄にフォーカスがある間は無効">
-            ⌨ 1〜9=プレイ/伏せ/対象/発動候補・E=ターン終了・F=発動・H=温存・Esc=取消
           </div>
         </div>
       </div>
@@ -5386,6 +5407,8 @@ function HotkeyClicker() {
 function NoteBar({ count, onAdd }: { count: number; onAdd: (text: string) => void }) {
   const [text, setText] = useState('')
   const [flash, setFlash] = useState(false)
+  // 狭い画面では📝だけに畳む (2026-09-06 UI整理: スマホでターン終了ボタンに被っていた)
+  const [open, setOpen] = useState<boolean>(() => !(typeof window !== 'undefined' && window.matchMedia('(max-width: 700px)').matches))
   const submit = () => {
     const t = text.trim()
     if (t === '') return
@@ -5402,16 +5425,25 @@ function NoteBar({ count, onAdd }: { count: number; onAdd: (text: string) => voi
         borderRadius: 8, padding: '6px 8px', display: 'flex', gap: 6, alignItems: 'center',
       }}
     >
-      <span title="レポート書き出し(📄)に「プレイメモ」として同梱されます">📝{count > 0 ? count : ''}</span>
-      <input
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') submit()
-        }}
-        placeholder={flash ? '✅ 記録しました' : '気づきメモ (Enterで記録)'}
-        style={{ width: 200 }}
-      />
+      <span
+        role="button"
+        title={open ? 'メモ欄を畳む' : 'メモ欄を開く（レポート書き出しに「プレイメモ」として同梱）'}
+        style={{ cursor: 'pointer' }}
+        onClick={() => setOpen((v) => !v)}
+      >
+        📝{count > 0 ? count : ''}
+      </span>
+      {open && (
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submit()
+          }}
+          placeholder={flash ? '✅ 記録しました' : '気づきメモ (Enterで記録)'}
+          style={{ width: 200 }}
+        />
+      )}
     </div>
   )
 }

@@ -792,3 +792,77 @@ button:disabled { cursor: not-allowed; }
 
 /* 殉教の誓い (白 2026-09-06): 破壊する従者を選んでいる間、選べる従者を強調 */
 .permanent-selectable { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dark); }
+
+/* ---------- 戦闘UIの整理 (2026-09-06 ユーザー「⌨の常設ヒントがターン終了の右で領域を取りすぎ。もっと洗練を」) ----------
+   ターン終了はプレイヤー行の右端へ (手札行は手札だけ)。キー凡例は上部バーの ⌨ で折りたたみ、
+   代わりにカード・対象・発動ボタンに小さなキー札を出す。最悪被ダメ予測はHPの直下へ */
+
+.keycap {
+  display: inline-block;
+  min-width: 16px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: normal;
+  color: var(--muted);
+  background: var(--panel);
+  vertical-align: middle;
+  text-align: center;
+}
+.keycap-float { position: absolute; top: 6px; left: 6px; margin: 0; z-index: 2; }
+.card-hotkey {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.area-topbar { position: relative; }
+.keyhelp {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 30;
+  min-width: 300px;
+  max-width: 92vw;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.keyhelp-title { font-weight: bold; margin-bottom: 6px; }
+.keyhelp table { border-collapse: collapse; }
+.keyhelp td { padding: 3px 6px; vertical-align: top; }
+.keyhelp td:first-child { white-space: nowrap; }
+/* プレイヤーパネル: 左=ステータス (折り返す)・右=ターン終了 (縦中央に固定) */
+.area-player { display: grid; grid-template-columns: 1fr auto; column-gap: 14px; align-items: center; }
+.area-player > .player-row { min-width: 0; }
+.turn-controls { display: flex; align-items: center; justify-content: flex-end; }
+.btn-endturn { font-size: 16px; font-weight: bold; padding: 12px 22px; white-space: nowrap; }
+.forecast-inline { margin-top: 6px; font-size: 12px; color: var(--muted); }
+.forecast-inline.forecast-warn { color: var(--text); }
+.forecast-inline.forecast-danger { color: var(--danger); font-weight: bold; }
+.field { min-height: 100px; }
+
+@media (max-width: 700px) {
+  .area-player { grid-template-columns: 1fr; row-gap: 8px; }
+  .turn-controls { width: 100%; }
+  .turn-controls .btn-endturn { width: 100%; }
+  .keyhelp { left: 0; right: 0; min-width: 0; }
+}
