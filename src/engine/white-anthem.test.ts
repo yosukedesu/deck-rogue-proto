@@ -65,7 +65,7 @@ describe('回復の換金 (onHealed網)', () => {
     expect(s.player.block).toBe(4)
   })
 
-  it('ひなたのパッシブ: 毎T回復1が回復時誘発 (ブロック1) の鼓動になる', () => {
+  it('ひなたのパッシブ (2026-09-06 駆けつけ): 毎Tの自動回復は無い。従者が出た時にその従者が即1回動く', () => {
     let s = applyCommand(createInitialState(42, 'set-confirm'), {
       type: 'StartCombat',
       seed: 42,
@@ -73,10 +73,17 @@ describe('回復の換金 (onHealed網)', () => {
       deckId: 'starter_white',
       leaderId: 'leader_white',
     })
-    s = { ...s, player: { ...s.player, hp: s.player.maxHp - 10 } }
+    s = { ...s, player: { ...s.player, hp: s.player.maxHp - 10, hand: [] } }
     s = withIntent(s, attackIntent(0))
     s = applyCommand(s, { type: 'EndTurn' })
-    // ターン開始: パッシブ回復1 → onHealed → パッシブのブロック1
-    expect(s.player.block).toBeGreaterThanOrEqual(1)
+    // ターン開始に旧パッシブの回復1 → ブロック1 は起きない (回復を出力にしない裁定)
+    expect(s.eventLog.filter((e) => e.type === 'HpHealed').length).toBe(0)
+    expect(s.player.block).toBe(0)
+    // 従者の少年を出すと登場時に2ダメ (駆けつけ)
+    s = withHand(s, ['white_perm_squire'])
+    const hp0 = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
+    expect(hp0 - s.enemies[0].hp).toBe(2)
+    expect(s.eventLog.some((e) => e.type === 'RetainerRushed')).toBe(true)
   })
 })
