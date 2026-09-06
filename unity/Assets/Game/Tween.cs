@@ -158,6 +158,60 @@ namespace DeckRogue.Game
             }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
+        /// <summary>斬撃: pos に筋を出して 0.18 秒で消える (angle は度)</summary>
+        public static void Slash(RectTransform layer, Vector2 pos, float angle, Color color)
+        {
+            if (layer == null) return;
+            var rt = UiKit.NewRect("slash", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(240f, 60f);
+            rt.anchoredPosition = pos;
+            rt.localRotation = Quaternion.Euler(0f, 0f, angle);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = ThemeFx.Slash();
+            img.color = color;
+            img.raycastTarget = false;
+            rt.localScale = new Vector3(0.3f, 1f, 1f);
+            Run(0.18f, k => { if (rt == null) return; rt.localScale = new Vector3(0.3f + 0.9f * Apply(Ease.OutQuad, k), 1f - 0.4f * k, 1f); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>画面全体の色の点滅 (被弾の赤など)</summary>
+        public static void ScreenFlash(RectTransform layer, Color color, float dur = 0.25f)
+        {
+            if (layer == null) return;
+            var rt = UiKit.NewRect("flash", layer);
+            UiKit.Stretch(rt, 0f, 0f, 0f, 0f);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.color = color;
+            img.raycastTarget = false;
+            Run(dur, k => { if (img != null) img.color = new Color(color.r, color.g, color.b, color.a * (1f - k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>アイコンが膨らんで消える (ブロック獲得の盾など)</summary>
+        public static void IconBurst(RectTransform layer, Vector2 pos, string icon, Color color, float size = 96f)
+        {
+            if (layer == null) return;
+            var rt = UiKit.NewRect("burst", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = pos;
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = Theme.Icon(icon);
+            img.preserveAspect = true;
+            img.color = color;
+            img.raycastTarget = false;
+            rt.localScale = Vector3.one * 0.5f;
+            Run(0.4f, k => { if (rt == null) return; rt.localScale = Vector3.one * (0.5f + 0.9f * Apply(Ease.OutBack, k)); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>踏み込み: 前へ出て戻る (敵の攻撃・自分の攻撃)</summary>
+        public static void Lunge(RectTransform rt, Vector2 dir, float dur = 0.28f)
+        {
+            if (rt == null) return;
+            var origin = rt.anchoredPosition;
+            Move(rt, origin + dir, dur * 0.35f, Ease.OutQuad, () => { if (rt != null) Move(rt, origin, dur * 0.65f, Ease.OutCubic); });
+        }
+
         /// <summary>他の RectTransform の中心を、fx レイヤーの座標系 (anchor 中央) へ変換する</summary>
         public static Vector2 CenterIn(RectTransform target, RectTransform layer)
         {

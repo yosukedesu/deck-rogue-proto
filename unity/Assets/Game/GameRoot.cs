@@ -161,6 +161,7 @@ namespace DeckRogue.Game
         {
             Error = null;
             Notice = null;
+            bool wasCombat = Rs != null && Rs.Phase == RunPhases.Combat;
             try
             {
                 Rs = DeckRogue.Engine.Run.ApplyRunCommand(Rs, cmd);
@@ -172,6 +173,7 @@ namespace DeckRogue.Game
             Pending = null;
             ModeChoiceUid = null;
             ViewPile = null;
+            if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Play(Rs.Phase == RunPhases.Lost ? "lose" : "win", 0.8f, 0f);
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
@@ -333,6 +335,25 @@ namespace DeckRogue.Game
             Rebuild();
         }
 
+        /// <summary>場面に合わせて BGM を切り替える (同じ名前なら何もしない)。素材は Resources/Audio/bgm/<name>、無ければ合成</summary>
+        void UpdateBgm()
+        {
+            try
+            {
+                if (Rs == null) { Audio.Bgm("title"); return; }
+                if (Rs.Phase == RunPhases.Combat)
+                {
+                    bool boss = false;
+                    try { var node = DeckRogue.Engine.Run.CurrentNode(Rs); boss = node != null && node.Type == "boss"; } catch (Exception) { }
+                    Audio.Bgm(boss ? "boss" + Rs.Act : "battle" + Rs.Act);
+                    return;
+                }
+                if (Rs.Phase == RunPhases.Won) { Audio.Bgm("title"); return; }
+                Audio.Bgm("map" + Rs.Act);
+            }
+            catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
+        }
+
         // ---- 描画 ----
 
         public void Rebuild()
@@ -369,6 +390,7 @@ namespace DeckRogue.Game
 
         void BuildScreen()
         {
+            UpdateBgm();
             // 戦闘は新画面 (M2): キャンバス直下 1920×1080 に組む。旧画面の入れ物には何も置かない
             if (Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null)
             {

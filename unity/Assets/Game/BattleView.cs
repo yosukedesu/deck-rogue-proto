@@ -139,8 +139,23 @@ namespace DeckRogue.Game
                 _enemyHits[i].GetComponent<Button>().interactable = alive;
                 for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
                 g.RegisterAnchor("enemy" + i, pan);
+                bool wasAlive = _shownEnemyHp[i] > 0;
                 BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i]);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
+                if (wasAlive && !alive)
+                {
+                    // 撃破: スプライトが白く光ってから沈む
+                    var sprRt = pan.Find("sprite") as RectTransform;
+                    var sprImg = sprRt != null ? sprRt.GetComponent<Image>() : null;
+                    if (sprImg != null)
+                    {
+                        var dim = sprImg.color;
+                        sprImg.color = Color.white;
+                        Tween.Run(0.5f, k => { if (sprImg != null) sprImg.color = Color.Lerp(Color.white, dim, k); }, Ease.InQuad);
+                        Tween.Move(sprRt, sprRt.anchoredPosition + new Vector2(0f, -30f), 0.5f, Ease.InQuad);
+                    }
+                    Audio.Play(st.Enemies[i].Fled == true ? "lunge" : "death", 0.9f);
+                }
             }
             // リーダー
             if (_playerArea == null)
@@ -153,6 +168,17 @@ namespace DeckRogue.Game
             g.RegisterAnchor("player", _playerArea);
             BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp);
             _shownPlayerHp = st.Player.Hp;
+        }
+
+        public RectTransform EnemySprite(int index)
+        {
+            if (index < 0 || index >= _enemyPanels.Count || _enemyPanels[index] == null) return null;
+            return _enemyPanels[index].Find("sprite") as RectTransform;
+        }
+
+        public RectTransform PlayerSprite()
+        {
+            return _playerArea != null ? _playerArea.Find("sprite") as RectTransform : null;
         }
 
         /// <summary>演出の途中で HP バーだけ先に動かす (順送りの敵フェーズ: 被弾のたびに減る)</summary>
@@ -286,6 +312,7 @@ namespace DeckRogue.Game
                 Tween.After(delay, () =>
                 {
                     if (rtc == null) return;
+                    if (isNew) Audio.Play("card_draw", 0.6f, 0.12f);
                     Tween.Move(rtc, target, isNew ? 0.28f : 0.2f, Ease.OutCubic);
                     Tween.Scale(rtc, Vector3.one * BattleScreen.CardScale, isNew ? 0.28f : 0.2f, Ease.OutQuad);
                     var r0 = rtc.localRotation;
@@ -325,7 +352,7 @@ namespace DeckRogue.Game
             bool inExhaust = false;
             for (int i = 0; i < st.Player.ExhaustPile.Count; i++) if (st.Player.ExhaustPile[i].Uid == uid) inExhaust = true;
 
-            if (inSet) { FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
+            if (inSet) { Audio.Play("card_set", 0.8f); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
             if (inPerm) { FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
             if (uid == LastPlayedUid)
             {
@@ -334,6 +361,7 @@ namespace DeckRogue.Game
                 Vector2 to = new Vector2(0f, 420f);
                 var target = LastPlayedTarget >= 0 ? g.Anchor("enemy" + LastPlayedTarget) : null;
                 if (target != null) to = Tween.CenterIn(target, fx) + new Vector2(0f, 40f);
+                Audio.Play("card_play", 0.8f);
                 Tween.Move(rt, to, 0.2f, Ease.OutCubic);
                 Tween.Scale(rt, Vector3.one * 0.6f, 0.2f, Ease.OutQuad);
                 rt.localRotation = Quaternion.identity;

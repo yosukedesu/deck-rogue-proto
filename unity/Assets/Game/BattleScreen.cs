@@ -587,6 +587,7 @@ namespace DeckRogue.Game
             enter.callback.AddListener(delegate
             {
                 if (_dragging) return;
+                Audio.Hover();
                 rt.SetAsLastSibling();
                 Tween.Scale(rt, Vector3.one * 1.18f, 0.12f, Ease.OutQuad);
                 Tween.Move(rt, hc.BasePos + new Vector2(0f, 70f), 0.12f, Ease.OutQuad);

@@ -164,6 +164,7 @@ namespace DeckRogue.Game
             cb.fadeDuration = 0.05f;
             btn.colors = cb;
             btn.interactable = interactable;
+            btn.onClick.AddListener(delegate { Audio.Play("click", 0.5f, 0.08f); });
             if (onClick != null) btn.onClick.AddListener(delegate { onClick(); });
             var t = Txt(rt, label, size, ColText, TextAnchor.MiddleCenter);
             Stretch(t.rectTransform, 8f, 8f, 2f, 2f);

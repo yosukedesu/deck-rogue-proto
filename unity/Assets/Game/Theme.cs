@@ -525,6 +525,36 @@ namespace DeckRogue.Game
             return s;
         }
 
+        /// <summary>斬撃の筋 (48×12。中央が明るく両端へ消える)</summary>
+        public static Sprite Slash()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("slash", out s)) return s;
+            s = Theme.Art("fx", "slash");
+            if (s == null)
+            {
+                const int w = 48, h = 12;
+                var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[w * h];
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float dx = Mathf.Abs((x + 0.5f) / w * 2f - 1f);
+                        float dy = Mathf.Abs((y + 0.5f) / h * 2f - 1f);
+                        float a = Mathf.Clamp01(1f - dx) * Mathf.Clamp01(1f - dy * 1.4f);
+                        a = a > 0.55f ? 1f : a > 0.3f ? 0.6f : a > 0.15f ? 0.25f : 0f;
+                        px[y * w + x] = new Color(1f, 1f, 1f, a);
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["slash"] = s;
+            return s;
+        }
+
         /// <summary>カードの紋章 (絵の代わり): id のハッシュから 24×16 の左右対称の模様。差し替えは Art/cards/<id>.png</summary>
         public static Sprite CardArt(string cardId, Color tint)
         {

@@ -64,6 +64,11 @@ scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開い�
 枠・アイコンは `Assets/Game/Theme.cs` がコードで生成するドット絵のプレースホルダー（`Assets/Resources/Art/<種別>/<id>.png` を置くと差し替わる。`Assets/Editor/ArtImporter.cs` が Point・非圧縮を自動設定）。
 動きは `Tween.cs`、演出は `Presenter.cs`（イベントログの差分→浮き文字・揺れ）。基準解像度は 1920×1080（旧画面は 1.5 倍の入れ物に組んで見た目を維持）。
 
+## 音（2026-09-07 M2-5）
+
+効果音と BGM は `Assets/Game/Synth.cs` がコードで合成（レトロ調）。`Assets/Resources/Audio/sfx/<name>.wav|ogg`・`Assets/Resources/Audio/bgm/<name>.ogg` を置くとそちらが鳴る。
+名前: sfx＝card_draw / card_play / card_set / hit / hit_big / slash / block / heal / buff / turn / enemy_turn / lunge / click / hover / energy / death / win / lose、bgm＝title / map1-3 / battle1-3 / boss1-3。音量は PlayerPrefs（audio.master / audio.sfx / audio.bgm）。
+
 ## レンダーパイプライン（2026-09-07）
 
 Built-in は Unity 6.5 で非推奨（6.7 で終了）なので **URP 17.6.0**（`Packages/manifest.json`）。`Assets/Settings/URP-Default.asset`（パイプライン）と
