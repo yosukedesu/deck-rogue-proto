@@ -73,3 +73,23 @@ describe('残機の予告HP (2026-09-06 人間ラン#8「復活するときの�
   })
 })
 
+describe('金羽の大鴉の作り直し (2026-09-06 ユーザー「そもそもエリートがやる行動じゃない」)', () => {
+  it('盗み・逃走を持たず、舞い上がる(防御8+筋力1)→急降下14〜18(+4/回)→つつき の時計', () => {
+    const def = getEnemyDef('enemy_elite_gold_raven')
+    expect(def.moves.some((m) => m.kind === 'steal-gold' || m.kind === 'flee')).toBe(false)
+    expect(def.sequence).toEqual(['soar', 'dive', 'peck'])
+    const dive = def.moves.find((m) => m.id === 'dive')
+    expect(dive?.growPerUse).toBe(4)
+    expect(def.moves.find((m) => m.id === 'soar')?.alsoBuff).toBe(1)
+    expect(def.startingBlock).toBeUndefined()
+  })
+})
+
+describe('ドキュメントの空ファイル化を止める (2026-09-06 スクリプト事故で CLAUDE.md と unity-port.md が空になった)', () => {
+  it('CLAUDE.md と docs/unity-port.md は100行以上ある', async () => {
+    const { readFileSync } = await import('node:fs')
+    expect(readFileSync('CLAUDE.md', 'utf-8').split('\n').length).toBeGreaterThan(100)
+    expect(readFileSync('docs/unity-port.md', 'utf-8').split('\n').length).toBeGreaterThan(100)
+  })
+})
+
