@@ -207,10 +207,10 @@
     "id": "relic_quiet_bell",
     "name": "静かな鈴",
     "sprite": "🔔",
-    "description": "伏せ札がある間、敵の攻撃ダメージ-1（最低1）",
+    "description": "伏せ札がある間、敵の攻撃ダメージ-2（最低1）",
     "rarity": "uncommon",
     "combatRule": {
-      "setDamageReduction": 1
+      "setDamageReduction": 2
     }
   },
   {
@@ -449,6 +449,28 @@
     "bonus": {
       "rewardChoices": 2,
       "maxHp": -10
+    }
+  },
+  {
+    "id": "relic_black_star",
+    "name": "黒星の欠片",
+    "sprite": "🌟",
+    "description": "強個体を倒した時のレリック3択から、2つ取れる",
+    "rarity": "boss",
+    "bonus": {
+      "eliteRelicPicks": 1
+    }
+  },
+  {
+    "id": "relic_tiny_house",
+    "name": "小さな家",
+    "sprite": "🏠",
+    "description": "取った時: 最大HP+8・+60G・デッキの1枚をランダムに鍛える",
+    "rarity": "boss",
+    "bonus": {
+      "maxHp": 8,
+      "goldOnPickup": 60,
+      "upgradeRandomOnPickup": 1
     }
   }
 ]

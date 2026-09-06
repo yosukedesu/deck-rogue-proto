@@ -135,6 +135,11 @@ goldens/                    # ゴールデンマスターJSONL（TS生成・C#�
 
 ## 11. P2/P3 の最小版（2026-09-06）
 
+- **実機検証の導線（2026-09-07・Unity 6000.6.0f1 が Windows 側に入った）**: `scripts/unity-win.sh {compile|verify|sync}` が WSL から
+  Windows の Unity.exe をバッチ起動する（作業コピー `C:\Users\yosuke\deck-rogue-unity` へ rsync → `-batchmode -nographics -quit`）。
+  `verify` は `Assets/Editor/BatchTools.cs` の `VerifyGoldens`（EngineTests の照合ループと同じ手順を Unity 内で回す＝Mono 上でも
+  TS と同じハッシュを出す確認）。初回の学び: `com.unity.modules.vr` は 6.6 に無い（manifest から除去）。
+
 - P2 骨格: `unity/` がそのままプロジェクトルート。`Packages/manifest.json`（Newtonsoft 3.2.1・uGUI・Input System）、`ProjectSettings/ProjectVersion.txt`（Unity 6）、エンジン asmdef の Newtonsoft 参照、`Assets/StreamingAssets/data/`（`npm run unity:sync`）。開き方は `unity/README.md`。
 - P3 最小: `Assets/Game/`（GameRoot / UiKit / CardText / CombatScreen / RunScreens・約2,400行）。シーン・プレハブ無しで空シーンの Play から起動し、セットアップ→マップ→戦闘→報酬/レリック/焚き火/工房/ショップ/イベント→勝敗が動く設計。Unity API のスタブで dotnet コンパイル 0 error、CardText 全410札とヘッドレス走行で例外ゼロ。**実機コンパイルは Windows 側が初**。
 - 次: Claude Code から Unity をバッチ起動できる環境（`Unity.exe -batchmode` でコンパイル・テスト・スクショ）を作ってから、画面1つ＝1タスクで積む。TextMeshPro＋Noto Sans JP・Android IL2CPP（反射の link.xml）は製品段階の前に。

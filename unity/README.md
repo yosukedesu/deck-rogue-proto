@@ -37,5 +37,21 @@ JSON は `Assets/StreamingAssets/data/`（`npm run unity:sync` で `src/data` �
 4. 空のシーンのまま **Play**。`Assets/Game/GameRoot.cs` が `RuntimeInitializeOnLoadMethod` で画面を組み立てる（シーン・プレハブ不要）。セットアップ→ラン開始→マップ→戦闘…がブラウザ版と同じエンジンで動く。
 5. うまく行かない時: Console のエラーをそのまま貼って報告（Assets/Game はこのマシンでコンパイルできないので、最初のコンパイルは Unity 側）。
 
+## WSL からのバッチ実行（2026-09-07・`scripts/unity-win.sh`）
+
+Windows 側の Unity Editor（Hub が入れた `C:\Program Files\Unity\Hub\Editor\<version>\Editor\Unity.exe`）を WSL から直接叩く。
+正本はこのリポジトリの `unity/`。`\\wsl$` の UNC パスを Unity が扱えないので、`C:\Users\yosuke\deck-rogue-unity` へ rsync した
+使い捨ての作業コピー（`Library/` はそこに溜まる）で動かす。
+
+```bash
+scripts/unity-win.sh compile   # 同期 → -batchmode -nographics -quit → error CS... を要約
+scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGoldens (Unity 内でゴールデン8本を照合)
+scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開いて手で触る時)
+```
+
+ログは `C:\Users\yosuke\deck-rogue-unity\unity-batch.log`。初回はパッケージ解決で数分かかる。作業コピー側で Unity が書き換えた
+`ProjectSettings/ProjectVersion.txt` はスクリプトが正本へ戻す。Hub の GUI で開く時も同じ作業コピーを Add する（手で直した
+`Assets/` の変更はリポジトリへ手動で戻すこと＝作業コピーは常に上書きされる）。
+
 Android はまだ（StreamingAssets を `File` で読んでいる＝Editor/デスクトップ向け。実機は UnityWebRequest 読込に切り替える）。
 

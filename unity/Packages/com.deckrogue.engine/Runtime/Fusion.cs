@@ -727,13 +727,29 @@ namespace DeckRogue.Engine
         /// <summary>[...new Set([...wa, ...wb])].join('') — JS の文字列スプレッドはコードポイント単位</summary>
         private static string UniqueCodePoints(string wa, string wb)
         {
+            // Unity (Mono / .NET Standard 2.1) には string.EnumerateRunes が無いので、サロゲートペアを自前で歩く。
+            // 孤立サロゲートは JS のスプレッドと同じくその1文字をそのまま1要素として扱う
             var seen = new HashSet<int>();
             var sb = new StringBuilder();
             foreach (var s in new[] { wa, wb })
             {
-                foreach (var r in s.EnumerateRunes())
+                int i = 0;
+                while (i < s.Length)
                 {
-                    if (seen.Add(r.Value)) sb.Append(r.ToString());
+                    int cp;
+                    int len;
+                    if (char.IsHighSurrogate(s[i]) && i + 1 < s.Length && char.IsLowSurrogate(s[i + 1]))
+                    {
+                        cp = char.ConvertToUtf32(s[i], s[i + 1]);
+                        len = 2;
+                    }
+                    else
+                    {
+                        cp = s[i];
+                        len = 1;
+                    }
+                    if (seen.Add(cp)) sb.Append(s, i, len);
+                    i += len;
                 }
             }
             return sb.ToString();
