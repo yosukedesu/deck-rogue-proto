@@ -75,6 +75,12 @@ namespace DeckRogue.Game
         RectTransform _root;
         /// <summary>演出レイヤー (浮き文字など)。基準 1920×1080 の座標系・最前面・レイキャストを塞がない</summary>
         public RectTransform FxLayer;
+        /// <summary>新画面 (M2 以降) の入れ物。キャンバス直下 1920×1080。旧画面の _root (1.5倍の入れ物) とは別</summary>
+        public RectTransform ScreenRoot;
+        /// <summary>戦闘ログの引き出しを開いているか</summary>
+        public bool ShowLog;
+        /// <summary>選択式カードのモード選択中 (手札の uid)</summary>
+        public string ModeChoiceUid;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
         /// <summary>画面の組み立てが演出の的 (敵パネル・自分の欄) を登録する。Rebuild ごとに消える</summary>
         public void RegisterAnchor(string name, RectTransform rt) { _anchors[name] = rt; }
@@ -125,6 +131,8 @@ namespace DeckRogue.Game
             _root.sizeDelta = new Vector2(1280f, 720f);
             _root.anchoredPosition = Vector2.zero;
             _root.localScale = Vector3.one * 1.5f;
+            ScreenRoot = UiKit.NewRect("screen", canvasGo.transform);
+            UiKit.Stretch(ScreenRoot, 0f, 0f, 0f, 0f);
             FxLayer = UiKit.NewRect("fx", canvasGo.transform);
             UiKit.Stretch(FxLayer, 0f, 0f, 0f, 0f);
             var fxCg = FxLayer.gameObject.AddComponent<CanvasGroup>();
@@ -158,6 +166,7 @@ namespace DeckRogue.Game
                 Error = ex.Message;
             }
             Pending = null;
+            ModeChoiceUid = null;
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
@@ -317,6 +326,15 @@ namespace DeckRogue.Game
                 c.SetParent(null, false);
                 Destroy(c.gameObject);
             }
+            if (ScreenRoot != null)
+            {
+                for (int i = ScreenRoot.childCount - 1; i >= 0; i--)
+                {
+                    var c = ScreenRoot.GetChild(i);
+                    c.SetParent(null, false);
+                    Destroy(c.gameObject);
+                }
+            }
             try
             {
                 BuildScreen();
@@ -330,6 +348,12 @@ namespace DeckRogue.Game
 
         void BuildScreen()
         {
+            // 戦闘は新画面 (M2): キャンバス直下 1920×1080 に組む。旧画面の入れ物には何も置かない
+            if (Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null)
+            {
+                BattleScreen.Build(this, ScreenRoot);
+                return;
+            }
             var bg = UiKit.Pan(_root, UiKit.ColBg, "bg");
             bg.raycastTarget = false;
             UiKit.Stretch(bg.rectTransform, 0f, 0f, 0f, 0f);

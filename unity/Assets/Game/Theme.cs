@@ -296,3 +296,90 @@ namespace DeckRogue.Game
         }
     }
 }
+
+namespace DeckRogue.Game
+{
+    /// <summary>敵・リーダーのプレースホルダー (2026-09-07 M2): id のハッシュから左右対称のドット絵の生き物を生成する。
+    /// Resources/Art/enemies/<id>.png (PixelLab) があればそれを使う</summary>
+    public static class Creature
+    {
+        static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
+
+        public static Sprite Get(string category, string id, bool friendly = false)
+        {
+            var key = category + "/" + id;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            s = Theme.Art(category, id);
+            if (s == null) s = Generate(id, friendly);
+            _cache[key] = s;
+            return s;
+        }
+
+        static uint Hash(string s)
+        {
+            uint h = 2166136261u;
+            for (int i = 0; i < s.Length; i++) { h ^= s[i]; h *= 16777619u; }
+            return h;
+        }
+
+        /// <summary>16×16 の半分をランダムに埋めて鏡映しにする (宇宙船ジェネレータの古典)。色は id の色相・目は白</summary>
+        static Sprite Generate(string id, bool friendly)
+        {
+            const int n = 16;
+            uint h = Hash(id);
+            var rng = new System.Random((int)(h & 0x7fffffff));
+            float hue = friendly ? 0.33f + (h % 30) / 300f : (h % 360) / 360f;
+            var main = Color.HSVToRGB(hue, friendly ? 0.55f : 0.6f, friendly ? 0.75f : 0.7f);
+            var dark = Color.HSVToRGB(hue, 0.7f, 0.3f);
+            var light = Color.HSVToRGB(hue, 0.35f, 0.95f);
+            var mask = new bool[n, n];
+            // 体: 中央寄りほど埋まりやすい。上下の端は空ける
+            for (int y = 2; y < n - 1; y++)
+            {
+                for (int x = 0; x < n / 2; x++)
+                {
+                    float cx = (x + 0.5f) / (n / 2f);            // 0(外)〜1(中央)
+                    float cy = 1f - Mathf.Abs((y - n / 2f) / (n / 2f));
+                    float p = 0.15f + 0.75f * cx * cy;
+                    mask[x, y] = rng.NextDouble() < p;
+                }
+            }
+            // 足: 下段に2本
+            mask[3, 1] = true; mask[4, 1] = true; mask[3, 2] = true; mask[4, 2] = true;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            bool At(int x, int y) { if (x < 0 || y < 0 || y >= n || x >= n) return false; int mx = x < n / 2 ? x : n - 1 - x; return mask[mx, y]; }
+            for (int y = 0; y < n; y++)
+            {
+                for (int x = 0; x < n; x++)
+                {
+                    Color c = new Color(0f, 0f, 0f, 0f);
+                    if (At(x, y))
+                    {
+                        bool edge = !At(x - 1, y) || !At(x + 1, y) || !At(x, y - 1) || !At(x, y + 1);
+                        c = edge ? dark : (y > n / 2 + 1 ? light : main);
+                    }
+                    else if (At(x - 1, y) || At(x + 1, y) || At(x, y - 1) || At(x, y + 1))
+                    {
+                        c = new Color(0f, 0f, 0f, 0.9f); // 輪郭
+                    }
+                    px[y * n + x] = c;
+                }
+            }
+            // 目 (白+黒) を上から5行目あたりに
+            int ey = n - 6;
+            for (int x = 0; x < n; x++)
+            {
+                if (At(x, ey) && (x == 5 || x == n - 6)) { px[ey * n + x] = Color.white; px[(ey - 1) * n + x] = Color.black; }
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            var s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "creature:" + id;
+            return s;
+        }
+    }
+}

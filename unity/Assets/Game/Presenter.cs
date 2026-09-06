@@ -33,7 +33,7 @@ namespace DeckRogue.Game
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
-                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed)) continue;
+                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded)) continue;
                 var captured = ev;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
                 Tween.After(delay, () => { try { Show(g, fx, captured); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
@@ -41,6 +41,23 @@ namespace DeckRogue.Game
             }
             _seen = log.Count;
             _seenCombat = combat;
+        }
+
+        /// <summary>画面中央の帯 (ターン開始・敵の番)。0.9 秒で消える</summary>
+        static void Banner(RectTransform fx, string text, Color color)
+        {
+            var rt = UiKit.NewRect("banner", fx);
+            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, -44f), new Vector2(0f, 44f));
+            var bg = rt.gameObject.AddComponent<UnityEngine.UI.Image>();
+            bg.color = new Color(0f, 0f, 0f, 0.55f);
+            bg.raycastTarget = false;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+            cg.alpha = 0f;
+            var t = UiKit.Txt(rt, text, 40, color, TextAnchor.MiddleCenter, true);
+            t.outlineWidth = 0.2f; t.outlineColor = Color.black;
+            UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
+            Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
         static void Show(GameRoot g, RectTransform fx, GameEvent ev)
@@ -60,6 +77,9 @@ namespace DeckRogue.Game
                     }
                     else
                     {
+                        // 攻撃した敵は前へ踏み込む (パンチ)
+                        var attacker = g.Anchor("enemy" + (d.EnemyIndex ?? -1));
+                        if (attacker != null) Tween.Punch(attacker, 0.08f, 0.25f);
                         var rt = g.Anchor("player");
                         if (rt == null) return;
                         var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
@@ -76,6 +96,12 @@ namespace DeckRogue.Game
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
                     break;
                 }
+                case GameEvent_TurnStarted ts:
+                    Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", UiKit.ColAccent);
+                    break;
+                case GameEvent_TurnEnded _:
+                    Banner(fx, "敵の番", UiKit.Hex("#ff6b57"));
+                    break;
                 case GameEvent_HpHealed h:
                 {
                     var rt = g.Anchor("player");

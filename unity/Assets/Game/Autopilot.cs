@@ -68,6 +68,9 @@ namespace DeckRogue.Game
             {
                 switch (_scenario)
                 {
+                    case "battle":
+                        yield return Battle(g);
+                        break;
                     case "tour":
                     default:
                         yield return Tour(g);
@@ -80,6 +83,67 @@ namespace DeckRogue.Game
             }
             yield return null;
             Application.Quit(0);
+        }
+
+        /// <summary>戦闘画面の状態を一通り撮る: 素・手札ホバー・ログ・モード選択・対象選択・伏せ→確認ウィンドウ・ターン後</summary>
+        IEnumerator Battle(GameRoot g)
+        {
+            g.Seed = _seed;
+            g.StartRun();
+            for (int i = 0; i < 8 && g.Rs != null && g.Rs.Phase != RunPhases.Combat; i++)
+            {
+                var rs = g.Rs;
+                if (rs.Phase == RunPhases.Map) g.Do(new RunCommand_ChooseNode { Col = DeckRogue.Engine.Run.NextChoices(rs)[0] });
+                else break;
+            }
+            if (g.Rs == null || g.Rs.Phase != RunPhases.Combat) { yield return Shot("no-combat"); yield break; }
+            yield return Shot("battle");
+
+            // 手札ホバー (EventTrigger へ PointerEnter を送る)
+            var hand0 = GameObject.Find("hand1");
+            if (hand0 != null)
+            {
+                var pd = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current);
+                UnityEngine.EventSystems.ExecuteEvents.Execute(hand0, pd, UnityEngine.EventSystems.ExecuteEvents.pointerEnterHandler);
+                yield return new WaitForSeconds(0.25f);
+                yield return Shot("battle-hover");
+                UnityEngine.EventSystems.ExecuteEvents.Execute(hand0, pd, UnityEngine.EventSystems.ExecuteEvents.pointerExitHandler);
+            }
+
+            g.ShowLog = true; g.Rebuild();
+            yield return Shot("battle-log");
+            g.ShowLog = false; g.Rebuild();
+
+            var st = g.Rs.Combat;
+            CardInstance modeCard = null, dmgCard = null, reactionCard = null;
+            foreach (var c in st.Player.Hand)
+            {
+                if (modeCard == null && c.Def.Modes != null && c.Def.Modes.Count > 0) modeCard = c;
+                if (dmgCard == null && c.Def.Type != "reaction" && (c.Def.Modes == null || c.Def.Modes.Count == 0) && c.Def.Effects.Any(e => e.Effect == "dealDamage")) dmgCard = c;
+                if (reactionCard == null && c.Def.Type == "reaction") reactionCard = c;
+            }
+            if (modeCard != null) { g.ModeChoiceUid = modeCard.Uid; g.Rebuild(); yield return Shot("battle-mode"); g.ModeChoiceUid = null; g.Rebuild(); }
+            int alive = st.Enemies.Count(e => e.Hp > 0);
+            if (dmgCard != null && alive > 1)
+            {
+                g.BeginPlay(dmgCard, null);
+                yield return Shot("battle-target");
+                g.CancelPending();
+            }
+            if (reactionCard != null)
+            {
+                g.DoCombat(new Command_SetCard { CardUid = reactionCard.Uid });
+                yield return Shot("battle-set");
+            }
+            g.DoCombat(new Command_EndTurn());
+            yield return Shot("battle-after-end");
+            if (g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction)
+            {
+                yield return Shot("battle-confirm");
+                g.DoCombat(new Command_ConfirmReaction { Fire = false });
+                yield return Shot("battle-held");
+            }
+            yield return Shot("battle-turn2");
         }
 
         /// <summary>セットアップ→ラン開始→マップ→最初のノード→戦闘 (ターン終了×2)。戦闘以外に入ったらその画面も撮る</summary>
