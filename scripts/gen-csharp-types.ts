@@ -20,7 +20,7 @@ const constName = (lit: string): string => {
   const p = lit.replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ').map(pascal).join('')
   return /^[0-9]/.test(p) ? `_${p}` : p || 'Empty'
 }
-const isDouble = (name: string): boolean => /ratio|scale|multiplier|premium|atkScale|hpScale/i.test(name)
+const isDouble = (name: string): boolean => /ratio|scale|multiplier|premium|atkScale|hpScale|chance/i.test(name)
 
 /** 文字列リテラル union の別名 (CardType など) → 生成する定数クラス */
 const literalUnions = new Map<string, string[]>()
@@ -30,6 +30,8 @@ const taggedUnions = new Map<string, ts.TypeLiteralNode[]>()
 const typeAliases = new Map<string, ts.TypeNode>()
 /** 生成したレコード名 (重複防止) */
 const emitted = new Set<string>()
+/** interface 名 → 宣言ノード (extends の平坦化に使う) */
+const interfaceDecls = new Map<string, ts.InterfaceDeclaration>()
 const out: string[] = []
 
 function literalsOf(node: ts.TypeNode): string[] | null {
@@ -100,7 +102,26 @@ function csType(node: ts.TypeNode | undefined, propName: string, owner: string):
   return 'object'
 }
 
-function emitRecord(name: string, members: ts.NodeArray<ts.TypeElement>, doc: string, extra?: { discriminator?: string; base?: string }): void {
+/**
+ * interface の継承 (extends) を平坦化してメンバー列を返す。
+ * C# の record は sealed で出しているので基底を継承させず、基底のプロパティをそのまま埋め込む
+ * (PlayerState/EnemyState extends CombatantState の hp/maxHp/block が落ちていた 2026-09-06 修正)
+ */
+function membersOfInterface(node: ts.InterfaceDeclaration, seen: Set<string> = new Set()): readonly ts.TypeElement[] {
+  if (seen.has(node.name.text)) return []
+  seen.add(node.name.text)
+  const inherited: ts.TypeElement[] = []
+  for (const clause of node.heritageClauses ?? []) {
+    if (clause.token !== ts.SyntaxKind.ExtendsKeyword) continue
+    for (const t of clause.types) {
+      const base = interfaceDecls.get(t.expression.getText())
+      if (base) inherited.push(...membersOfInterface(base, seen))
+    }
+  }
+  return [...inherited, ...node.members]
+}
+
+function emitRecord(name: string, members: readonly ts.TypeElement[], doc: string, extra?: { discriminator?: string; base?: string }): void {
   if (emitted.has(name)) return
   emitted.add(name)
   const lines: string[] = []
@@ -139,6 +160,10 @@ for (const file of SOURCES) {
   const sf = program.getSourceFile(file)
   if (!sf) continue
   sf.forEachChild((node) => {
+    if (ts.isInterfaceDeclaration(node)) {
+      interfaceDecls.set(node.name.text, node)
+      return
+    }
     if (!ts.isTypeAliasDeclaration(node)) return
     const lits = literalsOf(node.type)
     if (lits) {
@@ -167,7 +192,7 @@ for (const file of SOURCES) {
   sf.forEachChild((node) => {
     if (ts.isInterfaceDeclaration(node)) {
       const doc = ts.getJSDocCommentsAndTags(node).map((d) => (ts.isJSDoc(d) && typeof d.comment === 'string' ? d.comment : '')).filter(Boolean).join(' ') || node.name.text
-      emitRecord(node.name.text, node.members, doc)
+      emitRecord(node.name.text, membersOfInterface(node), doc)
     } else if (ts.isTypeAliasDeclaration(node) && taggedUnions.has(node.name.text)) {
       const base = node.name.text
       out.push(`    /// <summary>判別共用体 ${base} (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>\n    public abstract record ${base}\n    {\n        [JsonProperty("type")]\n        public string Type { get; init; } = default!;\n    }\n`)
