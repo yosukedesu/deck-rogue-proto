@@ -35,7 +35,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -88,7 +88,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚${e.condition?.targetDead === true ? '(戦闘が続いていれば。最後の1体では無駄)' : ''}`,
-    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '従者のターン開始効果を今すぐ解決(アンセム込み)', activateEnteredRetainer: '場に出た従者はすぐに1回動く(駆けつけ。従者以外の置物では何も起きない)',
+    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '従者のターン開始効果を今すぐ解決(アンセム込み)', activateEnteredRetainer: '場に出た従者はすぐに1回動く(駆けつけ。従者以外の置物では何も起きない)',
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
@@ -100,7 +100,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターンにカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}]`
     : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
@@ -111,6 +111,7 @@ function cardLine(def: CardDef): string {
     def.retain ? '保持(全捨てで手札に残る)' : '',
     def.freeIfHandAllPhysical === true || def.freeIfHandAll === 'physical' ? '手札の他の札がすべて物理なら0E' : '',
     def.freeIfHandAll === 'spell' ? '手札の他の札がすべて呪文なら0E' : '',
+    def.freeIfHandAll === 'nonphysical' ? '手札の他の札に物理が無ければ0E(置物・リアクション・呪文は可)' : '',
     def.requiresRetainer === true ? 'プレイ条件: 場に従者が1体以上' : '',
     def.freeIfMomentumAtLeast !== undefined ? `勢い${def.freeIfMomentumAtLeast}以上なら0E` : '',
     def.discardCost ? `捨てコスト${def.discardCost}` : '',
@@ -237,7 +238,8 @@ function intentLine(s: GameState, i: number): string {
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : '' // T3: 噛みつき果実 (育つ砲台) の同時強化が落ちていた
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}${buff}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
+    // 威圧は分岐の有無を問わず出す (2026-09-06 Opusラン X: setAlt を持たない敵だけ「攻撃21〜26」と生値で、最悪被ダメ予測19と矛盾していた)
+    attack: `攻撃${it.shownMin}〜${it.shownMax}${(e.weak ?? 0) > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, e.weak ?? 0)}〜${applyEnemyWeak(it.shownMax, e.weak ?? 0)}` : ''}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}${buff}`, defend: `防御${it.shownMin}〜${it.shownMax}`,
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `筋力+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,
@@ -378,7 +380,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]
     // 条件付き意図の解決後の分岐を表示する (素の intent を出すと実値が幅表示と食い違う)
     const it = effectiveIntent(s, s.pendingWindow.enemyIndex)
-    L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it) : '---'}」実値=${it?.actual}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
+    L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it, enemy.weak ?? 0) : '---'}」実値=${it ? (it.kind === 'attack' ? applyEnemyWeak(it.actual, enemy.weak ?? 0) : it.actual) : '?'}${it && it.kind === 'attack' && (enemy.weak ?? 0) > 0 ? `(威圧前${it.actual})` : ''}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
     const win = windowFromPending(s)
     const cands = win ? usableSetCards(s, win) : []
     L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
@@ -409,10 +411,11 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push('手札:')
     for (const c of p.hand) {
       const cost = effectiveCost(s, c)
-      const playable = isPlayableFromHand(c) && cost <= p.energy
+      const playable = isPlayableFromHand(c) && cost <= p.energy && retainerRequirementMet(s, c) // 殉教の誓い・進軍の号令 (2026-09-06 Opusラン X: 表示だけ嘘だった)
       const settable = c.def.type === 'reaction' || (s.setAnyCards === true && canSetAsNormal(c.def))
       const canSet = settable && canSetCard(s, c.uid)
       const marks = [
+        c.def.requiresRetainer === true && !retainerRequirementMet(s, c) ? '従者が場にいないのでプレイ不可' : '',
         c.def.id.startsWith('status_') // 負傷・がらくた・火傷・烙印・仮初の烙印 (2026-09-02 Opusラン: 火傷が「エナジー不足」と誤表示)
           ? c.def.id === 'status_scald'
             ? '使用不可(死に札)・自ターン終了時に手札にあるとHP-2'
@@ -729,7 +732,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       const r = getRelicDef(run.shop.relicId)
       L.push(` レリック ${run.shop.relicPrice}G: ${relicRarityTag(r) ? `${relicRarityTag(r)} ` : ''}${r.name} (${r.description})`)
     }
-    L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+50G)`)
+    L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+25G)`)
     L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
     L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopLeave"}`)
     L.push('   デッキ:')

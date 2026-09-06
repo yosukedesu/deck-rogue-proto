@@ -251,7 +251,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.perfectBlockLastPhase === true) parts.push('🛡直前の敵フェーズを完全に凌いだ')
   if (c.targetDead === true) parts.push('💀とどめ')
   if (c.lastActionNoHpLoss === true) parts.push('🛡完全に凌いだ時')
-  if (c.healedThisTurn === true) parts.push('💚このターンにカードで回復していたら')
+  if (c.healedThisTurn === true) parts.push('💚このターン、先にカードで回復していたら')
   return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
 }
 
@@ -415,7 +415,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'summonPermanent':
       return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す${e.condition?.targetDead === true ? '（戦闘が続いていれば。最後の1体を倒した時は何も起きない）' : ''}`
     case 'duplicateRetainers':
-      return `${trigger}🏳️ 場の従者1体につき、同じ従者を1体場に出す（複製は複製を産まない。登場誘発は全部起きる）`
+      return `${trigger}🏳️ 場の従者1体につき、同じ従者を1体場に出す（複製は複製を産まず、複製同士は互いの登場に反応しない）`
     case 'sacrificeRetainer':
       return `${trigger}🕯️ 場の従者1体を選んで破壊する`
     case 'triggerRetainersNow':
@@ -570,6 +570,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.retain) lines.push('保持（ターン終了時に手札に残る）')
   if (def.freeIfHandAllPhysical === true || def.freeIfHandAll === 'physical') lines.push('手札の他の札がすべて物理ならコスト0')
   if (def.freeIfHandAll === 'spell') lines.push('手札の他の札がすべて呪文ならコスト0')
+  if (def.freeIfHandAll === 'nonphysical') lines.push('手札の他の札に物理が無ければコスト0（置物・リアクション・呪文は可）')
   if (def.requiresRetainer === true) lines.push('プレイ条件: 場に従者が1体以上')
   if (def.freeIfMomentumAtLeast !== undefined) lines.push(`勢いが${def.freeIfMomentumAtLeast}以上ならコスト0`)
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
@@ -3400,7 +3401,7 @@ const COND_JA: Record<string, string> = {
   perfectBlockLastPhase: '直前の敵フェーズを完全に凌いだ',
   targetDead: 'とどめ',
   lastActionNoHpLoss: '完全に凌いだ時',
-  healedThisTurn: 'このターンにカードで回復していたら(置物・パッシブの自動回復は数えない)',
+  healedThisTurn: 'このターン、先にカードで回復していたら(置物・パッシブの自動回復は数えない)',
 }
 function condJa(k: string): string {
   return COND_JA[k] ?? k
@@ -4319,7 +4320,7 @@ function RunScreen({
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
           <DeckChip run={run} />
           <div className="choice-desc" style={{ marginTop: 6 }}>
-            買わずに出てもよい。除去・鍛えるは回数無制限（使うたび+50G逓増）。
+            買わずに出てもよい。除去・鍛えるは回数無制限（除去は使うたび+25G、鍛えるは+50G逓増）。
           </div>
         </div>
         <div className="setup-section-title">カード</div>

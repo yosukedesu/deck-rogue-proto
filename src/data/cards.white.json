@@ -179,7 +179,7 @@
       "fortress"
     ],
     "rarity": "uncommon",
-    "freeIfHandAll": "spell"
+    "freeIfHandAll": "nonphysical"
   },
   {
     "id": "white_perm_squire",

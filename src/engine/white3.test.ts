@@ -64,10 +64,13 @@ describe('白の参照シナジー (本家6型の条件札7)', () => {
     expect(high.player.hp).toBe(66)
   })
 
-  it('大城壁: U・2E・ブロック14。自身を除く手札がすべて呪文なら0E', () => {
+  it('大城壁: U・2E・ブロック14。自身を除く手札に物理が無ければ0E (2026-09-06 裁定: 2ラン9戦で0回だった「呪文だけ」を緩和)', () => {
     const def = getCardDef('white_fortress')
     expect(def.rarity).toBe('uncommon')
-    expect(def.freeIfHandAll).toBe('spell')
+    expect(def.freeIfHandAll).toBe('nonphysical')
+    // 置物・リアクションが混じっていても物理が無ければ0E
+    const noPhys = fresh(['white_fortress', 'white_perm_squire', 'white_reaction_ward', 'white_heal'])
+    expect(effectiveCost(noPhys, noPhys.player.hand[0])).toBe(0)
     const spells = fresh(['white_fortress', 'white_heal', 'white_mercy_staff'])
     expect(effectiveCost(spells, spells.player.hand[0])).toBe(0)
     const mixed = fresh(['white_fortress', 'white_heal', 'white_strike'])
@@ -153,6 +156,17 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     // 軍楽隊の登場誘発: 少年の複製で1 (軍楽隊1体)・乙女の複製で1・軍楽隊の複製で2 (自身も含め2体) = 4ドロー
     expect(s.player.hand.length).toBe(hand0 - 1 + 4)
     expect(s.player.exhaustPile.some((c) => c.def.id === 'white_miracle_division')).toBe(true)
+  })
+
+  it('分列の奇跡: 複製同士は互いの登場に反応しない (2026-09-06 裁定。軍楽長が先頭にいても線形)', () => {
+    let s = energy(fresh(['white_perm_bandleader', 'white_perm_squire', 'white_perm_shieldmaiden', 'white_miracle_division']), 9)
+    s = play(s, 't0_white_perm_bandleader')
+    s = play(s, 't1_white_perm_squire')
+    s = play(s, 't2_white_perm_shieldmaiden')
+    const b0 = s.player.block
+    s = play(s, 't3_white_miracle_division')
+    // 軍楽長の複製: 元の軍楽長+2・自分自身+2 ／ 少年の複製: 元+2 (複製の軍楽長は反応しない) ／ 乙女の複製: 元+2 = 8
+    expect(s.player.block - b0).toBe(8)
   })
 
   it('殉教の誓い: 従者0ならプレイ不可。選んだ従者だけ消え、この置物がある間 従者+2', () => {

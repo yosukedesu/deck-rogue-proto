@@ -830,7 +830,7 @@ export interface CardDef {
   /** 手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03) */
   readonly freeIfHandAllPhysical?: boolean
   /** 手札の他の札がすべてこのタイプなら0E (freeIfHandAllPhysical の一般化。白の大城壁='spell' 2026-09-06。判定は自身を除く手札) */
-  readonly freeIfHandAll?: 'physical' | 'spell'
+  readonly freeIfHandAll?: 'physical' | 'spell' | 'nonphysical' // nonphysical=自身を除く手札に物理が無ければ (大城壁 2026-09-06 裁定。置物・リアクション・呪文は許す)
   /** プレイ条件: 場に従者 (retainer・innate除く) が1体以上 (殉教の誓い 2026-09-06。xCost のエナジー1以上と同じ playability) */
   readonly requiresRetainer?: boolean
   /** 勢いがN以上ならこのカードは0E (追い風。緑 勢いの網 2026-09-04。重圧の上乗せは残る) */

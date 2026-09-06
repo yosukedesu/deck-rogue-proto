@@ -64,7 +64,7 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
   const freeType = card.def.freeIfHandAll ?? (card.def.freeIfHandAllPhysical === true ? 'physical' : undefined)
   if (
     freeType !== undefined &&
-    state.player.hand.every((c) => c.uid === card.uid || c.def.type === freeType)
+    state.player.hand.every((c) => c.uid === card.uid || (freeType === 'nonphysical' ? c.def.type !== 'physical' : c.def.type === freeType))
   ) return up
   // 勢い参照 (追い風): 勢いがN以上なら0E (緑 勢いの網 2026-09-04。「軽く積める勢い」をテンポに還元する口)
   if (card.def.freeIfMomentumAtLeast !== undefined && state.player.momentum >= card.def.freeIfMomentumAtLeast) return up
@@ -1154,11 +1154,15 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 走査は解決開始時のスナップショット = 複製が複製を産まない。登場誘発 (軍楽隊=ドロー) は全部起きる
       const snapshot = state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true)
       let s = state
+      // 複製同士は互いの登場に反応しない (2026-09-06 ユーザー裁定。Opusラン X: 複製された軍楽長が同じバッチの残りにも反応し
+      // 1枚でブロック+84 の二次関数)。元からいた置物と自分自身の登場には反応する = 線形
+      const batch = new Set<string>()
       for (const src of snapshot) {
         const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${src.def.id}`, def: src.def, token: true }
+        batch.add(token.uid)
         s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] }, lastEnteredPermanentUid: token.uid }
         s = emit(s, { type: 'PermanentPlayed', cardId: src.def.id })
-        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex, (p) => p.uid === token.uid || !batch.has(p.uid))
       }
       return emit(s, { type: 'RetainersDuplicated', count: snapshot.length })
     }
