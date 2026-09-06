@@ -4,6 +4,7 @@
 # (\\wsl$ の UNC パスを Unity が扱えないため)。Library/ は作業コピー側に残るので2回目以降は速い。
 #   scripts/unity-win.sh compile   # 同期 → バッチ起動 → コンパイル結果 (error CS...) を要約
 #   scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGoldens (エンジンの実機ゴールデン照合)
+#   scripts/unity-win.sh play      # 同期 → BatchTools.PlaySmoke (プレイモードに入り、セットアップ→ラン開始→進路→戦闘を UI 経由で回す)
 #   scripts/unity-win.sh sync      # 同期だけ
 # ログ: C:\Users\yosuke\deck-rogue-unity\unity-batch.log (WSL からは $WIN_DIR/unity-batch.log)
 set -u
@@ -27,15 +28,18 @@ echo "synced → $WIN_DIR (Unity: $UNITY)"
 WIN_PROJ="$(wslpath -w "$WIN_DIR")"
 LOG="$WIN_DIR/unity-batch.log"
 rm -f "$LOG"
-ARGS=(-batchmode -nographics -quit -projectPath "$WIN_PROJ" -logFile "$(wslpath -w "$LOG")")
+ARGS=(-batchmode -nographics -projectPath "$WIN_PROJ" -logFile "$(wslpath -w "$LOG")")
 case "$MODE" in
-  compile) ;;
-  verify) ARGS+=(-executeMethod DeckRogue.EditorTools.BatchTools.VerifyGoldens) ;;
+  compile) ARGS+=(-quit) ;;
+  verify) ARGS+=(-quit -executeMethod DeckRogue.EditorTools.BatchTools.VerifyGoldens) ;;
+  # play は -quit を付けない (プレイモードに入るため)。スモーク側が EditorApplication.Exit で必ず終わる。保険で timeout
+  play) ARGS+=(-executeMethod DeckRogue.EditorTools.PlaySmoke.Run) ;;
   *) echo "unknown mode: $MODE"; exit 2 ;;
 esac
 echo "run: Unity ${ARGS[*]}"
-"$UNITY" "${ARGS[@]}"
+timeout -k 10 540 "$UNITY" "${ARGS[@]}"
 CODE=$?
+if [ "$CODE" = "124" ]; then echo "timeout: Unity を強制終了する"; taskkill.exe /IM Unity.exe /F >/dev/null 2>&1; fi
 echo "exit code: $CODE"
 # 作業コピー側で Unity が書き換えた ProjectVersion.txt (リビジョン付き) を正本へ戻す
 if [ -f "$WIN_DIR/ProjectSettings/ProjectVersion.txt" ]; then cp "$WIN_DIR/ProjectSettings/ProjectVersion.txt" "$REPO/unity/ProjectSettings/ProjectVersion.txt"; fi

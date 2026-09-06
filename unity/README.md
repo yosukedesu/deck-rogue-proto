@@ -46,6 +46,7 @@ Windows 側の Unity Editor（Hub が入れた `C:\Program Files\Unity\Hub\Edito
 ```bash
 scripts/unity-win.sh compile   # 同期 → -batchmode -nographics -quit → error CS... を要約
 scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGoldens (Unity 内でゴールデン8本を照合)
+scripts/unity-win.sh play      # 同期 → PlaySmoke (プレイモードでセットアップ→ラン開始→進路→戦闘3ターンを GameRoot の API で回し、例外・エラーログ・空画面を検出)
 scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開いて手で触る時)
 ```
 

@@ -94,3 +94,166 @@ namespace DeckRogue.EditorTools
         }
     }
 }
+
+namespace DeckRogue.EditorTools
+{
+    /// <summary>
+    /// プレイモードのスモーク (2026-09-07): -batchmode でプレイモードに入り、GameRoot の公開APIで
+    /// セットアップ→ラン開始→進路選択→戦闘 (ターン終了×3) を回して例外・エラーログ・画面の空を検出する。
+    /// 描画は -nographics で行われないが、UI の組み立て (Rebuild) と engine の呼び出しは全て走る。
+    /// 起動: Unity.exe -batchmode -nographics -projectPath ... -executeMethod DeckRogue.EditorTools.PlaySmoke.Run (-quit は付けない)
+    /// </summary>
+    public static class PlaySmoke
+    {
+        const string Flag = "DeckRogue.PlaySmoke.Armed";
+        static bool _hooked;
+        static int _step;
+        static int _frames;
+        static int _errors;
+        static readonly System.Collections.Generic.List<string> _errorLines = new System.Collections.Generic.List<string>();
+        static int _transitions;
+        static int _turns;
+
+        public static void Run()
+        {
+            SessionState.SetBool(Flag, true);
+            Hook();
+            Debug.Log("[DeckRogue] PlaySmoke: プレイモードへ");
+            EditorApplication.EnterPlaymode();
+        }
+
+        [InitializeOnLoadMethod]
+        static void OnLoad()
+        {
+            if (SessionState.GetBool(Flag, false)) Hook();
+        }
+
+        static void Hook()
+        {
+            if (_hooked) return;
+            _hooked = true;
+            EditorApplication.update += Tick;
+            Application.logMessageReceived += OnLog;
+        }
+
+        static void OnLog(string condition, string stackTrace, LogType type)
+        {
+            if (type != LogType.Exception && type != LogType.Error) return;
+            if (condition.StartsWith("[DeckRogue]")) return;
+            // Editor 自身の起動時インデックス作成 (UnityEditor.Search.SearchDatabase) がバッチ初回に投げる ArgumentOutOfRange はゲームと無関係
+            if (stackTrace != null && stackTrace.Contains("UnityEditor.Search.")) return;
+            _errors++;
+            if (_errorLines.Count < 8) _errorLines.Add(condition + (string.IsNullOrEmpty(stackTrace) ? "" : "\n" + stackTrace.Split('\n')[0]));
+        }
+
+        static void Finish(int code, string why)
+        {
+            SessionState.SetBool(Flag, false);
+            EditorApplication.update -= Tick;
+            foreach (var l in _errorLines) Debug.Log("[DeckRogue] 検出したエラー: " + l);
+            Debug.Log($"[DeckRogue] PlaySmoke 終了 code={code} ({why}) errors={_errors} transitions={_transitions} turns={_turns}");
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+            else EditorApplication.ExitPlaymode();
+        }
+
+        static int CountUnder<T>(Component root) where T : Component => root == null ? 0 : root.GetComponentsInChildren<T>(true).Length;
+
+        static void Tick()
+        {
+            _frames++;
+            try
+            {
+                var g = DeckRogue.Game.GameRoot.I;
+                switch (_step)
+                {
+                    case 0:
+                        if (!Application.isPlaying || g == null)
+                        {
+                            if (_frames > 1500) Finish(1, "GameRoot が起動しない");
+                            return;
+                        }
+                        Debug.Log($"[DeckRogue] boot ok: Content.IsLoaded={Content.IsLoaded} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)} error={g.Error ?? "なし"}");
+                        if (!Content.IsLoaded || g.Error != null) { Finish(1, "データ読込に失敗"); return; }
+                        if (CountUnder<UnityEngine.UI.Text>(g) == 0) { Finish(1, "セットアップ画面が空"); return; }
+                        _step = 1; _frames = 0;
+                        return;
+                    case 1:
+                        if (_frames < 5) return;
+                        g.Seed = 4242;
+                        g.StartRun();
+                        Debug.Log($"[DeckRogue] StartRun: phase={g.Rs?.Phase ?? "null"} error={g.Error ?? "なし"} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
+                        if (g.Rs == null || g.Error != null || g.Rs.Phase != RunPhases.Map) { Finish(1, "ラン開始に失敗"); return; }
+                        _step = 2; _frames = 0;
+                        return;
+                    case 2:
+                    {
+                        if (_frames < 5) return;
+                        var rs = g.Rs;
+                        if (rs == null || g.Error != null) { Finish(1, "ラン状態が壊れた: " + (g.Error ?? "")); return; }
+                        if (rs.Phase == RunPhases.Combat) { _step = 3; _frames = 0; return; }
+                        if (_transitions >= 10) { Finish(1, "10回遷移しても戦闘に入らない: " + rs.Phase); return; }
+                        RunCommand cmd = null;
+                        switch (rs.Phase)
+                        {
+                            case RunPhases.Map:
+                            {
+                                var cols = DeckRogue.Engine.Run.NextChoices(rs);
+                                cmd = new RunCommand_ChooseNode { Col = cols[0] };
+                                break;
+                            }
+                            case RunPhases.Event:
+                            {
+                                // 規約: 最後の選択肢は常に安全な「立ち去る」
+                                var eventId = (string)rs.GetType().GetProperty("EventId")?.GetValue(rs);
+                                var ev = Content.AllEvents.FirstOrDefault(e => e.Id == eventId);
+                                cmd = new RunCommand_EventChoice { Index = ev != null ? ev.Choices.Count - 1 : 0 };
+                                break;
+                            }
+                            case RunPhases.Shop: cmd = new RunCommand_ShopLeave(); break;
+                            case RunPhases.Campfire: cmd = new RunCommand_CampfireRest(); break;
+                            case RunPhases.Workshop: cmd = new RunCommand_WorkshopSkip(); break;
+                            case RunPhases.RelicReward: cmd = new RunCommand_SkipRelic(); break;
+                            case RunPhases.Reward: cmd = new RunCommand_SkipReward(); break;
+                            default: Finish(1, "想定外のフェーズ: " + rs.Phase); return;
+                        }
+                        g.Do(cmd);
+                        _transitions++;
+                        Debug.Log($"[DeckRogue] 遷移{_transitions}: {cmd.Type} → phase={g.Rs?.Phase} error={g.Error ?? "なし"} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
+                        _frames = 0;
+                        return;
+                    }
+                    case 3:
+                    {
+                        if (_frames < 5) return;
+                        var rs = g.Rs;
+                        if (rs == null || g.Error != null) { Finish(1, "戦闘中にエラー: " + (g.Error ?? "")); return; }
+                        if (rs.Phase != RunPhases.Combat || _turns >= 3) { _step = 4; _frames = 0; return; }
+                        var combat = rs.Combat;
+                        if (combat != null && combat.Phase == CombatPhases.AwaitingReaction)
+                        {
+                            g.DoCombat(new Command_ConfirmReaction { Fire = false });
+                            Debug.Log($"[DeckRogue] 温存 → combat.phase={g.Rs?.Combat?.Phase} error={g.Error ?? "なし"}");
+                        }
+                        else
+                        {
+                            g.DoCombat(new Command_EndTurn());
+                            _turns++;
+                            var c = g.Rs?.Combat;
+                            Debug.Log($"[DeckRogue] ターン終了{_turns}: run.phase={g.Rs?.Phase} combat.phase={c?.Phase} hp={c?.Player?.Hp} error={g.Error ?? "なし"} texts={CountUnder<UnityEngine.UI.Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
+                        }
+                        _frames = 0;
+                        return;
+                    }
+                    case 4:
+                        Finish(_errors == 0 ? 0 : 1, _errors == 0 ? "OK" : "エラーログあり");
+                        return;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[DeckRogue] PlaySmoke で例外: " + e);
+                Finish(1, "例外");
+            }
+        }
+    }
+}

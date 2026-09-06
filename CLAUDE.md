@@ -12,7 +12,7 @@ Slay the Spire型デッキ構築ローグライクの**ルール検証用プロ�
 - 本実装は **Unity へ移植する（2026-08-24 一本化決定。Godot / libGDX 案はクローズ）**。
   **したがってルールエンジンは移植可能な純ロジックとして書くこと（最重要）。**
 - 移植作戦は **`docs/unity-port.md` が一次資料**（2026-08-24策定・方式確定: 手書きC#移植＋ゴールデンマスター検証。
-  移植後もルールの実験室はTS側に残す運用。P0スパイク=RNG等価性検証から先行着手）。**P1 済（2026-09-06）: engine 全域を C# へ翻訳し、ゴールデン8本1,105手が全手一致。規約 `unity/PORTING.md`。ルール変更後は `npm run goldens`（8本）→ C# 追随 → `dotnet run -- verify`**。
+  移植後もルールの実験室はTS側に残す運用。P0スパイク=RNG等価性検証から先行着手）。**P1 済（2026-09-06）: engine 全域を C# へ翻訳し、ゴールデン8本1,105手が全手一致。規約 `unity/PORTING.md`。ルール変更後は `npm run goldens`（8本）→ C# 追随 → `dotnet run -- verify`**。**P2 実機起動済（2026-09-07 Unity 6000.6.0f1）: `scripts/unity-win.sh {compile|verify|play}` が WSL から Windows の Unity をバッチ起動（作業コピーへ rsync）。コンパイル0エラー・Unity内ゴールデン8/8・プレイモードのスモーク（ラン開始→戦闘3T）が通る。Unity のランタイムに無い API（EnumerateRunes 等）は使わない**。
 
 ## 確定済みルール（変更時はまずこのセクションを更新）
 

@@ -139,6 +139,10 @@ goldens/                    # ゴールデンマスターJSONL（TS生成・C#�
   Windows の Unity.exe をバッチ起動する（作業コピー `C:\Users\yosuke\deck-rogue-unity` へ rsync → `-batchmode -nographics -quit`）。
   `verify` は `Assets/Editor/BatchTools.cs` の `VerifyGoldens`（EngineTests の照合ループと同じ手順を Unity 内で回す＝Mono 上でも
   TS と同じハッシュを出す確認）。初回の学び: `com.unity.modules.vr` は 6.6 に無い（manifest から除去）。
+  **結果（2026-09-07）**: Input System を同梱版 1.20.0（1.11.2 は 6.6 で TreeViewItem の obsolete エラー）・Newtonsoft 3.2.2・uGUI 2.6.0 に固定し、
+  エンジンの `string.EnumerateRunes`（Unity のランタイムに無い）をサロゲート対応ループへ直した後、**コンパイル0エラー（Assets/Game 2,400行も一発）・
+  Unity 内ゴールデン照合8/8一致・プレイモードのスモーク（`play`）でセットアップ→ラン開始→進路→戦闘3ターンがエラーなし**（Text 26→61・Button 19→13 と画面が組み替わり、HP 72→59＝敵が殴っている）。
+  残る未確認は「絵」＝描画（-nographics では見えない）。Hub で作業コピーを開いて Play すれば見られる。
 
 - P2 骨格: `unity/` がそのままプロジェクトルート。`Packages/manifest.json`（Newtonsoft 3.2.1・uGUI・Input System）、`ProjectSettings/ProjectVersion.txt`（Unity 6）、エンジン asmdef の Newtonsoft 参照、`Assets/StreamingAssets/data/`（`npm run unity:sync`）。開き方は `unity/README.md`。
 - P3 最小: `Assets/Game/`（GameRoot / UiKit / CardText / CombatScreen / RunScreens・約2,400行）。シーン・プレハブ無しで空シーンの Play から起動し、セットアップ→マップ→戦闘→報酬/レリック/焚き火/工房/ショップ/イベント→勝敗が動く設計。Unity API のスタブで dotnet コンパイル 0 error、CardText 全410札とヘッドレス走行で例外ゼロ。**実機コンパイルは Windows 側が初**。
