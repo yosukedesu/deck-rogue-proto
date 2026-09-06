@@ -202,3 +202,14 @@ export function enemyPunishesSet(def: EnemyDef): boolean {
   const tables = [def.moves, def.movesBelowHalf ?? [], def.movesVsSet ?? [], def.movesVsTokens ?? [], def.movesWhenAlone ?? []]
   return tables.some((t) => t.some((m) => m.setAlt?.ignoreFreshness === true))
 }
+
+/**
+ * 残機・分裂の予告HP: 分裂体は素の値×親のHP倍率 (幕・ボス係数・難易度) で出る (確定済みルール表「敵ギミック第1波」)。
+ * 表示は必ずこの実値を出す (2026-09-03 Opusラン K「二の相HP55」の予告に対し実際は132 → CLI は是正済みだったが
+ * ブラウザUIは素の値のままだった = 2026-09-06 人間ラン#8「復活するときの体力の説明が違う」)
+ */
+export function splitChildHp(parent: { readonly maxHp: number }, parentDef: EnemyDef, childDef: EnemyDef): number {
+  const ratio = parentDef.maxHp > 0 ? parent.maxHp / parentDef.maxHp : 1
+  return Math.max(1, Math.round(childDef.maxHp * ratio))
+}
+

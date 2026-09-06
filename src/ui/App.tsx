@@ -66,7 +66,7 @@ import {
 import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { FusionLabPage } from './FusionLab.tsx'
@@ -1761,7 +1761,7 @@ function BattleScreen({
                     {enemyDef.splitInto !== undefined && !dead && (
                       <span className="chip chip-strength">
                         {enemyDef.splitInto.count === 1
-                          ? <>♻️ {kw('残機')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}（HP{getEnemyDef(enemyDef.splitInto.enemyId).maxHp}）で再起動</>
+                          ? <>♻️ {kw('残機')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}（HP{splitChildHp(enemy, enemyDef, getEnemyDef(enemyDef.splitInto.enemyId))}）で再起動</>
                           : <>🫠 {kw('分裂')}: 倒すと{getEnemyDef(enemyDef.splitInto.enemyId).name}×{enemyDef.splitInto.count}{enemyDef.splitInto.stunned === true ? '（出現ターンは動かない）' : ''}</>}
                       </span>
                     )}

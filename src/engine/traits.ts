@@ -3,7 +3,7 @@
 // 「どのギミックにどの用語 (KEYWORD_HELP) を使うか」は GIMMICK_KEYWORDS で共有し、
 // display-coverage.test が「新しい EnemyDef キーに用語解説とタグの両方があること」を機械固定する。
 import { getEnemyDef } from './content.ts'
-import { turnsUntilHatch } from './summary.ts'
+import { splitChildHp, turnsUntilHatch } from './summary.ts'
 import type { EnemyDef, GameState } from './types.ts'
 
 /** EnemyDef のギミック系キー (enemy-conventions.test のホワイトリストと共有) */
@@ -103,8 +103,7 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     const child = getEnemyDef(def.splitInto.enemyId)
     // 予告HPは親のHP倍率 (幕・ボス係数・難易度) を継承した実値で出す (2026-09-03 Opusラン K:
     // 「二の相HP55」の予告に対し実際は132で出ていた)
-    const ratio = def.maxHp > 0 ? e.maxHp / def.maxHp : 1
-    const childHp = Math.max(1, Math.round(child.maxHp * ratio))
+    const childHp = splitChildHp(e, def, child)
     tags.push(
       def.splitInto.count === 1
         ? `残機(倒すと${child.name}HP${childHp}で再起動)`

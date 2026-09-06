@@ -1,6 +1,7 @@
 // 2026-09-06 人間ラン#7a/#7b のメモへの裁定: 静かな鈴−2／罠師の茂み1E常在／歩き木の重圧は攻撃札だけ／代償なしのボスレリック2つ
 import { describe, expect, it } from 'vitest'
 import { getCardDef, getEnemyDef, getRelicDef } from './content.ts'
+import { splitChildHp } from './summary.ts'
 import { effectiveCost } from './effects.ts'
 import { applyRunCommand, relicBonusSum } from './run.ts'
 import type { RunState } from './run.ts'
@@ -60,3 +61,15 @@ describe('代償なしのボスレリック (2026-09-06 人間#7b「全部デメ
     expect(plain.phase).toBe('reward')
   })
 })
+
+describe('残機の予告HP (2026-09-06 人間ラン#8「復活するときの体力の説明が違う」)', () => {
+  it('分裂体の予告HPは素の値×親の倍率 (幕3ボス×2.4: 二の相55→132・三の相70→168)', () => {
+    const c1 = getEnemyDef('enemy_chimera_1')
+    const c2 = getEnemyDef('enemy_chimera_2')
+    const c3 = getEnemyDef('enemy_chimera_3')
+    expect(splitChildHp({ maxHp: Math.round(c1.maxHp * 2.4) }, c1, c2)).toBe(Math.round(c2.maxHp * 2.4))
+    expect(splitChildHp({ maxHp: Math.round(c2.maxHp * 2.4) }, c2, c3)).toBe(Math.round(c3.maxHp * 2.4))
+    expect(splitChildHp({ maxHp: c1.maxHp }, c1, c2)).toBe(c2.maxHp)
+  })
+})
+
