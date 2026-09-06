@@ -194,4 +194,5 @@ Theme（9スライスのボタン枠・16px アイコン13種）、Tween（移�
 **M2-5 音と攻撃演出（同日・ユーザー「SEとかBGMつけてほしい。2を進めて」）**: `Synth.cs` が効果音18種と BGM（幕ごと battle1-3／boss／map／title＝8小節ループ。矩形波・三角波・ノイズのレトロ調）を
 コードで合成し、`Audio.cs` が再生（AudioSource プール・ピッチ揺らぎ・ホバー音の連打抑制・BGM のクロスフェード・PlayerPrefs の音量）。素材は `Assets/Resources/Audio/sfx|bgm/<name>` を置けば差し替わる（絵と同じ規約）。
 演出: 敵の攻撃＝踏み込み（`Tween.Lunge`）→自分に斬撃の筋→画面揺れ（`ScreenRoot` を揺らす）→赤い点滅、自分の攻撃＝カードが飛ぶ→斬撃＋白い点滅＋大きい時は揺れ、ブロック＝盾が膨らむ、回復＝ハート、撃破＝白く光って沈む＋音、ターン/敵の番の音、カードのドロー/プレイ/伏せ/ボタン/ホバーの音、勝敗のジングル。
+素材（同日・ユーザー「アセットストアからいけない？」）: Asset Store は Editor からしか落とせない（ユーザーが Import → `scripts/unity-win.sh pull` で回収 → `Audio.Map` で対応付け）ので、効果音は CC0 の Kenney（rpg-audio / impact-sounds / ui-audio / music-jingles）を直接落として `Resources/Audio/sfx/` に同梱した（番号違いは `_2` `_3` で鳴らすたびに選ぶ）。BGM は Kenney に無いので合成のまま＝Asset Store か CC0 のループ集の候補。ジングル（heal/buff/win/lose）は聴かずに選んだので要差し替え確認。
 

@@ -10,6 +10,7 @@ namespace DeckRogue.Game
     {
         static Audio _i;
         static readonly Dictionary<string, AudioClip> _clips = new Dictionary<string, AudioClip>();
+        static readonly Dictionary<string, List<AudioClip>> _variants = new Dictionary<string, List<AudioClip>>();
         readonly List<AudioSource> _pool = new List<AudioSource>();
         AudioSource _bgm;
         string _bgmName;
@@ -38,6 +39,12 @@ namespace DeckRogue.Game
             if (_i != null && _i._bgm != null) _i._bgm.volume = Master * BgmVol;
         }
 
+        /// <summary>
+        /// 名前→Resources のパス (拡張子なし) の対応表。Asset Store 等の素材をリネームせずに使う時はここに書く。
+        /// 例: { "sfx/hit", "Audio/SomePack/impact_soft_01" }。無ければ Audio/<kind>/<name> → 合成、の順
+        /// </summary>
+        public static readonly Dictionary<string, string> Map = new Dictionary<string, string>();
+
         static AudioClip Load(string kind, string name)
         {
             string key = kind + "/" + name;
@@ -45,7 +52,9 @@ namespace DeckRogue.Game
             if (_clips.TryGetValue(key, out c)) return c;
             try
             {
-                c = Resources.Load<AudioClip>("Audio/" + kind + "/" + name);
+                string mapped;
+                c = Map.TryGetValue(key, out mapped) ? Resources.Load<AudioClip>(mapped) : null;
+                if (c == null) c = Resources.Load<AudioClip>("Audio/" + kind + "/" + name);
                 if (c == null) c = kind == "bgm" ? Synth.Bgm(name) : Synth.Sfx(name);
             }
             catch (System.Exception e) { Debug.LogWarning("[Audio] " + key + ": " + e.Message); c = null; }
@@ -53,12 +62,33 @@ namespace DeckRogue.Game
             return c;
         }
 
+        /// <summary>素材の番号違い (name_2, name_3 …) も集めて、鳴らすたびに選ぶ (素材が1つなら合成音は使わない)</summary>
+        static AudioClip Pick(string name)
+        {
+            List<AudioClip> list;
+            if (!_variants.TryGetValue(name, out list))
+            {
+                list = new List<AudioClip>();
+                var first = Load("sfx", name);
+                if (first != null) list.Add(first);
+                for (int i = 2; i <= 6; i++)
+                {
+                    AudioClip v = null;
+                    try { v = Resources.Load<AudioClip>("Audio/sfx/" + name + "_" + i); } catch (System.Exception) { }
+                    if (v == null) break;
+                    list.Add(v);
+                }
+                _variants[name] = list;
+            }
+            return list.Count == 0 ? null : list[Random.Range(0, list.Count)];
+        }
+
         /// <summary>効果音。pitchJitter で毎回少し音程を揺らす (同じ音の連打が機械的にならない)</summary>
         public static void Play(string name, float volume = 1f, float pitchJitter = 0.06f)
         {
             if (!Application.isPlaying) return;
             var a = I;
-            var clip = Load("sfx", name);
+            var clip = Pick(name);
             if (clip == null) return;
             AudioSource src = null;
             for (int i = 0; i < a._pool.Count; i++) if (!a._pool[i].isPlaying) { src = a._pool[i]; break; }

@@ -19,6 +19,16 @@ WIN_DIR="${WIN_DIR:-/mnt/c/Users/yosuke/deck-rogue-unity-batch}"
 UNITY="${UNITY_EXE:-$(ls -d "/mnt/c/Program Files/Unity/Hub/Editor/"*/Editor/Unity.exe 2>/dev/null | sort | tail -1)}"
 if [ -z "$UNITY" ]; then echo "Unity.exe が見つからない (Hub の Editor フォルダ)"; exit 2; fi
 
+if [ "$MODE" = "pull" ]; then
+  SRC="${2:?回収するパス (作業コピー相対。例: Assets/SomePack)}"
+  GUI="${GUI_DIR:-/mnt/c/Users/yosuke/deck-rogue-unity}"
+  if [ ! -e "$GUI/$SRC" ]; then echo "無い: $GUI/$SRC"; exit 2; fi
+  mkdir -p "$REPO/unity/$(dirname "$SRC")"
+  rsync -a "$GUI/$SRC" "$REPO/unity/$(dirname "$SRC")/"
+  [ -f "$GUI/$SRC.meta" ] && cp "$GUI/$SRC.meta" "$REPO/unity/$SRC.meta"
+  echo "pulled → unity/$SRC ($(find "$REPO/unity/$SRC" -type f | wc -l) files)"
+  exit 0
+fi
 mkdir -p "$WIN_DIR"
 # 作業コピーへ同期 (Library/Temp/Logs/obj/bin は作業コピー側の生成物なので触らない)
 rsync -a --delete \

@@ -68,6 +68,11 @@ scripts/unity-win.sh sync      # 同期だけ (Hub で作業コピーを開い�
 
 効果音と BGM は `Assets/Game/Synth.cs` がコードで合成（レトロ調）。`Assets/Resources/Audio/sfx/<name>.wav|ogg`・`Assets/Resources/Audio/bgm/<name>.ogg` を置くとそちらが鳴る。
 名前: sfx＝card_draw / card_play / card_set / hit / hit_big / slash / block / heal / buff / turn / enemy_turn / lunge / click / hover / energy / death / win / lose、bgm＝title / map1-3 / battle1-3 / boss1-3。音量は PlayerPrefs（audio.master / audio.sfx / audio.bgm）。
+番号違い（`hit_2.ogg` `hit_3.ogg` …）を置くと鳴らすたびに選ぶ。素材をリネームしたくない時は `Audio.Map`（名前→Resources のパス）に書く。
+
+**Asset Store の素材を使う手順**: Editor（Hub で開いた `deck-rogue-unity`）の Package Manager → My Assets → Download/Import で `Assets/<パック名>/` に入る →
+WSL で `scripts/unity-win.sh pull "Assets/<パック名>"` でリポジトリへ回収（作業コピーは同期で上書きされるので必須）→ 使う音を `Resources/Audio/sfx/<name>` へコピーするか `Audio.Map` で対応付ける。
+CC0 の素材集（Kenney）は URL から直接落とせるので、効果音はそれを同梱している（`Assets/Resources/Audio/sfx/LICENSE-kenney.txt`）。
 
 ## レンダーパイプライン（2026-09-07）
 
