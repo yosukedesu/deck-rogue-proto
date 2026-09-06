@@ -1149,7 +1149,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       let s = state
       for (const src of snapshot) {
         const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${src.def.id}`, def: src.def, token: true }
-        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
+        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] }, lastEnteredPermanentUid: token.uid }
         s = emit(s, { type: 'PermanentPlayed', cardId: src.def.id })
         s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
       }
@@ -1159,6 +1159,17 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 殉教の誓い (白 2026-09-06): 破壊する従者は PlayCard.permanentUid で選び、combat.ts の playCard が解決する
       // (引導・回収と同じ「選択は playCard」の配管)。置物トリガー・工房産の他経路では何もしない
       return state
+    case 'activateEnteredRetainer': {
+      // 駆けつけ (ひなたのパッシブ 2026-09-06 ユーザー裁定): 場に出た従者はすぐに1回動く = その従者のターン開始効果を
+      // 登場時に1回解決 (アンセム込み)。白ホードの「準備が長く爆発が遅い」(集結の平均発射5.4T) を構造で前に出す。
+      // 従者以外の置物 (道具・オーラ) が出た時は何もしない。1登場=1回 (リニア)
+      const uid = state.lastEnteredPermanentUid
+      const entered = uid !== undefined ? state.player.permanents.find((p) => p.uid === uid) : undefined
+      if (!entered || entered.def.retainer !== true || entered.innate === true) return state
+      if (!entered.def.effects.some((e) => e.trigger === 'onTurnStart')) return state
+      const s = runPermanentTriggers(state, 'onTurnStart', enemyIndex, (p) => p.uid === entered.uid)
+      return emit(s, { type: 'RetainerRushed', cardId: entered.def.id })
+    }
     case 'triggerRetainersNow': {
       // 進軍の号令 (白 2026-09-06 本家 Multi-Cast): 従者 (innate除く) のターン開始効果を今すぐ1回解決 (アンセム込み)
       const isRetainer = (p: CardInstance): boolean => p.def.retainer === true && p.innate !== true
@@ -1178,7 +1189,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
           def,
           token: true,
         }
-        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
+        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] }, lastEnteredPermanentUid: token.uid }
         s = emit(s, { type: 'PermanentPlayed', cardId: def.id })
         s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
       }

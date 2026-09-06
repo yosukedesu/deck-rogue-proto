@@ -1230,7 +1230,6 @@
     "type": "permanent",
     "cost": 1,
     "rarity": "common",
-    "token": true,
     "retainer": true,
     "effects": [
       {

@@ -88,7 +88,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚`,
-    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '従者のターン開始効果を今すぐ解決(アンセム込み)',
+    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '従者のターン開始効果を今すぐ解決(アンセム込み)', activateEnteredRetainer: '場に出た従者はすぐに1回動く(駆けつけ。従者以外の置物では何も起きない)',
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
@@ -267,6 +267,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'RetainerSacrificed') L.push(` 🕯️殉教: ${cname(e.cardId)}を自ら失った`)
       else if (e.type === 'RetainersDuplicated') L.push(` 🏳️分列: 従者${e.count}体が複製された`)
       else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 従者${e.count}体のターン開始効果を今すぐ解決`)
+      else if (e.type === 'RetainerRushed') L.push(` 🏇駆けつけ: ${cname(e.cardId)}が登場してすぐに動いた`)
       else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${cname(e.cardId)}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
       else if (e.type === 'HpHealed') L.push(e.amount > 0 ? ` 回復${e.amount}` : ' 回復0(満タン。onHealedは誘発)')

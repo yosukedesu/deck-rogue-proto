@@ -337,6 +337,8 @@ export interface GameState {
     /** その行動の実値 (2026-08-31: post窓の minActionValue 判定用) */
     readonly actual: number
   } | null
+  /** 直前に場に出た置物の uid (駆けつけ=ひなた 2026-09-06: onPermanentEntered の解決中に「誰が出たか」を読む) */
+  readonly lastEnteredPermanentUid?: string
   /** 発生済みイベントログ (リプレイ・シミュレーション統計の材料) */
   readonly eventLog: readonly GameEvent[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional */
@@ -492,6 +494,7 @@ export type GameEvent =
   | { readonly type: 'RetainerSacrificed'; readonly cardId: string } // 殉教の誓い (白 2026-09-06): 自分で従者を1体破壊
   | { readonly type: 'RetainersDuplicated'; readonly count: number } // 分列の奇跡 (白 2026-09-06)
   | { readonly type: 'RetainersTriggered'; readonly count: number } // 進軍の号令 (白 2026-09-06)
+  | { readonly type: 'RetainerRushed'; readonly cardId: string } // 駆けつけ (ひなた 2026-09-06): 場に出た従者が即1回動いた
   | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
   | { readonly type: 'GoldStolen'; readonly enemyIndex: number; readonly amount: number } // 盗み (精算は勝利時)
   | { readonly type: 'EnemyFled'; readonly enemyIndex: number } // 逃走 (戦闘離脱)
@@ -661,6 +664,7 @@ export interface DeclarativeEffect {
     | 'duplicateRetainers' // 分列の奇跡 (白 2026-09-06): 場の従者1体につき同じ従者を1体召喚 (解決開始時のスナップショット=複製は複製を産まない。登場誘発は全部起きる)
     | 'sacrificeRetainer' // 殉教の誓い (白 2026-09-06): PlayCard.permanentUid で選んだ従者1体を破壊 (combat.ts の playCard が解決。自分の従者狩り=罠壊しの罰は発火しない)
     | 'triggerRetainersNow' // 進軍の号令 (白 2026-09-06): 従者 (innate除く) のターン開始効果を今すぐ1回解決 (アンセム込み)
+    | 'activateEnteredRetainer' // 駆けつけ (ひなたのパッシブ 2026-09-06): 場に出た従者のターン開始効果を登場時に1回解決 (onPermanentEntered 専用。従者以外の置物では何もしない)
     | 'dischargeBurn' // 爆熱 (赤): 対象の延焼×amount のダメージを与え、延焼を全て失わせる (DoT+焼き切りを手放す緊張)
     | 'shatterBlockConvert' // 破城槌 (赤): 敵のブロックを全て破壊し、破壊した値と同じダメージを与える
     | 'dealDamageExecute' // 処刑 (赤): amount ダメージ。対象のHPが最大の25%以下なら amountMax ダメージ

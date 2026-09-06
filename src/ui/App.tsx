@@ -420,6 +420,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🕯️ 場の従者1体を選んで破壊する`
     case 'triggerRetainersNow':
       return `${trigger}📯 従者すべてのターン開始効果を今すぐ解決する（アンセム込み。リーダーパッシブ・レリックは対象外）`
+    case 'activateEnteredRetainer':
+      return `${trigger}🏇 場に出た従者はすぐに1回動く（その従者のターン開始効果を登場時に解決。従者以外の置物では何も起きない）`
     case 'addCardToHand':
       return `${trigger}🗡️ ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚手札に加える（この戦闘限り）`
     case 'empowerShivs':
@@ -3374,7 +3376,7 @@ const EFFECT_JA: Record<string, string> = {
   exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
   retrieveFromExhaust: '消滅置き場から回収', playFromExhaust: '消滅置き場から直接プレイ',
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
-  duplicateRetainers: '場の従者を1体ずつ複製', sacrificeRetainer: '従者1体を選んで破壊', triggerRetainersNow: '従者のターン開始効果を今すぐ解決',
+  duplicateRetainers: '場の従者を1体ずつ複製', sacrificeRetainer: '従者1体を選んで破壊', triggerRetainersNow: '従者のターン開始効果を今すぐ解決', activateEnteredRetainer: '場に出た従者が即1回動く(駆けつけ)',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
   gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
   strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', dealDamagePerWeak: '対象の威圧×N追加ダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',

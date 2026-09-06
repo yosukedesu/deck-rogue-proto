@@ -96,17 +96,11 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_white",
     "sprite": "☀️",
-    "description": "光耀の聖歌士。マラソンを癒しで走り切る。毎ターン開始時にHP1回復",
+    "description": "光耀の聖歌士。歌に呼ばれて従者が駆けつける。従者が場に出た時、その従者のターン開始効果をすぐに1回解決する",
     "passive": [
       {
-        "trigger": "onTurnStart",
-        "effect": "gainHp",
-        "amount": 1
-      },
-      {
-        "trigger": "onHealed",
-        "effect": "gainBlock",
-        "amount": 1
+        "trigger": "onPermanentEntered",
+        "effect": "activateEnteredRetainer"
       }
     ]
   },

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef } from './content.ts'
 import { effectiveCost, resolveReactionEffects, retainerRequirementMet } from './effects.ts'
 import { applyCommand } from './state.ts'
-import { freshCombat, withHand } from './test-helpers.ts'
+import { createRunInBattle, freshCombat, withHand } from './test-helpers.ts'
 import { REWARD_EXCLUDED } from './run.ts'
 import type { GameState } from './types.ts'
 
@@ -19,8 +19,7 @@ describe('白の品質パス (撤去4・スターター差し替え)', () => {
       expect(allCards.some((c) => c.id === id), id).toBe(false)
     }
     const page = getCardDef('white_perm_page')
-    expect(page.token).toBe(true)
-    expect(page.retainer).toBe(true)
+    expect(page.retainer).toBe(true) // 召喚された個体は summonPermanent が token:true を付ける
     expect(REWARD_EXCLUDED.has('white_perm_page')).toBe(true)
   })
 })
@@ -179,3 +178,43 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     expect(s.player.block - b0).toBe(2)
   })
 })
+
+describe('ひなたのパッシブ「駆けつけ」(2026-09-06 ユーザー裁定: 従者が場に出た時、すぐに1回動く)', () => {
+  const hinata = (): GameState => {
+    const run = createRunInBattle(7, 'set-confirm', 'leader_white')
+    const s = run.combat!
+    expect(s.player.permanents.some((p) => p.def.id === 'leader_white_passive')).toBe(true)
+    return { ...s, player: { ...s.player, energy: 9, energyMax: 9 } }
+  }
+
+  it('従者の少年を出すとその場で2ダメ。白銀の号令があればアンセム込みで3。道具 (光の聖杯) では何も起きない', () => {
+    let s = withHand(hinata(), ['white_perm_squire', 'white_perm_warcry', 'white_perm_squire', 'white_perm_chalice'])
+    const hp0 = s.enemies[0].hp
+    s = play(s, 't0_white_perm_squire')
+    expect(hp0 - s.enemies[0].hp).toBe(2)
+    s = play(s, 't1_white_perm_warcry')
+    s = play(s, 't2_white_perm_squire')
+    expect(hp0 - s.enemies[0].hp).toBe(2 + 3)
+    const before = s.eventLog.filter((e) => e.type === 'RetainerRushed').length
+    s = play(s, 't3_white_perm_chalice')
+    expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(before)
+    expect(hp0 - s.enemies[0].hp).toBe(5)
+  })
+
+  it('見習いの列 (召喚2体) は2回駆けつける = 1+1ダメ。軍楽隊 (登場誘発のみ・ターン開始効果なし) は動かない', () => {
+    let s = withHand(hinata(), ['white_page_rank', 'white_perm_band'])
+    const hp0 = s.enemies[0].hp
+    s = play(s, 't0_white_page_rank')
+    expect(hp0 - s.enemies[0].hp).toBe(2)
+    expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(2)
+    s = play(s, 't1_white_perm_band')
+    expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(2)
+  })
+
+  it('旧パッシブ (毎T回復1・回復ごとブロック1) は無い = 修繕の祈りの条件は自動では成立しない', () => {
+    const s = withHand(hinata(), ['white_mending'])
+    const t = play(s, 't0_white_mending')
+    expect(t.player.block).toBe(6)
+  })
+})
+

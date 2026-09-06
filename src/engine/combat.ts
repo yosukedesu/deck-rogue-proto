@@ -1011,6 +1011,7 @@ export function playCard(
     s = emit(s, { type: 'GuardianRedirected', fromIndex: redirectedFrom, toIndex: enemyIndex })
   }
   if (isPermanent) {
+    s = { ...s, lastEnteredPermanentUid: card.uid } // 駆けつけ (ひなた) が「誰が出たか」を読む
     s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
     // 置物登場の誘発 (白の接着剤)。自身の登場にも誘発する (確定済みルール表「消滅の誘発」系)
     s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
@@ -1209,6 +1210,7 @@ export function playCard(
             exhaustPile: s.player.exhaustPile.filter((c) => c.uid !== retrieveUid),
             permanents: [...s.player.permanents, chosen],
           },
+          lastEnteredPermanentUid: chosen.uid,
         }
         s = emit(s, { type: 'PermanentPlayed', cardId: chosen.def.id })
         s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
