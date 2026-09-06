@@ -38,7 +38,9 @@ namespace DeckRogue.Engine
         public static (int Value, RngState Next) NextInt(RngState rng, int min, int max)
         {
             var (v, next) = Next(rng);
-            return (min + (int)Math.Floor(v * (max - min + 1)), next);
+            // 幅は long で計算する: TS の nextInt(rng, 0, 2**31-1) (戦闘シード) は int だと max-min+1 が溢れる
+            long span = (long)max - min + 1;
+            return ((int)(min + (long)Math.Floor(v * span)), next);
         }
 
         /// <summary>重み配列からインデックスを1つ抽選。重み合計は正であること。</summary>

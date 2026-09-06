@@ -267,10 +267,8 @@ namespace DeckRogue.Engine
             // encounterOverride は ?マスが戦闘に解決した時の敵 (ノードは encounterId を持たない)
             string? encounterId = encounterOverride ?? node?.EncounterId;
             if (node == null || encounterId == null) throw new InvalidOperationException("戦闘ノードではない");
-            // TS: nextInt(run.rng, 0, 2**31 - 1)。C# の Rng.NextInt は (max-min+1) が int で溢れるので
-            // 同じ1消費を double で直接展開する (min=0・幅 2^31 = 2147483648.0)
-            var (seedRoll, rng) = Rng.Next(run.Rng);
-            int combatSeed = (int)Math.Floor(seedRoll * 2147483648.0);
+            // 戦闘シード: TS の nextInt(rng, 0, 2**31-1) と同じ1消費 (Rng.NextInt は幅を long で計算するので溢れない)
+            var (combatSeed, rng) = Rng.NextInt(run.Rng, 0, int.MaxValue);
             // 難易度倍率: 全敵一律で既存スケールの上に乗算
             var diff = DifficultyScale(run.Difficulty);
             double[] bossHpByAct = { 1.35, 2.3, 2.4 };
