@@ -526,7 +526,7 @@ namespace DeckRogue.Game
 
             // 伏せ場 (リーダーの右): 点線のポケットに伏せ札の裏
             var setArea = UiKit.NewRect("setzone", area);
-            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(300f, 110f), new Vector2(0f, 300f));
+            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(390f, 110f), new Vector2(0f, 300f));
             var setTag = Tag(setArea, 26f, -2f);
             UiKit.Anchor(setTag, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f));
             var stFit = setTag.GetComponent<ContentSizeFitter>();

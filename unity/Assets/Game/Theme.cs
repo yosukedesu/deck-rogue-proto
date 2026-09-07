@@ -380,14 +380,15 @@ namespace DeckRogue.Game
         static Sprite Generate(string id, bool friendly, int size)
         {
             int n = Mathf.Max(16, size);
-            int cells = n / 4;
+            int cells = n / 4;                 // 粗い型 (体の形) はここで決め、ドットの描き込みは 1 ドット単位で行う
             uint h = Hash(id);
             var rng = new System.Random((int)(h & 0x7fffffff));
             float hue = friendly ? 0.33f + (h % 30) / 300f : (h % 360) / 360f;
             var main = Color.HSVToRGB(hue, friendly ? 0.5f : 0.55f, friendly ? 0.72f : 0.66f);
             var shade = Color.HSVToRGB(hue, 0.62f, 0.42f);
             var light = Color.HSVToRGB(hue, 0.36f, 0.9f);
-            var outline = Color.HSVToRGB(hue, 0.7f, 0.18f);
+            var hilite = Color.HSVToRGB(hue, 0.2f, 1f);
+            var outline = Color.HSVToRGB(hue, 0.7f, 0.16f);
             var mask = new bool[cells, cells];
             for (int y = 2; y < cells - 1; y++)
                 for (int x = 0; x < cells / 2; x++)
@@ -397,7 +398,6 @@ namespace DeckRogue.Game
                     float p = 0.12f + 0.78f * cx * cy;
                     mask[x, y] = rng.NextDouble() < p;
                 }
-            // 足: 下段に2本。頭の上に角か耳をたまに
             int fx = cells / 4;
             mask[fx, 1] = true; mask[fx + 1, 1] = true; mask[fx, 2] = true; mask[fx + 1, 2] = true;
             if (rng.NextDouble() < 0.5) { mask[cells / 2 - 3, cells - 2] = true; mask[cells / 2 - 3, cells - 1] = true; }
@@ -407,15 +407,27 @@ namespace DeckRogue.Game
                 int mx = x < cells / 2 ? x : cells - 1 - x;
                 return mask[mx, y];
             }
-            // 孤立マスを落として塊にする
             for (int y = 0; y < cells; y++)
                 for (int x = 0; x < cells / 2; x++)
                     if (mask[x, y] && !At(x - 1, y) && !At(x + 1, y) && !At(x, y - 1) && !At(x, y + 1)) mask[x, y] = false;
+            // 1ドット単位の形: ブロックの外角を丸める (4x4 の階段でなく、なだらかな輪郭)
+            bool Solid(int px_, int py_)
+            {
+                if (px_ < 0 || py_ < 0 || px_ >= n || py_ >= n) return false;
+                int cx = px_ / 4, cy = py_ / 4;
+                if (!At(cx, cy)) return false;
+                int lx = px_ % 4, ly = py_ % 4;
+                bool l = At(cx - 1, cy), r = At(cx + 1, cy), d = At(cx, cy - 1), u = At(cx, cy + 1);
+                if (!l && !d && !At(cx - 1, cy - 1) && lx == 0 && ly == 0) return false;
+                if (!r && !d && !At(cx + 1, cy - 1) && lx == 3 && ly == 0) return false;
+                if (!l && !u && !At(cx - 1, cy + 1) && lx == 0 && ly == 3) return false;
+                if (!r && !u && !At(cx + 1, cy + 1) && lx == 3 && ly == 3) return false;
+                return true;
+            }
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Point;
             tex.wrapMode = TextureWrapMode.Clamp;
             var px = new Color[n * n];
-            bool Solid(int px_, int py_) { return At(px_ / 4, py_ / 4); }
             for (int y = 0; y < n; y++)
                 for (int x = 0; x < n; x++)
                 {
@@ -423,19 +435,22 @@ namespace DeckRogue.Game
                     if (Solid(x, y))
                     {
                         bool edge = !Solid(x - 1, y) || !Solid(x + 1, y) || !Solid(x, y - 1) || !Solid(x, y + 1);
-                        bool edge2 = !Solid(x - 2, y) || !Solid(x + 2, y) || !Solid(x, y - 2) || !Solid(x, y + 2);
-                        bool underTop = !Solid(x, y + 3) || !Solid(x - 3, y);      // 左上の縁 = 光
-                        bool overBottom = !Solid(x, y - 3) || !Solid(x + 3, y);    // 右下の縁 = 影
+                        // 右上が光源: 右上の縁に近いほど明るく、左下の縁に近いほど暗く
+                        int toLight = 0, toShade = 0;
+                        for (int k = 1; k <= 5; k++) { if (Solid(x + k, y + k)) toLight = k; else break; }
+                        for (int k = 1; k <= 5; k++) { if (Solid(x - k, y - k)) toShade = k; else break; }
+                        bool dither = ((x + y) & 1) == 0;
                         if (edge) c = outline;
-                        else if (edge2 && overBottom) c = shade;
-                        else if (underTop && ((x + y) & 1) == 0) c = light;
-                        else if (underTop) c = Color.Lerp(main, light, 0.5f);
-                        else if (y < n * 0.42f) c = ((x + y) & 1) == 0 ? shade : Color.Lerp(main, shade, 0.5f);
+                        else if (toLight <= 1) c = hilite;
+                        else if (toLight <= 3) c = dither ? light : main;
+                        else if (toShade <= 2) c = shade;
                         else c = main;
+                        // 体の模様: 斑を少し
+                        if (!edge && ((x * 7 + y * 13) % 29) == 0) c = Color.Lerp(c, shade, 0.6f);
                     }
                     px[y * n + x] = c;
                 }
-            // 目 (白+黒の瞳+光) を上から4割の高さに左右対称で
+            // 目 (白+黒の瞳+光)
             int ey = (int)(n * 0.62f);
             int ex = n / 2 - n / 6;
             for (int side = 0; side < 2; side++)
@@ -448,8 +463,8 @@ namespace DeckRogue.Game
                 px[(ey + 1) * n + bx + 1] = Color.black; px[(ey + 1) * n + bx + 2] = Color.black;
                 px[(ey + 2) * n + bx + 1] = Color.black; px[(ey + 2) * n + bx + 2] = Color.black;
                 px[(ey + 2) * n + bx + 2] = new Color(0.85f, 0.9f, 1f);
+                for (int dx = -1; dx <= 4; dx++) { if (Solid(bx + dx, ey - 1)) px[(ey - 1) * n + bx + dx] = outline; if (Solid(bx + dx, ey + 4)) px[(ey + 4) * n + bx + dx] = outline; }
             }
-            // 口
             int my = (int)(n * 0.5f);
             for (int dx = -2; dx <= 2; dx++) if (Solid(n / 2 + dx, my)) px[my * n + n / 2 + dx] = outline;
             tex.SetPixels(px);
@@ -459,7 +474,6 @@ namespace DeckRogue.Game
             return s;
         }
     }
-
 }
 
 namespace DeckRogue.Game

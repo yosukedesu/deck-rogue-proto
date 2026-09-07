@@ -15,6 +15,8 @@ Shader "DeckRogue/StageUnit"
         _LampPos ("Lamp Position", Vector) = (0,0,0,0)
         _LampColor ("Lamp Color", Color) = (0,0,0,0)
         _LampFalloff ("Lamp Falloff", Float) = 14
+        _SunDir2 ("Sun Direction (uv)", Vector) = (0.7,0.7,0,0)
+        _SunAmount ("Sun Gradient", Float) = 0
     }
     SubShader
     {
@@ -40,14 +42,17 @@ Shader "DeckRogue/StageUnit"
             float4 _LampPos;
             half4 _LampColor;
             float _LampFalloff;
+            float4 _SunDir2;
+            float _SunAmount;
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
-            struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; float fogFactor : TEXCOORD1; float3 positionWS : TEXCOORD2; };
+            struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; float fogFactor : TEXCOORD1; float3 positionWS : TEXCOORD2; float2 uv0 : TEXCOORD3; };
             Varyings Vert(Attributes i)
             {
                 Varyings o;
                 VertexPositionInputs p = GetVertexPositionInputs(i.positionOS.xyz);
                 o.positionCS = p.positionCS;
                 o.positionWS = p.positionWS;
+                o.uv0 = i.uv;
                 o.uv = TRANSFORM_TEX(i.uv, _BaseMap);
                 o.fogFactor = ComputeFogFactor(p.positionCS.z);
                 return o;
@@ -59,6 +64,9 @@ Shader "DeckRogue/StageUnit"
                 // 夜の環境光 + ランタン (距離で減衰。板の中でランタンに近い側が暖かくなる)
                 float d2 = dot(i.positionWS - _LampPos.xyz, i.positionWS - _LampPos.xyz);
                 half3 light = _Ambient.rgb + _LampColor.rgb * (1.0 / (1.0 + d2 / max(0.01, _LampFalloff)));
+                // 月光の向き: 板の中で光源側 (右上) が明るく、反対側 (左下) が暗い
+                float g = dot(i.uv0 - 0.5, _SunDir2.xy);
+                light *= (1.0 + g * _SunAmount);
                 c.rgb *= light;
                 c.rgb = lerp(c.rgb, half3(1, 1, 1), _Flash);
                 half3 fogged = MixFog(c.rgb, i.fogFactor);
