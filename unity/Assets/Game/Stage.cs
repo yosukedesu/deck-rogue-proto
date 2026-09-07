@@ -19,8 +19,8 @@ namespace DeckRogue.Game
 {
     public static class Stage
     {
-        public const float Fov = 30f;
-        public const float Pitch = 25f;                 // 見下ろし角 (俯瞰。台地の木の頭が上端に入る)
+        public const float Fov = 36f;                   // 広めの画角 = 手前が大きく奥が小さい (奥行きが読める)
+        public const float Pitch = 16f;                 // 見下ろし角。上端の視線が水平より 2° 上 = 遠景の山と空の帯が入る
         const float PathYaw = -22f;                     // 道の向き (手前左 → 奥右)。隊列もこの線に沿う
         const float PlaneUnitsPerScreen = 10.8f;        // 基準深度で画面の高さ = 10.8 units
         const float GroundLineRatio = 0.45f;            // 画面の下から何割に world 原点を置くか
@@ -103,9 +103,10 @@ namespace DeckRogue.Game
                 _volume.priority = 1f;
                 var profile = ScriptableObject.CreateInstance<VolumeProfile>();
                 _dof = profile.Add<DepthOfField>(true);
-                _dof.mode.value = DepthOfFieldMode.Gaussian;
-                _dof.gaussianMaxRadius.value = 1.1f;
-                _dof.highQualitySampling.value = true;
+                _dof.mode.value = DepthOfFieldMode.Bokeh;      // 手前 (崖下の前景) も軽くぼける。中距離は 2px 未満
+                _dof.focalLength.value = 300f;
+                _dof.aperture.value = 9f;
+                _dof.bladeCount.value = 6;
                 var bloom = profile.Add<Bloom>(true);
                 bloom.threshold.value = 0.9f;
                 bloom.intensity.value = 1.6f;
@@ -165,7 +166,7 @@ namespace DeckRogue.Game
             _camBase = p0 - _fwd * _dist;
             _cam.transform.position = _camBase;
             _cam.transform.rotation = rot;
-            if (_dof != null) { _dof.gaussianStart.value = _dist + 8f; _dof.gaussianEnd.value = _dist + 46f; }
+            if (_dof != null) _dof.focusDistance.value = _dist + 0.8f;
         }
 
         static float ScaleFactor()
@@ -200,10 +201,15 @@ namespace DeckRogue.Game
 
         // ---------------------------------------------------------------- 座席 (舞台が配置を決める)
 
-        /// <summary>道の上の点 (t = 道に沿った距離・s = 道と直角の横ずれ。s>0 は奥側) を world へ</summary>
+        const float LedgeS = -4.6f;                     // 台地の手前の縁 (道に直角の距離)。これより手前は 1 段低い
+        const float LowerY = -1.6f;                      // 崖下の地面の高さ
+
+        /// <summary>道の上の点 (t = 道に沿った距離・s = 道と直角の横ずれ。s>0 は奥側) を world へ。高さは地形に合わせる</summary>
         static Vector3 OnPath(float t, float s)
         {
-            return Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(t, 0f, s);
+            var p = Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(t, 0f, s);
+            p.y = s < LedgeS ? LowerY : 0f;
+            return p;
         }
 
         public static Vector3 LeaderSlot() { return OnPath(-5.0f, 0.9f); }
@@ -414,16 +420,16 @@ namespace DeckRogue.Game
             else
             {
                 // 幕1: 地面は黄緑寄り・木は青緑寄り (溶け合わない)
-                p.SkyTop = UiKit.Hex("#141a3c"); p.SkyBot = UiKit.Hex("#3a4478"); p.Fog = UiKit.Hex("#8090bc");
+                p.SkyTop = UiKit.Hex("#141a3c"); p.SkyBot = UiKit.Hex("#3a4478"); p.Fog = UiKit.Hex("#5a6a9c");
                 p.GrassA = UiKit.Hex("#436230"); p.GrassB = UiKit.Hex("#365228"); p.GrassC = UiKit.Hex("#5a7a3c"); p.GrassDry = UiKit.Hex("#6c6c42");
                 p.DirtA = UiKit.Hex("#6c5b40"); p.DirtB = UiKit.Hex("#564834");
                 p.StoneA = UiKit.Hex("#7a7674"); p.StoneB = UiKit.Hex("#5c5856");
                 p.CliffA = UiKit.Hex("#524a42"); p.CliffB = UiKit.Hex("#3c3630");
                 p.LeafA = UiKit.Hex("#2c5a48"); p.LeafB = UiKit.Hex("#1e4236"); p.LeafC = UiKit.Hex("#4a8a64"); p.Trunk = UiKit.Hex("#4a3a2a");
-                p.Ambient = new Color(0.28f, 0.32f, 0.52f); p.Sun = new Color(0.6f, 0.68f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
+                p.Ambient = new Color(0.25f, 0.29f, 0.5f); p.Sun = new Color(0.6f, 0.68f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
                 p.Filter = new Color(0.84f, 0.9f, 1.12f); p.UnitAmbient = new Color(0.64f, 0.7f, 0.94f);
             }
-            p.LampOnUnits = 0.5f; p.LampIntensity = 5.5f; p.SunIntensity = 0.85f;
+            p.LampOnUnits = 0.5f; p.LampIntensity = 5.5f; p.SunIntensity = 0.72f;
             return p;
         }
 
@@ -453,12 +459,33 @@ namespace DeckRogue.Game
             // 地面と道
             var grass = Px.Grass(p, rng); var dirt = Px.Dirt(p, rng); var stone = Px.Stone(p, rng); var cliff = Px.Cliff(p, rng);
             var mGrass = Lit(Tex(act, "grass", grass)); var mDirt = Lit(Tex(act, "dirt", dirt)); var mStone = Lit(Tex(act, "stone", stone)); var mCliff = Lit(Tex(act, "cliff", cliff));
+            var pathRot = Quaternion.Euler(0f, PathYaw, 0f);
             var ground = new MB();
-            ground.Floor(-60f, -30f, 60f, 60f, 0f);
-            Solid("ground", ground, mGrass);
+            ground.Floor(-90f, LedgeS, 90f, 90f, 0f);                       // 台地 (戦闘の場)
+            Solid("ground", ground, mGrass).transform.rotation = pathRot;
+            var lower = new MB();
+            lower.Floor(-90f, -60f, 90f, LedgeS, LowerY);                    // 崖下の地面 (暗め)
+            var mGrassLow = Lit(Tex(act, "grass", grass)); mGrassLow.SetColor("_BaseColor", new Color(0.62f, 0.66f, 0.78f));
+            Solid("ground-lower", lower, mGrassLow).transform.rotation = pathRot;
+            var ledge = new MB();
+            ledge.WallZ(-90f, 90f, LowerY, 0f, LedgeS);                       // 崖の縁 (手前を向く面)
+            Solid("ledge", ledge, mCliff).transform.rotation = pathRot;
+            {
+                // 崖の縁の根元の影 (崖下へ薄れる帯) と、縁の上の明るい線
+                var strip = new GameObject("ledge-shadow");
+                strip.transform.SetParent(_world, false);
+                strip.AddComponent<MeshFilter>().sharedMesh = _quad;
+                var smr = strip.AddComponent<MeshRenderer>();
+                smr.sharedMaterial = GlowMaterial(StripTex());
+                smr.sharedMaterial.color = new Color(ShadowColor.r, ShadowColor.g, ShadowColor.b, 0.6f);
+                smr.shadowCastingMode = ShadowCastingMode.Off; smr.receiveShadows = false;
+                strip.transform.rotation = pathRot * Quaternion.Euler(-90f, 0f, 0f);
+                strip.transform.position = pathRot * new Vector3(0f, LowerY + 0.02f, LedgeS);
+                strip.transform.localScale = new Vector3(180f, 1.4f, 1f);
+            }
             var path = new MB();
             path.Floor(-70f, -2.4f, 70f, 2.2f, 0.012f);
-            Solid("path", path, mDirt).transform.rotation = Quaternion.Euler(0f, PathYaw, 0f);
+            Solid("path", path, mDirt).transform.rotation = pathRot;
             // 道の縁: 草に食われた縁と、すり減った中央 (不規則な抜き板)
             var mBite = Cutout(Px.Patch(p.GrassA, p.GrassB, rng)); var mWorn = Cutout(Px.Patch(Color.Lerp(p.DirtA, p.GrassDry, 0.35f), p.DirtA, rng));
             for (int i = 0; i < 22; i++)
@@ -480,7 +507,7 @@ namespace DeckRogue.Game
             for (int i = 0; i < 12; i++)
             {
                 float t = -28f + (float)rng.NextDouble() * 56f;
-                float s = -10f + (float)rng.NextDouble() * 22f;
+                float s = -4.2f + (float)rng.NextDouble() * 13f;
                 if (Mathf.Abs(s) < 2.8f) continue;
                 float sz = 1.2f + (float)rng.NextDouble() * 1.8f;
                 var w = OnPath(t, s);
@@ -492,7 +519,7 @@ namespace DeckRogue.Game
             for (int i = 0; i < 60; i++)
             {
                 float t = -26f + (float)rng.NextDouble() * 52f;
-                float s = -10f + (float)rng.NextDouble() * 22f;
+                float s = -4.2f + (float)rng.NextDouble() * 13f;
                 var w = OnPath(t, s);
                 if (Mathf.Abs(s) < 1.9f) { if (rng.NextDouble() < 0.35) Decal("pebble", mPebble, w.x, w.z, 0.22f + (float)rng.NextDouble() * 0.12f, 0.14f, (float)rng.NextDouble() * 360f); continue; }
                 if (Mathf.Abs(s) < 2.5f) continue;
@@ -533,7 +560,18 @@ namespace DeckRogue.Game
             // 地面の高さの木 (両脇の額縁・近いので大きく見える)。戦闘ライン (道) には置かない
             Cross("tree", trees[1], OnPath(-12.5f, 5.0f), 3.4f, 0.5f);
             Cross("tree", trees[0], OnPath(-9.5f, 7.6f), 2.8f, 0.5f);
-            Cross("tree", trees[2], OnPath(13.5f, -4.8f), 3.1f, 0.5f);
+            Cross("tree", trees[2], OnPath(14.5f, -3.6f), 3.1f, 0.5f);
+            // 前景 (崖下・画面の下の隅): 大きな岩と丈の高い草。近いので大きく、軽くぼける
+            var tall = Px.TallGrass(p, rng);
+            Plane("rock-front", rock, OnPath(-3.2f, -7.4f), 2.0f, 0.5f, true);
+            Plane("rock-front", rock, OnPath(11.5f, -6.8f), 1.5f, 0.5f, true);
+            for (int i = 0; i < 14; i++)
+            {
+                float t = -18f + (float)rng.NextDouble() * 36f;
+                float s = LedgeS - 0.3f - (float)rng.NextDouble() * 1.6f;
+                var g = Plane("tallgrass", tall, OnPath(t, s), 1.5f + (float)rng.NextDouble() * 0.6f, 0.5f, false);
+                if (rng.NextDouble() < 0.5) g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f);
+            }
             // 奥の台地の木 (小さめ)
             var rot2 = Quaternion.Euler(0f, yaw2, 0f);
             for (int i = 0; i < 12; i++)
@@ -580,15 +618,17 @@ namespace DeckRogue.Game
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(7f, 4.4f, 44f), 2.2f, 0.4f);
+            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(-4f, 8.2f, 70f), 2.6f, 0.4f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 32f), 2.6f, 0.4f, 120f);
+            var mts = Prop("mountains", Px.Mountains(p, rng, 0.55f), new Vector3(4f, 2.6f, 58f), 6.5f, 0.4f, 200f);
+            mts.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var mts2 = Prop("mountains2", Px.Mountains(p, rng, 0.35f), new Vector3(-10f, 2.9f, 48f), 4.5f, 0.4f, 150f);
+            mts2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
             skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var skyline2 = Prop("skyline2", Px.Skyline(p, rng), new Vector3(6f, 3.0f, 40f), 3.4f, 0.4f, 160f);
-            skyline2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
         }
 
         static Texture2D Tex(int act, string kind, Texture2D fallback)
@@ -1173,6 +1213,47 @@ namespace DeckRogue.Game
                 for (int k = 0; k < 7; k++)
                     Disc(px, n, n, 8f + (float)rng.NextDouble() * 16f, 8f + (float)rng.NextDouble() * 16f, 4f + (float)rng.NextDouble() * 7f, ((k & 1) == 0) ? a : Mix(a, b, 0.5f), rng, 1.5f);
                 for (int y = 0; y < n; y++) for (int x = 0; x < n; x++) if (px[y * n + x].a > 0f && ((x + y) & 1) == 0 && rng.NextDouble() < 0.35) px[y * n + x] = Mix(px[y * n + x], b, 0.5f);
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>丈の高い草 (前景用・大きめ)。3階調の穂</summary>
+            public static Texture2D TallGrass(Pal p, System.Random rng)
+            {
+                int w = 28, h = 44;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                for (int i = 0; i < px.Length; i++) px[i] = Color.clear;
+                for (int b = 0; b < 9; b++)
+                {
+                    int x0 = 2 + b * 3, top = 22 + rng.Next(20);
+                    int lean = rng.Next(3) - 1;
+                    for (int y = 0; y < top; y++)
+                    {
+                        int x = x0 + (y * lean) / 12;
+                        var c = y > top - 6 ? p.GrassC : (y < 8 ? p.GrassB : p.GrassA);
+                        Put(px, w, h, x, y, c);
+                        if (y > top - 3) Put(px, w, h, x + 1, y, Mix(p.GrassC, Color.white, 0.15f));
+                    }
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>遠くの山の稜線 (霧で薄れる前提の一色のシルエット)。fade で空の色に寄せる</summary>
+            public static Texture2D Mountains(Pal p, System.Random rng, float fade)
+            {
+                int w = 512, h = 96;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var c = Mix(Mix(p.SkyBot, Color.black, 0.35f), p.Fog, fade);
+                float hh = 30f;
+                for (int x = 0; x < w; x++)
+                {
+                    if (x % 3 == 0) hh = Mathf.Clamp(hh + (float)(rng.NextDouble() * 6.0 - 3.0), 18f, 80f);
+                    int top = (int)hh + ((x / 40) % 2 == 0 ? 6 : 0);
+                    for (int y = 0; y < top; y++) px[y * w + x] = c;
+                }
                 t.SetPixels(px); t.Apply();
                 return t;
             }
