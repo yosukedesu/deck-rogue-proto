@@ -2,8 +2,8 @@
   "id": "enemy_probe",
   "engine": "pixflux",
   "request": {
-    "description": "pixel art in the style of Hollow Knight's spirits: a small lonely ghost, a smooth pale bone-white mask face with two large empty black eye sockets and no mouth, a wispy dark ghostly body that tapers and trails off into thin mist below instead of legs, floating slightly above the ground, tiny thin arms, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, a tiny scout ghost peeking from under a hood of dead leaves, holding a thin stick, leaning forward curiously",
-    "negative_description": "insect, beetle, bug legs, antennae, colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
+    "description": "pixel art creature in the melancholic style of Hollow Knight: the body shape is exactly the creature described, with a smooth pale bone-white mask face with two large empty black eye sockets, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet mood, clean readable silhouette, thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left, a small hunched scout goblin-like creature in a ragged leaf hood peeking out, long thin arms, holding a thin probing stick, tiptoeing; the mask is its face",
+    "negative_description": "colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime, human face, teeth, angry, glow, blurry, gradient background, text, watermark, side profile, sheet ghost, wispy mist body",
     "image_size": {
       "width": 64,
       "height": 64
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T15:24:16.720Z"
+  "at": "2026-09-07T18:45:59.559Z"
 }

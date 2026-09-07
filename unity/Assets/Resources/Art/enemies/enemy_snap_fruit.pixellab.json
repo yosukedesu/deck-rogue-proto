@@ -2,8 +2,8 @@
   "id": "enemy_snap_fruit",
   "engine": "pixflux",
   "request": {
-    "description": "pixel art in the style of Hollow Knight's spirits: a small lonely ghost, a smooth pale bone-white mask face with two large empty black eye sockets and no mouth, a wispy dark ghostly body that tapers and trails off into thin mist below instead of legs, floating slightly above the ground, tiny thin arms, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, a round ghost shaped like a fallen fruit with two withered leaf-like wisps and a dry stem, a small closed slit for a mouth",
-    "negative_description": "insect, beetle, bug legs, antennae, colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
+    "description": "pixel art creature in the melancholic style of Hollow Knight: the body shape is exactly the creature described, with a smooth pale bone-white mask face with two large empty black eye sockets, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet mood, clean readable silhouette, thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left, a round plump fruit with a stem and two leaves on top, the fruit itself has a wide dark mouth with rounded teeth and a pale mask-like face, sitting on the ground",
+    "negative_description": "colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime, human face, angry, glow, blurry, gradient background, text, watermark, side profile, hooded robe, cloak, sheet ghost, humanoid, standing person, arms and legs like a person, wispy mist body",
     "image_size": {
       "width": 64,
       "height": 64
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T15:26:13.426Z"
+  "at": "2026-09-07T18:47:59.036Z"
 }
