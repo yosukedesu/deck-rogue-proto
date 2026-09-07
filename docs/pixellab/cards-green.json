@@ -1,0 +1,475 @@
+{
+ "_note": "緑のカード挿絵 91 種 (2026-09-08)。第1稿は『月の森の空き地に小さな人物』に収束したので、第2稿は主題の近景 (人物・月・風景は禁止語)。80×48・背景つき。node scripts/pixellab.mjs gen docs/pixellab/cards-green.json --force",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8,
+  "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors"
+ },
+ "style": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky",
+ "items": [
+  {
+   "id": "green_ramp_sprout",
+   "out": "unity/Assets/Resources/Art/cards/green_ramp_sprout.png",
+   "description": "{style}, a single green sprout with two leaves rising from a mound of dark soil, close-up"
+  },
+  {
+   "id": "green_ramp_deep_roots",
+   "out": "unity/Assets/Resources/Art/cards/green_ramp_deep_roots.png",
+   "description": "{style}, a tangle of thick roots plunging into a cross-section of dark soil, close-up"
+  },
+  {
+   "id": "green_ramp_sunlight",
+   "out": "unity/Assets/Resources/Art/cards/green_ramp_sunlight.png",
+   "description": "{style}, a shaft of warm light falling on a small sapling in a pot of earth, close-up, no sky"
+  },
+  {
+   "id": "green_strike",
+   "out": "unity/Assets/Resources/Art/cards/green_strike.png",
+   "description": "{style}, a gnarled wooden staff lying diagonally with a burst of impact sparks at its tip, close-up, no hands"
+  },
+  {
+   "id": "green_double_lash",
+   "out": "unity/Assets/Resources/Art/cards/green_double_lash.png",
+   "description": "{style}, two green vine whips crossing in an X with motion streaks, close-up, no hands"
+  },
+  {
+   "id": "green_fang",
+   "out": "unity/Assets/Resources/Art/cards/green_fang.png",
+   "description": "{style}, one huge curved beast fang with a drop of sap on it, extreme close-up"
+  },
+  {
+   "id": "green_guard",
+   "out": "unity/Assets/Resources/Art/cards/green_guard.png",
+   "description": "{style}, a round shield woven from vines and bark, straight on, close-up"
+  },
+  {
+   "id": "green_bark_armor",
+   "out": "unity/Assets/Resources/Art/cards/green_bark_armor.png",
+   "description": "{style}, a chest plate made of thick tree bark plates on a wooden stand, close-up, no person"
+  },
+  {
+   "id": "green_entangle",
+   "out": "unity/Assets/Resources/Art/cards/green_entangle.png",
+   "description": "{style}, green vines coiling tightly around a wooden post, close-up"
+  },
+  {
+   "id": "green_finisher_wrath",
+   "out": "unity/Assets/Resources/Art/cards/green_finisher_wrath.png",
+   "description": "{style}, a colossal ancient tree face roaring with branches like arms, storm of leaves, close-up on the trunk face"
+  },
+  {
+   "id": "green_finisher_stomp",
+   "out": "unity/Assets/Resources/Art/cards/green_finisher_stomp.png",
+   "description": "{style}, the enormous clawed foot of a beast crushing the ground with cracks and dust, close-up"
+  },
+  {
+   "id": "green_reaction_thorns",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_thorns.png",
+   "description": "{style}, a dense wall of long sharp thorns bristling toward the viewer, close-up"
+  },
+  {
+   "id": "green_reaction_vine",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_vine.png",
+   "description": "{style}, vines woven into a tight protective lattice, close-up"
+  },
+  {
+   "id": "green_reaction_root_weave",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_root_weave.png",
+   "description": "{style}, roots woven into a knotted circular pattern over a fading dark rune, close-up"
+  },
+  {
+   "id": "green_growth_ring",
+   "out": "unity/Assets/Resources/Art/cards/green_growth_ring.png",
+   "description": "{style}, the top of a cut tree stump showing concentric growth rings, faint green glow, close-up"
+  },
+  {
+   "id": "green_sig_canopy",
+   "out": "unity/Assets/Resources/Art/cards/green_sig_canopy.png",
+   "description": "{style}, a thick canopy of leaves heavy with glowing fruit, seen from below, close-up"
+  },
+  {
+   "id": "green_sig_rite_of_bloom",
+   "out": "unity/Assets/Resources/Art/cards/green_sig_rite_of_bloom.png",
+   "description": "{style}, a giant flower blooming open in a burst of petals and light, close-up"
+  },
+  {
+   "id": "green_sig_vine_dance",
+   "out": "unity/Assets/Resources/Art/cards/green_sig_vine_dance.png",
+   "description": "{style}, many vines whirling in a spiral around a glowing center, close-up"
+  },
+  {
+   "id": "green_sig_trample",
+   "out": "unity/Assets/Resources/Art/cards/green_sig_trample.png",
+   "description": "{style}, cloven hooves smashing through undergrowth with leaves flying, close-up on the hooves"
+  },
+  {
+   "id": "green_sig_stampede",
+   "out": "unity/Assets/Resources/Art/cards/green_sig_stampede.png",
+   "description": "{style}, the head of a giant tusked elephant-beast charging straight at the viewer in dust, close-up"
+  },
+  {
+   "id": "green_trample_charge",
+   "out": "unity/Assets/Resources/Art/cards/green_trample_charge.png",
+   "description": "{style}, a horned beast head lowered with dust kicked up, ready to charge, close-up"
+  },
+  {
+   "id": "green_ritual_surge",
+   "out": "unity/Assets/Resources/Art/cards/green_ritual_surge.png",
+   "description": "{style}, golden sap oozing from a cut in dark bark, glowing, close-up"
+  },
+  {
+   "id": "green_perm_growth_tree",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_growth_tree.png",
+   "description": "{style}, an ancient wide tree trunk with deep rings carved in its bark, close-up"
+  },
+  {
+   "id": "green_perm_herd_chief",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_herd_chief.png",
+   "description": "{style}, a great stag with enormous branching antlers, head and shoulders, close-up"
+  },
+  {
+   "id": "green_flash_insight",
+   "out": "unity/Assets/Resources/Art/cards/green_flash_insight.png",
+   "description": "{style}, a bright green spark of light bursting between overlapping leaves, close-up"
+  },
+  {
+   "id": "green_serpent_gulp",
+   "out": "unity/Assets/Resources/Art/cards/green_serpent_gulp.png",
+   "description": "{style}, the open jaws of a giant serpent with fangs, close-up"
+  },
+  {
+   "id": "green_reaction_resonance",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_resonance.png",
+   "description": "{style}, thorny vines with rings of green light vibrating out from them, close-up"
+  },
+  {
+   "id": "green_wild_sprout",
+   "out": "unity/Assets/Resources/Art/cards/green_wild_sprout.png",
+   "description": "{style}, several wild sprouts bursting through cracked gray stone, close-up"
+  },
+  {
+   "id": "green_sweep",
+   "out": "unity/Assets/Resources/Art/cards/green_sweep.png",
+   "description": "{style}, a broad branch sweeping sideways through tall grass, arc of cut grass, close-up, no hands"
+  },
+  {
+   "id": "green_bloom_lash",
+   "out": "unity/Assets/Resources/Art/cards/green_bloom_lash.png",
+   "description": "{style}, a vine tipped with a blooming pink flower lashing out with motion streak, close-up"
+  },
+  {
+   "id": "green_weak_point",
+   "out": "unity/Assets/Resources/Art/cards/green_weak_point.png",
+   "description": "{style}, a sharp thorn spear tip pressing into a glowing crack on dark scaled hide, close-up"
+  },
+  {
+   "id": "green_snare_root",
+   "out": "unity/Assets/Resources/Art/cards/green_snare_root.png",
+   "description": "{style}, roots wrapping and binding around a dark clawed foot, close-up"
+  },
+  {
+   "id": "green_perm_wild_call",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_wild_call.png",
+   "description": "{style}, a curved beast horn instrument with rings of sound coming out, close-up"
+  },
+  {
+   "id": "green_triple_horn",
+   "out": "unity/Assets/Resources/Art/cards/green_triple_horn.png",
+   "description": "{style}, three sharp horns thrusting forward in a row with motion lines, close-up"
+  },
+  {
+   "id": "green_horn_flare",
+   "out": "unity/Assets/Resources/Art/cards/green_horn_flare.png",
+   "description": "{style}, a curved horn trumpet with a burst of glowing energy from its bell, close-up"
+  },
+  {
+   "id": "green_sapling_strike",
+   "out": "unity/Assets/Resources/Art/cards/green_sapling_strike.png",
+   "description": "{style}, a young slender tree trunk swung as a club, blur of leaves, close-up, no hands"
+  },
+  {
+   "id": "green_trunk_stance",
+   "out": "unity/Assets/Resources/Art/cards/green_trunk_stance.png",
+   "description": "{style}, a massive tree trunk standing like a wall with roots gripping stone, close-up"
+  },
+  {
+   "id": "green_perm_tree_pulse",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_tree_pulse.png",
+   "description": "{style}, glowing veins of sap pulsing through the bark of a great trunk, close-up"
+  },
+  {
+   "id": "green_horn_stance",
+   "out": "unity/Assets/Resources/Art/cards/green_horn_stance.png",
+   "description": "{style}, a horned beast head braced low with horns forward, close-up"
+  },
+  {
+   "id": "green_x_vine_flurry",
+   "out": "unity/Assets/Resources/Art/cards/green_x_vine_flurry.png",
+   "description": "{style}, a flurry of countless thin vines lashing in every direction, close-up"
+  },
+  {
+   "id": "green_x_bark_armor",
+   "out": "unity/Assets/Resources/Art/cards/green_x_bark_armor.png",
+   "description": "{style}, thick bark plates stacked in heavy layers like armor, close-up"
+  },
+  {
+   "id": "green_x_sylvan_tempest",
+   "out": "unity/Assets/Resources/Art/cards/green_x_sylvan_tempest.png",
+   "description": "{style}, a whirlwind of leaves and broken branches, close-up on the vortex"
+  },
+  {
+   "id": "green_mode_crossroads",
+   "out": "unity/Assets/Resources/Art/cards/green_mode_crossroads.png",
+   "description": "{style}, a wooden signpost with two arrows pointing opposite ways, ivy on it, close-up"
+  },
+  {
+   "id": "green_mode_great_fork",
+   "out": "unity/Assets/Resources/Art/cards/green_mode_great_fork.png",
+   "description": "{style}, a huge tree trunk splitting into two great branches, close-up on the fork"
+  },
+  {
+   "id": "green_basic_bash",
+   "out": "unity/Assets/Resources/Art/cards/green_basic_bash.png",
+   "description": "{style}, a heavy wooden club with a knotted head smashing down with a shockwave, close-up, no hands"
+  },
+  {
+   "id": "green_perm_hunters_gaze",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_hunters_gaze.png",
+   "description": "{style}, two glowing amber eyes peering out of dark dense leaves, close-up"
+  },
+  {
+   "id": "green_perm_pain_root",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_pain_root.png",
+   "description": "{style}, roots spreading across the ground and gripping stones, close-up"
+  },
+  {
+   "id": "green_vine_wedge",
+   "out": "unity/Assets/Resources/Art/cards/green_vine_wedge.png",
+   "description": "{style}, a wedge-shaped vine splitting a gray stone block with cracks, close-up"
+  },
+  {
+   "id": "green_devour_vine",
+   "out": "unity/Assets/Resources/Art/cards/green_devour_vine.png",
+   "description": "{style}, a vine with a fanged maw biting a stone shield in half, close-up"
+  },
+  {
+   "id": "green_reaction_preempt",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_preempt.png",
+   "description": "{style}, a vine spear with a sharp thorn tip thrusting out of dark leaves, close-up"
+  },
+  {
+   "id": "green_reaction_powder_pod",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_powder_pod.png",
+   "description": "{style}, a seed pod bursting with a cloud of powder and flying seeds, close-up"
+  },
+  {
+   "id": "green_harvest_strike",
+   "out": "unity/Assets/Resources/Art/cards/green_harvest_strike.png",
+   "description": "{style}, one enormous glinting fang set in dark gums, extreme close-up"
+  },
+  {
+   "id": "green_grand_harvest",
+   "out": "unity/Assets/Resources/Art/cards/green_grand_harvest.png",
+   "description": "{style}, a woven basket overflowing with glowing fruit and grain, close-up"
+  },
+  {
+   "id": "green_leaf_strike",
+   "out": "unity/Assets/Resources/Art/cards/green_leaf_strike.png",
+   "description": "{style}, a single sharp leaf blade flying with a motion streak toward a gap in dark armor, close-up"
+  },
+  {
+   "id": "green_dappled_light",
+   "out": "unity/Assets/Resources/Art/cards/green_dappled_light.png",
+   "description": "{style}, dappled spots of light on mossy ground under leaves, close-up"
+  },
+  {
+   "id": "green_twin_fang_vine",
+   "out": "unity/Assets/Resources/Art/cards/green_twin_fang_vine.png",
+   "description": "{style}, a vine ending in two fang-like thorns striking, close-up"
+  },
+  {
+   "id": "green_leaf_blade",
+   "out": "unity/Assets/Resources/Art/cards/green_leaf_blade.png",
+   "description": "{style}, a single falling leaf with a sharpened glinting edge, close-up"
+  },
+  {
+   "id": "green_vine_spring",
+   "out": "unity/Assets/Resources/Art/cards/green_vine_spring.png",
+   "description": "{style}, a tightly coiled vine spring launching upward, close-up"
+  },
+  {
+   "id": "green_perm_thorn_vine",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_thorn_vine.png",
+   "description": "{style}, a thorny vine wrapped around a wooden post, close-up"
+  },
+  {
+   "id": "green_perm_wind_runner",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_wind_runner.png",
+   "description": "{style}, tall grass bending in waves under a gust of wind with drifting leaves, close-up"
+  },
+  {
+   "id": "green_perm_sprout_keeper",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_sprout_keeper.png",
+   "description": "{style}, a tiny sprout sheltered under a large cupped leaf, close-up"
+  },
+  {
+   "id": "green_perm_thorn_leaves",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_thorn_leaves.png",
+   "description": "{style}, a dense bush whose leaves are shaped like sharp thorns, close-up"
+  },
+  {
+   "id": "green_sweeping_horn",
+   "out": "unity/Assets/Resources/Art/cards/green_sweeping_horn.png",
+   "description": "{style}, a curved beast horn sweeping sideways through grass with motion streak, close-up"
+  },
+  {
+   "id": "green_earth_roar",
+   "out": "unity/Assets/Resources/Art/cards/green_earth_roar.png",
+   "description": "{style}, cracked ground with green light glowing in the fissures and pebbles jumping, close-up"
+  },
+  {
+   "id": "green_perm_trapper_grove",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_trapper_grove.png",
+   "description": "{style}, a hidden rope snare trap set among ferns and fallen leaves, close-up"
+  },
+  {
+   "id": "green_regrowth_root",
+   "out": "unity/Assets/Resources/Art/cards/green_regrowth_root.png",
+   "description": "{style}, a withered brown plant with fresh green shoots regrowing from its roots, close-up"
+  },
+  {
+   "id": "green_forest_guidance",
+   "out": "unity/Assets/Resources/Art/cards/green_forest_guidance.png",
+   "description": "{style}, a trail of glowing blue mushrooms on dark mossy ground, close-up"
+  },
+  {
+   "id": "green_spreading_vine",
+   "out": "unity/Assets/Resources/Art/cards/green_spreading_vine.png",
+   "description": "{style}, vines multiplying and spreading across an old stone wall, close-up"
+  },
+  {
+   "id": "green_growing_fang",
+   "out": "unity/Assets/Resources/Art/cards/green_growing_fang.png",
+   "description": "{style}, a fang growing larger with glowing growth rings inside it, close-up"
+  },
+  {
+   "id": "green_honing",
+   "out": "unity/Assets/Resources/Art/cards/green_honing.png",
+   "description": "{style}, a whetstone grinding a thorn blade to a sharp point with sparks, close-up, no hands"
+  },
+  {
+   "id": "green_verdant_hour",
+   "out": "unity/Assets/Resources/Art/cards/green_verdant_hour.png",
+   "description": "{style}, an hourglass filled with glowing green leaves instead of sand, close-up"
+  },
+  {
+   "id": "green_reaction_vine_formation",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_vine_formation.png",
+   "description": "{style}, vines woven into a row of overlapping shields, close-up"
+  },
+  {
+   "id": "green_reaction_tree_warden",
+   "out": "unity/Assets/Resources/Art/cards/green_reaction_tree_warden.png",
+   "description": "{style}, a barrier of thick roots rising from the ground like a wall, close-up"
+  },
+  {
+   "id": "green_prey_strike",
+   "out": "unity/Assets/Resources/Art/cards/green_prey_strike.png",
+   "description": "{style}, a small beast crouched in tall grass with eyes fixed forward, close-up"
+  },
+  {
+   "id": "green_sprint",
+   "out": "unity/Assets/Resources/Art/cards/green_sprint.png",
+   "description": "{style}, hooves kicking up dust with motion lines, close-up, no rider"
+  },
+  {
+   "id": "green_gale_horn",
+   "out": "unity/Assets/Resources/Art/cards/green_gale_horn.png",
+   "description": "{style}, a horn instrument blasting a visible gale of wind and leaves, close-up"
+  },
+  {
+   "id": "green_horn_thrust",
+   "out": "unity/Assets/Resources/Art/cards/green_horn_thrust.png",
+   "description": "{style}, a single powerful horn thrusting forward with a shockwave, close-up"
+  },
+  {
+   "id": "green_horn_storm",
+   "out": "unity/Assets/Resources/Art/cards/green_horn_storm.png",
+   "description": "{style}, several horns spinning in a whirl of wind, close-up"
+  },
+  {
+   "id": "green_wind_wall",
+   "out": "unity/Assets/Resources/Art/cards/green_wind_wall.png",
+   "description": "{style}, a wall of swirling wind full of leaves, close-up"
+  },
+  {
+   "id": "green_rooting_rush",
+   "out": "unity/Assets/Resources/Art/cards/green_rooting_rush.png",
+   "description": "{style}, a hoof stamping down and sprouting roots into the soil, close-up"
+  },
+  {
+   "id": "green_charging_horn",
+   "out": "unity/Assets/Resources/Art/cards/green_charging_horn.png",
+   "description": "{style}, a huge armored beast head with a horn charging straight at the viewer, close-up"
+  },
+  {
+   "id": "green_tailwind",
+   "out": "unity/Assets/Resources/Art/cards/green_tailwind.png",
+   "description": "{style}, a gust of wind streaming leaves diagonally across the frame, close-up"
+  },
+  {
+   "id": "green_horn_volley",
+   "out": "unity/Assets/Resources/Art/cards/green_horn_volley.png",
+   "description": "{style}, three horns jabbing forward in a row with motion lines, close-up"
+  },
+  {
+   "id": "green_perm_bark_bud",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_bark_bud.png",
+   "description": "{style}, a small bud sprouting from a crack in a bark plate, close-up"
+  },
+  {
+   "id": "green_perm_gale_vine",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_gale_vine.png",
+   "description": "{style}, a vine whipping sideways in a strong wind, close-up"
+  },
+  {
+   "id": "green_wind_dash",
+   "out": "unity/Assets/Resources/Art/cards/green_wind_dash.png",
+   "description": "{style}, a blur of wind lines rushing between two tree trunks, close-up"
+  },
+  {
+   "id": "green_wind_cutter",
+   "out": "unity/Assets/Resources/Art/cards/green_wind_cutter.png",
+   "description": "{style}, a crescent blade of wind slicing through leaves, close-up"
+  },
+  {
+   "id": "green_twig_strike",
+   "out": "unity/Assets/Resources/Art/cards/green_twig_strike.png",
+   "description": "{style}, a small twig snapping against a stone with tiny sparks, close-up, no hands"
+  },
+  {
+   "id": "green_perm_thorn_canopy",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_thorn_canopy.png",
+   "description": "{style}, a tree canopy made entirely of long thorns, close-up"
+  },
+  {
+   "id": "green_perm_gale_king",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_gale_king.png",
+   "description": "{style}, a majestic beast head crowned with swirling wind, close-up"
+  },
+  {
+   "id": "green_perm_root_spring",
+   "out": "unity/Assets/Resources/Art/cards/green_perm_root_spring.png",
+   "description": "{style}, a spring of glowing water welling up among roots, close-up"
+  }
+ ]
+}
