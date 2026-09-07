@@ -124,12 +124,14 @@ namespace DeckRogue.Game
                 for (int i = 0; i < st.Enemies.Count; i++) _shownEnemyHp[i] = st.Enemies[i].Hp;
             }
             // 座席: 舞台 (HD-2D) が決める。手前左から奥右へ斜めに並び、足元 (パネル下端+130) がその座席の地面に来る。奥の敵ほど先に描く
+            // 名前札・HPバー・チップは全員同じ線 (入れ物の下端 = StatusLineY・手札の上)。足元だけ座席の高さへ
             var slots = Stage.EnemySlots(st.Enemies.Count);
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 var feet = Stage.ProjectFeet("enemy" + i, slots[i]);
-                float w = 330f, h = 620f;
-                UiKit.Anchor(_enemyPanels[i], new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, feet.y - 130f), new Vector2(feet.x + w / 2f, feet.y - 130f + h));
+                float w = 330f, h = 720f;
+                UiKit.Anchor(_enemyPanels[i], new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, StatusLineY), new Vector2(feet.x + w / 2f, StatusLineY + h));
+                Stage.SetFeetOffset("enemy" + i, feet.y - StatusLineY);
                 _enemyPanels[i].SetSiblingIndex(st.Enemies.Count - 1 - i);
             }
             for (int i = 0; i < st.Enemies.Count; i++)
@@ -167,13 +169,17 @@ namespace DeckRogue.Game
             {
                 // リーダーの足元 (欄の左下から +130,+130) を舞台の座席へ
                 var feet = Stage.ProjectFeet("player", Stage.LeaderSlot());
-                UiKit.Anchor(_playerArea, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - 130f, feet.y - 130f), new Vector2(feet.x - 130f + 690f, feet.y - 130f + 680f));
+                UiKit.Anchor(_playerArea, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - 130f, StatusLineY), new Vector2(feet.x - 130f + 690f, StatusLineY + 720f));
+                Stage.SetFeetOffset("player", feet.y - StatusLineY);
             }
             for (int c = _playerArea.childCount - 1; c >= 0; c--) { var ch = _playerArea.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
             g.RegisterAnchor("player", _playerArea);
             BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp);
             _shownPlayerHp = st.Player.Hp;
         }
+
+        /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上</summary>
+        public const float StatusLineY = 300f;
 
         public RectTransform EnemySprite(int index)
         {

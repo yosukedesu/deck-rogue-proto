@@ -11,6 +11,10 @@ Shader "DeckRogue/StageUnit"
         _Flash ("Flash", Range(0,1)) = 0
         _Fog ("Fog", Range(0,1)) = 1
         _Cull ("Cull", Float) = 0
+        _Ambient ("Ambient", Color) = (1,1,1,1)
+        _LampPos ("Lamp Position", Vector) = (0,0,0,0)
+        _LampColor ("Lamp Color", Color) = (0,0,0,0)
+        _LampFalloff ("Lamp Falloff", Float) = 14
     }
     SubShader
     {
@@ -32,13 +36,18 @@ Shader "DeckRogue/StageUnit"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/UnlitInput.hlsl"
             half _Flash;
             half _Fog;
+            half4 _Ambient;
+            float4 _LampPos;
+            half4 _LampColor;
+            float _LampFalloff;
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
-            struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; float fogFactor : TEXCOORD1; };
+            struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; float fogFactor : TEXCOORD1; float3 positionWS : TEXCOORD2; };
             Varyings Vert(Attributes i)
             {
                 Varyings o;
                 VertexPositionInputs p = GetVertexPositionInputs(i.positionOS.xyz);
                 o.positionCS = p.positionCS;
+                o.positionWS = p.positionWS;
                 o.uv = TRANSFORM_TEX(i.uv, _BaseMap);
                 o.fogFactor = ComputeFogFactor(p.positionCS.z);
                 return o;
@@ -47,6 +56,10 @@ Shader "DeckRogue/StageUnit"
             {
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * _BaseColor;
                 clip(c.a - _Cutoff);
+                // 夜の環境光 + ランタン (距離で減衰。板の中でランタンに近い側が暖かくなる)
+                float d2 = dot(i.positionWS - _LampPos.xyz, i.positionWS - _LampPos.xyz);
+                half3 light = _Ambient.rgb + _LampColor.rgb * (1.0 / (1.0 + d2 / max(0.01, _LampFalloff)));
+                c.rgb *= light;
                 c.rgb = lerp(c.rgb, half3(1, 1, 1), _Flash);
                 half3 fogged = MixFog(c.rgb, i.fogFactor);
                 c.rgb = lerp(c.rgb, fogged, _Fog);

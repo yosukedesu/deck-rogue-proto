@@ -189,19 +189,20 @@ namespace DeckRogue.Game
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             float artTarget = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
             var artSprite = Creature.Get("enemies", e.EnemyId, false, (int)(artTarget / 4f));
-            float spriteTop = 130f + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
+            float feetY = Stage.FeetOffset("enemy" + index, 130f);
+            float spriteTop = feetY + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
 
             // 意図 (頭上の紙の吹き出し)
             if (alive)
             {
                 var it = e.Intent;
                 var bubble = UiKit.NewRect("intent", pan);
-                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, spriteTop + 70f), new Vector2(110f, spriteTop + 124f));
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, spriteTop + 24f), new Vector2(110f, spriteTop + 78f));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
                 bImg.raycastTarget = false;
                 var tail = UiKit.NewRect("tail", pan);
-                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 54f), new Vector2(18f, spriteTop + 72f));
+                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 8f), new Vector2(18f, spriteTop + 26f));
                 var tImg = tail.gameObject.AddComponent<Image>();
                 tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
                 var row = UiKit.NewRect("row", bubble);
@@ -223,19 +224,22 @@ namespace DeckRogue.Game
                 var detailText = IntentDetail(st, index, it);
                 var detail = UiKit.Txt(pan, detailText, 14, PaperFx.Paper, TextAnchor.UpperCenter);
                 detail.outlineWidth = 0.3f; detail.outlineColor = new Color(0.1f, 0.06f, 0.1f, 0.95f);
-                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 4f), new Vector2(30f, spriteTop + 52f));
+                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 82f), new Vector2(30f, spriteTop + 112f));
             }
 
             // 足元の影・貼り絵の縁・ドット絵
-            if (targeting && alive)
+            if (targeting && alive && !aimed)
             {
-                var glow = PaperFx.BlobImage(pan, PaperFx.Honey, "glow");
-                UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, 100f), new Vector2(130f, 170f));
-                glow.color = new Color(1f, 1f, 1f, 0.5f);
+                // 対象の候補: 足元に薄い輪 (べったりした光の楕円は影に見える)
+                var cand = UiKit.NewRect("cand", pan);
+                UiKit.Anchor(cand, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, feetY - 14f), new Vector2(100f, feetY + 14f));
+                var cImg = cand.gameObject.AddComponent<Image>();
+                cImg.sprite = PaperFx.Ring(5); cImg.color = new Color(PaperFx.Honey.r, PaperFx.Honey.g, PaperFx.Honey.b, 0.55f); cImg.raycastTarget = false;
+                cImg.preserveAspect = false;
             }
             // 絵は舞台 (HD-2D) のビルボードが描く。UI 側の矩形は位置・大きさ・色 (生死/点滅) の基準として残す
             var spr = UiKit.NewRect("sprite", pan);
-            PaperFx.FitPixel(spr, artSprite, 0f, 130f, artTarget);
+            PaperFx.FitPixel(spr, artSprite, 0f, feetY, artTarget);
             var img = spr.gameObject.AddComponent<Image>();
             img.sprite = artSprite;
             img.preserveAspect = true;
@@ -245,7 +249,7 @@ namespace DeckRogue.Game
             if (aimed)
             {
                 var ring = UiKit.NewRect("ring", pan);
-                UiKit.Anchor(ring, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-116f, 116f), new Vector2(116f, 146f));
+                UiKit.Anchor(ring, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-116f, feetY - 16f), new Vector2(116f, feetY + 14f));
                 var rImg = ring.gameObject.AddComponent<Image>();
                 rImg.sprite = PaperFx.Ring(6); rImg.color = PaperFx.Honey; rImg.raycastTarget = false;
                 rImg.preserveAspect = false;
@@ -471,7 +475,7 @@ namespace DeckRogue.Game
 
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
-            PaperFx.FitPixel(spr, leaderArt, 0f, 130f);
+            PaperFx.FitPixel(spr, leaderArt, 0f, Stage.FeetOffset("player", 130f));
             spr.anchorMin = spr.anchorMax = new Vector2(0f, 0f);
             spr.offsetMin += new Vector2(130f, 0f); spr.offsetMax += new Vector2(130f, 0f);
             var img = spr.gameObject.AddComponent<Image>();
@@ -553,9 +557,7 @@ namespace DeckRogue.Game
                 }
                 else
                 {
-                    var et = UiKit.Txt(slot, "空き", 12, PaperFx.Paper, TextAnchor.MiddleCenter);
-                    et.outlineWidth = 0.18f; et.outlineColor = new Color(0f, 0f, 0f, 0.7f);
-                    UiKit.Stretch(et.rectTransform, 0f, 0f, 0f, 0f);
+                    // 空きの枠はポケットの点線だけ (文字は置かない)
                 }
             }
 
