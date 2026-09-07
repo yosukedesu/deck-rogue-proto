@@ -181,6 +181,9 @@ namespace DeckRogue.Game
         /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上</summary>
         public const float StatusLineY = 300f;
 
+        /// <summary>手札 UI に残っている札の数 (自動操作の検証用)</summary>
+        public int HandCount { get { return _hand.Count; } }
+
         public RectTransform EnemySprite(int index)
         {
             if (index < 0 || index >= _enemyPanels.Count || _enemyPanels[index] == null) return null;

@@ -155,7 +155,23 @@ namespace DeckRogue.Game
             {
                 g.BeginPlay(dmgCard, null);
                 yield return Shot("battle-target");
-                g.CancelPending();
+                // 対象を選んでプレイを完了させ、捨て札へ行くかを記録する (2026-09-07 「カードが捨て札にいかない」の再現)
+                int tgt = -1;
+                for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { tgt = i; break; }
+                string playedUid = dmgCard.Uid;
+                g.OnEnemyClicked(tgt);
+                yield return WaitPresentation();
+                yield return new WaitForSeconds(0.6f);
+                var st2 = g.Rs != null ? g.Rs.Combat : null;
+                if (st2 != null)
+                {
+                    bool inDiscard = st2.Player.DiscardPile.Any(c => c.Uid == playedUid);
+                    bool inHand = st2.Player.Hand.Any(c => c.Uid == playedUid);
+                    Debug.Log("[Autopilot] played " + dmgCard.Def.Name + " → discard=" + st2.Player.DiscardPile.Count + " (inDiscard=" + inDiscard + ", inHand=" + inHand + ") hand=" + st2.Player.Hand.Count + " energy=" + st2.Player.Energy + " pending=" + (g.Pending != null));
+                    int handCards = g.Battle != null ? g.Battle.HandCount : -1;
+                    Debug.Log("[Autopilot] hand ui cards=" + handCards);
+                }
+                yield return Shot("battle-played");
             }
             if (reactionCard != null)
             {
