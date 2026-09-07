@@ -380,49 +380,58 @@ namespace DeckRogue.Game
         static Sprite Generate(string id, bool friendly, int size)
         {
             int n = Mathf.Max(16, size);
-            int cells = n / 4;                 // 粗い型 (体の形) はここで決め、ドットの描き込みは 1 ドット単位で行う
+            float u = n / 64f;                                   // 64 ドット基準の倍率
             uint h = Hash(id);
             var rng = new System.Random((int)(h & 0x7fffffff));
             float hue = friendly ? 0.33f + (h % 30) / 300f : (h % 360) / 360f;
-            var main = Color.HSVToRGB(hue, friendly ? 0.5f : 0.55f, friendly ? 0.72f : 0.66f);
-            var shade = Color.HSVToRGB(hue, 0.62f, 0.42f);
-            var light = Color.HSVToRGB(hue, 0.36f, 0.9f);
+            var main = Color.HSVToRGB(hue, friendly ? 0.5f : 0.55f, friendly ? 0.72f : 0.64f);
+            var shade = Color.HSVToRGB(hue, 0.64f, 0.4f);
+            var light = Color.HSVToRGB(hue, 0.38f, 0.88f);
             var hilite = Color.HSVToRGB(hue, 0.2f, 1f);
-            var outline = Color.HSVToRGB(hue, 0.7f, 0.16f);
-            var mask = new bool[cells, cells];
-            for (int y = 2; y < cells - 1; y++)
-                for (int x = 0; x < cells / 2; x++)
+            var outline = Color.HSVToRGB(hue, 0.7f, 0.14f);
+            // 形: 楕円の胴・円の頭・脚・角/耳
+            float cx = n * 0.5f;
+            float bodyRx = n * (0.22f + (float)rng.NextDouble() * 0.12f), bodyRy = n * (0.16f + (float)rng.NextDouble() * 0.08f);
+            float bodyCy = n * (0.30f + (float)rng.NextDouble() * 0.06f);
+            float headR = n * (0.14f + (float)rng.NextDouble() * 0.08f);
+            float headCx = cx + (rng.NextDouble() < 0.5 ? -1f : 1f) * n * (float)rng.NextDouble() * 0.05f;
+            float headCy = bodyCy + bodyRy * 0.55f + headR * 0.6f;
+            int legs = rng.NextDouble() < 0.55 ? 2 : 4;
+            float legW = n * 0.06f, legTop = bodyCy, legSpread = bodyRx * (legs == 2 ? 0.45f : 0.75f);
+            bool horns = rng.NextDouble() < 0.5, ears = !horns && rng.NextDouble() < 0.6, cyclops = rng.NextDouble() < 0.18;
+            bool Solid(int x, int y)
+            {
+                if (x < 0 || y < 0 || x >= n || y >= n) return false;
+                float fx = x + 0.5f, fy = y + 0.5f;
+                float dx = (fx - cx) / bodyRx, dy = (fy - bodyCy) / bodyRy;
+                if (dx * dx + dy * dy <= 1f) return true;
+                float hx = fx - headCx, hy = fy - headCy;
+                if (hx * hx + hy * hy <= headR * headR) return true;
+                for (int l = 0; l < legs; l++)
                 {
-                    float cx = (x + 0.5f) / (cells / 2f);
-                    float cy = 1f - Mathf.Abs((y - cells / 2f) / (cells / 2f));
-                    float p = 0.12f + 0.78f * cx * cy;
-                    mask[x, y] = rng.NextDouble() < p;
+                    float lx = legs == 2 ? cx + (l == 0 ? -legSpread : legSpread) : cx + (l - 1.5f) * legSpread * 0.66f;
+                    if (Mathf.Abs(fx - lx) <= legW * 0.5f && fy >= n * 0.04f && fy <= legTop) return true;
+                    if (fy < n * 0.04f + legW * 0.6f && fy >= n * 0.04f && Mathf.Abs(fx - lx) <= legW * 0.8f) return true;   // 足先
                 }
-            int fx = cells / 4;
-            mask[fx, 1] = true; mask[fx + 1, 1] = true; mask[fx, 2] = true; mask[fx + 1, 2] = true;
-            if (rng.NextDouble() < 0.5) { mask[cells / 2 - 3, cells - 2] = true; mask[cells / 2 - 3, cells - 1] = true; }
-            bool At(int x, int y)
-            {
-                if (x < 0 || y < 0 || y >= cells || x >= cells) return false;
-                int mx = x < cells / 2 ? x : cells - 1 - x;
-                return mask[mx, y];
-            }
-            for (int y = 0; y < cells; y++)
-                for (int x = 0; x < cells / 2; x++)
-                    if (mask[x, y] && !At(x - 1, y) && !At(x + 1, y) && !At(x, y - 1) && !At(x, y + 1)) mask[x, y] = false;
-            // 1ドット単位の形: ブロックの外角を丸める (4x4 の階段でなく、なだらかな輪郭)
-            bool Solid(int px_, int py_)
-            {
-                if (px_ < 0 || py_ < 0 || px_ >= n || py_ >= n) return false;
-                int cx = px_ / 4, cy = py_ / 4;
-                if (!At(cx, cy)) return false;
-                int lx = px_ % 4, ly = py_ % 4;
-                bool l = At(cx - 1, cy), r = At(cx + 1, cy), d = At(cx, cy - 1), u = At(cx, cy + 1);
-                if (!l && !d && !At(cx - 1, cy - 1) && lx == 0 && ly == 0) return false;
-                if (!r && !d && !At(cx + 1, cy - 1) && lx == 3 && ly == 0) return false;
-                if (!l && !u && !At(cx - 1, cy + 1) && lx == 0 && ly == 3) return false;
-                if (!r && !u && !At(cx + 1, cy + 1) && lx == 3 && ly == 3) return false;
-                return true;
+                if (horns)
+                {
+                    for (int sgn = -1; sgn <= 1; sgn += 2)
+                    {
+                        float bx = headCx + sgn * headR * 0.6f, by = headCy + headR * 0.7f;
+                        float t = (fy - by) / (headR * 0.9f);
+                        if (t >= 0f && t <= 1f && Mathf.Abs(fx - (bx + sgn * t * headR * 0.35f)) <= (1f - t) * legW * 0.6f + 0.6f) return true;
+                    }
+                }
+                if (ears)
+                {
+                    for (int sgn = -1; sgn <= 1; sgn += 2)
+                    {
+                        float ex = headCx + sgn * headR * 0.8f, ey = headCy + headR * 0.65f;
+                        float r = headR * 0.42f;
+                        if ((fx - ex) * (fx - ex) + (fy - ey) * (fy - ey) <= r * r) return true;
+                    }
+                }
+                return false;
             }
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Point;
@@ -435,38 +444,45 @@ namespace DeckRogue.Game
                     if (Solid(x, y))
                     {
                         bool edge = !Solid(x - 1, y) || !Solid(x + 1, y) || !Solid(x, y - 1) || !Solid(x, y + 1);
-                        // 右上が光源: 右上の縁に近いほど明るく、左下の縁に近いほど暗く
                         int toLight = 0, toShade = 0;
-                        for (int k = 1; k <= 5; k++) { if (Solid(x + k, y + k)) toLight = k; else break; }
-                        for (int k = 1; k <= 5; k++) { if (Solid(x - k, y - k)) toShade = k; else break; }
+                        for (int k = 1; k <= 6; k++) { if (Solid(x + k, y + k)) toLight = k; else break; }
+                        for (int k = 1; k <= 6; k++) { if (Solid(x - k, y - k)) toShade = k; else break; }
                         bool dither = ((x + y) & 1) == 0;
+                        int L = Mathf.Max(1, Mathf.RoundToInt(u));
                         if (edge) c = outline;
-                        else if (toLight <= 1) c = hilite;
-                        else if (toLight <= 3) c = dither ? light : main;
-                        else if (toShade <= 2) c = shade;
+                        else if (toLight <= L) c = hilite;
+                        else if (toLight <= 3 * L) c = dither ? light : main;
+                        else if (toShade <= 2 * L) c = shade;
+                        else if (toShade <= 4 * L) c = dither ? shade : main;
                         else c = main;
-                        // 体の模様: 斑を少し
-                        if (!edge && ((x * 7 + y * 13) % 29) == 0) c = Color.Lerp(c, shade, 0.6f);
+                        // 胴と頭の境に暗い線 (重なりを読ませる)
+                        float hx = x + 0.5f - headCx, hy = y + 0.5f - headCy;
+                        float hd = Mathf.Sqrt(hx * hx + hy * hy);
+                        if (!edge && hd > headR - 1.2f * u && hd <= headR && (y + 0.5f) < headCy) c = shade;
+                        if (!edge && ((x * 7 + y * 13) % 31) == 0 && (y + 0.5f) < bodyCy + bodyRy * 0.6f) c = Color.Lerp(c, shade, 0.6f);
                     }
                     px[y * n + x] = c;
                 }
-            // 目 (白+黒の瞳+光)
-            int ey = (int)(n * 0.62f);
-            int ex = n / 2 - n / 6;
-            for (int side = 0; side < 2; side++)
+            // 目 (白+黒の瞳+光) と口
+            int eyeW = Mathf.Max(3, Mathf.RoundToInt(4 * u));
+            int ey = Mathf.RoundToInt(headCy - eyeW * 0.5f + headR * 0.05f);
+            var eyeXs = cyclops ? new[] { Mathf.RoundToInt(headCx - eyeW * 0.5f) } : new[] { Mathf.RoundToInt(headCx - headR * 0.5f - eyeW * 0.5f), Mathf.RoundToInt(headCx + headR * 0.5f - eyeW * 0.5f) };
+            foreach (var bx in eyeXs)
             {
-                int bx = side == 0 ? ex - 2 : n - 1 - ex - 1;
-                if (!Solid(bx + 1, ey)) continue;
-                for (int dy = 0; dy < 4; dy++)
-                    for (int dx = 0; dx < 4; dx++)
-                        px[(ey + dy) * n + bx + dx] = Color.white;
-                px[(ey + 1) * n + bx + 1] = Color.black; px[(ey + 1) * n + bx + 2] = Color.black;
-                px[(ey + 2) * n + bx + 1] = Color.black; px[(ey + 2) * n + bx + 2] = Color.black;
-                px[(ey + 2) * n + bx + 2] = new Color(0.85f, 0.9f, 1f);
-                for (int dx = -1; dx <= 4; dx++) { if (Solid(bx + dx, ey - 1)) px[(ey - 1) * n + bx + dx] = outline; if (Solid(bx + dx, ey + 4)) px[(ey + 4) * n + bx + dx] = outline; }
+                for (int dy = 0; dy < eyeW; dy++)
+                    for (int dx = 0; dx < eyeW; dx++)
+                        if (Solid(bx + dx, ey + dy)) px[(ey + dy) * n + bx + dx] = Color.white;
+                int pw = Mathf.Max(1, eyeW / 2);
+                for (int dy = 0; dy < pw; dy++)
+                    for (int dx = 0; dx < pw; dx++)
+                        if (bx + dx + 1 < n && ey + dy + 1 < n) px[(ey + dy + 1) * n + bx + dx + 1] = Color.black;
+                if (bx + pw + 1 < n && ey + pw + 1 < n) px[(ey + pw + 1) * n + bx + pw + 1 - 1] = new Color(0.85f, 0.9f, 1f);
+                for (int dx = -1; dx <= eyeW; dx++) { if (Solid(bx + dx, ey - 1)) px[(ey - 1) * n + bx + dx] = outline; if (Solid(bx + dx, ey + eyeW)) px[(ey + eyeW) * n + bx + dx] = outline; }
             }
-            int my = (int)(n * 0.5f);
-            for (int dx = -2; dx <= 2; dx++) if (Solid(n / 2 + dx, my)) px[my * n + n / 2 + dx] = outline;
+            int my = Mathf.RoundToInt(headCy - headR * 0.45f);
+            int mw = Mathf.RoundToInt(headR * 0.5f);
+            for (int dx = -mw; dx <= mw; dx++) { int mx = Mathf.RoundToInt(headCx) + dx; if (Solid(mx, my)) px[my * n + mx] = outline; }
+            if (rng.NextDouble() < 0.5) for (int dx = -mw; dx <= mw; dx += Mathf.Max(1, mw)) { int mx = Mathf.RoundToInt(headCx) + dx; if (Solid(mx, my - 1)) px[(my - 1) * n + mx] = Color.white; }
             tex.SetPixels(px);
             tex.Apply(false, false);
             var s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
