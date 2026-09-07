@@ -15,6 +15,7 @@ Shader "DeckRogue/StageUnit"
         _LampPos ("Lamp Position", Vector) = (0,0,0,0)
         _LampColor ("Lamp Color", Color) = (0,0,0,0)
         _LampFalloff ("Lamp Falloff", Float) = 14
+        _LampStrength ("Lamp Strength", Float) = 0
         _SunDir2 ("Sun Direction (uv)", Vector) = (0.7,0.7,0,0)
         _SunAmount ("Sun Gradient", Float) = 0
         _Rim ("Rim Light", Float) = 0
@@ -44,6 +45,7 @@ Shader "DeckRogue/StageUnit"
             float4 _LampPos;
             half4 _LampColor;
             float _LampFalloff;
+            float _LampStrength;
             float4 _SunDir2;
             float _SunAmount;
             float _Rim;
@@ -67,7 +69,8 @@ Shader "DeckRogue/StageUnit"
                 clip(c.a - _Cutoff);
                 // 夜の環境光 + ランタン (距離で減衰。板の中でランタンに近い側が暖かくなる)
                 float d2 = dot(i.positionWS - _LampPos.xyz, i.positionWS - _LampPos.xyz);
-                half3 light = _Ambient.rgb + _LampColor.rgb * (1.0 / (1.0 + d2 / max(0.01, _LampFalloff)));
+                float lf = saturate(_LampStrength / (1.0 + d2 / max(0.01, _LampFalloff)));
+                half3 light = lerp(_Ambient.rgb, _LampColor.rgb * 1.15, lf);   // 街灯の範囲では色が暖色へ寄る (足し算で飛ばさない)
                 // 月光の向き: 板の中で光源側 (右上) が明るく、反対側 (左下) が暗い
                 float g = dot(i.uv0 - 0.5, _SunDir2.xy);
                 light *= (1.0 + g * _SunAmount);

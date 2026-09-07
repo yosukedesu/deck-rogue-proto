@@ -25,7 +25,7 @@ namespace DeckRogue.Game
         const float PlaneUnitsPerScreen = 10.8f;        // 基準深度で画面の高さ = 10.8 units
         const float GroundLineRatio = 0.45f;            // 画面の下から何割に world 原点を置くか
         const float Tile = 1.28f;                        // 32ドットのタイル1枚 = 1.28 units (基準深度で 4px/ドット)
-        static readonly Color ShadowColor = new Color(0.02f, 0.02f, 0.06f, 0.88f);   // 接地影: 地面より暗く青寄り (第5回: 3体とも同じ濃さで足元の中心)
+        static readonly Color ShadowColor = new Color(0.02f, 0.02f, 0.08f, 0.92f);   // 接地影: 地面より暗く青寄り。幅0.8・高さ0.35・足元中心・地面とスプライトの間
 
         static Camera _cam;
         static Volume _volume;
@@ -266,7 +266,8 @@ namespace DeckRogue.Game
         {
             if (Mathf.Abs(h) > 0.01f) return false;
             float t, s; PathLocal(x, z, out t, out s);
-            float e = ((t - 2f) / 11.5f) * ((t - 2f) / 11.5f) + ((s - 0.4f) / 3.4f) * ((s - 0.4f) / 3.4f) + (Vnoise(x * 0.45f + 5f, z * 0.45f + 9f) - 0.5f) * 0.7f;
+            float e = ((t - 2f) / 11.5f) * ((t - 2f) / 11.5f) + ((s - 0.4f) / 3.4f) * ((s - 0.4f) / 3.4f)
+                    + (Vnoise(x * 0.3f + 5f, z * 0.3f + 9f) - 0.5f) * 1.2f + (Vnoise(x * 0.9f + 2f, z * 0.9f + 4f) - 0.5f) * 0.35f;   // 縁を大きく・細かく揺らす
             return e < 1f;
         }
         static int CellI(float x) { return Mathf.Clamp(Mathf.FloorToInt((x - TX0) / Cell), 0, TNX - 1); }
@@ -287,19 +288,20 @@ namespace DeckRogue.Game
                     _Dirt[i, j] = DirtAt(x, z, _H[i, j]);
                 }
             var top = new MB(); var dirtTop = new MB(); var walls = new MB(); var strips = new MB();
-            var strong = new Color(1f, 1f, 1f, 0.85f); var clear = new Color(1f, 1f, 1f, 0f);
+            var strong = new Color(1f, 1f, 1f, 1f); var clear = new Color(1f, 1f, 1f, 0f);
             for (int i = 0; i < TNX; i++)
                 for (int j = 0; j < TNZ; j++)
                 {
                     float h = _H[i, j];
                     float x0 = TX0 + i * Cell, x1 = x0 + Cell, z0 = TZ0 + j * Cell, z1 = z0 + Cell;
-                    (_Dirt[i, j] ? dirtTop : top).Floor(x0, z0, x1, z1, h);
+                    if (_Dirt[i, j]) dirtTop.Floor(x0, z0, x1, z1, h);
+                    else top.FloorRot(x0, z0, x1, z1, h, (int)(Hash01(i * 3 + 11, j * 5 + 7) * 4f));
                     // 崖面: 隣が低ければその側に壁を張る (自分が高い側)。手前向きと横向きの壁の根元には影の帯
                     if (j > 0 && _H[i, j - 1] < h - 0.01f)
                     {
                         float hn = _H[i, j - 1];
                         walls.WallZ(x0, x1, hn, h, z0);
-                        strips.QuadC(new Vector3(x0, hn + 0.03f, z0), new Vector3(x0, hn + 0.03f, z0 - 1.3f), new Vector3(x1, hn + 0.03f, z0 - 1.3f), new Vector3(x1, hn + 0.03f, z0), strong, clear, clear, strong);
+                        strips.QuadC(new Vector3(x0, hn + 0.03f, z0), new Vector3(x0, hn + 0.03f, z0 - 1.8f), new Vector3(x1, hn + 0.03f, z0 - 1.8f), new Vector3(x1, hn + 0.03f, z0), strong, clear, clear, strong);
                     }
                     if (j < TNZ - 1 && _H[i, j + 1] < h - 0.01f)
                     {
@@ -389,6 +391,17 @@ namespace DeckRogue.Game
             var sh = Blob("shadow-" + key, _units, Vector3.zero, 1f);
             var u = go.AddComponent<StageUnit>();
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
+            if (key == "player")
+            {
+                // 杖の先の光: 板の右上 (絵の uv≈0.64,0.93) に追従する淡い暖色のハロー
+                var halo = new GameObject("staff-glow");
+                halo.transform.SetParent(_units, false);
+                halo.AddComponent<MeshFilter>().sharedMesh = _quadCentered;
+                var hmr = halo.AddComponent<MeshRenderer>();
+                hmr.sharedMaterial = GlowMaterial(Px.Radial(new Color(1f, 0.86f, 0.5f, 0.5f)));
+                hmr.shadowCastingMode = ShadowCastingMode.Off; hmr.receiveShadows = false;
+                u.Halo = halo.transform; u.HaloUv = new Vector2(0.64f, 0.93f);
+            }
             u.LateUpdate();
             _bound[key] = u;
         }
@@ -412,8 +425,9 @@ namespace DeckRogue.Game
         class StageUnit : MonoBehaviour
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float Depth; public Transform Shadow;
+            public Transform Halo; public Vector2 HaloUv;
             static readonly Vector3[] _c = new Vector3[4];
-            void OnDestroy() { if (Shadow != null) Destroy(Shadow.gameObject); }
+            void OnDestroy() { if (Shadow != null) Destroy(Shadow.gameObject); if (Halo != null) Destroy(Halo.gameObject); }
             public void LateUpdate()
             {
                 if (Rect == null) { Destroy(gameObject); return; }
@@ -434,6 +448,14 @@ namespace DeckRogue.Game
                 {
                     float ww = w * k;
                     PlaceBlob(Shadow, new Vector3(pos.x, 0f, pos.z), ww, tint.a);
+                }
+                if (Halo != null)
+                {
+                    float ww = w * k, hh = h * k;
+                    Halo.position = pos + _right * ((HaloUv.x - 0.5f) * ww) + _up * (HaloUv.y * hh) - _fwd * 0.05f;
+                    Halo.rotation = CameraRotation;
+                    float sz = 0.9f * (1f + 0.06f * Mathf.Sin(Time.time * 5f));
+                    Halo.localScale = new Vector3(sz, sz, 1f);
                 }
             }
         }
@@ -481,7 +503,8 @@ namespace DeckRogue.Game
             bool painted = _pal.LampOnUnits > 0f;
             m.SetColor("_Ambient", painted ? _pal.UnitAmbient : Color.white);
             m.SetVector("_LampPos", _lampPos);
-            m.SetColor("_LampColor", painted ? _pal.Lantern * _pal.LampOnUnits : Color.black);
+            m.SetColor("_LampColor", painted ? _pal.Lantern : Color.black);
+            m.SetFloat("_LampStrength", painted ? _pal.LampOnUnits : 0f);
             m.SetFloat("_LampFalloff", 7f);
             m.SetVector("_SunDir2", new Vector4(0.7f, 0.7f, 0f, 0f));   // 右上が光源側
             m.SetFloat("_SunAmount", painted ? sunAmount : 0f);
@@ -512,7 +535,7 @@ namespace DeckRogue.Game
         /// 光源 (右上・手前) の反対 = 左奥へ少し寄せる</summary>
         static void PlaceBlob(Transform blob, Vector3 basePos, float width, float alpha)
         {
-            float w = width * 0.8f, d = width * 0.45f;
+            float w = width * 0.8f, d = width * 0.35f;
             blob.position = new Vector3(basePos.x, basePos.y + 0.03f, basePos.z);   // 中心原点の板 = そのまま足元
             blob.rotation = Quaternion.Euler(90f, 0f, 0f);
             blob.localScale = new Vector3(w, d, 1f);
@@ -565,7 +588,7 @@ namespace DeckRogue.Game
                 p.Ambient = new Color(0.25f, 0.29f, 0.5f); p.Sun = new Color(0.6f, 0.68f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
                 p.Filter = new Color(0.84f, 0.9f, 1.12f); p.UnitAmbient = new Color(0.5f, 0.57f, 0.88f);   // 環境光は青く暗め = 街灯の暖色が読める
             }
-            p.LampOnUnits = 2.2f; p.LampIntensity = 5.5f; p.SunIntensity = 0.8f;
+            p.LampOnUnits = 1.25f; p.LampIntensity = 5.5f; p.SunIntensity = 0.8f;   // 補間の強さ (1 で街灯の色そのもの)
             return p;
         }
 
@@ -596,10 +619,10 @@ namespace DeckRogue.Game
             var grass = Px.Grass(p, rng); var dirt = Px.Dirt(p, rng); var stone = Px.Stone(p, rng); var cliff = Px.Cliff(p, rng);
             var mGrass = Lit(Tex(act, "grass", grass)); var mDirt = Lit(Tex(act, "dirt", dirt)); var mStone = Lit(Tex(act, "stone", stone)); var mCliff = Lit(Tex(act, "cliff", cliff));
             // PixelLab のタイルは昼の色で描かれるので、取り込んだ時だけ幕の夜のパレットへ寄せる (仮のタイルは元から夜の色)
-            if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.56f, 0.7f, 0.68f));
-            if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.46f, 0.5f, 0.64f));    // 夜の道は青灰。暖色は街灯の範囲だけ
-            if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.6f, 0.62f, 0.72f));
-            if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.53f, 0.52f));
+            if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.58f, 0.72f, 0.66f));
+            if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.66f, 0.6f, 0.56f));    // 土=灰茶 (月明かりの空き地。影が読める明るさ)。暖色は街灯の範囲だけ
+            if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.56f, 0.62f, 0.76f)); // 石=青灰
+            if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.52f, 0.48f));  // 崖=土色
             // ---- 段丘の地形 (本家の段々畑のような起伏): 高さ場を段に量子化し、段差に崖面を張る。戦闘の場だけ平らに均す
             BuildTerrain(mGrass, mDirt, mCliff);
 
@@ -618,14 +641,10 @@ namespace DeckRogue.Game
             // 草地のムラ: 明るい草地と枯れ地の「色の島」(少なく・大小・不定形)
             var mIslandLight = Cutout(Px.Patch(p.GrassC, Color.Lerp(p.GrassA, p.GrassC, 0.5f), rng));
             var mIslandDry = Cutout(Px.Patch(p.GrassDry, Color.Lerp(p.GrassA, p.GrassDry, 0.5f), rng));
-            float[] islandT = { -16f, -6f, 4f, 11f, 19f };
-            float[] islandS = { 5.5f, -3.8f, 7.0f, 4.2f, -3.6f };
-            float[] islandSz = { 4.6f, 1.6f, 3.2f, 2.2f, 1.2f };
-            for (int i = 0; i < islandT.Length; i++)
-            {
-                var w = OnPath(islandT[i], islandS[i]);
-                if (IsDirt(w.x, w.z)) continue;
-                Decal("island", i % 2 == 0 ? mIslandLight : mIslandDry, w.x, w.z, islandSz[i], islandSz[i] * (0.55f + (float)rng.NextDouble() * 0.25f), (float)rng.NextDouble() * 360f);
+            {   // 塊 2 つ (向きを変える) と細い流れ 1 つ
+                var w1 = OnPath(-15f, 6.2f); Decal("island", mIslandLight, w1.x, w1.z, 4.2f, 2.6f, 25f);
+                var w2 = OnPath(12f, -4.6f); Decal("island", mIslandDry, w2.x, w2.z, 2.4f, 1.9f, 140f);
+                var w3 = OnPath(3f, 7.6f); Decal("island-streak", mIslandDry, w3.x, w3.z, 5.0f, 0.9f, 80f);
             }
             // 草の株・花は草地に、小石は土の上に
             var tuft = Px.Tuft(p, rng); var pebble = Px.Pebble(p, rng); var flower = Px.Flower(p, rng);
@@ -653,6 +672,7 @@ namespace DeckRogue.Game
                 float x = -40f + (float)rng.NextDouble() * 80f, z = -6f + (float)rng.NextDouble() * 54f;
                 float tt, ss; PathLocal(x, z, out tt, out ss);
                 if (ss > -2f && ss < 6.5f && tt > -12f && tt < 16f) continue;      // 戦闘の場と背後は空ける
+                if (ss > -2f && ss < 9.5f && tt > -9.5f && tt < 0f) continue;       // リーダーの頭上も空ける
                 float h = GroundY(x, z);
                 if (h < Step * 0.5f && ss < 8f) continue;                         // 近くの平地には置かない
                 float sc = 2.6f * (0.6f + (float)rng.NextDouble() * 0.9f);
@@ -660,8 +680,8 @@ namespace DeckRogue.Game
                 placed++;
             }
             // 両脇の額縁の木 (近いので大きい)
-            { var w = OnPath(-13.5f, 5.2f); Cross("tree", trees[1], w, 3.6f, 0.5f); }
-            { var w = OnPath(-10f, 8.4f); Cross("tree", trees[0], w, 3.0f, 0.5f); }
+            { var w = OnPath(-15.5f, 5.4f); Cross("tree", trees[1], w, 3.6f, 0.5f); }
+            { var w = OnPath(-12f, 9.6f); Cross("tree", trees[0], w, 3.0f, 0.5f); }
             { var w = OnPath(15.5f, -4.4f); Cross("tree", trees[2], w, 3.2f, 0.5f); }
             // 前景 (手前の低い地面・画面の下の隅): 大きな岩と丈の高い草
             var tall = Px.TallGrass(p, rng);
@@ -853,7 +873,8 @@ namespace DeckRogue.Game
             go.transform.localScale = new Vector3(w, height, 1f);
             go.AddComponent<MeshFilter>().sharedMesh = _quad;
             var mr = go.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = SpriteMat(tex, cutoff, 0.8f);
+            mr.sharedMaterial = SpriteMat(tex, cutoff, 1.0f);
+            mr.sharedMaterial.SetFloat("_Rim", 0.3f);                 // 右上の縁に 1 ドットの光 (切り絵に見えない)
             mr.shadowCastingMode = ShadowCastingMode.On;
             mr.receiveShadows = false;
             if (contactShadow) Blob("shadow-" + name, _world, pos, w);
@@ -870,7 +891,8 @@ namespace DeckRogue.Game
             go.transform.localScale = new Vector3(w, height, w);
             go.AddComponent<MeshFilter>().sharedMesh = _cross;
             var mr = go.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = SpriteMat(tex, cutoff, 0.8f);
+            mr.sharedMaterial = SpriteMat(tex, cutoff, 1.0f);
+            mr.sharedMaterial.SetFloat("_Rim", 0.3f);
             mr.shadowCastingMode = ShadowCastingMode.On;
             mr.receiveShadows = false;
             Blob("shadow-" + name, _world, pos, w * 0.6f);
@@ -977,6 +999,15 @@ namespace DeckRogue.Game
             {
                 Quad(new Vector3(x0, y, z0), new Vector3(x0, y, z1), new Vector3(x1, y, z1), new Vector3(x1, y, z0),
                      new Vector2(x0, z0) / Tile, new Vector2(x0, z1) / Tile, new Vector2(x1, z1) / Tile, new Vector2(x1, z0) / Tile);
+            }
+
+            /// <summary>床。UV を 90° 単位で回す (草の目が一方向に流れない)</summary>
+            public void FloorRot(float x0, float z0, float x1, float z1, float y, int rot)
+            {
+                var uv = new[] { new Vector2(x0, z0) / Tile, new Vector2(x0, z1) / Tile, new Vector2(x1, z1) / Tile, new Vector2(x1, z0) / Tile };
+                rot = ((rot % 4) + 4) % 4;
+                Quad(new Vector3(x0, y, z0), new Vector3(x0, y, z1), new Vector3(x1, y, z1), new Vector3(x1, y, z0),
+                     uv[rot], uv[(rot + 1) % 4], uv[(rot + 2) % 4], uv[(rot + 3) % 4]);
             }
 
             public void WallZ(float x0, float x1, float y0, float y1, float z)
