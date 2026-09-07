@@ -88,6 +88,7 @@ def icon(name, size=20, color='currentColor', sw=2):
         'clock': '<circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path>',
         'arrow': '<path d="M4 12h14"></path><path d="M13 6l6 6-6 6"></path>',
         'warn': '<path d="M12 3l10 18H2L12 3z"></path><path d="M12 10v5M12 18v.5"></path>',
+        'hammer': '<path d="M14 4l6 6-3 3-6-6 3-3z"></path><path d="M12 10L4 18l2 2 8-8"></path><path d="M9 5l3-3M19 15l3-3"></path>',
         'hourglass': '<path d="M6 3h12M6 21h12M8 3c0 5 8 6 8 9s-8 4-8 9M16 3c0 5-8 6-8 9s8 4 8 9"></path>',
     }
     return ('<svg width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex:none">%s</svg>'
@@ -102,7 +103,7 @@ HEAD = '''<!doctype html>
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&amp;family=Zen+Kurenaido&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&amp;family=Zen+Kurenaido&amp;family=Zen+Antique&amp;display=swap">
   <style>
     body { margin: 0; background: #131917; font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; color: #e6ecdf; }
     a { color: #e0b84a; } a:hover { color: #f0d58a; }
@@ -113,6 +114,7 @@ HEAD = '''<!doctype html>
     .chip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 8px; background: rgba(0,0,0,0.55); border: 2px solid #0b0f0d; font-size: 14px; font-weight: 700; }
     .keycap { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; border: 2px solid #0b0f0d; background: #243230; box-shadow: inset 0 2px 0 #3a4a44; color: #8a9a90; font-size: 12px; font-weight: 700; }
     .num { font-variant-numeric: tabular-nums; }
+    .serif { font-family: "Zen Antique", "Hiragino Mincho ProN", "Yu Mincho", serif; }
   </style>
 </helmet>
 '''
@@ -121,35 +123,108 @@ TAIL = '''</x-dc>
 </html>
 '''
 
-# ---- card (200×290; CardView.cs の配置を写す) ----
-def card(name, typ, cost, rarity, body_lines, notes=None, preview=None, playable=True, key=None, mode_lines=None, scale=1.0, faceup=True):
-    tint = C[typ]
-    frame = tint if playable else lerp(tint, '#000000', 0.5)
-    inner = C['cardInner'] if playable else '#141917'
-    txt = C['text'] if playable else C['dim']
+# ---- card (200×290) — 世界観寄りの面: タイプ=枠の材質、色=角の蔦、名前=羊皮紙の帯、本文=羊皮紙に墨、左下の剣=与ダメ・右下の盾=ブロック ----
+INK = '#2a2118'; PARCH = '#e9e2cf'; PARCH_DARK = '#cfc4a6'
+ROLE = dict(dmg='#a8382a', block='#2f5f9e', counter='#2f6e68', growth='#3f7a3a', momentum='#8a6a1a', expose='#8a4a1a', shatter='#6a4a2a', draw='#4a4a7a', mana='#8a6a1a')
+ROLE_ICON = dict(dmg='sword', block='shield', counter='undo', growth='leaf', momentum='wind', expose='target', shatter='hammer', draw='deck', mana='bolt')
+
+def type_frame_css(typ):
+    """枠の材質 (タイプごと)。9スライス 64×96 の枠絵に置き換わる前提の CSS 表現"""
+    if typ == 'physical':   # 鉄帯の木枠
+        return ('background: repeating-linear-gradient(90deg, #6b4a2a 0 3px, #5a3d22 3px 5px, #75522f 5px 9px, #5f4224 9px 12px); '
+                'box-shadow: inset 0 0 0 3px #3a2612, inset 0 0 0 5px #8a6a3c;')
+    if typ == 'spell':      # 紫の呪印
+        return ('background: linear-gradient(180deg, #4a3570, #2e2046); '
+                'box-shadow: inset 0 0 0 3px #1c1230, inset 0 0 0 5px #7a5aa8, inset 0 0 14px rgba(164,138,208,0.35);')
+    if typ == 'reaction':   # 封蝋の漆
+        return ('background: repeating-linear-gradient(135deg, #1f4a46 0 6px, #17393a 6px 12px); '
+                'box-shadow: inset 0 0 0 3px #0b2220, inset 0 0 0 5px #3f8c86;')
+    return ('background: repeating-linear-gradient(0deg, #6e6857 0 4px, #625c4c 4px 7px, #736d5b 7px 11px); '   # 石板と金の象嵌
+            'box-shadow: inset 0 0 0 3px #3a3628, inset 0 0 0 5px #b08a2e;')
+
+def crest_svg(typ, size=56):
+    col = {'physical': '#e0c9a0', 'spell': '#d8c8f0', 'reaction': '#9fd8d0', 'permanent': '#f0d58a'}[typ]
+    if typ == 'physical':
+        inner = '<path d="M6 42L42 6M6 6l36 36"></path><path d="M8 4l6 0 0 6M40 4l-6 0 0 6M4 40l0 6 6 0M44 40l0 6-6 0"></path><circle cx="24" cy="24" r="5" fill="%s"></circle>' % col
+    elif typ == 'spell':
+        inner = '<path d="M24 4v40M4 24h40M9 9l30 30M39 9L9 39"></path><circle cx="24" cy="24" r="9"></circle><circle cx="24" cy="24" r="3" fill="%s"></circle>' % col
+    elif typ == 'reaction':
+        inner = '<path d="M4 24c6-9 14-13 20-13s14 4 20 13c-6 9-14 13-20 13S10 33 4 24z"></path><circle cx="24" cy="24" r="6"></circle><path d="M6 42L42 6"></path>'
+    else:
+        inner = '<path d="M10 44h28M14 44V16M34 44V16M8 16h32M12 12l12-8 12 8"></path><path d="M20 44V26h8v18"></path>'
+    return ('<svg width="%d" height="%d" viewBox="0 0 48 48" fill="none" stroke="%s" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block">%s</svg>' % (size, size, col, inner))
+
+def vine_svg(color, w=60, h=22, flip=False):
+    """角の蔦 (色アイデンティティ)。緑=葉、他色は解凍時に差し替え"""
+    tf = 'transform: scaleX(-1);' if flip else ''
+    return ('<svg width="%d" height="%d" viewBox="0 0 60 22" fill="none" stroke="%s" stroke-width="2" stroke-linecap="round" style="display:block;%s">'
+            '<path d="M2 20C12 14 22 6 40 5c8 0 14 2 18 6"></path>'
+            '<path d="M14 15c-1-5 2-8 6-8 0 5-3 8-6 8z" fill="%s"></path><path d="M28 9c0-5 4-7 8-6-1 5-4 7-8 6z" fill="%s"></path><path d="M46 7c3-3 7-3 10 0-3 3-7 3-10 0z" fill="%s"></path>'
+            '</svg>') % (w, h, color, tf, color, color, color)
+
+def stat_plaque(kind, value, x, right=False):
+    col = ROLE[kind]
+    ico = ROLE_ICON[kind]
+    side = ('right: %dpx' % x) if right else ('left: %dpx' % x)
+    fs = 20 if len(str(value)) <= 2 else 16
+    return ('<div class="abs num" style="%s; bottom: 6px; width: 64px; height: 40px; box-sizing: border-box; background: linear-gradient(180deg, %s, %s); border: 3px solid #0b0f0d; box-shadow: inset 0 2px 0 rgba(255,255,255,0.18), 0 2px 0 #000; display: flex; align-items: center; justify-content: center; gap: 4px; color: #fff; font-size: %dpx; font-weight: 900; text-shadow: 0 1px 0 #000, 0 0 3px #000">%s<span>%s</span></div>'
+            % (side, lerp(col, '#ffffff', 0.12), lerp(col, '#000000', 0.35), fs, icon(ico, 16, '#fff', 2.6), value))
+
+def line(kind, text):
+    """本文の1行。kind が None なら文字だけ"""
+    if kind is None:
+        return '<div style="line-height: 19px">%s</div>' % text
+    return ('<div style="display: flex; align-items: center; justify-content: center; gap: 5px; line-height: 19px"><span style="display:inline-flex; width: 16px; height: 16px; align-items: center; justify-content: center; border-radius: 50%%; background: %s">%s</span><span>%s</span></div>'
+            % (ROLE[kind], icon(ROLE_ICON[kind], 12, '#fff', 2.6), text))
+
+def card(name, typ, cost, rarity, body_lines, notes=None, preview=None, playable=True, key=None, mode_lines=None, dmg=None, blk=None, counter=None, color='green', scale=1.0):
+    """body_lines: [(kind|None, text)] / mode_lines: [(kind, text)] / dmg・blk・counter: 左下右下の札 (文字列)"""
+    ink = INK if playable else '#6a625a'
+    edge_col = C[color]
+    frame_css = type_frame_css(typ)
     type_ja = {'physical': '物理', 'spell': '呪文', 'reaction': 'リアクション', 'permanent': '置物'}[typ]
-    rar = {'common': 'C', 'uncommon': 'U', 'rare': 'R'}[rarity]
+    rar = {'common': 'コモン', 'uncommon': 'アンコモン', 'rare': 'レア'}[rarity]
     gem = {'common': '#9fb0a6', 'uncommon': '#6f9fd8', 'rare': '#f0c33c'}[rarity]
-    name_size = 18 if len(name) > 6 else (20 if len(name) > 4 else 21)
-    body = ''.join('<div style="line-height: 22px">%s</div>' % l for l in body_lines)
+    type_light = {'physical': '#e0c9a0', 'spell': '#d8c8f0', 'reaction': '#9fd8d0', 'permanent': '#f0d58a'}[typ]
+    name_size = 15 if len(name) > 5 else (17 if len(name) > 4 else 19)
+    body = ''.join(line(k, t) for k, t in body_lines)
     if mode_lines:
-        body += '<div style="margin-top: 6px; display: flex; flex-direction: column; gap: 4px">' + ''.join(
-            '<div style="display: flex; align-items: center; gap: 6px; justify-content: center"><span style="width: 8px; height: 8px; background: %s; transform: rotate(45deg); flex: none"></span><span>%s</span></div>' % (C['gold'], m) for m in mode_lines) + '</div>'
-    pv = ('<div class="abs num" style="left: 18px; right: 18px; bottom: 36px; text-align: left; font-size: 14px; font-weight: 700; color: %s">%s</div>' % (C['energy'], preview)) if preview else ''
-    nt = ('<div class="abs" style="left: 16px; right: 16px; bottom: 14px; text-align: center; font-size: 12px; color: %s">%s</div>' % (C['energy'], notes)) if notes else ''
+        body += '<div style="margin-top: 4px; display: flex; flex-direction: column; gap: 2px">' + ''.join(
+            '<div style="display: flex; align-items: center; justify-content: center; gap: 6px; line-height: 19px"><span style="width: 7px; height: 7px; background: %s; transform: rotate(45deg); flex: none"></span>%s</div>' % (ROLE[k], line(k, t).replace('<div style="display: flex; align-items: center; justify-content: center; gap: 5px; line-height: 19px">', '<div style="display: flex; align-items: center; gap: 5px">')) for k, t in mode_lines) + '</div>'
+    pv = ''
+    if preview: body += '<div class="num" style="line-height: 19px; color: %s">%s</div>' % ('#8a2a1e' if playable else '#7a6a62', preview)
+    nt = ('<div class="abs" style="left: 50%%; bottom: 14px; transform: translateX(-50%%); padding: 1px 5px; background: #1a1208; border: 2px solid %s; color: %s; font-size: 10px; font-weight: 700; white-space: nowrap">%s</div>' % (C['gold'], C['energy'], notes)) if notes else ''
     keycap = ('<div class="abs" style="right: -6px; top: -10px"><span class="keycap">%s</span></div>' % key) if key else ''
+    plaques = ''
+    if dmg is not None: plaques += stat_plaque('dmg', dmg, 6)
+    if counter is not None: plaques += stat_plaque('counter', counter, 6)
+    if blk is not None: plaques += stat_plaque('block', blk, 6, right=True)
+    if mode_lines and dmg is not None and blk is not None:
+        plaques += '<div class="abs" style="left: 50%%; bottom: 14px; transform: translateX(-50%%); padding: 1px 5px; background: %s; border: 2px solid #0b0f0d; color: %s; font-size: 10px; font-weight: 700; white-space: nowrap">どちらか</div>' % (PARCH, INK)
+    dimmer = '' if playable else '<div class="abs" style="inset: 0; background: rgba(0,0,0,0.45)"></div>'
     return ('<div class="card" style="position: relative; width: 200px; height: 290px; transform: scale(%s); transform-origin: 50%% 100%%">'
-            '<div class="abs" style="inset: 0; background: %s; border: 3px solid %s; box-shadow: inset 0 0 0 3px %s"></div>'
-            '<div class="abs" style="inset: 12px; background: %s"></div>'
-            '<div class="abs" style="left: 16px; right: 16px; top: 52px; height: 104px; overflow: hidden; border-bottom: 3px solid %s">%s</div>'
-            '<div class="abs" style="left: 44px; right: 40px; top: 12px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: %dpx; font-weight: 700; color: %s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">%s</div>'
-            '<div class="abs" style="left: -14px; top: -6px; width: 64px; height: 64px; border-radius: 50%%; background: radial-gradient(circle at 40%% 35%%, #fff0a8 0%%, %s 45%%, #9a7a1c 100%%); border: 3px solid #1a1208; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: #fff; text-shadow: 0 0 3px #000, 0 2px 0 #000">%s</div>'
-            '<div class="abs" style="right: 16px; top: 20px; width: 24px; height: 24px; background: %s; transform: rotate(45deg) scale(0.7); border: 3px solid #0b0f0d"></div>'
-            '<div class="abs" style="left: 14px; right: 14px; top: 160px; height: 18px; text-align: center; font-size: 12px; color: %s">%s  ·  %s</div>'
-            '<div class="abs" style="left: 18px; right: 18px; top: 182px; bottom: 36px; text-align: center; font-size: 15px; color: %s">%s</div>'
-            '%s%s%s</div>') % (
-        scale, lerp(frame, C['cardFrame'], 0.35), frame, frame, inner, C['edge'], cardart_svg(name, tint, 168, 104), name_size, txt, name,
-        C['energy'], cost, gem, lerp(tint, '#ffffff', 0.55), type_ja, rar, txt, body, pv, nt, keycap)
+            # 枠 (材質)
+            '<div class="abs" style="inset: 0; border: 3px solid #0b0f0d; box-sizing: border-box; %s"></div>'
+            # 角の蔦 (色)
+            '<div class="abs" style="left: 8px; top: 44px">%s</div><div class="abs" style="right: 8px; top: 44px">%s</div>'
+            # 紋章の窓 (タイプの紋章。1枚ずつの絵は最後)
+            '<div class="abs" style="left: 16px; right: 16px; top: 54px; height: 78px; background: radial-gradient(ellipse at 50%% 40%%, #26322c 0%%, #141a17 70%%); border: 2px solid #0b0f0d; box-shadow: inset 0 0 0 2px %s; display: flex; align-items: center; justify-content: center">%s</div>'
+            # 名前の帯 (羊皮紙・両端を切り込み)
+            '<div class="abs" style="left: 40px; right: 40px; top: 13px; height: 32px; background: linear-gradient(180deg, %s, %s); clip-path: polygon(5%% 0, 95%% 0, 100%% 50%%, 95%% 100%%, 5%% 100%%, 0 50%%)"></div>'
+            '<div class="abs serif" style="left: 50px; right: 50px; top: 13px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: %dpx; font-weight: 700; color: %s; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden">%s</div>'
+            # コスト玉
+            '<div class="abs" style="left: -12px; top: -8px; width: 60px; height: 60px; border-radius: 50%%; background: radial-gradient(circle at 40%% 35%%, #fff0a8 0%%, %s 45%%, #9a7a1c 100%%); border: 3px solid #1a1208; box-shadow: 0 0 0 2px %s; display: flex; align-items: center; justify-content: center; font-size: 27px; font-weight: 900; color: #fff; text-shadow: 0 0 3px #000, 0 2px 0 #000">%s</div>'
+            # レア度の宝石
+            '<div class="abs" style="right: 14px; top: 16px; width: 22px; height: 22px; background: %s; transform: rotate(45deg) scale(0.7); border: 3px solid #0b0f0d"></div>'
+            # タイプ帯
+            '<div class="abs" style="left: 16px; right: 16px; top: 134px; height: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: %s; letter-spacing: 1px">%s<span>%s · %s</span></div>'
+            # 本文 (羊皮紙に墨)
+            '<div class="abs" style="left: 14px; right: 14px; top: 154px; bottom: 52px; background: linear-gradient(180deg, %s, %s); border: 2px solid #0b0f0d; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35)"></div>'
+            '<div class="abs" style="left: 20px; right: 20px; top: 159px; bottom: 56px; text-align: center; font-size: 13px; color: %s; font-weight: 700">%s</div>'
+            '%s%s%s%s%s</div>') % (
+        scale, frame_css, vine_svg(edge_col, 46, 16), vine_svg(edge_col, 46, 16, flip=True), lerp(type_light, '#000000', 0.5), crest_svg(typ), PARCH, PARCH_DARK,
+        name_size, ink, name, C['energy'], type_light, cost, gem, type_light, crest_svg(typ, 14), type_ja, rar,
+        PARCH, PARCH_DARK, ink, body, pv, plaques, nt, keycap, dimmer)
 
 def card_back(w, h, label='伏せ札'):
     return ('<div style="position: relative; width: %dpx; height: %dpx; background: #17332f; border: 3px solid %s; box-shadow: inset 0 0 0 3px #0b0f0d; overflow: hidden">'
@@ -247,11 +322,11 @@ def enemy(x, svg, name, hp, mx, intent, chips, ring=None, block=None, dim=False)
 
 def hand(hover_index=2):
     cards = [
-        card('打撃', 'physical', 1, 'common', ['ダメージ 6'], preview='→ 探り屋 に 6', key='1'),
-        card('蔦の楔', 'physical', 1, 'common', ['粉砕（敵ブロック全壊）', 'ダメージ 5'], preview='→ 探り屋 に 5', key='2'),
-        card('絡み蔦', 'physical', 1, 'common', ['どちらか1つ'], mode_lines=['ブロック 7', 'ダメージ 7'], key='3'),
-        card('防御', 'physical', 1, 'common', ['ブロック 5'], key='4'),
-        card('茨の返し', 'reaction', 1, 'common', ['被攻撃後: 返し 10'], notes='伏せる: 1E · 右クリック', key='5'),
+        card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', key='1', dmg='6'),
+        card('蔦の楔', 'physical', 1, 'common', [('shatter', '粉砕: 敵ブロック全壊'), ('dmg', 'ダメージ 5')], preview='→ 探り屋 に 5', key='2', dmg='5'),
+        card('絡み蔦', 'physical', 1, 'common', [(None, 'どちらか1つ')], mode_lines=[('block', 'ブロック 7'), ('dmg', 'ダメージ 7')], key='3', dmg='7', blk='7'),
+        card('防御', 'physical', 1, 'common', [('block', 'ブロック 5')], key='4', blk='5'),
+        card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], notes='伏せる 1E', key='5', counter='10'),
     ]
     offs = [(-392, 34, -9), (-196, 10, -4.5), (0, 0, 0), (196, 10, 4.5), (392, 34, 9)]
     s = ''
@@ -315,7 +390,7 @@ def reaction_modal():
           '</div>') % (C['dim'], icon('sword', 20, C['bad']), icon('sword', 36, C['bad'], 2.2), C['bad'], C['dim'], icon('shield', 22, C['block']), C['dim'], C['bad'], C['dim'], C['gold'], icon('warn', 20, C['gold']), C['dim'])
     # 候補札
     m += '<div class="abs" style="left: 520px; top: 84px; font-size: 14px; font-weight: 700; color: %s">発動できる伏せ札</div>' % C['dim']
-    m += '<div class="abs" style="left: 520px; top: 110px; width: 200px; height: 290px">%s</div>' % card('茨の返し', 'reaction', 1, 'common', ['被攻撃後: 返し 10'], preview='→ 探り屋 38 → 28')
+    m += '<div class="abs" style="left: 520px; top: 110px; width: 200px; height: 290px">%s</div>' % card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], preview='→ 探り屋 38 → 28', counter='10')
     m += ('<div class="abs" style="left: 748px; top: 118px; width: 220px; display: flex; flex-direction: column; gap: 12px">'
           '<div class="btn btn-gold" style="height: 64px; font-size: 22px">発動 <span class="keycap" style="color: #1a1208; background: #fff0a8">F</span></div>'
           '<div class="btn" style="height: 56px; font-size: 18px">温存する <span class="keycap">H</span></div>'
@@ -326,28 +401,38 @@ def reaction_modal():
     return m
 
 def card_anatomy():
-    s = '<div style="position: relative; width: 1200px; height: 720px; overflow: hidden; background: #131917">'
-    s += '<div class="abs" style="left: 40px; top: 28px; font-size: 26px; font-weight: 900">カードの面 — 200×290（手札は 0.92 倍・ホバーで 1.0）</div>'
-    s += '<div class="abs" style="left: 40px; top: 66px; font-size: 14px; color: %s">4タイプの枠色は Theme.CardTypeColor の実値。紋章の窓は PixelLab の絵（Art/cards/&lt;id&gt;.png）で差し替わる</div>' % C['dim']
+    W, H = 1760, 820
+    s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #131917">' % (W, H)
+    s += '<div class="abs serif" style="left: 40px; top: 26px; font-size: 28px; font-weight: 700">カードの面 — 塔の戦利品として</div>'
+    s += ('<div class="abs" style="left: 40px; top: 66px; font-size: 14px; color: %s; line-height: 20px">枠の材質＝タイプ（鉄帯の木枠・紫の呪印・封蝋の漆・石板と金の象嵌）／角の蔦＝流派の色／名前は羊皮紙の帯に明朝／本文は羊皮紙に墨。'
+          '1枚ずつの絵は最後なので、窓にはタイプの紋章を置く。<b style="color: %s">左下の剣＝与えるダメージ、右下の盾＝得るブロック</b>。数字だけ見れば攻めか守りか分かる。</div>') % (C['dim'], C['text'])
     cards = [
-        card('打撃', 'physical', 1, 'common', ['ダメージ 6'], preview='→ 探り屋 に 6'),
-        card('疾風の号砲', 'spell', 1, 'uncommon', ['勢い +3', '勢い 2倍'], notes='消滅'),
-        card('茨の返し', 'reaction', 1, 'common', ['被攻撃後: 返し 10'], notes='伏せる: 1E'),
-        card('年輪の大樹', 'permanent', 2, 'rare', ['ブロック 5', '毎T開始時: 成長 +1']),
+        (card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', dmg='6'), '攻撃', '剣の札だけ'),
+        (card('防御', 'physical', 1, 'common', [('block', 'ブロック 5')], blk='5'), '防御', '盾の札だけ'),
+        (card('絡み蔦', 'physical', 1, 'common', [(None, 'どちらか1つ')], mode_lines=[('block', 'ブロック 7'), ('dmg', 'ダメージ 7')], dmg='7', blk='7'), '択', '両方＋「どちらか」'),
+        (card('二連の蔦打ち', 'physical', 1, 'common', [('dmg', 'ダメージ 5 ×2')], preview='→ 探り屋 に 5+5', dmg='5×2'), '多段', '剣に ×N'),
+        (card('疾風の号砲', 'spell', 1, 'uncommon', [('momentum', '勢い +3'), ('momentum', '勢い 2倍')], notes='消滅'), '補助', '札なし＝数字を出さない'),
+        (card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], notes='伏せる 1E', counter='10'), '返し', '戻り矢印の札'),
+        (card('年輪の大樹', 'permanent', 2, 'rare', [('block', 'ブロック 5'), ('growth', '毎T開始時: 成長 +1')], blk='5'), '置物', '盾＋毎ターンの本文'),
     ]
-    for i, c in enumerate(cards):
-        s += '<div class="abs" style="left: %dpx; top: 130px; width: 200px; height: 290px; transform: scale(1.3); transform-origin: 0 0">%s</div>' % (60 + i * 290, c)
-    labels = [(1, 'コスト玉（左上・28px 900）。割引中は緑の数字'), (2, '名前（21px／8文字以上は 18px）'), (3, 'レア度の宝石（C 灰・U 青・R 金）'),
-              (4, '紋章の窓 168×104（PixelLab 差し替え枠）'), (5, 'タイプ帯「物理 · C」'), (6, '本文 15px。選択式は ◆ の箇条書き'),
-              (7, '予測行（対象が決まると実値。成長・勢い・弱体・急所・装甲を通した数）'), (8, '注記（消滅・保持・追加コスト）')]
-    s += '<div class="abs" style="left: 60px; top: 540px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 40px; width: 1080px">'
-    for n, t in labels:
-        s += ('<div style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span class="num" style="width: 24px; height: 24px; border-radius: 50%%; background: %s; color: #1a1208; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; flex: none">%d</span><span>%s</span></div>') % (C['gold'], n, t)
+    sc = 1.15
+    step = 236
+    for i, (c, role, note) in enumerate(cards):
+        x = 60 + i * step
+        s += '<div class="abs" style="left: %dpx; top: 150px; width: 200px; height: 290px; transform: scale(%s); transform-origin: 0 0">%s</div>' % (x, sc, c)
+        s += ('<div class="abs" style="left: %dpx; top: 500px; width: %dpx; text-align: center"><div class="serif" style="font-size: 20px; font-weight: 700; color: %s">%s</div><div style="font-size: 13px; color: %s; margin-top: 4px">%s</div></div>'
+              % (x, 200 * sc, C['gold'], role, C['dim'], note))
+    # 凡例: 本文のアイコン
+    s += '<div class="abs" style="left: 60px; top: 580px; font-size: 15px; font-weight: 700; color: %s">本文のしるし（16px の状態アイコンと同じ絵）</div>' % C['text']
+    leg = [('dmg', 'ダメージ'), ('block', 'ブロック'), ('counter', '返し'), ('growth', '成長'), ('momentum', '勢い'), ('expose', '急所'), ('shatter', '粉砕'), ('draw', 'ドロー'), ('mana', 'エナジー')]
+    s += '<div class="abs" style="left: 60px; top: 612px; display: flex; gap: 14px; flex-wrap: wrap; width: 1640px">'
+    for k, t in leg:
+        s += ('<div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; background: %s; border: 2px solid #0b0f0d; color: %s; font-size: 14px; font-weight: 700">'
+              '<span style="display:inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; border-radius: 50%%; background: %s">%s</span>%s</div>') % (PARCH, INK, ROLE[k], icon(ROLE_ICON[k], 14, '#fff', 2.6), t)
     s += '</div>'
-    # 番号の打ち込み (1枚目の上)
-    pins = [(1, 46, 118), (2, 200, 124), (3, 300, 134), (4, 170, 250), (5, 170, 336), (6, 170, 372), (7, 110, 438), (8, 170, 484)]
-    for n, x, y in pins:
-        s += '<div class="abs num" style="left: %dpx; top: %dpx; width: 26px; height: 26px; border-radius: 50%%; background: %s; color: #1a1208; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; border: 2px solid #1a1208; box-shadow: 0 0 0 2px %s">%d</div>' % (x, y, C['gold'], C['gold'], n)
+    s += ('<div class="abs" style="left: 60px; top: 680px; width: 1640px; font-size: 14px; color: %s; line-height: 22px">'
+          '実装メモ: 枠は 9スライス 64×96（`card_&lt;type&gt;_&lt;color&gt;.png`・発注書どおり）、蔦は色ごとの角パーツ、剣と盾の札は効果から導く（dealDamage の合計→剣、gainBlock/gainIceBlock→盾、counter→戻り矢印。データにカテゴリは増やさない）。'
+          '手札では 0.92 倍・ホバーで 1.0。文字は名前 Zen Antique 20px／本文 Noto Sans JP 14px 700。使えない札は全体を 45%% 暗くする。</div>') % C['dim']
     s += '</div>'
     return s
 
@@ -400,14 +485,14 @@ canvas = {
     'artboards': [
         {'file': 'Main.dc.html', 'title': '戦闘画面（自分のターン・手札ホバー）', 'x': 0, 'y': 0, 'w': 1920, 'h': 1080},
         {'file': 'ReactionWindow.dc.html', 'title': '確認ウィンドウ（発動／温存）', 'x': 2040, 'y': 0, 'w': 1920, 'h': 1080},
-        {'file': 'CardAnatomy.dc.html', 'title': 'カードの面', 'x': 0, 'y': 1240, 'w': 1200, 'h': 720},
-        {'file': 'DirectionB.dc.html', 'title': '別案B（低精細）', 'x': 1320, 'y': 1240, 'w': 960, 'h': 540},
-        {'file': 'DirectionC.dc.html', 'title': '別案C（低精細）', 'x': 2400, 'y': 1240, 'w': 960, 'h': 540},
+        {'file': 'CardAnatomy.dc.html', 'title': 'カードの面', 'x': 0, 'y': 1240, 'w': 1760, 'h': 820},
+        {'file': 'DirectionB.dc.html', 'title': '別案B（低精細）', 'x': 1880, 'y': 1240, 'w': 960, 'h': 540},
+        {'file': 'DirectionC.dc.html', 'title': '別案C（低精細）', 'x': 2960, 'y': 1240, 'w': 960, 'h': 540},
     ],
     'annotations': [
-        {'id': 'brief', 'x': 0, 'y': -200, 'w': 640, 'text': '戦闘UIの作り直し（静的モック）。Theme/UiKit の実値（#131917 夜空・#e0b84a 金・Noto Sans JP・カード200×290）で描いた本命＝現行の「左にリーダー、右に敵、扇の手札」を保ちつつ、伏せ場を専用スロットに、最悪被ダメをHPの直下に、意図を吹き出しに、置物を面で並べる。'},
+        {'id': 'brief', 'x': 0, 'y': -200, 'w': 640, 'text': '戦闘UIの作り直し（静的モック）。第2版: カード面を世界観寄り（枠の材質＝タイプ・角の蔦＝色・羊皮紙の帯と本文）にし、左下の剣／右下の盾で攻撃と防御を一目で。Theme/UiKit の実値（#131917 夜空・#e0b84a 金・Noto Sans JP・カード200×290）で描いた本命＝現行の「左にリーダー、右に敵、扇の手札」を保ちつつ、伏せ場を専用スロットに、最悪被ダメをHPの直下に、意図を吹き出しに、置物を面で並べる。'},
         {'id': 'note-modal', 'x': 2040, 'y': -120, 'w': 520, 'text': 'set-confirm の山場。左に「実値・受け・HP差分」、中央に候補札、右に発動／温存。後続の敵の分岐が反転する警告を金で。'},
-        {'id': 'note-alts', 'x': 1320, 'y': 1140, 'w': 560, 'text': '別案は構造だけの下書き。B は伏せ場を卓の中央に置く物理感、C は数字を常設する情報優先。どちらかに寄せるなら本命に取り込む。'},
+        {'id': 'note-alts', 'x': 1880, 'y': 1140, 'w': 560, 'text': '別案は構造だけの下書き。B は伏せ場を卓の中央に置く物理感、C は数字を常設する情報優先。どちらかに寄せるなら本命に取り込む。'},
     ],
     'launch': {'view': 'canvas'},
 }
