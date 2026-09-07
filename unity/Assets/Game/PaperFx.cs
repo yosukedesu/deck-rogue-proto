@@ -385,7 +385,7 @@ namespace DeckRogue.Game
             s.name = key; _cache[key] = s; return s;
         }
 
-        /// <summary>ドット絵を整数倍で置く倍率 = round(目安の表示幅 / 実寸)。目安 256px: 128→2 (通常・エリート・リーダー)、ボスは目安 384 で3倍。生成の代役 16 は 16倍</summary>
+        /// <summary>ドット絵を整数倍で置く倍率 = round(目安の表示幅 / 実寸)。密度はオクトラ相当 (1ドット=4px): 通常 64→256・エリート 80→320・ボス 96→384 がどれも4倍。生成の代役 16 は 16倍</summary>
         public static int PixelScale(Sprite s, float target = 256f)
         {
             if (s == null) return 1;

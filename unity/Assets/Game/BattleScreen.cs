@@ -224,10 +224,11 @@ namespace DeckRogue.Game
             try { def = Content.GetEnemyDef(e.EnemyId); } catch (Exception) { }
             string nm = def != null ? def.Name : e.EnemyId;
             // ドット絵は整数倍 (通常・エリート 128→2倍=256px、ボスは3倍=384px)。吹き出しは絵の上端に合わせる
-            bool isBoss = false;
-            try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); isBoss = node != null && node.Type == MapNodeTypes.Boss; } catch (Exception) { }
+            // 密度はオクトラ相当 (1ドット=画面4px): 通常 64→256・エリート 80→320・ボス 96→384 がどれも4倍になる目安
+            string nodeType = null;
+            try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             var artSprite = Creature.Get("enemies", e.EnemyId);
-            float artTarget = isBoss ? 384f : 256f;
+            float artTarget = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
             float spriteTop = 130f + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
 
             // 意図 (頭上の紙の吹き出し)
