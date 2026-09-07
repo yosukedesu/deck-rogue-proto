@@ -17,6 +17,8 @@ Shader "DeckRogue/StageUnit"
         _LampFalloff ("Lamp Falloff", Float) = 14
         _SunDir2 ("Sun Direction (uv)", Vector) = (0.7,0.7,0,0)
         _SunAmount ("Sun Gradient", Float) = 0
+        _Rim ("Rim Light", Float) = 0
+        _RimColor ("Rim Color", Color) = (0.78,0.82,0.95,1)
     }
     SubShader
     {
@@ -44,6 +46,8 @@ Shader "DeckRogue/StageUnit"
             float _LampFalloff;
             float4 _SunDir2;
             float _SunAmount;
+            float _Rim;
+            half4 _RimColor;   // _BaseMap_TexelSize は UnlitInput.hlsl が宣言済み
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; float fogFactor : TEXCOORD1; float3 positionWS : TEXCOORD2; float2 uv0 : TEXCOORD3; };
             Varyings Vert(Attributes i)
@@ -68,6 +72,14 @@ Shader "DeckRogue/StageUnit"
                 float g = dot(i.uv0 - 0.5, _SunDir2.xy);
                 light *= (1.0 + g * _SunAmount);
                 c.rgb *= light;
+                // リムライト: 光源側 (右上) の隣のドットが透明なら縁を淡く光らせる
+                if (_Rim > 0.0)
+                {
+                    float2 tx = _BaseMap_TexelSize.xy;
+                    half aR = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv + float2(tx.x, 0)).a;
+                    half aU = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv + float2(0, tx.y)).a;
+                    if (aR < _Cutoff || aU < _Cutoff) c.rgb = lerp(c.rgb, _RimColor.rgb, _Rim);
+                }
                 c.rgb = lerp(c.rgb, half3(1, 1, 1), _Flash);
                 half3 fogged = MixFog(c.rgb, i.fogFactor);
                 c.rgb = lerp(c.rgb, fogged, _Fog);
