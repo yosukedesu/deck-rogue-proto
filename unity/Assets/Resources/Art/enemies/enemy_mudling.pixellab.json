@@ -2,8 +2,8 @@
   "id": "enemy_mudling",
   "engine": "pixflux",
   "request": {
-    "description": "Octopath Traveler HD-2D style pixel art monster, small round mud blob creature with two dim glowing eyes and a mischievous grin, dripping wet brown mud, tiny stubby arms, three-quarter front view facing left, clean silhouette, 20 color palette, transparent background",
-    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "description": "Octopath Traveler HD-2D style pixel art, very cute chibi creature in the spirit of Hollow Knight's little bug characters: round soft body, oversized head, big simple dark eyes with a tiny highlight, tiny stubby limbs, gentle slightly melancholic charming expression, clean readable silhouette, 24 color palette, transparent background, three-quarter front view facing left, a small round blob of soft brown mud with two big dark eyes and a tiny smile, little stubby arms, a sprout on its head",
+    "negative_description": "scary, menacing, gore, sharp teeth, angry, realistic, human face, blurry, glow, gradient background, text, watermark, extra limbs, side profile",
     "image_size": {
       "width": 64,
       "height": 64
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T14:29:48.309Z"
+  "at": "2026-09-07T14:58:03.408Z"
 }

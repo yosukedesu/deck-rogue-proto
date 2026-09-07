@@ -1,0 +1,24 @@
+{
+  "id": "enemy_cog_construct",
+  "engine": "pixflux",
+  "request": {
+    "description": "Octopath Traveler HD-2D style pixel art, very cute chibi creature in the spirit of Hollow Knight's little bug characters: round soft body, oversized head, big simple dark eyes with a tiny highlight, tiny stubby limbs, gentle slightly melancholic charming expression, clean readable silhouette, 24 color palette, transparent background, three-quarter front view facing left, a small cube shaped clockwork automaton made of brass plates and iron rivets, not a person, one big round glass lens for an eye in the middle of the box, a little spinning cog on top, stubby metal legs, dutiful",
+    "negative_description": "scary, menacing, gore, sharp teeth, angry, realistic, human face, blurry, glow, gradient background, text, watermark, extra limbs, side profile",
+    "image_size": {
+      "width": 64,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south-west"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-07T15:04:56.080Z"
+}
