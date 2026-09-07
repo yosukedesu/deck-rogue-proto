@@ -2,8 +2,8 @@
   "id": "enemy_mudling",
   "engine": "pixflux",
   "request": {
-    "description": "pixel art creature in the melancholic style of Hollow Knight: the body shape is exactly the creature described, with a smooth pale bone-white mask face with two large empty black eye sockets, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet mood, clean readable silhouette, thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left, a small round blob of dark wet mud, no limbs, a tiny pale mask sunk into the front of the blob, one drip sliding down",
-    "negative_description": "colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime, human face, teeth, angry, glow, blurry, gradient background, text, watermark, side profile, hooded robe, cloak, sheet ghost, humanoid, standing person, arms and legs like a person, wispy mist body",
+    "description": "pixel art slime monster in the melancholic style of Hollow Knight: a small low dome-shaped blob of dark wet mud sitting on the ground like a slime, two large empty black eye holes pressed into the front of the blob and no other features, one drip of mud, muted palette of black, off-white and dusty blue-grey, forlorn quiet mood, soft detailed shading, dark selective outline, 12 colors, transparent background, seen slightly from above",
+    "negative_description": "hood, robe, cloak, mask, skull, face, body, torso, arms, legs, head, standing, figure, person, humanoid, colorful, bright colors, smile, teeth, glow, blurry, gradient background, text, watermark",
     "image_size": {
       "width": 64,
       "height": 64
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T18:46:47.067Z"
+  "at": "2026-09-07T18:59:50.538Z"
 }
