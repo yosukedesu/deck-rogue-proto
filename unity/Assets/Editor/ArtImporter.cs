@@ -33,7 +33,7 @@ namespace DeckRogue.EditorTools
             imp.mipmapEnabled = false;
             imp.alphaIsTransparency = true;
             imp.spritePixelsPerUnit = 100f;
-            imp.wrapMode = TextureWrapMode.Clamp;
+            imp.wrapMode = assetPath.Replace('\\', '/').Contains("/Art/tiles/") ? TextureWrapMode.Repeat : TextureWrapMode.Clamp; // 舞台のタイルは敷き詰める
             var name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
             imp.isReadable = true; // 貼り絵の縁 (PaperFx.Silhouette) が GetPixels32 で読む
             var ts = new TextureImporterSettings();

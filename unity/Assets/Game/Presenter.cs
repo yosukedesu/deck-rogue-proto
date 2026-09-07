@@ -127,12 +127,11 @@ namespace DeckRogue.Game
                         if (spr != null)
                         {
                             Tween.Slash(fx, Tween.CenterIn(spr, fx), UnityEngine.Random.Range(-50f, -20f), new Color(1f, 0.95f, 0.8f, 0.95f));
-                            var img = spr.GetComponent<UnityEngine.UI.Image>();
-                            if (img != null) Tween.Flash(img, Color.white, 0.2f);
+                            Stage.Flash("enemy" + (d.EnemyIndex ?? 0));
                         }
                         Audio.Play("slash", 0.6f);
                         Audio.Play(d.Amount >= 15 ? "hit_big" : "hit", 0.9f);
-                        if (d.Amount >= 15) Tween.Shake(g.ScreenRoot, Mathf.Min(14f, d.Amount * 0.4f), 0.25f);
+                        if (d.Amount >= 15) Stage.Shake(Mathf.Min(14f, d.Amount * 0.4f), 0.25f);
                         Tween.Float(fx, pos, d.Amount.ToString(), d.Amount > 0 ? UiKit.Hex("#ffd36b") : UiKit.ColDim, d.Amount >= 20 ? 46 : 36);
                         if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f));
                         if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(d.EnemyIndex ?? 0, -d.HpLoss);
@@ -150,7 +149,8 @@ namespace DeckRogue.Game
                         Audio.Play(d.HpLoss >= 12 ? "hit_big" : "hit", d.HpLoss > 0 ? 0.9f : 0.45f);
                         if (d.HpLoss > 0)
                         {
-                            Tween.Shake(g.ScreenRoot, Mathf.Min(18f, 4f + d.HpLoss * 0.7f), 0.3f);
+                            Stage.Shake(Mathf.Min(18f, 4f + d.HpLoss * 0.7f), 0.3f);
+                            Stage.Flash("player");
                             Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, Mathf.Min(0.35f, 0.1f + d.HpLoss * 0.015f)));
                         }
                         var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);

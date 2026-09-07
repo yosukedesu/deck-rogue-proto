@@ -233,12 +233,7 @@ namespace DeckRogue.Game
                 UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, 100f), new Vector2(130f, 170f));
                 glow.color = new Color(1f, 1f, 1f, 0.5f);
             }
-            var sh = UiKit.NewRect("shadow", pan);
-            UiKit.Anchor(sh, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-96f, 118f), new Vector2(96f, 148f));
-            var shImg = sh.gameObject.AddComponent<Image>();
-            shImg.sprite = ThemeFx.Shadow();
-            shImg.raycastTarget = false;
-            shImg.color = alive ? Color.white : new Color(1f, 1f, 1f, 0.3f);
+            // 絵は舞台 (HD-2D) のビルボードが描く。UI 側の矩形は位置・大きさ・色 (生死/点滅) の基準として残す
             var spr = UiKit.NewRect("sprite", pan);
             PaperFx.FitPixel(spr, artSprite, 0f, 130f, artTarget);
             var img = spr.gameObject.AddComponent<Image>();
@@ -246,7 +241,7 @@ namespace DeckRogue.Game
             img.preserveAspect = true;
             img.raycastTarget = false;
             img.color = alive ? Color.white : new Color(0.3f, 0.3f, 0.3f, 0.5f);
-            if (alive) PaperFx.Sticker(pan, artSprite, spr, 1);
+            Stage.BindUnit("enemy" + index, spr, img, artSprite);
             if (aimed)
             {
                 var ring = UiKit.NewRect("ring", pan);
@@ -474,11 +469,6 @@ namespace DeckRogue.Game
             string leaderName = leaderId;
             try { var ld = Content.GetLeaderDef(leaderId); leaderName = ld.Name; } catch (Exception) { }
 
-            var lsh = UiKit.NewRect("shadow", area);
-            UiKit.Anchor(lsh, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(10f, 118f), new Vector2(250f, 150f));
-            var lshImg = lsh.gameObject.AddComponent<Image>();
-            lshImg.sprite = ThemeFx.Shadow();
-            lshImg.raycastTarget = false;
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
             PaperFx.FitPixel(spr, leaderArt, 0f, 130f);
@@ -488,7 +478,7 @@ namespace DeckRogue.Game
             img.sprite = leaderArt;
             img.preserveAspect = true;
             img.raycastTarget = false;
-            PaperFx.Sticker(area, leaderArt, spr, 1);
+            Stage.BindUnit("player", spr, img, leaderArt);
 
             var nameTag = UiKit.NewRect("nametag", area);
             UiKit.Anchor(nameTag, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(20f, 90f), new Vector2(240f, 124f));

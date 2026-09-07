@@ -226,3 +226,17 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 `BattleScreen.BuildBackground` は舞台へ委譲し UI 側には何も置かない。URP のレンダラーに `PostProcessData` が無いとポスト処理は描かれないので `UrpSetup` が割り当てる（`scripts/unity-win.sh setup-urp` で反映）。
 副産物のバグ修正: 戦闘の最初の組み立てで直前の画面（マップ）が ScreenRoot に残っていた（不透明な背景で隠れていた）→ `Rebuild` が Battle 未生成の戦闘でも掃除する。
 
+### 舞台＝HD-2D ジオラマ — 2026-09-07（段階1 の「板の背景」を置換）
+
+ユーザー「やっぱ3D表現がほしい」→ ask_user 3択で「HD-2D ジオラマ」（＝「オクトラ風なら」）。オクトラの構造そのもの: 舞台だけ本物の3D、キャラは2Dドット。
+- `Stage.cs` を全面作り直し。Main Camera を透視（FOV 30°・見下ろし 12°）にし、地面 y=0・キャラの立つ線 z=0・1 unit=焦点面で 100px の座標系で
+  コード生成の箱庭（地面と道・段々の台地と崖・遺跡の柱・板の木/茂み/岩・ランタン・空の板・月・地平線の木立・低い霧）を組む。幕ごとにパレット。
+- **キャラは UI の矩形に追従するビルボード** (`Stage.BindUnit`): 焦点面（視線に垂直・距離 D）上では画面ピクセルと world が 1:1 なので、uGUI の
+  sprite 枠（`FitPixel` の 4 倍矩形）をそのまま焦点面へ写す。整数 px に丸めるので「1ドット=画面4px」が保たれ、被写界深度も焦点面では 0。
+  Image は非表示にして色（生死・点滅）だけ読む。名前札・HPバー・吹き出しは UI の既存レイアウトのまま。Tween.Lunge/Punch は矩形が動くので自動で追従。
+- 影: 月光の平行光（Soft）。ドット絵の板も `StageUnit.shader` の ShadowCaster パスで影を落とす（`_ALPHATEST_ON` を #define して UnlitInput + ShadowCasterPass を流用）。
+  被写界深度は Bokeh（focalLength 300 / aperture 1.6 で強めのティルトシフト）。DepthOnly パスも持つ。
+- 画面揺れは `Stage.Shake`（カメラ）へ移し、紙の UI は揺れない。被弾の点滅は `Stage.Flash`（シェーダの `_Flash`）。
+- 素材の差し替え口: `Art/tiles/act<N>_{grass,dirt,stone,cliff}.png`（ArtImporter が `/Art/tiles/` を Repeat に）・`Art/bg/act<N>.png`。
+  URP Lit を確実にビルドへ含めるため `Resources/Materials/Diorama.mat`（Lit の GUID 直書き）を土台に材質を作る。
+
