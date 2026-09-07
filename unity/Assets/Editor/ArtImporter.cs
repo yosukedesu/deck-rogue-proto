@@ -36,6 +36,10 @@ namespace DeckRogue.EditorTools
             imp.wrapMode = TextureWrapMode.Clamp;
             var name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
             imp.isReadable = true; // 貼り絵の縁 (PaperFx.Silhouette) が GetPixels32 で読む
+            var ts = new TextureImporterSettings();
+            imp.ReadTextureSettings(ts);
+            ts.spriteMeshType = SpriteMeshType.FullRect; // 透明部分を切り詰めない (整数倍配置と影絵の基準を rect に揃える)
+            imp.SetTextureSettings(ts);
             int border = name == "panel" || name.StartsWith("btn_") ? 6 : name.StartsWith("card_") ? 12
                 : name == "paper_panel" ? 14 : name == "paper_tag" ? 10 : name == "paper_button" ? 12 : name == "paper_card" ? 16 : 0;
             if (border > 0) imp.spriteBorder = new Vector4(border, border, border, border);

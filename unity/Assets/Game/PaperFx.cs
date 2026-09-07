@@ -273,8 +273,10 @@ namespace DeckRogue.Game
             try { srcPx = tex.GetPixels32(); }
             catch (Exception) { return null; } // 読めないテクスチャ (Read/Write 無効) は諦める
             int w = tex.width, h = tex.height;
-            var rect = src.textureRect;
-            int rx = (int)rect.x, ry = (int)rect.y, rw = (int)rect.width, rh = (int)rect.height;
+            // 取り込んだ絵は textureRect が透明部分を切り詰めた矩形になる (Tight メッシュ)。表示は rect 全体に合わせるので rect を使う
+            var rect = src.rect;
+            int rx = Mathf.RoundToInt(rect.x), ry = Mathf.RoundToInt(rect.y), rw = Mathf.RoundToInt(rect.width), rh = Mathf.RoundToInt(rect.height);
+            if (rx < 0 || ry < 0 || rx + rw > w || ry + rh > h) return null;
             int up = SilhouetteUp;
             int ow = rw * up + pad * 2, oh = rh * up + pad * 2;
             var outPx = new Color[ow * oh];
