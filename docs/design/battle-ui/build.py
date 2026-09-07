@@ -1,13 +1,14 @@
-# build.py — 戦闘UIデザインカンバスの作業ファイル (.dc.html / canvas.json) を生成する。
-# 値は unity/Assets/Game/{Theme,UiKit,CardView,BattleScreen}.cs の実値 (色・寸法) を写している。
+# build.py — 戦闘UIデザインカンバス v3「静かな夜」: 暗いガラスの面・細い金の線・明朝の名前・数字は Cinzel。
+# 骨格 (配置) は v1 のまま。ごつい斜面・木目・羊皮紙・太縁の札は撤去。値は unity/Assets/Game/Theme.cs の色を土台に再構成。
 import json, random, os
 OUT = os.path.dirname(os.path.abspath(__file__))
 
-# ---- tokens (UiKit / Theme の実値) ----
-C = dict(bg='#131917', panel='#1e2622', panel2='#243230', edge='#0b0f0d', light='#3a4a44', btn='#2c3a35', btnLight='#5a7a6c',
-         gold='#e0b84a', energy='#f0c33c', text='#e6ecdf', dim='#8a9a90', accent='#6abf69', hp='#c94f4f', block='#6f9fd8', bad='#e06c6c',
-         cardFrame='#e9e2cf', cardInner='#1b2420', physical='#8a6a3c', spell='#6c4f9c', reaction='#3f8c86', permanent='#b08a2e', green='#5fb85a',
+C = dict(bg='#0f1412', text='#eef2ea', dim='rgba(238,242,234,0.55)', faint='rgba(238,242,234,0.14)',
+         gold='#e0b84a', goldSoft='#f0d58a', hp='#c94f4f', block='#6f9fd8', bad='#e06c6c', accent='#6abf69',
+         physical='#b08a5a', spell='#9a7fd0', reaction='#5fb0a8', permanent='#d1a33a', green='#5fb85a', blue='#4f8fd6', red='#d65a4f', white='#e8e2c8', black='#8a6fb0',
          skyTop='#162919', skyBot='#0a0f0b', groundTop='#1f3322', groundBot='#0d170e', horizon='#364c39')
+ROLE = dict(dmg='#e06c6c', block='#6f9fd8', counter='#5fb0a8', growth='#6abf69', momentum='#e0b84a', expose='#e0a04a', shatter='#c9a27a', draw='#9fb0d8', mana='#f0d58a')
+ROLE_ICON = dict(dmg='sword', block='shield', counter='undo', growth='leaf', momentum='wind', expose='target', shatter='hammer', draw='deck', mana='bolt')
 
 def lerp(a, b, t):
     a = a.lstrip('#'); b = b.lstrip('#')
@@ -15,20 +16,22 @@ def lerp(a, b, t):
     rb, gb, bb = int(b[0:2], 16), int(b[2:4], 16), int(b[4:6], 16)
     return '#%02x%02x%02x' % (round(ra + (rb - ra) * t), round(ga + (gb - ga) * t), round(ba + (bb - ba) * t))
 
-# ---- placeholder art (アプリの Creature / CardArt と同じ「idのハッシュから左右対称」の作法) ----
-def creature_svg(seed, dark, mid, light, size, eyes=True, friendly=False):
+def rgba(hexcol, a):
+    h = hexcol.lstrip('#')
+    return 'rgba(%d,%d,%d,%s)' % (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), a)
+
+# ---- placeholder creature (アプリの Creature と同じ「idのハッシュから左右対称」のドット絵) ----
+def creature_svg(seed, dark, mid, light, size, eyes=True):
     rng = random.Random(seed)
     n = 16
     mask = [[False] * n for _ in range(n)]
     for y in range(2, n - 1):
         for x in range(n // 2):
-            cx = (x + 0.5) / (n / 2)
-            cy = 1 - abs((y - n / 2) / (n / 2))
+            cx = (x + 0.5) / (n / 2); cy = 1 - abs((y - n / 2) / (n / 2))
             mask[y][x] = rng.random() < 0.12 + 0.62 * cx * cy
     def at(x, y):
         if x < 0 or y < 0 or x >= n or y >= n: return False
-        mx = x if x < n // 2 else n - 1 - x
-        return mask[y][mx]
+        return mask[y][x if x < n // 2 else n - 1 - x]
     rects = []
     for y in range(n):
         for x in range(n):
@@ -37,62 +40,49 @@ def creature_svg(seed, dark, mid, light, size, eyes=True, friendly=False):
                 col = dark if edge else (light if y < n * 0.45 else mid)
                 rects.append('<rect x="%d" y="%d" width="1" height="1" fill="%s"></rect>' % (x, y, col))
             elif at(x - 1, y) or at(x + 1, y) or at(x, y - 1) or at(x, y + 1):
-                rects.append('<rect x="%d" y="%d" width="1" height="1" fill="%s"></rect>' % (x, y, C['edge']))
+                rects.append('<rect x="%d" y="%d" width="1" height="1" fill="#0b0f0d"></rect>' % (x, y))
     if eyes:
-        ey = 6
-        rects.append('<rect x="5" y="%d" width="1" height="1" fill="#ffffff"></rect><rect x="10" y="%d" width="1" height="1" fill="#ffffff"></rect>' % (ey, ey))
-    return ('<svg viewBox="0 0 16 16" width="%d" height="%d" shape-rendering="crispEdges" style="display:block">%s</svg>' % (size, size, ''.join(rects)))
-
-def cardart_svg(seed, tint, w, h):
-    rng = random.Random(seed)
-    W, H = 24, 16
-    dark = lerp(tint, '#000000', 0.55); light = lerp(tint, '#ffffff', 0.35); bg = lerp(dark, '#000000', 0.6)
-    mask = [[False] * (W // 2) for _ in range(H)]
-    for y in range(1, H - 1):
-        for x in range(W // 2):
-            cx = (x + 0.5) / (W / 2); cy = 1 - abs((y - H / 2) / (H / 2))
-            mask[y][x] = rng.random() < 0.08 + 0.5 * cx * cy
-    def at(x, y):
-        if x < 0 or y < 0 or y >= H or x >= W: return False
-        mx = x if x < W // 2 else W - 1 - x
-        return mask[y][mx]
-    rects = ['<rect x="0" y="0" width="24" height="16" fill="%s"></rect>' % bg]
-    for y in range(H):
-        for x in range(W):
-            if at(x, y):
-                edge = not at(x - 1, y) or not at(x + 1, y) or not at(x, y - 1) or not at(x, y + 1)
-                col = dark if edge else (light if y > H / 2 else tint)
-                rects.append('<rect x="%d" y="%d" width="1" height="1" fill="%s"></rect>' % (x, y, col))
-    return '<svg viewBox="0 0 24 16" width="%d" height="%d" preserveAspectRatio="none" shape-rendering="crispEdges" style="display:block">%s</svg>' % (w, h, ''.join(rects))
+        rects.append('<rect x="5" y="6" width="1" height="1" fill="#ffffff"></rect><rect x="10" y="6" width="1" height="1" fill="#ffffff"></rect>')
+    return '<svg viewBox="0 0 16 16" width="%d" height="%d" shape-rendering="crispEdges" style="display:block">%s</svg>' % (size, size, ''.join(rects))
 
 # ---- icons (stroke SVG, 24 grid) ----
-def icon(name, size=20, color='currentColor', sw=2):
-    paths = {
-        'sword': '<path d="M14 4l6 6-9 9-3 1-3-3 1-3 8-10z"></path><path d="M5 19l-2 2"></path><path d="M13 7l4 4"></path>',
-        'shield': '<path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"></path>',
-        'heart': '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path>',
-        'coin': '<circle cx="12" cy="12" r="8"></circle><path d="M9 12h6M12 9v6"></path>',
-        'bolt': '<path d="M13 3L5 14h6l-1 7 8-11h-6l1-7z"></path>',
-        'deck': '<rect x="5" y="4" width="11" height="15" rx="1"></rect><path d="M9 8h11v13H9"></path>',
-        'skull': '<path d="M12 3a7 7 0 0 1 7 7v3l-2 2v3H7v-3l-2-2v-3a7 7 0 0 1 7-7z"></path><circle cx="9.5" cy="11" r="1.2"></circle><circle cx="14.5" cy="11" r="1.2"></circle>',
-        'leaf': '<path d="M5 19C7 9 13 5 20 4c-1 8-5 14-15 15z"></path><path d="M5 19l8-8"></path>',
-        'wind': '<path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 13h15a3 3 0 1 1-3 3"></path><path d="M3 18h7"></path>',
-        'down': '<path d="M12 4v14"></path><path d="M6 12l6 6 6-6"></path>',
-        'target': '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>',
-        'eyeoff': '<path d="M3 3l18 18"></path><path d="M10 6.5A9 9 0 0 1 21 12a9 9 0 0 1-2.5 3.5"></path><path d="M6 8a9 9 0 0 0-3 4 9 9 0 0 0 11 5"></path>',
-        'gear': '<circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"></path>',
-        'log': '<path d="M5 6h14M5 12h14M5 18h9"></path>',
-        'key': '<circle cx="8" cy="12" r="4"></circle><path d="M12 12h9M17 12v3M20 12v2"></path>',
-        'undo': '<path d="M9 14L4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 0 12h-3"></path>',
-        'fire': '<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-4s0 3 2 3c1-3-1-5 1-9z"></path>',
-        'clock': '<circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path>',
-        'arrow': '<path d="M4 12h14"></path><path d="M13 6l6 6-6 6"></path>',
-        'warn': '<path d="M12 3l10 18H2L12 3z"></path><path d="M12 10v5M12 18v.5"></path>',
-        'hammer': '<path d="M14 4l6 6-3 3-6-6 3-3z"></path><path d="M12 10L4 18l2 2 8-8"></path><path d="M9 5l3-3M19 15l3-3"></path>',
-        'hourglass': '<path d="M6 3h12M6 21h12M8 3c0 5 8 6 8 9s-8 4-8 9M16 3c0 5-8 6-8 9s8 4 8 9"></path>',
-    }
+PATHS = {
+    'sword': '<path d="M14 4l6 6-9 9-3 1-3-3 1-3 8-10z"></path><path d="M5 19l-2 2"></path><path d="M13 7l4 4"></path>',
+    'shield': '<path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"></path>',
+    'heart': '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path>',
+    'coin': '<circle cx="12" cy="12" r="8"></circle><path d="M9 12h6M12 9v6"></path>',
+    'bolt': '<path d="M13 3L5 14h6l-1 7 8-11h-6l1-7z"></path>',
+    'deck': '<rect x="5" y="4" width="11" height="15" rx="1"></rect><path d="M9 8h11v13H9"></path>',
+    'leaf': '<path d="M5 19C7 9 13 5 20 4c-1 8-5 14-15 15z"></path><path d="M5 19l8-8"></path>',
+    'wind': '<path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 13h15a3 3 0 1 1-3 3"></path><path d="M3 18h7"></path>',
+    'down': '<path d="M12 4v14"></path><path d="M6 12l6 6 6-6"></path>',
+    'target': '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>',
+    'eyeoff': '<path d="M3 3l18 18"></path><path d="M10 6.5A9 9 0 0 1 21 12a9 9 0 0 1-2.5 3.5"></path><path d="M6 8a9 9 0 0 0-3 4 9 9 0 0 0 11 5"></path>',
+    'gear': '<circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"></path>',
+    'log': '<path d="M5 6h14M5 12h14M5 18h9"></path>',
+    'undo': '<path d="M9 14L4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 0 12h-3"></path>',
+    'clock': '<circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path>',
+    'arrow': '<path d="M4 12h14"></path><path d="M13 6l6 6-6 6"></path>',
+    'warn': '<path d="M12 3l10 18H2L12 3z"></path><path d="M12 10v5M12 18v.5"></path>',
+    'hammer': '<path d="M14 4l6 6-3 3-6-6 3-3z"></path><path d="M12 10L4 18l2 2 8-8"></path><path d="M9 5l3-3M19 15l3-3"></path>',
+    'flag': '<path d="M5 21V4"></path><path d="M5 4h11l-2 4 2 4H5"></path>',
+    'gem': '<path d="M6 3h12l4 6-10 12L2 9l4-6z"></path><path d="M2 9h20M10 3l2 18M14 3l-2 18"></path>',
+}
+def icon(name, size=20, color='currentColor', sw=1.8):
     return ('<svg width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex:none">%s</svg>'
-            % (size, size, color, sw, paths[name]))
+            % (size, size, color, sw, PATHS[name]))
+
+def crest_svg(typ, size=52, color=None):
+    col = color or {'physical': '#d9c39a', 'spell': '#cdbdf0', 'reaction': '#9fd8d0', 'permanent': '#f0d58a'}[typ]
+    if typ == 'physical':
+        inner = '<path d="M8 40L40 8M8 8l32 32"></path><path d="M10 6h5v5M38 6h-5v5M6 38v-5h5M42 38v-5h-5"></path>'
+    elif typ == 'spell':
+        inner = '<path d="M24 5v38M5 24h38M10.6 10.6l26.8 26.8M37.4 10.6L10.6 37.4"></path><circle cx="24" cy="24" r="8"></circle>'
+    elif typ == 'reaction':
+        inner = '<path d="M4 24c6-9 14-13 20-13s14 4 20 13c-6 9-14 13-20 13S10 33 4 24z"></path><circle cx="24" cy="24" r="6"></circle>'
+    else:
+        inner = '<path d="M10 42h28M14 42V18M34 42V18M8 18h32M12 14l12-8 12 8"></path><path d="M21 42V28h6v14"></path>'
+    return ('<svg width="%d" height="%d" viewBox="0 0 48 48" fill="none" stroke="%s" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block">%s</svg>' % (size, size, col, inner))
 
 HEAD = '''<!doctype html>
 <html>
@@ -103,18 +93,20 @@ HEAD = '''<!doctype html>
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&amp;family=Zen+Kurenaido&amp;family=Zen+Antique&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;family=Shippori+Mincho+B1:wght@600;700&amp;family=Cinzel:wght@600;700&amp;family=Zen+Kurenaido&amp;display=swap">
   <style>
-    body { margin: 0; background: #131917; font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; color: #e6ecdf; }
+    body { margin: 0; background: #0f1412; font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; color: #eef2ea; -webkit-font-smoothing: antialiased; }
     a { color: #e0b84a; } a:hover { color: #f0d58a; }
     .abs { position: absolute; }
-    .panel { background: #1e2622; border: 3px solid #0b0f0d; box-shadow: inset 0 3px 0 #3a4a44, inset 3px 0 0 #3a4a44; }
-    .btn { background: #2c3a35; border: 3px solid #0b0f0d; box-shadow: inset 0 3px 0 #5a7a6c; color: #e6ecdf; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .btn-gold { background: #e0b84a; color: #1a1208; box-shadow: inset 0 3px 0 #fff0a8; }
-    .chip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 8px; background: rgba(0,0,0,0.55); border: 2px solid #0b0f0d; font-size: 14px; font-weight: 700; }
-    .keycap { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; border: 2px solid #0b0f0d; background: #243230; box-shadow: inset 0 2px 0 #3a4a44; color: #8a9a90; font-size: 12px; font-weight: 700; }
-    .num { font-variant-numeric: tabular-nums; }
-    .serif { font-family: "Zen Antique", "Hiragino Mincho ProN", "Yu Mincho", serif; }
+    .serif { font-family: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif; }
+    .numeral { font-family: Cinzel, "Times New Roman", serif; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .glass { background: rgba(12,17,15,0.72); border: 1px solid rgba(238,242,234,0.14); border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.35); }
+    .label { font-size: 11px; letter-spacing: 0.14em; color: rgba(238,242,234,0.55); font-weight: 500; }
+    .pill { display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 13px; background: rgba(0,0,0,0.45); border: 1px solid rgba(238,242,234,0.14); font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 6px; font-weight: 700; }
+    .btn-primary { background: #e0b84a; color: #15120a; box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 6px 18px rgba(224,184,74,0.25); }
+    .btn-ghost { background: rgba(0,0,0,0.35); border: 1px solid rgba(238,242,234,0.22); color: #eef2ea; }
+    .keycap { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border: 1px solid rgba(238,242,234,0.3); border-radius: 4px; color: rgba(238,242,234,0.6); font-size: 11px; font-weight: 500; font-family: "Noto Sans JP", sans-serif; }
   </style>
 </helmet>
 '''
@@ -123,149 +115,105 @@ TAIL = '''</x-dc>
 </html>
 '''
 
-# ---- card (200×290) — 世界観寄りの面: タイプ=枠の材質、色=角の蔦、名前=羊皮紙の帯、本文=羊皮紙に墨、左下の剣=与ダメ・右下の盾=ブロック ----
-INK = '#2a2118'; PARCH = '#e9e2cf'; PARCH_DARK = '#cfc4a6'
-ROLE = dict(dmg='#a8382a', block='#2f5f9e', counter='#2f6e68', growth='#3f7a3a', momentum='#8a6a1a', expose='#8a4a1a', shatter='#6a4a2a', draw='#4a4a7a', mana='#8a6a1a')
-ROLE_ICON = dict(dmg='sword', block='shield', counter='undo', growth='leaf', momentum='wind', expose='target', shatter='hammer', draw='deck', mana='bolt')
+# ---- card (200×290) 「静かな夜」 ----
+def role_glyph(kind, size=14):
+    return '<span style="display:inline-flex; align-items:center; justify-content:center; width:%dpx; height:%dpx; flex:none">%s</span>' % (size + 4, size + 4, icon(ROLE_ICON[kind], size, ROLE[kind], 2))
 
-def type_frame_css(typ):
-    """枠の材質 (タイプごと)。9スライス 64×96 の枠絵に置き換わる前提の CSS 表現"""
-    if typ == 'physical':   # 鉄帯の木枠
-        return ('background: repeating-linear-gradient(90deg, #6b4a2a 0 3px, #5a3d22 3px 5px, #75522f 5px 9px, #5f4224 9px 12px); '
-                'box-shadow: inset 0 0 0 3px #3a2612, inset 0 0 0 5px #8a6a3c;')
-    if typ == 'spell':      # 紫の呪印
-        return ('background: linear-gradient(180deg, #4a3570, #2e2046); '
-                'box-shadow: inset 0 0 0 3px #1c1230, inset 0 0 0 5px #7a5aa8, inset 0 0 14px rgba(164,138,208,0.35);')
-    if typ == 'reaction':   # 封蝋の漆
-        return ('background: repeating-linear-gradient(135deg, #1f4a46 0 6px, #17393a 6px 12px); '
-                'box-shadow: inset 0 0 0 3px #0b2220, inset 0 0 0 5px #3f8c86;')
-    return ('background: repeating-linear-gradient(0deg, #6e6857 0 4px, #625c4c 4px 7px, #736d5b 7px 11px); '   # 石板と金の象嵌
-            'box-shadow: inset 0 0 0 3px #3a3628, inset 0 0 0 5px #b08a2e;')
-
-def crest_svg(typ, size=56):
-    col = {'physical': '#e0c9a0', 'spell': '#d8c8f0', 'reaction': '#9fd8d0', 'permanent': '#f0d58a'}[typ]
-    if typ == 'physical':
-        inner = '<path d="M6 42L42 6M6 6l36 36"></path><path d="M8 4l6 0 0 6M40 4l-6 0 0 6M4 40l0 6 6 0M44 40l0 6-6 0"></path><circle cx="24" cy="24" r="5" fill="%s"></circle>' % col
-    elif typ == 'spell':
-        inner = '<path d="M24 4v40M4 24h40M9 9l30 30M39 9L9 39"></path><circle cx="24" cy="24" r="9"></circle><circle cx="24" cy="24" r="3" fill="%s"></circle>' % col
-    elif typ == 'reaction':
-        inner = '<path d="M4 24c6-9 14-13 20-13s14 4 20 13c-6 9-14 13-20 13S10 33 4 24z"></path><circle cx="24" cy="24" r="6"></circle><path d="M6 42L42 6"></path>'
-    else:
-        inner = '<path d="M10 44h28M14 44V16M34 44V16M8 16h32M12 12l12-8 12 8"></path><path d="M20 44V26h8v18"></path>'
-    return ('<svg width="%d" height="%d" viewBox="0 0 48 48" fill="none" stroke="%s" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block">%s</svg>' % (size, size, col, inner))
-
-def vine_svg(color, w=60, h=22, flip=False):
-    """角の蔦 (色アイデンティティ)。緑=葉、他色は解凍時に差し替え"""
-    tf = 'transform: scaleX(-1);' if flip else ''
-    return ('<svg width="%d" height="%d" viewBox="0 0 60 22" fill="none" stroke="%s" stroke-width="2" stroke-linecap="round" style="display:block;%s">'
-            '<path d="M2 20C12 14 22 6 40 5c8 0 14 2 18 6"></path>'
-            '<path d="M14 15c-1-5 2-8 6-8 0 5-3 8-6 8z" fill="%s"></path><path d="M28 9c0-5 4-7 8-6-1 5-4 7-8 6z" fill="%s"></path><path d="M46 7c3-3 7-3 10 0-3 3-7 3-10 0z" fill="%s"></path>'
-            '</svg>') % (w, h, color, tf, color, color, color)
-
-def stat_plaque(kind, value, x, right=False):
-    col = ROLE[kind]
-    ico = ROLE_ICON[kind]
-    side = ('right: %dpx' % x) if right else ('left: %dpx' % x)
-    fs = 20 if len(str(value)) <= 2 else 16
-    return ('<div class="abs num" style="%s; bottom: 6px; width: 64px; height: 40px; box-sizing: border-box; background: linear-gradient(180deg, %s, %s); border: 3px solid #0b0f0d; box-shadow: inset 0 2px 0 rgba(255,255,255,0.18), 0 2px 0 #000; display: flex; align-items: center; justify-content: center; gap: 4px; color: #fff; font-size: %dpx; font-weight: 900; text-shadow: 0 1px 0 #000, 0 0 3px #000">%s<span>%s</span></div>'
-            % (side, lerp(col, '#ffffff', 0.12), lerp(col, '#000000', 0.35), fs, icon(ico, 16, '#fff', 2.6), value))
-
-def line(kind, text):
-    """本文の1行。kind が None なら文字だけ"""
+def line(kind, text, color='#dfe5da'):
     if kind is None:
-        return '<div style="line-height: 19px">%s</div>' % text
-    return ('<div style="display: flex; align-items: center; justify-content: center; gap: 5px; line-height: 19px"><span style="display:inline-flex; width: 16px; height: 16px; align-items: center; justify-content: center; border-radius: 50%%; background: %s">%s</span><span>%s</span></div>'
-            % (ROLE[kind], icon(ROLE_ICON[kind], 12, '#fff', 2.6), text))
+        return '<div style="line-height: 20px; color: %s">%s</div>' % (color, text)
+    return ('<div style="display: flex; align-items: center; justify-content: center; gap: 4px; line-height: 20px; color: %s">%s<span>%s</span></div>' % (color, role_glyph(kind), text))
+
+def value_badge(kind, value, right=False):
+    col = ROLE[kind]
+    side = 'right: 14px' if right else 'left: 14px'
+    return ('<div class="abs numeral" style="%s; bottom: 12px; height: 30px; padding: 0 10px 0 8px; display: flex; align-items: center; gap: 6px; border-radius: 6px; background: %s; border: 1px solid %s; color: %s; font-size: 17px">%s<span>%s</span></div>'
+            % (side, rgba(col, 0.16), rgba(col, 0.55), lerp(col, '#ffffff', 0.35), icon(ROLE_ICON[kind], 14, lerp(col, '#ffffff', 0.35), 2.2), value))
 
 def card(name, typ, cost, rarity, body_lines, notes=None, preview=None, playable=True, key=None, mode_lines=None, dmg=None, blk=None, counter=None, color='green', scale=1.0):
-    """body_lines: [(kind|None, text)] / mode_lines: [(kind, text)] / dmg・blk・counter: 左下右下の札 (文字列)"""
-    ink = INK if playable else '#6a625a'
-    edge_col = C[color]
-    frame_css = type_frame_css(typ)
+    tcol = C[typ]
     type_ja = {'physical': '物理', 'spell': '呪文', 'reaction': 'リアクション', 'permanent': '置物'}[typ]
     rar = {'common': 'コモン', 'uncommon': 'アンコモン', 'rare': 'レア'}[rarity]
-    gem = {'common': '#9fb0a6', 'uncommon': '#6f9fd8', 'rare': '#f0c33c'}[rarity]
-    type_light = {'physical': '#e0c9a0', 'spell': '#d8c8f0', 'reaction': '#9fd8d0', 'permanent': '#f0d58a'}[typ]
-    name_size = 15 if len(name) > 5 else (17 if len(name) > 4 else 19)
+    gem = {'common': 'rgba(238,242,234,0.5)', 'uncommon': '#6f9fd8', 'rare': '#e0b84a'}[rarity]
+    name_size = 16 if len(name) > 5 else (18 if len(name) > 4 else 20)
     body = ''.join(line(k, t) for k, t in body_lines)
     if mode_lines:
-        body += '<div style="margin-top: 4px; display: flex; flex-direction: column; gap: 2px">' + ''.join(
-            '<div style="display: flex; align-items: center; justify-content: center; gap: 6px; line-height: 19px"><span style="width: 7px; height: 7px; background: %s; transform: rotate(45deg); flex: none"></span>%s</div>' % (ROLE[k], line(k, t).replace('<div style="display: flex; align-items: center; justify-content: center; gap: 5px; line-height: 19px">', '<div style="display: flex; align-items: center; gap: 5px">')) for k, t in mode_lines) + '</div>'
-    pv = ''
-    if preview: body += '<div class="num" style="line-height: 19px; color: %s">%s</div>' % ('#8a2a1e' if playable else '#7a6a62', preview)
-    nt = ('<div class="abs" style="left: 50%%; bottom: 14px; transform: translateX(-50%%); padding: 1px 5px; background: #1a1208; border: 2px solid %s; color: %s; font-size: 10px; font-weight: 700; white-space: nowrap">%s</div>' % (C['gold'], C['energy'], notes)) if notes else ''
-    keycap = ('<div class="abs" style="right: -6px; top: -10px"><span class="keycap">%s</span></div>' % key) if key else ''
-    plaques = ''
-    if dmg is not None: plaques += stat_plaque('dmg', dmg, 6)
-    if counter is not None: plaques += stat_plaque('counter', counter, 6)
-    if blk is not None: plaques += stat_plaque('block', blk, 6, right=True)
+        body += '<div style="margin-top: 2px; display: flex; flex-direction: column; gap: 0px">' + ''.join(
+            '<div style="display: flex; align-items: center; justify-content: center; gap: 6px; line-height: 20px"><span style="width: 5px; height: 5px; border-radius: 50%%; background: %s; flex: none"></span>%s</div>' % (ROLE[k], line(k, t).replace('justify-content: center; ', '')) for k, t in mode_lines) + '</div>'
+    if preview:
+        body += '<div class="numeral" style="line-height: 22px; font-size: 13px; color: %s; letter-spacing: 0.02em">%s</div>' % (C['goldSoft'], preview)
+    badges = ''
+    if dmg is not None: badges += value_badge('dmg', dmg)
+    if counter is not None: badges += value_badge('counter', counter)
+    if blk is not None: badges += value_badge('block', blk, right=True)
+    center_note = ''
     if mode_lines and dmg is not None and blk is not None:
-        plaques += '<div class="abs" style="left: 50%%; bottom: 14px; transform: translateX(-50%%); padding: 1px 5px; background: %s; border: 2px solid #0b0f0d; color: %s; font-size: 10px; font-weight: 700; white-space: nowrap">どちらか</div>' % (PARCH, INK)
-    dimmer = '' if playable else '<div class="abs" style="inset: 0; background: rgba(0,0,0,0.45)"></div>'
-    return ('<div class="card" style="position: relative; width: 200px; height: 290px; transform: scale(%s); transform-origin: 50%% 100%%">'
-            # 枠 (材質)
-            '<div class="abs" style="inset: 0; border: 3px solid #0b0f0d; box-sizing: border-box; %s"></div>'
-            # 角の蔦 (色)
-            '<div class="abs" style="left: 8px; top: 44px">%s</div><div class="abs" style="right: 8px; top: 44px">%s</div>'
-            # 紋章の窓 (タイプの紋章。1枚ずつの絵は最後)
-            '<div class="abs" style="left: 16px; right: 16px; top: 54px; height: 78px; background: radial-gradient(ellipse at 50%% 40%%, #26322c 0%%, #141a17 70%%); border: 2px solid #0b0f0d; box-shadow: inset 0 0 0 2px %s; display: flex; align-items: center; justify-content: center">%s</div>'
-            # 名前の帯 (羊皮紙・両端を切り込み)
-            '<div class="abs" style="left: 40px; right: 40px; top: 13px; height: 32px; background: linear-gradient(180deg, %s, %s); clip-path: polygon(5%% 0, 95%% 0, 100%% 50%%, 95%% 100%%, 5%% 100%%, 0 50%%)"></div>'
-            '<div class="abs serif" style="left: 50px; right: 50px; top: 13px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: %dpx; font-weight: 700; color: %s; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden">%s</div>'
-            # コスト玉
-            '<div class="abs" style="left: -12px; top: -8px; width: 60px; height: 60px; border-radius: 50%%; background: radial-gradient(circle at 40%% 35%%, #fff0a8 0%%, %s 45%%, #9a7a1c 100%%); border: 3px solid #1a1208; box-shadow: 0 0 0 2px %s; display: flex; align-items: center; justify-content: center; font-size: 27px; font-weight: 900; color: #fff; text-shadow: 0 0 3px #000, 0 2px 0 #000">%s</div>'
-            # レア度の宝石
-            '<div class="abs" style="right: 14px; top: 16px; width: 22px; height: 22px; background: %s; transform: rotate(45deg) scale(0.7); border: 3px solid #0b0f0d"></div>'
-            # タイプ帯
-            '<div class="abs" style="left: 16px; right: 16px; top: 134px; height: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: %s; letter-spacing: 1px">%s<span>%s · %s</span></div>'
-            # 本文 (羊皮紙に墨)
-            '<div class="abs" style="left: 14px; right: 14px; top: 154px; bottom: 52px; background: linear-gradient(180deg, %s, %s); border: 2px solid #0b0f0d; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35)"></div>'
-            '<div class="abs" style="left: 20px; right: 20px; top: 159px; bottom: 56px; text-align: center; font-size: 13px; color: %s; font-weight: 700">%s</div>'
-            '%s%s%s%s%s</div>') % (
-        scale, frame_css, vine_svg(edge_col, 46, 16), vine_svg(edge_col, 46, 16, flip=True), lerp(type_light, '#000000', 0.5), crest_svg(typ), PARCH, PARCH_DARK,
-        name_size, ink, name, C['energy'], type_light, cost, gem, type_light, crest_svg(typ, 14), type_ja, rar,
-        PARCH, PARCH_DARK, ink, body, pv, plaques, nt, keycap, dimmer)
+        center_note = '<div class="abs label" style="left: 0; right: 0; bottom: 20px; text-align: center; font-size: 10px">どちらか</div>'
+    elif notes:
+        center_note = '<div class="abs label" style="left: 0; right: 0; bottom: 20px; text-align: center; font-size: 10px; color: %s; letter-spacing: 0.1em">%s</div>' % (C['goldSoft'], notes)
+    keycap = ('<div class="abs" style="right: 10px; top: -22px"><span class="keycap">%s</span></div>' % key) if key else ''
+    dim_css = '' if playable else 'filter: saturate(0.4) brightness(0.7);'
+    return ('<div class="card" style="position: relative; width: 200px; height: 290px; transform: scale(%s); transform-origin: 50%% 100%%; %s">'
+            '<div class="abs" style="inset: 0; border-radius: 10px; background: linear-gradient(180deg, #1d2624 0%%, #11171500 60%%), #121816; border: 1px solid %s; box-shadow: 0 0 0 1px rgba(0,0,0,0.7), 0 12px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.07)"></div>'
+            '<div class="abs" style="left: 1px; right: 1px; top: 1px; height: 110px; border-radius: 9px 9px 0 0; background: linear-gradient(180deg, %s, rgba(0,0,0,0))"></div>'
+            # コスト
+            '<div class="abs numeral" style="left: 12px; top: 12px; width: 34px; height: 34px; border-radius: 50%%; border: 1px solid %s; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; font-size: 17px; color: %s">%s</div>'
+            # レア度
+            '<div class="abs" style="right: 14px; top: 20px">%s</div>'
+            # 名前
+            '<div class="abs serif" style="left: 50px; right: 36px; top: 12px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: %dpx; font-weight: 700; color: #f4f6f0; white-space: nowrap; letter-spacing: 0.04em">%s</div>'
+            '<div class="abs" style="left: 60px; right: 46px; top: 50px; height: 1px; background: linear-gradient(90deg, rgba(0,0,0,0), %s, rgba(0,0,0,0))"></div>'
+            # 紋章の窓
+            '<div class="abs" style="left: 14px; right: 14px; top: 60px; height: 92px; border-radius: 6px; background: radial-gradient(ellipse at 50%% 35%%, %s 0%%, rgba(0,0,0,0.25) 75%%); border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center">%s</div>'
+            # タイプ
+            '<div class="abs label" style="left: 0; right: 0; top: 160px; text-align: center; font-size: 10px">%s · %s</div>'
+            # 本文
+            '<div class="abs" style="left: 16px; right: 16px; top: 180px; bottom: 50px; text-align: center; font-size: 13px; font-weight: 500">%s</div>'
+            '%s%s%s</div>') % (
+        scale, dim_css, rgba(tcol, 0.55), rgba(tcol, 0.28), rgba(C['gold'], 0.8), C['goldSoft'], cost,
+        icon('gem', 14, gem, 1.6), name_size, name, C[color], rgba(tcol, 0.35), crest_svg(typ, 50), type_ja, rar, body, badges, center_note, keycap)
 
-def card_back(w, h, label='伏せ札'):
-    return ('<div style="position: relative; width: %dpx; height: %dpx; background: #17332f; border: 3px solid %s; box-shadow: inset 0 0 0 3px #0b0f0d; overflow: hidden">'
-            '<div class="abs" style="inset: 10px; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 6px, transparent 6px 14px), repeating-linear-gradient(-45deg, rgba(255,255,255,0.06) 0 6px, transparent 6px 14px); border: 2px solid rgba(255,255,255,0.12)"></div>'
-            '<div class="abs" style="inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #9fd8d0">%s<div style="font-size: 13px; font-weight: 700">%s</div></div></div>') % (w, h, C['reaction'], icon('eyeoff', 28, '#9fd8d0'), label)
+def card_back(w, h):
+    return ('<div style="position: relative; width: %dpx; height: %dpx; border-radius: 8px; background: #0e1b1a; border: 1px solid %s; box-shadow: 0 8px 18px rgba(0,0,0,0.45); overflow: hidden">'
+            '<div class="abs" style="inset: 8px; border-radius: 4px; border: 1px solid rgba(159,216,208,0.25); background-image: repeating-linear-gradient(135deg, rgba(159,216,208,0.08) 0 1px, transparent 1px 9px)"></div>'
+            '<div class="abs" style="inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #9fd8d0">%s<div class="serif" style="font-size: 14px; font-weight: 700; letter-spacing: 0.1em">伏せ札</div></div></div>') % (w, h, rgba(C['reaction'], 0.6), icon('eyeoff', 26, '#9fd8d0', 1.6))
 
-def hpbar(w, h, cur, mx, color=C['hp'], block=None, font=15):
+def hpbar(w, cur, mx, block=None, color=C['hp'], numeral=15):
     pct = max(0, min(100, cur / mx * 100))
     badge = ''
     if block is not None:
-        badge = ('<div class="abs" style="left: -22px; top: -12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center">%s'
-                 '<div class="abs num" style="inset: 0; display: flex; align-items: center; justify-content: center; padding-top: 1px; font-size: 17px; font-weight: 900; color: #fff; text-shadow: 0 0 3px #000">%d</div></div>'
-                 % (icon('shield', 44, C['block'], 2.2).replace('fill="none"', 'fill="#2c4a6e"'), block))
-    return ('<div style="position: relative; width: %dpx; height: %dpx; background: #0b0f0d; border: 3px solid #0b0f0d; box-shadow: inset 0 0 0 2px #2a1414">'
-            '<div class="abs" style="left: 0; top: 0; bottom: 0; width: %.1f%%; background: linear-gradient(180deg, %s, %s)"></div>'
-            '<div class="abs num" style="inset: 0; display: flex; align-items: center; justify-content: center; font-size: %dpx; font-weight: 700; color: #fff; text-shadow: 0 1px 0 #000, 0 0 3px #000">%d / %d</div>%s</div>') % (
-        w, h, pct, lerp(color, '#ffffff', 0.18), lerp(color, '#000000', 0.25), font, cur, mx, badge)
+        badge = ('<div class="numeral abs" style="left: -54px; top: -9px; height: 28px; padding: 0 8px 0 6px; display: flex; align-items: center; gap: 4px; border-radius: 14px; background: rgba(0,0,0,0.5); border: 1px solid %s; color: %s; font-size: 14px">%s%d</div>'
+                 % (rgba(C['block'], 0.6), lerp(C['block'], '#ffffff', 0.35), icon('shield', 14, lerp(C['block'], '#ffffff', 0.35), 2.2), block))
+    return ('<div style="position: relative; width: %dpx; height: 10px; border-radius: 5px; background: rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(0,0,0,0.6)">'
+            '<div class="abs" style="left: 0; top: 0; bottom: 0; width: %.1f%%; border-radius: 5px; background: linear-gradient(90deg, %s, %s); box-shadow: 0 0 10px %s"></div>%s'
+            '<div class="abs numeral" style="left: 0; right: 0; top: 14px; text-align: center; font-size: %dpx; color: #f4f6f0; letter-spacing: 0.04em">%d <span style="color: rgba(238,242,234,0.45); font-size: %dpx">/ %d</span></div></div>') % (
+        w, pct, lerp(color, '#000000', 0.15), lerp(color, '#ffffff', 0.15), rgba(color, 0.35), badge, numeral, cur, max(11, numeral - 3), mx)
 
-def chip(icon_name, label, color):
-    return '<div class="chip" style="color: %s">%s<span class="num">%s</span></div>' % (color, icon(icon_name, 18, color), label)
+def pill(icon_name, label, color):
+    return '<div class="pill" style="color: %s; border-color: %s">%s<span>%s</span></div>' % (lerp(color, '#ffffff', 0.25), rgba(color, 0.45), icon(icon_name, 14, lerp(color, '#ffffff', 0.25), 2), label)
 
-def intent_bubble(kind, text, sub, color, x, y, w=232):
-    return ('<div class="abs panel" style="left: %dpx; top: %dpx; width: %dpx; height: 62px; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(20,26,24,0.92)">'
-            '%s<span class="num" style="font-size: 28px; font-weight: 900; color: %s; text-shadow: 0 0 6px rgba(0,0,0,0.8)">%s</span></div>'
-            '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; text-align: center; font-size: 13px; color: %s; line-height: 18px">%s</div>'
-            '<div class="abs" style="left: %dpx; top: %dpx; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 12px solid #0b0f0d"></div>') % (
-        x, y, w, icon(kind, 40, color, 2.2), color, text, x - 30, y + 70, w + 60, C['energy'], sub, x + w // 2 - 10, y + 62)
+def intent_capsule(kind, text, sub, color, cx, y):
+    w = 220
+    return ('<div class="abs glass" style="left: %dpx; top: %dpx; width: %dpx; height: 52px; display: flex; align-items: center; justify-content: center; gap: 10px; border-color: %s">'
+            '%s<span class="numeral" style="font-size: 26px; color: %s; letter-spacing: 0.04em">%s</span></div>'
+            '<div class="abs label" style="left: %dpx; top: %dpx; width: %dpx; text-align: center; font-size: 11px; letter-spacing: 0.06em; color: rgba(238,242,234,0.7); line-height: 16px">%s</div>'
+            '<div class="abs" style="left: %dpx; top: %dpx; width: 1px; height: 22px; background: linear-gradient(180deg, %s, rgba(0,0,0,0))"></div>') % (
+        cx - w // 2, y, w, rgba(color, 0.45), icon(kind, 24, color, 1.8), color, text, cx - w // 2 - 40, y + 58, w + 80, sub, cx, y + 52, rgba(color, 0.6))
 
-def background(w=1920, h=1080, act_sky=(C['skyTop'], C['skyBot']), ground=(C['groundTop'], C['groundBot']), horizon=C['horizon']):
+def background(w=1920, h=1080):
     hy = round(h * 0.66)
     return ('<div class="abs" style="left: 0; top: 0; width: %dpx; height: %dpx; background: linear-gradient(180deg, %s 0%%, %s 100%%)"></div>'
             '<div class="abs" style="left: 0; top: %dpx; width: %dpx; height: %dpx; background: linear-gradient(180deg, %s 0%%, %s 100%%)"></div>'
-            '<div class="abs" style="left: 0; top: %dpx; width: %dpx; height: 6px; background: %s"></div>'
-            '<div class="abs" style="left: 0; top: 0; width: %dpx; height: %dpx; background: radial-gradient(ellipse at 50%% 45%%, rgba(0,0,0,0) 45%%, rgba(0,0,0,0.55) 100%%)"></div>') % (
-        w, hy, act_sky[0], act_sky[1], hy, w, h - hy, ground[0], ground[1], hy - 3, w, horizon, w, h)
+            '<div class="abs" style="left: 0; top: %dpx; width: %dpx; height: 1px; background: %s"></div>'
+            '<div class="abs" style="left: 0; top: %dpx; width: %dpx; height: 120px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0))"></div>'
+            '<div class="abs" style="left: 0; top: 0; width: %dpx; height: %dpx; background: radial-gradient(ellipse at 50%% 40%%, rgba(0,0,0,0) 40%%, rgba(0,0,0,0.6) 100%%)"></div>') % (
+        w, hy, C['skyTop'], C['skyBot'], hy, w, h - hy, C['groundTop'], C['groundBot'], hy, w, rgba('#7fa88a', 0.35), hy, w, w, h)
 
-def sprite_with_shadow(svg, x, y, size, ring=None):
+def sprite(svg, x, y, size, ring=None):
     s = ''
     if ring:
-        s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 26px; border-radius: 50%%; border: 4px solid %s; box-shadow: 0 0 18px %s"></div>' % (x - 8, y + size - 14, size + 16, ring, ring)
-    s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 30px; border-radius: 50%%; background: radial-gradient(ellipse, rgba(0,0,0,0.6), rgba(0,0,0,0) 70%%)"></div>' % (x, y + size - 16, size)
+        s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 22px; border-radius: 50%%; border: 1px solid %s; box-shadow: 0 0 24px %s, inset 0 0 12px %s"></div>' % (x - 10, y + size - 12, size + 20, ring, rgba(ring, 0.5), rgba(ring, 0.25))
+    s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 26px; border-radius: 50%%; background: radial-gradient(ellipse, rgba(0,0,0,0.65), rgba(0,0,0,0) 70%%)"></div>' % (x, y + size - 14, size)
     s += '<div class="abs" style="left: %dpx; top: %dpx">%s</div>' % (x, y, svg)
     return s
 
@@ -273,171 +221,232 @@ LEADER = creature_svg('leader_green', '#1c3d2a', '#2e7a4a', '#7fe0a0', 220)
 PROBE_A = creature_svg('enemy_probe', '#2a2438', '#5a4a7a', '#a48ad0', 200)
 PROBE_B = creature_svg('enemy_probe_2', '#2a2438', '#5a4a7a', '#a48ad0', 200)
 
-def topbar(dimmed=False):
+def topbar():
     relics = ['成長の種', '古根の杯', '商人の秤', '読みの眼鏡']
-    rel = ''.join('<div class="panel" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center" title="%s">%s</div>' % (r, creature_svg('relic:' + r, '#7a5a18', '#e0b84a', '#fff0a8', 26, eyes=False)) for r in relics)
-    return ('<div class="abs" style="left: 0; top: 0; width: 1920px; height: 64px; background: rgba(0,0,0,0.58); border-bottom: 3px solid #0b0f0d; display: flex; align-items: center; padding: 0 24px; gap: 28px; box-sizing: border-box">'
-            '<div style="display: flex; align-items: center; gap: 14px; font-size: 19px; font-weight: 700"><span>幕1</span><span style="color: #8a9a90">行 4 / 16</span><span style="color: #8a9a90">·</span><span>探り屋の二人組</span></div>'
-            '<div class="chip" style="color: #e6ecdf; height: 34px; font-size: 16px">%s<span>ターン 3</span></div>'
+    rel = ''.join('<div style="width: 36px; height: 36px; border-radius: 50%%; border: 1px solid rgba(238,242,234,0.18); background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center" title="%s">%s</div>' % (r, creature_svg('relic:' + r, '#7a5a18', '#e0b84a', '#fff0a8', 20, eyes=False)) for r in relics)
+    return ('<div class="abs" style="left: 0; top: 0; width: 1920px; height: 64px; background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0)); display: flex; align-items: center; padding: 0 32px; gap: 28px; box-sizing: border-box">'
+            '<div style="display: flex; align-items: baseline; gap: 14px"><span class="label">幕 1 · 行 4 / 16</span><span class="serif" style="font-size: 20px; font-weight: 700; letter-spacing: 0.06em">探り屋の二人組</span></div>'
+            '<div class="pill" style="height: 28px">%s<span class="label" style="color: rgba(238,242,234,0.75); letter-spacing: 0.08em">ターン 3</span></div>'
             '<div style="flex: 1"></div>'
-            '<div class="chip" style="color: %s; height: 36px; font-size: 20px">%s<span class="num">67 G</span></div>'
-            '<div class="btn" style="height: 40px; padding: 0 16px; font-size: 16px">%s<span>デッキ 14</span></div>'
-            '<div style="display: flex; gap: 6px; align-items: center">%s</div>'
-            '<div class="btn" style="height: 40px; padding: 0 14px; font-size: 15px">%s<span>ログ</span></div>'
-            '<div class="btn" style="width: 40px; height: 40px">%s</div>'
-            '</div>') % (icon('clock', 18, C['dim']), C['gold'], icon('coin', 22, C['gold']), icon('deck', 20, C['text']), rel, icon('log', 18, C['text']), icon('gear', 20, C['text']))
+            '<div style="display: flex; align-items: center; gap: 8px">%s<span class="numeral" style="font-size: 20px; color: %s">67</span><span class="label">G</span></div>'
+            '<div class="pill btn-ghost" style="height: 34px; padding: 0 14px; font-size: 13px; border-radius: 17px">%s<span>デッキ 14</span></div>'
+            '<div style="display: flex; gap: 8px; align-items: center">%s</div>'
+            '<div class="pill btn-ghost" style="height: 34px; padding: 0 14px; font-size: 13px; border-radius: 17px">%s<span>ログ</span></div>'
+            '<div class="pill btn-ghost" style="width: 34px; height: 34px; padding: 0; justify-content: center; border-radius: 17px">%s</div>'
+            '</div>') % (icon('clock', 14, 'rgba(238,242,234,0.6)'), icon('coin', 18, C['gold']), C['goldSoft'], icon('deck', 16, C['text']), rel, icon('log', 16, C['text']), icon('gear', 16, C['text']))
 
 def player_zone(hp=62, block=8, worst=14):
-    s = sprite_with_shadow(LEADER, 150, 380, 220)
-    s += '<div class="abs" style="left: 100px; top: 598px; width: 320px; text-align: center; font-size: 20px; font-weight: 700">大樹の巫女 このは</div>'
-    s += '<div class="abs" style="left: 110px; top: 634px">%s</div>' % hpbar(300, 24, hp, 80, block=block)
-    s += ('<div class="abs" style="left: 110px; top: 668px; width: 460px; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: %s; white-space: nowrap">%s<span>最悪被ダメ −%d</span><span style="color: %s; font-weight: 400">→ HP %d</span>'
-          '<span style="font-size: 12px; font-weight: 400; color: %s; margin-left: 6px">（ブロック %d を差し引き済）</span></div>') % (C['bad'], icon('warn', 16, C['bad']), worst, C['text'], hp - worst, C['dim'], block)
-    s += ('<div class="abs" style="left: 110px; top: 700px; display: flex; gap: 8px">%s%s%s</div>' % (
-        chip('leaf', '成長 +3', C['accent']), chip('wind', '勢い +2', C['gold']), chip('down', '弱体 1', '#a48ad0')))
+    s = sprite(LEADER, 150, 380, 220)
+    s += '<div class="abs serif" style="left: 100px; top: 600px; width: 320px; text-align: center; font-size: 20px; font-weight: 700; letter-spacing: 0.08em">大樹の巫女 このは</div>'
+    s += '<div class="abs" style="left: 120px; top: 636px">%s</div>' % hpbar(280, hp, 80, block=block, numeral=16)
+    s += ('<div class="abs" style="left: 110px; top: 676px; width: 460px; display: flex; align-items: center; gap: 8px; white-space: nowrap">'
+          '<span class="pill" style="color: %s; border-color: %s; background: %s">%s<span>最悪被ダメ</span><span class="numeral" style="font-size: 14px">−%d</span></span>'
+          '<span class="label" style="letter-spacing: 0.04em">→ HP <span class="numeral" style="font-size: 14px; color: #f4f6f0">%d</span>　ブロック %d を差し引き済</span></div>') % (
+        lerp(C['bad'], '#ffffff', 0.2), rgba(C['bad'], 0.5), rgba(C['bad'], 0.12), icon('warn', 13, lerp(C['bad'], '#ffffff', 0.2), 2), worst, hp - worst, block)
+    s += '<div class="abs" style="left: 110px; top: 710px; display: flex; gap: 8px">%s%s%s</div>' % (pill('leaf', '成長 +3', C['accent']), pill('wind', '勢い +2', C['gold']), pill('down', '弱体 1', '#a48ad0'))
     # 伏せ場
-    s += '<div class="abs" style="left: 420px; top: 372px; font-size: 14px; font-weight: 700; color: %s; display: flex; align-items: center; gap: 6px">%s伏せ場 <span class="num">1 / 1</span></div>' % (C['dim'], icon('eyeoff', 16, C['dim']))
-    s += '<div class="abs" style="left: 420px; top: 398px; padding: 6px; border: 3px dashed rgba(159,216,208,0.45); background: rgba(0,0,0,0.25)">%s</div>' % card_back(120, 172)
-    s += '<div class="abs" style="left: 420px; top: 596px; width: 136px; text-align: center; font-size: 12px; color: %s; line-height: 16px">被攻撃後に発動候補<br>回収 1E</div>' % C['dim']
+    s += '<div class="abs label" style="left: 424px; top: 374px; display: flex; align-items: center; gap: 6px">%s伏せ場 <span class="numeral" style="font-size: 12px; color: #f4f6f0">1 / 1</span></div>' % icon('eyeoff', 13, 'rgba(238,242,234,0.55)')
+    s += '<div class="abs" style="left: 420px; top: 398px; padding: 8px; border-radius: 12px; border: 1px dashed rgba(159,216,208,0.4)">%s</div>' % card_back(120, 172)
+    s += '<div class="abs label" style="left: 416px; top: 598px; width: 144px; text-align: center; font-size: 10px; line-height: 16px">被攻撃後に発動候補<br>回収 1E</div>'
     # 置物
-    s += '<div class="abs" style="left: 600px; top: 372px; font-size: 14px; font-weight: 700; color: %s">置物</div>' % C['dim']
-    perms = [('年輪の大樹', '毎T 成長+1', C['permanent'], False), ('大樹の根', '2ターン目から上限4', C['green'], True)]
+    s += '<div class="abs label" style="left: 604px; top: 374px">置物</div>'
+    perms = [('年輪の大樹', '毎T 成長+1', 'permanent', False), ('大樹の根', '2ターン目から上限4', 'permanent', True)]
     tiles = ''
-    for nm, eff, col, innate in perms:
-        tiles += ('<div class="panel" style="width: 150px; height: 128px; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; opacity: %s">'
-                  '<div style="height: 52px; border: 2px solid %s; overflow: hidden">%s</div>'
-                  '<div style="font-size: 14px; font-weight: 700; white-space: nowrap">%s</div><div style="font-size: 12px; color: %s; line-height: 15px">%s</div></div>') % (
-            '0.75' if innate else '1', C['edge'], cardart_svg(nm, col, 128, 52), nm, C['dim'], eff)
+    for nm, eff, typ, innate in perms:
+        tiles += ('<div class="glass" style="width: 148px; height: 120px; padding: 10px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; opacity: %s; border-radius: 10px">'
+                  '<div style="display: flex; align-items: center; gap: 8px">%s<div class="serif" style="font-size: 14px; font-weight: 700; white-space: nowrap">%s</div></div>'
+                  '<div class="label" style="font-size: 11px; letter-spacing: 0.04em; line-height: 16px">%s</div></div>') % ('0.7' if innate else '1', crest_svg('permanent', 26, C['green'] if innate else None), nm, eff)
     s += '<div class="abs" style="left: 600px; top: 398px; display: flex; gap: 10px">%s</div>' % tiles
     return s
 
-def enemy(x, svg, name, hp, mx, intent, chips, ring=None, block=None, dim=False):
+def enemy(cx, svg, name, hp, mx, intent, chips, ring=None, block=None):
     kind, text, sub, color = intent
-    s = intent_bubble(kind, text, sub, color, x - 16, 286)
-    s += sprite_with_shadow(svg, x, 400, 200, ring)
-    s += '<div class="abs" style="left: %dpx; top: 608px; width: 300px; text-align: center; font-size: 20px; font-weight: 700">%s</div>' % (x - 50, name)
-    s += '<div class="abs" style="left: %dpx; top: 644px">%s</div>' % (x - 20, hpbar(240, 22, hp, mx, block=block))
-    s += '<div class="abs" style="left: %dpx; top: 680px; width: 300px; display: flex; justify-content: center; gap: 8px">%s</div>' % (x - 50, ''.join(chips))
+    s = intent_capsule(kind, text, sub, color, cx, 292)
+    s += sprite(svg, cx - 100, 400, 200, ring)
+    s += '<div class="abs serif" style="left: %dpx; top: 604px; width: 300px; text-align: center; font-size: 20px; font-weight: 700; letter-spacing: 0.1em">%s</div>' % (cx - 150, name)
+    s += '<div class="abs" style="left: %dpx; top: 640px">%s</div>' % (cx - 110, hpbar(220, hp, mx, block=block))
+    s += '<div class="abs" style="left: %dpx; top: 680px; width: 300px; display: flex; justify-content: center; gap: 8px">%s</div>' % (cx - 150, ''.join(chips))
     return s
+
+HAND_CARDS = [
+    dict(name='打撃', typ='physical', cost=1, rarity='common', body_lines=[('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', dmg='6'),
+    dict(name='蔦の楔', typ='physical', cost=1, rarity='common', body_lines=[('shatter', '粉砕: 敵ブロック全壊'), ('dmg', 'ダメージ 5')], preview='→ 探り屋 に 5', dmg='5'),
+    dict(name='絡み蔦', typ='physical', cost=1, rarity='common', body_lines=[(None, 'どちらか1つ')], mode_lines=[('block', 'ブロック 7'), ('dmg', 'ダメージ 7')], dmg='7', blk='7'),
+    dict(name='防御', typ='physical', cost=1, rarity='common', body_lines=[('block', 'ブロック 5')], blk='5'),
+    dict(name='茨の返し', typ='reaction', cost=1, rarity='common', body_lines=[('counter', '被攻撃後: 返し 10')], notes='伏せる 1E', counter='10'),
+]
 
 def hand(hover_index=2):
-    cards = [
-        card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', key='1', dmg='6'),
-        card('蔦の楔', 'physical', 1, 'common', [('shatter', '粉砕: 敵ブロック全壊'), ('dmg', 'ダメージ 5')], preview='→ 探り屋 に 5', key='2', dmg='5'),
-        card('絡み蔦', 'physical', 1, 'common', [(None, 'どちらか1つ')], mode_lines=[('block', 'ブロック 7'), ('dmg', 'ダメージ 7')], key='3', dmg='7', blk='7'),
-        card('防御', 'physical', 1, 'common', [('block', 'ブロック 5')], key='4', blk='5'),
-        card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], notes='伏せる 1E', key='5', counter='10'),
-    ]
     offs = [(-392, 34, -9), (-196, 10, -4.5), (0, 0, 0), (196, 10, 4.5), (392, 34, 9)]
     s = ''
-    for i, (c, (dx, dy, rot)) in enumerate(zip(cards, offs)):
+    for i, (spec, (dx, dy, rot)) in enumerate(zip(HAND_CARDS, offs)):
         hovered = i == hover_index
+        c = card(key=str(i + 1), **spec)
         sc = 0.92 if not hovered else 1.0
         lift = 0 if not hovered else -70
-        glow = 'filter: drop-shadow(0 0 14px rgba(240,195,60,0.55));' if hovered else ''
-        z = 10 if hovered else i
+        glow = 'filter: drop-shadow(0 0 18px rgba(224,184,74,0.45));' if hovered else ''
         s += ('<div class="abs" style="left: %dpx; bottom: %dpx; width: 200px; height: 290px; transform: rotate(%sdeg) scale(%s); transform-origin: 50%% 100%%; z-index: %d; %s">%s</div>' % (
-            960 - 100 + dx, 30 - dy - lift, 0 if hovered else rot, sc, z, glow, c))
+            960 - 100 + dx, 30 - dy - lift, 0 if hovered else rot, sc, 10 if hovered else i, glow, c))
     return s
 
+def energy_ring(cur, mx, x, y, size=124):
+    r = 54; circ = 2 * 3.14159 * r
+    frac = cur / mx
+    return ('<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: %dpx">'
+            '<svg width="%d" height="%d" viewBox="0 0 124 124" style="display:block; transform: rotate(-90deg)"><circle cx="62" cy="62" r="%d" fill="rgba(0,0,0,0.45)" stroke="rgba(238,242,234,0.1)" stroke-width="6"></circle>'
+            '<circle cx="62" cy="62" r="%d" fill="none" stroke="%s" stroke-width="6" stroke-linecap="round" stroke-dasharray="%.1f %.1f"></circle></svg>'
+            '<div class="abs numeral" style="inset: 0; display: flex; align-items: baseline; justify-content: center; padding-top: 34px; color: #f4f6f0; font-size: 40px; text-shadow: 0 0 18px %s">%d<span style="font-size: 18px; color: rgba(238,242,234,0.5); margin-left: 4px">/ %d</span></div>'
+            '<div class="abs label" style="left: 0; right: 0; bottom: 20px; text-align: center; font-size: 10px">エナジー</div></div>') % (
+        x, y, size, size, size, size, r, r, C['gold'], circ * frac, circ * (1 - frac), rgba(C['gold'], 0.6), cur, mx)
+
 def bottom_controls(energy=3, emax=4):
-    s = ('<div class="abs" style="left: 96px; top: 830px; width: 136px; height: 136px; border-radius: 50%%; background: radial-gradient(circle at 40%% 35%%, #fff0a8 0%%, %s 40%%, #9a7a1c 100%%); border: 4px solid #1a1208; box-shadow: 0 0 28px rgba(240,195,60,0.35); display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 900; color: #fff; text-shadow: 0 0 4px #000, 0 3px 0 #000" class="num">%d/%d</div>'
-         '<div class="abs" style="left: 96px; top: 972px; width: 136px; text-align: center; font-size: 13px; color: %s">エナジー · 上限 %d</div>') % (C['energy'], energy, emax, C['dim'], emax)
-    s += ('<div class="abs panel" style="left: 40px; top: 1000px; width: 132px; height: 62px; display: flex; align-items: center; gap: 10px; padding: 0 12px; box-sizing: border-box">%s<span class="num" style="font-size: 26px; font-weight: 900">12</span><span style="font-size: 12px; color: %s; margin-left: auto">山札</span></div>') % (icon('deck', 24, C['text']), C['dim'])
-    s += ('<div class="abs panel" style="left: 1690px; top: 1000px; width: 190px; height: 62px; display: flex; align-items: center; gap: 10px; padding: 0 12px; box-sizing: border-box">%s<span class="num" style="font-size: 26px; font-weight: 900">3</span><span style="font-size: 12px; color: %s">捨て札</span><span class="num" style="font-size: 20px; font-weight: 700; color: %s; margin-left: auto">1</span><span style="font-size: 12px; color: %s">消滅</span></div>') % (icon('undo', 24, C['text']), C['dim'], C['dim'], C['dim'])
-    s += ('<div class="abs btn" style="left: 1650px; top: 870px; width: 230px; height: 72px; font-size: 22px">ターン終了 <span class="keycap" style="font-size: 13px">E</span></div>'
-          '<div class="abs" style="left: 1650px; top: 838px; width: 230px; text-align: right; font-size: 13px; color: %s">手札 5 · 伏せ 1/1</div>') % C['dim']
+    s = energy_ring(energy, emax, 96, 838)
+    s += '<div class="abs label" style="left: 96px; top: 966px; width: 124px; text-align: center; font-size: 10px; letter-spacing: 0.08em">上限 %d · 2ターン目から</div>' % emax
+    s += ('<div class="abs pill" style="left: 40px; top: 1012px; height: 34px; padding: 0 14px; border-radius: 17px">%s<span class="numeral" style="font-size: 16px; color: #f4f6f0">12</span><span class="label">山札</span></div>') % icon('deck', 16, 'rgba(238,242,234,0.7)')
+    s += ('<div class="abs pill" style="left: 1660px; top: 1012px; height: 34px; padding: 0 14px; border-radius: 17px; gap: 10px">%s<span class="numeral" style="font-size: 16px; color: #f4f6f0">3</span><span class="label">捨て札</span><span style="width: 1px; height: 14px; background: rgba(238,242,234,0.2)"></span><span class="numeral" style="font-size: 16px; color: #f4f6f0">1</span><span class="label">消滅</span></div>') % icon('undo', 16, 'rgba(238,242,234,0.7)')
+    s += ('<div class="abs btn btn-ghost" style="left: 1650px; top: 872px; width: 230px; height: 64px; font-size: 20px; border-color: %s; letter-spacing: 0.1em; border-radius: 32px" ><span class="serif">ターン終了</span><span class="keycap">E</span></div>'
+          '<div class="abs label" style="left: 1650px; top: 846px; width: 230px; text-align: right; font-size: 10px">手札 5 · 伏せ 1/1</div>') % rgba(C['gold'], 0.5)
     return s
 
 def battle_scene(with_modal=False):
-    s = '<div style="position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #131917">'
+    s = '<div style="position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #0f1412">'
     s += background()
     s += topbar()
+    s += player_zone()
     if not with_modal:
-        s += player_zone()
-        s += enemy(1080, PROBE_A, '探り屋', 31, 38, ('sword', '5〜7', '伏せ札あり → 12〜16 か 5〜7（順番を守らない）', C['bad']),
-                   [chip('target', '急所 2', C['energy']), chip('down', '筋力 −2', C['dim'])], ring=C['gold'])
-        s += enemy(1480, PROBE_B, '探り屋', 38, 38, ('sword', '12〜16', '本気の突き（三度目）', C['bad']),
-                   [chip('down', '筋力 −2', C['dim'])], block=6)
+        s += enemy(1180, PROBE_A, '探り屋', 31, 38, ('sword', '5〜7', '伏せ札あり → 12〜16 か 5〜7（順番を守らない）', C['bad']),
+                   [pill('target', '急所 2', C['expose'] if 'expose' in C else '#e0a04a'), pill('down', '筋力 −2', '#8a9a90')], ring=C['gold'])
+        s += enemy(1580, PROBE_B, '探り屋', 38, 38, ('sword', '12〜16', '本気の突き（三度目）', C['bad']), [pill('down', '筋力 −2', '#8a9a90')], block=6)
         s += hand(2)
         s += bottom_controls()
     else:
-        s += player_zone(hp=62, block=8, worst=14)
-        s += enemy(1080, PROBE_A, '探り屋', 31, 38, ('sword', '5〜7', '伏せ札あり → 12〜16 か 5〜7', C['bad']),
-                   [chip('target', '急所 2', C['energy']), chip('down', '筋力 −2', C['dim'])])
-        s += enemy(1480, PROBE_B, '探り屋', 38, 38, ('sword', '14', '実値 · 表示は 12〜16', C['bad']),
-                   [chip('down', '筋力 −2', C['dim'])], block=6, ring=C['bad'])
+        s += enemy(1180, PROBE_A, '探り屋', 31, 38, ('sword', '5〜7', '伏せ札あり → 12〜16 か 5〜7', C['bad']),
+                   [pill('target', '急所 2', '#e0a04a'), pill('down', '筋力 −2', '#8a9a90')])
+        s += enemy(1580, PROBE_B, '探り屋', 38, 38, ('sword', '14', '実値 · 表示は 12〜16', C['bad']), [pill('down', '筋力 −2', '#8a9a90')], block=6, ring=C['bad'])
         s += hand(None)
         s += bottom_controls(energy=0)
-        s += '<div class="abs" style="left: 0; top: 0; width: 1920px; height: 1080px; background: rgba(0,0,0,0.62); z-index: 50"></div>'
+        s += '<div class="abs" style="left: 0; top: 0; width: 1920px; height: 1080px; background: rgba(6,9,8,0.7); z-index: 50"></div>'
         s += reaction_modal()
     s += '</div>'
     return s
 
 def reaction_modal():
-    m = '<div class="abs panel" style="left: 460px; top: 260px; width: 1000px; height: 540px; z-index: 51; background: #1e2622; box-shadow: inset 0 3px 0 #3a4a44, inset 3px 0 0 #3a4a44, 0 30px 60px rgba(0,0,0,0.6)">'
-    m += ('<div class="abs" style="left: 32px; top: 24px; right: 32px; display: flex; align-items: baseline; gap: 16px"><div style="font-size: 28px; font-weight: 900; color: %s">リアクション — 発動する？ 温存する？</div>'
-          '<div style="font-size: 14px; color: %s; margin-left: auto">被攻撃後（解決後）の窓</div></div>') % (C['accent'], C['dim'])
-    # 行動の要約
-    m += ('<div class="abs" style="left: 32px; top: 84px; width: 440px; display: flex; flex-direction: column; gap: 14px">'
-          '<div class="panel" style="padding: 14px 16px; background: rgba(0,0,0,0.35); display: flex; flex-direction: column; gap: 10px">'
-          '<div style="display: flex; align-items: center; gap: 10px; font-size: 16px; color: %s">%s<span>探り屋（2体目）の行動</span></div>'
-          '<div style="display: flex; align-items: center; gap: 12px">%s<span class="num" style="font-size: 34px; font-weight: 900; color: %s">14</span><span style="font-size: 14px; color: %s">実値（表示は 12〜16）</span></div>'
-          '<div style="display: flex; align-items: center; gap: 10px; font-size: 16px">%s<span>ブロック 8 で受け</span><span style="color: %s">→</span><span class="num" style="font-weight: 900; color: %s">HP −6</span><span class="num" style="color: %s">62 → 56</span></div>'
+    m = '<div class="abs glass" style="left: 480px; top: 270px; width: 960px; height: 520px; z-index: 51; border-radius: 14px; border-color: rgba(224,184,74,0.35); box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)">'
+    m += ('<div class="abs" style="left: 36px; top: 28px; right: 36px; display: flex; align-items: baseline; gap: 18px">'
+          '<div class="serif" style="font-size: 26px; font-weight: 700; letter-spacing: 0.1em">リアクション</div><div class="label" style="font-size: 13px; letter-spacing: 0.1em">発動する？ 温存する？</div>'
+          '<div class="label" style="margin-left: auto">被攻撃後（解決後）の窓</div></div>')
+    m += ('<div class="abs" style="left: 36px; top: 84px; width: 420px; display: flex; flex-direction: column; gap: 16px">'
+          '<div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(238,242,234,0.1)">'
+          '<div class="label" style="display: flex; align-items: center; gap: 8px">%s探り屋（2体目）の行動</div>'
+          '<div style="display: flex; align-items: baseline; gap: 12px"><span class="numeral" style="font-size: 44px; color: %s; line-height: 1">14</span><span class="label">実値 · 表示は 12〜16</span></div>'
+          '<div style="height: 1px; background: rgba(238,242,234,0.1)"></div>'
+          '<div style="display: flex; align-items: center; gap: 10px; font-size: 14px">%s<span>ブロック 8 で受け</span><span class="label">→</span><span class="numeral" style="font-size: 18px; color: %s">−6</span><span class="label">HP 62 → 56</span></div>'
           '</div>'
-          '<div class="panel" style="padding: 12px 16px; background: rgba(224,184,74,0.10); border-color: #4a3a10; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 20px; color: %s">%s<span>発動すると後続の 探り屋 は「伏せなし」の分岐で確定する（5〜7 → 12〜16 になる可能性）</span></div>'
-          '<div style="font-size: 13px; color: %s; line-height: 19px">温存すれば札は伏せたまま残る。次のターンも同じ窓が開く。<br>回収は自ターンに 1E。</div>'
-          '</div>') % (C['dim'], icon('sword', 20, C['bad']), icon('sword', 36, C['bad'], 2.2), C['bad'], C['dim'], icon('shield', 22, C['block']), C['dim'], C['bad'], C['dim'], C['gold'], icon('warn', 20, C['gold']), C['dim'])
-    # 候補札
-    m += '<div class="abs" style="left: 520px; top: 84px; font-size: 14px; font-weight: 700; color: %s">発動できる伏せ札</div>' % C['dim']
-    m += '<div class="abs" style="left: 520px; top: 110px; width: 200px; height: 290px">%s</div>' % card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], preview='→ 探り屋 38 → 28', counter='10')
-    m += ('<div class="abs" style="left: 748px; top: 118px; width: 220px; display: flex; flex-direction: column; gap: 12px">'
-          '<div class="btn btn-gold" style="height: 64px; font-size: 22px">発動 <span class="keycap" style="color: #1a1208; background: #fff0a8">F</span></div>'
-          '<div class="btn" style="height: 56px; font-size: 18px">温存する <span class="keycap">H</span></div>'
-          '<div style="font-size: 12px; color: %s; line-height: 17px; text-align: center">発動後は捨て札へ。<br>消滅持ちは消滅置き場へ</div>'
-          '</div>') % C['dim']
-    m += ('<div class="abs" style="left: 32px; right: 32px; top: 476px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: %s">%s<span>この後 探り屋（1体目）の行動が続く：攻撃 5〜7</span></div>') % (C['dim'], icon('arrow', 16, C['dim']))
+          '<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; border: 1px solid %s; background: %s; font-size: 13px; line-height: 19px; color: %s">%s<span>発動すると後続の探り屋は「伏せなし」の分岐で確定する（5〜7 → 12〜16 の可能性）</span></div>'
+          '<div class="label" style="font-size: 12px; line-height: 18px; letter-spacing: 0.04em">温存すれば札は伏せたまま残り、次のターンも同じ窓が開く。回収は自ターンに 1E。</div>'
+          '</div>') % (icon('sword', 14, C['bad'], 2), C['bad'], icon('shield', 18, C['block']), C['bad'], rgba(C['gold'], 0.4), rgba(C['gold'], 0.08), C['goldSoft'], icon('warn', 18, C['gold']))
+    m += '<div class="abs label" style="left: 520px; top: 84px">発動できる伏せ札</div>'
+    m += '<div class="abs" style="left: 520px; top: 112px; width: 200px; height: 290px">%s</div>' % card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], preview='→ 探り屋 38 → 28', counter='10')
+    m += ('<div class="abs" style="left: 748px; top: 120px; width: 176px; display: flex; flex-direction: column; gap: 12px">'
+          '<div class="btn btn-primary" style="height: 56px; font-size: 18px"><span class="serif" style="letter-spacing: 0.12em">発動</span><span class="keycap" style="color: #15120a; border-color: rgba(0,0,0,0.4)">F</span></div>'
+          '<div class="btn btn-ghost" style="height: 48px; font-size: 15px">温存する <span class="keycap">H</span></div>'
+          '<div class="label" style="font-size: 10px; line-height: 15px; text-align: center; letter-spacing: 0.04em">発動後は捨て札へ。<br>消滅持ちは消滅置き場へ</div></div>')
+    m += ('<div class="abs label" style="left: 36px; right: 36px; top: 462px; display: flex; align-items: center; gap: 10px; font-size: 12px">%s<span>この後 探り屋（1体目）の行動が続く：攻撃 5〜7</span></div>') % icon('arrow', 14, 'rgba(238,242,234,0.5)')
     m += '</div>'
     return m
 
+# ---- カードの面 (役割の読み方) ----
 def card_anatomy():
-    W, H = 1760, 820
-    s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #131917">' % (W, H)
-    s += '<div class="abs serif" style="left: 40px; top: 26px; font-size: 28px; font-weight: 700">カードの面 — 塔の戦利品として</div>'
-    s += ('<div class="abs" style="left: 40px; top: 66px; font-size: 14px; color: %s; line-height: 20px">枠の材質＝タイプ（鉄帯の木枠・紫の呪印・封蝋の漆・石板と金の象嵌）／角の蔦＝流派の色／名前は羊皮紙の帯に明朝／本文は羊皮紙に墨。'
-          '1枚ずつの絵は最後なので、窓にはタイプの紋章を置く。<b style="color: %s">左下の剣＝与えるダメージ、右下の盾＝得るブロック</b>。数字だけ見れば攻めか守りか分かる。</div>') % (C['dim'], C['text'])
+    W, H = 1760, 800
+    s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #0f1412">' % (W, H)
+    s += background(W, H)
+    s += '<div class="abs serif" style="left: 40px; top: 26px; font-size: 28px; font-weight: 700; letter-spacing: 0.1em">カードの面</div>'
+    s += ('<div class="abs" style="left: 40px; top: 70px; font-size: 13px; color: rgba(238,242,234,0.7); line-height: 20px; width: 1100px">暗い面に、タイプの色は縁と紋章の光だけ。名前は明朝、数字は Cinzel。<b style="color: #f4f6f0">左下の剣＝与えるダメージ、右下の盾＝得るブロック</b>。数字だけ見れば攻めか守りか分かる。1枚ずつの絵は最後なので、窓にはタイプの紋章。</div>')
     cards = [
-        (card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', dmg='6'), '攻撃', '剣の札だけ'),
-        (card('防御', 'physical', 1, 'common', [('block', 'ブロック 5')], blk='5'), '防御', '盾の札だけ'),
-        (card('絡み蔦', 'physical', 1, 'common', [(None, 'どちらか1つ')], mode_lines=[('block', 'ブロック 7'), ('dmg', 'ダメージ 7')], dmg='7', blk='7'), '択', '両方＋「どちらか」'),
-        (card('二連の蔦打ち', 'physical', 1, 'common', [('dmg', 'ダメージ 5 ×2')], preview='→ 探り屋 に 5+5', dmg='5×2'), '多段', '剣に ×N'),
-        (card('疾風の号砲', 'spell', 1, 'uncommon', [('momentum', '勢い +3'), ('momentum', '勢い 2倍')], notes='消滅'), '補助', '札なし＝数字を出さない'),
-        (card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], notes='伏せる 1E', counter='10'), '返し', '戻り矢印の札'),
-        (card('年輪の大樹', 'permanent', 2, 'rare', [('block', 'ブロック 5'), ('growth', '毎T開始時: 成長 +1')], blk='5'), '置物', '盾＋毎ターンの本文'),
+        (card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', dmg='6'), '攻撃'),
+        (card('防御', 'physical', 1, 'common', [('block', 'ブロック 5')], blk='5'), '防御'),
+        (card('絡み蔦', 'physical', 1, 'common', [(None, 'どちらか1つ')], mode_lines=[('block', 'ブロック 7'), ('dmg', 'ダメージ 7')], dmg='7', blk='7'), '択'),
+        (card('二連の蔦打ち', 'physical', 1, 'common', [('dmg', 'ダメージ 5 ×2')], preview='→ 探り屋 に 5+5', dmg='5×2'), '多段'),
+        (card('疾風の号砲', 'spell', 1, 'uncommon', [('momentum', '勢い +3'), ('momentum', '勢い 2倍')], notes='消滅'), '補助'),
+        (card('茨の返し', 'reaction', 1, 'common', [('counter', '被攻撃後: 返し 10')], notes='伏せる 1E', counter='10'), '返し'),
+        (card('年輪の大樹', 'permanent', 2, 'rare', [('block', 'ブロック 5'), ('growth', '毎T開始時: 成長 +1')], blk='5'), '置物'),
     ]
-    sc = 1.15
-    step = 236
-    for i, (c, role, note) in enumerate(cards):
+    sc = 1.15; step = 236
+    for i, (c, role) in enumerate(cards):
         x = 60 + i * step
-        s += '<div class="abs" style="left: %dpx; top: 150px; width: 200px; height: 290px; transform: scale(%s); transform-origin: 0 0">%s</div>' % (x, sc, c)
-        s += ('<div class="abs" style="left: %dpx; top: 500px; width: %dpx; text-align: center"><div class="serif" style="font-size: 20px; font-weight: 700; color: %s">%s</div><div style="font-size: 13px; color: %s; margin-top: 4px">%s</div></div>'
-              % (x, 200 * sc, C['gold'], role, C['dim'], note))
-    # 凡例: 本文のアイコン
-    s += '<div class="abs" style="left: 60px; top: 580px; font-size: 15px; font-weight: 700; color: %s">本文のしるし（16px の状態アイコンと同じ絵）</div>' % C['text']
+        s += '<div class="abs" style="left: %dpx; top: 140px; width: 200px; height: 290px; transform: scale(%s); transform-origin: 0 0">%s</div>' % (x, sc, c)
+        s += '<div class="abs serif" style="left: %dpx; top: 490px; width: %dpx; text-align: center; font-size: 18px; font-weight: 700; color: %s; letter-spacing: 0.2em">%s</div>' % (x, 200 * sc, C['goldSoft'], role)
+    s += '<div class="abs label" style="left: 60px; top: 560px">本文のしるし</div>'
     leg = [('dmg', 'ダメージ'), ('block', 'ブロック'), ('counter', '返し'), ('growth', '成長'), ('momentum', '勢い'), ('expose', '急所'), ('shatter', '粉砕'), ('draw', 'ドロー'), ('mana', 'エナジー')]
-    s += '<div class="abs" style="left: 60px; top: 612px; display: flex; gap: 14px; flex-wrap: wrap; width: 1640px">'
+    s += '<div class="abs" style="left: 60px; top: 586px; display: flex; gap: 10px; flex-wrap: wrap; width: 1640px">'
     for k, t in leg:
-        s += ('<div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; background: %s; border: 2px solid #0b0f0d; color: %s; font-size: 14px; font-weight: 700">'
-              '<span style="display:inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; border-radius: 50%%; background: %s">%s</span>%s</div>') % (PARCH, INK, ROLE[k], icon(ROLE_ICON[k], 14, '#fff', 2.6), t)
+        s += '<div class="pill" style="height: 30px; color: %s; border-color: %s">%s<span>%s</span></div>' % (lerp(ROLE[k], '#ffffff', 0.25), rgba(ROLE[k], 0.45), icon(ROLE_ICON[k], 14, lerp(ROLE[k], '#ffffff', 0.25), 2), t)
     s += '</div>'
-    s += ('<div class="abs" style="left: 60px; top: 680px; width: 1640px; font-size: 14px; color: %s; line-height: 22px">'
-          '実装メモ: 枠は 9スライス 64×96（`card_&lt;type&gt;_&lt;color&gt;.png`・発注書どおり）、蔦は色ごとの角パーツ、剣と盾の札は効果から導く（dealDamage の合計→剣、gainBlock/gainIceBlock→盾、counter→戻り矢印。データにカテゴリは増やさない）。'
-          '手札では 0.92 倍・ホバーで 1.0。文字は名前 Zen Antique 20px／本文 Noto Sans JP 14px 700。使えない札は全体を 45%% 暗くする。</div>') % C['dim']
+    s += ('<div class="abs" style="left: 60px; top: 650px; width: 1640px; font-size: 12px; color: rgba(238,242,234,0.55); line-height: 20px; letter-spacing: 0.02em">'
+          '実装メモ: 面は 1px の縁＋上部のタイプ色の光（9スライスは色を掛けるだけの1種で足りる）。剣と盾の札は効果から導く（dealDamage の合計→剣、gainBlock/gainIceBlock→盾、counter→戻り矢印。データにカテゴリは増やさない）。'
+          '手札では 0.92 倍・ホバーで 1.0 と金の淡い光。名前 Shippori Mincho B1 20px／本文 Noto Sans JP 13px 500／数字 Cinzel。使えない札は彩度と明度を落とす。</div>')
     s += '</div>'
     return s
 
-def lowfi(title, motivation, tradeoff, boxes, notes):
-    # boxes: (x, y, w, h, label, kind) kind: 'field'|'ui'|'card'|'accent'
+# ---- 見た目の別案 (同じ部品を3つの肌で) ----
+def styles_board():
+    W, H = 1760, 620
+    s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #0f1412">' % (W, H)
+    s += '<div class="abs serif" style="left: 40px; top: 26px; font-size: 28px; font-weight: 700; letter-spacing: 0.1em">見た目の方向 — 同じ部品を3つの肌で</div>'
+    s += '<div class="abs label" style="left: 40px; top: 68px; font-size: 12px">A が本命（左の2枚に適用済み）。B・C は同じ骨格に別の肌を着せた場合。</div>'
+    cols = [
+        ('A', '静かな夜', '暗いガラスの面・細い金の線・明朝。夜の塔の空気を壊さず、数字と名前だけを浮かせる', '派手さは無い。ドット絵の敵が主役になる分、UIは引く',
+         dict(bg='linear-gradient(180deg, #162919, #0a0f0b)', panel='rgba(12,17,15,0.72)', border='rgba(238,242,234,0.16)', text='#eef2ea', dim='rgba(238,242,234,0.55)', radius='8px', shadow='0 8px 24px rgba(0,0,0,0.35)', accent='#e0b84a', hp='#c94f4f', bad='#e06c6c', block='#6f9fd8', numeral='#f4f6f0', btnbg='#e0b84a', btntext='#15120a', cardbg='linear-gradient(180deg, #1d2624, #121816)', cardborder='rgba(176,138,90,0.55)')),
+        ('B', '白の版画', '生成りの紙に黒い線と赤。版画の刷りのような硬い輪郭で、情報が紙に刷られている感じ', '夜の舞台と対比が強く、目が疲れる人もいる。暗い敵の絵と喧嘩しやすい',
+         dict(bg='linear-gradient(180deg, #2a2622, #15130f)', panel='#efe9dc', border='#15130f', text='#15130f', dim='rgba(21,19,15,0.6)', radius='2px', shadow='4px 4px 0 #15130f', accent='#c8321e', hp='#c8321e', bad='#c8321e', block='#1f4e8c', numeral='#15130f', btnbg='#15130f', btntext='#efe9dc', cardbg='#f3eee2', cardborder='#15130f')),
+        ('C', '霧の水彩', '青緑の霧のような柔らかい面と丸み。光がにじむ。ゆるかわの住人と相性がよい', '締まりが出にくく、緊張の場面（確認ウィンドウ）で圧が弱い',
+         dict(bg='linear-gradient(180deg, #1b3a3d, #0d1c20)', panel='linear-gradient(180deg, rgba(120,170,175,0.22), rgba(40,80,90,0.28))', border='rgba(190,230,230,0.28)', text='#f2fbfa', dim='rgba(242,251,250,0.6)', radius='16px', shadow='0 12px 30px rgba(0,0,0,0.35), 0 0 30px rgba(120,200,200,0.12)', accent='#ffd27a', hp='#ff7a6e', bad='#ff9a8e', block='#8ec5ff', numeral='#ffffff', btnbg='#ffd27a', btntext='#1b2a2c', cardbg='linear-gradient(180deg, rgba(120,170,175,0.25), rgba(30,60,70,0.6))', cardborder='rgba(190,230,230,0.35)')),
+    ]
+    for i, (tag, title, why, cost, t) in enumerate(cols):
+        x = 40 + i * 570
+        s += '<div class="abs" style="left: %dpx; top: 100px; width: 540px; height: 490px; border-radius: 12px; background: %s; border: 1px solid rgba(238,242,234,0.1); overflow: hidden">' % (x, t['bg'])
+        s += ('<div class="abs" style="left: 22px; top: 18px; display: flex; align-items: baseline; gap: 12px"><span class="numeral" style="font-size: 22px; color: %s">%s</span><span class="serif" style="font-size: 22px; font-weight: 700; color: %s; letter-spacing: 0.1em">%s</span></div>') % (t['accent'], tag, t['text'] if tag != 'B' else '#efe9dc', title)
+        # 部品1: 意図カプセル＋名前＋HP
+        s += ('<div class="abs" style="left: 22px; top: 70px; width: 236px; height: 52px; border-radius: %s; background: %s; border: 1px solid %s; box-shadow: %s; display: flex; align-items: center; justify-content: center; gap: 10px">%s<span class="numeral" style="font-size: 24px; color: %s">12〜16</span></div>'
+              '<div class="abs serif" style="left: 22px; top: 134px; width: 236px; text-align: center; font-size: 18px; font-weight: 700; color: %s; letter-spacing: 0.1em">探り屋</div>'
+              '<div class="abs" style="left: 40px; top: 166px; width: 200px; height: 10px; border-radius: %s; background: rgba(0,0,0,0.25); border: 1px solid %s"><div style="width: 80%%; height: 100%%; border-radius: inherit; background: %s"></div></div>'
+              '<div class="abs numeral" style="left: 40px; top: 182px; width: 200px; text-align: center; font-size: 14px; color: %s">31 <span style="opacity: 0.5">/ 38</span></div>') % (
+            t['radius'], t['panel'], t['border'], t['shadow'], icon('sword', 22, t['bad'], 1.8), t['bad'] if tag != 'B' else '#c8321e',
+            '#efe9dc' if tag == 'B' else t['text'], '5px' if tag != 'B' else '0', t['border'] if tag == 'B' else 'rgba(0,0,0,0)', t['hp'], '#efe9dc' if tag == 'B' else t['numeral'])
+        # 部品2: ボタン
+        s += ('<div class="abs" style="left: 22px; top: 224px; width: 236px; display: flex; flex-direction: column; gap: 10px">'
+              '<div class="btn" style="height: 48px; font-size: 16px; border-radius: %s; background: %s; color: %s; box-shadow: %s"><span class="serif" style="letter-spacing: 0.12em">発動</span></div>'
+              '<div class="btn" style="height: 44px; font-size: 14px; border-radius: %s; background: %s; color: %s; border: 1px solid %s">温存する</div></div>') % (
+            t['radius'], t['btnbg'], t['btntext'], t['shadow'], t['radius'], t['panel'] if tag != 'A' else 'rgba(0,0,0,0.35)', t['text'] if tag == 'B' else t['text'], t['border'])
+        # 部品3: カード (スキンを当てる簡易版)
+        s += '<div class="abs" style="left: 300px; top: 70px">%s</div>' % skin_card(t, tag)
+        s += ('<div class="abs" style="left: 22px; bottom: 18px; width: 496px; font-size: 12px; line-height: 18px; color: %s"><b style="color: %s">ねらい:</b> %s<br><b style="color: %s">代償:</b> %s</div>') % (
+            'rgba(238,242,234,0.75)', t['accent'], why, t['accent'], cost)
+        s += '</div>'
+    s += '</div>'
+    return s
+
+def skin_card(t, tag):
+    hard = tag == 'B'
+    radius = t['radius']
+    return ('<div style="position: relative; width: 200px; height: 290px">'
+            '<div class="abs" style="inset: 0; border-radius: %s; background: %s; border: %s solid %s; box-shadow: %s"></div>'
+            '<div class="abs numeral" style="left: 12px; top: 12px; width: 34px; height: 34px; border-radius: 50%%; border: 1px solid %s; background: %s; display: flex; align-items: center; justify-content: center; font-size: 17px; color: %s">1</div>'
+            '<div class="abs serif" style="left: 50px; right: 36px; top: 12px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: %s; letter-spacing: 0.04em">打撃</div>'
+            '<div class="abs" style="left: 14px; right: 14px; top: 60px; height: 92px; border-radius: %s; background: %s; border: 1px solid %s; display: flex; align-items: center; justify-content: center">%s</div>'
+            '<div class="abs label" style="left: 0; right: 0; top: 160px; text-align: center; font-size: 10px; color: %s">物理 · コモン</div>'
+            '<div class="abs" style="left: 16px; right: 16px; top: 182px; text-align: center; font-size: 13px; font-weight: 500; color: %s; display: flex; align-items: center; justify-content: center; gap: 4px">%s ダメージ 6</div>'
+            '<div class="abs numeral" style="left: 14px; bottom: 12px; height: 30px; padding: 0 10px 0 8px; display: flex; align-items: center; gap: 6px; border-radius: %s; background: %s; border: 1px solid %s; color: %s; font-size: 17px">%s<span>6</span></div>'
+            '</div>') % (
+        radius, t['cardbg'], '2px' if hard else '1px', t['cardborder'], t['shadow'],
+        t['accent'] if not hard else t['border'], 'rgba(0,0,0,0.55)' if not hard else '#efe9dc', t['accent'] if not hard else t['text'],
+        t['text'] if not hard else '#15130f', '4px' if hard else ('6px' if tag == 'A' else '12px'),
+        'rgba(0,0,0,0.3)' if not hard else '#e4dccb', t['cardborder'] if hard else 'rgba(255,255,255,0.06)', crest_svg('physical', 50, '#15130f' if hard else None),
+        t['dim'] if not hard else 'rgba(21,19,15,0.6)', t['text'] if not hard else '#15130f', icon('sword', 14, t['bad'], 2),
+        '4px' if hard else ('6px' if tag == 'A' else '10px'), rgba(t['bad'], 0.16) if not hard else '#c8321e', rgba(t['bad'], 0.55) if not hard else '#15130f', lerp(t['bad'], '#ffffff', 0.35) if not hard else '#efe9dc', icon('sword', 14, lerp(t['bad'], '#ffffff', 0.35) if not hard else '#efe9dc', 2.2))
+
+# ---- 低精細の構造案 (据え置き) ----
+def lowfi(title, motivation, tradeoff, boxes):
     s = ('<div style="position: relative; width: 960px; height: 540px; overflow: hidden; background: #f4f1ea; color: #2a2a2a; font-family: \'Zen Kurenaido\', \'Noto Sans JP\', sans-serif">')
     s += '<div class="abs" style="left: 20px; top: 12px; font-size: 24px; font-weight: 700">%s</div>' % title
     for x, y, w, h, label, kind in boxes:
@@ -448,29 +457,18 @@ def lowfi(title, motivation, tradeoff, boxes, notes):
     return s + '</div>'
 
 def direction_b():
-    boxes = [
-        (20, 50, 920, 400, '', 'field'),
-        (330, 60, 120, 90, '敵A\n意図カード', 'card'), (470, 60, 120, 90, '敵B\n意図カード', 'card'), (610, 60, 120, 90, '敵C\n意図カード', 'card'),
-        (330, 160, 400, 60, '敵の列（顔・HP・状態）', 'ui'),
-        (400, 240, 260, 90, '卓の中央 = 伏せ場（大きく）\n敵の意図カードと向き合う', 'accent'),
-        (40, 300, 200, 140, 'リーダーの卓席\n顔・HP・ブロック・最悪被ダメ', 'ui'),
-        (700, 300, 220, 60, '置物の列', 'ui'),
-        (260, 350, 420, 90, '手札は扇でなく一列（重ならない）', 'ui'),
-        (700, 380, 220, 60, 'エナジー · ターン終了', 'ui'),
-    ]
+    boxes = [(20, 50, 920, 400, '', 'field'), (330, 60, 120, 90, '敵A\n意図カード', 'card'), (470, 60, 120, 90, '敵B\n意図カード', 'card'), (610, 60, 120, 90, '敵C\n意図カード', 'card'),
+             (330, 160, 400, 60, '敵の列（顔・HP・状態）', 'ui'), (400, 240, 260, 90, '卓の中央 = 伏せ場（大きく）\n敵の意図カードと向き合う', 'accent'),
+             (40, 300, 200, 140, 'リーダーの卓席\n顔・HP・ブロック・最悪被ダメ', 'ui'), (700, 300, 220, 60, '置物の列', 'ui'), (260, 350, 420, 90, '手札は扇でなく一列（重ならない）', 'ui'), (700, 380, 220, 60, 'エナジー · ターン終了', 'ui')]
     return lowfi('案B — 卓上型（テーブル）', '伏せ札を「卓の中央に置く」物理感で set-confirm を主役にする。敵の意図もカードとして卓に出るので読み合いが一枚の卓で完結する',
-                 '敵が3体以上だと意図カードが窮屈。人物の絵が小さくなり、PixelLab の立ち絵が活きにくい', boxes, None)
+                 '敵が3体以上だと意図カードが窮屈。人物の絵が小さくなり、PixelLab の立ち絵が活きにくい', boxes)
 
 def direction_c():
-    boxes = [
-        (20, 50, 220, 400, 'サイドレール\n\nリーダー顔 / HP\nブロック / 状態\n最悪被ダメ\n\n山札 / 捨て札 / 消滅\n\n直近ログ 5行\n\nキー凡例', 'ui'),
-        (260, 50, 680, 40, '予測バー: 最悪 −14 ／ 打ち消し可 2 ／ 伏せ 1/1', 'accent'),
-        (260, 100, 680, 220, '戦場（敵は大きく・意図は頭上）', 'field'),
-        (260, 330, 680, 120, '手札は一列・文字を大きく（ホバーで拡大）', 'ui'),
-        (860, 100, 70, 40, 'ログ', 'ui'),
-    ]
+    boxes = [(20, 50, 220, 400, 'サイドレール\n\nリーダー顔 / HP\nブロック / 状態\n最悪被ダメ\n\n山札 / 捨て札 / 消滅\n\n直近ログ 5行\n\nキー凡例', 'ui'),
+             (260, 50, 680, 40, '予測バー: 最悪 −14 ／ 打ち消し可 2 ／ 伏せ 1/1', 'accent'), (260, 100, 680, 220, '戦場（敵は大きく・意図は頭上）', 'field'),
+             (260, 330, 680, 120, '手札は一列・文字を大きく（ホバーで拡大）', 'ui'), (860, 100, 70, 40, 'ログ', 'ui')]
     return lowfi('案C — HUDレール型（情報優先）', 'テスターがいま一番使っている数字（最悪被ダメ・伏せ・打ち消し）を左のレールと予測バーに常設し、暗算を消す',
-                 '画面が「道具」に寄り、ゲームらしい没入感は薄れる。1280 幅では手札が窮屈', boxes, None)
+                 '画面が「道具」に寄り、ゲームらしい没入感は薄れる。1280 幅では手札が窮屈', boxes)
 
 def write(name, body):
     with open(os.path.join(OUT, name), 'w', encoding='utf-8') as f:
@@ -478,6 +476,7 @@ def write(name, body):
 
 write('Main.dc.html', battle_scene(False))
 write('ReactionWindow.dc.html', battle_scene(True))
+write('Styles.dc.html', styles_board())
 write('CardAnatomy.dc.html', card_anatomy())
 write('DirectionB.dc.html', direction_b())
 write('DirectionC.dc.html', direction_c())
@@ -485,17 +484,18 @@ canvas = {
     'artboards': [
         {'file': 'Main.dc.html', 'title': '戦闘画面（自分のターン・手札ホバー）', 'x': 0, 'y': 0, 'w': 1920, 'h': 1080},
         {'file': 'ReactionWindow.dc.html', 'title': '確認ウィンドウ（発動／温存）', 'x': 2040, 'y': 0, 'w': 1920, 'h': 1080},
-        {'file': 'CardAnatomy.dc.html', 'title': 'カードの面', 'x': 0, 'y': 1240, 'w': 1760, 'h': 820},
-        {'file': 'DirectionB.dc.html', 'title': '別案B（低精細）', 'x': 1880, 'y': 1240, 'w': 960, 'h': 540},
-        {'file': 'DirectionC.dc.html', 'title': '別案C（低精細）', 'x': 2960, 'y': 1240, 'w': 960, 'h': 540},
+        {'file': 'Styles.dc.html', 'title': '見た目の方向 A / B / C', 'x': 0, 'y': 1240, 'w': 1760, 'h': 620},
+        {'file': 'CardAnatomy.dc.html', 'title': 'カードの面', 'x': 1880, 'y': 1240, 'w': 1760, 'h': 800},
+        {'file': 'DirectionB.dc.html', 'title': '別案B（配置の低精細）', 'x': 0, 'y': 2160, 'w': 960, 'h': 540},
+        {'file': 'DirectionC.dc.html', 'title': '別案C（配置の低精細）', 'x': 1080, 'y': 2160, 'w': 960, 'h': 540},
     ],
     'annotations': [
-        {'id': 'brief', 'x': 0, 'y': -200, 'w': 640, 'text': '戦闘UIの作り直し（静的モック）。第2版: カード面を世界観寄り（枠の材質＝タイプ・角の蔦＝色・羊皮紙の帯と本文）にし、左下の剣／右下の盾で攻撃と防御を一目で。Theme/UiKit の実値（#131917 夜空・#e0b84a 金・Noto Sans JP・カード200×290）で描いた本命＝現行の「左にリーダー、右に敵、扇の手札」を保ちつつ、伏せ場を専用スロットに、最悪被ダメをHPの直下に、意図を吹き出しに、置物を面で並べる。'},
-        {'id': 'note-modal', 'x': 2040, 'y': -120, 'w': 520, 'text': 'set-confirm の山場。左に「実値・受け・HP差分」、中央に候補札、右に発動／温存。後続の敵の分岐が反転する警告を金で。'},
-        {'id': 'note-alts', 'x': 1880, 'y': 1140, 'w': 560, 'text': '別案は構造だけの下書き。B は伏せ場を卓の中央に置く物理感、C は数字を常設する情報優先。どちらかに寄せるなら本命に取り込む。'},
+        {'id': 'brief', 'x': 0, 'y': -200, 'w': 640, 'text': '戦闘UIの作り直し・第3版「静かな夜」。配置は第1版のまま、見た目を一新: ごつい斜面のパネル・木目と羊皮紙・太縁の札をやめ、暗いガラスの面・1pxの金の線・明朝の名前・Cinzel の数字・余白で見せる。剣＝攻撃／盾＝防御の札はそのまま（細い縁の小札に）。'},
+        {'id': 'note-modal', 'x': 2040, 'y': -120, 'w': 520, 'text': 'set-confirm の山場。左に「実値・受け・HP差分」、中央に候補札、右に発動（金）／温存（線）。後続の敵の分岐が反転する警告は金の細枠。'},
+        {'id': 'note-styles', 'x': 0, 'y': 1150, 'w': 640, 'text': '見た目の別案。A（本命・適用済み）／B 白の版画＝生成りの紙と黒い線／C 霧の水彩＝青緑の柔らかい面。B か C に寄せるなら、本命2枚を同じ肌で描き直す。'},
     ],
     'launch': {'view': 'canvas'},
 }
 with open(os.path.join(OUT, 'canvas.json'), 'w', encoding='utf-8') as f:
     json.dump(canvas, f, ensure_ascii=False, indent=2)
-print('written', sorted(os.listdir(OUT)))
+print('written', sorted(f for f in os.listdir(OUT) if f.endswith('.html') or f.endswith('.json')))
