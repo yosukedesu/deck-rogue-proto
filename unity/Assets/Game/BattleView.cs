@@ -389,7 +389,8 @@ namespace DeckRogue.Game
 
         void Shatter(RectTransform rt)
         {
-            var cg = rt.GetComponent<CanvasGroup>() ?? rt.gameObject.AddComponent<CanvasGroup>();
+            var cg = rt.GetComponent<CanvasGroup>();
+            if (cg == null) cg = rt.gameObject.AddComponent<CanvasGroup>();   // ?? は不可: エディタでは無いコンポーネントが例外を投げる null オブジェクトで返る
             cg.blocksRaycasts = false;
             Tween.Scale(rt, Vector3.one * 0.2f, 0.3f, Ease.InQuad);
             Tween.Run(0.3f, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
@@ -399,7 +400,8 @@ namespace DeckRogue.Game
         {
             var dest = g.Anchor(anchor);
             Vector2 to = dest != null ? Tween.CenterIn(dest, HandLayer) : new Vector2(900f, -100f);
-            var cg = rt.GetComponent<CanvasGroup>() ?? rt.gameObject.AddComponent<CanvasGroup>();
+            var cg = rt.GetComponent<CanvasGroup>();
+            if (cg == null) cg = rt.gameObject.AddComponent<CanvasGroup>();   // ?? は不可: エディタでは無いコンポーネントが例外を投げる null オブジェクトで返る
             cg.blocksRaycasts = false;
             Tween.After(delay, () =>
             {
