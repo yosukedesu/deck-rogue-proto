@@ -18,11 +18,29 @@ import os from 'node:os'
 
 const API = 'https://api.pixellab.ai/v1'
 
+function tokenFiles() {
+  const list = []
+  if (process.env.PIXELLAB_TOKEN_FILE) list.push(process.env.PIXELLAB_TOKEN_FILE)
+  list.push(path.join(os.homedir(), '.config', 'pixellab', 'token'))
+  // WSL から Windows 側のホームも見る (PowerShell で保存した場合)。C:\Users\<name>\.config\pixellab\token
+  try {
+    for (const name of fs.readdirSync('/mnt/c/Users')) {
+      const f = path.join('/mnt/c/Users', name, '.config', 'pixellab', 'token')
+      if (fs.existsSync(f)) list.push(f)
+    }
+  } catch (e) { /* WSL でない */ }
+  return list
+}
+
 function token() {
   if (process.env.PIXELLAB_TOKEN) return process.env.PIXELLAB_TOKEN.trim()
-  const f = path.join(os.homedir(), '.config', 'pixellab', 'token')
-  if (fs.existsSync(f)) return fs.readFileSync(f, 'utf-8').trim()
-  console.error('PIXELLAB_TOKEN が無い。~/.bashrc に export PIXELLAB_TOKEN=... を書くか、~/.config/pixellab/token に鍵だけを保存する (chmod 600)')
+  for (const f of tokenFiles()) {
+    if (fs.existsSync(f)) {
+      const t = fs.readFileSync(f, 'utf-8').replace(/^\uFEFF/, '').trim()
+      if (t) return t
+    }
+  }
+  console.error('PixelLab の鍵が無い。~/.config/pixellab/token (WSL) か C:\\Users\\<name>\\.config\\pixellab\\token (Windows) に鍵だけを保存する')
   process.exit(2)
 }
 
