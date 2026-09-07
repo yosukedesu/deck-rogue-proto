@@ -245,7 +245,7 @@ namespace DeckRogue.Game
                 UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-size, -size), new Vector2(size, size));
             }
 
-            var frame = UiKit.Frame(cell, Theme.Button, NodeTint(n.Type, avail, cur, taken, passed), "frame", 3f);
+            var frame = UiKit.Frame(cell, Theme.Button, NodeTint(n.Type, avail, cur, taken, passed), "frame", 1f);
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
             var icon = UiKit.Icon(cell, NodeIcon(n.Type), boss ? 56f : 34f);
             icon.raycastTarget = false;

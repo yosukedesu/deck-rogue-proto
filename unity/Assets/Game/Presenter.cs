@@ -97,15 +97,15 @@ namespace DeckRogue.Game
         static void Banner(RectTransform fx, string text, Color color)
         {
             var rt = UiKit.NewRect("banner", fx);
-            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, -44f), new Vector2(0f, 44f));
+            UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-360f, -40f), new Vector2(360f, 40f));
+            rt.localRotation = Quaternion.Euler(0f, 0f, -1f);
             var bg = rt.gameObject.AddComponent<UnityEngine.UI.Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.55f);
+            bg.sprite = PaperFx.Panel; bg.type = UnityEngine.UI.Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
             bg.raycastTarget = false;
             var cg = rt.gameObject.AddComponent<CanvasGroup>();
             cg.blocksRaycasts = false;
             cg.alpha = 0f;
-            var t = UiKit.Txt(rt, text, 40, color, TextAnchor.MiddleCenter, true);
-            t.outlineWidth = 0.2f; t.outlineColor = Color.black;
+            var t = UiKit.Deco(rt, text, 34, color, TextAnchor.MiddleCenter);
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }

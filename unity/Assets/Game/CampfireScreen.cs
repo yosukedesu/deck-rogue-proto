@@ -68,14 +68,14 @@ namespace DeckRogue.Game
             ic.raycastTarget = false;
             ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0.5f, 1f);
             ic.rectTransform.anchoredPosition = new Vector2(0f, -80f);
-            var t = UiKit.Txt(cell, title, 30, UiKit.ColText, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Deco(cell, title, 30, UiKit.ColInk, TextAnchor.MiddleCenter);
             t.raycastTarget = false;
             UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -190f), new Vector2(0f, -140f));
-            var l1 = UiKit.Txt(cell, line1, 17, UiKit.ColText, TextAnchor.MiddleCenter);
+            var l1 = UiKit.Txt(cell, line1, 17, UiKit.ColInk, TextAnchor.MiddleCenter, true);
             l1.raycastTarget = false;
             l1.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(l1.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(16f, -240f), new Vector2(-16f, -192f));
-            var l2 = UiKit.Txt(cell, line2, 14, UiKit.ColDim, TextAnchor.MiddleCenter);
+            var l2 = UiKit.Txt(cell, line2, 14, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
             l2.raycastTarget = false;
             UiKit.Anchor(l2.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(16f, -280f), new Vector2(-16f, -242f));
             if (enabled)

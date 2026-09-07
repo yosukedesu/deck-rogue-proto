@@ -48,11 +48,11 @@ namespace DeckRogue.Game
             CardInstance a = (g.WorkshopA >= 0 && g.WorkshopA < run.Deck.Count) ? run.Deck[g.WorkshopA] : null;
             CardInstance b = (g.WorkshopB >= 0 && g.WorkshopB < run.Deck.Count) ? run.Deck[g.WorkshopB] : null;
 
-            var ht = UiKit.Txt(srt, "素材", 18, UiKit.ColText, TextAnchor.MiddleLeft, true);
+            var ht = UiKit.Txt(srt, "素材", 18, UiKit.ColInk, TextAnchor.MiddleLeft, true);
             UiKit.Anchor(ht.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -46f), new Vector2(-20f, -16f));
             Slot(g, srt, a, "A", new Vector2(-105f, -170f), delegate { g.WorkshopA = -1; g.Rebuild(); });
             Slot(g, srt, b, "B", new Vector2(105f, -170f), delegate { g.WorkshopB = -1; g.Rebuild(); });
-            var plus = UiKit.Txt(srt, "+", 40, UiKit.ColDim, TextAnchor.MiddleCenter, true);
+            var plus = UiKit.Txt(srt, "+", 40, UiKit.ColInkSoft, TextAnchor.MiddleCenter, true);
             UiKit.Anchor(plus.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-20f, -195f), new Vector2(20f, -145f));
 
             string blocked = null;
@@ -73,7 +73,7 @@ namespace DeckRogue.Game
                 catch (Exception ex) { blocked = ex.Message; }
             }
 
-            var arrow = UiKit.Txt(srt, "▼ 合成結果", 16, UiKit.ColDim, TextAnchor.MiddleCenter);
+            var arrow = UiKit.Txt(srt, "▼ 合成結果", 16, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
             UiKit.Anchor(arrow.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -330f), new Vector2(0f, -300f));
 
             if (fused != null)
@@ -88,14 +88,14 @@ namespace DeckRogue.Game
                 Tween.Punch(cell, 0.08f, 0.5f);
                 if (notes.Count > 0)
                 {
-                    var nt = UiKit.Txt(srt, "注記: " + string.Join(" / ", notes.ToArray()), 12, UiKit.ColDim, TextAnchor.UpperLeft);
+                    var nt = UiKit.Txt(srt, "注記: " + string.Join(" / ", notes.ToArray()), 12, UiKit.ColInkSoft, TextAnchor.UpperLeft);
                     nt.textWrappingMode = TextWrappingModes.Normal;
                     UiKit.Anchor(nt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -340f - CardView.H * 1.1f - 70f), new Vector2(-20f, -340f - CardView.H * 1.1f - 6f));
                 }
             }
             else
             {
-                var msg = UiKit.Txt(srt, blocked != null ? "合成できない: " + blocked : "デッキから2枚選ぶ", 16, blocked != null ? UiKit.ColBad : UiKit.ColDim, TextAnchor.MiddleCenter);
+                var msg = UiKit.Txt(srt, blocked != null ? "合成できない: " + blocked : "デッキから2枚選ぶ", 16, blocked != null ? UiKit.ColBad : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 msg.textWrappingMode = TextWrappingModes.Normal;
                 UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -440f), new Vector2(-20f, -340f));
             }
@@ -123,7 +123,7 @@ namespace DeckRogue.Game
             {
                 var frame = UiKit.Frame(cell, Theme.Panel, new Color(1f, 1f, 1f, 0.5f), "empty", 3f);
                 UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
-                var t = UiKit.Txt(cell, label + "\n(空)", 16, UiKit.ColDim, TextAnchor.MiddleCenter);
+                var t = UiKit.Txt(cell, label + "\n(空)", 16, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
                 return;
             }

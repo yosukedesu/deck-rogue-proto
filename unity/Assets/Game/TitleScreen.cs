@@ -22,7 +22,7 @@ namespace DeckRogue.Game
             UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
 
             // 題
-            var title = UiKit.Txt(root, "DECK ROGUE", 64, UiKit.ColText, TextAnchor.MiddleLeft, true);
+            var title = UiKit.Deco(root, "DECK ROGUE", 64, UiKit.ColText, TextAnchor.MiddleLeft);
             title.characterSpacing = 8f;
             title.outlineWidth = 0.25f; title.outlineColor = Color.black;
             UiKit.Anchor(title.rectTransform, new Vector2(0f, 1f), new Vector2(0.6f, 1f), new Vector2(60f, -120f), new Vector2(0f, -30f));
@@ -105,11 +105,11 @@ namespace DeckRogue.Game
             art.preserveAspect = true;
             UiKit.Anchor(art.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-56f, -138f), new Vector2(56f, -22f));
 
-            var name = UiKit.Txt(cell, ld.Name, 18, UiKit.ColText, TextAnchor.MiddleCenter, true);
+            var name = UiKit.Deco(cell, ld.Name, 18, UiKit.ColInk, TextAnchor.MiddleCenter);
             name.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 54f), new Vector2(-6f, 96f));
 
-            var stats = UiKit.Txt(cell, string.Join("/", RunUi.ColorsJa(ld.Colors)) + "  HP " + ld.MaxHp + "\nドロー " + ld.DrawPerTurn + "  エナジー " + ld.EnergyMax, 12, UiKit.ColDim, TextAnchor.MiddleCenter);
+            var stats = UiKit.Txt(cell, string.Join("/", RunUi.ColorsJa(ld.Colors)) + "  HP " + ld.MaxHp + "\nドロー " + ld.DrawPerTurn + "  エナジー " + ld.EnergyMax, 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
             UiKit.Anchor(stats.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 8f), new Vector2(-6f, 54f));
 
             if (selected)
@@ -123,13 +123,13 @@ namespace DeckRogue.Game
 
         static void Detail(GameRoot g, RectTransform side, LeaderDef ld)
         {
-            var name = UiKit.Txt(side, ld.Name, 30, UiKit.ColText, TextAnchor.MiddleLeft, true);
+            var name = UiKit.Deco(side, ld.Name, 30, UiKit.ColInk, TextAnchor.MiddleLeft);
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -70f), new Vector2(-24f, -20f));
-            var colors = UiKit.Txt(side, string.Join(" / ", RunUi.ColorsJa(ld.Colors)) + "   最大HP " + ld.MaxHp + "   ドロー " + ld.DrawPerTurn + "   エナジー " + ld.EnergyMax + "   報酬候補 " + ld.RewardChoices + "枚", 14, UiKit.ColDim, TextAnchor.MiddleLeft);
+            var colors = UiKit.Txt(side, string.Join(" / ", RunUi.ColorsJa(ld.Colors)) + "   最大HP " + ld.MaxHp + "   ドロー " + ld.DrawPerTurn + "   エナジー " + ld.EnergyMax + "   報酬候補 " + ld.RewardChoices + "枚", 14, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             colors.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(colors.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -120f), new Vector2(-24f, -72f));
 
-            var desc = UiKit.Txt(side, ld.Description, 16, UiKit.ColText, TextAnchor.UpperLeft);
+            var desc = UiKit.Txt(side, ld.Description, 16, UiKit.ColInk, TextAnchor.UpperLeft);
             desc.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(desc.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -330f), new Vector2(-24f, -126f));
 
@@ -148,7 +148,7 @@ namespace DeckRogue.Game
                     parts.Add(nm + (e.Count > 1 ? "×" + e.Count : ""));
                     total += e.Count;
                 }
-                var dk = UiKit.Txt(side, "初期デッキ " + total + "枚: " + string.Join("、", parts.ToArray()), 13, UiKit.ColDim, TextAnchor.UpperLeft);
+                var dk = UiKit.Txt(side, "初期デッキ " + total + "枚: " + string.Join("、", parts.ToArray()), 13, UiKit.ColInkSoft, TextAnchor.UpperLeft);
                 dk.textWrappingMode = TextWrappingModes.Normal;
                 UiKit.Anchor(dk.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -420f), new Vector2(-24f, -336f));
             }
@@ -159,7 +159,7 @@ namespace DeckRogue.Game
             var hg = UiKit.Horz(seedRow, 10, 0);
             hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandWidth = false;
-            var seedLbl = UiKit.Txt(seedRow, "シード", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
+            var seedLbl = UiKit.Txt(seedRow, "シード", 15, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(seedLbl, 64f, 36f, 64f, 36f);
             var field = RunScreens.MakeSeedField(g, seedRow);
             UiKit.Le(field, 180f, 36f, 180f, 36f);
@@ -168,16 +168,16 @@ namespace DeckRogue.Game
             var hg2 = UiKit.Horz(diffRow, 10, 0);
             hg2.childAlignment = TextAnchor.MiddleLeft;
             hg2.childForceExpandWidth = false;
-            var diffLbl = UiKit.Txt(diffRow, "難易度", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
+            var diffLbl = UiKit.Txt(diffRow, "難易度", 15, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(diffLbl, 64f, 36f, 64f, 36f);
             var minus = UiKit.Btn(diffRow, "−", delegate { g.Difficulty = Math.Max(1, g.Difficulty - 1); g.Rebuild(); }, 18, g.Difficulty > 1);
             BattleScreen.SetSize(minus, 40f, 36f);
-            var dv = UiKit.Txt(diffRow, g.Difficulty.ToString(), 20, g.Difficulty > DeckRogue.Engine.Run.DEFAULT_DIFFICULTY ? UiKit.ColBad : UiKit.ColText, TextAnchor.MiddleCenter, true);
+            var dv = UiKit.Txt(diffRow, g.Difficulty.ToString(), 20, g.Difficulty > DeckRogue.Engine.Run.DEFAULT_DIFFICULTY ? UiKit.ColBad : UiKit.ColInk, TextAnchor.MiddleCenter, true);
             UiKit.Le(dv, 44f, 36f, 44f, 36f);
             var plus = UiKit.Btn(diffRow, "+", delegate { g.Difficulty = Math.Min(10, g.Difficulty + 1); g.Rebuild(); }, 18, g.Difficulty < 10);
             BattleScreen.SetSize(plus, 40f, 36f);
 
-            var note = UiKit.Txt(side, "難易度 3 が標準。上げると敵の打点とHPが増える (報酬は変わらない)", 12, UiKit.ColDim, TextAnchor.MiddleLeft);
+            var note = UiKit.Txt(side, "難易度 3 が標準。上げると敵の打点とHPが増える (報酬は変わらない)", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             note.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(note.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 108f), new Vector2(-24f, 146f));
 

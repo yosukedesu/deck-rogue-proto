@@ -116,12 +116,12 @@ namespace DeckRogue.Game
             }
             else
             {
-                var none = UiKit.Txt(side.transform, "レリックは売切", 15, UiKit.ColDim, TextAnchor.MiddleCenter);
+                var none = UiKit.Txt(side.transform, "レリックは売切", 15, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 UiKit.Le(none, -1f, 40f, -1f, 40f);
             }
             ServiceBtn(side.transform, "カード除去  " + rmPrice + "G", run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); });
             ServiceBtn(side.transform, "鍛える  " + upPrice + "G", run.Gold >= upPrice, delegate { g.ShopMode = "upgrade"; g.Rebuild(); });
-            var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColDim, TextAnchor.MiddleCenter);
+            var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
             UiKit.Le(note, -1f, 24f, -1f, 24f);
 
             RunUi.BottomButton(root, "店を出る", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, -100f);
@@ -138,14 +138,14 @@ namespace DeckRogue.Game
             var tag = UiKit.NewRect("price", cell);
             UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 4f), new Vector2(70f, 40f));
             var bg = tag.gameObject.AddComponent<Image>();
-            bg.sprite = Theme.Button; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f / 3f;
+            bg.sprite = Theme.Tag; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
             bg.color = over != null ? new Color(0.5f, 0.5f, 0.5f, 1f) : affordable ? Color.white : new Color(0.7f, 0.55f, 0.55f, 1f);
             var hg = UiKit.Horz(tag, 4, 0);
             hg.childAlignment = TextAnchor.MiddleCenter;
             hg.childForceExpandWidth = false;
             hg.childForceExpandHeight = false;
             if (over == null) UiKit.Icon(tag, "gold", 22f);
-            var t = UiKit.Txt(tag, over ?? (price + " G"), 17, over != null ? UiKit.ColDim : affordable ? Theme.Gold : UiKit.ColBad, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(tag, over ?? (price + " G"), 17, over != null ? UiKit.ColInkSoft : affordable ? Theme.Gold : UiKit.ColBad, TextAnchor.MiddleCenter, true);
             UiKit.Le(t, 50f, 30f, -1f, 30f);
         }
     }

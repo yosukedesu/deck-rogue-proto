@@ -97,12 +97,12 @@ namespace DeckRogue.Game
             var art = RunUi.RelicArt(cell, id, 84f);
             art.rectTransform.anchorMin = art.rectTransform.anchorMax = new Vector2(0.5f, 1f);
             art.rectTransform.anchoredPosition = new Vector2(0f, -58f);
-            var name = UiKit.Txt(cell, rd != null ? rd.Name : id, 22, UiKit.ColText, TextAnchor.MiddleCenter, true);
+            var name = UiKit.Deco(cell, rd != null ? rd.Name : id, 22, UiKit.ColInk, TextAnchor.MiddleCenter);
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -138f), new Vector2(-8f, -102f));
             string rar = rd != null ? CardText.RarityLabel(rd.Rarity) : "";
             var rt = UiKit.Txt(cell, rar, 13, Theme.Gold, TextAnchor.MiddleCenter);
             UiKit.Anchor(rt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -160f), new Vector2(-8f, -138f));
-            var desc = UiKit.Txt(cell, rd != null ? rd.Description : "", 15, UiKit.ColText, TextAnchor.UpperCenter);
+            var desc = UiKit.Txt(cell, rd != null ? rd.Description : "", 15, UiKit.ColInk, TextAnchor.UpperCenter);
             desc.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(desc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(16f, 70f), new Vector2(-16f, -166f));
             return cell;

@@ -1,0 +1,425 @@
+// PaperFx.cs — 「絵本」の肌 (2026-09-07 デザインカンバス第5版で決定) の生成部品。
+// クリーム色の紙の9スライス (鉛筆の二重線)・水彩のにじみ・紙の粒・貼り絵の縁 (ドット絵の切り抜き)・タイプのしおり・マスキングテープ。
+// 規約「絵はドット、紙と文字はなめらか」: ここで作るのは紙と線 (なめらか側)。ドット絵は Point フィルタで整数倍に置く。
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace DeckRogue.Game
+{
+    public static class PaperFx
+    {
+        public static readonly Color Paper = UiKit.Hex("#f4ecd6");
+        public static readonly Color Paper2 = UiKit.Hex("#eadfc4");
+        public static readonly Color Ink = UiKit.Hex("#3b2f2f");
+        public static readonly Color InkSoft = new Color(59f / 255f, 47f / 255f, 47f / 255f, 0.62f);
+        public static readonly Color Honey = UiKit.Hex("#e0b25a");
+        public static readonly Color Rose = UiKit.Hex("#d97b7b");
+        public static readonly Color Sky = UiKit.Hex("#7fa7c9");
+        public static readonly Color Moss = UiKit.Hex("#8fae7b");
+        public static readonly Color Plum = UiKit.Hex("#a98cc4");
+        public static readonly Color Teal = UiKit.Hex("#7ab8b0");
+        public static readonly Color Sand = UiKit.Hex("#c9a982");
+        public static readonly Color Night = UiKit.Hex("#1a1c33");
+
+        static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
+
+        /// <summary>タイプの色 (しおり)。物理=砂・呪文=藤・リアクション=青緑・置物=蜂蜜</summary>
+        public static Color TypeColor(string type)
+        {
+            switch (type)
+            {
+                case "spell": return Plum;
+                case "reaction": return Teal;
+                case "permanent": return Honey;
+                default: return Sand;
+            }
+        }
+
+        /// <summary>役割の色 (しるし・にじみ)。dmg=薔薇・block=空・counter=青緑・growth=苔・momentum=蜂蜜</summary>
+        public static Color RoleColor(string role)
+        {
+            switch (role)
+            {
+                case "block": return Sky;
+                case "counter": return Teal;
+                case "growth": return Moss;
+                case "momentum": return Honey;
+                case "expose": return UiKit.Hex("#e0a04a");
+                default: return Rose;
+            }
+        }
+
+        // ---- 9スライス (角丸の紙。1テクセル=1px で線を細く保つ。UiKit.Frame は名前が paper で始まる絵を1倍で貼る) ----
+
+        /// <summary>紙のパネル: 外から 淡い線1・紙3・墨2・紙。角丸 12</summary>
+        public static Sprite Panel { get { return Nine("paper_panel", 48, 12, 14, PanelBands, false); } }
+        /// <summary>紙の札 (小さな帯): 墨2・紙。角丸 8</summary>
+        public static Sprite Tag { get { return Nine("paper_tag", 32, 8, 10, TagBands, false); } }
+        /// <summary>紙のボタン: 墨2・紙、下に厚み (墨 50%) 4px。角丸 10</summary>
+        public static Sprite Button { get { return Nine("paper_button", 40, 10, 12, TagBands, true); } }
+        /// <summary>カードの面: パネルと同じ二重線。角丸 14</summary>
+        public static Sprite Card { get { return Nine("paper_card", 52, 14, 16, PanelBands, false); } }
+
+        static Color PanelBands(float d)
+        {
+            if (d < 1f) return new Color(Ink.r, Ink.g, Ink.b, 0.5f);
+            if (d < 4f) return Paper;
+            if (d < 6f) return Ink;
+            return Paper;
+        }
+        static Color TagBands(float d)
+        {
+            if (d < 2f) return Ink;
+            return Paper;
+        }
+
+        static Sprite Nine(string name, int size, int radius, int border, Func<float, Color> bands, bool thickBottom)
+        {
+            Sprite s;
+            if (_cache.TryGetValue(name, out s)) return s;
+            s = Theme.Art("ui", name);
+            if (s == null)
+            {
+                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Bilinear;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[size * size];
+                float half = size / 2f;
+                for (int y = 0; y < size; y++)
+                    for (int x = 0; x < size; x++)
+                    {
+                        // 角丸矩形の内側距離 (ピクセル中心)。d<0 は外
+                        float cx = x + 0.5f - half, cy = y + 0.5f - half;
+                        float qx = Math.Abs(cx) - (half - radius), qy = Math.Abs(cy) - (half - radius);
+                        float outside = Mathf.Sqrt(Mathf.Max(qx, 0f) * Mathf.Max(qx, 0f) + Mathf.Max(qy, 0f) * Mathf.Max(qy, 0f)) + Mathf.Min(Mathf.Max(qx, qy), 0f) - radius;
+                        float d = -outside; // 内側ほど大きい
+                        Color c;
+                        if (d < 0f) c = new Color(0f, 0f, 0f, 0f);
+                        else
+                        {
+                            c = bands(d);
+                            if (d < 1f) c.a *= Mathf.Clamp01(d + 0.5f); // 縁を半ドットだけ滑らかに
+                            if (thickBottom && y < 4 && d >= 2f) c = Color.Lerp(c, Ink, 0.5f);
+                        }
+                        px[y * size + x] = c;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(border, border, border, border));
+                s.name = name;
+            }
+            _cache[name] = s;
+            return s;
+        }
+
+        // ---- 水彩のにじみ (役割の札・舞台の後ろ) ----
+
+        public static Sprite Blob(Color color)
+        {
+            string key = "blob:" + ColorUtility.ToHtmlStringRGBA(color);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int w = 96, h = 64;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            var light = Color.Lerp(color, Color.white, 0.25f);
+            var dark = Color.Lerp(color, Color.black, 0.12f);
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    float nx = (x + 0.5f) / w * 2f - 1f, ny = (y + 0.5f) / h * 2f - 1f;
+                    float ang = Mathf.Atan2(ny, nx);
+                    float wobble = 1f + 0.08f * Mathf.Sin(ang * 3f + 0.7f) + 0.05f * Mathf.Cos(ang * 5f - 1.3f);
+                    float r = Mathf.Sqrt(nx * nx + ny * ny) / wobble;
+                    float a = Mathf.Clamp01((0.98f - r) / 0.10f);           // 縁は 10% で落ちる
+                    float t = Mathf.Clamp01((nx + 0.6f) * 0.5f + (ny + 0.6f) * 0.3f);
+                    var c = Color.Lerp(light, dark, t);
+                    c.a = a * (0.92f - 0.1f * r);
+                    px[y * w + x] = c;
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key;
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>紙の粒 (乗算の代わりに、墨の低い不透明度の点を敷く)。Image.type = Tiled で使う</summary>
+        public static Sprite Grain()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("grain", out s)) return s;
+            const int n = 128;
+            var rng = new System.Random(20260907);
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Repeat;
+            var px = new Color[n * n];
+            for (int i = 0; i < px.Length; i++)
+            {
+                double v = rng.NextDouble();
+                float a = v < 0.55 ? 0f : (float)((v - 0.55) / 0.45) * 0.09f;
+                px[i] = new Color(Ink.r, Ink.g, Ink.b, a);
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "grain";
+            _cache["grain"] = s;
+            return s;
+        }
+
+        /// <summary>タイプのしおり (16×24 のドット。下端に切り込み)。2倍で貼る</summary>
+        public static Sprite Bookmark(Color color)
+        {
+            string key = "bookmark:" + ColorUtility.ToHtmlStringRGB(color);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int w = 16, h = 24;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            var edge = Color.Lerp(color, Ink, 0.55f);
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    // 下の切り込み: y が小さいほど (下) 中央が欠ける
+                    int notch = 4 - y; // y=0 で 4, y=3 で 1
+                    bool cut = notch > 0 && Math.Abs(x - (w - 1) / 2f) < notch;
+                    bool inside = !cut;
+                    if (!inside) { px[y * w + x] = new Color(0f, 0f, 0f, 0f); continue; }
+                    bool border = x == 0 || x == w - 1 || y == h - 1 || (notch > 0 && Math.Abs(x - (w - 1) / 2f) < notch + 1) || y == 0;
+                    px[y * w + x] = border ? edge : color;
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key;
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>マスキングテープ (半透明の蜂蜜色。左右は破いた縁)</summary>
+        public static Sprite Tape()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("tape", out s)) return s;
+            const int w = 96, h = 24;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var px = new Color[w * h];
+            var rng = new System.Random(7);
+            var col = new Color(1f, 0.886f, 0.55f, 0.74f);
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    bool tornL = x < 3 && rng.NextDouble() < 0.45, tornR = x > w - 4 && rng.NextDouble() < 0.45;
+                    px[y * w + x] = (tornL || tornR) ? new Color(0f, 0f, 0f, 0f) : col;
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "tape";
+            _cache["tape"] = s;
+            return s;
+        }
+
+        /// <summary>吹き出しの尾 (下向きの小さな三角。紙色に墨の線)</summary>
+        public static Sprite BubbleTail()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("tail", out s)) return s;
+            const int w = 30, h = 22;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    // 上辺が幅いっぱい、下の先端 (x≈8) へ細る
+                    float t = 1f - (y + 0.5f) / h;           // 上=0, 下=1
+                    float left = Mathf.Lerp(2f, 8f, t), right = Mathf.Lerp(w - 4f, 12f, t);
+                    bool inside = x + 0.5f > left && x + 0.5f < right;
+                    bool edge = inside && (x + 0.5f < left + 2f || x + 0.5f > right - 2f || y < 2);
+                    px[y * w + x] = !inside ? new Color(0f, 0f, 0f, 0f) : (edge ? Ink : Paper);
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 1f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "tail";
+            _cache["tail"] = s;
+            return s;
+        }
+
+        // ---- 貼り絵: ドット絵の切り抜きの縁 (紙色に膨らませた影絵) ----
+
+        /// <summary>src の不透明部分を pad テクセルぶん膨らませた紙色の影絵。ドット絵の縁は崩さず、その外に紙の縁を足す</summary>
+        public const int SilhouetteUp = 4;   // 影絵の解像度倍率 (縁の太さ = pad / この値 テクセル)
+
+        public static Sprite Silhouette(Sprite src, int pad, Color color)
+        {
+            if (src == null || src.texture == null) return null;
+            string key = "sil:" + src.name + ":" + pad + ":" + ColorUtility.ToHtmlStringRGBA(color);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            Texture2D tex = src.texture;
+            Color32[] srcPx;
+            try { srcPx = tex.GetPixels32(); }
+            catch (Exception) { return null; } // 読めないテクスチャ (Read/Write 無効) は諦める
+            int w = tex.width, h = tex.height;
+            var rect = src.textureRect;
+            int rx = (int)rect.x, ry = (int)rect.y, rw = (int)rect.width, rh = (int)rect.height;
+            int up = SilhouetteUp;
+            int ow = rw * up + pad * 2, oh = rh * up + pad * 2;
+            var outPx = new Color[ow * oh];
+            var clear = new Color(0f, 0f, 0f, 0f);
+            for (int y = 0; y < oh; y++)
+                for (int x = 0; x < ow; x++)
+                {
+                    bool hit = false;
+                    for (int dy = -pad; dy <= pad && !hit; dy++)
+                        for (int dx = -pad; dx <= pad; dx++)
+                        {
+                            int ux = x - pad + dx, uy = y - pad + dy;          // 4倍解像度の座標
+                            if (ux < 0 || uy < 0 || ux >= rw * up || uy >= rh * up) continue;
+                            int sx = ux / up, sy = uy / up;
+                            if (srcPx[(ry + sy) * w + (rx + sx)].a > 40) { hit = true; break; }
+                        }
+                    outPx[y * ow + x] = hit ? color : clear;
+                }
+            var ot = new Texture2D(ow, oh, TextureFormat.RGBA32, false);
+            ot.filterMode = FilterMode.Point;
+            ot.wrapMode = TextureWrapMode.Clamp;
+            ot.SetPixels(outPx);
+            ot.Apply(false, false);
+            s = Sprite.Create(ot, new Rect(0, 0, ow, oh), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key;
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>
+        /// ドット絵を「紙の切り抜き」として置く: 紙色の縁 (pad テクセル) と、右下に落ちる墨の影。
+        /// rt は絵の矩形 (preserveAspect の Image と同じ寸法で置く)。返り値は貼った縁の Image (無ければ null)
+        /// </summary>
+        public static Image Sticker(RectTransform host, Sprite art, RectTransform rt, int pad = 1)
+        {
+            var sil = Silhouette(art, pad, Paper);
+            if (sil == null) return null;
+            // 絵の表示倍率に合わせて縁の矩形を膨らませる (絵は整数倍で描かれる想定)
+            float scale = rt.rect.width / art.rect.width;
+            float grow = pad * scale / SilhouetteUp;
+            var shadow = UiKit.NewRect("sticker-shadow", host);
+            shadow.SetSiblingIndex(rt.GetSiblingIndex());
+            CopyRect(rt, shadow, grow + 4f, -4f);
+            var shImg = shadow.gameObject.AddComponent<Image>();
+            shImg.sprite = sil; shImg.preserveAspect = true; shImg.raycastTarget = false;
+            shImg.color = new Color(Ink.r, Ink.g, Ink.b, 0.55f);
+            var edge = UiKit.NewRect("sticker", host);
+            edge.SetSiblingIndex(rt.GetSiblingIndex());
+            CopyRect(rt, edge, grow, 0f);
+            var img = edge.gameObject.AddComponent<Image>();
+            img.sprite = sil; img.preserveAspect = true; img.raycastTarget = false;
+            return img;
+        }
+
+        static void CopyRect(RectTransform from, RectTransform to, float grow, float dy)
+        {
+            to.anchorMin = from.anchorMin; to.anchorMax = from.anchorMax; to.pivot = from.pivot;
+            to.offsetMin = from.offsetMin + new Vector2(-grow, -grow + dy);
+            to.offsetMax = from.offsetMax + new Vector2(grow, grow + dy);
+        }
+
+        /// <summary>紙の円盤 (墨の縁2px)。エナジーの太陽などに</summary>
+        public static Sprite Disc()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("disc", out s)) return s;
+            const int n = 128;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var px = new Color[n * n];
+            float c = n / 2f;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float d = c - Mathf.Sqrt((x + 0.5f - c) * (x + 0.5f - c) + (y + 0.5f - c) * (y + 0.5f - c));
+                    Color col = d < 0f ? new Color(0f, 0f, 0f, 0f) : (d < 2f ? Ink : Paper);
+                    if (d >= 0f && d < 1f) col.a *= Mathf.Clamp01(d + 0.5f);
+                    px[y * n + x] = col;
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "disc"; _cache["disc"] = s; return s;
+        }
+
+        /// <summary>白いリング (太さ thick px、外径 128)。色は Image で乗せ、fillMethod Radial360 で弧にする</summary>
+        public static Sprite Ring(int thick = 8)
+        {
+            string key = "ring" + thick;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int n = 128;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var px = new Color[n * n];
+            float c = n / 2f;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float r = Mathf.Sqrt((x + 0.5f - c) * (x + 0.5f - c) + (y + 0.5f - c) * (y + 0.5f - c));
+                    float outer = c - 1f, inner = c - 1f - thick;
+                    float a = Mathf.Clamp01(outer - r + 0.5f) * Mathf.Clamp01(r - inner + 0.5f);
+                    px[y * n + x] = new Color(1f, 1f, 1f, a);
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key; _cache[key] = s; return s;
+        }
+
+        // ---- よく使う組み立て ----
+
+        /// <summary>紙の面 (9スライス・1倍)。tint で紙の色味を変える (白=そのまま)</summary>
+        public static Image Sheet(Transform parent, Sprite nine, string name = "paper", Color? tint = null)
+        {
+            var rt = UiKit.NewRect(name, parent);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = nine;
+            img.type = Image.Type.Sliced;
+            img.pixelsPerUnitMultiplier = 1f;
+            img.color = tint ?? Color.white;
+            return img;
+        }
+
+        /// <summary>紙の粒を重ねる (親いっぱい)</summary>
+        public static Image GrainOver(Transform parent, float alpha = 1f)
+        {
+            var rt = UiKit.NewRect("grain", parent);
+            UiKit.Stretch(rt, 0f, 0f, 0f, 0f);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = Grain();
+            img.type = Image.Type.Tiled;
+            img.pixelsPerUnitMultiplier = 1f;
+            img.color = new Color(1f, 1f, 1f, alpha);
+            img.raycastTarget = false;
+            return img;
+        }
+
+        /// <summary>水彩のにじみ (Image)。w×h に伸ばす</summary>
+        public static Image BlobImage(Transform parent, Color color, string name = "blob")
+        {
+            var rt = UiKit.NewRect(name, parent);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = Blob(color);
+            img.preserveAspect = false;
+            img.raycastTarget = false;
+            return img;
+        }
+    }
+}

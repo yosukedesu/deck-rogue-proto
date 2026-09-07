@@ -48,9 +48,9 @@ namespace DeckRogue.Game
             var icon = UiKit.Icon(prt, "question", 64f);
             icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0f, 1f);
             icon.rectTransform.anchoredPosition = new Vector2(60f, -60f);
-            var name = UiKit.Txt(prt, def.Name, 34, UiKit.ColText, TextAnchor.MiddleLeft, true);
+            var name = UiKit.Deco(prt, def.Name, 34, UiKit.ColInk, TextAnchor.MiddleLeft);
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(110f, -100f), new Vector2(-30f, -24f));
-            var flavor = UiKit.Txt(prt, def.Flavor, 18, UiKit.ColText, TextAnchor.UpperLeft);
+            var flavor = UiKit.Txt(prt, def.Flavor, 18, UiKit.ColInk, TextAnchor.UpperLeft);
             flavor.textWrappingMode = TextWrappingModes.Normal;
             flavor.lineSpacing = 8f;
             UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -330f), new Vector2(-40f, -120f));

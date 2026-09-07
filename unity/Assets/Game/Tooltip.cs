@@ -55,9 +55,10 @@ namespace DeckRogue.Game
                 bg.sprite = Theme.Panel;
                 bg.type = Image.Type.Sliced;
                 bg.pixelsPerUnitMultiplier = 1f / 3f;
-                bg.color = new Color(0.9f, 0.95f, 0.9f, 0.98f);
+                bg.color = Color.white;
+                bg.pixelsPerUnitMultiplier = 1f;
                 bg.raycastTarget = false;
-                _text = UiKit.Txt(_panel, "", 16, UiKit.ColText, TextAnchor.UpperLeft);
+                _text = UiKit.Txt(_panel, "", 15, UiKit.ColInk, TextAnchor.UpperLeft);
                 _text.rectTransform.anchorMin = _text.rectTransform.anchorMax = new Vector2(0f, 1f);
                 _text.rectTransform.pivot = new Vector2(0f, 1f);
                 _text.rectTransform.anchoredPosition = new Vector2(16f, -12f);

@@ -12,13 +12,13 @@ namespace DeckRogue.Game
     public static class Theme
     {
         // ---- パレット (ドット絵向けに彩度を抑えた森の夜) ----
-        public static readonly Color Bg = UiKit.Hex("#131917");
-        public static readonly Color PanelFill = UiKit.Hex("#1e2622");
-        public static readonly Color PanelEdge = UiKit.Hex("#0b0f0d");
-        public static readonly Color PanelLight = UiKit.Hex("#3a4a44");
-        public static readonly Color ButtonFill = UiKit.Hex("#2c3a35");
-        public static readonly Color ButtonLight = UiKit.Hex("#5a7a6c");
-        public static readonly Color Gold = UiKit.Hex("#e0b84a");
+        public static readonly Color Bg = UiKit.Hex("#1a1c33");
+        public static readonly Color PanelFill = UiKit.Hex("#f4ecd6");
+        public static readonly Color PanelEdge = UiKit.Hex("#3b2f2f");
+        public static readonly Color PanelLight = UiKit.Hex("#fbf6e8");
+        public static readonly Color ButtonFill = UiKit.Hex("#f4ecd6");
+        public static readonly Color ButtonLight = UiKit.Hex("#fbf6e8");
+        public static readonly Color Gold = UiKit.Hex("#e0b25a");
 
         /// <summary>カードタイプの枠色 (物理=茶／呪文=紫／リアクション=青緑／置物=金)</summary>
         public static Color CardTypeColor(string type)
@@ -60,9 +60,11 @@ namespace DeckRogue.Game
 
         // ---- 9スライス ----
 
-        public static Sprite Panel { get { return Nine("ui", "panel", 24, 6, PanelFill, PanelEdge, PanelLight); } }
-        public static Sprite Button { get { return Nine("ui", "btn_normal", 24, 6, ButtonFill, PanelEdge, ButtonLight); } }
-        public static Sprite CardFrame { get { return Nine("ui", "card_frame", 32, 8, UiKit.Hex("#e9e2cf"), PanelEdge, Color.white); } }
+        // 「絵本」の肌: 紙の9スライス (PaperFx)。名前が paper で始まる絵は UiKit.Frame が1倍で貼る (線を細く保つ)
+        public static Sprite Panel { get { return PaperFx.Panel; } }
+        public static Sprite Button { get { return PaperFx.Button; } }
+        public static Sprite CardFrame { get { return PaperFx.Card; } }
+        public static Sprite Tag { get { return PaperFx.Tag; } }
 
         /// <summary>角の丸い枠 (size×size・border 幅の縁)。差し替えは同名 PNG (9スライスの border は Sprite 側の設定を使う)</summary>
         static Sprite Nine(string category, string name, int size, int border, Color fill, Color edge, Color light)
@@ -165,6 +167,24 @@ namespace DeckRogue.Game
             { "map", new[] {
                 "................", "..-----------...", "..-#########-...", "..-#--#--#--#...", "..-#########-...", "..-#--#--#--#...", "..-#########-...",
                 "..-#--#--#--#...", "..-#########-...", "..-----------...", "................", "................", "................", "................", "................", "................" } },
+            { "star", new[] {
+                "................", ".......--.......", ".......##.......", "......-##-......", "..------##------", "..-############-", "...-##########-.",
+                "....-########-..", ".....-######-...", "....-###--###-..", "...-##-....-##-.", "..-#-........-#-", "..--..........--", "................", "................", "................" } },
+            { "counter", new[] {
+                "................", "................", "....--..........", "...-#-..........", "..-#-----.......", ".-######-.......", "..-#-----#-.....",
+                "...-#-...-#-....", "....--....-#-...", "...........#-...", "..........-#-...", ".....---.-#-....", ".....-###-......", "......---.......", "................", "................" } },
+            { "crest_physical", new[] {
+                "-..............-", "#-............-#", "-#-..........-#-", ".-#-........-#-.", "..-#-......-#-..", "...-#-....-#-...", "....-#-..-#-....",
+                ".....-#--#-.....", ".....-#--#-.....", "....-#-..-#-....", "...-#-....-#-...", "..-#-......-#-..", ".-#-........-#-.", "-#-..........-#-", "#-............-#", "-..............-" } },
+            { "crest_spell", new[] {
+                ".......--.......", "......-##-......", "...-..-##-..-...", "..-#-.-##-.-#-..", "...-#--##--#-...", "....-######-....", ".....-####-.....",
+                "-######++######-", "-######++######-", ".....-####-.....", "....-######-....", "...-#--##--#-...", "..-#-.-##-.-#-..", "...-..-##-..-...", "......-##-......", ".......--......." } },
+            { "crest_reaction", new[] {
+                "................", "................", "................", ".....------.....", "...--######--...", "..-###----###-..", ".-##--####--##-.",
+                "-##-##-##-##-##-", "-##-##-++-##-##-", ".-##--####--##-.", "..-###----###-..", "...--######--...", ".....------.....", "................", "................", "................" } },
+            { "crest_permanent", new[] {
+                ".......--.......", "......-##-......", ".....-####-.....", "....-######-....", "...-########-...", "..-##########-..", ".-############-.",
+                "-######++######-", "..-----##-----..", "......-##-......", "......-##-......", "......-##-......", ".....-####-.....", "....-######-....", "...-########-...", "...----------..." } },
             { "set", new[] {
                 "................", "..-----------...", "..-#########-...", "..-#--#--#--#...", "..-#########-...", "..-#--#--#--#...", "..-#########-...",
                 "..-#--#--#--#...", "..-#########-...", "..-----------...", "................", "................", "................", "................", "................", "................" } },
@@ -201,6 +221,9 @@ namespace DeckRogue.Game
                 case "burn": return UiKit.Hex("#e8742f");
                 case "gold": return UiKit.Hex("#e0b84a");
                 case "pierce": return UiKit.Hex("#e8e2c8");
+                case "star": return UiKit.Hex("#e0b25a");
+                case "counter": return UiKit.Hex("#7ab8b0");
+                case "crest_physical": case "crest_spell": case "crest_reaction": case "crest_permanent": return UiKit.Hex("#eadfc4");
                 case "skull": return UiKit.Hex("#e2d6d0");
                 case "crown": return UiKit.Hex("#f0c33c");
                 case "hammer": return UiKit.Hex("#c9b08a");
@@ -221,6 +244,7 @@ namespace DeckRogue.Game
             var px = new Color[w * h];
             var dark = Color.Lerp(main, Color.black, 0.45f);
             var light = Color.Lerp(main, Color.white, 0.45f);
+            if (name != null && name.StartsWith("crest_")) { dark = PaperFx.Ink; light = PaperFx.Paper; } // 紋章は墨の線画 (塗りは紙色)
             for (int y = 0; y < h; y++)
             {
                 var row = rows[y];

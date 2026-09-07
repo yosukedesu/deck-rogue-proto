@@ -11,16 +11,19 @@ namespace DeckRogue.Game
     public static class UiKit
     {
         // ---- ダークテーマ (Theme.cs のパレットと揃える) ----
-        public static readonly Color ColBg = Hex("#131917");
-        public static readonly Color ColPanel = Hex("#1c2422");
-        public static readonly Color ColPanel2 = Hex("#243230");
-        public static readonly Color ColText = Hex("#e6ecdf");
-        public static readonly Color ColDim = Hex("#8a9a90");
-        public static readonly Color ColAccent = Hex("#6abf69");
-        public static readonly Color ColHp = Hex("#c94f4f");
-        public static readonly Color ColBlock = Hex("#6f9fd8");
-        public static readonly Color ColEnergy = Hex("#f0c33c");
-        public static readonly Color ColBad = Hex("#e06c6c");
+        // 「絵本」の肌 (2026-09-07): 舞台 (夜) の上の文字は紙色、紙の上の文字は墨
+        public static readonly Color ColBg = Hex("#1a1c33");
+        public static readonly Color ColPanel = Hex("#f4ecd6");
+        public static readonly Color ColPanel2 = Hex("#eadfc4");
+        public static readonly Color ColText = Hex("#f4ecd6");
+        public static readonly Color ColDim = new Color(244f / 255f, 236f / 255f, 214f / 255f, 0.72f);
+        public static readonly Color ColInk = Hex("#3b2f2f");
+        public static readonly Color ColInkSoft = new Color(59f / 255f, 47f / 255f, 47f / 255f, 0.62f);
+        public static readonly Color ColAccent = Hex("#8fae7b");
+        public static readonly Color ColHp = Hex("#d97b7b");
+        public static readonly Color ColBlock = Hex("#7fa7c9");
+        public static readonly Color ColEnergy = Hex("#e0b25a");
+        public static readonly Color ColBad = Hex("#c8583f");
         public static readonly Color ColClear = new Color(0f, 0f, 0f, 0f);
 
         static TMP_FontAsset _fontRegular;
@@ -40,14 +43,19 @@ namespace DeckRogue.Game
         /// </summary>
         public static TMP_FontAsset FontRegular { get { EnsureFonts(); return _fontRegular; } }
         public static TMP_FontAsset FontBold { get { EnsureFonts(); return _fontBold ?? _fontRegular; } }
+        /// <summary>名前・見出しの装飾明朝 (Kaisei Decol・OFL)。無ければ太字</summary>
+        public static TMP_FontAsset FontDeco { get { EnsureFonts(); return _fontDeco ?? FontBold; } }
+        static TMP_FontAsset _fontDeco;
 
         static void EnsureFonts()
         {
             if (_fontTried) return;
             _fontTried = true;
-            _fontRegular = MakeFont("NotoSansJP-Regular");
-            _fontBold = MakeFont("NotoSansJP-Bold");
-            if (_fontRegular == null) Debug.LogWarning("[UiKit] Noto Sans JP を作れなかった。TMP の既定フォントで描く (日本語は豆腐)");
+            // 本文と数字は手書き風の Klee One (OFL)。無ければ Noto Sans JP
+            _fontRegular = MakeFont("KleeOne-Regular") ?? MakeFont("NotoSansJP-Regular");
+            _fontBold = MakeFont("KleeOne-SemiBold") ?? MakeFont("NotoSansJP-Bold");
+            _fontDeco = MakeFont("KaiseiDecol-Bold");
+            if (_fontRegular == null) Debug.LogWarning("[UiKit] 日本語フォントを作れなかった。TMP の既定フォントで描く (日本語は豆腐)");
         }
 
         static TMP_FontAsset MakeFont(string resourceName)
@@ -95,9 +103,18 @@ namespace DeckRogue.Game
             var img = rt.gameObject.AddComponent<Image>();
             img.sprite = sprite;
             img.type = Image.Type.Sliced;
-            img.pixelsPerUnitMultiplier = 1f / scale;
+            img.pixelsPerUnitMultiplier = (sprite != null && sprite.name != null && sprite.name.StartsWith("paper")) ? 1f : 1f / scale;
             img.color = tint;
             return img;
+        }
+
+        /// <summary>見出し・名前 (装飾明朝)。既定は墨</summary>
+        public static TMP_Text Deco(Transform parent, string text, int size, Color? color = null, TextAnchor anchor = TextAnchor.MiddleCenter)
+        {
+            var t = Txt(parent, text, size, color ?? ColInk, anchor, true);
+            if (FontDeco != null) t.font = FontDeco;
+            t.characterSpacing = 2f;
+            return t;
         }
 
         static TextAlignmentOptions MapAnchor(TextAnchor a)
@@ -145,7 +162,7 @@ namespace DeckRogue.Game
             {
                 img.sprite = sp;
                 img.type = Image.Type.Sliced;
-                img.pixelsPerUnitMultiplier = 1f / 3f;
+                img.pixelsPerUnitMultiplier = 1f;
                 img.color = bg.HasValue ? bg.Value : Color.white;
             }
             else
@@ -166,8 +183,8 @@ namespace DeckRogue.Game
             btn.interactable = interactable;
             btn.onClick.AddListener(delegate { Audio.Play("click", 0.5f, 0.08f); });
             if (onClick != null) btn.onClick.AddListener(delegate { onClick(); });
-            var t = Txt(rt, label, size, ColText, TextAnchor.MiddleCenter);
-            Stretch(t.rectTransform, 8f, 8f, 2f, 2f);
+            var t = Txt(rt, label, size, ColInk, TextAnchor.MiddleCenter, true);
+            Stretch(t.rectTransform, 8f, 8f, 2f, 6f);
             Le(rt, -1f, size + 16f, -1f, size + 16f);
             return btn;
         }
@@ -318,8 +335,8 @@ namespace DeckRogue.Game
         /// <summary>見出し1行</summary>
         public static TMP_Text Head(Transform parent, string text, int size = 18)
         {
-            var t = Txt(parent, text, size, ColAccent, TextAnchor.UpperLeft, true);
-            Le(t, -1f, size + 8f, -1f, size + 8f);
+            var t = Deco(parent, text, size, ColInk, TextAnchor.MiddleLeft);
+            Le(t, -1f, size + 12f, -1f, size + 12f);
             return t;
         }
 
@@ -332,6 +349,7 @@ namespace DeckRogue.Game
             img.preserveAspect = true;
             img.raycastTarget = false;
             img.color = tint.HasValue ? tint.Value : Color.white;
+            rt.sizeDelta = new Vector2(size, size);
             Le(rt, size, size, size, size);
             return img;
         }

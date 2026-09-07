@@ -211,3 +211,10 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 学び: 戦闘→報酬の遷移で `Presenter` が戦闘のバナーを重ねていた（戦闘フェーズ以外では演出を止め FX 層を掃除する）／`CenteredButton` は行の入れ物付きなので固定位置には向かない（`RunUi.BottomButton`）／
 絵文字（レリックの sprite・✕）は Noto Sans JP に無く豆腐になる＝文字でなく絵で出す／`GridLayoutGroup` の一覧は `Scroll` の縦レイアウトを外してから付ける。
 旧 `RunScreens.cs` はシード入力欄の生成（`MakeSeedField`）だけが残り、画面としては使われない（次の整理で削る）。残: 設定（音量）、続きから、マップのパン操作の手触り、PixelLab の絵の差し替え。
+
+**M2/M3 の肌を「絵本」に（2026-09-07・デザインカンバス「戦闘画面 作り直し」第5版の決定を実装）**: `Assets/Game/PaperFx.cs` に紙の9スライス（角丸の SDF で外から淡い線1・紙3・墨2、1テクセル=1px）、
+水彩のにじみ・紙の粒（Tiled）・貼り絵の縁（ドット絵の影絵を4倍解像度で膨らませて紙色に。縁≈3px）・タイプのしおり・マスキングテープ・円盤とリング（エナジーの太陽）を生成。
+`Theme.Panel/Button/CardFrame` は紙に差し替え（`UiKit.Frame` は名前が paper で始まる絵を1倍で貼る）、`UiKit` は色を紙（舞台の上）と墨（紙の上）の2系統に、フォントは本文 Klee One／名前 Kaisei Decol（`Resources/Fonts`・OFL）。
+`CardView` は作り直し（しおり=タイプにコスト、星=レア度、紙の台紙に挿絵 `Art/cards/<id>.png` を2倍か紋章16×16を3倍、左下の剣・右下の盾のにじみの札＝効果から導出 `RoleLabels`）。
+`BattleScreen` は上部の札・紙の吹き出しの意図・名前札・紙のHPバー・貼り絵の敵とリーダー・伏せ札の裏・付箋の置物・紙の山札札・エナジーの太陽・紙の頁のモーダル・紙のログ。
+ラン画面は Theme の差し替えで追随し、紙の上の文字を墨に一括変更（RunUi.TopBar は札に）。学び: レイアウトの外に置く `UiKit.Icon` は sizeDelta を明示しないと 100px になる／紋章は '-' を墨・'#' を紙にして線画にする。

@@ -50,7 +50,7 @@ namespace DeckRogue.Game
         public static void BuildBackground(RectTransform root, int act)
         {
             var art = Theme.Art("bg", "act" + act);
-            var bg = UiKit.Pan(root, Theme.Bg, "bg");
+            var bg = UiKit.Pan(root, PaperFx.Night, "bg");
             UiKit.Stretch(bg.rectTransform, 0f, 0f, 0f, 0f);
             bg.raycastTarget = false;
             if (art != null)
@@ -60,32 +60,48 @@ namespace DeckRogue.Game
                 bg.preserveAspect = false;
                 return;
             }
-            // プレースホルダー: 上が暗い夜空 (グラデーション)、下が地面の帯、周辺はビネットで落とす (幕ごとに色相を変える)
-            float hue = act == 1 ? 0.36f : act == 2 ? 0.55f : 0.02f;
+            // 「絵本」の夜: 群青の水彩 (幕で色相を変える)、遠くに紫と青緑のにじみ、足元は苔の地面、紙の粒
+            Color skyTop = act == 1 ? UiKit.Hex("#26294a") : act == 2 ? UiKit.Hex("#1f3a3d") : UiKit.Hex("#3a1f2a");
+            Color skyBot = act == 1 ? UiKit.Hex("#12142a") : act == 2 ? UiKit.Hex("#0d1c20") : UiKit.Hex("#160c12");
+            Color blobA = act == 1 ? UiKit.Hex("#7a5aa0") : act == 2 ? UiKit.Hex("#4a8a8c") : UiKit.Hex("#a05a6a");
+            Color blobB = act == 1 ? UiKit.Hex("#46788c") : act == 2 ? UiKit.Hex("#3a6a7a") : UiKit.Hex("#7a4a3a");
             var sky = UiKit.Pan(root, Color.white, "sky");
-            sky.sprite = ThemeFx.Gradient("sky" + act, Color.HSVToRGB(hue, 0.45f, 0.16f), Color.HSVToRGB(hue, 0.35f, 0.06f));
+            sky.sprite = ThemeFx.Gradient("sky" + act, skyTop, skyBot);
             UiKit.Anchor(sky.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
             sky.raycastTarget = false;
+            var b1 = PaperFx.BlobImage(root, blobA, "mist-a");
+            UiKit.Anchor(b1.rectTransform, new Vector2(0.05f, 0.55f), new Vector2(0.45f, 1f), Vector2.zero, Vector2.zero);
+            b1.color = new Color(1f, 1f, 1f, 0.32f);
+            var b2 = PaperFx.BlobImage(root, blobB, "mist-b");
+            UiKit.Anchor(b2.rectTransform, new Vector2(0.6f, 0.5f), new Vector2(1f, 0.95f), Vector2.zero, Vector2.zero);
+            b2.color = new Color(1f, 1f, 1f, 0.28f);
             var ground = UiKit.Pan(root, Color.white, "ground");
-            ground.sprite = ThemeFx.Gradient("ground" + act, Color.HSVToRGB(hue, 0.4f, 0.2f), Color.HSVToRGB(hue, 0.45f, 0.09f));
+            ground.sprite = ThemeFx.Gradient("ground" + act, UiKit.Hex("#3b3a2c"), UiKit.Hex("#1e1f18"));
             UiKit.Anchor(ground.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), Vector2.zero, Vector2.zero);
             ground.raycastTarget = false;
-            var horizon = UiKit.Pan(root, Color.HSVToRGB(hue, 0.3f, 0.3f), "horizon");
-            UiKit.Anchor(horizon.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.34f), new Vector2(0f, -3f), new Vector2(0f, 3f));
+            var moss = PaperFx.BlobImage(root, PaperFx.Moss, "moss");
+            UiKit.Anchor(moss.rectTransform, new Vector2(0.25f, 0.2f), new Vector2(0.75f, 0.36f), Vector2.zero, Vector2.zero);
+            moss.color = new Color(1f, 1f, 1f, 0.22f);
+            var horizon = UiKit.Pan(root, new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.22f), "horizon");
+            UiKit.Anchor(horizon.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.34f), new Vector2(0f, -1f), new Vector2(0f, 2f));
             horizon.raycastTarget = false;
+            var grain = PaperFx.GrainOver(root, 0.55f);
+            grain.transform.SetAsLastSibling();
             var vig = UiKit.Pan(root, Color.white, "vignette");
             vig.sprite = ThemeFx.Vignette();
             UiKit.Stretch(vig.rectTransform, 0f, 0f, 0f, 0f);
             vig.raycastTarget = false;
         }
 
-        // ---- 上部バー ----
-
         static void BuildTopBar(GameRoot g, RectTransform root, RunState run, GameState st)
         {
-            var bar = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.55f), "topbar");
-            UiKit.Anchor(bar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopH), new Vector2(0f, 0f));
-            bar.raycastTarget = false;
+            var bar = UiKit.NewRect("topbar", root);
+            UiKit.Anchor(bar, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopH), new Vector2(0f, 0f));
+            var hg = UiKit.Horz(bar, 12, 0);
+            hg.padding = new RectOffset(28, 28, 0, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft;
+            hg.childForceExpandHeight = false;
+            hg.childForceExpandWidth = false;
 
             string enc = "";
             try
@@ -94,60 +110,82 @@ namespace DeckRogue.Game
                 if (node != null && node.EncounterId != null) enc = Content.EncounterName(node.EncounterId);
             }
             catch (Exception) { }
-            var left = UiKit.Txt(bar.transform, "幕" + run.Act + "  行" + (run.Row + 1) + "   " + enc + "   ターン " + st.Turn, 22, UiKit.ColText, TextAnchor.MiddleLeft, true);
-            UiKit.Anchor(left.rectTransform, new Vector2(0f, 0f), new Vector2(0.4f, 1f), new Vector2(24f, 0f), new Vector2(0f, 0f));
+            var title = Tag(bar, 40f, -0.6f);
+            var tl = UiKit.Txt(title, "幕 " + run.Act + " · 行 " + (run.Row + 1), 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            tl.characterSpacing = 2f;
+            UiKit.Le(tl, -1f, 30f, -1f, 30f);
+            var te = UiKit.Deco(title, enc, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(te, -1f, 30f, -1f, 30f);
+            var turn = Tag(bar, 32f, 1f);
+            UiKit.Icon(turn, "set", 16f, PaperFx.InkSoft);
+            var tt = UiKit.Txt(turn, "ターン " + st.Turn, 13, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            UiKit.Le(tt, -1f, 26f, -1f, 26f);
 
-            // 中央: 資源
-            var mid = UiKit.NewRect("res", bar.transform);
-            UiKit.Anchor(mid, new Vector2(0.4f, 0f), new Vector2(0.72f, 1f), Vector2.zero, Vector2.zero);
-            var hg = UiKit.Horz(mid, 18, 0);
-            hg.childAlignment = TextAnchor.MiddleCenter;
-            hg.childForceExpandHeight = false;
-            var p = st.Player;
-            Chip(mid, "heart", p.Hp + " / " + p.MaxHp, UiKit.ColHp, 24);
-            Chip(mid, "gold", run.Gold + " G", Theme.Gold, 22);
+            var spacer = UiKit.NewRect("spacer", bar);
+            UiKit.Le(spacer, 10f, 10f, -1f, -1f, 1f, -1f);
 
-            // 右: レリック・デッキ・ログ
-            var right = UiKit.NewRect("right", bar.transform);
-            UiKit.Anchor(right, new Vector2(0.72f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-16f, 0f));
-            var rg = UiKit.Horz(right, 10, 0);
-            rg.childAlignment = TextAnchor.MiddleRight;
-            rg.childForceExpandHeight = false;
-            var relicNames = new List<string>();
-            for (int i = 0; i < run.Relics.Count; i++)
+            var gold = Tag(bar, 34f, 0f);
+            UiKit.Icon(gold, "gold", 16f);
+            var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(gt, -1f, 28f, -1f, 28f);
+            var gl = UiKit.Txt(gold, "G", 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(gl, -1f, 28f, -1f, 28f);
+
+            for (int i = 0; i < run.Relics.Count && i < 8; i++)
             {
-                try { var rd = Content.GetRelicDef(run.Relics[i]); relicNames.Add((rd.Sprite ?? "") + rd.Name); }
-                catch (Exception) { relicNames.Add(run.Relics[i]); }
+                RelicDef rd = null;
+                try { rd = Content.GetRelicDef(run.Relics[i]); } catch (Exception) { }
+                var cell = UiKit.NewRect("relic", bar);
+                UiKit.Le(cell, 34f, 34f, 34f, 34f);
+                var disc = cell.gameObject.AddComponent<Image>();
+                disc.sprite = PaperFx.Disc(); disc.preserveAspect = true;
+                RunUi.RelicArt(cell, run.Relics[i], 20f);
+                var tip = rd != null ? "<b>" + rd.Name + "</b>\n" + rd.Description : run.Relics[i];
+                Tooltip.Attach(cell.gameObject, delegate { return tip; });
             }
-            var relT = UiKit.Txt(right, relicNames.Count > 0 ? string.Join("  ", relicNames.ToArray()) : "レリックなし", 15, UiKit.ColDim, TextAnchor.MiddleRight);
-            relT.textWrappingMode = TextWrappingModes.NoWrap;
-            relT.overflowMode = TextOverflowModes.Ellipsis;
-            UiKit.Le(relT, 100f, 30f, 360f, 30f, 1f, -1f);
-            var logBtn = UiKit.Btn(right, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 15);
-            SetSize(logBtn, 130f, 44f);
+            var logBtn = UiKit.Btn(bar, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 13);
+            SetSize(logBtn, g.ShowLog ? 130f : 84f, 34f);
 
-            // エラー・通知は上部バーの下に赤で
+            // エラー・通知は上部バーの下に (紙の札)
             string msg = g.Error != null ? "! " + g.Error : (g.Notice != null ? g.Notice : null);
             if (msg != null)
             {
-                var m = UiKit.Txt(root, msg, 18, g.Error != null ? UiKit.ColBad : UiKit.ColEnergy, TextAnchor.MiddleCenter, true);
-                m.outlineWidth = 0.2f; m.outlineColor = Color.black;
-                UiKit.Anchor(m.rectTransform, new Vector2(0.1f, 1f), new Vector2(0.9f, 1f), new Vector2(0f, -TopH - 40f), new Vector2(0f, -TopH - 4f));
+                var note = UiKit.NewRect("message", root);
+                UiKit.Anchor(note, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-460f, -TopH - 48f), new Vector2(460f, -TopH - 8f));
+                var nImg = PaperFx.Sheet(note, PaperFx.Tag, "paper", g.Error != null ? new Color(1f, 0.85f, 0.8f, 1f) : Color.white);
+                UiKit.Stretch(nImg.rectTransform, 0f, 0f, 0f, 0f);
+                var m = UiKit.Txt(note, msg, 15, g.Error != null ? UiKit.ColBad : PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                UiKit.Stretch(m.rectTransform, 12f, 12f, 0f, 0f);
             }
+        }
+
+        /// <summary>紙の札 (横並びの入れ物)。少し傾けて手で置いた感じに</summary>
+        public static RectTransform Tag(Transform parent, float height, float rot, Color? tint = null)
+        {
+            var rt = UiKit.NewRect("tag", parent);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = PaperFx.Tag; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 1f;
+            img.color = tint ?? Color.white;
+            img.raycastTarget = false;
+            var hg = UiKit.Horz(rt, 6, 0);
+            hg.padding = new RectOffset(10, 10, 0, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft;
+            hg.childForceExpandHeight = false;
+            hg.childForceExpandWidth = false;
+            var le = UiKit.Le(rt, -1f, height, -1f, height);
+            le.flexibleWidth = 0f;
+            var fit = rt.gameObject.AddComponent<ContentSizeFitter>();
+            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            if (rot != 0f) rt.localRotation = Quaternion.Euler(0f, 0f, rot);
+            return rt;
         }
 
         static void Chip(Transform parent, string icon, string text, Color color, int size)
         {
-            var row = UiKit.NewRect("chip-" + icon, parent);
-            var hg = UiKit.Horz(row, 6, 0);
-            hg.childAlignment = TextAnchor.MiddleLeft;
-            hg.childForceExpandHeight = false;
-            UiKit.Icon(row, icon, 32);
-            var t = UiKit.Txt(row, text, size, color, TextAnchor.MiddleLeft, true);
-            UiKit.Le(t, 40f, size + 8f, -1f, size + 8f);
-            var fit = row.gameObject.AddComponent<ContentSizeFitter>();
-            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var tag = Tag(parent, size + 12f, 0f);
+            UiKit.Icon(tag, icon, 16f);
+            var t = UiKit.Txt(tag, text, size, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            UiKit.Le(t, 30f, size + 8f, -1f, size + 8f);
         }
 
         /// <summary>縦レイアウトの中に、横いっぱいに伸びない中央寄せのボタンを置く</summary>
@@ -180,41 +218,52 @@ namespace DeckRogue.Game
             bool alive = e.Hp > 0;
             bool aimed = g.PreferredTarget == index || (g.Pending != null && g.Pending.TargetIndex.HasValue && g.Pending.TargetIndex.Value == index);
             bool targeting = g.Pending != null && g.Pending.NextNeed() == "target";
-            if (targeting && alive)
-            {
-                var glow = UiKit.Frame(pan, Theme.Panel, new Color(1f, 0.85f, 0.3f, 0.5f), "glow", 3f);
-                UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-124f, 118f), new Vector2(124f, 346f));
-                glow.raycastTarget = false;
-            }
             g.RegisterAnchor("enemy" + index, pan);
 
             EnemyDef def = null;
             try { def = Content.GetEnemyDef(e.EnemyId); } catch (Exception) { }
             string nm = def != null ? def.Name : e.EnemyId;
 
-            // 意図 (頭上)
+            // 意図 (頭上の紙の吹き出し)
             if (alive)
             {
                 var it = e.Intent;
-                var intentRow = UiKit.NewRect("intent", pan);
-                UiKit.Anchor(intentRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 400f), new Vector2(0f, 456f));
-                var ig = UiKit.Horz(intentRow, 8, 0);
+                var bubble = UiKit.NewRect("intent", pan);
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 408f), new Vector2(110f, 462f));
+                var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
+                UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
+                bImg.raycastTarget = false;
+                var tail = UiKit.NewRect("tail", pan);
+                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, 392f), new Vector2(18f, 410f));
+                var tImg = tail.gameObject.AddComponent<Image>();
+                tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
+                var row = UiKit.NewRect("row", bubble);
+                UiKit.Stretch(row, 0f, 0f, 0f, 0f);
+                var ig = UiKit.Horz(row, 10, 0);
                 ig.childAlignment = TextAnchor.MiddleCenter;
                 ig.childForceExpandHeight = false;
+                ig.childForceExpandWidth = false;
                 if (it != null)
                 {
-                    UiKit.Icon(intentRow, IntentIcon(it.Kind), 48, IntentColor(it.Kind));
-                    var itT = UiKit.Txt(intentRow, IntentShort(it), 26, IntentColor(it.Kind), TextAnchor.MiddleLeft, true);
-                    itT.outlineWidth = 0.2f; itT.outlineColor = Color.black;
+                    var ic = UiKit.Icon(row, IntentIcon(it.Kind), 32f, IntentColor(it.Kind));
+                    UiKit.Le(ic, 32f, 32f, 32f, 32f);
+                    var itT = UiKit.Deco(row, IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft);
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
                 }
-                // 分岐・付与などの詳細は小さく
+                // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)
                 var detailText = IntentDetail(st, index, it);
-                var detail = UiKit.Txt(pan, detailText, 14, UiKit.ColEnergy, TextAnchor.LowerCenter);
-                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-20f, 340f), new Vector2(20f, 398f));
+                var detail = UiKit.Txt(pan, detailText, 13, PaperFx.Paper, TextAnchor.UpperCenter);
+                detail.outlineWidth = 0.18f; detail.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 340f), new Vector2(30f, 390f));
             }
 
-            // 足元の影とスプライト
+            // 足元の影・貼り絵の縁・ドット絵
+            if (targeting && alive)
+            {
+                var glow = PaperFx.BlobImage(pan, PaperFx.Honey, "glow");
+                UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, 100f), new Vector2(130f, 170f));
+                glow.color = new Color(1f, 1f, 1f, 0.5f);
+            }
             var sh = UiKit.NewRect("shadow", pan);
             UiKit.Anchor(sh, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-96f, 118f), new Vector2(96f, 148f));
             var shImg = sh.gameObject.AddComponent<Image>();
@@ -224,25 +273,35 @@ namespace DeckRogue.Game
             var spr = UiKit.NewRect("sprite", pan);
             UiKit.Anchor(spr, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 130f), new Vector2(100f, 330f));
             var img = spr.gameObject.AddComponent<Image>();
-            img.sprite = Creature.Get("enemies", e.EnemyId);
+            var artSprite = Creature.Get("enemies", e.EnemyId);
+            img.sprite = artSprite;
             img.preserveAspect = true;
             img.raycastTarget = false;
             img.color = alive ? Color.white : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+            if (alive) PaperFx.Sticker(pan, artSprite, spr, 1);
             if (aimed)
             {
-                var ring = UiKit.Pan(pan, new Color(1f, 0.85f, 0.3f, 0.35f), "ring");
-                UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-112f, 124f), new Vector2(112f, 130f));
-                ring.raycastTarget = false;
+                var ring = UiKit.NewRect("ring", pan);
+                UiKit.Anchor(ring, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-116f, 116f), new Vector2(116f, 146f));
+                var rImg = ring.gameObject.AddComponent<Image>();
+                rImg.sprite = PaperFx.Ring(6); rImg.color = PaperFx.Honey; rImg.raycastTarget = false;
+                rImg.preserveAspect = false;
             }
 
-            // 名前・HP
-            var nameT = UiKit.Txt(pan, nm + (alive ? "" : (e.Fled == true ? "（逃走）" : "（撃破）")), 20, alive ? UiKit.ColText : UiKit.ColDim, TextAnchor.MiddleCenter, true);
-            nameT.outlineWidth = 0.18f; nameT.outlineColor = Color.black;
-            UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 92f), new Vector2(0f, 122f));
-            HpBar(pan, new Vector2(0.08f, 0f), new Vector2(0.92f, 0f), 62f, 88f, shownHp, e.MaxHp, e.Block);
+            // 名前の札・HP
+            var nameTag = UiKit.NewRect("nametag", pan);
+            UiKit.Anchor(nameTag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-72f, 90f), new Vector2(72f, 124f));
+            nameTag.localRotation = Quaternion.Euler(0f, 0f, index % 2 == 0 ? 1f : -1f);
+            var ntImg = PaperFx.Sheet(nameTag, PaperFx.Tag, "paper", alive ? Color.white : new Color(0.8f, 0.8f, 0.8f, 1f));
+            UiKit.Stretch(ntImg.rectTransform, 0f, 0f, 0f, 0f);
+            ntImg.raycastTarget = false;
+            var nameT = UiKit.Deco(nameTag, nm + (alive ? "" : (e.Fled == true ? "（逃走）" : "（撃破）")), 19, PaperFx.Ink, TextAnchor.MiddleCenter);
+            UiKit.Stretch(nameT.rectTransform, 6f, 6f, 0f, 0f);
+            nameT.textWrappingMode = TextWrappingModes.NoWrap;
+            HpBar(pan, new Vector2(0.1f, 0f), new Vector2(0.9f, 0f), 66f, 84f, shownHp, e.MaxHp, e.Block);
             if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
 
-            // 状態チップ
+            // 状態の札
             var chips = new List<KeyValuePair<string, string>>();
             if (e.Strength != 0) chips.Add(new KeyValuePair<string, string>("sword", "筋力" + (e.Strength > 0 ? "+" : "") + e.Strength));
             if (e.Burn > 0) chips.Add(new KeyValuePair<string, string>("burn", "延焼" + e.Burn));
@@ -253,17 +312,18 @@ namespace DeckRogue.Game
             if (e.BurrowActive == true) chips.Add(new KeyValuePair<string, string>("shield", "潜伏"));
             string traits = CardText.EnemyTraits(def);
             var chipRow = UiKit.NewRect("chips", pan);
-            UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 26f), new Vector2(0f, 58f));
+            UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 30f), new Vector2(0f, 58f));
             var cg = UiKit.Horz(chipRow, 6, 0);
             cg.childAlignment = TextAnchor.MiddleCenter;
             cg.childForceExpandHeight = false;
-            for (int i = 0; i < chips.Count; i++) SmallChip(chipRow, chips[i].Key, chips[i].Value, UiKit.ColText);
+            cg.childForceExpandWidth = false;
+            for (int i = 0; i < chips.Count; i++) SmallChip(chipRow, chips[i].Key, chips[i].Value, PaperFx.Ink);
             if (traits.Length > 0)
             {
-                var tr = UiKit.Txt(pan, traits, 12, UiKit.ColDim, TextAnchor.UpperCenter);
-                UiKit.Anchor(tr.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 0f), new Vector2(10f, 24f));
+                var tr = UiKit.Txt(pan, traits, 12, PaperFx.Paper, TextAnchor.UpperCenter);
+                tr.outlineWidth = 0.18f; tr.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+                UiKit.Anchor(tr.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 2f), new Vector2(10f, 28f));
             }
-
         }
 
         /// <summary>敵の吹き出し (名前・HP・意図・特性)。用語解説は Tooltip 側が足す</summary>
@@ -285,20 +345,26 @@ namespace DeckRogue.Game
 
         static void SmallChip(Transform parent, string icon, string text, Color color)
         {
-            var row = UiKit.NewRect("chip", parent);
-            var bg = row.gameObject.AddComponent<Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.5f);
-            bg.raycastTarget = true;
-            Tooltip.Attach(row.gameObject, delegate { return text; });
-            var hg = UiKit.Horz(row, 3, 4);
-            hg.childAlignment = TextAnchor.MiddleLeft;
-            hg.childForceExpandHeight = false;
-            UiKit.Icon(row, icon, 32);
-            var t = UiKit.Txt(row, text, 14, color, TextAnchor.MiddleLeft, true);
+            var tag = Tag(parent, 26f, 0f);
+            var img = tag.GetComponent<Image>();
+            img.raycastTarget = true;
+            Tooltip.Attach(tag.gameObject, delegate { return text; });
+            var dot = UiKit.Pan(tag, DotColor(icon, text), "dot");
+            UiKit.Le(dot, 10f, 10f, 10f, 10f);
+            UiKit.Icon(tag, icon, 16f, PaperFx.Ink);
+            var t = UiKit.Txt(tag, text, 12, PaperFx.Ink, TextAnchor.MiddleLeft, true);
             UiKit.Le(t, 20f, 24f, -1f, 24f);
-            var fit = row.gameObject.AddComponent<ContentSizeFitter>();
-            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        static Color DotColor(string icon, string text)
+        {
+            if (text.StartsWith("成長")) return PaperFx.Moss;
+            if (text.StartsWith("勢い")) return PaperFx.Honey;
+            if (text.StartsWith("急所")) return UiKit.Hex("#e0a04a");
+            if (text.StartsWith("延焼")) return UiKit.Hex("#e8742f");
+            if (text.StartsWith("弱") || text.StartsWith("脆") || text.StartsWith("虚") || text.StartsWith("重") || text.StartsWith("拘") || text.StartsWith("霞")) return PaperFx.Plum;
+            if (text.StartsWith("筋力")) return UiKit.Hex("#b7a89a");
+            return PaperFx.Sky;
         }
 
         /// <summary>HP バーの値 (演出で滑らせるために持つ)</summary>
@@ -327,31 +393,37 @@ namespace DeckRogue.Game
         {
             var bar = UiKit.NewRect("hpbar", parent);
             UiKit.Anchor(bar, aMin, aMax, new Vector2(0f, yMin), new Vector2(0f, yMax));
-            var bg = bar.gameObject.AddComponent<Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.7f);
-            bg.raycastTarget = false;
+            // 紙の帯 (墨の縁) に薔薇色の水彩
+            var edge = bar.gameObject.AddComponent<Image>();
+            edge.color = PaperFx.Ink;
+            edge.raycastTarget = false;
+            var track = UiKit.Pan(bar, PaperFx.Paper, "track");
+            UiKit.Stretch(track.rectTransform, 2f, 2f, 2f, 2f);
+            track.raycastTarget = false;
             float r = max > 0 ? Mathf.Clamp01((float)hp / max) : 0f;
             var fill = UiKit.NewRect("fill", bar);
             var fimg = fill.gameObject.AddComponent<Image>();
-            fimg.color = UiKit.ColHp;
+            fimg.sprite = ThemeFx.Gradient("hpfill", Color.Lerp(PaperFx.Rose, Color.white, 0.15f), Color.Lerp(PaperFx.Rose, Color.black, 0.08f));
             fimg.raycastTarget = false;
             UiKit.Anchor(fill, new Vector2(0f, 0f), new Vector2(r, 1f), new Vector2(3f, 3f), new Vector2(0f, -3f));
-            var t = UiKit.Txt(bar, hp + " / " + max, 16, Color.white, TextAnchor.MiddleCenter, true);
-            t.outlineWidth = 0.2f; t.outlineColor = Color.black;
+            var t = UiKit.Txt(bar, hp + " / " + max, 13, PaperFx.Ink, TextAnchor.MiddleCenter, true);
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             var info = bar.gameObject.AddComponent<HpBarInfo>();
             info.Max = max; info.Value = hp; info.Fill = fill; info.Label = t;
             if (block > 0)
             {
                 var b = UiKit.NewRect("block", bar);
-                UiKit.Anchor(b, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(-30f, -22f), new Vector2(14f, 22f));
-                var bi = b.gameObject.AddComponent<Image>();
-                bi.sprite = Theme.Icon("shield");
-                bi.preserveAspect = true;
-                bi.raycastTarget = false;
-                var bt = UiKit.Txt(b, block.ToString(), 17, Color.white, TextAnchor.MiddleCenter, true);
-                bt.outlineWidth = 0.25f; bt.outlineColor = Color.black;
-                UiKit.Stretch(bt.rectTransform, 0f, 0f, 0f, 0f);
+                UiKit.Anchor(b, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(-54f, -18f), new Vector2(-8f, 18f));
+                var blob = PaperFx.BlobImage(b, PaperFx.Sky);
+                UiKit.Stretch(blob.rectTransform, 0f, 0f, 0f, 0f);
+                var row = UiKit.NewRect("row", b);
+                UiKit.Stretch(row, 0f, 0f, 0f, 0f);
+                var hg = UiKit.Horz(row, 2, 0);
+                hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+                var ic = UiKit.Icon(row, "shield", 14f, PaperFx.Ink);
+                UiKit.Le(ic, 14f, 14f, 14f, 14f);
+                var bt = UiKit.Txt(row, block.ToString(), 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                UiKit.Le(bt, 12f, 20f, -1f, 20f);
             }
         }
 
@@ -442,26 +514,34 @@ namespace DeckRogue.Game
             var spr = UiKit.NewRect("sprite", area);
             UiKit.Anchor(spr, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(10f, 130f), new Vector2(250f, 370f));
             var img = spr.gameObject.AddComponent<Image>();
-            img.sprite = Creature.Get("leaders", leaderId, true);
+            var leaderArt = Creature.Get("leaders", leaderId, true);
+            img.sprite = leaderArt;
             img.preserveAspect = true;
             img.raycastTarget = false;
+            PaperFx.Sticker(area, leaderArt, spr, 1);
 
-            var nameT = UiKit.Txt(area, leaderName, 20, UiKit.ColText, TextAnchor.MiddleCenter, true);
-            nameT.outlineWidth = 0.18f; nameT.outlineColor = Color.black;
-            UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 92f), new Vector2(260f, 122f));
+            var nameTag = UiKit.NewRect("nametag", area);
+            UiKit.Anchor(nameTag, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(20f, 90f), new Vector2(240f, 124f));
+            nameTag.localRotation = Quaternion.Euler(0f, 0f, -1f);
+            var ntImg = PaperFx.Sheet(nameTag, PaperFx.Tag, "paper");
+            UiKit.Stretch(ntImg.rectTransform, 0f, 0f, 0f, 0f);
+            ntImg.raycastTarget = false;
+            var nameT = UiKit.Deco(nameTag, leaderName, 19, PaperFx.Ink, TextAnchor.MiddleCenter);
+            UiKit.Stretch(nameT.rectTransform, 6f, 6f, 0f, 0f);
             var hpRt = UiKit.NewRect("hpwrap", area);
-            UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(40f, 62f), new Vector2(250f, 88f));
+            UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(50f, 64f), new Vector2(250f, 84f));
             HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, shownHp, p.MaxHp, p.Block);
             if (shownHp != p.Hp) TweenHpBar(area, p.Hp);
             if (p.IceBlock > 0)
             {
-                var ice = UiKit.Txt(area, "氷壁 " + p.IceBlock, 15, UiKit.Hex("#9fd8ff"), TextAnchor.MiddleLeft, true);
-                UiKit.Anchor(ice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(236f, 62f), new Vector2(380f, 88f));
+                var ice = UiKit.Txt(area, "氷壁 " + p.IceBlock, 14, UiKit.Hex("#bfe6ff"), TextAnchor.MiddleLeft, true);
+                ice.outlineWidth = 0.18f; ice.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+                UiKit.Anchor(ice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(256f, 62f), new Vector2(380f, 88f));
             }
 
-            // 資源・状態のチップ (右側に縦積み)
+            // 資源・状態の札
             var col = UiKit.NewRect("chips", area);
-            UiKit.Anchor(col, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(10f, 26f), new Vector2(0f, 58f));
+            UiKit.Anchor(col, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(10f, 28f), new Vector2(0f, 58f));
             var vg = UiKit.Horz(col, 6, 0);
             vg.childAlignment = TextAnchor.MiddleLeft;
             vg.childForceExpandWidth = false;
@@ -478,46 +558,79 @@ namespace DeckRogue.Game
             if (p.Restrain > 0) res.Add(new KeyValuePair<string, string>("set", "拘束 " + p.Restrain));
             if ((p.Mist ?? 0) > 0) res.Add(new KeyValuePair<string, string>("draw", "霞み " + p.Mist.Value));
             if ((p.Slow ?? 0) > 0) res.Add(new KeyValuePair<string, string>("exposed", "重り " + p.Slow.Value));
-            for (int i = 0; i < res.Count; i++) SmallChip(col, res[i].Key, res[i].Value, i >= 5 && res[i].Value.StartsWith("弱") || res[i].Value.StartsWith("脆") || res[i].Value.StartsWith("虚") || res[i].Value.StartsWith("拘") || res[i].Value.StartsWith("霞") || res[i].Value.StartsWith("重") ? UiKit.ColBad : UiKit.ColText);
+            for (int i = 0; i < res.Count; i++) SmallChip(col, res[i].Key, res[i].Value, PaperFx.Ink);
 
-            // 伏せ場 (リーダーの右上)
+            // 伏せ場 (リーダーの右): 点線のポケットに伏せ札の裏
             var setArea = UiKit.NewRect("setzone", area);
-            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(300f, 110f), new Vector2(0f, 290f));
-            var setLabel = UiKit.Txt(setArea, "伏せ場 " + p.SetCards.Count + " / " + p.SetSlots, 15, UiKit.ColAccent, TextAnchor.UpperLeft, true);
-            UiKit.Anchor(setLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -22f), new Vector2(0f, 0f));
+            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(300f, 110f), new Vector2(0f, 300f));
+            var setTag = Tag(setArea, 26f, -2f);
+            UiKit.Anchor(setTag, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f));
+            var stFit = setTag.GetComponent<ContentSizeFitter>();
+            UiKit.Icon(setTag, "set", 14f, PaperFx.InkSoft);
+            var setLabel = UiKit.Txt(setTag, "伏せ場 " + p.SetCards.Count + " / " + p.SetSlots, 12, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            UiKit.Le(setLabel, -1f, 22f, -1f, 22f);
             for (int i = 0; i < p.SetSlots; i++)
             {
                 var slot = UiKit.NewRect("slot" + i, setArea);
-                UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * 120f, 0f), new Vector2(i * 120f + 104f, 150f));
+                UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * 124f, 0f), new Vector2(i * 124f + 108f, 156f));
                 g.RegisterAnchor("setslot" + i, slot);
-                var sImg = UiKit.Frame(slot, Theme.Panel, i < p.SetCards.Count ? UiKit.Hex("#3f8c86") : new Color(1f, 1f, 1f, 0.35f), "slotframe", 3f);
-                UiKit.Stretch(sImg.rectTransform, 0f, 0f, 0f, 0f);
-                sImg.raycastTarget = false;
+                var pocket = PaperFx.Sheet(slot, PaperFx.Tag, "pocket", new Color(1f, 1f, 1f, 0.35f));
+                UiKit.Stretch(pocket.rectTransform, -6f, -6f, -6f, -6f);
+                pocket.raycastTarget = false;
                 if (i < p.SetCards.Count)
                 {
                     var sc = p.SetCards[i];
-                    var ct = UiKit.Txt(slot, sc.Def.Name, 14, UiKit.ColText, TextAnchor.MiddleCenter, true);
-                    UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(6f, 40f), new Vector2(-6f, -6f));
-                    var body = UiKit.Txt(slot, CardText.Short(CardText.Body(sc.Def), 30), 11, UiKit.ColDim, TextAnchor.UpperCenter);
-                    UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 4f), new Vector2(-6f, 44f));
+                    var back = PaperFx.Sheet(slot, PaperFx.Tag, "back", UiKit.Hex("#2b2d4d"));
+                    UiKit.Stretch(back.rectTransform, 0f, 0f, 0f, 0f);
+                    back.raycastTarget = false;
+                    var q = UiKit.Icon(slot, "question", 32f, PaperFx.Paper);
+                    UiKit.Anchor(q.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-16f, 4f), new Vector2(16f, 36f));
+                    var ct = UiKit.Deco(slot, "伏せ札", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
+                    UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(4f, -28f), new Vector2(-4f, -4f));
+                    string tip = "<b>" + sc.Def.Name + "</b>\n" + CardText.Body(sc.Def);
+                    pocket.raycastTarget = true;
+                    Tooltip.Attach(pocket.gameObject, delegate { return tip; });
                 }
                 else
                 {
-                    var et = UiKit.Txt(slot, "空き", 13, UiKit.ColDim, TextAnchor.MiddleCenter);
+                    var et = UiKit.Txt(slot, "空き", 12, PaperFx.Paper, TextAnchor.MiddleCenter);
+                    et.outlineWidth = 0.18f; et.outlineColor = new Color(0f, 0f, 0f, 0.7f);
                     UiKit.Stretch(et.rectTransform, 0f, 0f, 0f, 0f);
                 }
             }
 
-            // 置物 (伏せ場の右)
-            var perms = new List<string>();
-            for (int i = 0; i < p.Permanents.Count; i++)
+            // 置物 (伏せ場の右): 紙の付箋
+            var permRow = UiKit.NewRect("perms", setArea);
+            UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(p.SetSlots * 124f + 12f, 40f), new Vector2(0f, 156f));
+            var pg = UiKit.Horz(permRow, 12, 0);
+            pg.childAlignment = TextAnchor.UpperLeft;
+            pg.childForceExpandWidth = false;
+            pg.childForceExpandHeight = false;
+            int shown = 0;
+            for (int i = 0; i < p.Permanents.Count && shown < 4; i++)
             {
                 var q = p.Permanents[i];
                 if (q.Innate == true) continue;
-                perms.Add(q.Def.Name);
+                shown++;
+                var note = UiKit.NewRect("perm", permRow);
+                UiKit.Le(note, 150f, 112f, 150f, 112f);
+                note.localRotation = Quaternion.Euler(0f, 0f, shown % 2 == 0 ? 1.2f : -1.5f);
+                var nImg = PaperFx.Sheet(note, PaperFx.Panel, "paper");
+                UiKit.Stretch(nImg.rectTransform, 0f, 0f, 0f, 0f);
+                nImg.raycastTarget = true;
+                string tip = "<b>" + q.Def.Name + "</b>\n" + CardText.Body(q.Def);
+                Tooltip.Attach(note.gameObject, delegate { return tip; });
+                var pin = UiKit.Pan(note, PaperFx.Rose, "pin");
+                UiKit.Anchor(pin.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-6f, -4f), new Vector2(6f, 8f));
+                pin.raycastTarget = false;
+                var crest = UiKit.Icon(note, "crest_permanent", 20f, PaperFx.Ink);
+                UiKit.Anchor(crest.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(12f, -36f), new Vector2(32f, -16f));
+                var nt = UiKit.Deco(note, q.Def.Name, 14, PaperFx.Ink, TextAnchor.MiddleLeft);
+                UiKit.Anchor(nt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(38f, -40f), new Vector2(-8f, -12f));
+                nt.textWrappingMode = TextWrappingModes.NoWrap;
+                var body = UiKit.Txt(note, CardText.Short(CardText.Body(q.Def), 26), 11, PaperFx.InkSoft, TextAnchor.UpperLeft);
+                UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(12f, 8f), new Vector2(-10f, -44f));
             }
-            var permT = UiKit.Txt(setArea, perms.Count > 0 ? "置物: " + string.Join("・", perms.ToArray()) : "", 14, UiKit.ColText, TextAnchor.UpperLeft);
-            UiKit.Anchor(permT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(p.SetSlots * 120f + 10f, 0f), new Vector2(0f, 150f));
         }
 
         // ---- 手札 (扇) ----
@@ -677,7 +790,7 @@ namespace DeckRogue.Game
         {
             var p = st.Player;
             Pile(g, root, new Vector2(0f, 0f), new Vector2(24f, 24f), "draw", "山札", p.DrawPile.Count, -1, delegate { g.ViewPile = "draw"; g.Rebuild(); }, "pile-draw");
-            Pile(g, root, new Vector2(1f, 0f), new Vector2(-150f, 24f), "exhaust", "捨て札 / 消滅", p.DiscardPile.Count, p.ExhaustPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); }, "pile-discard");
+            Pile(g, root, new Vector2(1f, 0f), new Vector2(-214f, 24f), "exhaust", "捨て札 / 消滅", p.DiscardPile.Count, p.ExhaustPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); }, "pile-discard");
             if (g.ViewPile != null) BuildPileViewer(g, root, st);
         }
 
@@ -685,25 +798,39 @@ namespace DeckRogue.Game
         {
             var rt = UiKit.NewRect("pile-" + icon, root);
             if (anchorName != null) g.RegisterAnchor(anchorName, rt);
+            UiKit.Anchor(rt, anchor, anchor, offset, offset + new Vector2(count2 >= 0 ? 190f : 130f, 40f));
+            rt.localRotation = Quaternion.Euler(0f, 0f, anchor.x > 0.5f ? 1f : -1f);
+            var frame = PaperFx.Sheet(rt, PaperFx.Tag, "paper");
+            UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
+            frame.raycastTarget = onClick != null;
             if (onClick != null)
             {
-                var hit = rt.gameObject.AddComponent<Image>();
-                hit.color = new Color(0f, 0f, 0f, 0f);
                 var pb = rt.gameObject.AddComponent<Button>();
-                pb.targetGraphic = hit;
+                pb.targetGraphic = frame;
                 pb.transition = Selectable.Transition.None;
                 pb.onClick.AddListener(delegate { onClick(); });
             }
-            UiKit.Anchor(rt, anchor, anchor, offset, offset + new Vector2(126f, 96f));
-            var frame = UiKit.Frame(rt, Theme.Panel, Color.white, "frame", 3f);
-            UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
-            frame.raycastTarget = false;
-            var ic = UiKit.Icon(rt, icon, 36);
-            UiKit.Anchor(ic.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(12f, -48f), new Vector2(48f, -12f));
-            var cnt = UiKit.Txt(rt, count2 >= 0 ? count + " / " + count2 : count.ToString(), 24, UiKit.ColText, TextAnchor.MiddleLeft, true);
-            UiKit.Anchor(cnt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(54f, -52f), new Vector2(-6f, -8f));
-            var lb = UiKit.Txt(rt, label, 13, UiKit.ColDim, TextAnchor.LowerLeft);
-            UiKit.Anchor(lb.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(12f, 8f), new Vector2(-6f, 34f));
+            var row = UiKit.NewRect("row", rt);
+            UiKit.Stretch(row, 0f, 0f, 0f, 0f);
+            var hg = UiKit.Horz(row, 6, 0);
+            hg.padding = new RectOffset(12, 12, 0, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft;
+            hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            var ic = UiKit.Icon(row, icon, 16f, PaperFx.Ink);
+            UiKit.Le(ic, 16f, 16f, 16f, 16f);
+            var cnt = UiKit.Deco(row, count.ToString(), 17, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(cnt, -1f, 30f, -1f, 30f);
+            var lb = UiKit.Txt(row, count2 >= 0 ? "捨て札" : label, 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(lb, -1f, 30f, -1f, 30f);
+            if (count2 >= 0)
+            {
+                var sep = UiKit.Pan(row, PaperFx.InkSoft, "sep");
+                UiKit.Le(sep, 1.5f, 14f, 1.5f, 14f);
+                var cnt2 = UiKit.Deco(row, count2.ToString(), 17, PaperFx.Ink, TextAnchor.MiddleLeft);
+                UiKit.Le(cnt2, -1f, 30f, -1f, 30f);
+                var lb2 = UiKit.Txt(row, "消滅", 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+                UiKit.Le(lb2, -1f, 30f, -1f, 30f);
+            }
         }
 
         /// <summary>山札 (名前順=引き順は伏せたまま) / 捨て札 / 消滅置き場の一覧モーダル</summary>
@@ -722,13 +849,13 @@ namespace DeckRogue.Game
             for (int i = 0; i < kinds.Length; i++)
             {
                 string k = kinds[i];
-                var b = UiKit.Btn(tabs, labels[i], delegate { g.ViewPile = k; g.Rebuild(); }, 18, true, g.ViewPile == k ? UiKit.Hex("#cfeacc") : Color.white);
+                var b = UiKit.Btn(tabs, labels[i], delegate { g.ViewPile = k; g.Rebuild(); }, 18, true, g.ViewPile == k ? UiKit.Hex("#f6dd98") : Color.white);
                 SetSize(b, 200f, 44f);
             }
             IReadOnlyList<CardInstance> pile = g.ViewPile == "discard" ? st.Player.DiscardPile : g.ViewPile == "exhaust" ? st.Player.ExhaustPile : st.Player.DrawPile;
             var list = new List<CardInstance>(pile);
             if (g.ViewPile == "draw") list.Sort((a, b) => string.CompareOrdinal(a.Def.Name, b.Def.Name)); // 引き順は伏せたまま
-            var content = UiKit.Scroll(inner, true, new Color(0f, 0f, 0f, 0.25f), 12, 12);
+            var content = UiKit.Scroll(inner, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, 300f, -1f, 300f, -1f, 1f);
             var vg = content.GetComponent<VerticalLayoutGroup>();
             if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
@@ -739,7 +866,7 @@ namespace DeckRogue.Game
             grid.childAlignment = TextAnchor.UpperLeft;
             if (list.Count == 0)
             {
-                var none = UiKit.Txt(inner, "（空）", 18, UiKit.ColDim, TextAnchor.MiddleCenter);
+                var none = UiKit.Txt(inner, "（空）", 18, PaperFx.InkSoft, TextAnchor.MiddleCenter);
                 UiKit.Le(none, -1f, 40f, -1f, 40f);
             }
             for (int i = 0; i < list.Count; i++)
@@ -754,35 +881,56 @@ namespace DeckRogue.Game
         static void BuildEndTurn(GameRoot g, RectTransform root, GameState st)
         {
             bool myTurn = st.Phase == CombatPhases.PlayerTurn && g.Pending == null;
-            var b = UiKit.Btn(root, "ターン終了", delegate { g.DoCombat(new Command_EndTurn()); }, 24, myTurn, myTurn ? UiKit.Hex("#cfeacc") : Color.white);
+            var b = UiKit.Btn(root, "ターン終了", delegate { g.DoCombat(new Command_EndTurn()); }, 21, myTurn, myTurn ? UiKit.Hex("#f6dd98") : Color.white);
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
-            UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-300f, 136f), new Vector2(-24f, 216f));
-            // エナジー玉 (手札の左)
-            var orb = UiKit.NewRect("energyOrb", root);
-            UiKit.Anchor(orb, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(190f, 150f), new Vector2(290f, 250f));
-            var orbImg = orb.gameObject.AddComponent<Image>();
-            orbImg.sprite = ThemeFx.CostOrb();
-            orbImg.preserveAspect = true;
-            orbImg.raycastTarget = false;
-            orbImg.color = st.Player.Energy > 0 ? Color.white : new Color(0.55f, 0.55f, 0.55f, 1f);
-            var et = UiKit.Txt(orb, st.Player.Energy + "/" + st.Player.EnergyMax, 30, Color.white, TextAnchor.MiddleCenter, true);
-            et.outlineWidth = 0.3f; et.outlineColor = Color.black;
-            UiKit.Stretch(et.rectTransform, 0f, 0f, 0f, 0f);
-            var el = UiKit.Txt(root, "エナジー", 14, UiKit.ColDim, TextAnchor.MiddleCenter);
-            UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(170f, 126f), new Vector2(310f, 150f));
-            g.RegisterAnchor("energy", orb);
+            var brt = b.GetComponent<RectTransform>();
+            UiKit.Anchor(brt, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-270f, 146f), new Vector2(-40f, 210f));
+            brt.localRotation = Quaternion.Euler(0f, 0f, -1f);
+            var bt = b.GetComponentInChildren<TMP_Text>();
+            if (bt != null && UiKit.FontDeco != null) { bt.font = UiKit.FontDeco; bt.characterSpacing = 4f; }
+            var hint = UiKit.Txt(root, "手札 " + st.Player.Hand.Count + " · 伏せ " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 11, PaperFx.Paper, TextAnchor.MiddleRight);
+            hint.outlineWidth = 0.18f; hint.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+            UiKit.Anchor(hint.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-270f, 216f), new Vector2(-40f, 236f));
+
+            // エナジーの太陽 (紙の円盤に蜂蜜色の弧)
+            var sun = UiKit.NewRect("energyOrb", root);
+            UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(96f, 116f), new Vector2(224f, 244f));
+            sun.localRotation = Quaternion.Euler(0f, 0f, -3f);
+            var disc = UiKit.NewRect("disc", sun);
+            UiKit.Stretch(disc, 6f, 6f, 6f, 6f);
+            var dImg = disc.gameObject.AddComponent<Image>();
+            dImg.sprite = PaperFx.Disc(); dImg.preserveAspect = true; dImg.raycastTarget = false;
+            dImg.color = st.Player.Energy > 0 ? Color.white : new Color(0.85f, 0.85f, 0.85f, 1f);
+            var arc = UiKit.NewRect("arc", sun);
+            UiKit.Stretch(arc, 0f, 0f, 0f, 0f);
+            var aImg = arc.gameObject.AddComponent<Image>();
+            aImg.sprite = PaperFx.Ring(7); aImg.color = PaperFx.Honey; aImg.raycastTarget = false;
+            aImg.type = Image.Type.Filled; aImg.fillMethod = Image.FillMethod.Radial360; aImg.fillOrigin = 2; aImg.fillClockwise = true;
+            aImg.fillAmount = st.Player.EnergyMax > 0 ? Mathf.Clamp01((float)st.Player.Energy / st.Player.EnergyMax) : 0f;
+            var et = UiKit.Deco(sun, st.Player.Energy.ToString(), 40, PaperFx.Ink, TextAnchor.MiddleCenter);
+            UiKit.Anchor(et.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-8f, 4f), new Vector2(-8f, 6f));
+            var em = UiKit.Txt(sun, "/ " + st.Player.EnergyMax, 15, PaperFx.InkSoft, TextAnchor.MiddleLeft, true);
+            UiKit.Anchor(em.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(16f, -14f), new Vector2(60f, 8f));
+            var el = UiKit.Txt(sun, "エナジー", 9, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            el.characterSpacing = 3f;
+            UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 22f), new Vector2(0f, 38f));
+            g.RegisterAnchor("energy", sun);
         }
 
         // ---- ログの引き出し ----
 
         static void BuildLogDrawer(GameRoot g, RectTransform root, GameState st)
         {
-            var pan = UiKit.Pan(root, new Color(0.05f, 0.07f, 0.06f, 0.94f), "logDrawer");
-            UiKit.Anchor(pan.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-520f, 260f), new Vector2(0f, -TopH));
-            UiKit.Vert(pan.transform, 4, 12);
-            UiKit.Head(pan.transform, "戦闘ログ", 20);
-            var content = UiKit.Scroll(pan.transform, true, new Color(0f, 0f, 0f, 0.25f), 2, 8);
+            var pan = UiKit.NewRect("logDrawer", root);
+            UiKit.Anchor(pan, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-520f, 260f), new Vector2(-12f, -TopH - 8f));
+            var sheet = PaperFx.Sheet(pan, PaperFx.Panel, "paper");
+            UiKit.Stretch(sheet.rectTransform, 0f, 0f, 0f, 0f);
+            var inner = UiKit.NewRect("inner", pan);
+            UiKit.Stretch(inner, 16f, 16f, 14f, 14f);
+            UiKit.Vert(inner, 4, 0);
+            UiKit.Head(inner, "戦闘ログ", 20);
+            var content = UiKit.Scroll(inner, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 2, 8);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, 100f, -1f, 100f, -1f, 1f);
             var lines = new List<string>();
             for (int i = 0; i < st.EventLog.Count; i++)
@@ -793,7 +941,7 @@ namespace DeckRogue.Game
             int from = Math.Max(0, lines.Count - 60);
             for (int i = from; i < lines.Count; i++)
             {
-                var t = UiKit.Txt(content, lines[i], 15, UiKit.ColText);
+                var t = UiKit.Txt(content, lines[i], 14, PaperFx.Ink);
                 UiKit.Le(t, -1f, 20f, -1f, -1f);
             }
         }
@@ -802,12 +950,14 @@ namespace DeckRogue.Game
 
         public static RectTransform Modal(RectTransform root, float w, float h, string name)
         {
-            var backdrop = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.7f), name + "-backdrop");
+            var backdrop = UiKit.Pan(root, new Color(20f / 255f, 18f / 255f, 40f / 255f, 0.68f), name + "-backdrop");
             UiKit.Stretch(backdrop.rectTransform, 0f, 0f, 0f, 0f);
             var win = UiKit.Frame(backdrop.transform, Theme.Panel, Color.white, name, 3f);
             UiKit.Anchor(win.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-w / 2f, -h / 2f), new Vector2(w / 2f, h / 2f));
+            win.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0.4f);
+            PaperFx.GrainOver(win.transform, 0.6f);
             var inner = UiKit.NewRect("inner", win.transform);
-            UiKit.Stretch(inner, 24f, 24f, 20f, 20f);
+            UiKit.Stretch(inner, 28f, 28f, 22f, 22f);
             UiKit.Vert(inner, 10, 0);
             return inner;
         }
@@ -830,14 +980,14 @@ namespace DeckRogue.Game
             var info = UiKit.Txt(inner,
                 (ei + 1) + ". " + ename + " の " + (win.Stage == "pre" ? "行動の前（実行前）" : "行動の後（解決後）") + "\n"
                 + CardText.IntentText(st, ei) + "\n<b>実値: " + win.Actual + "</b>" + (win.Stage == "post" ? "   このHP損失: " + win.HpLoss : ""),
-                18, UiKit.ColText);
+                18, PaperFx.Ink);
             UiKit.Le(info, -1f, 96f, -1f, 96f);
             var risks = Effects.SetBranchFlipRisks(st);
             if (risks.Count > 0)
             {
                 var buf = new List<string>();
                 for (int i = 0; i < risks.Count; i++) buf.Add((risks[i] + 1).ToString());
-                var w = UiKit.Txt(inner, "⚠ 発動すると伏せ枠が空き、敵 " + string.Join("・", buf.ToArray()) + " が「伏せなし」の分岐に変わる", 15, UiKit.ColEnergy);
+                var w = UiKit.Txt(inner, "⚠ 発動すると伏せ枠が空き、敵 " + string.Join("・", buf.ToArray()) + " が「伏せなし」の分岐に変わる", 15, UiKit.Hex("#8a5a1a"));
                 UiKit.Le(w, -1f, 40f, -1f, 40f);
             }
             var usable = Effects.UsableSetCards(st, win);
@@ -856,14 +1006,14 @@ namespace DeckRogue.Game
                 var cv = CardView.Build(wrap, c, st, true, false, "cand-card");
                 cv.anchoredPosition = new Vector2(0f, 26f);
                 cv.localScale = Vector3.one * 0.86f;
-                var fb = UiKit.Btn(wrap, "発動", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 18, true, UiKit.Hex("#cfeacc"));
+                var fb = UiKit.Btn(wrap, "発動", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 18, true, UiKit.Hex("#f6dd98"));
                 var fle = fb.GetComponent<LayoutElement>();
                 if (fle != null) UnityEngine.Object.Destroy(fle);
                 UiKit.Anchor(fb.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 0f), new Vector2(70f, 44f));
             }
             if (usable.Count == 0)
             {
-                var none = UiKit.Txt(row, "発動できる伏せ札はありません", 16, UiKit.ColDim, TextAnchor.MiddleCenter);
+                var none = UiKit.Txt(row, "発動できる伏せ札はありません", 16, PaperFx.InkSoft, TextAnchor.MiddleCenter);
                 UiKit.Le(none, 400f, 40f, 400f, 40f);
             }
             var un = Effects.UnaffordableSetCards(st, win);
@@ -871,7 +1021,7 @@ namespace DeckRogue.Game
             {
                 var buf = new List<string>();
                 for (int i = 0; i < un.Count; i++) buf.Add(un[i].Def.Name);
-                var ut = UiKit.Txt(inner, "エナジー不足で発動できない: " + string.Join("、", buf.ToArray()), 14, UiKit.ColDim);
+                var ut = UiKit.Txt(inner, "エナジー不足で発動できない: " + string.Join("、", buf.ToArray()), 14, PaperFx.InkSoft);
                 UiKit.Le(ut, -1f, 24f, -1f, 24f);
             }
             CenteredButton(inner, "温存する", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = false }); }, 20, 320f, 56f);
@@ -881,10 +1031,9 @@ namespace DeckRogue.Game
 
         static void BuildTargetBanner(GameRoot g, RectTransform root)
         {
-            var pan = UiKit.Pan(root, UiKit.Hex("#b8862c"), "targetBanner");
-            UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-420f, -TopH - 70f), new Vector2(420f, -TopH - 10f));
-            var t = UiKit.Txt(pan.transform, "「" + g.Pending.Card.Def.Name + "」の対象を選ぶ — 敵をクリック（またはカードを敵へドラッグ）", 20, Color.white, TextAnchor.MiddleLeft, true);
-            t.outlineWidth = 0.2f; t.outlineColor = Color.black;
+            var pan = PaperFx.Sheet(root, PaperFx.Tag, "targetBanner", UiKit.Hex("#f6dd98"));
+            UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-420f, -TopH - 66f), new Vector2(420f, -TopH - 14f));
+            var t = UiKit.Txt(pan.transform, "「" + g.Pending.Card.Def.Name + "」の対象を選ぶ — 敵をクリック（またはカードを敵へドラッグ）", 18, PaperFx.Ink, TextAnchor.MiddleLeft, true);
             UiKit.Anchor(t.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 0f), new Vector2(-150f, 0f));
             var b = UiKit.Btn(pan.transform, "取り消し", delegate { g.CancelPending(); }, 16);
             var le = b.GetComponent<LayoutElement>();
@@ -904,7 +1053,7 @@ namespace DeckRogue.Game
             var hg = UiKit.Horz(inner, 10, 0);
             hg.childAlignment = TextAnchor.MiddleCenter;
             hg.childForceExpandWidth = true;
-            var title = UiKit.Txt(inner, card.Def.Name + ":", 18, UiKit.ColText, TextAnchor.MiddleLeft, true);
+            var title = UiKit.Deco(inner, card.Def.Name, 18, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(title, 100f, -1f, 160f, -1f);
             int cost = card.Def.Cost;
             try { cost = Effects.EffectiveCost(st, card); } catch (Exception) { }
@@ -960,13 +1109,13 @@ namespace DeckRogue.Game
 
             var inner = Modal(root, 1400f, 720f, "picker");
             UiKit.Head(inner, p.Card.Def.Name + " — " + title + "（選択中 " + selected.Count + " / " + want + "）", 24);
-            var content = UiKit.Scroll(inner, false, new Color(0f, 0f, 0f, 0.25f), 16, 12);
+            var content = UiKit.Scroll(inner, false, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 16, 12);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, 360f, -1f, 360f, -1f, 1f);
             var lg = content.GetComponent<HorizontalLayoutGroup>();
             if (lg != null) { lg.childForceExpandWidth = false; lg.childForceExpandHeight = false; lg.childAlignment = TextAnchor.MiddleLeft; }
             if (pool.Count == 0)
             {
-                var none = UiKit.Txt(content, "（候補がありません）", 16, UiKit.ColDim);
+                var none = UiKit.Txt(content, "（候補がありません）", 16, PaperFx.InkSoft);
                 UiKit.Le(none, 300f, 40f, 300f, 40f);
             }
             for (int i = 0; i < pool.Count; i++)
@@ -980,7 +1129,7 @@ namespace DeckRogue.Game
                 cv.anchoredPosition = new Vector2(0f, 30f);
                 cv.localScale = Vector3.one * 0.86f;
                 string cap = need;
-                var pick = UiKit.Btn(wrap, isSel ? "選択中" : "選ぶ", delegate { OnPick(g, cap, uid); }, 16, true, isSel ? UiKit.Hex("#cfeacc") : Color.white);
+                var pick = UiKit.Btn(wrap, isSel ? "選択中" : "選ぶ", delegate { OnPick(g, cap, uid); }, 16, true, isSel ? UiKit.Hex("#f6dd98") : Color.white);
                 var ple = pick.GetComponent<LayoutElement>();
                 if (ple != null) UnityEngine.Object.Destroy(ple);
                 UiKit.Anchor(pick.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 0f), new Vector2(70f, 44f));

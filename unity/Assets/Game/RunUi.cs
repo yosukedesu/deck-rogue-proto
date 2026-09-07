@@ -17,45 +17,48 @@ namespace DeckRogue.Game
         public static void TopBar(GameRoot g, RectTransform root, string title)
         {
             var run = g.Rs;
-            var bar = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.55f), "topbar");
-            UiKit.Anchor(bar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopH), new Vector2(0f, 0f));
-            bar.raycastTarget = false;
-            var left = UiKit.Txt(bar.transform, title + "   幕" + run.Act + "  行 " + (run.Row + 1) + " / " + run.Map.Count, 22, UiKit.ColText, TextAnchor.MiddleLeft, true);
-            UiKit.Anchor(left.rectTransform, new Vector2(0f, 0f), new Vector2(0.4f, 1f), new Vector2(24f, 0f), new Vector2(0f, 0f));
-
-            var mid = UiKit.NewRect("res", bar.transform);
-            UiKit.Anchor(mid, new Vector2(0.38f, 0f), new Vector2(0.7f, 1f), Vector2.zero, Vector2.zero);
-            var hg = UiKit.Horz(mid, 18, 0);
-            hg.childAlignment = TextAnchor.MiddleCenter;
+            var bar = UiKit.NewRect("topbar", root);
+            UiKit.Anchor(bar, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -TopH), new Vector2(0f, 0f));
+            var hg = UiKit.Horz(bar, 12, 0);
+            hg.padding = new RectOffset(28, 28, 0, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandHeight = false;
-            Chip(mid, "heart", run.Hp + " / " + run.MaxHp, UiKit.ColHp, 24);
-            Chip(mid, "gold", run.Gold + " G", Theme.Gold, 22);
-            var deckBtn = UiKit.Btn(mid, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.Rebuild(); }, 16);
-            BattleScreen.SetSize(deckBtn, 150f, 44f);
+            hg.childForceExpandWidth = false;
 
-            var right = UiKit.NewRect("relics", bar.transform);
-            UiKit.Anchor(right, new Vector2(0.7f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(-16f, 0f));
-            var rg = UiKit.Horz(right, 6, 0);
-            rg.childAlignment = TextAnchor.MiddleRight;
-            rg.childForceExpandHeight = false;
-            rg.childForceExpandWidth = false;
-            if (run.Relics.Count == 0)
-            {
-                var none = UiKit.Txt(right, "レリックなし", 15, UiKit.ColDim, TextAnchor.MiddleRight);
-                UiKit.Le(none, 120f, 30f, -1f, 30f);
-            }
-            for (int i = 0; i < run.Relics.Count && i < 12; i++)
+            var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
+            var tl = UiKit.Txt(t1, "幕 " + run.Act + " · 行 " + (run.Row + 1) + " / " + run.Map.Count, 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            tl.characterSpacing = 2f;
+            UiKit.Le(tl, -1f, 30f, -1f, 30f);
+            var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(te, -1f, 30f, -1f, 30f);
+
+            var spacer = UiKit.NewRect("spacer", bar);
+            UiKit.Le(spacer, 10f, 10f, -1f, -1f, 1f, -1f);
+
+            var hp = BattleScreen.Tag(bar, 36f, 0.6f);
+            UiKit.Icon(hp, "heart", 16f);
+            var ht = UiKit.Deco(hp, run.Hp.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(ht, -1f, 30f, -1f, 30f);
+            var hm = UiKit.Txt(hp, "/ " + run.MaxHp, 12, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(hm, -1f, 30f, -1f, 30f);
+            var gold = BattleScreen.Tag(bar, 36f, -0.4f);
+            UiKit.Icon(gold, "gold", 16f);
+            var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(gt, -1f, 30f, -1f, 30f);
+            var gl = UiKit.Txt(gold, "G", 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(gl, -1f, 30f, -1f, 30f);
+            var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.Rebuild(); }, 13);
+            BattleScreen.SetSize(deckBtn, 110f, 36f);
+
+            for (int i = 0; i < run.Relics.Count && i < 10; i++)
             {
                 RelicDef rd = null;
                 try { rd = Content.GetRelicDef(run.Relics[i]); } catch (Exception) { }
-                var cell = UiKit.NewRect("relic", right);
-                UiKit.Le(cell, 48f, 48f, 48f, 48f);
-                var bg = cell.gameObject.AddComponent<Image>();
-                bg.sprite = Theme.Panel;
-                bg.type = Image.Type.Sliced;
-                bg.pixelsPerUnitMultiplier = 1f / 3f;
-                bg.color = Color.white;
-                RelicArt(cell, run.Relics[i], 36f);
+                var cell = UiKit.NewRect("relic", bar);
+                UiKit.Le(cell, 34f, 34f, 34f, 34f);
+                var disc = cell.gameObject.AddComponent<Image>();
+                disc.sprite = PaperFx.Disc(); disc.preserveAspect = true;
+                RelicArt(cell, run.Relics[i], 20f);
                 var tip = rd != null ? "<b>" + rd.Name + "</b>\n" + rd.Description : run.Relics[i];
                 Tooltip.Attach(cell.gameObject, delegate { return tip; });
             }
@@ -69,7 +72,7 @@ namespace DeckRogue.Game
             var pan = UiKit.Frame(root, Theme.Panel, g.Error != null ? new Color(1f, 0.7f, 0.7f, 1f) : Color.white, "message", 3f);
             UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-460f, -TopH - 56f), new Vector2(460f, -TopH - 8f));
             pan.raycastTarget = false;
-            var t = UiKit.Txt(pan.transform, msg, 16, g.Error != null ? UiKit.ColBad : UiKit.ColText, TextAnchor.MiddleCenter);
+            var t = UiKit.Txt(pan.transform, msg, 16, g.Error != null ? UiKit.ColBad : UiKit.ColInk, TextAnchor.MiddleCenter, true);
             UiKit.Stretch(t.rectTransform, 12f, 12f, 0f, 0f);
             t.raycastTarget = false;
         }
@@ -127,7 +130,7 @@ namespace DeckRogue.Game
         public static void CardGrid(GameRoot g, Transform parent, IReadOnlyList<CardInstance> cards,
             Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null)
         {
-            var content = UiKit.Scroll(parent, true, new Color(0f, 0f, 0f, 0.25f), 12, 12);
+            var content = UiKit.Scroll(parent, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, minH, -1f, minH, -1f, 1f);
             var vg = content.GetComponent<VerticalLayoutGroup>();
             if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
@@ -139,7 +142,7 @@ namespace DeckRogue.Game
             grid.childAlignment = TextAnchor.UpperLeft;
             if (cards.Count == 0)
             {
-                var none = UiKit.Txt(parent, "（空）", 18, UiKit.ColDim, TextAnchor.MiddleCenter);
+                var none = UiKit.Txt(parent, "（空）", 18, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 UiKit.Le(none, -1f, 40f, -1f, 40f);
             }
             for (int i = 0; i < cards.Count; i++)
@@ -176,8 +179,8 @@ namespace DeckRogue.Game
         /// <summary>画面の見出し (大きな題と小さな説明)</summary>
         public static void Heading(RectTransform root, string title, string sub, float y = TopH + 24f)
         {
-            var t = UiKit.Txt(root, title, 36, UiKit.ColText, TextAnchor.MiddleCenter, true);
-            t.outlineWidth = 0.2f; t.outlineColor = Color.black;
+            var t = UiKit.Deco(root, title, 36, UiKit.ColText, TextAnchor.MiddleCenter);
+            t.outlineWidth = 0.2f; t.outlineColor = new Color(0f, 0f, 0f, 0.7f);
             UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -y - 50f), new Vector2(0f, -y));
             if (!string.IsNullOrEmpty(sub))
             {
