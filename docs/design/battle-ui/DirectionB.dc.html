@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&amp;family=Zen+Kurenaido&amp;display=swap">
+  <style>
+    body { margin: 0; background: #131917; font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; color: #e6ecdf; }
+    a { color: #e0b84a; } a:hover { color: #f0d58a; }
+    .abs { position: absolute; }
+    .panel { background: #1e2622; border: 3px solid #0b0f0d; box-shadow: inset 0 3px 0 #3a4a44, inset 3px 0 0 #3a4a44; }
+    .btn { background: #2c3a35; border: 3px solid #0b0f0d; box-shadow: inset 0 3px 0 #5a7a6c; color: #e6ecdf; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-gold { background: #e0b84a; color: #1a1208; box-shadow: inset 0 3px 0 #fff0a8; }
+    .chip { display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 8px; background: rgba(0,0,0,0.55); border: 2px solid #0b0f0d; font-size: 14px; font-weight: 700; }
+    .keycap { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; border: 2px solid #0b0f0d; background: #243230; box-shadow: inset 0 2px 0 #3a4a44; color: #8a9a90; font-size: 12px; font-weight: 700; }
+    .num { font-variant-numeric: tabular-nums; }
+  </style>
+</helmet>
+<div style="position: relative; width: 960px; height: 540px; overflow: hidden; background: #f4f1ea; color: #2a2a2a; font-family: 'Zen Kurenaido', 'Noto Sans JP', sans-serif"><div class="abs" style="left: 20px; top: 12px; font-size: 24px; font-weight: 700">案B — 卓上型（テーブル）</div><div class="abs" style="left: 20px; top: 50px; width: 920px; height: 400px; border: 2px solid #2a2a2a; background: #e8e3d8; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box"></div><div class="abs" style="left: 330px; top: 60px; width: 120px; height: 90px; border: 2px solid #2a2a2a; background: #ffffff; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">敵A
+意図カード</div><div class="abs" style="left: 470px; top: 60px; width: 120px; height: 90px; border: 2px solid #2a2a2a; background: #ffffff; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">敵B
+意図カード</div><div class="abs" style="left: 610px; top: 60px; width: 120px; height: 90px; border: 2px solid #2a2a2a; background: #ffffff; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">敵C
+意図カード</div><div class="abs" style="left: 330px; top: 160px; width: 400px; height: 60px; border: 2px dashed #6b6b6b; background: transparent; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">敵の列（顔・HP・状態）</div><div class="abs" style="left: 400px; top: 240px; width: 260px; height: 90px; border: 2px solid #2a2a2a; background: #fff7d6; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">卓の中央 = 伏せ場（大きく）
+敵の意図カードと向き合う</div><div class="abs" style="left: 40px; top: 300px; width: 200px; height: 140px; border: 2px dashed #6b6b6b; background: transparent; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">リーダーの卓席
+顔・HP・ブロック・最悪被ダメ</div><div class="abs" style="left: 700px; top: 300px; width: 220px; height: 60px; border: 2px dashed #6b6b6b; background: transparent; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">置物の列</div><div class="abs" style="left: 260px; top: 350px; width: 420px; height: 90px; border: 2px dashed #6b6b6b; background: transparent; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">手札は扇でなく一列（重ならない）</div><div class="abs" style="left: 700px; top: 380px; width: 220px; height: 60px; border: 2px dashed #6b6b6b; background: transparent; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; line-height: 18px; padding: 4px; box-sizing: border-box">エナジー · ターン終了</div><div class="abs" style="left: 20px; top: 468px; width: 920px; font-size: 14px; line-height: 20px"><span style="font-weight: 700">ねらい:</span> 伏せ札を「卓の中央に置く」物理感で set-confirm を主役にする。敵の意図もカードとして卓に出るので読み合いが一枚の卓で完結する<br><span style="font-weight: 700">代償:</span> 敵が3体以上だと意図カードが窮屈。人物の絵が小さくなり、PixelLab の立ち絵が活きにくい</div></div></x-dc>
+</body>
+</html>
