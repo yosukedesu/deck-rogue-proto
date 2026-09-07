@@ -223,18 +223,24 @@ namespace DeckRogue.Game
             EnemyDef def = null;
             try { def = Content.GetEnemyDef(e.EnemyId); } catch (Exception) { }
             string nm = def != null ? def.Name : e.EnemyId;
+            // ドット絵は整数倍 (通常・エリート 128→2倍=256px、ボスは3倍=384px)。吹き出しは絵の上端に合わせる
+            bool isBoss = false;
+            try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); isBoss = node != null && node.Type == MapNodeTypes.Boss; } catch (Exception) { }
+            var artSprite = Creature.Get("enemies", e.EnemyId);
+            float artTarget = isBoss ? 384f : 256f;
+            float spriteTop = 130f + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
 
             // 意図 (頭上の紙の吹き出し)
             if (alive)
             {
                 var it = e.Intent;
                 var bubble = UiKit.NewRect("intent", pan);
-                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 408f), new Vector2(110f, 462f));
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, spriteTop + 70f), new Vector2(110f, spriteTop + 124f));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
                 bImg.raycastTarget = false;
                 var tail = UiKit.NewRect("tail", pan);
-                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, 392f), new Vector2(18f, 410f));
+                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 54f), new Vector2(18f, spriteTop + 72f));
                 var tImg = tail.gameObject.AddComponent<Image>();
                 tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
                 var row = UiKit.NewRect("row", bubble);
@@ -256,7 +262,7 @@ namespace DeckRogue.Game
                 var detailText = IntentDetail(st, index, it);
                 var detail = UiKit.Txt(pan, detailText, 13, PaperFx.Paper, TextAnchor.UpperCenter);
                 detail.outlineWidth = 0.18f; detail.outlineColor = new Color(0f, 0f, 0f, 0.7f);
-                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, 340f), new Vector2(30f, 390f));
+                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 4f), new Vector2(30f, spriteTop + 52f));
             }
 
             // 足元の影・貼り絵の縁・ドット絵
@@ -273,8 +279,7 @@ namespace DeckRogue.Game
             shImg.raycastTarget = false;
             shImg.color = alive ? Color.white : new Color(1f, 1f, 1f, 0.3f);
             var spr = UiKit.NewRect("sprite", pan);
-            var artSprite = Creature.Get("enemies", e.EnemyId);
-            PaperFx.FitPixel(spr, artSprite, 0f, 130f);
+            PaperFx.FitPixel(spr, artSprite, 0f, 130f, artTarget);
             var img = spr.gameObject.AddComponent<Image>();
             img.sprite = artSprite;
             img.preserveAspect = true;

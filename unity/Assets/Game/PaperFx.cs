@@ -385,17 +385,16 @@ namespace DeckRogue.Game
             s.name = key; _cache[key] = s; return s;
         }
 
-        /// <summary>ドット絵を整数倍で置く倍率。目安の表示幅 192px: 64→3・96→2・48→4・16(生成の代役)→12。128 以上は2倍 (エリート・ボスは大きく)</summary>
-        public static int PixelScale(Sprite s, float target = 192f)
+        /// <summary>ドット絵を整数倍で置く倍率 = round(目安の表示幅 / 実寸)。目安 256px: 128→2 (通常・エリート・リーダー)、ボスは目安 384 で3倍。生成の代役 16 は 16倍</summary>
+        public static int PixelScale(Sprite s, float target = 256f)
         {
             if (s == null) return 1;
             float w = s.rect.width;
-            if (w >= 128f) return 2;
             return Math.Max(1, Mathf.RoundToInt(target / w));
         }
 
         /// <summary>rt を絵の整数倍の寸法にする (足元 bottom を保ち、中心 cx に置く)</summary>
-        public static void FitPixel(RectTransform rt, Sprite s, float cx, float bottom, float target = 192f)
+        public static void FitPixel(RectTransform rt, Sprite s, float cx, float bottom, float target = 256f)
         {
             int k = PixelScale(s, target);
             float w = s.rect.width * k, h = s.rect.height * k;
