@@ -202,15 +202,148 @@ namespace DeckRogue.Game
 
         // ---------------------------------------------------------------- 座席 (舞台が配置を決める)
 
-        const float LedgeS = -4.6f;                     // 台地の手前の縁 (道に直角の距離)。これより手前は 1 段低い
-        const float LowerY = -1.6f;                      // 崖下の地面の高さ
-
-        /// <summary>道の上の点 (t = 道に沿った距離・s = 道と直角の横ずれ。s>0 は奥側) を world へ。高さは地形に合わせる</summary>
+        /// <summary>道の上の点 (t = 道に沿った距離・s = 道と直角の横ずれ。s>0 は奥側) を world へ。高さは段丘の高さ場に合わせる</summary>
         static Vector3 OnPath(float t, float s)
         {
             var p = Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(t, 0f, s);
-            p.y = s < LedgeS ? LowerY : 0f;
+            p.y = GroundY(p.x, p.z);
             return p;
+        }
+
+        static void PathLocal(float x, float z, out float t, out float s)
+        {
+            var l = Quaternion.Euler(0f, -PathYaw, 0f) * new Vector3(x, 0f, z);
+            t = l.x; s = l.z;
+        }
+
+        // ---------------------------------------------------------------- 段丘の高さ場 (2026-09-08 ユーザー「地形が単調。本家を見習って」)
+        // 本家の戦場は起伏を段に切った段丘 (草の天面と土の崖面・縁は不定形)。ノイズの起伏を Step 刻みに量子化して段にし、
+        // 隣のセルとの高低差に崖面を張る。戦闘の場 (道の座標 t≈2,s≈0.5 の楕円) は平らに均し、土の空き地は不定形の塊にする。
+        const float Cell = 0.5f, Step = 1.1f;
+        const float TX0 = -56f, TZ0 = -24f;
+        const int TNX = 224, TNZ = 200;
+        static float[,] _H;
+        static bool[,] _Dirt;
+        static int _tseed = 1;
+
+        static float Hash01(int x, int z)
+        {
+            uint h = (uint)(x * 374761393 + z * 668265263 + _tseed * 1013904223);
+            h = (h ^ (h >> 13)) * 1274126177u; h ^= h >> 16;
+            return (h & 0xffffff) / 16777216f;
+        }
+        static float Vnoise(float x, float z)
+        {
+            int xi = Mathf.FloorToInt(x), zi = Mathf.FloorToInt(z);
+            float fx = x - xi, fz = z - zi;
+            fx = fx * fx * (3f - 2f * fx); fz = fz * fz * (3f - 2f * fz);
+            float a = Hash01(xi, zi), b = Hash01(xi + 1, zi), c = Hash01(xi, zi + 1), d = Hash01(xi + 1, zi + 1);
+            return Mathf.Lerp(Mathf.Lerp(a, b, fx), Mathf.Lerp(c, d, fx), fz);
+        }
+        static float Fbm(float x, float z)
+        {
+            return 0.6f * Vnoise(x * 0.045f, z * 0.045f) + 0.28f * Vnoise(x * 0.1f + 31f, z * 0.1f + 17f) + 0.12f * Vnoise(x * 0.2f + 7f, z * 0.2f + 3f);
+        }
+        /// <summary>戦闘の場 (平らに均す領域) の重み 0..1</summary>
+        static float ArenaMask(float t, float s)
+        {
+            float e = ((t - 2f) / 15f) * ((t - 2f) / 15f) + ((s - 0.5f) / 6f) * ((s - 0.5f) / 6f);
+            return 1f - Mathf.Clamp01((e - 0.7f) / 0.5f);
+        }
+        static float RawHeight(float x, float z)
+        {
+            float t, s; PathLocal(x, z, out t, out s);
+            float n = Fbm(x, z);
+            float rise = Mathf.Max(0f, s - 4f) * 0.1f;                         // 奥へ緩く上がる
+            float drop = s < -4f ? -(1.4f + (-4f - s) * 0.25f) : 0f;             // 手前は下がる
+            float h = (n - 0.42f) * 3.2f + rise + drop;
+            h = Mathf.Min(h, 3.3f);
+            if (z > 34f) h = Mathf.Min(h, 2.2f - (z - 34f) * 0.02f);             // 遠景は低く = 山の稜線と空の帯が残る
+            return Mathf.Lerp(h, 0f, ArenaMask(t, s));
+        }
+        static float Quantize(float h, float arena) { return arena > 0.99f ? 0f : Mathf.Round(h / Step) * Step; }
+        static bool DirtAt(float x, float z, float h)
+        {
+            if (Mathf.Abs(h) > 0.01f) return false;
+            float t, s; PathLocal(x, z, out t, out s);
+            float e = ((t - 2f) / 11.5f) * ((t - 2f) / 11.5f) + ((s - 0.4f) / 3.4f) * ((s - 0.4f) / 3.4f) + (Vnoise(x * 0.45f + 5f, z * 0.45f + 9f) - 0.5f) * 0.7f;
+            return e < 1f;
+        }
+        static int CellI(float x) { return Mathf.Clamp(Mathf.FloorToInt((x - TX0) / Cell), 0, TNX - 1); }
+        static int CellJ(float z) { return Mathf.Clamp(Mathf.FloorToInt((z - TZ0) / Cell), 0, TNZ - 1); }
+        public static float GroundY(float x, float z) { return _H == null ? 0f : _H[CellI(x), CellJ(z)]; }
+        static bool IsDirt(float x, float z) { return _Dirt != null && _Dirt[CellI(x), CellJ(z)]; }
+
+        static void BuildTerrain(Material mGrass, Material mDirt, Material mCliff)
+        {
+            _tseed = 1000 + _paintedAct * 7;
+            _H = new float[TNX, TNZ]; _Dirt = new bool[TNX, TNZ];
+            for (int i = 0; i < TNX; i++)
+                for (int j = 0; j < TNZ; j++)
+                {
+                    float x = TX0 + (i + 0.5f) * Cell, z = TZ0 + (j + 0.5f) * Cell;
+                    float t, s; PathLocal(x, z, out t, out s);
+                    _H[i, j] = Quantize(RawHeight(x, z), ArenaMask(t, s));
+                    _Dirt[i, j] = DirtAt(x, z, _H[i, j]);
+                }
+            var top = new MB(); var dirtTop = new MB(); var walls = new MB(); var strips = new MB();
+            var strong = new Color(1f, 1f, 1f, 0.85f); var clear = new Color(1f, 1f, 1f, 0f);
+            for (int i = 0; i < TNX; i++)
+                for (int j = 0; j < TNZ; j++)
+                {
+                    float h = _H[i, j];
+                    float x0 = TX0 + i * Cell, x1 = x0 + Cell, z0 = TZ0 + j * Cell, z1 = z0 + Cell;
+                    (_Dirt[i, j] ? dirtTop : top).Floor(x0, z0, x1, z1, h);
+                    // 崖面: 隣が低ければその側に壁を張る (自分が高い側)。手前向きと横向きの壁の根元には影の帯
+                    if (j > 0 && _H[i, j - 1] < h - 0.01f)
+                    {
+                        float hn = _H[i, j - 1];
+                        walls.WallZ(x0, x1, hn, h, z0);
+                        strips.QuadC(new Vector3(x0, hn + 0.03f, z0), new Vector3(x0, hn + 0.03f, z0 - 1.3f), new Vector3(x1, hn + 0.03f, z0 - 1.3f), new Vector3(x1, hn + 0.03f, z0), strong, clear, clear, strong);
+                    }
+                    if (j < TNZ - 1 && _H[i, j + 1] < h - 0.01f)
+                    {
+                        float hn = _H[i, j + 1];
+                        walls.Quad(new Vector3(x1, hn, z1), new Vector3(x1, h, z1), new Vector3(x0, h, z1), new Vector3(x0, hn, z1),
+                                   new Vector2(x1, hn) / Tile, new Vector2(x1, h) / Tile, new Vector2(x0, h) / Tile, new Vector2(x0, hn) / Tile);
+                    }
+                    if (i > 0 && _H[i - 1, j] < h - 0.01f)
+                    {
+                        float hn = _H[i - 1, j];
+                        walls.Quad(new Vector3(x0, hn, z1), new Vector3(x0, h, z1), new Vector3(x0, h, z0), new Vector3(x0, hn, z0),
+                                   new Vector2(z1, hn) / Tile, new Vector2(z1, h) / Tile, new Vector2(z0, h) / Tile, new Vector2(z0, hn) / Tile);
+                        strips.QuadC(new Vector3(x0, hn + 0.03f, z0), new Vector3(x0 - 1.0f, hn + 0.03f, z0), new Vector3(x0 - 1.0f, hn + 0.03f, z1), new Vector3(x0, hn + 0.03f, z1), strong, clear, clear, strong);
+                    }
+                    if (i < TNX - 1 && _H[i + 1, j] < h - 0.01f)
+                    {
+                        float hn = _H[i + 1, j];
+                        walls.Quad(new Vector3(x1, hn, z0), new Vector3(x1, h, z0), new Vector3(x1, h, z1), new Vector3(x1, hn, z1),
+                                   new Vector2(z0, hn) / Tile, new Vector2(z0, h) / Tile, new Vector2(z1, h) / Tile, new Vector2(z1, hn) / Tile);
+                        strips.QuadC(new Vector3(x1, hn + 0.03f, z1), new Vector3(x1 + 1.0f, hn + 0.03f, z1), new Vector3(x1 + 1.0f, hn + 0.03f, z0), new Vector3(x1, hn + 0.03f, z0), strong, clear, clear, strong);
+                    }
+                }
+            Solid("terrain-grass", top, mGrass);
+            Solid("terrain-dirt", dirtTop, mDirt);
+            Solid("terrain-cliff", walls, mCliff);
+            var sgo = new GameObject("terrain-shadow");
+            sgo.transform.SetParent(_world, false);
+            sgo.AddComponent<MeshFilter>().sharedMesh = strips.Build();
+            var smr = sgo.AddComponent<MeshRenderer>();
+            smr.sharedMaterial = GlowMaterial(Px.Solid(Color.white));
+            smr.sharedMaterial.color = new Color(ShadowColor.r, ShadowColor.g, ShadowColor.b, 1f);
+            smr.shadowCastingMode = ShadowCastingMode.Off; smr.receiveShadows = false;
+        }
+
+        /// <summary>土の空き地の境界のセル中心 (縁の食い込みを置く候補)</summary>
+        static List<Vector3> DirtEdgeCells()
+        {
+            var list = new List<Vector3>();
+            if (_Dirt == null) return list;
+            for (int i = 1; i < TNX - 1; i++)
+                for (int j = 1; j < TNZ - 1; j++)
+                    if (_Dirt[i, j] && (!_Dirt[i - 1, j] || !_Dirt[i + 1, j] || !_Dirt[i, j - 1] || !_Dirt[i, j + 1]))
+                        list.Add(new Vector3(TX0 + (i + 0.5f) * Cell, _H[i, j], TZ0 + (j + 0.5f) * Cell));
+            return list;
         }
 
         public static Vector3 LeaderSlot() { return OnPath(-5.0f, 0.9f); }
@@ -466,131 +599,84 @@ namespace DeckRogue.Game
             if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.56f, 0.7f, 0.68f));
             if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.46f, 0.5f, 0.64f));    // 夜の道は青灰。暖色は街灯の範囲だけ
             if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.6f, 0.62f, 0.72f));
-            if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.56f, 0.56f, 0.66f));
-            var pathRot = Quaternion.Euler(0f, PathYaw, 0f);
-            var ground = new MB();
-            ground.Floor(-90f, LedgeS, 90f, 90f, 0f);                       // 台地 (戦闘の場)
-            Solid("ground", ground, mGrass).transform.rotation = pathRot;
-            var lower = new MB();
-            lower.Floor(-90f, -60f, 90f, LedgeS, LowerY);                    // 崖下の地面 (暗め)
-            var mGrassLow = Lit(Tex(act, "grass", grass)); mGrassLow.SetColor("_BaseColor", new Color(0.62f, 0.66f, 0.78f));
-            Solid("ground-lower", lower, mGrassLow).transform.rotation = pathRot;
-            var ledge = new MB();
-            ledge.WallZ(-90f, 90f, LowerY, 0f, LedgeS);                       // 崖の縁 (手前を向く面)
-            Solid("ledge", ledge, mCliff).transform.rotation = pathRot;
-            {
-                // 崖の縁の根元の影 (崖下へ薄れる帯) と、縁の上の明るい線
-                var strip = new GameObject("ledge-shadow");
-                strip.transform.SetParent(_world, false);
-                strip.AddComponent<MeshFilter>().sharedMesh = _quadCentered;
-                var smr = strip.AddComponent<MeshRenderer>();
-                smr.sharedMaterial = GlowMaterial(StripTex());
-                smr.sharedMaterial.color = new Color(ShadowColor.r, ShadowColor.g, ShadowColor.b, 0.92f);
-                smr.shadowCastingMode = ShadowCastingMode.Off; smr.receiveShadows = false;
-                strip.transform.rotation = pathRot * Quaternion.Euler(90f, 0f, 0f);
-                strip.transform.position = pathRot * new Vector3(0f, LowerY + 0.03f, LedgeS);   // 中心を縁の線に (見える半分が外へ薄れる)
-                strip.transform.localScale = new Vector3(180f, 4.8f, 1f);
-            }
-            var path = new MB();
-            path.Floor(-70f, -2.4f, 70f, 2.2f, 0.012f);
-            Solid("path", path, mDirt).transform.rotation = pathRot;
-            // 道の縁: 草に食われた縁と、すり減った中央 (不規則な抜き板)
+            if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.53f, 0.52f));
+            // ---- 段丘の地形 (本家の段々畑のような起伏): 高さ場を段に量子化し、段差に崖面を張る。戦闘の場だけ平らに均す
+            BuildTerrain(mGrass, mDirt, mCliff);
+
+            // 土の空き地の縁: 草に食われた縁と土のこぼれ (不定形の塊の境界に置く)
             var mBite = Cutout(Px.Patch(p.GrassA, p.GrassB, rng));
             var mSpill = Cutout(Px.Patch(p.DirtA, p.DirtB, rng));
-            for (int i = 0; i < 40; i++)
+            var edges = DirtEdgeCells();
+            for (int i = 0; i < edges.Count; i++) { int j = rng.Next(i, edges.Count); var tmp = edges[i]; edges[i] = edges[j]; edges[j] = tmp; }
+            for (int i = 0; i < Mathf.Min(44, edges.Count); i++)
             {
-                float t = -30f + (float)rng.NextDouble() * 60f;
-                float side = rng.NextDouble() < 0.5 ? -1f : 1f;
-                float sz = 0.7f + (float)rng.NextDouble() * 1.5f;
-                var w = OnPath(t, side * (1.7f + (float)rng.NextDouble() * 0.9f));         // 草が道の縁に食い込む (縁をまたぐ)
-                Decal("bite", mBite, w.x, w.z, sz, sz * 0.6f, (float)rng.NextDouble() * 360f);
-                if (i % 3 == 0)
-                {
-                    var w2 = OnPath(t + 1.1f, side * (2.5f + (float)rng.NextDouble() * 0.6f));  // 土が草にこぼれる
-                    Decal("spill", mSpill, w2.x, w2.z, sz * 0.8f, sz * 0.45f, (float)rng.NextDouble() * 360f);
-                }
+                var c = edges[i];
+                float sz = 0.7f + (float)rng.NextDouble() * 1.4f;
+                if (i % 3 != 2) Decal("bite", mBite, c.x + ((float)rng.NextDouble() - 0.5f) * 0.6f, c.z + ((float)rng.NextDouble() - 0.5f) * 0.6f, sz, sz * 0.6f, (float)rng.NextDouble() * 360f);
+                else Decal("spill", mSpill, c.x + ((float)rng.NextDouble() - 0.5f) * 0.8f, c.z + ((float)rng.NextDouble() - 0.5f) * 0.8f, sz * 0.8f, sz * 0.45f, (float)rng.NextDouble() * 360f);
             }
-            // 草地のムラ: 明るい草地と枯れ地の「色の島」(暗い斑は置かない)
+            // 草地のムラ: 明るい草地と枯れ地の「色の島」(少なく・大小・不定形)
             var mIslandLight = Cutout(Px.Patch(p.GrassC, Color.Lerp(p.GrassA, p.GrassC, 0.5f), rng));
             var mIslandDry = Cutout(Px.Patch(p.GrassDry, Color.Lerp(p.GrassA, p.GrassDry, 0.5f), rng));
-            // 島は少なく (5つ)、大小を 0.5〜2 倍にばらし、道の上には置かない
             float[] islandT = { -16f, -6f, 4f, 11f, 19f };
             float[] islandS = { 5.5f, -3.8f, 7.0f, 4.2f, -3.6f };
             float[] islandSz = { 4.6f, 1.6f, 3.2f, 2.2f, 1.2f };
             for (int i = 0; i < islandT.Length; i++)
             {
                 var w = OnPath(islandT[i], islandS[i]);
+                if (IsDirt(w.x, w.z)) continue;
                 Decal("island", i % 2 == 0 ? mIslandLight : mIslandDry, w.x, w.z, islandSz[i], islandSz[i] * (0.55f + (float)rng.NextDouble() * 0.25f), (float)rng.NextDouble() * 360f);
             }
-            // 草の株・花は道の外に、小石は道の上に (暖色の灰)
+            // 草の株・花は草地に、小石は土の上に
             var tuft = Px.Tuft(p, rng); var pebble = Px.Pebble(p, rng); var flower = Px.Flower(p, rng);
             var mPebble = Cutout(pebble);
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < 46; i++)
             {
-                float t = -26f + (float)rng.NextDouble() * 52f;
-                float s = -4.2f + (float)rng.NextDouble() * 13f;
-                var w = OnPath(t, s);
-                if (Mathf.Abs(s) < 1.9f) { if (rng.NextDouble() < 0.3) Decal("pebble", mPebble, w.x, w.z, 0.36f + (float)rng.NextDouble() * 0.16f, 0.24f, (float)rng.NextDouble() * 360f); continue; }
-                if (Mathf.Abs(s) < 2.6f) continue;
+                float t = -22f + (float)rng.NextDouble() * 46f;
+                float sv = -5f + (float)rng.NextDouble() * 15f;
+                var w = OnPath(t, sv);
+                if (IsDirt(w.x, w.z)) { if (rng.NextDouble() < 0.5) Decal("pebble", mPebble, w.x, w.z, 0.36f + (float)rng.NextDouble() * 0.16f, 0.24f, (float)rng.NextDouble() * 360f); continue; }
                 if (rng.NextDouble() < 0.15) Plane("flower", flower, w, 0.46f, 0.5f, false);
                 else Plane("tuft", tuft, w, 0.44f + (float)rng.NextDouble() * 0.18f, 0.5f, false);
             }
 
-            // 段々の台地 (奥へ上がる) と崖の面。縁は斜め (手前左が近く、奥右へ抜ける)。根元に接地の影の帯
-            const float yaw1 = -14f, yaw2 = -8f;
-            Terrace(-70f, 9f, 70f, 24f, 1.4f, mGrass, mCliff, yaw1);
-            Terrace(-70f, 24f, 70f, 70f, 3.0f, mGrass, mCliff, yaw2);
+            // 遺跡の柱 (石) — 段丘の上に (額縁)
+            { var w = OnPath(-15f, 6.5f); Pillar(w.x, w.y, w.z, 1.2f, 4.0f, mStone); }
+            { var w = OnPath(17f, 7.5f); Pillar(w.x, w.y, w.z, 1.3f, 3.2f, mStone); }
 
-            // 遺跡の柱 (石) — 左右で額縁を作る
-            Pillar(-11.6f, 0f, 2.2f, 1.2f, 4.2f, mStone);
-            Pillar(12.4f, 0f, 6.0f, 1.1f, 3.0f, mStone);
-            var pt = Quaternion.Euler(0f, yaw1, 0f) * new Vector3(15f, 0f, 14f);
-            Pillar(pt.x, 1.4f, pt.z, 1.4f, 3.4f, mStone);
-
-            // 木: 3種の形・大きさ 0.7〜1.3・群生と隙間。テクスチャは2倍密度 (画面で約4px/ドット)
+            // 木: 段丘の上に大小をばらして散らす (戦闘の場の外・奥ほど多い)。3種・大きさ 0.6〜1.5
             var trees = new[] { Px.Tree(p, rng, 0), Px.Tree(p, rng, 1), Px.Tree(p, rng, 2) };
             var bush = Px.Bush(p, rng); var rock = Px.Rock(p, rng);
-            var rot1 = Quaternion.Euler(0f, yaw1, 0f);
-            for (int c = 0; c < 4; c++)
+            int placed = 0, tries = 0;
+            while (placed < 64 && tries++ < 1400)
             {
-                float cx = -20f + c * 12f + (float)rng.NextDouble() * 6f, cz = 10.5f + (float)rng.NextDouble() * 3f;
-                int cnt = 3 + rng.Next(3);
-                for (int i = 0; i < cnt; i++)
-                {
-                    var local = new Vector3(cx + (float)rng.NextDouble() * 5f - 2.5f, 1.4f, cz + (float)rng.NextDouble() * 3f - 1.5f);
-                    Cross("tree", trees[rng.Next(3)], rot1 * local, 2.6f * (0.7f + (float)rng.NextDouble() * 0.6f), 0.5f);
-                }
+                float x = -40f + (float)rng.NextDouble() * 80f, z = -6f + (float)rng.NextDouble() * 54f;
+                float tt, ss; PathLocal(x, z, out tt, out ss);
+                if (ss > -2f && ss < 6.5f && tt > -12f && tt < 16f) continue;      // 戦闘の場と背後は空ける
+                float h = GroundY(x, z);
+                if (h < Step * 0.5f && ss < 8f) continue;                         // 近くの平地には置かない
+                float sc = 2.6f * (0.6f + (float)rng.NextDouble() * 0.9f);
+                Cross("tree", trees[rng.Next(3)], new Vector3(x, h, z), sc, 0.5f);
+                placed++;
             }
-            for (int i = 0; i < 5; i++)
-            {
-                var local = new Vector3(-26f + (float)rng.NextDouble() * 52f, 1.4f, 12f + (float)rng.NextDouble() * 5f);
-                Cross("tree", trees[rng.Next(3)], rot1 * local, 2.6f * (0.7f + (float)rng.NextDouble() * 0.6f), 0.5f);
-            }
-            // 地面の高さの木 (両脇の額縁・近いので大きく見える)。戦闘ライン (道) には置かない
-            Cross("tree", trees[1], OnPath(-12.5f, 5.0f), 3.4f, 0.5f);
-            Cross("tree", trees[0], OnPath(-9.5f, 7.6f), 2.8f, 0.5f);
-            Cross("tree", trees[2], OnPath(14.5f, -3.6f), 3.1f, 0.5f);
-            // 前景 (崖下・画面の下の隅): 大きな岩と丈の高い草。近いので大きく、軽くぼける
+            // 両脇の額縁の木 (近いので大きい)
+            { var w = OnPath(-13.5f, 5.2f); Cross("tree", trees[1], w, 3.6f, 0.5f); }
+            { var w = OnPath(-10f, 8.4f); Cross("tree", trees[0], w, 3.0f, 0.5f); }
+            { var w = OnPath(15.5f, -4.4f); Cross("tree", trees[2], w, 3.2f, 0.5f); }
+            // 前景 (手前の低い地面・画面の下の隅): 大きな岩と丈の高い草
             var tall = Px.TallGrass(p, rng);
             Plane("rock-front", rock, OnPath(-3.2f, -7.4f), 2.0f, 0.5f, true);
             Plane("rock-front", rock, OnPath(11.5f, -6.8f), 1.5f, 0.5f, true);
             for (int i = 0; i < 14; i++)
             {
                 float t = -18f + (float)rng.NextDouble() * 36f;
-                float s = LedgeS - 0.3f - (float)rng.NextDouble() * 1.6f;
-                var g = Plane("tallgrass", tall, OnPath(t, s), 1.5f + (float)rng.NextDouble() * 0.6f, 0.5f, false);
+                float sv = -5.0f - (float)rng.NextDouble() * 1.6f;
+                var g = Plane("tallgrass", tall, OnPath(t, sv), 1.5f + (float)rng.NextDouble() * 0.6f, 0.5f, false);
                 if (rng.NextDouble() < 0.5) g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f);
             }
-            // 奥の台地の木 (小さめ)
-            var rot2 = Quaternion.Euler(0f, yaw2, 0f);
-            for (int i = 0; i < 12; i++)
-            {
-                var local = new Vector3(-30f + (float)rng.NextDouble() * 60f, 3.0f, 26f + (float)rng.NextDouble() * 10f);
-                Cross("tree-far", trees[rng.Next(3)], rot2 * local, 3.0f * (0.6f + (float)rng.NextDouble() * 0.5f), 0.5f);
-            }
-            // 茂み・岩: 戦闘ライン (道の s∈[-3.5, 3.5]) の外だけ = 敵の背後を空ける
-            float[] bt = { -15f, -12f, 1f, 15f, 17f, 0.5f, 6f, -10f };
-            float[] bs = { 5.6f, 7.4f, 9.6f, 5.2f, 7.8f, -6.4f, -7.2f, -6.0f };
+            // 茂み・岩: 戦闘ラインの外 (段丘の縁や手前)
+            float[] bt = { -15f, -12f, 1f, 15f, 17f, 0.5f, 6f, -10f, 9f, -18f };
+            float[] bs = { 5.6f, 7.4f, 9.6f, 5.2f, 7.8f, -6.4f, -7.2f, -6.0f, 8.8f, 7.2f };
             for (int i = 0; i < bt.Length; i++)
             {
                 var b = Plane("bush", bush, OnPath(bt[i], bs[i]), 0.9f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
@@ -598,6 +684,13 @@ namespace DeckRogue.Game
             }
             Plane("rock", rock, OnPath(-14.5f, 4.2f), 0.9f, 0.5f, true);
             Plane("rock", rock, OnPath(16.5f, 4.0f), 0.8f, 0.5f, true);
+            for (int i = 0; i < 6; i++)
+            {
+                float x = -34f + (float)rng.NextDouble() * 68f, z = 4f + (float)rng.NextDouble() * 40f;
+                float tt, ss; PathLocal(x, z, out tt, out ss);
+                if (ss > -3f && ss < 7f && tt > -12f && tt < 16f) continue;
+                Plane("rock", rock, new Vector3(x, GroundY(x, z), z), 0.6f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
+            }
 
             // 街灯: 細い支柱と灯具 (暗い鉄)、HDR の炎 (ブルーム)、足元に暖色の光溜まり
             var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
@@ -738,7 +831,7 @@ namespace DeckRogue.Game
         {
             var go = new GameObject(name);
             go.transform.SetParent(_world, false);
-            go.transform.position = new Vector3(x, 0.02f, z);
+            go.transform.position = new Vector3(x, GroundY(x, z) + 0.02f, z);
             go.transform.rotation = Quaternion.Euler(90f, rotDeg, 0f);
             go.transform.localScale = new Vector3(w, d, 1f);
             var mf = go.AddComponent<MeshFilter>(); mf.sharedMesh = _quad;
@@ -870,7 +963,7 @@ namespace DeckRogue.Game
             readonly List<Vector3> _n = new List<Vector3>();
             readonly List<int> _t = new List<int>();
 
-            void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector2 ua, Vector2 ub, Vector2 uc, Vector2 ud)
+            public void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector2 ua, Vector2 ub, Vector2 uc, Vector2 ud)
             {
                 int i = _v.Count;
                 var n = Vector3.Cross(b - a, c - a).normalized;
@@ -905,10 +998,22 @@ namespace DeckRogue.Game
                      new Vector2(z0, y) / Tile, new Vector2(z0, y1) / Tile, new Vector2(z1, y1) / Tile, new Vector2(z1, y) / Tile);
             }
 
+            readonly List<Color> _c = new List<Color>();
+
+            /// <summary>頂点色つきの面 (影の帯: 壁側 1 → 外 0)</summary>
+            public void QuadC(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color ca, Color cb, Color cc, Color cd)
+            {
+                while (_c.Count < _v.Count) _c.Add(Color.white);
+                Quad(a, b, c, d, Vector2.zero, Vector2.one, Vector2.one, Vector2.zero);
+                _c.Add(ca); _c.Add(cb); _c.Add(cc); _c.Add(cd);
+            }
+
             public Mesh Build()
             {
                 var m = new Mesh();
+                m.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
                 m.SetVertices(_v); m.SetUVs(0, _uv); m.SetNormals(_n); m.SetTriangles(_t, 0);
+                if (_c.Count > 0) { while (_c.Count < _v.Count) _c.Add(Color.white); m.SetColors(_c); }
                 m.RecalculateBounds();
                 return m;
             }
