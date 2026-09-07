@@ -282,6 +282,13 @@ namespace DeckRogue.EditorTools
                 // メニューの「URP Universal Renderer」と同じ手順: CreateInstance → パッケージのシェーダー参照を埋める → 保存
                 const string rendererPath = dir + "/URP-Renderer.asset";
                 var renderer = AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRendererData>(rendererPath);
+                if (renderer != null && renderer.postProcessData == null)
+                {
+                    // ポスト処理 (ブルーム等) はレンダラーの PostProcessData が無いと描かれない
+                    var ppd = AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.PostProcessData>("Packages/com.unity.render-pipelines.universal/Runtime/Data/PostProcessData.asset");
+                    if (ppd != null) { renderer.postProcessData = ppd; EditorUtility.SetDirty(renderer); AssetDatabase.SaveAssets(); Debug.Log("[DeckRogue] URP: PostProcessData を割り当てた"); }
+                    else Debug.LogWarning("[DeckRogue] URP: PostProcessData が見つからない");
+                }
                 if (renderer == null)
                 {
                     renderer = ScriptableObject.CreateInstance<UnityEngine.Rendering.Universal.UniversalRendererData>();

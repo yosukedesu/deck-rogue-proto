@@ -49,48 +49,8 @@ namespace DeckRogue.Game
 
         public static void BuildBackground(RectTransform root, int act)
         {
-            var art = Theme.Art("bg", "act" + act);
-            var bg = UiKit.Pan(root, PaperFx.Night, "bg");
-            UiKit.Stretch(bg.rectTransform, 0f, 0f, 0f, 0f);
-            bg.raycastTarget = false;
-            if (art != null)
-            {
-                bg.sprite = art;
-                bg.color = Color.white;
-                bg.preserveAspect = false;
-                return;
-            }
-            // 「絵本」の夜: 群青の水彩 (幕で色相を変える)、遠くに紫と青緑のにじみ、足元は苔の地面、紙の粒
-            Color skyTop = act == 1 ? UiKit.Hex("#26294a") : act == 2 ? UiKit.Hex("#1f3a3d") : UiKit.Hex("#3a1f2a");
-            Color skyBot = act == 1 ? UiKit.Hex("#12142a") : act == 2 ? UiKit.Hex("#0d1c20") : UiKit.Hex("#160c12");
-            Color blobA = act == 1 ? UiKit.Hex("#7a5aa0") : act == 2 ? UiKit.Hex("#4a8a8c") : UiKit.Hex("#a05a6a");
-            Color blobB = act == 1 ? UiKit.Hex("#46788c") : act == 2 ? UiKit.Hex("#3a6a7a") : UiKit.Hex("#7a4a3a");
-            var sky = UiKit.Pan(root, Color.white, "sky");
-            sky.sprite = ThemeFx.Gradient("sky" + act, skyTop, skyBot);
-            UiKit.Anchor(sky.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-            sky.raycastTarget = false;
-            var b1 = PaperFx.BlobImage(root, blobA, "mist-a");
-            UiKit.Anchor(b1.rectTransform, new Vector2(0.05f, 0.55f), new Vector2(0.45f, 1f), Vector2.zero, Vector2.zero);
-            b1.color = new Color(1f, 1f, 1f, 0.32f);
-            var b2 = PaperFx.BlobImage(root, blobB, "mist-b");
-            UiKit.Anchor(b2.rectTransform, new Vector2(0.6f, 0.5f), new Vector2(1f, 0.95f), Vector2.zero, Vector2.zero);
-            b2.color = new Color(1f, 1f, 1f, 0.28f);
-            var ground = UiKit.Pan(root, Color.white, "ground");
-            ground.sprite = ThemeFx.Gradient("ground" + act, UiKit.Hex("#3b3a2c"), UiKit.Hex("#1e1f18"));
-            UiKit.Anchor(ground.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), Vector2.zero, Vector2.zero);
-            ground.raycastTarget = false;
-            var moss = PaperFx.BlobImage(root, PaperFx.Moss, "moss");
-            UiKit.Anchor(moss.rectTransform, new Vector2(0.25f, 0.2f), new Vector2(0.75f, 0.36f), Vector2.zero, Vector2.zero);
-            moss.color = new Color(1f, 1f, 1f, 0.22f);
-            var horizon = UiKit.Pan(root, new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.22f), "horizon");
-            UiKit.Anchor(horizon.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.34f), new Vector2(0f, -1f), new Vector2(0f, 2f));
-            horizon.raycastTarget = false;
-            var grain = PaperFx.GrainOver(root, 0.55f);
-            grain.transform.SetAsLastSibling();
-            var vig = UiKit.Pan(root, Color.white, "vignette");
-            vig.sprite = ThemeFx.Vignette();
-            UiKit.Stretch(vig.rectTransform, 0f, 0f, 0f, 0f);
-            vig.raycastTarget = false;
+            // 背景は舞台 (別カメラ・ポスト処理と粒子つき) に描く。UI 側 (root) には何も置かない
+            Stage.Paint(act);
         }
 
         static void BuildTopBar(GameRoot g, RectTransform root, RunState run, GameState st)

@@ -373,7 +373,10 @@ namespace DeckRogue.Game
                 Destroy(c.gameObject);
             }
             bool inCombat = Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null;
-            if (ScreenRoot != null && !inCombat)
+            // 戦闘中は BattleView が差分更新するので掃除しない。ただし戦闘の最初の組み立て (Battle がまだ無い) は
+            // 直前の画面 (マップ等) が残っているので掃除する (2026-09-07 舞台化で背景が UI 側から消え、残骸が透けた)
+            bool freshCombat = inCombat && Battle == null;
+            if (ScreenRoot != null && (!inCombat || freshCombat))
             {
                 if (Battle != null) { Battle.Destroy(); Battle = null; }
                 Tooltip.Hide();

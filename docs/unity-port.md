@@ -218,3 +218,11 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 `CardView` は作り直し（しおり=タイプにコスト、星=レア度、紙の台紙に挿絵 `Art/cards/<id>.png` を2倍か紋章16×16を3倍、左下の剣・右下の盾のにじみの札＝効果から導出 `RoleLabels`）。
 `BattleScreen` は上部の札・紙の吹き出しの意図・名前札・紙のHPバー・貼り絵の敵とリーダー・伏せ札の裏・付箋の置物・紙の山札札・エナジーの太陽・紙の頁のモーダル・紙のログ。
 ラン画面は Theme の差し替えで追随し、紙の上の文字を墨に一括変更（RunUi.TopBar は札に）。学び: レイアウトの外に置く `UiKit.Icon` は sizeDelta を明示しないと 100px になる／紋章は '-' を墨・'#' を紙にして線画にする。
+
+### 舞台（段階1）— 2026-09-07
+
+背景を UI から分離した。`Stage.cs` が Main Camera を舞台カメラ（正射影・URP のポスト処理 ON）にし、Screen Space - Camera の舞台キャンバスに幕の背景を描く。
+ランタイム生成の VolumeProfile（Bloom threshold 0.72 / intensity 1.2、Vignette 0.3、ColorAdjustments の colorFilter を幕で切替）と、ワールド空間の ParticleSystem（蛍・ほこり・葉。素材は `Resources/Materials/ParticleSprite.mat`＝Sprites/Default をビルドに含めるため）。
+`BattleScreen.BuildBackground` は舞台へ委譲し UI 側には何も置かない。URP のレンダラーに `PostProcessData` が無いとポスト処理は描かれないので `UrpSetup` が割り当てる（`scripts/unity-win.sh setup-urp` で反映）。
+副産物のバグ修正: 戦闘の最初の組み立てで直前の画面（マップ）が ScreenRoot に残っていた（不透明な背景で隠れていた）→ `Rebuild` が Battle 未生成の戦闘でも掃除する。
+
