@@ -2,13 +2,13 @@
   "id": "enemy_slug",
   "engine": "pixflux",
   "request": {
-    "description": "Octopath Traveler HD-2D style pixel art, very cute chibi creature in the spirit of Hollow Knight's little bug characters: round soft body, oversized head, big simple dark eyes with a tiny highlight, tiny stubby limbs, gentle slightly melancholic charming expression, clean readable silhouette, 24 color palette, transparent background, three-quarter front view facing left, a chubby round slug with no legs, soft glossy green body, two little eye stalks with big eyes, a small bubble of yellow acid at its mouth, content expression",
-    "negative_description": "scary, menacing, gore, sharp teeth, angry, realistic, human face, blurry, glow, gradient background, text, watermark, extra limbs, side profile",
+    "description": "pixel art in the style of Hollow Knight's creatures: a small lonely bug-like being with a smooth pale bone-white mask for a face with two large empty black eye sockets and no mouth, ink-black or dusty charcoal body, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, tiny thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, three-quarter front view facing left, a small slug-like bug with a soft dusty charcoal body and no legs, a pale mask face with two empty eyes at the front, a faint teal trail of acid drool beneath it",
+    "negative_description": "colorful, saturated colors, bright colors, rainbow, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
     "image_size": {
       "width": 64,
       "height": 64
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T14:57:46.068Z"
+  "at": "2026-09-07T15:13:46.733Z"
 }

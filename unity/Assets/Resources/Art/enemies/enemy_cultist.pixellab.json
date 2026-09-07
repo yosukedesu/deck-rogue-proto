@@ -2,13 +2,13 @@
   "id": "enemy_cultist",
   "engine": "pixflux",
   "request": {
-    "description": "Octopath Traveler HD-2D style pixel art, very cute chibi creature in the spirit of Hollow Knight's little bug characters: round soft body, oversized head, big simple dark eyes with a tiny highlight, tiny stubby limbs, gentle slightly melancholic charming expression, clean readable silhouette, 24 color palette, transparent background, three-quarter front view facing left, a small floating wisp spirit shaped like a dark teardrop candle flame (not a person), two big round pale glowing eyes, tiny hands clasped around a little dark idol, hovering and whispering",
-    "negative_description": "scary, menacing, gore, sharp teeth, angry, realistic, human face, blurry, glow, gradient background, text, watermark, extra limbs, side profile",
+    "description": "pixel art in the style of Hollow Knight's creatures: a small lonely bug-like being with a smooth pale bone-white mask for a face with two large empty black eye sockets and no mouth, ink-black or dusty charcoal body, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, tiny thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, three-quarter front view facing left, a small hooded bug in a dark tattered robe, only a pale mask with two empty eye sockets showing inside the hood, tiny hands clasped around a small dark idol",
+    "negative_description": "colorful, saturated colors, bright colors, rainbow, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
     "image_size": {
       "width": 64,
       "height": 64
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T15:06:19.715Z"
+  "at": "2026-09-07T15:15:18.972Z"
 }

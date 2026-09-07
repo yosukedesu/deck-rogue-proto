@@ -2,13 +2,13 @@
   "id": "enemy_wide_power",
   "engine": "pixflux",
   "request": {
-    "description": "Octopath Traveler HD-2D style pixel art, very cute chibi creature in the spirit of Hollow Knight's little bug characters: round soft body, oversized head, big simple dark eyes with a tiny highlight, tiny stubby limbs, gentle slightly melancholic charming expression, clean readable silhouette, 24 color palette, transparent background, three-quarter front view facing left, a wide low fluffy beast like a big round furry loaf, tiny legs, big sleepy eyes, swaying tufts of fur, dull grey-brown",
-    "negative_description": "scary, menacing, gore, sharp teeth, angry, realistic, human face, blurry, glow, gradient background, text, watermark, extra limbs, side profile",
+    "description": "pixel art in the style of Hollow Knight's creatures: a small lonely bug-like being with a smooth pale bone-white mask for a face with two large empty black eye sockets and no mouth, ink-black or dusty charcoal body, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, tiny thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, three-quarter front view facing left, a wide low beast-like bug with a broad dark furry shell, a pale mask with two empty eyes low on its front, many tiny legs, swaying quietly",
+    "negative_description": "colorful, saturated colors, bright colors, rainbow, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
     "image_size": {
       "width": 64,
       "height": 64
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
@@ -20,5 +20,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T14:59:22.452Z"
+  "at": "2026-09-07T15:14:29.129Z"
 }

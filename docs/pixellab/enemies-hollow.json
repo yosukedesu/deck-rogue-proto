@@ -1,0 +1,111 @@
+{
+  "_note": "敵の方向 (2026-09-08 ユーザー「もっとホロウナイトに似せて。カラフルじゃなく寂しげな良さ」): 墨黒・骨白・くすんだ青灰の低彩度、白い仮面の顔に空洞の黒い目、口は無いか小さい、静かで寂しげ。node scripts/pixellab.mjs gen docs/pixellab/enemies-hollow.json --force",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "side",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "colorful, saturated colors, bright colors, rainbow, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile"
+  },
+  "style": "pixel art in the style of Hollow Knight's creatures: a small lonely bug-like being with a smooth pale bone-white mask for a face with two large empty black eye sockets and no mouth, ink-black or dusty charcoal body, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, tiny thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a small round spider bug, its pale mask has four empty eye sockets, thin black legs, a single drop of dark sludge hanging from a thread beneath it"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_snap_fruit.png",
+      "description": "{style}, a round husk-like bug shaped like a fallen fruit, dusty dark shell with two withered leaf-like wings, a pale mask face with empty eyes and a small closed slit for a mouth, a dry stem on top"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a small round puddle-shaped blob of dark wet mud with no body and no limbs, only a small pale mask with two empty eye sockets floating on top of the mud, a drip of mud sliding down"
+    },
+    {
+      "id": "enemy_probe",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_probe.png",
+      "description": "{style}, a tiny beetle-like scout, a pale mask with two empty eyes and a small crack, a ragged dark cloak of dead leaves around its shell, holding a thin stick, tiptoeing forward"
+    },
+    {
+      "id": "enemy_slug",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_slug.png",
+      "description": "{style}, a small slug-like bug with a soft dusty charcoal body and no legs, a pale mask face with two empty eyes at the front, a faint teal trail of acid drool beneath it"
+    },
+    {
+      "id": "enemy_iron_clam",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_iron_clam.png",
+      "description": "{style}, a small closed iron-grey clam shell with rivets, slightly open, a pale mask with two empty eyes peeking from inside the shell"
+    },
+    {
+      "id": "enemy_wide_power",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_wide_power.png",
+      "description": "{style}, a wide low beast-like bug with a broad dark furry shell, a pale mask with two empty eyes low on its front, many tiny legs, swaying quietly"
+    },
+    {
+      "id": "enemy_thorn_squirrel",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thorn_squirrel.png",
+      "description": "{style}, a small squirrel-like bug with a large tail made of pale bony thorns, a pale mask with two empty eyes, tiny paws, sitting up alert"
+    },
+    {
+      "id": "enemy_apprentice_colossus",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_apprentice_colossus.png",
+      "description": "{style}, a small hunched stone golem made of cracked dark rock, a pale rune-carved mask with two empty eyes, one heavy arm raised slowly, a faint teal rune on its chest"
+    },
+    {
+      "id": "enemy_cultist",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_cultist.png",
+      "description": "{style}, a small hooded bug in a dark tattered robe, only a pale mask with two empty eye sockets showing inside the hood, tiny hands clasped around a small dark idol"
+    },
+    {
+      "id": "enemy_mud_lump",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mud_lump.png",
+      "description": "{style}, a big shapeless mound of dark dripping mud like a boulder, no legs, two thick mud arms melting at the sides, a pale mask with two empty eyes sunk into the front of the mound"
+    },
+    {
+      "id": "enemy_mimic_imp",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mimic_imp.png",
+      "description": "{style}, a tiny winged bug with small horns, its pale mask held slightly askew like a mask on a stick, two empty eyes, thin bat-like wings, dusty charcoal body"
+    },
+    {
+      "id": "enemy_thief",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thief.png",
+      "description": "{style}, a tiny four-legged beetle-like bug with a pale mask with two empty eyes, no cloak, no hood, carrying a worn coin sack strapped on its back, scurrying on thin legs"
+    },
+    {
+      "id": "enemy_gaping_maw",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_gaping_maw.png",
+      "description": "{style}, a round bug whose pale mask is split by a wide dark hollow mouth like a cracked shell, two small empty eyes above, tiny legs, sitting still"
+    },
+    {
+      "id": "enemy_cog_construct",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_cog_construct.png",
+      "description": "{style}, a small cube-shaped iron automaton with rivets, a pale round mask plate with one empty eye socket in the middle, a small dark cog on top, stubby metal legs"
+    },
+    {
+      "id": "enemy_vine_walker",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_vine_walker.png",
+      "description": "{style}, a small dead tree stump on root legs, a pale mask with two empty eyes set in the dark bark, thin withered vines hanging from its branches"
+    },
+    {
+      "id": "enemy_spore_cap",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_spore_cap.png",
+      "description": "{style}, a small mushroom-like bug with a wide dusty pale cap, a pale mask with two empty eyes under the cap, a thin drifting puff of grey spores"
+    },
+    {
+      "id": "enemy_strangler_serpent",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_strangler_serpent.png",
+      "description": "{style}, a small coiled serpent-like bug with a dark segmented body, a pale mask with two empty eyes at the head, thin coils resting on the ground"
+    }
+  ]
+}
