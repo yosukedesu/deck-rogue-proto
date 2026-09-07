@@ -1,0 +1,119 @@
+{
+  "_note": "敵の方向 (2026-09-08 ユーザー「虫よりゴースト的なお化け」「マップの角度と向きが合っていない」): 幽霊の形 (脚なし・靄に溶ける・浮遊) + 視点は low top-down (舞台の見下ろしに合わせる)。node scripts/pixellab.mjs gen docs/pixellab/enemies-ghost.json --force",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "insect, beetle, bug legs, antennae, colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile"
+  },
+  "style": "pixel art in the style of Hollow Knight's spirits: a small lonely ghost, a smooth pale bone-white mask face with two large empty black eye sockets and no mouth, a wispy dark ghostly body that tapers and trails off into thin mist below instead of legs, floating slightly above the ground, tiny thin arms, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above",
+  "items": [
+    {
+      "id": "enemy_probe",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_probe.png",
+      "description": "{style}, a tiny scout ghost peeking from under a hood of dead leaves, holding a thin stick, leaning forward curiously"
+    },
+    {
+      "id": "enemy_slug",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_slug.png",
+      "description": "{style}, a low slug-shaped ghost hugging the ground, a long soft body, a faint teal trail of acid mist behind it"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a tiny ghost rising out of a small puddle of dark mud, only the mask and a wisp of body above the mud"
+    },
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a spider ghost, a round body with thin wispy legs of smoke, a drop of dark sludge hanging from a thread"
+    },
+    {
+      "id": "enemy_iron_clam",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_iron_clam.png",
+      "description": "{style}, a ghost peeking out of a half-open riveted iron-grey clam shell, mist spilling from the shell"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_snap_fruit.png",
+      "description": "{style}, a round ghost shaped like a fallen fruit with two withered leaf-like wisps and a dry stem, a small closed slit for a mouth"
+    },
+    {
+      "id": "enemy_wide_power",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_wide_power.png",
+      "description": "{style}, a wide low ghost like a broad drifting cloud with a mask at the front, swaying, many small wisps underneath"
+    },
+    {
+      "id": "enemy_thorn_squirrel",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thorn_squirrel.png",
+      "description": "{style}, a small squirrel-like ghost with a large tail of pale bony thorns, sitting up alert"
+    },
+    {
+      "id": "enemy_apprentice_colossus",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_apprentice_colossus.png",
+      "description": "{style}, a hunched ghost made of cracked dark stone fragments held together by mist, a rune-carved mask, one heavy arm raised slowly, a faint teal rune on its chest"
+    },
+    {
+      "id": "enemy_cultist",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_cultist.png",
+      "description": "{style}, a ghost in a dark tattered hooded robe, only the mask showing inside the hood, tiny hands clasped around a small dark idol"
+    },
+    {
+      "id": "enemy_mud_lump",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mud_lump.png",
+      "description": "{style}, a big slow ghost shaped like a mound of dark dripping mud, a mask sunk into the front, heavy drooping arms of mud"
+    },
+    {
+      "id": "enemy_mimic_imp",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mimic_imp.png",
+      "description": "{style}, a tiny horned ghost holding its mask slightly askew like a mask on a stick, thin bat-like wisps for wings"
+    },
+    {
+      "id": "enemy_thief",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thief.png",
+      "description": "{style}, a tiny ghost carrying a worn coin sack bigger than itself on its back, sneaking"
+    },
+    {
+      "id": "enemy_gaping_maw",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_gaping_maw.png",
+      "description": "{style}, a round ghost whose mask is split by a wide dark hollow mouth like a cracked shell, two small empty eyes above"
+    },
+    {
+      "id": "enemy_cog_construct",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_cog_construct.png",
+      "description": "{style}, a ghost haunting a small cube-shaped iron automaton with rivets, the mask plate has one empty eye socket, mist leaking from its seams, a small dark cog on top"
+    },
+    {
+      "id": "enemy_vine_walker",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_vine_walker.png",
+      "description": "{style}, a ghost of a dead tree stump, a mask set in the dark bark, thin withered vines and roots trailing into mist"
+    },
+    {
+      "id": "enemy_spore_cap",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_spore_cap.png",
+      "description": "{style}, a mushroom-shaped ghost with a wide dusty pale cap, a mask under the cap, a thin drifting puff of grey spores"
+    },
+    {
+      "id": "enemy_strangler_serpent",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_strangler_serpent.png",
+      "description": "{style}, a long coiled serpent-shaped ghost, a mask at the head, coils of dark mist resting on the ground"
+    },
+    {
+      "id": "leader_green",
+      "out": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "direction": "south-east",
+      "guidance": 8,
+      "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+      "description": "Octopath Traveler HD-2D style pixel art character, cute chibi with 2.5 heads tall proportions, young forest priestess girl named Konoha, brown braided hair with a green leaf hair ornament, white robe with green trim, holding a tall wooden staff sprouting small leaves, gentle calm expression, standing idle pose, three-quarter front view facing right, seen slightly from above, clean readable silhouette, 24 color palette, transparent background"
+    }
+  ]
+}

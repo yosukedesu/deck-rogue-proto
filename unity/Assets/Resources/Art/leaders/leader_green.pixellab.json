@@ -1,0 +1,24 @@
+{
+  "id": "leader_green",
+  "engine": "pixflux",
+  "request": {
+    "description": "Octopath Traveler HD-2D style pixel art character, cute chibi with 2.5 heads tall proportions, young forest priestess girl named Konoha, brown braided hair with a green leaf hair ornament, white robe with green trim, holding a tall wooden staff sprouting small leaves, gentle calm expression, standing idle pose, three-quarter front view facing right, seen slightly from above, clean readable silhouette, 24 color palette, transparent background",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "image_size": {
+      "width": 64,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south-east"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-07T15:31:10.585Z"
+}

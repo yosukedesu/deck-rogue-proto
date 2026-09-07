@@ -2,8 +2,8 @@
   "id": "enemy_slug",
   "engine": "pixflux",
   "request": {
-    "description": "pixel art in the style of Hollow Knight's creatures: a small lonely bug-like being with a smooth pale bone-white mask for a face with two large empty black eye sockets and no mouth, ink-black or dusty charcoal body, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, tiny thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, three-quarter front view facing left, a small slug-like bug with a soft dusty charcoal body and no legs, a pale mask face with two empty eyes at the front, a faint teal trail of acid drool beneath it",
-    "negative_description": "colorful, saturated colors, bright colors, rainbow, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
+    "description": "pixel art in the style of Hollow Knight's spirits: a small lonely ghost, a smooth pale bone-white mask face with two large empty black eye sockets and no mouth, a wispy dark ghostly body that tapers and trails off into thin mist below instead of legs, floating slightly above the ground, tiny thin arms, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet melancholic mood, simple rounded silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, a low slug-shaped ghost hugging the ground, a long soft body, a faint teal trail of acid mist behind it",
+    "negative_description": "insect, beetle, bug legs, antennae, colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime girl, human face, teeth, angry, glow, blurry, gradient background, text, watermark, extra limbs, side profile",
     "image_size": {
       "width": 64,
       "height": 64
@@ -13,12 +13,12 @@
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "side",
+    "view": "low top-down",
     "direction": "south-west"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T15:13:46.733Z"
+  "at": "2026-09-07T15:24:55.695Z"
 }
