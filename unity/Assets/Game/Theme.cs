@@ -356,13 +356,14 @@ namespace DeckRogue.Game
     {
         static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
 
-        public static Sprite Get(string category, string id, bool friendly = false)
+        /// <summary>絵を取る。無ければ仮の絵を size ドット (通常 64・エリート 80・ボス 96 = どれも4倍表示) で作る</summary>
+        public static Sprite Get(string category, string id, bool friendly = false, int size = 64)
         {
-            var key = category + "/" + id;
+            var key = category + "/" + id + "@" + size;
             Sprite s;
             if (_cache.TryGetValue(key, out s)) return s;
             s = Theme.Art(category, id);
-            if (s == null) s = Generate(id, friendly);
+            if (s == null) s = Generate(id, friendly, size);
             _cache[key] = s;
             return s;
         }
@@ -374,58 +375,83 @@ namespace DeckRogue.Game
             return h;
         }
 
-        /// <summary>16×16 の半分をランダムに埋めて鏡映しにする (宇宙船ジェネレータの古典)。色は id の色相・目は白</summary>
-        static Sprite Generate(string id, bool friendly)
+        /// <summary>仮の生き物: 粗い型 (size/4 マス) を鏡映しで作り、4倍に伸ばして同じドットの粒に揃える。
+        /// 輪郭・影・地・光の4段と目・口で「ドット絵の生き物」に見える最低限 (2026-09-07 粒の統一)</summary>
+        static Sprite Generate(string id, bool friendly, int size)
         {
-            const int n = 16;
+            int n = Mathf.Max(16, size);
+            int cells = n / 4;
             uint h = Hash(id);
             var rng = new System.Random((int)(h & 0x7fffffff));
             float hue = friendly ? 0.33f + (h % 30) / 300f : (h % 360) / 360f;
-            var main = Color.HSVToRGB(hue, friendly ? 0.55f : 0.6f, friendly ? 0.75f : 0.7f);
-            var dark = Color.HSVToRGB(hue, 0.7f, 0.3f);
-            var light = Color.HSVToRGB(hue, 0.35f, 0.95f);
-            var mask = new bool[n, n];
-            // 体: 中央寄りほど埋まりやすい。上下の端は空ける
-            for (int y = 2; y < n - 1; y++)
-            {
-                for (int x = 0; x < n / 2; x++)
+            var main = Color.HSVToRGB(hue, friendly ? 0.5f : 0.55f, friendly ? 0.72f : 0.66f);
+            var shade = Color.HSVToRGB(hue, 0.62f, 0.42f);
+            var light = Color.HSVToRGB(hue, 0.36f, 0.9f);
+            var outline = Color.HSVToRGB(hue, 0.7f, 0.18f);
+            var mask = new bool[cells, cells];
+            for (int y = 2; y < cells - 1; y++)
+                for (int x = 0; x < cells / 2; x++)
                 {
-                    float cx = (x + 0.5f) / (n / 2f);            // 0(外)〜1(中央)
-                    float cy = 1f - Mathf.Abs((y - n / 2f) / (n / 2f));
-                    float p = 0.15f + 0.75f * cx * cy;
+                    float cx = (x + 0.5f) / (cells / 2f);
+                    float cy = 1f - Mathf.Abs((y - cells / 2f) / (cells / 2f));
+                    float p = 0.12f + 0.78f * cx * cy;
                     mask[x, y] = rng.NextDouble() < p;
                 }
+            // 足: 下段に2本。頭の上に角か耳をたまに
+            int fx = cells / 4;
+            mask[fx, 1] = true; mask[fx + 1, 1] = true; mask[fx, 2] = true; mask[fx + 1, 2] = true;
+            if (rng.NextDouble() < 0.5) { mask[cells / 2 - 3, cells - 2] = true; mask[cells / 2 - 3, cells - 1] = true; }
+            bool At(int x, int y)
+            {
+                if (x < 0 || y < 0 || y >= cells || x >= cells) return false;
+                int mx = x < cells / 2 ? x : cells - 1 - x;
+                return mask[mx, y];
             }
-            // 足: 下段に2本
-            mask[3, 1] = true; mask[4, 1] = true; mask[3, 2] = true; mask[4, 2] = true;
+            // 孤立マスを落として塊にする
+            for (int y = 0; y < cells; y++)
+                for (int x = 0; x < cells / 2; x++)
+                    if (mask[x, y] && !At(x - 1, y) && !At(x + 1, y) && !At(x, y - 1) && !At(x, y + 1)) mask[x, y] = false;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Point;
             tex.wrapMode = TextureWrapMode.Clamp;
             var px = new Color[n * n];
-            bool At(int x, int y) { if (x < 0 || y < 0 || y >= n || x >= n) return false; int mx = x < n / 2 ? x : n - 1 - x; return mask[mx, y]; }
+            bool Solid(int px_, int py_) { return At(px_ / 4, py_ / 4); }
             for (int y = 0; y < n; y++)
-            {
                 for (int x = 0; x < n; x++)
                 {
                     Color c = new Color(0f, 0f, 0f, 0f);
-                    if (At(x, y))
+                    if (Solid(x, y))
                     {
-                        bool edge = !At(x - 1, y) || !At(x + 1, y) || !At(x, y - 1) || !At(x, y + 1);
-                        c = edge ? dark : (y > n / 2 + 1 ? light : main);
-                    }
-                    else if (At(x - 1, y) || At(x + 1, y) || At(x, y - 1) || At(x, y + 1))
-                    {
-                        c = new Color(0f, 0f, 0f, 0.9f); // 輪郭
+                        bool edge = !Solid(x - 1, y) || !Solid(x + 1, y) || !Solid(x, y - 1) || !Solid(x, y + 1);
+                        bool edge2 = !Solid(x - 2, y) || !Solid(x + 2, y) || !Solid(x, y - 2) || !Solid(x, y + 2);
+                        bool underTop = !Solid(x, y + 3) || !Solid(x - 3, y);      // 左上の縁 = 光
+                        bool overBottom = !Solid(x, y - 3) || !Solid(x + 3, y);    // 右下の縁 = 影
+                        if (edge) c = outline;
+                        else if (edge2 && overBottom) c = shade;
+                        else if (underTop && ((x + y) & 1) == 0) c = light;
+                        else if (underTop) c = Color.Lerp(main, light, 0.5f);
+                        else if (y < n * 0.42f) c = ((x + y) & 1) == 0 ? shade : Color.Lerp(main, shade, 0.5f);
+                        else c = main;
                     }
                     px[y * n + x] = c;
                 }
-            }
-            // 目 (白+黒) を上から5行目あたりに
-            int ey = n - 6;
-            for (int x = 0; x < n; x++)
+            // 目 (白+黒の瞳+光) を上から4割の高さに左右対称で
+            int ey = (int)(n * 0.62f);
+            int ex = n / 2 - n / 6;
+            for (int side = 0; side < 2; side++)
             {
-                if (At(x, ey) && (x == 5 || x == n - 6)) { px[ey * n + x] = Color.white; px[(ey - 1) * n + x] = Color.black; }
+                int bx = side == 0 ? ex - 2 : n - 1 - ex - 1;
+                if (!Solid(bx + 1, ey)) continue;
+                for (int dy = 0; dy < 4; dy++)
+                    for (int dx = 0; dx < 4; dx++)
+                        px[(ey + dy) * n + bx + dx] = Color.white;
+                px[(ey + 1) * n + bx + 1] = Color.black; px[(ey + 1) * n + bx + 2] = Color.black;
+                px[(ey + 2) * n + bx + 1] = Color.black; px[(ey + 2) * n + bx + 2] = Color.black;
+                px[(ey + 2) * n + bx + 2] = new Color(0.85f, 0.9f, 1f);
             }
+            // 口
+            int my = (int)(n * 0.5f);
+            for (int dx = -2; dx <= 2; dx++) if (Solid(n / 2 + dx, my)) px[my * n + n / 2 + dx] = outline;
             tex.SetPixels(px);
             tex.Apply(false, false);
             var s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
@@ -433,6 +459,7 @@ namespace DeckRogue.Game
             return s;
         }
     }
+
 }
 
 namespace DeckRogue.Game

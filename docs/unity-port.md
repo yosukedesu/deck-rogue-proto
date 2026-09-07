@@ -240,3 +240,17 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 - 素材の差し替え口: `Art/tiles/act<N>_{grass,dirt,stone,cliff}.png`（ArtImporter が `/Art/tiles/` を Repeat に）・`Art/bg/act<N>.png`。
   URP Lit を確実にビルドへ含めるため `Resources/Materials/Diorama.mat`（Lit の GUID 直書き）を土台に材質を作る。
 
+### HD-2D 舞台の作り直し（外部レビュー5点）— 2026-09-07
+
+レビュー: ①粒の混在（このは=64@4×・敵=32@8×・UI=ベクター） ②真横の一本道 ③ライティング無し ④一律ぼかし・ローポリ単色の木 ⑤単色の地面。
+- ① `Creature.Get(category, id, friendly, size)`: 仮の敵絵を 64/80/96 ドットで生成（粗い型 size/4 マスを4倍に伸ばし、輪郭・影・地・光の4段＋目・口）。UI のベクターは規約どおり据え置き。
+- ② 見下ろし 20°。座席は舞台が決める（`LeaderSlot`／`EnemySlots(n)`＝斜めの列）。`ProjectFeet(key, world)` が UI 座標と深度を返し、
+  `BattleView` が敵パネル（330×620・足元=下端+130）とリーダー欄（690×680・足元=左下+130,130）をそこへ置く（横並びレイアウトを廃止。奥の敵ほど先に描く）。
+  板は「座席の深度の面」に UI の矩形を写す（`ScreenToPlane(sx, sy, depth)`）ので画面上は 4px/ドットのまま。
+- ③ 接地影（Sprites/Default の柔らかい楕円・板と別オブジェクト＝親の非一様スケールで歪ませない）。キャラの板は影を落とさない。
+  月光は斜め前上（木・柱が落とす。URP アセットでソフトシャドウ ON・距離60）。ランタン=HDR の炎＋点光源 7（ゆらぐ）＋ブルーム。
+  夜の色補正（postExposure −0.1・contrast 14・saturation −8・colorFilter 青寄り）。キャラの色＝`UnitAmbient`（青寄り）＋ランタン色×距離減衰。
+- ④ Bokeh aperture 6.5（キャラの列 ±2 unit は 1px 未満・遠景 4〜7px）。霧は淡い青（22→85）で空気遠近。木は十字の板（`Cross`）に
+  ドット絵（40×60・3段の陰影＋輪郭）を貼った Lit 抜き板（`DioramaCutout.mat`＝`_ALPHATEST_ON` をビルドに含める）＝光を受け影を落とす。
+- ⑤ タイル: 草地=2色ディザ＋草の房（V字＋光）＋窪み、土=ムラ＋小石（明+影）＋ひび。地面の斑（寝かせた抜き板）と草株・花・小石（十字板）を散らす。
+

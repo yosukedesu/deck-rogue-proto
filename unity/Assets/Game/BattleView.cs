@@ -105,18 +105,10 @@ namespace DeckRogue.Game
                 _enemyPanels.Clear();
                 _enemyHits.Clear();
                 _enemiesArea = UiKit.NewRect("enemies", FieldLayer);
-                UiKit.Anchor(_enemiesArea, new Vector2(0.40f, 0.31f), new Vector2(0.99f, 0.94f), Vector2.zero, Vector2.zero);
-                var hg = UiKit.Horz(_enemiesArea, 28, 0);
-                hg.childAlignment = TextAnchor.LowerCenter;
-                hg.childForceExpandWidth = false;
-                hg.childForceExpandHeight = true;
-                hg.childControlWidth = true;
-                int n = Math.Max(1, st.Enemies.Count);
-                float w = Mathf.Min(330f, 1100f / n);
+                UiKit.Stretch(_enemiesArea, 0f, 0f, 0f, 0f);
                 for (int i = 0; i < st.Enemies.Count; i++)
                 {
                     var pan = UiKit.NewRect("enemy" + i, _enemiesArea);
-                    UiKit.Le(pan, w, -1f, w, -1f);
                     var hit = pan.gameObject.AddComponent<Image>();
                     hit.color = new Color(0f, 0f, 0f, 0f);
                     var btn = pan.gameObject.AddComponent<Button>();
@@ -130,6 +122,15 @@ namespace DeckRogue.Game
                 }
                 _shownEnemyHp = new int[st.Enemies.Count];
                 for (int i = 0; i < st.Enemies.Count; i++) _shownEnemyHp[i] = st.Enemies[i].Hp;
+            }
+            // 座席: 舞台 (HD-2D) が決める。手前左から奥右へ斜めに並び、足元 (パネル下端+130) がその座席の地面に来る。奥の敵ほど先に描く
+            var slots = Stage.EnemySlots(st.Enemies.Count);
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                var feet = Stage.ProjectFeet("enemy" + i, slots[i]);
+                float w = 330f, h = 620f;
+                UiKit.Anchor(_enemyPanels[i], new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, feet.y - 130f), new Vector2(feet.x + w / 2f, feet.y - 130f + h));
+                _enemyPanels[i].SetSiblingIndex(st.Enemies.Count - 1 - i);
             }
             for (int i = 0; i < st.Enemies.Count; i++)
             {
@@ -161,8 +162,12 @@ namespace DeckRogue.Game
             if (_playerArea == null)
             {
                 _playerArea = UiKit.NewRect("player", FieldLayer);
-                UiKit.Anchor(_playerArea, new Vector2(0.02f, 0.31f), new Vector2(0.38f, 0.94f), Vector2.zero, Vector2.zero);
                 _shownPlayerHp = st.Player.Hp;
+            }
+            {
+                // リーダーの足元 (欄の左下から +130,+130) を舞台の座席へ
+                var feet = Stage.ProjectFeet("player", Stage.LeaderSlot());
+                UiKit.Anchor(_playerArea, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - 130f, feet.y - 130f), new Vector2(feet.x - 130f + 690f, feet.y - 130f + 680f));
             }
             for (int c = _playerArea.childCount - 1; c >= 0; c--) { var ch = _playerArea.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
             g.RegisterAnchor("player", _playerArea);

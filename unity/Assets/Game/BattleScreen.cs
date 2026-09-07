@@ -187,8 +187,8 @@ namespace DeckRogue.Game
             // 密度はオクトラ相当 (1ドット=画面4px): 通常 64→256・エリート 80→320・ボス 96→384 がどれも4倍になる目安
             string nodeType = null;
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
-            var artSprite = Creature.Get("enemies", e.EnemyId);
             float artTarget = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
+            var artSprite = Creature.Get("enemies", e.EnemyId, false, (int)(artTarget / 4f));
             float spriteTop = 130f + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
 
             // 意図 (頭上の紙の吹き出し)
@@ -221,8 +221,8 @@ namespace DeckRogue.Game
                 }
                 // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)
                 var detailText = IntentDetail(st, index, it);
-                var detail = UiKit.Txt(pan, detailText, 13, PaperFx.Paper, TextAnchor.UpperCenter);
-                detail.outlineWidth = 0.18f; detail.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+                var detail = UiKit.Txt(pan, detailText, 14, PaperFx.Paper, TextAnchor.UpperCenter);
+                detail.outlineWidth = 0.3f; detail.outlineColor = new Color(0.1f, 0.06f, 0.1f, 0.95f);
                 UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 4f), new Vector2(30f, spriteTop + 52f));
             }
 
