@@ -1,0 +1,102 @@
+{
+  "_note": "第1バッチ (2026-09-07): このは + 幕1・弱プールの敵 + 幕1の地面タイル。node scripts/pixellab.mjs gen docs/pixellab/batch1.json",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [64, 64],
+    "view": "side",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic"
+  },
+  "items": [
+    {
+      "id": "leader_green",
+      "out": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "direction": "south-east",
+      "description": "Octopath Traveler HD-2D style pixel art character, cute chibi with 2.5 heads tall proportions, young forest priestess girl named Konoha, brown braided hair with a green leaf hair ornament, white robe with green trim, holding a tall wooden staff sprouting small leaves, gentle smile, standing idle pose, three-quarter front view facing right, clean readable silhouette, 24 color palette, transparent background"
+    },
+    {
+      "id": "enemy_probe",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_probe.png",
+      "direction": "south-west",
+      "description": "Octopath Traveler HD-2D style pixel art monster, cute but eerie small scout creature, a goblin-like prober with big curious eyes and a long probing stick, hooded ragged cloak, crouched sneaky pose, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background"
+    },
+    {
+      "id": "enemy_slug",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_slug.png",
+      "direction": "south-west",
+      "description": "Octopath Traveler HD-2D style pixel art monster, fat acid-spitting slug, glossy green body with yellow acid drool, stubby eye stalks, slimy trail, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "direction": "south-west",
+      "description": "Octopath Traveler HD-2D style pixel art monster, small round mud blob creature with two dim glowing eyes and a mischievous grin, dripping wet brown mud, tiny stubby arms, three-quarter front view facing left, clean silhouette, 20 color palette, transparent background"
+    },
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "direction": "south-west",
+      "description": "Octopath Traveler HD-2D style pixel art monster, sludge-spinning spider, dark olive body dripping black sludge, eight thin legs, six small pale eyes, a strand of sticky sludge web, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background"
+    },
+    {
+      "id": "enemy_iron_clam",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_iron_clam.png",
+      "direction": "south-west",
+      "description": "Octopath Traveler HD-2D style pixel art monster, iron-shelled giant clam half open, rusty metal shell with rivets, a soft pink creature inside with one eye, sitting on the ground, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_snap_fruit.png",
+      "direction": "south-west",
+      "description": "Octopath Traveler HD-2D style pixel art monster, carnivorous biting fruit, a round purple fruit with a wide mouth of sharp teeth, two leaf arms and a stem, small angry eyes, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background"
+    },
+    {
+      "id": "act1_grass",
+      "out": "unity/Assets/Resources/Art/tiles/act1_grass.png",
+      "size": [32, 32],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "description": "seamless tileable pixel art ground texture, night meadow grass seen from directly above, dark yellow-green with a few lighter grass tufts, subtle mottling, no objects, no border, repeating tile"
+    },
+    {
+      "id": "act1_dirt",
+      "out": "unity/Assets/Resources/Art/tiles/act1_dirt.png",
+      "size": [32, 32],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "description": "seamless tileable pixel art ground texture, packed dirt path seen from directly above, warm brown with small pebbles and faint cracks, no objects, no border, repeating tile"
+    },
+    {
+      "id": "act1_stone",
+      "out": "unity/Assets/Resources/Art/tiles/act1_stone.png",
+      "size": [32, 32],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "description": "seamless tileable pixel art wall texture, old grey stone brick wall, staggered bricks with dark mortar lines, slightly weathered, no objects, no border, repeating tile"
+    },
+    {
+      "id": "act1_cliff",
+      "out": "unity/Assets/Resources/Art/tiles/act1_cliff.png",
+      "size": [32, 32],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "description": "seamless tileable pixel art cliff face texture, layered earth and rock strata, brown and grey horizontal layers with small roots, no objects, no border, repeating tile"
+    }
+  ]
+}
