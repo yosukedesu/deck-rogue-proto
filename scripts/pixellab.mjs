@@ -90,6 +90,7 @@ async function gen(manifestPath, opts) {
   for (const item of m.items) {
     if (only && !only.includes(item.id)) continue
     const it = { ...defaults, ...item }
+    if (m.style && typeof it.description === 'string') it.description = it.description.replace('{style}', m.style)
     const out = path.resolve(it.out)
     if (fs.existsSync(out) && !opts.force) { console.log(`skip (既にある): ${it.id} → ${it.out}`); continue }
     const [w, h] = it.size
