@@ -273,9 +273,9 @@ namespace DeckRogue.Game
             shImg.raycastTarget = false;
             shImg.color = alive ? Color.white : new Color(1f, 1f, 1f, 0.3f);
             var spr = UiKit.NewRect("sprite", pan);
-            UiKit.Anchor(spr, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 130f), new Vector2(100f, 330f));
-            var img = spr.gameObject.AddComponent<Image>();
             var artSprite = Creature.Get("enemies", e.EnemyId);
+            PaperFx.FitPixel(spr, artSprite, 0f, 130f);
+            var img = spr.gameObject.AddComponent<Image>();
             img.sprite = artSprite;
             img.preserveAspect = true;
             img.raycastTarget = false;
@@ -514,9 +514,11 @@ namespace DeckRogue.Game
             lshImg.sprite = ThemeFx.Shadow();
             lshImg.raycastTarget = false;
             var spr = UiKit.NewRect("sprite", area);
-            UiKit.Anchor(spr, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(10f, 130f), new Vector2(250f, 370f));
-            var img = spr.gameObject.AddComponent<Image>();
             var leaderArt = Creature.Get("leaders", leaderId, true);
+            PaperFx.FitPixel(spr, leaderArt, 0f, 130f);
+            spr.anchorMin = spr.anchorMax = new Vector2(0f, 0f);
+            spr.offsetMin += new Vector2(130f, 0f); spr.offsetMax += new Vector2(130f, 0f);
+            var img = spr.gameObject.AddComponent<Image>();
             img.sprite = leaderArt;
             img.preserveAspect = true;
             img.raycastTarget = false;
