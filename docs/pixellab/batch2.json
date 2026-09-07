@@ -1,0 +1,43 @@
+{
+  "_note": "第2バッチ: 幕1・本帯の敵 12体 + 蛞蝓の作り直し (第1バッチは蛙寄りだった)。node scripts/pixellab.mjs gen docs/pixellab/batch2.json",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [64, 64],
+    "view": "side",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, human"
+  },
+  "items": [
+    { "id": "enemy_slug", "out": "unity/Assets/Resources/Art/enemies/enemy_slug.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a fat slimy slug with no legs, elongated soft body lying on the ground, two eye stalks, spitting a glob of yellow-green acid, glossy wet skin, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_wide_power", "out": "unity/Assets/Resources/Art/enemies/enemy_wide_power.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a writhing beast, a hunched furry quadruped with a wide swaying body and no visible eyes, dull grey-brown fur, unpredictable menacing posture, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_thorn_squirrel", "out": "unity/Assets/Resources/Art/enemies/enemy_thorn_squirrel.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a cute squirrel covered in sharp thorn-like quills, bushy spiky tail, small black eyes, sitting up alert, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_apprentice_colossus", "out": "unity/Assets/Resources/Art/enemies/enemy_apprentice_colossus.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a small unfinished stone golem, clay and rock body with cracks, one arm raised as if winding up a slow heavy punch, glowing rune on its chest, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_cultist", "out": "unity/Assets/Resources/Art/enemies/enemy_cultist.png",
+      "description": "Octopath Traveler HD-2D style pixel art enemy, a whispering cultist in a dark hooded robe, face hidden in shadow with two faint glowing eyes, hands clasped around a small dark idol, chanting, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_mud_lump", "out": "unity/Assets/Resources/Art/enemies/enemy_mud_lump.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a large slow lump of wet mud shaped like a hunched giant, thick dripping body, tiny dim eyes, heavy stubby arms, three-quarter front view facing left, clean silhouette, 20 color palette, transparent background" },
+    { "id": "enemy_mimic_imp", "out": "unity/Assets/Resources/Art/enemies/enemy_mimic_imp.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a small mischievous imp with a mirror-like mask, red skin, tiny horns and bat wings, mimicking a pose with a cheeky grin, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_thief", "out": "unity/Assets/Resources/Art/enemies/enemy_thief.png",
+      "description": "Octopath Traveler HD-2D style pixel art enemy, a sneaky goblin thief with a big coin sack over the shoulder, green skin, big ears, a small dagger, crouched ready to run away, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_gaping_maw", "out": "unity/Assets/Resources/Art/enemies/enemy_gaping_maw.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a beast that is mostly a huge gaping mouth full of teeth on short legs, dark red inside the mouth, small eyes above the jaw, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_cog_construct", "out": "unity/Assets/Resources/Art/enemies/enemy_cog_construct.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a box-shaped clockwork soldier made of brass gears and iron plates, a single round glass eye, spinning cog on top, sturdy stubby legs, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_vine_walker", "out": "unity/Assets/Resources/Art/enemies/enemy_vine_walker.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a walking dead tree wrapped in thorny vines, hollow eyes in the bark, root legs, vines dragging on the ground, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_spore_cap", "out": "unity/Assets/Resources/Art/enemies/enemy_spore_cap.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a plump mushroom creature with a wide spotted cap puffing a cloud of pale spores, sleepy eyes, stubby feet, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" },
+    { "id": "enemy_strangler_serpent", "out": "unity/Assets/Resources/Art/enemies/enemy_strangler_serpent.png",
+      "description": "Octopath Traveler HD-2D style pixel art monster, a thick constrictor serpent coiled and rearing up, mottled green and brown scales, narrow yellow eyes, tongue out, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background" }
+  ]
+}

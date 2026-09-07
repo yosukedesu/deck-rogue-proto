@@ -1,0 +1,24 @@
+{
+  "id": "enemy_sludge_spider",
+  "engine": "pixflux",
+  "request": {
+    "description": "Octopath Traveler HD-2D style pixel art monster, sludge-spinning spider, dark olive body dripping black sludge, eight thin legs, six small pale eyes, a strand of sticky sludge web, three-quarter front view facing left, clean silhouette, 24 color palette, transparent background",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "image_size": {
+      "width": 64,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south-west"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-07T14:31:20.857Z"
+}

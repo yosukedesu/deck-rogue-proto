@@ -1,0 +1,23 @@
+{
+  "id": "act1_cliff",
+  "engine": "pixflux",
+  "request": {
+    "description": "seamless tileable pixel art cliff face texture, layered earth and rock strata, brown and grey horizontal layers with small roots, no objects, no border, repeating tile",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "image_size": {
+      "width": 32,
+      "height": 32
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "medium shading",
+    "detail": "medium detail",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-07T14:32:53.810Z"
+}

@@ -460,6 +460,11 @@ namespace DeckRogue.Game
             // 地面と道
             var grass = Px.Grass(p, rng); var dirt = Px.Dirt(p, rng); var stone = Px.Stone(p, rng); var cliff = Px.Cliff(p, rng);
             var mGrass = Lit(Tex(act, "grass", grass)); var mDirt = Lit(Tex(act, "dirt", dirt)); var mStone = Lit(Tex(act, "stone", stone)); var mCliff = Lit(Tex(act, "cliff", cliff));
+            // PixelLab のタイルは昼の色で描かれるので、取り込んだ時だけ幕の夜のパレットへ寄せる (仮のタイルは元から夜の色)
+            if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.62f, 0.72f, 0.66f));
+            if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.62f, 0.56f, 0.52f));
+            if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.6f, 0.6f, 0.68f));
+            if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.56f, 0.52f, 0.56f));
             var pathRot = Quaternion.Euler(0f, PathYaw, 0f);
             var ground = new MB();
             ground.Floor(-90f, LedgeS, 90f, 90f, 0f);                       // 台地 (戦闘の場)
@@ -637,6 +642,8 @@ namespace DeckRogue.Game
             var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
             skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
         }
+
+        static bool HasTile(int act, string kind) { return Theme.Art("tiles", "act" + act + "_" + kind) != null; }
 
         static Texture2D Tex(int act, string kind, Texture2D fallback)
         {

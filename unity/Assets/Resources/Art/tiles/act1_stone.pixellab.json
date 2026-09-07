@@ -1,0 +1,23 @@
+{
+  "id": "act1_stone",
+  "engine": "pixflux",
+  "request": {
+    "description": "seamless tileable pixel art wall texture, old grey stone brick wall, staggered bricks with dark mortar lines, slightly weathered, no objects, no border, repeating tile",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "image_size": {
+      "width": 32,
+      "height": 32
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "medium shading",
+    "detail": "medium detail",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-07T14:32:40.255Z"
+}

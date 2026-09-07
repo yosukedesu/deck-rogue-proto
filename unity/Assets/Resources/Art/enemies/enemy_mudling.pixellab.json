@@ -1,0 +1,24 @@
+{
+  "id": "enemy_mudling",
+  "engine": "pixflux",
+  "request": {
+    "description": "Octopath Traveler HD-2D style pixel art monster, small round mud blob creature with two dim glowing eyes and a mischievous grin, dripping wet brown mud, tiny stubby arms, three-quarter front view facing left, clean silhouette, 20 color palette, transparent background",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "image_size": {
+      "width": 64,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south-west"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-07T14:29:48.309Z"
+}
