@@ -248,6 +248,8 @@ namespace DeckRogue.Game
             var frame = UiKit.Frame(cell, Theme.Button, NodeTint(n.Type, avail, cur, taken, passed), "frame", 1f);
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
             var icon = UiKit.Icon(cell, NodeIcon(n.Type), boss ? 56f : 34f);
+            var nodeArt = Theme.Art("map", "node_" + n.Type);
+            if (nodeArt != null) { icon.sprite = nodeArt; icon.color = Color.white; }
             icon.raycastTarget = false;
             icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             icon.rectTransform.anchoredPosition = Vector2.zero;

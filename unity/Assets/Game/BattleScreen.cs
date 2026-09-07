@@ -245,8 +245,10 @@ namespace DeckRogue.Game
                 ig.childForceExpandWidth = false;
                 if (it != null)
                 {
-                    var ic = UiKit.Icon(row, IntentIcon(it.Kind), 32f, IntentColor(it.Kind));
-                    UiKit.Le(ic, 32f, 32f, 32f, 32f);
+                    var intentArt = Theme.Art("icons", "intent_" + it.Kind);
+                    var ic = UiKit.Icon(row, IntentIcon(it.Kind), 32f, intentArt != null ? Color.white : IntentColor(it.Kind));
+                    if (intentArt != null) { ic.sprite = intentArt; ic.rectTransform.sizeDelta = new Vector2(48f, 48f); UiKit.Le(ic, 48f, 48f, 48f, 48f); }
+                    else UiKit.Le(ic, 32f, 32f, 32f, 32f);
                     var itT = UiKit.Deco(row, IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft);
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
                 }

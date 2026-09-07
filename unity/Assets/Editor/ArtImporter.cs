@@ -35,7 +35,9 @@ namespace DeckRogue.EditorTools
             imp.spritePixelsPerUnit = 100f;
             imp.wrapMode = TextureWrapMode.Clamp;
             var name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
-            int border = name == "panel" || name.StartsWith("btn_") ? 6 : name.StartsWith("card_") ? 12 : 0;
+            imp.isReadable = true; // 貼り絵の縁 (PaperFx.Silhouette) が GetPixels32 で読む
+            int border = name == "panel" || name.StartsWith("btn_") ? 6 : name.StartsWith("card_") ? 12
+                : name == "paper_panel" ? 14 : name == "paper_tag" ? 10 : name == "paper_button" ? 12 : name == "paper_card" ? 16 : 0;
             if (border > 0) imp.spriteBorder = new Vector4(border, border, border, border);
         }
     }
