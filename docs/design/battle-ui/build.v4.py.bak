@@ -75,109 +75,6 @@ def crest_svg(typ, size=52, color=INK):
     else: inner = '<path d="M10 42h28M14 42V18M34 42V18M8 18h32M12 14l12-8 12 8"></path><path d="M21 42V28h6v14"></path>'
     return '<svg width="%d" height="%d" viewBox="0 0 48 48" fill="none" stroke="%s" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:block">%s</svg>' % (size, size, color, inner)
 
-
-# ==== ドット絵 (発注書の 16px 状態アイコン・24px 意図アイコン・カード挿絵の代役。PixelLab の絵で差し替わる前提) ====
-BITMAPS = {
- 'sword': ["..............-.", ".............-#-", "............-#+-", "...........-#+-.", "..........-#+-..", ".........-#+-...", "..-.....-#+-....", ".-#-...-#+-.....",
-           "..-#-.-#+-......", "...-#-#+-.......", "....-##-........", "...-#-#-........", "..-#-..-........", ".-#-............", ".--.............", "................"],
- 'shield': ["................", "...--------.....", "..-########-....", ".-##++####+#-...", ".-#+#######+#-..", ".-#+########-...", ".-##########-...", ".-##########-...",
-            "..-########-....", "..-########-....", "...-######-.....", "....-####-......", ".....-##-.......", "......--........", "................", "................"],
- 'undo': ["................", "................", "....--..........", "...-#-..........", "..-#-----.......", ".-######-.......", "..-#-----#-.....", "...-#-...-#-....",
-          "....--....-#-...", "...........#-...", "..........-#-...", ".....---.-#-....", ".....-###-......", "......---.......", "................", "................"],
- 'leaf': ["................", "..........---...", "........--###-..", "......--####+-..", ".....-####+#-...", "....-###+##-....", "...-##+###-.....", "...-#+###-......",
-          "..-#+##-........", "..-##-#-........", "..-#-.-.........", ".-#-............", ".--.............", "................", "................", "................"],
- 'wind': ["................", "................", "....--------....", "...-########-...", "....------#-....", ".........#-.....", "..----------....", ".-##########-...",
-          "..-----------...", ".............-..", "...--------#-...", "..-#########-...", "...---------....", "................", "................", "................"],
- 'target': ["................", ".....------.....", "...--######--...", "..-##------##-..", ".-##-......-##-.", ".-#-..----..-#-.", "-#-..-####-..-#-", "-#-..-#++#-..-#-",
-            "-#-..-####-..-#-", ".-#-..----..-#-.", ".-##-......-##-.", "..-##------##-..", "...--######--...", ".....------.....", "................", "................"],
- 'hammer': ["................", "......------....", ".....-######-...", ".....-######-...", "......--#---....", "........#.......", ".......-#-......", "......-#-.......",
-            ".....-#-........", "....-#-.........", "...-#-..........", "..-#-...........", "..--............", "................", "................", "................"],
- 'bolt': ["................", "........--......", ".......-#-......", "......-#-.......", ".....-#-........", "....-#----......", "...-######-.....", "....----#-......",
-          ".......-#-......", "......-#-.......", ".....-#-........", "....-#-.........", "....--..........", "................", "................", "................"],
- 'deck': ["................", "...--------.....", "...-######-.....", "...-#----#---...", "...-#-######-...", "...-#-#----#-...", "...-#-#-###-#-..", "...-#-#-#--#-#..",
-          "...--#-#-####-..", ".....-#-#----#..", ".....--#-#####..", ".......-#-----..", ".......--#####..", "........------..", "................", "................"],
- 'star': ["................", ".......--.......", ".......##.......", "......-##-......", "..------##------", "..-############-", "...-##########-.", "....-########-..",
-          ".....-######-...", "....-###--###-..", "...-##-....-##-.", "..-#-........-#-", "..--..........--", "................", "................", "................"],
- 'crest_physical': ["-..............-", "#-............-#", "-#-..........-#-", ".-#-........-#-.", "..-#-......-#-..", "...-#-....-#-...", "....-#-..-#-....", ".....-#--#-.....",
-                    ".....-#--#-.....", "....-#-..-#-....", "...-#-....-#-...", "..-#-......-#-..", ".-#-........-#-.", "-#-..........-#-", "#-............-#", "-..............-"],
- 'crest_spell': [".......--.......", "......-##-......", "...-..-##-..-...", "..-#-.-##-.-#-..", "...-#--##--#-...", "....-######-....", ".....-####-.....", "-######++######-",
-                 "-######++######-", ".....-####-.....", "....-######-....", "...-#--##--#-...", "..-#-.-##-.-#-..", "...-..-##-..-...", "......-##-......", ".......--......."],
- 'crest_reaction': ["................", "................", "................", ".....------.....", "...--######--...", "..-###----###-..", ".-##--####--##-.", "-##-##-##-##-##-",
-                    "-##-##-++-##-##-", ".-##--####--##-.", "..-###----###-..", "...--######--...", ".....------.....", "................", "................", "................"],
- 'crest_permanent': [".......--.......", "......-##-......", ".....-####-.....", "....-######-....", "...-########-...", "..-##########-..", ".-############-.", "-######++######-",
-                     "..-----##-----..", "......-##-......", "......-##-......", "......-##-......", ".....-####-.....", "....-######-....", "...-########-...", "...----------..."],
-}
-def pixel_icon(name, scale=1, main=None, dark='#3b2f2f', light=None):
-    """16×16 のビットマップを SVG の矩形で描く (crispEdges)。scale=1 で 16px、2 で 32px"""
-    rows = BITMAPS[name]
-    main = main or '#3b2f2f'; light = light or lerp(main, '#ffffff', 0.45)
-    rects = []
-    for y, row in enumerate(rows):
-        x = 0
-        while x < 16:
-            ch = row[x]
-            if ch == '.': x += 1; continue
-            x2 = x
-            while x2 < 16 and row[x2] == ch: x2 += 1
-            col = {'#': main, '-': dark, '+': light}[ch]
-            rects.append('<rect x="%d" y="%d" width="%d" height="1" fill="%s"></rect>' % (x, y, x2 - x, col))
-            x = x2
-    size = 16 * scale
-    return '<svg width="%d" height="%d" viewBox="0 0 16 16" shape-rendering="crispEdges" style="display:block;flex:none">%s</svg>' % (size, size, ''.join(rects))
-
-PIX_PAL = {  # 挿絵プレースホルダーの配色 (空3・地2・図の暗中明)
- 'physical': dict(sky=['#6c5a4a', '#8a7358', '#a58e6a'], ground=['#4e3f31', '#3a2e24'], fig=['#3b2f2f', '#8a5a3a', '#d9a06a'], acc='#d97b7b'),
- 'spell': dict(sky=['#3b2f5a', '#54467a', '#6e5f98'], ground=['#2b2242', '#1e1830'], fig=['#2a2238', '#7b66a8', '#c9b8ee'], acc='#ffd27a'),
- 'reaction': dict(sky=['#2f4f4d', '#3f6b68', '#588a86'], ground=['#243c3a', '#1a2c2a'], fig=['#1f3a38', '#4f9a92', '#a8e0d8'], acc='#f4ecd6'),
- 'permanent': dict(sky=['#5c4d2a', '#7a6738', '#9c874a'], ground=['#4a3d22', '#352b18'], fig=['#3b2f1a', '#b8862a', '#f0d58a'], acc='#8fae7b'),
-}
-def pixel_scene(seed, typ, scale=2):
-    """80×48 の挿絵プレースホルダー: 空の帯・地面・左右対称の図・きらめき。PixelLab の絵 (80×48) と同じ枡目"""
-    W, H = 80, 48
-    pal = PIX_PAL[typ]
-    rng = random.Random(seed)
-    rects = []
-    # 空 (3帯) と地面 (2帯)
-    bands = [(0, 14, pal['sky'][0]), (14, 26, pal['sky'][1]), (26, 34, pal['sky'][2]), (34, 42, pal['ground'][0]), (42, 48, pal['ground'][1])]
-    for y0, y1, col in bands: rects.append('<rect x="0" y="%d" width="80" height="%d" fill="%s"></rect>' % (y0, y1 - y0, col))
-    # 遠景の丘 (左右非対称の低い山)
-    for i in range(6):
-        x = rng.randint(0, 70); w = rng.randint(8, 18); h = rng.randint(2, 6)
-        rects.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s"></rect>' % (x, 34 - h, w, h, pal['ground'][0]))
-    # 図 (24×24 左右対称)
-    n = 24; ox, oy = 28, 12
-    mask = [[False] * n for _ in range(n)]
-    for y in range(3, n - 1):
-        for x in range(n // 2):
-            cx = (x + 0.5) / (n / 2); cy = 1 - abs((y - n / 2) / (n / 2))
-            mask[y][x] = rng.random() < 0.10 + 0.66 * cx * cy
-    def at(x, y):
-        if x < 0 or y < 0 or x >= n or y >= n: return False
-        return mask[y][x if x < n // 2 else n - 1 - x]
-    dark, mid, light = pal['fig']
-    for y in range(n):
-        x = 0
-        while x < n:
-            if not at(x, y): x += 1; continue
-            edge = not at(x - 1, y) or not at(x + 1, y) or not at(x, y - 1) or not at(x, y + 1)
-            col = dark if edge else (light if y < n * 0.42 else mid)
-            x2 = x
-            while x2 < n and at(x2, y) and ((not at(x2 - 1, y) or not at(x2 + 1, y) or not at(x2, y - 1) or not at(x2, y + 1)) == edge): x2 += 1
-            rects.append('<rect x="%d" y="%d" width="%d" height="1" fill="%s"></rect>' % (ox + x, oy + y, x2 - x, col))
-            x = x2
-    # 目・きらめき
-    rects.append('<rect x="%d" y="%d" width="1" height="1" fill="#ffffff"></rect><rect x="%d" y="%d" width="1" height="1" fill="#ffffff"></rect>' % (ox + 9, oy + 10, ox + 14, oy + 10))
-    for i in range(7):
-        rects.append('<rect x="%d" y="%d" width="1" height="1" fill="%s"></rect>' % (rng.randint(2, 77), rng.randint(2, 12), pal['acc']))
-    return '<svg width="%d" height="%d" viewBox="0 0 80 48" shape-rendering="crispEdges" class="px" style="display:block">%s</svg>' % (W * scale, H * scale, ''.join(rects))
-
-def sticker(svg, pad=2, paper=PAPER, shadow=True):
-    """ドット絵を紙の切り抜き (貼り絵) にする: 紙色の硬い縁 + 落ちる影。ぼかしは使わない"""
-    f = ' '.join('drop-shadow(%dpx %dpx 0 %s)' % (dx, dy, paper) for dx, dy in ((pad, 0), (-pad, 0), (0, pad), (0, -pad), (pad, pad), (-pad, -pad), (pad, -pad), (-pad, pad)))
-    f += ' drop-shadow(%dpx %dpx 0 %s)' % (pad + 1, pad + 1, rgba(INK, 0.7))
-    if shadow: f += ' drop-shadow(0 10px 6px rgba(0,0,0,0.35))'
-    return '<div style="filter: %s">%s</div>' % (f, svg)
-
 # 紙・水彩の部品
 PAPER_SHADOW = '0 0 0 1.5px %s, 0 0 0 4px %s, 0 0 0 5.5px %s, 0 10px 22px rgba(0,0,0,0.35)' % (INK, PAPER, rgba(INK, 0.5))
 def paper_style(radius='18px 22px 16px 20px / 20px 16px 22px 18px', bg=PAPER, shadow=None):
@@ -200,7 +97,7 @@ HEAD = '''<!doctype html>
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&amp;family=Klee+One:wght@400;600&amp;family=Zen+Kurenaido&amp;family=DotGothic16&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&amp;family=Klee+One:wght@400;600&amp;family=Zen+Kurenaido&amp;display=swap">
   <style>
     body { margin: 0; background: #1a1c33; font-family: "Klee One", "Zen Kurenaido", "Hiragino Sans", sans-serif; color: #3b2f2f; -webkit-font-smoothing: antialiased; }
     a { color: #b8862a; } a:hover { color: #8a6218; }
@@ -213,8 +110,6 @@ HEAD = '''<!doctype html>
     .pbtn { display: flex; align-items: center; justify-content: center; gap: 10px; background: #f4ecd6; color: #3b2f2f; border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px; box-shadow: 0 0 0 1.5px #3b2f2f, 0 4px 0 rgba(59,47,47,0.55), 0 8px 16px rgba(0,0,0,0.3); }
     .label { font-size: 11px; letter-spacing: 0.08em; color: rgba(59,47,47,0.65); }
     .light { color: #f4ecd6; }
-    .dot { font-family: "DotGothic16", monospace; }
-    .px { image-rendering: pixelated; }
     .keycap { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border: 1.5px solid rgba(59,47,47,0.6); border-radius: 5px; color: rgba(59,47,47,0.75); font-size: 11px; background: rgba(255,255,255,0.4); }
   </style>
 </helmet>
@@ -224,14 +119,10 @@ TAIL = '''</x-dc>
 </html>
 '''
 
-def role_glyph(kind, size=14, pixel=True):
+def role_glyph(kind, size=14):
     col = ROLE[kind]
-    if pixel:
-        g = pixel_icon(ROLE_ICON[kind], 1, main=INK, dark=INK, light=lerp(INK, '#ffffff', 0.5))
-    else:
-        g = icon(ROLE_ICON[kind], size, INK, 2)
     return ('<span style="position: relative; display: inline-flex; width: %dpx; height: %dpx; align-items: center; justify-content: center; flex: none">'
-            '<span class="abs" style="inset: 1px; border-radius: 48%% 52%% 45%% 55%% / 55%% 45%% 55%% 45%%; background: %s"></span><span style="position: relative; display: flex">%s</span></span>') % (size + 6, size + 6, rgba(col, 0.55), g)
+            '<span class="abs" style="inset: 1px; border-radius: 48%% 52%% 45%% 55%% / 55%% 45%% 55%% 45%%; background: %s"></span><span style="position: relative">%s</span></span>') % (size + 6, size + 6, rgba(col, 0.55), icon(ROLE_ICON[kind], size, INK, 2))
 
 def line(kind, text):
     if kind is None: return '<div style="line-height: 21px">%s</div>' % text
@@ -240,16 +131,16 @@ def line(kind, text):
 def stars(rarity):
     n = {'common': 1, 'uncommon': 2, 'rare': 3}[rarity]
     fill = {'common': 'none', 'uncommon': C['sky'], 'rare': C['honey']}[rarity]
-    return '<div style="display: flex; gap: 0px">' + ''.join(pixel_icon('star', 1, main=fill if fill != 'none' else PAPER, dark=INK) for _ in range(n)) + '</div>'
+    return '<div style="display: flex; gap: 1px">' + ''.join(icon('star', 11, INK, 1.6).replace('fill="none"', 'fill="%s"' % fill) for _ in range(n)) + '</div>'
 
 def value_blob(kind, value, right=False):
     col = ROLE[kind]
     side = 'right: 10px' if right else 'left: 10px'
     return ('<div class="abs" style="%s; bottom: 8px; width: 60px; height: 40px">%s'
             '<div class="abs hand num" style="inset: 0; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 18px; color: %s">%s<span>%s</span></div></div>'
-            % (side, blob(col, 60, 40, 0.9, -4 if not right else 5), INK, pixel_icon(ROLE_ICON[kind], 1, main=INK, dark=INK), value))
+            % (side, blob(col, 60, 40, 0.9, -4 if not right else 5), INK, icon(ROLE_ICON[kind], 15, INK, 2.2), value))
 
-def card(name, typ, cost, rarity, body_lines, notes=None, preview=None, playable=True, key=None, mode_lines=None, dmg=None, blk=None, counter=None, color='green', scale=1.0, window='pixel'):
+def card(name, typ, cost, rarity, body_lines, notes=None, preview=None, playable=True, key=None, mode_lines=None, dmg=None, blk=None, counter=None, color='green', scale=1.0):
     tcol = C[typ]
     type_ja = {'physical': '物理', 'spell': '呪文', 'reaction': 'リアクション', 'permanent': '置物'}[typ]
     rar = {'common': 'コモン', 'uncommon': 'アンコモン', 'rare': 'レア'}[rarity]
@@ -280,25 +171,15 @@ def card(name, typ, cost, rarity, body_lines, notes=None, preview=None, playable
             # 名前
             '<div class="abs deco" style="left: 50px; right: 30px; top: 10px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: %dpx; color: %s; white-space: nowrap; letter-spacing: 0.02em">%s</div>'
             '<svg class="abs" style="left: 56px; top: 44px" width="110" height="6" viewBox="0 0 110 6" fill="none" stroke="%s" stroke-width="1.4" stroke-linecap="round"><path d="M1 4c20-3 40 1 55-1s35-2 53 1"></path></svg>'
-            # 挿絵の窓 (%%s に差し替え: 水彩の窓 / 紙の台紙に貼ったドット絵)
-            '%s'
+            # 挿絵の窓 (水彩のにじみ + 墨の紋章)
+            '<div class="abs" style="left: 16px; right: 16px; top: 58px; height: 92px; border-radius: 40%% 60%% 55%% 45%% / 50%% 40%% 60%% 50%%; background: radial-gradient(circle at 45%% 40%%, %s, %s 65%%, %s 100%%); display: flex; align-items: center; justify-content: center">%s</div>'
             # タイプ
             '<div class="abs label" style="left: 0; right: 0; top: 158px; text-align: center; font-size: 10px">%s ・ %s</div>'
             # 本文
             '<div class="abs hand" style="left: 16px; right: 16px; top: 178px; bottom: 52px; text-align: center; font-size: 14px; color: %s">%s</div>'
             '%s%s%s</div>') % (
         scale, dim_css, grain(), tcol, rgba(INK, 0.8), INK, cost, stars(rarity), name_size, INK, name, rgba(INK, 0.55),
-        card_window(name, typ, tcol, window), type_ja, rar, INK, body, blobs, center, keycap)
-
-
-def card_window(name, typ, tcol, window):
-    """カードの絵の窓。pixel=80×48 の挿絵を2倍で紙の台紙に貼る／crest=絵が無い間のドットの紋章／wash=旧・水彩に墨の紋章"""
-    if window == 'wash':
-        return ('<div class="abs" style="left: 16px; right: 16px; top: 58px; height: 92px; border-radius: 40%% 60%% 55%% 45%% / 50%% 40%% 60%% 50%%; background: radial-gradient(circle at 45%% 40%%, %s, %s 65%%, %s 100%%); display: flex; align-items: center; justify-content: center">%s</div>'
-                % (rgba(lerp(tcol, '#ffffff', 0.35), 0.9), rgba(tcol, 0.55), rgba(tcol, 0.0), crest_svg(typ, 50)))
-    inner = pixel_scene(name, typ, 2) if window == 'pixel' else ('<div style="width: 160px; height: 96px; background: %s; display: flex; align-items: center; justify-content: center">%s</div>' % (rgba(lerp(tcol, '#ffffff', 0.55), 0.9), pixel_icon('crest_' + typ, 3, main=INK, dark=INK, light=lerp(INK, '#ffffff', 0.55))))
-    # 台紙: 紙の余白 4px + 鉛筆の線。少し傾けて「貼った」感じ
-    return ('<div class="abs" style="left: 16px; top: 54px; width: 168px; height: 104px; transform: rotate(-0.6deg); background: %s; box-shadow: 0 0 0 1.5px %s, 0 3px 6px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center">%s</div>' % (PAPER2, rgba(INK, 0.75), inner))
+        rgba(lerp(tcol, '#ffffff', 0.35), 0.9), rgba(tcol, 0.55), rgba(tcol, 0.0), crest_svg(typ, 50), type_ja, rar, INK, body, blobs, center, keycap)
 
 def card_back(w, h):
     return ('<div style="position: relative; width: %dpx; height: %dpx; border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px; background: #2b2d4d; box-shadow: 0 0 0 1.5px %s, 0 0 0 4px %s, 0 0 0 5.5px %s, 0 8px 18px rgba(0,0,0,0.4); overflow: hidden">'
@@ -317,7 +198,7 @@ def hpbar(w, cur, mx, block=None, numeral=15):
         w, INK, pct, C['rose'], lerp(C['rose'], '#ffffff', 0.2), badge, numeral, cur, max(11, numeral - 3), mx)
 
 def pill(icon_name, label, color):
-    return '<div class="tag" style="height: 26px; padding: 0 8px 0 6px"><span style="width: 10px; height: 10px; border-radius: 50%%; background: %s; flex: none"></span>%s<span class="hand">%s</span></div>' % (color, pixel_icon(icon_name, 1, main=INK, dark=INK) if icon_name in BITMAPS else icon(icon_name, 13, INK, 2), label)
+    return '<div class="tag" style="height: 26px; padding: 0 8px 0 6px"><span style="width: 10px; height: 10px; border-radius: 50%%; background: %s; flex: none"></span>%s<span class="hand">%s</span></div>' % (color, icon(icon_name, 13, INK, 2), label)
 
 def bubble(kind, text, sub, color, cx, y):
     w = 220
@@ -325,7 +206,7 @@ def bubble(kind, text, sub, color, cx, y):
             '%s<span class="deco num" style="font-size: 27px; color: %s">%s</span></div>'
             '<svg class="abs" style="left: %dpx; top: %dpx" width="30" height="22" viewBox="0 0 30 22" fill="%s" stroke="%s" stroke-width="1.5"><path d="M4 0c4 6 6 12 10 20 2-8 6-14 12-20z"></path></svg>'
             '<div class="abs hand" style="left: %dpx; top: %dpx; width: %dpx; text-align: center; font-size: 12px; color: #f4ecd6; text-shadow: 0 1px 0 rgba(0,0,0,0.6); line-height: 16px">%s</div>') % (
-        cx - w // 2, y, w, grain(), pixel_icon(kind, 2, main=color, dark=INK, light=lerp(color, '#ffffff', 0.45)), INK, text, cx - 12, y + 56, PAPER, INK, cx - w // 2 - 40, y + 82, w + 80, sub)
+        cx - w // 2, y, w, grain(), icon(kind, 24, color, 2), INK, text, cx - 12, y + 56, PAPER, INK, cx - w // 2 - 40, y + 82, w + 80, sub)
 
 def background(w=1920, h=1080):
     hy = round(h * 0.66)
@@ -336,16 +217,12 @@ def background(w=1920, h=1080):
             '<div class="abs" style="left: 0; top: 0; width: %dpx; height: %dpx; background: radial-gradient(ellipse at 50%% 40%%, rgba(0,0,0,0) 45%%, rgba(0,0,0,0.45) 100%%)"></div>') % (
         w, hy, C['nightTop'], C['nightBot'], hy, w, h - hy, C['groundTop'], C['groundBot'], hy - 1, w, w, h, NOISE, w, h)
 
-def sprite(svg, x, y, size, ring=None, wash=C['plum'], mode='sticker'):
-    """mode: sticker=紙の切り抜きの縁と影 (規約)／wash=旧・水彩のにじみ／plain=影だけ"""
-    s = ''
-    if mode == 'wash':
-        s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: %dpx; filter: blur(6px); opacity: 0.55">%s</div>' % (x - 20, y - 6, size + 40, size + 30, blob(wash, size + 40, size + 30, 0.7, 6))
+def sprite(svg, x, y, size, ring=None, wash=C['plum']):
+    s = '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: %dpx; filter: blur(6px); opacity: 0.55">%s</div>' % (x - 20, y - 6, size + 40, size + 30, blob(wash, size + 40, size + 30, 0.7, 6))
     if ring:
         s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 24px; border-radius: 50%%; border: 2px dashed %s"></div>' % (x - 10, y + size - 12, size + 20, ring)
-    s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 24px; border-radius: 50%%; background: radial-gradient(ellipse, rgba(0,0,0,0.5), rgba(0,0,0,0) 70%%)"></div>' % (x, y + size - 12, size)
-    body = sticker(svg, 3) if mode == 'sticker' else svg
-    s += '<div class="abs" style="left: %dpx; top: %dpx">%s</div>' % (x, y, body)
+    s += '<div class="abs" style="left: %dpx; top: %dpx; width: %dpx; height: 24px; border-radius: 50%%; background: radial-gradient(ellipse, rgba(0,0,0,0.55), rgba(0,0,0,0) 70%%)"></div>' % (x, y + size - 12, size)
+    s += '<div class="abs" style="left: %dpx; top: %dpx">%s</div>' % (x, y, svg)
     return s
 
 LEADER = creature_svg('leader_green', '#1c3d2a', '#2e7a4a', '#7fe0a0', 220)
@@ -492,7 +369,7 @@ def card_anatomy():
     W, H = 1760, 800
     s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #1a1c33">' % (W, H) + background(W, H)
     s += '<div class="abs deco light" style="left: 40px; top: 26px; font-size: 28px; letter-spacing: 0.06em; text-shadow: 0 2px 0 rgba(0,0,0,0.5)">カードの面 — 絵本の一枚として</div>'
-    s += ('<div class="abs hand light" style="left: 40px; top: 70px; font-size: 13px; line-height: 20px; width: 1200px; text-shadow: 0 1px 0 rgba(0,0,0,0.6)">クリーム色の紙に鉛筆の二重線。タイプは左上の「しおり」の色（コストを乗せる）、レア度は星の数。挿絵は 80×48 のドット絵を2倍で紙の台紙に貼る（今は代役。絵が無い札はドットの紋章）。'
+    s += ('<div class="abs hand light" style="left: 40px; top: 70px; font-size: 13px; line-height: 20px; width: 1200px; text-shadow: 0 1px 0 rgba(0,0,0,0.6)">クリーム色の紙に鉛筆の二重線。タイプは左上の「しおり」の色（コストを乗せる）、レア度は星の数。挿絵の窓は水彩のにじみに墨の紋章（1枚ずつの絵は最後）。'
           '<b>左下の剣のにじみ＝与えるダメージ、右下の盾のにじみ＝得るブロック</b>。数字だけ見れば攻めか守りか分かる。</div>')
     cards = [
         (card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], preview='→ 探り屋 に 6', dmg='6'), '攻撃'),
@@ -515,51 +392,8 @@ def card_anatomy():
         s += '<div class="tag" style="height: 32px; padding: 0 12px 0 6px">%s<span class="hand">%s</span></div>' % (role_glyph(k, 14), t)
     s += '</div>'
     s += ('<div class="abs hand light" style="left: 60px; top: 650px; width: 1640px; font-size: 12px; line-height: 20px; text-shadow: 0 1px 0 rgba(0,0,0,0.6); opacity: 0.85">'
-          '実装メモ: 紙の面は 9スライス1種（紙色）＋鉛筆の二重線、しおりはタイプ色の1パーツ、にじみは役割色の1パーツ（剣/盾）、しるしは 16px のドット（発注書の状態アイコン）。挿絵は `Art/cards/&lt;id&gt;.png` 80×48 を Point フィルタで2倍。剣と盾は効果から導く（dealDamage の合計→剣、gainBlock/gainIceBlock→盾、counter→戻り矢印。データにカテゴリは増やさない）。'
+          '実装メモ: 紙の面は 9スライス1種（紙色）＋鉛筆の二重線、しおりはタイプ色の1パーツ、にじみは役割色の1パーツ（剣/盾）。剣と盾は効果から導く（dealDamage の合計→剣、gainBlock/gainIceBlock→盾、counter→戻り矢印。データにカテゴリは増やさない）。'
           '手札は 0.92 倍・ホバーで 1.0 と蜂蜜色の淡い光。名前 Kaisei Decol／本文 Klee One 14px。使えない札は彩度を落とす。紙の粒はノイズ1枚の乗算。</div>')
-    s += '</div>'
-    return s
-
-
-def pixelfit_board():
-    W, H = 1760, 980
-    s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #1a1c33">' % (W, H) + background(W, H)
-    s += '<div class="abs deco light" style="left: 40px; top: 26px; font-size: 28px; letter-spacing: 0.06em; text-shadow: 0 2px 0 rgba(0,0,0,0.5)">ドット絵との相性 — 規約「絵はドット、紙と文字はなめらか」</div>'
-    s += ('<div class="abs hand light" style="left: 40px; top: 70px; width: 1500px; font-size: 13px; line-height: 20px; text-shadow: 0 1px 0 rgba(0,0,0,0.6)">'
-          '挿絵的なもの（カードの絵・紋章・状態と意図のアイコン・剣と盾のしるし）はドット絵を整数倍で置き、紙・鉛筆線・水彩の面・文字はなめらかなUI層。同じ存在を2つの画材で描かない。ドット絵に滑らかなにじみを重ねない。</div>')
-    # --- 1. カードの窓 ---
-    s += '<div class="abs deco light" style="left: 40px; top: 120px; font-size: 18px; letter-spacing: 0.1em">1. カードの窓</div>'
-    variants = [('wash', '旧: 水彩の窓に墨の紋章', '紙の上で美しいが、場のドット絵と画材が違う。絵が入る余地も曖昧'),
-                ('pixel', '規約: 80×48 のドット絵を2倍で台紙に貼る', 'PixelLab の枡目と一致。従者は場のトークンと同じ絵になる。今の 168×104 の窓に 4px の紙の余白で収まる'),
-                ('crest', '絵が無い間: ドットの紋章 16×16 を3倍', '発注書「枠＋タイプアイコン＋名前で成立」をドットで満たす。412種の絵が揃うまでの姿')]
-    for i, (win, title, note) in enumerate(variants):
-        x = 40 + i * 400
-        s += '<div class="abs" style="left: %dpx; top: 158px; width: 200px; height: 290px">%s</div>' % (x, card('打撃', 'physical', 1, 'common', [('dmg', 'ダメージ 6')], dmg='6', window=win))
-        s += '<div class="abs hand light" style="left: %dpx; top: 158px; width: 160px; font-size: 13px; line-height: 19px"><b>%s</b><br><span style="opacity: 0.8">%s</span></div>' % (x + 220, title, note)
-    # 4タイプの挿絵見本
-    s += '<div class="abs" style="left: 1260px; top: 158px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">'
-    for typ in ('physical', 'spell', 'reaction', 'permanent'):
-        s += '<div style="padding: 4px; background: %s; box-shadow: 0 0 0 1.5px %s">%s</div>' % (PAPER2, rgba(INK, 0.75), pixel_scene('sample_' + typ, typ, 2).replace('width="160" height="96"', 'width="160" height="96"'))
-    s += '</div>'
-    s += '<div class="abs hand light" style="left: 1260px; top: 380px; width: 440px; font-size: 12px; line-height: 18px; opacity: 0.85">4タイプの挿絵の代役（配色だけタイプで変える）。本物は PixelLab に 80×48 で発注し `Art/cards/&lt;id&gt;.png` に置く。</div>'
-    # --- 2. 舞台の敵 ---
-    s += '<div class="abs deco light" style="left: 40px; top: 486px; font-size: 18px; letter-spacing: 0.1em">2. 舞台の敵</div>'
-    modes = [('wash', '旧: 水彩のにじみ', 'ドットの硬い縁と滑らかなぼかしが隣り合い、浮く'), ('sticker', '規約: 紙の切り抜き（貼り絵）', '紙色の硬い縁と影。絵本に貼った挿絵として成立し、ドットの縁は崩れない'), ('plain', '素: 影だけ', '最も無難。舞台が絵本でなく「ステージ」に寄る')]
-    for i, (mode, title, note) in enumerate(modes):
-        x = 40 + i * 400
-        s += sprite(PROBE_A.replace('width="200" height="200"', 'width="160" height="160"'), x + 20, 520, 160, mode=mode)
-        s += '<div class="abs hand light" style="left: %dpx; top: 530px; width: 180px; font-size: 13px; line-height: 19px"><b>%s</b><br><span style="opacity: 0.8">%s</span></div>' % (x + 200, title, note)
-    # --- 3. しるしと数字 ---
-    s += '<div class="abs deco light" style="left: 40px; top: 730px; font-size: 18px; letter-spacing: 0.1em">3. しるしと数字</div>'
-    s += '<div class="abs hand light" style="left: 40px; top: 766px; font-size: 12px; opacity: 0.85">旧: 線のアイコン</div>'
-    s += '<div class="abs" style="left: 40px; top: 786px; display: flex; gap: 8px">' + ''.join('<div class="tag" style="height: 30px; padding: 0 10px 0 6px">%s<span class="hand">%s</span></div>' % (role_glyph(k, 14, pixel=False), t) for k, t in [('dmg', 'ダメージ'), ('block', 'ブロック'), ('counter', '返し'), ('growth', '成長'), ('momentum', '勢い')]) + '</div>'
-    s += '<div class="abs hand light" style="left: 40px; top: 836px; font-size: 12px; opacity: 0.85">規約: 16px のドットのアイコン（発注書の状態アイコンと同じ枡目）</div>'
-    s += '<div class="abs" style="left: 40px; top: 856px; display: flex; gap: 8px">' + ''.join('<div class="tag" style="height: 30px; padding: 0 10px 0 6px">%s<span class="hand">%s</span></div>' % (role_glyph(k, 14, pixel=True), t) for k, t in [('dmg', 'ダメージ'), ('block', 'ブロック'), ('counter', '返し'), ('growth', '成長'), ('momentum', '勢い')]) + '</div>'
-    s += ('<div class="abs" style="left: 900px; top: 766px; display: flex; gap: 40px">'
-          '<div><div class="hand light" style="font-size: 12px; opacity: 0.85">数字 A: Klee One（手書き。今の案）</div><div class="tag" style="height: 56px; padding: 0 18px; margin-top: 8px"><span class="hand num" style="font-size: 30px">31 <span style="opacity: 0.5; font-size: 18px">/ 38</span></span><span style="width: 1.5px; height: 30px; background: rgba(59,47,47,0.3)"></span><span class="deco num" style="font-size: 30px; color: %s">12〜16</span></div></div>'
-          '<div><div class="hand light" style="font-size: 12px; opacity: 0.85">数字 B: DotGothic16（ドット寄せ。文字だけドットの折衷）</div><div class="tag" style="height: 56px; padding: 0 18px; margin-top: 8px"><span class="dot num" style="font-size: 30px">31 <span style="opacity: 0.5; font-size: 18px">/ 38</span></span><span style="width: 1.5px; height: 30px; background: rgba(59,47,47,0.3)"></span><span class="dot num" style="font-size: 30px; color: %s">12〜16</span></div></div>'
-          '</div>') % (lerp(C['rose'], '#000000', 0.25), lerp(C['rose'], '#000000', 0.25))
-    s += '<div class="abs hand light" style="left: 900px; top: 880px; width: 800px; font-size: 12px; line-height: 18px; opacity: 0.85">推奨は A。文字は「本の活字」であって挿絵ではないので、なめらかで良い。B は数字が読みにくくなる場面（12〜16 の幅表示）がある。</div>'
     s += '</div>'
     return s
 
@@ -641,7 +475,6 @@ def write(name, body):
 
 write('Main.dc.html', battle_scene(False))
 write('ReactionWindow.dc.html', battle_scene(True))
-write('PixelFit.dc.html', pixelfit_board())
 write('Styles.dc.html', styles_board())
 write('CardAnatomy.dc.html', card_anatomy())
 write('DirectionB.dc.html', direction_b())
@@ -650,17 +483,15 @@ canvas = {
     'artboards': [
         {'file': 'Main.dc.html', 'title': '戦闘画面（自分のターン・手札ホバー）', 'x': 0, 'y': 0, 'w': 1920, 'h': 1080},
         {'file': 'ReactionWindow.dc.html', 'title': '確認ウィンドウ（発動／温存）', 'x': 2040, 'y': 0, 'w': 1920, 'h': 1080},
-        {'file': 'PixelFit.dc.html', 'title': 'ドット絵との相性（比較）', 'x': 0, 'y': 1240, 'w': 1760, 'h': 980},
+        {'file': 'Styles.dc.html', 'title': '日本一の手触り A / B / C', 'x': 0, 'y': 1240, 'w': 1760, 'h': 620},
         {'file': 'CardAnatomy.dc.html', 'title': 'カードの面', 'x': 1880, 'y': 1240, 'w': 1760, 'h': 800},
-        {'file': 'Styles.dc.html', 'title': '日本一の手触り A / B / C', 'x': 0, 'y': 2340, 'w': 1760, 'h': 620},
-        {'file': 'DirectionB.dc.html', 'title': '別案B（配置の低精細）', 'x': 1880, 'y': 2340, 'w': 960, 'h': 540},
-        {'file': 'DirectionC.dc.html', 'title': '別案C（配置の低精細）', 'x': 2960, 'y': 2340, 'w': 960, 'h': 540},
+        {'file': 'DirectionB.dc.html', 'title': '別案B（配置の低精細）', 'x': 0, 'y': 2160, 'w': 960, 'h': 540},
+        {'file': 'DirectionC.dc.html', 'title': '別案C（配置の低精細）', 'x': 1080, 'y': 2160, 'w': 960, 'h': 540},
     ],
     'annotations': [
         {'id': 'brief', 'x': 0, 'y': -200, 'w': 640, 'text': '戦闘UIの作り直し・第4版「絵本」（日本一ソフトウェアの絵本調の空気を自作の意匠で）。配置は第1版のまま、見た目を紙と水彩に: クリーム色の紙・鉛筆の二重線・水彩のにじみ・手書き風の文字（Klee One）と装飾明朝（Kaisei Decol）。剣＝攻撃／盾＝防御はにじみの札に。'},
         {'id': 'note-modal', 'x': 2040, 'y': -120, 'w': 520, 'text': 'set-confirm の山場は「開いた本の一頁」。左に実値・受け・HP差分、中央に候補札、右に発動（蜂蜜色）／温存（紙）。分岐が反転する警告はマスキングテープで貼った付箋。'},
-        {'id': 'note-pixel', 'x': 0, 'y': 1150, 'w': 700, 'text': '第5版: 規約「絵はドット、紙と文字はなめらか」を本命2枚にも適用。カードの窓は 80×48 のドット絵を2倍で紙の台紙に貼る（本物が来るまで代役）、敵とリーダーは紙の切り抜き（貼り絵）、しるしは 16px のドット。比較ボードで旧との差を確認できる。'},
-        {'id': 'note-styles', 'x': 0, 'y': 2250, 'w': 640, 'text': '日本一の手触り3種。A 絵本（選択・適用済み）／B 魔女の書＝群青と金の唐草／C ゴシック・コミック＝黒白赤。B か C に変えるなら本命2枚を描き直す。'},
+        {'id': 'note-styles', 'x': 0, 'y': 1150, 'w': 640, 'text': '日本一の手触り3種。A 絵本（選択・適用済み）／B 魔女の書＝群青と金の唐草／C ゴシック・コミック＝黒白赤。B か C に変えるなら本命2枚を描き直す。'},
     ],
     'launch': {'view': 'canvas'},
 }
