@@ -451,6 +451,7 @@ namespace DeckRogue.Game
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
             u.FeetPad = FeetPad(sprite);   // 絵の下端の透明行 (足元の余白) の割合。板をそのぶん下げて足を地面に着ける (2026-09-08「キャラが地面から浮いてる」)
             u.BaseTex = sprite.texture;
+            u.BaseUvScale = new Vector2(tr.width / tw, tr.height / th); u.BaseUvOffset = new Vector2(tr.x / tw, tr.y / th);
             u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
             // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
             string cat = key == "player" ? "leaders" : "enemies";
@@ -560,13 +561,25 @@ namespace DeckRogue.Game
                 if (Key != null) _animStates[Key] = new AnimState { Anim = Anim, Frame = Frame, FrameT = FrameT, At = Time.time };
                 Apply();
             }
+            public float FrameScaleX = 1f, FrameScaleY = 1f;   // 枠が元絵より大きいコマ (攻撃の 96px) の拡大率
             public void Apply()
             {
                 List<Texture2D> frames;
                 Texture2D tex = Anims.TryGetValue(Anim, out frames) && frames.Count > 0 ? frames[Mathf.Clamp(Frame, 0, frames.Count - 1)] : BaseTex;
                 if (tex == null || Mat == null) return;
                 Mat.SetTexture("_BaseMap", tex); Mat.mainTexture = tex;
+                if (BaseTex != null && tex != BaseTex)
+                {
+                    FrameScaleX = tex.width / (float)BaseTex.width; FrameScaleY = tex.height / (float)BaseTex.height;
+                    Mat.SetTextureScale("_BaseMap", Vector2.one); Mat.SetTextureOffset("_BaseMap", Vector2.zero);
+                }
+                else
+                {
+                    FrameScaleX = FrameScaleY = 1f;
+                    Mat.SetTextureScale("_BaseMap", BaseUvScale); Mat.SetTextureOffset("_BaseMap", BaseUvOffset);
+                }
             }
+            public Vector2 BaseUvScale = Vector2.one, BaseUvOffset = Vector2.zero;
             void Advance()
             {
                 List<Texture2D> frames;
@@ -599,7 +612,7 @@ namespace DeckRogue.Game
                 if (Anim == "idle" && Breathe) pos += _up * (Mathf.Sin(Time.time * 2.4f + BreathePhase) * 2f * k);   // 呼吸: ±2px の上下 (拡大・回転はしない)
                 transform.position = pos;
                 transform.rotation = CameraRotation;
-                transform.localScale = new Vector3(Mathf.Max(0.01f, w * k), Mathf.Max(0.01f, h * k), 1f);
+                transform.localScale = new Vector3(Mathf.Max(0.01f, w * k * FrameScaleX), Mathf.Max(0.01f, h * k * FrameScaleY), 1f);   // 広い枠のコマは同じドット密度で板を広げる (足元中央は固定)
                 var tint = Img != null ? Img.color : Color.white;
                 Mat.SetColor("_BaseColor", tint);
                 ApplyLight(Mat, 0.5f);   // 月明かりの明暗勾配を強め
