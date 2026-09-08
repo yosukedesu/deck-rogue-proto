@@ -57,22 +57,33 @@ namespace DeckRogue.Engine
         /// <summary>data/*.json を読み込む。テストは Content.Load("../../src/data")。</summary>
         public static void Load(string dataDir)
         {
+            LoadFrom(file =>
+            {
+                var path = Path.Combine(dataDir, file);
+                if (!File.Exists(path)) throw new InvalidOperationException($"データファイルが見つからない: {path}");
+                return File.ReadAllText(path);
+            });
+        }
+
+        /// <summary>ファイル名→JSON文字列 の関数から読み込む (Android の APK 内など File が使えない環境用。Unity は Resources の TextAsset を渡す)。</summary>
+        public static void LoadFrom(Func<string, string> read)
+        {
             // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
             var cards = new List<CardDef>();
-            cards.AddRange(WithColor(ReadList<CardDef>(dataDir, "cards.green.json"), CardColors.Green));
-            cards.AddRange(WithColor(ReadList<CardDef>(dataDir, "cards.blue.json"), CardColors.Blue));
-            cards.AddRange(WithColor(ReadList<CardDef>(dataDir, "cards.red.json"), CardColors.Red));
-            cards.AddRange(WithColor(ReadList<CardDef>(dataDir, "cards.white.json"), CardColors.White));
-            cards.AddRange(WithColor(ReadList<CardDef>(dataDir, "cards.black.json"), CardColors.Black));
+            cards.AddRange(WithColor(ParseList<CardDef>(read("cards.green.json"), "cards.green.json"), CardColors.Green));
+            cards.AddRange(WithColor(ParseList<CardDef>(read("cards.blue.json"), "cards.blue.json"), CardColors.Blue));
+            cards.AddRange(WithColor(ParseList<CardDef>(read("cards.red.json"), "cards.red.json"), CardColors.Red));
+            cards.AddRange(WithColor(ParseList<CardDef>(read("cards.white.json"), "cards.white.json"), CardColors.White));
+            cards.AddRange(WithColor(ParseList<CardDef>(read("cards.black.json"), "cards.black.json"), CardColors.Black));
             AllCards = cards;
 
-            AllEnemies = ReadList<EnemyDef>(dataDir, "enemies.json");
-            AllEncounters = ReadList<EncounterDef>(dataDir, "encounters.json");
-            AllDecks = ReadList<DeckDef>(dataDir, "decks.json");
-            AllLeaders = ReadList<LeaderDef>(dataDir, "leaders.json");
-            AllRelics = ReadList<RelicDef>(dataDir, "relics.json");
-            AllEvents = ReadList<EventDef>(dataDir, "events.json");
-            AllFusionsRaw = JArray.Parse(File.ReadAllText(Path.Combine(dataDir, "fusions.json")));
+            AllEnemies = ParseList<EnemyDef>(read("enemies.json"), "enemies.json");
+            AllEncounters = ParseList<EncounterDef>(read("encounters.json"), "encounters.json");
+            AllDecks = ParseList<DeckDef>(read("decks.json"), "decks.json");
+            AllLeaders = ParseList<LeaderDef>(read("leaders.json"), "leaders.json");
+            AllRelics = ParseList<RelicDef>(read("relics.json"), "relics.json");
+            AllEvents = ParseList<EventDef>(read("events.json"), "events.json");
+            AllFusionsRaw = JArray.Parse(read("fusions.json"));
             AllFusions = DeserializeFusions<FusionRecipe>();
 
             // 索引 (TS の find と同じ「先頭一致」を保つため、重複 id は最初の1件だけ登録する)
@@ -92,12 +103,11 @@ namespace DeckRogue.Engine
             return AllFusionsRaw.ToObject<List<T>>(JsonSerializer.Create(Settings)) ?? new List<T>();
         }
 
-        private static List<T> ReadList<T>(string dataDir, string file)
+        private static List<T> ParseList<T>(string json, string name)
         {
-            var path = Path.Combine(dataDir, file);
-            if (!File.Exists(path)) throw new InvalidOperationException($"データファイルが見つからない: {path}");
-            var list = JsonConvert.DeserializeObject<List<T>>(File.ReadAllText(path), Settings);
-            if (list == null) throw new InvalidOperationException($"データファイルを読めない: {path}");
+            if (json == null) throw new InvalidOperationException($"データファイルが見つからない: {name}");
+            var list = JsonConvert.DeserializeObject<List<T>>(json, Settings);
+            if (list == null) throw new InvalidOperationException($"データファイルを読めない: {name}");
             return list;
         }
 

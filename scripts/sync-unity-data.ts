@@ -5,16 +5,20 @@ import { join } from 'node:path'
 
 const SRC = 'src/data'
 const DST = 'unity/Assets/StreamingAssets/data'
+const DST2 = 'unity/Assets/Resources/Data'   // Android (APK 内) は StreamingAssets を File で読めないので TextAsset としても持つ (2026-09-09)
 const check = process.argv.includes('check')
 mkdirSync(DST, { recursive: true })
+mkdirSync(DST2, { recursive: true })
 let diff = 0
 for (const f of readdirSync(SRC).filter((x) => x.endsWith('.json'))) {
   const a = readFileSync(join(SRC, f), 'utf-8')
-  const b = existsSync(join(DST, f)) ? readFileSync(join(DST, f), 'utf-8') : null
-  if (a !== b) {
-    diff++
-    if (!check) copyFileSync(join(SRC, f), join(DST, f))
-    console.log(`${check ? 'DIFF' : 'copied'} ${f}`)
+  for (const dst of [DST, DST2]) {
+    const b = existsSync(join(dst, f)) ? readFileSync(join(dst, f), 'utf-8') : null
+    if (a !== b) {
+      diff++
+      if (!check) copyFileSync(join(SRC, f), join(dst, f))
+      console.log(`${check ? 'DIFF' : 'copied'} ${dst}/${f}`)
+    }
   }
 }
 if (check && diff > 0) {

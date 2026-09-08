@@ -107,6 +107,7 @@ namespace DeckRogue.Game
                 _volume.priority = 1f;
                 var profile = ScriptableObject.CreateInstance<VolumeProfile>();
                 _dof = profile.Add<DepthOfField>(true);
+                _dof.active = !Application.isMobilePlatform;   // スマホは被写界深度を切る (まず動くこと優先)
                 _dof.mode.value = DepthOfFieldMode.Gaussian;   // 座席 (リーダー〜一番奥の敵) は全部くっきり。ぼけるのは遠景だけ (2026-09-08「敵が少しぼやけてる」)
                 _dof.gaussianMaxRadius.value = 1.2f;
                 _dof.highQualitySampling.value = true;
@@ -2297,6 +2298,7 @@ namespace DeckRogue.Game
 
         static void MoteLights(ParticleSystem ps, int max, float ratio)
         {
+            if (Application.isMobilePlatform) { max = Mathf.Max(2, max / 3); ratio *= 0.5f; }   // スマホ: 粒ごとの点光源を 1/3 に
             var lights = ps.lights;
             lights.enabled = true;
             lights.light = MoteLightTemplate();

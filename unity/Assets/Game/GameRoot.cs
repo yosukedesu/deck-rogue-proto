@@ -149,7 +149,18 @@ namespace DeckRogue.Game
 
             try
             {
-                if (!Content.IsLoaded) Content.Load(Path.Combine(Application.streamingAssetsPath, "data"));
+                if (!Content.IsLoaded)
+                {
+                    // Android の APK 内は File で読めないので、Resources/Data の TextAsset (npm run unity:sync が複製) を優先する
+                    if (Resources.Load<TextAsset>("Data/enemies") != null)
+                        Content.LoadFrom(file =>
+                        {
+                            var name = file.EndsWith(".json") ? file.Substring(0, file.Length - 5) : file;
+                            var ta = Resources.Load<TextAsset>("Data/" + name);
+                            return ta != null ? ta.text : null;
+                        });
+                    else Content.Load(Path.Combine(Application.streamingAssetsPath, "data"));
+                }
             }
             catch (Exception ex)
             {

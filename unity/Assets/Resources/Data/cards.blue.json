@@ -1,0 +1,1308 @@
+[
+  {
+    "id": "blue_strike",
+    "name": "水撃",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_guard",
+    "name": "氷盾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_current_lash",
+    "name": "渦流の鞭",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_ice_wall",
+    "name": "氷壁",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 15
+      }
+    ]
+  },
+  {
+    "id": "blue_glacier",
+    "name": "大氷河",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 21
+      }
+    ]
+  },
+  {
+    "id": "blue_ponder",
+    "name": "思案",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_churn",
+    "name": "記憶の渦",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_mana_convert",
+    "name": "魔力変換",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ],
+    "exhaust": true,
+    "axis": [
+      "storm"
+    ]
+  },
+  {
+    "id": "blue_storm_lash",
+    "name": "奔流の連撃",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_tsunami",
+    "name": "大津波",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayedTotal",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_counterspell",
+    "name": "対抗呪文",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_mana_leak",
+    "name": "マナ漏出",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "condition": {
+          "maxActionValue": 15
+        },
+        "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "condition": {
+          "maxActionValue": 15
+        },
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_veil",
+    "name": "霜の帳",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainIceBlock",
+        "amount": 7
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_cold_reading",
+    "name": "冷徹な観察",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "gainIceBlock",
+        "amount": 3
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "addAether",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_sage_spring",
+    "name": "賢者の泉",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_armor",
+    "name": "霜の鎧",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainIceBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_archive",
+    "name": "水鏡の書庫",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_burst",
+    "name": "霊気放出",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAether",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "blue_storm_barrier",
+    "name": "渦の障壁",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerCardPlayed",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_chain_thought",
+    "name": "連鎖する思考",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCardsPerCardPlayed",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_flash",
+    "name": "ひらめき",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_spark",
+    "name": "魔力の火花",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "uncommon",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "discountNext",
+        "amount": 2
+      }
+    ],
+    "axis": [
+      "storm"
+    ]
+  },
+  {
+    "id": "blue_focus",
+    "name": "集中",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "discountNext",
+        "amount": 2
+      }
+    ],
+    "exhaust": true,
+    "axis": [
+      "storm"
+    ]
+  },
+  {
+    "id": "blue_confuse",
+    "name": "幻惑の囁き",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "confuse",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addAether",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_ripple_blade",
+    "name": "さざなみの刃",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_foam_armor",
+    "name": "泡沫の鎧",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerCardPlayed",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_storm_echo",
+    "name": "嵐の残響",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_whisper_trap",
+    "name": "囁きの罠",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "confuse",
+        "amount": 1,
+        "condition": {
+          "maxActionValue": 16
+        }
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_seal",
+    "name": "反響の符",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "drawCards",
+        "amount": 1
+      },
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "addAether",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_static",
+    "name": "静電の帳",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onAetherGained",
+        "effect": "dealDamage",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_torrent",
+    "name": "霊気の奔流",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAetherDraw",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_spell_steal",
+    "name": "魔力盗み",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negateConvertIce"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_ice_lance",
+    "name": "氷の槍",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerIceBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_mist_double",
+    "name": "霧の分身",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "gainIceBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_chain",
+    "name": "氷結の連鎖",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 10
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_maelstrom",
+    "name": "大漩渦",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 4,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_reaction_mind_eye",
+    "name": "心眼",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onEnemyDefended",
+        "effect": "gainIceBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onEnemyDefended",
+        "effect": "addAether",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_reaction_surge",
+    "name": "白波の壁",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainIceBlock",
+        "amount": 12
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_shackle",
+    "name": "凍てつく枷",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 9
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_mirror",
+    "name": "還流の水鏡",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onActionNegated",
+        "effect": "dealDamage",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_tide_drop",
+    "name": "潮の一滴",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "axis": [
+      "storm"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_aftermath",
+    "name": "余波",
+    "cost": 0,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_rapid_strike",
+    "name": "早瀬の一撃",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_thick_ice",
+    "name": "厚氷の盾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "blue_undertow",
+    "name": "逆巻き",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negate",
+        "condition": {
+          "minActionValue": 12
+        }
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "addAether",
+        "amount": 2,
+        "condition": {
+          "minActionValue": 12
+        }
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_lance",
+    "name": "霊気の槍",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAether",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_vortex_ring",
+    "name": "渦電の輪",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onActionNegated",
+        "effect": "addAether",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_flood",
+    "name": "満ちる霊気",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeAether",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_weight_of_wisdom",
+    "name": "知恵の重み",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_tome_shield",
+    "name": "書庫の盾",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_knowledge_torrent",
+    "name": "知識の奔流",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_deep_cloak",
+    "name": "懐深き外套",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_omniscient_blow",
+    "name": "全知の一撃",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "blue_echo",
+    "name": "反復",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_stance",
+    "name": "谺の構え",
+    "cost": 1,
+    "type": "reaction",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onAttacked",
+        "effect": "addSpellEcho",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_double_chant",
+    "name": "二重詠唱",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_echo_circle",
+    "name": "こだまの法陣",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addSpellEcho",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_stack_bastion",
+    "name": "万巻の砦",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_sea",
+    "name": "反響の海",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_frost_thorn",
+    "name": "霜の棘",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_aether_breath",
+    "name": "霊気の呼吸",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addAether",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_cold_sweep",
+    "name": "冷手の一払い",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_page_wind",
+    "name": "頁繰りの風",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerHandCard",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_rolling_wave",
+    "name": "巻き波",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerCardPlayed",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "blue_ice_hail",
+    "name": "氷礫の驟雨",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_glacial_maul",
+    "name": "凍てつく大槌",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 16
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 8
+      }
+    ]
+  },
+  {
+    "id": "blue_wisdom_vortex",
+    "name": "知恵の渦",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerCardPlayed",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_grand_archive",
+    "name": "大書庫の砦",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlockPerHandCard",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_frozen_silence",
+    "name": "凍る静寂",
+    "cost": 2,
+    "type": "reaction",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onEnemyAction",
+        "effect": "negate"
+      },
+      {
+        "trigger": "onEnemyAction",
+        "effect": "gainIceBlock",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_charged_mist",
+    "name": "帯電の霧",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addAether",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainIceBlock",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_tidal_lectern",
+    "name": "潮汐の書見台",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "drawCards",
+        "amount": 1
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainIceBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "blue_echo_chorus",
+    "name": "こだまの大合唱",
+    "cost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addSpellEcho",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_perm_permafrost",
+    "name": "永久凍土",
+    "cost": 3,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainIceBlock",
+        "amount": 3
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "gainIceBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_kindle_chant",
+    "name": "焚べ火の詠唱",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "discardCost": 2,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCasts",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "blue_thought_bonfire",
+    "name": "思考の大焚火",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "discardCost": 3,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCasts",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "blue_whisper_kindle",
+    "name": "囁きの焚べ火",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "discardCost": 1,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCasts",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7
+      }
+    ]
+  }
+]

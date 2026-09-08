@@ -1,0 +1,2362 @@
+[
+  {
+    "id": "starter",
+    "name": "スターター",
+    "description": "基本15種×各1枚。ルール検証用の万能構成",
+    "cards": [
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_deep_roots",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sunlight",
+        "count": 1
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_double_lash",
+        "count": 1
+      },
+      {
+        "cardId": "green_fang",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 1
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_finisher_wrath",
+        "count": 1
+      },
+      {
+        "cardId": "green_finisher_stomp",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_root_weave",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_big_mana",
+    "name": "ビッグマナ理想形",
+    "description": "ランプ連打からエナジー上限を伸ばし、森の大爆発と巨獣の踏みつけを連発する",
+    "cards": [
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 2
+      },
+      {
+        "cardId": "green_ramp_deep_roots",
+        "count": 3
+      },
+      {
+        "cardId": "green_ramp_sunlight",
+        "count": 2
+      },
+      {
+        "cardId": "green_sig_canopy",
+        "count": 2
+      },
+      {
+        "cardId": "green_earth_roar",
+        "count": 1
+      },
+      {
+        "cardId": "green_x_sylvan_tempest",
+        "count": 1
+      },
+      {
+        "cardId": "green_finisher_stomp",
+        "count": 2
+      },
+      {
+        "cardId": "green_finisher_wrath",
+        "count": 1
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_root_weave",
+        "count": 2
+      },
+      {
+        "cardId": "green_ritual_surge",
+        "count": 2
+      },
+      {
+        "cardId": "green_flash_insight",
+        "count": 2
+      },
+      {
+        "cardId": "green_x_bark_armor",
+        "count": 1
+      },
+      {
+        "cardId": "green_sapling_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_growth",
+    "name": "成長スタック理想形",
+    "description": "年輪と開花の儀で成長を爆伸ばしし、多段ヒットの全打点に乗せて轢き殺す",
+    "cards": [
+      {
+        "cardId": "green_growth_ring",
+        "count": 4
+      },
+      {
+        "cardId": "green_sig_rite_of_bloom",
+        "count": 2
+      },
+      {
+        "cardId": "green_double_lash",
+        "count": 4
+      },
+      {
+        "cardId": "green_sig_vine_dance",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_growth_tree",
+        "count": 1
+      },
+      {
+        "cardId": "green_serpent_gulp",
+        "count": 1
+      },
+      {
+        "cardId": "green_wild_sprout",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_trample",
+    "name": "トランプル理想形",
+    "description": "突進で勢いを積み、貫通の巨象の突進で締める。攻撃を叩き込むほど加速する群れの暴走",
+    "cards": [
+      {
+        "cardId": "green_trample_charge",
+        "count": 3
+      },
+      {
+        "cardId": "green_sig_trample",
+        "count": 3
+      },
+      {
+        "cardId": "green_sig_stampede",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_herd_chief",
+        "count": 2
+      },
+      {
+        "cardId": "green_ritual_surge",
+        "count": 2
+      },
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 2
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "run_basic",
+    "name": "ラン基本デッキ",
+    "description": "本家形の初期10枚 (2026-09-03): 打撃3・打ち据え・防御3・絡み蔦 (モード=決断の教材)・蔦の楔 (開幕ブロックへの答え札)・茨の返し (伏せの教材)。ビルドを決める札 (二連の蔦打ち) と枠を埋める2枚目 (守りの蔓) は報酬プールへ",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 3
+      },
+      {
+        "cardId": "green_basic_bash",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 3
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_vine_wedge",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "starter_blue",
+    "name": "青スターター",
+    "color": "blue",
+    "description": "青の全カード各1枚。青のルール検証用の万能構成",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 1
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "blue_current_lash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 1
+      },
+      {
+        "cardId": "blue_focus",
+        "count": 1
+      },
+      {
+        "cardId": "blue_mana_convert",
+        "count": 1
+      },
+      {
+        "cardId": "blue_storm_lash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "blue_mana_leak",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "blue_cold_reading",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_armor",
+        "count": 1
+      },
+      {
+        "cardId": "blue_aether_burst",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_storm",
+    "name": "ストーム理想形",
+    "color": "blue",
+    "description": "ドローと軽量カードを1ターンに叩き込み、奔流の連撃・大津波の枚数参照ダメージで爆発する",
+    "cards": [
+      {
+        "cardId": "blue_mana_convert",
+        "count": 2
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 2
+      },
+      {
+        "cardId": "blue_kindle_chant",
+        "count": 2
+      },
+      {
+        "cardId": "blue_thought_bonfire",
+        "count": 1
+      },
+      {
+        "cardId": "blue_chain_thought",
+        "count": 1
+      },
+      {
+        "cardId": "blue_focus",
+        "count": 1
+      },
+      {
+        "cardId": "blue_flash",
+        "count": 1
+      },
+      {
+        "cardId": "blue_spark",
+        "count": 1
+      },
+      {
+        "cardId": "blue_storm_lash",
+        "count": 3
+      },
+      {
+        "cardId": "blue_rolling_wave",
+        "count": 1
+      },
+      {
+        "cardId": "blue_maelstrom",
+        "count": 1
+      },
+      {
+        "cardId": "blue_tide_drop",
+        "count": 2
+      },
+      {
+        "cardId": "blue_frost_armor",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_permission",
+    "name": "パーミッション理想形",
+    "color": "blue",
+    "description": "パーミッション理想形。打ち消しの本家。還流の水鏡で「打ち消すたび殴る」クロックが付いた",
+    "cards": [
+      {
+        "cardId": "blue_counterspell",
+        "count": 2
+      },
+      {
+        "cardId": "blue_mana_leak",
+        "count": 2
+      },
+      {
+        "cardId": "blue_undertow",
+        "count": 2
+      },
+      {
+        "cardId": "blue_spell_steal",
+        "count": 1
+      },
+      {
+        "cardId": "blue_perm_mirror",
+        "count": 1
+      },
+      {
+        "cardId": "blue_perm_vortex_ring",
+        "count": 1
+      },
+      {
+        "cardId": "blue_perm_static",
+        "count": 1
+      },
+      {
+        "cardId": "blue_aether_lance",
+        "count": 2
+      },
+      {
+        "cardId": "blue_aether_burst",
+        "count": 1
+      },
+      {
+        "cardId": "blue_aether_flood",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 1
+      },
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "run_basic_blue",
+    "name": "ラン基本デッキ(青)",
+    "color": "blue",
+    "description": "青ドラフト連戦の出発点。水撃×2・氷盾×3・氷の槍・潮の一滴(派生攻撃)・思案・対抗呪文・霜の帳の10枚",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 3
+      },
+      {
+        "cardId": "blue_ice_lance",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "blue_tide_drop",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "starter_red",
+    "name": "赤スターター",
+    "color": "red",
+    "description": "赤の全カード各1枚。赤のルール検証用の万能構成",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_spreading_fire",
+        "count": 1
+      },
+      {
+        "cardId": "red_inferno",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_brazier",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_ember",
+        "count": 1
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 1
+      },
+      {
+        "cardId": "red_impulse",
+        "count": 1
+      },
+      {
+        "cardId": "red_big_impulse",
+        "count": 1
+      },
+      {
+        "cardId": "red_ember_slash",
+        "count": 1
+      },
+      {
+        "cardId": "red_fire_rain",
+        "count": 1
+      },
+      {
+        "cardId": "red_gamble",
+        "count": 1
+      },
+      {
+        "cardId": "red_chaos_bolt",
+        "count": 1
+      },
+      {
+        "cardId": "red_reckless",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_thorn_flame",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_burn",
+    "name": "バーン理想形",
+    "color": "red",
+    "description": "着火と火鉢で延焼を積み上げ、敵が動く前に焼き切る。防御は薄いが火が守ってくれる",
+    "cards": [
+      {
+        "cardId": "red_ignite",
+        "count": 3
+      },
+      {
+        "cardId": "red_spreading_fire",
+        "count": 3
+      },
+      {
+        "cardId": "red_inferno",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_brazier",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_ember",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_furnace",
+        "count": 1
+      },
+      {
+        "cardId": "red_burst_release",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_thorn_flame",
+        "count": 1
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_chaos",
+    "name": "衝動バクチ理想形",
+    "color": "red",
+    "description": "衝動で刹那の手札を捲り、儀式マナで叩きつける。賭けと粉砕と捨て身——考えるな、燃やせ",
+    "cards": [
+      {
+        "cardId": "red_impulse",
+        "count": 2
+      },
+      {
+        "cardId": "red_big_impulse",
+        "count": 2
+      },
+      {
+        "cardId": "red_scorching_insight",
+        "count": 2
+      },
+      {
+        "cardId": "red_burn_it_all",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_instant_flame",
+        "count": 2
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_gamble",
+        "count": 2
+      },
+      {
+        "cardId": "red_chaos_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "red_spreading_fire",
+        "count": 2
+      },
+      {
+        "cardId": "red_reckless",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_red",
+    "name": "ラン基本デッキ(赤)",
+    "color": "red",
+    "description": "赤ドラフト連戦の出発点。手数で押す構成: 火弾×3・火花×2(0マナ)・灰の盾×2・憤怒置物2(火纏い・棘火の帳)・着火の10枚",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 3
+      },
+      {
+        "cardId": "red_spark",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_thorn_flame",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_izzet",
+    "name": "ラン基本デッキ(イゼット)",
+    "color": "blue",
+    "description": "青赤ドラフト連戦の出発点。水撃×3・火弾×2・氷盾×2・灰の盾×2・対抗呪文×1（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "starter_white",
+    "name": "白スターター",
+    "color": "white",
+    "description": "防御・回復・従者・威圧の白基本セット",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_mercy_staff",
+        "count": 1
+      },
+      {
+        "cardId": "white_mass_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_menace",
+        "count": 1
+      },
+      {
+        "cardId": "white_decree",
+        "count": 1
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 1
+      },
+      {
+        "cardId": "white_fortress",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_choir",
+        "count": 1
+      },
+      {
+        "cardId": "white_rally",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_retribution",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_horde",
+    "name": "従者ホード",
+    "color": "white",
+    "description": "従者を並べて「集結」で刈り取る横並びの理想形（2026-08-26: 前半に攻撃札が皆無だったため白盾×2を聖光の一撃×2へ）",
+    "cards": [
+      {
+        "cardId": "white_perm_squire",
+        "count": 3
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 2
+      },
+      {
+        "cardId": "white_perm_hound",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_banner",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_choir",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_banneret",
+        "count": 2
+      },
+      {
+        "cardId": "white_rally",
+        "count": 3
+      },
+      {
+        "cardId": "white_grand_charge",
+        "count": 1
+      },
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_fortress",
+    "name": "白亜の要塞",
+    "color": "white",
+    "description": "要塞理想形。ブロックを攻撃に変換する。城壁の弩で「守るたび殴る」時計が回る",
+    "cards": [
+      {
+        "cardId": "white_fortress",
+        "count": 3
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 3
+      },
+      {
+        "cardId": "white_shield_bash",
+        "count": 1
+      },
+      {
+        "cardId": "white_gate_close",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_ballista",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 2
+      },
+      {
+        "cardId": "white_perm_bell",
+        "count": 1
+      },
+      {
+        "cardId": "white_mending",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_white",
+    "name": "白の初期デッキ",
+    "color": "white",
+    "description": "白のドラフト連戦の出発点。聖光の一撃×2・白盾×2・聖盾の一撃・城壁砕き(派生攻撃)・従者の少年・奉仕の心・リアクション2(護りの聖印・報復の光)の10枚",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "white_shield_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "white_service",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_retribution",
+        "count": 1
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "starter_black",
+    "name": "黒スターター",
+    "color": "black",
+    "description": "ドレイン・墓地・自傷の黒基本セット",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_big_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_blood_spray",
+        "count": 1
+      },
+      {
+        "cardId": "black_blood_rite",
+        "count": 1
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_seedbed",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_last_stand",
+        "count": 1
+      },
+      {
+        "cardId": "black_dark_pact",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_grudge",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
+        "count": 1
+      },
+      {
+        "cardId": "black_blood_price",
+        "count": 1
+      },
+      {
+        "cardId": "black_feast",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_drain",
+    "name": "吸血の宴",
+    "color": "black",
+    "description": "削って吸って粘るドレインの理想形",
+    "cards": [
+      {
+        "cardId": "black_drain",
+        "count": 3
+      },
+      {
+        "cardId": "black_big_drain",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_candle",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_blade",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_seedbed",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_tithe",
+        "count": 1
+      },
+      {
+        "cardId": "black_feast",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 2
+      },
+      {
+        "cardId": "black_scythe",
+        "count": 1
+      },
+      {
+        "cardId": "black_blood_spray",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_graveyard",
+    "name": "亡者の凱旋",
+    "color": "black",
+    "description": "忘却の刻(消滅7枚)を目指してデッキを食い、しきい値で化けるペイオフを叩きつける",
+    "cards": [
+      {
+        "cardId": "black_perm_chorus",
+        "count": 1
+      },
+      {
+        "cardId": "black_grave_digger",
+        "count": 2
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_altar",
+        "count": 1
+      },
+      {
+        "cardId": "black_offering",
+        "count": 1
+      },
+      {
+        "cardId": "black_grave_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "black_corpse_explosion",
+        "count": 1
+      },
+      {
+        "cardId": "black_grave_burst",
+        "count": 1
+      },
+      {
+        "cardId": "black_wraith_feast",
+        "count": 1
+      },
+      {
+        "cardId": "black_oblivion_veil",
+        "count": 2
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_seedbed",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_black",
+    "name": "黒の初期デッキ",
+    "color": "black",
+    "description": "黒のドラフト連戦の出発点。影の一撃×2・骨の盾×2・影の刃(派生攻撃)・闇の契約・生命吸収・爆ぜる骸・リアクション2(呪詛返し・怨嗟)の10枚",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "black_dark_pact",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_bursting_corpse",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_grudge",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_recycle",
+    "name": "冥府の取引",
+    "color": "black",
+    "description": "払ったコストを取り戻す黒のハック。自傷を背徳の収穫で換金し、血の儀式を死者再生で買い戻す",
+    "cards": [
+      {
+        "cardId": "black_blood_rite",
+        "count": 2
+      },
+      {
+        "cardId": "black_raise_dead",
+        "count": 2
+      },
+      {
+        "cardId": "black_corpse_collect",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_price",
+        "count": 2
+      },
+      {
+        "cardId": "black_perm_pain_core",
+        "count": 1
+      },
+      {
+        "cardId": "black_harvest_sin",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_legion",
+    "name": "白銀の大隊",
+    "color": "white",
+    "description": "従者を並べて軍旗と軍楽隊で加速し、聖騎士団の突撃で轢き潰す横並びの理想形",
+    "cards": [
+      {
+        "cardId": "white_perm_band",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_banner",
+        "count": 1
+      },
+      {
+        "cardId": "white_muster",
+        "count": 2
+      },
+      {
+        "cardId": "white_shield_call",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_hound",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 1
+      },
+      {
+        "cardId": "white_rally",
+        "count": 2
+      },
+      {
+        "cardId": "white_knight_charge",
+        "count": 1
+      },
+      {
+        "cardId": "white_rank_shield",
+        "count": 2
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_rage",
+    "name": "憤怒の闘技場",
+    "color": "red",
+    "description": "憤怒理想形。守らず被弾を換金する。床つきの怒り火とエンジンの篭手で「引けた時だけ勝つ」を解消",
+    "cards": [
+      {
+        "cardId": "red_perm_rage_mask",
+        "count": 2
+      },
+      {
+        "cardId": "red_hearth_shield",
+        "count": 2
+      },
+      {
+        "cardId": "red_wrath_flame",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_pyre",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_final_blow",
+        "count": 2
+      },
+      {
+        "cardId": "red_heat_screen",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_azorius",
+    "name": "なぎの初期デッキ",
+    "color": "white",
+    "description": "白青の基本10枚。護りと氷壁の種入り",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "blue_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ice_wall",
+        "count": 1
+      },
+      {
+        "cardId": "white_bodyslam",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_rakdos",
+    "name": "あかねの初期デッキ",
+    "color": "black",
+    "description": "黒赤の基本10枚。自傷と憤怒の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_strike",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "black_shadow_blade",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_gruul",
+    "name": "いぶきの初期デッキ",
+    "color": "red",
+    "description": "赤緑の基本10枚。勢いと成長の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_selesnya",
+    "name": "わかばの初期デッキ",
+    "color": "green",
+    "description": "緑白の基本10枚。従者と成長の種入り",
+    "cards": [
+      {
+        "cardId": "white_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_squire",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_orzhov",
+    "name": "あかりの初期デッキ",
+    "color": "white",
+    "description": "白黒の基本10枚。回復とドレインの種入り",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_martyr",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      },
+      {
+        "cardId": "black_drain",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_horde_v2",
+    "name": "従者ホード（解凍版）",
+    "color": "white",
+    "description": "白の解凍（2026-09-06）の検証用: ばらまき・倍加・対価・号令と本家型の条件札を揃えた幕2開始のチェックポイント用デッキ",
+    "cards": [
+      {
+        "cardId": "white_perm_squire",
+        "count": 2
+      },
+      {
+        "cardId": "white_perm_shieldmaiden",
+        "count": 1
+      },
+      {
+        "cardId": "white_page_rank",
+        "count": 2
+      },
+      {
+        "cardId": "white_holy_procession",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_warcry",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_martyr_vow",
+        "count": 1
+      },
+      {
+        "cardId": "white_march_order",
+        "count": 1
+      },
+      {
+        "cardId": "white_miracle_division",
+        "count": 1
+      },
+      {
+        "cardId": "white_rank_thrust",
+        "count": 1
+      },
+      {
+        "cardId": "white_rally",
+        "count": 1
+      },
+      {
+        "cardId": "white_shield_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_mending",
+        "count": 1
+      },
+      {
+        "cardId": "white_heal",
+        "count": 1
+      },
+      {
+        "cardId": "white_fortress",
+        "count": 1
+      },
+      {
+        "cardId": "white_light_arrow",
+        "count": 1
+      },
+      {
+        "cardId": "white_blade_prayer",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_retribution",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_band",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_golgari",
+    "name": "くろはの初期デッキ",
+    "color": "black",
+    "description": "黒緑の基本10枚。忘却と成長の種入り",
+    "cards": [
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "black_mill",
+        "count": 1
+      },
+      {
+        "cardId": "green_growth_ring",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_boros",
+    "name": "あさひの初期デッキ",
+    "color": "red",
+    "description": "赤白の基本10枚。従者と延焼の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
+    "cards": [
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_strike",
+        "count": 1
+      },
+      {
+        "cardId": "white_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_hound",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_simic",
+    "name": "しずくの初期デッキ",
+    "color": "green",
+    "description": "緑青の基本10枚。ランプとドローの種入り",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 1
+      },
+      {
+        "cardId": "blue_ponder",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_basic_dimir",
+    "name": "かすみの初期デッキ",
+    "color": "blue",
+    "description": "青黒の基本10枚。リアクション4枚入り＝伏せ2枠を初手から使う",
+    "cards": [
+      {
+        "cardId": "blue_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_strike",
+        "count": 1
+      },
+      {
+        "cardId": "blue_guard",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      },
+      {
+        "cardId": "blue_frost_veil",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_curse",
+        "count": 1
+      },
+      {
+        "cardId": "blue_mana_leak",
+        "count": 1
+      },
+      {
+        "cardId": "black_reaction_grudge",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_trample",
+    "name": "荒角の道",
+    "description": "ドラフト連戦の出発点・トランプル型。勢いと貫通で一気に踏み込む（打撃×3・防御×3・リアクション×2・突進の助走・大角の群長）",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 3
+      },
+      {
+        "cardId": "green_guard",
+        "count": 3
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 1
+      },
+      {
+        "cardId": "green_perm_herd_chief",
+        "count": 1
+      }
+    ],
+    "color": "green"
+  },
+  {
+    "id": "deck_riposte",
+    "name": "読み勝ちの構え",
+    "color": "green",
+    "description": "リアクションの成功を成長・勢い・マナに換金する読み合い理想形（面白さ5への処方②の検証用）",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_basic_bash",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_preempt",
+        "count": 2
+      },
+      {
+        "cardId": "green_reaction_vine_formation",
+        "count": 1
+      },
+      {
+        "cardId": "green_perm_hunters_gaze",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_blaze",
+    "name": "猛り火理想形",
+    "color": "red",
+    "description": "延焼の合計8で全札が化ける。火を絶やさない限り、火力も防御もドローも猛り火が面倒を見る",
+    "cards": [
+      {
+        "cardId": "red_ignite",
+        "count": 3
+      },
+      {
+        "cardId": "red_blaze_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_fire_rain",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_furnace",
+        "count": 1
+      },
+      {
+        "cardId": "red_blaze_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_blade",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_pursuit",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_wall",
+        "count": 2
+      },
+      {
+        "cardId": "red_blaze_cloak",
+        "count": 1
+      },
+      {
+        "cardId": "red_blaze_roar",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_gamble",
+    "name": "運任せ理想形",
+    "color": "red",
+    "description": "乱数を撃つほど賭博師の焔が火を積み、一擲乾坤が枚数を刈り取る。ロールの上下でなく「何回振ったか」が勝ち筋",
+    "cards": [
+      {
+        "cardId": "red_gamble",
+        "count": 3
+      },
+      {
+        "cardId": "red_long_shot",
+        "count": 3
+      },
+      {
+        "cardId": "red_bomb",
+        "count": 2
+      },
+      {
+        "cardId": "red_chaos_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "red_grand_fireworks",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_gambler",
+        "count": 2
+      },
+      {
+        "cardId": "red_all_in",
+        "count": 2
+      },
+      {
+        "cardId": "red_ritual",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "id": "deck_grimoire",
+    "name": "抱え込み理想形",
+    "cards": [
+      {
+        "cardId": "blue_weight_of_wisdom",
+        "count": 3
+      },
+      {
+        "cardId": "blue_tome_shield",
+        "count": 2
+      },
+      {
+        "cardId": "blue_knowledge_torrent",
+        "count": 2
+      },
+      {
+        "cardId": "blue_perm_deep_cloak",
+        "count": 1
+      },
+      {
+        "cardId": "blue_omniscient_blow",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 2
+      },
+      {
+        "cardId": "blue_churn",
+        "count": 1
+      },
+      {
+        "cardId": "blue_archive",
+        "count": 1
+      },
+      {
+        "cardId": "blue_thick_ice",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_echo",
+    "name": "反復書庫理想形",
+    "cards": [
+      {
+        "cardId": "blue_echo",
+        "count": 3
+      },
+      {
+        "cardId": "blue_double_chant",
+        "count": 2
+      },
+      {
+        "cardId": "blue_perm_echo_circle",
+        "count": 1
+      },
+      {
+        "cardId": "blue_weight_of_wisdom",
+        "count": 2
+      },
+      {
+        "cardId": "blue_knowledge_torrent",
+        "count": 2
+      },
+      {
+        "cardId": "blue_omniscient_blow",
+        "count": 1
+      },
+      {
+        "cardId": "blue_sage_spring",
+        "count": 1
+      },
+      {
+        "cardId": "blue_archive",
+        "count": 1
+      },
+      {
+        "cardId": "blue_stack_bastion",
+        "count": 1
+      },
+      {
+        "cardId": "blue_thick_ice",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_necro",
+    "name": "亡骸の宴",
+    "cards": [
+      {
+        "cardId": "black_bursting_corpse",
+        "count": 2
+      },
+      {
+        "cardId": "black_whispering_ghost",
+        "count": 2
+      },
+      {
+        "cardId": "black_grudge_bone",
+        "count": 1
+      },
+      {
+        "cardId": "black_groaning_skull",
+        "count": 1
+      },
+      {
+        "cardId": "black_corpse_tinder",
+        "count": 2
+      },
+      {
+        "cardId": "black_mill",
+        "count": 2
+      },
+      {
+        "cardId": "black_grave_digger",
+        "count": 1
+      },
+      {
+        "cardId": "black_rotten_claw",
+        "count": 1
+      },
+      {
+        "cardId": "black_necro_knight",
+        "count": 1
+      },
+      {
+        "cardId": "black_offering",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_harvest",
+    "name": "大収穫の道",
+    "cards": [
+      {
+        "cardId": "green_growth_ring",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_growth_tree",
+        "count": 2
+      },
+      {
+        "cardId": "green_sig_rite_of_bloom",
+        "count": 1
+      },
+      {
+        "cardId": "green_prey_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_harvest_strike",
+        "count": 2
+      },
+      {
+        "cardId": "green_bloom_lash",
+        "count": 2
+      },
+      {
+        "cardId": "green_grand_harvest",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_shiv",
+    "name": "骨刃の宴",
+    "description": "骨刃アーキの理想形。ナイフを撒いて消滅置き場を太らせ、合唱・消滅数参照で刈る",
+    "cards": [
+      {
+        "cardId": "black_shiv_dance",
+        "count": 2
+      },
+      {
+        "cardId": "black_cloak_dagger",
+        "count": 2
+      },
+      {
+        "cardId": "black_shiv_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_quick_shiv",
+        "count": 1
+      },
+      {
+        "cardId": "black_infinite_blades",
+        "count": 1
+      },
+      {
+        "cardId": "black_accuracy",
+        "count": 1
+      },
+      {
+        "cardId": "black_whetstone_altar",
+        "count": 1
+      },
+      {
+        "cardId": "black_perm_chorus",
+        "count": 1
+      },
+      {
+        "cardId": "black_blade_procession",
+        "count": 1
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "deck_bloodfeast",
+    "name": "血汐の宴",
+    "description": "黒の回復換金型の理想形。ドレイン+亡骸回復でonHealedを鳴らし、燭台・香炉・血汐で刈る",
+    "cards": [
+      {
+        "cardId": "black_drain",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_thirst",
+        "count": 2
+      },
+      {
+        "cardId": "black_blood_candle",
+        "count": 1
+      },
+      {
+        "cardId": "black_thirst_censer",
+        "count": 1
+      },
+      {
+        "cardId": "black_seething_blood",
+        "count": 2
+      },
+      {
+        "cardId": "black_crimson_feast",
+        "count": 1
+      },
+      {
+        "cardId": "black_corpse_candle",
+        "count": 1
+      },
+      {
+        "cardId": "black_bone_stoke",
+        "count": 1
+      },
+      {
+        "cardId": "black_strike",
+        "count": 2
+      },
+      {
+        "cardId": "black_guard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "id": "run_xramp_check",
+    "name": "X多段×ランプ (検証用)",
+    "description": "人間ラン#2 (2026-09-02 seed1620409730) の完成デッキ相当。幕3チェックポイント検証用 (工房産の茨の砦・大牙の乱撃・真・防御は素材で代替)",
+    "cards": [
+      {
+        "cardId": "green_x_vine_flurry",
+        "count": 4
+      },
+      {
+        "cardId": "green_x_sylvan_tempest",
+        "count": 1
+      },
+      {
+        "cardId": "green_triple_horn",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_deep_roots",
+        "count": 2
+      },
+      {
+        "cardId": "green_ramp_sprout",
+        "count": 1
+      },
+      {
+        "cardId": "green_ramp_sunlight",
+        "count": 1
+      },
+      {
+        "cardId": "green_horn_stance",
+        "count": 2
+      },
+      {
+        "cardId": "green_mode_crossroads",
+        "count": 1
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 1
+      },
+      {
+        "cardId": "green_flash_insight",
+        "count": 2
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_vine",
+        "count": 1
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_vine_wedge",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 2
+      },
+      {
+        "cardId": "green_strike",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "run_weak_check",
+    "name": "威圧検証（幕2開始用）",
+    "description": "2026-09-04 威圧Weak化の検証チェックポイント: 中立スターター10枚+絡め捕る根×2+二連の蔦打ち+木漏れ日+牙の一撃",
+    "cards": [
+      {
+        "cardId": "green_strike",
+        "count": 3
+      },
+      {
+        "cardId": "green_basic_bash",
+        "count": 1
+      },
+      {
+        "cardId": "green_guard",
+        "count": 3
+      },
+      {
+        "cardId": "green_entangle",
+        "count": 1
+      },
+      {
+        "cardId": "green_vine_wedge",
+        "count": 1
+      },
+      {
+        "cardId": "green_reaction_thorns",
+        "count": 1
+      },
+      {
+        "cardId": "green_snare_root",
+        "count": 2
+      },
+      {
+        "cardId": "green_double_lash",
+        "count": 1
+      },
+      {
+        "cardId": "green_dappled_light",
+        "count": 1
+      },
+      {
+        "cardId": "green_fang",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_momentum",
+    "name": "勢いの道",
+    "color": "green",
+    "description": "勢いの理想形（2026-09-04 勢いの網）。軽く積む→倍にする→一突きで吐く、の順序パズル。18枚（sim初版15枚は幕3級に0%＝受けを樹皮の鎧2と群長で補強）＋連なる角（装甲への答え）",
+    "cards": [
+      {
+        "cardId": "green_sprint",
+        "count": 2
+      },
+      {
+        "cardId": "green_trample_charge",
+        "count": 3
+      },
+      {
+        "cardId": "green_horn_stance",
+        "count": 2
+      },
+      {
+        "cardId": "green_tailwind",
+        "count": 2
+      },
+      {
+        "cardId": "green_horn_thrust",
+        "count": 2
+      },
+      {
+        "cardId": "green_horn_storm",
+        "count": 1
+      },
+      {
+        "cardId": "green_wind_wall",
+        "count": 1
+      },
+      {
+        "cardId": "green_charging_horn",
+        "count": 1
+      },
+      {
+        "cardId": "green_gale_horn",
+        "count": 1
+      },
+      {
+        "cardId": "green_bark_armor",
+        "count": 2
+      },
+      {
+        "cardId": "green_perm_herd_chief",
+        "count": 1
+      },
+      {
+        "cardId": "green_horn_volley",
+        "count": 1
+      }
+    ]
+  }
+]

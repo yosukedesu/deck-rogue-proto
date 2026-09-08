@@ -426,6 +426,45 @@ namespace DeckRogue.EditorTools
             if (Application.isBatchMode) EditorApplication.Exit(code);
         }
 
+        /// <summary>Android の APK を Build/DeckRogue.apk に作る (2026-09-09)。横向き固定・ARM64 (IL2CPP)・minSdk 26。Hub の Android Build Support が必要</summary>
+        public static void BuildAndroid()
+        {
+            int code = 0;
+            try
+            {
+                EnsureScene();
+                EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+                PlayerSettings.companyName = "DeckRogue";
+                PlayerSettings.productName = "DeckRogue";
+                PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.deckrogue.proto");
+                PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
+                PlayerSettings.allowedAutorotateToLandscapeLeft = true; PlayerSettings.allowedAutorotateToLandscapeRight = true;
+                PlayerSettings.allowedAutorotateToPortrait = false; PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+                PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+                PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+                PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+                PlayerSettings.Android.forceSDCardPermission = false;
+                EditorUserBuildSettings.buildAppBundle = false;
+                var opts = new BuildPlayerOptions
+                {
+                    scenes = new[] { ScenePath },
+                    locationPathName = "Build/DeckRogue.apk",
+                    target = BuildTarget.Android,
+                    options = BuildOptions.None,
+                };
+                var report = BuildPipeline.BuildPlayer(opts);
+                var s = report.summary;
+                Debug.Log($"[DeckRogue] android build: result={s.result} errors={s.totalErrors} warnings={s.totalWarnings} size={s.totalSize / (1024 * 1024)}MB time={s.totalTime.TotalSeconds:F0}s → {s.outputPath}");
+                if (s.result != UnityEditor.Build.Reporting.BuildResult.Succeeded) code = 1;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[DeckRogue] android build で例外: " + e);
+                code = 1;
+            }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+
         /// <summary>TextMeshPro の必須リソース (TMP Settings・既定フォント・シェーダー) をパッケージから取り込む (一度だけ)</summary>
         public static void SetupTmp()
         {

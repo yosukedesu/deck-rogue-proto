@@ -52,6 +52,17 @@ case "$MODE" in
   setup-urp) ARGS+=(-quit -executeMethod DeckRogue.EditorTools.UrpSetup.Run) ;;   # URP アセット生成→Graphics/Quality へ割当 (2026-09-07)
   setup-tmp) ARGS+=(-quit -executeMethod DeckRogue.EditorTools.BuildTools.SetupTmp) ;;   # TMP Essential Resources の取り込み (一度だけ)
   build) ARGS+=(-quit -buildTarget Win64 -executeMethod DeckRogue.EditorTools.BuildTools.BuildWindows) ;;   # Build/DeckRogue.exe
+  android) ARGS+=(-quit -buildTarget Android -executeMethod DeckRogue.EditorTools.BuildTools.BuildAndroid) ;;   # Build/DeckRogue.apk (Hub の Android Build Support が必要。2026-09-09)
+  install)
+    # 直前の android ビルドを USB 接続のスマホへ入れる (Windows 側の adb)
+    APK="$WIN_DIR/Build/DeckRogue.apk"
+    ADB="/mnt/c/Users/$(ls /mnt/c/Users | grep -v -i 'public\|default\|all users' | head -1)/AppData/Local/Android/Sdk/platform-tools/adb.exe"
+    [ -f "$APK" ] || { echo "APK が無い: $APK (先に scripts/unity-win.sh android)"; exit 2; }
+    [ -f "$ADB" ] || ADB=adb
+    "$ADB" devices
+    "$ADB" install -r "$(wslpath -w "$APK")"
+    exit $?
+    ;;
   shots)
     # 自動操縦スクショ: ビルド済みプレイヤーを起動し、PNG を unity/Shots/ (git 管理外) へ回収する
     EXE="$WIN_DIR/Build/DeckRogue.exe"

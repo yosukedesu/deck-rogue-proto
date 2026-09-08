@@ -401,3 +401,9 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
   ④溜め2・振り抜き1・戻り1（元絵）の4コマ・8fps。パレット吸着と接地行揃え。教訓: 骨格は体だけを動かす＝武器は最初から別レイヤー。
 - 追補（同日「斧が振り下ろされていない」）: 攻撃コマだけ **96×96 の枠**（64 の体を下寄せ中央 +16,+32）にして、振り下ろしを右下（敵の方）へ。溜め（左上・頭の後ろ）→頭上（右上）→振り抜き（右下）→戻り、10fps。
   `StageUnit.Apply` は枠が元絵より大きいコマを同じドット密度で板を広げて出す（足元中央は固定・UV は全面。元絵に戻る時は元の UV）。
+
+### 2026-09-09 Android の準備（ユーザー「Androidスマホに入れられない？」→ Hub で Android Build Support を導入中）
+- **データ読み込み**: `Content.LoadFrom(Func<string,string>)`（engine。ファイル名→JSON文字列）を追加し `Load(dir)` はその薄い皮に。Unity は `Resources/Data/*.json`（TextAsset）を優先して読む＝APK の中でも動く。`npm run unity:sync` が StreamingAssets と Resources/Data の両方へ複製。ゴールデン8本一致。
+- **ビルド**: `BuildTools.BuildAndroid`（`com.deckrogue.proto`・横向き固定・IL2CPP ARM64・minSdk 26）→ `scripts/unity-win.sh android` で Build/DeckRogue.apk、`scripts/unity-win.sh install` で Windows 側の adb からインストール。
+- **モバイル品質（第1段）**: `Application.isMobilePlatform` なら被写界深度を切り、粒の点光源を 1/3 に。SSAO・ブルームは残す（実機で重ければ次）。
+- 未対応: ホバーの吹き出し（長押し化）・文字の最小サイズ・戦闘以外の画面の当たり判定の大きさ。
