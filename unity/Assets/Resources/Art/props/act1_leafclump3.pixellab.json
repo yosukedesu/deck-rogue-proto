@@ -1,0 +1,23 @@
+{
+  "id": "act1_leafclump3",
+  "engine": "pixflux",
+  "request": {
+    "description": "a small tuft of leaves at the tip of a branch, lit from the top right, pixel art prop for an HD-2D Octopath Traveler style forest scene at night under cool moonlight, detailed shading, selective dark outline, muted desaturated palette of moss green, grey-brown and pale silver, single object, transparent background, no text, no border",
+    "negative_description": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face",
+    "image_size": {
+      "width": 48,
+      "height": 32
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-08T10:46:39.790Z"
+}

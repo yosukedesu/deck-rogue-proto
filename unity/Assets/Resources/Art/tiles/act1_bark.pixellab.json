@@ -1,0 +1,24 @@
+{
+  "id": "act1_bark",
+  "engine": "pixflux",
+  "request": {
+    "description": "seamless tileable pixel art texture of dark brown tree bark with deep vertical grooves and fibrous ridges, seen straight on, dim cool moonlight, low contrast, no moss, no objects, no border, no text",
+    "negative_description": "moss, leaves, green, dots, lamps, bright, saturated, text, watermark, border, frame, blurry",
+    "image_size": {
+      "width": 64,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-08T10:59:47.344Z",
+  "postprocess": "64x64 から継ぎ目の良い 32x32 窓 (26,32) を切り出し"
+}

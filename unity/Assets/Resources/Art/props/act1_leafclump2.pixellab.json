@@ -1,0 +1,24 @@
+{
+  "id": "act1_leafclump2",
+  "engine": "pixflux",
+  "request": {
+    "description": "a loose airy mass of tree foliage only (no trunk), leaves in small clusters, lit from the top right, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, muted night palette lit by cool moonlight (desaturated moss green, grey-brown, pale silver), no text",
+    "negative_description": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, water, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face",
+    "image_size": {
+      "width": 64,
+      "height": 40
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-08T10:55:32.045Z",
+  "postprocess": "下 4 行 (幹) を切り落として葉だけに"
+}
