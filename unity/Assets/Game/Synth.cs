@@ -164,16 +164,21 @@ namespace DeckRogue.Game
                     Noise(b, 0f, 0.5f, 0.01f, 0.4f, 0.5f, 0.3f, rng);
                     return Finish(name, b, 0.7f);
                 case "win":
-                    b = Buf(1.6f);
+                    // 絵本の終わりの小さな鈴 (2026-09-08「戦闘終了の音が怖すぎる」: 矩形波のファンファーレをやめ、ハープ風の上昇と余韻に)
+                    b = Buf(2.4f);
                     float[] notes = { 523f, 659f, 784f, 1047f };
-                    for (int i = 0; i < notes.Length; i++) Tone(b, i * 0.14f, notes[i], notes[i], i == 3 ? 0.9f : 0.16f, "pulse", 0.005f, i == 3 ? 0.7f : 0.08f, 0.5f);
-                    Tone(b, 0.42f, 262f, 262f, 1.0f, "tri", 0.01f, 0.8f, 0.4f);
+                    for (int i = 0; i < notes.Length; i++) Tone(b, i * 0.16f, notes[i], notes[i], 1.6f - i * 0.15f, "sine", 0.008f, 0.55f, 0.32f);
+                    Tone(b, 0.62f, 1568f, 1568f, 1.5f, "sine", 0.01f, 0.8f, 0.16f);
+                    Tone(b, 0f, 262f, 262f, 2.3f, "tri", 0.25f, 1.6f, 0.14f);
+                    Tone(b, 0f, 392f, 392f, 2.3f, "tri", 0.3f, 1.6f, 0.1f);
                     return Finish(name, b, 0.7f);
                 case "lose":
-                    b = Buf(1.4f);
-                    Tone(b, 0f, 392f, 392f, 0.3f, "tri", 0.01f, 0.15f, 0.5f);
-                    Tone(b, 0.3f, 370f, 370f, 0.3f, "tri", 0.01f, 0.15f, 0.5f);
-                    Tone(b, 0.6f, 349f, 330f, 0.8f, "tri", 0.01f, 0.6f, 0.5f);
+                    // 静かに灯が消える: 柔らかい下降と低い余韻 (唸り・不協和なし)
+                    b = Buf(2.6f);
+                    Tone(b, 0f, 659f, 659f, 1.8f, "sine", 0.02f, 0.7f, 0.24f);
+                    Tone(b, 0.32f, 523f, 523f, 1.6f, "sine", 0.02f, 0.7f, 0.22f);
+                    Tone(b, 0.64f, 440f, 440f, 1.4f, "sine", 0.02f, 0.7f, 0.2f);
+                    Tone(b, 0.3f, 220f, 220f, 2.2f, "tri", 0.3f, 1.5f, 0.12f);
                     return Finish(name, b, 0.7f);
                 default:
                     b = Buf(0.1f);

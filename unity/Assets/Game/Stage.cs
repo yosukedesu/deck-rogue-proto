@@ -930,12 +930,12 @@ namespace DeckRogue.Game
             var stars = Prop("stars", Px.Stars(rng), new Vector3(0f, 6f, 88f), 14f, 0.3f, 150f);
             stars.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             stars.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(14f, 9.4f, 40f), 2.0f, 0.4f);   // 幕1は小さな月。木立の梢より上 (右奥の切れ目)、塔の肩の脇
+            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(12f, 14.2f, 88f), 3.0f, 0.4f);   // 幕1は小さな月。遠く高く (仰角 5°) = どの梢よりも上に出る。空の板 (z90) の手前
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.5f)), new Vector3(14f, 9.4f, 40.5f), 7f, 7f);   // 月の暈 = 月明かりが強い夜
+            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.5f)), new Vector3(12f, 14.2f, 88.5f), 11f, 11f);   // 月の暈 = 月明かりが強い夜
             var mts = Prop("mountains", Px.Mountains(p, rng, 0.55f), new Vector3(4f, 2.6f, 58f), 6.5f, 0.4f, 200f);
             mts.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var mts2 = Prop("mountains2", Px.Mountains(p, rng, 0.35f), new Vector3(-10f, 2.9f, 48f), 4.5f, 0.4f, 150f);
