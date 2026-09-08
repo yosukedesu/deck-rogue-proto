@@ -312,15 +312,34 @@ namespace DeckRogue.Game
 
         static void SmallChip(Transform parent, string icon, string text, Color color)
         {
-            var tag = Tag(parent, 26f, 0f);
+            var tag = Tag(parent, 28f, 0f);
             var img = tag.GetComponent<Image>();
             img.raycastTarget = true;
-            Tooltip.Attach(tag.gameObject, delegate { return text; });
+            bool debuff = text.StartsWith("弱") || text.StartsWith("脆") || text.StartsWith("虚") || text.StartsWith("重") || text.StartsWith("拘") || text.StartsWith("霞");
+            if (debuff) img.color = new Color(0.93f, 0.86f, 0.97f, 1f);   // 状態異常の札は薄い紫の紙 = 資源の札と見分ける
+            Tooltip.Attach(tag.gameObject, delegate { return ChipTip(text); });
             var dot = UiKit.Pan(tag, DotColor(icon, text), "dot");
             UiKit.Le(dot, 10f, 10f, 10f, 10f);
             UiKit.Icon(tag, icon, 16f, PaperFx.Ink);
-            var t = UiKit.Txt(tag, text, 12, PaperFx.Ink, TextAnchor.MiddleLeft, true);
-            UiKit.Le(t, 20f, 24f, -1f, 24f);
+            var t = UiKit.Txt(tag, text, 13, debuff ? PaperFx.Plum : PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            UiKit.Le(t, 20f, 26f, -1f, 26f);
+        }
+
+        /// <summary>札のツールチップ: 用語解説 (KEYWORD_HELP) と残りの数の意味</summary>
+        static string ChipTip(string text)
+        {
+            int sp = text.IndexOf(' ');
+            string key = sp > 0 ? text.Substring(0, sp) : text;
+            for (int i = key.Length; i > 0; i--)
+            {
+                string help;
+                if (KeywordHelp.Terms.TryGetValue(key.Substring(0, i), out help))
+                {
+                    string rest = sp > 0 ? text.Substring(sp + 1) : "";
+                    return "<b>" + key.Substring(0, i) + "</b>" + (rest.Length > 0 ? " " + rest.Replace("T", "ターン") : "") + "\n" + help;
+                }
+            }
+            return text;
         }
 
         static Color DotColor(string icon, string text)
@@ -516,12 +535,13 @@ namespace DeckRogue.Game
             if (p.Aether > 0) res.Add(new KeyValuePair<string, string>("energy", "霊気 " + p.Aether));
             if (p.NextCardDiscount > 0) res.Add(new KeyValuePair<string, string>("energy", "次のカード -" + p.NextCardDiscount));
             if (p.SpellEchoes > 0) res.Add(new KeyValuePair<string, string>("draw", "反復 " + p.SpellEchoes));
-            if (p.Weak > 0) res.Add(new KeyValuePair<string, string>("exposed", "弱体 " + p.Weak));
-            if (p.Vulnerable > 0) res.Add(new KeyValuePair<string, string>("exposed", "脆弱 " + p.Vulnerable));
-            if (p.Frail > 0) res.Add(new KeyValuePair<string, string>("exposed", "虚弱 " + p.Frail));
-            if (p.Restrain > 0) res.Add(new KeyValuePair<string, string>("set", "拘束 " + p.Restrain));
-            if ((p.Mist ?? 0) > 0) res.Add(new KeyValuePair<string, string>("draw", "霞み " + p.Mist.Value));
-            if ((p.Slow ?? 0) > 0) res.Add(new KeyValuePair<string, string>("exposed", "重り " + p.Slow.Value));
+            // 状態異常は「名前 残りNT」で、数字がターンだと一目で読めるように (2026-09-09「デバフ表示が分かりにくすぎる」)
+            if (p.Weak > 0) res.Add(new KeyValuePair<string, string>("exposed", "弱体 " + p.Weak + "T"));
+            if (p.Vulnerable > 0) res.Add(new KeyValuePair<string, string>("exposed", "脆弱 " + p.Vulnerable + "T"));
+            if (p.Frail > 0) res.Add(new KeyValuePair<string, string>("exposed", "虚弱 " + p.Frail + "T"));
+            if (p.Restrain > 0) res.Add(new KeyValuePair<string, string>("set", "拘束 " + p.Restrain + "T"));
+            if ((p.Mist ?? 0) > 0) res.Add(new KeyValuePair<string, string>("draw", "霞み " + p.Mist.Value + "T"));
+            if ((p.Slow ?? 0) > 0) res.Add(new KeyValuePair<string, string>("exposed", "重り " + p.Slow.Value + "T"));
             for (int i = 0; i < res.Count; i++) SmallChip(col, res[i].Key, res[i].Value, PaperFx.Ink);
 
             // 伏せ場 (リーダーの右): 点線のポケットに伏せ札の裏

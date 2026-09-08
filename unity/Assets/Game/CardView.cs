@@ -112,8 +112,12 @@ namespace DeckRogue.Game
             UiKit.Anchor(typeT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(14f, -176f), new Vector2(-14f, -160f));
             typeT.characterSpacing = 3f;
 
-            // 本文 (墨)
-            string bodyText = CardText.Body(def);
+            // 本文 (墨)。戦闘中は成長・勢い・弱体を掛けた実値を色つきで (本家のカードの数字の読み方。2026-09-09)
+            Func<int, int> mod = st != null ? MakeDamageModifier(st, c) : null;
+            CardText.DamageModifier = mod;
+            string bodyText;
+            try { bodyText = CardText.Body(def); }
+            finally { CardText.DamageModifier = null; }
             var body = UiKit.Txt(root, bodyText, 14, ink, TextAnchor.UpperCenter, true);
             UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(16f, 56f), new Vector2(-16f, -180f));
             body.lineSpacing = -4f;
@@ -127,9 +131,9 @@ namespace DeckRogue.Game
             }
 
             // 役割の札 (左下=与ダメ・右下=ブロック・返しは左下に戻り矢印)
-            string dmg, blk, counter; bool modeBoth;
-            RoleLabels(def, out dmg, out blk, out counter, out modeBoth);
-            if (dmg != null) Badge(root, "dmg", "sword", dmg, false, ink);
+            string dmg, blk, counter; bool modeBoth; int dmgDelta;
+            RoleLabels(def, mod, out dmg, out blk, out counter, out modeBoth, out dmgDelta);
+            if (dmg != null) Badge(root, "dmg", "sword", dmg, false, dmgDelta > 0 ? UiKit.Hex("#2f7a3c") : dmgDelta < 0 ? UiKit.Hex("#b03a30") : ink);
             else if (counter != null) Badge(root, "counter", "counter", counter, false, ink);
             if (blk != null) Badge(root, "block", "shield", blk, true, ink);
             string notes = CardText.Notes(def);
@@ -174,37 +178,64 @@ namespace DeckRogue.Game
             row.localRotation = Quaternion.Euler(0f, 0f, right ? -4f : 4f); // 文字は水平に戻す
         }
 
-        /// <summary>効果から役割の値を導く。ダメージ=onPlay の dealDamage の合計 (同値の多段は a×n)、ブロック=gainBlock/gainIceBlock、返し=counter</summary>
-        public static void RoleLabels(CardDef def, out string dmg, out string blk, out string counter, out bool modeBoth)
+        /// <summary>手札用: 成長・勢い・弱体を掛けたダメージ (engine の DamageBreakdownOf の自分側の段と同じ手順。敵側の急所・装甲・ブロックは対象が決まってから予測行が担う)</summary>
+        static Func<int, int> MakeDamageModifier(GameState st, CardInstance c)
         {
-            dmg = null; blk = null; counter = null; modeBoth = false;
-            if (def.Modes != null && def.Modes.Count > 0)
+            var p = st.Player;
+            int grow = c != null && c.GrowBonus.HasValue ? c.GrowBonus.Value : 0;
+            return delegate (int baseAmt)
             {
-                string d = null, b = null;
-                for (int m = 0; m < def.Modes.Count; m++)
-                {
-                    string md, mb, mc;
-                    Summarize(def.Modes[m].Effects, out md, out mb, out mc);
-                    if (md != null) d = md;
-                    if (mb != null) b = mb;
-                }
-                dmg = d; blk = b; modeBoth = d != null && b != null;
-                return;
-            }
-            Summarize(def.Effects, out dmg, out blk, out counter);
+                int a = baseAmt + grow;
+                if (p.Growth > 0) a += p.Growth;
+                if (p.Momentum > 0) a += p.Momentum;
+                if (p.Weak > 0 && a > 0) a = Math.Max(1, (int)Math.Floor(a * 0.75));
+                return a;
+            };
         }
 
-        static void Summarize(IReadOnlyList<DeclarativeEffect> effects, out string dmg, out string blk, out string counter)
+        public static void RoleLabels(CardDef def, out string dmg, out string blk, out string counter, out bool modeBoth)
         {
-            dmg = null; blk = null; counter = null;
+            int delta;
+            RoleLabels(def, null, out dmg, out blk, out counter, out modeBoth, out delta);
+        }
+
+        /// <summary>効果から役割の値を導く。ダメージ=onPlay の dealDamage の合計 (同値の多段は a×n)、ブロック=gainBlock/gainIceBlock、返し=counter。
+        /// mod があればダメージは補正後の値で、dmgDelta にその向き (+/-) を返す</summary>
+        public static void RoleLabels(CardDef def, Func<int, int> mod, out string dmg, out string blk, out string counter, out bool modeBoth, out int dmgDelta)
+        {
+            dmg = null; blk = null; counter = null; modeBoth = false; dmgDelta = 0;
+            if (def.Modes != null && def.Modes.Count > 0)
+            {
+                string d = null, b = null; int dd = 0;
+                for (int m = 0; m < def.Modes.Count; m++)
+                {
+                    string md, mb, mc; int mdd;
+                    Summarize(def.Modes[m].Effects, mod, out md, out mb, out mc, out mdd);
+                    if (md != null) { d = md; dd = mdd; }
+                    if (mb != null) b = mb;
+                }
+                dmg = d; blk = b; modeBoth = d != null && b != null; dmgDelta = dd;
+                return;
+            }
+            Summarize(def.Effects, mod, out dmg, out blk, out counter, out dmgDelta);
+        }
+
+        static void Summarize(IReadOnlyList<DeclarativeEffect> effects, Func<int, int> mod, out string dmg, out string blk, out string counter, out int dmgDelta)
+        {
+            dmg = null; blk = null; counter = null; dmgDelta = 0;
             if (effects == null) return;
             var dmgs = new List<int>();
-            int block = 0, ctr = 0;
+            int block = 0, ctr = 0, baseSum = 0;
             for (int i = 0; i < effects.Count; i++)
             {
                 var e = effects[i];
                 if (e.Trigger != null && e.Trigger != "onPlay" && e.Trigger != "onAttacked" && e.Trigger != "onAttackedPre") continue;
-                if (e.Effect == "dealDamage" && e.Amount.HasValue) dmgs.Add(e.Amount.Value);
+                if (e.Effect == "dealDamage" && e.Amount.HasValue)
+                {
+                    bool play = e.Trigger == null || e.Trigger == "onPlay";
+                    int v = play && mod != null ? mod(e.Amount.Value) : e.Amount.Value;
+                    dmgs.Add(v); baseSum += e.Amount.Value;
+                }
                 else if ((e.Effect == "gainBlock" || e.Effect == "gainIceBlock") && e.Amount.HasValue) block += e.Amount.Value;
                 else if (e.Effect == "counter" && e.Amount.HasValue) ctr += e.Amount.Value;
             }
@@ -214,6 +245,7 @@ namespace DeckRogue.Game
                 for (int i = 1; i < dmgs.Count; i++) if (dmgs[i] != dmgs[0]) same = false;
                 int sum = 0; for (int i = 0; i < dmgs.Count; i++) sum += dmgs[i];
                 dmg = dmgs.Count > 1 && same ? dmgs[0] + "×" + dmgs.Count : sum.ToString();
+                dmgDelta = sum - baseSum;
             }
             if (block > 0) blk = block.ToString();
             if (ctr > 0) counter = ctr.ToString();

@@ -11,6 +11,14 @@ namespace DeckRogue.Game
 {
     public static class CardText
     {
+        /// <summary>手札の表示用: onPlay のダメージ量に成長・勢い・弱体を掛けた実値を返す関数 (CardView が Body の前後で差し込む)。null なら素の数字</summary>
+        public static Func<int, int> DamageModifier;
+        /// <summary>補正後の数字の色 (上がった=苔・下がった=朱)。本家のカードの数字と同じ読み方</summary>
+        public static string Colored(int baseAmt, int shown)
+        {
+            if (shown == baseAmt) return shown.ToString();
+            return (shown > baseAmt ? "<color=#3f8f4a>" : "<color=#c0453a>") + shown + "</color>";
+        }
         // ---- 語彙表 ----
 
         static readonly Dictionary<string, string> TriggerJa = new Dictionary<string, string>
@@ -282,6 +290,11 @@ namespace DeckRogue.Game
             if (e.Effect == "summonPermanent") return "召喚" + amt + "体: " + CardName(e.SummonId);
             if (e.Effect == "addCardToHand") return CardName(e.SummonId) + "を" + amt + "枚手札へ";
             string tpl;
+            if (e.Effect == "dealDamage" && DamageModifier != null && (e.Trigger == null || e.Trigger == "onPlay"))
+            {
+                int shown = DamageModifier(amt);
+                return "ダメージ" + Colored(amt, shown);
+            }
             if (EffectJa.TryGetValue(e.Effect, out tpl)) return tpl.Replace("N", amt.ToString());
             return e.Effect + (e.Amount.HasValue ? " " + amt : "");
         }
@@ -289,19 +302,41 @@ namespace DeckRogue.Game
         /// <summary>カードの効果行 (選択式はモードごと)。改行区切り</summary>
         public static string Body(CardDef def)
         {
-            var lines = new List<string>();
-            for (int i = 0; i < def.Effects.Count; i++) lines.Add(EffectLine(def.Effects[i], def.Type));
+            var lines = Collapse(LinesOf(def.Effects, def.Type));
             if (def.Modes != null)
             {
+                // 選択式: モード名は効果の言い換え (「7ダメージ」と「ダメージ7」) なので捨て、効果だけを ◆ で並べる (2026-09-09「ダメージ ダメージと読めて2回攻撃と勘違い」)
                 for (int m = 0; m < def.Modes.Count; m++)
                 {
-                    var mode = def.Modes[m];
-                    var inner = new List<string>();
-                    for (int i = 0; i < mode.Effects.Count; i++) inner.Add(EffectLine(mode.Effects[i], def.Type));
-                    lines.Add("◆" + mode.Name + ": " + string.Join(" / ", inner.ToArray()));
+                    var inner = Collapse(LinesOf(def.Modes[m].Effects, def.Type));
+                    lines.Add("◆" + string.Join(" / ", inner.ToArray()));
                 }
             }
             return string.Join("\n", lines.ToArray());
+        }
+
+        static List<string> LinesOf(IReadOnlyList<DeclarativeEffect> effects, string holderType)
+        {
+            var lines = new List<string>();
+            if (effects == null) return lines;
+            for (int i = 0; i < effects.Count; i++) lines.Add(EffectLine(effects[i], holderType));
+            return lines;
+        }
+
+        /// <summary>同じ行の連続 (二連の蔦打ち = ダメージ4 / ダメージ4) は「ダメージ4 ×2回」に畳む = 多段が一目で分かる</summary>
+        static List<string> Collapse(List<string> lines)
+        {
+            var res = new List<string>();
+            int i = 0;
+            while (i < lines.Count)
+            {
+                int j = i;
+                while (j + 1 < lines.Count && lines[j + 1] == lines[i]) j++;
+                int n = j - i + 1;
+                res.Add(n > 1 ? lines[i] + " ×" + n + "回" : lines[i]);
+                i = j + 1;
+            }
+            return res;
         }
 
         /// <summary>消滅・保持・追加コストなどの注記</summary>

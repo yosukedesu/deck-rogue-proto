@@ -110,6 +110,16 @@ namespace DeckRogue.Game
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
+        static string StatusJa(string status)
+        {
+            switch (status)
+            {
+                case "weak": return "弱体"; case "vulnerable": return "脆弱"; case "frail": return "虚弱"; case "restrain": return "拘束";
+                case "mist": return "霞み"; case "slow": return "重り"; case "wound": return "負傷"; case "scald": return "火傷"; case "junk": return "がらくた";
+                default: return status;
+            }
+        }
+
         static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp)
         {
             switch (ev)
@@ -179,6 +189,59 @@ namespace DeckRogue.Game
                     Audio.Play("enemy_turn", 0.6f, 0f);
                     Banner(fx, "敵の番", UiKit.Hex("#ff6b57"));
                     break;
+                case GameEvent_StatusInflicted si:
+                {
+                    // 自分に状態異常: 紫の浮き文字で「いつ掛かったか」を見せる (2026-09-09「いつデバフをかけられたかも分からない」)
+                    var rt = g.Anchor("player");
+                    if (rt == null) return;
+                    Audio.Play("buff", 0.5f, 0.02f);
+                    var ps2 = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    if (ps2 != null) Tween.IconBurst(fx, Tween.CenterIn(ps2, fx) + new Vector2(0f, 30f), "exposed", new Color(0.72f, 0.5f, 0.85f, 0.9f), 110f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, UiKit.Hex("#b47ad6"), 32, 46f, 1.2f);
+                    break;
+                }
+                case GameEvent_ExposedApplied ea:
+                {
+                    var rt = g.Anchor("enemy" + ea.EnemyIndex);
+                    if (rt == null) return;
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "急所 +" + ea.Amount, UiKit.Hex("#e0a04a"), 28, 40f, 1.0f);
+                    break;
+                }
+                case GameEvent_EnemyWeakened ew:
+                {
+                    var rt = g.Anchor("enemy" + ew.EnemyIndex);
+                    if (rt == null) return;
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "威圧 +" + ew.Amount, UiKit.Hex("#7fa7c9"), 28, 40f, 1.0f);
+                    break;
+                }
+                case GameEvent_BurnApplied ba:
+                {
+                    var rt = g.Anchor("enemy" + ba.EnemyIndex);
+                    if (rt == null) return;
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "延焼 +" + ba.Amount, UiKit.Hex("#e8742f"), 28, 40f, 1.0f);
+                    break;
+                }
+                case GameEvent_StrengthGained sg:
+                {
+                    var rt = g.Anchor("enemy" + sg.EnemyIndex);
+                    if (rt == null || sg.Amount == 0) return;
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "筋力 " + (sg.Amount > 0 ? "+" : "") + sg.Amount, sg.Amount > 0 ? UiKit.Hex("#e0b25a") : UiKit.Hex("#7fa7c9"), 28, 40f, 1.0f);
+                    break;
+                }
+                case GameEvent_GrowthAdded ga:
+                {
+                    var rt = g.Anchor("player");
+                    if (rt == null || ga.Amount <= 0) return;
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(-60f, 60f), "成長 +" + ga.Amount, PaperFx.Moss, 26, 36f, 0.9f);
+                    break;
+                }
+                case GameEvent_MomentumAdded ma:
+                {
+                    var rt = g.Anchor("player");
+                    if (rt == null || ma.Amount <= 0) return;
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(60f, 60f), "勢い +" + ma.Amount, PaperFx.Honey, 26, 36f, 0.9f);
+                    break;
+                }
                 case GameEvent_HpHealed h:
                 {
                     var rt = g.Anchor("player");
