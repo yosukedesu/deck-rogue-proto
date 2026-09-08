@@ -463,7 +463,13 @@ namespace DeckRogue.Game
                 }
                 if (list.Count > 0) u.Anims[anim] = list;
             }
-            if (u.Anims.ContainsKey("idle")) u.Play("idle");
+            // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
+            StageUnit prev;
+            if (_bound.TryGetValue(key, out prev) && prev != null && prev.Anim != "idle" && u.Anims.ContainsKey(prev.Anim))
+            {
+                u.Anim = prev.Anim; u.Frame = prev.Frame; u.FrameT = prev.FrameT; u.Apply();
+            }
+            else if (u.Anims.ContainsKey("idle")) u.Play("idle");
             if (key == "player")
             {
                 // 杖の先の光: 板の右上 (絵の uv≈0.64,0.93) に追従する淡い暖色のハロー
@@ -540,7 +546,7 @@ namespace DeckRogue.Game
                 Anim = anim; Frame = 0; FrameT = 0f;
                 Apply();
             }
-            void Apply()
+            public void Apply()
             {
                 List<Texture2D> frames;
                 Texture2D tex = Anims.TryGetValue(Anim, out frames) && frames.Count > 0 ? frames[Mathf.Clamp(Frame, 0, frames.Count - 1)] : BaseTex;
