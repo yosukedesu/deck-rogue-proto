@@ -269,9 +269,13 @@ namespace DeckRogue.Game
         {
             if (Mathf.Abs(h) > 0.01f) return false;
             float t, s; PathLocal(x, z, out t, out s);
-            float e = ((t - 2f) / 11.5f) * ((t - 2f) / 11.5f) + ((s - 0.4f) / 3.4f) * ((s - 0.4f) / 3.4f)
-                    + (Vnoise(x * 0.3f + 5f, z * 0.3f + 9f) - 0.5f) * 1.2f + (Vnoise(x * 0.9f + 2f, z * 0.9f + 4f) - 0.5f) * 0.35f;   // 縁を大きく・細かく揺らす
-            return e < 1f;
+            float e = ((t - 2f) / 9.5f) * ((t - 2f) / 9.5f) + ((s - 0.4f) / 2.7f) * ((s - 0.4f) / 2.7f)
+                    + (Vnoise(x * 0.3f + 5f, z * 0.3f + 9f) - 0.5f) * 1.0f + (Vnoise(x * 0.9f + 2f, z * 0.9f + 4f) - 0.5f) * 0.35f;   // 縁を大きく・細かく揺らす
+            if (e < 1f) return true;
+            // 森の中の獣道: 空き地の前後へ曲がりながら細く続く (2026-09-08「森じゃなくて道路じゃん」= 広い道をやめる)
+            float wob = Mathf.Sin(t * 0.32f) * 1.1f + Mathf.Sin(t * 0.11f + 1.7f) * 0.6f;
+            float half = 0.75f + (Vnoise(x * 0.5f + 3f, z * 0.5f + 1f) - 0.5f) * 0.5f;
+            return Mathf.Abs(s - 0.4f - wob) < half && t > -34f && t < 44f;
         }
         static int CellI(float x) { return Mathf.Clamp(Mathf.FloorToInt((x - TX0) / Cell), 0, TNX - 1); }
         static int CellJ(float z) { return Mathf.Clamp(Mathf.FloorToInt((z - TZ0) / Cell), 0, TNZ - 1); }
@@ -726,37 +730,62 @@ namespace DeckRogue.Game
             // 木: 段丘の上に大小をばらして散らす (戦闘の場の外・奥ほど多い)。3種・大きさ 0.6〜1.5
             var trees = new[] { Px.Tree(p, rng, 0), Px.Tree(p, rng, 1), Px.Tree(p, rng, 2) };
             var bush = Px.Bush(p, rng); var rock = Px.Rock(p, rng);
+            // 森 (2026-09-08「森じゃなくて道路じゃん」): 平地にも木を生やし、戦闘の場と手前・リーダーの頭上・塔の見える切れ目だけ空ける
             int placed = 0, tries = 0;
-            while (placed < 64 && tries++ < 1400)
+            while (placed < 120 && tries++ < 3200)
             {
-                float x = -40f + (float)rng.NextDouble() * 80f, z = -6f + (float)rng.NextDouble() * 54f;
+                float x = -44f + (float)rng.NextDouble() * 88f, z = -8f + (float)rng.NextDouble() * 58f;
                 float tt, ss; PathLocal(x, z, out tt, out ss);
-                if (ss > -2f && ss < 6.5f && tt > -12f && tt < 16f) continue;      // 戦闘の場と背後は空ける
-                if (ss > -2f && ss < 9.5f && tt > -9.5f && tt < 0f) continue;       // リーダーの頭上も空ける
+                if (ss > -2.6f && ss < 4.6f && tt > -13f && tt < 17f) continue;      // 戦闘の場
+                if (ss > -2.6f && ss < 6.0f && tt > -9.5f && tt < -1f) continue;     // リーダーの頭上 (吹き出し)
+                if (ss < -2.6f && ss > -9f && tt > -12f && tt < 18f) continue;       // 場の手前 (キャラを隠さない)
+                if (IsDirt(x, z)) continue;                                          // 道の上には生えない
+                if (tt > 13f && tt < 26f && ss > 3f && ss < 13f && rng.NextDouble() < 0.7) continue;   // 道の先 = 塔が見える切れ目
                 float h = GroundY(x, z);
-                if (h < Step * 0.5f && ss < 8f) continue;                         // 近くの平地には置かない
-                float sc = 2.6f * (0.6f + (float)rng.NextDouble() * 0.9f);
+                float sc = 3.4f * (0.7f + (float)rng.NextDouble() * 0.9f);
+                if (ss < -2.6f) sc *= 1.25f;                                         // 手前の木は大きい
                 Cross("tree", trees[rng.Next(3)], new Vector3(x, h, z), sc, 0.5f);
                 placed++;
             }
-            // 両脇の額縁の木 (近いので大きい)
-            { var w = OnPath(-15.5f, 5.4f); Cross("tree", trees[1], w, 3.6f, 0.5f); }
-            { var w = OnPath(-12f, 9.6f); Cross("tree", trees[0], w, 3.0f, 0.5f); }
-            { var w = OnPath(15.5f, -4.4f); Cross("tree", trees[2], w, 3.2f, 0.5f); }
+            // 額縁と場の背後の大木 (近いので大きい = 森に囲まれている)
+            { var w = OnPath(-15.5f, 5.4f); Cross("tree", trees[1], w, 6.2f, 0.5f); }
+            { var w = OnPath(-12f, 9.6f); Cross("tree", trees[0], w, 5.0f, 0.5f); }
+            { var w = OnPath(15.5f, -4.4f); Cross("tree", trees[2], w, 5.4f, 0.5f); }
+            { var w = OnPath(-13.5f, -5.2f); Cross("tree", trees[0], w, 6.8f, 0.5f); }
+            { var w = OnPath(19.5f, 3.8f); Cross("tree", trees[1], w, 6.0f, 0.5f); }
+            { var w = OnPath(-4f, 6.8f); Cross("tree", trees[0], w, 5.6f, 0.5f); }
+            { var w = OnPath(7f, 7.6f); Cross("tree", trees[2], w, 5.2f, 0.5f); }
+            { var w = OnPath(12.5f, 5.8f); Cross("tree", trees[0], w, 5.8f, 0.5f); }
+            { var w = OnPath(1.5f, 9.4f); Cross("tree", trees[1], w, 6.4f, 0.5f); }
+            // 下草: 羊歯を空き地の縁と段丘に (道の上は避ける)
+            var fern = Px.Fern(p, rng);
+            for (int i = 0; i < 56; i++)
+            {
+                float t = -18f + (float)rng.NextDouble() * 40f;
+                float sv = rng.NextDouble() < 0.5 ? -4.4f + (float)rng.NextDouble() * 1.6f : 4.4f + (float)rng.NextDouble() * 3.2f;
+                var w = OnPath(t, sv);
+                if (IsDirt(w.x, w.z)) continue;
+                var f = Plane("fern", fern, w, 0.7f + (float)rng.NextDouble() * 0.4f, 0.5f, false);
+                if (rng.NextDouble() < 0.5) f.transform.localScale = new Vector3(-f.transform.localScale.x, f.transform.localScale.y, 1f);
+            }
+            // 頭上の枝葉 (額縁の上辺。中央は月と塔のために空ける)
+            var canopy = Px.Canopy(p, rng);
+            { var c = Plane("canopy", canopy, new Vector3(-9.5f, 4.3f, 1.5f), 3.2f, 0.5f, false); c.transform.rotation = Quaternion.identity; }
+            { var c = Plane("canopy", canopy, new Vector3(10.5f, 4.5f, 1.0f), 3.0f, 0.5f, false); c.transform.rotation = Quaternion.identity; c.transform.localScale = new Vector3(-c.transform.localScale.x, c.transform.localScale.y, 1f); }
             // 前景 (手前の低い地面・画面の下の隅): 大きな岩と丈の高い草
             var tall = Px.TallGrass(p, rng);
             Plane("rock-front", rock, OnPath(-3.2f, -7.4f), 2.0f, 0.5f, true);
             Plane("rock-front", rock, OnPath(11.5f, -6.8f), 1.5f, 0.5f, true);
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < 26; i++)
             {
-                float t = -18f + (float)rng.NextDouble() * 36f;
-                float sv = -5.0f - (float)rng.NextDouble() * 1.6f;
+                float t = -20f + (float)rng.NextDouble() * 42f;
+                float sv = i < 14 ? -5.0f - (float)rng.NextDouble() * 1.6f : 4.6f + (float)rng.NextDouble() * 1.4f;
                 var g = Plane("tallgrass", tall, OnPath(t, sv), 1.5f + (float)rng.NextDouble() * 0.6f, 0.5f, false);
                 if (rng.NextDouble() < 0.5) g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f);
             }
             // 茂み・岩: 戦闘ラインの外 (段丘の縁や手前)
-            float[] bt = { -15f, -12f, 1f, 15f, 17f, 0.5f, 6f, -10f, 9f, -18f };
-            float[] bs = { 5.6f, 7.4f, 9.6f, 5.2f, 7.8f, -6.4f, -7.2f, -6.0f, 8.8f, 7.2f };
+            float[] bt = { -15f, -12f, 1f, 15f, 17f, 0.5f, 6f, -10f, 9f, -18f, -7f, 4f, 10f, 14f, -16f, 20f, -2f, 8f };
+            float[] bs = { 5.6f, 7.4f, 9.6f, 5.2f, 7.8f, -6.4f, -7.2f, -6.0f, 8.8f, 7.2f, 5.0f, 5.4f, 6.6f, -5.4f, -4.6f, 6.2f, -4.8f, -5.6f };
             for (int i = 0; i < bt.Length; i++)
             {
                 var b = Plane("bush", bush, OnPath(bt[i], bs[i]), 0.9f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
@@ -1325,6 +1354,51 @@ namespace DeckRogue.Game
                     Disc(px, w, h, 25f * q, 44f * q, 8f * q, p.LeafA, rng, 1.2f * q);
                     Foliage(px, w, h, p, rng, 22 * q, q);
                 }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>羊歯: 根元から弧を描いて広がる葉 5〜6 本</summary>
+            public static Texture2D Fern(Pal p, System.Random rng)
+            {
+                const int q = 2;
+                int w = 18 * q, h = 12 * q;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                for (int i = 0; i < px.Length; i++) px[i] = Color.clear;
+                int n = 5 + rng.Next(2);
+                for (int k = 0; k < n; k++)
+                {
+                    float ang = Mathf.Lerp(0.25f, Mathf.PI - 0.25f, (k + 0.5f) / n) + ((float)rng.NextDouble() - 0.5f) * 0.25f;
+                    float len = (8f + (float)rng.NextDouble() * 3f) * q;
+                    var c = k % 2 == 0 ? p.LeafB : Mix(p.LeafA, p.LeafC, 0.5f);
+                    for (float d = 0; d < len; d += 0.5f)
+                    {
+                        float k2 = d / len;
+                        float x = w / 2f + Mathf.Cos(ang) * d, y = Mathf.Sin(ang) * d * (1f - 0.35f * k2 * k2);
+                        Put(px, w, h, Mathf.RoundToInt(x), Mathf.RoundToInt(y), c);
+                        if (((int)(d / q)) % 2 == 0) { Put(px, w, h, Mathf.RoundToInt(x) + (Mathf.Cos(ang) > 0 ? 1 : -1), Mathf.RoundToInt(y) + 1, Mix(c, Color.black, 0.25f)); }
+                    }
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>頭上の枝葉: 上辺から垂れる葉の塊 (下 4 割は透明)。額縁の上辺に置く</summary>
+            public static Texture2D Canopy(Pal p, System.Random rng)
+            {
+                const int q = 2;
+                int w = 160 * q, h = 48 * q;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                for (int i = 0; i < px.Length; i++) px[i] = Color.clear;
+                var dark = Mix(p.LeafA, Color.black, 0.45f);
+                for (int i = 0; i < 26; i++)
+                {
+                    float cx = (float)rng.NextDouble() * w, cy = h - (6f + (float)rng.NextDouble() * 16f) * q, r = (7f + (float)rng.NextDouble() * 9f) * q;
+                    Disc(px, w, h, cx, cy, r, i % 3 == 0 ? p.LeafA : dark, rng, 1.2f * q);
+                }
+                for (int x = 0; x < w; x++) for (int y = h - 8 * q; y < h; y++) if (px[y * w + x].a > 0.5f) px[y * w + x] = dark;   // 最上段は影
                 t.SetPixels(px); t.Apply();
                 return t;
             }
