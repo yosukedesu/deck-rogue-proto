@@ -1,0 +1,23 @@
+{
+  "id": "act1_grass2",
+  "engine": "pixflux",
+  "request": {
+    "description": "dense forest moss and short grass with a few tiny pale flowers and small pebbles, seamless tileable pixel art ground texture seen from directly above, dark and desaturated as under cool moonlight at night, low contrast, dull green and grey, no objects, no border, no text",
+    "negative_description": "bright, orange, saturated, daylight, text, watermark, border, frame, blurry, objects, trees",
+    "image_size": {
+      "width": 64,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-08T11:15:00.956Z"
+}

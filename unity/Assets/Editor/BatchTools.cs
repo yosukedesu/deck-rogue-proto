@@ -268,6 +268,39 @@ namespace DeckRogue.EditorTools
     /// </summary>
     public static class UrpSetup
     {
+        /// <summary>SSAO (画面空間の環境遮蔽) をレンダラーに足す (2026-09-08 舞台の品質: 幹や岩の根元に柔らかい接地の暗さ = オクトラの地面の締まり)。既にあれば何もしない</summary>
+        static void EnsureSsao(UnityEngine.Rendering.Universal.UniversalRendererData renderer)
+        {
+            var so = new SerializedObject(renderer);
+            var list = so.FindProperty("m_RendererFeatures");
+            var map = so.FindProperty("m_RendererFeatureMap");
+            if (list == null) { Debug.LogWarning("[DeckRogue] URP: m_RendererFeatures が見つからない"); return; }
+            for (int i = 0; i < list.arraySize; i++)
+                if (list.GetArrayElementAtIndex(i).objectReferenceValue is UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion) return;
+            var f = ScriptableObject.CreateInstance<UnityEngine.Rendering.Universal.ScreenSpaceAmbientOcclusion>();
+            f.name = "SSAO";
+            var fso = new SerializedObject(f);
+            var st = fso.FindProperty("m_Settings");
+            if (st != null)
+            {
+                var q = st.FindPropertyRelative("Intensity"); if (q != null) q.floatValue = 1.3f;
+                q = st.FindPropertyRelative("Radius"); if (q != null) q.floatValue = 0.32f;
+                q = st.FindPropertyRelative("Falloff"); if (q != null) q.floatValue = 80f;
+                q = st.FindPropertyRelative("DirectLightingStrength"); if (q != null) q.floatValue = 0.4f;
+                q = st.FindPropertyRelative("Downsample"); if (q != null) q.boolValue = false;
+                q = st.FindPropertyRelative("AfterOpaque"); if (q != null) q.boolValue = false;
+                fso.ApplyModifiedPropertiesWithoutUndo();
+            }
+            AssetDatabase.AddObjectToAsset(f, renderer);
+            list.arraySize++;
+            list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = f;
+            // m_RendererFeatureMap はエディタが検証時に作り直すので触らない (GetInstanceID は Unity 6 で obsolete)
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(renderer);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[DeckRogue] URP: SSAO を追加した");
+        }
+
         public static void Run()
         {
             int code = 0;
@@ -289,6 +322,7 @@ namespace DeckRogue.EditorTools
                     if (ppd != null) { renderer.postProcessData = ppd; EditorUtility.SetDirty(renderer); AssetDatabase.SaveAssets(); Debug.Log("[DeckRogue] URP: PostProcessData を割り当てた"); }
                     else Debug.LogWarning("[DeckRogue] URP: PostProcessData が見つからない");
                 }
+                if (renderer != null) EnsureSsao(renderer);
                 if (renderer == null)
                 {
                     renderer = ScriptableObject.CreateInstance<UnityEngine.Rendering.Universal.UniversalRendererData>();
