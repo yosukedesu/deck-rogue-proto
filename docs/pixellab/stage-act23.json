@@ -1,0 +1,96 @@
+{
+  "_note": "幕2 (提灯の夜市) と幕3 (月の回廊) の小物 (2026-09-08 first cut)。",
+  "defaults": {
+    "engine": "pixflux",
+    "view": "low top-down",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face"
+  },
+  "items": [
+    {
+      "id": "act2_barrel",
+      "out": "unity/Assets/Resources/Art/props/act2_barrel.png",
+      "size": [
+        32,
+        40
+      ],
+      "description": "an old wooden barrel with iron bands, muted brown, dim warm lantern light, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act2_crate",
+      "out": "unity/Assets/Resources/Art/props/act2_crate.png",
+      "size": [
+        32,
+        32
+      ],
+      "description": "a worn wooden crate with rope, muted brown, dim warm lantern light, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act2_lantern",
+      "out": "unity/Assets/Resources/Art/props/act2_lantern.png",
+      "size": [
+        32,
+        48
+      ],
+      "description": "a hanging paper lantern glowing warm orange on a short iron hook, muted night colors, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act2_gear",
+      "out": "unity/Assets/Resources/Art/props/act2_gear.png",
+      "size": [
+        32,
+        32
+      ],
+      "description": "a large rusty iron cog gear leaning against nothing, dull grey-brown, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act2_stall",
+      "out": "unity/Assets/Resources/Art/props/act2_stall.png",
+      "size": [
+        80,
+        56
+      ],
+      "description": "a small abandoned market stall with a tattered awning and an empty counter, muted faded red cloth, dim warm light, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act3_pillar",
+      "out": "unity/Assets/Resources/Art/props/act3_pillar.png",
+      "size": [
+        48,
+        96
+      ],
+      "description": "a tall black stone pillar with pale silver moonlit edges and faint carved runes, cracked, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act3_chain",
+      "out": "unity/Assets/Resources/Art/props/act3_chain.png",
+      "size": [
+        24,
+        96
+      ],
+      "description": "a heavy hanging iron chain, dark with pale moonlit highlights, vertical, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act3_statue",
+      "out": "unity/Assets/Resources/Art/props/act3_statue.png",
+      "size": [
+        48,
+        80
+      ],
+      "description": "a weathered stone statue of a kneeling hooded figure without a visible face, pale grey under moonlight, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    },
+    {
+      "id": "act3_brazier",
+      "out": "unity/Assets/Resources/Art/props/act3_brazier.png",
+      "size": [
+        32,
+        48
+      ],
+      "description": "a stone brazier with a cold pale blue flame, moonlit, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text"
+    }
+  ]
+}

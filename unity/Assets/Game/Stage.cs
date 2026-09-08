@@ -244,6 +244,7 @@ namespace DeckRogue.Game
         const float TX0 = -56f, TZ0 = -24f;
         const int TNX = 224, TNZ = 200;
         static float[,] _H;
+        static bool _flat;                      // 幕2/3 = 塔の中の平らな床 (起伏・川・土の道なし)
         static bool[,] _Dirt;
         static int _tseed = 1;
 
@@ -275,6 +276,7 @@ namespace DeckRogue.Game
         /// 小川の溝は空き地の奥を横切る。戦闘の場は平ら</summary>
         static float RawHeight(float x, float z)
         {
+            if (_flat) return 0f;
             float t, s; PathLocal(x, z, out t, out s);
             float n = Fbm(x, z);
             float rise = Mathf.Max(0f, s - 5f) * 0.06f + Mathf.Max(0f, t - 12f) * 0.05f;   // 奥と道の先へ緩く登る (塔へ向かう道)
@@ -294,16 +296,18 @@ namespace DeckRogue.Game
         const float StreamHalf = 0.95f, StreamBed = 0.5f, WaterLevel = -0.22f;
         static float StreamDepth(float t, float s)
         {
+            if (_flat) return 0f;
             if (t < -26f || t > 30f) return 0f;                                       // 川は舞台の幅だけ (遠くまで延ばさない)
             float d = Mathf.Abs(s - StreamCenter(t)) / StreamHalf;
             if (d >= 1f) return 0f;
             float k = 1f - d * d;                                                   // 中心で最深
             return StreamBed * k * k;
         }
-        static bool InStream(float t, float s) { return t >= -26f && t <= 30f && Mathf.Abs(s - StreamCenter(t)) < StreamHalf * 0.92f; }
+        static bool InStream(float t, float s) { return !_flat && t >= -26f && t <= 30f && Mathf.Abs(s - StreamCenter(t)) < StreamHalf * 0.92f; }
         static float Quantize(float h, float arena) { return arena > 0.99f ? 0f : Mathf.Round(h / Step) * Step; }
         static bool DirtAt(float x, float z, float h)
         {
+            if (_flat) return false;
             float t, s; PathLocal(x, z, out t, out s);
             if (InStream(t, s)) return false;
             float e = ((t - 2f) / 9.5f) * ((t - 2f) / 9.5f) + ((s - 0.4f) / 2.7f) * ((s - 0.4f) / 2.7f)
@@ -360,8 +364,8 @@ namespace DeckRogue.Game
                                 uv[rot], uv[(rot + 1) % 4], uv[(rot + 2) % 4], uv[(rot + 3) % 4]);
                 }
             Solid("terrain-grass", top, mGrass);
-            var mLitter = HasTile(_paintedAct, "grass2") ? Lit(Tex(_paintedAct, "grass2", null)) : Lit(Tex(_paintedAct, "leaves", Px.Dirt(_pal, new System.Random(3))));
-            mLitter.SetColor("_BaseColor", HasTile(_paintedAct, "grass2") ? new Color(0.4f, 0.5f, 0.5f) : HasTile(_paintedAct, "leaves") ? new Color(0.62f, 0.62f, 0.66f) : new Color(0.5f, 0.46f, 0.44f));
+            var mLitter = _flat ? mGrass : HasTile(_paintedAct, "grass2") ? Lit(Tex(_paintedAct, "grass2", null)) : Lit(Tex(_paintedAct, "leaves", Px.Dirt(_pal, new System.Random(3))));
+            if (!_flat) mLitter.SetColor("_BaseColor", HasTile(_paintedAct, "grass2") ? new Color(0.4f, 0.5f, 0.5f) : HasTile(_paintedAct, "leaves") ? new Color(0.62f, 0.62f, 0.66f) : new Color(0.5f, 0.46f, 0.44f));
             Solid("terrain-litter", litter, mLitter);
             Solid("terrain-dirt", dirtTop, mDirt);
             var mBed = Lit(Tex(_paintedAct, "dirt", Px.Dirt(_pal, new System.Random(5)))); mBed.SetColor("_BaseColor", new Color(0.36f, 0.34f, 0.32f));   // 川床 = 暗い湿った土
@@ -633,8 +637,9 @@ namespace DeckRogue.Game
         static Pal PalOf(int act)
         {
             var p = new Pal();
-            if (act == 2)
+            if (act == 3)
             {
+                // 幕3 月の回廊: 冷たい銀と藍。空を埋める月
                 p.SkyTop = UiKit.Hex("#0d1a22"); p.SkyBot = UiKit.Hex("#2a4a52"); p.Fog = UiKit.Hex("#6f8f99");
                 p.GrassA = UiKit.Hex("#3f5c3a"); p.GrassB = UiKit.Hex("#324a30"); p.GrassC = UiKit.Hex("#5a7a4a"); p.GrassDry = UiKit.Hex("#6c7a4c");
                 p.DirtA = UiKit.Hex("#55504a"); p.DirtB = UiKit.Hex("#43403a");
@@ -644,8 +649,9 @@ namespace DeckRogue.Game
                 p.Ambient = new Color(0.26f, 0.36f, 0.42f); p.Sun = new Color(0.55f, 0.85f, 0.92f); p.Lantern = new Color(0.55f, 0.95f, 1f);
                 p.Filter = new Color(0.86f, 1.0f, 1.04f); p.UnitAmbient = new Color(0.62f, 0.8f, 0.86f);
             }
-            else if (act == 3)
+            else if (act == 2)
             {
+                // 幕2 提灯の夜市: 暖かい提灯の橙と古い木と石
                 p.SkyTop = UiKit.Hex("#200c16"); p.SkyBot = UiKit.Hex("#5c2838"); p.Fog = UiKit.Hex("#8a5a66");
                 p.GrassA = UiKit.Hex("#5a4a3a"); p.GrassB = UiKit.Hex("#463a2e"); p.GrassC = UiKit.Hex("#726048"); p.GrassDry = UiKit.Hex("#7a6a50");
                 p.DirtA = UiKit.Hex("#5c4242"); p.DirtB = UiKit.Hex("#4a3333");
@@ -675,9 +681,14 @@ namespace DeckRogue.Game
         public static void Paint(int act)
         {
             Ensure();
+            // 検証用: 起動引数 -stageact N で舞台の幕だけ差し替える (スクショの自動操縦で幕2/3の舞台を撮る。ゲームの進行には触れない)
+            var cargs = Environment.GetCommandLineArgs();
+            for (int i = 0; i < cargs.Length - 1; i++) if (cargs[i] == "-stageact") { int a; if (int.TryParse(cargs[i + 1], out a)) act = Mathf.Clamp(a, 1, 3); }
             if (_paintedAct == act) return;
             _paintedAct = act;
+            _flat = act != 1;
             for (int i = _world.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(_world.GetChild(i).gameObject);
+            SetFxForAct(act);
             var p = PalOf(act);
             _pal = p;
             var rng = new System.Random(1000 + act * 17);
@@ -702,7 +713,16 @@ namespace DeckRogue.Game
             if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.66f, 0.6f, 0.56f));    // 土=灰茶 (月明かりの空き地。影が読める明るさ)。暖色は街灯の範囲だけ
             if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.56f, 0.62f, 0.76f)); // 石=青灰
             if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.52f, 0.48f));  // 崖=土色
-            // ---- 段丘の地形 (本家の段々畑のような起伏): 高さ場を段に量子化し、段差に崖面を張る。戦闘の場だけ平らに均す
+            if (act != 1)
+            {
+                // 幕2/3: 塔の中。床は石 (幕2=暖かい灰茶・幕3=冷たい黒石)
+                var mFloor = Lit(Tex(act, "stone", stone));
+                mFloor.SetColor("_BaseColor", act == 2 ? new Color(0.5f, 0.42f, 0.38f) : new Color(0.3f, 0.33f, 0.44f));
+                BuildTerrain(mFloor, mDirt, mCliff);
+                if (act == 2) PaintMarket(p, rng, mFloor); else PaintCorridor(p, rng, mFloor);
+                return;
+            }
+            // ---- 森の床 (幕1): なだらかな起伏・小川・獣道
             BuildTerrain(mGrass, mDirt, mCliff);
 
             // 土の空き地の縁: 草に食われた縁と土のこぼれ (不定形の塊の境界に置く)
@@ -946,6 +966,158 @@ namespace DeckRogue.Game
             var tower = Prop("tower", Px.Tower(p, rng), new Vector3(23f, -2f, 50f), 40f, 0.4f);   // 山 (z58) より手前に立てて上へ抜ける
             tower.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f);
             tower.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+        }
+
+        /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す</summary>
+        static void SetFxForAct(int act)
+        {
+            if (_fx == null) return;
+            for (int i = 0; i < _fx.childCount; i++)
+            {
+                var c = _fx.GetChild(i);
+                bool on = true;
+                switch (c.name)
+                {
+                    case "fireflies": case "water-sparkle": case "leaves": on = act == 1; break;
+                    case "moondust": on = act != 2; break;
+                    case "mist-far": on = act != 2; break;
+                }
+                c.gameObject.SetActive(on);
+            }
+        }
+
+        /// <summary>幕2 提灯の夜市 (first cut 2026-09-08): 塔の中の市の名残。石の床・奥の石壁と暗い門・提灯の柱と吊り提灯 (暖色はここだけ)・屋台と樽と歯車。空は暗い天井</summary>
+        static void PaintMarket(Pal p, System.Random rng, Material mFloor)
+        {
+            // 奥の壁 (石) と暗い門
+            var wall = new MB();
+            var wz = OnPath(0f, 9.5f).z; // 場の奥
+            for (int seg = 0; seg < 3; seg++)
+            {
+                float z = 12f + seg * 9f; float h = 6f + seg * 1.5f;
+                wall.WallZ(-46f, 60f, 0f, h, z);
+                wall.Floor(-46f, z, 60f, z + 0.8f, h);
+            }
+            var mWall = Lit(Tex(_paintedAct, "stone", Px.Stone(p, rng))); mWall.SetColor("_BaseColor", new Color(0.42f, 0.36f, 0.34f));
+            Solid("wall", wall, mWall);
+            var dark = Px.Solid(new Color(0.03f, 0.02f, 0.04f));
+            float[] gx = { -18f, -4f, 10f, 26f };
+            for (int i = 0; i < gx.Length; i++)
+            {
+                var g = Prop("gate", dark, new Vector3(gx[i], 0f, 11.9f), 4.2f, 0.1f, 2.6f);
+                g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.6f);
+            }
+            // 提灯の柱: 道の両脇に。暖色の点光源と足元の光溜まり
+            var lantern = PropTex(_paintedAct, "lantern", null);
+            var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
+            for (int i = 0; i < 6; i++)
+            {
+                float t = -15f + i * 6.4f; float sv = (i % 2 == 0) ? -5.4f : 5.2f;   // 場の外 (手前の柱が伏せ場と重ならない)
+                var w = OnPath(t, sv);
+                var pole = new MB(); pole.Box(w.x, 0f, w.z, 0.14f, 3.2f, 0.14f); pole.Box(w.x, 0f, w.z, 0.5f, 0.12f, 0.5f); pole.Box(w.x + 0.25f, 3.1f, w.z, 0.6f, 0.08f, 0.08f);
+                Solid("lantern-pole", pole, mIron);
+                if (lantern != null) { var l = Plane("lantern", lantern, new Vector3(w.x + 0.5f, 2.35f, w.z - 0.02f), 0.9f, 0.5f, false); l.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); }
+                var lgo = new GameObject("lantern-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = new Vector3(w.x + 0.5f, 2.4f, w.z);
+                var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 5.5f; li.intensity = 1.6f; li.color = new Color(1f, 0.62f, 0.32f); li.shadows = LightShadows.None;
+                var pool = Glow("lantern-pool", Px.Radial(new Color(1f, 0.7f, 0.4f, 0.3f)), new Vector3(w.x + 0.5f, 0.035f, w.z), 1f, 1f);
+                pool.GetComponent<MeshFilter>().sharedMesh = _quadCentered; pool.transform.rotation = Quaternion.Euler(90f, 0f, 0f); pool.transform.localScale = new Vector3(4.6f, 4f, 1f);
+                Glow("lantern-glow", Px.Glow(new Color(1f, 0.7f, 0.4f, 0.5f)), new Vector3(w.x + 0.5f, 1.9f, w.z - 0.3f), 2.2f, 2.2f);
+            }
+            // 吊り提灯の列: 道を横切る紐に 5 個ずつ (奥ほど高く小さく)
+            if (lantern != null)
+                for (int row = 0; row < 3; row++)
+                {
+                    float sv0 = 1.2f + row * 3.2f;
+                    for (int k = 0; k < 6; k++)
+                    {
+                        float t = -12f + k * 5f + (row % 2) * 2.5f;
+                        var w = OnPath(t, sv0);
+                        var l = Plane("lantern-string", lantern, new Vector3(w.x, 3.6f + row * 0.3f, w.z), 0.55f, 0.5f, false);
+                        l.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+                        Glow("lantern-glow", Px.Glow(new Color(1f, 0.66f, 0.36f, 0.35f)), new Vector3(w.x, 3.75f + row * 0.3f, w.z - 0.2f), 1.2f, 1.2f);
+                    }
+                }
+            // 屋台・樽・木箱・歯車 (場の外)
+            var stall = PropTex(_paintedAct, "stall", null); var barrel = PropTex(_paintedAct, "barrel", null); var crate = PropTex(_paintedAct, "crate", null); var gear = PropTex(_paintedAct, "gear", null);
+            if (stall != null) { Plane("stall", stall, OnPath(-9f, 7.2f), 2.4f, 0.5f, true); Plane("stall", stall, OnPath(9f, 7.6f), 2.2f, 0.5f, true); var st3 = Plane("stall", stall, OnPath(20f, 6.4f), 2.0f, 0.5f, true); st3.transform.localScale = new Vector3(-st3.transform.localScale.x, st3.transform.localScale.y, 1f); }
+            float[] bt = { -16f, -14.5f, -4f, 4f, 15f, 17f, 19f, -11f, 12f, -6f };
+            float[] bs = { -5.2f, 5.6f, 6.4f, -5.4f, 5.4f, -5.0f, 6.8f, -6.2f, 6.9f, 6.1f };
+            for (int i = 0; i < bt.Length; i++)
+            {
+                var w = OnPath(bt[i], bs[i]);
+                var tex = (i % 3 == 0) ? crate : (i % 3 == 1) ? barrel : gear;
+                if (tex == null) continue;
+                var g = Plane(i % 3 == 0 ? "crate" : i % 3 == 1 ? "barrel" : "gear", tex, w, 0.8f + (float)rng.NextDouble() * 0.3f, 0.5f, true);
+                if (rng.NextDouble() < 0.5) g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f);
+            }
+            // 光の粒の足元 (幕1と同じ群れの位置)
+            var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
+            var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.25f)), lampBase, 1f, 1f);
+            mp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; mp.transform.rotation = Quaternion.Euler(90f, 0f, 0f); mp.transform.position = lampBase + new Vector3(0f, 0.035f, 0f); mp.transform.localScale = new Vector3(5f, 4.4f, 1f);
+            // 天井: 暗い丸天井の板 (空の代わり)。高い窓から一筋の月光
+            var sky = Prop("sky", Px.Gradient(UiKit.Hex("#1a1014"), UiKit.Hex("#050305")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
+            sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var beam = Px.Beam();
+            var b1 = Glow("moonbeam", beam, new Vector3(6f, 0.3f, 10f), 22f, 6f); b1.transform.rotation = Quaternion.Euler(0f, 0f, -12f);
+            Glow("window-glow", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.45f)), new Vector3(9f, 12f, 30f), 6f, 6f);
+            RenderSettings.fogStartDistance = 12f; RenderSettings.fogEndDistance = 46f;
+        }
+
+        /// <summary>幕3 月の回廊 (first cut 2026-09-08): 頂に近い黒い石の回廊。両脇の柱と鎖・跪く石像・冷たい火の篝火。空を埋める月とその光の帯</summary>
+        static void PaintCorridor(Pal p, System.Random rng, Material mFloor)
+        {
+            var pillar = PropTex(_paintedAct, "pillar", null); var chain = PropTex(_paintedAct, "chain", null); var statue = PropTex(_paintedAct, "statue", null); var brazier = PropTex(_paintedAct, "brazier", null);
+            var mDark = Lit(Tex(_paintedAct, "stone", Px.Stone(p, rng))); mDark.SetColor("_BaseColor", new Color(0.2f, 0.22f, 0.3f));
+            // 両脇の柱の列 (奥ほど霧に溶ける)。柱の間に鎖
+            var pts = new List<Vector2>();
+            for (int i = 0; i < 7; i++) pts.Add(new Vector2(-16f + i * 5.4f, 5.8f));        // 奥の列 (場の後ろ)
+            pts.Add(new Vector2(-20f, -4.8f)); pts.Add(new Vector2(22f, -4.6f));            // 両端の手前 (額縁。場の手前には立てない = キャラを隠さない)
+            for (int i = 0; i < pts.Count; i++)
+            {
+                var w = OnPath(pts[i].x, pts[i].y);
+                if (pillar != null) Plane("pillar", pillar, w, 5.6f, 0.5f, true);
+                else { var mb = new MB(); mb.Box(w.x, 0f, w.z, 1.1f, 5.6f, 1.1f); Solid("pillar", mb, mDark); }
+                if (chain != null && i % 2 == 1) Plane("chain", chain, new Vector3(w.x + 1.5f, 2.6f, w.z + 0.2f), 4.4f, 0.5f, false);
+            }
+            // 低い縁石 (回廊の縁) と奥の段
+            var edge = new MB();
+            foreach (float sv in new[] { -6.2f, 6.6f }) { var a = OnPath(-30f, sv); var b = OnPath(40f, sv); edge.Box((a.x + b.x) * 0.5f, 0f, (a.z + b.z) * 0.5f, 70f, 0.5f, 0.6f); }
+            var step = OnPath(0f, 10f); edge.Box(step.x, 0f, step.z, 90f, 1.2f, 3f); edge.Box(step.x, 0f, step.z + 3f, 90f, 2.4f, 3f);
+            Solid("corridor-edge", edge, mDark);
+            // 石像と篝火 (冷たい青の火 = 月光の白の仲間。暖色は無い)
+            if (statue != null) { Plane("statue", statue, OnPath(-20f, 3.2f), 3.2f, 0.5f, true); var s2 = Plane("statue", statue, OnPath(22f, 3.4f), 3.2f, 0.5f, true); s2.transform.localScale = new Vector3(-s2.transform.localScale.x, s2.transform.localScale.y, 1f); }
+            float[] bt = { -10f, 8f, 16f, -2f };
+            for (int i = 0; i < bt.Length; i++)
+            {
+                var w = OnPath(bt[i], i % 2 == 0 ? -3.6f : 4.0f);
+                if (brazier != null) { var b = Plane("brazier", brazier, w, 1.5f, 0.5f, true); b.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); }
+                var lgo = new GameObject("brazier-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, 1.2f, 0f);
+                var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 5f; li.intensity = 1.1f; li.color = new Color(0.55f, 0.75f, 1f); li.shadows = LightShadows.None;
+                Glow("brazier-glow", Px.Glow(new Color(0.6f, 0.8f, 1f, 0.45f)), w + new Vector3(0f, 1.2f, -0.3f), 2.4f, 2.4f);
+            }
+            // 光の粒の足元
+            var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
+            var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.22f)), lampBase, 1f, 1f);
+            mp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; mp.transform.rotation = Quaternion.Euler(90f, 0f, 0f); mp.transform.position = lampBase + new Vector3(0f, 0.035f, 0f); mp.transform.localScale = new Vector3(5f, 4.4f, 1f);
+            // 空を埋める月と星、月光の帯が床に落ちる
+            var sky = Prop("sky", Px.Gradient(UiKit.Hex("#0b1424"), UiKit.Hex("#03060c")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
+            sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var stars = Prop("stars", Px.Stars(rng), new Vector3(0f, 6f, 88f), 14f, 0.3f, 150f);
+            stars.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); stars.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var moon = Prop("moon", Px.Disc(new Color(2.2f, 2.1f, 1.8f)), new Vector3(8f, 11.5f, 84f), 14f, 0.4f);   // 空を埋める月 (仰角 3.7° = 帯の中)
+            moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+            moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white); moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.55f)), new Vector3(8f, 11.5f, 84.5f), 30f, 30f);
+            var beam = Px.Beam();
+            float[] bx = { -8f, 4f, 16f }; float[] bz = { 10f, 12f, 9f };
+            for (int i = 0; i < bx.Length; i++) { var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), 22f, 6f); b.transform.rotation = Quaternion.Euler(0f, 0f, -10f); }
+            for (float tt2 = -20f; tt2 <= 24f; tt2 += 3f)
+            {
+                var c = OnPath(tt2, 0.4f);
+                var g = Glow("moon-on-floor", Px.Radial(new Color(0.75f, 0.85f, 1f, 0.16f)), new Vector3(c.x, 0.04f, c.z), 1f, 1f);
+                g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(90f, 0f, 0f); g.transform.localScale = new Vector3(4.5f, 3f, 1f);
+            }
+            RenderSettings.fogStartDistance = 14f; RenderSettings.fogEndDistance = 58f;
         }
 
         static bool HasTile(int act, string kind) { return Theme.Art("tiles", "act" + act + "_" + kind) != null; }
