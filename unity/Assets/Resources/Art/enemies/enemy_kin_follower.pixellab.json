@@ -1,0 +1,24 @@
+{
+  "id": "enemy_kin_follower",
+  "engine": "pixflux",
+  "request": {
+    "description": "pixel art creature in the melancholic style of Hollow Knight: the body shape is exactly the creature described, with a smooth pale bone-white mask face with two large empty black eye sockets, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet mood, clean readable silhouette, thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left, a slender dancer with a pale mask, flowing dark ribbons around the body, one leg raised mid-dance, holding a curved knife, graceful and eerie",
+    "negative_description": "colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime, human face, glow, blurry, gradient background, text, watermark, side profile, sheet ghost, wispy mist body",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 9,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south-west"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-08T01:04:54.184Z"
+}

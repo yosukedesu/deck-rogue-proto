@@ -1,0 +1,84 @@
+{
+  "_note": "幕1のエリート4体 (80×80) と幕ボス3体 (96×96)。形は名前どおり・仮面・低彩度。view=low top-down。node scripts/pixellab.mjs gen docs/pixellab/enemies-elite-act1.json",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime, human face, glow, blurry, gradient background, text, watermark, side profile, sheet ghost, wispy mist body"
+  },
+  "style": "pixel art creature in the melancholic style of Hollow Knight: the body shape is exactly the creature described, with a smooth pale bone-white mask face with two large empty black eye sockets, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet mood, clean readable silhouette, thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_elite_sergeant",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_sergeant.png",
+      "description": "{style}, a stout heavy ogre-like drill sergeant with a pale mask face, thick arms, spiked shoulder plates, holding a long coiled whip, stomping forward"
+    },
+    {
+      "id": "enemy_elite_sentry",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_sentry.png",
+      "description": "{style}, a tall thin stone sentry statue with a pale mask and one narrow empty eye, holding a long spear upright, cracked stone body, standing at attention"
+    },
+    {
+      "id": "enemy_elite_gold_raven",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_gold_raven.png",
+      "description": "{style}, a large raven with dark ragged feathers and a few pale gold-tipped feathers, a pale mask beak face with empty eyes, wings half spread, clawed feet on the ground"
+    },
+    {
+      "id": "enemy_elite_devourer",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_devourer.png",
+      "description": "{style}, a fat giant larva-like bug with a segmented dark body, a huge round mouth ringed with rounded pale teeth at the front, tiny legs, hunched and hungry"
+    },
+    {
+      "id": "enemy_brute",
+      "size": [
+        96,
+        96
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_brute.png",
+      "description": "{style}, a huge hulking ogre boss with a pale mask face, enormous thick arms, hunched heavy body, dragging a massive spiked wooden club, dominating pose"
+    },
+    {
+      "id": "enemy_kin_priest",
+      "size": [
+        96,
+        96
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_kin_priest.png",
+      "description": "{style}, a tall priest in dark layered robes with a pale mask and a tall pale headdress, holding a staff topped with a dark idol, solemn"
+    },
+    {
+      "id": "enemy_kin_follower",
+      "size": [
+        96,
+        96
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_kin_follower.png",
+      "description": "{style}, a slender dancer with a pale mask, flowing dark ribbons around the body, one leg raised mid-dance, holding a curved knife, graceful and eerie"
+    }
+  ]
+}
