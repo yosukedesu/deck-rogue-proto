@@ -152,7 +152,7 @@ namespace DeckRogue.Game
             var lgo = new GameObject("Lantern");
             _lantern = lgo.AddComponent<Light>();
             _lantern.type = LightType.Point;
-            _lantern.range = 8.5f;
+            _lantern.range = 7.0f;
             _lantern.shadows = LightShadows.None;
             _lampPos = OnPath(-7.1f, 2.2f) + new Vector3(0f, 1.2f, 0f);   // 光の粒の群れの中心 (街灯は撤去。世界観「あかりは装置でなく月から零れた光の粒」2026-09-08)
             lgo.transform.position = _lampPos;
@@ -667,7 +667,7 @@ namespace DeckRogue.Game
                 p.Ambient = new Color(0.28f, 0.33f, 0.56f); p.Sun = new Color(0.72f, 0.8f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
                 p.Filter = new Color(0.86f, 0.92f, 1.12f); p.UnitAmbient = new Color(0.58f, 0.65f, 0.94f);   // 環境光は青く暗め = 街灯の暖色が読める
             }
-            p.LampOnUnits = 1.25f; p.LampIntensity = 5.5f; p.SunIntensity = 1.6f;   // 月明かりは強め (2026-09-08「月明かりももっと強くして」。旧 0.8)   // 補間の強さ (1 で街灯の色そのもの)
+            p.LampOnUnits = 1.0f; p.LampIntensity = 3.6f; p.SunIntensity = 1.6f;   // 月明かりは強め (2026-09-08「月明かりももっと強くして」。旧 0.8)   // 補間の強さ (1 で街灯の色そのもの)
             return p;
         }
 
@@ -914,11 +914,11 @@ namespace DeckRogue.Game
 
             // 光の粒の足元: 群れの下に暖色の光溜まり (粒そのものは StageFx の Motes)。装置 (街灯) は置かない
             var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
-            var pool = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.5f)), lampBase, 1f, 1f);
+            var pool = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.3f)), lampBase, 1f, 1f);
             pool.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
             pool.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             pool.transform.position = lampBase + new Vector3(0f, 0.035f, 0f);
-            pool.transform.localScale = new Vector3(7.2f, 6.2f, 1f);
+            pool.transform.localScale = new Vector3(6.0f, 5.2f, 1f);
 
             // 空 (遠い板) と月、地平線の木立
             var skyTex = Theme.Art("bg", "act" + act);
@@ -2018,18 +2018,18 @@ namespace DeckRogue.Game
             var go = new GameObject("mote-light-template");
             go.transform.SetParent(_fx, false);
             var l = go.AddComponent<Light>();
-            l.type = LightType.Point; l.range = 1.4f; l.intensity = 1.2f; l.color = new Color(1f, 0.82f, 0.5f); l.shadows = LightShadows.None;
+            l.type = LightType.Point; l.range = 1.1f; l.intensity = 0.55f; l.color = new Color(1f, 0.82f, 0.5f); l.shadows = LightShadows.None;
             go.SetActive(false);
             _moteLightTpl = l;
             return l;
         }
 
-        static void MoteLights(ParticleSystem ps, int max)
+        static void MoteLights(ParticleSystem ps, int max, float ratio)
         {
             var lights = ps.lights;
             lights.enabled = true;
             lights.light = MoteLightTemplate();
-            lights.ratio = 1f;                      // 一粒ずつが照明
+            lights.ratio = ratio;                   // 照明になる粒の割合 (全部だと足元が光溜まりだらけになる)
             lights.maxLights = max;
             lights.useParticleColor = false;
             lights.sizeAffectsRange = false;
@@ -2146,10 +2146,10 @@ namespace DeckRogue.Game
             var main = ps.main;
             main.startLifetime = new ParticleSystem.MinMaxCurve(6f, 11f);
             main.startSpeed = 0f;
-            main.startSize = new ParticleSystem.MinMaxCurve(0.14f, 0.24f);
-            main.startColor = new Color(2.0f, 1.6f, 0.75f, 1f);
-            main.maxParticles = 70;
-            var em = ps.emission; em.rateOverTime = 8f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.18f);
+            main.startColor = new Color(1.6f, 1.3f, 0.65f, 1f);
+            main.maxParticles = 50;
+            var em = ps.emission; em.rateOverTime = 6f;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(34f, 1.4f, 3.2f);
             shape.rotation = new Vector3(0f, PathYaw, 0f); shape.position = new Vector3(0f, 0.9f, 0f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
@@ -2161,7 +2161,7 @@ namespace DeckRogue.Game
             g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
                       new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.12f), new GradientAlphaKey(0.85f, 0.5f), new GradientAlphaKey(1f, 0.85f), new GradientAlphaKey(0f, 1f) });   // 途中で消えない = 全部の粒が光っている
             col.color = g;
-            MoteLights(ps, 48);
+            MoteLights(ps, 14, 0.3f);
             ps.Play();
 
             var c = NewSystem("motes-cluster", GlowDotTex());
@@ -2177,7 +2177,7 @@ namespace DeckRogue.Game
             vel = c.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
             vel.y = new ParticleSystem.MinMaxCurve(-0.05f, 0.1f);
             col = c.colorOverLifetime; col.enabled = true; col.color = g;
-            MoteLights(c, 18);
+            MoteLights(c, 4, 0.35f);
             c.Play();
         }
 
