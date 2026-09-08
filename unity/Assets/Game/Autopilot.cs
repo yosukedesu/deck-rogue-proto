@@ -53,10 +53,10 @@ namespace DeckRogue.Game
             while (GameObject.Find("inputblock") != null && Time.realtimeSinceStartup - t0 < 6f) yield return null;
         }
 
-        IEnumerator Shot(string name)
+        IEnumerator Shot(string name, int settle = 6)
         {
-            // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)
-            for (int i = 0; i < 6; i++) yield return null;
+            // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)。コマ送りの途中を撮る時は settle=1
+            for (int i = 0; i < settle; i++) yield return null;
             _n++;
             var path = Path.Combine(_dir, $"{_n:00}-{name}.png");
             ScreenCapture.CaptureScreenshot(path, 1);
@@ -171,8 +171,10 @@ namespace DeckRogue.Game
                     int handCards = g.Battle != null ? g.Battle.HandCount : -1;
                     Debug.Log("[Autopilot] hand ui cards=" + handCards);
                 }
-                yield return new WaitForSeconds(0.2f);
-                yield return Shot("battle-swing");   // 攻撃コマ (溜め→振り抜き) の途中
+                yield return new WaitForSeconds(0.08f);
+                yield return Shot("battle-swing", 1);    // 攻撃コマ: 溜め (0〜0.25s)
+                yield return new WaitForSeconds(0.14f);
+                yield return Shot("battle-swing2", 1);   // 攻撃コマ: 振り抜き (0.25〜0.375s)
                 yield return Shot("battle-played");
             }
             if (reactionCard != null)

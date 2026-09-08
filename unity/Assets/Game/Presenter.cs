@@ -211,6 +211,7 @@ namespace DeckRogue.Game
                         foreach (var e in def.Effects) { if (e.Trigger == null || e.Trigger == "onPlay") { if (e.Effect == "dealDamage" || e.Effect == "dealDamageRandom" || e.Effect == "dealDamageCleave") atk = true; if (e.Effect == "gainBlock" || e.Effect == "gainIceBlock") blk = true; } }
                         if (def.Modes != null) foreach (var m in def.Modes) foreach (var e in m.Effects) { if (e.Effect == "dealDamage") atk = true; if (e.Effect == "gainBlock") blk = true; }
                     }
+                    Debug.Log("[Presenter] CardPlayed " + cp.CardId + " atk=" + atk + " blk=" + blk);
                     if (atk)
                     {
                         Stage.PlayAnim("player", "attack");

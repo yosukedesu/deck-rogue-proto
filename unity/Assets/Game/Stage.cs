@@ -515,7 +515,9 @@ namespace DeckRogue.Game
         public static void PlayAnim(string key, string anim)
         {
             StageUnit u;
-            if (_bound.TryGetValue(key, out u) && u != null) u.Play(anim);
+            bool ok = _bound.TryGetValue(key, out u) && u != null;
+            Debug.Log("[Stage] PlayAnim " + key + " " + anim + " bound=" + ok + (ok ? " has=" + u.Anims.ContainsKey(anim) + " anims=" + string.Join(",", u.Anims.Keys) : ""));
+            if (ok) u.Play(anim);
         }
 
         /// <summary>被弾の白い点滅</summary>
