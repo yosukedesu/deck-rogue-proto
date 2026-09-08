@@ -190,7 +190,14 @@ namespace DeckRogue.Game
                 yield return WaitPresentation();
                 yield return Shot("battle-held");
             }
+            // 残りの確認ウィンドウは全部温存して、敵の番が終わった2ターン目の盤面 (状態の札・手札の実値) を撮る
+            for (int k = 0; k < 6 && g.Rs != null && g.Rs.Phase == RunPhases.Combat && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction; k++)
+            {
+                g.DoCombat(new Command_ConfirmReaction { Fire = false });
+                yield return WaitPresentation();
+            }
             yield return WaitPresentation();
+            yield return new WaitForSeconds(0.6f);
             yield return Shot("battle-turn2");
         }
 
