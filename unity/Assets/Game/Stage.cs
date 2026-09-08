@@ -516,8 +516,16 @@ namespace DeckRogue.Game
         {
             StageUnit u;
             bool ok = _bound.TryGetValue(key, out u) && u != null;
-            Debug.Log("[Stage] PlayAnim " + key + " " + anim + " bound=" + ok + (ok ? " has=" + u.Anims.ContainsKey(anim) + " anims=" + string.Join(",", u.Anims.Keys) : ""));
+            Debug.Log("[Stage] PlayAnim " + key + " " + anim + " t=" + Time.realtimeSinceStartup.ToString("F2") + " dt=" + Time.deltaTime.ToString("F3") + " bound=" + ok + (ok ? " has=" + u.Anims.ContainsKey(anim) : ""));
             if (ok) u.Play(anim);
+        }
+
+        /// <summary>デバッグ: いま表示中のコマ</summary>
+        public static string DebugAnim(string key)
+        {
+            StageUnit u;
+            if (!_bound.TryGetValue(key, out u) || u == null) return "(unbound)";
+            return u.Anim + "#" + u.Frame + " t=" + Time.realtimeSinceStartup.ToString("F2") + " tex=" + (u.Mat != null && u.Mat.mainTexture != null ? u.Mat.mainTexture.name : "-");
         }
 
         /// <summary>被弾の白い点滅</summary>
