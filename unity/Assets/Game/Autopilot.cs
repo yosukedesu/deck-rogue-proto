@@ -171,6 +171,8 @@ namespace DeckRogue.Game
                     int handCards = g.Battle != null ? g.Battle.HandCount : -1;
                     Debug.Log("[Autopilot] hand ui cards=" + handCards);
                 }
+                yield return new WaitForSeconds(0.2f);
+                yield return Shot("battle-swing");   // 攻撃コマ (溜め→振り抜き) の途中
                 yield return Shot("battle-played");
             }
             if (reactionCard != null)
