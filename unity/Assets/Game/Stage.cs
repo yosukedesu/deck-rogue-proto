@@ -532,7 +532,7 @@ namespace DeckRogue.Game
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
             public Dictionary<string, List<Texture2D>> Anims = new Dictionary<string, List<Texture2D>>();
-            public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 7f; public bool Breathe = true; public float BreathePhase;
+            public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 8f; public bool Breathe = true; public float BreathePhase;
             static readonly Vector3[] _c = new Vector3[4];
             public void Play(string anim)
             {

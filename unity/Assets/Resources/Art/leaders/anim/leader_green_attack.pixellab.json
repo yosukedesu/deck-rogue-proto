@@ -1,0 +1,5 @@
+{
+  "engine": "animate-with-skeleton + axe layer composite",
+  "note": "斧なしの体 (body_clean=元絵から斧を確定的に切り離し) を骨格で動かし、刃の元ドット+合成の柄を手の関節に90°単位で回して合成。溜め2・振り抜き1・戻り1 (2026-09-09)",
+  "keyframes": "docs/pixellab/skel_leader_green_attack2.json"
+}
