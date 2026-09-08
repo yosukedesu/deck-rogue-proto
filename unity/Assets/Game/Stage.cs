@@ -392,6 +392,7 @@ namespace DeckRogue.Game
             var sh = Blob("shadow-" + key, _units, Vector3.zero, 1f);
             var u = go.AddComponent<StageUnit>();
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
+            u.FeetPad = FeetPad(sprite);   // 絵の下端の透明行 (足元の余白) の割合。板をそのぶん下げて足を地面に着ける (2026-09-08「キャラが地面から浮いてる」)
             if (key == "player")
             {
                 // 杖の先の光: 板の右上 (絵の uv≈0.64,0.93) に追従する淡い暖色のハロー
@@ -405,6 +406,29 @@ namespace DeckRogue.Game
             }
             u.LateUpdate();
             _bound[key] = u;
+        }
+
+        static readonly Dictionary<Texture2D, float> _feetPad = new Dictionary<Texture2D, float>();
+        /// <summary>絵の矩形の中で、いちばん下の不透明ドットより下にある透明行の割合 (0〜1)。PixelLab の絵は下に数ドットの余白がある</summary>
+        static float FeetPad(Sprite sprite)
+        {
+            var t = sprite.texture;
+            float pad;
+            if (_feetPad.TryGetValue(t, out pad)) return pad;
+            pad = 0f;
+            try
+            {
+                var r = sprite.textureRect;
+                var px = t.GetPixels32();
+                int w = t.width, x0 = Mathf.RoundToInt(r.x), y0 = Mathf.RoundToInt(r.y), x1 = Mathf.RoundToInt(r.x + r.width), y1 = Mathf.RoundToInt(r.y + r.height);
+                for (int y = y0; y < y1 && pad == 0f; y++)
+                    for (int x = x0; x < x1; x++)
+                        if (px[y * w + x].a > 40) { pad = (y - y0) / Mathf.Max(1f, r.height); break; }
+                if (pad >= 0.5f) pad = 0f;   // 半分以上が透明なら絵ではなく別物 (安全弁)
+            }
+            catch (System.Exception) { pad = 0f; }
+            _feetPad[t] = pad;
+            return pad;
         }
 
         /// <summary>被弾の白い点滅</summary>
@@ -426,7 +450,7 @@ namespace DeckRogue.Game
         class StageUnit : MonoBehaviour
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float Depth; public Transform Shadow;
-            public Transform Halo; public Vector2 HaloUv;
+            public Transform Halo; public Vector2 HaloUv; public float FeetPad;
             static readonly Vector3[] _c = new Vector3[4];
             void OnDestroy() { if (Shadow != null) Destroy(Shadow.gameObject); if (Halo != null) Destroy(Halo.gameObject); }
             public void LateUpdate()
@@ -437,18 +461,20 @@ namespace DeckRogue.Game
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
                 float k = _k * Depth / _dist;
                 var pos = ScreenToPlane(sx, sy, Depth);
+                var ground = pos;
+                pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
                 transform.position = pos;
                 transform.rotation = CameraRotation;
                 transform.localScale = new Vector3(Mathf.Max(0.01f, w * k), Mathf.Max(0.01f, h * k), 1f);
                 var tint = Img != null ? Img.color : Color.white;
                 Mat.SetColor("_BaseColor", tint);
-                ApplyLight(Mat, 0.35f);
+                ApplyLight(Mat, 0.5f);   // 月明かりの明暗勾配を強め
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
                 if (Shadow != null)
                 {
                     float ww = w * k;
-                    PlaceBlob(Shadow, new Vector3(pos.x, 0f, pos.z), ww, tint.a);
+                    PlaceBlob(Shadow, new Vector3(ground.x, 0f, ground.z), ww, tint.a);
                 }
                 if (Halo != null)
                 {
@@ -586,10 +612,10 @@ namespace DeckRogue.Game
                 p.StoneA = UiKit.Hex("#7a7674"); p.StoneB = UiKit.Hex("#5c5856");
                 p.CliffA = UiKit.Hex("#524a42"); p.CliffB = UiKit.Hex("#3c3630");
                 p.LeafA = UiKit.Hex("#2c5a48"); p.LeafB = UiKit.Hex("#1e4236"); p.LeafC = UiKit.Hex("#4a8a64"); p.Trunk = UiKit.Hex("#4a3a2a");
-                p.Ambient = new Color(0.25f, 0.29f, 0.5f); p.Sun = new Color(0.6f, 0.68f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
-                p.Filter = new Color(0.84f, 0.9f, 1.12f); p.UnitAmbient = new Color(0.5f, 0.57f, 0.88f);   // 環境光は青く暗め = 街灯の暖色が読める
+                p.Ambient = new Color(0.28f, 0.33f, 0.56f); p.Sun = new Color(0.72f, 0.8f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
+                p.Filter = new Color(0.86f, 0.92f, 1.12f); p.UnitAmbient = new Color(0.58f, 0.65f, 0.94f);   // 環境光は青く暗め = 街灯の暖色が読める
             }
-            p.LampOnUnits = 1.25f; p.LampIntensity = 5.5f; p.SunIntensity = 0.8f;   // 補間の強さ (1 で街灯の色そのもの)
+            p.LampOnUnits = 1.25f; p.LampIntensity = 5.5f; p.SunIntensity = 1.6f;   // 月明かりは強め (2026-09-08「月明かりももっと強くして」。旧 0.8)   // 補間の強さ (1 で街灯の色そのもの)
             return p;
         }
 
@@ -733,6 +759,7 @@ namespace DeckRogue.Game
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.5f)), new Vector3(13f, 9.5f, 72.5f), 9f, 9f);   // 月の暈 = 月明かりが強い夜
             var mts = Prop("mountains", Px.Mountains(p, rng, 0.55f), new Vector3(4f, 2.6f, 58f), 6.5f, 0.4f, 200f);
             mts.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var mts2 = Prop("mountains2", Px.Mountains(p, rng, 0.35f), new Vector3(-10f, 2.9f, 48f), 4.5f, 0.4f, 150f);
@@ -1540,6 +1567,54 @@ namespace DeckRogue.Game
         // ---------------------------------------------------------------- 粒子
 
         static Texture2D _dot;
+        static Texture2D _glowDot;
+        /// <summary>光の粒の絵: 明るい芯と柔らかい暈 (ブルームに乗る)</summary>
+        static Texture2D GlowDotTex()
+        {
+            if (_glowDot != null) return _glowDot;
+            _glowDot = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+            _glowDot.filterMode = FilterMode.Bilinear;
+            var px = new Color[32 * 32];
+            for (int y = 0; y < 32; y++)
+                for (int x = 0; x < 32; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(16f, 16f)) / 16f;
+                    float core = Mathf.Clamp01(1f - d * 3.2f);                 // 芯 (半径 ≈ 1/3)
+                    float halo = Mathf.Pow(Mathf.Clamp01(1f - d), 2.2f) * 0.55f;   // 暈
+                    px[y * 32 + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(core + halo));
+                }
+            _glowDot.SetPixels(px); _glowDot.Apply();
+            return _glowDot;
+        }
+
+        static Light _moteLightTpl;
+        /// <summary>粒ごとの点光源のひな型 (ParticleSystem の Lights モジュールが複製する)。URP は Forward+ なので数の上限は気にしない</summary>
+        static Light MoteLightTemplate()
+        {
+            if (_moteLightTpl != null) return _moteLightTpl;
+            var go = new GameObject("mote-light-template");
+            go.transform.SetParent(_fx, false);
+            var l = go.AddComponent<Light>();
+            l.type = LightType.Point; l.range = 1.4f; l.intensity = 1.2f; l.color = new Color(1f, 0.82f, 0.5f); l.shadows = LightShadows.None;
+            go.SetActive(false);
+            _moteLightTpl = l;
+            return l;
+        }
+
+        static void MoteLights(ParticleSystem ps, int max)
+        {
+            var lights = ps.lights;
+            lights.enabled = true;
+            lights.light = MoteLightTemplate();
+            lights.ratio = 1f;                      // 一粒ずつが照明
+            lights.maxLights = max;
+            lights.useParticleColor = false;
+            lights.sizeAffectsRange = false;
+            lights.alphaAffectsIntensity = true;
+            lights.rangeMultiplier = 1f;
+            lights.intensityMultiplier = 1f;
+        }
+
         static Texture2D DotTex()
         {
             if (_dot != null) return _dot;
@@ -1634,14 +1709,14 @@ namespace DeckRogue.Game
         static void Motes()
         {
             var dir = Quaternion.Euler(0f, PathYaw, 0f) * Vector3.right;   // 道の向き (+t = 塔の方)
-            var ps = NewSystem("motes-path", DotTex());
+            var ps = NewSystem("motes-path", GlowDotTex());
             var main = ps.main;
             main.startLifetime = new ParticleSystem.MinMaxCurve(6f, 11f);
             main.startSpeed = 0f;
-            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.12f);
-            main.startColor = new Color(1.6f, 1.35f, 0.62f, 1f);
-            main.maxParticles = 110;
-            var em = ps.emission; em.rateOverTime = 12f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.14f, 0.24f);
+            main.startColor = new Color(2.0f, 1.6f, 0.75f, 1f);
+            main.maxParticles = 70;
+            var em = ps.emission; em.rateOverTime = 8f;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(34f, 1.4f, 3.2f);
             shape.rotation = new Vector3(0f, PathYaw, 0f); shape.position = new Vector3(0f, 0.9f, 0f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
@@ -1651,23 +1726,25 @@ namespace DeckRogue.Game
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.15f), new GradientAlphaKey(0.4f, 0.5f), new GradientAlphaKey(1f, 0.75f), new GradientAlphaKey(0f, 1f) });
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.12f), new GradientAlphaKey(0.85f, 0.5f), new GradientAlphaKey(1f, 0.85f), new GradientAlphaKey(0f, 1f) });   // 途中で消えない = 全部の粒が光っている
             col.color = g;
+            MoteLights(ps, 48);
             ps.Play();
 
-            var c = NewSystem("motes-cluster", DotTex());
+            var c = NewSystem("motes-cluster", GlowDotTex());
             main = c.main;
             main.startLifetime = new ParticleSystem.MinMaxCurve(4f, 7f);
             main.startSpeed = 0f;
-            main.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.09f);
-            main.startColor = new Color(1.5f, 1.25f, 0.62f, 1f);
-            main.maxParticles = 24;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.2f);
+            main.startColor = new Color(1.8f, 1.45f, 0.7f, 1f);
+            main.maxParticles = 18;
             em = c.emission; em.rateOverTime = 9f;
             shape = c.shape; shape.shapeType = ParticleSystemShapeType.Sphere; shape.radius = 1.1f; shape.position = _lampPos;
             noise = c.noise; noise.enabled = true; noise.strength = 0.5f; noise.frequency = 0.6f; noise.scrollSpeed = 0.35f;
             vel = c.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
             vel.y = new ParticleSystem.MinMaxCurve(-0.05f, 0.1f);
             col = c.colorOverLifetime; col.enabled = true; col.color = g;
+            MoteLights(c, 18);
             c.Play();
         }
 
