@@ -1,0 +1,100 @@
+{
+  "_note": "このはの攻撃/防御のポーズ静止画 (2026-09-09): animate-with-text は斧を鎌に変えるので、pixflux + init_image (元絵) でポーズ違いの静止画を作り、コマにする試験。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-east",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, scythe, sickle, curved blade, sword, staff, bow, adult, tall proportions, sad, scary, blush"
+  },
+  "items": [
+    {
+      "id": "windup_220",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_windup_220.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 220,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, winding up with the axe raised high over her head with both hands, knees bent, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "chop_220",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_chop_220.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 220,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, mid-swing, the axe slammed down in front of her, blade near the ground, body leaning forward, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "block_220",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_block_220.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 220,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, bracing defensively, holding the axe horizontally in front of her body with both hands like a shield, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "windup_320",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_windup_320.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 320,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, winding up with the axe raised high over her head with both hands, knees bent, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "chop_320",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_chop_320.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 320,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, mid-swing, the axe slammed down in front of her, blade near the ground, body leaning forward, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "block_320",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_block_320.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 320,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, bracing defensively, holding the axe horizontally in front of her body with both hands like a shield, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "chop_90",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_chop_90.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 90,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, mid-swing, the axe slammed down in front of her, blade near the ground, body leaning forward, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "chop_140",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_chop_140.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 140,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, mid-swing, the axe slammed down in front of her, blade near the ground, body leaning forward, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "windup_90",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_windup_90.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 90,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, winding up with the axe raised high over her head with both hands, knees bent, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "windup_140",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/anim-test/still_windup_140.png",
+      "seed": 61,
+      "init": "unity/Assets/Resources/Art/leaders/leader_green.png",
+      "init_strength": 140,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown braided pigtails, big bright green eyes, orange scarf, deep green hooded cloak with the hood up, holding a huge two-handed woodcutter axe with a long wooden handle and a wide rectangular steel blade, winding up with the axe raised high over her head with both hands, knees bent, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    }
+  ]
+}

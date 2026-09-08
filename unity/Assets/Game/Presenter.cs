@@ -4,6 +4,7 @@
 // 座標は GameRoot.Anchors (画面の組み立てが登録した RectTransform) から取る。無ければ黙って飛ばす。
 using System;
 using System.Collections.Generic;
+using DeckRogue.Engine;
 using UnityEngine;
 using UnityEngine.UI;
 using DeckRogue.Engine.Generated;
@@ -159,6 +160,8 @@ namespace DeckRogue.Game
                         Audio.Play(d.HpLoss >= 12 ? "hit_big" : "hit", d.HpLoss > 0 ? 0.9f : 0.45f);
                         if (d.HpLoss > 0)
                         {
+                            Stage.PlayAnim("player", "hurt");
+                            if (pSpr != null) Tween.Lunge(pSpr, new Vector2(-36f, 0f));   // のけぞり (後ろへ小さく)
                             Stage.Shake(Mathf.Min(18f, 4f + d.HpLoss * 0.7f), 0.3f);
                             Stage.Flash("player");
                             Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, Mathf.Min(0.35f, 0.1f + d.HpLoss * 0.015f)));
@@ -189,6 +192,26 @@ namespace DeckRogue.Game
                     Audio.Play("enemy_turn", 0.6f, 0f);
                     Banner(fx, "敵の番", UiKit.Hex("#ff6b57"));
                     break;
+                case GameEvent_CardPlayed cp:
+                {
+                    // 攻撃札なら斧を振る (本家式: その場で踏み込んで振る)。守りの札なら構え
+                    CardDef def = null;
+                    try { def = Content.GetCardDef(cp.CardId); } catch (Exception) { }
+                    bool atk = false, blk = false;
+                    if (def != null)
+                    {
+                        foreach (var e in def.Effects) { if (e.Trigger == null || e.Trigger == "onPlay") { if (e.Effect == "dealDamage" || e.Effect == "dealDamageRandom" || e.Effect == "dealDamageCleave") atk = true; if (e.Effect == "gainBlock" || e.Effect == "gainIceBlock") blk = true; } }
+                        if (def.Modes != null) foreach (var m in def.Modes) foreach (var e in m.Effects) { if (e.Effect == "dealDamage") atk = true; if (e.Effect == "gainBlock") blk = true; }
+                    }
+                    if (atk)
+                    {
+                        Stage.PlayAnim("player", "attack");
+                        var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                        if (pSpr != null) Tween.Lunge(pSpr, new Vector2(70f, 8f));
+                    }
+                    else if (blk) Stage.PlayAnim("player", "block");
+                    break;
+                }
                 case GameEvent_StatusInflicted si:
                 {
                     // 自分に状態異常: 紫の浮き文字で「いつ掛かったか」を見せる (2026-09-09「いつデバフをかけられたかも分からない」)

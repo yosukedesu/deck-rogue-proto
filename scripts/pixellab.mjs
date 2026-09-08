@@ -8,6 +8,7 @@
 //   node scripts/pixellab.mjs gen docs/pixellab/batch1.json   # 発注書 (manifest) を順に生成
 //     --only <id,id>   その id だけ / --force  既にある PNG も作り直す / --dry  送らずに内容だけ表示 / --seed N  seed を上書き
 //   node scripts/pixellab.mjs rotate <in.png> <out.png> --from south-east --to south-west [--size 64]
+//   node scripts/pixellab.mjs animate <ref.png> <outprefix> --action "..." --description "..." --frames N [--view v] [--direction d] [--seed N]
 //
 // 発注書 (JSON): { "defaults": {...}, "items": [ { "id", "out", "description", "size":[w,h], "direction", "view", "outline", "shading", "detail",
 //   "negative", "no_background", "seed", "engine": "pixflux"|"bitforge", "style": "<png path>" (bitforge の style_image), "style_strength": 0-100 } ] }
@@ -126,6 +127,104 @@ async function gen(manifestPath, opts) {
   console.log(`合計 ${spent.toFixed(4)} USD`)
 }
 
+// animate-with-text: 参考画像 (64×64) とテキストから N コマを生成し、<prefix>_<i>.png に保存する (2026-09-09 このはの戦闘アニメ)
+async function animate(refFile, prefix, opts) {
+  const n = Number(opts.frames ?? 4)
+  const body = {
+    image_size: { width: 64, height: 64 },
+    description: String(opts.description ?? ''),
+    action: String(opts.action ?? 'idle'),
+    negative_description: String(opts.negative ?? ''),
+    reference_image: pngToB64(path.resolve(refFile)),
+    n_frames: n,
+    view: opts.view ?? 'low top-down',
+    direction: opts.direction ?? 'south-east',
+    text_guidance_scale: Number(opts.guidance ?? 8),
+    image_guidance_scale: Number(opts['image-guidance'] ?? 1.4),
+  }
+  if (opts.color) body.color_image = pngToB64(path.resolve(opts.color))                       // パレットの固定 (元絵を渡す)
+  if (opts.init) {                                                                            // 各コマの初期画像 (元絵を n 枚) = 見た目の固定。strength が高いほど動かない
+    body.init_images = Array.from({ length: n }, () => pngToB64(path.resolve(opts.init)))
+    body.init_image_strength = Number(opts['init-strength'] ?? 300)
+  }
+  if (opts.seed !== undefined) body.seed = Number(opts.seed)
+  console.log(`animate ${path.basename(refFile)} → ${prefix}_[0..${n - 1}] : ${body.action}`)
+  if (opts.dry) return
+  const r = await call('/animate-with-text', body)
+  const dir = path.dirname(path.resolve(prefix))
+  fs.mkdirSync(dir, { recursive: true })
+  const frames = r.images ?? []
+  frames.forEach((im, i) => fs.writeFileSync(`${prefix}_${i}.png`, b64ToPng(im.base64 ?? im)))
+  const meta = { engine: 'animate-with-text', request: { ...body, reference_image: refFile }, usage: r.usage, frames: frames.length, at: new Date().toISOString() }
+  fs.writeFileSync(`${prefix}.pixellab.json`, JSON.stringify(meta, null, 2))
+  console.log(`  → ${frames.length} frames (${r.usage?.usd ?? '?'} USD)`)
+}
+
+// estimate-skeleton: 絵から骨格 (18点) を推定して JSON に保存する (2026-09-09)
+async function estimateSkeleton(inFile, outFile) {
+  const r = await call('/estimate-skeleton', { image: pngToB64(path.resolve(inFile)) })
+  fs.writeFileSync(path.resolve(outFile), JSON.stringify(r.keypoints, null, 2))
+  console.log(`→ ${outFile} (${r.keypoints.length} keypoints, ${r.usage?.usd ?? '?'} USD)`)
+}
+
+// animate-with-skeleton: 参考画像 + 3コマぶんの骨格 (JSON: [[{x,y,label,z_index}...] ×3]) → 3コマ
+async function animateSkeleton(refFile, kpFile, prefix, opts) {
+  const frames = JSON.parse(fs.readFileSync(path.resolve(kpFile), 'utf-8'))
+  const size = Number(opts.size ?? 64)
+  const body = {
+    image_size: { width: size, height: size },
+    reference_image: pngToB64(path.resolve(refFile)),
+    skeleton_keypoints: frames,
+    guidance_scale: Number(opts.guidance ?? 4),
+    view: opts.view ?? 'low top-down',
+    direction: opts.direction ?? 'south-east',
+  }
+  if (opts.color) body.color_image = pngToB64(path.resolve(opts.color))
+  if (opts.init) { body.init_images = frames.map(() => pngToB64(path.resolve(opts.init))); body.init_image_strength = Number(opts['init-strength'] ?? 300) }
+  if (opts['init-list']) { body.init_images = String(opts['init-list']).split(',').map(f => pngToB64(path.resolve(f))); body.init_image_strength = Number(opts['init-strength'] ?? 300) }
+  if (opts['mask-list']) {
+    // 白=描き直す。inpainting_images は init と同じ絵 (直したい所だけ白)
+    body.inpainting_images = String(opts['init-list'] ?? '').split(',').map(f => pngToB64(path.resolve(f)))
+    body.mask_images = String(opts['mask-list']).split(',').map(f => (f && f !== '-') ? pngToB64(path.resolve(f)) : null)
+  }
+  if (opts.seed !== undefined) body.seed = Number(opts.seed)
+  console.log(`animate-skeleton ${path.basename(refFile)} → ${prefix}_[0..2]`)
+  if (opts.dry) return
+  const r = await call('/animate-with-skeleton', body)
+  fs.mkdirSync(path.dirname(path.resolve(prefix)), { recursive: true })
+  const imgs = r.images ?? []
+  imgs.forEach((im, i) => fs.writeFileSync(`${prefix}_${i}.png`, b64ToPng(im.base64 ?? im)))
+  fs.writeFileSync(`${prefix}.pixellab.json`, JSON.stringify({ engine: 'animate-with-skeleton', request: { ...body, reference_image: refFile, init_images: opts.init, color_image: opts.color }, usage: r.usage, frames: imgs.length, at: new Date().toISOString() }, null, 2))
+  console.log(`  → ${imgs.length} frames (${r.usage?.usd ?? '?'} USD)`)
+}
+
+// inpaint: 白いマスクの範囲だけ描き直す (2026-09-09 斧を消して体だけの参考画像を作る)
+async function inpaint(inFile, maskFile, outFile, opts) {
+  const size = Number(opts.size ?? 64)
+  const body = {
+    description: String(opts.description ?? ''),
+    negative_description: String(opts.negative ?? ''),
+    image_size: { width: size, height: size },
+    inpainting_image: pngToB64(path.resolve(inFile)),
+    mask_image: pngToB64(path.resolve(maskFile)),
+    text_guidance_scale: Number(opts.guidance ?? 3),
+    no_background: true,
+    view: opts.view ?? 'low top-down',
+    direction: opts.direction ?? 'south-east',
+    outline: opts.outline ?? 'selective outline',
+    shading: opts.shading ?? 'medium shading',
+    detail: opts.detail ?? 'highly detailed',
+  }
+  if (opts.color) body.color_image = pngToB64(path.resolve(opts.color))
+  if (opts.seed !== undefined) body.seed = Number(opts.seed)
+  console.log(`inpaint ${path.basename(inFile)} → ${outFile}`)
+  if (opts.dry) return
+  const r = await call('/inpaint', body)
+  fs.mkdirSync(path.dirname(path.resolve(outFile)), { recursive: true })
+  fs.writeFileSync(path.resolve(outFile), b64ToPng(r.image.base64))
+  console.log(`  → ${outFile} (${r.usage?.usd ?? '?'} USD)`)
+}
+
 async function rotate(inFile, outFile, opts) {
   const size = Number(opts.size ?? 64)
   const body = {
@@ -149,6 +248,10 @@ try {
   if (cmd === 'balance') await balance()
   else if (cmd === 'gen') await gen(pos[1], opts)
   else if (cmd === 'rotate') await rotate(pos[1], pos[2], opts)
+  else if (cmd === 'animate') await animate(pos[1], pos[2], opts)
+  else if (cmd === 'skeleton') await estimateSkeleton(pos[1], pos[2])
+  else if (cmd === 'inpaint') await inpaint(pos[1], pos[2], pos[3], opts)
+  else if (cmd === 'animskel') await animateSkeleton(pos[1], pos[2], pos[3], opts)
   else { console.error('usage: pixellab.mjs balance | gen <manifest.json> [--only a,b] [--force] [--dry] [--seed N] | rotate <in> <out> [--from d] [--to d] [--size N]'); process.exit(1) }
 } catch (e) {
   console.error(String(e.message ?? e))

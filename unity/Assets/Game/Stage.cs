@@ -448,6 +448,22 @@ namespace DeckRogue.Game
             var u = go.AddComponent<StageUnit>();
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
             u.FeetPad = FeetPad(sprite);   // 絵の下端の透明行 (足元の余白) の割合。板をそのぶん下げて足を地面に着ける (2026-09-08「キャラが地面から浮いてる」)
+            u.BaseTex = sprite.texture;
+            u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
+            // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
+            string cat = key == "player" ? "leaders" : "enemies";
+            foreach (var anim in new[] { "idle", "attack", "hurt", "block" })
+            {
+                var list = new List<Texture2D>();
+                for (int i = 0; i < 16; i++)
+                {
+                    var f = Theme.Art(cat + "/anim", sprite.name + "_" + anim + "_" + i);
+                    if (f == null) break;
+                    list.Add(f.texture);
+                }
+                if (list.Count > 0) u.Anims[anim] = list;
+            }
+            if (u.Anims.ContainsKey("idle")) u.Play("idle");
             if (key == "player")
             {
                 // 杖の先の光: 板の右上 (絵の uv≈0.64,0.93) に追従する淡い暖色のハロー
@@ -486,6 +502,13 @@ namespace DeckRogue.Game
             return pad;
         }
 
+        /// <summary>コマ送りの再生 (attack/hurt/block は1回、終わると待機へ)。コマが無ければ何もしない</summary>
+        public static void PlayAnim(string key, string anim)
+        {
+            StageUnit u;
+            if (_bound.TryGetValue(key, out u) && u != null) u.Play(anim);
+        }
+
         /// <summary>被弾の白い点滅</summary>
         public static void Flash(string key, float dur = 0.18f)
         {
@@ -506,11 +529,45 @@ namespace DeckRogue.Game
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float Depth; public Transform Shadow;
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
+            // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
+            public Texture2D BaseTex;
+            public Dictionary<string, List<Texture2D>> Anims = new Dictionary<string, List<Texture2D>>();
+            public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 7f; public bool Breathe = true; public float BreathePhase;
             static readonly Vector3[] _c = new Vector3[4];
+            public void Play(string anim)
+            {
+                if (!Anims.ContainsKey(anim) || Anims[anim].Count == 0) return;
+                Anim = anim; Frame = 0; FrameT = 0f;
+                Apply();
+            }
+            void Apply()
+            {
+                List<Texture2D> frames;
+                Texture2D tex = Anims.TryGetValue(Anim, out frames) && frames.Count > 0 ? frames[Mathf.Clamp(Frame, 0, frames.Count - 1)] : BaseTex;
+                if (tex == null || Mat == null) return;
+                Mat.SetTexture("_BaseMap", tex); Mat.mainTexture = tex;
+            }
+            void Advance()
+            {
+                List<Texture2D> frames;
+                if (!Anims.TryGetValue(Anim, out frames) || frames.Count == 0) return;
+                float fps = Anim == "idle" ? 4f : Fps;
+                FrameT += Time.deltaTime;
+                if (FrameT < 1f / fps) return;
+                FrameT -= 1f / fps;
+                Frame++;
+                if (Frame >= frames.Count)
+                {
+                    if (Anim == "idle") Frame = 0;
+                    else { Anim = "idle"; Frame = 0; }
+                }
+                Apply();
+            }
             void OnDestroy() { if (Shadow != null) Destroy(Shadow.gameObject); if (Halo != null) Destroy(Halo.gameObject); }
             public void LateUpdate()
             {
                 if (Rect == null) { Destroy(gameObject); return; }
+                Advance();
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
@@ -518,6 +575,7 @@ namespace DeckRogue.Game
                 var pos = ScreenToPlane(sx, sy, Depth);
                 var ground = pos;
                 pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
+                if (Anim == "idle" && Breathe) pos += _up * (Mathf.Sin(Time.time * 2.4f + BreathePhase) * 2f * k);   // 呼吸: ±2px の上下 (拡大・回転はしない)
                 transform.position = pos;
                 transform.rotation = CameraRotation;
                 transform.localScale = new Vector3(Mathf.Max(0.01f, w * k), Mathf.Max(0.01f, h * k), 1f);
