@@ -466,7 +466,7 @@ namespace DeckRogue.Game
                 }
                 if (list.Count > 0) u.Anims[anim] = list;
             }
-            u.FrameDur["attack"] = new[] { 0.09f, 0.03f, 0.05f, 0.14f };   // 溜め 0.09 → 頭上 0.03 → 振り抜き 0.05 → 残心 0.14 (2026-09-09「振り下ろし遅すぎ」)
+            u.FrameDur["attack"] = new[] { 0.05f, 0.02f, 0.03f, 0.12f };   // 溜め 0.05 → 頭上 0.02 → 振り抜き 0.03 (一瞬) → 食い込み 0.12 (重さ) = 0.22s (2026-09-09「もっと早く。ゆっくりは斧が重く見えるように」)
             u.FrameDur["hurt"] = new[] { 0.06f, 0.16f, 0.10f };
             u.FrameDur["block"] = new[] { 0.06f, 0.20f, 0.08f };
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)

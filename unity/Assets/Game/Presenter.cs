@@ -82,7 +82,7 @@ namespace DeckRogue.Game
             Canvas.ForceUpdateCanvases();
             // カードが敵へ飛ぶ 0.2 秒に着弾を合わせる
             float delay = 0f;
-            for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = 0.2f; break; }
+            for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = 0.1f; break; }   // 着弾は振り抜き (0.07〜0.10s) に合わせる
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
@@ -216,7 +216,8 @@ namespace DeckRogue.Game
                     {
                         Stage.PlayAnim("player", "attack");
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                        if (pSpr != null) Tween.After(0.1f, () => { if (pSpr != null) Tween.Lunge(pSpr, new Vector2(70f, 8f)); });   // 踏み込みは振り抜きの瞬間に
+                        // 振り抜きの瞬間 (0.07s): 踏み込み + 体が少し沈む + 画面が揺れる = 斧の重さ
+                        Tween.After(0.07f, () => { if (pSpr != null) Tween.Lunge(pSpr, new Vector2(64f, -6f)); Stage.Shake(7f, 0.16f); });
                     }
                     else if (blk) Stage.PlayAnim("player", "block");
                     break;

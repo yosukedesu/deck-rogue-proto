@@ -161,10 +161,10 @@ namespace DeckRogue.Game
                 string playedUid = dmgCard.Uid;
                 g.OnEnemyClicked(tgt);
                 // 攻撃コマはクリック直後 0.5 秒 (8fps×4) なので、演出待ちの前に撮る
-                yield return new WaitForSeconds(0.04f);
-                yield return Shot("battle-swing", 1);    // 溜め (0〜0.09s)
+                yield return new WaitForSeconds(0.02f);
+                yield return Shot("battle-swing", 1);    // 溜め (0〜0.05s)
                 yield return new WaitForSeconds(0.08f);
-                yield return Shot("battle-swing2", 1);   // 振り抜き〜残心 (0.12〜0.31s)
+                yield return Shot("battle-swing2", 1);   // 食い込み (0.10〜0.22s)
                 yield return WaitPresentation();
                 yield return new WaitForSeconds(0.6f);
                 var st2 = g.Rs != null ? g.Rs.Combat : null;
