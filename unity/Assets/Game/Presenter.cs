@@ -216,7 +216,7 @@ namespace DeckRogue.Game
                     {
                         Stage.PlayAnim("player", "attack");
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                        if (pSpr != null) Tween.Lunge(pSpr, new Vector2(70f, 8f));
+                        if (pSpr != null) Tween.After(0.1f, () => { if (pSpr != null) Tween.Lunge(pSpr, new Vector2(70f, 8f)); });   // 踏み込みは振り抜きの瞬間に
                     }
                     else if (blk) Stage.PlayAnim("player", "block");
                     break;

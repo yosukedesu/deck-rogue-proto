@@ -466,6 +466,9 @@ namespace DeckRogue.Game
                 }
                 if (list.Count > 0) u.Anims[anim] = list;
             }
+            u.FrameDur["attack"] = new[] { 0.09f, 0.03f, 0.05f, 0.14f };   // 溜め 0.09 → 頭上 0.03 → 振り抜き 0.05 → 残心 0.14 (2026-09-09「振り下ろし遅すぎ」)
+            u.FrameDur["hurt"] = new[] { 0.06f, 0.16f, 0.10f };
+            u.FrameDur["block"] = new[] { 0.06f, 0.20f, 0.08f };
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
             AnimState st0;
@@ -552,6 +555,7 @@ namespace DeckRogue.Game
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
             public Dictionary<string, List<Texture2D>> Anims = new Dictionary<string, List<Texture2D>>();
+            public Dictionary<string, float[]> FrameDur = new Dictionary<string, float[]>();   // コマごとの秒 (緩急)。無ければ fps で均等
             public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 8f; public bool Breathe = true; public float BreathePhase; public string Key;
             static readonly Vector3[] _c = new Vector3[4];
             public void Play(string anim)
@@ -586,9 +590,12 @@ namespace DeckRogue.Game
                 if (Key != null) _animStates[Key] = new AnimState { Anim = Anim, Frame = Frame, FrameT = FrameT, At = Time.time };
                 if (!Anims.TryGetValue(Anim, out frames) || frames.Count == 0) return;
                 float fps = Anim == "idle" ? 4f : Fps;
+                float dur = 1f / fps;
+                float[] durs;
+                if (FrameDur.TryGetValue(Anim, out durs) && Frame < durs.Length) dur = durs[Frame];
                 FrameT += Time.deltaTime;
-                if (FrameT < 1f / fps) return;
-                FrameT -= 1f / fps;
+                if (FrameT < dur) return;
+                FrameT -= dur;
                 Frame++;
                 if (Frame >= frames.Count)
                 {
