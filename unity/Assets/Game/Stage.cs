@@ -647,7 +647,7 @@ namespace DeckRogue.Game
                 p.CliffA = UiKit.Hex("#3f484c"); p.CliffB = UiKit.Hex("#2e3538");
                 p.LeafA = UiKit.Hex("#25564c"); p.LeafB = UiKit.Hex("#1a3f38"); p.LeafC = UiKit.Hex("#3f7a66"); p.Trunk = UiKit.Hex("#3c3a38");
                 p.Ambient = new Color(0.26f, 0.36f, 0.42f); p.Sun = new Color(0.55f, 0.85f, 0.92f); p.Lantern = new Color(0.55f, 0.95f, 1f);
-                p.Filter = new Color(0.86f, 1.0f, 1.04f); p.UnitAmbient = new Color(0.62f, 0.8f, 0.86f);
+                p.Filter = new Color(0.92f, 0.97f, 1.06f); p.UnitAmbient = new Color(0.8f, 0.84f, 0.96f);   // 銀の月光 (キャラを緑に染めない)
             }
             else if (act == 2)
             {
@@ -1012,7 +1012,7 @@ namespace DeckRogue.Game
             var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
             for (int i = 0; i < 6; i++)
             {
-                float t = -15f + i * 6.4f; float sv = (i % 2 == 0) ? -5.4f : 5.2f;   // 場の外 (手前の柱が伏せ場と重ならない)
+                float t = -15f + i * 6.4f; float sv = (t < -11f || t > 13f) ? -5.4f : 5.2f;   // 手前の柱は両端だけ (真ん中の手前はカメラに近くて画面を貫く)
                 var w = OnPath(t, sv);
                 var pole = new MB(); pole.Box(w.x, 0f, w.z, 0.14f, 3.2f, 0.14f); pole.Box(w.x, 0f, w.z, 0.5f, 0.12f, 0.5f); pole.Box(w.x + 0.25f, 3.1f, w.z, 0.6f, 0.08f, 0.08f);
                 Solid("lantern-pole", pole, mIron);
@@ -1104,10 +1104,10 @@ namespace DeckRogue.Game
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var stars = Prop("stars", Px.Stars(rng), new Vector3(0f, 6f, 88f), 14f, 0.3f, 150f);
             stars.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); stars.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var moon = Prop("moon", Px.Disc(new Color(2.2f, 2.1f, 1.8f)), new Vector3(8f, 11.5f, 84f), 14f, 0.4f);   // 空を埋める月 (仰角 3.7° = 帯の中)
+            var moon = Prop("moon", Px.Disc(new Color(2.2f, 2.1f, 1.8f)), new Vector3(8f, 9.6f, 84f), 13f, 0.4f);   // 空を埋める月 (帯の中に全部入る)
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white); moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.55f)), new Vector3(8f, 11.5f, 84.5f), 30f, 30f);
+            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.55f)), new Vector3(8f, 9.6f, 84.5f), 28f, 28f);
             var beam = Px.Beam();
             float[] bx = { -8f, 4f, 16f }; float[] bz = { 10f, 12f, 9f };
             for (int i = 0; i < bx.Length; i++) { var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), 22f, 6f); b.transform.rotation = Quaternion.Euler(0f, 0f, -10f); }
