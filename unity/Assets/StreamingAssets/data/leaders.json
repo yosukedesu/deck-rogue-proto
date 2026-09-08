@@ -11,7 +11,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic",
     "sprite": "🌳",
-    "description": "大樹の巫女。タフで、根を張ってから戦う。2ターン目からエナジー上限4",
+    "description": "大樹の狩人。大樹の里の見習い狩人で、自分より大きな斧を振る。タフで、根を張ってから戦う。2ターン目からエナジー上限4",
     "passive": [
       {
         "trigger": "onCombatStart",

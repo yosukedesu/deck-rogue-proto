@@ -1,9 +1,9 @@
 {
-  "id": "leader_green",
+  "id": "leader_green_61",
   "engine": "pixflux",
   "request": {
-    "description": "Octopath Traveler HD-2D style pixel art character, cute chibi with 2.5 heads tall proportions, young forest priestess girl named Konoha, brown braided hair with a green leaf hair ornament, white robe with green trim, holding a tall wooden staff sprouting small leaves, gentle calm expression, standing idle pose, three-quarter front view facing right, seen slightly from above, clean readable silhouette, 24 color palette, transparent background",
-    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic",
+    "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter named Konoha, short reddish-brown ponytail, big bright eyes, cheerful confident expression, orange scarf around the neck, deep green tunic with a leather chest piece and fur collar, short boots, holding a huge two-handed axe with a long wooden handle wrapped in cloth and a wide worn iron blade, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, tall proportions, sad, scary, blush",
     "image_size": {
       "width": 64,
       "height": 64
@@ -11,14 +11,15 @@
     "text_guidance_scale": 8,
     "no_background": true,
     "outline": "selective outline",
-    "shading": "detailed shading",
+    "shading": "medium shading",
     "detail": "highly detailed",
     "view": "low top-down",
-    "direction": "south-east"
+    "direction": "south-east",
+    "seed": 61
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T15:31:10.585Z"
+  "at": "2026-09-08T05:05:39.738Z"
 }

@@ -1,0 +1,44 @@
+{
+  "_note": "このは作り直し・大樹の狩人 (2026-09-08 ユーザー裁定: 森の狩人・両手の大斧・元気な見習い狩人・赤茶の短いポニーテール＋橙の首巻き・木の長柄＋幅広の鉄刃)。敵と同じ紙の肌で、夜の舞台の唯一の暖色。4シードから選ぶ。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-east",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, tall proportions, sad, scary, blush"
+  },
+  "items": [
+    {
+      "id": "leader_green_3",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter/leader_green_3.png",
+      "seed": 3,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter named Konoha, short reddish-brown ponytail, big bright eyes, cheerful confident expression, orange scarf around the neck, deep green tunic with a leather chest piece and fur collar, short boots, holding a huge two-handed axe with a long wooden handle wrapped in cloth and a wide worn iron blade, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "leader_green_19",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter/leader_green_19.png",
+      "seed": 19,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter named Konoha, short reddish-brown ponytail, big bright eyes, cheerful confident expression, orange scarf around the neck, deep green tunic with a leather chest piece and fur collar, short boots, holding a huge two-handed axe with a long wooden handle wrapped in cloth and a wide worn iron blade, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "leader_green_37",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter/leader_green_37.png",
+      "seed": 37,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter named Konoha, short reddish-brown ponytail, big bright eyes, cheerful confident expression, orange scarf around the neck, deep green tunic with a leather chest piece and fur collar, short boots, holding a huge two-handed axe with a long wooden handle wrapped in cloth and a wide worn iron blade, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "leader_green_61",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter/leader_green_61.png",
+      "seed": 61,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter named Konoha, short reddish-brown ponytail, big bright eyes, cheerful confident expression, orange scarf around the neck, deep green tunic with a leather chest piece and fur collar, short boots, holding a huge two-handed axe with a long wooden handle wrapped in cloth and a wide worn iron blade, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    }
+  ]
+}
