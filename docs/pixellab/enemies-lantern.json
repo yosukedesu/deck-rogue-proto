@@ -1,0 +1,246 @@
+{
+  "_note": "敵の印象をホロウナイトから離す本番 (2026-09-08 ユーザー選択「灯りの目」): 顔も仮面も無く、森の素材 (苔・樹皮・藁・粘土) の暗い体に灯りの目が2つだけ。色は墨+苔+黄土+生成り、目だけが暖色。幕1の18体+エリート4+ボス3。node scripts/pixellab.mjs gen docs/pixellab/enemies-lantern.json --force",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "mask, skull, white face, bone white, hollow eye sockets, human face, person, humanoid, teeth, smile, colorful, saturated colors, bright body, glow on the body, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature: a dark quiet being made of forest matter (moss, bark, straw, wet clay), it has NO face and NO mask, only two small softly glowing ember-orange eyes like distant lantern lights set in the dark of its body, melancholic still mood, muted palette of ink black, dusty moss green, ochre and pale straw where the eyes are the only warm light, the body shape is exactly the creature described, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_probe",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_probe.png",
+      "description": "{style}, a small hunched scout creature made of dry leaves and twigs with a hood of dead leaves, long thin twig arms holding a thin probing stick, tiptoeing, two small ember eyes in the hood's dark"
+    },
+    {
+      "id": "enemy_slug",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_slug.png",
+      "description": "{style}, a fat slug of dark wet clay: one long soft segmented body lying flat with no legs, two short eye stalks each tipped with an ember light, a faint pale trail of acid"
+    },
+    {
+      "id": "enemy_mudling",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a small low dome of dark wet mud like a slime with one drip sliding down, no limbs, two small ember eyes pressed into its front"
+    },
+    {
+      "id": "enemy_sludge_spider",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a spider made of dark wet clay and twigs: a round abdomen and small head, EIGHT thin twig legs spread wide, a drop of sludge hanging from a thread, two small ember eyes on the head"
+    },
+    {
+      "id": "enemy_iron_clam",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_iron_clam.png",
+      "description": "{style}, a giant clam: a riveted rusty iron shell half open sitting on the ground, dark moss inside, two small ember eyes glowing from within the shell"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_snap_fruit.png",
+      "description": "{style}, a round plump fruit of dark mossy skin with a stem and two leaves, a wide dark crack of a mouth across it, sitting on the ground, two small ember eyes above the crack"
+    },
+    {
+      "id": "enemy_wide_power",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_wide_power.png",
+      "description": "{style}, a wide low four-legged beast like a broad shaggy loaf of dark moss and straw, many tufts, two small ember eyes low at the front"
+    },
+    {
+      "id": "enemy_thorn_squirrel",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thorn_squirrel.png",
+      "description": "{style}, a squirrel of dark bark with a huge bushy tail covered in pale straw thorns, tiny paws, two small ember eyes"
+    },
+    {
+      "id": "enemy_apprentice_colossus",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_apprentice_colossus.png",
+      "description": "{style}, a small stone golem of stacked cracked dark rock blocks with moss in the cracks, thick heavy arms, one arm raised slowly, two small ember eyes in a dark hollow of the head block"
+    },
+    {
+      "id": "enemy_cultist",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_cultist.png",
+      "description": "{style}, a small figure wrapped in a dark tattered straw cape and hood with no face inside, tiny twig hands clasped around a small dark idol, two small ember eyes deep in the hood"
+    },
+    {
+      "id": "enemy_mud_lump",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mud_lump.png",
+      "description": "{style}, a big slow mound of dark dripping mud shaped like a hunched giant with heavy drooping arms of mud, no face, two small ember eyes in the front of the mound"
+    },
+    {
+      "id": "enemy_mimic_imp",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mimic_imp.png",
+      "description": "{style}, a tiny imp of dark bark with two little horns and ragged leaf wings spread, holding a small cracked round mirror, thin tail, two small ember eyes"
+    },
+    {
+      "id": "enemy_thief",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thief.png",
+      "description": "{style}, a small goblin-like creature of dark straw with huge pointed leaf ears and thin twig limbs, carrying a worn coin sack bigger than itself on its back, sneaking, two small ember eyes"
+    },
+    {
+      "id": "enemy_gaping_maw",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_gaping_maw.png",
+      "description": "{style}, a round beast of dark moss that is mostly one enormous gaping dark mouth with a ring of pale wooden teeth, short stubby legs, two small ember eyes above the mouth"
+    },
+    {
+      "id": "enemy_cog_construct",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_cog_construct.png",
+      "description": "{style}, a cube-shaped automaton of rusty iron plates and brass gears overgrown with moss, one round glass lens glowing ember as its single eye, a spinning cog on top, stubby metal legs"
+    },
+    {
+      "id": "enemy_vine_walker",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_vine_walker.png",
+      "description": "{style}, a walking dead tree stump on thick root legs, thorny vines wrapped around it, a few leaves on a branch, two small ember eyes in a dark hollow of the bark"
+    },
+    {
+      "id": "enemy_spore_cap",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_spore_cap.png",
+      "description": "{style}, a plump mushroom creature with a wide spotted cap of dusty ochre, stubby feet, a puff of grey spores, two small ember eyes in the dark under the cap"
+    },
+    {
+      "id": "enemy_strangler_serpent",
+      "size": [
+        64,
+        64
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_strangler_serpent.png",
+      "description": "{style}, a thick constrictor serpent of dark bark-like scales coiled in loops and rearing its head, tongue out, two small ember eyes"
+    },
+    {
+      "id": "enemy_elite_sergeant",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_sergeant.png",
+      "description": "{style}, a stout heavy ogre-like drill sergeant made of dark clay and rope, thick arms, spiked wooden shoulder plates, holding a long coiled whip, stomping forward, two small ember eyes in a dark hollow head"
+    },
+    {
+      "id": "enemy_elite_sentry",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_sentry.png",
+      "description": "{style}, a tall thin sentry statue of cracked dark stone overgrown with moss, holding a long spear upright, standing at attention, one narrow ember eye glowing in the head"
+    },
+    {
+      "id": "enemy_elite_gold_raven",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_gold_raven.png",
+      "description": "{style}, a large raven of dark ragged feathers with a few pale gold-tipped feathers, wings half spread, clawed feet on the ground, two small ember eyes"
+    },
+    {
+      "id": "enemy_elite_devourer",
+      "size": [
+        80,
+        80
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_elite_devourer.png",
+      "description": "{style}, a fat giant larva-like bug of dark clay with a segmented body, a huge round dark mouth ringed with pale wooden teeth at the front, tiny legs, hunched and hungry, two small ember eyes above the mouth"
+    },
+    {
+      "id": "enemy_brute",
+      "size": [
+        96,
+        96
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_brute.png",
+      "description": "{style}, a huge hulking ogre boss of dark clay and moss, enormous thick arms, hunched heavy body, dragging a massive spiked wooden club, dominating pose, two small ember eyes in a dark hollow head"
+    },
+    {
+      "id": "enemy_kin_priest",
+      "size": [
+        96,
+        96
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_kin_priest.png",
+      "description": "{style}, a tall priest figure wrapped in dark layered straw robes with a tall pale straw headdress, no face inside the hood, holding a staff topped with a dark idol, solemn, two small ember eyes deep in the hood"
+    },
+    {
+      "id": "enemy_kin_follower",
+      "size": [
+        96,
+        96
+      ],
+      "out": "unity/Assets/Resources/Art/enemies/enemy_kin_follower.png",
+      "description": "{style}, a slender dancer figure of dark cloth and straw with flowing dark ribbons, no face, one leg raised mid-dance, holding a curved knife, graceful and eerie, two small ember eyes"
+    }
+  ]
+}

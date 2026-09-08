@@ -60,7 +60,8 @@ function b64ToPng(b64) {
   return Buffer.from(s, 'base64')
 }
 function pngToB64(file) {
-  return { type: 'base64', base64: 'data:image/png;base64,' + fs.readFileSync(file).toString('base64') }
+  // 送る側は data: の接頭辞なしの生の base64 (接頭辞つきだと HTTP 500 "Invalid base64-encoded string")
+  return { type: 'base64', base64: fs.readFileSync(file).toString('base64') }
 }
 
 function args() {

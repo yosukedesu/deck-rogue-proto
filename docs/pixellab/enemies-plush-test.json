@@ -1,0 +1,41 @@
+{
+  "_note": "敵の試作・ぬいぐるみ版 (2026-09-08 ユーザー「静かな版の果実がかなりいい、蜘蛛は不気味」): 果実を参考画像 (bitforge style) に、丸い体・短い脚・小さな穏やかな顔・色褪せた低彩度で揃える。 bitforge の参考画像は形まで写す (全部が果実になった) ので pixflux に戻し、言葉で揃える。 2026-09-08 ユーザー「もう少し寂しげに」: 頬の赤みを消し、目は半分閉じた眠たげな伏し目、少しうつむく。彩度はさらに落とす。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "scary, horror, menacing, creepy, spindly, sharp teeth, fangs, claws, red eyes, glowing eyes, skull, mask, bone, human face, person, humanoid, big googly eyes, cartoon mascot, smile, happy, cheerful, blush, rosy cheeks, pink cheeks, rabbit, bunny, bear, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature from a faded old picture book: a small quiet plush-like forest creature, round soft worn body, short stubby limbs, a tiny wistful face with two half-closed sleepy dark eyes looking down and a tiny flat mouth (no blush, no cheeks, no mask), lonely and a little sad, slightly slumped posture, strongly desaturated dusty palette of faded ochre, greyed moss, pale straw and ink, low contrast, the body shape follows the creature described but rounded and simplified like an old plush toy, clean readable silhouette, soft detailed shading, dark selective outline, 10 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_snap_fruit_lonely",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonely/enemy_snap_fruit.png",
+      "description": "{style}, a round faded fruit with a curled stem and two drooping leaves, sitting in the grass, tiny wistful face on its front"
+    },
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a round plush SPIDER: one round fuzzy body with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread below, tiny wistful face"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a small low dome of soft dark MUD SLIME with one drip sliding down its side, no limbs, no ears, a tiny wistful face pressed into its front"
+    },
+    {
+      "id": "enemy_thief",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thief.png",
+      "description": "{style}, a small round GOBLIN plush with a big round head, two small pointed leaf-shaped ears on the sides, stubby arms, carrying a worn coin sack over its shoulder, tiny wistful face, sneaking"
+    }
+  ]
+}

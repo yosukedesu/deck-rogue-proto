@@ -1,0 +1,45 @@
+{
+  "_note": "敵の柄パターン試作・水彩絵本版 (2026-09-08 ユーザー「何パターンかだして」)。UIの絵本の肌に寄せる: クリーム紙・セージ・砂色、水彩の柔らかい塗り、細い墨の線。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "medium detail",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, elf, doll, hair, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, sharp teeth, fangs, claws, red eyes, glowing eyes, skull, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art in the style of a gentle watercolor picture book illustration, soft rounded simplified body, slightly big head, tiny face with two small dark bead eyes and no mouth, no blush, calm and quiet, soft muted pastel palette of cream paper, faded sage, warm sand and greyed brown with a thin dark ink outline, gentle soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "fruit",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_watercolor/fruit.png",
+      "seed": 23,
+      "description": "a round plump FRUIT with faded mossy skin, a curled stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, {style}"
+    },
+    {
+      "id": "spider",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_watercolor/spider.png",
+      "seed": 23,
+      "description": "a round plush spider with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread, {style}"
+    },
+    {
+      "id": "mudling",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_watercolor/mudling.png",
+      "seed": 23,
+      "description": "a small SLIME BLOB of soft dark mud shaped like a low dome, glossy and drippy with one drip sliding down its side, no limbs, no ears, {style}"
+    },
+    {
+      "id": "thief",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_watercolor/thief.png",
+      "seed": 23,
+      "description": "a small creature hiding inside a worn burlap SACK tied at the top, two small dark eyes peeking through holes in the sack, two tiny feet peeking out below, a few coins spilling from the sack, {style}"
+    }
+  ]
+}

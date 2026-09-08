@@ -1,0 +1,36 @@
+{
+  "_note": "敵の印象をホロウナイトから離す試作 (2026-09-08 ユーザー選択「灯りの目」): 顔も仮面も無く、暗い体に灯りの目が2つだけ。素材は森のもの (苔・樹皮・藁・粘土)。色は墨+苔+黄土+生成り、目だけが暖色。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "mask, skull, white face, bone white, hollow eye sockets, human face, person, humanoid, teeth, smile, colorful, saturated colors, bright body, glow on the body, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature: a dark quiet being made of forest matter (moss, bark, straw, wet clay), it has NO face and NO mask, only two small softly glowing ember-orange eyes like distant lantern lights set in the dark of its body, melancholic still mood, muted palette of ink black, dusty moss green, ochre and pale straw where the eyes are the only warm light, the body shape is exactly the creature described, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a spider made of dark wet clay and twigs: a round abdomen and small head, EIGHT thin twig legs spread wide, a drop of sludge hanging from a thread, the two ember eyes on the head"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_snap_fruit.png",
+      "description": "{style}, a round plump fruit of dark mossy skin with a stem and two leaves, a wide dark crack of a mouth across it, sitting on the ground, two ember eyes above the crack"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a small low dome of dark wet mud like a slime with one drip sliding down, no limbs, two ember eyes pressed into its front"
+    }
+  ]
+}

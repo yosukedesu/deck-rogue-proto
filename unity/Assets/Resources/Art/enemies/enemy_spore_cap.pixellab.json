@@ -1,9 +1,9 @@
 {
-  "id": "enemy_spore_cap",
+  "id": "enemy_spore_cap__41",
   "engine": "pixflux",
   "request": {
-    "description": "pixel art creature in the melancholic style of Hollow Knight: the body shape is exactly the creature described, with a smooth pale bone-white mask face with two large empty black eye sockets, muted desaturated palette of only black, off-white and dusty blue-grey with at most one faint teal accent, forlorn quiet mood, clean readable silhouette, thin limbs, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left, a plump mushroom creature with a wide spotted cap, a pale mask under the cap, stubby feet, a puff of grey spores",
-    "negative_description": "colorful, saturated colors, bright colors, pink cheeks, blush, smile, happy, cartoon mascot, anime, human face, teeth, angry, glow, blurry, gradient background, text, watermark, side profile, hooded robe, cloak, sheet ghost, humanoid, standing person, arms and legs like a person, wispy mist body",
+    "description": "a plump MUSHROOM creature with a wide spotted cap, two bead eyes under the cap, stubby feet, a small puff of grey spores, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile",
     "image_size": {
       "width": 64,
       "height": 64
@@ -11,14 +11,15 @@
     "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
-    "shading": "detailed shading",
+    "shading": "medium shading",
     "detail": "highly detailed",
     "view": "low top-down",
-    "direction": "south-west"
+    "direction": "south-west",
+    "seed": 41
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-07T18:57:10.358Z"
+  "at": "2026-09-08T04:23:58.392Z"
 }

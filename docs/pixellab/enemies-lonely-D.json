@@ -1,0 +1,39 @@
+{
+  "_note": "寂しげ版D (2026-09-08): 蜘蛛専用。ぬいぐるみ語の文 (sheet3) だけが不気味にならなかったので、その文に頬なし・伏し目を足して3シード。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, doll, hair, clothes, rabbit, bunny, bear, cat, fox, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, sharp teeth, fangs, claws, red eyes, glowing eyes, skull, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature from a faded old picture book: a small quiet plush-like forest creature, round soft body, short stubby limbs, a tiny face with only two small dark half-closed eyes looking down and no mouth, no blush, no cheeks, quiet and a little lonely, strongly desaturated dusty palette of faded ochre, greyed moss, pale straw and ink, low contrast, the body shape follows the creature described but rounded and simplified like an old plush toy, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "spider_5",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyD/spider_5.png",
+      "seed": 5,
+      "description": "{style}, a round plush spider with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread, tiny lonely face"
+    },
+    {
+      "id": "spider_17",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyD/spider_17.png",
+      "seed": 17,
+      "description": "{style}, a round plush spider with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread, tiny lonely face"
+    },
+    {
+      "id": "spider_29",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyD/spider_29.png",
+      "seed": 29,
+      "description": "{style}, a round plush spider with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread, tiny lonely face"
+    }
+  ]
+}

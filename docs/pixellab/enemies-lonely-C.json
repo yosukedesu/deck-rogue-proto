@@ -1,0 +1,69 @@
+{
+  "_note": "寂しげ版C (2026-09-08): 物として描く (果実・泥・袋・クッション蜘蛛)。人格語なし・頬の赤み禁止・伏し目。各2シードから選ぶ。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, girl, boy, elf, doll, hair, hood, clothes, skin, rabbit, bunny, bear, cat, fox, deer, dog, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, sharp teeth, fangs, claws, red eyes, glowing eyes, skull, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature from a faded old picture book, soft rounded simplified body like a stuffed cushion, tiny face with only two small dark half-closed eyes looking down and no mouth, no blush, no cheeks, quiet and a little lonely, strongly desaturated dusty palette of faded ochre, greyed moss, pale straw and ink, low contrast, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "fruit_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/fruit_11.png",
+      "seed": 11,
+      "description": "a round plump FRUIT with faded mossy skin, a curled stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, {style}"
+    },
+    {
+      "id": "fruit_23",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/fruit_23.png",
+      "seed": 23,
+      "description": "a round plump FRUIT with faded mossy skin, a curled stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, {style}"
+    },
+    {
+      "id": "spider_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/spider_11.png",
+      "seed": 11,
+      "description": "a round mossy CUSHION SPIDER: one fat round body with a small round head in front and eight short rounded stubby nubs for legs tucked underneath, a drop of dark sludge hanging on a thread beneath it, {style}"
+    },
+    {
+      "id": "spider_23",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/spider_23.png",
+      "seed": 23,
+      "description": "a round mossy CUSHION SPIDER: one fat round body with a small round head in front and eight short rounded stubby nubs for legs tucked underneath, a drop of dark sludge hanging on a thread beneath it, {style}"
+    },
+    {
+      "id": "mudling_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/mudling_11.png",
+      "seed": 11,
+      "description": "a small SLIME BLOB of soft dark mud shaped like a low dome, glossy and drippy with one drip sliding down its side, no limbs, no ears, {style}"
+    },
+    {
+      "id": "mudling_23",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/mudling_23.png",
+      "seed": 23,
+      "description": "a small SLIME BLOB of soft dark mud shaped like a low dome, glossy and drippy with one drip sliding down its side, no limbs, no ears, {style}"
+    },
+    {
+      "id": "thief_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/thief_11.png",
+      "seed": 11,
+      "description": "a small creature hiding inside a worn burlap SACK tied at the top, two small dark eyes peeking through holes in the sack, two tiny feet peeking out below, a few coins spilling from the sack, {style}"
+    },
+    {
+      "id": "thief_23",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyC/thief_23.png",
+      "seed": 23,
+      "description": "a small creature hiding inside a worn burlap SACK tied at the top, two small dark eyes peeking through holes in the sack, two tiny feet peeking out below, a few coins spilling from the sack, {style}"
+    }
+  ]
+}

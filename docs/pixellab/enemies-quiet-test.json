@@ -1,0 +1,36 @@
+{
+  "_note": "敵の試作・静かな版 (2026-09-08): 怖くなく (灯りの目は却下)、マスコットにもならない中間。小さく淡い眠たげな目、色褪せた低彩度、丸く柔らかい形。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "scary, horror, menacing, creepy, sharp teeth, fangs, claws, red eyes, orange eyes, ember, fire, skull, mask, bone, human face, person, humanoid, big googly eyes, cartoon mascot, cute mascot, smile, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature from a faded old picture book: a small quiet forest spirit made of dusty moss, straw and bark, soft rounded shapes, it has NO mask and NO mouth, only two small soft pale eyes, dim and half-closed as if sleepy and a little sad, harmless and gentle, strongly desaturated muted palette of dusty moss green, faded ochre, pale straw and ink, low contrast, no bright colors, the body shape is exactly the creature described, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a plump round spider of dusty moss with a small head and EIGHT thin twig legs, a drop of dark sludge hanging from a thread, two small pale sleepy eyes on the head"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_snap_fruit.png",
+      "description": "{style}, a round plump fruit with faded mossy skin, a stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, two small pale sleepy eyes"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a small low dome of dark mud like a slime with one drip sliding down, no limbs, two small pale sleepy eyes in its front"
+    }
+  ]
+}

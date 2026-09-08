@@ -1,0 +1,45 @@
+{
+  "_note": "敵の柄パターン試作・月明かり版 (2026-09-08)。淡い銀灰の体が内側からほのかに光る、黒い豆の目。灯りの目 (却下) とは違い光は体全体で静か。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, elf, doll, hair, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, skull, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art of a pale moonlit forest spirit, body made of soft pale grey-white mist-like fur or moss faintly glowing from within, soft rounded simplified body, tiny face with two small round black bead eyes and no mouth, no blush, serene and quiet, almost monochrome palette of pale silver, cold grey, dusty blue-grey and ink with one faint moss accent, low contrast, gentle detailed shading, dark selective outline, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "fruit",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_moonlit/fruit.png",
+      "seed": 23,
+      "description": "a round plump FRUIT with pale mossy skin, a curled stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, {style}"
+    },
+    {
+      "id": "spider",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_moonlit/spider.png",
+      "seed": 23,
+      "description": "a round plush spider with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread, {style}"
+    },
+    {
+      "id": "mudling",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_moonlit/mudling.png",
+      "seed": 23,
+      "description": "a small SLIME BLOB of soft dark mud shaped like a low dome, glossy and drippy with one drip sliding down its side, no limbs, no ears, {style}"
+    },
+    {
+      "id": "thief",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_moonlit/thief.png",
+      "seed": 23,
+      "description": "a small creature hiding inside a worn burlap SACK tied at the top, two small dark eyes peeking through holes in the sack, two tiny feet peeking out below, a few coins spilling from the sack, {style}"
+    }
+  ]
+}

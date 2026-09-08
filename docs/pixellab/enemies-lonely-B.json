@@ -1,0 +1,38 @@
+{
+  "_note": "寂しげ版B (2026-09-08): bitforge で果実を参考画像にするが強さを 55→28 に落とし、肌 (色・塗り) だけ写して形は文に従わせる試み。",
+  "defaults": {
+    "engine": "bitforge",
+    "style": "docs/pixellab/style-quiet-fruit.png",
+    "style_strength": 28,
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, girl, boy, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, deer, dog, plush toy, fruit, leaves on head, scary, horror, creepy, spindly, thin legs, sharp teeth, fangs, claws, red eyes, glowing eyes, skull, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art from a faded old picture book, soft rounded simplified shape, tiny face with only two small dark half-closed sleepy eyes looking down and no mouth, no blush, no cheeks, quiet and a little lonely, strongly desaturated dusty palette of faded ochre, greyed moss, pale straw and ink, low contrast, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_sludge_spider",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyB/enemy_sludge_spider.png",
+      "description": "a fat round fuzzy SPIDER shaped like a mossy pincushion: one big round body, a small round head in front, eight SHORT stubby rounded legs tucked close underneath, a drop of dark sludge hanging from a thread beneath it, {style}"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyB/enemy_mudling.png",
+      "description": "a small SLIME BLOB of soft dark mud shaped like a low dome, glossy and drippy with one drip sliding down its side, no limbs, no ears, no hair, {style}"
+    },
+    {
+      "id": "enemy_thief",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonelyB/enemy_thief.png",
+      "description": "a small round mossy IMP creature with a big round head, two small pointed ears, no hair, no clothes, stubby arms holding a worn coin sack, hunched, {style}"
+    }
+  ]
+}

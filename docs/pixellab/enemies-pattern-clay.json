@@ -1,0 +1,45 @@
+{
+  "_note": "敵の柄パターン試作・土人形版 (2026-09-08)。素焼きの土 (埴輪) の質感、うつろな楕円の目の穴。ホロウナイトから最も遠い固有性の候補。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, elf, doll face, hair, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, sharp teeth, fangs, claws, red eyes, glowing eyes, skull, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art of a small figurine made of unglazed matte clay like an ancient haniwa terracotta doll, soft rounded simplified body with a chunky hand-formed look, tiny face with two small hollow oval eye holes and no mouth, no blush, calm and quiet, muted earthen palette of terracotta, pale clay, dusty umber and soot with a faint moss patch, low contrast, soft detailed shading, dark selective outline, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "fruit",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_clay/fruit.png",
+      "seed": 23,
+      "description": "a round plump FRUIT with a curled stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, {style}"
+    },
+    {
+      "id": "spider",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_clay/spider.png",
+      "seed": 23,
+      "description": "a round spider with a small round head and eight SHORT stubby legs tucked close under it, a drop of dark sludge hanging from a thread, {style}"
+    },
+    {
+      "id": "mudling",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_clay/mudling.png",
+      "seed": 23,
+      "description": "a small SLIME BLOB of soft dark mud shaped like a low dome, drippy with one drip sliding down its side, no limbs, no ears, {style}"
+    },
+    {
+      "id": "thief",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pat_clay/thief.png",
+      "seed": 23,
+      "description": "a small creature hiding inside a worn SACK tied at the top, two small eye holes in the sack, two tiny feet peeking out below, a few coins spilling from the sack, {style}"
+    }
+  ]
+}

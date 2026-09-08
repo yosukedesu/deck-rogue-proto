@@ -1,0 +1,41 @@
+{
+  "_note": "敵の試作・寂しげ版 (2026-09-08 ユーザー「もう少し寂しげに」): 果実を産んだ「静かな版」の文をそのまま土台にし、頬の赤みを禁止・目を伏せ気味に・少しうなだれる、だけを足す。「ぬいぐるみ」の語は熊や兎を呼ぶので使わない。蜘蛛の脚は短く太く (細い枝脚が不気味の正体)。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "scary, horror, menacing, creepy, spindly, thin legs, sharp teeth, fangs, claws, red eyes, orange eyes, ember, fire, skull, mask, bone, human face, person, humanoid, doll, child, big googly eyes, cartoon mascot, cute mascot, smile, happy, blush, rosy cheeks, pink cheeks, rabbit, bunny, bear, cat, plush toy, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art creature from a faded old picture book: a small quiet forest spirit made of dusty moss, straw and bark, soft rounded shapes, it has NO mask and NO mouth and NO cheeks, only two small soft pale eyes, dim and half-closed, looking down as if lonely and tired, head slightly drooping, harmless and gentle, strongly desaturated muted palette of greyed moss, faded ochre, pale straw and ink, low contrast, no bright colors, the body shape is exactly the creature described, clean readable silhouette, soft detailed shading, dark selective outline, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "enemy_snap_fruit",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/lonely2/enemy_snap_fruit.png",
+      "description": "{style}, a round plump fruit with faded mossy skin, a stem and two drooping leaves, sitting on the ground, a faint seam where a mouth would be, two small pale sleepy eyes looking down"
+    },
+    {
+      "id": "enemy_sludge_spider",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_sludge_spider.png",
+      "description": "{style}, a plump round spider of dusty moss with a small head and eight SHORT THICK rounded legs tucked close under its body, a drop of dark sludge hanging from a thread, two small pale sleepy eyes looking down"
+    },
+    {
+      "id": "enemy_mudling",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_mudling.png",
+      "description": "{style}, a small low dome of dark mud like a slime with one drip sliding down, no limbs, no ears, two small pale sleepy eyes looking down in its front"
+    },
+    {
+      "id": "enemy_thief",
+      "out": "unity/Assets/Resources/Art/enemies/enemy_thief.png",
+      "description": "{style}, a small round goblin spirit of bark and straw with a big round head, two small pointed ears, stubby arms hugging a worn coin sack, hunched and sneaking, two small pale sleepy eyes looking down"
+    }
+  ]
+}

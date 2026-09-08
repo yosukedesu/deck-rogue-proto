@@ -67,6 +67,8 @@ Shader "DeckRogue/StageUnit"
             {
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * _BaseColor;
                 clip(c.a - _Cutoff);
+                // 灯りの目: 暖色で明るいドット (r が高く r>g>b) は環境光で暗くせず、少し持ち上げてブルームに乗せる
+                bool ember = (c.r > 0.78) && (c.r > c.g * 1.35) && (c.g > c.b * 1.2);
                 // 夜の環境光 + ランタン (距離で減衰。板の中でランタンに近い側が暖かくなる)
                 float d2 = dot(i.positionWS - _LampPos.xyz, i.positionWS - _LampPos.xyz);
                 float lf = saturate(_LampStrength / (1.0 + d2 / max(0.01, _LampFalloff)));
@@ -74,7 +76,7 @@ Shader "DeckRogue/StageUnit"
                 // 月光の向き: 板の中で光源側 (右上) が明るく、反対側 (左下) が暗い
                 float g = dot(i.uv0 - 0.5, _SunDir2.xy);
                 light *= (1.0 + g * _SunAmount);
-                c.rgb *= light;
+                if (ember) c.rgb *= 1.6; else c.rgb *= light;
                 // リムライト: 光源側 (右上) の隣のドットが透明なら縁を淡く光らせる
                 if (_Rim > 0.0)
                 {
