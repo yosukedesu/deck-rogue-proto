@@ -43,6 +43,8 @@ namespace DeckRogue.Game
         static Texture2D _blobTex, _stripTex;
         static Pal _pal;
         static Vector3 _lampPos;
+        struct AnimState { public string Anim; public int Frame; public float FrameT; public float At; }
+        static readonly Dictionary<string, AnimState> _animStates = new Dictionary<string, AnimState>();
         static Material _waterMat;
         static readonly Dictionary<string, StageUnit> _bound = new Dictionary<string, StageUnit>();
         static readonly Dictionary<string, float> _depths = new Dictionary<string, float>();
@@ -464,10 +466,11 @@ namespace DeckRogue.Game
                 if (list.Count > 0) u.Anims[anim] = list;
             }
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
-            StageUnit prev;
-            if (_bound.TryGetValue(key, out prev) && prev != null && prev.Anim != "idle" && u.Anims.ContainsKey(prev.Anim))
+            u.Key = key;
+            AnimState st0;
+            if (_animStates.TryGetValue(key, out st0) && st0.Anim != "idle" && u.Anims.ContainsKey(st0.Anim) && Time.time - st0.At < 2f)
             {
-                u.Anim = prev.Anim; u.Frame = prev.Frame; u.FrameT = prev.FrameT; u.Apply();
+                u.Anim = st0.Anim; u.Frame = st0.Frame; u.FrameT = st0.FrameT; u.Apply();
             }
             else if (u.Anims.ContainsKey("idle")) u.Play("idle");
             if (key == "player")
@@ -538,12 +541,13 @@ namespace DeckRogue.Game
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
             public Dictionary<string, List<Texture2D>> Anims = new Dictionary<string, List<Texture2D>>();
-            public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 8f; public bool Breathe = true; public float BreathePhase;
+            public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 8f; public bool Breathe = true; public float BreathePhase; public string Key;
             static readonly Vector3[] _c = new Vector3[4];
             public void Play(string anim)
             {
                 if (!Anims.ContainsKey(anim) || Anims[anim].Count == 0) return;
                 Anim = anim; Frame = 0; FrameT = 0f;
+                if (Key != null) _animStates[Key] = new AnimState { Anim = Anim, Frame = Frame, FrameT = FrameT, At = Time.time };
                 Apply();
             }
             public void Apply()
@@ -556,6 +560,7 @@ namespace DeckRogue.Game
             void Advance()
             {
                 List<Texture2D> frames;
+                if (Key != null) _animStates[Key] = new AnimState { Anim = Anim, Frame = Frame, FrameT = FrameT, At = Time.time };
                 if (!Anims.TryGetValue(Anim, out frames) || frames.Count == 0) return;
                 float fps = Anim == "idle" ? 4f : Fps;
                 FrameT += Time.deltaTime;
