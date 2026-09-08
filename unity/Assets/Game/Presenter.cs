@@ -49,9 +49,11 @@ namespace DeckRogue.Game
             {
                 var ev = log[i];
                 float gap;
+                if (ev is GameEvent_CardPlayed) { var cp = ev; try { Show(g, fx, cp, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
                 if (ev is GameEvent_DamageDealt) gap = 0.4f;
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
+                else if (IsStatusEvent(ev)) gap = 0.3f;
                 else continue;
                 var captured = ev;
                 Tween.After(delay, () => { try { Show(g, fx, captured, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
@@ -84,7 +86,8 @@ namespace DeckRogue.Game
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
-                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded)) continue;
+                if (ev is GameEvent_CardPlayed) { var cp = ev; try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
+                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev))) continue;
                 var captured = ev;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
@@ -109,6 +112,11 @@ namespace DeckRogue.Game
             var t = UiKit.Deco(rt, text, 34, color, TextAnchor.MiddleCenter);
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        static bool IsStatusEvent(GameEvent ev)
+        {
+            return ev is GameEvent_StatusInflicted || ev is GameEvent_ExposedApplied || ev is GameEvent_EnemyWeakened || ev is GameEvent_BurnApplied || ev is GameEvent_StrengthGained || ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded;
         }
 
         static string StatusJa(string status)
