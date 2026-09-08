@@ -1,9 +1,9 @@
 {
-  "id": "leader_green_61",
+  "id": "D_おさげ_1_外套_11",
   "engine": "pixflux",
   "request": {
-    "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter named Konoha, short reddish-brown ponytail, big bright eyes, cheerful confident expression, orange scarf around the neck, deep green tunic with a leather chest piece and fur collar, short boots, holding a huge two-handed axe with a long wooden handle wrapped in cloth and a wide worn iron blade, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
-    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, tall proportions, sad, scary, blush",
+    "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, tall proportions, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes",
     "image_size": {
       "width": 64,
       "height": 64
@@ -15,12 +15,12 @@
     "detail": "highly detailed",
     "view": "low top-down",
     "direction": "south-east",
-    "seed": 61
+    "seed": 11
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T05:05:39.738Z",
-  "postprocess": "mirrored horizontally (生成が左向きに出たので左右反転して右向き=south-east に。2026-09-08 ユーザー「向きが逆じゃない？」) / 刃の無彩色ドットを鋼のランプ(青灰→白の刃先)に再着色 (ユーザー「刃が金属に見えない」。有彩色=柄・髪は不変)"
+  "at": "2026-09-08T05:57:27.634Z",
+  "postprocess": "生成が左向きだったので左右反転 (肌色の重心で検算)。2026-09-08 ユーザー裁定: 焦げ茶のおさげ×深緑の外套 seed11・緑の目"
 }

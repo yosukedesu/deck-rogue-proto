@@ -1,0 +1,116 @@
+{
+  "_note": "このは v2 (2026-09-08 ユーザー「焦げ茶・緑の目・服と髪型も見直す」): 髪型4×服2×2シード=16。向きは肌色の重心で検算し左向きは反転。",
+  "defaults": {
+    "engine": "pixflux",
+    "size": [
+      64,
+      64
+    ],
+    "view": "low top-down",
+    "direction": "south-east",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, tall proportions, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes"
+  },
+  "items": [
+    {
+      "id": "A_ボブ_1_外套_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/A_ボブ_1_外套_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown short chin-length bob haircut with a small leaf hair clip, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "A_ボブ_1_外套_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/A_ボブ_1_外套_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown short chin-length bob haircut with a small leaf hair clip, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "A_ボブ_2_ベスト_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/A_ボブ_2_ベスト_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown short chin-length bob haircut with a small leaf hair clip, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "A_ボブ_2_ベスト_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/A_ボブ_2_ベスト_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown short chin-length bob haircut with a small leaf hair clip, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "B_横三つ編み_1_外套_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/B_横三つ編み_1_外套_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown one thick braid hanging over her shoulder, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "B_横三つ編み_1_外套_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/B_横三つ編み_1_外套_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown one thick braid hanging over her shoulder, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "B_横三つ編み_2_ベスト_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/B_横三つ編み_2_ベスト_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown one thick braid hanging over her shoulder, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "B_横三つ編み_2_ベスト_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/B_横三つ編み_2_ベスト_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown one thick braid hanging over her shoulder, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "C_ポニーテール_1_外套_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/C_ポニーテール_1_外套_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown high short ponytail, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "C_ポニーテール_1_外套_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/C_ポニーテール_1_外套_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown high short ponytail, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "C_ポニーテール_2_ベスト_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/C_ポニーテール_2_ベスト_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown high short ponytail, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "C_ポニーテール_2_ベスト_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/C_ポニーテール_2_ベスト_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown high short ponytail, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "D_おさげ_1_外套_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/D_おさげ_1_外套_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "D_おさげ_1_外套_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/D_おさげ_1_外套_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "D_おさげ_2_ベスト_11",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/D_おさげ_2_ベスト_11.png",
+      "seed": 11,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    },
+    {
+      "id": "D_おさげ_2_ベスト_43",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/hunter2/D_おさげ_2_ベスト_43.png",
+      "seed": 43,
+      "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a brown leather vest with a fur collar over a cream long-sleeve shirt and a short deep green skirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+    }
+  ]
+}

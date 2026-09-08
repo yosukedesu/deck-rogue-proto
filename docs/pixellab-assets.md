@@ -226,7 +226,7 @@ attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / stea
 
 | 順 | 何を | 枚数 | 寸法 | 理由 |
 |---|---|---|---|---|
-| 1 | **このは（戦闘内ちび）** `leaders/leader_green.png` | 1 | 64×64 | 主役。全戦闘に出る。**大樹の狩人（2026-09-08 改称）**＝元気な見習い狩人・赤茶の短いポニーテール・橙の首巻き・深緑のチュニックと革の胸当て・自分より大きな両手斧（木の長柄＋幅広の鉄刃）を肩に担ぐ。敵と同じ紙の肌で、夜の舞台の唯一の暖色。発注書 `docs/pixellab/leader-green-hunter.json` |
+| 1 | **このは（戦闘内ちび）** `leaders/leader_green.png` | 1 | 64×64 | 主役。全戦闘に出る。**大樹の狩人（2026-09-08 改称）**＝元気な見習い狩人・焦げ茶のおさげ・緑の目・深緑のフード付き外套・橙の首巻き・自分より大きな両手斧（木の長柄＋鋼の刃）を肩に担ぐ。敵と同じ紙の肌で、暖色は首巻きだけ。発注書 `docs/pixellab/leader-green-hunter-v2.json`（髪型4×服2×2シードの比較から D_おさげ×1_外套 seed11。初版 `leader-green-hunter.json` は赤茶ポニーテール＝差し替え済み） |
 | 2 | **幕1・弱プールの敵** 探り屋 `enemy_probe`／酸吐きの蛞蝓 `enemy_slug`／小泥 `enemy_mudling`／汚泥紡ぎの蜘蛛 `enemy_sludge_spider`／鉄殻の溝貝 `enemy_iron_clam`／噛みつき果実 `enemy_snap_fruit` | 6 | 96×96 | 最初の3戦で出る顔。ここまでで「初戦の絵」が全部本物になる |
 | 3 | **意図アイコン** `icons/intent_<kind>.png`（attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / steal-gold / flee / mill / rest / hatch） | 13 | 24×24 | 敵の頭上の吹き出しに毎ターン出る。線は墨1色＋役割の色1つ |
 | 4 | **状態アイコン・上位8** sword（攻撃/筋力）・shield（ブロック）・growth（成長）・momentum（勢い）・exposed（急所）・burn（延焼）・set（伏せ）・heart（HP） | 8 | 16×16 | カード本文・バフ欄・剣と盾の札に毎ターン出る（残りは表の後で） |
