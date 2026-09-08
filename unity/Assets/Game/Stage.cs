@@ -20,7 +20,7 @@ namespace DeckRogue.Game
     public static class Stage
     {
         public const float Fov = 36f;                   // 広めの画角 = 手前が大きく奥が小さい (奥行きが読める)
-        public const float Pitch = 16f;                 // 見下ろし角。上端の視線が水平より 2° 上 = 遠景の山と空の帯が入る
+        public const float Pitch = 12f;                         // 見下ろし。上端の視線は水平より 6° 上 = 空の帯に月と塔が入る (2026-09-08 世界観「月の塔」。16° では帯が 2° で塔が山に隠れた)
         const float PathYaw = -22f;                     // 道の向き (手前左 → 奥右)。隊列もこの線に沿う
         const float PlaneUnitsPerScreen = 10.8f;        // 基準深度で画面の高さ = 10.8 units
         const float GroundLineRatio = 0.45f;            // 画面の下から何割に world 原点を置くか
@@ -142,15 +142,16 @@ namespace DeckRogue.Game
             var lgo = new GameObject("Lantern");
             _lantern = lgo.AddComponent<Light>();
             _lantern.type = LightType.Point;
-            _lantern.range = 9.5f;
+            _lantern.range = 8.5f;
             _lantern.shadows = LightShadows.None;
-            _lampPos = OnPath(-7.1f, 2.2f) + new Vector3(0f, 2.2f, 0f);
+            _lampPos = OnPath(-7.1f, 2.2f) + new Vector3(0f, 1.2f, 0f);   // 光の粒の群れの中心 (街灯は撤去。世界観「あかりは装置でなく月から零れた光の粒」2026-09-08)
             lgo.transform.position = _lampPos;
 
             LayoutCamera();
             Fireflies();
             Dust();
             Leaves();
+            Motes();
         }
 
         /// <summary>カメラの位置: 基準深度 _dist で 1 unit = 100px、world 原点が画面の下から GroundLineRatio に来る</summary>
@@ -712,27 +713,13 @@ namespace DeckRogue.Game
                 Plane("rock", rock, new Vector3(x, GroundY(x, z), z), 0.6f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
             }
 
-            // 街灯: 細い支柱と灯具 (暗い鉄)、HDR の炎 (ブルーム)、足元に暖色の光溜まり
-            var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
+            // 光の粒の足元: 群れの下に暖色の光溜まり (粒そのものは StageFx の Motes)。装置 (街灯) は置かない
             var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
-            var pole = new MB();
-            pole.Box(lampBase.x, 0f, lampBase.z, 0.12f, 2.0f, 0.12f);
-            pole.Box(lampBase.x, 2.0f, lampBase.z, 0.42f, 0.08f, 0.42f);
-            pole.Box(lampBase.x, 2.42f, lampBase.z, 0.36f, 0.08f, 0.36f);
-            pole.Box(lampBase.x, 0f, lampBase.z, 0.3f, 0.12f, 0.3f);
-            Solid("lantern-pole", pole, mIron);
-            var flame = Prop("lantern-flame", Px.Disc(new Color(3.6f, 2.5f, 1.1f)), new Vector3(_lampPos.x, 2.08f, _lampPos.z - 0.02f), 0.36f, 0.4f);
-            flame.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
-            flame.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
-            flame.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
-            flame.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            Glow("lantern-glow", Px.Glow(new Color(1f, 0.8f, 0.5f, 0.6f)), new Vector3(_lampPos.x, 0.9f, _lampPos.z - 0.3f), 2.6f, 2.6f);
-            var pool = Glow("lantern-pool", Px.Radial(new Color(1f, 0.76f, 0.42f, 0.62f)), lampBase, 1f, 1f);
+            var pool = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.5f)), lampBase, 1f, 1f);
             pool.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
             pool.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            pool.transform.position = lampBase + new Vector3(0f, 0.035f, 0f);   // 中心原点の板 = 柱の足元が中心
-            pool.transform.localScale = new Vector3(8.4f, 7.2f, 1f);            // 半径 ≈ 灯具の高さ 2.2 の 1.5〜2倍 = リーダーの足元まで届く
-            Blob("shadow-lantern", _world, lampBase, 0.5f);
+            pool.transform.position = lampBase + new Vector3(0f, 0.035f, 0f);
+            pool.transform.localScale = new Vector3(7.2f, 6.2f, 1f);
 
             // 空 (遠い板) と月、地平線の木立
             var skyTex = Theme.Art("bg", "act" + act);
@@ -741,7 +728,7 @@ namespace DeckRogue.Game
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(-4f, 8.2f, 70f), 2.6f, 0.4f);
+            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(13f, 9.5f, 72f), 2.4f, 0.4f);   // 幕1は小さな月。塔の肩の脇 (カメラ y≈5.1・上端 +6° の帯の中)
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
@@ -752,6 +739,10 @@ namespace DeckRogue.Game
             mts2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
             skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            // 塔: 道の先 (奥右) の地平に立ち、画面の上へ消えるほど高い黒い塔。世界観「長い夜と月の塔」。霧は半分だけ受けて山より暗く残す
+            var tower = Prop("tower", Px.Tower(p, rng), new Vector3(23f, -2f, 50f), 40f, 0.4f);   // 山 (z58) より手前に立てて上へ抜ける
+            tower.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f);
+            tower.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
         }
 
         static bool HasTile(int act, string kind) { return Theme.Art("tiles", "act" + act + "_" + kind) != null; }
@@ -1461,6 +1452,43 @@ namespace DeckRogue.Game
                 return t;
             }
 
+            /// <summary>遠景の塔: 上へ細り、らせんの段が右上がりに走り、頂は空に溶ける。窓の灯はごく少数</summary>
+            public static Texture2D Tower(Pal p, System.Random rng)
+            {
+                int w = 96, h = 384;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var body = Mix(p.SkyTop, Color.black, 0.62f);
+                var edge = Mix(body, p.SkyBot, 0.28f);
+                var win = new Color(1f, 0.78f, 0.45f, 1f);
+                for (int y = 0; y < h; y++)
+                {
+                    float k = y / (float)(h - 1);
+                    float half = Mathf.Lerp(30f, 16f, k);
+                    float cx = w * 0.5f + Mathf.Sin(k * 9f) * 1.5f;
+                    float a = k > 0.8f ? Mathf.InverseLerp(1f, 0.8f, k) : 1f;
+                    for (int x = 0; x < w; x++)
+                    {
+                        float d = x - cx;
+                        if (Mathf.Abs(d) > half) continue;
+                        var c = d > half - 4f ? edge : body;
+                        bool ring = ((y + (int)(d * 0.35f)) % 28) < 2 && k < 0.78f;
+                        if (ring) c = Mix(c, p.SkyBot, 0.3f);
+                        c.a = a;
+                        px[y * w + x] = c;
+                    }
+                }
+                for (int i = 0; i < 9; i++)
+                {
+                    int y = rng.Next(20, (int)(h * 0.7f));
+                    float k = y / (float)(h - 1); float half = Mathf.Lerp(30f, 16f, k);
+                    int x = (int)(w * 0.5f + (rng.NextDouble() * 2 - 1) * (half - 6f));
+                    px[y * w + x] = win;
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
             public static Texture2D Gradient(Color bottom, Color top)
             {
                 var t = new Texture2D(4, 64, TextureFormat.RGBA32, false);
@@ -1600,6 +1628,47 @@ namespace DeckRogue.Game
                       new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.3f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 1f) });
             col.color = g;
             ps.Play();
+        }
+
+        /// <summary>光の粒: 月から零れた光。道筋に沿って塔の方へゆっくり流れ、足元の一群が暖色の光源 (街灯の後継)</summary>
+        static void Motes()
+        {
+            var dir = Quaternion.Euler(0f, PathYaw, 0f) * Vector3.right;   // 道の向き (+t = 塔の方)
+            var ps = NewSystem("motes-path", DotTex());
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(6f, 11f);
+            main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.12f);
+            main.startColor = new Color(1.6f, 1.35f, 0.62f, 1f);
+            main.maxParticles = 110;
+            var em = ps.emission; em.rateOverTime = 12f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(34f, 1.4f, 3.2f);
+            shape.rotation = new Vector3(0f, PathYaw, 0f); shape.position = new Vector3(0f, 0.9f, 0f);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(dir.x * 0.1f, dir.x * 0.3f); vel.z = new ParticleSystem.MinMaxCurve(dir.z * 0.1f, dir.z * 0.3f);
+            vel.y = new ParticleSystem.MinMaxCurve(-0.04f, 0.08f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.3f; noise.frequency = 0.4f; noise.scrollSpeed = 0.25f;
+            var col = ps.colorOverLifetime; col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.15f), new GradientAlphaKey(0.4f, 0.5f), new GradientAlphaKey(1f, 0.75f), new GradientAlphaKey(0f, 1f) });
+            col.color = g;
+            ps.Play();
+
+            var c = NewSystem("motes-cluster", DotTex());
+            main = c.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(4f, 7f);
+            main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.09f);
+            main.startColor = new Color(1.5f, 1.25f, 0.62f, 1f);
+            main.maxParticles = 24;
+            em = c.emission; em.rateOverTime = 9f;
+            shape = c.shape; shape.shapeType = ParticleSystemShapeType.Sphere; shape.radius = 1.1f; shape.position = _lampPos;
+            noise = c.noise; noise.enabled = true; noise.strength = 0.5f; noise.frequency = 0.6f; noise.scrollSpeed = 0.35f;
+            vel = c.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.y = new ParticleSystem.MinMaxCurve(-0.05f, 0.1f);
+            col = c.colorOverLifetime; col.enabled = true; col.color = g;
+            c.Play();
         }
 
         static void Leaves()
