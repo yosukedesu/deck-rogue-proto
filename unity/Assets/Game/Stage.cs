@@ -105,10 +105,9 @@ namespace DeckRogue.Game
                 _volume.priority = 1f;
                 var profile = ScriptableObject.CreateInstance<VolumeProfile>();
                 _dof = profile.Add<DepthOfField>(true);
-                _dof.mode.value = DepthOfFieldMode.Bokeh;      // 手前 (崖下の前景) も軽くぼける。中距離は 2px 未満
-                _dof.focalLength.value = 300f;
-                _dof.aperture.value = 9f;
-                _dof.bladeCount.value = 6;
+                _dof.mode.value = DepthOfFieldMode.Gaussian;   // 座席 (リーダー〜一番奥の敵) は全部くっきり。ぼけるのは遠景だけ (2026-09-08「敵が少しぼやけてる」)
+                _dof.gaussianMaxRadius.value = 1.2f;
+                _dof.highQualitySampling.value = true;
                 var bloom = profile.Add<Bloom>(true);
                 bloom.threshold.value = 0.9f;
                 bloom.intensity.value = 1.8f;
@@ -125,9 +124,9 @@ namespace DeckRogue.Game
                 lgg.gamma.value = new Vector4(1f, 1f, 1.02f, 0f);
                 lgg.gain.value = new Vector4(1.04f, 1.02f, 0.98f, 0.03f);     // 光は少し暖かく
                 var grain = profile.Add<FilmGrain>(true);
-                grain.type.value = FilmGrainLookup.Thin1; grain.intensity.value = 0.18f; grain.response.value = 0.7f;
+                grain.type.value = FilmGrainLookup.Thin1; grain.intensity.value = 0.12f; grain.response.value = 0.75f;
                 var ca = profile.Add<ChromaticAberration>(true);
-                ca.intensity.value = 0.08f;
+                ca.intensity.value = 0.03f;                                   // ドット絵の縁を崩さない程度
                 _color = profile.Add<ColorAdjustments>(true);
                 _color.postExposure.value = -0.05f;   // ACES が中間調を沈めるぶん戻す
                 _color.contrast.value = 14f;
@@ -182,7 +181,14 @@ namespace DeckRogue.Game
             _camBase = p0 - _fwd * _dist;
             _cam.transform.position = _camBase;
             _cam.transform.rotation = rot;
-            if (_dof != null) _dof.focusDistance.value = _dist + 0.8f;
+            if (_dof != null)
+            {
+                // 一番奥の座席 (敵4体時の t=11.2) の深度より少し奥からぼかし始める
+                var far = Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(11.2f, 0f, 0.7f);
+                float dFar = Vector3.Dot(far - _camBase, _fwd);
+                _dof.gaussianStart.value = dFar + 4f;
+                _dof.gaussianEnd.value = dFar + 26f;
+            }
         }
 
         static float ScaleFactor()
@@ -2079,25 +2085,35 @@ namespace DeckRogue.Game
             return ps;
         }
 
+        /// <summary>蛍 (2026-09-08 ユーザー案「ホタルのような動く緑の発光する粒子」): 黄緑に瞬く小さな光。ふわりと漂い、ときどき止まる。
+        /// 川辺と森の縁に多い。道を照らす光の粒 (金・流れる) とは色と動きで区別する</summary>
         static void Fireflies()
         {
-            var ps = NewSystem("fireflies", DotTex());
+            var ps = NewSystem("fireflies", GlowDotTex());
             var main = ps.main;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(5f, 9f);
+            main.startLifetime = new ParticleSystem.MinMaxCurve(6f, 12f);
             main.startSpeed = 0f;
-            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.1f);
-            main.startColor = new Color(1.6f, 1.4f, 0.5f, 1f);
-            main.maxParticles = 50;
-            var em = ps.emission; em.rateOverTime = 3f;
-            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(20f, 3f, 12f); shape.position = new Vector3(0f, 1.6f, 4f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.07f, 0.12f);
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(1.2f, 2.2f, 0.6f, 1f), new Color(1.6f, 2.4f, 0.9f, 1f));
+            main.maxParticles = 70;
+            var em = ps.emission; em.rateOverTime = 7f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40f, 2.2f, 22f);
+            shape.rotation = new Vector3(0f, PathYaw, 0f);
+            var c = Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(2f, 0f, 3.5f);
+            shape.position = new Vector3(c.x, 1.1f, c.z);                                     // 空き地の奥〜川辺〜森の縁
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.x = new ParticleSystem.MinMaxCurve(-0.12f, 0.12f); vel.y = new ParticleSystem.MinMaxCurve(-0.06f, 0.12f);
-            var noise = ps.noise; noise.enabled = true; noise.strength = 0.25f; noise.frequency = 0.35f; noise.scrollSpeed = 0.2f;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f); vel.y = new ParticleSystem.MinMaxCurve(-0.08f, 0.14f); vel.z = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.55f; noise.frequency = 0.5f; noise.scrollSpeed = 0.35f;
+            // 瞬き: 寿命の中で 3〜4 回ふわっと灯る (蛍の呼吸)
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0.35f, 0.5f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 1f) });
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.08f), new GradientAlphaKey(0.05f, 0.2f), new GradientAlphaKey(1f, 0.34f), new GradientAlphaKey(0.05f, 0.48f),
+                              new GradientAlphaKey(1f, 0.62f), new GradientAlphaKey(0.05f, 0.76f), new GradientAlphaKey(1f, 0.88f), new GradientAlphaKey(0f, 1f) });
             col.color = g;
+            var sz = ps.sizeOverLifetime; sz.enabled = true;
+            var curve = new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(0.08f, 1f), new Keyframe(0.2f, 0.5f), new Keyframe(0.34f, 1f), new Keyframe(0.48f, 0.5f), new Keyframe(0.62f, 1f), new Keyframe(0.76f, 0.5f), new Keyframe(0.88f, 1f), new Keyframe(1f, 0.6f));
+            sz.size = new ParticleSystem.MinMaxCurve(1f, curve);
             ps.Play();
         }
 
