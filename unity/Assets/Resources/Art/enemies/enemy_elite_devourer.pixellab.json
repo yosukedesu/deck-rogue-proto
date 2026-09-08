@@ -1,9 +1,9 @@
 {
-  "id": "enemy_elite_devourer__83",
+  "id": "devourer_puffbug",
   "engine": "pixflux",
   "request": {
-    "description": "a fat giant LARVA like a pale soft caterpillar, segmented rounded body, a big round open mouth at the front, two tiny bead eyes above the mouth, tiny stub legs, hunched, no human face, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
-    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, doll face",
+    "description": "a big round FLUFFY BUG like a ball of pale moss fur with a tiny face, stubby legs and two short soft antennae, sitting still, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, caterpillar, larva, worm, maggot, segmented body, slimy, wet, many legs",
     "image_size": {
       "width": 80,
       "height": 80
@@ -15,12 +15,12 @@
     "detail": "highly detailed",
     "view": "low top-down",
     "direction": "south-west",
-    "seed": 83
+    "seed": 23
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T04:37:50.765Z",
-  "postprocess": "右向きに出ていたので左右反転 (敵は左＝リーダーの方を向く。2026-09-08 ユーザー指摘)"
+  "at": "2026-09-08T15:51:44.105Z",
+  "postprocess": "2026-09-09 ユーザー「芋虫はきもすぎ」→6案から「⑤毛玉の虫」を採用"
 }
