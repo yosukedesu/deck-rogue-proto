@@ -110,16 +110,16 @@ namespace DeckRogue.Game
                 _dof.bladeCount.value = 6;
                 var bloom = profile.Add<Bloom>(true);
                 bloom.threshold.value = 0.9f;
-                bloom.intensity.value = 1.6f;
-                bloom.scatter.value = 0.7f;
-                bloom.tint.value = new Color(1f, 0.9f, 0.72f);
+                bloom.intensity.value = 1.8f;
+                bloom.scatter.value = 0.78f;
+                bloom.tint.value = new Color(1f, 0.94f, 0.84f);   // 幻想寄り (2026-09-08「もっと幻想的に」): 少し強く・柔らかく・暖色に寄せすぎない
                 var vig = profile.Add<Vignette>(true);
                 vig.intensity.value = 0.34f;
                 vig.smoothness.value = 0.6f;
                 vig.color.value = new Color(0.02f, 0.02f, 0.06f);
                 _color = profile.Add<ColorAdjustments>(true);
-                _color.postExposure.value = -0.15f;
-                _color.contrast.value = 16f;
+                _color.postExposure.value = -0.28f;   // 夜を深く (霧と光る物で明るくなった分を戻す)
+                _color.contrast.value = 20f;
                 _color.saturation.value = -6f;
                 _volume.sharedProfile = profile;
             }
@@ -152,6 +152,8 @@ namespace DeckRogue.Game
             Dust();
             Leaves();
             Motes();
+            Mist();
+            Moondust();
         }
 
         /// <summary>カメラの位置: 基準深度 _dist で 1 unit = 100px、world 原点が画面の下から GroundLineRatio に来る</summary>
@@ -685,6 +687,37 @@ namespace DeckRogue.Game
                 if (rng.NextDouble() < 0.15) Plane("flower", flower, w, 0.46f, 0.5f, false);
                 else Plane("tuft", tuft, w, 0.44f + (float)rng.NextDouble() * 0.18f, 0.5f, false);
             }
+            // 光る茸: 月の光だけで育つ森の灯 (世界観)。自発光の板 + 足元の青い暈 + いくつかは点光源。戦闘の場は避ける
+            var shroom = Px.GlowShroom(p, rng);
+            int lit = 0;
+            for (int i = 0; i < 40; i++)
+            {
+                float t = -24f + (float)rng.NextDouble() * 50f;
+                float sv = -6f + (float)rng.NextDouble() * 17f;
+                if (sv > -2.5f && sv < 6.5f && t > -11f && t < 15f) continue;   // 戦闘の場と道の中は避ける
+                var w = OnPath(t, sv);
+                if (IsDirt(w.x, w.z)) continue;
+                var g = Prop("glowshroom", shroom, w + new Vector3(0f, 0.02f, 0f), 0.42f + (float)rng.NextDouble() * 0.16f, 0.5f);
+                g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+                var halo = Glow("shroom-halo", Px.Radial(new Color(0.55f, 0.9f, 1f, 0.42f)), w + new Vector3(0f, 0.03f, 0f), 1f, 1f);
+                halo.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                halo.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                halo.transform.localScale = new Vector3(1.5f, 1.3f, 1f);
+                if (lit < 8 && sv > -4f && sv < 9f)
+                {
+                    var lgo2 = new GameObject("shroom-light"); lgo2.transform.SetParent(_world, false); lgo2.transform.position = w + new Vector3(0f, 0.35f, 0f);
+                    var l = lgo2.AddComponent<Light>(); l.type = LightType.Point; l.range = 1.7f; l.intensity = 0.9f; l.color = new Color(0.55f, 0.85f, 1f); l.shadows = LightShadows.None;
+                    lit++;
+                }
+            }
+            // 月光の筋: 右上 (月光の向き) から差す淡い光の帯を木立の間に (中景〜遠景)
+            var beam = Px.Beam();
+            float[] bx = { -8f, 5f, 17f }; float[] bz = { 20f, 25f, 18f }; float[] bw = { 4.2f, 5.6f, 3.4f };
+            for (int i = 0; i < bx.Length; i++)
+            {
+                var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.5f, bz[i]), 18f, bw[i]);
+                b.transform.rotation = Quaternion.Euler(0f, 0f, -16f);
+            }
 
             // 遺跡の柱 (石) — 段丘の上に (額縁)
             { var w = OnPath(-15f, 6.5f); Pillar(w.x, w.y, w.z, 1.2f, 4.0f, mStone); }
@@ -754,6 +787,9 @@ namespace DeckRogue.Game
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var stars = Prop("stars", Px.Stars(rng), new Vector3(0f, 6f, 88f), 14f, 0.3f, 150f);
+            stars.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
+            stars.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(13f, 9.5f, 72f), 2.4f, 0.4f);   // 幕1は小さな月。塔の肩の脇 (カメラ y≈5.1・上端 +6° の帯の中)
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
@@ -1516,6 +1552,68 @@ namespace DeckRogue.Game
                 return t;
             }
 
+            /// <summary>光る茸: 淡い青緑の傘 2〜3 本 (自発光の板として置く)</summary>
+            public static Texture2D GlowShroom(Pal p, System.Random rng)
+            {
+                int w = 14, h = 12;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                for (int i = 0; i < px.Length; i++) px[i] = Color.clear;
+                var cap = new Color(0.62f, 0.98f, 1.15f); var capD = new Color(0.4f, 0.72f, 0.9f); var stem = new Color(0.78f, 0.86f, 0.8f); var stemD = new Color(0.55f, 0.62f, 0.62f);
+                int[] cx = { 3, 8, 11 }; int[] ch = { 5, 8, 4 }; int[] cw = { 2, 3, 2 };
+                for (int k = 0; k < 3; k++)
+                {
+                    for (int y = 0; y < ch[k] - 2; y++) { Put(px, w, h, cx[k], y, stem); Put(px, w, h, cx[k] - 1, y, stemD); }
+                    for (int dx = -cw[k]; dx <= cw[k]; dx++)
+                    {
+                        Put(px, w, h, cx[k] + dx, ch[k] - 2, capD);
+                        Put(px, w, h, cx[k] + dx, ch[k] - 1, cap);
+                        if (Mathf.Abs(dx) < cw[k]) Put(px, w, h, cx[k] + dx, ch[k], cap);
+                    }
+                    Put(px, w, h, cx[k], ch[k] - 1, Color.white);
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>月光の筋: 上が濃く下へ消える縦の帯、左右は柔らかく</summary>
+            public static Texture2D Beam()
+            {
+                int w = 32, h = 128;
+                var t = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                t.filterMode = FilterMode.Bilinear; t.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[w * h];
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float u = (x + 0.5f) / w, v = (y + 0.5f) / h;
+                        float side = Mathf.Sin(u * Mathf.PI); side *= side;
+                        float a = side * Mathf.Pow(v, 1.6f) * 0.3f;
+                        px[y * w + x] = new Color(0.72f, 0.82f, 1f, a);
+                    }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>星空: まばらな点。いくつかは少し大きく明るい</summary>
+            public static Texture2D Stars(System.Random rng)
+            {
+                int w = 512, h = 64;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                for (int i = 0; i < px.Length; i++) px[i] = Color.clear;
+                for (int i = 0; i < 170; i++)
+                {
+                    int x = rng.Next(0, w), y = rng.Next(0, h);
+                    float b = 0.5f + (float)rng.NextDouble() * 0.5f;
+                    var c = new Color(0.85f * b + 0.4f, 0.9f * b + 0.4f, 1.3f * b + 0.3f, 1f);
+                    px[y * w + x] = c;
+                    if (rng.NextDouble() < 0.18) { Put(px, w, h, x + 1, y, c * 0.7f); Put(px, w, h, x, y + 1, c * 0.7f); }
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
             public static Texture2D Gradient(Color bottom, Color top)
             {
                 var t = new Texture2D(4, 64, TextureFormat.RGBA32, false);
@@ -1746,6 +1844,66 @@ namespace DeckRogue.Game
             col = c.colorOverLifetime; col.enabled = true; col.color = g;
             MoteLights(c, 18);
             c.Play();
+        }
+
+        /// <summary>地面の霧: 大きく淡い板がゆっくり流れる (中景〜遠景。戦闘の場は薄く)。遠景の帯は濃いめ = 段丘の奥行き</summary>
+        static void Mist()
+        {
+            var dir = Quaternion.Euler(0f, PathYaw, 0f) * Vector3.right;
+            var near = NewSystem("mist", GlowDotTex());
+            var main = near.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(14f, 22f);
+            main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(2.2f, 3.4f);
+            main.startColor = new Color(0.62f, 0.74f, 1f, 0.05f);
+            main.maxParticles = 16;
+            var em = near.emission; em.rateOverTime = 0.9f;
+            var shape = near.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(44f, 0.4f, 22f); shape.position = new Vector3(0f, 0.45f, 15f);
+            var vel = near.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(dir.x * 0.05f, dir.x * 0.14f); vel.z = new ParticleSystem.MinMaxCurve(dir.z * 0.05f, dir.z * 0.14f);
+            var col = near.colorOverLifetime; col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.25f), new GradientAlphaKey(1f, 0.75f), new GradientAlphaKey(0f, 1f) });
+            col.color = g;
+            near.Play();
+
+            var far = NewSystem("mist-far", GlowDotTex());
+            main = far.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(16f, 26f);
+            main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(5f, 8f);
+            main.startColor = new Color(0.6f, 0.72f, 1f, 0.09f);
+            main.maxParticles = 14;
+            em = far.emission; em.rateOverTime = 0.65f;
+            shape = far.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(70f, 0.6f, 16f); shape.position = new Vector3(4f, 1.2f, 38f);
+            vel = far.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f);
+            col = far.colorOverLifetime; col.enabled = true; col.color = g;
+            far.Play();
+        }
+
+        /// <summary>月の塵: 銀色の小さな粒が舞台全体でゆっくり昇る (暖色ではないので光のルールに触れない)</summary>
+        static void Moondust()
+        {
+            var ps = NewSystem("moondust", GlowDotTex());
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(9f, 15f);
+            main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.04f, 0.09f);
+            main.startColor = new Color(0.85f, 0.95f, 1.3f, 0.8f);
+            main.maxParticles = 90;
+            var em = ps.emission; em.rateOverTime = 7f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40f, 6f, 30f); shape.position = new Vector3(0f, 2.5f, 12f);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f); vel.y = new ParticleSystem.MinMaxCurve(0.04f, 0.14f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.2f; noise.frequency = 0.3f; noise.scrollSpeed = 0.15f;
+            var col = ps.colorOverLifetime; col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0.7f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            col.color = g;
+            ps.Play();
         }
 
         static void Leaves()
