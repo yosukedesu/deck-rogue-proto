@@ -22,5 +22,5 @@
     "generations": 1
   },
   "at": "2026-09-08T05:05:39.738Z",
-  "postprocess": "mirrored horizontally (生成が左向きに出たので左右反転して右向き=south-east に。2026-09-08 ユーザー「向きが逆じゃない？」)"
+  "postprocess": "mirrored horizontally (生成が左向きに出たので左右反転して右向き=south-east に。2026-09-08 ユーザー「向きが逆じゃない？」) / 刃の無彩色ドットを鋼のランプ(青灰→白の刃先)に再着色 (ユーザー「刃が金属に見えない」。有彩色=柄・髪は不変)"
 }
