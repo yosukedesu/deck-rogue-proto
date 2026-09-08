@@ -362,6 +362,9 @@ namespace DeckRogue.Game
 
         // ---- 敵 ----
 
+        /// <summary>状態異常の表示名 (吹き出しの札用)</summary>
+        public static string StatusName(string status) { string ja; return StatusJa.TryGetValue(status, out ja) ? ja : status; }
+
         public static string InflictSuffix(StatusInflict inf)
         {
             if (inf == null) return "";

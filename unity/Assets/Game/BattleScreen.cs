@@ -197,12 +197,13 @@ namespace DeckRogue.Game
             {
                 var it = e.Intent;
                 var bubble = UiKit.NewRect("intent", pan);
-                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, spriteTop + 24f), new Vector2(110f, spriteTop + 78f));
+                // 頭上の順: 絵 → 状態の札 (spriteTop+2〜30) → 吹き出しの尾 → 吹き出し (+54〜108) → 分岐などの詳細 (+112〜)
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, spriteTop + 54f), new Vector2(130f, spriteTop + 108f));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
                 bImg.raycastTarget = false;
                 var tail = UiKit.NewRect("tail", pan);
-                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 8f), new Vector2(18f, spriteTop + 26f));
+                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 38f), new Vector2(18f, spriteTop + 56f));
                 var tImg = tail.gameObject.AddComponent<Image>();
                 tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
                 var row = UiKit.NewRect("row", bubble);
@@ -219,12 +220,16 @@ namespace DeckRogue.Game
                     else UiKit.Le(ic, 32f, 32f, 32f, 32f);
                     var itT = UiKit.Deco(row, IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft);
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
+                    // デバフ・筋力・盾の予告は吹き出しの中に (2026-09-09「敵行動表示にダメージだけでなくデバフも予告」)
+                    if (it.Inflict != null) BubblePill(row, "exposed", CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.Plum, new Color(0.93f, 0.86f, 0.97f, 1f));
+                    if (it.AlsoBuff.HasValue) BubblePill(row, "sword", "筋力+" + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
+                    if (it.AlsoDefend.HasValue) BubblePill(row, "shield", "盾" + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
                 }
                 // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)
                 var detailText = IntentDetail(st, index, it);
                 var detail = UiKit.Txt(pan, detailText, 14, PaperFx.Paper, TextAnchor.UpperCenter);
                 detail.outlineWidth = 0.3f; detail.outlineColor = new Color(0.1f, 0.06f, 0.1f, 0.95f);
-                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 82f), new Vector2(30f, spriteTop + 112f));
+                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 112f), new Vector2(30f, spriteTop + 142f));
             }
 
             // 足元の影・貼り絵の縁・ドット絵
@@ -279,7 +284,8 @@ namespace DeckRogue.Game
             if (e.BurrowActive == true) chips.Add(new KeyValuePair<string, string>("shield", "潜伏"));
             string traits = CardText.EnemyTraits(def);
             var chipRow = UiKit.NewRect("chips", pan);
-            UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 30f), new Vector2(0f, 58f));
+            // 状態の札は頭の上 (2026-09-09「状態変化はキャラの頭の上に」)
+            UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-40f, spriteTop + 2f), new Vector2(40f, spriteTop + 30f));
             var cg = UiKit.Horz(chipRow, 6, 0);
             cg.childAlignment = TextAnchor.MiddleCenter;
             cg.childForceExpandHeight = false;
@@ -308,6 +314,23 @@ namespace DeckRogue.Game
             string traits = CardText.EnemyTraits(def);
             if (traits.Length > 0) sb.Append("\n特性: ").Append(traits);
             return sb.ToString();
+        }
+
+        /// <summary>吹き出しの中の小さな札 (デバフ・筋力・盾の予告)</summary>
+        static void BubblePill(Transform row, string icon, string text, Color ink, Color paper)
+        {
+            var pill = UiKit.NewRect("pill", row);
+            var bg = pill.gameObject.AddComponent<Image>();
+            bg.sprite = PaperFx.Tag; bg.type = Image.Type.Sliced; bg.color = paper; bg.raycastTarget = false;
+            UiKit.Le(pill, 60f, 30f, -1f, 30f);
+            var hg = UiKit.Horz(pill, 2, 4);
+            hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            var ic = UiKit.Icon(pill, icon, 14f, ink);
+            UiKit.Le(ic, 14f, 14f, 14f, 14f);
+            var t = UiKit.Txt(pill, text, 14, ink, TextAnchor.MiddleCenter, true);
+            UiKit.Le(t, 30f, 24f, -1f, 24f);
+            var fit = pill.gameObject.AddComponent<ContentSizeFitter>();
+            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         static void SmallChip(Transform parent, string icon, string text, Color color)
@@ -417,7 +440,7 @@ namespace DeckRogue.Game
         static string IntentDetail(GameState st, int index, EnemyIntent it)
         {
             string full = CardText.IntentText(st, index);
-            string[] marks = { "【", "※", "+", "付与", "伏せ", "従者", "弱体", "脆弱", "虚弱", "負傷", "火傷", "拘束", "霞", "重り", "がらくた", "→", "手数" };
+            string[] marks = { "【", "※", "伏せ", "従者", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ
             for (int i = 0; i < marks.Length; i++) if (full.Contains(marks[i])) return full;
             return "";
         }
@@ -494,7 +517,9 @@ namespace DeckRogue.Game
 
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
-            PaperFx.FitPixel(spr, leaderArt, 0f, Stage.FeetOffset("player", 130f));
+            float pFeet = Stage.FeetOffset("player", 130f);
+            float pTop = pFeet + leaderArt.rect.height * PaperFx.PixelScale(leaderArt, 256f);
+            PaperFx.FitPixel(spr, leaderArt, 0f, pFeet);
             spr.anchorMin = spr.anchorMax = new Vector2(0f, 0f);
             spr.offsetMin += new Vector2(130f, 0f); spr.offsetMax += new Vector2(130f, 0f);
             var img = spr.gameObject.AddComponent<Image>();
@@ -524,9 +549,10 @@ namespace DeckRogue.Game
 
             // 資源・状態の札
             var col = UiKit.NewRect("chips", area);
-            UiKit.Anchor(col, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(10f, 28f), new Vector2(0f, 58f));
+            // 状態の札は頭の上 (絵の中心 x=130+128 に寄せる)
+            UiKit.Anchor(col, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(60f, pTop + 4f), new Vector2(460f, pTop + 32f));
             var vg = UiKit.Horz(col, 6, 0);
-            vg.childAlignment = TextAnchor.MiddleLeft;
+            vg.childAlignment = TextAnchor.MiddleCenter;
             vg.childForceExpandWidth = false;
             vg.childForceExpandHeight = false;
             var res = new List<KeyValuePair<string, string>>();

@@ -1,0 +1,77 @@
+{
+  "_note": "大喰らいの蟲の別案 (2026-09-09 ユーザー「見た目きもすぎ」= 芋虫は却下)。丸くて柔らかい虫の形を6案。",
+  "defaults": {
+    "engine": "pixflux",
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, caterpillar, larva, worm, maggot, segmented body, slimy, wet, many legs"
+  },
+  "style": "pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "items": [
+    {
+      "id": "devourer_pillbug",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/devourer/devourer_pillbug.png",
+      "seed": 23,
+      "size": [
+        80,
+        80
+      ],
+      "description": "a big round PILL BUG (roly-poly) curled into a plump ball with smooth pale armored plates, tiny bead eyes peeking from the front, small stubby legs tucked under, {style}"
+    },
+    {
+      "id": "devourer_cocoon",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/devourer/devourer_cocoon.png",
+      "seed": 23,
+      "size": [
+        80,
+        80
+      ],
+      "description": "a big fat COCOON of pale silk with a tiny round head peeking out of the top, wrapped snugly, sitting on the ground, {style}"
+    },
+    {
+      "id": "devourer_beetle",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/devourer/devourer_beetle.png",
+      "seed": 23,
+      "size": [
+        80,
+        80
+      ],
+      "description": "a big chubby round BEETLE with a smooth domed shell and small folded wings, a tiny face with bead eyes, short stubby legs, sitting like a pebble, {style}"
+    },
+    {
+      "id": "devourer_snail",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/devourer/devourer_snail.png",
+      "seed": 23,
+      "size": [
+        80,
+        80
+      ],
+      "description": "a big round SNAIL with a smooth pale spiral shell and a soft plump body, two short eye stalks with bead eyes, calm, {style}"
+    },
+    {
+      "id": "devourer_puffbug",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/devourer/devourer_puffbug.png",
+      "seed": 23,
+      "size": [
+        80,
+        80
+      ],
+      "description": "a big round FLUFFY BUG like a ball of pale moss fur with a tiny face, stubby legs and two short soft antennae, sitting still, {style}"
+    },
+    {
+      "id": "devourer_honeypot",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/devourer/devourer_honeypot.png",
+      "seed": 23,
+      "size": [
+        80,
+        80
+      ],
+      "description": "a big round HONEYPOT ANT-like creature with a smooth translucent bulging belly like a paper lantern, a small round head with bead eyes, short legs, {style}"
+    }
+  ]
+}
