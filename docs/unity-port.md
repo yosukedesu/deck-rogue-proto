@@ -407,3 +407,5 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 - **ビルド**: `BuildTools.BuildAndroid`（`com.deckrogue.proto`・横向き固定・IL2CPP ARM64・minSdk 26）→ `scripts/unity-win.sh android` で Build/DeckRogue.apk、`scripts/unity-win.sh install` で Windows 側の adb からインストール。
 - **モバイル品質（第1段）**: `Application.isMobilePlatform` なら被写界深度を切り、粒の点光源を 1/3 に。SSAO・ブルームは残す（実機で重ければ次）。
 - 未対応: ホバーの吹き出し（長押し化）・文字の最小サイズ・戦闘以外の画面の当たり判定の大きさ。
+- **実機に入った（2026-09-09）**: Hub に Android Build Support 導入後、`scripts/unity-win.sh android`（初回 IL2CPP 込み 9〜10 分・2回目 2 分。上限は 60 分に）→ `install`（`adb -s <serial>`。エミュレータが offline で並ぶと `-s` が要る）。Galaxy S25（2340×1080）で起動・データ読み込み・3D 舞台・ポスト処理まで動作。
+  logcat に毎フレーム「Particle Velocity curves must all be in the same mode」＝速度カーブの3軸のモード混在（PC では見えなかった）→ 3軸とも2定数に揃えて解消。次: 実機の体感（重さ・文字・タップ）を聞いてモバイル品質段と長押しの吹き出し。
