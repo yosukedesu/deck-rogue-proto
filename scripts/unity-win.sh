@@ -81,7 +81,8 @@ case "$MODE" in
   *) echo "unknown mode: $MODE"; exit 2 ;;
 esac
 echo "run: Unity ${ARGS[*]}"
-timeout -k 10 540 "$UNITY" "${ARGS[@]}"
+LIMIT=540; [ "$MODE" = "android" ] && LIMIT=3600   # Android は IL2CPP のコンパイルで初回 15 分以上かかる (2026-09-09)
+timeout -k 10 "$LIMIT" "$UNITY" "${ARGS[@]}"
 CODE=$?
 if [ "$CODE" = "124" ]; then echo "timeout: Unity を強制終了する"; taskkill.exe /IM Unity.exe /F >/dev/null 2>&1; fi
 echo "exit code: $CODE"
