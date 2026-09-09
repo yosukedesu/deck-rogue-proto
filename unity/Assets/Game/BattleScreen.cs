@@ -71,7 +71,7 @@ namespace DeckRogue.Game
             }
             catch (Exception) { }
             var title = Tag(bar, 40f, -0.6f);
-            var tl = UiKit.Txt(title, "幕 " + run.Act + " · 行 " + (run.Row + 1), 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var tl = UiKit.Txt(title, "幕 " + run.Act + " · 行 " + (run.Row + 1), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             tl.characterSpacing = 2f;
             UiKit.Le(tl, -1f, 30f, -1f, 30f);
             var te = UiKit.Deco(title, enc, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
@@ -88,7 +88,7 @@ namespace DeckRogue.Game
             UiKit.Icon(gold, "gold", 16f);
             var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(gt, -1f, 28f, -1f, 28f);
-            var gl = UiKit.Txt(gold, "G", 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 28f, -1f, 28f);
 
             for (int i = 0; i < run.Relics.Count && i < 8; i++)
@@ -114,7 +114,7 @@ namespace DeckRogue.Game
                 UiKit.Anchor(note, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-460f, -TopH - 48f), new Vector2(460f, -TopH - 8f));
                 var nImg = PaperFx.Sheet(note, PaperFx.Tag, "paper", g.Error != null ? new Color(1f, 0.85f, 0.8f, 1f) : Color.white);
                 UiKit.Stretch(nImg.rectTransform, 0f, 0f, 0f, 0f);
-                var m = UiKit.Txt(note, msg, 15, g.Error != null ? UiKit.ColBad : PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                var m = UiKit.Txt(note, msg, 15, g.Error != null ? UiKit.ColBadInk : PaperFx.Ink, TextAnchor.MiddleCenter, true);
                 UiKit.Stretch(m.rectTransform, 12f, 12f, 0f, 0f);
             }
         }
@@ -221,15 +221,19 @@ namespace DeckRogue.Game
                     var itT = UiKit.Deco(row, IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft);
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
                     // デバフ・筋力・盾の予告は吹き出しの中に (2026-09-09「敵行動表示にダメージだけでなくデバフも予告」)
-                    if (it.Inflict != null) BubblePill(row, "exposed", CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.Plum, new Color(0.93f, 0.86f, 0.97f, 1f));
+                    if (it.Inflict != null) BubblePill(row, "exposed", CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));
                     if (it.AlsoBuff.HasValue) BubblePill(row, "sword", "筋力+" + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
                     if (it.AlsoDefend.HasValue) BubblePill(row, "shield", "盾" + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
                 }
                 // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)
                 var detailText = IntentDetail(st, index, it);
-                var detail = UiKit.Txt(pan, detailText, 14, PaperFx.Paper, TextAnchor.UpperCenter);
-                detail.outlineWidth = 0.3f; detail.outlineColor = new Color(0.1f, 0.06f, 0.1f, 0.95f);
-                UiKit.Anchor(detail.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, spriteTop + 112f), new Vector2(30f, spriteTop + 142f));
+                if (!string.IsNullOrEmpty(detailText))
+                {
+                    // 舞台の上の文字は夜の札に乗せる (縁取りだけでは草と月光の上で読めなかった。2026-09-09)
+                    var detail = PaperFx.NightNote(pan, detailText, 14, 340f);
+                    detail.anchorMin = detail.anchorMax = new Vector2(0.5f, 0f); detail.pivot = new Vector2(0.5f, 0f);
+                    detail.anchoredPosition = new Vector2(0f, spriteTop + 112f);
+                }
             }
 
             // 足元の影・貼り絵の縁・ドット絵
@@ -293,9 +297,9 @@ namespace DeckRogue.Game
             for (int i = 0; i < chips.Count; i++) SmallChip(chipRow, chips[i].Key, chips[i].Value, PaperFx.Ink);
             if (traits.Length > 0)
             {
-                var tr = UiKit.Txt(pan, traits, 12, PaperFx.Paper, TextAnchor.UpperCenter);
-                tr.outlineWidth = 0.18f; tr.outlineColor = new Color(0f, 0f, 0f, 0.7f);
-                UiKit.Anchor(tr.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-10f, 2f), new Vector2(10f, 28f));
+                var tr = PaperFx.NightNote(pan, traits, 13, 320f);
+                tr.anchorMin = tr.anchorMax = new Vector2(0.5f, 0f); tr.pivot = new Vector2(0.5f, 1f);
+                tr.anchoredPosition = new Vector2(0f, 30f);
             }
         }
 
@@ -344,7 +348,7 @@ namespace DeckRogue.Game
             var dot = UiKit.Pan(tag, DotColor(icon, text), "dot");
             UiKit.Le(dot, 10f, 10f, 10f, 10f);
             UiKit.Icon(tag, icon, 16f, PaperFx.Ink);
-            var t = UiKit.Txt(tag, text, 13, debuff ? PaperFx.Plum : PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            var t = UiKit.Txt(tag, text, 14, debuff ? PaperFx.PlumInk : PaperFx.Ink, TextAnchor.MiddleLeft, true);
             UiKit.Le(t, 20f, 26f, -1f, 26f);
         }
 
@@ -415,7 +419,8 @@ namespace DeckRogue.Game
             fimg.sprite = ThemeFx.Gradient("hpfill", Color.Lerp(PaperFx.Rose, Color.white, 0.15f), Color.Lerp(PaperFx.Rose, Color.black, 0.08f));
             fimg.raycastTarget = false;
             UiKit.Anchor(fill, new Vector2(0f, 0f), new Vector2(r, 1f), new Vector2(3f, 3f), new Vector2(0f, -3f));
-            var t = UiKit.Txt(bar, hp + " / " + max, 13, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(bar, hp + " / " + max, 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+            t.outlineWidth = 0.16f; t.outlineColor = new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.9f);   // 薔薇色の塗りの上でも墨が立つ
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             var info = bar.gameObject.AddComponent<HpBarInfo>();
             info.Max = max; info.Value = hp; info.Fill = fill; info.Label = t;
@@ -542,8 +547,8 @@ namespace DeckRogue.Game
             if (shownHp != p.Hp) TweenHpBar(area, p.Hp);
             if (p.IceBlock > 0)
             {
-                var ice = UiKit.Txt(area, "氷壁 " + p.IceBlock, 14, UiKit.Hex("#bfe6ff"), TextAnchor.MiddleLeft, true);
-                ice.outlineWidth = 0.18f; ice.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+                var ice = UiKit.Txt(area, "氷壁 " + p.IceBlock, 15, UiKit.Hex("#bfe6ff"), TextAnchor.MiddleLeft, true);
+                ice.outlineWidth = 0.32f; ice.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
                 UiKit.Anchor(ice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(256f, 62f), new Vector2(380f, 88f));
             }
 
@@ -577,7 +582,7 @@ namespace DeckRogue.Game
             UiKit.Anchor(setTag, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f));
             var stFit = setTag.GetComponent<ContentSizeFitter>();
             UiKit.Icon(setTag, "set", 14f, PaperFx.InkSoft);
-            var setLabel = UiKit.Txt(setTag, "伏せ場 " + p.SetCards.Count + " / " + p.SetSlots, 12, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            var setLabel = UiKit.Txt(setTag, "伏せ場 " + p.SetCards.Count + " / " + p.SetSlots, 13, PaperFx.Ink, TextAnchor.MiddleLeft, true);
             UiKit.Le(setLabel, -1f, 22f, -1f, 22f);
             for (int i = 0; i < p.SetSlots; i++)
             {
@@ -649,7 +654,7 @@ namespace DeckRogue.Game
             var terms = KeywordHelp.FindIn(text);
             if (terms.Count == 0) return null;
             var lines = new List<string>();
-            for (int i = 0; i < terms.Count && i < 4; i++) lines.Add("<color=#8fd08c><b>" + terms[i] + "</b></color> " + KeywordHelp.Terms[terms[i]]);
+            for (int i = 0; i < terms.Count && i < 4; i++) lines.Add("<color=#276a34><b>" + terms[i] + "</b></color> " + KeywordHelp.Terms[terms[i]]);
             return string.Join("\n", lines.ToArray());
         }
 
@@ -828,7 +833,7 @@ namespace DeckRogue.Game
             UiKit.Le(ic, 16f, 16f, 16f, 16f);
             var cnt = UiKit.Deco(row, count.ToString(), 17, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(cnt, -1f, 30f, -1f, 30f);
-            var lb = UiKit.Txt(row, count2 >= 0 ? "捨て札" : label, 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var lb = UiKit.Txt(row, count2 >= 0 ? "捨て札" : label, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(lb, -1f, 30f, -1f, 30f);
             if (count2 >= 0)
             {
@@ -836,7 +841,7 @@ namespace DeckRogue.Game
                 UiKit.Le(sep, 1.5f, 14f, 1.5f, 14f);
                 var cnt2 = UiKit.Deco(row, count2.ToString(), 17, PaperFx.Ink, TextAnchor.MiddleLeft);
                 UiKit.Le(cnt2, -1f, 30f, -1f, 30f);
-                var lb2 = UiKit.Txt(row, "消滅", 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+                var lb2 = UiKit.Txt(row, "消滅", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
                 UiKit.Le(lb2, -1f, 30f, -1f, 30f);
             }
         }
@@ -897,9 +902,9 @@ namespace DeckRogue.Game
             brt.localRotation = Quaternion.Euler(0f, 0f, -1f);
             var bt = b.GetComponentInChildren<TMP_Text>();
             if (bt != null && UiKit.FontDeco != null) { bt.font = UiKit.FontDeco; bt.characterSpacing = 4f; }
-            var hint = UiKit.Txt(root, "手札 " + st.Player.Hand.Count + " · 伏せ " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 11, PaperFx.Paper, TextAnchor.MiddleRight);
-            hint.outlineWidth = 0.18f; hint.outlineColor = new Color(0f, 0f, 0f, 0.7f);
-            UiKit.Anchor(hint.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-270f, 216f), new Vector2(-40f, 236f));
+            var hint = PaperFx.NightNote(root, "手札 " + st.Player.Hand.Count + " · 伏せ " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 13, 240f);
+            hint.anchorMin = hint.anchorMax = new Vector2(1f, 0f); hint.pivot = new Vector2(1f, 0f);
+            hint.anchoredPosition = new Vector2(-40f, 216f);
 
             // エナジーの太陽 (紙の円盤に蜂蜜色の弧)
             var sun = UiKit.NewRect("energyOrb", root);
@@ -920,9 +925,9 @@ namespace DeckRogue.Game
             UiKit.Anchor(et.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-8f, 4f), new Vector2(-8f, 6f));
             var em = UiKit.Txt(sun, "/ " + st.Player.EnergyMax, 15, PaperFx.InkSoft, TextAnchor.MiddleLeft, true);
             UiKit.Anchor(em.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(16f, -14f), new Vector2(60f, 8f));
-            var el = UiKit.Txt(sun, "エナジー", 9, PaperFx.InkSoft, TextAnchor.MiddleCenter);
-            el.characterSpacing = 3f;
-            UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 22f), new Vector2(0f, 38f));
+            var el = UiKit.Txt(sun, "エナジー", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            el.characterSpacing = 2f;
+            UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 20f), new Vector2(0f, 38f));
             g.RegisterAnchor("energy", sun);
         }
 
@@ -978,7 +983,7 @@ namespace DeckRogue.Game
             var pending = st.PendingWindow;
             if (win == null || pending == null)
             {
-                UiKit.Txt(inner, "窓の情報を復元できません", 16, UiKit.ColBad);
+                UiKit.Txt(inner, "窓の情報を復元できません", 16, UiKit.ColBadInk);
                 UiKit.Btn(inner, "温存して続ける", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = false }); }, 18);
                 return;
             }
@@ -995,7 +1000,7 @@ namespace DeckRogue.Game
             {
                 var buf = new List<string>();
                 for (int i = 0; i < risks.Count; i++) buf.Add((risks[i] + 1).ToString());
-                var w = UiKit.Txt(inner, "⚠ 発動すると伏せ枠が空き、敵 " + string.Join("・", buf.ToArray()) + " が「伏せなし」の分岐に変わる", 15, UiKit.Hex("#8a5a1a"));
+                var w = UiKit.Txt(inner, "⚠ 発動すると伏せ枠が空き、敵 " + string.Join("・", buf.ToArray()) + " が「伏せなし」の分岐に変わる", 15, PaperFx.GoldInk);
                 UiKit.Le(w, -1f, 40f, -1f, 40f);
             }
             var usable = Effects.UsableSetCards(st, win);
@@ -1113,7 +1118,7 @@ namespace DeckRogue.Game
                 for (int i = 0; i < st.Player.Permanents.Count; i++) { var q = st.Player.Permanents[i]; if (q.Def.Retainer == true && q.Innate != true) retainers.Add(q); }
                 pool = retainers; selected = new List<string>(); want = 1; title = "破壊する従者を選ぶ";
             }
-            else { UiKit.Txt(root, "未対応の選択: " + need, 20, UiKit.ColBad); return; }
+            else { UiKit.Txt(root, "未対応の選択: " + need, 20, UiKit.ColBadInk); return; }
 
             var inner = Modal(root, 1400f, 720f, "picker");
             UiKit.Head(inner, p.Card.Def.Name + " — " + title + "（選択中 " + selected.Count + " / " + want + "）", 24);

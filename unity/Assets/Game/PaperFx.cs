@@ -13,7 +13,11 @@ namespace DeckRogue.Game
         public static readonly Color Paper = UiKit.Hex("#f4ecd6");
         public static readonly Color Paper2 = UiKit.Hex("#eadfc4");
         public static readonly Color Ink = UiKit.Hex("#3b2f2f");
-        public static readonly Color InkSoft = new Color(59f / 255f, 47f / 255f, 47f / 255f, 0.62f);
+        public static readonly Color InkSoft = UiKit.Hex("#574b48");   // 中墨 (紙の上で 7:1)。透明度で薄めない
+        /// <summary>状態異常の文字 (藤色の紙の上で 6.7:1。Plum そのものは 1.9:1 で読めない)</summary>
+        public static readonly Color PlumInk = UiKit.Hex("#5a3d78");
+        /// <summary>紙の上の金の文字 (予測行・注意書き)</summary>
+        public static readonly Color GoldInk = UiKit.Hex("#7a4e12");
         public static readonly Color Honey = UiKit.Hex("#e0b25a");
         public static readonly Color Rose = UiKit.Hex("#d97b7b");
         public static readonly Color Sky = UiKit.Hex("#7fa7c9");
@@ -336,6 +340,22 @@ namespace DeckRogue.Game
             to.anchorMin = from.anchorMin; to.anchorMax = from.anchorMax; to.pivot = from.pivot;
             to.offsetMin = from.offsetMin + new Vector2(-grow, -grow + dy);
             to.offsetMax = from.offsetMax + new Vector2(grow, grow + dy);
+        }
+
+        /// <summary>舞台 (夜) の上に置く短い注記: 夜色の札に紙色の文字。文字の幅に合わせて札を作る (maxWidth を超えたら折り返す)。
+        /// 縁取りだけの紙色の文字は草の上で読めなかった (2026-09-09)。呼び出し側で anchor/pivot/anchoredPosition を置く</summary>
+        public static RectTransform NightNote(Transform parent, string text, int size, float maxWidth, bool bold = false, string name = "nightnote")
+        {
+            var rt = UiKit.NewRect(name, parent);
+            var bg = rt.gameObject.AddComponent<Image>();
+            bg.sprite = Tag; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
+            bg.color = new Color(Night.r, Night.g, Night.b, 0.84f);
+            bg.raycastTarget = false;
+            var t = UiKit.Txt(rt, text, size, Paper, TextAnchor.MiddleCenter, bold);
+            UiKit.Stretch(t.rectTransform, 9f, 9f, 3f, 3f);
+            var pref = t.GetPreferredValues(text, Mathf.Max(40f, maxWidth - 18f), 0f);
+            rt.sizeDelta = new Vector2(Mathf.Min(maxWidth, pref.x + 20f), pref.y + 8f);
+            return rt;
         }
 
         /// <summary>紙の円盤 (墨の縁2px)。エナジーの太陽などに</summary>

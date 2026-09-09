@@ -86,11 +86,13 @@ namespace DeckRogue.Game
             var viewport = UiKit.NewRect("viewport", pan.transform);
             UiKit.Stretch(viewport, 8f, 8f, 2f, 2f);
             viewport.gameObject.AddComponent<RectMask2D>();
-            var txt = UiKit.Txt(viewport, "", 15, UiKit.ColText, TextAnchor.MiddleLeft);
+            var txt = UiKit.Txt(viewport, "", 15, UiKit.ColInk, TextAnchor.MiddleLeft);   // 紙の入力欄なので墨 (紙色だと数字が見えない。2026-09-09)
             UiKit.Stretch(txt.rectTransform, 0f, 0f, 0f, 0f);
             var field = pan.gameObject.AddComponent<TMP_InputField>();
             field.textViewport = viewport;
             field.textComponent = txt;
+            field.caretColor = UiKit.ColInk;
+            field.customCaretColor = true;
             field.targetGraphic = pan;
             field.contentType = TMP_InputField.ContentType.IntegerNumber;
             field.characterLimit = 9;

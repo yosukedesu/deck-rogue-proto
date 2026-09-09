@@ -84,7 +84,7 @@ namespace DeckRogue.Game
             bool discounted = false;
             try { if (st != null) { cost = Effects.EffectiveCost(st, c); discounted = def.XCost != true && cost != def.Cost; } } catch (Exception) { }
             string costLabel = def.XCost == true ? "X" : cost.ToString();
-            var costT = UiKit.Txt(bm, costLabel, 19, discounted ? UiKit.Hex("#2f6e40") : PaperFx.Ink, TextAnchor.MiddleCenter, true);
+            var costT = UiKit.Txt(bm, costLabel, 19, discounted ? UiKit.Hex("#276a34") : PaperFx.Ink, TextAnchor.MiddleCenter, true);
             UiKit.Anchor(costT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 10f), new Vector2(0f, -4f));
 
             // 星 (レア度)
@@ -108,9 +108,9 @@ namespace DeckRogue.Game
             underline.raycastTarget = false;
 
             // タイプ・レア度の小さな文字
-            var typeT = UiKit.Txt(root, CardText.TypeJa(def.Type) + " ・ " + CardText.RarityLabel(def.Rarity ?? "common"), 10, PaperFx.InkSoft, TextAnchor.MiddleCenter);
-            UiKit.Anchor(typeT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(14f, -176f), new Vector2(-14f, -160f));
-            typeT.characterSpacing = 3f;
+            var typeT = UiKit.Txt(root, CardText.TypeJa(def.Type) + " ・ " + CardText.RarityLabel(def.Rarity ?? "common"), 13, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            UiKit.Anchor(typeT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(14f, -178f), new Vector2(-14f, -160f));
+            typeT.characterSpacing = 2f;
 
             // 本文 (墨)。戦闘中は成長・勢い・弱体を掛けた実値を色つきで (本家のカードの数字の読み方。2026-09-09)
             Func<int, int> mod = st != null ? MakeDamageModifier(st, c) : null;
@@ -118,40 +118,43 @@ namespace DeckRogue.Game
             string bodyText;
             try { bodyText = CardText.Body(def); }
             finally { CardText.DamageModifier = null; }
-            var body = UiKit.Txt(root, bodyText, 14, ink, TextAnchor.UpperCenter, true);
-            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(16f, 56f), new Vector2(-16f, -180f));
+            var body = UiKit.Txt(root, bodyText, 15, ink, TextAnchor.UpperCenter, true);
+            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 56f), new Vector2(-14f, -182f));
             body.lineSpacing = -4f;
 
             // 予測行 (対象が決まっている時、実処理と同じ手順の実値)
             string preview = Preview(c, st);
             if (preview != null)
             {
-                var pv = UiKit.Txt(root, preview, 13, UiKit.Hex("#8a5a1a"), TextAnchor.MiddleCenter, true);
+                var pv = UiKit.Txt(root, preview, 13, PaperFx.GoldInk, TextAnchor.MiddleCenter, true);
                 UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 54f), new Vector2(-18f, 78f));
             }
 
             // 役割の札 (左下=与ダメ・右下=ブロック・返しは左下に戻り矢印)
             string dmg, blk, counter; bool modeBoth; int dmgDelta;
             RoleLabels(def, mod, out dmg, out blk, out counter, out modeBoth, out dmgDelta);
-            if (dmg != null) Badge(root, "dmg", "sword", dmg, false, dmgDelta > 0 ? UiKit.Hex("#2f7a3c") : dmgDelta < 0 ? UiKit.Hex("#b03a30") : ink);
+            if (dmg != null) Badge(root, "dmg", "sword", dmg, false, dmgDelta > 0 ? UiKit.Hex("#276a34") : dmgDelta < 0 ? UiKit.Hex("#a33a30") : ink);
             else if (counter != null) Badge(root, "counter", "counter", counter, false, ink);
             if (blk != null) Badge(root, "block", "shield", blk, true, ink);
             string notes = CardText.Notes(def);
             if (modeBoth)
             {
-                var either = UiKit.Txt(root, "どちらか", 10, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+                var either = UiKit.Txt(root, "どちらか", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter);
                 UiKit.Anchor(either.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 14f), new Vector2(0f, 30f));
             }
             else if (notes.Length > 0)
             {
                 var tape = UiKit.NewRect("tape", root);
-                UiKit.Anchor(tape, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-44f, 12f), new Vector2(44f, 34f));
                 tape.localRotation = Quaternion.Euler(0f, 0f, 3f);
                 var tImg = tape.gameObject.AddComponent<Image>();
                 tImg.sprite = PaperFx.Tape(); tImg.raycastTarget = false;
-                var tt = UiKit.Txt(tape, notes, 10, PaperFx.Ink, TextAnchor.MiddleCenter, true);
-                UiKit.Stretch(tt.rectTransform, 2f, 2f, 0f, 0f);
+                var tt = UiKit.Txt(tape, notes, 13, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                UiKit.Stretch(tt.rectTransform, 4f, 4f, 0f, 0f);
                 tt.textWrappingMode = TextWrappingModes.NoWrap;
+                // テープは文字の幅に合わせる (「追加コスト:手札1枚を捨てる」がはみ出していた)。札の幅を超える長文だけ 11px まで縮める
+                float tw = Mathf.Clamp(tt.GetPreferredValues(notes, 1000f, 0f).x + 18f, 88f, W - 24f);
+                tt.enableAutoSizing = true; tt.fontSizeMin = 11f; tt.fontSizeMax = 13f;
+                UiKit.Anchor(tape, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, 12f), new Vector2(tw / 2f, 34f));
             }
             return root;
         }

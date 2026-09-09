@@ -114,7 +114,7 @@ namespace DeckRogue.Game
 
             if (selected)
             {
-                var mark = UiKit.Txt(cell, "▼ 選択中", 13, Theme.Gold, TextAnchor.MiddleCenter, true);
+                var mark = UiKit.Txt(cell, "▼ 選択中", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter, true);
                 UiKit.Anchor(mark.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -36f), new Vector2(0f, -14f));
                 mark.raycastTarget = false;
             }
@@ -172,7 +172,7 @@ namespace DeckRogue.Game
             UiKit.Le(diffLbl, 64f, 36f, 64f, 36f);
             var minus = UiKit.Btn(diffRow, "−", delegate { g.Difficulty = Math.Max(1, g.Difficulty - 1); g.Rebuild(); }, 18, g.Difficulty > 1);
             BattleScreen.SetSize(minus, 40f, 36f);
-            var dv = UiKit.Txt(diffRow, g.Difficulty.ToString(), 20, g.Difficulty > DeckRogue.Engine.Run.DEFAULT_DIFFICULTY ? UiKit.ColBad : UiKit.ColInk, TextAnchor.MiddleCenter, true);
+            var dv = UiKit.Txt(diffRow, g.Difficulty.ToString(), 20, g.Difficulty > DeckRogue.Engine.Run.DEFAULT_DIFFICULTY ? UiKit.ColBadInk : UiKit.ColInk, TextAnchor.MiddleCenter, true);
             UiKit.Le(dv, 44f, 36f, 44f, 36f);
             var plus = UiKit.Btn(diffRow, "+", delegate { g.Difficulty = Math.Min(10, g.Difficulty + 1); g.Rebuild(); }, 18, g.Difficulty < 10);
             BattleScreen.SetSize(plus, 40f, 36f);

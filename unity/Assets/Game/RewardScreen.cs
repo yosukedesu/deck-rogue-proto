@@ -100,7 +100,7 @@ namespace DeckRogue.Game
             var name = UiKit.Deco(cell, rd != null ? rd.Name : id, 22, UiKit.ColInk, TextAnchor.MiddleCenter);
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -138f), new Vector2(-8f, -102f));
             string rar = rd != null ? CardText.RarityLabel(rd.Rarity) : "";
-            var rt = UiKit.Txt(cell, rar, 13, Theme.Gold, TextAnchor.MiddleCenter);
+            var rt = UiKit.Txt(cell, rar, 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter);
             UiKit.Anchor(rt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -160f), new Vector2(-8f, -138f));
             var desc = UiKit.Txt(cell, rd != null ? rd.Description : "", 15, UiKit.ColInk, TextAnchor.UpperCenter);
             desc.textWrappingMode = TextWrappingModes.Normal;

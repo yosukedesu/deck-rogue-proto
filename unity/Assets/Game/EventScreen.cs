@@ -66,7 +66,7 @@ namespace DeckRogue.Game
                 bool needsCard = DeckRogue.Engine.Run.EventChoiceNeedsCard(ch);
                 bool last = i == def.Choices.Count - 1;
                 string hint = ChoiceHint(ch);
-                var b = UiKit.Btn(list, (last ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + (hint.Length > 0 ? "\n<size=14><color=#c8b878>" + hint + "</color></size>" : ""),
+                var b = UiKit.Btn(list, (last ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + (hint.Length > 0 ? "\n<size=14><color=#7a4e12>" + hint + "</color></size>" : ""),
                     delegate
                     {
                         if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }

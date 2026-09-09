@@ -17,7 +17,7 @@ namespace DeckRogue.Game
         public static string Colored(int baseAmt, int shown)
         {
             if (shown == baseAmt) return shown.ToString();
-            return (shown > baseAmt ? "<color=#3f8f4a>" : "<color=#c0453a>") + shown + "</color>";
+            return (shown > baseAmt ? "<color=#276a34>" : "<color=#a33a30>") + shown + "</color>";   // 紙の上で 5.5:1 (旧 #3f8f4a は 3.4:1)
         }
         // ---- 語彙表 ----
 

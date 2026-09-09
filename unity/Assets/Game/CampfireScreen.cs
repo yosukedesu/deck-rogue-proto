@@ -84,7 +84,7 @@ namespace DeckRogue.Game
                 btn.targetGraphic = frame;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.1f, 1.1f, 1.1f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
                 btn.onClick.AddListener(delegate { Audio.Play("click", 0.5f); onClick(); });
-                var hintB = UiKit.Txt(cell, "クリックで選ぶ", 13, Theme.Gold, TextAnchor.MiddleCenter);
+                var hintB = UiKit.Txt(cell, "クリックで選ぶ", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter);
                 hintB.raycastTarget = false;
                 UiKit.Anchor(hintB.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 18f), new Vector2(0f, 44f));
             }

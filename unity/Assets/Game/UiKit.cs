@@ -16,9 +16,17 @@ namespace DeckRogue.Game
         public static readonly Color ColPanel = Hex("#f4ecd6");
         public static readonly Color ColPanel2 = Hex("#eadfc4");
         public static readonly Color ColText = Hex("#f4ecd6");
-        public static readonly Color ColDim = new Color(244f / 255f, 236f / 255f, 214f / 255f, 0.72f);
+        // 二次の文字色は実色で持つ (2026-09-09 コントラスト是正: 透明度で薄めると背景次第で 3.7:1 まで落ちて読めなかった)。
+        // 夜の上の淡い紙色 = 9:1、紙の上の中墨 = 7:1、紙の上の墨 = 11:1
+        public static readonly Color ColDim = Hex("#c4beb2");
         public static readonly Color ColInk = Hex("#3b2f2f");
-        public static readonly Color ColInkSoft = new Color(59f / 255f, 47f / 255f, 47f / 255f, 0.62f);
+        public static readonly Color ColInkSoft = Hex("#574b48");
+        /// <summary>紙の上に置く金の文字 (Theme.Gold #e0b25a は紙の上で 1.7:1 = 読めない。塗りとアイコンは Gold のまま)</summary>
+        public static readonly Color ColGoldInk = Hex("#7a4e12");
+        /// <summary>紙の上に置く朱の文字 (ColBad は塗り用。紙の上では 3.6:1)</summary>
+        public static readonly Color ColBadInk = Hex("#9c3a2a");
+        /// <summary>文字の最小サイズ (1920×1080 基準)。これ未満は Txt が切り上げる (9〜11px の注記が読めなかった)</summary>
+        public const int MinFontSize = 13;
         public static readonly Color ColAccent = Hex("#8fae7b");
         public static readonly Color ColHp = Hex("#d97b7b");
         public static readonly Color ColBlock = Hex("#7fa7c9");
@@ -141,7 +149,7 @@ namespace DeckRogue.Game
             var t = rt.gameObject.AddComponent<TextMeshProUGUI>();
             var f = bold ? FontBold : FontRegular;
             if (f != null) t.font = f;
-            t.fontSize = size;
+            t.fontSize = Math.Max(size, MinFontSize);
             t.color = color;
             t.text = text == null ? "" : text;
             t.alignment = MapAnchor(anchor);
@@ -315,7 +323,7 @@ namespace DeckRogue.Game
             fill.offsetMin = Vector2.zero;
             fill.offsetMax = Vector2.zero;
 
-            var t = Txt(row, caption, 13, ColText, TextAnchor.MiddleCenter, true);
+            var t = Txt(row, caption, 14, ColText, TextAnchor.MiddleCenter, true);
             Stretch(t.rectTransform, 4f, 4f, 0f, 0f);
         }
 

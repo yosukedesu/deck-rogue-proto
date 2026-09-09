@@ -409,3 +409,9 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 - 未対応: ホバーの吹き出し（長押し化）・文字の最小サイズ・戦闘以外の画面の当たり判定の大きさ。
 - **実機に入った（2026-09-09）**: Hub に Android Build Support 導入後、`scripts/unity-win.sh android`（初回 IL2CPP 込み 9〜10 分・2回目 2 分。上限は 60 分に）→ `install`（`adb -s <serial>`。エミュレータが offline で並ぶと `-s` が要る）。Galaxy S25（2340×1080）で起動・データ読み込み・3D 舞台・ポスト処理まで動作。
   logcat に毎フレーム「Particle Velocity curves must all be in the same mode」＝速度カーブの3軸のモード混在（PC では見えなかった）→ 3軸とも2定数に揃えて解消。次: 実機の体感（重さ・文字・タップ）を聞いてモバイル品質段と長押しの吹き出し。
+
+### 2026-09-09 文字のコントラスト是正（ユーザー「文字と背景のコントラストのせいで読めない文字が多い」）
+- **原因は3つ**: ①二次の文字を「墨 62% の透明度」で薄めていた（紙の上で 3.7:1・9〜11px）②旧ダークテーマの色をそのまま紙の上に置いていた（Theme.Gold の文字 1.7:1・藤色の状態異常 1.9:1・ツールチップの淡い緑 1.6:1）③舞台（夜）の上に縁取りだけの紙色の文字（草と月光の上で消える）。
+- **是正**: 実色の二次インク（`UiKit.ColInkSoft`/`PaperFx.InkSoft` = #574b48、`ColDim` = #c4beb2）／紙の上の金と朱の墨（`ColGoldInk` #7a4e12・`ColBadInk` #9c3a2a）／状態異常の墨（`PaperFx.PlumInk` #5a3d78）／夜の札（`PaperFx.NightNote`: 文字幅に合わせた夜色の札。伏せ分岐の詳細・敵の特性・手札の数）／`UiKit.Txt` の最小 13px／浮き文字は縁取り 0.32＋影／HP バーの数字は 15px＋紙色の細い縁取り／シード入力欄の数字が紙色で見えなかったのを墨に／カードの注記テープを文字幅に合わせる。
+- 規約は CLAUDE.md「UIの見た目の方針」の「文字の読みやすさの規約」。カードの面そのものは第2版のデザインカンバス（`docs/design/card-design/`）で裁定待ち。
+- スマホの文字は別問題（1920 基準の 13px ≈ S25 で 0.9mm）。UI 倍率の決定が要る。

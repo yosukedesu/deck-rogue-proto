@@ -91,7 +91,7 @@ namespace DeckRogue.Game
                 PriceTag(cell, item.Price, sold ? "売切" : null, canBuy);
                 if (i == n - 1 && n >= 6)
                 {
-                    var rare = UiKit.Txt(cell, "★ レア枠", 13, Theme.Gold, TextAnchor.MiddleCenter, true);
+                    var rare = UiKit.Txt(cell, "★ レア枠", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter, true);
                     UiKit.Anchor(rare.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-60f, 4f), new Vector2(60f, 26f));
                 }
             }
@@ -145,7 +145,7 @@ namespace DeckRogue.Game
             hg.childForceExpandWidth = false;
             hg.childForceExpandHeight = false;
             if (over == null) UiKit.Icon(tag, "gold", 22f);
-            var t = UiKit.Txt(tag, over ?? (price + " G"), 17, over != null ? UiKit.ColInkSoft : affordable ? Theme.Gold : UiKit.ColBad, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(tag, over ?? (price + " G"), 17, over != null ? UiKit.ColInkSoft : affordable ? UiKit.ColGoldInk : UiKit.ColBadInk, TextAnchor.MiddleCenter, true);
             UiKit.Le(t, 50f, 30f, -1f, 30f);
         }
     }

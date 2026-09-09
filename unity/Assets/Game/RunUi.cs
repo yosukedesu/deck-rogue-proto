@@ -26,7 +26,7 @@ namespace DeckRogue.Game
             hg.childForceExpandWidth = false;
 
             var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
-            var tl = UiKit.Txt(t1, "幕 " + run.Act + " · 行 " + (run.Row + 1) + " / " + run.Map.Count, 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var tl = UiKit.Txt(t1, "幕 " + run.Act + " · 行 " + (run.Row + 1) + " / " + run.Map.Count, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             tl.characterSpacing = 2f;
             UiKit.Le(tl, -1f, 30f, -1f, 30f);
             var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
@@ -39,13 +39,13 @@ namespace DeckRogue.Game
             UiKit.Icon(hp, "heart", 16f);
             var ht = UiKit.Deco(hp, run.Hp.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(ht, -1f, 30f, -1f, 30f);
-            var hm = UiKit.Txt(hp, "/ " + run.MaxHp, 12, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var hm = UiKit.Txt(hp, "/ " + run.MaxHp, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(hm, -1f, 30f, -1f, 30f);
             var gold = BattleScreen.Tag(bar, 36f, -0.4f);
             UiKit.Icon(gold, "gold", 16f);
             var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(gt, -1f, 30f, -1f, 30f);
-            var gl = UiKit.Txt(gold, "G", 11, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 30f, -1f, 30f);
             var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.Rebuild(); }, 13);
             BattleScreen.SetSize(deckBtn, 110f, 36f);
@@ -72,7 +72,7 @@ namespace DeckRogue.Game
             var pan = UiKit.Frame(root, Theme.Panel, g.Error != null ? new Color(1f, 0.7f, 0.7f, 1f) : Color.white, "message", 3f);
             UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-460f, -TopH - 56f), new Vector2(460f, -TopH - 8f));
             pan.raycastTarget = false;
-            var t = UiKit.Txt(pan.transform, msg, 16, g.Error != null ? UiKit.ColBad : UiKit.ColInk, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(pan.transform, msg, 16, g.Error != null ? UiKit.ColBadInk : UiKit.ColInk, TextAnchor.MiddleCenter, true);
             UiKit.Stretch(t.rectTransform, 12f, 12f, 0f, 0f);
             t.raycastTarget = false;
         }

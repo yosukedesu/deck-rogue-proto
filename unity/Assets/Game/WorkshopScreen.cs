@@ -95,7 +95,7 @@ namespace DeckRogue.Game
             }
             else
             {
-                var msg = UiKit.Txt(srt, blocked != null ? "合成できない: " + blocked : "デッキから2枚選ぶ", 16, blocked != null ? UiKit.ColBad : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                var msg = UiKit.Txt(srt, blocked != null ? "合成できない: " + blocked : "デッキから2枚選ぶ", 16, blocked != null ? UiKit.ColBadInk : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 msg.textWrappingMode = TextWrappingModes.Normal;
                 UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -440f), new Vector2(-20f, -340f));
             }

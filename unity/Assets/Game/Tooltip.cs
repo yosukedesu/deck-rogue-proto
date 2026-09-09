@@ -30,7 +30,7 @@ namespace DeckRogue.Game
                 {
                     var terms = KeywordHelp.FindIn(body);
                     for (int i = 0; i < terms.Count && i < 4; i++)
-                        body += "\n<color=#8fd08c><b>" + terms[i] + "</b></color> <color=#c8d0c8>" + KeywordHelp.Terms[terms[i]] + "</color>";
+                        body += "\n<color=#276a34><b>" + terms[i] + "</b></color> <color=#574b48>" + KeywordHelp.Terms[terms[i]] + "</color>";   // 紙の上で 5.5:1 / 7:1
                 }
                 var pd = d as PointerEventData;
                 Show(body, pd != null ? pd.position : (Vector2)Input.mousePosition);

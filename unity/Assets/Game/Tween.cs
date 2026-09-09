@@ -144,9 +144,14 @@ namespace DeckRogue.Game
             var cg = rt.gameObject.AddComponent<CanvasGroup>();
             cg.blocksRaycasts = false;
             cg.interactable = false;
+            // 影 (右下に 2px) と太めの縁取り: 草や月光の上でも読める (2026-09-09)
+            var sh = UiKit.Txt(rt, text, size, new Color(0f, 0f, 0f, 0.75f), TextAnchor.MiddleCenter, true);
+            UiKit.Stretch(sh.rectTransform, 2f, -2f, 2f, -2f);
+            sh.outlineWidth = 0.3f;
+            sh.outlineColor = new Color(0f, 0f, 0f, 0.75f);
             var t = UiKit.Txt(rt, text, size, color, TextAnchor.MiddleCenter, true);
-            t.outlineWidth = 0.2f;
-            t.outlineColor = new Color(0f, 0f, 0f, 0.9f);
+            t.outlineWidth = 0.32f;
+            t.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             rt.localScale = Vector3.one * 0.6f;
             Scale(rt, Vector3.one, 0.18f, Ease.OutBack);
