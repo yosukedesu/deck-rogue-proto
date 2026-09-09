@@ -103,6 +103,23 @@ namespace DeckRogue.Game
             go.AddComponent<GameRoot>();
         }
 
+        /// <summary>コマンドラインの -uiscale N (PC でスマホの倍率を確かめる用)。無ければ 1</summary>
+        static float UiScaleArg()
+        {
+            try
+            {
+                var args = System.Environment.GetCommandLineArgs();
+                for (int i = 0; i + 1 < args.Length; i++)
+                    if (args[i] == "-uiscale")
+                    {
+                        float v;
+                        if (float.TryParse(args[i + 1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out v)) return v;
+                    }
+            }
+            catch (System.Exception) { }
+            return 1f;
+        }
+
         void Awake()
         {
             I = this;
@@ -115,9 +132,20 @@ namespace DeckRogue.Game
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f); // 本家と同じ基準 (2026-09-07 裁定)
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
+            // 基準 1920×1080 (本家と同じ。2026-09-07 裁定)。スマホは 1.3倍 (2026-09-09 ユーザー裁定「スマホだけ 1.3倍」):
+            // 高さ 831 を基準に全体を大きく描き、横長端末の余りは横に逃がす (S25 2340×1080 → 1800×831 のキャンバス)。PC で確かめる時は -uiscale 1.3
+            float ui = Application.isMobilePlatform ? 1.3f : UiScaleArg();
+            if (ui > 1.001f)
+            {
+                scaler.referenceResolution = new Vector2(1920f / ui, 1080f / ui);
+                scaler.matchWidthOrHeight = 1f;
+            }
+            else
+            {
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.matchWidthOrHeight = 0.5f;
+            }
             canvasGo.AddComponent<GraphicRaycaster>();
 
             // EventSystem (シーンに無ければ作る)

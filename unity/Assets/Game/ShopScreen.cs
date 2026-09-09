@@ -55,12 +55,15 @@ namespace DeckRogue.Game
             RunUi.Heading(root, "ショップ", "カードをクリックで購入。所持金 " + run.Gold + "G");
 
             // 棚 (カード)
+            // 棚は左端〜右パネルの手前 (画面幅から出す。スマホの 1800 幅では中央固定だと6枚目がパネルに隠れた。2026-09-09)
             var shelf = UiKit.NewRect("shelf", root);
-            UiKit.Anchor(shelf, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-760f, -RunUi.TopH - 520f), new Vector2(560f, -RunUi.TopH - 110f));
-            float scale = 0.95f;
-            float cardW = CardView.W * scale, cardH = CardView.H * scale;
+            UiKit.Anchor(shelf, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -RunUi.TopH - 520f), new Vector2(-480f, -RunUi.TopH - 110f));
+            float rootW = root.rect.width > 0f ? root.rect.width : 1920f;
+            float availW = rootW - 40f - 480f;
             int n = shop.Cards.Count;
             float gap = 24f;
+            float scale = Mathf.Min(0.95f, (availW - Math.Max(0, n - 1) * gap) / Math.Max(1, n) / CardView.W);
+            float cardW = CardView.W * scale, cardH = CardView.H * scale;
             float totalW = n * cardW + Math.Max(0, n - 1) * gap;
             float x0 = -totalW / 2f + cardW / 2f;
             for (int i = 0; i < n; i++)

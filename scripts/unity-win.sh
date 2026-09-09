@@ -69,8 +69,9 @@ case "$MODE" in
     if [ ! -f "$EXE" ]; then echo "ビルドが無い: $EXE (先に scripts/unity-win.sh build)"; exit 2; fi
     SCENARIO="${2:-tour}"; SEED="${3:-4242}"; STAGEACT="${4:-}"   # 4つ目: 舞台の幕だけ差し替え (-stageact)
     rm -rf "$WIN_DIR/Shots"; mkdir -p "$WIN_DIR/Shots"
-    timeout -k 5 180 "$EXE" -autopilot "$SCENARIO" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" ${STAGEACT:+-stageact "$STAGEACT"} \
-      -screen-width 1920 -screen-height 1080 -screen-fullscreen 0 -logFile "$(wslpath -w "$WIN_DIR/player.log")"
+    # SHOT_W/SHOT_H で窓の寸法、UISCALE でスマホの倍率を PC で再現 (例: SHOT_W=1920 SHOT_H=886 UISCALE=1.3 = S25 の 1800×831 キャンバス)
+    timeout -k 5 180 "$EXE" -autopilot "$SCENARIO" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" ${STAGEACT:+-stageact "$STAGEACT"} ${UISCALE:+-uiscale "$UISCALE"} \
+      -screen-width "${SHOT_W:-1920}" -screen-height "${SHOT_H:-1080}" -screen-fullscreen 0 -logFile "$(wslpath -w "$WIN_DIR/player.log")"
     PCODE=$?
     mkdir -p "$REPO/unity/Shots"; rm -f "$REPO/unity/Shots"/*.png
     cp "$WIN_DIR/Shots"/*.png "$REPO/unity/Shots/" 2>/dev/null

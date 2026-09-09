@@ -420,3 +420,8 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 - **カンバス**: `docs/design/card-design/build.py` → Main（4案×6枚）／States（案B の14状態）／Type（文字と墨の規約・コントラスト比）。seed 済み html は追わない（.gitignore）。
 - **実装**（`CardView.cs`）: 紙は `PaperFx.CardOf(rarity)`＝外側の線の色がレア度（C 墨50%・U 空・R 蜂蜜 2px）／左上のコスト玉 `PaperFx.Orb`（蜂蜜、割引は苔）に Kaisei 22／全幅の窓 176×100（夜色 #20233a・墨の縁）に 80×48 を2倍／窓の下端に掛かるタイプの帯 `PaperFx.Ribbon`（両端が尖った帯・タイプ色）に宝石 `ThemeFx.Gem`＋タイプ名 14／本文 16（自動縮小 12 まで）で数字は `CardText.Emphasize` が 130% に、短い括弧の注記「(貫通)」は小さな下地の札に／選択式は「どちらか一つ」を先頭に／注記テープは文字幅。星・しおり・にじみの札は廃止。
 - 数字の色の規則（上がる=#276a34・下がる=#a33a30・鍛えた札は「+」）は従来どおり `CardText.Colored` が担う。
+
+### 2026-09-09 スマホは UI を 1.3倍（ユーザー裁定。1.5倍／PC 基準のまま、との3択）
+- `GameRoot.Awake`: `Application.isMobilePlatform` なら CanvasScaler の基準を 1920/1.3×1080/1.3＝1477×831・高さ基準（matchWidthOrHeight=1）。横長端末の余りは横へ（S25 2340×1080 → 1800×831 のキャンバス）。PC は 1920×1080・0.5 のまま。
+- PC での再現: `-uiscale N`（`GameRoot.UiScaleArg`）。`scripts/unity-win.sh shots` は `SHOT_W`/`SHOT_H`（窓の寸法）と `UISCALE` を環境変数で受ける。S25 相当＝`SHOT_W=1920 SHOT_H=886 UISCALE=1.3`。
+- 配置は変えない（手札の重なりが増える・地図はスクロール）。長押しの吹き出しと当たり判定の大きさは未対応。

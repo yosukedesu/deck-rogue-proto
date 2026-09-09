@@ -78,19 +78,23 @@ namespace DeckRogue.Game
 
             if (fused != null)
             {
+                // 結果の札はパネルの高さに合わせて縮める (スマホの 831 高では 1.1倍だと合成ボタンに隠れた。2026-09-09)
+                float rootH = root.rect.height > 0f ? root.rect.height : 1080f;
+                float panelH = rootH - 40f - (RunUi.TopH + 20f);
+                float rs = Mathf.Clamp((panelH - 340f - 156f) / CardView.H, 0.7f, 1.1f);
                 var cell = UiKit.NewRect("result", srt);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 1f);
-                cell.sizeDelta = new Vector2(CardView.W * 1.1f, CardView.H * 1.1f);
-                cell.anchoredPosition = new Vector2(0f, -340f - CardView.H * 0.55f);
+                cell.sizeDelta = new Vector2(CardView.W * rs, CardView.H * rs);
+                cell.anchoredPosition = new Vector2(0f, -340f - CardView.H * rs * 0.5f);
                 var ci = new CardInstance { Uid = "fused", Def = fused };
                 var cv = CardView.Build(cell, ci, null, true, false, "fused-card");
-                cv.localScale = Vector3.one * 1.1f;
+                cv.localScale = Vector3.one * rs;
                 Tween.Punch(cell, 0.08f, 0.5f);
                 if (notes.Count > 0)
                 {
                     var nt = UiKit.Txt(srt, "注記: " + string.Join(" / ", notes.ToArray()), 12, UiKit.ColInkSoft, TextAnchor.UpperLeft);
                     nt.textWrappingMode = TextWrappingModes.Normal;
-                    UiKit.Anchor(nt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -340f - CardView.H * 1.1f - 70f), new Vector2(-20f, -340f - CardView.H * 1.1f - 6f));
+                    UiKit.Anchor(nt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -340f - CardView.H * rs - 70f), new Vector2(-20f, -340f - CardView.H * rs - 6f));
                 }
             }
             else
