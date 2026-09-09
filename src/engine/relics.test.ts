@@ -188,6 +188,15 @@ describe('レリック効果', () => {
       expect(def.effects?.[0]).toMatchObject({ trigger: 'onCombatStart', effect: 'gainSetSlot', amount: 1 })
     })
 
+    it('二重の符: 戦闘開始時に伏せ枠が2になり、2枚同時に伏せられる', () => {
+      // このは=伏せ枠1。onCombatStart の gainSetSlot で2枠になる
+      // レリックを持ったまま戦闘に入ると onCombatStart で gainSetSlot が発火する
+      const withRelic = intoBattle({ ...createRun(11, 'set-confirm'), relics: ['relic_double_talisman'] })
+      expect(withRelic.combat?.player.setSlots).toBe(2) // 既定1 + 二重の符
+      const bare = intoBattle(createRun(11, 'set-confirm'))
+      expect(bare.combat?.player.setSlots).toBe(1) // 無しなら1のまま
+    })
+
     it('黒星の欠片は幕1では候補に出ない（actMin=2）', () => {
       expect(getRelicDef('relic_black_star').actMin).toBe(2)
       // 幕1のボス3択: 黒星の欠片は除外される
