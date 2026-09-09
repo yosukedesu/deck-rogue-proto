@@ -299,6 +299,44 @@ namespace DeckRogue.Game
             return e.Effect + (e.Amount.HasValue ? " " + amt : "");
         }
 
+        /// <summary>案B の本文 (2026-09-09): 数字 (+N/-N 含む) を 130% に、「(貫通)」のような短い括弧の注記を小さな下地つきの札に。
+        /// タグ (色・スプライト) の中は触らない。表示層だけの加工で Body の語彙は不変</summary>
+        public static string Emphasize(string body)
+        {
+            if (string.IsNullOrEmpty(body)) return body;
+            var sb = new StringBuilder();
+            int i = 0;
+            while (i < body.Length)
+            {
+                char ch = body[i];
+                if (ch == '<')
+                {
+                    int j = body.IndexOf('>', i);
+                    if (j < 0) { sb.Append(body.Substring(i)); break; }
+                    sb.Append(body, i, j - i + 1); i = j + 1; continue;
+                }
+                if (ch == '(')
+                {
+                    int j = body.IndexOf(')', i);
+                    if (j > i + 1 && j - i - 1 <= 6)
+                    {
+                        sb.Append("<nobr><size=78%><mark=#3b2f2f22> ").Append(body, i + 1, j - i - 1).Append(" </mark></size></nobr>");   // 札の途中で折り返さない
+                        i = j + 1; continue;
+                    }
+                }
+                bool sign = (ch == '+' || ch == '-') && i + 1 < body.Length && char.IsDigit(body[i + 1]) && (i == 0 || !char.IsDigit(body[i - 1]));
+                if (char.IsDigit(ch) || sign)
+                {
+                    int j = sign ? i + 1 : i;
+                    while (j < body.Length && char.IsDigit(body[j])) j++;
+                    sb.Append("<nobr><size=130%>").Append(body, i, j - i).Append("</size></nobr>");   // 「-1」の途中で折り返さない
+                    i = j; continue;
+                }
+                sb.Append(ch); i++;
+            }
+            return sb.ToString();
+        }
+
         /// <summary>カードの効果行 (選択式はモードごと)。改行区切り</summary>
         public static string Body(CardDef def)
         {

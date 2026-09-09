@@ -415,3 +415,8 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 - **是正**: 実色の二次インク（`UiKit.ColInkSoft`/`PaperFx.InkSoft` = #574b48、`ColDim` = #c4beb2）／紙の上の金と朱の墨（`ColGoldInk` #7a4e12・`ColBadInk` #9c3a2a）／状態異常の墨（`PaperFx.PlumInk` #5a3d78）／夜の札（`PaperFx.NightNote`: 文字幅に合わせた夜色の札。伏せ分岐の詳細・敵の特性・手札の数）／`UiKit.Txt` の最小 13px／浮き文字は縁取り 0.32＋影／HP バーの数字は 15px＋紙色の細い縁取り／シード入力欄の数字が紙色で見えなかったのを墨に／カードの注記テープを文字幅に合わせる。
 - 規約は CLAUDE.md「UIの見た目の方針」の「文字の読みやすさの規約」。カードの面そのものは第2版のデザインカンバス（`docs/design/card-design/`）で裁定待ち。
 - スマホの文字は別問題（1920 基準の 13px ≈ S25 で 0.9mm）。UI 倍率の決定が要る。
+
+### 2026-09-09 カードの面・第2版＝案B「本家型の帯」（ユーザー「カードのデザインについてちゃんと詰めていきたい」→ 同じ6枚×4案のカンバスから B を裁定）
+- **カンバス**: `docs/design/card-design/build.py` → Main（4案×6枚）／States（案B の14状態）／Type（文字と墨の規約・コントラスト比）。seed 済み html は追わない（.gitignore）。
+- **実装**（`CardView.cs`）: 紙は `PaperFx.CardOf(rarity)`＝外側の線の色がレア度（C 墨50%・U 空・R 蜂蜜 2px）／左上のコスト玉 `PaperFx.Orb`（蜂蜜、割引は苔）に Kaisei 22／全幅の窓 176×100（夜色 #20233a・墨の縁）に 80×48 を2倍／窓の下端に掛かるタイプの帯 `PaperFx.Ribbon`（両端が尖った帯・タイプ色）に宝石 `ThemeFx.Gem`＋タイプ名 14／本文 16（自動縮小 12 まで）で数字は `CardText.Emphasize` が 130% に、短い括弧の注記「(貫通)」は小さな下地の札に／選択式は「どちらか一つ」を先頭に／注記テープは文字幅。星・しおり・にじみの札は廃止。
+- 数字の色の規則（上がる=#276a34・下がる=#a33a30・鍛えた札は「+」）は従来どおり `CardText.Colored` が担う。

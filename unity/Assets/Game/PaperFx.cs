@@ -65,6 +65,14 @@ namespace DeckRogue.Game
         public static Sprite Button { get { return Nine("paper_button", 40, 10, 12, TagBands, true); } }
         /// <summary>カードの面: パネルと同じ二重線。角丸 14</summary>
         public static Sprite Card { get { return Nine("paper_card", 52, 14, 16, PanelBands, false); } }
+        /// <summary>カードの面・案B (2026-09-09): 外側の線の色がレア度 (C 墨50%・U 空・R 蜂蜜=2px)。差し替えは Art/ui/paper_card_<rarity>.png</summary>
+        public static Sprite CardOf(string rarity)
+        {
+            string r = rarity ?? "common";
+            Color line = r == "rare" ? Honey : r == "uncommon" ? Sky : new Color(Ink.r, Ink.g, Ink.b, 0.5f);
+            float lw = r == "common" ? 1f : 2f;
+            return Nine("paper_card_" + r, 52, 14, 16, d => d < lw ? line : (d < 4f ? Paper : (d < 6f ? Ink : Paper)), false);
+        }
 
         static Color PanelBands(float d)
         {
@@ -207,6 +215,73 @@ namespace DeckRogue.Game
             s.name = key;
             _cache[key] = s;
             return s;
+        }
+
+        /// <summary>コスト玉 (52px): 色の玉 (左上が明るい) に墨の輪2・紙の輪2・淡い墨の外線1。案B のカードの左上</summary>
+        public static Sprite Orb(Color color)
+        {
+            string key = "orb:" + ColorUtility.ToHtmlStringRGB(color);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int n = 52;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            float c = n / 2f;
+            var light = Color.Lerp(color, Color.white, 0.35f);
+            var dark = Color.Lerp(color, Color.black, 0.18f);
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = x + 0.5f - c, dy = y + 0.5f - c;
+                    float r = Mathf.Sqrt(dx * dx + dy * dy);
+                    Color col;
+                    if (r < 20f) col = Color.Lerp(light, dark, Mathf.Clamp01((dx - dy) / 40f + 0.5f));   // 左上が明るい
+                    else if (r < 22f) col = Ink;
+                    else if (r < 24f) col = Paper;
+                    else if (r < 25f) col = new Color(Ink.r, Ink.g, Ink.b, 0.5f);
+                    else col = new Color(0f, 0f, 0f, 0f);
+                    if (r >= 24f && r < 25.5f) col.a *= Mathf.Clamp01(25.5f - r);   // 外縁を滑らかに
+                    px[y * n + x] = col;
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key; _cache[key] = s; return s;
+        }
+
+        /// <summary>タイプの帯 (150×26): 両端が尖った帯。塗りはタイプ色、内側 1.5px は墨寄りの線。案B の窓の下端に掛ける</summary>
+        public static Sprite Ribbon(Color color)
+        {
+            string key = "ribbon:" + ColorUtility.ToHtmlStringRGB(color);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int w = 150, h = 26;
+            float hh = h / 2f;
+            var edge = Color.Lerp(color, Ink, 0.55f);
+            bool Inside(float x, float y, float m)
+            {
+                float yy = Mathf.Abs(y - hh);
+                if (yy > hh - m) return false;
+                if (x >= 8f + m && x <= w - 8f - m) return true;
+                float tx = (x < w / 2f ? x : w - x) - m * 1.3f;   // 尖った端: 幅が中央へ向けて広がる
+                if (tx < 0f) return false;
+                return yy <= hh * (tx / 8f) - m * 0.5f;
+            }
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    float fx = x + 0.5f, fy = y + 0.5f;
+                    Color col = !Inside(fx, fy, 0f) ? new Color(0f, 0f, 0f, 0f) : (!Inside(fx, fy, 1.5f) ? edge : color);
+                    px[y * w + x] = col;
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key; _cache[key] = s; return s;
         }
 
         /// <summary>マスキングテープ (半透明の蜂蜜色。左右は破いた縁)</summary>

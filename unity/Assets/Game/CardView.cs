@@ -1,7 +1,7 @@
-// CardView.cs — カードの面 (200×290)。「絵本」の肌 (2026-09-07 デザインカンバス第5版):
-// クリーム色の紙に鉛筆の二重線、左上のしおり=タイプ (コストを乗せる)、右上の星=レア度、
-// 紙の台紙に貼った挿絵 (Art/cards/<id>.png 80×48 を2倍。無ければタイプの紋章 16×16 を3倍)、
-// 本文は墨、左下の剣のにじみ=与ダメ・右下の盾のにじみ=ブロック (効果から導出。データにカテゴリは増やさない)。
+// CardView.cs — カードの面 (200×290)。「絵本」の肌の上に案B「本家型の帯」(2026-09-09 デザインカンバス第2版・ユーザー裁定):
+// 左上のコスト玉 (割引は苔色・X)、全幅の夜色の窓に挿絵 (Art/cards/<id>.png 80×48 を2倍。無ければタイプの紋章)、
+// 窓の下端に掛かるタイプの帯 (色＋文字＋レア度の宝石)、本文は墨で数字は 130%、紙の外側の線の色がレア度 (C 墨・U 空・R 蜂蜜)。
+// 旧・第5版の「左下の剣・右下の盾のにじみの札」は廃止 (数字は本文の1か所)。RoleLabels は効果からの役割抽出として残す。
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -30,28 +30,29 @@ namespace DeckRogue.Game
             var def = c.Def;
             var typeCol = PaperFx.TypeColor(def.Type);
             var ink = playable ? PaperFx.Ink : new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.7f);
+            string rarity = def.Rarity ?? "common";
 
-            // 紙
-            var paper = PaperFx.Sheet(root, PaperFx.Card, "paper", playable ? Color.white : new Color(0.82f, 0.8f, 0.76f, 1f));
+            // 紙 (外側の線の色がレア度: C 墨・U 空・R 蜂蜜)
+            var paper = PaperFx.Sheet(root, PaperFx.CardOf(rarity), "paper", playable ? Color.white : new Color(0.82f, 0.8f, 0.76f, 1f));
             UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
             paper.raycastTarget = interactable;
             var grain = PaperFx.GrainOver(root, 0.7f);
             grain.raycastTarget = false;
 
-            // 挿絵の台紙 (168×104) と絵
-            var mat = UiKit.NewRect("art", root);
-            UiKit.Anchor(mat, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -158f), new Vector2(184f, -54f));
-            var matEdge = mat.gameObject.AddComponent<Image>();
-            matEdge.color = new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.8f);
-            matEdge.raycastTarget = false;
-            var matIn = UiKit.Pan(mat, PaperFx.Paper2, "mat");
-            UiKit.Stretch(matIn.rectTransform, 2f, 2f, 2f, 2f);
-            matIn.raycastTarget = false;
+            // 挿絵の窓 (全幅 176×100。夜色に墨の縁。80×48 を2倍で中央に)
+            var win = UiKit.NewRect("art", root);
+            UiKit.Anchor(win, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, -144f), new Vector2(-12f, -44f));
+            var winEdge = win.gameObject.AddComponent<Image>();
+            winEdge.color = PaperFx.Ink;
+            winEdge.raycastTarget = false;
+            var winIn = UiKit.Pan(win, UiKit.Hex("#20233a"), "night");
+            UiKit.Stretch(winIn.rectTransform, 1.5f, 1.5f, 1.5f, 1.5f);
+            winIn.raycastTarget = false;
             var art = Theme.Art("cards", def.Id);
             if (art != null)
             {
                 // 80×48 を2倍 (整数倍)。それ以外の寸法でも縦横比を保って収める
-                var ai = UiKit.NewRect("pic", mat);
+                var ai = UiKit.NewRect("pic", win);
                 ai.anchorMin = ai.anchorMax = new Vector2(0.5f, 0.5f);
                 ai.sizeDelta = new Vector2(Mathf.Min(160f, art.rect.width * 2f), Mathf.Min(96f, art.rect.height * 2f));
                 var aimg = ai.gameObject.AddComponent<Image>();
@@ -60,10 +61,10 @@ namespace DeckRogue.Game
             }
             else
             {
-                var wash = UiKit.Pan(mat, new Color(typeCol.r, typeCol.g, typeCol.b, 0.35f), "wash");
-                UiKit.Stretch(wash.rectTransform, 2f, 2f, 2f, 2f);
+                var wash = UiKit.Pan(win, new Color(typeCol.r, typeCol.g, typeCol.b, 0.3f), "wash");
+                UiKit.Stretch(wash.rectTransform, 1.5f, 1.5f, 1.5f, 1.5f);
                 wash.raycastTarget = false;
-                var crestRt = UiKit.NewRect("crest", mat);
+                var crestRt = UiKit.NewRect("crest", win);
                 crestRt.anchorMin = crestRt.anchorMax = new Vector2(0.5f, 0.5f);
                 crestRt.sizeDelta = new Vector2(48f, 48f);
                 crestRt.anchoredPosition = Vector2.zero;
@@ -74,75 +75,70 @@ namespace DeckRogue.Game
                 crest.color = playable ? Color.white : new Color(1f, 1f, 1f, 0.7f);
             }
 
-            // しおり (タイプ) とコスト
-            var bm = UiKit.NewRect("bookmark", root);
-            UiKit.Anchor(bm, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(12f, -44f), new Vector2(44f, 4f));
-            var bmImg = bm.gameObject.AddComponent<Image>();
-            bmImg.sprite = PaperFx.Bookmark(playable ? typeCol : Color.Lerp(typeCol, Color.gray, 0.5f));
-            bmImg.raycastTarget = false;
+            // コスト玉 (左上に少しはみ出す。割引は苔色・X コストは「X」)
             int cost = def.Cost;
             bool discounted = false;
             try { if (st != null) { cost = Effects.EffectiveCost(st, c); discounted = def.XCost != true && cost != def.Cost; } } catch (Exception) { }
             string costLabel = def.XCost == true ? "X" : cost.ToString();
-            var costT = UiKit.Txt(bm, costLabel, 19, discounted ? UiKit.Hex("#276a34") : PaperFx.Ink, TextAnchor.MiddleCenter, true);
-            UiKit.Anchor(costT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 10f), new Vector2(0f, -4f));
+            var orb = UiKit.NewRect("cost", root);
+            UiKit.Anchor(orb, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(-6f, -46f), new Vector2(46f, 6f));
+            var orbImg = orb.gameObject.AddComponent<Image>();
+            orbImg.sprite = PaperFx.Orb(discounted ? PaperFx.Moss : PaperFx.Honey);
+            orbImg.preserveAspect = true; orbImg.raycastTarget = false;
+            if (!playable) orbImg.color = new Color(0.82f, 0.82f, 0.82f, 1f);
+            var costT = UiKit.Deco(orb, costLabel, 22, ink, TextAnchor.MiddleCenter);
+            UiKit.Anchor(costT.rectTransform, Vector2.zero, Vector2.one, new Vector2(0f, 1f), new Vector2(0f, -1f));
+            costT.characterSpacing = 0f;
 
-            // 星 (レア度)
-            int stars = def.Rarity == "rare" ? 3 : def.Rarity == "uncommon" ? 2 : 1;
-            Color starCol = def.Rarity == "rare" ? PaperFx.Honey : def.Rarity == "uncommon" ? PaperFx.Sky : PaperFx.Paper;
-            for (int i = 0; i < stars; i++)
-            {
-                var star = UiKit.Icon(root, "star", 16f, starCol);
-                UiKit.Anchor(star.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-12f - 16f * (i + 1), -28f), new Vector2(-12f - 16f * i, -12f));
-                star.raycastTarget = false;
-            }
-
-            // 名前 (装飾明朝) と鉛筆の下線
-            int nameSize = def.Name.Length > 5 ? 16 : (def.Name.Length > 4 ? 18 : 20);
+            // 名前 (装飾明朝)
+            int nameSize = def.Name.Length > 5 ? 17 : (def.Name.Length > 4 ? 18 : 20);
             var nameT = UiKit.Deco(root, def.Name, nameSize, ink, TextAnchor.MiddleCenter);
-            UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(50f, -46f), new Vector2(-34f, -10f));
+            UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(44f, -40f), new Vector2(-12f, -8f));
             nameT.textWrappingMode = TextWrappingModes.NoWrap;
             nameT.overflowMode = TextOverflowModes.Overflow;
-            var underline = UiKit.Pan(root, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.55f), "underline");
-            UiKit.Anchor(underline.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(60f, -48f), new Vector2(-46f, -46f));
-            underline.raycastTarget = false;
 
-            // タイプ・レア度の小さな文字
-            var typeT = UiKit.Txt(root, CardText.TypeJa(def.Type) + " ・ " + CardText.RarityLabel(def.Rarity ?? "common"), 13, PaperFx.InkSoft, TextAnchor.MiddleCenter);
-            UiKit.Anchor(typeT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(14f, -178f), new Vector2(-14f, -160f));
+            // タイプの帯 (窓の下端に掛ける。色と文字で 物理／呪文／リアクション／置物、宝石がレア度)
+            var ribbon = UiKit.NewRect("type", root);
+            UiKit.Anchor(ribbon, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-75f, -162f), new Vector2(75f, -136f));
+            var rImg = ribbon.gameObject.AddComponent<Image>();
+            rImg.sprite = PaperFx.Ribbon(playable ? typeCol : Color.Lerp(typeCol, Color.gray, 0.5f));
+            rImg.raycastTarget = false;
+            var row = UiKit.NewRect("row", ribbon);
+            UiKit.Stretch(row, 0f, 0f, 0f, 0f);
+            var hg = UiKit.Horz(row, 5, 0);
+            hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            var gem = UiKit.NewRect("gem", row);
+            var gImg = gem.gameObject.AddComponent<Image>();
+            gImg.sprite = ThemeFx.Gem(rarity); gImg.preserveAspect = true; gImg.raycastTarget = false;
+            UiKit.Le(gem, 16f, 16f, 16f, 16f);
+            var typeT = UiKit.Txt(row, CardText.TypeJa(def.Type), 14, PaperFx.Ink, TextAnchor.MiddleCenter, true);
             typeT.characterSpacing = 2f;
+            UiKit.Le(typeT, -1f, 22f, -1f, 22f);
 
-            // 本文 (墨)。戦闘中は成長・勢い・弱体を掛けた実値を色つきで (本家のカードの数字の読み方。2026-09-09)
+            // 本文 (墨。数字は 130%)。戦闘中は成長・勢い・弱体を掛けた実値を色つきで (本家のカードの数字の読み方)
             Func<int, int> mod = st != null ? MakeDamageModifier(st, c) : null;
             CardText.DamageModifier = mod;
             string bodyText;
             try { bodyText = CardText.Body(def); }
             finally { CardText.DamageModifier = null; }
-            var body = UiKit.Txt(root, bodyText, 15, ink, TextAnchor.UpperCenter, true);
-            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 56f), new Vector2(-14f, -182f));
-            body.lineSpacing = -4f;
+            bodyText = CardText.Emphasize(bodyText);
+            if (def.Modes != null && def.Modes.Count > 0) bodyText = "<size=80%><color=#574b48>どちらか一つ</color></size>\n" + bodyText;
+            var body = UiKit.Txt(root, bodyText, 16, ink, TextAnchor.UpperCenter, true);
+            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 40f), new Vector2(-14f, -172f));
+            body.enableAutoSizing = true; body.fontSizeMin = 12f; body.fontSizeMax = 16f;   // 長文だけ 12px まで縮める (最小 13px の唯一の例外)
+            body.lineSpacing = 2f;
 
             // 予測行 (対象が決まっている時、実処理と同じ手順の実値)
             string preview = Preview(c, st);
             if (preview != null)
             {
                 var pv = UiKit.Txt(root, preview, 13, PaperFx.GoldInk, TextAnchor.MiddleCenter, true);
-                UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 54f), new Vector2(-18f, 78f));
+                UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 38f), new Vector2(-18f, 60f));
             }
 
-            // 役割の札 (左下=与ダメ・右下=ブロック・返しは左下に戻り矢印)
-            string dmg, blk, counter; bool modeBoth; int dmgDelta;
-            RoleLabels(def, mod, out dmg, out blk, out counter, out modeBoth, out dmgDelta);
-            if (dmg != null) Badge(root, "dmg", "sword", dmg, false, dmgDelta > 0 ? UiKit.Hex("#276a34") : dmgDelta < 0 ? UiKit.Hex("#a33a30") : ink);
-            else if (counter != null) Badge(root, "counter", "counter", counter, false, ink);
-            if (blk != null) Badge(root, "block", "shield", blk, true, ink);
+            // 注記 (消滅・保持・追加コスト) のテープ。文字の幅に合わせる
             string notes = CardText.Notes(def);
-            if (modeBoth)
-            {
-                var either = UiKit.Txt(root, "どちらか", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter);
-                UiKit.Anchor(either.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 14f), new Vector2(0f, 30f));
-            }
-            else if (notes.Length > 0)
+            if (notes.Length > 0)
             {
                 var tape = UiKit.NewRect("tape", root);
                 tape.localRotation = Quaternion.Euler(0f, 0f, 3f);
@@ -151,34 +147,11 @@ namespace DeckRogue.Game
                 var tt = UiKit.Txt(tape, notes, 13, PaperFx.Ink, TextAnchor.MiddleCenter, true);
                 UiKit.Stretch(tt.rectTransform, 4f, 4f, 0f, 0f);
                 tt.textWrappingMode = TextWrappingModes.NoWrap;
-                // テープは文字の幅に合わせる (「追加コスト:手札1枚を捨てる」がはみ出していた)。札の幅を超える長文だけ 11px まで縮める
                 float tw = Mathf.Clamp(tt.GetPreferredValues(notes, 1000f, 0f).x + 18f, 88f, W - 24f);
                 tt.enableAutoSizing = true; tt.fontSizeMin = 11f; tt.fontSizeMax = 13f;
                 UiKit.Anchor(tape, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, 12f), new Vector2(tw / 2f, 34f));
             }
             return root;
-        }
-
-        /// <summary>にじみの札: 水彩の丸に、ドットのしるしと数字 (墨)</summary>
-        static void Badge(RectTransform root, string role, string icon, string value, bool right, Color ink)
-        {
-            var cell = UiKit.NewRect("badge-" + role, root);
-            if (right) UiKit.Anchor(cell, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-70f, 8f), new Vector2(-10f, 48f));
-            else UiKit.Anchor(cell, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(10f, 8f), new Vector2(70f, 48f));
-            cell.localRotation = Quaternion.Euler(0f, 0f, right ? 4f : -4f);
-            var blob = PaperFx.BlobImage(cell, PaperFx.RoleColor(role));
-            UiKit.Stretch(blob.rectTransform, 0f, 0f, 0f, 0f);
-            var row = UiKit.NewRect("row", cell);
-            UiKit.Stretch(row, 0f, 0f, 0f, 0f);
-            var hg = UiKit.Horz(row, 3, 0);
-            hg.childAlignment = TextAnchor.MiddleCenter;
-            hg.childForceExpandWidth = false;
-            hg.childForceExpandHeight = false;
-            var ic = UiKit.Icon(row, icon, 16f, ink);
-            UiKit.Le(ic, 16f, 16f, 16f, 16f);
-            var t = UiKit.Txt(row, value, value.Length > 2 ? 15 : 18, ink, TextAnchor.MiddleCenter, true);
-            UiKit.Le(t, 14f, 24f, -1f, 24f);
-            row.localRotation = Quaternion.Euler(0f, 0f, right ? -4f : 4f); // 文字は水平に戻す
         }
 
         /// <summary>手札用: 成長・勢い・弱体を掛けたダメージ (engine の DamageBreakdownOf の自分側の段と同じ手順。敵側の急所・装甲・ブロックは対象が決まってから予測行が担う)</summary>
