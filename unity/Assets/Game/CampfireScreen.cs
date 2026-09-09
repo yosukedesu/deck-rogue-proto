@@ -29,16 +29,18 @@ namespace DeckRogue.Game
 
             if (g.SubMode == "forge")
             {
-                RunUi.Heading(root, "鍛える", "1枚選ぶ。札の下が鍛えた後の姿");
+                RunUi.Heading(root, "鍛える", "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
+                var preview = ForgePreviewArea(root);
                 var area = UiKit.NewRect("forge", root);
-                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
+                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + ForgePreviewH)));
                 UiKit.Vert(area, 0, 0);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c) ? "鍛える" : null; },
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c); },
                     delegate (int i) { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireUpgrade { Index = i }); },
-                    500f, null, delegate (int i, CardInstance c) { return DescribeUpgrade(c); });
+                    400f);
                 AttachUpgradeTips(area, run.Deck);
+                AttachForgePreview(g, area, run.Deck, preview);
                 RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f);
                 return;
             }
@@ -91,7 +93,91 @@ namespace DeckRogue.Game
             return cell;
         }
 
-        /// <summary>札の下に出す「鍛えると→」の1行 (Proto盤の describeUpgrade と同じ: コストが下がる札はコストだけ、他は鍛えた後の効果行)</summary>
+        /// <summary>本家 Smith の「元 → 鍛えた後」の並び (2026-09-09): 見出しの下に横 800×高 ForgePreviewH の場所を取り、札に触れると2枚を並べる</summary>
+        public const float ForgePreviewH = 262f;
+        public static RectTransform LastPreviewArea;
+
+        public static RectTransform ForgePreviewArea(RectTransform root)
+        {
+            var area = UiKit.NewRect("forgePreview", root);
+            UiKit.Anchor(area, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-420f, -(RunUi.TopH + 100f + ForgePreviewH)), new Vector2(420f, -(RunUi.TopH + 100f)));
+            var hint = UiKit.Txt(area, "札に触れると、元の札と鍛えた後の札がここに並ぶ", 15, UiKit.ColDim, TextAnchor.MiddleCenter);
+            hint.outlineWidth = 0.3f; hint.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
+            UiKit.Stretch(hint.rectTransform, 0f, 0f, 0f, 0f);
+            LastPreviewArea = area;
+            return area;
+        }
+
+        public static void ShowForgePair(GameRoot g, RectTransform area, CardInstance c)
+        {
+            if (area == null || c == null) return;
+            for (int i = area.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(area.GetChild(i).gameObject);
+            const float sc = 0.85f;
+            float w = CardView.W * sc, h = CardView.H * sc;
+            var left = UiKit.NewRect("orig", area);
+            left.anchorMin = left.anchorMax = new Vector2(0.5f, 0.5f);
+            left.sizeDelta = new Vector2(w, h);
+            left.anchoredPosition = new Vector2(-w / 2f - 56f, 0f);
+            var cvA = CardView.Build(left, c, null, true, false, "orig-card");
+            cvA.localScale = Vector3.one * sc;
+            var arrow = UiKit.Deco(area, "→", 44, UiKit.ColText, TextAnchor.MiddleCenter);
+            arrow.outlineWidth = 0.25f; arrow.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
+            UiKit.Anchor(arrow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-40f, -30f), new Vector2(40f, 30f));
+            CardInstance up = null;
+            try { if (Upgrade.CanUpgradeCard(c)) up = Upgrade.UpgradeCard(c); } catch (Exception) { }
+            if (up != null)
+            {
+                var right = UiKit.NewRect("upgraded", area);
+                right.anchorMin = right.anchorMax = new Vector2(0.5f, 0.5f);
+                right.sizeDelta = new Vector2(w, h);
+                right.anchoredPosition = new Vector2(w / 2f + 56f, 0f);
+                var cvB = CardView.Build(right, up, null, true, false, "upgraded-card");
+                cvB.localScale = Vector3.one * sc;
+                Tween.Punch(right, 0.06f, 0.4f);
+            }
+            else
+            {
+                bool upg = false;
+                try { upg = Upgrade.IsUpgraded(c); } catch (Exception) { }
+                var note = UiKit.Txt(area, upg ? "鍛え済み" : "この札は鍛えられない", 17, UiKit.ColDim, TextAnchor.MiddleCenter);
+                note.outlineWidth = 0.3f; note.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
+                UiKit.Anchor(note.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(56f, -30f), new Vector2(56f + w, 30f));
+            }
+        }
+
+        /// <summary>グリッドの各 cell に、触れる (PC はホバー・スマホはタップ) と ShowForgePair する挙動を付ける</summary>
+        public static void AttachForgePreview(GameRoot g, RectTransform gridArea, IReadOnlyList<CardInstance> deck, RectTransform previewArea)
+        {
+            var cells = gridArea.GetComponentsInChildren<RectTransform>(true);
+            int k = 0;
+            for (int i = 0; i < cells.Length; i++)
+            {
+                if (cells[i].name != "cell") continue;
+                if (k >= deck.Count) break;
+                var c = deck[k++];
+                var et = cells[i].gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+                var enter = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+                enter.callback.AddListener(delegate { ShowForgePair(g, previewArea, c); });
+                et.triggers.Add(enter);
+                var click = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerClick };
+                click.callback.AddListener(delegate { if (!CardPopup.ClickSuppressed) ShowForgePair(g, previewArea, c); });
+                et.triggers.Add(click);
+            }
+        }
+
+        /// <summary>自動操縦のスクショ用: 最初に鍛えられる札の並びを出す</summary>
+        public static void PreviewFirst(GameRoot g)
+        {
+            if (LastPreviewArea == null || g.Rs == null) return;
+            for (int i = 0; i < g.Rs.Deck.Count; i++)
+            {
+                bool ok = false;
+                try { ok = Upgrade.CanUpgradeCard(g.Rs.Deck[i]); } catch (Exception) { }
+                if (ok) { ShowForgePair(g, LastPreviewArea, g.Rs.Deck[i]); return; }
+            }
+        }
+
+        /// <summary>ツールチップ用の「鍛えると→」の1文 (コストが下がる札はコストだけ、他は鍛えた後の効果行)</summary>
         public static string DescribeUpgrade(CardInstance c)
         {
             if (!Upgrade.CanUpgradeCard(c)) return Upgrade.IsUpgraded(c) ? "鍛え済み" : "鍛えられない";

@@ -31,9 +31,10 @@ namespace DeckRogue.Game
             {
                 bool removing = g.ShopMode == "remove";
                 RunUi.Heading(root, removing ? "カード除去 (" + rmPrice + "G)" : "鍛える (" + upPrice + "G)",
-                    removing ? "デッキから1枚を永久に取り除く" : "1枚選ぶ。札の下が鍛えた後の姿");
+                    removing ? "デッキから1枚を永久に取り除く" : "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
+                RectTransform preview = removing ? null : CampfireScreen.ForgePreviewArea(root);
                 var area = UiKit.NewRect("svc", root);
-                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
+                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + (removing ? 0f : CampfireScreen.ForgePreviewH))));
                 UiKit.Vert(area, 0, 0);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return removing ? "除去" : (Upgrade.CanUpgradeCard(c) ? "鍛える" : null); },
@@ -46,8 +47,8 @@ namespace DeckRogue.Game
                         if (rm) g.Do(new RunCommand_ShopRemove { Index = i });
                         else g.Do(new RunCommand_ShopUpgrade { Index = i });
                     },
-                    500f, null, removing ? null : (Func<int, CardInstance, string>)delegate (int i, CardInstance c) { return CampfireScreen.DescribeUpgrade(c); });
-                if (!removing) CampfireScreen.AttachUpgradeTips(area, run.Deck);
+                    removing ? 500f : 400f);
+                if (!removing) { CampfireScreen.AttachUpgradeTips(area, run.Deck); CampfireScreen.AttachForgePreview(g, area, run.Deck, preview); }
                 RunUi.BottomButton(root, "戻る", delegate { g.ShopMode = null; g.Rebuild(); }, 18, 220f, 50f);
                 return;
             }
@@ -91,6 +92,7 @@ namespace DeckRogue.Game
                     UiKit.Stretch(st.rectTransform, 0f, 0f, 0f, 0f);
                 }
                 else RewardScreen.HoverRaise(cv, delegate { if (canBuy) { Audio.Play("energy", 0.7f); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
+                CardPopup.Attach(g, cv, ci, null, true);
                 PriceTag(cell, item.Price, sold ? "売切" : null, canBuy);
                 if (i == n - 1 && n >= 6)
                 {

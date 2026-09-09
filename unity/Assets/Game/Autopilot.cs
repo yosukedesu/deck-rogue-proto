@@ -118,6 +118,15 @@ namespace DeckRogue.Game
                 yield return Shot("battle-hover");
                 UnityEngine.EventSystems.ExecuteEvents.Execute(hand0, pd, UnityEngine.EventSystems.ExecuteEvents.pointerExitHandler);
             }
+            // 拡大表示 (長押し相当) と「鍛えた後を見る」
+            if (g.Rs.Combat.Player.Hand.Count > 1)
+            {
+                CardPopup.Open(g, g.Rs.Combat.Player.Hand[1], g.Rs.Combat);
+                yield return new WaitForSeconds(0.2f);
+                yield return Shot("battle-popup");
+                CardPopup.Close();
+                yield return null;
+            }
 
             g.ShowLog = true; g.Rebuild();
             yield return Shot("battle-log");
@@ -244,8 +253,8 @@ namespace DeckRogue.Game
                 {
                     seen.Add("shot:" + ph);
                     yield return Shot(ph);
-                    if (ph == RunPhases.Campfire) { g.SubMode = "forge"; g.Rebuild(); yield return Shot("campfire-forge"); g.SubMode = null; g.Rebuild(); }
-                    if (ph == RunPhases.Shop) { g.ShopMode = "upgrade"; g.Rebuild(); yield return Shot("shop-upgrade"); g.ShopMode = null; g.Rebuild(); }
+                    if (ph == RunPhases.Campfire) { g.SubMode = "forge"; g.Rebuild(); CampfireScreen.PreviewFirst(g); yield return Shot("campfire-forge"); g.SubMode = null; g.Rebuild(); }
+                    if (ph == RunPhases.Shop) { g.ShopMode = "upgrade"; g.Rebuild(); CampfireScreen.PreviewFirst(g); yield return Shot("shop-upgrade"); g.ShopMode = null; g.Rebuild(); }
                     if (ph == RunPhases.Workshop && rs.Deck.Count >= 2)
                     {
                         g.WorkshopA = 0; g.WorkshopB = 1;

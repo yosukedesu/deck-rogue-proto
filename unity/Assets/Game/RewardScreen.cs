@@ -45,6 +45,7 @@ namespace DeckRogue.Game
                 cv.localScale = Vector3.one * scale;
                 cv.anchoredPosition = new Vector2(0f, 35f);
                 HoverRaise(cv, delegate { Audio.Play("card_play", 0.7f); g.Do(new RunCommand_PickReward { Index = idx }); });
+                CardPopup.Attach(g, cv, ci, null, true);
                 var b = UiKit.Btn(cell, "取る", delegate { Audio.Play("card_play", 0.7f); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, UiKit.Hex("#cfeacc"));
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
@@ -133,7 +134,13 @@ namespace DeckRogue.Game
             exit.callback.AddListener(delegate { Tween.Scale(rt, baseScale, 0.15f, Ease.OutQuad); });
             trig.triggers.Add(exit);
             var click = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
-            click.callback.AddListener(delegate { onClick(); });
+            click.callback.AddListener(delegate (BaseEventData d)
+            {
+                var pd = d as PointerEventData;
+                if (pd != null && pd.button != PointerEventData.InputButton.Left) return;   // 右クリックは拡大表示 (CardPopup)
+                if (CardPopup.ClickSuppressed || CardPopup.IsOpen) return;                    // 長押しで開いた直後の離し
+                onClick();
+            });
             trig.triggers.Add(click);
         }
     }

@@ -75,6 +75,8 @@ namespace DeckRogue.Game
         RectTransform _root;
         /// <summary>演出レイヤー (浮き文字など)。基準 1920×1080 の座標系・最前面・レイキャストを塞がない</summary>
         public RectTransform FxLayer;
+        /// <summary>カードの拡大表示など、入力を受ける最前面の層 (FxLayer は raycast を通さないので別に持つ。開く時に最後尾へ回す)</summary>
+        public RectTransform PopupLayer;
         /// <summary>新画面 (M2 以降) の入れ物。キャンバス直下 1920×1080。旧画面の _root (1.5倍の入れ物) とは別</summary>
         public RectTransform ScreenRoot;
         /// <summary>戦闘ログの引き出しを開いているか</summary>
@@ -174,6 +176,8 @@ namespace DeckRogue.Game
             var fxCg = FxLayer.gameObject.AddComponent<CanvasGroup>();
             fxCg.blocksRaycasts = false;
             fxCg.interactable = false;
+            PopupLayer = UiKit.NewRect("popup", canvasGo.transform);
+            UiKit.Stretch(PopupLayer, 0f, 0f, 0f, 0f);
 
             try
             {
@@ -419,6 +423,7 @@ namespace DeckRogue.Game
             {
                 if (Battle != null) { Battle.Destroy(); Battle = null; }
                 Tooltip.Hide();
+                CardPopup.Close();
                 if (FxLayer != null) for (int i = FxLayer.childCount - 1; i >= 0; i--) Destroy(FxLayer.GetChild(i).gameObject);
                 for (int i = ScreenRoot.childCount - 1; i >= 0; i--)
                 {

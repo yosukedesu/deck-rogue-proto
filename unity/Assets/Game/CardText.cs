@@ -236,6 +236,14 @@ namespace DeckRogue.Game
             if (c.TargetDead == true) parts.Add("とどめ");
             if (c.LastActionNoHpLoss == true) parts.Add("完全に凌いだ時");
             if (c.HealedThisTurn == true) parts.Add("このT先にカードで回復していたら");
+            // 2026-09-09 抜けていた2種 (若幹の一撃・大地の唸りが「ダメージ6 ×2回」に化け、共鳴する茨の打ち消しが無条件に見えていた)
+            if (c.MinEnergyMax.HasValue) parts.Add("エナジー上限" + c.MinEnergyMax.Value + "以上");
+            if (c.ActionKinds != null && c.ActionKinds.Count > 0)
+            {
+                var ks = new List<string>();
+                for (int i = 0; i < c.ActionKinds.Count; i++) ks.Add(KindJa(c.ActionKinds[i]));
+                parts.Add("敵の行動が" + string.Join("・", ks.ToArray()) + "の時");
+            }
             if (parts.Count == 0) return "";
             return "[" + string.Join("かつ", parts.ToArray()) + "] ";
         }

@@ -87,8 +87,9 @@ namespace DeckRogue.Game
                 cell.sizeDelta = new Vector2(CardView.W * rs, CardView.H * rs);
                 cell.anchoredPosition = new Vector2(0f, -340f - CardView.H * rs * 0.5f);
                 var ci = new CardInstance { Uid = "fused", Def = fused };
-                var cv = CardView.Build(cell, ci, null, true, false, "fused-card");
+                var cv = CardView.Build(cell, ci, null, true, true, "fused-card");
                 cv.localScale = Vector3.one * rs;
+                CardPopup.Attach(g, cv, ci, null, true);
                 Tween.Punch(cell, 0.08f, 0.5f);
                 if (notes.Count > 0)
                 {
@@ -131,7 +132,8 @@ namespace DeckRogue.Game
                 UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
                 return;
             }
-            var cv = CardView.Build(cell, c, null, true, false, "slot-card");
+            var cv = CardView.Build(cell, c, null, true, true, "slot-card");
+            CardPopup.Attach(g, cv, c, null, true);
             cv.localScale = Vector3.one * 0.62f;
             var x = UiKit.Btn(cell, "×", delegate { Audio.Play("click", 0.5f); onClear(); }, 14, true, UiKit.Hex("#8a5a5a"));
             var le = x.GetComponent<LayoutElement>();

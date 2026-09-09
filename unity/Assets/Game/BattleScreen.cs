@@ -664,11 +664,13 @@ namespace DeckRogue.Game
         {
             var rt = hc.Rt;
             var et = rt.gameObject.AddComponent<EventTrigger>();
+            // 長押し 0.5 秒で拡大表示 (本家の SingleCardViewPopup。右クリックは伏せるに使っているので手札は長押しだけ)
+            CardPopup.Attach(g, rt, c, delegate { return g.Rs != null ? g.Rs.Combat : null; }, false);
             // ドラッグ: カードを持ち上げて敵に落とすと対象指定して即プレイ、戦場に落とすとプレイ、手札に戻すと取り消し
             var beginDrag = new EventTrigger.Entry { eventID = EventTriggerType.BeginDrag };
             beginDrag.callback.AddListener(delegate
             {
-                if (!hc.Playable) return;
+                if (!hc.Playable || CardPopup.IsOpen) return;
                 _dragging = true;
                 rt.SetAsLastSibling();
                 rt.localRotation = Quaternion.identity;
@@ -742,6 +744,7 @@ namespace DeckRogue.Game
             click.callback.AddListener(delegate (BaseEventData d)
             {
                 var pd = d as PointerEventData;
+                if (CardPopup.ClickSuppressed || CardPopup.IsOpen) return;   // 長押しで拡大表示を開いた直後の離しはプレイしない
                 if (pd != null && pd.button == PointerEventData.InputButton.Right)
                 {
                     if (hc.Settable) g.DoCombat(new Command_SetCard { CardUid = c.Uid });
@@ -891,8 +894,9 @@ namespace DeckRogue.Game
             for (int i = 0; i < list.Count; i++)
             {
                 var cell = UiKit.NewRect("cell", content);
-                var cv = CardView.Build(cell, list[i], st, true, false, "pile-card");
+                var cv = CardView.Build(cell, list[i], st, true, true, "pile-card");
                 cv.localScale = Vector3.one * 0.8f;
+                CardPopup.Attach(g, cv, list[i], delegate { return g.Rs != null ? g.Rs.Combat : null; }, true);
             }
             CenteredButton(inner, "閉じる", delegate { g.ViewPile = null; g.Rebuild(); }, 18, 260f, 50f);
         }
@@ -1022,7 +1026,8 @@ namespace DeckRogue.Game
                 string uid = c.Uid;
                 var wrap = UiKit.NewRect("cand", row);
                 var wle = UiKit.Le(wrap, 220f, 320f, 220f, 320f);
-                var cv = CardView.Build(wrap, c, st, true, false, "cand-card");
+                var cv = CardView.Build(wrap, c, st, true, true, "cand-card");
+                CardPopup.Attach(g, cv, c, delegate { return g.Rs != null ? g.Rs.Combat : null; }, true);
                 cv.anchoredPosition = new Vector2(0f, 26f);
                 cv.localScale = Vector3.one * 0.86f;
                 var fb = UiKit.Btn(wrap, "発動", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 18, true, UiKit.Hex("#f6dd98"));
@@ -1144,7 +1149,8 @@ namespace DeckRogue.Game
                 bool isSel = selected.Contains(uid);
                 var wrap = UiKit.NewRect("cand", content);
                 UiKit.Le(wrap, 220f, 330f, 220f, 330f);
-                var cv = CardView.Build(wrap, c, st, !isSel, false, "cand-card");
+                var cv = CardView.Build(wrap, c, st, !isSel, true, "cand-card");
+                CardPopup.Attach(g, cv, c, delegate { return g.Rs != null ? g.Rs.Combat : null; }, true);
                 cv.anchoredPosition = new Vector2(0f, 30f);
                 cv.localScale = Vector3.one * 0.86f;
                 string cap = need;
