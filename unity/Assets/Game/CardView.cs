@@ -26,7 +26,19 @@ namespace DeckRogue.Game
             root.anchorMin = root.anchorMax = new Vector2(0.5f, 0.5f);
             root.pivot = new Vector2(0.5f, 0.5f);
             root.sizeDelta = new Vector2(W, H);
+            Fill(root, c, st, playable, interactable);
+            return root;
+        }
 
+        /// <summary>既にある札の面を描き直す (ドラッグ中に対象の敵が変わった時など。根は残すので進行中のドラッグは切れない)</summary>
+        public static void Refill(RectTransform root, CardInstance c, GameState st, bool playable, bool interactable)
+        {
+            for (int i = root.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(root.GetChild(i).gameObject);
+            Fill(root, c, st, playable, interactable);
+        }
+
+        static void Fill(RectTransform root, CardInstance c, GameState st, bool playable, bool interactable)
+        {
             var def = c.Def;
             var typeCol = PaperFx.TypeColor(def.Type);
             var ink = playable ? PaperFx.Ink : new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.7f);
@@ -75,18 +87,19 @@ namespace DeckRogue.Game
                 crest.color = playable ? Color.white : new Color(1f, 1f, 1f, 0.7f);
             }
 
-            // コスト玉 (左上に少しはみ出す。割引は苔色・X コストは「X」)
+            // コスト玉 (左上に少しはみ出す)。表示は実際に払う量: 割引で下がれば緑、重圧で上がれば朱の数字 (本家の読み方。2026-09-09)
             int cost = def.Cost;
-            bool discounted = false;
-            try { if (st != null) { cost = Effects.EffectiveCost(st, c); discounted = def.XCost != true && cost != def.Cost; } } catch (Exception) { }
+            try { if (st != null) cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
+            bool discounted = def.XCost != true && cost < def.Cost;
+            bool raised = def.XCost != true && cost > def.Cost;
             string costLabel = def.XCost == true ? "X" : cost.ToString();
             var orb = UiKit.NewRect("cost", root);
             UiKit.Anchor(orb, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(-6f, -46f), new Vector2(46f, 6f));
             var orbImg = orb.gameObject.AddComponent<Image>();
-            orbImg.sprite = PaperFx.Orb(discounted ? PaperFx.Moss : PaperFx.Honey);
+            orbImg.sprite = PaperFx.Orb(PaperFx.Honey);
             orbImg.preserveAspect = true; orbImg.raycastTarget = false;
             if (!playable) orbImg.color = new Color(0.82f, 0.82f, 0.82f, 1f);
-            var costT = UiKit.Deco(orb, costLabel, 22, ink, TextAnchor.MiddleCenter);
+            var costT = UiKit.Deco(orb, costLabel, 22, discounted ? UiKit.Hex("#276a34") : raised ? UiKit.Hex("#a33a30") : ink, TextAnchor.MiddleCenter);
             UiKit.Anchor(costT.rectTransform, Vector2.zero, Vector2.one, new Vector2(0f, 1f), new Vector2(0f, -1f));
             costT.characterSpacing = 0f;
 
@@ -115,7 +128,7 @@ namespace DeckRogue.Game
             typeT.characterSpacing = 2f;
             UiKit.Le(typeT, -1f, 22f, -1f, 22f);
 
-            // 本文 (墨。数字は 130%)。戦闘中は成長・勢い・弱体を掛けた実値を色つきで (本家のカードの数字の読み方)
+            // 本文 (墨。数字は 130%)。戦闘中は成長・勢い・弱体、狙った敵の急所・装甲を掛けた実値を色つきで (本家のカードの数字の読み方)
             Func<int, int> mod = st != null ? MakeDamageModifier(st, c) : null;
             CardText.DamageModifier = mod;
             string bodyText;
@@ -133,24 +146,38 @@ namespace DeckRogue.Game
             body.enableAutoSizing = true; body.fontSizeMin = 12f; body.fontSizeMax = 16f;   // 長文だけ 12px まで縮める (最小 13px の唯一の例外)
             body.lineSpacing = 2f;
 
-            // 予測行 (対象が決まっている時、実処理と同じ手順の実値)。本文の下端に重ねる
-            string preview = Preview(c, st);
-            if (preview != null)
-            {
-                var pv = UiKit.Txt(root, preview, 13, PaperFx.GoldInk, TextAnchor.MiddleCenter, true);
-                UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 12f), new Vector2(-18f, 34f));
-            }
-            return root;
         }
 
-        /// <summary>手札用: 成長・勢い・弱体を掛けたダメージ (engine の DamageBreakdownOf の自分側の段と同じ手順。敵側の急所・装甲・ブロックは対象が決まってから予測行が担う)</summary>
+        /// <summary>手札用: 成長・勢い・弱体を掛けたダメージ。PreviewEnemy (狙った敵・ドラッグ先・生存1体) があれば engine の DamageBreakdownOf と同じ手順で
+        /// 急所×1.5・装甲上限まで掛ける (敵ブロックは引かない = 本家と同じく「与えるダメージ」を出す。2026-09-09)</summary>
         static Func<int, int> MakeDamageModifier(GameState st, CardInstance c)
         {
             var p = st.Player;
             int grow = c != null && c.GrowBonus.HasValue ? c.GrowBonus.Value : 0;
+            int target = PreviewEnemy;
+            bool hasTarget = target >= 0 && target < st.Enemies.Count && st.Enemies[target].Hp > 0;
             return delegate (int baseAmt)
             {
                 int a = baseAmt + grow;
+                if (hasTarget)
+                {
+                    try
+                    {
+                        var bd = Effects.DamageBreakdownOf(st, target, a, false);
+                        if (bd != null && bd.Steps.Count > 0)
+                        {
+                            int v = a;
+                            for (int i = 0; i < bd.Steps.Count; i++)
+                            {
+                                string l = bd.Steps[i].Label ?? "";
+                                if (l.StartsWith("敵ブロック") || l.StartsWith("貫通") || l.StartsWith("潜伏") || l.StartsWith("無形") || l.StartsWith("ターン装甲")) break;
+                                v = bd.Steps[i].Value;
+                            }
+                            return v;
+                        }
+                    }
+                    catch (Exception) { }
+                }
                 if (p.Growth > 0) a += p.Growth;
                 if (p.Momentum > 0) a += p.Momentum;
                 if (p.Weak > 0 && a > 0) a = Math.Max(1, (int)Math.Floor(a * 0.75));
@@ -214,28 +241,6 @@ namespace DeckRogue.Game
             }
             if (block > 0) blk = block.ToString();
             if (ctr > 0) counter = ctr.ToString();
-        }
-
-        /// <summary>対象が決まっている時、ダメージ効果の実値を見積もる (実処理と同じ手順)。補正が無ければ null</summary>
-        static string Preview(CardInstance c, GameState st)
-        {
-            if (st == null || PreviewEnemy < 0 || PreviewEnemy >= st.Enemies.Count) return null;
-            var parts = new List<string>();
-            bool changed = false;
-            for (int i = 0; i < c.Def.Effects.Count; i++)
-            {
-                var e = c.Def.Effects[i];
-                if (e.Trigger != "onPlay" || e.Effect != "dealDamage" || !e.Amount.HasValue) continue;
-                int baseAmt = e.Amount.Value + (c.GrowBonus ?? 0);
-                DamageBreakdown bd = null;
-                try { bd = Effects.DamageBreakdownOf(st, PreviewEnemy, baseAmt, e.Pierce == true); } catch (Exception) { }
-                if (bd == null || bd.Steps.Count == 0) continue;
-                int final = bd.HpLoss;
-                if (final != baseAmt) changed = true;
-                parts.Add(final.ToString());
-            }
-            if (!changed || parts.Count == 0) return null;
-            return "→ 実ダメ " + string.Join("+", parts.ToArray());
         }
     }
 }

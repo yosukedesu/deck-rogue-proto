@@ -29,7 +29,7 @@ namespace DeckRogue.Game
 
             if (g.SubMode == "forge")
             {
-                RunUi.Heading(root, "鍛える", "1枚選ぶ。カードにカーソルを重ねると鍛えた後の姿");
+                RunUi.Heading(root, "鍛える", "1枚選ぶ。札の下が鍛えた後の姿");
                 var area = UiKit.NewRect("forge", root);
                 UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
                 UiKit.Vert(area, 0, 0);
@@ -37,7 +37,7 @@ namespace DeckRogue.Game
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c) ? "鍛える" : null; },
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c); },
                     delegate (int i) { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireUpgrade { Index = i }); },
-                    500f);
+                    500f, null, delegate (int i, CardInstance c) { return DescribeUpgrade(c); });
                 AttachUpgradeTips(area, run.Deck);
                 RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f);
                 return;
@@ -89,6 +89,19 @@ namespace DeckRogue.Game
                 UiKit.Anchor(hintB.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 18f), new Vector2(0f, 44f));
             }
             return cell;
+        }
+
+        /// <summary>札の下に出す「鍛えると→」の1行 (Proto盤の describeUpgrade と同じ: コストが下がる札はコストだけ、他は鍛えた後の効果行)</summary>
+        public static string DescribeUpgrade(CardInstance c)
+        {
+            if (!Upgrade.CanUpgradeCard(c)) return Upgrade.IsUpgraded(c) ? "鍛え済み" : "鍛えられない";
+            try
+            {
+                var up = Upgrade.UpgradeCard(c);
+                if (up.Def.Cost != c.Def.Cost) return "鍛えると→ コスト " + c.Def.Cost + "E → " + up.Def.Cost + "E（効果は据え置き）";
+                return "鍛えると→ " + CardText.Body(up.Def).Replace("\n", " / ");
+            }
+            catch (Exception ex) { return "鍛えられない: " + ex.Message; }
         }
 
         /// <summary>グリッドの各カードに「鍛えると→」のツールチップ</summary>

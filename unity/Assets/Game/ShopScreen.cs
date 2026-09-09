@@ -31,7 +31,7 @@ namespace DeckRogue.Game
             {
                 bool removing = g.ShopMode == "remove";
                 RunUi.Heading(root, removing ? "カード除去 (" + rmPrice + "G)" : "鍛える (" + upPrice + "G)",
-                    removing ? "デッキから1枚を永久に取り除く" : "1枚選ぶ。カーソルを重ねると鍛えた後の姿");
+                    removing ? "デッキから1枚を永久に取り除く" : "1枚選ぶ。札の下が鍛えた後の姿");
                 var area = UiKit.NewRect("svc", root);
                 UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
                 UiKit.Vert(area, 0, 0);
@@ -46,7 +46,7 @@ namespace DeckRogue.Game
                         if (rm) g.Do(new RunCommand_ShopRemove { Index = i });
                         else g.Do(new RunCommand_ShopUpgrade { Index = i });
                     },
-                    500f);
+                    500f, null, removing ? null : (Func<int, CardInstance, string>)delegate (int i, CardInstance c) { return CampfireScreen.DescribeUpgrade(c); });
                 if (!removing) CampfireScreen.AttachUpgradeTips(area, run.Deck);
                 RunUi.BottomButton(root, "戻る", delegate { g.ShopMode = null; g.Rebuild(); }, 18, 220f, 50f);
                 return;

@@ -683,6 +683,12 @@ namespace DeckRogue.Game
                 var parent = rt.parent as RectTransform;
                 Vector2 local;
                 if (pd != null && parent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, pd.position, null, out local)) rt.anchoredPosition = local;
+                // 敵の上に来たら、その敵に対する実値で札を描き直す (急所・装甲が数字に乗る)
+                if (pd != null && g.Battle != null && g.Rs != null && g.Rs.Combat != null)
+                {
+                    int over = EnemyUnderPointer(pd);
+                    try { g.Battle.RefreshHandCard(g, g.Rs.Combat, hc, over); } catch (Exception) { }
+                }
             });
             et.triggers.Add(drag);
             var endDrag = new EventTrigger.Entry { eventID = EventTriggerType.EndDrag };

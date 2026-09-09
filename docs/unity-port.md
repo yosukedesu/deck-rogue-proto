@@ -426,3 +426,8 @@ battle1=8-Bit Battle Loop／battle2-3=Juhani Junkala Chiptune Adventures Stage 1
 - `GameRoot.Awake`: `Application.isMobilePlatform` なら CanvasScaler の基準を 1920/1.3×1080/1.3＝1477×831・高さ基準（matchWidthOrHeight=1）。横長端末の余りは横へ（S25 2340×1080 → 1800×831 のキャンバス）。PC は 1920×1080・0.5 のまま。
 - PC での再現: `-uiscale N`（`GameRoot.UiScaleArg`）。`scripts/unity-win.sh shots` は `SHOT_W`/`SHOT_H`（窓の寸法）と `UISCALE` を環境変数で受ける。S25 相当＝`SHOT_W=1920 SHOT_H=886 UISCALE=1.3`。
 - 配置は変えない（手札の重なりが増える・地図はスクロール）。長押しの吹き出しと当たり判定の大きさは未対応。
+
+### 2026-09-09 本家の数字の読み方（ユーザー指示3点: 割引のコストと色／敵に当てた時のダメージ／鍛えた後が分かる）
+- **コスト**: `CardView` は `Effects.EffectiveCost` の値を玉に出し、下がれば緑 #276a34・上がれば朱 #a33a30 の数字（玉の色は蜂蜜のまま）。手札 (`BattleView.SyncHand`) は表示したコストと予測の対象を `HandCard.Cost/Preview` に持ち、変わったら同じ位置で作り直す（旧実装はプレイ可否と鍛えの変化しか見ておらず、割引トークンが出ても数字が古いままだった＝報告の根）。
+- **敵に当てた時のダメージ**: `CardView.MakeDamageModifier` が `PreviewEnemy` のある時は engine の `DamageBreakdownOf` を呼び、敵ブロック・貫通・潜伏・無形・ターン装甲の段の手前までの値（成長・勢い・弱体・急所×1.5・装甲上限）を本文の数字にする。予測行「→ 実ダメ N」は廃止。ドラッグ中は `BattleScreen.HookHandCard` の Drag で `EnemyUnderPointer` を見て `BattleView.RefreshHandCard`（`CardView.Refill`＝根を残して子だけ描き直す。進行中のドラッグが切れない）。
+- **鍛えた後**: `RunUi.CardGrid` に `subLabel`（札の下の1行・44px・Ellipsis）を足し、焚き火とショップの鍛える画面は `CampfireScreen.DescribeUpgrade`（Proto盤の describeUpgrade と同じ: コストが変わる札は「コスト 2E → 1E（効果は据え置き）」、他は鍛えた後の効果行）を常時表示。ツールチップは残す。

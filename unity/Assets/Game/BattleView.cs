@@ -36,6 +36,8 @@ namespace DeckRogue.Game
             public int Index;
             public bool Playable;
             public bool Settable;
+            public int Cost;        // 表示したコスト (割引・重圧で変わったら描き直す。2026-09-09)
+            public int Preview;     // 表示に使った対象の敵 (-1 = 無し)
         }
         readonly Dictionary<string, HandCard> _hand = new Dictionary<string, HandCard>();
 
@@ -218,6 +220,25 @@ namespace DeckRogue.Game
             return null;
         }
 
+        /// <summary>予測に使う敵: 狙いを付けた敵、無ければ生存が1体の時だけその敵 (SyncHand と同じ規則)</summary>
+        public static int PreviewTargetFor(GameRoot g, GameState st)
+        {
+            int alive = 0, firstAlive = -1;
+            for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { alive++; if (firstAlive < 0) firstAlive = i; }
+            return g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? g.PreferredTarget : (alive == 1 ? firstAlive : -1);
+        }
+
+        /// <summary>ドラッグ中に敵の上へ来た/離れた時、その札だけ描き直す (本家と同じく敵に当てた時に数字が変わる。2026-09-09)</summary>
+        public void RefreshHandCard(GameRoot g, GameState st, HandCard hc, int previewEnemy)
+        {
+            int preview = previewEnemy >= 0 ? previewEnemy : PreviewTargetFor(g, st);
+            if (hc.Preview == preview) return;
+            hc.Preview = preview;
+            CardView.PreviewEnemy = preview;
+            try { CardView.Refill(hc.Rt, hc.Card, st, hc.Playable, true); }
+            finally { CardView.PreviewEnemy = -1; }
+        }
+
         public void SyncHand(GameRoot g, GameState st, bool animate)
         {
             var hand = st.Player.Hand;
@@ -264,9 +285,9 @@ namespace DeckRogue.Game
                 bool settable = myTurn && g.Pending == null && SetBase.CanSetCard(st, c.Uid);
                 HandCard hc;
                 bool fresh = !_hand.TryGetValue(c.Uid, out hc);
-                if (!fresh && (hc.Playable != playable || hc.Settable != settable || !ReferenceEquals(hc.Card.Def, c.Def) || hc.Card.GrowBonus != c.GrowBonus))
+                if (!fresh && (hc.Playable != playable || hc.Settable != settable || !ReferenceEquals(hc.Card.Def, c.Def) || hc.Card.GrowBonus != c.GrowBonus || hc.Cost != cost || hc.Preview != preview))
                 {
-                    // 見た目が変わる (プレイ可否・鍛え・育つ) → 同じ位置で作り直す
+                    // 見た目が変わる (プレイ可否・鍛え・育つ・コスト・狙った敵) → 同じ位置で作り直す
                     var pos = hc.Rt.anchoredPosition; var rot = hc.Rt.localRotation; var scl = hc.Rt.localScale;
                     hc.Rt.SetParent(null, false);
                     UnityEngine.Object.Destroy(hc.Rt.gameObject);
@@ -277,7 +298,7 @@ namespace DeckRogue.Game
                     var rt2 = CardView.Build(HandLayer, c, st, playable, true, "hand" + i);
                     CardView.PreviewEnemy = -1;
                     rt2.anchoredPosition = pos; rt2.localRotation = rot; rt2.localScale = scl;
-                    hc = new HandCard { Rt = rt2, Card = c, Playable = playable, Settable = settable };
+                    hc = new HandCard { Rt = rt2, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview };
                     _hand[c.Uid] = hc;
                     fresh = false;
                     Attach(g, hc, c);
@@ -287,7 +308,7 @@ namespace DeckRogue.Game
                     CardView.PreviewEnemy = preview;
                     var rt = CardView.Build(HandLayer, c, st, playable, true, "hand" + i);
                     CardView.PreviewEnemy = -1;
-                    hc = new HandCard { Rt = rt, Card = c, Playable = playable, Settable = settable };
+                    hc = new HandCard { Rt = rt, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview };
                     _hand[c.Uid] = hc;
                     Attach(g, hc, c);
                     if (animate)

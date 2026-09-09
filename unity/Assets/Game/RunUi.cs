@@ -128,7 +128,8 @@ namespace DeckRogue.Game
 
         /// <summary>カードのグリッド (スクロール)。btnLabel が null を返す札はボタンなし。marked は強調</summary>
         public static void CardGrid(GameRoot g, Transform parent, IReadOnlyList<CardInstance> cards,
-            Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null)
+            Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null,
+            Func<int, CardInstance, string> subLabel = null)
         {
             var content = UiKit.Scroll(parent, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, minH, -1f, minH, -1f, 1f);
@@ -136,7 +137,9 @@ namespace DeckRogue.Game
             if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
             var grid = content.gameObject.AddComponent<GridLayoutGroup>();
             bool withBtn = btnLabel != null;
-            grid.cellSize = new Vector2(CardView.W * 0.8f, CardView.H * 0.8f + (withBtn ? 48f : 0f));
+            bool withSub = subLabel != null;   // 札の下の1行 (焚き火・ショップの「鍛えると→」。ホバー無しでも見える。2026-09-09)
+            float subH = withSub ? 44f : 0f;
+            grid.cellSize = new Vector2(CardView.W * 0.8f, CardView.H * 0.8f + (withBtn ? 48f : 0f) + subH);
             grid.spacing = new Vector2(14f, 14f);
             grid.padding = new RectOffset(12, 12, 12, 12);
             grid.childAlignment = TextAnchor.UpperLeft;
@@ -153,11 +156,24 @@ namespace DeckRogue.Game
                 var cell = UiKit.NewRect("cell", content);
                 var cv = CardView.Build(cell, c, g.Rs.Combat, true, false, "deck-card");
                 cv.localScale = Vector3.one * 0.8f;
-                if (withBtn) cv.anchoredPosition = new Vector2(0f, 24f);
+                float lift = (withBtn ? 24f : 0f) + subH / 2f;
+                if (lift > 0f) cv.anchoredPosition = new Vector2(0f, lift);
+                if (withSub)
+                {
+                    string sub = subLabel(i, c);
+                    if (!string.IsNullOrEmpty(sub))
+                    {
+                        // 舞台 (夜) の上なので紙色＋縁取り (中墨だと読めない)
+                        var stx = UiKit.Txt(cell, sub, 13, UiKit.ColText, TextAnchor.UpperCenter);
+                        stx.outlineWidth = 0.3f; stx.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
+                        stx.overflowMode = TextOverflowModes.Ellipsis;
+                        UiKit.Anchor(stx.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(2f, withBtn ? 46f : 2f), new Vector2(-2f, (withBtn ? 46f : 2f) + subH - 4f));
+                    }
+                }
                 if (mark)
                 {
                     var ring = UiKit.Frame(cell, Theme.Panel, new Color(1f, 0.85f, 0.3f, 0.6f), "mark", 3f);
-                    UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-CardView.W * 0.4f - 8f, -CardView.H * 0.4f - 8f + (withBtn ? 24f : 0f)), new Vector2(CardView.W * 0.4f + 8f, CardView.H * 0.4f + 8f + (withBtn ? 24f : 0f)));
+                    UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-CardView.W * 0.4f - 8f, -CardView.H * 0.4f - 8f + lift), new Vector2(CardView.W * 0.4f + 8f, CardView.H * 0.4f + 8f + lift));
                     ring.raycastTarget = false;
                     ring.transform.SetAsFirstSibling();
                 }
