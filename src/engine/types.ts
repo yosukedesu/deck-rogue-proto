@@ -1216,6 +1216,8 @@ export interface RelicDef {
   readonly eliteBossOnly?: boolean
   /** この幕までしか候補に出ない (経済レリック=幕1〜2。終盤の外れ枠にしない 2026-09-03 ユーザー裁定) */
   readonly actMax?: number
+  /** この幕以降でしか候補に出ない (2026-09-09 黒星の欠片。早く取るほど増分が乗算する代償なしボスレリックの供給側の絞り) */
+  readonly actMin?: number
   /** A型: 戦闘開始時に不可視の置物として注入される宣言的効果 */
   readonly effects?: readonly DeclarativeEffect[]
   /** B型: ラン定数の恒久変更 */

@@ -175,9 +175,33 @@ describe('レリック効果', () => {
     }
   })
 
-  it('在庫は38個・IDは一意（2026-09-06 代償なしのボス2つ） (第二弾拡充 2026-08-29・ボスレリック 2026-09-03)', () => {
-    expect(allRelics).toHaveLength(38) // 2026-09-05 大工の道具を撤去 (1幕1回・100Gの下で死に枠) // 2026-09-03 ボスレリック+4 (王冠の欠片・呪いの鍵・賢者の石・鎖の首輪) // 2026-09-03 蜃気楼の面を撤去 (確認ウィンドウを「はい」ボタンに退化させる。独立3本一致)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(38)
+  it('在庫は39個・IDは一意（2026-09-09 二重の符）', () => {
+    expect(allRelics).toHaveLength(39) // 2026-09-09 二重の符 (伏せ枠+1) // 2026-09-05 大工の道具を撤去 (1幕1回・100Gの下で死に枠) // 2026-09-03 ボスレリック+4 // 2026-09-03 蜃気楼の面を撤去
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(39)
+  })
+
+  // 2026-09-09 友人のフルランの診断（docs/playtest-2026-09-09-friend-run-analysis.md）への処方
+  describe('伏せの制度と供給の絞り', () => {
+    it('二重の符は戦闘開始時に伏せ枠を1つ増やす（このは=1枠 → 2枠）', () => {
+      const def = getRelicDef('relic_double_talisman')
+      expect(def.rarity).toBe('uncommon')
+      expect(def.effects?.[0]).toMatchObject({ trigger: 'onCombatStart', effect: 'gainSetSlot', amount: 1 })
+    })
+
+    it('黒星の欠片は幕1では候補に出ない（actMin=2）', () => {
+      expect(getRelicDef('relic_black_star').actMin).toBe(2)
+      // 幕1のボス3択: 黒星の欠片は除外される
+      let run = createRun(1234, 'set-confirm')
+      run = { ...run, act: 1, relicQueue: allRelics.map((r) => r.id) }
+      const [act1] = drawRelicOptions(run, 'boss', 3)
+      expect(act1).not.toContain('relic_black_star')
+      // 幕2なら出うる (候補列に残っている)
+      const run2 = { ...run, act: 2 }
+      const pool2 = run2.relicQueue.filter(
+        (id) => run2.act >= (getRelicDef(id).actMin ?? 0) && run2.act <= (getRelicDef(id).actMax ?? 99),
+      )
+      expect(pool2).toContain('relic_black_star')
+    })
   })
 })
 

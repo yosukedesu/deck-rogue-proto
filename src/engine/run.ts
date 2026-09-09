@@ -70,7 +70,9 @@ export const REWARD_EXCLUDED = new Set([
 ])
 // 0.3→0.25 (2026-08-31 ユーザー裁定「25%で様子見」。再検証ラン2本とも「HPが半分を切らない」=
 // 焚き火散布でルート選択の代償を作ったのに回復が毎回リセットしていた、への最小の絞り)
-const CAMPFIRE_HEAL_RATIO = 0.3 // 0.25→0.3 (2026-09-04 ユーザー裁定。曲線再設計で被ダメが増えたぶんの収支合わせ: 人間ラン3本が幕2〜3のHP収支で0/3)
+const CAMPFIRE_HEAL_RATIO = 0.25 // 0.3→0.25 (2026-09-09 ユーザー裁定「焚き火側で調整」。友人のフルランで被ダメ総量212に対し
+// 幕ボス全回復2回だけで+122 (58%) = HPが緊張の資源として機能していなかった。全回復は残し休むを絞る。
+// 旧: 0.25→0.3 (2026-09-04。曲線再設計で被ダメが増えたぶんの収支合わせ: 人間ラン3本が幕2〜3のHP収支で0/3)
 // 2026-08-26 再設計: 回復は焚き火に到達すれば自動で入る。
 // 「回復か強化か」の二択にすると、実測で焚き火到達時HPが常に20〜46%のため全員が回復しか選べず、
 // 強化・除去が一度も使われなかった (供給側の機能が「既に余裕のある者」にしか届かない状態だった)。
@@ -429,7 +431,14 @@ export function drawRelicOptions(
   count = 3,
 ): readonly [readonly string[], RngState] {
   // actMax (2026-09-03): 経済レリックは幕1〜2にしか出ない (終盤に引くと外れ枠)
-  const pool = run.relicQueue.filter((id) => !run.relics.includes(id) && run.act <= (getRelicDef(id).actMax ?? 99))
+  // actMin (2026-09-09): 黒星の欠片は幕2以降。幕1ボスで取ると以後の強個体5回すべてが2個取りになり
+  // レリックが18個まで膨らんだ (友人ラン: 18個中5個がこの増分) = 早取りほど乗算する供給側の絞り
+  const pool = run.relicQueue.filter(
+    (id) =>
+      !run.relics.includes(id) &&
+      run.act <= (getRelicDef(id).actMax ?? 99) &&
+      run.act >= (getRelicDef(id).actMin ?? 0),
+  )
   let rng = run.rng
   const picked: string[] = []
   const take = (tier: RelicRarity): boolean => {

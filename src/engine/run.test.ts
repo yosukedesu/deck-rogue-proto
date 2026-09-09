@@ -241,7 +241,7 @@ describe('HP持ち越しと焚き火', () => {
     expect(r2.phase).toBe('campfire')
     expect(r2.hp).toBe(20) // 進入時の自動回復は廃止 (2026-08-29)
     r2 = applyRunCommand(r2, { type: 'CampfireRest' }) // 「休む」= ここで初めて回復
-    expect(r2.hp).toBe(20 + Math.floor(r2.maxHp * 0.3)) // 25%→30% (2026-09-04 HP収支の是正)
+    expect(r2.hp).toBe(20 + Math.floor(r2.maxHp * 0.25)) // 30%→25% (2026-09-09 ユーザー裁定「焚き火側で調整」。友人ランで幕ボス全回復2回が被ダメ総量の58%を埋めていた)
     expect(r2.phase).toBe('map')
   })
 

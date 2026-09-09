@@ -214,6 +214,20 @@
     }
   },
   {
+    "id": "relic_double_talisman",
+    "name": "二重の符",
+    "sprite": "🎴",
+    "description": "伏せ場が1枠増える（同時に2枚まで伏せられる）",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainSetSlot",
+        "amount": 1
+      }
+    ]
+  },
+  {
     "id": "relic_crown_shard",
     "name": "王冠の欠片",
     "sprite": "👑",
@@ -455,11 +469,12 @@
     "id": "relic_black_star",
     "name": "黒星の欠片",
     "sprite": "🌟",
-    "description": "強個体を倒した時のレリック3択から、2つ取れる",
+    "description": "強個体を倒した時のレリック3択から、2つ取れる（幕2以降で見つかる）",
     "rarity": "boss",
     "bonus": {
       "eliteRelicPicks": 1
-    }
+    },
+    "actMin": 2
   },
   {
     "id": "relic_tiny_house",

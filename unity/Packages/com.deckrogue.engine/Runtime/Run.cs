@@ -96,8 +96,9 @@ namespace DeckRogue.Engine
             "black_guard",
         };
 
-        /// <summary>焚き火の回復比率 (2026-09-04 0.25→0.3)</summary>
-        private const double CAMPFIRE_HEAL_RATIO = 0.3;
+        /// <summary>焚き火の回復比率 (2026-09-09 0.3→0.25。ユーザー裁定「焚き火側で調整」＝
+        /// 友人のフルランで被ダメ総量212に対し幕ボス全回復2回だけで+122(58%)、HPが緊張の資源になっていなかった)</summary>
+        private const double CAMPFIRE_HEAL_RATIO = 0.25;
         /// <summary>勝利ごとの自動回復は廃止 (回復は焚き火のみ)</summary>
         private const int VICTORY_HEAL = 0;
         /// <summary>エリート補正は廃止 (エリート専用敵化)</summary>
@@ -384,7 +385,11 @@ namespace DeckRogue.Engine
         {
             // actMax: 経済レリックは幕1〜2にしか出ない
             var pool = run.RelicQueue
-                .Where(id => !run.Relics.Contains(id) && run.Act <= (Content.GetRelicDef(id).ActMax ?? 99))
+                // actMin (2026-09-09): 黒星の欠片は幕2以降。幕1ボスで取ると以後の強個体すべてが2個取りになる
+                .Where(id =>
+                    !run.Relics.Contains(id)
+                    && run.Act <= (Content.GetRelicDef(id).ActMax ?? 99)
+                    && run.Act >= (Content.GetRelicDef(id).ActMin ?? 0))
                 .ToList();
             var rng = run.Rng;
             var picked = new List<string>();
