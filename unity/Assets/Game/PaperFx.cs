@@ -1,5 +1,5 @@
 // PaperFx.cs — 「絵本」の肌 (2026-09-07 デザインカンバス第5版で決定) の生成部品。
-// クリーム色の紙の9スライス (鉛筆の二重線)・水彩のにじみ・紙の粒・貼り絵の縁 (ドット絵の切り抜き)・タイプのしおり・マスキングテープ。
+// クリーム色の紙の9スライス (鉛筆の二重線)・水彩のにじみ・紙の粒・貼り絵の縁 (ドット絵の切り抜き)・タイプのしおり。マスキングテープは廃止 (2026-09-09 ユーザー「テープの書き方はやめて」)。
 // 規約「絵はドット、紙と文字はなめらか」: ここで作るのは紙と線 (なめらか側)。ドット絵は Point フィルタで整数倍に置く。
 using System;
 using System.Collections.Generic;
@@ -282,31 +282,6 @@ namespace DeckRogue.Game
             tex.SetPixels(px); tex.Apply(false, false);
             s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
             s.name = key; _cache[key] = s; return s;
-        }
-
-        /// <summary>マスキングテープ (半透明の蜂蜜色。左右は破いた縁)</summary>
-        public static Sprite Tape()
-        {
-            Sprite s;
-            if (_cache.TryGetValue("tape", out s)) return s;
-            const int w = 96, h = 24;
-            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
-            tex.filterMode = FilterMode.Bilinear;
-            var px = new Color[w * h];
-            var rng = new System.Random(7);
-            var col = new Color(1f, 0.886f, 0.55f, 0.74f);
-            for (int y = 0; y < h; y++)
-                for (int x = 0; x < w; x++)
-                {
-                    bool tornL = x < 3 && rng.NextDouble() < 0.45, tornR = x > w - 4 && rng.NextDouble() < 0.45;
-                    px[y * w + x] = (tornL || tornR) ? new Color(0f, 0f, 0f, 0f) : col;
-                }
-            tex.SetPixels(px);
-            tex.Apply(false, false);
-            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
-            s.name = "tape";
-            _cache["tape"] = s;
-            return s;
         }
 
         /// <summary>吹き出しの尾 (下向きの小さな三角。紙色に墨の線)</summary>

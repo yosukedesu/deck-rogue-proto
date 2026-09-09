@@ -380,22 +380,38 @@ namespace DeckRogue.Game
         /// <summary>消滅・保持・追加コストなどの注記</summary>
         public static string Notes(CardDef def)
         {
+            var n = CostNotes(def);
+            n.AddRange(TrailNotes(def));
+            return n.Count == 0 ? "" : string.Join(" / ", n.ToArray());
+        }
+
+        /// <summary>コスト側の注記 (X・追加コスト・亡骸プレイ・0E 条件・前提)。カードでは本文の先頭に普通の文で置く
+        /// (2026-09-09 ユーザー「追加コストは付箋みたいに下に貼るのでなく、普通の表記で効果の最上部に」)</summary>
+        public static List<string> CostNotes(CardDef def)
+        {
             var n = new List<string>();
-            if (def.Exhaust == true) n.Add("消滅");
-            if (def.Retain == true) n.Add("保持");
-            if (def.XCost == true) n.Add("Xコスト(エナジーを全て払う)");
-            if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト:手札" + def.DiscardCost.Value + "枚を捨てる");
-            if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト:手札" + def.ExhaustCost.Value + "枚を消滅");
+            if (def.XCost == true) n.Add("X: エナジーを全て払う");
+            if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.DiscardCost.Value + "枚を捨てる");
+            if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.ExhaustCost.Value + "枚を消滅");
             if (def.NecroCost.HasValue) n.Add("亡骸プレイ " + def.NecroCost.Value + "E");
             if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけなら0E");
             if (def.FreeIfHandAll != null) n.Add("手札が" + TypeJa(def.FreeIfHandAll) + "だけなら0E");
             if (def.FreeIfMomentumAtLeast.HasValue) n.Add("勢い" + def.FreeIfMomentumAtLeast.Value + "以上なら0E");
             if (def.RequiresRetainer == true) n.Add("場に従者が必要");
-            if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
             if (def.BlazeDiscount.HasValue) n.Add("猛り火中コスト-" + def.BlazeDiscount.Value);
+            return n;
+        }
+
+        /// <summary>効果の後ろに付く注記 (消滅・保持・条件付き消滅・札の種類)。カードでは本文の末尾</summary>
+        public static List<string> TrailNotes(CardDef def)
+        {
+            var n = new List<string>();
+            if (def.Exhaust == true) n.Add("消滅");
+            if (def.Retain == true) n.Add("保持");
+            if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
             if (def.Retainer == true) n.Add("従者");
             if (def.ShivToken == true) n.Add("骨のナイフ");
-            return n.Count == 0 ? "" : string.Join(" / ", n.ToArray());
+            return n;
         }
 
         // ---- 敵 ----

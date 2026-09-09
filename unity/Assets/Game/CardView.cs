@@ -121,35 +121,24 @@ namespace DeckRogue.Game
             string bodyText;
             try { bodyText = CardText.Body(def); }
             finally { CardText.DamageModifier = null; }
-            bodyText = CardText.Emphasize(bodyText);
             if (def.Modes != null && def.Modes.Count > 0) bodyText = "<size=80%><color=#574b48>どちらか一つ</color></size>\n" + bodyText;
+            // 追加コスト (X・捨て・消滅コスト・0E 条件) は本文の先頭に普通の表記、消滅・保持は本文の末尾 (2026-09-09 ユーザー「付箋でなく効果の最上部に」)
+            var costNotes = CardText.CostNotes(def);
+            var trail = CardText.TrailNotes(def);
+            if (costNotes.Count > 0) bodyText = string.Join("\n", costNotes.ToArray()) + "\n" + bodyText;
+            if (trail.Count > 0) bodyText = bodyText + "\n" + string.Join("・", trail.ToArray());
+            bodyText = CardText.Emphasize(bodyText);
             var body = UiKit.Txt(root, bodyText, 16, ink, TextAnchor.UpperCenter, true);
-            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 40f), new Vector2(-14f, -172f));
+            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 14f), new Vector2(-14f, -172f));
             body.enableAutoSizing = true; body.fontSizeMin = 12f; body.fontSizeMax = 16f;   // 長文だけ 12px まで縮める (最小 13px の唯一の例外)
             body.lineSpacing = 2f;
 
-            // 予測行 (対象が決まっている時、実処理と同じ手順の実値)
+            // 予測行 (対象が決まっている時、実処理と同じ手順の実値)。本文の下端に重ねる
             string preview = Preview(c, st);
             if (preview != null)
             {
                 var pv = UiKit.Txt(root, preview, 13, PaperFx.GoldInk, TextAnchor.MiddleCenter, true);
-                UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 38f), new Vector2(-18f, 60f));
-            }
-
-            // 注記 (消滅・保持・追加コスト) のテープ。文字の幅に合わせる
-            string notes = CardText.Notes(def);
-            if (notes.Length > 0)
-            {
-                var tape = UiKit.NewRect("tape", root);
-                tape.localRotation = Quaternion.Euler(0f, 0f, 3f);
-                var tImg = tape.gameObject.AddComponent<Image>();
-                tImg.sprite = PaperFx.Tape(); tImg.raycastTarget = false;
-                var tt = UiKit.Txt(tape, notes, 13, PaperFx.Ink, TextAnchor.MiddleCenter, true);
-                UiKit.Stretch(tt.rectTransform, 4f, 4f, 0f, 0f);
-                tt.textWrappingMode = TextWrappingModes.NoWrap;
-                float tw = Mathf.Clamp(tt.GetPreferredValues(notes, 1000f, 0f).x + 18f, 88f, W - 24f);
-                tt.enableAutoSizing = true; tt.fontSizeMin = 11f; tt.fontSizeMax = 13f;
-                UiKit.Anchor(tape, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, 12f), new Vector2(tw / 2f, 34f));
+                UiKit.Anchor(pv.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(18f, 12f), new Vector2(-18f, 34f));
             }
             return root;
         }

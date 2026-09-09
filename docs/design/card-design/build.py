@@ -213,6 +213,8 @@ def window_B(cid, dim=False, top=44, h=100):
 
 def body_B(c, numcol=None, top=172, size=16, numsize=21):
     body = ''
+    # 追加コスト (X・捨て・消滅コスト) は本文の先頭に普通の表記 (2026-09-09 ユーザー「付箋でなく効果の最上部に」)
+    for cn in c.get('cost_notes', []): body += '<div style="line-height: 24px">%s</div>' % cn
     lines = c.get('lines') or []
     def kwtags():
         return ''.join('<span class="kw">%s</span>' % k for k in c.get('kw', []))
@@ -222,7 +224,8 @@ def body_B(c, numcol=None, top=172, size=16, numsize=21):
         body += '<div style="font-size: 13px; color: %s; line-height: 18px">どちらか一つ</div>' % INK_MID
         for m in c['modes']: body += '<div style="line-height: 26px">◆ %s</div>' % line_text(m[0], numsize=numsize, color=numcol if m[0][0] == 'dmg' else None)
     if c.get('pre'): body = body.replace(ROLE_JA['counter'], c['pre'] + ': ' + ROLE_JA['counter'])
-    return '<div class="abs hand" style="left: 14px; right: 14px; top: %dpx; bottom: 40px; text-align: center; font-size: %dpx; color: %s">%s</div>' % (top, size, INK, body)
+    if c.get('notes'): body += '<div style="line-height: 24px">%s</div>' % c['notes']   # 消滅・保持は本文の末尾
+    return '<div class="abs hand" style="left: 14px; right: 14px; top: %dpx; bottom: 14px; text-align: center; font-size: %dpx; color: %s">%s</div>' % (top, size, INK, body)
 
 def card_B(c, dim=False, hover=False, numcol=None, name=None, cost=None, costcol=None, preview=None):
     ink = INK if not dim else rgba(INK, 0.7)
@@ -234,8 +237,7 @@ def card_B(c, dim=False, hover=False, numcol=None, name=None, cost=None, costcol
     s += window_B(c['id'], dim)
     s += ribbon(c['typ'], TYPE_JA[c['typ']], gemr=c['rarity'])
     s += body_B(c, numcol=numcol)
-    if preview: s += '<div class="abs hand num" style="left: 0; right: 0; bottom: 42px; text-align: center; font-size: 13px; color: %s">%s</div>' % (GOLD_INK, preview)
-    if c.get('notes'): s += tape(58, 258, 84, c['notes'])
+    if preview: s += '<div class="abs hand num" style="left: 0; right: 0; bottom: 14px; text-align: center; font-size: 13px; color: %s">%s</div>' % (GOLD_INK, preview)
     s += '</div>'
     return s
 
@@ -336,9 +338,10 @@ def states_board():
     s = '<div style="position: relative; width: %dpx; height: %dpx; overflow: hidden; background: #1a1c33">' % (W, H)
     s += '<div class="abs" style="inset: 0; background: linear-gradient(180deg, #26294a 0%, #12142a 100%)"></div>'
     s += '<div class="abs deco light" style="left: 40px; top: 26px; font-size: 30px; letter-spacing: 0.06em; text-shadow: 0 2px 0 rgba(0,0,0,0.5)">案B の状態一覧 — 1枚の札が戦闘中に取る姿</div>'
-    s += '<div class="abs note" style="left: 40px; top: 72px; width: 1600px">本家のカードの読み方に合わせる: 数字が上がれば緑、下がれば朱、鍛えた札は名前に「+」と緑の数字。使えない札は彩度を落とす。ホバーで 1.2倍と蜂蜜色の光。予測行は対象を決めた時だけ (金の墨)。</div>'
+    s += '<div class="abs note" style="left: 40px; top: 72px; width: 1600px">本家のカードの読み方に合わせる: 数字が上がれば緑、下がれば朱、鍛えた札は名前に「+」と緑の数字。使えない札は彩度を落とす。ホバーで 1.2倍と蜂蜜色の光。予測行は対象を決めた時だけ (金の墨)。追加コスト (X・捨て・消滅コスト) は本文の先頭に普通の表記、消滅・保持は本文の末尾 (付箋は廃止)。</div>'
     strike = CARDS[0]; fang = CARDS[1]; entangle = CARDS[2]; thorns = CARDS[3]; tree = CARDS[4]; sprout = CARDS[5]
-    x_flurry = dict(id='green_x_vine_flurry', name='蔦の連撃', typ='physical', cost='X', rarity='uncommon', lines=[('dmg', '5')], kw=['×X回'])
+    x_flurry = dict(id='green_x_vine_flurry', name='蔦の連撃', typ='physical', cost='X', rarity='uncommon', lines=[('dmg', '5')], kw=['×X回'], cost_notes=['X: エナジーを全て払う'])
+    gulp = dict(id='green_serpent_gulp', name='大蛇の丸呑み', typ='physical', cost=3, rarity='uncommon', lines=[('dmg', '34')], cost_notes=['追加コスト: 手札1枚を捨てる'])
     bloom = dict(id='green_sig_rite_of_bloom', name='開花の儀', typ='spell', cost=2, rarity='rare', lines=[('growth', '2倍')], notes='消滅')
     stomp = dict(id='green_finisher_stomp', name='巨獣の踏みつけ', typ='physical', cost=5, rarity='rare', lines=[('dmg', '50')], notes='保持')
     items = [
@@ -350,6 +353,7 @@ def states_board():
         ('X コスト', card_B(x_flurry)),
         ('消滅', card_B(bloom)),
         ('保持 (5E の大型)', card_B(stomp)),
+        ('追加コスト (本文の先頭)', card_B(gulp)),
         ('選択式', card_B(entangle)),
         ('リアクション (伏せる)', card_B(thorns)),
         ('置物 (レア)', card_B(tree)),
@@ -358,8 +362,8 @@ def states_board():
         ('対象を決めた時の予測行', card_B(strike, preview='→ 実ダメ 3 (装甲5)')),
     ]
     for i, (label, html) in enumerate(items):
-        col = i % 7; row = i // 7
-        x = 40 + col * 245; y = 130 + row * 380
+        col = i % 8; row = i // 8
+        x = 40 + col * 215; y = 130 + row * 380
         s += '<div class="abs" style="left: %dpx; top: %dpx; width: 200px; height: 290px">%s</div>' % (x, y + 30, html)
         s += '<div class="abs note" style="left: %dpx; top: %dpx; width: 210px; font-size: 13px">%s</div>' % (x, y, label)
     s += '</div>'
