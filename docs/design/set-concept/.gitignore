@@ -1,0 +1,4 @@
+
+# デザインカンバスの seed 済み html（生成元の .dc.html と build.py だけ追う）
+docs/design/*/*.html
+!docs/design/*/*.dc.html
