@@ -2402,7 +2402,7 @@ namespace DeckRogue.Game
             var em = ps.emission; em.rateOverTime = 5f;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(22f, 8f, 14f); shape.position = new Vector3(0f, 3.5f, 3f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.x = new ParticleSystem.MinMaxCurve(-0.05f, 0.05f); vel.y = new ParticleSystem.MinMaxCurve(0.02f, 0.08f);
+            vel.x = new ParticleSystem.MinMaxCurve(-0.05f, 0.05f); vel.y = new ParticleSystem.MinMaxCurve(0.02f, 0.08f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
@@ -2427,7 +2427,7 @@ namespace DeckRogue.Game
             shape.rotation = new Vector3(0f, PathYaw, 0f); shape.position = new Vector3(0f, 0.9f, 0f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
             vel.x = new ParticleSystem.MinMaxCurve(dir.x * 0.1f, dir.x * 0.3f); vel.z = new ParticleSystem.MinMaxCurve(dir.z * 0.1f, dir.z * 0.3f);
-            vel.y = new ParticleSystem.MinMaxCurve(-0.04f, 0.08f);
+            vel.y = new ParticleSystem.MinMaxCurve(-0.04f, 0.08f);   // 3軸とも同じモード (2定数)。混ぜると Android で毎フレーム E ログ
             var noise = ps.noise; noise.enabled = true; noise.strength = 0.3f; noise.frequency = 0.4f; noise.scrollSpeed = 0.25f;
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
@@ -2448,7 +2448,7 @@ namespace DeckRogue.Game
             shape = c.shape; shape.shapeType = ParticleSystemShapeType.Sphere; shape.radius = 1.1f; shape.position = _lampPos;
             noise = c.noise; noise.enabled = true; noise.strength = 0.5f; noise.frequency = 0.6f; noise.scrollSpeed = 0.35f;
             vel = c.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.y = new ParticleSystem.MinMaxCurve(-0.05f, 0.1f);
+            vel.x = new ParticleSystem.MinMaxCurve(0f, 0f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f); vel.y = new ParticleSystem.MinMaxCurve(-0.05f, 0.1f);
             col = c.colorOverLifetime; col.enabled = true; col.color = g;
             MoteLights(c, 4, 0.35f);
             c.Play();
@@ -2468,7 +2468,7 @@ namespace DeckRogue.Game
             var em = near.emission; em.rateOverTime = 0.9f;
             var shape = near.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(44f, 0.4f, 22f); shape.position = new Vector3(0f, 0.45f, 15f);
             var vel = near.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.x = new ParticleSystem.MinMaxCurve(dir.x * 0.05f, dir.x * 0.14f); vel.z = new ParticleSystem.MinMaxCurve(dir.z * 0.05f, dir.z * 0.14f);
+            vel.x = new ParticleSystem.MinMaxCurve(dir.x * 0.05f, dir.x * 0.14f); vel.z = new ParticleSystem.MinMaxCurve(dir.z * 0.05f, dir.z * 0.14f); vel.y = new ParticleSystem.MinMaxCurve(0f, 0f);
             var col = near.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
@@ -2486,7 +2486,7 @@ namespace DeckRogue.Game
             em = far.emission; em.rateOverTime = 0.65f;
             shape = far.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(70f, 0.6f, 16f); shape.position = new Vector3(4f, 1.2f, 38f);
             vel = far.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f);
+            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f); vel.y = new ParticleSystem.MinMaxCurve(0f, 0f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
             col = far.colorOverLifetime; col.enabled = true; col.color = g;
             far.Play();
         }
@@ -2504,7 +2504,7 @@ namespace DeckRogue.Game
             var em = ps.emission; em.rateOverTime = 7f;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40f, 6f, 30f); shape.position = new Vector3(0f, 2.5f, 12f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f); vel.y = new ParticleSystem.MinMaxCurve(0.04f, 0.14f);
+            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f); vel.y = new ParticleSystem.MinMaxCurve(0.04f, 0.14f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
             var noise = ps.noise; noise.enabled = true; noise.strength = 0.2f; noise.frequency = 0.3f; noise.scrollSpeed = 0.15f;
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
@@ -2550,7 +2550,7 @@ namespace DeckRogue.Game
             var em = ps.emission; em.rateOverTime = 0.6f;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(22f, 0.5f, 12f); shape.position = new Vector3(0f, 8f, 4f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
-            vel.x = new ParticleSystem.MinMaxCurve(-0.35f, 0.15f); vel.y = new ParticleSystem.MinMaxCurve(-0.9f, -0.5f);
+            vel.x = new ParticleSystem.MinMaxCurve(-0.35f, 0.15f); vel.y = new ParticleSystem.MinMaxCurve(-0.9f, -0.5f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
             var noise = ps.noise; noise.enabled = true; noise.strength = 0.6f; noise.frequency = 0.5f; noise.scrollSpeed = 0.3f;
             var rot = ps.rotationOverLifetime; rot.enabled = true; rot.z = new ParticleSystem.MinMaxCurve(-1.5f, 1.5f);
             ps.Play();
