@@ -44,3 +44,7 @@ unity/.vs/
 # Unity 自動操縦スクショ (scripts/unity-win.sh shots の回収先)
 unity/Shots/
 unity/Build/
+
+# デザインカンバスの公開用に seed した1枚 html（2MB の編集ペイロード込み。生成元の .dc.html と build.py だけを追う）
+docs/design/*/*.html
+!docs/design/*/*.dc.html
