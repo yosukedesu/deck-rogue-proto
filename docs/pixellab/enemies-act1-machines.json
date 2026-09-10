@@ -1,0 +1,77 @@
+{
+ "_note": "幕1の古機 (2026-09-10 新規)。野生化した古代の採掘機械＝金属質で獣と質感を分ける (ユーザー裁定)。shading は detailed (硬いハイライトを出す)、negative に fur/moss/animal/watercolor を足して獣の画材へ流れるのを防ぐ。各2シード (23/41)。",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "low top-down",
+  "direction": "south-west",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 9,
+  "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot"
+ },
+ "style": "pixel art of an ancient mining automaton that was never switched off, still working in a buried city, body of tarnished pale metal plates and worn stone with visible rivets, brass cogs and a taut cable, hard straight edges and crisp metallic highlights, thin dark ink outline, one small pale glowing lens where a face would be, no mouth, no fur, no animal features, cold patient and a little sad, palette of cream paper, tarnished silver, weathered brass, dusty blue-grey slate and ink, low contrast",
+ "items": [
+  {
+   "id": "enemy_apprentice_colossus__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/orders/enemy_apprentice_colossus__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small unfinished mining GOLEM of stacked cut stone blocks bound with iron bands, thick heavy arms, chipped edges, one small pale lens set in a rune-carved stone head, one arm raised slowly, {style}"
+  },
+  {
+   "id": "enemy_apprentice_colossus__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/orders/enemy_apprentice_colossus__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small unfinished mining GOLEM of stacked cut stone blocks bound with iron bands, thick heavy arms, chipped edges, one small pale lens set in a rune-carved stone head, one arm raised slowly, {style}"
+  },
+  {
+   "id": "enemy_cog_construct__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/orders/enemy_cog_construct__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a cube-shaped iron AUTOMATON with rivets and brass gears, one round glass lens as an eye, a spinning cog on top, stubby metal legs, weathered pale grey metal plates, {style}"
+  },
+  {
+   "id": "enemy_cog_construct__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/orders/enemy_cog_construct__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a cube-shaped iron AUTOMATON with rivets and brass gears, one round glass lens as an eye, a spinning cog on top, stubby metal legs, weathered pale grey metal plates, {style}"
+  },
+  {
+   "id": "enemy_elite_sentry__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/orders/enemy_elite_sentry__23.png",
+   "seed": 23,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a tall narrow STONE LANTERN sentry of cut stone banded with iron, one narrow pale slit lens in the lantern head, a long iron spear clamped to its side, cracked pale stone, standing at attention, no arms, no face, {style}"
+  },
+  {
+   "id": "enemy_elite_sentry__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/orders/enemy_elite_sentry__41.png",
+   "seed": 41,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a tall narrow STONE LANTERN sentry of cut stone banded with iron, one narrow pale slit lens in the lantern head, a long iron spear clamped to its side, cracked pale stone, standing at attention, no arms, no face, {style}"
+  }
+ ]
+}

@@ -1,0 +1,341 @@
+{
+ "_note": "敵の2系統の割り当て (2026-09-10 世界観改稿)。beast=露頭でマナを浴びて育った生き物 (水彩絵本×淡い光)／machine=野生化した古代の採掘機械 (金属質。質感を分ける・ユーザー裁定)／hybrid=生き物に古代の部品を継いだもの (体は獣・継ぎ手だけ金属)／revenant=坑で消えた者の名残 (輪郭が薄い。獣でも古機でもない少数派)。絵の発注 (docs/pixellab/) と将来の図鑑の分類がこれを読む。ルールには影響しない",
+ "kinds": {
+  "enemy_wide_power": {
+   "name": "うねる獣",
+   "kind": "beast"
+  },
+  "enemy_probe": {
+   "name": "探り屋",
+   "kind": "beast"
+  },
+  "enemy_set_wary": {
+   "name": "用心深い影",
+   "kind": "revenant"
+  },
+  "enemy_set_breaker": {
+   "name": "罠壊し",
+   "kind": "machine"
+  },
+  "enemy_brute": {
+   "name": "脳筋オーガ",
+   "kind": "beast"
+  },
+  "enemy_turtle": {
+   "name": "眠たがりの大亀",
+   "kind": "beast"
+  },
+  "enemy_hexer": {
+   "name": "泥投げの妖術師",
+   "kind": "beast"
+  },
+  "enemy_wolf": {
+   "name": "牙嵐の狼",
+   "kind": "beast"
+  },
+  "enemy_moss": {
+   "name": "苔まといの主",
+   "kind": "beast"
+  },
+  "enemy_joker": {
+   "name": "嘲る道化",
+   "kind": "beast"
+  },
+  "enemy_drummer": {
+   "name": "鼓吹きコボルト",
+   "kind": "beast"
+  },
+  "enemy_warden": {
+   "name": "刻限の門番",
+   "kind": "machine"
+  },
+  "enemy_thorn_squirrel": {
+   "name": "針毛の栗鼠",
+   "kind": "beast"
+  },
+  "enemy_thief": {
+   "name": "こそ泥ゴブリン",
+   "kind": "beast"
+  },
+  "enemy_bomber": {
+   "name": "火薬樽かつぎ",
+   "kind": "beast"
+  },
+  "enemy_moss_healer": {
+   "name": "苔の癒し手",
+   "kind": "beast"
+  },
+  "enemy_axe_ogre": {
+   "name": "大振りの斧鬼",
+   "kind": "beast"
+  },
+  "enemy_shell_guard": {
+   "name": "石殻の番人",
+   "kind": "machine"
+  },
+  "enemy_apprentice_colossus": {
+   "name": "見習い巨像",
+   "kind": "machine"
+  },
+  "enemy_mimic_imp": {
+   "name": "物真似の子鬼",
+   "kind": "beast"
+  },
+  "enemy_cultist": {
+   "name": "囁きの狂信者",
+   "kind": "beast"
+  },
+  "enemy_slug": {
+   "name": "酸吐きの蛞蝓",
+   "kind": "beast"
+  },
+  "enemy_whetstone_colossus": {
+   "name": "砥石の巨像",
+   "kind": "machine"
+  },
+  "enemy_mimic_jester": {
+   "name": "物真似の道化",
+   "kind": "beast"
+  },
+  "enemy_cinder_imp": {
+   "name": "焚きつけのインプ",
+   "kind": "beast"
+  },
+  "enemy_rock_beetle": {
+   "name": "岩皮の甲虫",
+   "kind": "beast"
+  },
+  "enemy_big_slime": {
+   "name": "大苔スライム",
+   "kind": "beast"
+  },
+  "enemy_moss_slime": {
+   "name": "苔スライム",
+   "kind": "beast"
+  },
+  "enemy_elite_sergeant": {
+   "name": "鞭打ちの鬼軍曹",
+   "kind": "beast"
+  },
+  "enemy_elite_sentry": {
+   "name": "歩哨",
+   "kind": "machine"
+  },
+  "enemy_elite_iron_egg": {
+   "name": "眠れる鉄卵",
+   "kind": "machine"
+  },
+  "enemy_elite_slaver": {
+   "name": "鎖持ちの奴隷商",
+   "kind": "beast"
+  },
+  "enemy_elite_stab_book": {
+   "name": "刺突の書",
+   "kind": "machine"
+  },
+  "enemy_elite_giant_face": {
+   "name": "巨面",
+   "kind": "machine"
+  },
+  "enemy_elite_gold_raven": {
+   "name": "金羽の大鴉",
+   "kind": "beast"
+  },
+  "enemy_elite_mirror_djinn": {
+   "name": "写し身の魔人",
+   "kind": "revenant"
+  },
+  "enemy_elite_doom_chanter": {
+   "name": "終焉の唱い手",
+   "kind": "beast"
+  },
+  "enemy_elite_devourer": {
+   "name": "大喰らいの蟲",
+   "kind": "beast"
+  },
+  "enemy_elite_owl": {
+   "name": "読み手の梟",
+   "kind": "beast"
+  },
+  "enemy_elite_deathless": {
+   "name": "不滅の騎士",
+   "kind": "machine"
+  },
+  "enemy_shield_squire": {
+   "name": "盾持ちの従士",
+   "kind": "hybrid"
+  },
+  "enemy_crossbow_archer": {
+   "name": "弩弓の射手",
+   "kind": "hybrid"
+  },
+  "enemy_bond_wolf": {
+   "name": "双牙の狼",
+   "kind": "beast"
+  },
+  "enemy_mud_lump": {
+   "name": "泥まとうもの",
+   "kind": "beast"
+  },
+  "enemy_elite_husk_3": {
+   "name": "不滅の骸兵・参",
+   "kind": "machine"
+  },
+  "enemy_elite_husk_2": {
+   "name": "不滅の骸兵・弐",
+   "kind": "machine"
+  },
+  "enemy_elite_husk_1": {
+   "name": "不滅の骸兵・壱",
+   "kind": "machine"
+  },
+  "enemy_brood_toad": {
+   "name": "蟲抱えの蛙鬼",
+   "kind": "beast"
+  },
+  "enemy_broodling": {
+   "name": "蠢く幼体",
+   "kind": "beast"
+  },
+  "enemy_brood_raptor": {
+   "name": "抱卵の走竜",
+   "kind": "beast"
+  },
+  "enemy_raptor_egg": {
+   "name": "走竜の卵",
+   "kind": "beast"
+  },
+  "enemy_raptor_chick": {
+   "name": "走竜の仔",
+   "kind": "beast"
+  },
+  "enemy_mourn_beast": {
+   "name": "弔いの獣",
+   "kind": "beast"
+  },
+  "enemy_maw_hunter": {
+   "name": "大顎の狩人",
+   "kind": "beast"
+  },
+  "enemy_sludge_berserker": {
+   "name": "汚泥の大暴れ",
+   "kind": "beast"
+  },
+  "enemy_mudling": {
+   "name": "小泥",
+   "kind": "beast"
+  },
+  "enemy_gaping_maw": {
+   "name": "裂け口の獣",
+   "kind": "beast"
+  },
+  "enemy_cog_construct": {
+   "name": "歯車の箱兵",
+   "kind": "machine"
+  },
+  "enemy_spore_cap": {
+   "name": "胞子吹きの茸",
+   "kind": "beast"
+  },
+  "enemy_strangler_serpent": {
+   "name": "巻きつく大蛇",
+   "kind": "beast"
+  },
+  "enemy_snap_fruit": {
+   "name": "噛みつき果実",
+   "kind": "beast"
+  },
+  "enemy_vine_walker": {
+   "name": "蔦纏いの歩き木",
+   "kind": "beast"
+  },
+  "enemy_iron_clam": {
+   "name": "鉄殻の溝貝",
+   "kind": "beast"
+  },
+  "enemy_sludge_spider": {
+   "name": "汚泥紡ぎの蜘蛛",
+   "kind": "beast"
+  },
+  "enemy_axe_automaton": {
+   "name": "絡繰の斧兵",
+   "kind": "machine"
+  },
+  "enemy_axe_automaton_reboot": {
+   "name": "絡繰の斧兵・再起",
+   "kind": "machine"
+  },
+  "enemy_thunder_globe": {
+   "name": "雷球の巨頭",
+   "kind": "machine"
+  },
+  "enemy_frog_knight": {
+   "name": "蛙の騎士",
+   "kind": "hybrid"
+  },
+  "enemy_biting_scroll": {
+   "name": "噛みつく巻物",
+   "kind": "machine"
+  },
+  "enemy_lost_soul": {
+   "name": "失せ人の霊",
+   "kind": "revenant"
+  },
+  "enemy_forgotten_soul": {
+   "name": "忘れ人の霊",
+   "kind": "revenant"
+  },
+  "enemy_devoted_sculptor": {
+   "name": "献身の彫師",
+   "kind": "machine"
+  },
+  "enemy_chomper": {
+   "name": "金切り顎",
+   "kind": "machine"
+  },
+  "enemy_scald_gnat": {
+   "name": "灼き虻",
+   "kind": "beast"
+  },
+  "enemy_kin_priest": {
+   "name": "血族の司祭",
+   "kind": "beast"
+  },
+  "enemy_kin_follower": {
+   "name": "血族の踊り手",
+   "kind": "beast"
+  },
+  "enemy_crab_crusher": {
+   "name": "巨蟹の砕き腕",
+   "kind": "beast"
+  },
+  "enemy_crab_cannon": {
+   "name": "巨蟹の撃ち腕",
+   "kind": "beast"
+  },
+  "enemy_chimera_1": {
+   "name": "蘇る合成獣・一の相",
+   "kind": "hybrid"
+  },
+  "enemy_chimera_2": {
+   "name": "蘇る合成獣・二の相",
+   "kind": "hybrid"
+  },
+  "enemy_chimera_3": {
+   "name": "蘇る合成獣・三の相",
+   "kind": "hybrid"
+  },
+  "enemy_burrow_worm": {
+   "name": "潜行する大地虫",
+   "kind": "beast"
+  },
+  "enemy_bowl_bug": {
+   "name": "転がる岩虫",
+   "kind": "beast"
+  },
+  "enemy_nemesis_wraith": {
+   "name": "因縁の亡霊",
+   "kind": "revenant"
+  }
+ }
+}
