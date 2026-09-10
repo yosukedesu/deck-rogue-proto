@@ -1,0 +1,30 @@
+{
+ "id": "enemy_lost_soul__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a small floating WISP of pale mist, rounded and swollen like a filled drop with soft dissolving edges, a shallow helmet-shaped dent pressed into its top, thin streams of mist curling inward toward it from all sides as if being inhaled, a rusted mining pick lying on the ground beneath it, a frayed rope loop, no face, no limbs, pixel art in the style of a gentle watercolor picture book illustration of the faint remains of a miner who never came back: a small floating pale translucent wisp or shroud shape with soft dissolving edges, no face, no limbs, faintly glowing from within, carrying one small mining prop, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin soft outline, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, person, miner, face, eyes, mouth, arms, hands, legs, hooded figure, sheet ghost, skull, helmet on a head",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "basic shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:23:04.730Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11"
+ }
+}

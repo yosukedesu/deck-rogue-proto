@@ -1,0 +1,30 @@
+{
+ "id": "enemy_cinder_imp__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a tiny IMP: small round body, two little rounded horns, small bat wings spread, thin tail with a rounded tip, holding a small clay ember pot in one paw and flicking a pinch of faintly glowing cinder specks with the other, a few pale embers drifting up from the pot, no human face, bead eyes, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, devil, demon, goblin, child, boy, humanoid imp, blazing fire, big flames, red skin, torch, human hands",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:39:25.807Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11"
+ }
+}

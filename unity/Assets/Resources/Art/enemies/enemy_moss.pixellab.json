@@ -1,0 +1,30 @@
+{
+ "id": "enemy_moss__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a huge old BISON-like BEAST with a tall shoulder hump, small curved horns and a low heavy head, its whole back and flanks draped in a thick blanket of moss with tiny mushrooms and ferns sprouting from it, one patch on the shoulder where the moss has peeled away showing bare pale hide, standing heavy on four thick legs, faint glow under the moss, two bead eyes, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, bear, cow with udder, humanoid, shaman, robe, tree ent with a face, open mouth, teeth, vivid green, bright colors",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:56:12.100Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11"
+ }
+}

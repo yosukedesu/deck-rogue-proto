@@ -1,0 +1,30 @@
+{
+ "id": "enemy_bowl_bug__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a big PILL BUG (woodlouse): a rounded segmented shell back bulging like a rough boulder with cracked rock plates and a few moss tufts, tiny stubby legs tucked underneath, a small head with two short antennae and bead eyes peeking out from the front, body half curled as if about to roll forward, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, beetle with wings, ball with a face, armadillo, bowling ball, plain boulder, humanoid",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:37:38.677Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11"
+ }
+}

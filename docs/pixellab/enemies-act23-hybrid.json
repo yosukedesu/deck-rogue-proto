@@ -1,0 +1,148 @@
+{
+ "_note": "幕2/3の継ぎ物 (生き物に古代の部品を継いだもの＝獣の画材＋金属の継ぎ手) (2026-09-11 ユーザー「2,3幕の敵画像もpixellab作成して適用して」)。種の記述は workflow enemy-art-descriptions-act23。各2シード (23,41) から選ぶ。form_ja: enemy_crossbow_archer=背に弩を据えたカメレオン（岩の上から狙う）; enemy_shield_squire=肩に鉄板の大盾を継いだアルマジロ（低く構える）; enemy_chimera_1=継ぎはぎの四足獣・額に鉄板（頭突き）・番号札の鉄首輪; enemy_chimera_2=同じ継ぎはぎの四足獣・痩せて前脚が真鍮の鉤刃の熊手に（刃が一本増えている）; enemy_chimera_3=同じ継ぎはぎの四足獣・後脚にピストン継ぎ手で跳躍の構え・喉に淡く光る真鍮の排気口; enemy_frog_knight=板金を継いだ蛙・脇に錐の槍・跳ぶ構え",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "low top-down",
+  "direction": "south-west",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 9
+ },
+ "style": "pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, with two or three mismatched parts of tarnished pale metal grafted onto the body: a riveted plate, a brass joint with a small cog, a small pale glowing lens, stitched seams where metal meets fur",
+ "items": [
+  {
+   "id": "enemy_crossbow_archer__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_crossbow_archer__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a slender CHAMELEON-like lizard perched low on a rock, long curled tail, a small brass crossbow bolted to its back like a turret with a bolt loaded and the string drawn, a riveted iron plate on its shoulder, one eye replaced by a tiny brass sighting lens, bead eye on the other side, aiming forward, stitched seam where the crossbow mount meets the fur, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, human archer, elf, person holding crossbow, hands, arms, hood, cloak, humanoid robot, mech, biped"
+  },
+  {
+   "id": "enemy_crossbow_archer__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_crossbow_archer__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a slender CHAMELEON-like lizard perched low on a rock, long curled tail, a small brass crossbow bolted to its back like a turret with a bolt loaded and the string drawn, a riveted iron plate on its shoulder, one eye replaced by a tiny brass sighting lens, bead eye on the other side, aiming forward, stitched seam where the crossbow mount meets the fur, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, human archer, elf, person holding crossbow, hands, arms, hood, cloak, humanoid robot, mech, biped"
+  },
+  {
+   "id": "enemy_shield_squire__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_shield_squire__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a stout ARMADILLO-like beast crouched low on four short legs, rounded plated back, head tucked down, a large square riveted iron plate bolted to its left shoulder and held up in front like a tower shield, a brass hinge joint at that shoulder, a small pale lens set in a metal collar, the plate's lower edge dented and chipped, stitched seam where the mount meets the fur, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, knight, soldier, squire, person with shield, hands, arms, hood, cloak, humanoid robot, mech, biped standing upright"
+  },
+  {
+   "id": "enemy_shield_squire__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_shield_squire__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a stout ARMADILLO-like beast crouched low on four short legs, rounded plated back, head tucked down, a large square riveted iron plate bolted to its left shoulder and held up in front like a tower shield, a brass hinge joint at that shoulder, a small pale lens set in a metal collar, the plate's lower edge dented and chipped, stitched seam where the mount meets the fur, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, knight, soldier, squire, person with shield, hands, arms, hood, cloak, humanoid robot, mech, biped standing upright"
+  },
+  {
+   "id": "enemy_chimera_1__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_chimera_1__23.png",
+   "seed": 23,
+   "size": [
+    96,
+    96
+   ],
+   "description": "a heavy four-legged patchwork BEAST stitched together from mismatched fur patches with visible seams, thick neck, blunt wide muzzle, a riveted iron plate bolted over its forehead for headbutting, head lowered and shoulders raised to charge, a brass hinge joint at one foreleg, a wide iron collar with a numbered brass tag and a short broken chain, a small pale lens set in the collar, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, sharp teeth, fangs"
+  },
+  {
+   "id": "enemy_chimera_1__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_chimera_1__41.png",
+   "seed": 41,
+   "size": [
+    96,
+    96
+   ],
+   "description": "a heavy four-legged patchwork BEAST stitched together from mismatched fur patches with visible seams, thick neck, blunt wide muzzle, a riveted iron plate bolted over its forehead for headbutting, head lowered and shoulders raised to charge, a brass hinge joint at one foreleg, a wide iron collar with a numbered brass tag and a short broken chain, a small pale lens set in the collar, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, sharp teeth, fangs"
+  },
+  {
+   "id": "enemy_chimera_2__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_chimera_2__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a leaner four-legged patchwork BEAST stitched from mismatched fur patches with visible seams, blunt wide muzzle, a cracked riveted iron plate over its forehead, both forepaws replaced by brass rakes of hooked blades with one extra blade bolted on loosely, forelegs raised to swipe, a wide iron collar with a numbered brass tag, a small pale lens set in the collar, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, werewolf"
+  },
+  {
+   "id": "enemy_chimera_2__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_chimera_2__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a leaner four-legged patchwork BEAST stitched from mismatched fur patches with visible seams, blunt wide muzzle, a cracked riveted iron plate over its forehead, both forepaws replaced by brass rakes of hooked blades with one extra blade bolted on loosely, forelegs raised to swipe, a wide iron collar with a numbered brass tag, a small pale lens set in the collar, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, werewolf"
+  },
+  {
+   "id": "enemy_chimera_3__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_chimera_3__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean four-legged patchwork BEAST stitched from mismatched fur patches with visible seams, blunt wide muzzle, a cracked riveted iron plate over its forehead, brass rakes of hooked blades for forepaws, hind legs rebuilt with brass piston joints and coiled low to leap, a brass vent grafted into its throat leaking a soft pale glow and thin smoke, a wide iron collar with a numbered brass tag, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, werewolf, flames, burning"
+  },
+  {
+   "id": "enemy_chimera_3__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_chimera_3__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean four-legged patchwork BEAST stitched from mismatched fur patches with visible seams, blunt wide muzzle, a cracked riveted iron plate over its forehead, brass rakes of hooked blades for forepaws, hind legs rebuilt with brass piston joints and coiled low to leap, a brass vent grafted into its throat leaking a soft pale glow and thin smoke, a wide iron collar with a numbered brass tag, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, werewolf, flames, burning"
+  },
+  {
+   "id": "enemy_frog_knight__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_frog_knight__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a squat FROG sitting on its haunches with a wide flat head and bead eyes on top, a riveted iron plate bolted over its brow and another across its rounded back, brass hinge joints at both knees, a small pale lens set in a metal collar, a short lance made from a rusted mining drill bit strapped along its side, crouched with hind legs folded and ready to leap, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, knight, human knight, frog man, humanoid frog standing upright, biped, hands, arms, sword held in hand, helmet on a person, mech"
+  },
+  {
+   "id": "enemy_frog_knight__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_frog_knight__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a squat FROG sitting on its haunches with a wide flat head and bead eyes on top, a riveted iron plate bolted over its brow and another across its rounded back, brass hinge joints at both knees, a small pale lens set in a metal collar, a short lance made from a rusted mining drill bit strapped along its side, crouched with hind legs folded and ready to leap, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, knight, human knight, frog man, humanoid frog standing upright, biped, hands, arms, sword held in hand, helmet on a person, mech"
+  }
+ ]
+}

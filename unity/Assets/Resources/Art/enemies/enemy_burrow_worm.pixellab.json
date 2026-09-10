@@ -1,0 +1,30 @@
+{
+ "id": "enemy_burrow_worm__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a giant EARTHWORM: a thick ringed tube body rearing up out of a mound of broken soil, tail end still buried, the front end capped by a heavy rounded shell of packed dirt clods, pebbles and rock plates, two closed pale mandible tips just visible under the shell rim, two tiny bead eyes, loose clumps of earth sliding off its segments, faint pale glow between the rings, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, snake, dragon, sandworm with open mouth, teeth, tongue, legs, humanoid, caterpillar with a face, cartoon worm, smile",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:55:02.621Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11"
+ }
+}

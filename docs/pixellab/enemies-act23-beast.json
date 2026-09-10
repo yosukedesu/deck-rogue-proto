@@ -1,0 +1,698 @@
+{
+ "_note": "幕2/3の獣 (露頭でマナを浴びて育った生き物＝水彩絵本×淡い光) (2026-09-11 ユーザー「2,3幕の敵画像もpixellab作成して適用して」)。種の記述は workflow enemy-art-descriptions-act23。各2シード (23,41) から選ぶ。form_ja: enemy_big_slime=苔と小石をかぶった巨大な泥スライムの丘（皮の下で小さいのが膨らんでいる）; enemy_bomber=火薬樽を背負って庇うアナグマ; enemy_bowl_bug=岩の殻を背負い半分丸まって転がるダンゴムシ; enemy_brood_raptor=巣の卵に覆いかぶさる羽毛の走竜の母（卵・雛と同じ斑点柄）; enemy_cinder_imp=火種の壺から火の粉を弾くコウモリ羽の小鬼（物真似の子鬼と同じ体つき）; enemy_crab_cannon=壁の裂け目から突き出た巨蟹の右腕（筒状の撃ち爪。砕き腕と同じ殻）; enemy_crab_crusher=壁の裂け目から突き出た巨蟹の左腕（巨大な砕き爪。撃ち腕と同じ殻）; enemy_drummer=腹に太鼓を抱えて叩くモグラ; enemy_elite_owl=片眼鏡で巻物を読む大きな老いた梟（探り屋の梟の族）; enemy_elite_slaver=鎖と網と錘を引きずる大きなハイエナ獣; enemy_hexer=泥団子を投げるイモリ; enemy_joker=鈴つきの三つ又の冠羽で嘲るカササギ; enemy_maw_hunter=巨大な顎で獲物に糸を張る狩り蜘蛛; enemy_mimic_jester=手鏡を掲げるまだら羽のカササギ（嘲る道化と同じ冠羽・物真似の子鬼と同じ鏡）; enemy_moss_healer=苔の籠を背負った小さな苔鹿（苔まといの主と同じ族の小型）; enemy_moss_slime=大苔スライムのかけらの小さな苔スライム（同じ形で小さく滑らか）; enemy_raptor_chick=割れた斑点の殻に立つ走竜の雛（母と同じ柄）; enemy_raptor_egg=巣に据えられた大きな斑点の走竜の卵（ひびから光が漏れる）; enemy_rock_beetle=身の丈に合わない岩の殻の下に隠れた小さな甲虫; enemy_scald_gnat=腹が熱く膨れた虻（口吻から熱い雫）; enemy_turtle=苔むした丘のような甲羅で眠る巨大な陸亀; enemy_axe_ogre=斧を頭上に振りかぶる猪面の獣（膝が曲がり、もう息が切れかけている）; enemy_bond_wolf=片側に一本だけ牙を持ち、首の紐が見えない片割れへ伸びている狼; enemy_brood_toad=腹が異様に膨れ、内側から幼体の影が押している大蛙; enemy_broodling=尾がまだ残る小さな蛙の幼生（オタマジャクシ型・牙の芽つき）; enemy_burrow_worm=土と石の殻を頭にかぶり、地面から起き上がる大ミミズ; enemy_elite_doom_chanter=割れた鐘の上で翅を擦って唱う老いた鈴虫（節を数える小石の列つき）; enemy_moss=背中一面に苔の毛布をまとった巨大な野牛の獣（肩の苔が一部剥がれている）; enemy_mourn_beast=頭を垂れ、角に弔いの布を掛けた牙持ちの大鹿（片割れの方へ半身を向けている）; enemy_sludge_berserker=黒い泥をまとって踏み鳴らす河馬の獣（足元で泥が飛び散る）; enemy_wolf=口吻の両側に小さな牙の列を並べ、跳びかかる瞬間の狼",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "low top-down",
+  "direction": "south-west",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 9
+ },
+ "style": "pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+ "items": [
+  {
+   "id": "enemy_big_slime__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_big_slime__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a huge SLIME: one wide heavy dome of dark mud blanketed in pale moss and tiny pebbles, several small rounded bumps bulging under its skin like smaller slimes about to crawl out, one thick drip sliding down its side, two small bead eyes sunk into the front, no limbs, no ears, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, blob with arms, blob with legs, cartoon slime with a big grin, cube slime, gelatinous cube, green jelly, bright green, humanoid"
+  },
+  {
+   "id": "enemy_big_slime__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_big_slime__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a huge SLIME: one wide heavy dome of dark mud blanketed in pale moss and tiny pebbles, several small rounded bumps bulging under its skin like smaller slimes about to crawl out, one thick drip sliding down its side, two small bead eyes sunk into the front, no limbs, no ears, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, blob with arms, blob with legs, cartoon slime with a big grin, cube slime, gelatinous cube, green jelly, bright green, humanoid"
+  },
+  {
+   "id": "enemy_bomber__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_bomber__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a stocky low BADGER with a striped face and short thick legs, an oversized wooden powder BARREL bound with iron bands strapped to its back with rope, a short fuse sticking out of the barrel with a tiny lit tip, crouched and shielding the barrel with one paw as if ready to heave it, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, person carrying a barrel, backpack, soldier, bomb with a face, explosion, flames, dog, raccoon, humanoid"
+  },
+  {
+   "id": "enemy_bomber__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_bomber__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a stocky low BADGER with a striped face and short thick legs, an oversized wooden powder BARREL bound with iron bands strapped to its back with rope, a short fuse sticking out of the barrel with a tiny lit tip, crouched and shielding the barrel with one paw as if ready to heave it, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, person carrying a barrel, backpack, soldier, bomb with a face, explosion, flames, dog, raccoon, humanoid"
+  },
+  {
+   "id": "enemy_bowl_bug__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_bowl_bug__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a big PILL BUG (woodlouse): a rounded segmented shell back bulging like a rough boulder with cracked rock plates and a few moss tufts, tiny stubby legs tucked underneath, a small head with two short antennae and bead eyes peeking out from the front, body half curled as if about to roll forward, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, beetle with wings, ball with a face, armadillo, bowling ball, plain boulder, humanoid"
+  },
+  {
+   "id": "enemy_bowl_bug__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_bowl_bug__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a big PILL BUG (woodlouse): a rounded segmented shell back bulging like a rough boulder with cracked rock plates and a few moss tufts, tiny stubby legs tucked underneath, a small head with two short antennae and bead eyes peeking out from the front, body half curled as if about to roll forward, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, beetle with wings, ball with a face, armadillo, bowling ball, plain boulder, humanoid"
+  },
+  {
+   "id": "enemy_brood_raptor__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_brood_raptor__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean feathered LIZARD-like raptor mother: long stiff tail, a crest of short pale feathers on the head and forearms, strong hind legs folded as it crouches low over a round nest of twigs and moss holding two large speckled eggs, one leg planted protectively in front of the nest, feathered arms spread wide, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dinosaur skeleton, dragon, T-rex, chicken, hen, bird, human, scaly monster, humanoid"
+  },
+  {
+   "id": "enemy_brood_raptor__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_brood_raptor__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean feathered LIZARD-like raptor mother: long stiff tail, a crest of short pale feathers on the head and forearms, strong hind legs folded as it crouches low over a round nest of twigs and moss holding two large speckled eggs, one leg planted protectively in front of the nest, feathered arms spread wide, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dinosaur skeleton, dragon, T-rex, chicken, hen, bird, human, scaly monster, humanoid"
+  },
+  {
+   "id": "enemy_cinder_imp__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_cinder_imp__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a tiny IMP: small round body, two little rounded horns, small bat wings spread, thin tail with a rounded tip, holding a small clay ember pot in one paw and flicking a pinch of faintly glowing cinder specks with the other, a few pale embers drifting up from the pot, no human face, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, devil, demon, goblin, child, boy, humanoid imp, blazing fire, big flames, red skin, torch, human hands"
+  },
+  {
+   "id": "enemy_cinder_imp__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_cinder_imp__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a tiny IMP: small round body, two little rounded horns, small bat wings spread, thin tail with a rounded tip, holding a small clay ember pot in one paw and flicking a pinch of faintly glowing cinder specks with the other, a few pale embers drifting up from the pot, no human face, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, devil, demon, goblin, child, boy, humanoid imp, blazing fire, big flames, red skin, torch, human hands"
+  },
+  {
+   "id": "enemy_crab_cannon__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_crab_cannon__23.png",
+   "seed": 23,
+   "size": [
+    96,
+    96
+   ],
+   "description": "the RIGHT ARM of a giant CRAB thrusting out of a crack in a dark stone wall: a long segmented shell arm ending in a tube-shaped claw like a barrel, a faint pale light gathering in the round opening at its tip, barnacles and moss on the shell plates, rubble and a rusted pickaxe at the base, two tiny bead eyes on short stalks peeking from the crack, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, whole crab, full crab body, crab standing on legs, metal cannon, gun, humanoid arm, hand, fingers, human"
+  },
+  {
+   "id": "enemy_crab_cannon__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_crab_cannon__41.png",
+   "seed": 41,
+   "size": [
+    96,
+    96
+   ],
+   "description": "the RIGHT ARM of a giant CRAB thrusting out of a crack in a dark stone wall: a long segmented shell arm ending in a tube-shaped claw like a barrel, a faint pale light gathering in the round opening at its tip, barnacles and moss on the shell plates, rubble and a rusted pickaxe at the base, two tiny bead eyes on short stalks peeking from the crack, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, whole crab, full crab body, crab standing on legs, metal cannon, gun, humanoid arm, hand, fingers, human"
+  },
+  {
+   "id": "enemy_crab_crusher__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_crab_crusher__23.png",
+   "seed": 23,
+   "size": [
+    96,
+    96
+   ],
+   "description": "the LEFT ARM of a giant CRAB thrusting out of a crack in a dark stone wall: a long segmented shell arm ending in an enormous heavy pincer claw with blunt rounded tips held slightly open, barnacles and moss on the shell plates, old rope and rubble at the base, two tiny bead eyes on short stalks peeking from the crack, same pale shell as its other arm, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, whole crab, full crab body, crab standing on legs, humanoid arm, hand, fingers, human, lobster"
+  },
+  {
+   "id": "enemy_crab_crusher__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_crab_crusher__41.png",
+   "seed": 41,
+   "size": [
+    96,
+    96
+   ],
+   "description": "the LEFT ARM of a giant CRAB thrusting out of a crack in a dark stone wall: a long segmented shell arm ending in an enormous heavy pincer claw with blunt rounded tips held slightly open, barnacles and moss on the shell plates, old rope and rubble at the base, two tiny bead eyes on short stalks peeking from the crack, same pale shell as its other arm, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, whole crab, full crab body, crab standing on legs, humanoid arm, hand, fingers, human, lobster"
+  },
+  {
+   "id": "enemy_drummer__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_drummer__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small round MOLE with a big flat nose, soft velvety fur and tiny bead eyes, a round wooden DRUM strapped to its belly, both stubby paws holding two short drumsticks raised mid-beat, sitting upright on its hind feet, a small tuft of moss on its head, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, kobold, lizardman, dog, person, drummer boy, standing human, uniform, hat, humanoid"
+  },
+  {
+   "id": "enemy_drummer__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_drummer__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small round MOLE with a big flat nose, soft velvety fur and tiny bead eyes, a round wooden DRUM strapped to its belly, both stubby paws holding two short drumsticks raised mid-beat, sitting upright on its hind feet, a small tuft of moss on its head, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, kobold, lizardman, dog, person, drummer boy, standing human, uniform, hat, humanoid"
+  },
+  {
+   "id": "enemy_elite_owl__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_elite_owl__23.png",
+   "seed": 23,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a large old OWL, the same round body as the small scout owl but bigger and heavier with layered soft feathers and two long ear tufts, a small round monocle lens over one bead eye, holding an unrolled paper SCROLL open between its wing tips as if reading, one talon resting on a small stack of old books, calm and perfectly still, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, wizard, hat, human glasses on a face, person, hood, robe, humanoid"
+  },
+  {
+   "id": "enemy_elite_owl__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_elite_owl__41.png",
+   "seed": 41,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a large old OWL, the same round body as the small scout owl but bigger and heavier with layered soft feathers and two long ear tufts, a small round monocle lens over one bead eye, holding an unrolled paper SCROLL open between its wing tips as if reading, one talon resting on a small stack of old books, calm and perfectly still, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, wizard, hat, human glasses on a face, person, hood, robe, humanoid"
+  },
+  {
+   "id": "enemy_elite_slaver__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_elite_slaver__23.png",
+   "seed": 23,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a big hunched HYENA-like BEAST with a bristly mane along its back and a grey scarred muzzle, thick neck and sloped shoulders, a heavy iron collar with a long chain wound around one foreleg, dragging a rope net and an iron ball weight on a chain behind it, short blunt muzzle, no human face, bead eyes, standing heavily on four legs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, slave trader, man, person holding a whip, dog, wolf, human hands, upright standing, humanoid"
+  },
+  {
+   "id": "enemy_elite_slaver__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_elite_slaver__41.png",
+   "seed": 41,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a big hunched HYENA-like BEAST with a bristly mane along its back and a grey scarred muzzle, thick neck and sloped shoulders, a heavy iron collar with a long chain wound around one foreleg, dragging a rope net and an iron ball weight on a chain behind it, short blunt muzzle, no human face, bead eyes, standing heavily on four legs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, slave trader, man, person holding a whip, dog, wolf, human hands, upright standing, humanoid"
+  },
+  {
+   "id": "enemy_hexer__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_hexer__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a plump NEWT (salamander) standing in a puddle of mud: wide flat head, a long tail curled behind, four short splayed legs with small toes, mud-caked belly and paws, one forepaw raised holding a round ball of dripping dark mud about to throw, a string of small clay charms around its neck, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, witch, wizard, hat, robe, staff, human hands, person, frog, humanoid"
+  },
+  {
+   "id": "enemy_hexer__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_hexer__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a plump NEWT (salamander) standing in a puddle of mud: wide flat head, a long tail curled behind, four short splayed legs with small toes, mud-caked belly and paws, one forepaw raised holding a round ball of dripping dark mud about to throw, a string of small clay charms around its neck, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, witch, wizard, hat, robe, staff, human hands, person, frog, humanoid"
+  },
+  {
+   "id": "enemy_joker__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_joker__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a plump MAGPIE-like bird with a three-pointed feather crest, each point tipped with a tiny round bell, long tail feathers, one wing raised in a mocking flourish, the other wing holding a short stick topped with a small bell, standing on one foot on a small stone, head tilted, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, jester, harlequin, clown, jester hat, human, person, fool in costume, face paint, humanoid"
+  },
+  {
+   "id": "enemy_joker__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_joker__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a plump MAGPIE-like bird with a three-pointed feather crest, each point tipped with a tiny round bell, long tail feathers, one wing raised in a mocking flourish, the other wing holding a short stick topped with a small bell, standing on one foot on a small stone, head tilted, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, jester, harlequin, clown, jester hat, human, person, fool in costume, face paint, humanoid"
+  },
+  {
+   "id": "enemy_maw_hunter__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_maw_hunter__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a large hunting SPIDER with two huge blunt pincer JAWS at the front, thick round fuzzy body, eight short thick legs planted wide, sitting on a mat of pale silk, one thread of silk stretched from its jaws to a small wrapped silk bundle, patient and still, bead eyes above the jaws, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, spindly long legs, black widow, realistic spider, human, dripping fangs, red markings, humanoid"
+  },
+  {
+   "id": "enemy_maw_hunter__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_maw_hunter__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a large hunting SPIDER with two huge blunt pincer JAWS at the front, thick round fuzzy body, eight short thick legs planted wide, sitting on a mat of pale silk, one thread of silk stretched from its jaws to a small wrapped silk bundle, patient and still, bead eyes above the jaws, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, spindly long legs, black widow, realistic spider, human, dripping fangs, red markings, humanoid"
+  },
+  {
+   "id": "enemy_mimic_jester__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_mimic_jester__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a MAGPIE-like bird with the same three-pointed feather crest as the mocking magpie but with tiny mirror shards instead of bells, patchwork feathers in two pale tones like a checkered coat, holding up a round hand MIRROR in one wing so it catches a faint pale glow, tail feathers fanned, head tilted as if copying a pose, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, jester, harlequin, clown, human, person, mirror with a face inside, reflection of a person, humanoid"
+  },
+  {
+   "id": "enemy_mimic_jester__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_mimic_jester__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a MAGPIE-like bird with the same three-pointed feather crest as the mocking magpie but with tiny mirror shards instead of bells, patchwork feathers in two pale tones like a checkered coat, holding up a round hand MIRROR in one wing so it catches a faint pale glow, tail feathers fanned, head tilted as if copying a pose, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, jester, harlequin, clown, human, person, mirror with a face inside, reflection of a person, humanoid"
+  },
+  {
+   "id": "enemy_moss_healer__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_moss_healer__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small MOSS DEER like a fawn: slender body covered in pale moss, tiny budding antlers with strands of moss hanging from them, a woven basket full of moss patches strapped to its back, one soft patch of moss balanced on its nose ready to press onto a wounded friend, thin careful legs, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, healer in robes, nurse, priest, staff, dog, goat, bear, human, humanoid"
+  },
+  {
+   "id": "enemy_moss_healer__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_moss_healer__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small MOSS DEER like a fawn: slender body covered in pale moss, tiny budding antlers with strands of moss hanging from them, a woven basket full of moss patches strapped to its back, one soft patch of moss balanced on its nose ready to press onto a wounded friend, thin careful legs, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, healer in robes, nurse, priest, staff, dog, goat, bear, human, humanoid"
+  },
+  {
+   "id": "enemy_moss_slime__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_moss_slime__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small SLIME: a low rounded dome of dark mud blanketed in pale moss, the same shape as the big moss slime but much smaller and smoother, one tiny leaf sprout on top, a single drip at its side, two small bead eyes on the front, no limbs, no ears, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, blob with arms, blob with legs, cartoon slime with a big grin, cube slime, gelatinous cube, green jelly, bright green, humanoid"
+  },
+  {
+   "id": "enemy_moss_slime__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_moss_slime__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small SLIME: a low rounded dome of dark mud blanketed in pale moss, the same shape as the big moss slime but much smaller and smoother, one tiny leaf sprout on top, a single drip at its side, two small bead eyes on the front, no limbs, no ears, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, blob with arms, blob with legs, cartoon slime with a big grin, cube slime, gelatinous cube, green jelly, bright green, humanoid"
+  },
+  {
+   "id": "enemy_raptor_chick__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_raptor_chick__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small plump RAPTOR CHICK: oversized round head, fluffy pale down instead of feathers, a short stubby tail, two strong little hind legs, stubby feathered arms held out, standing in the broken halves of a speckled eggshell with a bit of shell still stuck on its head, bead eyes, hungry and eager, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, chicken chick, duckling, bird, dinosaur skeleton, dragon, human, humanoid"
+  },
+  {
+   "id": "enemy_raptor_chick__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_raptor_chick__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small plump RAPTOR CHICK: oversized round head, fluffy pale down instead of feathers, a short stubby tail, two strong little hind legs, stubby feathered arms held out, standing in the broken halves of a speckled eggshell with a bit of shell still stuck on its head, bead eyes, hungry and eager, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, chicken chick, duckling, bird, dinosaur skeleton, dragon, human, humanoid"
+  },
+  {
+   "id": "enemy_raptor_egg__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_raptor_egg__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a large speckled EGG the size of a boulder sitting upright in a nest of twigs and moss, pale shell with darker speckles matching the raptor mother, a thin crack running down from the top with a faint pale light showing through the crack, the egg tilted slightly as if something moved inside, no face, no limbs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, egg with a face, eyes on the egg, cracked open, chick visible, easter egg, colorful patterns, bird, human"
+  },
+  {
+   "id": "enemy_raptor_egg__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_raptor_egg__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a large speckled EGG the size of a boulder sitting upright in a nest of twigs and moss, pale shell with darker speckles matching the raptor mother, a thin crack running down from the top with a faint pale light showing through the crack, the egg tilted slightly as if something moved inside, no face, no limbs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, egg with a face, eyes on the egg, cracked open, chick visible, easter egg, colorful patterns, bird, human"
+  },
+  {
+   "id": "enemy_rock_beetle__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_rock_beetle__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small BEETLE almost hidden under a huge rough BOULDER shell far too big for its body, the rock shell rounded and cracked with a few moss tufts, only a tiny head with two short antennae and six tiny legs poking out beneath the front edge, bead eyes, pressed low to the ground, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, beetle with wings, ladybug, plain boulder, turtle, snail, human, humanoid"
+  },
+  {
+   "id": "enemy_rock_beetle__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_rock_beetle__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small BEETLE almost hidden under a huge rough BOULDER shell far too big for its body, the rock shell rounded and cracked with a few moss tufts, only a tiny head with two short antennae and six tiny legs poking out beneath the front edge, bead eyes, pressed low to the ground, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, beetle with wings, ladybug, plain boulder, turtle, snail, human, humanoid"
+  },
+  {
+   "id": "enemy_scald_gnat__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_scald_gnat__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a fat GNAT (horsefly): round fuzzy body, two short translucent wings, a swollen round abdomen faintly lit from inside like a dim ember, a long thin proboscis with one hot drop hanging from the tip, six short legs, hovering just above the ground, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, mosquito with long legs, bee, wasp, yellow stripes, flames, human, humanoid"
+  },
+  {
+   "id": "enemy_scald_gnat__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_scald_gnat__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a fat GNAT (horsefly): round fuzzy body, two short translucent wings, a swollen round abdomen faintly lit from inside like a dim ember, a long thin proboscis with one hot drop hanging from the tip, six short legs, hovering just above the ground, bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, mosquito with long legs, bee, wasp, yellow stripes, flames, human, humanoid"
+  },
+  {
+   "id": "enemy_turtle__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_turtle__23.png",
+   "seed": 23,
+   "size": [
+    96,
+    96
+   ],
+   "description": "a giant TORTOISE asleep: an enormous domed shell overgrown with moss and small ferns like a hill, a tiny sapling and a small stone lantern standing on top of the shell, a rusted pickaxe stuck in the moss, thick stubby legs folded under, the wrinkled head half tucked into the shell with two heavy half-closed bead eyes, slow and dreaming, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, turtle standing upright, ninja turtle, cartoon turtle, sea turtle, flippers, bright green, human, humanoid"
+  },
+  {
+   "id": "enemy_turtle__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_turtle__41.png",
+   "seed": 41,
+   "size": [
+    96,
+    96
+   ],
+   "description": "a giant TORTOISE asleep: an enormous domed shell overgrown with moss and small ferns like a hill, a tiny sapling and a small stone lantern standing on top of the shell, a rusted pickaxe stuck in the moss, thick stubby legs folded under, the wrinkled head half tucked into the shell with two heavy half-closed bead eyes, slow and dreaming, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, turtle standing upright, ninja turtle, cartoon turtle, sea turtle, flippers, bright green, human, humanoid"
+  },
+  {
+   "id": "enemy_axe_ogre__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_axe_ogre__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a stocky boar-snouted BEAST with small tusks, thick arms ending in blunt paws and a round heavy belly, gripping an oversized chipped stone axe raised high over its head in a full wind-up, feet planted wide, knees bent, shoulders heaving as if already out of breath, shaggy pale moss fur, two bead eyes, no human face, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, human, humanoid, person, orc warrior, muscular man, armor, helmet, tunic, boots, five-fingered hands, human face, open mouth"
+  },
+  {
+   "id": "enemy_axe_ogre__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_axe_ogre__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a stocky boar-snouted BEAST with small tusks, thick arms ending in blunt paws and a round heavy belly, gripping an oversized chipped stone axe raised high over its head in a full wind-up, feet planted wide, knees bent, shoulders heaving as if already out of breath, shaggy pale moss fur, two bead eyes, no human face, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, human, humanoid, person, orc warrior, muscular man, armor, helmet, tunic, boots, five-fingered hands, human face, open mouth"
+  },
+  {
+   "id": "enemy_bond_wolf__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_bond_wolf__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean WOLF: narrow head, pointed ears, sturdy legs, bushy tail held low, crouching with shoulders forward and head lowered, one short pale tusk curving up from the right side of its closed muzzle, a frayed pale cord knotted around its neck with a loose end trailing on the ground toward its unseen twin, pale moss fur, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dog, husky, fox, cat, werewolf, standing on two legs, open mouth, snarl, teeth, collar with tag, leash held by a person, human"
+  },
+  {
+   "id": "enemy_bond_wolf__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_bond_wolf__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean WOLF: narrow head, pointed ears, sturdy legs, bushy tail held low, crouching with shoulders forward and head lowered, one short pale tusk curving up from the right side of its closed muzzle, a frayed pale cord knotted around its neck with a loose end trailing on the ground toward its unseen twin, pale moss fur, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dog, husky, fox, cat, werewolf, standing on two legs, open mouth, snarl, teeth, collar with tag, leash held by a person, human"
+  },
+  {
+   "id": "enemy_brood_toad__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_brood_toad__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a fat squat TOAD: wide flat head with two bead eyes on top, warty humped back, short thick legs splayed, sitting on a hugely swollen round belly that sags to the ground, three small dark oval lumps pressing outward from inside the belly skin, faint pale glow around each lump, stubby forelegs resting on top of the belly, pale moss-like skin, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, frog prince, crown, humanoid, arms with hands, sitting like a person, open mouth, tongue, pregnant woman, human, bright green"
+  },
+  {
+   "id": "enemy_brood_toad__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_brood_toad__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a fat squat TOAD: wide flat head with two bead eyes on top, warty humped back, short thick legs splayed, sitting on a hugely swollen round belly that sags to the ground, three small dark oval lumps pressing outward from inside the belly skin, faint pale glow around each lump, stubby forelegs resting on top of the belly, pale moss-like skin, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, frog prince, crown, humanoid, arms with hands, sitting like a person, open mouth, tongue, pregnant woman, human, bright green"
+  },
+  {
+   "id": "enemy_broodling__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_broodling__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a tiny TADPOLE-like toadlet, small in frame: soft dark oval body, the same wide flat head as a toad with two bead eyes on top, a short wriggling tail still attached, two tiny bud-like hind legs, two small pale tusk nubs at the front of the closed muzzle, body curled mid-wriggle, glistening wet, faint pale glow inside, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fish, axolotl, kitten, puppy, human baby, humanoid, worm with a face, cartoon smile, open mouth, teeth, bright colors"
+  },
+  {
+   "id": "enemy_broodling__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_broodling__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a tiny TADPOLE-like toadlet, small in frame: soft dark oval body, the same wide flat head as a toad with two bead eyes on top, a short wriggling tail still attached, two tiny bud-like hind legs, two small pale tusk nubs at the front of the closed muzzle, body curled mid-wriggle, glistening wet, faint pale glow inside, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fish, axolotl, kitten, puppy, human baby, humanoid, worm with a face, cartoon smile, open mouth, teeth, bright colors"
+  },
+  {
+   "id": "enemy_burrow_worm__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_burrow_worm__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a giant EARTHWORM: a thick ringed tube body rearing up out of a mound of broken soil, tail end still buried, the front end capped by a heavy rounded shell of packed dirt clods, pebbles and rock plates, two closed pale mandible tips just visible under the shell rim, two tiny bead eyes, loose clumps of earth sliding off its segments, faint pale glow between the rings, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, snake, dragon, sandworm with open mouth, teeth, tongue, legs, humanoid, caterpillar with a face, cartoon worm, smile"
+  },
+  {
+   "id": "enemy_burrow_worm__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_burrow_worm__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a giant EARTHWORM: a thick ringed tube body rearing up out of a mound of broken soil, tail end still buried, the front end capped by a heavy rounded shell of packed dirt clods, pebbles and rock plates, two closed pale mandible tips just visible under the shell rim, two tiny bead eyes, loose clumps of earth sliding off its segments, faint pale glow between the rings, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, snake, dragon, sandworm with open mouth, teeth, tongue, legs, humanoid, caterpillar with a face, cartoon worm, smile"
+  },
+  {
+   "id": "enemy_elite_doom_chanter__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_elite_doom_chanter__23.png",
+   "seed": 23,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a large old BELL CRICKET: long oval body, big folded wings raised and rubbing together mid-chant, strong bent hind legs, two long antennae arching back, perched on top of a cracked upturned bronze bell half sunk in moss, a row of small pale tally-stones lined up before it counting the verses, the last stone glowing brighter, pale moss fur on its back, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, human singer, bard, robe, microphone, humanoid, cartoon grasshopper with a face, open mouth, teeth, musical notes, text, thin spindly legs"
+  },
+  {
+   "id": "enemy_elite_doom_chanter__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_elite_doom_chanter__41.png",
+   "seed": 41,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a large old BELL CRICKET: long oval body, big folded wings raised and rubbing together mid-chant, strong bent hind legs, two long antennae arching back, perched on top of a cracked upturned bronze bell half sunk in moss, a row of small pale tally-stones lined up before it counting the verses, the last stone glowing brighter, pale moss fur on its back, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, human singer, bard, robe, microphone, humanoid, cartoon grasshopper with a face, open mouth, teeth, musical notes, text, thin spindly legs"
+  },
+  {
+   "id": "enemy_moss__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_moss__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a huge old BISON-like BEAST with a tall shoulder hump, small curved horns and a low heavy head, its whole back and flanks draped in a thick blanket of moss with tiny mushrooms and ferns sprouting from it, one patch on the shoulder where the moss has peeled away showing bare pale hide, standing heavy on four thick legs, faint glow under the moss, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, bear, cow with udder, humanoid, shaman, robe, tree ent with a face, open mouth, teeth, vivid green, bright colors"
+  },
+  {
+   "id": "enemy_moss__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_moss__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a huge old BISON-like BEAST with a tall shoulder hump, small curved horns and a low heavy head, its whole back and flanks draped in a thick blanket of moss with tiny mushrooms and ferns sprouting from it, one patch on the shoulder where the moss has peeled away showing bare pale hide, standing heavy on four thick legs, faint glow under the moss, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, bear, cow with udder, humanoid, shaman, robe, tree ent with a face, open mouth, teeth, vivid green, bright colors"
+  },
+  {
+   "id": "enemy_mourn_beast__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_mourn_beast__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a tall gaunt ELK-like BEAST with drooping antlers hung with strips of pale torn ribbon, head bowed low to the ground, two short pale sabre tusks pointing down from the closed muzzle like a musk deer, sunken flanks, standing on four sturdy hooved legs half turned toward its unseen mate, a few small pale flowers scattered at its hooves, two bead eyes, pale moss fur, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, reindeer, sleigh, Christmas, human mourner, robe, veil, humanoid, open mouth, teeth, skull, bones, red, thin spindly legs"
+  },
+  {
+   "id": "enemy_mourn_beast__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_mourn_beast__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a tall gaunt ELK-like BEAST with drooping antlers hung with strips of pale torn ribbon, head bowed low to the ground, two short pale sabre tusks pointing down from the closed muzzle like a musk deer, sunken flanks, standing on four sturdy hooved legs half turned toward its unseen mate, a few small pale flowers scattered at its hooves, two bead eyes, pale moss fur, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, reindeer, sleigh, Christmas, human mourner, robe, veil, humanoid, open mouth, teeth, skull, bones, red, thin spindly legs"
+  },
+  {
+   "id": "enemy_sludge_berserker__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_sludge_berserker__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a hulking HIPPO-like BEAST coated in dripping dark sludge, barrel body low to the ground, broad flat head with two small bead eyes on top and two short pale tusks at the closed muzzle, one thick foreleg raised mid-stomp, black mud splashing outward in clods and drips around its feet, a puddle of sludge spreading beneath it, patches of pale moss fur on its back, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, humanoid, muscular man, boxer, gloves, open mouth, yawning hippo, teeth, cartoon hippo, tutu, pink, human"
+  },
+  {
+   "id": "enemy_sludge_berserker__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_sludge_berserker__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a hulking HIPPO-like BEAST coated in dripping dark sludge, barrel body low to the ground, broad flat head with two small bead eyes on top and two short pale tusks at the closed muzzle, one thick foreleg raised mid-stomp, black mud splashing outward in clods and drips around its feet, a puddle of sludge spreading beneath it, patches of pale moss fur on its back, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, humanoid, muscular man, boxer, gloves, open mouth, yawning hippo, teeth, cartoon hippo, tutu, pink, human"
+  },
+  {
+   "id": "enemy_wolf__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_wolf__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean WOLF: narrow head, pointed ears, sturdy legs, bushy tail streaming back, caught mid-lunge with both forepaws off the ground and hind legs pushing off, a bristling row of many small pale tusk spikes lining both sides of its closed muzzle and jawline like a comb, a spiky ruff of fur around the neck, pale moss fur, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dog, husky, fox, cat, werewolf, standing on two legs, open mouth, snarl, drool, red eyes, human, humanoid"
+  },
+  {
+   "id": "enemy_wolf__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23/enemy_wolf__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a lean WOLF: narrow head, pointed ears, sturdy legs, bushy tail streaming back, caught mid-lunge with both forepaws off the ground and hind legs pushing off, a bristling row of many small pale tusk spikes lining both sides of its closed muzzle and jawline like a comb, a spiky ruff of fur around the neck, pale moss fur, two bead eyes, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dog, husky, fox, cat, werewolf, standing on two legs, open mouth, snarl, drool, red eyes, human, humanoid"
+  }
+ ]
+}

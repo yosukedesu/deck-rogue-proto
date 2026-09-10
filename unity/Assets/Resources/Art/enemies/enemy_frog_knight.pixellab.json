@@ -1,0 +1,30 @@
+{
+ "id": "enemy_frog_knight__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a squat FROG sitting on its haunches with a wide flat head and bead eyes on top, a riveted iron plate bolted over its brow and another across its rounded back, brass hinge joints at both knees, a small pale lens set in a metal collar, a short lance made from a rusted mining drill bit strapped along its side, crouched with hind legs folded and ready to leap, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, with two or three mismatched parts of tarnished pale metal grafted onto the body: a riveted plate, a brass joint with a small cog, a small pale glowing lens, stitched seams where metal meets fur",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, knight, human knight, frog man, humanoid frog standing upright, biped, hands, arms, sword held in hand, helmet on a person, mech",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:19:44.999Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11"
+ }
+}

@@ -1,0 +1,115 @@
+{
+ "_note": "幕2/3の作り直し (revenant)。判定で不合格になった敵を fix_hint の記述で3シード (7/57/83)。種を大文字で先頭に・別種へ流れる語を negative に",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "low top-down",
+  "direction": "south-west",
+  "outline": "selective outline",
+  "shading": "basic shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 9
+ },
+ "style": "pixel art in the style of a gentle watercolor picture book illustration of the faint remains of a miner who never came back: a small floating pale translucent wisp or shroud shape with soft dissolving edges, no face, no limbs, faintly glowing from within, carrying one small mining prop, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin soft outline, low contrast",
+ "items": [
+  {
+   "id": "enemy_nemesis_wraith__7",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_nemesis_wraith__7.png",
+   "seed": 7,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a pale faceless WISP: Faceless, limbless pale wisp: right half solid, left half dissolving into drifting mist; a scythe made from a bent iron rail floats beside it on its own (not held); no arms, no face, no lantern, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, grim reaper, hooded figure, skeleton, skull, person holding scythe, hands, arms, robe, cloak, face, eyes, mouth, face, eyes, arms, hands, cartoon ghost, lantern"
+  },
+  {
+   "id": "enemy_nemesis_wraith__57",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_nemesis_wraith__57.png",
+   "seed": 57,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a pale faceless WISP: Faceless, limbless pale wisp: right half solid, left half dissolving into drifting mist; a scythe made from a bent iron rail floats beside it on its own (not held); no arms, no face, no lantern, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, grim reaper, hooded figure, skeleton, skull, person holding scythe, hands, arms, robe, cloak, face, eyes, mouth, face, eyes, arms, hands, cartoon ghost, lantern"
+  },
+  {
+   "id": "enemy_nemesis_wraith__83",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_nemesis_wraith__83.png",
+   "seed": 83,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a pale faceless WISP: Faceless, limbless pale wisp: right half solid, left half dissolving into drifting mist; a scythe made from a bent iron rail floats beside it on its own (not held); no arms, no face, no lantern, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, grim reaper, hooded figure, skeleton, skull, person holding scythe, hands, arms, robe, cloak, face, eyes, mouth, face, eyes, arms, hands, cartoon ghost, lantern"
+  },
+  {
+   "id": "enemy_elite_mirror_djinn__7",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_elite_mirror_djinn__7.png",
+   "seed": 7,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a polished SILVER-ORE SLAB: polished silver-ore slab with a smooth mirror-like face, a pale faceless wisp clearly visible as a reflection INSIDE the slab, small lantern and a cog fragment at its base; no separate creature, no limbs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, genie, djinn, humanoid, person, face, eyes, mouth, arms, hands, torso, hooded figure, sheet ghost, skull, reflection of a person, bear, creature beside, second creature, limbs, face"
+  },
+  {
+   "id": "enemy_elite_mirror_djinn__57",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_elite_mirror_djinn__57.png",
+   "seed": 57,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a polished SILVER-ORE SLAB: polished silver-ore slab with a smooth mirror-like face, a pale faceless wisp clearly visible as a reflection INSIDE the slab, small lantern and a cog fragment at its base; no separate creature, no limbs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, genie, djinn, humanoid, person, face, eyes, mouth, arms, hands, torso, hooded figure, sheet ghost, skull, reflection of a person, bear, creature beside, second creature, limbs, face"
+  },
+  {
+   "id": "enemy_elite_mirror_djinn__83",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_elite_mirror_djinn__83.png",
+   "seed": 83,
+   "size": [
+    80,
+    80
+   ],
+   "description": "a polished SILVER-ORE SLAB: polished silver-ore slab with a smooth mirror-like face, a pale faceless wisp clearly visible as a reflection INSIDE the slab, small lantern and a cog fragment at its base; no separate creature, no limbs, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, genie, djinn, humanoid, person, face, eyes, mouth, arms, hands, torso, hooded figure, sheet ghost, skull, reflection of a person, bear, creature beside, second creature, limbs, face"
+  },
+  {
+   "id": "enemy_forgotten_soul__7",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_forgotten_soul__7.png",
+   "seed": 7,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a faceless WISP of lantern glow: Faceless, limbless wisp: a dim cloudy lantern-glow wrapped in pale mist, sinking into a pool of dark haze on the floor; no eyes, no hood, no hands, no held objects, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, person, face, eyes, mouth, arms, hands, legs, hooded figure, sheet ghost, skull, skeleton, zombie, hood, hooded figure, eye, eyes, hand, arm, person, held lantern, robe"
+  },
+  {
+   "id": "enemy_forgotten_soul__57",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_forgotten_soul__57.png",
+   "seed": 57,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a faceless WISP of lantern glow: Faceless, limbless wisp: a dim cloudy lantern-glow wrapped in pale mist, sinking into a pool of dark haze on the floor; no eyes, no hood, no hands, no held objects, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, person, face, eyes, mouth, arms, hands, legs, hooded figure, sheet ghost, skull, skeleton, zombie, hood, hooded figure, eye, eyes, hand, arm, person, held lantern, robe"
+  },
+  {
+   "id": "enemy_forgotten_soul__83",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/en23r/enemy_forgotten_soul__83.png",
+   "seed": 83,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a faceless WISP of lantern glow: Faceless, limbless wisp: a dim cloudy lantern-glow wrapped in pale mist, sinking into a pool of dark haze on the floor; no eyes, no hood, no hands, no held objects, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, person, face, eyes, mouth, arms, hands, legs, hooded figure, sheet ghost, skull, skeleton, zombie, hood, hooded figure, eye, eyes, hand, arm, person, held lantern, robe"
+  }
+ ]
+}

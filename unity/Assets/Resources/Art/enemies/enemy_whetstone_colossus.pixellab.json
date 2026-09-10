@@ -1,0 +1,30 @@
+{
+ "id": "enemy_whetstone_colossus__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a stone GRINDING-WHEEL COLOSSUS: a large round whetstone disc mounted upright in a heavy stone frame with iron bands, a long straight blade pressed against the wheel throwing sparks, three deep notches carved on the frame as a count, a small pale lens set in the axle hub, thick stone base, no head and no legs, pixel art of an ancient mining automaton that was never switched off, still working in a buried city, body of tarnished pale metal plates and worn stone with visible rivets, brass cogs and a taut cable, hard straight edges and crisp metallic highlights, thin dark ink outline, one small pale glowing lens where a face would be, no mouth, no fur, no animal features, cold patient and a little sad, palette of cream paper, tarnished silver, weathered brass, dusty blue-grey slate and ink, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, giant humanoid statue, golem with arms and legs, moai, face, torso, standing figure, hands",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:01:52.394Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11"
+ }
+}

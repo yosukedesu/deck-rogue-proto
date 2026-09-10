@@ -1,0 +1,30 @@
+{
+ "id": "enemy_mimic_jester__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a MAGPIE-like bird with the same three-pointed feather crest as the mocking magpie but with tiny mirror shards instead of bells, patchwork feathers in two pale tones like a checkered coat, holding up a round hand MIRROR in one wing so it catches a faint pale glow, tail feathers fanned, head tilted as if copying a pose, bead eyes, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, jester, harlequin, clown, human, person, mirror with a face inside, reflection of a person, humanoid",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:46:09.164Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "id": "enemy_set_breaker__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a squat DEMOLITION AUTOMATON on tank treads: a boxy tarnished metal body, one oversized arm ending in a heavy hammer head, the other arm a three-pronged claw gripping a bundle of broken trap parts and twisted wire, a small pale lens on a domed top, a spool of chain on its back, scrap debris scattered around its treads, pixel art of an ancient mining automaton that was never switched off, still working in a buried city, body of tarnished pale metal plates and worn stone with visible rivets, brass cogs and a taut cable, hard straight edges and crisp metallic highlights, thin dark ink outline, one small pale glowing lens where a face would be, no mouth, no fur, no animal features, cold patient and a little sad, palette of cream paper, tarnished silver, weathered brass, dusty blue-grey slate and ink, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, humanoid robot, knight, soldier, hands, fingers, two legs, torso, head with face",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:00:52.523Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11"
+ }
+}

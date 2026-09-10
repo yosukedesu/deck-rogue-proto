@@ -1,0 +1,30 @@
+{
+ "id": "enemy_big_slime__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a huge SLIME: one wide heavy dome of dark mud blanketed in pale moss and tiny pebbles, several small rounded bumps bulging under its skin like smaller slimes about to crawl out, one thick drip sliding down its side, two small bead eyes sunk into the front, no limbs, no ears, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, blob with arms, blob with legs, cartoon slime with a big grin, cube slime, gelatinous cube, green jelly, bright green, humanoid",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:36:47.241Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11"
+ }
+}

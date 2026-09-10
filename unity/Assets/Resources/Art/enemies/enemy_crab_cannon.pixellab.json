@@ -1,0 +1,30 @@
+{
+ "id": "enemy_crab_cannon__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "the RIGHT ARM of a giant CRAB thrusting out of a crack in a dark stone wall: a long segmented shell arm ending in a tube-shaped claw like a barrel, a faint pale light gathering in the round opening at its tip, barnacles and moss on the shell plates, rubble and a rusted pickaxe at the base, two tiny bead eyes on short stalks peeking from the crack, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, whole crab, full crab body, crab standing on legs, metal cannon, gun, humanoid arm, hand, fingers, human",
+  "image_size": {
+   "width": 96,
+   "height": 96
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T19:40:28.815Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11"
+ }
+}
