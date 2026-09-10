@@ -445,7 +445,7 @@ namespace DeckRogue.Game
         static string IntentDetail(GameState st, int index, EnemyIntent it)
         {
             string full = CardText.IntentText(st, index);
-            string[] marks = { "【", "※", "伏せ", "従者", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ
+            string[] marks = { "【", "※", "からくり", "従者", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ
             for (int i = 0; i < marks.Length; i++) if (full.Contains(marks[i])) return full;
             return "";
         }
@@ -498,7 +498,7 @@ namespace DeckRogue.Game
                 case "rally": return "応援";
                 case "heal": return "回復";
                 case "hex": return "呪い";
-                case "destroy-set": return "伏せ破壊";
+                case "destroy-set": return "からくり壊し";
                 case "destroy-token": return "従者狩り";
                 case "steal-gold": return "盗み";
                 case "flee": return "逃走";
@@ -582,7 +582,7 @@ namespace DeckRogue.Game
             UiKit.Anchor(setTag, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f));
             var stFit = setTag.GetComponent<ContentSizeFitter>();
             UiKit.Icon(setTag, "set", 14f, PaperFx.InkSoft);
-            var setLabel = UiKit.Txt(setTag, "伏せ場 " + p.SetCards.Count + " / " + p.SetSlots, 13, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            var setLabel = UiKit.Txt(setTag, "からくり " + p.SetCards.Count + " / " + p.SetSlots, 13, PaperFx.Ink, TextAnchor.MiddleLeft, true);
             UiKit.Le(setLabel, -1f, 22f, -1f, 22f);
             for (int i = 0; i < p.SetSlots; i++)
             {
@@ -600,7 +600,7 @@ namespace DeckRogue.Game
                     back.raycastTarget = false;
                     var q = UiKit.Icon(slot, "question", 32f, PaperFx.Paper);
                     UiKit.Anchor(q.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-16f, 4f), new Vector2(16f, 36f));
-                    var ct = UiKit.Deco(slot, "伏せ札", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
+                    var ct = UiKit.Deco(slot, "仕込み札", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
                     UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(4f, -28f), new Vector2(-4f, -4f));
                     string tip = "<b>" + sc.Def.Name + "</b>\n" + CardText.Body(sc.Def);
                     pocket.raycastTarget = true;
@@ -760,7 +760,7 @@ namespace DeckRogue.Game
             // 伏せられる札には「伏せる」ボタン (ホバー中だけ・カードの足元)
             if (hc.Settable)
             {
-                var sb = UiKit.Btn(rt, "伏せる", delegate { g.DoCombat(new Command_SetCard { CardUid = c.Uid }); }, 15, true, UiKit.Hex("#bfe3dc"));
+                var sb = UiKit.Btn(rt, "仕込む", delegate { g.DoCombat(new Command_SetCard { CardUid = c.Uid }); }, 15, true, UiKit.Hex("#bfe3dc"));
                 var sle = sb.GetComponent<LayoutElement>();
                 if (sle != null) UnityEngine.Object.Destroy(sle);
                 var srt = sb.GetComponent<RectTransform>();
@@ -912,7 +912,7 @@ namespace DeckRogue.Game
             brt.localRotation = Quaternion.Euler(0f, 0f, -1f);
             var bt = b.GetComponentInChildren<TMP_Text>();
             if (bt != null && UiKit.FontDeco != null) { bt.font = UiKit.FontDeco; bt.characterSpacing = 4f; }
-            var hint = PaperFx.NightNote(root, "手札 " + st.Player.Hand.Count + " · 伏せ " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 13, 240f);
+            var hint = PaperFx.NightNote(root, "手札 " + st.Player.Hand.Count + " · からくり " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 13, 240f);
             hint.anchorMin = hint.anchorMax = new Vector2(1f, 0f); hint.pivot = new Vector2(1f, 0f);
             hint.anchoredPosition = new Vector2(-40f, 216f);
 
@@ -1010,7 +1010,7 @@ namespace DeckRogue.Game
             {
                 var buf = new List<string>();
                 for (int i = 0; i < risks.Count; i++) buf.Add((risks[i] + 1).ToString());
-                var w = UiKit.Txt(inner, "⚠ 発動すると伏せ枠が空き、敵 " + string.Join("・", buf.ToArray()) + " が「伏せなし」の分岐に変わる", 15, PaperFx.GoldInk);
+                var w = UiKit.Txt(inner, "⚠ 動かすとからくりが空き、敵 " + string.Join("・", buf.ToArray()) + " が「からくりなし」の分岐に変わる", 15, PaperFx.GoldInk);
                 UiKit.Le(w, -1f, 40f, -1f, 40f);
             }
             var usable = Effects.UsableSetCards(st, win);
@@ -1037,7 +1037,7 @@ namespace DeckRogue.Game
             }
             if (usable.Count == 0)
             {
-                var none = UiKit.Txt(row, "発動できる伏せ札はありません", 16, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+                var none = UiKit.Txt(row, "動かせるからくりはありません", 16, PaperFx.InkSoft, TextAnchor.MiddleCenter);
                 UiKit.Le(none, 400f, 40f, 400f, 40f);
             }
             var un = Effects.UnaffordableSetCards(st, win);
@@ -1095,7 +1095,7 @@ namespace DeckRogue.Game
             {
                 UiKit.Btn(inner, "プレイ", delegate { g.ModeChoiceUid = null; PlayCard(g, card, null); }, 16, playable);
             }
-            if (SetBase.CanSetCard(st, card.Uid)) UiKit.Btn(inner, "伏せる", delegate { g.ModeChoiceUid = null; g.DoCombat(new Command_SetCard { CardUid = card.Uid }); }, 16);
+            if (SetBase.CanSetCard(st, card.Uid)) UiKit.Btn(inner, "仕込む", delegate { g.ModeChoiceUid = null; g.DoCombat(new Command_SetCard { CardUid = card.Uid }); }, 16);
             UiKit.Btn(inner, "やめる", delegate { g.ModeChoiceUid = null; g.Rebuild(); }, 16);
         }
 

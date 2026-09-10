@@ -36,7 +36,7 @@ namespace DeckRogue.Game
             { "onCombatStart", "戦闘開始時" },
             { "onAttackPlayed", "攻撃プレイ後" },
             { "onSpellPlayed", "呪文をプレイした時" },
-            { "onSetDestroyed", "この伏せが破壊された時" },
+            { "onSetDestroyed", "このからくりが壊された時" },
             { "onHealed", "HPが回復するたび" },
             { "onHpLost", "カード効果でHPを失うたび" },
             { "onCardExhausted", "カードが消滅するたび" },
@@ -45,8 +45,8 @@ namespace DeckRogue.Game
             { "onImpulsePlayed", "衝動カードをプレイするたび" },
             { "onRandomPlayed", "運任せの札をプレイするたび" },
             { "onAetherGained", "霊気を得るたび" },
-            { "onCardSet", "カードを伏せるたび" },
-            { "onReactionFired", "リアクションが発動するたび" },
+            { "onCardSet", "カードを仕込むたび" },
+            { "onReactionFired", "からくりを動かすたび" },
             { "onSelfExhausted", "亡骸" },
             { "onGrowthGained", "成長を得るたび" },
             { "onMomentumGained", "勢いを得るたび" },
@@ -131,7 +131,7 @@ namespace DeckRogue.Game
             { "activateEnteredRetainer", "場に出た従者が即1回動く" },
             { "blessRetainers", "【常在】従者の効果+N" },
             { "empowerShivs", "【常在】ナイフ与ダメ+N" },
-            { "gainSetSlot", "伏せ枠+N(この戦闘中)" },
+            { "gainSetSlot", "仕込み枠+N(この戦闘中)" },
             { "retrieveFromDiscard", "捨て札からN枚を手札へ(選ぶ)" },
             { "searchDeck", "山札からN枚を手札へ(選ぶ)" },
             { "addCopyToDiscard", "コピーN枚を捨て札へ" },
@@ -146,7 +146,7 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, string> IntentKindJa = new Dictionary<string, string>
         {
             { "attack", "攻撃" }, { "defend", "防御" }, { "buff", "筋力上げ" }, { "rally", "応援" },
-            { "heal", "回復" }, { "hex", "呪い" }, { "destroy-set", "伏せ破壊" }, { "destroy-token", "従者狩り" },
+            { "heal", "回復" }, { "hex", "呪い" }, { "destroy-set", "からくり壊し" }, { "destroy-token", "従者狩り" },
             { "steal-gold", "盗み" }, { "flee", "逃走" }, { "mill", "山札喰い" }, { "rest", "隙" }, { "hatch", "孵化" },
         };
 
@@ -158,7 +158,7 @@ namespace DeckRogue.Game
 
         static readonly Dictionary<string, string> TypeJaMap = new Dictionary<string, string>
         {
-            { "physical", "物理" }, { "spell", "呪文" }, { "reaction", "リアクション" }, { "permanent", "置物" },
+            { "physical", "物理" }, { "spell", "呪文" }, { "reaction", "仕込み札" }, { "permanent", "置物" },
         };
 
         static readonly Dictionary<string, string> RarityJa = new Dictionary<string, string>
@@ -450,7 +450,7 @@ namespace DeckRogue.Game
                 }
                 case "defend":
                     return "防御 " + it.ShownMin + "〜" + it.ShownMax + (it.AlsoBuff.HasValue ? " +筋力" + it.AlsoBuff.Value : "");
-                case "destroy-set": return "伏せ破壊";
+                case "destroy-set": return "からくり壊し";
                 case "destroy-token": return "従者狩り";
                 case "buff": return "筋力 +" + it.ShownMin + "〜" + it.ShownMax;
                 case "rally": return "応援 +" + it.ShownMin + "〜" + it.ShownMax + " (味方全体の筋力)";
@@ -476,7 +476,7 @@ namespace DeckRogue.Game
             {
                 // EffectiveIntent は条件を満たさない時だけ raw をそのまま返す (参照が同じ)
                 bool altActive = !object.ReferenceEquals(eff, raw);
-                string what = raw.ConditionalOn == "set" ? "伏せ札" : "従者";
+                string what = raw.ConditionalOn == "set" ? "からくり" : "従者";
                 s += "  【" + what + (altActive ? "あり" : "なし") + "分岐】";
                 if (!altActive) s += " ※" + what + "があると: " + IntentLine(BranchToIntent(raw.Alt));
             }
@@ -537,7 +537,7 @@ namespace DeckRogue.Game
             var c = ev as GameEvent_TurnEnded; if (c != null) return "ターン終了 → 敵の行動";
             var d = ev as GameEvent_CardsDrawn; if (d != null) return d.Count + "枚ドロー" + (d.Cards != null && d.Cards.Count > 0 ? ": " + Names(d.Cards) : "");
             var e = ev as GameEvent_CardPlayed; if (e != null) return "プレイ: " + CardName(e.CardId);
-            var f = ev as GameEvent_CardSet; if (f != null) return "伏せた: " + CardName(f.CardId);
+            var f = ev as GameEvent_CardSet; if (f != null) return "仕込んだ: " + CardName(f.CardId);
             var g = ev as GameEvent_SetCardRetrieved; if (g != null) return "回収: " + CardName(g.CardId);
             var h = ev as GameEvent_EnemyIntentDeclared; if (h != null) return "敵" + (h.EnemyIndex + 1) + "の意図: " + IntentLine(h.Intent);
             var i2 = ev as GameEvent_ActionNegated; if (i2 != null) return "敵の行動を打ち消した!";
@@ -567,11 +567,11 @@ namespace DeckRogue.Game
                 string ja; if (!StatusJa.TryGetValue(t2.Status, out ja)) ja = t2.Status;
                 return ja + t2.Amount + "を付与された";
             }
-            var u = ev as GameEvent_ReactionTriggered; if (u != null) return "リアクション発動: " + CardName(u.CardId);
-            var v = ev as GameEvent_ReactionHeld; if (v != null) return "温存: " + Names(v.CandidateIds) + " (敵" + (v.EnemyIndex + 1) + "の" + KindJa(v.Kind) + " " + v.Stage + "窓 / 実値" + v.Value + ")";
+            var u = ev as GameEvent_ReactionTriggered; if (u != null) return "動かした: " + CardName(u.CardId);
+            var v = ev as GameEvent_ReactionHeld; if (v != null) return "巻いたまま: " + Names(v.CandidateIds) + " (敵" + (v.EnemyIndex + 1) + "の" + KindJa(v.Kind) + " " + v.Stage + "窓 / 実値" + v.Value + ")";
             var w = ev as GameEvent_ReactionWhiffed; if (w != null) return "空振り: " + CardName(w.CardId);
-            var x = ev as GameEvent_ReactionUnaffordable; if (x != null) return "伏せ札「" + CardName(x.CardId) + "」は発動に" + x.Cost + "E必要 (残り" + x.Energy + "E) = 温存";
-            var y = ev as GameEvent_SetCardDestroyed; if (y != null) return "伏せカード破壊: " + CardName(y.CardId);
+            var x = ev as GameEvent_ReactionUnaffordable; if (x != null) return "仕込み札「" + CardName(x.CardId) + "」を動かすには" + x.Cost + "E必要 (残り" + x.Energy + "E) = 巻いたまま";
+            var y = ev as GameEvent_SetCardDestroyed; if (y != null) return "からくりを壊された: " + CardName(y.CardId);
             var z = ev as GameEvent_PermanentPlayed; if (z != null) return "置物を設置: " + CardName(z.CardId);
             var a2 = ev as GameEvent_CardExhausted; if (a2 != null) return "消滅: " + CardName(a2.CardId);
             var b2 = ev as GameEvent_CardsMilled; if (b2 != null) return "山札の上" + b2.Count + "枚を忘却" + (b2.CardIds != null ? ": " + Names(b2.CardIds) : "");

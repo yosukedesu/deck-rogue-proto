@@ -7,7 +7,7 @@ import type { EnemyIntent, GameEvent } from '../engine/types.ts'
 // ui/ 層に置く純関数。engine には触らない。ダウンロードは App 側の1関数だけがDOMを使う。
 
 const KIND_LABEL: Record<string, string> = {
-  attack: '攻撃', defend: '防御', 'destroy-set': '伏せ破壊',
+  attack: '攻撃', defend: '防御', 'destroy-set': 'からくり壊し',
   'destroy-token': '従者狩り', buff: '筋力上げ', rally: '応援', hex: '呪い',
 }
 
@@ -37,7 +37,7 @@ export function intentText(intent: EnemyIntent | null): string {
       return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${buff}${inflictSuffix(intent)}`
     }
     case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
-    case 'destroy-set': return '💥 伏せ破壊'
+    case 'destroy-set': return '💥 からくり壊し'
     case 'destroy-token': return '🪓 従者狩り'
     case 'buff': return `💪 筋力 +${intent.shownMin}〜${intent.shownMax}`
     case 'rally': return `📣 応援 +${intent.shownMin}〜${intent.shownMax}（味方全体の筋力）`
@@ -70,8 +70,8 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'TurnEnded': return { text: 'ターン終了 → 敵の行動', cls: 'log-line' }
     case 'CardsDrawn': return { text: `${e.count}枚ドロー`, cls: 'log-line' }
     case 'CardPlayed': return { text: `プレイ: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'CardSet': return { text: `伏せた: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'SetCardRetrieved': return { text: `回収: ${cardName(e.cardId)} (1E払って手札へ)`, cls: 'log-line' }
+    case 'CardSet': return { text: `仕込んだ: ${cardName(e.cardId)}`, cls: 'log-line' }
+    case 'SetCardRetrieved': return { text: `取り出した: ${cardName(e.cardId)}（1E払ってからくりから手札へ）`, cls: 'log-line' }
     case 'EnemyIntentDeclared': return { text: `敵の意図: ${intentText(e.intent)}`, cls: 'log-line' }
     case 'EnemyActionExecuting':
     case 'EnemyActionResolved': return null
@@ -141,21 +141,21 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardsDiscarded': return { text: `コストとして捨てた: ${e.cardIds.map(cardName).join('、')}`, cls: 'log-line' }
     case 'EnergyMaxGained': return { text: `エナジー上限+${e.amount}`, cls: 'log-line' }
     case 'GrowthAdded': return { text: `成長+${e.amount}`, cls: 'log-good' }
-    case 'SetSlotGained': return { text: `🃏 伏せ枠+${e.amount}（この戦闘中）`, cls: 'log-good' }
+    case 'SetSlotGained': return { text: `🃏 仕込み枠+${e.amount}（この戦闘中）`, cls: 'log-good' }
     case 'MaxHpGained': return { text: `💗 最大HP+${e.amount}（この戦闘後も残る）`, cls: 'log-good' }
     case 'CardsMovedToHand': return { text: `${e.from === 'draw' ? '🔍 サーチ' : '🌱 回収'}: ${e.cardIds.map(cardName).join('・')}を手札に加えた`, cls: 'log-good' }
     case 'CardCopied': return { text: `🌿 ${cardName(e.cardId)}のコピー${e.count}枚を捨て札に加えた`, cls: 'log-line' }
     case 'CardGrew': return { text: `📈 ${cardName(e.cardId)}が育った（与ダメ+${e.bonus}）`, cls: 'log-good' }
     case 'CardUpgradedInHand': return { text: `🔨 ${cardName(e.cardId)}を鍛えた（この戦闘中）`, cls: 'log-good' }
-    case 'ReactionTriggered': return { text: `リアクション発動: ${cardName(e.cardId)}`, cls: 'log-good' }
+    case 'ReactionTriggered': return { text: `動かした: ${cardName(e.cardId)}`, cls: 'log-good' }
     case 'ReactionWhiffed': return { text: `空振り: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'ReactionUnaffordable': return { text: `⚠ 伏せ札「${cardName(e.cardId)}」は発動に${e.cost}E必要だが残り${e.energy}E＝窓は開かず温存`, cls: 'log-bad' }
+    case 'ReactionUnaffordable': return { text: `⚠ 仕込み札「${cardName(e.cardId)}」を動かすには${e.cost}E必要だが残り${e.energy}E＝窓は開かず巻いたまま`, cls: 'log-bad' }
     case 'ReactionHeld':
       return {
-        text: `温存: ${e.candidateIds.map(cardName).join('、')}（敵${e.enemyIndex + 1}の${KIND_LABEL[e.kind] ?? e.kind} ${e.stage}窓 / 実値${e.value}）`,
+        text: `巻いたまま: ${e.candidateIds.map(cardName).join('、')}（敵${e.enemyIndex + 1}の${KIND_LABEL[e.kind] ?? e.kind} ${e.stage}窓 / 実値${e.value}）`,
         cls: 'log-line',
       }
-    case 'SetCardDestroyed': return { text: `伏せカード破壊: ${cardName(e.cardId)}`, cls: 'log-bad' }
+    case 'SetCardDestroyed': return { text: `からくりを壊された: ${cardName(e.cardId)}`, cls: 'log-bad' }
     case 'EnemyPhaseEnded': return null
     case 'CombatEnded':
       return e.result === 'won' ? { text: '=== 勝利 ===', cls: 'log-good' } : { text: '=== 敗北 ===', cls: 'log-bad' }

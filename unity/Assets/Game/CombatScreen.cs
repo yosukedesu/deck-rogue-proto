@@ -149,11 +149,11 @@ namespace DeckRogue.Game
             UiKit.Le(setRow, -1f, 40f, -1f, 40f);
             var hg = UiKit.Horz(setRow, 6, 0);
             hg.childAlignment = TextAnchor.MiddleLeft;
-            var lab = UiKit.Txt(setRow, "伏せ場 " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 13, UiKit.ColAccent, TextAnchor.MiddleLeft);
+            var lab = UiKit.Txt(setRow, "からくり " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 13, UiKit.ColAccent, TextAnchor.MiddleLeft);
             UiKit.Le(lab, 110f, -1f, 110f, -1f);
             if (st.Player.SetCards.Count == 0)
             {
-                var t = UiKit.Txt(setRow, "(伏せ札なし)", 12, UiKit.ColDim, TextAnchor.MiddleLeft);
+                var t = UiKit.Txt(setRow, "(からくりは空)", 12, UiKit.ColDim, TextAnchor.MiddleLeft);
                 UiKit.Le(t, 160f, -1f, 160f, -1f);
             }
             for (int i = 0; i < st.Player.SetCards.Count; i++)
@@ -297,7 +297,7 @@ namespace DeckRogue.Game
                 var b = UiKit.Btn(btnRow, "プレイ", delegate { g.BeginPlay(card, null); }, 12, playable);
                 Flex(b);
             }
-            var sb = UiKit.Btn(btnRow, "伏せる", delegate { g.DoCombat(new Command_SetCard { CardUid = card.Uid }); }, 12, settable);
+            var sb = UiKit.Btn(btnRow, "仕込む", delegate { g.DoCombat(new Command_SetCard { CardUid = card.Uid }); }, 12, settable);
             Flex(sb);
         }
 
@@ -369,7 +369,7 @@ namespace DeckRogue.Game
             {
                 var buf = new List<string>();
                 for (int i = 0; i < risks.Count; i++) buf.Add("敵" + (risks[i] + 1));
-                var w = UiKit.Txt(pan.transform, "! 発動すると伏せ枠が空き、" + string.Join("・", buf.ToArray()) + " が「伏せなし」分岐に変わる", 13, UiKit.ColBad);
+                var w = UiKit.Txt(pan.transform, "! 動かすとからくりが空き、" + string.Join("・", buf.ToArray()) + " が「からくりなし」分岐に変わる", 13, UiKit.ColBad);
                 UiKit.Le(w, -1f, 34f, -1f, 34f);
             }
 
@@ -385,7 +385,7 @@ namespace DeckRogue.Game
             }
             if (usable.Count == 0)
             {
-                UiKit.Txt(pan.transform, "発動できる伏せ札はありません", 13, UiKit.ColDim);
+                UiKit.Txt(pan.transform, "動かせるからくりはありません", 13, UiKit.ColDim);
             }
 
             var un = Effects.UnaffordableSetCards(st, win);

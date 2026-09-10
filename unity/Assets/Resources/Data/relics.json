@@ -193,7 +193,7 @@
     "id": "relic_talisman_pouch",
     "name": "符師の懐",
     "sprite": "👝",
-    "description": "カードを伏せるたび、1枚ドロー",
+    "description": "カードを仕込むたび、1枚ドロー",
     "rarity": "uncommon",
     "effects": [
       {
@@ -207,7 +207,7 @@
     "id": "relic_quiet_bell",
     "name": "静かな鈴",
     "sprite": "🔔",
-    "description": "伏せ札がある間、敵の攻撃ダメージ-2（最低1）",
+    "description": "からくりがある間、敵の攻撃ダメージ-2（最低1）",
     "rarity": "uncommon",
     "combatRule": {
       "setDamageReduction": 2
@@ -217,7 +217,7 @@
     "id": "relic_double_talisman",
     "name": "二重の符",
     "sprite": "🎴",
-    "description": "伏せ場が1枠増える（同時に2枚まで伏せられる）",
+    "description": "仕込み枠が1つ増える（同時に2枚まで仕込める）",
     "rarity": "uncommon",
     "effects": [
       {
@@ -346,7 +346,7 @@
     "id": "relic_reading_glasses",
     "name": "読みの眼鏡",
     "sprite": "👓",
-    "description": "伏せ札が発動するたび、次のカード-1",
+    "description": "からくりを動かすたび、次のカード-1",
     "rarity": "uncommon",
     "effects": [
       {
@@ -360,7 +360,7 @@
     "id": "relic_retrieve_cord",
     "name": "回収の紐",
     "sprite": "🧵",
-    "description": "伏せ札の回収が0Eになる",
+    "description": "からくりから取り出すのが0Eになる",
     "rarity": "uncommon",
     "combatRule": {
       "retrieveFree": true
