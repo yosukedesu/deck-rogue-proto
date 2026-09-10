@@ -1171,26 +1171,25 @@ namespace DeckRogue.Game
             // 支保工 (2026-09-10): 先代の坑匠が組んだ木の門型が道に沿って奥へ連なる = 坑道の背骨。
             // MB.Box は軸に平行なので、道の向きに寝かせる梁は小さな箱を並べて作る
             var mWood = Lit(Px.Solid(UiKit.Hex("#4a3a2c")));
+            // 道の向き (PathYaw) に回した入れ物の中で組む = 梁が 1 本の箱で済む (2026-09-11 第2版。旧「小さな箱の連なり」は梁が凸凹に見えた)。
+            // 手前の柱は戦闘の場 (t=-12〜14) の外だけに立てる = キャラが柱に隠れない (ユーザー「キャラと柱が被って見えなくなってる」)
             var timber = new MB();
+            const float sNear = -5.2f, sFar = 6.6f;
             for (int i = 0; i < 9; i++)
             {
                 float t = -22f + i * 5.6f;
-                var a = OnPath(t, -5.2f); var b = OnPath(t, 6.6f);
-                timber.Box(a.x, 0f, a.z, 0.5f, 4.3f, 0.5f);
-                timber.Box(b.x, 0f, b.z, 0.5f, 4.3f, 0.5f);
-                for (int k = 0; k <= 24; k++)   // 梁
+                bool nearPost = t < -12f || t > 14f;
+                timber.Box(t, 0f, sFar, 0.5f, 4.3f, 0.5f);                                         // 奥の柱 (全部)
+                if (nearPost)
                 {
-                    float u = k / 24f;
-                    timber.Box(Mathf.Lerp(a.x, b.x, u), 4.3f, Mathf.Lerp(a.z, b.z, u), 0.62f, 0.42f, 0.62f);
+                    timber.Box(t, 0f, sNear, 0.5f, 4.3f, 0.5f);                                    // 手前の柱
+                    timber.Box(t, 4.3f, (sNear + sFar) * 0.5f, 0.42f, 0.42f, sFar - sNear);         // 道を跨ぐ梁
+                    timber.Box(t, 3.4f, sNear + 0.9f, 0.3f, 0.3f, 1.8f);                            // 方杖 (角の補強)
                 }
-                if (i % 3 == 0)                 // 斜めの方杖 (角の補強)
-                    for (int k = 0; k <= 5; k++)
-                    {
-                        float u = k / 5f;
-                        timber.Box(Mathf.Lerp(a.x, a.x + (b.x - a.x) * 0.16f, u), Mathf.Lerp(3.1f, 4.3f, u), Mathf.Lerp(a.z, a.z + (b.z - a.z) * 0.16f, u), 0.34f, 0.34f, 0.34f);
-                    }
+                else timber.Box(t, 4.3f, sFar - 2.2f, 0.42f, 0.42f, 4.4f);                          // 場の上には短い持ち送りだけ
+                timber.Box(t, 3.4f, sFar - 0.9f, 0.3f, 0.3f, 1.8f);
             }
-            Solid("timber", timber, mWood);
+            Solid("timber", timber, mWood).transform.rotation = Quaternion.Euler(0f, PathYaw, 0f);
 
             // トロッコの軌道 (2026-09-10): 場の奥を道に沿って走る。枕木 + 二本のレール
             var mRail = Lit(Px.Solid(UiKit.Hex("#3a3a42")));
@@ -1214,21 +1213,21 @@ namespace DeckRogue.Game
             GameObject Halo(string nm, Vector3 center, float size, Color c) { var g = Glow(nm, Px.Glow(c), center, size, size); g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; return g; }
             // 岩の天井 (裏返しの床 = 下向きの面) と鍾乳石と垂れ根。カメラの上端 (水平+6°) には奥の天井だけが入る
             {
-                var ceil = new MB(); ceil.Floor(64f, 6f, -50f, 40f, 7.2f);
+                var ceil = new MB(); ceil.Floor(64f, 4f, -50f, 40f, 6.2f);
                 var mCeil = Lit(Tex(_paintedAct, "cliff", Px.Cliff(p, rng))); mCeil.SetColor("_BaseColor", new Color(0.3f, 0.26f, 0.26f));
                 Solid("ceiling", ceil, mCeil);
                 var stal = Px.Stalactites(p, rng);
                 for (int i = 0; i < 9; i++)
                 {
                     var w = OnPath(-22f + i * 5.5f + ((float)rng.NextDouble() - 0.5f) * 3f, 4f + (float)rng.NextDouble() * 6f);
-                    var g = Plane("stalactite", stal, new Vector3(w.x, 7.2f - 2.6f, w.z), 2.6f, 0.5f, false);
+                    var g = Plane("stalactite", stal, new Vector3(w.x, 6.2f - 3.3f, w.z), 3.3f, 0.5f, false);
                     g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 }
                 var roots = Px.HangingRoots(p, rng);
                 for (int i = 0; i < 6; i++)
                 {
                     var w = OnPath(-18f + i * 7.5f, 3f + (float)rng.NextDouble() * 5f);
-                    var g = Plane("roots", roots, new Vector3(w.x, 7.2f - 2.2f, w.z), 2.2f, 0.5f, false);
+                    var g = Plane("roots", roots, new Vector3(w.x, 6.2f - 2.8f, w.z), 2.8f, 0.5f, false);
                     g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 }
             }
@@ -1368,7 +1367,7 @@ namespace DeckRogue.Game
             var mDark = Lit(Tex(_paintedAct, "stone", Px.Stone(p, rng))); mDark.SetColor("_BaseColor", new Color(0.2f, 0.22f, 0.3f));
             // 両脇の柱の列 (奥ほど霧に溶ける)。柱の間に鎖
             var pts = new List<Vector2>();
-            for (int i = 0; i < 7; i++) pts.Add(new Vector2(-16f + i * 5.4f, 5.8f));        // 奥の列 (場の後ろ)
+            for (int i = 0; i < 7; i++) if (i != 3 && i != 4) pts.Add(new Vector2(-16f + i * 5.4f, 5.8f));   // 奥の列 (場の後ろ)。3・4 本目は抜いて大門を見せる (2026-09-11 第2版)
             pts.Add(new Vector2(-20f, -4.8f)); pts.Add(new Vector2(22f, -4.6f));            // 両端の手前 (額縁。場の手前には立てない = キャラを隠さない)
             for (int i = 0; i < pts.Count; i++)
             {
@@ -1400,8 +1399,8 @@ namespace DeckRogue.Game
             {
                 var a1 = Glow("aurora", Px.Aurora(veinC, rng), new Vector3(-4f, 10.5f, 40f), 5.5f, 70f);
                 a1.GetComponent<MeshFilter>().sharedMesh = _quadCentered; a1.transform.rotation = Quaternion.Euler(-25f, 0f, -6f);
-                var a2 = Glow("aurora", Px.Aurora(new Color(0.6f, 1f, 0.95f), rng), new Vector3(14f, 9.2f, 30f), 3.2f, 48f);
-                a2.GetComponent<MeshFilter>().sharedMesh = _quadCentered; a2.transform.rotation = Quaternion.Euler(-25f, 0f, 8f);
+                var a2 = Glow("aurora", Px.Aurora(new Color(0.6f, 1f, 0.95f), rng), new Vector3(6f, 8.8f, 34f), 3.2f, 48f);
+                a2.GetComponent<MeshFilter>().sharedMesh = _quadCentered; a2.transform.rotation = Quaternion.Euler(-25f, 0f, 34f);   // 1本目と交差させる
             }
             // 大結晶の尖塔: 街の左右に 3 本 (幻想の主役)。強い点光源
             {
@@ -1425,14 +1424,14 @@ namespace DeckRogue.Game
             }
             // 大門と水道橋: 奥の段の上に古代の門 (紋が光る)、その両脇に半円アーチの列
             {
-                var gw = OnPath(2f, 13.5f);
-                var arch = Prop("great-arch", Px.Arch(p, veinC), new Vector3(gw.x, 1.2f, gw.z), 11f, 0.4f);
+                var gw = OnPath(3f, 19f);   // 第2版: 近すぎると半円がカメラの上端から切れる (z≈20 で y 7.3 まで入る)
+                var arch = Prop("great-arch", Px.Arch(p, veinC), new Vector3(gw.x, 0.4f, gw.z), 6.6f, 0.4f);
                 arch.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); arch.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.35f);
-                Halo("arch-glow", new Vector3(gw.x, 6.5f, gw.z - 0.3f), 7f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
+                Halo("arch-glow", new Vector3(gw.x, 3.6f, gw.z - 0.3f), 5.5f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
                 var arc = Px.Arcade(p, 9);
-                var al = Prop("arcade", arc, new Vector3(gw.x - 22f, 2.4f, gw.z + 6f), 5.2f, 0.4f); al.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
-                var ar = Prop("arcade", arc, new Vector3(gw.x + 24f, 2.4f, gw.z + 8f), 5.6f, 0.4f); ar.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
-                var st = new MB(); var b = OnPath(2f, 10f);   // 門へ上る幅広の階段
+                var al = Prop("arcade", arc, new Vector3(gw.x - 20f, 0.6f, gw.z + 7f), 4.6f, 0.4f); al.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
+                var ar = Prop("arcade", arc, new Vector3(gw.x + 22f, 0.6f, gw.z + 9f), 5.0f, 0.4f); ar.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
+                var st = new MB(); var b = OnPath(3f, 16f);   // 門へ上る幅広の階段
                 for (int k = 0; k < 5; k++) st.Box(b.x, k * 0.24f, b.z - k * 0.5f, 16f - k * 1.2f, 0.24f, 0.55f);
                 Solid("great-stairs", st, mDark);
             }
@@ -1455,12 +1454,12 @@ namespace DeckRogue.Game
             if (statue != null) { var s3 = Plane("statue", statue, OnPath(-4f, 12.5f), 2.6f, 0.5f, true); s3.transform.rotation = Quaternion.Euler(0f, 0f, -12f); }
             // 水没した街路: 左奥の低い所に黒い水面 (脈の光と窓明かりを映す)
             {
-                var wp = Glow("flood", Px.Water(p), OnPath(-26f, 9f) + new Vector3(0f, 0.03f, 0f), 1f, 1f);
-                wp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; wp.transform.rotation = Quaternion.Euler(90f, PathYaw, 0f); wp.transform.localScale = new Vector3(22f, 12f, 1f);
+                var wp = Glow("flood", Px.Water(p), OnPath(-15f, -6.5f) + new Vector3(0f, 0.03f, 0f), 1f, 1f);   // 左手前の低い所 (第2版: 左奥では見えなかった)
+                wp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; wp.transform.rotation = Quaternion.Euler(90f, PathYaw, 0f); wp.transform.localScale = new Vector3(16f, 7f, 1f);
                 var wm = wp.GetComponent<MeshRenderer>().sharedMaterial; wm.color = new Color(0.5f, 0.8f, 0.85f, 0.35f); _waterMat = wm;
                 for (int i = 0; i < 6; i++)
                 {
-                    var h = Halo("flood-reflect", OnPath(-32f + i * 2.6f, 8f + (float)rng.NextDouble() * 4f) + new Vector3(0f, 0.06f, 0f), 1.6f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
+                    var h = Halo("flood-reflect", OnPath(-21f + i * 2.4f, -8.5f + (float)rng.NextDouble() * 3.5f) + new Vector3(0f, 0.06f, 0f), 1.6f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
                     h.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
                 }
             }
@@ -3130,7 +3129,7 @@ namespace DeckRogue.Game
             var main = ps.main; main.startLifetime = new ParticleSystem.MinMaxCurve(0.9f, 1.3f); main.startSpeed = 0f;
             main.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.08f); main.startColor = new Color(0.8f, 0.95f, 1f, 0.9f); main.maxParticles = 30;
             var em = ps.emission; em.rateOverTime = 3f;
-            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40f, 0.2f, 20f); shape.position = new Vector3(0f, 6.4f, 12f);
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40f, 0.2f, 20f); shape.position = new Vector3(0f, 5.6f, 12f);
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
             vel.x = new ParticleSystem.MinMaxCurve(0f, 0f); vel.y = new ParticleSystem.MinMaxCurve(-6f, -5f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
             var ren = ps.GetComponent<ParticleSystemRenderer>(); ren.renderMode = ParticleSystemRenderMode.Stretch; ren.velocityScale = 0.06f; ren.lengthScale = 1f;
