@@ -1,0 +1,323 @@
+{
+ "_note": "このは ちびのスタイル案 (/home/yosuke/.claude/projects/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/subagents/workflows/wf_938ca202-0d5/journal.jsonl から生成。size=64)",
+ "defaults": {
+  "engine": "pixflux",
+  "no_background": true
+ },
+ "items": [
+  {
+   "id": "s1_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s1_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime chibi JRPG battle sprite, SD super-deformed kawaii girl exactly 2 heads tall, the head is as big as the whole body, tiny body with short stubby arms and legs, soft round face, huge sparkling green anime eyes covering half the face with two white highlights each, tiny dot nose, small open smiling mouth, plain cheeks with no blush marks, dark brown hair in two thick braided pigtails drawn as clean chunky locks with a bright highlight streak, deep green hooded cloak with the hood down, orange scarf, cream shirt under a small leather chest piece, short leather boots, energetic idle pose leaning forward with one fist clenched, a huge two-handed woodcutter axe taller than her rests on her shoulder, long wooden handle, wide steel blade with a bright edge, Disgaea style Nippon Ichi SD sprite, bold black outline, clean flat cel shading with two tones per color, crisp readable silhouette, palette of cream, deep green, leather brown, dark brown hair and one orange accent, 24 colors, transparent background",
+   "negative": "western cartoon, american cartoon style, disney, pixar, chinese mobile gacha style, korean mmo style, realistic, photorealistic, realistic proportions, adult proportions, tall slender body, long limbs, small narrow eyes, big nose, muddy shading, soft gradient, airbrush, blurry, noisy dithering, dark grimy colors, plush toy, blush marks, 3d render, background, text, watermark",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "medium detail",
+   "guidance": 9
+  },
+  {
+   "id": "s1_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s1_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime chibi JRPG battle sprite, SD super-deformed kawaii girl exactly 2 heads tall, the head is as big as the whole body, tiny body with short stubby arms and legs, soft round face, huge sparkling green anime eyes covering half the face with two white highlights each, tiny dot nose, small open smiling mouth, plain cheeks with no blush marks, dark brown hair in two thick braided pigtails drawn as clean chunky locks with a bright highlight streak, deep green hooded cloak with the hood down, orange scarf, cream shirt under a small leather chest piece, short leather boots, energetic idle pose leaning forward with one fist clenched, a huge two-handed woodcutter axe taller than her rests on her shoulder, long wooden handle, wide steel blade with a bright edge, Disgaea style Nippon Ichi SD sprite, bold black outline, clean flat cel shading with two tones per color, crisp readable silhouette, palette of cream, deep green, leather brown, dark brown hair and one orange accent, 24 colors, transparent background",
+   "negative": "western cartoon, american cartoon style, disney, pixar, chinese mobile gacha style, korean mmo style, realistic, photorealistic, realistic proportions, adult proportions, tall slender body, long limbs, small narrow eyes, big nose, muddy shading, soft gradient, airbrush, blurry, noisy dithering, dark grimy colors, plush toy, blush marks, 3d render, background, text, watermark",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "medium detail",
+   "guidance": 9
+  },
+  {
+   "id": "s2_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s2_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime kawaii chibi sprite for a JRPG battle screen, SD super-deformed girl 2.5 heads tall with an oversized head and a small slim body, short arms and legs, soft round face with a pointed little chin, large expressive anime eyes with big green irises and two sparkling highlights each, thin dark upper lash line, tiny nose drawn as one dot, small closed smile, plain cheeks with no blush marks, dark brown hair in two braided pigtails drawn as clear stylized locks with bangs and a lighter highlight band, deep green hooded cloak with the hood up framing her face and the braids hanging out below it, orange scarf at the neck, cream shirt and a small leather chest piece, short boots, lively ready stance with feet apart and knees slightly bent, both hands gripping a huge two-handed woodcutter axe taller than her that rests across her shoulder, long wooden handle, wide bright steel blade, anime cel shading with hard-edged two-tone shadows and a thin rim highlight, dark thin outline only on the silhouette, crisp pixel clusters, palette of cream, deep green, leather brown, dark brown and one orange accent, 24 colors, transparent background",
+   "negative": "western cartoon, american cartoon style, disney, pixar, chinese mobile gacha style, korean mmo style, realistic, photorealistic, realistic proportions, adult proportions, tall slender body, long limbs, small narrow eyes, big nose, muddy shading, soft gradient, airbrush, blurry, noisy dithering, dark grimy colors, plush toy, blush marks, 3d render, background, text, watermark",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "guidance": 8
+  },
+  {
+   "id": "s2_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s2_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime kawaii chibi sprite for a JRPG battle screen, SD super-deformed girl 2.5 heads tall with an oversized head and a small slim body, short arms and legs, soft round face with a pointed little chin, large expressive anime eyes with big green irises and two sparkling highlights each, thin dark upper lash line, tiny nose drawn as one dot, small closed smile, plain cheeks with no blush marks, dark brown hair in two braided pigtails drawn as clear stylized locks with bangs and a lighter highlight band, deep green hooded cloak with the hood up framing her face and the braids hanging out below it, orange scarf at the neck, cream shirt and a small leather chest piece, short boots, lively ready stance with feet apart and knees slightly bent, both hands gripping a huge two-handed woodcutter axe taller than her that rests across her shoulder, long wooden handle, wide bright steel blade, anime cel shading with hard-edged two-tone shadows and a thin rim highlight, dark thin outline only on the silhouette, crisp pixel clusters, palette of cream, deep green, leather brown, dark brown and one orange accent, 24 colors, transparent background",
+   "negative": "western cartoon, american cartoon style, disney, pixar, chinese mobile gacha style, korean mmo style, realistic, photorealistic, realistic proportions, adult proportions, tall slender body, long limbs, small narrow eyes, big nose, muddy shading, soft gradient, airbrush, blurry, noisy dithering, dark grimy colors, plush toy, blush marks, 3d render, background, text, watermark",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "guidance": 8
+  },
+  {
+   "id": "s3_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s3_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime chibi girl pixel art sprite, kawaii SD super-deformed style like Fire Emblem Heroes and Princess Connect chibi units, 2.5 heads tall with a big round head and a tiny slim body, soft round face, huge sparkling anime eyes in bright green with two white highlights each, tiny nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clear separate locks with a short fringe and two thick braided pigtails ending in small tufts, orange scarf wrapped around the neck, deep green hooded cloak with the hood down over a cream shirt and a small leather chest piece, short brown leather boots, holding a huge two-handed woodcutter axe taller than herself with a long wooden handle and a wide bright steel blade resting on her right shoulder gripped by one hand, the other hand on her hip, cute confident idle pose, clean cel shading with crisp flat color steps and a glossy anime highlight on the hair and eyes, limited 24 color palette of cream, deep green, warm brown and one orange accent, transparent background",
+   "negative": "western cartoon, Disney style, Pixar style, Cartoon Network style, cheap mobile game art, chinese mobile game style, wuxia, hanfu, kimono, samurai, ninja, oni mask, medieval knight, viking, elf ears, realistic proportions, realistic face, small eyes, long nose, muddy shading, dirty colors, gradient smudge, blurry, noisy, rosy cheeks, blush marks, photorealistic, 3d render, text, watermark, background, ground shadow",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "s3_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s3_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime chibi girl pixel art sprite, kawaii SD super-deformed style like Fire Emblem Heroes and Princess Connect chibi units, 2.5 heads tall with a big round head and a tiny slim body, soft round face, huge sparkling anime eyes in bright green with two white highlights each, tiny nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clear separate locks with a short fringe and two thick braided pigtails ending in small tufts, orange scarf wrapped around the neck, deep green hooded cloak with the hood down over a cream shirt and a small leather chest piece, short brown leather boots, holding a huge two-handed woodcutter axe taller than herself with a long wooden handle and a wide bright steel blade resting on her right shoulder gripped by one hand, the other hand on her hip, cute confident idle pose, clean cel shading with crisp flat color steps and a glossy anime highlight on the hair and eyes, limited 24 color palette of cream, deep green, warm brown and one orange accent, transparent background",
+   "negative": "western cartoon, Disney style, Pixar style, Cartoon Network style, cheap mobile game art, chinese mobile game style, wuxia, hanfu, kimono, samurai, ninja, oni mask, medieval knight, viking, elf ears, realistic proportions, realistic face, small eyes, long nose, muddy shading, dirty colors, gradient smudge, blurry, noisy, rosy cheeks, blush marks, photorealistic, 3d render, text, watermark, background, ground shadow",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "s4_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s4_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "kawaii Japanese JRPG chibi sprite in the style of Disgaea and Octopath Traveler HD-2D character sprites, SD super-deformed girl 2.5 heads tall, oversized round head on a small slim body with short stubby legs, soft round face, plain cheeks with no blush marks, very large expressive anime eyes in vivid green with two round white highlights and dark upper lashes, tiny dot nose, small open cheerful grin, dark brown hair in clean chunky anime locks with a side fringe and two braided pigtails hanging past the shoulders tied with small ties, orange scarf knotted at the neck, deep green hooded cloak hood down draped over a cream shirt with a small brown leather chest piece and belt, short brown boots, both hands gripping a huge two-handed woodcutter axe taller than she is, long wooden handle and a wide bright polished steel blade resting on her shoulder, feet apart in a lively confident idle stance, crisp cel-style pixel shading with clean two or three tone color steps, glossy anime highlight on hair and eyes, bright saturated but harmonious palette of cream, deep green, warm brown and orange, transparent background",
+   "negative": "western cartoon, american comic style, Disney style, Pixar style, cheap mobile game art, chinese mobile game style, wuxia, hanfu, kimono, yukata, samurai, ninja, shrine maiden, medieval knight, viking, elf ears, realistic proportions, realistic anatomy, realistic face, small narrow eyes, long nose, muddy shading, dirty colors, smeared gradients, blurry, noisy, rosy cheeks, blush marks, photorealistic, 3d render, text, watermark, background, ground shadow",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "guidance": 9
+  },
+  {
+   "id": "s4_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s4_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "kawaii Japanese JRPG chibi sprite in the style of Disgaea and Octopath Traveler HD-2D character sprites, SD super-deformed girl 2.5 heads tall, oversized round head on a small slim body with short stubby legs, soft round face, plain cheeks with no blush marks, very large expressive anime eyes in vivid green with two round white highlights and dark upper lashes, tiny dot nose, small open cheerful grin, dark brown hair in clean chunky anime locks with a side fringe and two braided pigtails hanging past the shoulders tied with small ties, orange scarf knotted at the neck, deep green hooded cloak hood down draped over a cream shirt with a small brown leather chest piece and belt, short brown boots, both hands gripping a huge two-handed woodcutter axe taller than she is, long wooden handle and a wide bright polished steel blade resting on her shoulder, feet apart in a lively confident idle stance, crisp cel-style pixel shading with clean two or three tone color steps, glossy anime highlight on hair and eyes, bright saturated but harmonious palette of cream, deep green, warm brown and orange, transparent background",
+   "negative": "western cartoon, american comic style, Disney style, Pixar style, cheap mobile game art, chinese mobile game style, wuxia, hanfu, kimono, yukata, samurai, ninja, shrine maiden, medieval knight, viking, elf ears, realistic proportions, realistic anatomy, realistic face, small narrow eyes, long nose, muddy shading, dirty colors, smeared gradients, blurry, noisy, rosy cheeks, blush marks, photorealistic, 3d render, text, watermark, background, ground shadow",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "guidance": 9
+  },
+  {
+   "id": "s5_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s5_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute girl forest hunter apprentice, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed woodcutter axe taller than her with a long wooden handle and a wide steel blade resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "s5_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s5_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute girl forest hunter apprentice, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed woodcutter axe taller than her with a long wooden handle and a wide steel blade resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "s6_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s6_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime style JRPG pixel art battle sprite in the HD-2D look of the Live A Live remake and Octopath Traveler II, kawaii SD chara-design at 3 heads tall, big head and a small slim body, cheerful girl hunter apprentice, cute anime face with large expressive green eyes with two bright highlights and dark upper lashes, tiny nose, small open-mouth grin, plain cheeks without blush, dark brown hair in two thick braided pigtails with clear individual strands, deep green hood pulled up and framing her face with the braids hanging out in front, orange scarf wrapped once around her neck, cream shirt and brown leather chest piece, deep green cloak swaying, short leather boots, a huge two-handed woodcutter axe taller than she is with a long wooden haft and a wide steel blade with a bright edge, held over her right shoulder with both hands, energetic idle pose leaning slightly forward with her head tilted, cel shaded pixel art with clean two-tone highlights and a soft dark shadow side, hair and cloth folds rendered with care, selective dark outline, refined muted JRPG palette, 24 colors, transparent background, three-quarter front view from slightly above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose, face hidden by hood",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "guidance": 9
+  },
+  {
+   "id": "s6_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s6_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime style JRPG pixel art battle sprite in the HD-2D look of the Live A Live remake and Octopath Traveler II, kawaii SD chara-design at 3 heads tall, big head and a small slim body, cheerful girl hunter apprentice, cute anime face with large expressive green eyes with two bright highlights and dark upper lashes, tiny nose, small open-mouth grin, plain cheeks without blush, dark brown hair in two thick braided pigtails with clear individual strands, deep green hood pulled up and framing her face with the braids hanging out in front, orange scarf wrapped once around her neck, cream shirt and brown leather chest piece, deep green cloak swaying, short leather boots, a huge two-handed woodcutter axe taller than she is with a long wooden haft and a wide steel blade with a bright edge, held over her right shoulder with both hands, energetic idle pose leaning slightly forward with her head tilted, cel shaded pixel art with clean two-tone highlights and a soft dark shadow side, hair and cloth folds rendered with care, selective dark outline, refined muted JRPG palette, 24 colors, transparent background, three-quarter front view from slightly above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose, face hidden by hood",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "guidance": 9
+  },
+  {
+   "id": "s7_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s7_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime chibi pixel art sprite, kawaii SD super-deformed girl 2.5 heads tall, a cheerful apprentice forest hunter, colored like a gentle watercolor picture book. Big round head with a soft round face, huge sparkling anime eyes in bright green with two white highlights each, thin arched eyebrows, a tiny dot nose, a small closed smiling mouth, plain cheeks with no blush marks. Dark brown hair drawn as clean chunky locks with one lighter highlight band, two thick braided pigtails hanging in front of the shoulders. Tiny slim body, short legs, deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, an orange scarf at the neck, short leather boots. Cute idle pose: the huge two-handed woodcutter axe, long wooden handle and wide polished steel blade with a bright edge, taller than her, rests on her right shoulder held in one hand, the other hand a small fist on her hip, feet close together. Clean cel-style pixel shading in two tones with soft watercolor-wash colors: cream paper, deep green, warm leather brown, one orange accent, thin dark ink outline, readable silhouette, 24 color palette, transparent background.",
+   "negative": "western cartoon, american cartoon, disney style, cartoon network style, chinese mobile game style, realistic proportions, realistic face, small eyes, long nose, tall body, 5 heads tall, adult, muddy shading, dirty pixels, blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, plush, goblin, sad, scary, kimono, samurai armor, katana",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "s7_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s7_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese anime chibi pixel art sprite, kawaii SD super-deformed girl 2.5 heads tall, a cheerful apprentice forest hunter, colored like a gentle watercolor picture book. Big round head with a soft round face, huge sparkling anime eyes in bright green with two white highlights each, thin arched eyebrows, a tiny dot nose, a small closed smiling mouth, plain cheeks with no blush marks. Dark brown hair drawn as clean chunky locks with one lighter highlight band, two thick braided pigtails hanging in front of the shoulders. Tiny slim body, short legs, deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, an orange scarf at the neck, short leather boots. Cute idle pose: the huge two-handed woodcutter axe, long wooden handle and wide polished steel blade with a bright edge, taller than her, rests on her right shoulder held in one hand, the other hand a small fist on her hip, feet close together. Clean cel-style pixel shading in two tones with soft watercolor-wash colors: cream paper, deep green, warm leather brown, one orange accent, thin dark ink outline, readable silhouette, 24 color palette, transparent background.",
+   "negative": "western cartoon, american cartoon, disney style, cartoon network style, chinese mobile game style, realistic proportions, realistic face, small eyes, long nose, tall body, 5 heads tall, adult, muddy shading, dirty pixels, blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, plush, goblin, sad, scary, kimono, samurai armor, katana",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "s8_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s8_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "JRPG pixel art sprite in the style of an HD-2D game character, Japanese kawaii chibi girl 2.5 heads tall, an energetic apprentice forest hunter, in gentle watercolor picture-book colors. Oversized round head, soft round face, very large anime eyes in bright green taking up a third of the face, each with two sparkling white highlights, visible eyebrows peeking through the bangs, a tiny nose, a small open cheerful smile, plain cheeks with no blush marks. Dark brown hair in stylized clean locks with side bangs and two braided pigtails. Petite slim body with short limbs, deep green hooded cloak with the hood down, orange scarf around the neck, cream shirt under a brown leather chest piece, short boots. Idle stance: both small hands grip the long wooden handle of a huge two-handed woodcutter axe with a wide polished steel blade and bright edge, the axe taller than her resting across her right shoulder, weight on one leg, a playful lean. Flat cel shading with one shadow tone and one highlight, watercolor palette of cream paper, deep green, warm leather brown and one orange accent, thin dark ink outline, readable silhouette, 24 color palette, transparent background.",
+   "negative": "western cartoon, american cartoon, disney style, chinese mobile game style, realistic proportions, realistic face, small eyes, long nose, tall body, 5 heads tall, adult, muddy shading, soft gradients, dirty pixels, blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, plush, goblin, sad, scary, kimono, samurai armor, katana",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "medium detail",
+   "guidance": 9
+  },
+  {
+   "id": "s8_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-jp/s8_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "JRPG pixel art sprite in the style of an HD-2D game character, Japanese kawaii chibi girl 2.5 heads tall, an energetic apprentice forest hunter, in gentle watercolor picture-book colors. Oversized round head, soft round face, very large anime eyes in bright green taking up a third of the face, each with two sparkling white highlights, visible eyebrows peeking through the bangs, a tiny nose, a small open cheerful smile, plain cheeks with no blush marks. Dark brown hair in stylized clean locks with side bangs and two braided pigtails. Petite slim body with short limbs, deep green hooded cloak with the hood down, orange scarf around the neck, cream shirt under a brown leather chest piece, short boots. Idle stance: both small hands grip the long wooden handle of a huge two-handed woodcutter axe with a wide polished steel blade and bright edge, the axe taller than her resting across her right shoulder, weight on one leg, a playful lean. Flat cel shading with one shadow tone and one highlight, watercolor palette of cream paper, deep green, warm leather brown and one orange accent, thin dark ink outline, readable silhouette, 24 color palette, transparent background.",
+   "negative": "western cartoon, american cartoon, disney style, chinese mobile game style, realistic proportions, realistic face, small eyes, long nose, tall body, 5 heads tall, adult, muddy shading, soft gradients, dirty pixels, blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, plush, goblin, sad, scary, kimono, samurai armor, katana",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "medium detail",
+   "guidance": 9
+  }
+ ],
+ "meta": [
+  {
+   "n": 1,
+   "name_ja": "ディスガイア型",
+   "intent_ja": "魔界戦記ディスガイア準拠の2頭身＝頭が体と同じ大きさ・目は顔の半分・太い黒線とベタ塗り2階調で「日本のSD」を一発で読ませる（128px立ち絵は同文の頭身を『3 heads tall, full body standing portrait』に差し替え・detail を highly detailed に上げる）"
+  },
+  {
+   "n": 2,
+   "name_ja": "元気SD2.5頭身",
+   "intent_ja": "2.5頭身の元気な構え＋フード上げ＝HD-2Dの舞台で埋もれない輪郭。硬い2階調のセル影とリム光で「中華/欧米の滑らかグラデ」を断つ（128px立ち絵は同文で『3 heads tall, standing portrait』・shading を detailed shading に）"
+  },
+  {
+   "n": 3,
+   "name_ja": "FEHちび立ち絵",
+   "intent_ja": "FEH・プリコネのちびユニットの型（丸顔・キラキラ瞳・房ごとの髪・腰に手の可愛い立ち姿）にセル塗りで寄せる。128px立ち絵は同文で size=128・「2.5 heads」を「3 heads」に置換・view side・direction south で通る"
+  },
+  {
+   "n": 4,
+   "name_ja": "日本一SDドット",
+   "intent_ja": "日本一（魔界戦記）とオクトラHD-2Dのスプライトの型＝頭でっかちで足が短い元気なSD、両手で斧を担ぐ動きのある立ち姿、2〜3階調のセル塗りで「安い海外風」の写実寄り比率を消す"
+  },
+  {
+   "n": 5,
+   "name_ja": "オクトラ正統",
+   "intent_ja": "「水彩絵本」を捨てて Octopath/Live A Live のHD-2D語彙に全置換。3頭身＋アニメ顔（大きな目・二点ハイライト・点鼻・小口）＋3段セル塗り＋静の構え。128立ち絵は冒頭を 'full body standing portrait, about 4 heads tall' に差し替えれば同スタイルで伸びる。"
+  },
+  {
+   "n": 6,
+   "name_ja": "ライブアライブ元気",
+   "intent_ja": "同じHD-2D語彙でフードを被せ・前傾＋首かしげの動の構え・開いた口の笑顔＝「元気な見習い」を顔と姿勢で出す。detailed shading で髪の房と布のしわを深く。128立ち絵は 'full body standing portrait, about 4 heads tall' に差し替えて同スタイル。"
+  },
+  {
+   "n": 7,
+   "name_ja": "絵本SDアニメ顔",
+   "intent_ja": "画材は水彩絵本のまま、顔と頭身だけ日本のSDチビ（大きな二つ光の目・点鼻・小口・丸顔）に差し替える最小折衷。128立ち絵は冒頭を「about 4 heads tall, full body standing portrait」に、頭身の語を消して同文で流用可"
+  },
+  {
+   "n": 8,
+   "name_ja": "HD-2Dセル顔",
+   "intent_ja": "オクトラ系HD-2D JRPGスプライトを錨に、目が顔の1/3を占めるアニメ顔＋フラットなセル塗り2階調で「安い西洋顔」を構造から消す。128立ち絵は「about 4 heads tall, full body standing portrait」に置き換え、目の比率と2階調は据え置きで同じ画材が通る"
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "_note": "このは v3 (2026-09-11 ユーザー「このはの武器をもっと設定にあったものに」→「マナを通す機械仕掛けの大鶴嘴」)。髪・外套・首巻きは v2 (D_おさげ_1_外套_11) と同じ文で武器だけ差し替え。3シードから選ぶ。向きは肌色の重心で検算し左向きは反転。",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   64,
+   64
+  ],
+  "view": "low top-down",
+  "direction": "south-east",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 8,
+  "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, axe, scythe, adult, tall proportions, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes"
+ },
+ "items": [
+  {
+   "id": "konoha_pick_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pick/konoha_pick_11.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic young mine-delving artisan witch, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed mining pickaxe taller than her: a long wooden haft bound with brass bands and a small brass gear near the head, a heavy dark iron pick head with one pointed tip and one flat hammer face, a small glowing teal mana crystal set in the socket where head meets haft, resting the pickaxe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+  },
+  {
+   "id": "konoha_pick_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pick/konoha_pick_61.png",
+   "seed": 61,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic young mine-delving artisan witch, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed mining pickaxe taller than her: a long wooden haft bound with brass bands and a small brass gear near the head, a heavy dark iron pick head with one pointed tip and one flat hammer face, a small glowing teal mana crystal set in the socket where head meets haft, resting the pickaxe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+  },
+  {
+   "id": "konoha_pick_23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/pick/konoha_pick_23.png",
+   "seed": 23,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic young mine-delving artisan witch, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed mining pickaxe taller than her: a long wooden haft bound with brass bands and a small brass gear near the head, a heavy dark iron pick head with one pointed tip and one flat hammer face, a small glowing teal mana crystal set in the socket where head meets haft, resting the pickaxe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+  }
+ ]
+}

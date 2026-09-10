@@ -1,8 +1,8 @@
 {
-  "id": "green_strike_5",
+  "id": "green_strike_29",
   "engine": "pixflux",
   "request": {
-    "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a huge two-handed woodcutter axe with a long wooden handle wrapped in cloth and a wide worn iron blade swinging diagonally with a burst of impact sparks at the blade edge, close-up, no hands",
+    "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a huge two-handed magitech axe with a long wooden handle bound with brass bands, a brass cogwheel at the eye of the axe, a wide dark steel blade with three small glowing teal mana crystal shards embedded in it swinging diagonally with a burst of impact sparks and a faint teal glow at the crystal shards, close-up, no hands",
     "negative_description": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors",
     "image_size": {
       "width": 80,
@@ -14,11 +14,11 @@
     "shading": "detailed shading",
     "detail": "highly detailed",
     "view": "side",
-    "seed": 5
+    "seed": 29
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T05:06:15.254Z"
+  "at": "2026-09-10T17:34:41.046Z"
 }

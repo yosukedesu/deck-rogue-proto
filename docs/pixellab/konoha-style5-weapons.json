@@ -1,0 +1,241 @@
+{
+ "_note": "このは 絵柄5 (オクトラ正統・HD-2D 3頭身アニメ顔。2026-09-11 ユーザー「5がいいね」) を土台に武器4種を比較。大斧は4シード・他は2シード",
+ "defaults": {
+  "engine": "pixflux",
+  "no_background": true
+ },
+ "items": [
+  {
+   "id": "w_axe_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_axe_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed woodcutter axe taller than her with a long wooden handle and a wide steel blade resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_axe_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_axe_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed woodcutter axe taller than her with a long wooden handle and a wide steel blade resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_axe_23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_axe_23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed woodcutter axe taller than her with a long wooden handle and a wide steel blade resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_axe_41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_axe_41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed woodcutter axe taller than her with a long wooden handle and a wide steel blade resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_masakari_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_masakari_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge masakari, a Japanese broad axe with one wide crescent-moon steel blade wider than her torso and a thick oak haft wrapped in braided cord, taller than her, resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_masakari_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_masakari_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge masakari, a Japanese broad axe with one wide crescent-moon steel blade wider than her torso and a thick oak haft wrapped in braided cord, taller than her, resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_pick_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_pick_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed mining pickaxe taller than her, a thick oak haft bound with brass bands and a small brass gear at the neck, a heavy dark iron pick head with a pointed tip and a flat hammer face, a small glowing teal mana crystal set in the socket, resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_pick_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_pick_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed mining pickaxe taller than her, a thick oak haft bound with brass bands and a small brass gear at the neck, a heavy dark iron pick head with a pointed tip and a flat hammer face, a small glowing teal mana crystal set in the socket, resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_hammer_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_hammer_11.png",
+   "seed": 11,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge mana-driven piston hammer taller than her, a massive riveted dark iron hammer head as big as her torso with brass bands and two short exhaust stacks, a small round teal mana crystal window on the side, a thick wooden shaft with a brass gear at the neck, resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  },
+  {
+   "id": "w_hammer_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/chibi-w/w_hammer_61.png",
+   "seed": 61,
+   "size": [
+    64,
+    64
+   ],
+   "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge mana-driven piston hammer taller than her, a massive riveted dark iron hammer head as big as her torso with brass bands and two short exhaust stacks, a small round teal mana crystal window on the side, a thick wooden shaft with a brass gear at the neck, resting on her right shoulder, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+   "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+   "view": "low top-down",
+   "direction": "south-east",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "highly detailed",
+   "guidance": 8
+  }
+ ],
+ "meta": [
+  {
+   "id": "w_axe_11",
+   "key": "axe",
+   "name_ja": "元の大斧",
+   "seed": 11
+  },
+  {
+   "id": "w_axe_61",
+   "key": "axe",
+   "name_ja": "元の大斧",
+   "seed": 61
+  },
+  {
+   "id": "w_axe_23",
+   "key": "axe",
+   "name_ja": "元の大斧",
+   "seed": 23
+  },
+  {
+   "id": "w_axe_41",
+   "key": "axe",
+   "name_ja": "元の大斧",
+   "seed": 41
+  },
+  {
+   "id": "w_masakari_11",
+   "key": "masakari",
+   "name_ja": "鉞",
+   "seed": 11
+  },
+  {
+   "id": "w_masakari_61",
+   "key": "masakari",
+   "name_ja": "鉞",
+   "seed": 61
+  },
+  {
+   "id": "w_pick_11",
+   "key": "pick",
+   "name_ja": "機械の大鶴嘴",
+   "seed": 11
+  },
+  {
+   "id": "w_pick_61",
+   "key": "pick",
+   "name_ja": "機械の大鶴嘴",
+   "seed": 61
+  },
+  {
+   "id": "w_hammer_11",
+   "key": "hammer",
+   "name_ja": "マナ動力槌",
+   "seed": 11
+  },
+  {
+   "id": "w_hammer_61",
+   "key": "hammer",
+   "name_ja": "マナ動力槌",
+   "seed": 61
+  }
+ ]
+}

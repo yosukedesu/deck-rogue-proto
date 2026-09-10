@@ -1,26 +1,21 @@
 {
-  "id": "D_おさげ_1_外套_11",
-  "engine": "pixflux",
-  "request": {
-    "description": "pixel art in the style of a gentle watercolor picture book illustration, cute chibi girl 2.5 heads tall, an energetic apprentice forest hunter, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
-    "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, tall proportions, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes",
-    "image_size": {
-      "width": 64,
-      "height": 64
-    },
-    "text_guidance_scale": 8,
-    "no_background": true,
-    "outline": "selective outline",
-    "shading": "medium shading",
-    "detail": "highly detailed",
-    "view": "low top-down",
-    "direction": "south-east",
-    "seed": 11
-  },
-  "usage": {
-    "type": "generations",
-    "generations": 1
-  },
-  "at": "2026-09-08T05:57:27.634Z",
-  "postprocess": "生成が左向きだったので左右反転 (肌色の重心で検算)。2026-09-08 ユーザー裁定: 焦げ茶のおさげ×深緑の外套 seed11・緑の目"
+ "id": "konoha_final",
+ "engine": "pixflux + composite",
+ "note": "2026-09-11 本採用。絵柄5「オクトラ正統」(HD-2D 3頭身アニメ顔) seed 11。キャラ＝x_a_edge_txt (刃先だけ結晶)、武器＝x_d_shards_txt (結晶の欠片が刃に) を武器の範囲だけ画素で移植 (scratchpad/chibi-x/final_check.png)。ユーザー「キャラデザは1! 武器は上段4」",
+ "character_request": {
+  "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed magitech axe taller than her resting on her right shoulder: a wide dark steel blade whose cutting edge is a thin strip of glowing translucent teal mana crystal, a brass cogwheel hub at the eye of the axe holding a small teal crystal core, a long wooden handle with brass bands, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+  "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
+  "view": "low top-down",
+  "direction": "south-east",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "guidance": 8,
+  "seed": 11
+ },
+ "weapon_request": {
+  "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed magitech axe taller than her resting on her right shoulder: a wide dark steel blade with three small glowing teal mana crystal shards embedded in it, a brass cogwheel hub at the eye of the axe holding a teal crystal core, a long wooden handle with brass bands, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
+  "seed": 11
+ },
+ "composite_zone": "head box x38-63,y5-34 + handle band (44,22)->(6,46) w2.6 + hand box x2-12,y40-49"
 }

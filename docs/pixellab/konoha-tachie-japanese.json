@@ -1,0 +1,246 @@
+{
+ "_note": "このは 立ち絵の武器案 (/home/yosuke/.claude/projects/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/subagents/workflows/wf_735cfb0d-487/journal.jsonl から生成。outfit=both)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   128,
+   128
+  ],
+  "view": "side",
+  "direction": "south-east",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 8,
+  "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body"
+ },
+ "items": [
+  {
+   "id": "j1_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j1_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a masakari, a Japanese broad axe like Kintaro's: a huge crescent-shaped black-lacquered iron head with a bright polished edge, mounted on a thick straight oak handle wrapped in hemp rope, with a red braided silk cord tied just below the head; a teal magatama bead and one small brass bell hang from that cord; a small round family-crest metal fitting is riveted on the axe cheek; the heavy axe rests on her right shoulder, one hand gripping the handle, blade rising above her head, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, double-bit axe, viking axe, western battle axe, steampunk, brass pipes, exposed gears, glowing runes"
+  },
+  {
+   "id": "j1_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j1_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a masakari, a Japanese broad axe like Kintaro's: a huge crescent-shaped black-lacquered iron head with a bright polished edge, mounted on a thick straight oak handle wrapped in hemp rope, with a red braided silk cord tied just below the head; a teal magatama bead and one small brass bell hang from that cord; a small round family-crest metal fitting is riveted on the axe cheek; the heavy axe rests on her right shoulder, one hand gripping the handle, blade rising above her head, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, double-bit axe, viking axe, western battle axe, steampunk, brass pipes, exposed gears, glowing runes"
+  },
+  {
+   "id": "j2_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j2_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a kakeya, a giant Japanese wooden mallet: a barrel-shaped head of pale oak as wide as her torso, bound with two black iron hoops and a crossed hemp rope, a white paper talisman strip pasted on the striking face and a teal magatama bead set into the end grain; a thick straight handle of dark wood wrapped with red braided cord at the grip; the mallet stands planted upright on the ground beside her, both hands resting on top of the head, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, metal hammer head, sledgehammer, warhammer, steampunk, brass pipes, exposed gears, glowing runes"
+  },
+  {
+   "id": "j2_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j2_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a kakeya, a giant Japanese wooden mallet: a barrel-shaped head of pale oak as wide as her torso, bound with two black iron hoops and a crossed hemp rope, a white paper talisman strip pasted on the striking face and a teal magatama bead set into the end grain; a thick straight handle of dark wood wrapped with red braided cord at the grip; the mallet stands planted upright on the ground beside her, both hands resting on top of the head, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, metal hammer head, sledgehammer, warhammer, steampunk, brass pipes, exposed gears, glowing runes"
+  },
+  {
+   "id": "j3_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j3_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a masakari, a Japanese broad axe like Kintaro's: one huge crescent-moon iron blade, wider than her torso, dull grey with a bright edge line; short thick haft of dark wood lacquered deep red (urushi), the neck below the head wrapped in braided teal silk cord (kumihimo); a small teal magatama bead set in the axe eye, one paper talisman strip and a tiny brass bell tied at the neck; held two-handed, haft resting on her right shoulder, blade rising above her head, edge facing outward, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, pickaxe, double-bit axe, viking axe, western battle axe, steel plate armor, blush marks"
+  },
+  {
+   "id": "j3_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j3_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a masakari, a Japanese broad axe like Kintaro's: one huge crescent-moon iron blade, wider than her torso, dull grey with a bright edge line; short thick haft of dark wood lacquered deep red (urushi), the neck below the head wrapped in braided teal silk cord (kumihimo); a small teal magatama bead set in the axe eye, one paper talisman strip and a tiny brass bell tied at the neck; held two-handed, haft resting on her right shoulder, blade rising above her head, edge facing outward, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, pickaxe, double-bit axe, viking axe, western battle axe, steel plate armor, blush marks"
+  },
+  {
+   "id": "j4_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j4_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a kakeya, a giant Japanese wooden mallet: one big rectangular block head of pale wood, as wide as her shoulders, bound by two black iron hoops, a round family-crest fitting (kamon) on its side face, a small wooden karakuri gear and a coiled brass spring showing through a cut window in the block, a teal magatama bead hanging on hemp rope at the neck; long thick unpainted haft; the mallet head rests on the ground at her feet, haft standing upright, both hands stacked on the handle end, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, pickaxe, war hammer, metal hammer head, sledgehammer, western blacksmith, steel plate armor, blush marks"
+  },
+  {
+   "id": "j4_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j4_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a kakeya, a giant Japanese wooden mallet: one big rectangular block head of pale wood, as wide as her shoulders, bound by two black iron hoops, a round family-crest fitting (kamon) on its side face, a small wooden karakuri gear and a coiled brass spring showing through a cut window in the block, a teal magatama bead hanging on hemp rope at the neck; long thick unpainted haft; the mallet head rests on the ground at her feet, haft standing upright, both hands stacked on the handle end, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, spear, naginata, thin staff, pickaxe, war hammer, metal hammer head, sledgehammer, western blacksmith, steel plate armor, blush marks"
+  },
+  {
+   "id": "j5_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j5_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a kakeya, a huge Japanese wooden mallet, held in both hands and resting on her right shoulder. The head is a large rectangular lacquered wooden box, dark wood grain with vermilion lacquer edges and brass clasps, one side open to show wooden karakuri gears and a coiled brass mainspring. A thick braided silk cord with a wooden toggle hangs from the head like a pull-string. A teal magatama bead is set in the box. Thick oak handle wrapped in hemp rope, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, sledgehammer, warhammer, metal hammer head, pickaxe, staff, sword, katana, spear, steampunk pipes, goggles, gemstone, glowing runes"
+  },
+  {
+   "id": "j5_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j5_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a kakeya, a huge Japanese wooden mallet, held in both hands and resting on her right shoulder. The head is a large rectangular lacquered wooden box, dark wood grain with vermilion lacquer edges and brass clasps, one side open to show wooden karakuri gears and a coiled brass mainspring. A thick braided silk cord with a wooden toggle hangs from the head like a pull-string. A teal magatama bead is set in the box. Thick oak handle wrapped in hemp rope, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, sledgehammer, warhammer, metal hammer head, pickaxe, staff, sword, katana, spear, steampunk pipes, goggles, gemstone, glowing runes"
+  },
+  {
+   "id": "j6_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j6_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a masakari, a Japanese broad axe, planted head-down on the ground with both hands stacked on top of the handle. The wide crescent blade is dark iron, mounted on a vermilion lacquered wooden housing at its neck that shows a large wooden cogwheel and a coiled spring behind a brass frame. A wooden wind-up key sticks out of the housing. Thick oak handle wrapped in braided crimson silk cord, a brass bell and a paper talisman strip tied below the head, a teal magatama bead set in the hub, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, naginata, spear, halberd, double-bladed axe, viking axe, battle axe, pickaxe, thin pole, steampunk goggles, glowing runes"
+  },
+  {
+   "id": "j6_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j6_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a masakari, a Japanese broad axe, planted head-down on the ground with both hands stacked on top of the handle. The wide crescent blade is dark iron, mounted on a vermilion lacquered wooden housing at its neck that shows a large wooden cogwheel and a coiled spring behind a brass frame. A wooden wind-up key sticks out of the housing. Thick oak handle wrapped in braided crimson silk cord, a brass bell and a paper talisman strip tied below the head, a teal magatama bead set in the hub, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, katana, sword, naginata, spear, halberd, double-bladed axe, viking axe, battle axe, pickaxe, thin pole, steampunk goggles, glowing runes"
+  },
+  {
+   "id": "j7_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j7_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a masakari, a Japanese broad axe like Kintaro's: one huge crescent-shaped iron blade wider than her torso, on a thick dark wooden haft as tall as she is, red lacquer at both ends. The axe socket is wrapped in a twisted shimenawa straw rope with white zigzag paper streamers (shide) and two small brass bells; a teal magatama bead is set into the eye of the axe head. The haft rests on her right shoulder, blade rising behind her head, both hands gripping the haft, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, sword, katana, spear, naginata, staff, thin pole, double-bit axe, viking axe, glowing runes, blush"
+  },
+  {
+   "id": "j7_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j7_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a masakari, a Japanese broad axe like Kintaro's: one huge crescent-shaped iron blade wider than her torso, on a thick dark wooden haft as tall as she is, red lacquer at both ends. The axe socket is wrapped in a twisted shimenawa straw rope with white zigzag paper streamers (shide) and two small brass bells; a teal magatama bead is set into the eye of the axe head. The haft rests on her right shoulder, blade rising behind her head, both hands gripping the haft, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, sword, katana, spear, naginata, staff, thin pole, double-bit axe, viking axe, glowing runes, blush"
+  },
+  {
+   "id": "j8_std",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j8_std.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a kakeya, a giant Japanese wooden mallet: a barrel-thick head of dark red-lacquered oak on a thick wooden handle, bound with two iron hoops and a coil of hemp rope, a round bronze mirror disc inlaid on the side of the head, a white paper ofuda talisman strip pasted beside it, and a teal magatama bead hanging from a red-and-white braided silk cord tied at the neck of the handle. The head sits on the ground in front of her boots, both hands resting on top of the handle, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, sword, katana, spear, naginata, staff, thin pole, metal sledgehammer, war hammer, glowing runes, blush"
+  },
+  {
+   "id": "j8_wa",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/j8_wa.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, a kakeya, a giant Japanese wooden mallet: a barrel-thick head of dark red-lacquered oak on a thick wooden handle, bound with two iron hoops and a coil of hemp rope, a round bronze mirror disc inlaid on the side of the head, a white paper ofuda talisman strip pasted beside it, and a teal magatama bead hanging from a red-and-white braided silk cord tied at the neck of the handle. The head sits on the ground in front of her boots, both hands resting on top of the handle, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, sword, katana, spear, naginata, staff, thin pole, metal sledgehammer, war hammer, glowing runes, blush"
+  }
+ ],
+ "meta": [
+  {
+   "id": "j1_std",
+   "n": 1,
+   "name_ja": "黒漆の鉞",
+   "concept_ja": "金太郎の鉞をそのまま大きく。黒漆の三日月刃と麻縄巻きの樫柄だけで一目で日本。肩に担ぐ縦長シルエット",
+   "outfit": "std"
+  },
+  {
+   "id": "j1_wa",
+   "n": 1,
+   "name_ja": "黒漆の鉞",
+   "concept_ja": "金太郎の鉞をそのまま大きく。黒漆の三日月刃と麻縄巻きの樫柄だけで一目で日本。肩に担ぐ縦長シルエット",
+   "outfit": "wa"
+  },
+  {
+   "id": "j2_std",
+   "n": 2,
+   "name_ja": "御札の掛矢",
+   "concept_ja": "杭打ちの大木槌。樽のような樫の頭に鉄輪と御札、地面に据えて両手を乗せる横に太いシルエット",
+   "outfit": "std"
+  },
+  {
+   "id": "j2_wa",
+   "n": 2,
+   "name_ja": "御札の掛矢",
+   "concept_ja": "杭打ちの大木槌。樽のような樫の頭に鉄輪と御札、地面に据えて両手を乗せる横に太いシルエット",
+   "outfit": "wa"
+  },
+  {
+   "id": "j3_std",
+   "n": 3,
+   "name_ja": "紅漆の鉞",
+   "concept_ja": "金太郎の鉞そのまま——半月の大刃を肩に担ぐ輪郭だけで、64pxでも一目で日本と読める斧",
+   "outfit": "std"
+  },
+  {
+   "id": "j3_wa",
+   "n": 3,
+   "name_ja": "紅漆の鉞",
+   "concept_ja": "金太郎の鉞そのまま——半月の大刃を肩に担ぐ輪郭だけで、64pxでも一目で日本と読める斧",
+   "outfit": "wa"
+  },
+  {
+   "id": "j4_std",
+   "n": 4,
+   "name_ja": "家紋の掛矢",
+   "concept_ja": "掛矢の四角い木槌頭を足元に据える——刃ではなく『木の塊＋鉄輪』の塊シルエットで鉞と真逆の輪郭にする",
+   "outfit": "std"
+  },
+  {
+   "id": "j4_wa",
+   "n": 4,
+   "name_ja": "家紋の掛矢",
+   "concept_ja": "掛矢の四角い木槌頭を足元に据える——刃ではなく『木の塊＋鉄輪』の塊シルエットで鉞と真逆の輪郭にする",
+   "outfit": "wa"
+  },
+  {
+   "id": "j5_std",
+   "n": 5,
+   "name_ja": "からくり掛矢",
+   "concept_ja": "掛矢（大木槌）の頭を朱漆の縁取りのからくり箱にして木の歯車と発条を覗かせ、頭から垂れる組紐の引き手で「人が糸を引いて動かす道具」を一目で読ませる。肩に担ぐ四角い塊のシルエット",
+   "outfit": "std"
+  },
+  {
+   "id": "j5_wa",
+   "n": 5,
+   "name_ja": "からくり掛矢",
+   "concept_ja": "掛矢（大木槌）の頭を朱漆の縁取りのからくり箱にして木の歯車と発条を覗かせ、頭から垂れる組紐の引き手で「人が糸を引いて動かす道具」を一目で読ませる。肩に担ぐ四角い塊のシルエット",
+   "outfit": "wa"
+  },
+  {
+   "id": "j6_std",
+   "n": 6,
+   "name_ja": "ぜんまい鉞",
+   "concept_ja": "金太郎の鉞（幅広の片刃斧）の首に朱漆のからくり筐体と木のねじ鍵を付け、里の工房で「ぜんまいを巻いて振る道具」にする。地面に突き立てて両手を重ねる、三日月刃のシルエット",
+   "outfit": "std"
+  },
+  {
+   "id": "j6_wa",
+   "n": 6,
+   "name_ja": "ぜんまい鉞",
+   "concept_ja": "金太郎の鉞（幅広の片刃斧）の首に朱漆のからくり筐体と木のねじ鍵を付け、里の工房で「ぜんまいを巻いて振る道具」にする。地面に突き立てて両手を重ねる、三日月刃のシルエット",
+   "outfit": "wa"
+  },
+  {
+   "id": "j7_std",
+   "n": 7,
+   "name_ja": "注連縄の鉞",
+   "concept_ja": "山の神の斧。注連縄と紙垂を巻いた鉞を肩に担ぎ、刃の目に嵌めた勾玉が光る",
+   "outfit": "std"
+  },
+  {
+   "id": "j7_wa",
+   "n": 7,
+   "name_ja": "注連縄の鉞",
+   "concept_ja": "山の神の斧。注連縄と紙垂を巻いた鉞を肩に担ぎ、刃の目に嵌めた勾玉が光る",
+   "outfit": "wa"
+  },
+  {
+   "id": "j8_std",
+   "n": 8,
+   "name_ja": "神鏡の掛矢",
+   "concept_ja": "小さな祠のような大槌。神鏡と御札を嵌めた掛矢を足元に据え、勾玉が柄元から揺れる",
+   "outfit": "std"
+  },
+  {
+   "id": "j8_wa",
+   "n": 8,
+   "name_ja": "神鏡の掛矢",
+   "concept_ja": "小さな祠のような大槌。神鏡と御札を嵌めた掛矢を足元に据え、勾玉が柄元から揺れる",
+   "outfit": "wa"
+  }
+ ]
+}

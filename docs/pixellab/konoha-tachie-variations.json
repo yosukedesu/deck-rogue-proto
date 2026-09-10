@@ -1,0 +1,126 @@
+{
+ "_note": "このは 立ち絵の武器バリエーション 8案 (2026-09-11。workflow konoha-weapon-variations の4レンズ×2案)。対照 (元の大斧) は konoha-tachie-control.json。頭と尾の文は対照と同じで武器の文だけ違う",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   128,
+   128
+  ],
+  "view": "side",
+  "direction": "south-east",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 8,
+  "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body"
+ },
+ "items": [
+  {
+   "id": "v1_tool",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v1_tool.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a huge mana-driven piston hammer taller than her: a massive blocky dark iron hammer head as big as her torso, shaped like a riveted locomotive cylinder with brass bands, a brass piston rod and two short exhaust stacks sticking up from the top of the head, a small round teal mana crystal window on the side of the head, a thick wooden shaft with a large brass gear at the neck, resting the hammer on her shoulder with both hands gripping the shaft in an idle stance, a small wisp of steam rising from the vents, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, sword, pickaxe, axe, farming tool, thin pole, mallet"
+  },
+  {
+   "id": "v2_tool",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v2_tool.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, a huge mana-driven rock drill as long as she is tall: a thick tapered dark iron drill bit with a deep spiral groove, as wide as her head at the base and narrowing to a point, mounted on a boxy brass engine block with one large exposed gear, copper pipes and a short chimney vent on top, a glowing teal mana crystal set into the engine block, two stubby side handles, held low at her hip with both hands, the drill tip pointing forward and down toward the ground, a puff of steam from the vent, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, sword, axe, pickaxe, gun, rifle, shovel, lance"
+  },
+  {
+   "id": "v3_machine",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v3_machine.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, A huge mining pick shouldered exactly like a woodcutter's axe: the iron head is one wide crescent, two long curved spikes spanning wider than her shoulders, tips curving down front and back like horns, with a teal mana crystal set in the thick center socket. Thick oak haft bound with two iron bands, longer than she is tall. She carries it over her right shoulder with both hands on the haft, the crescent head rising behind her head, weight leaning back, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, sword, hoe, sickle, scythe, thin pole, small hand pick, farming tool"
+  },
+  {
+   "id": "v4_machine",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v4_machine.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, A massive square gear-hammer resting head-down on the ground beside her: the head is a boxy iron block as wide as her torso and as tall as her knee, riveted on its face, a brass gear half-sunk into one side and a glowing teal mana vent slit across the front. Short thick oak haft, only as long as her torso, angled toward her; her right hand grips the top of the haft, left hand on her hip, as if the block is too heavy to lift casually, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, sword, thin pole, round hammer head, mallet on shoulder, shovel, farming tool"
+  },
+  {
+   "id": "v5_magic",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v5_magic.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, A huge two-handed great axe, as tall as she is, resting across her right shoulder with both hands gripping the thick oak haft. The wide crescent axe head is a single cleaved slab of teal mana crystal, faceted and glowing softly from within, clamped in a dark iron and brass bracket with visible rivets. Shallow rune grooves run down the leather-wrapped haft and glow the same teal. A faint teal halo surrounds the blade. Heavy, solid, clearly not a staff, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, sword, pickaxe, scythe, hoe, sickle, thin pole"
+  },
+  {
+   "id": "v6_magic",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v6_magic.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, A massive square-headed lantern maul, longer than she is tall, planted head-down on the ground at her side with both hands stacked on top of the thick iron-banded haft. The blocky hammer head is a dark iron cage of four riveted bars around a large teal mana crystal that glows through the gaps like a lantern. Two brass rune rings circle the neck of the haft and glow faintly. Heavy sledge proportions, chunky silhouette, nothing thin, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, sword, axe, pickaxe, hoe, hanging lantern, thin pole"
+  },
+  {
+   "id": "v7_silhouette",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v7_silhouette.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, A huge miner's pickaxe carried across her shoulder like a woodcutter's axe: a thick oak haft as long as she is tall, ending in a wide forged-iron head nearly as broad as her shoulders, one side a long curved pick spike, the other a short flat chisel point. At the neck where head meets haft, a small brass gear cluster and a coiled spring, with one thumb-sized teal mana crystal set in a socket. Both hands grip the haft near her hip, the head resting heavily behind her shoulder, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, spear, sword, hoe, mattock, shovel, scythe, upright thin pole"
+  },
+  {
+   "id": "v8_silhouette",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/v8_silhouette.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, A heavy hand-held rock drill shaped like a stubby jackhammer: a chunky riveted iron cylinder as wide as her head, reaching from the ground to her chest, with a leather-wrapped crossbar T-handle on top and a thick tapered steel chisel bit as fat as her wrist planted point-down between her boots. One brass gear and a coiled spring show through a side cutout, a small teal mana crystal cell clamped beside them. Both hands press down on the T-handle, her weight leaning onto it, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body, staff, wand, spear, sword, gun, rifle, cannon, thin pole, hoe, shovel"
+  }
+ ],
+ "meta": [
+  {
+   "id": "v1_tool",
+   "name_ja": "マナ動力槌",
+   "concept_ja": "機関車のシリンダーをそのまま槌頭にした杭打ち機。肩に担ぐ縦長の大質量シルエットで、大斧の「重さ」を機械で継ぐ",
+   "lens": "machine"
+  },
+  {
+   "id": "v2_tool",
+   "name_ja": "螺旋掘削錐",
+   "concept_ja": "歯車と配管を剥き出しにした機関ブロックに巨大な螺旋錐を付けた掘削機。腰だめに構え前下方へ突き出す横長シルエットで、槌とは真逆の形",
+   "lens": "machine"
+  },
+  {
+   "id": "v3_machine",
+   "name_ja": "双角の大鶴嘴",
+   "concept_ja": "大斧の「肩に担いだ大きな刃」をそのまま鶴嘴の巨大な三日月頭に置き換え、肩幅より広い二本角の輪郭で64pxでも一目で読ませる",
+   "lens": "silhouette"
+  },
+  {
+   "id": "v4_machine",
+   "name_ja": "歯車の大槌",
+   "concept_ja": "担ぐのでなく地面に据えた四角い鉄塊の槌頭で「持ち上げるのも重い」重量感を出し、鶴嘴の横広の角とは正反対の足元の大きな箱の輪郭で差別化する",
+   "lens": "silhouette"
+  },
+  {
+   "id": "v5_magic",
+   "name_ja": "脈晶の大斧",
+   "concept_ja": "元の大斧の重さと肩に担ぐ影をそのまま残し、斧の頭そのものを割り出したマナ脈の結晶に置き換えて刃が内側から光る。",
+   "lens": "magic"
+  },
+  {
+   "id": "v6_magic",
+   "name_ja": "灯晶の大槌",
+   "concept_ja": "鉄の檻に結晶を灯した四角い頭の大槌を地面に突き立てる——塊が下にある影で「重い道具の芯に光が宿る」を斧と別の形で見せる。",
+   "lens": "magic"
+  },
+  {
+   "id": "v7_silhouette",
+   "name_ja": "双頭の大鶴嘴",
+   "concept_ja": "本物の鶴嘴を斧と同じ肩担ぎに戻す。頭を肩幅まで広げて重さを読ませ、マナ機構は首元の歯車と発条と結晶1粒だけに絞る",
+   "lens": "tool"
+  },
+  {
+   "id": "v8_silhouette",
+   "name_ja": "発条削岩槌",
+   "concept_ja": "削岩機の形そのまま。頭幅の太い鉄胴を足元に据えて両手で押さえ込む縦の塊＝肩担ぎの横シルエットと対になる。発条と歯車で動く重機の重さ",
+   "lens": "tool"
+  }
+ ]
+}

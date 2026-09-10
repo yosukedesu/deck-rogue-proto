@@ -1,0 +1,34 @@
+{
+ "_note": "このは 立ち絵 (128px・4頭身) の対照＝元の大斧 (2026-09-11 ユーザー「これなら元のほうがいい。立ち絵でバリエーション作って選ばせて」)。武器案は konoha-weapon-variations の結果から同じ器で生成する",
+ "head": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, ",
+ "tail": ", muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   128,
+   128
+  ],
+  "view": "side",
+  "direction": "south-east",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 8,
+  "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body"
+ },
+ "items": [
+  {
+   "id": "ctrl_axe_11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/ctrl_axe_11.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+  },
+  {
+   "id": "ctrl_axe_61",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie/ctrl_axe_61.png",
+   "seed": 61,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green hooded cloak with the hood down over a leather chest piece and a cream shirt, short leather boots, holding a huge two-handed woodcutter axe with a long wooden handle and a wide polished steel blade with a bright edge, the axe is taller than her, resting the axe on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+  }
+ ]
+}

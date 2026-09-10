@@ -1,0 +1,26 @@
+{
+ "_note": "和装の対照 (2026-09-11 ユーザー「もっと日本らしく」): 服だけ和装 (頭巾・半纏・襷・脚絆・地下足袋) にした元の大斧＝鉞。武器案の和装版と見比べる用",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   128,
+   128
+  ],
+  "view": "side",
+  "direction": "south-east",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 8,
+  "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, staff, wand, bow, sword, adult, sad, scary, blush, rosy cheeks, red hair, orange hair, red eyes, chibi, tiny body"
+ },
+ "items": [
+  {
+   "id": "ctrl_wa_masakari",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/tachie-wa/ctrl_wa_masakari.png",
+   "seed": 11,
+   "description": "pixel art in the style of a gentle watercolor picture book illustration, cute girl about 4 heads tall, full body standing portrait, an energetic young mine-delving gear-witch artisan, dark brown two braided pigtails, big bright green eyes, cheerful confident expression, plain cheeks with no blush marks, orange scarf around the neck, a deep green zukin hood and a short deep green hanten work jacket with sleeves tied back by a cord (tasuki) over a cream kimono-style shirt, a leather apron, dark work trousers with kyahan leg wraps and jika-tabi split-toe boots, holding a huge masakari, a Japanese broad axe with a wide crescent iron blade and a long oak haft wrapped in braided cord, taller than her, resting it on her shoulder in an idle stance, muted palette of cream paper, deep green, warm leather brown and one warm orange accent, thin dark ink outline, soft shading like watercolor washes, clean readable silhouette, 24 color palette, transparent background, seen slightly from above, three-quarter front view facing right"
+  }
+ ]
+}
