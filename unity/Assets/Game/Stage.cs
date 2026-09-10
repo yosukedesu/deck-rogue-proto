@@ -420,6 +420,37 @@ namespace DeckRogue.Game
         }
 
         /// <summary>UI の入れ物の下端から足元までの高さ (敵ごとに違う。名前札や HP バーは入れ物の下端基準で同じ線に揃う)</summary>
+        // ---- からくりの匣 (2026-09-10 世界観「からくりだけ実物」): リーダーの足元に置く小さな木の匣。仕込むと蓋が開き、動かすと閃く ----
+        static GameObject _box; static Texture2D _boxClosed, _boxOpen; static int _boxShown = -1; static GameObject _boxGlow;
+        /// <summary>仕込み札の枚数に合わせて匣の蓋を開閉する。fired=true なら一度閃く (動かした)</summary>
+        public static void SetKarakuriBox(int setCount, bool fired)
+        {
+            Ensure();
+            if (_box == null || _box.transform.parent != _world)
+            {
+                _boxClosed = Px.KarakuriBox(false); _boxOpen = Px.KarakuriBox(true);
+                var pos = OnPath(-3.7f, -0.75f);   // リーダー (t=-5, s=0.9) の少し右手前 = 足元 (UI のポケットとは重ねない)
+                _box = Plane("karakuri-box", _boxClosed, pos + new Vector3(0f, 0.01f, 0f), 0.62f, 0.5f, true);
+                _boxGlow = Glow("karakuri-glow", Px.Glow(new Color(0.55f, 1f, 0.9f, 0.6f)), pos + new Vector3(0f, 0.45f, -0.15f), 1.6f, 1.6f);
+                _boxGlow.SetActive(false);
+                _boxShown = -1;
+            }
+            bool open = setCount > 0;
+            if (_boxShown != (open ? 1 : 0))
+            {
+                var mr = _box.GetComponent<MeshRenderer>();
+                var tex = open ? _boxOpen : _boxClosed;
+                mr.sharedMaterial.SetTexture("_BaseMap", tex); mr.sharedMaterial.mainTexture = tex;
+                _boxShown = open ? 1 : 0;
+            }
+            if (fired && _boxGlow != null)
+            {
+                _boxGlow.SetActive(true);
+                var t = _boxGlow.transform; var s0 = new Vector3(1.6f, 1.6f, 1f);
+                Tween.Run(0.45f, k => { if (_boxGlow == null) return; t.localScale = s0 * (1f + k * 0.9f); if (k >= 1f) _boxGlow.SetActive(false); }, Ease.OutQuad);
+            }
+        }
+
         public static void SetFeetOffset(string key, float y) { _feetOffsets[key] = y; }
         public static float FeetOffset(string key, float fallback) { float y; return _feetOffsets.TryGetValue(key, out y) ? y : fallback; }
 
@@ -878,6 +909,26 @@ namespace DeckRogue.Game
                     g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 }
             }
+            // 露頭 (2026-09-10 世界観改稿): 脈が地表に顔を出した場所。地面の細い割れ目が青緑に光り、光の粒はここから湧く。
+            // 群れの中心 (_lampPos) に太いのを1本、その周りに細いのを数本。幕2/3の脈の光と同じ色で繋ぐ
+            {
+                var seam = Px.Radial(new Color(0.45f, 0.95f, 0.86f, 0.75f));
+                var lb = new Vector3(_lampPos.x, 0f, _lampPos.z);
+                for (int i = 0; i < 7; i++)
+                {
+                    float ang = (i == 0) ? PathYaw + 18f : (float)rng.NextDouble() * 180f;
+                    float len = (i == 0) ? 3.6f : 1.2f + (float)rng.NextDouble() * 1.6f;
+                    float wid = (i == 0) ? 0.34f : 0.14f + (float)rng.NextDouble() * 0.1f;
+                    var off = (i == 0) ? Vector3.zero : new Vector3(-2.2f + (float)rng.NextDouble() * 4.4f, 0f, -1.6f + (float)rng.NextDouble() * 3.2f);
+                    var w = lb + off; w.y = GroundY(w.x, w.z) + 0.03f;
+                    var g = Glow("outcrop-seam", seam, w, 1f, 1f);
+                    g.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                    g.transform.rotation = Quaternion.Euler(90f, ang, 0f);
+                    g.transform.localScale = new Vector3(len, wid, 1f);
+                }
+                var ogo = new GameObject("outcrop-light"); ogo.transform.SetParent(_world, false); ogo.transform.position = lb + new Vector3(0f, 0.4f, 0f);
+                var ol = ogo.AddComponent<Light>(); ol.type = LightType.Point; ol.range = 3.2f; ol.intensity = 0.9f; ol.color = new Color(0.45f, 0.95f, 0.88f); ol.shadows = LightShadows.None;
+            }
             // 光る茸: 脈のマナを浴びて育つ森の灯 (世界観)。自発光の板 + 足元の青い暈 + いくつかは点光源。戦闘の場は避ける
             var shroom = PropTex(act, "shroom", Px.GlowShroom(p, rng));
             int lit = 0;
@@ -1108,6 +1159,47 @@ namespace DeckRogue.Game
                 var g = Prop("gate", dark, new Vector3(gx[i], 0f, 11.9f), 4.2f, 0.1f, 2.6f);
                 g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.6f);
             }
+            // 支保工 (2026-09-10): 先代の坑匠が組んだ木の門型が道に沿って奥へ連なる = 坑道の背骨。
+            // MB.Box は軸に平行なので、道の向きに寝かせる梁は小さな箱を並べて作る
+            var mWood = Lit(Px.Solid(UiKit.Hex("#4a3a2c")));
+            var timber = new MB();
+            for (int i = 0; i < 9; i++)
+            {
+                float t = -22f + i * 5.6f;
+                var a = OnPath(t, -5.2f); var b = OnPath(t, 6.6f);
+                timber.Box(a.x, 0f, a.z, 0.5f, 4.3f, 0.5f);
+                timber.Box(b.x, 0f, b.z, 0.5f, 4.3f, 0.5f);
+                for (int k = 0; k <= 24; k++)   // 梁
+                {
+                    float u = k / 24f;
+                    timber.Box(Mathf.Lerp(a.x, b.x, u), 4.3f, Mathf.Lerp(a.z, b.z, u), 0.62f, 0.42f, 0.62f);
+                }
+                if (i % 3 == 0)                 // 斜めの方杖 (角の補強)
+                    for (int k = 0; k <= 5; k++)
+                    {
+                        float u = k / 5f;
+                        timber.Box(Mathf.Lerp(a.x, a.x + (b.x - a.x) * 0.16f, u), Mathf.Lerp(3.1f, 4.3f, u), Mathf.Lerp(a.z, a.z + (b.z - a.z) * 0.16f, u), 0.34f, 0.34f, 0.34f);
+                    }
+            }
+            Solid("timber", timber, mWood);
+
+            // トロッコの軌道 (2026-09-10): 場の奥を道に沿って走る。枕木 + 二本のレール
+            var mRail = Lit(Px.Solid(UiKit.Hex("#3a3a42")));
+            var rails = new MB();
+            for (float t = -26f; t <= 26f; t += 0.55f)
+            {
+                var r1 = OnPath(t, 8.1f); var r2 = OnPath(t, 9.3f);
+                rails.Box(r1.x, 0.16f, r1.z, 0.34f, 0.12f, 0.34f);
+                rails.Box(r2.x, 0.16f, r2.z, 0.34f, 0.12f, 0.34f);
+            }
+            for (float t = -26f; t <= 26f; t += 1.7f)   // 枕木
+                for (int k = 0; k <= 6; k++)
+                {
+                    var w = OnPath(t, Mathf.Lerp(7.9f, 9.5f, k / 6f));
+                    rails.Box(w.x, 0f, w.z, 0.4f, 0.16f, 0.4f);
+                }
+            Solid("rails", rails, mRail);
+
             // 提灯の柱: 道の両脇に。暖色の点光源と足元の光溜まり
             var lantern = PropTex(_paintedAct, "lantern", null);
             var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
@@ -1155,16 +1247,23 @@ namespace DeckRogue.Game
             var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
             var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.25f)), lampBase, 1f, 1f);
             mp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; mp.transform.rotation = Quaternion.Euler(90f, 0f, 0f); mp.transform.position = lampBase + new Vector3(0f, 0.035f, 0f); mp.transform.localScale = new Vector3(5f, 4.4f, 1f);
-            // 天井: 暗い丸天井の板 (空の代わり)。高い窓から一筋の月光
+            // 天井: 暗い岩天井の板 (空の代わり)
             var sky = Prop("sky", Px.Gradient(UiKit.Hex("#1a1014"), UiKit.Hex("#050305")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var beam = Px.Beam();
-            var b1 = Glow("moonbeam", beam, new Vector3(6f, 0.3f, 10f), 22f, 6f); b1.transform.rotation = Quaternion.Euler(0f, 0f, -12f);
-            Glow("window-glow", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.45f)), new Vector3(9f, 12f, 30f), 6f, 6f);
+            // 露頭 (2026-09-10。旧・高い窓からの月光を置換): 岩の割れ目から漏れるマナの光。
+            // 光のルールどおり色で分ける = 暖色は提灯の範囲だけ、脈は青緑
+            for (int i = 0; i < 5; i++)
+            {
+                var w = OnPath(-19f + i * 9.2f, 8.8f + (float)rng.NextDouble() * 1.4f);
+                float hy = 1.1f + (float)rng.NextDouble() * 1.6f;
+                Glow("vein-glow", Px.Glow(new Color(0.42f, 0.95f, 0.86f, 0.45f)), w + new Vector3(0f, hy, -0.25f), 2.4f, 2.4f);
+                var vgo = new GameObject("vein-light"); vgo.transform.SetParent(_world, false); vgo.transform.position = w + new Vector3(0f, hy, 0f);
+                var vl = vgo.AddComponent<Light>(); vl.type = LightType.Point; vl.range = 6f; vl.intensity = 0.8f; vl.color = new Color(0.4f, 0.95f, 0.9f); vl.shadows = LightShadows.None;
+            }
             RenderSettings.fogStartDistance = 12f; RenderSettings.fogEndDistance = 46f;
         }
 
-        /// <summary>幕3 坑底の古代都市 (2026-09-10 改稿。旧「月の回廊」): 底の黒い石の街路。両脇の柱と鎖・跪く石像・冷たい火の篝火。空を埋める月とその光の帯</summary>
+        /// <summary>幕3 坑底の古代都市 (2026-09-10 改稿。旧「月の回廊」): 底の黒い石の街路。両脇の柱と鎖・跪く石像・古代の冷たい灯。奥に街の輪郭と今も回っている採掘機械。空は無く、脈の光が床の割れ目から立ち上る</summary>
         static void PaintCorridor(Pal p, System.Random rng, Material mFloor)
         {
             var pillar = PropTex(_paintedAct, "pillar", null); var chain = PropTex(_paintedAct, "chain", null); var statue = PropTex(_paintedAct, "statue", null); var brazier = PropTex(_paintedAct, "brazier", null);
@@ -1185,7 +1284,7 @@ namespace DeckRogue.Game
             foreach (float sv in new[] { -6.2f, 6.6f }) { var a = OnPath(-30f, sv); var b = OnPath(40f, sv); edge.Box((a.x + b.x) * 0.5f, 0f, (a.z + b.z) * 0.5f, 70f, 0.5f, 0.6f); }
             var step = OnPath(0f, 10f); edge.Box(step.x, 0f, step.z, 90f, 1.2f, 3f); edge.Box(step.x, 0f, step.z + 3f, 90f, 2.4f, 3f);
             Solid("corridor-edge", edge, mDark);
-            // 石像と篝火 (冷たい青の火 = 月光の白の仲間。暖色は無い)
+            // 石像と古代の灯 (冷たい青の火。暖色は無い = 人のいない場所)
             if (statue != null) { Plane("statue", statue, OnPath(-20f, 3.2f), 3.2f, 0.5f, true); var s2 = Plane("statue", statue, OnPath(22f, 3.4f), 3.2f, 0.5f, true); s2.transform.localScale = new Vector3(-s2.transform.localScale.x, s2.transform.localScale.y, 1f); }
             float[] bt = { -10f, 8f, 16f, -2f };
             for (int i = 0; i < bt.Length; i++)
@@ -1200,22 +1299,33 @@ namespace DeckRogue.Game
             var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
             var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.22f)), lampBase, 1f, 1f);
             mp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; mp.transform.rotation = Quaternion.Euler(90f, 0f, 0f); mp.transform.position = lampBase + new Vector3(0f, 0.035f, 0f); mp.transform.localScale = new Vector3(5f, 4.4f, 1f);
-            // 空を埋める月と星、月光の帯が床に落ちる
-            var sky = Prop("sky", Px.Gradient(UiKit.Hex("#0b1424"), UiKit.Hex("#03060c")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
+            // 岩天井と、脈の光にぼんやり浮かぶ古代都市 (2026-09-10。旧・空を埋める月と月光の帯を置換。ここは坑の底なので空は無い)
+            var sky = Prop("sky", Px.Gradient(UiKit.Hex("#08181c"), UiKit.Hex("#02070a")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var stars = Prop("stars", Px.Stars(rng), new Vector3(0f, 6f, 88f), 14f, 0.3f, 150f);
-            stars.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); stars.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var moon = Prop("moon", Px.Disc(new Color(2.2f, 2.1f, 1.8f)), new Vector3(8f, 9.6f, 84f), 13f, 0.4f);   // 空を埋める月 (帯の中に全部入る)
-            moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
-            moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white); moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.55f)), new Vector3(8f, 9.6f, 84.5f), 28f, 28f);
-            var beam = Px.Beam();
+            // 地平の脈の光: 街の輪郭が黒く抜けて読めるように、街の後ろに広い青緑の光の帯を敷く (旧世界の月の代わりの明るい背景)
+            Glow("vein-horizon", Px.Radial(new Color(0.35f, 0.9f, 0.82f, 0.7f)), new Vector3(4f, 2.5f, 66f), 22f, 170f);
+            Glow("vein-horizon2", Px.Radial(new Color(0.45f, 1f, 0.9f, 0.45f)), new Vector3(-18f, 2f, 64f), 14f, 80f);
+            var city = Prop("city-far", Px.Skyline(p, rng), new Vector3(2f, 1.4f, 58f), 13f, 0.3f, 170f);       // 街の輪郭 (奥。手前の段と柱の上に頭が出る高さ)
+            city.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.55f); city.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var city2 = Prop("city-near", Px.Skyline(p, rng), new Vector3(-14f, 1.0f, 46f), 9f, 0.3f, 120f);    // 街の輪郭 (中景)
+            city2.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.4f); city2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            // 止まらない採掘機械: 街の向こうで今も回っている櫓 (幕1の坑口と同じ形 = 「同じものが底にもある」)
+            var rig = Prop("rig", Px.Headframe(p, rng), new Vector3(18f, 0.6f, 50f), 14f, 0.4f);
+            rig.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f); rig.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            // 街の窓明かり (脈の色。誰もいないのに灯っている)
+            for (int i = 0; i < 14; i++)
+            {
+                float wx = -34f + (float)rng.NextDouble() * 70f, wy = 0.8f + (float)rng.NextDouble() * 6f, wz = 44f + (float)rng.NextDouble() * 16f;
+                Glow("city-window", Px.Glow(new Color(0.4f, 0.9f, 0.85f, 0.3f)), new Vector3(wx, wy, wz), 2.2f, 2.2f);
+            }
+            // 脈の光: 床の割れ目から立ち上る (旧・月光の柱の置換。ここが世界でいちばん脈が濃い)
+            var beam = Px.Beam(new Color(0.5f, 1f, 0.92f));
             float[] bx = { -8f, 4f, 16f }; float[] bz = { 10f, 12f, 9f };
-            for (int i = 0; i < bx.Length; i++) { var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), 22f, 6f); b.transform.rotation = Quaternion.Euler(0f, 0f, -10f); }
+            for (int i = 0; i < bx.Length; i++) { var b = Glow("vein-beam", beam, new Vector3(bx[i], 0.3f, bz[i]), 22f, 6f); b.transform.rotation = Quaternion.Euler(0f, 0f, -10f); }
             for (float tt2 = -20f; tt2 <= 24f; tt2 += 3f)
             {
                 var c = OnPath(tt2, 0.4f);
-                var g = Glow("moon-on-floor", Px.Radial(new Color(0.75f, 0.85f, 1f, 0.16f)), new Vector3(c.x, 0.04f, c.z), 1f, 1f);
+                var g = Glow("vein-on-floor", Px.Radial(new Color(0.45f, 0.95f, 0.88f, 0.16f)), new Vector3(c.x, 0.04f, c.z), 1f, 1f);
                 g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(90f, 0f, 0f); g.transform.localScale = new Vector3(4.5f, 3f, 1f);
             }
             RenderSettings.fogStartDistance = 14f; RenderSettings.fogEndDistance = 58f;
@@ -2145,6 +2255,41 @@ namespace DeckRogue.Game
                 return t;
             }
 
+            /// <summary>からくりの匣 (2026-09-10): 小さな木の匣。open なら蓋が開いて中に仕込み札の裏 (夜色) と歯車が見える</summary>
+            public static Texture2D KarakuriBox(bool open)
+            {
+                int w = 24, h = 22;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var wood = UiKit.Hex("#6b4b33"); var woodL = UiKit.Hex("#8a6647"); var woodD = UiKit.Hex("#4a3222");
+                var iron = UiKit.Hex("#3a3a42"); var card = UiKit.Hex("#2b2d4d"); var brass = UiKit.Hex("#c9a04a"); var ink = UiKit.Hex("#221a16");
+                void Rect(int x0, int y0, int x1, int y1, Color c) { for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) if (x >= 0 && x < w && y >= 0 && y < h) { var cc = c; cc.a = 1f; px[y * w + x] = cc; } }
+                // 本体 (下 12 行): 板目と鉄の帯
+                Rect(2, 0, 21, 11, wood);
+                Rect(2, 0, 21, 0, woodD); Rect(2, 11, 21, 11, woodL);
+                Rect(2, 0, 2, 11, woodD); Rect(21, 0, 21, 11, woodD);
+                Rect(4, 2, 4, 9, iron); Rect(19, 2, 19, 9, iron);          // 鉄の帯
+                Rect(11, 4, 12, 6, brass);                                  // 錠前
+                for (int y = 3; y <= 9; y += 3) Rect(6, y, 17, y, woodD);   // 板目
+                if (!open)
+                {
+                    // 閉じた蓋 (上 6 行): 少し張り出す
+                    Rect(1, 12, 22, 16, woodL); Rect(1, 12, 22, 12, woodD); Rect(1, 16, 22, 16, wood);
+                    Rect(4, 13, 4, 15, iron); Rect(19, 13, 19, 15, iron);
+                }
+                else
+                {
+                    // 開いた蓋 (後ろへ立つ) と、中の仕込み札の裏と歯車
+                    Rect(3, 12, 20, 13, ink);                               // 口の影
+                    Rect(5, 13, 18, 16, card); Rect(5, 16, 18, 16, UiKit.Hex("#4a4d80"));   // 札の裏 (夜色)
+                    Rect(1, 15, 22, 21, woodL); Rect(1, 15, 22, 15, woodD); Rect(1, 21, 22, 21, woodD);   // 立った蓋
+                    Rect(4, 16, 4, 20, iron); Rect(19, 16, 19, 20, iron);
+                    Rect(10, 17, 13, 19, brass); Rect(11, 16, 12, 20, brass); Rect(9, 18, 14, 18, brass);   // 歯車
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
             /// <summary>光る茸: 淡い青緑の傘 2〜3 本 (自発光の板として置く)</summary>
             public static Texture2D GlowShroom(Pal p, System.Random rng)
             {
@@ -2170,7 +2315,10 @@ namespace DeckRogue.Game
             }
 
             /// <summary>月光の筋: 上が濃く下へ消える縦の帯、左右は柔らかく</summary>
-            public static Texture2D Beam()
+            public static Texture2D Beam() { return Beam(new Color(0.7f, 0.8f, 1f)); }
+
+            /// <summary>光の柱。色を渡せる (2026-09-10: 幕3 の脈の光は青緑)</summary>
+            public static Texture2D Beam(Color tint)
             {
                 int w = 32, h = 128;
                 var t = new Texture2D(w, h, TextureFormat.RGBA32, false);
@@ -2182,7 +2330,7 @@ namespace DeckRogue.Game
                         float u = (x + 0.5f) / w, v = (y + 0.5f) / h;
                         float side = Mathf.Sin(u * Mathf.PI); side *= side;
                         float a = side * Mathf.Pow(v, 1.3f) * 0.6f;
-                        px[y * w + x] = new Color(0.7f, 0.8f, 1f, a);
+                        px[y * w + x] = new Color(tint.r, tint.g, tint.b, a);
                     }
                 t.SetPixels(px); t.Apply();
                 return t;

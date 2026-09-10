@@ -75,6 +75,8 @@ namespace DeckRogue.Game
             _enemyHits.Clear();
         }
 
+        int _boxLogSeen;   // 匣の閃きに使った EventLog の読み位置
+
         public void ClearUi()
         {
             for (int i = UiLayer.childCount - 1; i >= 0; i--)
@@ -178,6 +180,11 @@ namespace DeckRogue.Game
             g.RegisterAnchor("player", _playerArea);
             BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp);
             _shownPlayerHp = st.Player.Hp;
+            // からくりの匣 (2026-09-10 世界観「からくりだけ実物」): 舞台のリーダーの足元。仕込み札があれば蓋が開き、動かした (ReactionTriggered) 直後は閃く
+            bool fired = false;
+            for (int i = _boxLogSeen; i < st.EventLog.Count; i++) if (st.EventLog[i] is GameEvent_ReactionTriggered) fired = true;
+            _boxLogSeen = st.EventLog.Count;
+            Stage.SetKarakuriBox(st.Player.SetCards.Count, fired);
         }
 
         /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上</summary>

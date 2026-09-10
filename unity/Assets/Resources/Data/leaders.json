@@ -32,7 +32,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_blue",
     "sprite": "🌊",
-    "description": "潮読みの導師。紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
+    "description": "潮読みの導師。潮の里の工房の出。紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
     "passive": [
       {
         "trigger": "onSpellPlayed",
@@ -53,7 +53,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_red",
     "sprite": "🌋",
-    "description": "燼の闘士。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
+    "description": "燼の闘士。燼の里の工房の出。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
     "passive": [
       {
         "trigger": "onAttackPlayed",
@@ -75,7 +75,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_izzet",
     "sprite": "⚡",
-    "description": "霹靂の魔道士。青赤の複合（イゼット）。紙耐久で手札4枚。毎ターン次のカード-1、報酬ピックの候補が4枚（基本3+1）（基本3+1）",
+    "description": "霹靂の魔道士。青赤の複合（イゼット）。潮と燼、二つの里の工房を修めた。紙耐久で手札4枚。毎ターン次のカード-1、報酬ピックの候補が4枚（基本3+1）（基本3+1）",
     "passive": [
       {
         "trigger": "onTurnStart",
@@ -96,7 +96,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_white",
     "sprite": "☀️",
-    "description": "光耀の聖歌士。歌に呼ばれて従者が駆けつける。従者が場に出た時、その従者のターン開始効果をすぐに1回解決する",
+    "description": "光耀の聖歌士。光耀の里の工房の出。歌に呼ばれて従者が駆けつける。従者が場に出た時、その従者のターン開始効果をすぐに1回解決する",
     "passive": [
       {
         "trigger": "onPermanentEntered",
@@ -116,7 +116,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_black",
     "sprite": "🌑",
-    "description": "宵闇の死霊術師。滅びを糧に立つ。カードが消滅するたびHP1回復",
+    "description": "宵闇の死霊術師。宵闇の里の工房の出。滅びを糧に立つ。カードが消滅するたびHP1回復",
     "passive": [
       {
         "trigger": "onCardExhausted",
@@ -138,7 +138,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_azorius",
     "sprite": "🕊️",
-    "description": "静粛の裁定官。白青の複合（アゾリウス）。何が来ても先に構えている。被攻撃前に自動でブロック2",
+    "description": "静粛の裁定官。白青の複合（アゾリウス）。光耀と潮、二つの里の工房を修めた。何が来ても先に構えている。被攻撃前に自動でブロック2",
     "passive": [
       {
         "trigger": "onAttackIncoming",
@@ -160,7 +160,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_rakdos",
     "sprite": "🎭",
-    "description": "血宴の踊り手。黒赤の複合（ラクドス）。痛みは演目の一部。カード効果でHPを失うたび対象に1ダメージ",
+    "description": "血宴の踊り手。黒赤の複合（ラクドス）。宵闇と燼、二つの里の工房を修めた。痛みは演目の一部。カード効果でHPを失うたび対象に1ダメージ",
     "passive": [
       {
         "trigger": "onHpLost",
@@ -182,7 +182,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_gruul",
     "sprite": "🐗",
-    "description": "荒野の蛮勇。赤緑の複合（グルール）。殴るほど熱く、太くなる。攻撃カードをプレイするたび勢い+1と成長+1",
+    "description": "荒野の蛮勇。赤緑の複合（グルール）。燼と大樹、二つの里の工房を修めた。殴るほど熱く、太くなる。攻撃カードをプレイするたび勢い+1と成長+1",
     "passive": [
       {
         "trigger": "onAttackPlayed",
@@ -209,7 +209,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_selesnya",
     "sprite": "🌱",
-    "description": "森集いの司。緑白の複合（セレズニア）。仲間が増えるほど森が育つ。置物が場に出るたび成長+1",
+    "description": "森集いの司。緑白の複合（セレズニア）。大樹と光耀、二つの里の工房を修めた。仲間が増えるほど森が育つ。置物が場に出るたび成長+1",
     "passive": [
       {
         "trigger": "onPermanentEntered",
@@ -231,7 +231,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_orzhov",
     "sprite": "🕯️",
-    "description": "彼岸の聖灯守。白黒の複合（オルゾフ）。命の灯は等価交換。HPが回復するたび対象に1ダメージ",
+    "description": "彼岸の聖灯守。白黒の複合（オルゾフ）。光耀と宵闇、二つの里の工房を修めた。命の灯は等価交換。HPが回復するたび対象に1ダメージ",
     "passive": [
       {
         "trigger": "onHealed",
@@ -253,7 +253,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_golgari",
     "sprite": "🍂",
-    "description": "腐土の園丁。黒緑の複合（ゴルガリ）。朽ちるものは糧になる。カードが消滅するたび成長+1",
+    "description": "腐土の園丁。黒緑の複合（ゴルガリ）。宵闇と大樹、二つの里の工房を修めた。朽ちるものは糧になる。カードが消滅するたび成長+1",
     "passive": [
       {
         "trigger": "onCardExhausted",
@@ -275,7 +275,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_boros",
     "sprite": "🌅",
-    "description": "暁軍の旗頭。赤白の複合（ボロス）。夜明けと共に従者が駆けつける。戦闘開始時、従者の少年トークン1体を召喚",
+    "description": "暁軍の旗頭。赤白の複合（ボロス）。燼と光耀、二つの里の工房を修めた。夜明けと共に従者が駆けつける。戦闘開始時、従者の少年トークン1体を召喚",
     "passive": [
       {
         "trigger": "onCombatStart",
@@ -298,7 +298,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_simic",
     "sprite": "💠",
-    "description": "変容の探究者。緑青の複合（シミック）。作り変えた器は大きく、脆い。エナジー上限4で開始し、戦闘開始時に1ドロー",
+    "description": "変容の探究者。緑青の複合（シミック）。大樹と潮、二つの里の工房を修めた。作り変えた器は大きく、脆い。エナジー上限4で開始し、戦闘開始時に1ドロー",
     "passive": [
       {
         "trigger": "onCombatStart",
@@ -320,7 +320,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_dimir",
     "sprite": "🌫️",
-    "description": "霞幕の密偵。青黒の複合（ディミア）。手の内は二重に隠す。仕込み枠が2つある（動かせるのは敵の1行動につき1枚まで）",
+    "description": "霞幕の密偵。青黒の複合（ディミア）。潮と宵闇、二つの里の工房を修めた。手の内は二重に隠す。仕込み枠が2つある（動かせるのは敵の1行動につき1枚まで）",
     "passive": [],
     "setSlots": 2
   }
