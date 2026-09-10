@@ -7,5 +7,6 @@
   0,
   0,
   0
- ]
+ ],
+ "facing": "right (左右反転した元絵から。scripts/konoha-weapon.py --flip = ZONE_R)"
 }

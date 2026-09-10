@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """このはの武器レイヤー合成 (2026-09-11。2026-09-09 の斧の手順を再現可能にした)。
 
-  mask    <chibi.png> <outdir>        武器の範囲 (頭の箱＋柄の帯＋手元) のマスクと武器レイヤー・握りの座標を出す
+  mask    <chibi.png> <outdir> [--flip]   武器の範囲 (頭の箱＋柄の帯＋手元) のマスクと武器レイヤー・握りの座標を出す (--flip = 左右反転した元絵)
   strip   <chibi.png> <weapon.png> <out.png>   武器の画素を消して体の穴を近傍色で埋めた「体だけ」の参考画像を作る
   compose <bodyframes_prefix> <weapon.png> <anchor.json> <kp.json> <out_prefix>
           [--canvas 96|128x96] [--angles a,b,c] [--extra-idle body.png] [--palette ref.png] [--place identity|hand] [--align body_ref.png] [--grips "x,y;x,y;..."]
@@ -14,7 +14,9 @@ from PIL import Image
 def load(p): return Image.open(p).convert('RGBA')
 
 # 武器の範囲 (2026-09-11 konoha_final.png): 頭の箱・柄の帯 (握りの線)・手元の光
-ZONE = {'head': (38, 63, 2, 34), 'haft': ((44, 22), (6, 46), 2.6), 'hand': (2, 12, 40, 49), 'grip': (17, 42)}
+ZONE_L = {'head': (38, 63, 2, 34), 'haft': ((44, 22), (6, 46), 2.6), 'hand': (2, 12, 40, 49), 'grip': (17, 42), 'sure_from': 45}   # 元絵 (左向き。斧は右肩)
+ZONE_R = {'head': (0, 25, 2, 34), 'haft': ((19, 22), (57, 46), 2.6), 'hand': (51, 61, 40, 49), 'grip': (46, 42), 'sure_to': 18}      # 左右反転 (右向き=敵の方。斧は左肩)
+ZONE = ZONE_L
 
 def in_zone(x, y):
     hx0, hx1, hy0, hy1 = ZONE['head']
@@ -45,7 +47,8 @@ def cmd_mask(src, outdir):
             r, g, b, a = ip[x, y]
             if a == 0: continue
             hx0, hx1, hy0, hy1 = ZONE['head']; x0, x1, y0, y1 = ZONE['hand']
-            sure = (x >= hx0 + 7 and hy0 <= y <= hy1) or (x0 <= x <= x1 and y0 <= y <= y1)   # 頭の箱の右側と手元は体に掛からない = 色を見ずに武器
+            in_head = hy0 <= y <= hy1 and ((x >= ZONE['sure_from']) if 'sure_from' in ZONE else (x <= ZONE['sure_to']))
+            sure = in_head or (x0 <= x <= x1 and y0 <= y <= y1)   # 頭の箱の外側と手元は体に掛からない = 色を見ずに武器
             if sure or not is_body_color((r, g, b)): wp[x, y] = (r, g, b, a)
     for _ in range(2):   # 穴埋め: 周囲4方向の3つ以上が武器なら武器 (輪郭の暗い線を拾う)
         add = []
@@ -145,10 +148,9 @@ def cmd_compose(prefix, weapon_png, anchor_json, kp_json, out_prefix, opts):
         out = Image.new('RGBA', (cw, chh), (0, 0, 0, 0)); out.paste(b2, off)
         pts = {p['label']: (p['x'] * 64, p['y'] * 64) for p in frames[i]}
         ra = pts.get('RIGHT ARM')
+        grip = grips[i] if grips and i < len(grips) else grip0
         if opts.get('place', 'identity') == 'hand' and ra: hx, hy = ra[0] + (sx if ref else 0), ra[1] + dy
         else: hx, hy = grip[0], grip[1] + dy
-        grip = grips[i] if grips and i < len(grips) else grip0
-        if not (opts.get('place', 'identity') == 'hand' and ra): hx, hy = grip[0], grip[1] + dy
         big = Image.new('RGBA', (128, 128), (0, 0, 0, 0)); big.paste(weapon, (32, 32))
         ang = angles[i] if i < len(angles) else 0.0
         rot = big.rotate(ang, resample=Image.NEAREST, center=(grip[0] + 32, grip[1] + 32))
@@ -165,6 +167,7 @@ if __name__ == '__main__':
     opts = {}
     for i, x in enumerate(a):
         if x.startswith('--'): opts[x[2:]] = a[i + 1] if i + 1 < len(a) and not a[i + 1].startswith('--') else '1'
+    if opts.get('flip'): ZONE = ZONE_R
     if cmd == 'mask': cmd_mask(pos[0], pos[1])
     elif cmd == 'strip': cmd_strip(pos[0], pos[1], pos[2])
     elif cmd == 'compose': cmd_compose(pos[0], pos[1], pos[2], pos[3], pos[4], opts)
