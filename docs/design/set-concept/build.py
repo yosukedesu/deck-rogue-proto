@@ -144,7 +144,33 @@ def art_kui(step):
     return s
 
 
-ART = {'shikake': art_shikake, 'ito': art_ito, 'tomoshibi': art_tomoshibi, 'kui': art_kui}
+def art_karakuri(step):
+    """カラクリ: 足元に据えた小さな木の匣（歯車と発条）。発動＝蓋がはじけて中身が飛び出す"""
+    bx, by = CX - 17, CY - 26
+    box = (f'<g transform="translate({bx},{by})">'
+           f'<rect x="0" y="8" width="34" height="18" rx="3" fill="#a8763f" stroke="#3b2f2f" stroke-width="1.4"/>'
+           f'<rect x="3" y="12" width="28" height="10" rx="2" fill="#8a6a3c"/>'
+           f'<circle cx="10" cy="17" r="4.2" fill="none" stroke="#e0b25a" stroke-width="1.6"/>'
+           f'<circle cx="10" cy="17" r="1.4" fill="#e0b25a"/>'
+           f'<circle cx="22" cy="19" r="3" fill="none" stroke="#c9a982" stroke-width="1.3"/>')
+    if step == 0:
+        # 蓋を閉じ、ぜんまいの取っ手を回している
+        return (box + f'<rect x="0" y="3" width="34" height="6" rx="2" fill="#c9a982" stroke="#3b2f2f" stroke-width="1.3"/>'
+                f'<path d="M34 14 q 8 -2 6 -8" fill="none" stroke="#3b2f2f" stroke-width="1.4"/>'
+                f'<circle cx="40" cy="5" r="2.6" fill="#c9a982" stroke="#3b2f2f" stroke-width="1.1"/></g>'
+                f'<circle cx="{CX}" cy="{CY-40}" r="11" fill="#e0b25a" opacity="0.20"/>')
+    if step == 1:
+        # 閉じたまま。歯車がひとつ噛んでいる印
+        return (box + f'<rect x="0" y="3" width="34" height="6" rx="2" fill="#c9a982" stroke="#3b2f2f" stroke-width="1.3"/></g>'
+                f'<circle cx="{CX-7}" cy="{CY-9}" r="1.5" fill="#e0b25a" opacity="0.85"/>')
+    # 作動: 蓋がはじけ、中身が敵へ飛ぶ
+    return (box + '</g>'
+            f'<g transform="rotate(-52 {bx} {by+4})"><rect x="{bx}" y="{by+1}" width="34" height="6" rx="2" fill="#f0d58a" stroke="#3b2f2f" stroke-width="1.3"/></g>'
+            f'<path d="M{CX+4} {CY-30} L{CX+40} {CY-46}" stroke="#ffe9a8" stroke-width="3.2" stroke-linecap="round"/>'
+            + ''.join(f'<circle cx="{CX+10+i*9}" cy="{CY-34-i*4}" r="2.1" fill="#f0d58a"/>' for i in range(4)))
+
+
+ART = {'shikake': art_shikake, 'ito': art_ito, 'tomoshibi': art_tomoshibi, 'kui': art_kui, 'karakuri': art_karakuri}
 
 
 def strip(key, steps):
@@ -177,7 +203,8 @@ def board(pkgs):
           'そこで第3版は <b>物として目に見える × どの色の道具でもない</b> に絞った。'
           '前提の訂正: 「罠」自体は色をまたいでいる（<b>囁きの罠は青</b>）。却下されたのは語ではなく「狩人が獣道に」という<b>物語の枠</b>だったので、'
           '物の具体性は残し、置く場所を<b>足元／敵とのあいだの地面</b>にして誰の職能でもなくする。'
-          '下の「物」はすべて実データで未使用（糸・灯・杭・仕掛は名前に一度も出てこない）。3コマで因果が読めることを最優先にした。</div>')
+          '下の「物」はすべて実データで未使用（からくり・仕掛・糸・灯・杭は名前に一度も出てこない）。3コマで因果が読めることを最優先にした。'
+          '<b>カラクリ</b>はユーザーの提案（2026-09-10）。塔は幕2＝工房の名残・歯車、幕3＝作られたもの、と元から作り物の場所なので相性がよい。</div>')
 
     for p in pkgs:
         pk = p['package']
@@ -214,7 +241,7 @@ def write(name, body):
 pkgs = json.load(open(os.path.join(OUT, 'packages3.json'), encoding='utf-8'))
 write('Main.dc.html', board(pkgs))
 json.dump({
-    'artboards': [{'file': 'Main.dc.html', 'title': '「伏せ」の言い換え（目に見える物・4案）', 'x': 0, 'y': 0, 'w': 1760, 'h': 2100, 'expand': 'fill'}],
+    'artboards': [{'file': 'Main.dc.html', 'title': '「伏せ」の言い換え（目に見える物・4案）', 'x': 0, 'y': 0, 'w': 1760, 'h': 2600, 'expand': 'fill'}],
     'annotations': [{'id': 'brief', 'x': 0, 'y': -150, 'w': 720,
                      'text': '第3版（2026-09-10）。第1版=緑の職能に見える／第2版=イメージしにくい、の2回の却下を受け、'
                              '「目に見える物 × どの色の道具でもない」に絞った。各案を3コマ（置く→敵が動く→作動）で見せる。'}],
