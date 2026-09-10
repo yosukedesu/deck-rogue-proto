@@ -193,7 +193,7 @@ namespace DeckRogue.Game
 
         static float Hz(float semiFromA2) { return 110f * Mathf.Pow(2f, semiFromA2 / 12f); }
 
-        /// <summary>幕ごとの雰囲気: 1=森の夜 (穏やか)、2=洞窟 (暗め・速め)、3=塔の頂 (緊張)。boss は速く重く</summary>
+        /// <summary>幕ごとの雰囲気: 1=森の夜 (穏やか)、2=坑道 (暗め・速め)、3=坑底の古代都市 (緊張)。boss は速く重く</summary>
         public static AudioClip Bgm(string name)
         {
             int act = name.Contains("3") ? 3 : name.Contains("2") ? 2 : 1;

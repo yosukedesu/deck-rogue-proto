@@ -26,7 +26,7 @@ namespace DeckRogue.Game
             title.characterSpacing = 8f;
             title.outlineWidth = 0.25f; title.outlineColor = Color.black;
             UiKit.Anchor(title.rectTransform, new Vector2(0f, 1f), new Vector2(0.6f, 1f), new Vector2(60f, -120f), new Vector2(0f, -30f));
-            var sub = UiKit.Txt(root, "古の塔を登る — リアクション式デッキ構築ローグライク (プロトタイプ)", 18, UiKit.ColDim, TextAnchor.MiddleLeft);
+            var sub = UiKit.Txt(root, "マナ脈の坑を降りる — からくり式デッキ構築ローグライク (プロトタイプ)", 18, UiKit.ColDim, TextAnchor.MiddleLeft);
             UiKit.Anchor(sub.rectTransform, new Vector2(0f, 1f), new Vector2(0.6f, 1f), new Vector2(64f, -150f), new Vector2(0f, -118f));
 
             RunUi.Message(g, root);

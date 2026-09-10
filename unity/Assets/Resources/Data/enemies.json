@@ -1138,7 +1138,7 @@
     "id": "enemy_elite_sentry",
     "name": "歩哨",
     "archetype": "elite",
-    "flavor": "塔の秩序を守る石の番人。侵入者の鞄にがらくたを詰め込む。",
+    "flavor": "古代都市の秩序を守る石の番人。侵入者の鞄にがらくたを詰め込む。",
     "maxHp": 42,
     "moves": [
       {
@@ -2990,7 +2990,7 @@
     "id": "enemy_chimera_1",
     "name": "蘇る合成獣・一の相",
     "archetype": "splitter",
-    "flavor": "古の塔の実験体。殺しても終わらない。一の相は噛み、頭突きで急所を晒す。",
+    "flavor": "古代都市の実験体。殺しても終わらない。一の相は噛み、頭突きで急所を晒す。",
     "maxHp": 50,
     "splitInto": {
       "enemyId": "enemy_chimera_2",

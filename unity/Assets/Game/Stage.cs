@@ -20,7 +20,7 @@ namespace DeckRogue.Game
     public static class Stage
     {
         public const float Fov = 36f;                   // 広めの画角 = 手前が大きく奥が小さい (奥行きが読める)
-        public const float Pitch = 12f;                         // 見下ろし。上端の視線は水平より 6° 上 = 空の帯に月と塔が入る (2026-09-08 世界観「月の塔」。16° では帯が 2° で塔が山に隠れた)
+        public const float Pitch = 12f;                         // 見下ろし。上端の視線は水平より 6° 上 = 空の帯に月と坑口の櫓が入る (16° では帯が 2° で遠景が山に隠れた)
         const float PathYaw = -22f;                     // 道の向き (手前左 → 奥右)。隊列もこの線に沿う
         const float PlaneUnitsPerScreen = 10.8f;        // 基準深度で画面の高さ = 10.8 units
         const float GroundLineRatio = 0.45f;            // 画面の下から何割に world 原点を置くか
@@ -157,7 +157,7 @@ namespace DeckRogue.Game
             _lantern.type = LightType.Point;
             _lantern.range = 7.0f;
             _lantern.shadows = LightShadows.None;
-            _lampPos = OnPath(-7.1f, 2.2f) + new Vector3(0f, 1.2f, 0f);   // 光の粒の群れの中心 (街灯は撤去。世界観「あかりは装置でなく月から零れた光の粒」2026-09-08)
+            _lampPos = OnPath(-7.1f, 2.2f) + new Vector3(0f, 1.2f, 0f);   // 光の粒の群れの中心 (街灯は撤去。世界観「あかりは装置でなく露頭から漏れるマナの光」2026-09-10)
             lgo.transform.position = _lampPos;
 
             LayoutCamera();
@@ -247,7 +247,7 @@ namespace DeckRogue.Game
         const float TX0 = -56f, TZ0 = -24f;
         const int TNX = 224, TNZ = 200;
         static float[,] _H;
-        static bool _flat;                      // 幕2/3 = 塔の中の平らな床 (起伏・川・土の道なし)
+        static bool _flat;                      // 幕2/3 = 坑の中の平らな床 (起伏・川・土の道なし)
         static bool[,] _Dirt;
         static int _tseed = 1;
 
@@ -739,7 +739,7 @@ namespace DeckRogue.Game
             var p = new Pal();
             if (act == 3)
             {
-                // 幕3 月の回廊: 冷たい銀と藍。空を埋める月
+                // 幕3 坑底の古代都市: 冷たい銀と藍。濃い脈の光
                 p.SkyTop = UiKit.Hex("#0d1a22"); p.SkyBot = UiKit.Hex("#2a4a52"); p.Fog = UiKit.Hex("#6f8f99");
                 p.GrassA = UiKit.Hex("#3f5c3a"); p.GrassB = UiKit.Hex("#324a30"); p.GrassC = UiKit.Hex("#5a7a4a"); p.GrassDry = UiKit.Hex("#6c7a4c");
                 p.DirtA = UiKit.Hex("#55504a"); p.DirtB = UiKit.Hex("#43403a");
@@ -815,7 +815,7 @@ namespace DeckRogue.Game
             if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.52f, 0.48f));  // 崖=土色
             if (act != 1)
             {
-                // 幕2/3: 塔の中。床は石 (幕2=暖かい灰茶・幕3=冷たい黒石)
+                // 幕2/3: 坑の中。床は石 (幕2=暖かい灰茶・幕3=冷たい黒石)
                 var mFloor = Lit(Tex(act, "stone", stone));
                 mFloor.SetColor("_BaseColor", act == 2 ? new Color(0.5f, 0.42f, 0.38f) : new Color(0.3f, 0.33f, 0.44f));
                 BuildTerrain(mFloor, mDirt, mCliff);
@@ -878,7 +878,7 @@ namespace DeckRogue.Game
                     g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 }
             }
-            // 光る茸: 月の光だけで育つ森の灯 (世界観)。自発光の板 + 足元の青い暈 + いくつかは点光源。戦闘の場は避ける
+            // 光る茸: 脈のマナを浴びて育つ森の灯 (世界観)。自発光の板 + 足元の青い暈 + いくつかは点光源。戦闘の場は避ける
             var shroom = PropTex(act, "shroom", Px.GlowShroom(p, rng));
             int lit = 0;
             for (int i = 0; i < 40; i++)
@@ -911,7 +911,7 @@ namespace DeckRogue.Game
             }
 
             // 遺跡の柱 (石) — 段丘の上に (額縁)
-            // 道標: 塔へ続く古い参道の名残 (苔むした折れた石柱)。青い煉瓦の柱は森に浮くので廃止
+            // 道標: 坑口へ続く古い道の名残 (苔むした折れた石柱)。青い煉瓦の柱は森に浮くので廃止
             var waystone = PropTex(act, "waystone", null);
             if (waystone != null)
             {
@@ -940,7 +940,7 @@ namespace DeckRogue.Game
                 if (ss < -2.6f && ss > -9f && tt > -12f && tt < 18f) continue;       // 場の手前 (キャラを隠さない)
                 if (IsDirt(x, z)) continue;                                          // 道の上には生えない
                 if (tt > 13f && tt < 26f && ss > 3f && ss < 13f && rng.NextDouble() < 0.7) continue;   // 道の先 = 塔が見える切れ目
-                if (x > 7f && x < 24f && z > 16f && z < 52f) continue;                                  // 月と塔が見える切れ目 (右奥。梢が月を隠さない)
+                if (x > 7f && x < 24f && z > 16f && z < 52f) continue;                                  // 月と坑口が見える切れ目 (右奥。梢が月を隠さない)
                 float h = GroundY(x, z);
                 float sc = 4.6f * (0.7f + (float)rng.NextDouble() * 0.9f);
                 if (ss < -2.6f) sc *= 1.25f;                                         // 手前の木は大きい
@@ -998,7 +998,7 @@ namespace DeckRogue.Game
                 var f = Plane("fern", fern, w, 0.7f + (float)rng.NextDouble() * 0.4f, 0.5f, false);
                 if (rng.NextDouble() < 0.5) f.transform.localScale = new Vector3(-f.transform.localScale.x, f.transform.localScale.y, 1f);
             }
-            // 頭上の枝葉 (額縁の上辺。中央は月と塔のために空ける)
+            // 頭上の枝葉 (額縁の上辺。中央は月と坑口のために空ける)
             var canopy = Px.Canopy(p, rng);
             { var c = Plane("canopy", canopy, new Vector3(-11f, 5.3f, 0.5f), 3.0f, 0.5f, false); c.transform.rotation = Quaternion.identity; }   // 上辺の両隅にだけ垂れる (画面を覆わない)
             { var c = Plane("canopy", canopy, new Vector3(11.5f, 5.5f, 0.2f), 2.8f, 0.5f, false); c.transform.rotation = Quaternion.identity; c.transform.localScale = new Vector3(-c.transform.localScale.x, c.transform.localScale.y, 1f); }
@@ -1062,10 +1062,11 @@ namespace DeckRogue.Game
             mts2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
             skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            // 塔: 道の先 (奥右) の地平に立ち、画面の上へ消えるほど高い黒い塔。世界観「長い夜と月の塔」。霧は半分だけ受けて山より暗く残す
-            var tower = Prop("tower", Px.Tower(p, rng), new Vector3(23f, -2f, 50f), 40f, 0.4f);   // 山 (z58) より手前に立てて上へ抜ける
-            tower.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f);
-            tower.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            // 坑口: 道の先 (奥右) に立つ木組みの櫓と、その足元の竪坑。世界観「マナ脈の坑を降りる」(2026-09-10 改稿。旧・古の塔を置換)。
+            // 霧は半分だけ受けて山より暗く残す = 「これから降りる場所」が遠景の主役になる
+            var pithead = Prop("pithead", Px.Headframe(p, rng), new Vector3(22f, 0.2f, 46f), 13f, 0.4f);
+            pithead.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f);
+            pithead.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
         }
 
         /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す</summary>
@@ -1086,7 +1087,7 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>幕2 提灯の夜市 (first cut 2026-09-08): 塔の中の市の名残。石の床・奥の石壁と暗い門・提灯の柱と吊り提灯 (暖色はここだけ)・屋台と樽と歯車。空は暗い天井</summary>
+        /// <summary>幕2 先代の坑道 (2026-09-10 改稿。旧「提灯の夜市」): 坑道の宿場跡。石の床・奥の石壁と暗い門・提灯の柱と吊り提灯 (暖色はここだけ)・屋台と樽と歯車。空は暗い天井</summary>
         static void PaintMarket(Pal p, System.Random rng, Material mFloor)
         {
             // 奥の壁 (石) と暗い門
@@ -1163,7 +1164,7 @@ namespace DeckRogue.Game
             RenderSettings.fogStartDistance = 12f; RenderSettings.fogEndDistance = 46f;
         }
 
-        /// <summary>幕3 月の回廊 (first cut 2026-09-08): 頂に近い黒い石の回廊。両脇の柱と鎖・跪く石像・冷たい火の篝火。空を埋める月とその光の帯</summary>
+        /// <summary>幕3 坑底の古代都市 (2026-09-10 改稿。旧「月の回廊」): 底の黒い石の街路。両脇の柱と鎖・跪く石像・冷たい火の篝火。空を埋める月とその光の帯</summary>
         static void PaintCorridor(Pal p, System.Random rng, Material mFloor)
         {
             var pillar = PropTex(_paintedAct, "pillar", null); var chain = PropTex(_paintedAct, "chain", null); var statue = PropTex(_paintedAct, "statue", null); var brazier = PropTex(_paintedAct, "brazier", null);
@@ -2061,39 +2062,85 @@ namespace DeckRogue.Game
                 return t;
             }
 
-            /// <summary>遠景の塔: 上へ細り、らせんの段が右上がりに走り、頂は空に溶ける。窓の灯はごく少数</summary>
-            public static Texture2D Tower(Pal p, System.Random rng)
+            /// <summary>(旧) 遠景の塔: 上へ細り、らせんの段が右上がりに走り、頂は空に溶ける。窓の灯はごく少数</summary>
+            /// <summary>坑口の櫓 (2026-09-10 世界観改稿。旧 Tower を置換): 木組みの八の字の脚・筋交い・
+            /// 天辺の滑車と巻上げ機・足元に黒い竪坑の口。遠景のシルエットとして読ませる</summary>
+            public static Texture2D Headframe(Pal p, System.Random rng)
             {
-                int w = 96, h = 384;
+                int w = 128, h = 176;
                 var t = New(w, h, false);
                 var px = new Color[w * h];
-                var body = Mix(p.SkyTop, Color.black, 0.62f);
-                var edge = Mix(body, p.SkyBot, 0.28f);
-                var win = new Color(1f, 0.78f, 0.45f, 1f);
-                for (int y = 0; y < h; y++)
+                var body = Mix(p.SkyTop, Color.black, 0.66f);          // 木組み (空より暗い影)
+                var edge = Mix(body, p.SkyBot, 0.3f);                  // 縁の一段明るい木
+                var hole = Mix(Color.black, p.SkyBot, 0.08f);          // 竪坑の口 = ほぼ黒
+                var lamp = new Color(1f, 0.78f, 0.45f, 1f);            // 櫓の作業灯
+
+                void Bar(int x0, int y0, int x1, int y1, int th, Color c)
                 {
-                    float k = y / (float)(h - 1);
-                    float half = Mathf.Lerp(30f, 16f, k);
-                    float cx = w * 0.5f + Mathf.Sin(k * 9f) * 1.5f;
-                    float a = k > 0.8f ? Mathf.InverseLerp(1f, 0.8f, k) : 1f;
-                    for (int x = 0; x < w; x++)
+                    int n = Mathf.Max(Mathf.Abs(x1 - x0), Mathf.Abs(y1 - y0)) + 1;
+                    for (int i = 0; i < n; i++)
                     {
-                        float d = x - cx;
-                        if (Mathf.Abs(d) > half) continue;
-                        var c = d > half - 4f ? edge : body;
-                        bool ring = ((y + (int)(d * 0.35f)) % 28) < 2 && k < 0.78f;
-                        if (ring) c = Mix(c, p.SkyBot, 0.3f);
-                        c.a = a;
-                        px[y * w + x] = c;
+                        float u = n == 1 ? 0f : i / (float)(n - 1);
+                        int cx = Mathf.RoundToInt(Mathf.Lerp(x0, x1, u));
+                        int cy = Mathf.RoundToInt(Mathf.Lerp(y0, y1, u));
+                        for (int dy = -th / 2; dy <= th / 2; dy++)
+                            for (int dx = -th / 2; dx <= th / 2; dx++)
+                            {
+                                int x = cx + dx, y = cy + dy;
+                                if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                                var col = c; col.a = 1f; px[y * w + x] = col;
+                            }
                     }
                 }
-                for (int i = 0; i < 9; i++)
+
+                // 脚: 下広がりの八の字 (地面 y=14 から天辺 y=150 へ)
+                int footL = 16, footR = w - 1 - footL, topL = 48, topR = w - 1 - topL;
+                int gy = 14, ty = 150;
+                Bar(footL, gy, topL, ty, 7, body);
+                Bar(footR, gy, topR, ty, 7, body);
+                Bar(footL + 9, gy, topL + 7, ty, 4, edge);             // 内側のもう一本 (二重の柱)
+                Bar(footR - 9, gy, topR - 7, ty, 4, edge);
+
+                // 横木と筋交い (4段。上へいくほど幅が狭い)
+                for (int i = 0; i < 4; i++)
                 {
-                    int y = rng.Next(20, (int)(h * 0.7f));
-                    float k = y / (float)(h - 1); float half = Mathf.Lerp(30f, 16f, k);
-                    int x = (int)(w * 0.5f + (rng.NextDouble() * 2 - 1) * (half - 6f));
-                    px[y * w + x] = win;
+                    float k0 = i / 4f, k1 = (i + 1) / 4f;
+                    int y0 = (int)Mathf.Lerp(gy, ty, k0), y1 = (int)Mathf.Lerp(gy, ty, k1);
+                    int l0 = (int)Mathf.Lerp(footL, topL, k0), r0 = w - 1 - l0;
+                    int l1 = (int)Mathf.Lerp(footL, topL, k1), r1 = w - 1 - l1;
+                    Bar(l1, y1, r1, y1, 4, body);                      // 横木
+                    Bar(l0, y0, r1, y1, 3, edge);                      // 筋交い (右上がり)
+                    Bar(r0, y0, l1, y1, 3, edge);                      // 筋交い (左上がり)
                 }
+
+                // 天辺: 台と滑車 (輪。中心を抜く)
+                Bar(topL - 6, ty, topR + 6, ty, 6, body);
+                int pcx = w / 2, pcy = ty + 13, pr = 13;
+                for (int y = pcy - pr; y <= pcy + pr; y++)
+                    for (int x = pcx - pr; x <= pcx + pr; x++)
+                    {
+                        if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                        float d = Mathf.Sqrt((x - pcx) * (x - pcx) + (y - pcy) * (y - pcy));
+                        if (d > pr || d < pr - 4.5f) continue;
+                        var c = body; c.a = 1f; px[y * w + x] = c;
+                    }
+                Bar(pcx, ty, pcx, pcy, 4, body);                        // 滑車の支え
+                Bar(pcx - 1, gy + 6, pcx - 1, pcy - pr, 2, edge);        // 巻上げの綱 (坑へ垂れる)
+
+                // 足元: 竪坑の口 (地面に開いた黒い穴。櫓より広い)
+                for (int y = 0; y <= gy + 2; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float ex = (x - w * 0.5f) / (w * 0.46f);
+                        float ey = (y - gy) / 13f;
+                        if (ex * ex + ey * ey > 1f) continue;
+                        var c = hole; c.a = 1f; px[y * w + x] = c;
+                    }
+
+                // 作業灯 2つ (暖色は灯の範囲だけ、の規約どおり点で置く)
+                px[(ty - 4) * w + topL + 2] = lamp;
+                px[(gy + 20) * w + footR - 12] = lamp;
+
                 t.SetPixels(px); t.Apply();
                 return t;
             }
@@ -2411,10 +2458,10 @@ namespace DeckRogue.Game
             ps.Play();
         }
 
-        /// <summary>光の粒: 月から零れた光。道筋に沿って塔の方へゆっくり流れ、足元の一群が暖色の光源 (街灯の後継)</summary>
+        /// <summary>光の粒: 露頭から漏れるマナの光 (2026-09-10 改稿。旧「月から零れた光」)。道筋に沿って坑口の方へゆっくり流れ、足元の一群が暖色の光源 (街灯の後継)</summary>
         static void Motes()
         {
-            var dir = Quaternion.Euler(0f, PathYaw, 0f) * Vector3.right;   // 道の向き (+t = 塔の方)
+            var dir = Quaternion.Euler(0f, PathYaw, 0f) * Vector3.right;   // 道の向き (+t = 坑口の方)
             var ps = NewSystem("motes-path", GlowDotTex());
             var main = ps.main;
             main.startLifetime = new ParticleSystem.MinMaxCurve(6f, 11f);
@@ -2424,10 +2471,10 @@ namespace DeckRogue.Game
             main.maxParticles = 50;
             var em = ps.emission; em.rateOverTime = 6f;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(34f, 1.4f, 3.2f);
-            shape.rotation = new Vector3(0f, PathYaw, 0f); shape.position = new Vector3(0f, 0.9f, 0f);
+            shape.rotation = new Vector3(0f, PathYaw, 0f); shape.position = new Vector3(0f, 0.15f, 0f);   // 地面すれすれから湧く (露頭から漏れる光)
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
             vel.x = new ParticleSystem.MinMaxCurve(dir.x * 0.1f, dir.x * 0.3f); vel.z = new ParticleSystem.MinMaxCurve(dir.z * 0.1f, dir.z * 0.3f);
-            vel.y = new ParticleSystem.MinMaxCurve(-0.04f, 0.08f);   // 3軸とも同じモード (2定数)。混ぜると Android で毎フレーム E ログ
+            vel.y = new ParticleSystem.MinMaxCurve(0.05f, 0.16f);   // 上へ昇る (2026-09-10 改稿: 下から湧く)。3軸とも同じモード = 混ぜると Android で毎フレーム E ログ
             var noise = ps.noise; noise.enabled = true; noise.strength = 0.3f; noise.frequency = 0.4f; noise.scrollSpeed = 0.25f;
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
