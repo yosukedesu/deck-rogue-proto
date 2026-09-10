@@ -168,6 +168,7 @@ namespace DeckRogue.Game
             Mist();
             Moondust();
             WaterSparkle();
+            VeinMotes(); Drips(); AshFall(); Wisps();   // 幕2/3 の粒 (SetFxForAct で幕ごとに出し分け)
         }
 
         /// <summary>カメラの位置: 基準深度 _dist で 1 unit = 100px、world 原点が画面の下から GroundLineRatio に来る</summary>
@@ -693,7 +694,8 @@ namespace DeckRogue.Game
                 for (int i = 0; i < _world.childCount; i++)
                 {
                     var c = _world.GetChild(i);
-                    if (c.name == "lantern-flame") c.localScale = new Vector3(0.36f, 0.36f, 1f) * (1f + 0.08f * Mathf.Sin(t * 9f) + 0.05f * Mathf.Sin(t * 23f));
+                    if (c.name == "rig-wheel") c.localRotation = Quaternion.Euler(0f, 0f, t * 18f);   // 回り続ける採掘の櫓
+                    else if (c.name == "lantern-flame") c.localScale = new Vector3(0.36f, 0.36f, 1f) * (1f + 0.08f * Mathf.Sin(t * 9f) + 0.05f * Mathf.Sin(t * 23f));
                 }
                 if (_lantern != null) _lantern.intensity = _pal.LampIntensity * (1f + 0.06f * Mathf.Sin(t * 9f) + 0.04f * Mathf.Sin(t * 23f));
             }
@@ -1118,6 +1120,10 @@ namespace DeckRogue.Game
             var pithead = Prop("pithead", Px.Headframe(p, rng), new Vector3(22f, 0.2f, 46f), 13f, 0.4f);
             pithead.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f);
             pithead.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            {   // 滑車は別の板にして回す (StageDriver が "rig-wheel" を回す)。櫓の絵の輪の位置 (128×176 の 64,163) に重ねる
+                var wheel = Prop("rig-wheel", Px.Wheel(Color.Lerp(p.SkyTop, Color.black, 0.55f), 32), new Vector3(22f, 0.2f + 13f * 163f / 176f, 45.9f), 2.1f, 0.4f);
+                wheel.GetComponent<MeshFilter>().sharedMesh = _quadCentered; wheel.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f); wheel.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
         }
 
         /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す</summary>
@@ -1133,6 +1139,9 @@ namespace DeckRogue.Game
                     case "fireflies": case "water-sparkle": case "leaves": on = act == 1; break;
                     case "moondust": on = act != 2; break;
                     case "mist-far": on = act != 2; break;
+                    case "vein-motes": on = act != 1; break;
+                    case "drips": on = act == 2; break;
+                    case "ashfall": case "wisps": on = act == 3; break;
                 }
                 c.gameObject.SetActive(on);
             }
@@ -1200,6 +1209,95 @@ namespace DeckRogue.Game
                 }
             Solid("rails", rails, mRail);
 
+            // ---- ハイディテール (2026-09-11 ユーザー「2.3ステージをもっとハイディテールに幻想的に」) ----
+            var veinC = new Color(0.42f, 0.95f, 0.86f);
+            GameObject Halo(string nm, Vector3 center, float size, Color c) { var g = Glow(nm, Px.Glow(c), center, size, size); g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; return g; }
+            // 岩の天井 (裏返しの床 = 下向きの面) と鍾乳石と垂れ根。カメラの上端 (水平+6°) には奥の天井だけが入る
+            {
+                var ceil = new MB(); ceil.Floor(64f, 6f, -50f, 40f, 7.2f);
+                var mCeil = Lit(Tex(_paintedAct, "cliff", Px.Cliff(p, rng))); mCeil.SetColor("_BaseColor", new Color(0.3f, 0.26f, 0.26f));
+                Solid("ceiling", ceil, mCeil);
+                var stal = Px.Stalactites(p, rng);
+                for (int i = 0; i < 9; i++)
+                {
+                    var w = OnPath(-22f + i * 5.5f + ((float)rng.NextDouble() - 0.5f) * 3f, 4f + (float)rng.NextDouble() * 6f);
+                    var g = Plane("stalactite", stal, new Vector3(w.x, 7.2f - 2.6f, w.z), 2.6f, 0.5f, false);
+                    g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                }
+                var roots = Px.HangingRoots(p, rng);
+                for (int i = 0; i < 6; i++)
+                {
+                    var w = OnPath(-18f + i * 7.5f, 3f + (float)rng.NextDouble() * 5f);
+                    var g = Plane("roots", roots, new Vector3(w.x, 7.2f - 2.2f, w.z), 2.2f, 0.5f, false);
+                    g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                }
+            }
+            // マナの結晶: 壁の根元に群れ、奥の壁を割って大結晶 (幻想の主役)。点光源と暈を添える
+            for (int i = 0; i < 7; i++)
+            {
+                float t = -21f + i * 7f + ((float)rng.NextDouble() - 0.5f) * 3f;
+                float sv = (i % 2 == 0) ? 7.6f + (float)rng.NextDouble() : -6.6f - (float)rng.NextDouble() * 0.6f;
+                if (sv < 0f && t > -12f && t < 14f) sv = 7.8f;   // 手前の真ん中はカメラに近いので奥へ
+                var w = OnPath(t, sv);
+                float hgt = 0.9f + (float)rng.NextDouble() * 0.9f;
+                var cr = Prop("crystal", Px.Crystal(veinC, rng), w, hgt, 0.5f);
+                cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+                Halo("crystal-halo", w + new Vector3(0f, hgt * 0.45f, -0.2f), hgt * 2.2f, new Color(veinC.r, veinC.g, veinC.b, 0.5f));
+                var lgo = new GameObject("crystal-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, hgt * 0.5f, 0f);
+                var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 4.5f + hgt * 2f; li.intensity = 0.9f + hgt * 0.5f; li.color = veinC; li.shadows = LightShadows.None;
+            }
+            {
+                var w = OnPath(15f, 9.4f);
+                var big = Prop("crystal-big", Px.Crystal(veinC, rng), w, 4.2f, 0.5f);
+                big.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+                Halo("crystal-halo", w + new Vector3(0f, 1.9f, -0.3f), 9f, new Color(veinC.r, veinC.g, veinC.b, 0.55f));
+                var lgo = new GameObject("crystal-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, 2f, -0.5f);
+                var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 12f; li.intensity = 2.2f; li.color = veinC; li.shadows = LightShadows.None;
+            }
+            // 壁を走る脈: 奥の壁の面に細い光の筋
+            {
+                var seamTex = Px.Radial(new Color(veinC.r, veinC.g, veinC.b, 0.7f));
+                for (int i = 0; i < 10; i++)
+                {
+                    float x = -30f + (float)rng.NextDouble() * 70f, y = 0.6f + (float)rng.NextDouble() * 4.5f;
+                    var g = Glow("wall-vein", seamTex, new Vector3(x, y, 11.92f), 0.18f + (float)rng.NextDouble() * 0.12f, 1.6f + (float)rng.NextDouble() * 2.4f);
+                    g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(0f, 0f, -35f + (float)rng.NextDouble() * 70f);
+                }
+            }
+            // トロッコ: 軌道の上に 1 台 (鉱が光る)、遠くにもう 1 台
+            {
+                var cartTex = Px.MineCart(veinC, rng);
+                var w1 = OnPath(4f, 8.7f); Plane("minecart", cartTex, w1 + new Vector3(0f, 0.12f, 0f), 1.15f, 0.5f, true);
+                Halo("ore-glow", w1 + new Vector3(0f, 1.0f, -0.2f), 2.2f, new Color(veinC.r, veinC.g, veinC.b, 0.35f));
+                var w2 = OnPath(-17f, 8.7f); var cart2 = Plane("minecart", cartTex, w2 + new Vector3(0f, 0.12f, 0f), 1.05f, 0.5f, true);
+                cart2.transform.localScale = new Vector3(-cart2.transform.localScale.x, cart2.transform.localScale.y, 1f);
+                for (int i = 0; i < 16; i++)   // こぼれた鉱のかけら
+                {
+                    var w = OnPath(-24f + (float)rng.NextDouble() * 48f, 7.4f + (float)rng.NextDouble() * 2.6f);
+                    float sz = 0.12f + (float)rng.NextDouble() * 0.12f;
+                    Glow("ore-bit", Px.Glow(new Color(veinC.r, veinC.g, veinC.b, 0.9f)), w + new Vector3(0f, 0.05f, 0f), sz, sz);
+                }
+            }
+            // 上の桟橋: 奥の壁に沿う木の歩廊 (支柱・床板・手すり)
+            {
+                var gal = new MB();
+                for (float t = -24f; t <= 24f; t += 0.5f) { var w = OnPath(t, 9.9f); gal.Box(w.x, 3.6f, w.z, 0.55f, 0.14f, 1.1f); }
+                for (float t = -24f; t <= 24f; t += 4f) { var w = OnPath(t, 9.9f); gal.Box(w.x, 0f, w.z, 0.28f, 3.6f, 0.28f); gal.Box(w.x, 3.74f, w.z, 0.18f, 0.9f, 0.18f); }
+                for (float t = -24f; t <= 24f; t += 0.5f) { var w = OnPath(t, 9.45f); gal.Box(w.x, 4.5f, w.z, 0.5f, 0.1f, 0.1f); }
+                Solid("gallery", gal, mWood);
+            }
+            // 崩れた岩: 壁の根元の瓦礫
+            {
+                var rock = Px.Rock(p, rng);
+                for (int i = 0; i < 10; i++)
+                {
+                    float sv = (i % 2 == 0) ? 8.4f + (float)rng.NextDouble() * 1.5f : -6.4f - (float)rng.NextDouble();
+                    float t = -24f + (float)rng.NextDouble() * 50f;
+                    if (sv < 0f && t > -12f && t < 14f) continue;
+                    Prop("rubble", rock, OnPath(t, sv), 0.35f + (float)rng.NextDouble() * 0.4f, 0.5f);
+                }
+            }
+
             // 提灯の柱: 道の両脇に。暖色の点光源と足元の光溜まり
             var lantern = PropTex(_paintedAct, "lantern", null);
             var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
@@ -1260,7 +1358,7 @@ namespace DeckRogue.Game
                 var vgo = new GameObject("vein-light"); vgo.transform.SetParent(_world, false); vgo.transform.position = w + new Vector3(0f, hy, 0f);
                 var vl = vgo.AddComponent<Light>(); vl.type = LightType.Point; vl.range = 6f; vl.intensity = 0.8f; vl.color = new Color(0.4f, 0.95f, 0.9f); vl.shadows = LightShadows.None;
             }
-            RenderSettings.fogStartDistance = 12f; RenderSettings.fogEndDistance = 46f;
+            RenderSettings.fogStartDistance = 10f; RenderSettings.fogEndDistance = 40f;   // 坑道は近くから霞む (奥行き)
         }
 
         /// <summary>幕3 坑底の古代都市 (2026-09-10 改稿。旧「月の回廊」): 底の黒い石の街路。両脇の柱と鎖・跪く石像・古代の冷たい灯。奥に街の輪郭と今も回っている採掘機械。空は無く、脈の光が床の割れ目から立ち上る</summary>
@@ -1295,6 +1393,88 @@ namespace DeckRogue.Game
                 var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 5f; li.intensity = 1.1f; li.color = new Color(0.55f, 0.75f, 1f); li.shadows = LightShadows.None;
                 Glow("brazier-glow", Px.Glow(new Color(0.6f, 0.8f, 1f, 0.45f)), w + new Vector3(0f, 1.2f, -0.3f), 2.4f, 2.4f);
             }
+            // ---- ハイディテール (2026-09-11 ユーザー「2.3ステージをもっとハイディテールに幻想的に」) ----
+            var veinC = new Color(0.42f, 0.95f, 0.86f);
+            GameObject Halo(string nm, Vector3 center, float size, Color c) { var g = Glow(nm, Px.Glow(c), center, size, size); g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; return g; }
+            // 天井を走る脈: 洞窟の天井に沿う光の帯が 2 本 (オーロラのように)
+            {
+                var a1 = Glow("aurora", Px.Aurora(veinC, rng), new Vector3(-4f, 10.5f, 40f), 5.5f, 70f);
+                a1.GetComponent<MeshFilter>().sharedMesh = _quadCentered; a1.transform.rotation = Quaternion.Euler(-25f, 0f, -6f);
+                var a2 = Glow("aurora", Px.Aurora(new Color(0.6f, 1f, 0.95f), rng), new Vector3(14f, 9.2f, 30f), 3.2f, 48f);
+                a2.GetComponent<MeshFilter>().sharedMesh = _quadCentered; a2.transform.rotation = Quaternion.Euler(-25f, 0f, 8f);
+            }
+            // 大結晶の尖塔: 街の左右に 3 本 (幻想の主役)。強い点光源
+            {
+                float[] ct = { -26f, 26f, -13f }; float[] cs = { 7.5f, 8.5f, 11.5f }; float[] ch = { 6.5f, 8.5f, 5f };
+                for (int i = 0; i < ct.Length; i++)
+                {
+                    var w = OnPath(ct[i], cs[i]);
+                    var cr = Prop("crystal-spire", Px.Crystal(veinC, rng), w, ch[i], 0.5f);
+                    cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.3f);
+                    Halo("crystal-halo", w + new Vector3(0f, ch[i] * 0.5f, -0.4f), ch[i] * 2.4f, new Color(veinC.r, veinC.g, veinC.b, 0.4f));
+                    var lgo = new GameObject("crystal-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, ch[i] * 0.45f, -1f);
+                    var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 10f + ch[i]; li.intensity = 1.8f; li.color = veinC; li.shadows = LightShadows.None;
+                }
+                for (int i = 0; i < 8; i++)   // 小さな結晶: 縁石の外
+                {
+                    var w = OnPath(-22f + i * 6.3f + ((float)rng.NextDouble() - 0.5f) * 2f, (i % 2 == 0) ? 6.9f : -6.6f);
+                    float hgt = 0.6f + (float)rng.NextDouble() * 0.7f;
+                    var cr = Prop("crystal", Px.Crystal(veinC, rng), w, hgt, 0.5f); cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+                    Halo("crystal-halo", w + new Vector3(0f, hgt * 0.45f, -0.2f), hgt * 2f, new Color(veinC.r, veinC.g, veinC.b, 0.45f));
+                }
+            }
+            // 大門と水道橋: 奥の段の上に古代の門 (紋が光る)、その両脇に半円アーチの列
+            {
+                var gw = OnPath(2f, 13.5f);
+                var arch = Prop("great-arch", Px.Arch(p, veinC), new Vector3(gw.x, 1.2f, gw.z), 11f, 0.4f);
+                arch.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); arch.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.35f);
+                Halo("arch-glow", new Vector3(gw.x, 6.5f, gw.z - 0.3f), 7f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
+                var arc = Px.Arcade(p, 9);
+                var al = Prop("arcade", arc, new Vector3(gw.x - 22f, 2.4f, gw.z + 6f), 5.2f, 0.4f); al.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
+                var ar = Prop("arcade", arc, new Vector3(gw.x + 24f, 2.4f, gw.z + 8f), 5.6f, 0.4f); ar.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
+                var st = new MB(); var b = OnPath(2f, 10f);   // 門へ上る幅広の階段
+                for (int k = 0; k < 5; k++) st.Box(b.x, k * 0.24f, b.z - k * 0.5f, 16f - k * 1.2f, 0.24f, 0.55f);
+                Solid("great-stairs", st, mDark);
+            }
+            // 床の紋: 場の縁を囲む淡い光の線 (古代の刻印)
+            {
+                var rune = Px.Radial(new Color(veinC.r, veinC.g, veinC.b, 0.5f));
+                for (int i = 0; i < 12; i++)
+                {
+                    float t = -14f + i * 2.6f;
+                    foreach (float sv in new[] { 5.4f, -5.6f })
+                    {
+                        var w = OnPath(t + (sv < 0f ? 1.3f : 0f), sv);
+                        var g = Glow("floor-rune", rune, new Vector3(w.x, 0.045f, w.z), 1f, 1f);
+                        g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(90f, PathYaw, 0f); g.transform.localScale = new Vector3(2.2f, 0.12f, 1f);
+                    }
+                }
+            }
+            // 倒れた柱と傾いた石像 (打ち捨てられた街)
+            if (pillar != null) { var f1 = Plane("pillar-fallen", pillar, OnPath(-9f, 8.6f) + new Vector3(2.4f, 0.3f, 0f), 5f, 0.5f, false); f1.transform.rotation = Quaternion.Euler(0f, 0f, 82f); }
+            if (statue != null) { var s3 = Plane("statue", statue, OnPath(-4f, 12.5f), 2.6f, 0.5f, true); s3.transform.rotation = Quaternion.Euler(0f, 0f, -12f); }
+            // 水没した街路: 左奥の低い所に黒い水面 (脈の光と窓明かりを映す)
+            {
+                var wp = Glow("flood", Px.Water(p), OnPath(-26f, 9f) + new Vector3(0f, 0.03f, 0f), 1f, 1f);
+                wp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; wp.transform.rotation = Quaternion.Euler(90f, PathYaw, 0f); wp.transform.localScale = new Vector3(22f, 12f, 1f);
+                var wm = wp.GetComponent<MeshRenderer>().sharedMaterial; wm.color = new Color(0.5f, 0.8f, 0.85f, 0.35f); _waterMat = wm;
+                for (int i = 0; i < 6; i++)
+                {
+                    var h = Halo("flood-reflect", OnPath(-32f + i * 2.6f, 8f + (float)rng.NextDouble() * 4f) + new Vector3(0f, 0.06f, 0f), 1.6f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
+                    h.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                }
+            }
+            // 鎖に吊られた古代の灯: 天井から (冷たい青の火)
+            if (chain != null)
+                for (int i = 0; i < 5; i++)
+                {
+                    var w = OnPath(-16f + i * 8f, 3f + (float)rng.NextDouble() * 4f);
+                    var c = Plane("chain-hang", chain, new Vector3(w.x, 4.8f, w.z), 4.2f, 0.5f, false); c.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                    Halo("hang-flame", new Vector3(w.x, 4.6f, w.z - 0.2f), 1.1f, new Color(0.6f, 0.85f, 1f, 0.6f));
+                    var lgo = new GameObject("hang-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = new Vector3(w.x, 4.6f, w.z);
+                    var li = lgo.AddComponent<Light>(); li.type = LightType.Point; li.range = 4f; li.intensity = 0.8f; li.color = new Color(0.55f, 0.8f, 1f); li.shadows = LightShadows.None;
+                }
+
             // 光の粒の足元
             var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
             var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.22f)), lampBase, 1f, 1f);
@@ -1312,6 +1492,10 @@ namespace DeckRogue.Game
             // 止まらない採掘機械: 街の向こうで今も回っている櫓 (幕1の坑口と同じ形 = 「同じものが底にもある」)
             var rig = Prop("rig", Px.Headframe(p, rng), new Vector3(18f, 0.6f, 50f), 14f, 0.4f);
             rig.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f); rig.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            {   // 滑車を回す (幕1の坑口と同じ仕掛け。誰も止めなかった機械が今も回っている)
+                var wheel = Prop("rig-wheel", Px.Wheel(Color.Lerp(p.SkyTop, Color.black, 0.5f), 32), new Vector3(18f, 0.6f + 14f * 163f / 176f, 49.9f), 2.3f, 0.4f);
+                wheel.GetComponent<MeshFilter>().sharedMesh = _quadCentered; wheel.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f); wheel.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
             // 街の窓明かり (脈の色。誰もいないのに灯っている)
             for (int i = 0; i < 14; i++)
             {
@@ -2290,6 +2474,219 @@ namespace DeckRogue.Game
                 return t;
             }
 
+            // ---------------- 幕2/3 のハイディテール (2026-09-11 ユーザー「2.3ステージをもっとハイディテールに幻想的に」) ----------------
+
+            /// <summary>マナの結晶: 3〜5 本の柱状の結晶が根元から扇に伸びる。左面が暗く右面が明るい (右上の光源)。自発光の板として置く</summary>
+            public static Texture2D Crystal(Color glow, System.Random rng)
+            {
+                int w = 40, h = 48;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var dark = Mix(glow, Color.black, 0.55f); var mid = Mix(glow, Color.white, 0.1f); var bright = Mix(glow, Color.white, 0.55f);
+                int n = 3 + rng.Next(3);
+                for (int k = 0; k < n; k++)
+                {
+                    float ang = -50f + (100f / (n - 1)) * k + ((float)rng.NextDouble() - 0.5f) * 14f;
+                    float len = 18f + (float)rng.NextDouble() * 22f;
+                    float wid = 3.5f + (float)rng.NextDouble() * 3f;
+                    float bx = w * 0.5f + ((float)rng.NextDouble() - 0.5f) * 10f, by = 4f;
+                    float dx = Mathf.Sin(ang * Mathf.Deg2Rad), dy = Mathf.Cos(ang * Mathf.Deg2Rad);
+                    for (float u = 0f; u <= len; u += 0.5f)
+                    {
+                        float hw = wid * (1f - Mathf.Pow(u / len, 2.2f)) + 0.6f;
+                        for (float v = -hw; v <= hw; v += 0.5f)
+                        {
+                            int x = Mathf.RoundToInt(bx + dx * u - dy * v), y = Mathf.RoundToInt(by + dy * u + dx * v);
+                            if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                            var c = v < -hw * 0.35f ? dark : v > hw * 0.45f ? bright : mid;
+                            if (u > len - 3f) c = bright;
+                            c.a = 1f; px[y * w + x] = c;
+                        }
+                    }
+                }
+                for (int y = 0; y < 6; y++)
+                    for (int x = 6; x < w - 6; x++)
+                    {
+                        float e = (x - w * 0.5f) / (w * 0.4f), f = (y - 3f) / 3.5f;
+                        if (e * e + f * f > 1f) continue;
+                        px[y * w + x] = new Color(0.22f, 0.24f, 0.28f, 1f);
+                    }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>鍾乳石: 天井から垂れる石の牙 2〜3 本 (板の上端が天井)。先は濡れて青い</summary>
+            public static Texture2D Stalactites(Pal p, System.Random rng)
+            {
+                int w = 48, h = 40;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var a = Mix(p.CliffA, Color.black, 0.2f); var b = Mix(p.CliffB, Color.black, 0.35f); var wet = Mix(p.CliffA, new Color(0.5f, 0.9f, 0.9f), 0.35f);
+                int n = 2 + rng.Next(2);
+                for (int k = 0; k < n; k++)
+                {
+                    float cx = 8f + (w - 16f) * (k + 0.5f) / n + ((float)rng.NextDouble() - 0.5f) * 6f;
+                    float len = 16f + (float)rng.NextDouble() * 20f; float top = 6f + (float)rng.NextDouble() * 5f;
+                    for (int y = 0; y < h; y++)
+                    {
+                        float d = h - 1 - y;
+                        if (d > len) continue;
+                        float hw = top * (1f - d / len);
+                        for (int x = 0; x < w; x++)
+                        {
+                            float e = x - cx; if (Mathf.Abs(e) > hw) continue;
+                            var c = e < -hw * 0.3f ? b : a; if (d > len - 2.5f) c = wet;
+                            c.a = 1f; px[y * w + x] = c;
+                        }
+                    }
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>垂れ根: 天井の岩の隙間から下がる細い根 (板の上端が天井)</summary>
+            public static Texture2D HangingRoots(Pal p, System.Random rng)
+            {
+                int w = 40, h = 44;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var c1 = Mix(p.Trunk, Color.black, 0.2f); var c2 = Mix(p.Trunk, p.LeafC, 0.25f);
+                int n = 4 + rng.Next(3);
+                for (int k = 0; k < n; k++)
+                {
+                    float x0 = 4f + (float)rng.NextDouble() * (w - 8f); float len = 14f + (float)rng.NextDouble() * 28f;
+                    float sway = ((float)rng.NextDouble() - 0.5f) * 10f; float ph = (float)rng.NextDouble() * 6f;
+                    for (int y = h - 1; y >= 0 && (h - 1 - y) <= len; y--)
+                    {
+                        float d = h - 1 - y; float x = x0 + sway * (d / len) + Mathf.Sin(d * 0.35f + ph) * 1.6f;
+                        int xi = Mathf.RoundToInt(x); int th = d < len * 0.5f ? 2 : 1;
+                        for (int dx = 0; dx < th; dx++) { int xx = xi + dx; if (xx < 0 || xx >= w) continue; var c = dx == 0 ? c1 : c2; c.a = 1f; px[y * w + xx] = c; }
+                    }
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>トロッコ: 木の箱に鉄の帯、山盛りの光る鉱</summary>
+            public static Texture2D MineCart(Color ore, System.Random rng)
+            {
+                int w = 34, h = 26;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var wood = UiKit.Hex("#5e4432"); var woodL = UiKit.Hex("#7a5a40"); var iron = UiKit.Hex("#3a3a42"); var ironL = UiKit.Hex("#5a5a66");
+                void R(int x0, int y0, int x1, int y1, Color c) { for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) if (x >= 0 && x < w && y >= 0 && y < h) { var cc = c; cc.a = 1f; px[y * w + x] = cc; } }
+                R(6, 0, 10, 4, iron); R(7, 1, 9, 3, ironL); R(23, 0, 27, 4, iron); R(24, 1, 26, 3, ironL);
+                for (int y = 5; y <= 18; y++) { int inset = (18 - y) / 3; R(3 + inset, y, w - 4 - inset, y, (y % 4 == 0) ? woodL : wood); }
+                R(3, 5, w - 4, 5, iron); R(2, 17, w - 3, 18, iron); R(9, 6, 9, 16, iron); R(w - 10, 6, w - 10, 16, iron);
+                var oreD = Mix(ore, Color.black, 0.4f); var oreL = Mix(ore, Color.white, 0.4f);
+                for (int i = 0; i < 26; i++)
+                {
+                    int x = 6 + rng.Next(w - 12), y = 15 + rng.Next(9);
+                    float e = (x - w * 0.5f) / (w * 0.36f), f = (y - 15f) / 9f; if (e * e + f * f > 1f) continue;
+                    R(x, y, x + 1, y + 1, rng.NextDouble() < 0.3 ? oreL : rng.NextDouble() < 0.5 ? ore : oreD);
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>古代の大門: 二本の柱と半円のアーチ。縁の紋が脈の色に光る</summary>
+            public static Texture2D Arch(Pal p, Color rune)
+            {
+                int w = 96, h = 124;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var stone = Mix(p.StoneB, Color.black, 0.45f); var edge = Mix(p.StoneA, Color.black, 0.3f);
+                int pw = 18, top = 76; float R = w * 0.5f, cx = w * 0.5f;
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        bool inPillar = (x < pw || x >= w - pw) && y < top;
+                        float dx = x - cx, dy = y - top; float rr = Mathf.Sqrt(dx * dx + dy * dy);
+                        bool inArch = y >= top && rr <= R && rr >= R - pw;
+                        if (!(inPillar || inArch)) continue;
+                        var c = ((x % 9 == 0) || (y % 11 == 0)) ? edge : stone;
+                        c.a = 1f; px[y * w + x] = c;
+                    }
+                var rc = rune; rc.a = 1f;
+                for (int a = 0; a <= 180; a += 2)
+                {
+                    float ang = a * Mathf.Deg2Rad; float rad = R - pw * 0.5f;
+                    int x = Mathf.RoundToInt(cx + Mathf.Cos(ang) * rad), y = Mathf.RoundToInt(top + Mathf.Sin(ang) * rad);
+                    if (x >= 0 && x < w && y >= 0 && y < h) { px[y * w + x] = rc; if (y + 1 < h) px[(y + 1) * w + x] = rc; }
+                }
+                for (int i = 0; i < 7; i++)
+                {
+                    int y0 = 8 + i * 10;
+                    for (int y = y0; y < y0 + 4 && y < top; y++) { px[y * w + pw / 2] = rc; px[y * w + pw / 2 + 1] = rc; px[y * w + (w - pw / 2 - 1)] = rc; px[y * w + (w - pw / 2 - 2)] = rc; }
+                }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>水道橋の列: 半円アーチの連なり (遠景のシルエット)</summary>
+            public static Texture2D Arcade(Pal p, int arches)
+            {
+                int aw = 28, w = aw * arches, h = 44;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                var stone = Mix(p.StoneB, Color.black, 0.5f); var edge = Mix(p.StoneA, Color.black, 0.35f);
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        int lx = x % aw; float dx = lx - aw * 0.5f;
+                        bool open = false;
+                        if (y < 24) open = Mathf.Abs(dx) < 8f;
+                        else if (y < 32) { float dy = y - 24; open = dx * dx + dy * dy < 64f; }
+                        if (open) continue;
+                        var c = (y >= h - 3 || y == 33 || lx == 0) ? edge : stone; c.a = 1f; px[y * w + x] = c;
+                    }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>天井を走る脈: 洞窟の天井に沿う光の帯 (両端で消える。滑らか)</summary>
+            public static Texture2D Aurora(Color c0, System.Random rng)
+            {
+                int w = 256, h = 48;
+                var t = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                t.filterMode = FilterMode.Bilinear; t.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[w * h];
+                float[] ph = new float[4]; for (int i = 0; i < 4; i++) ph[i] = (float)rng.NextDouble() * 10f;
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float u = x / (float)w, v = y / (float)h;
+                        float center = 0.5f + 0.18f * Mathf.Sin(u * 6.2f + ph[0]) + 0.08f * Mathf.Sin(u * 17f + ph[1]);
+                        float d = Mathf.Abs(v - center);
+                        float a = Mathf.Exp(-d * d * 40f) * (0.55f + 0.45f * Mathf.Sin(u * 31f + ph[2]) * Mathf.Sin(u * 7f + ph[3]));
+                        a *= Mathf.Sin(u * Mathf.PI);
+                        px[y * w + x] = new Color(c0.r, c0.g, c0.b, Mathf.Clamp01(a) * 0.8f);
+                    }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
+            /// <summary>滑車の輪: 縁と 6 本のスポーク (中心の板に貼って回す)</summary>
+            public static Texture2D Wheel(Color c, int size)
+            {
+                int w = size, h = size;
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                float cx = w * 0.5f - 0.5f, cy = h * 0.5f - 0.5f, R = w * 0.5f - 1f;
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float dx = x - cx, dy = y - cy; float r = Mathf.Sqrt(dx * dx + dy * dy); if (r > R) continue;
+                        bool rim = r > R - 3f, hub = r < 3f, spoke = false;
+                        float ang = Mathf.Atan2(dy, dx) * Mathf.Rad2Deg;
+                        for (int k = 0; k < 6; k++) if (Mathf.Abs(Mathf.DeltaAngle(ang, k * 60f)) < 5f) spoke = true;
+                        if (!(rim || hub || spoke)) continue;
+                        var cc = c; cc.a = 1f; px[y * w + x] = cc;
+                    }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
             /// <summary>光る茸: 淡い青緑の傘 2〜3 本 (自発光の板として置く)</summary>
             public static Texture2D GlowShroom(Pal p, System.Random rng)
             {
@@ -2707,6 +3104,68 @@ namespace DeckRogue.Game
                       new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0.7f, 0.6f), new GradientAlphaKey(0f, 1f) });
             col.color = g;
             ps.Play();
+        }
+
+        /// <summary>脈の粒: 結晶と露頭から青緑の粒がゆっくり昇る (幕2/3)</summary>
+        static void VeinMotes()
+        {
+            var ps = NewSystem("vein-motes", GlowDotTex());
+            var main = ps.main; main.startLifetime = new ParticleSystem.MinMaxCurve(7f, 12f); main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.06f, 0.14f); main.startColor = new Color(0.5f, 1.4f, 1.3f, 1f); main.maxParticles = 70;
+            var em = ps.emission; em.rateOverTime = 7f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(46f, 0.6f, 26f); shape.position = new Vector3(2f, 0.2f, 10f);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.04f, 0.04f); vel.y = new ParticleSystem.MinMaxCurve(0.08f, 0.2f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.25f; noise.frequency = 0.4f; noise.scrollSpeed = 0.2f;
+            var col = ps.colorOverLifetime; col.enabled = true; var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.15f), new GradientAlphaKey(0.8f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            col.color = g; ps.Play();
+        }
+
+        /// <summary>しずく: 天井から落ちる短い銀の筋 (幕2)</summary>
+        static void Drips()
+        {
+            var ps = NewSystem("drips", GlowDotTex());
+            var main = ps.main; main.startLifetime = new ParticleSystem.MinMaxCurve(0.9f, 1.3f); main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.08f); main.startColor = new Color(0.8f, 0.95f, 1f, 0.9f); main.maxParticles = 30;
+            var em = ps.emission; em.rateOverTime = 3f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40f, 0.2f, 20f); shape.position = new Vector3(0f, 6.4f, 12f);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(0f, 0f); vel.y = new ParticleSystem.MinMaxCurve(-6f, -5f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+            var ren = ps.GetComponent<ParticleSystemRenderer>(); ren.renderMode = ParticleSystemRenderMode.Stretch; ren.velocityScale = 0.06f; ren.lengthScale = 1f;
+            ps.Play();
+        }
+
+        /// <summary>灰: 天井から細かい灰がゆっくり落ちる (幕3)</summary>
+        static void AshFall()
+        {
+            var ps = NewSystem("ashfall", DotTex());
+            var main = ps.main; main.startLifetime = new ParticleSystem.MinMaxCurve(10f, 16f); main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.03f, 0.06f); main.startColor = new Color(0.75f, 0.85f, 0.9f, 0.5f); main.maxParticles = 120;
+            var em = ps.emission; em.rateOverTime = 9f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(50f, 0.5f, 30f); shape.position = new Vector3(0f, 9f, 14f);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.08f, 0.08f); vel.y = new ParticleSystem.MinMaxCurve(-0.5f, -0.3f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.3f; noise.frequency = 0.5f; noise.scrollSpeed = 0.3f;
+            ps.Play();
+        }
+
+        /// <summary>人魂: 淡い大きな光がゆっくり漂う (幕3。帰らなかった者の名残)</summary>
+        static void Wisps()
+        {
+            var ps = NewSystem("wisps", GlowDotTex());
+            var main = ps.main; main.startLifetime = new ParticleSystem.MinMaxCurve(12f, 20f); main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.5f, 0.9f); main.startColor = new Color(0.6f, 1.2f, 1.2f, 0.35f); main.maxParticles = 6;
+            var em = ps.emission; em.rateOverTime = 0.35f;
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(44f, 3f, 20f); shape.position = new Vector3(0f, 2.5f, 16f);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.15f, 0.15f); vel.y = new ParticleSystem.MinMaxCurve(-0.05f, 0.08f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.8f; noise.frequency = 0.25f; noise.scrollSpeed = 0.2f;
+            var col = ps.colorOverLifetime; col.enabled = true; var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.3f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 1f) });
+            col.color = g; ps.Play();
         }
 
         /// <summary>水のきらめき: 川筋 (s≈6.6 の帯) に限定した小さな銀の粒。短命で瞬く</summary>
