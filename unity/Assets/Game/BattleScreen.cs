@@ -517,8 +517,6 @@ namespace DeckRogue.Game
             var p = st.Player;
 
             string leaderId = g.Rs.LeaderId;
-            string leaderName = leaderId;
-            try { var ld = Content.GetLeaderDef(leaderId); leaderName = ld.Name; } catch (Exception) { }
 
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
@@ -533,14 +531,9 @@ namespace DeckRogue.Game
             img.raycastTarget = false;
             Stage.BindUnit("player", spr, img, leaderArt);
 
-            var nameTag = UiKit.NewRect("nametag", area);
-            UiKit.Anchor(nameTag, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(20f, 90f), new Vector2(240f, 124f));
-            nameTag.localRotation = Quaternion.Euler(0f, 0f, -1f);
-            var ntImg = PaperFx.Sheet(nameTag, PaperFx.Tag, "paper");
-            UiKit.Stretch(ntImg.rectTransform, 0f, 0f, 0f, 0f);
-            ntImg.raycastTarget = false;
-            var nameT = UiKit.Deco(nameTag, leaderName, 19, PaperFx.Ink, TextAnchor.MiddleCenter);
-            UiKit.Stretch(nameT.rectTransform, 6f, 6f, 0f, 0f);
+            // 自キャラの名前札は出さない (2026-09-11 ユーザー「スマホ表示だとキャラと名前が被ってキャラがよく見えなくなる。
+            // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。
+            // 敵の名前札は「どれを狙うか」の識別に要るので据え置き
             var hpRt = UiKit.NewRect("hpwrap", area);
             UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(50f, 64f), new Vector2(250f, 84f));
             HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, shownHp, p.MaxHp, p.Block);
