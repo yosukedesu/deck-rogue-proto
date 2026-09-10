@@ -1,0 +1,31 @@
+{
+ "id": "enemy_forgotten_soul__57",
+ "engine": "pixflux",
+ "request": {
+  "description": "a faceless WISP of lantern glow: Faceless, limbless wisp: a dim cloudy lantern-glow wrapped in pale mist, sinking into a pool of dark haze on the floor; no eyes, no hood, no hands, no held objects, pixel art in the style of a gentle watercolor picture book illustration of the faint remains of a miner who never came back: a small floating pale translucent wisp or shroud shape with soft dissolving edges, no face, no limbs, faintly glowing from within, carrying one small mining prop, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin soft outline, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, person, face, eyes, mouth, arms, hands, legs, hooded figure, sheet ghost, skull, skeleton, zombie, hood, hooded figure, eye, eyes, hand, arm, person, held lantern, robe",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "basic shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 57
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:48:24.741Z",
+ "judge": {
+  "pick": "redo",
+  "seed": 57,
+  "at": "2026-09-11",
+  "note": "第2回 (fix_hint で3シード) から手で選択"
+ }
+}

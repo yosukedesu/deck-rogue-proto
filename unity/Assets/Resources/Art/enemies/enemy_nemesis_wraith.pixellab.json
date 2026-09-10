@@ -1,0 +1,31 @@
+{
+ "id": "enemy_nemesis_wraith__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "a pale faceless WISP: Faceless, limbless pale wisp: right half solid, left half dissolving into drifting mist; a scythe made from a bent iron rail floats beside it on its own (not held); no arms, no face, no lantern, pixel art in the style of a gentle watercolor picture book illustration of the faint remains of a miner who never came back: a small floating pale translucent wisp or shroud shape with soft dissolving edges, no face, no limbs, faintly glowing from within, carrying one small mining prop, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin soft outline, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, grim reaper, hooded figure, skeleton, skull, person holding scythe, hands, arms, robe, cloak, face, eyes, mouth, face, eyes, arms, hands, cartoon ghost, lantern",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "basic shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:45:54.884Z",
+ "judge": {
+  "pick": "redo",
+  "seed": 7,
+  "at": "2026-09-11",
+  "note": "第2回 (fix_hint で3シード) から手で選択"
+ }
+}

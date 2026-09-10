@@ -1,0 +1,31 @@
+{
+ "id": "enemy_brood_raptor__83",
+ "engine": "pixflux",
+ "request": {
+  "description": "a feathered small THEROPOD DINOSAUR (raptor mother): feathered small theropod dinosaur (raptor) with a long stiff tail and NO large ears, crouched brooding on top of spotted eggs in a nest, plumage spotted like the eggs, two small bead eyes, no mouth, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, dinosaur skeleton, dragon, T-rex, chicken, hen, bird, human, scaly monster, humanoid, cat, fennec, fox, mouse, big ears, mammal, fur, open mouth, chicken",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 83
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-10T20:39:18.645Z",
+ "judge": {
+  "pick": "redo",
+  "seed": 83,
+  "at": "2026-09-11",
+  "note": "第2回 (fix_hint で3シード) から手で選択"
+ }
+}
