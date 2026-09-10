@@ -1,13 +1,19 @@
 {
  "engine": "animate-with-skeleton + weapon layer composite",
- "note": "2026-09-11 魔導の大斧版。体だけの参考画像 (scripts/konoha-weapon.py strip) を骨格キーフレーム (docs/pixellab/skel_leader_green_*.json) で動かし、武器レイヤー (mask) を握り (17,42) に合わせて合成 (compose --align)。パレットは leader_green.png に吸着",
+ "note": "2026-09-11 魔導の大斧版 (作り直し2): 新しい絵の骨格を /estimate-skeleton で取り、旧キーフレームを差分で移し替えた (scratchpad/final/kp_*.json)。体だけの参考画像 (strip) を骨格で動かし、武器レイヤーを握りに合わせて合成 (compose --align)",
  "frames": 4,
- "canvas": 96,
+ "canvas": "128x96",
  "angles": [
-  75,
-  15,
-  -50,
+  30,
+  12,
+  -40,
   0
  ],
- "note2": "攻撃は 96×96 (体を +16,+32)。溜め(体0,+75°)→頭上(体0,+15°)→振り抜き(体1,-50°)→戻り(体2,0°)。握りは RIGHT ARM の関節へ (--place hand)"
+ "note2": "攻撃は 128×96 (体を +32,+32 = 足元中央は不変)。溜め・頭上は柄の端寄り (12,44) を握り、振り抜き・戻りは元の握り (17,42)。握りは RIGHT ARM の関節へ",
+ "grips": [
+  "12,44",
+  "12,44",
+  "17,42",
+  "17,42"
+ ]
 }

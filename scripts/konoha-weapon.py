@@ -4,7 +4,7 @@
   mask    <chibi.png> <outdir>        武器の範囲 (頭の箱＋柄の帯＋手元) のマスクと武器レイヤー・握りの座標を出す
   strip   <chibi.png> <weapon.png> <out.png>   武器の画素を消して体の穴を近傍色で埋めた「体だけ」の参考画像を作る
   compose <bodyframes_prefix> <weapon.png> <anchor.json> <kp.json> <out_prefix>
-          [--canvas 96] [--angles a,b,c] [--extra-idle body.png] [--palette ref.png] [--place identity|hand] [--align body_ref.png]
+          [--canvas 96|128x96] [--angles a,b,c] [--extra-idle body.png] [--palette ref.png] [--place identity|hand] [--align body_ref.png] [--grips "x,y;x,y;..."]
           place=identity (既定) は元絵の位置に貼る (待機・被弾・防御)。place=hand は RIGHT ARM (柄を持つ手) の関節へ握りを合わせる (攻撃)
           体のコマ (animate-with-skeleton の出力) に武器を握りの位置へ回して貼る。パレットは元絵に吸着・接地行を揃える
 武器の範囲は元絵ごとに合わせる (ZONE)。"""
@@ -121,9 +121,12 @@ def bottom_row(im):
     return h - 1
 
 def cmd_compose(prefix, weapon_png, anchor_json, kp_json, out_prefix, opts):
-    canvas = int(opts.get('canvas', 64)); angles = [float(a) for a in opts.get('angles', '0,0,0').split(',')]
+    cv = str(opts.get('canvas', '64')).lower().split('x'); cw, chh = int(cv[0]), int(cv[-1])   # "96" or "128x96" (StageUnit は幅・高さ別々に拡大率を持つ)
+    angles = [float(a) for a in opts.get('angles', '0,0,0').split(',')]
     pal = palette_of(load(opts['palette'])) if opts.get('palette') else None
-    weapon = load(weapon_png); grip = json.load(open(anchor_json))['grip']; frames = json.load(open(kp_json))
+    weapon = load(weapon_png); grip0 = json.load(open(anchor_json))['grip']; frames = json.load(open(kp_json))
+    # --grips "x,y;x,y;..." コマごとの握り (振り上げは柄の端を握る = 柄が顔を横切らない)
+    grips = [tuple(int(v) for v in g.split(',')) for g in opts['grips'].split(';')] if opts.get('grips') else None
     bodies = []
     for i in range(len(frames)):
         try: bodies.append(load(f'{prefix}_{i}.png'))
@@ -131,7 +134,7 @@ def cmd_compose(prefix, weapon_png, anchor_json, kp_json, out_prefix, opts):
     if opts.get('extra-idle'):
         bodies.append(load(opts['extra-idle'])); frames = frames + [frames[-1]]; angles = angles + [0.0]
     ref = load(opts['align']) if opts.get('align') else None
-    base_bottom = bottom_row(ref) if ref else bottom_row(bodies[0]); off = ((canvas - 64) // 2, canvas - 64)
+    base_bottom = bottom_row(ref) if ref else bottom_row(bodies[0]); off = ((cw - 64) // 2, chh - 64)
     for i, body in enumerate(bodies):
         if ref:
             sx, sy = best_shift(ref, body); dy = sy
@@ -139,16 +142,18 @@ def cmd_compose(prefix, weapon_png, anchor_json, kp_json, out_prefix, opts):
         else:
             dy = base_bottom - bottom_row(body)
             b2 = Image.new('RGBA', body.size, (0, 0, 0, 0)); b2.paste(body, (0, dy))
-        out = Image.new('RGBA', (canvas, canvas), (0, 0, 0, 0)); out.paste(b2, off)
+        out = Image.new('RGBA', (cw, chh), (0, 0, 0, 0)); out.paste(b2, off)
         pts = {p['label']: (p['x'] * 64, p['y'] * 64) for p in frames[i]}
         ra = pts.get('RIGHT ARM')
         if opts.get('place', 'identity') == 'hand' and ra: hx, hy = ra[0] + (sx if ref else 0), ra[1] + dy
         else: hx, hy = grip[0], grip[1] + dy
+        grip = grips[i] if grips and i < len(grips) else grip0
+        if not (opts.get('place', 'identity') == 'hand' and ra): hx, hy = grip[0], grip[1] + dy
         big = Image.new('RGBA', (128, 128), (0, 0, 0, 0)); big.paste(weapon, (32, 32))
         ang = angles[i] if i < len(angles) else 0.0
         rot = big.rotate(ang, resample=Image.NEAREST, center=(grip[0] + 32, grip[1] + 32))
         tx, ty = int(round(hx + off[0] - (grip[0] + 32))), int(round(hy + off[1] - (grip[1] + 32)))
-        layer = Image.new('RGBA', (canvas, canvas), (0, 0, 0, 0)); layer.paste(rot, (tx, ty))
+        layer = Image.new('RGBA', (cw, chh), (0, 0, 0, 0)); layer.paste(rot, (tx, ty))
         out = Image.alpha_composite(out, layer)
         if pal: out = snap(out, pal)
         out.save(f'{out_prefix}_{i}.png'); print(f'{out_prefix}_{i}.png hand=({hx:.1f},{hy:.1f}) angle={ang}')
