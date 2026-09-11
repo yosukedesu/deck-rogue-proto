@@ -161,14 +161,19 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>自ターンにプレイ可能なカードか。リアクションタイプは false。置物・選択式は常にプレイ可能</summary>
-        public static bool IsPlayableFromHand(CardInstance card)
+        public static bool IsPlayableFromHand(CardInstance card, GameState? state = null)
         {
             if (card.Def.Type == CardTypes.Reaction) return false;
+            // 青い蝋燭 (レリック 2026-09-12 本家 Blue Candle): 烙印を 0E・HP-1・消滅 でプレイできる
+            if (state != null && state.BrandsPlayable == true && IsBrandCard(card)) return true;
             if (card.Def.Type == CardTypes.Permanent) return true;
             if ((card.Def.Modes?.Count ?? 0) > 0) return true;
             foreach (var e in card.Def.Effects) if (e.Trigger == "onPlay") return true;
             return false;
         }
+
+        /// <summary>烙印 (呪いの烙印・仮初の烙印) か。青い蝋燭のプレイ可否・黒曜の護符の数え上げが読む</summary>
+        public static bool IsBrandCard(CardInstance card) => card.Def.Id == "status_brand" || card.Def.Id == "status_guilt";
 
         /// <summary>ダメージを与える効果か (「攻撃プレイ後」誘発の判定に使う)</summary>
         private static readonly HashSet<string> DAMAGE_EFFECTS = new HashSet<string>
@@ -290,10 +295,32 @@ namespace DeckRogue.Engine
             foreach (var permanent in state.Player.Permanents)
             {
                 if (only != null && !only(permanent)) continue;
-                foreach (var effect in permanent.Def.Effects)
+                for (int ei = 0; ei < permanent.Def.Effects.Count; ei++)
                 {
+                    var effect = permanent.Def.Effects[ei];
                     if (effect.Trigger == trigger && BlazeConditionMet(s, effect, enemyIndex))
                     {
+                        // every/once (レリック本家形 2026-09-12): 条件を満たした誘発を数え、N回目ごと/初回だけ解決する。
+                        // カウンタは置物インスタンス (uid) が持つ = 同じレリックでも戦闘ごとに0から
+                        if (effect.Every != null || effect.Once != null)
+                        {
+                            bool turnScope = effect.Once == "turn" || effect.EveryScope == "turn";
+                            CardInstance? cur = null;
+                            foreach (var p in s.Player.Permanents) if (p.Uid == permanent.Uid) { cur = p; break; }
+                            if (cur == null) continue;
+                            var map = new Dictionary<string, int>();
+                            var src = turnScope ? cur.TurnTriggerCounts : cur.TriggerCounts;
+                            if (src != null) foreach (var kv in src) map[kv.Key] = kv.Value;
+                            string key = ei.ToString();
+                            int n = (map.TryGetValue(key, out var prev) ? prev : 0) + 1;
+                            map[key] = n;
+                            var perms = new List<CardInstance>(s.Player.Permanents.Count);
+                            foreach (var p in s.Player.Permanents)
+                                perms.Add(p.Uid == permanent.Uid ? (turnScope ? p with { TurnTriggerCounts = map } : p with { TriggerCounts = map }) : p);
+                            s = s with { Player = s.Player with { Permanents = perms } };
+                            bool fires = effect.Once != null ? n == 1 : n % (effect.Every ?? 1) == 0;
+                            if (!fires) continue;
+                        }
                         var boosted =
                             anthem > 0 && permanent.Def.Retainer == true && effect.Amount != null
                                 ? effect with { Amount = effect.Amount + anthem }
@@ -898,6 +925,8 @@ namespace DeckRogue.Engine
                 });
             s = ApplyWakeCheck(s, enemyIndex);
             s = BreakBurrowIfCracked(s, enemyIndex);
+            // 倒れた (2026-09-12 onEnemyDied): この呼び出しでHPが0以下になった時だけ (冒頭で倒れた敵は弾いている)
+            if (hpLoss > 0 && s.Enemies[enemyIndex].Hp <= 0) s = FireEnemyDied(s, enemyIndex);
             // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化
             {
                 var struck0 = s.Enemies[enemyIndex];
@@ -945,6 +974,7 @@ namespace DeckRogue.Engine
             var discardPile = new List<CardInstance>(state.Player.DiscardPile);
             var rng = state.Rng;
             var drawn = new List<CardInstance>();
+            int shuffles = 0;
             for (int i = 0; i < n; i++)
             {
                 if (drawPile.Count == 0)
@@ -954,6 +984,7 @@ namespace DeckRogue.Engine
                     drawPile = new List<CardInstance>(reshuffled);
                     discardPile = new List<CardInstance>();
                     rng = nextRng;
+                    shuffles++;
                 }
                 drawn.Add(drawPile[0]);
                 drawPile.RemoveAt(0);
@@ -968,9 +999,22 @@ namespace DeckRogue.Engine
                     Hand = state.Player.Hand.Concat(drawn).ToList(),
                 },
             };
-            return drawn.Count > 0
-                ? Events.Emit(next, new GameEvent_CardsDrawn { Count = drawn.Count, Cards = drawn.Select(c => c.Def.Name).ToList() })
-                : next;
+            if (drawn.Count > 0) next = Events.Emit(next, new GameEvent_CardsDrawn { Count = drawn.Count, Cards = drawn.Select(c => c.Def.Name).ToList() });
+            // 切り直しの誘発 (日時計・算盤 2026-09-12): 引き終えてから切り直した回数ぶん発火する
+            for (int k = 0; k < shuffles; k++)
+            {
+                next = Events.Emit(next, new GameEvent_DeckShuffled());
+                next = RunPermanentTriggers(next, "onShuffle", Math.Max(0, FindAliveIndex(next.Enemies)));
+            }
+            return next;
+        }
+
+        /// <summary>敵が倒れた時の誘発 (小鬼の角笛 2026-09-12)。与ダメ・延焼ティックのどちらの経路でも呼ぶ。逃走は倒れていない</summary>
+        public static GameState FireEnemyDied(GameState state, int enemyIndex)
+        {
+            var s = Events.Emit(state, new GameEvent_EnemyDied { EnemyIndex = enemyIndex });
+            s = RunPermanentTriggers(s, "onEnemyDied", enemyIndex);
+            return s;
         }
 
         /// <summary>
@@ -1053,6 +1097,16 @@ namespace DeckRogue.Engine
                 case "gainIceBlockPerHandCard":
                     // 抱え込み (青): 手札の枚数 × amount の氷壁
                     return GainPlayerIceBlock(state, (effect.Amount ?? 0) * state.Player.Hand.Count);
+                case "gainBlockPerHandCard":
+                    // 外套の留め金 (レリック 2026-09-12 本家 Cloak Clasp): 手札の枚数 × amount のブロック
+                    return GainPlayerBlock(state, (effect.Amount ?? 0) * state.Player.Hand.Count, enemyIndex);
+                case "drawCardsNextTurn":
+                    // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。StartPlayerTurn が読んで消す
+                    return state with { NextTurnDraw = (state.NextTurnDraw ?? 0) + (effect.Amount ?? 0) };
+                case "gainEnergyNextTurn":
+                    return state with { NextTurnEnergy = (state.NextTurnEnergy ?? 0) + (effect.Amount ?? 0) };
+                case "gainBlockNextTurn":
+                    return state with { NextTurnBlock = (state.NextTurnBlock ?? 0) + (effect.Amount ?? 0) };
                 case "blessRetainers":
                     // アンセム (白): 常在の静的効果。runPermanentTriggers が読むだけ (登場時のno-op)
                     return state;
@@ -1701,6 +1755,11 @@ namespace DeckRogue.Engine
                 if (c.TargetDead == true && !(e != null && e.Hp <= 0)) return false;
                 if (c.LastActionNoHpLoss == true
                     && !(state.LastAction != null && state.LastAction.Kind == "attack" && state.LastAction.HpLoss == 0)) return false;
+                // レリック本家形 (2026-09-12): ターン番号・ブロック0・攻撃なし・プレイ枚数
+                if (c.Turn != null && state.Turn != c.Turn.Value) return false;
+                if (c.BlockZero == true && state.Player.Block > 0) return false;
+                if (c.NoAttackThisTurn == true && (state.Player.AttacksPlayedThisTurn ?? 0) > 0) return false;
+                if (c.MaxPlaysThisTurn != null && (state.Player.PlaysThisTurn ?? 0) > c.MaxPlaysThisTurn.Value) return false;
             }
             // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
             if (effect.Condition?.MinGrowth != null && state.Player.Growth < effect.Condition.MinGrowth.Value) return false;

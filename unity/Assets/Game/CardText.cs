@@ -244,6 +244,11 @@ namespace DeckRogue.Game
             if (c.TargetDead == true) parts.Add("とどめ");
             if (c.LastActionNoHpLoss == true) parts.Add("完全に凌いだ時");
             if (c.HealedThisTurn == true) parts.Add("このT先にカードで回復していたら");
+            // レリック本家形 (2026-09-12)
+            if (c.Turn.HasValue) parts.Add(c.Turn.Value + "ターン目");
+            if (c.BlockZero == true) parts.Add("ブロックが0なら");
+            if (c.NoAttackThisTurn == true) parts.Add("このターン攻撃札を1枚もプレイしていなければ");
+            if (c.MaxPlaysThisTurn.HasValue) parts.Add("このターンのプレイが" + c.MaxPlaysThisTurn.Value + "枚以下なら");
             // 2026-09-09 抜けていた2種 (若幹の一撃・大地の唸りが「ダメージ6 ×2回」に化け、共鳴する茨の打ち消しが無条件に見えていた)
             if (c.MinEnergyMax.HasValue) parts.Add("エナジー上限" + c.MinEnergyMax.Value + "以上");
             if (c.ActionKinds != null && c.ActionKinds.Count > 0)
@@ -279,6 +284,9 @@ namespace DeckRogue.Game
                 sb.Append(": ");
             }
             sb.Append(ConditionLabel(e.Condition));
+            // every/once (レリック本家形 2026-09-12): 「3回ごと」「戦闘で1回だけ」
+            if (e.Every.HasValue) sb.Append("(" + (e.EveryScope == "turn" ? "1ターンに" : "") + e.Every.Value + "回ごとに1回) ");
+            else if (e.Once != null) sb.Append("(" + (e.Once == "turn" ? "ターンに" : "戦闘で") + "1回だけ) ");
             if (e.Target == "all") sb.Append("敵全体に ");
             sb.Append(EffectBody(e));
             if (e.Pierce == true) sb.Append("(貫通)");

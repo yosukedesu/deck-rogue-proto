@@ -115,6 +115,7 @@ namespace DeckRogue.Engine.Generated
         public const string Map = "map";
         public const string Combat = "combat";
         public const string RelicReward = "relic-reward";
+        public const string RelicChoose = "relic-choose";
         public const string Campfire = "campfire";
         public const string Workshop = "workshop";
         public const string Shop = "shop";
@@ -306,6 +307,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>反復トークン (青: 呪文コピー)。次に唱える呪文の効果を2回解決する。自ターン終了時にリセット (勢いと同じ持続則 = 敵フェーズに得た分は次の自ターンまで持つ)</summary>
         [JsonProperty("spellEchoes")]
         public int SpellEchoes { get; init; }
+        /// <summary>アーティファクト (時計仕掛けの土産 2026-09-12): 状態異常の付与をN回弾く (弱体・脆弱・虚弱・拘束・霞み・重り。負傷・火傷・がらくたは札なので弾かない)</summary>
+        [JsonProperty("artifact")]
+        public int? Artifact { get; init; }
+        /// <summary>このターン (自ターン開始〜次の自ターン開始) に敵の攻撃で失ったHPの累計 (脈打つ欠片=1ターンの損失上限の参照)</summary>
+        [JsonProperty("hpLostThisTurn")]
+        public int? HpLostThisTurn { get; init; }
     }
 
     /// <summary>EnemyState</summary>
@@ -510,6 +517,18 @@ namespace DeckRogue.Engine.Generated
         /// <summary>このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn&gt;0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W)</summary>
         [JsonProperty("healedThisTurn")]
         public bool? HealedThisTurn { get; init; }
+        /// <summary>戦闘のターン番号がちょうどNなら (角の留め具=T2・舵輪=T3・石の暦=T7。本家の「T2/T3 発火」型 2026-09-12)</summary>
+        [JsonProperty("turn")]
+        public int? Turn { get; init; }
+        /// <summary>自分のブロックが0なら (山銅の板=本家 Orichalcum。onTurnEnd で読む)</summary>
+        [JsonProperty("blockZero")]
+        public bool? BlockZero { get; init; }
+        /// <summary>このターンに攻撃札を1枚もプレイしていなければ (兵法書=本家 Art of War)</summary>
+        [JsonProperty("noAttackThisTurn")]
+        public bool? NoAttackThisTurn { get; init; }
+        /// <summary>このターンの実プレイ枚数がN枚以下なら (懐中時計=本家 Pocketwatch)</summary>
+        [JsonProperty("maxPlaysThisTurn")]
+        public int? MaxPlaysThisTurn { get; init; }
     }
 
     /// <summary>'awaiting-reaction' 中断中の再開情報。 stage 'pre' = 行動の実行前 (打ち消し・軽減の窓)、'post' = 行動の解決後 (返し系の窓)</summary>
@@ -604,6 +623,48 @@ namespace DeckRogue.Engine.Generated
         /// <summary>C型レリック (収穫の鎌 2026-09-03): 成長放出のあと成長がN残る</summary>
         [JsonProperty("harvestKeep")]
         public int? HarvestKeep { get; init; }
+        /// <summary>次の自ターン開始時に追加でドロー/一時マナ/ブロック (百年の謎かけ・兵法書・自ら固まる粘土。適用したら消える)</summary>
+        [JsonProperty("nextTurnDraw")]
+        public int? NextTurnDraw { get; init; }
+        [JsonProperty("nextTurnEnergy")]
+        public int? NextTurnEnergy { get; init; }
+        [JsonProperty("nextTurnBlock")]
+        public int? NextTurnBlock { get; init; }
+        /// <summary>C型: 手札を捨てない (ルーンの角錐。火傷の1回きり・衝動の失効は従来どおり)</summary>
+        [JsonProperty("retainHand")]
+        public bool? RetainHand { get; init; }
+        /// <summary>C型: 余ったエナジーを次の自ターンへ持ち越す (溶けない氷菓)</summary>
+        [JsonProperty("energyCarry")]
+        public bool? EnergyCarry { get; init; }
+        /// <summary>C型: 自ターン開始時にブロックをN持ち越す (頑丈な留め具)</summary>
+        [JsonProperty("blockKeep")]
+        public int? BlockKeep { get; init; }
+        /// <summary>C型: X札の X に+N (増幅の薬。支払いは増えない)</summary>
+        [JsonProperty("xBonus")]
+        public int? XBonus { get; init; }
+        /// <summary>C型: 敵の攻撃の各ヒットのHP損失-N (重金の棒。最低0)</summary>
+        [JsonProperty("hpLossReduce")]
+        public int? HpLossReduce { get; init; }
+        /// <summary>C型: 敵の攻撃の1ヒットの未ブロック分がN以下なら1になる (古い門柱=本家 Torii)</summary>
+        [JsonProperty("smallHitToOne")]
+        public int? SmallHitToOne { get; init; }
+        /// <summary>C型: 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片=StS2 Beating Remnant。免疫は作らない裁定の器)</summary>
+        [JsonProperty("maxHpLossPerTurn")]
+        public int? MaxHpLossPerTurn { get; init; }
+        /// <summary>C型: 致死ダメージを1度だけ耐えて最大HPの半分で立つ (蜥蜴の尾。ランで1度 = run 層が deathSaveUsed を読んで以後注入しない)</summary>
+        [JsonProperty("deathSave")]
+        public bool? DeathSave { get; init; }
+        [JsonProperty("deathSaveUsed")]
+        public bool? DeathSaveUsed { get; init; }
+        /// <summary>C型: 1ターンにプレイできる枚数の上限 (天鵞絨の首輪=6。拘束の3と併存=小さい方)</summary>
+        [JsonProperty("playCap")]
+        public int? PlayCap { get; init; }
+        /// <summary>C型: 敵の意図を表示しない (ルーンの円蓋。エンジンの宣言・分岐・確認ウィンドウは不変 = 表示層だけが隠す)</summary>
+        [JsonProperty("hideIntents")]
+        public bool? HideIntents { get; init; }
+        /// <summary>C型: 烙印をプレイできる (青い蝋燭: 0E・HP-1・消滅)</summary>
+        [JsonProperty("brandsPlayable")]
+        public bool? BrandsPlayable { get; init; }
     }
 
     /// <summary>判別共用体 Command (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -1549,6 +1610,40 @@ namespace DeckRogue.Engine.Generated
         public int Turn { get; init; }
     }
 
+    /// <summary>GameEvent: type="DeckShuffled"</summary>
+    public sealed record GameEvent_DeckShuffled : GameEvent
+    {
+        public const string TypeTag = "DeckShuffled";
+        public GameEvent_DeckShuffled() { Type = TypeTag; }
+    }
+
+    /// <summary>GameEvent: type="EnemyDied"</summary>
+    public sealed record GameEvent_EnemyDied : GameEvent
+    {
+        public const string TypeTag = "EnemyDied";
+        public GameEvent_EnemyDied() { Type = TypeTag; }
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
+    }
+
+    /// <summary>GameEvent: type="DeathSaved"</summary>
+    public sealed record GameEvent_DeathSaved : GameEvent
+    {
+        public const string TypeTag = "DeathSaved";
+        public GameEvent_DeathSaved() { Type = TypeTag; }
+        [JsonProperty("hp")]
+        public int Hp { get; init; }
+    }
+
+    /// <summary>GameEvent: type="PlayerArtifactBlocked"</summary>
+    public sealed record GameEvent_PlayerArtifactBlocked : GameEvent
+    {
+        public const string TypeTag = "PlayerArtifactBlocked";
+        public GameEvent_PlayerArtifactBlocked() { Type = TypeTag; }
+        [JsonProperty("status")]
+        public string Status { get; init; } = default!;
+    }
+
     /// <summary>GameEvent: type="CombatEnded"</summary>
     public sealed record GameEvent_CombatEnded : GameEvent
     {
@@ -1566,6 +1661,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針)</summary>
         [JsonProperty("condition")]
         public EffectCondition? Condition { get; init; }
+        /// <summary>N回目の誘発ごとに1回だけ解決する (本家のカウンター型 2026-09-12: 投げ刃の束=攻撃3枚ごと・墨壺=10枚ごと・陽気な花=3ターンごと)。 カウンタは置物インスタンスが持つ (CardInstance.triggerCounts / turnTriggerCounts)。条件 (condition) を満たした誘発だけ数える</summary>
+        [JsonProperty("every")]
+        public int? Every { get; init; }
+        /// <summary>every のカウンタの寿命。'turn'=自ターン開始でリセット (1ターンに攻撃3枚)・'combat'=戦闘内累計 (既定)</summary>
+        [JsonProperty("everyScope")]
+        public string? EveryScope { get; init; }
+        /// <summary>戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ)</summary>
+        [JsonProperty("once")]
+        public string? Once { get; init; }
         /// <summary>ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03)</summary>
         [JsonProperty("growthMultiplier")]
         public double? GrowthMultiplier { get; init; }
@@ -1815,6 +1919,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない (2026-08-26。確定済みルール表「置物数参照」)。パッシブが召喚したトークンは生得ではない。</summary>
         [JsonProperty("innate")]
         public bool? Innate { get; init; }
+        /// <summary>every/once の誘発カウンタ (戦闘内累計。キーは効果の添字。置物インスタンスだけが持つ 2026-09-12)</summary>
+        [JsonProperty("triggerCounts")]
+        public IReadOnlyDictionary<string, int>? TriggerCounts { get; init; }
+        /// <summary>every/once の誘発カウンタ (ターン内。自ターン開始でリセット)</summary>
+        [JsonProperty("turnTriggerCounts")]
+        public IReadOnlyDictionary<string, int>? TurnTriggerCounts { get; init; }
     }
 
     /// <summary>状態異常の付与。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 (1戦闘上限5枚)</summary>
@@ -2159,6 +2269,72 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ショップ除去の逓増幅に加算 (除去の鑿=-25 で +50→+25)</summary>
         [JsonProperty("removalStepDelta")]
         public int? RemovalStepDelta { get; init; }
+        /// <summary>マップを1行進むたび+N G。ショップで何か買うと止まる (大口の貯金箱=本家 Maw Bank。relicState.mawBroken)</summary>
+        [JsonProperty("goldPerRow")]
+        public int? GoldPerRow { get; init; }
+        /// <summary>?に入るたび+N G (蛇の頭骨=本家 Ssserpent Head)</summary>
+        [JsonProperty("goldPerUnknown")]
+        public int? GoldPerUnknown { get; init; }
+        /// <summary>?のN回目は必ず宝箱 (小さな宝箱=本家 Tiny Chest。relicState.unknownsSinceChest)</summary>
+        [JsonProperty("unknownChestEvery")]
+        public int? UnknownChestEvery { get; init; }
+        /// <summary>ショップに入るたびHP+N (行商の食券=本家 Meal Ticket)</summary>
+        [JsonProperty("shopHeal")]
+        public int? ShopHeal { get; init; }
+        /// <summary>焚き火に「発掘」(レリック1個) が出る (発掘の鶴嘴=本家 Shovel)</summary>
+        [JsonProperty("campfireDig")]
+        public bool? CampfireDig { get; init; }
+        /// <summary>焚き火に「取り除く」が出る (安らぎの煙管=本家 Peace Pipe。除去はショップ専売の裁定の唯一の例外=レリック限定)</summary>
+        [JsonProperty("campfireRemove")]
+        public bool? CampfireRemove { get; init; }
+        /// <summary>焚き火に「鍛錬」(戦闘開始時の成長+1。N回まで) が出る (重石=本家 Girya。relicState.train)</summary>
+        [JsonProperty("campfireTrain")]
+        public int? CampfireTrain { get; init; }
+        /// <summary>線の無い先へN回まで進める (翼の靴=本家 Wing Boots。relicState.wingBoots)</summary>
+        [JsonProperty("wingBoots")]
+        public int? WingBoots { get; init; }
+        /// <summary>通常戦の勝利でカード報酬をもうN組 (祈りの車輪=本家 Prayer Wheel)</summary>
+        [JsonProperty("extraRewardRounds")]
+        public int? ExtraRewardRounds { get; init; }
+        /// <summary>カード報酬を見送るたび最大HP+N (鳴り鉢=本家 Singing Bowl)</summary>
+        [JsonProperty("skipRewardMaxHp")]
+        public int? SkipRewardMaxHp { get; init; }
+        /// <summary>デッキに加わる札のうちこのタイプは鍛えた状態になる (卵=本家 Molten/Frozen/Toxic Egg)</summary>
+        [JsonProperty("upgradeOnAdd")]
+        public IReadOnlyList<string>? UpgradeOnAdd { get; init; }
+        /// <summary>取った時に全回復 (行商の菓子=本家 Lee's Waffle)</summary>
+        [JsonProperty("healFullOnPickup")]
+        public bool? HealFullOnPickup { get; init; }
+        /// <summary>取った時にレリックをN個受け取る (呼び鈴=本家 Calling Bell。宝箱と同じ層から)</summary>
+        [JsonProperty("relicsOnPickup")]
+        public int? RelicsOnPickup { get; init; }
+        /// <summary>取った時に烙印をN枚受け取る (呼び鈴の代償)</summary>
+        [JsonProperty("brandsOnPickup")]
+        public int? BrandsOnPickup { get; init; }
+        /// <summary>取った時にデッキからN枚を選んで取り除く (空の鳥籠=本家 Empty Cage。pendingRelicChoice)</summary>
+        [JsonProperty("removeOnPickup")]
+        public int? RemoveOnPickup { get; init; }
+        /// <summary>取った時にデッキからN枚を選んで同レア度の別の札に変え、鍛える (星読みの盤=本家 Astrolabe)</summary>
+        [JsonProperty("transformOnPickup")]
+        public int? TransformOnPickup { get; init; }
+        /// <summary>取った時に基本札 (打撃・防御=スターターの共通札) をすべて同レア度の別の札に変える (古代の匣=本家 Pandora's Box)</summary>
+        [JsonProperty("transformBasicsOnPickup")]
+        public bool? TransformBasicsOnPickup { get; init; }
+        /// <summary>焚き火で鍛えられない (融合の鎚=本家 Fusion Hammer)</summary>
+        [JsonProperty("noForge")]
+        public bool? NoForge { get; init; }
+        /// <summary>工房で1回の訪問にN回合成できる (職人の手袋。既定1)</summary>
+        [JsonProperty("workshopFuses")]
+        public int? WorkshopFuses { get; init; }
+        /// <summary>合成した札が鍛えた状態になる (鍛冶の火種)</summary>
+        [JsonProperty("fusionUpgraded")]
+        public bool? FusionUpgraded { get; init; }
+        /// <summary>烙印 (呪いの烙印・仮初の烙印) を受け取るたび最大HP+N (黒曜の護符=本家 Darkstone Periapt)</summary>
+        [JsonProperty("maxHpPerBrand")]
+        public int? MaxHpPerBrand { get; init; }
+        /// <summary>次のN回の烙印を無効にする (厄除けの札=本家 Omamori。relicState.brandWard)</summary>
+        [JsonProperty("brandWard")]
+        public int? BrandWard { get; init; }
     }
 
     /// <summary>RelicDef.combatRule のインライン型</summary>
@@ -2182,6 +2358,42 @@ namespace DeckRogue.Engine.Generated
         /// <summary>伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す)</summary>
         [JsonProperty("revealOnSet")]
         public bool? RevealOnSet { get; init; }
+        /// <summary>手札を捨てない (ルーンの角錐)</summary>
+        [JsonProperty("retainHand")]
+        public bool? RetainHand { get; init; }
+        /// <summary>余ったエナジーを次のターンへ持ち越す (溶けない氷菓)</summary>
+        [JsonProperty("energyCarry")]
+        public bool? EnergyCarry { get; init; }
+        /// <summary>ターン開始時にブロックをN持ち越す (頑丈な留め具)</summary>
+        [JsonProperty("blockKeep")]
+        public int? BlockKeep { get; init; }
+        /// <summary>X札の X に+N (増幅の薬)</summary>
+        [JsonProperty("xBonus")]
+        public int? XBonus { get; init; }
+        /// <summary>敵の攻撃の各ヒットのHP損失-N (重金の棒)</summary>
+        [JsonProperty("hpLossReduce")]
+        public int? HpLossReduce { get; init; }
+        /// <summary>敵の攻撃の1ヒットの未ブロック分がN以下なら1 (古い門柱)</summary>
+        [JsonProperty("smallHitToOne")]
+        public int? SmallHitToOne { get; init; }
+        /// <summary>1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片)</summary>
+        [JsonProperty("maxHpLossPerTurn")]
+        public int? MaxHpLossPerTurn { get; init; }
+        /// <summary>致死を1度だけ耐える (蜥蜴の尾。ランで1度)</summary>
+        [JsonProperty("deathSave")]
+        public bool? DeathSave { get; init; }
+        /// <summary>1ターンにプレイできる枚数の上限 (天鵞絨の首輪)</summary>
+        [JsonProperty("playCap")]
+        public int? PlayCap { get; init; }
+        /// <summary>敵の意図を表示しない (ルーンの円蓋)</summary>
+        [JsonProperty("hideIntents")]
+        public bool? HideIntents { get; init; }
+        /// <summary>烙印をプレイできる (青い蝋燭)</summary>
+        [JsonProperty("brandsPlayable")]
+        public bool? BrandsPlayable { get; init; }
+        /// <summary>戦闘開始時にアーティファクトN (時計仕掛けの土産)</summary>
+        [JsonProperty("artifact")]
+        public int? Artifact { get; init; }
     }
 
     /// <summary>RelicDef</summary>
@@ -2206,6 +2418,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>この幕以降でしか候補に出ない (2026-09-09 黒星の欠片。早く取るほど増分が乗算する代償なしボスレリックの供給側の絞り)</summary>
         [JsonProperty("actMin")]
         public int? ActMin { get; init; }
+        /// <summary>色ゲート (2026-09-12 本家のキャラ固有レリック): リーダーの色アイデンティティにこの色が1つでも含まれる時だけ候補列に入る。 省略=全リーダー。凍結色の固有レリックは解凍時に刷る (緑ランの検証を汚さない)</summary>
+        [JsonProperty("colors")]
+        public IReadOnlyList<string>? Colors { get; init; }
+        /// <summary>時限レリック (旅の蝋燭 2026-09-12 StS2 の消耗型): 戦闘に勝つたび残り-1・0で所持から消える (run.relicState に残数)</summary>
+        [JsonProperty("expiresAfterBattles")]
+        public int? ExpiresAfterBattles { get; init; }
         /// <summary>A型: 戦闘開始時に不可視の置物として注入される宣言的効果</summary>
         [JsonProperty("effects")]
         public IReadOnlyList<DeclarativeEffect>? Effects { get; init; }
@@ -2313,6 +2531,20 @@ namespace DeckRogue.Engine.Generated
         public int Shop { get; init; }
         [JsonProperty("treasure")]
         public int Treasure { get; init; }
+    }
+
+    /// <summary>RunState.pendingRelicChoice のインライン型</summary>
+    public sealed record RunStatePendingRelicChoice
+    {
+        [JsonProperty("relicId")]
+        public string RelicId { get; init; } = default!;
+        [JsonProperty("mode")]
+        public string Mode { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+        /// <summary>選び終えたら戻るフェーズ (報酬・レリック3択の続き・マップ)</summary>
+        [JsonProperty("resume")]
+        public string Resume { get; init; } = default!;
     }
 
     /// <summary>RunState</summary>
@@ -2434,6 +2666,18 @@ namespace DeckRogue.Engine.Generated
         /// <summary>この幕で引いた祠 (幕をまたぐと復活する = 本家 Shrine)</summary>
         [JsonProperty("seenShrineIds")]
         public IReadOnlyList<string> SeenShrineIds { get; init; } = default!;
+        /// <summary>レリックのラン内状態。キー: wingBoots=翼の靴の残回数 / mawBroken=1で大口の貯金箱が止まる / unknownsSinceChest=小さな宝箱の?カウント / train=重石の鍛錬回数 / lizardUsed=1で蜥蜴の尾は使用済み / brandWard=厄除けの札の残回数 / exp_&lt;relicId&gt;=時限レリックの残戦数</summary>
+        [JsonProperty("relicState")]
+        public IReadOnlyDictionary<string, int>? RelicState { get; init; }
+        /// <summary>通常戦のカード報酬の残り組数 (祈りの車輪)。省略/0 = いまの組が最後</summary>
+        [JsonProperty("rewardRoundsLeft")]
+        public int? RewardRoundsLeft { get; init; }
+        /// <summary>取得時にデッキから札を選ぶレリックの保留 (空の鳥籠=除去・星読みの盤=変成+鍛え)。phase 'relic-choose' の間だけ非null</summary>
+        [JsonProperty("pendingRelicChoice")]
+        public RunStatePendingRelicChoice? PendingRelicChoice { get; init; }
+        /// <summary>この工房の訪問で合成した回数 (職人の手袋=2回まで。工房進入でリセット)</summary>
+        [JsonProperty("workshopFusesUsed")]
+        public int? WorkshopFusesUsed { get; init; }
     }
 
     /// <summary>判別共用体 RunCommand (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -2525,6 +2769,29 @@ namespace DeckRogue.Engine.Generated
         public RunCommand_CampfireUpgrade() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
+    }
+
+    /// <summary>RunCommand: type="CampfireDig"</summary>
+    public sealed record RunCommand_CampfireDig : RunCommand
+    {
+        public const string TypeTag = "CampfireDig";
+        public RunCommand_CampfireDig() { Type = TypeTag; }
+    }
+
+    /// <summary>RunCommand: type="CampfireTrain"</summary>
+    public sealed record RunCommand_CampfireTrain : RunCommand
+    {
+        public const string TypeTag = "CampfireTrain";
+        public RunCommand_CampfireTrain() { Type = TypeTag; }
+    }
+
+    /// <summary>RunCommand: type="RelicChooseCards"</summary>
+    public sealed record RunCommand_RelicChooseCards : RunCommand
+    {
+        public const string TypeTag = "RelicChooseCards";
+        public RunCommand_RelicChooseCards() { Type = TypeTag; }
+        [JsonProperty("indices")]
+        public IReadOnlyList<int> Indices { get; init; } = default!;
     }
 
     /// <summary>RunCommand: type="WorkshopFuse"</summary>

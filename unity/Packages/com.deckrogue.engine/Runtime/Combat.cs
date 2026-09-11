@@ -43,6 +43,22 @@ namespace DeckRogue.Engine
         public int? EnergyMaxRefBonus { get; init; }
         /// <summary>C型レリック (収穫の鎌)</summary>
         public int? HarvestKeep { get; init; }
+        // ---- レリック本家形 (2026-09-12)。GameState の同名フラグへそのまま渡す ----
+        public bool? RetainHand { get; init; }
+        public bool? EnergyCarry { get; init; }
+        public int? BlockKeep { get; init; }
+        public int? XBonus { get; init; }
+        public int? HpLossReduce { get; init; }
+        public int? SmallHitToOne { get; init; }
+        public int? MaxHpLossPerTurn { get; init; }
+        public bool? DeathSave { get; init; }
+        public int? PlayCap { get; init; }
+        public bool? HideIntents { get; init; }
+        public bool? BrandsPlayable { get; init; }
+        /// <summary>戦闘開始時のアーティファクト (時計仕掛けの土産)</summary>
+        public int? Artifact { get; init; }
+        /// <summary>戦闘開始時の成長 (重石の鍛錬。焚き火で積んだ回数ぶん)</summary>
+        public int? StartGrowth { get; init; }
     }
 
     public static class Combat
@@ -58,6 +74,25 @@ namespace DeckRogue.Engine
         private const int SCALD_CAP = 5;
         /// <summary>拘束中に1ターンでプレイできるカードの上限 (本家StS2 Sloth 準拠)</summary>
         public const int RESTRAIN_PLAY_CAP = 3;
+
+        /// <summary>このターンにプレイできる枚数の上限 (拘束=3・天鵞絨の首輪=playCap。小さい方)。無制限なら null。UI も同じ式を読む</summary>
+        public static int? PlayCapOf(GameState state)
+        {
+            int? cap = null;
+            if (state.Player.Restrain > 0) cap = RESTRAIN_PLAY_CAP;
+            if (state.PlayCap != null) cap = cap == null ? state.PlayCap : Math.Min(cap.Value, state.PlayCap.Value);
+            return cap;
+        }
+
+        private static void AssertPlayCap(GameState state)
+        {
+            int? cap = PlayCapOf(state);
+            if (cap != null && (state.Player.PlaysThisTurn ?? 0) >= cap.Value)
+            {
+                string why = state.Player.Restrain > 0 && cap.Value == RESTRAIN_PLAY_CAP ? "拘束中は" : "天鵞絨の首輪により";
+                throw new InvalidOperationException($"{why}1ターンに{cap.Value}枚までしかプレイできない (すでに{cap.Value}枚プレイ済み)");
+            }
+        }
 
         // ==== 小さな移植ヘルパ ====
 
@@ -230,6 +265,7 @@ namespace DeckRogue.Engine
                         options.PlayerMaxHp ?? state.Player.MaxHp),
                     // A型レリックはリーダーパッシブと同じ「戦闘開始時から場にある置物」
                     Permanents = Concat(state.Player.Permanents, options.RelicPermanents ?? (IReadOnlyList<CardInstance>)new List<CardInstance>()),
+                    Artifact = (options.Artifact ?? 0) != 0 ? options.Artifact : null,
                 },
                 Enemies = enemies,
                 // C型レリック。revealIntents は第1ターンの意図宣言より前に立てる必要がある
@@ -240,11 +276,30 @@ namespace DeckRogue.Engine
                 RevealIntents = options.RevealIntents == true ? (bool?)true : null,
                 RevealOnSet = options.RevealOnSet == true ? (bool?)true : null,
                 SetAnyCards = options.SetAnyCards == true ? (bool?)true : null,
+                // レリック本家形 (2026-09-12): 規則改変の C型キー
+                RetainHand = options.RetainHand == true ? (bool?)true : null,
+                EnergyCarry = options.EnergyCarry == true ? (bool?)true : null,
+                BlockKeep = (options.BlockKeep ?? 0) != 0 ? options.BlockKeep : null,
+                XBonus = (options.XBonus ?? 0) != 0 ? options.XBonus : null,
+                HpLossReduce = (options.HpLossReduce ?? 0) != 0 ? options.HpLossReduce : null,
+                SmallHitToOne = (options.SmallHitToOne ?? 0) != 0 ? options.SmallHitToOne : null,
+                MaxHpLossPerTurn = (options.MaxHpLossPerTurn ?? 0) != 0 ? options.MaxHpLossPerTurn : null,
+                DeathSave = options.DeathSave == true ? (bool?)true : null,
+                PlayCap = (options.PlayCap ?? 0) != 0 ? options.PlayCap : null,
+                HideIntents = options.HideIntents == true ? (bool?)true : null,
+                BrandsPlayable = options.BrandsPlayable == true ? (bool?)true : null,
             };
             state = Events.Emit(state, new GameEvent_CombatStarted { EnemyId = enemyId });
             var s = StartPlayerTurn(state, 1);
             // onCombatStart: 第1ターンのセットアップの後に1回だけ発火
             s = Effects.RunPermanentTriggers(s, "onCombatStart", FirstAliveOrZero(s));
+            // 重石の鍛錬 (2026-09-12 本家 Girya): 焚き火で積んだ回数ぶん戦闘開始時に成長 (レリック置物と同じ innate 経路)
+            if ((options.StartGrowth ?? 0) > 0)
+            {
+                s = Effects.ResolveEffectTargeted(s with { InnateResolving = true },
+                    new DeclarativeEffect { Trigger = "onCombatStart", Effect = "addGrowth", Amount = options.StartGrowth }, FirstAliveOrZero(s));
+                s = s with { InnateResolving = false };
+            }
             return s;
         }
 
@@ -587,16 +642,25 @@ namespace DeckRogue.Engine
         /// <summary>自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・ドロー・敵意図宣言</summary>
         private static GameState StartPlayerTurn(GameState state, int turn)
         {
+            // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す
+            int? nextTurnDraw = state.NextTurnDraw;
+            int? nextTurnEnergy = state.NextTurnEnergy;
+            int? nextTurnBlock = state.NextTurnBlock;
             var s = state with
             {
                 Turn = turn,
                 Phase = CombatPhases.PlayerTurn,
+                NextTurnDraw = null,
+                NextTurnEnergy = null,
+                NextTurnBlock = null,
                 // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
                 // 上限のスナップショットもここで更新 = このターン中のランプは上限参照札に乗らない
                 Player = state.Player with
                 {
-                    Block = 0,
-                    Energy = state.Player.EnergyMax,
+                    // 頑丈な留め具 (blockKeep): ブロックをN持ち越す
+                    Block = state.BlockKeep != null ? Math.Min(state.Player.Block, state.BlockKeep.Value) : 0,
+                    // 溶けない氷菓 (energyCarry): 余ったエナジーを持ち越す (T1 は素の値)
+                    Energy = state.Player.EnergyMax + (state.EnergyCarry == true && turn > 1 ? state.Player.Energy : 0) + (nextTurnEnergy ?? 0),
                     EnergyMaxAtTurnStart = state.Player.EnergyMax + (state.EnergyMaxRefBonus ?? 0),
                     CardsPlayedThisTurn = 0,
                     SetsThisTurn = 0,
@@ -604,16 +668,21 @@ namespace DeckRogue.Engine
                     AttacksPlayedThisTurn = 0,
                     HealsThisTurn = 0,
                     WeakFreshThisPhase = 0,
+                    HpLostThisTurn = 0,
                     FreeResetUid = null,
                     // 見切り: 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
                     SetCards = MapIdx(state.Player.SetCards, (c, _) => c.SetFresh == true ? c with { SetFresh = false } : c),
+                    // every/once のターン内カウンタをリセット (2026-09-12)
+                    Permanents = MapIdx(state.Player.Permanents, (p, _) => p.TurnTriggerCounts == null ? p : p with { TurnTriggerCounts = null }),
                 },
             };
             // ターン装甲の累計リセット: 自ターン開始〜次の自ターン開始が「1ターン」
             s = s with { Enemies = MapIdx(s.Enemies, (e, _) => (e.DamageThisTurn ?? 0) > 0 ? e with { DamageThisTurn = 0 } : e) };
             s = Events.Emit(s, new GameEvent_TurnStarted { Turn = turn, Hand = s.Player.Hand.Select(c => c.Def.Name).ToList() });
             // ドローを onTurnStart 誘発より先に行う。霞み: ドロー-2・最低3枚
-            s = Effects.DrawCards(s, (s.Player.Mist ?? 0) > 0 ? Math.Max(3, s.Player.DrawPerTurn - 2) : s.Player.DrawPerTurn);
+            s = Effects.DrawCards(s, ((s.Player.Mist ?? 0) > 0 ? Math.Max(3, s.Player.DrawPerTurn - 2) : s.Player.DrawPerTurn) + (nextTurnDraw ?? 0));
+            // 自ら固まる粘土 (gainBlockNextTurn): 前のターンに積んだブロックを得る (ブロック獲得の誘発は通す)
+            if ((nextTurnBlock ?? 0) > 0) s = Effects.GainPlayerBlock(s, nextTurnBlock ?? 0, FirstAliveOrZero(s));
             s = Effects.RunPermanentTriggers(s, "onTurnStart", FirstAliveOrZero(s));
             // ターン開始誘発で敵が全滅したら即座に勝利を確定する
             s = CheckCombatEnd(s);
@@ -750,7 +819,16 @@ namespace DeckRogue.Engine
             state = ProcessMourning(state);
             if (state.Player.Hp <= 0)
             {
-                return Events.Emit(state with { Phase = CombatPhases.Lost }, new GameEvent_CombatEnded { Result = "lost" });
+                // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
+                if (state.DeathSave == true && state.DeathSaveUsed != true)
+                {
+                    int hp = Math.Max(1, (int)Math.Floor(state.Player.MaxHp / 2.0));
+                    state = Events.Emit(state with { DeathSaveUsed = true, Player = state.Player with { Hp = hp } }, new GameEvent_DeathSaved { Hp = hp });
+                }
+                else
+                {
+                    return Events.Emit(state with { Phase = CombatPhases.Lost }, new GameEvent_CombatEnded { Result = "lost" });
+                }
             }
             bool allDead = true;
             for (int i = 0; i < state.Enemies.Count; i++) if (state.Enemies[i].Hp > 0) { allDead = false; break; }
@@ -798,14 +876,11 @@ namespace DeckRogue.Engine
             CardInstance card = null;
             for (int i = 0; i < state.Player.Hand.Count; i++) if (state.Player.Hand[i].Uid == cardUid) { card = state.Player.Hand[i]; break; }
             if (card == null) throw new InvalidOperationException($"手札にないカード: {cardUid}");
-            if (!Effects.IsPlayableFromHand(card)) throw new InvalidOperationException($"{card.Def.Name} はプレイ不可 (リアクション専用)");
+            if (!Effects.IsPlayableFromHand(card, state)) throw new InvalidOperationException($"{card.Def.Name} はプレイ不可 (リアクション専用)");
             // 殉教の誓い: 従者が場にいる時だけプレイできる
             if (!Effects.RetainerRequirementMet(state, card)) throw new InvalidOperationException($"{card.Def.Name} は場に従者が1体以上いる時だけプレイできる");
             // 拘束: 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない
-            if (state.Player.Restrain > 0 && (state.Player.PlaysThisTurn ?? 0) >= RESTRAIN_PLAY_CAP)
-            {
-                throw new InvalidOperationException($"拘束中は1ターンに{RESTRAIN_PLAY_CAP}枚までしかプレイできない (すでに{RESTRAIN_PLAY_CAP}枚プレイ済み)");
-            }
+            AssertPlayCap(state);
             // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
             int cost = Effects.EffectiveCost(state, card);
             bool consumesDiscount =
@@ -824,17 +899,31 @@ namespace DeckRogue.Engine
                 }
             }
             int paidX = card.Def.XCost == true ? (xAmount ?? cost) : 0;
+            // 増幅の薬 (2026-09-12 本家 Chemical X): X に+N (支払いは増えない)
+            int effX = paidX > 0 ? paidX + (state.XBonus ?? 0) : 0;
             var effCard = card;
-            if (paidX != 0)
+            if (effX != 0)
             {
                 var expanded = new List<DeclarativeEffect>();
                 for (int i = 0; i < card.Def.Effects.Count; i++)
                 {
                     var e = card.Def.Effects[i];
-                    if (e.XHits == true) { for (int k = 0; k < paidX; k++) expanded.Add(e with { XHits = null }); }
+                    if (e.XHits == true) { for (int k = 0; k < effX; k++) expanded.Add(e with { XHits = null }); }
                     else expanded.Add(e);
                 }
                 effCard = card with { Def = card.Def with { Effects = expanded } };
+            }
+            // 青い蝋燭 (2026-09-12 本家 Blue Candle): 烙印は 0E・HP-1・消滅 の札として解決する
+            if (state.BrandsPlayable == true && Effects.IsBrandCard(card))
+            {
+                effCard = effCard with
+                {
+                    Def = effCard.Def with
+                    {
+                        Effects = new List<DeclarativeEffect> { new DeclarativeEffect { Trigger = "onPlay", Effect = "loseHp", Amount = 1 } },
+                        Exhaust = true,
+                    },
+                };
             }
             // 骨刃の強化 (empowerShivs): ナイフトークンのダメージに常在ボーナスを注入
             if (card.Def.ShivToken == true)
@@ -1073,7 +1162,7 @@ namespace DeckRogue.Engine
             bool isPermanent = card.Def.Type == CardTypes.Permanent;
             // 樹液: 急所を持つ敵が生存していれば消滅しない
             bool isExhaust =
-                card.Def.Exhaust == true &&
+                effCard.Def.Exhaust == true &&
                 !(card.Def.ExhaustUnlessExposedEnemy == true && state.Enemies.Any(e => e.Hp > 0 && e.Exposed > 0));
             var removed = new HashSet<string> { cardUid };
             foreach (var u in discards) removed.Add(u);
@@ -1371,10 +1460,7 @@ namespace DeckRogue.Engine
             var cost = card.Def.NecroCost;
             if (cost == null) throw new InvalidOperationException($"{card.Def.Name} は亡骸プレイを持たない");
             // 拘束は亡骸プレイにも効く (プレイヤー発行のプレイは全て上限の内)
-            if (state.Player.Restrain > 0 && (state.Player.PlaysThisTurn ?? 0) >= RESTRAIN_PLAY_CAP)
-            {
-                throw new InvalidOperationException($"拘束中は1ターンに{RESTRAIN_PLAY_CAP}枚までしかプレイできない (すでに{RESTRAIN_PLAY_CAP}枚プレイ済み)");
-            }
+            AssertPlayCap(state);
             if (cost.Value > state.Player.Energy) throw new InvalidOperationException($"エナジー不足: {card.Def.Name}");
             int aliveCount = state.Enemies.Count(e => e.Hp > 0);
             if (targetIndex != null)
@@ -1431,6 +1517,11 @@ namespace DeckRogue.Engine
         {
             if (state.Phase != CombatPhases.PlayerTurn) throw new InvalidOperationException("自ターン以外はターン終了できない");
             var s = Events.Emit(state, new GameEvent_TurnEnded { Turn = state.Turn, Unplayed = state.Player.Hand.Select(c => c.Def.Name).ToList() });
+            // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
+            // 勢いのリセット・弱体の減衰より前 = このターンの盤面を読む
+            s = Effects.RunPermanentTriggers(s, "onTurnEnd", FirstAliveOrZero(s));
+            s = CheckCombatEnd(s); // 石の暦 (7ターン目の終了時に全体52) で全滅しうる
+            if (IsOver(s)) return s;
             // 勢いは自ターン終了時にリセット。弱体・虚弱もここで1減る。
             // 疾風の王: 勢いの半分 (切り捨て) を次のターンへ持ち越す
             bool carryHalf = s.Player.Permanents.Any(p => p.Def.Effects.Any(e => e.Effect == "momentumCarryHalf"));
@@ -1503,6 +1594,7 @@ namespace DeckRogue.Engine
                     HpLostSinceRegen = (e.HpLostSinceRegen ?? 0) + amount,
                 });
                 s = Events.Emit(s, new GameEvent_BurnTick { EnemyIndex = i, Amount = amount });
+                if (s.Enemies[i].Hp <= 0) s = Effects.FireEnemyDied(s, i); // 焼き切って倒れた (onEnemyDied 2026-09-12)
                 s = Effects.ApplyWakeCheck(s, i); // 被弾覚醒はどの経路の被弾でも
                 // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
                 {
@@ -1657,6 +1749,15 @@ namespace DeckRogue.Engine
         {
             string status = inflict.Status;
             int amount = inflict.Amount;
+            // アーティファクト (時計仕掛けの土産 2026-09-12): 状態異常の付与を1回弾く (札の混入=負傷・火傷・がらくたは弾かない)
+            if ((state.Player.Artifact ?? 0) > 0
+                && (status == PlayerStatuss.Weak || status == PlayerStatuss.Vulnerable || status == PlayerStatuss.Frail
+                    || status == PlayerStatuss.Restrain || status == PlayerStatuss.Mist || status == PlayerStatuss.Slow))
+            {
+                return Events.Emit(
+                    state with { Player = state.Player with { Artifact = (state.Player.Artifact ?? 0) - 1 } },
+                    new GameEvent_PlayerArtifactBlocked { Status = status });
+            }
             if (status == PlayerStatuss.Mist)
             {
                 return Events.Emit(
@@ -1853,7 +1954,16 @@ namespace DeckRogue.Engine
                         int remaining = v - blocked;
                         int iceBlocked = Math.Min(iceBlock, remaining);
                         iceBlock -= iceBlocked;
-                        hpLoss += remaining - iceBlocked;
+                        int hit = remaining - iceBlocked;
+                        // レリック本家形 (2026-09-12): 免疫でなく上限と割合で受ける (StS2 準拠)。
+                        // 古い門柱: 未ブロック分がN以下なら1 / 重金の棒: 各ヒット-N / 脈打つ欠片: 1ターンの累計はN以下
+                        if (hit > 0 && state.SmallHitToOne != null && hit <= state.SmallHitToOne.Value) hit = 1;
+                        if (hit > 0 && state.HpLossReduce != null) hit = Math.Max(0, hit - state.HpLossReduce.Value);
+                        if (hit > 0 && state.MaxHpLossPerTurn != null)
+                        {
+                            hit = Math.Min(hit, Math.Max(0, state.MaxHpLossPerTurn.Value - (state.Player.HpLostThisTurn ?? 0) - hpLoss));
+                        }
+                        hpLoss += hit;
                     }
                     var sa = state with
                     {
@@ -1865,9 +1975,12 @@ namespace DeckRogue.Engine
                             // 憤怒 (逆上) の参照値: このフェーズで受けた攻撃ダメージを累積する
                             DamageTakenLastEnemyPhase = state.Player.DamageTakenLastEnemyPhase + hpLoss,
                             AttacksReceivedThisPhase = (state.Player.AttacksReceivedThisPhase ?? 0) + 1,
+                            HpLostThisTurn = (state.Player.HpLostThisTurn ?? 0) + hpLoss,
                         },
                     };
                     sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex });
+                    // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
+                    if (hpLoss > 0) sa = Effects.RunPermanentTriggers(sa, "onDamageTaken", enemyIndex);
                     // バランス崩し: 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる
                     if (Content.GetEnemyDef(sa.Enemies[enemyIndex].EnemyId).Imbalanced == true && hpLoss == 0 && dealtTotal > 0)
                     {
@@ -2131,15 +2244,19 @@ namespace DeckRogue.Engine
             // 火傷の生存則: このフェーズに注入された火傷 (scaldFresh) は全捨てを生き残り、
             // 自ターンを過ごした火傷は全捨てで消える = 1回きり。保持 (retain) は手札に残る
             var oldHand = s.Player.Hand;
+            // ルーンの角錐 (retainHand 2026-09-12): 手札を捨てない。自ターンを過ごした火傷だけは消える (1回きりの則は不変)
+            bool retainAll = s.RetainHand == true;
+            bool Keeps(CardInstance c) =>
+                (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id);
             s = s with
             {
                 Player = s.Player with
                 {
                     Hand = oldHand
-                        .Where(c => (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true)
+                        .Where(Keeps)
                         .Select(c => c.ScaldFresh == true ? c with { ScaldFresh = false } : c)
                         .ToList(),
-                    DiscardPile = Concat(s.Player.DiscardPile, oldHand.Where(c => c.Def.Id != Content.SCALD_DEF.Id && c.Def.Retain != true)),
+                    DiscardPile = Concat(s.Player.DiscardPile, oldHand.Where(c => c.Def.Id != Content.SCALD_DEF.Id && !Keeps(c))),
                 },
             };
             return StartPlayerTurn(s, s.Turn + 1);
