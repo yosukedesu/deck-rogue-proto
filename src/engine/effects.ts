@@ -88,13 +88,20 @@ export function retainerRequirementMet(state: GameState, card: CardInstance): bo
 }
 
 /** 自ターンにプレイ可能なカードか。リアクションタイプは false。置物・選択式は常にプレイ可能 */
-export function isPlayableFromHand(card: CardInstance): boolean {
+export function isPlayableFromHand(card: CardInstance, state?: GameState): boolean {
   if (card.def.type === 'reaction') return false
+  // 青い蝋燭 (レリック 2026-09-12 本家 Blue Candle): 烙印を 0E・HP-1・消滅 でプレイできる
+  if (state?.brandsPlayable === true && isBrandCard(card)) return true
   return (
     card.def.type === 'permanent' ||
     (card.def.modes?.length ?? 0) > 0 ||
     card.def.effects.some((e) => e.trigger === 'onPlay')
   )
+}
+
+/** 烙印 (呪いの烙印・仮初の烙印) か。青い蝋燭のプレイ可否・黒曜の護符の数え上げが読む */
+export function isBrandCard(card: CardInstance): boolean {
+  return card.def.id === 'status_brand' || card.def.id === 'status_guilt'
 }
 
 /** ダメージを与える効果か (「攻撃プレイ後」誘発の判定に使う) */
@@ -213,8 +220,30 @@ export function runPermanentTriggers(
   )
   for (const permanent of state.player.permanents) {
     if (only !== undefined && !only(permanent)) continue
-    for (const effect of permanent.def.effects) {
+    for (let ei = 0; ei < permanent.def.effects.length; ei++) {
+      const effect = permanent.def.effects[ei]
       if (effect.trigger === trigger && blazeConditionMet(s, effect, enemyIndex)) {
+        // every/once (レリック本家形 2026-09-12): 条件を満たした誘発を数え、N回目ごと/初回だけ解決する。
+        // カウンタは置物インスタンス (uid) が持つ = 同じレリックでも戦闘ごとに0から
+        if (effect.every !== undefined || effect.once !== undefined) {
+          const scope = effect.once === 'turn' || effect.everyScope === 'turn' ? 'turn' : 'combat'
+          const cur = s.player.permanents.find((p) => p.uid === permanent.uid)
+          if (cur === undefined) continue
+          const map = scope === 'turn' ? (cur.turnTriggerCounts ?? {}) : (cur.triggerCounts ?? {})
+          const n = (map[String(ei)] ?? 0) + 1
+          const nextMap = { ...map, [String(ei)]: n }
+          s = {
+            ...s,
+            player: {
+              ...s.player,
+              permanents: s.player.permanents.map((p) =>
+                p.uid === permanent.uid ? (scope === 'turn' ? { ...p, turnTriggerCounts: nextMap } : { ...p, triggerCounts: nextMap }) : p,
+              ),
+            },
+          }
+          const fires = effect.once !== undefined ? n === 1 : n % (effect.every ?? 1) === 0
+          if (!fires) continue
+        }
         const boosted =
           anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined
             ? { ...effect, amount: effect.amount + anthem }
@@ -829,6 +858,8 @@ export function dealDamageToEnemy(
   )
   s = applyWakeCheck(s, enemyIndex)
   s = breakBurrowIfCracked(s, enemyIndex)
+  // 倒れた (2026-09-12 onEnemyDied): この呼び出しでHPが0以下になった時だけ (冒頭で倒れた敵は弾いている)
+  if (hpLoss > 0 && s.enemies[enemyIndex].hp <= 0) s = fireEnemyDied(s, enemyIndex)
   // 激昂の与ダメ併用 (2026-08-30): 累計被ダメが enrageEveryDamage の倍数の壁を跨ぐたび強化。
   // 枚数トリガーの盲点 (1枚で100点出すデッキが素通しする) への処方
   {
@@ -879,6 +910,7 @@ export function drawCards(state: GameState, n: number): GameState {
   let discardPile = [...state.player.discardPile]
   let rng = state.rng
   const drawn: CardInstance[] = []
+  let shuffles = 0
   for (let i = 0; i < n; i++) {
     if (drawPile.length === 0) {
       if (discardPile.length === 0) break
@@ -886,15 +918,29 @@ export function drawCards(state: GameState, n: number): GameState {
       drawPile = [...reshuffled]
       discardPile = []
       rng = nextRng
+      shuffles++
     }
     drawn.push(drawPile.shift()!)
   }
-  const next: GameState = {
+  let next: GameState = {
     ...state,
     rng,
     player: { ...state.player, drawPile, discardPile, hand: [...state.player.hand, ...drawn] },
   }
-  return drawn.length > 0 ? emit(next, { type: 'CardsDrawn', count: drawn.length, cards: drawn.map((c) => c.def.name) }) : next
+  if (drawn.length > 0) next = emit(next, { type: 'CardsDrawn', count: drawn.length, cards: drawn.map((c) => c.def.name) })
+  // 切り直しの誘発 (日時計・算盤 2026-09-12): 引き終えてから切り直した回数ぶん発火する (誘発の中のドローが山を触っても安全)
+  for (let k = 0; k < shuffles; k++) {
+    next = emit(next, { type: 'DeckShuffled' })
+    next = runPermanentTriggers(next, 'onShuffle', Math.max(0, next.enemies.findIndex((e) => e.hp > 0)))
+  }
+  return next
+}
+
+/** 敵が倒れた時の誘発 (小鬼の角笛 2026-09-12)。与ダメ・延焼ティックのどちらの経路でも呼ぶ。逃走は倒れていない */
+export function fireEnemyDied(state: GameState, enemyIndex: number): GameState {
+  let s = emit(state, { type: 'EnemyDied', enemyIndex })
+  s = runPermanentTriggers(s, 'onEnemyDied', enemyIndex)
+  return s
 }
 
 /**
@@ -1013,6 +1059,16 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'gainIceBlockPerHandCard':
       // 抱え込み (青): 手札の枚数 × amount の氷壁
       return gainPlayerIceBlock(state, (effect.amount ?? 0) * state.player.hand.length)
+    case 'gainBlockPerHandCard':
+      // 外套の留め金 (レリック 2026-09-12 本家 Cloak Clasp): 手札の枚数 × amount のブロック
+      return gainPlayerBlock(state, (effect.amount ?? 0) * state.player.hand.length, enemyIndex)
+    case 'drawCardsNextTurn':
+      // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。startPlayerTurn が読んで消す
+      return { ...state, nextTurnDraw: (state.nextTurnDraw ?? 0) + (effect.amount ?? 0) }
+    case 'gainEnergyNextTurn':
+      return { ...state, nextTurnEnergy: (state.nextTurnEnergy ?? 0) + (effect.amount ?? 0) }
+    case 'gainBlockNextTurn':
+      return { ...state, nextTurnBlock: (state.nextTurnBlock ?? 0) + (effect.amount ?? 0) }
     case 'blessRetainers':
       // アンセム (白): 常在の静的効果。runPermanentTriggers が置物の解決時に読むだけで、
       // ここで解決すべきものは無い (登場時のno-op)
@@ -1641,6 +1697,11 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
     if (c.perfectBlockLastPhase === true && state.player.perfectBlockLastPhase !== true) return false
     if (c.targetDead === true && !(e !== undefined && e.hp <= 0)) return false
     if (c.lastActionNoHpLoss === true && !(state.lastAction !== null && state.lastAction.kind === 'attack' && state.lastAction.hpLoss === 0)) return false
+    // レリック本家形 (2026-09-12): ターン番号・ブロック0・攻撃なし・プレイ枚数
+    if (c.turn !== undefined && state.turn !== c.turn) return false
+    if (c.blockZero === true && state.player.block > 0) return false
+    if (c.noAttackThisTurn === true && (state.player.attacksPlayedThisTurn ?? 0) > 0) return false
+    if (c.maxPlaysThisTurn !== undefined && (state.player.playsThisTurn ?? 0) > c.maxPlaysThisTurn) return false
   }
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false

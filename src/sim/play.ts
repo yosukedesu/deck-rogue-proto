@@ -83,7 +83,8 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
     dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
-    dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`,
+    dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`, gainBlockPerHandCard: `手札の枚数×${a}ブロック`,
+    drawCardsNextTurn: `次T開始時に${a}枚多くドロー`, gainEnergyNextTurn: `次T開始時に一時マナ+${a}`, gainBlockNextTurn: `次T開始時にブロック+${a}`,
     addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者の効果+${a}`,
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
@@ -98,9 +99,10 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
+    onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
     : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
@@ -282,6 +284,10 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
       else if (e.type === 'ArtifactBlocked') L.push(` 🔮アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた(チャージ-1)=この効果は消えた`)
       else if (e.type === 'BurrowBroken') L.push(' 🪺潜伏の殻が割れた! 次の行動は噛みつきに差し替わる')
+      else if (e.type === 'DeckShuffled') L.push(' 🔀山札を切り直した')
+      else if (e.type === 'EnemyDied') L.push(` ☠敵${e.enemyIndex + 1}を倒した`)
+      else if (e.type === 'DeathSaved') L.push(` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
+      else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
       else if (e.type === 'EnemyWoken') L.push(' 👁️目を覚ました! 眠りの前奏が打ち切られた')
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)

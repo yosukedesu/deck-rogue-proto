@@ -233,12 +233,17 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onSelfExhausted: '亡骸 (この札がプレイ以外で消滅した時): ',
   onGrowthGained: '成長を得るたび: ',
   onMomentumGained: '勢いを得るたび: ',
+  onTurnEnd: 'ターン終了時: ',
+  onShuffle: '山札を切り直すたび: ',
+  onEnemyDied: '敵を倒すたび: ',
+  onDamageTaken: '攻撃でHPを失った後: ',
 }
 
 /** 誘発の追加条件の表示 */
 function conditionLabel(e: DeclarativeEffect): string {
   const c = e.condition
-  if (!c) return ''
+  const rhythm = everyOnceLabel(e)
+  if (!c) return rhythm
   const parts: string[] = []
   if (c.hpAtOrBelowRatio !== undefined) parts.push(`自分のHPが${Math.round(c.hpAtOrBelowRatio * 100)}%以下`)
   if (c.minDamageTaken !== undefined) parts.push(`${c.minDamageTaken}以上のダメージを受けた`)
@@ -256,7 +261,18 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.targetDead === true) parts.push('💀とどめ')
   if (c.lastActionNoHpLoss === true) parts.push('🛡完全に凌いだ時')
   if (c.healedThisTurn === true) parts.push('💚このターン、先にカードで回復していたら')
-  return parts.length > 0 ? `[${parts.join('かつ')}] ` : ''
+  if (c.turn !== undefined) parts.push(`⏳${c.turn}ターン目`)
+  if (c.blockZero === true) parts.push('🛡ブロックが0なら')
+  if (c.noAttackThisTurn === true) parts.push('このターン攻撃札を1枚もプレイしていなければ')
+  if (c.maxPlaysThisTurn !== undefined) parts.push(`このターンのプレイが${c.maxPlaysThisTurn}枚以下なら`)
+  return (parts.length > 0 ? `[${parts.join('かつ')}] ` : '') + rhythm
+}
+
+/** every/once (レリック本家形 2026-09-12) の表示: 「3回ごと」「戦闘で1回だけ」 */
+function everyOnceLabel(e: DeclarativeEffect): string {
+  if (e.every !== undefined) return `(${e.everyScope === 'turn' ? '1ターンに' : ''}${e.every}回ごとに1回) `
+  if (e.once !== undefined) return `(${e.once === 'turn' ? 'ターンに' : '戦闘で'}1回だけ) `
+  return ''
 }
 
 function ctx2Block(e: DeclarativeEffect, _ctx: EffectCtx | undefined, trigger: string, pierce: string): string {
@@ -352,6 +368,16 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}🧊 手札の枚数×${e.amount}の氷壁 [現在${(e.amount ?? 0) * ctx.handCards}]`
         : `${trigger}🧊 手札の枚数×${e.amount}の氷壁`
+    case 'gainBlockPerHandCard':
+      return ctx
+        ? `${trigger}🛡️ 手札の枚数×${e.amount}のブロック [現在${(e.amount ?? 0) * ctx.handCards}]`
+        : `${trigger}🛡️ 手札の枚数×${e.amount}のブロック`
+    case 'drawCardsNextTurn':
+      return `${trigger}次のターンの開始時に${e.amount}枚多くドロー`
+    case 'gainEnergyNextTurn':
+      return `${trigger}次のターンの開始時に一時マナ+${e.amount}`
+    case 'gainBlockNextTurn':
+      return `${trigger}次のターンの開始時にブロック+${e.amount}`
     case 'addSpellEcho':
       return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える。とげ反射も2回受ける）`
     case 'addCasts':

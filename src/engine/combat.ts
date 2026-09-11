@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireExhaustTriggers, fireNecroEffects, hasHuntableTokens, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet } from './effects.ts'
+import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -122,6 +122,22 @@ export interface CombatOptions {
   readonly energyMaxRefBonus?: number
   /** C型レリック (収穫の鎌): 成長放出のあと成長がN残る */
   readonly harvestKeep?: number
+  // ---- レリック本家形 (2026-09-12)。GameState の同名フラグへそのまま渡す ----
+  readonly retainHand?: boolean
+  readonly energyCarry?: boolean
+  readonly blockKeep?: number
+  readonly xBonus?: number
+  readonly hpLossReduce?: number
+  readonly smallHitToOne?: number
+  readonly maxHpLossPerTurn?: number
+  readonly deathSave?: boolean
+  readonly playCap?: number
+  readonly hideIntents?: boolean
+  readonly brandsPlayable?: boolean
+  /** 戦闘開始時のアーティファクト (時計仕掛けの土産) */
+  readonly artifact?: number
+  /** 戦闘開始時の成長 (重石の鍛錬。焚き火で積んだ回数ぶん) */
+  readonly startGrowth?: number
 }
 
 /** 戦闘開始の実体: デッキシャッフル・敵配置をして第1ターンを開始する */
@@ -193,6 +209,7 @@ export function startCombatWithOptions(
       ),
       // A型レリックはリーダーパッシブと同じ「戦闘開始時から場にある置物」(確定済みルール表「レリック」)
       permanents: [...state.player.permanents, ...(options.relicPermanents ?? [])],
+      ...(options.artifact ? { artifact: options.artifact } : {}),
     },
     enemies,
     // C型レリック。revealIntents は第1ターンの意図宣言 (startPlayerTurn) より前に立てる必要がある
@@ -203,11 +220,28 @@ export function startCombatWithOptions(
     ...(options.revealIntents ? { revealIntents: true } : {}),
     ...(options.revealOnSet ? { revealOnSet: true } : {}),
     ...(options.setAnyCards ? { setAnyCards: true } : {}),
+    // レリック本家形 (2026-09-12): 規則改変の C型キー
+    ...(options.retainHand ? { retainHand: true } : {}),
+    ...(options.energyCarry ? { energyCarry: true } : {}),
+    ...(options.blockKeep ? { blockKeep: options.blockKeep } : {}),
+    ...(options.xBonus ? { xBonus: options.xBonus } : {}),
+    ...(options.hpLossReduce ? { hpLossReduce: options.hpLossReduce } : {}),
+    ...(options.smallHitToOne ? { smallHitToOne: options.smallHitToOne } : {}),
+    ...(options.maxHpLossPerTurn ? { maxHpLossPerTurn: options.maxHpLossPerTurn } : {}),
+    ...(options.deathSave ? { deathSave: true } : {}),
+    ...(options.playCap ? { playCap: options.playCap } : {}),
+    ...(options.hideIntents ? { hideIntents: true } : {}),
+    ...(options.brandsPlayable ? { brandsPlayable: true } : {}),
   }
   state = emit(state, { type: 'CombatStarted', enemyId })
   let s = startPlayerTurn(state, 1)
   // onCombatStart: 第1ターンのセットアップ (エナジー・ドロー・意図宣言) の後に1回だけ発火
   s = runPermanentTriggers(s, 'onCombatStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  // 重石の鍛錬 (2026-09-12 本家 Girya): 焚き火で積んだ回数ぶん戦闘開始時に成長 (レリック置物と同じ innate 経路)
+  if ((options.startGrowth ?? 0) > 0) {
+    s = resolveEffectTargeted({ ...s, innateResolving: true }, { trigger: 'onCombatStart', effect: 'addGrowth', amount: options.startGrowth }, Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+    s = { ...s, innateResolving: false }
+  }
   return s
 }
 
@@ -554,16 +588,20 @@ function buildIntent(
 
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
 function startPlayerTurn(state: GameState, turn: number): GameState {
+  // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す
+  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, ...rest } = state
   let s: GameState = {
-    ...state,
+    ...rest,
     turn,
     phase: 'player-turn',
     // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
     // 上限のスナップショットもここで更新 = このターン中のランプは上限参照札に乗らない
     player: {
       ...state.player,
-      block: 0,
-      energy: state.player.energyMax,
+      // 頑丈な留め具 (blockKeep): ブロックをN持ち越す
+      block: state.blockKeep !== undefined ? Math.min(state.player.block, state.blockKeep) : 0,
+      // 溶けない氷菓 (energyCarry): 余ったエナジーを持ち越す (T1 は素の値)
+      energy: state.player.energyMax + (state.energyCarry === true && turn > 1 ? state.player.energy : 0) + (nextTurnEnergy ?? 0),
       energyMaxAtTurnStart: state.player.energyMax + (state.energyMaxRefBonus ?? 0), // 大樹の心: 上限参照札が読む値に+N
       cardsPlayedThisTurn: 0,
       setsThisTurn: 0,
@@ -571,9 +609,16 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       attacksPlayedThisTurn: 0,
       healsThisTurn: 0,
       weakFreshThisPhase: 0,
+      hpLostThisTurn: 0,
       freeResetUid: undefined,
       // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
       setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
+      // every/once のターン内カウンタをリセット (2026-09-12)
+      permanents: state.player.permanents.map((p) => {
+        if (p.turnTriggerCounts === undefined) return p
+        const { turnTriggerCounts: _t, ...q } = p
+        return q
+      }),
     },
   }
   // ターン装甲の累計リセット (2026-09-02): 自ターン開始〜次の自ターン開始が「1ターン」
@@ -583,7 +628,9 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
   // 泉 (onTurnStart ドロー) 等は順序が変わっても合計枚数は同じ = 既存挙動と等価
   // 霞み (2026-09-02): ドロー-2・最低3枚 (完全ゼロ化はしない = 全捨てルールと衝突するため)
-  s = drawCards(s, (s.player.mist ?? 0) > 0 ? Math.max(3, s.player.drawPerTurn - 2) : s.player.drawPerTurn)
+  s = drawCards(s, ((s.player.mist ?? 0) > 0 ? Math.max(3, s.player.drawPerTurn - 2) : s.player.drawPerTurn) + (nextTurnDraw ?? 0))
+  // 自ら固まる粘土 (gainBlockNextTurn): 前のターンに積んだブロックを得る (ブロック獲得の誘発は通す)
+  if ((nextTurnBlock ?? 0) > 0) s = gainPlayerBlock(s, nextTurnBlock ?? 0, Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   // ターン開始誘発 (従者の自動攻撃など) で敵が全滅したら即座に勝利を確定する
   // (プレイテストで発見: 判定がないと撃破済みの敵に手札が撃てる状態が残る)
@@ -705,7 +752,13 @@ export function checkCombatEnd(state: GameState): GameState {
   state = processSplits(state)
   state = processMourning(state)
   if (state.player.hp <= 0) {
-    return emit({ ...state, phase: 'lost' }, { type: 'CombatEnded', result: 'lost' })
+    // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
+    if (state.deathSave === true && state.deathSaveUsed !== true) {
+      const hp = Math.max(1, Math.floor(state.player.maxHp / 2))
+      state = emit({ ...state, deathSaveUsed: true, player: { ...state.player, hp } }, { type: 'DeathSaved', hp })
+    } else {
+      return emit({ ...state, phase: 'lost' }, { type: 'CombatEnded', result: 'lost' })
+    }
   }
   if (state.enemies.every((e) => e.hp <= 0)) {
     return emit({ ...state, phase: 'won' }, { type: 'CombatEnded', result: 'won' })
@@ -745,14 +798,12 @@ export function playCard(
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はカードをプレイできない')
   const card = state.player.hand.find((c) => c.uid === cardUid)
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
-  if (!isPlayableFromHand(card)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
+  if (!isPlayableFromHand(card, state)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
   // 殉教の誓い (白 2026-09-06): 従者が場にいる時だけプレイできる (xCost のエナジー1以上と同じ playability)
   if (!retainerRequirementMet(state, card)) throw new Error(`${card.def.name} は場に従者が1体以上いる時だけプレイできる`)
   // 拘束 (2026-09-02): 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない。
   // 参照は実プレイ枚数 (playsThisTurn) — 焚べ (addCasts) の嵩で拘束が早く詰まらない
-  if (state.player.restrain > 0 && (state.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) {
-    throw new Error(`拘束中は1ターンに${RESTRAIN_PLAY_CAP}枚までしかプレイできない (すでに${RESTRAIN_PLAY_CAP}枚プレイ済み)`)
-  }
+  assertPlayCap(state)
   // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
   const cost = effectiveCost(state, card)
   const consumesDiscount =
@@ -770,14 +821,20 @@ export function playCard(
     }
   }
   const paidX = card.def.xCost === true ? (xAmount ?? cost) : 0
+  // 増幅の薬 (2026-09-12 本家 Chemical X): X に+N (支払いは増えない)
+  const effX = paidX > 0 ? paidX + (state.xBonus ?? 0) : 0
   const expandX = (effects: readonly DeclarativeEffect[]): readonly DeclarativeEffect[] =>
-    paidX === 0
+    effX === 0
       ? effects
       : effects.flatMap((e) =>
-          e.xHits === true ? Array.from({ length: paidX }, () => ({ ...e, xHits: undefined })) : [e],
+          e.xHits === true ? Array.from({ length: effX }, () => ({ ...e, xHits: undefined })) : [e],
         )
   let effCard: CardInstance =
-    paidX === 0 ? card : { ...card, def: { ...card.def, effects: expandX(card.def.effects) } }
+    effX === 0 ? card : { ...card, def: { ...card.def, effects: expandX(card.def.effects) } }
+  // 青い蝋燭 (2026-09-12 本家 Blue Candle): 烙印は 0E・HP-1・消滅 の札として解決する
+  if (state.brandsPlayable === true && isBrandCard(card)) {
+    effCard = { ...effCard, def: { ...effCard.def, effects: [{ trigger: 'onPlay', effect: 'loseHp', amount: 1 }], exhaust: true } }
+  }
   // 骨刃の強化 (急所読み等の empowerShivs): ナイフトークンのダメージに常在ボーナスを注入
   if (card.def.shivToken === true) {
     const shivBonus = state.player.permanents.reduce(
@@ -986,7 +1043,7 @@ export function playCard(
   const isPermanent = card.def.type === 'permanent'
   // 樹液 (2026-09-03 本家 Dropkick 型): 急所を持つ敵が生存していれば消滅しない
   const isExhaust =
-    card.def.exhaust === true &&
+    effCard.def.exhaust === true &&
     !(card.def.exhaustUnlessExposedEnemy === true && state.enemies.some((e) => e.hp > 0 && e.exposed > 0))
   const removed = new Set([cardUid, ...discards, ...exhausts])
   const discardedCards = state.player.hand.filter((c) => discards.includes(c.uid))
@@ -1273,9 +1330,7 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
   if (cost === undefined) throw new Error(`${card.def.name} は亡骸プレイを持たない`)
   // 拘束は亡骸プレイにも効く (2026-09-02 レビュー是正: プレイヤー発行のプレイは全て上限の内。
   // 効果由来の直接プレイ〔死者再生〕はカード解決の途中なので止めない = 本家Havoc型の裁定)
-  if (state.player.restrain > 0 && (state.player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) {
-    throw new Error(`拘束中は1ターンに${RESTRAIN_PLAY_CAP}枚までしかプレイできない (すでに${RESTRAIN_PLAY_CAP}枚プレイ済み)`)
-  }
+  assertPlayCap(state)
   if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const aliveCount = state.enemies.filter((e) => e.hp > 0).length
   if (targetIndex !== undefined) {
@@ -1325,6 +1380,11 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
   let s = emit(state, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
+  // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
+  // 勢いのリセット・弱体の減衰より前 = このターンの盤面 (ブロック0・攻撃なし・プレイ枚数) を読む
+  s = runPermanentTriggers(s, 'onTurnEnd', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  s = checkCombatEnd(s) // 石の暦 (7ターン目の終了時に全体52) で全滅しうる
+  if (isOver(s)) return s
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
   // 弱体・虚弱もここで1減る — 作用するフェーズ (自ターン) の終了時に減る対称則 (確定済みルール表「状態異常」)
   // 疾風の王 (緑レア置物 2026-09-05): 勢いの半分 (切り捨て) を次のターンへ持ち越す = 勢いを「溶ける雪だるま」にする方針定義札
@@ -1409,6 +1469,7 @@ export function endTurn(state: GameState): GameState {
       ),
     }
     s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
+    if (s.enemies[i].hp <= 0) s = fireEnemyDied(s, i) // 焼き切って倒れた (onEnemyDied 2026-09-12)
     s = applyWakeCheck(s, i) // 被弾覚醒はどの経路の被弾でも (2026-09-02)
     // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
     {
@@ -1568,8 +1629,34 @@ const SCALD_CAP = 5
 /** 拘束中に1ターンでプレイできるカードの上限 (本家StS2 Sloth=「4枚目以降プレイ不可」準拠) */
 export const RESTRAIN_PLAY_CAP = 3
 
+/** このターンにプレイできる枚数の上限 (拘束=3・天鵞絨の首輪=playCap。小さい方)。無制限なら null。UI/CLI も同じ式を読む */
+export function playCapOf(state: GameState): number | null {
+  const caps: number[] = []
+  if (state.player.restrain > 0) caps.push(RESTRAIN_PLAY_CAP)
+  if (state.playCap !== undefined) caps.push(state.playCap)
+  return caps.length === 0 ? null : Math.min(...caps)
+}
+
+function assertPlayCap(state: GameState): void {
+  const cap = playCapOf(state)
+  if (cap !== null && (state.player.playsThisTurn ?? 0) >= cap) {
+    const why = state.player.restrain > 0 && cap === RESTRAIN_PLAY_CAP ? '拘束中は' : '天鵞絨の首輪により'
+    throw new Error(`${why}1ターンに${cap}枚までしかプレイできない (すでに${cap}枚プレイ済み)`)
+  }
+}
+
 function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameState {
   const { status, amount } = inflict
+  // アーティファクト (時計仕掛けの土産 2026-09-12): 状態異常の付与を1回弾く (札の混入=負傷・火傷・がらくたは弾かない)
+  if (
+    (state.player.artifact ?? 0) > 0 &&
+    (status === 'weak' || status === 'vulnerable' || status === 'frail' || status === 'restrain' || status === 'mist' || status === 'slow')
+  ) {
+    return emit(
+      { ...state, player: { ...state.player, artifact: (state.player.artifact ?? 0) - 1 } },
+      { type: 'PlayerArtifactBlocked', status },
+    )
+  }
   if (status === 'mist') {
     return emit(
       { ...state, player: { ...state.player, mist: (state.player.mist ?? 0) + amount } },
@@ -1759,7 +1846,15 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         const remaining = v - blocked
         const iceBlocked = Math.min(iceBlock, remaining)
         iceBlock -= iceBlocked
-        hpLoss += remaining - iceBlocked
+        let hit = remaining - iceBlocked
+        // レリック本家形 (2026-09-12): 免疫でなく上限と割合で受ける (StS2 準拠)。
+        // 古い門柱: 未ブロック分がN以下なら1 / 重金の棒: 各ヒット-N / 脈打つ欠片: 1ターンの累計はN以下
+        if (hit > 0 && state.smallHitToOne !== undefined && hit <= state.smallHitToOne) hit = 1
+        if (hit > 0 && state.hpLossReduce !== undefined) hit = Math.max(0, hit - state.hpLossReduce)
+        if (hit > 0 && state.maxHpLossPerTurn !== undefined) {
+          hit = Math.min(hit, Math.max(0, state.maxHpLossPerTurn - (state.player.hpLostThisTurn ?? 0) - hpLoss))
+        }
+        hpLoss += hit
       }
       let s: GameState = {
         ...state,
@@ -1771,9 +1866,12 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           // 憤怒 (逆上) の参照値: このフェーズで受けた攻撃ダメージを累積する
           damageTakenLastEnemyPhase: state.player.damageTakenLastEnemyPhase + hpLoss,
           attacksReceivedThisPhase: (state.player.attacksReceivedThisPhase ?? 0) + 1,
+          hpLostThisTurn: (state.player.hpLostThisTurn ?? 0) + hpLoss,
         },
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex })
+      // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
+      if (hpLoss > 0) s = runPermanentTriggers(s, 'onDamageTaken', enemyIndex)
       // バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる
       if (getEnemyDef(s.enemies[enemyIndex].enemyId).imbalanced === true && hpLoss === 0 && dealtTotal > 0) {
         s = { ...s, enemies: s.enemies.map((e, i) => (i === enemyIndex ? { ...e, staggeredNext: true } : e)) }
@@ -2070,17 +2168,20 @@ function finishEnemyPhase(state: GameState): GameState {
   //   — 旧実装は注入→同フェーズ末の全捨てで即捨て札行きになり「手数を奪う」設計が machine 上
   //   一度も機能していなかった ②自ターンを過ごした火傷は全捨てで消える = 1回きり
   //   — 旧実装は捨て札を循環する本家Burn型の恒久汚染で、仕様「全捨てで消える」と乖離していた
+  // ルーンの角錐 (retainHand 2026-09-12): 手札を捨てない。自ターンを過ごした火傷だけは消える (1回きりの則は不変)
+  const keeps = (c: CardInstance): boolean =>
+    (c.def.id === SCALD_DEF.id && c.scaldFresh === true) || c.def.retain === true || (s.retainHand === true && c.def.id !== SCALD_DEF.id)
   s = {
     ...s,
     player: {
       ...s.player,
       // 保持 (retain 2026-09-02): 全捨てで手札に残る
       hand: s.player.hand
-        .filter((c) => (c.def.id === SCALD_DEF.id && c.scaldFresh === true) || c.def.retain === true)
+        .filter(keeps)
         .map((c) => (c.scaldFresh === true ? { ...c, scaldFresh: false } : c)),
       discardPile: [
         ...s.player.discardPile,
-        ...s.player.hand.filter((c) => c.def.id !== SCALD_DEF.id && c.def.retain !== true),
+        ...s.player.hand.filter((c) => c.def.id !== SCALD_DEF.id && !keeps(c)),
       ],
     },
   }

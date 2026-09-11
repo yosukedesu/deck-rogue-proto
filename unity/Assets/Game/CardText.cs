@@ -50,6 +50,10 @@ namespace DeckRogue.Game
             { "onSelfExhausted", "亡骸" },
             { "onGrowthGained", "成長を得るたび" },
             { "onMomentumGained", "勢いを得るたび" },
+            { "onTurnEnd", "ターン終了時" },
+            { "onShuffle", "山札を切り直すたび" },
+            { "onEnemyDied", "敵を倒すたび" },
+            { "onDamageTaken", "攻撃でHPを失った後" },
         };
 
         static readonly Dictionary<string, string> EffectJa = new Dictionary<string, string>
@@ -81,6 +85,10 @@ namespace DeckRogue.Game
             { "gainIceBlock", "氷壁N(持ち越し)" },
             { "gainIceBlockPerCardPlayed", "詠唱数×N氷壁" },
             { "gainIceBlockPerHandCard", "手札数×N氷壁" },
+            { "gainBlockPerHandCard", "手札数×Nブロック" },
+            { "drawCardsNextTurn", "次のターンの開始時にN枚多くドロー" },
+            { "gainEnergyNextTurn", "次のターンの開始時に一時マナ+N" },
+            { "gainBlockNextTurn", "次のターンの開始時にブロック+N" },
             { "gainHp", "HP回復N" },
             { "loseHp", "自傷HP-N" },
             { "counter", "返しN" },

@@ -1,0 +1,5330 @@
+[
+ {
+  "id": "Akabeko",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "AlchemicalCoffer",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "AmethystAubergine",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterModifyingRewards",
+   "IsAllowed",
+   "TryModifyRewards"
+  ],
+  "props": [
+   "IsAllowedInShops",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Anchor",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ArcaneScroll",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ArchaicTooth",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ArtOfWar",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterEnergyReset",
+   "AfterTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "Astrolabe",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BagOfMarbles",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BagOfPreparation",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BeatingRemnant",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterDamageReceived",
+   "AfterModifyingHpLostAfterOsty",
+   "BeforeSideTurnStart",
+   "ModifyHpLostAfterOsty"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BeautifulBracelet",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Bellows",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BeltBuckle",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterCombatVictory",
+   "AfterObtained",
+   "AfterPotionDiscarded",
+   "AfterPotionProcured",
+   "AfterPotionUsed",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BigHat",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BigMushroom",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "AfterRoomEntered",
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BiiigHug",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "AfterShuffle"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BingBong",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardChangedPiles"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BlackBlood",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatVictory"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BlackStar",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "TryModifyRewards"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BlessedAntler",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeHandDraw",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BloodSoakedRose",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BloodVial",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStartLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BoneFlute",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterAttack"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BoneTea",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "DisplayAmount",
+   "IsUsedUp",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BookOfFiveRings",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardChangedPiles",
+   "IsAllowed"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BookRepairKnife",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterDiedToDoom"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Bookmark",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BoomingConch",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BoundPhylactery",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterEnergyResetLate",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity",
+   "SpawnsPets"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BowlerHat",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterGoldGained",
+   "IsAllowed",
+   "ShouldGainGold"
+  ],
+  "props": [
+   "IsAllowedInShops",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Bread",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterSideTurnStart",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "BrilliantScarf",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeSideTurnStart",
+   "TryModifyEnergyCostInCombat",
+   "TryModifyStarCost"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Brimstone",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BronzeScales",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BurningBlood",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterCombatVictory"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "BurningSticks",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardExhausted",
+   "AfterCombatEnd",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Byrdpip",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "AddsPet",
+   "HasUponPickupEffect",
+   "Rarity",
+   "SpawnsPets"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "CallingBell",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Candelabra",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "CaptainsWheel",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterBlockCleared"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Cauldron",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "CentennialPuzzle",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterDamageReceived"
+  ],
+  "props": [
+   "FlashSfx",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Chandelier",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "CharonsAshes",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterCardExhausted"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ChemicalX",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeCardPlayed",
+   "ModifyXValue"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ChoicesParadox",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ChosenCheese",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Circlet",
+  "base": "RelicModel",
+  "rarity": "None",
+  "pools": [
+   "Fallback"
+  ],
+  "hooks": [],
+  "props": [
+   "IsStackable",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Claws",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "CloakClasp",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "CrackedCore",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Crossbow",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "CursedPearl",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DarkstonePeriapt",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardChangedPiles"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DataDisk",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DaughterOfTheWind",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DelicateFrond",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DemonTongue",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterDamageReceived",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DeprecatedRelic",
+  "base": "RelicModel",
+  "rarity": "None",
+  "pools": [
+   "Deprecated"
+  ],
+  "hooks": [],
+  "props": [
+   "IsStackable",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DiamondDiadem",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterSideTurnStart",
+   "BeforeTurnEnd"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DingyRug",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyCardRewardCreationOptions"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DistinguishedCape",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DivineDestiny",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DivineRight",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DollysMirror",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DragonFruit",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterGoldGained",
+   "IsAllowed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DreamCatcher",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyExtraRestSiteHealText",
+   "TryModifyRestSiteHealRewards"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Driftwood",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "TryModifyRewardsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "DustyTome",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Ectoplasm",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyMaxEnergy",
+   "ShouldGainGold"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ElectricShrymp",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "EmberTea",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "DisplayAmount",
+   "IsUsedUp",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "EmotionChip",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterDamageReceived",
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "EmptyCage",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "EternalFeather",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeAnchor",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeBloodVial",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStartLate"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeHappyFlower",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeLeesWaffle",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeMango",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeMerchantsRug",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeOrichalcum",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart",
+   "BeforeTurnEnd",
+   "BeforeTurnEndVeryEarly"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeSneckoEye",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeStrikeDummy",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyDamageAdditive"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FakeVenerableTeaSet",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterEnergyReset",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "MerchantCost",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "FencingManual",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FestivePopper",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Fiddle",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterPreventingDraw",
+   "ModifyHandDrawLate",
+   "ShouldDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ForgottenSoul",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardExhausted"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FragrantMushroom",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FresnelLens",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyMerchantCardCreationResults",
+   "TryModifyCardBeingAddedToDeck",
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FrozenEgg",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "ModifyMerchantCardCreationResults",
+   "TryModifyCardBeingAddedToDeck",
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FuneraryMask",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "FurCoat",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCreatureAddedToCombat",
+   "AfterObtained",
+   "BeforeCombatStart",
+   "ModifyGeneratedMapLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GalacticDust",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterStarsSpent"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GamblingChip",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GamePiece",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "FlashSfx",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GhostSeed",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardEnteredCombat",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Girya",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered",
+   "IsAllowed",
+   "TryModifyRestSiteOptions"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GlassEye",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Glitter",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GnarledHammer",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GoldPlatedCables",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "AfterModifyingOrbPassiveTriggerCount",
+   "ModifyOrbPassiveTriggerCounts"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GoldenCompass",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "ModifyGeneratedMap",
+   "ModifyUnknownMapPointRoomTypes"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GoldenPearl",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Gorget",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "GremlinHorn",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterDeath"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "HandDrill",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterDamageGiven"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "HappyFlower",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "HeftyTablet",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "HelicalDart",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "HistoryCourse",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforePlayPhaseStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "HornCleat",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterBlockCleared"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "IceCream",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ShouldPlayerResetEnergy"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "InfusedCore",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "IntimidatingHelmet",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "IronClub",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "FlashSfx",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "IvoryTile",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "JeweledMask",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "JewelryBox",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "JossPaper",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardExhausted",
+   "AfterCombatEnd",
+   "AfterTurnEnd"
+  ],
+  "props": [
+   "FlashSfx",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "JuzuBracelet",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "ModifyUnknownMapPointRoomTypes"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Kifuda",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Kunai",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Kusarigama",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterTurnEnd",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Lantern",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "LargeCapsule",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LastingCandy",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared",
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "IsAllowed",
+   "TryModifyCardRewardOptions"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LavaLamp",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterDamageReceived",
+   "AfterRoomEntered",
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LavaRock",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "TryModifyRewards"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LeadPaperweight",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LeafyPoultice",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LeesWaffle",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LetterOpener",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterSideTurnStart",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LizardTail",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPreventingDeath",
+   "ShouldDieLate"
+  ],
+  "props": [
+   "IsUsedUp",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LoomingFruit",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LordsParasol",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LostCoffer",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LostWisp",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LuckyFysh",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardChangedPiles",
+   "IsAllowed"
+  ],
+  "props": [
+   "IsAllowedInShops",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "LunarPastry",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Mango",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MassiveScroll",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "IsAllowed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MawBank",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterItemPurchased",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "IsUsedUp",
+   "Rarity",
+   "ShouldFlashOnPlayer"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MealTicket",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered",
+   "IsAllowed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MeatCleaver",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "TryModifyRestSiteOptions"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MeatOnTheBone",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCombatVictoryEarly",
+   "AfterCurrentHpChanged",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MembershipCard",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyMerchantPrice"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MercuryHourglass",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Metronome",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterOrbChanneled",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MiniRegent",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterStarsSpent",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MiniatureCannon",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyDamageAdditive"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MiniatureTent",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ShouldDisableRemainingRestSiteOptions"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MoltenEgg",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "ModifyMerchantCardCreationResults",
+   "TryModifyCardBeingAddedToDeck",
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MrStruggles",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MummifiedHand",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MusicBox",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeCardPlayed",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "MysticLighter",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyDamageAdditive"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "NeowsBones",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "NeowsTalisman",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "NeowsTorment",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "NewLeaf",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "NinjaScroll",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "BeforeHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Nunchaku",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "NutritiousOyster",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "NutritiousSoup",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "OddlySmoothStone",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "OldCoin",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "IsAllowed"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "IsAllowedInShops",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "OrangeDough",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Orichalcum",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart",
+   "BeforeTurnEnd",
+   "BeforeTurnEndVeryEarly"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "OrnamentalFan",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Orrery",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsBlood",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsClaw",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsEye",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterObtained",
+   "AfterSideTurnStart",
+   "AfterTakingExtraTurn",
+   "BeforeCardPlayed",
+   "BeforeTurnEndEarly",
+   "ShouldTakeExtraTurn"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsFlesh",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterSideTurnStart",
+   "BeforeCombatStart",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsGrowth",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "TryModifyRestSiteOptions"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsHorn",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsLegion",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterModifyingBlockAmount",
+   "AfterObtained",
+   "AfterSideTurnStart",
+   "BeforeCombatStart",
+   "ModifyBlockMultiplicative"
+  ],
+  "props": [
+   "AddsPet",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsTears",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterSideTurnStart",
+   "BeforeTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsTooth",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaelsWing",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "TryModifyCardRewardAlternatives"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PandorasBox",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Pantograph",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaperKrane",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PaperPhrog",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ParryingShield",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Pear",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PenNib",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "BeforeCardPlayed",
+   "ModifyDamageMultiplicative"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Pendulum",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "FlashSfx",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Permafrost",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PetrifiedToad",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeCombatStartLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PhialHolster",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PhilosophersStone",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCreatureAddedToCombat",
+   "AfterRoomEntered",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PhylacteryUnbound",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart",
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "Rarity",
+   "SpawnsPets"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Planisphere",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered",
+   "IsAllowed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Pocketwatch",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterModifyingHandDraw",
+   "AfterSideTurnStart",
+   "BeforeSideTurnStart",
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PollinousCore",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterModifyingHandDraw",
+   "BeforeSideTurnStart",
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Pomander",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PotionBelt",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PowerCell",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PrayerWheel",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "TryModifyRewards"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PrecariousShears",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PreciseScissors",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PreservedFog",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PrismaticGem",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyCardRewardCreationOptions",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PumpkinCandle",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "AfterRoomEntered",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "PunchDagger",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RadiantPearl",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RainbowRing",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RazorTooth",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared",
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RedMask",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RedSkull",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterCurrentHpChanged",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RegalPillow",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRestSiteHeal",
+   "AfterRoomEntered",
+   "ModifyExtraRestSiteHealText",
+   "ModifyRestSiteHealAmount"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Regalite",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "AfterCardEnteredCombat"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ReptileTrinket",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPotionUsed"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RingOfTheDrake",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RingOfTheSnake",
+  "base": "RelicModel",
+  "rarity": "Starter",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RingingTriangle",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ShouldFlush"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RippleBasin",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeSideTurnStart",
+   "BeforeTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RoyalPoison",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RoyalStamp",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RuinedHelmet",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterModifyingPowerAmountReceived",
+   "TryModifyPowerAmountReceived"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RunicCapacitor",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "RunicPyramid",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ShouldFlush"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Sai",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SandCastle",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ScreamingFlagon",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeTurnEnd"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ScrollBoxes",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SeaGlass",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SealOfGold",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "SelfFormingClay",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Ironclad"
+  ],
+  "hooks": [
+   "AfterDamageReceived"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SereTalon",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Shovel",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "TryModifyRestSiteOptions"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Shuriken",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SignetRing",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SilverCrucible",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterModifyingCardRewardOptions",
+   "AfterRoomEntered",
+   "IsAllowed",
+   "ShouldGenerateTreasure",
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SlingOfCourage",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SmallCapsule",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SneckoEye",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained",
+   "BeforeCombatStart",
+   "ModifyHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SneckoSkull",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "AfterModifyingPowerAmountGiven",
+   "ModifyPowerAmountGiven"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Sozu",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyMaxEnergy",
+   "ShouldProcurePotion"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SparklingRouge",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared",
+   "Event"
+  ],
+  "hooks": [
+   "AfterBlockCleared"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SpikedGauntlets",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "ModifyMaxEnergy",
+   "TryModifyEnergyCostInCombat"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "StoneCalendar",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterRoomEntered",
+   "AfterSideTurnStart",
+   "BeforeTurnEnd"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "StoneCracker",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "StoneHumidifier",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterRestSiteHeal",
+   "ModifyExtraRestSiteHealText"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Storybook",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Strawberry",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "StrikeDummy",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyDamageAdditive"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SturdyClamp",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPreventingBlockClear",
+   "ShouldClearBlock"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SwordOfJade",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SwordOfStone",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatVictory"
+  ],
+  "props": [
+   "DisplayAmount",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "SymbioticVirus",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Defect"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TanxsWhistle",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TeaOfDiscourtesy",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeCombatStart"
+  ],
+  "props": [
+   "IsUsedUp",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TheAbacus",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterShuffle"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TheBoot",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterModifyingHpLostBeforeOsty",
+   "ModifyHpLostBeforeOsty"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TheCourier",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyMerchantPrice",
+   "ShouldRefillMerchantEntry"
+  ],
+  "props": [
+   "IsAllowedInShops",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ThrowingAxe",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterModifyingCardPlayCount",
+   "AfterRoomEntered",
+   "ModifyCardPlayCount"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Tingsha",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "AfterCardDiscarded"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TinyMailbox",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "ModifyExtraRestSiteHealText",
+   "TryModifyRestSiteHealRewards"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ToastyMittens",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforeHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Toolbox",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "BeforeHandDraw"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TouchOfOrobas",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ToughBandages",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "AfterCardDiscarded"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ToxicEgg",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "ModifyMerchantCardCreationResults",
+   "TryModifyCardBeingAddedToDeck",
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "ToyBox",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "IsUsedUp",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TriBoomerang",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TungstenRod",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterModifyingHpLostAfterOsty",
+   "ModifyHpLostAfterOsty"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TuningFork",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "TwistedFunnel",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Silent"
+  ],
+  "hooks": [
+   "BeforeSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "UnceasingTop",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterHandEmptied"
+  ],
+  "props": [
+   "FlashSfx",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "UndyingSigil",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Necrobinder"
+  ],
+  "hooks": [
+   "ModifyDamageMultiplicative"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "UnsettlingLamp",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "BeforeCombatStart",
+   "BeforePowerAmountChanged",
+   "ModifyPowerAmountGiven"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Vajra",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "VakuuCardSelector",
+  "base": "ICardSelector",
+  "rarity": null,
+  "pools": [],
+  "hooks": [],
+  "props": [],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Vambrace",
+  "base": "RelicModel",
+  "rarity": "Uncommon",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterModifyingBlockAmount",
+   "BeforeCombatStart",
+   "ModifyBlockMultiplicative"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "VelvetChoker",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCardPlayed",
+   "AfterCombatEnd",
+   "AfterRoomEntered",
+   "BeforeSideTurnStart",
+   "ModifyMaxEnergy",
+   "ShouldPlay"
+  ],
+  "props": [
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "VenerableTeaSet",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterEnergyReset",
+   "AfterRoomEntered"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "VeryHotCocoa",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterSideTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": true,
+  "upon_pickup": false
+ },
+ {
+  "id": "VexingPuzzlebox",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterPlayerTurnStart"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "VitruvianMinion",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Regent"
+  ],
+  "hooks": [
+   "ModifyBlockMultiplicative",
+   "ModifyDamageMultiplicative"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WarHammer",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatVictory"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WarPaint",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "Whetstone",
+  "base": "RelicModel",
+  "rarity": "Common",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WhisperingEarring",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "BeforePlayPhaseStartLate",
+   "ModifyMaxEnergy"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WhiteBeastStatue",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "ShouldForcePotionReward"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WhiteStar",
+  "base": "RelicModel",
+  "rarity": "Rare",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "IsAllowed",
+   "TryModifyRewards"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WingCharm",
+  "base": "RelicModel",
+  "rarity": "Shop",
+  "pools": [
+   "Shared"
+  ],
+  "hooks": [
+   "TryModifyCardRewardOptionsLate"
+  ],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WingedBoots",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterRoomEntered",
+   "IsAllowed",
+   "ShouldAllowFreeTravel"
+  ],
+  "props": [
+   "DisplayAmount",
+   "IsUsedUp",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WongoCustomerAppreciationBadge",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [],
+  "props": [
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "WongosMysteryTicket",
+  "base": "RelicModel",
+  "rarity": "Event",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterCombatEnd",
+   "AfterModifyingRewards",
+   "TryModifyRewards"
+  ],
+  "props": [
+   "DisplayAmount",
+   "IsUsedUp",
+   "Rarity",
+   "ShowCounter"
+  ],
+  "mentions_counter": true,
+  "uses_energy": false,
+  "upon_pickup": false
+ },
+ {
+  "id": "YummyCookie",
+  "base": "RelicModel",
+  "rarity": "Ancient",
+  "pools": [
+   "Event"
+  ],
+  "hooks": [
+   "AfterObtained"
+  ],
+  "props": [
+   "HasUponPickupEffect",
+   "Rarity"
+  ],
+  "mentions_counter": false,
+  "uses_energy": false,
+  "upon_pickup": false
+ }
+]

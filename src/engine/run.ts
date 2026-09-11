@@ -22,7 +22,7 @@ import {
 } from './content.ts'
 import { createRng, nextInt, shuffle } from './rng.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, GameState, ReactionMode, RngState, RelicRarity } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, GameState, ReactionMode, RngState, RelicDef, RelicRarity } from './types.ts'
 
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 export const REWARD_EXCLUDED = new Set([
@@ -118,9 +118,88 @@ export function workshopFusePrice(run: RunState): number {
 /** B型レリックの数値ボーナスの合計 (所持レリックから毎回導出 = RunState にフィールドを増やさない) */
 export function relicBonusSum(
   run: RunState,
-  key: 'victoryHealFlat' | 'shopUpgradeDiscount' | 'restMaxHp' | 'eliteGoldBonus' | 'fusionDiscount' | 'removalStepDelta' | 'eliteRelicPicks',
+  key:
+    | 'victoryHealFlat' | 'shopUpgradeDiscount' | 'restMaxHp' | 'eliteGoldBonus' | 'fusionDiscount' | 'removalStepDelta' | 'eliteRelicPicks'
+    | 'goldPerRow' | 'goldPerUnknown' | 'unknownChestEvery' | 'shopHeal' | 'campfireTrain' | 'wingBoots' | 'extraRewardRounds' | 'skipRewardMaxHp'
+    | 'relicsOnPickup' | 'brandsOnPickup' | 'removeOnPickup' | 'transformOnPickup' | 'workshopFuses' | 'maxHpPerBrand' | 'brandWard',
 ): number {
   return run.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.[key] ?? 0), 0)
+}
+
+/** B型の真偽キー (焚き火の発掘・除去・鍛えられない・合成の鍛え・全回復・基本札の変成) を所持レリックから導出する */
+export function relicFlag(
+  run: RunState,
+  key: 'campfireDig' | 'campfireRemove' | 'noForge' | 'fusionUpgraded' | 'noRest',
+): boolean {
+  return run.relics.some((id) => getRelicDef(id).bonus?.[key] === true)
+}
+
+/** レリックのラン内状態の読み書き (relicState。旧セーブは undefined) */
+export function relicStateOf(run: RunState, key: string): number {
+  return run.relicState?.[key] ?? 0
+}
+function withRelicState(run: RunState, key: string, value: number): RunState {
+  return { ...run, relicState: { ...(run.relicState ?? {}), [key]: value } }
+}
+
+/** 大口の貯金箱 (2026-09-12): ショップで何か買う (札・レリック・除去・鍛える) と以後の行進のG加算が止まる */
+function breakMawBank(run: RunState): RunState {
+  if (relicBonusSum(run, 'goldPerRow') <= 0 || relicStateOf(run, 'mawBroken') === 1) return run
+  return withRelicState(run, 'mawBroken', 1)
+}
+
+/**
+ * 焚き火で選べる行動 (2026-09-12 レリック本家形の第3選択肢はレリック限定)。UI/CLI/engine が同じ式を読む。
+ * dig=発掘の鶴嘴 / remove=安らぎの煙管 / trainLeft=重石の残り鍛錬回数 (0なら出ない) / forge=false なら鍛えられない (融合の鎚)
+ */
+export function campfireOptions(run: RunState): { readonly dig: boolean; readonly remove: boolean; readonly trainLeft: number; readonly forge: boolean } {
+  const trainMax = relicBonusSum(run, 'campfireTrain')
+  return {
+    dig: relicFlag(run, 'campfireDig'),
+    remove: relicFlag(run, 'campfireRemove'),
+    trainLeft: Math.max(0, trainMax - relicStateOf(run, 'train')),
+    forge: !relicFlag(run, 'noForge'),
+  }
+}
+
+/** 翼の靴 (2026-09-12 本家 Wing Boots): 残回数があれば、線の無い次の行のノードにも進める (nextChoices と排他の集合) */
+export function wingChoices(run: RunState): readonly number[] {
+  if (relicStateOf(run, 'wingBoots') <= 0) return []
+  if (run.row < 0 || run.row >= run.map.length - 1) return []
+  const normal = new Set(nextChoices(run))
+  return run.map[run.row + 1].map((_, c) => c).filter((c) => !normal.has(c))
+}
+
+/** 基本札 (打撃・防御=全色のスターターの共通札) か。古代の匣の変成対象 */
+export function isBasicCard(card: CardInstance): boolean {
+  return /^(green|blue|red|white|black)_(strike|guard)$/.test(card.def.id)
+}
+
+/**
+ * デッキに札を加える唯一の口 (2026-09-12)。卵 (upgradeOnAdd) と烙印の受け皿 (厄除けの札・黒曜の護符) をここで一度だけ適用する =
+ * 報酬・購入・イベント・変成・呪いの鍵のどこから来ても同じ扱い
+ */
+export function addCardsToRunDeck(run: RunState, cards: readonly CardInstance[]): RunState {
+  const eggs = new Set(run.relics.flatMap((id) => getRelicDef(id).bonus?.upgradeOnAdd ?? []))
+  const perBrand = relicBonusSum(run, 'maxHpPerBrand')
+  let next = run
+  const added: CardInstance[] = []
+  for (const c of cards) {
+    const isBrand = c.def.id === BRAND_DEF.id || c.def.id === GUILT_DEF.id
+    if (isBrand) {
+      // 厄除けの札 (本家 Omamori): 次のN回の烙印を無効にする
+      if (relicStateOf(next, 'brandWard') > 0) {
+        next = withRelicState(next, 'brandWard', relicStateOf(next, 'brandWard') - 1)
+        continue
+      }
+      // 黒曜の護符 (本家 Darkstone Periapt): 烙印を受け取るたび最大HP+N
+      if (perBrand > 0) next = { ...next, maxHp: next.maxHp + perBrand, hp: next.hp + perBrand }
+      added.push(c)
+      continue
+    }
+    added.push(eggs.has(c.def.type) && canUpgradeCard(c) ? upgradeCard(c) : c)
+  }
+  return added.length === 0 ? next : { ...next, deck: [...next.deck, ...added] }
 }
 /** ショップの価格倍率 (会員証=0.5。複数所持は積) */
 export function shopPriceRatio(run: RunState): number {
@@ -195,7 +274,7 @@ export function depthHpScale(row: number, act = 1): number {
   return late ? lateScale : early
 }
 
-export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'campfire' | 'workshop' | 'shop' | 'event' | 'reward' | 'won' | 'lost'
+export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'relic-choose' | 'campfire' | 'workshop' | 'shop' | 'event' | 'reward' | 'won' | 'lost'
 
 /** ショップの在庫 (ノード進入時にシードから決定) */
 export interface ShopState {
@@ -283,6 +362,24 @@ export interface RunState {
   readonly seenEventIds: readonly string[]
   /** この幕で引いた祠 (幕をまたぐと復活する = 本家 Shrine) */
   readonly seenShrineIds: readonly string[]
+  // ---- レリック本家形 (2026-09-12 docs/relic-analysis-2026-09-12.md)。旧セーブに無いので使用側は ?? ガード ----
+  /**
+   * レリックのラン内状態。キー: wingBoots=翼の靴の残回数 / mawBroken=1で大口の貯金箱が止まる / unknownsSinceChest=小さな宝箱の?カウント /
+   * train=重石の鍛錬回数 / lizardUsed=1で蜥蜴の尾は使用済み / brandWard=厄除けの札の残回数 / exp_<relicId>=時限レリックの残戦数
+   */
+  readonly relicState?: Readonly<Record<string, number>>
+  /** 通常戦のカード報酬の残り組数 (祈りの車輪)。省略/0 = いまの組が最後 */
+  readonly rewardRoundsLeft?: number
+  /** 取得時にデッキから札を選ぶレリックの保留 (空の鳥籠=除去・星読みの盤=変成+鍛え)。phase 'relic-choose' の間だけ非null */
+  readonly pendingRelicChoice?: {
+    readonly relicId: string
+    readonly mode: 'remove' | 'transform'
+    readonly count: number
+    /** 選び終えたら戻るフェーズ (報酬・レリック3択の続き・マップ) */
+    readonly resume: RunPhase
+  }
+  /** この工房の訪問で合成した回数 (職人の手袋=2回まで。工房進入でリセット) */
+  readonly workshopFusesUsed?: number
 }
 
 export type RunCommand =
@@ -295,8 +392,11 @@ export type RunCommand =
   | { readonly type: 'SkipRelic' }
   // 焚き火 (確定済みルール表「焚き火」): 休んで回復するか、デッキから1枚を永久に取り除くか
   | { readonly type: 'CampfireRest' }
-  | { readonly type: 'CampfireRemove'; readonly index: number }
+  | { readonly type: 'CampfireRemove'; readonly index: number } // 安らぎの煙管 (2026-09-12) を持つ時だけ通る (除去はショップ専売の唯一の例外)
   | { readonly type: 'CampfireUpgrade'; readonly index: number }
+  | { readonly type: 'CampfireDig' } // 発掘の鶴嘴 (2026-09-12): 焚き火でレリックを1個掘る (休む/鍛えると排他)
+  | { readonly type: 'CampfireTrain' } // 重石 (2026-09-12): 鍛錬=以後の戦闘開始時の成長+1 (N回まで。休む/鍛えると排他)
+  | { readonly type: 'RelicChooseCards'; readonly indices: readonly number[] } // relic-choose: 空の鳥籠 (除去) / 星読みの盤 (変成+鍛え) の対象
   // 工房 (確定済みルール表「カード合成（工房）」): 異なる2枚を選んで合成するか、見送る
   | { readonly type: 'WorkshopFuse'; readonly indexA: number; readonly indexB: number }
   | { readonly type: 'WorkshopSkip' }
@@ -332,6 +432,9 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
   // 難易度倍率 (確定済みルール表「難易度」): 全敵一律で既存スケールの上に乗算
   const diff = difficultyScale(run.difficulty)
+  const rules = run.relics.map((id) => getRelicDef(id).combatRule).filter((r): r is NonNullable<typeof r> => r !== undefined)
+  const ruleSum = (key: 'blockKeep' | 'xBonus' | 'hpLossReduce' | 'smallHitToOne' | 'maxHpLossPerTurn' | 'playCap' | 'artifact'): number =>
+    rules.reduce((a, r) => a + (r[key] ?? 0), 0)
   const combat = startCombatWithOptions(combatSeed, run.mode, encounterId, {
     deck: run.deck,
     leaderId: run.leaderId,
@@ -369,6 +472,22 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     energyMaxRefBonus: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.energyMaxRefBonus ?? 0), 0),
     harvestKeep: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.harvestKeep ?? 0), 0),
     ...(run.setAnyCards === true ? { setAnyCards: true } : {}),
+    // レリック本家形 (2026-09-12): 規則改変の C型キーを所持レリックから集計
+    ...(rules.some((r) => r.retainHand === true) ? { retainHand: true } : {}),
+    ...(rules.some((r) => r.energyCarry === true) ? { energyCarry: true } : {}),
+    ...(ruleSum('blockKeep') > 0 ? { blockKeep: ruleSum('blockKeep') } : {}),
+    ...(ruleSum('xBonus') > 0 ? { xBonus: ruleSum('xBonus') } : {}),
+    ...(ruleSum('hpLossReduce') > 0 ? { hpLossReduce: ruleSum('hpLossReduce') } : {}),
+    ...(ruleSum('smallHitToOne') > 0 ? { smallHitToOne: ruleSum('smallHitToOne') } : {}),
+    ...(ruleSum('maxHpLossPerTurn') > 0 ? { maxHpLossPerTurn: ruleSum('maxHpLossPerTurn') } : {}),
+    // 蜥蜴の尾はランで1度: 使い切ったら以後は注入しない
+    ...(rules.some((r) => r.deathSave === true) && relicStateOf(run, 'lizardUsed') === 0 ? { deathSave: true } : {}),
+    ...(ruleSum('playCap') > 0 ? { playCap: ruleSum('playCap') } : {}),
+    ...(rules.some((r) => r.hideIntents === true) ? { hideIntents: true } : {}),
+    ...(rules.some((r) => r.brandsPlayable === true) ? { brandsPlayable: true } : {}),
+    ...(ruleSum('artifact') > 0 ? { artifact: ruleSum('artifact') } : {}),
+    // 重石の鍛錬 (焚き火で積んだ回数ぶん戦闘開始時に成長)
+    ...(relicStateOf(run, 'train') > 0 ? { startGrowth: relicStateOf(run, 'train') } : {}),
   })
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
 }
@@ -397,7 +516,7 @@ function enterNodeInner(run: RunState): RunState {
       return { ...run, phase: 'campfire', combat: null, rewardOptions: null, campfireUpgradesUsed: 0 }
     }
     case 'workshop':
-      return { ...run, phase: 'workshop', combat: null, rewardOptions: null }
+      return { ...run, phase: 'workshop', combat: null, rewardOptions: null, workshopFusesUsed: 0 }
     case 'shop':
       return openShop(run)
     case 'event':
@@ -414,6 +533,11 @@ function enterNodeInner(run: RunState): RunState {
  * 幕1の5提示中「砥石5回・鉄の心臓4回」の反復を生んでいた (Opusマップ検証の指摘)
  */
 export type RelicSource = 'chest' | 'elite' | 'boss' | 'shop' | 'event'
+
+/** 色ゲート (2026-09-12): RelicDef.colors がリーダーの色アイデンティティと1つでも重なる時だけ候補になる */
+export function relicAllowedForColors(def: RelicDef, colors: readonly CardColor[]): boolean {
+  return def.colors === undefined || def.colors.some((c) => colors.includes(c))
+}
 type RelicTier = 'common' | 'uncommon' | 'rare'
 const relicRarity = (id: string) => getRelicDef(id).rarity ?? 'common'
 
@@ -437,7 +561,8 @@ export function drawRelicOptions(
     (id) =>
       !run.relics.includes(id) &&
       run.act <= (getRelicDef(id).actMax ?? 99) &&
-      run.act >= (getRelicDef(id).actMin ?? 0),
+      run.act >= (getRelicDef(id).actMin ?? 0) &&
+      relicAllowedForColors(getRelicDef(id), run.colors),
   )
   let rng = run.rng
   const picked: string[] = []
@@ -455,6 +580,8 @@ export function drawRelicOptions(
       break
     }
     if (source === 'shop' && n === 0 && take('shop')) continue
+    // ?イベントのレリックは event 層を優先 (2026-09-12 本家 StS2: 呪いと対の器・ハズレ枠は ? からしか出ない)
+    if (source === 'event' && take('event')) continue
     const [roll, r1] = nextInt(rng, 0, 99)
     rng = r1
     const tier: RelicTier = roll < 50 ? 'common' : roll < 83 ? 'uncommon' : 'rare'
@@ -492,6 +619,15 @@ function resolveUnknown(run: RunState): RunState {
   // 累積確率は据え置き = 次の?で当たりやすくなる (金が貯まった頃に来る)
   const tooPoor = run.gold < UNKNOWN_SHOP_MIN_GOLD
   const shopPct = (run.lastRoomWasShop ?? false) || nextHasShop || tooPoor ? 0 : pity.shop
+  // 蛇の頭骨 (2026-09-12 本家 Ssserpent Head): ?に入るたび+N G
+  run = { ...run, gold: run.gold + relicBonusSum(run, 'goldPerUnknown') }
+  // 小さな宝箱 (本家 Tiny Chest): ?のN回目は必ず宝箱 (累積確率は触らない)
+  const chestEvery = relicBonusSum(run, 'unknownChestEvery')
+  if (chestEvery > 0) {
+    const n = relicStateOf(run, 'unknownsSinceChest') + 1
+    if (n >= chestEvery) return openTreasure({ ...withRelicState(run, 'unknownsSinceChest', 0), eventId: null })
+    run = withRelicState(run, 'unknownsSinceChest', n)
+  }
   const [roll, rng] = nextInt(run.rng, 0, 99)
   const bump = (hit: 'monster' | 'shop' | 'treasure' | 'event') => ({
     monster: hit === 'monster' ? UNKNOWN_PITY_BASE.monster : pity.monster + UNKNOWN_PITY_BASE.monster,
@@ -609,7 +745,9 @@ export function openShop(run: RunState): RunState { // export はテスト用 (�
     relicId,
     relicPrice: Math.floor(SHOP_RELIC_PRICE * shopPriceRatio(run)), // 会員証
   }
-  return { ...run, rng, shop, phase: 'shop', combat: null, rewardOptions: null }
+  // 行商の食券 (2026-09-12 本家 Meal Ticket): ショップに入るたびHP+N
+  const heal = relicBonusSum(run, 'shopHeal')
+  return { ...run, rng, shop, phase: 'shop', combat: null, rewardOptions: null, hp: Math.min(run.maxHp, run.hp + heal) }
 }
 
 /**
@@ -675,7 +813,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
         uid: `brand_a${run.act}_r${run.row}_${i}`,
         def: BRAND_DEF,
       }))
-      next = { ...next, deck: [...next.deck, ...brands] }
+      next = addCardsToRunDeck(next, brands) // 厄除けの札・黒曜の護符 (2026-09-12) はここで受ける
     }
     if (o.timedCurses) {
       // 仮初の烙印 (2026-09-02 StS2 Guilty式): 烙印と同じ滞留HP-1だが5戦で自然消滅する中間対価
@@ -684,7 +822,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
         def: GUILT_DEF,
         expiresAfterBattles: 5,
       }))
-      next = { ...next, deck: [...next.deck, ...guilts] }
+      next = addCardsToRunDeck(next, guilts)
     }
   }
   applyOutcome(choice)
@@ -696,20 +834,15 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     for (let i = 0; i < choice.addRandomCards && pool.length > 0; i++) {
       const [idx, r1] = nextInt(rng, 0, pool.length - 1)
       rng = r1
-      next = {
-        ...next,
-        deck: [...next.deck, { uid: `event_a${run.act}_r${run.row}_${i}_${pool[idx].id}`, def: pool[idx] }],
-      }
+      next = addCardsToRunDeck(next, [{ uid: `event_a${run.act}_r${run.row}_${i}_${pool[idx].id}`, def: pool[idx] }]) // 卵 (2026-09-12) はここで乗る
     }
   }
   if (choice.relic) {
-    // イベントのレリックは C/U/R から抽選 (2026-09-03 本家式。boss/shop 層は出ない)
+    // イベントのレリックは event 層を優先し、無ければ C/U/R (2026-09-03 本家式。boss/shop 層は出ない。2026-09-12 event 層)
     const [drawn, rE] = drawRelicOptions({ ...next, rng }, 'event', 1)
     rng = rE
     const relicId = drawn[0]
-    if (relicId !== undefined) {
-      next = withRelicGainBrands(applyRelicBonus({ ...next, relics: [...next.relics, relicId] }, relicId), run)
-    }
+    if (relicId !== undefined) next = gainRelic(next, relicId)
   }
   if (choice.removeCard) {
     const card = next.deck[cardIndex ?? -1]
@@ -729,17 +862,8 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     // 同レアリティ固定なので、レア3%の希少性を迂回する経路にはならない
     const card = next.deck[cardIndex ?? -1]
     if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
-    const rarity = card.def.rarity ?? 'common'
-    const pool = rewardPool(run).filter((c) => (c.rarity ?? 'common') === rarity && c.id !== card.def.id)
-    if (pool.length > 0) {
-      const [idx, r1] = nextInt(rng, 0, pool.length - 1)
-      rng = r1
-      const replacement: CardInstance = {
-        uid: `trans_a${run.act}_r${run.row}_${pool[idx].id}`,
-        def: pool[idx],
-      }
-      next = { ...next, deck: next.deck.map((c, i) => (i === cardIndex ? replacement : c)) }
-    }
+    next = transformCardAt({ ...next, rng }, cardIndex ?? -1, false)
+    rng = next.rng
   }
   if (choice.duplicateCard) {
     // 複製 (本家 Duplicator): 同じ def が1枚増える。uid は一意にする
@@ -772,7 +896,78 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     applyOutcome(roll < choice.gamble.chance * 1000 ? choice.gamble.win : choice.gamble.lose)
   }
   if (next.hp <= 0) return { ...next, rng, hp: 0, phase: 'lost' }
-  return { ...next, rng, phase: 'map' }
+  return enterPendingChoice({ ...next, rng, phase: 'map' }, 'map')
+}
+
+/**
+ * デッキの1枚を同レアリティの別札へ変成する (イベントの変成・星読みの盤・古代の匣が共用)。
+ * upgrade=true なら鍛えて入れる (星読みの盤)。卵 (upgradeOnAdd) は変成にも乗る
+ */
+export function transformCardAt(run: RunState, index: number, upgrade: boolean): RunState {
+  const card = run.deck[index]
+  if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+  const rarity = card.def.rarity ?? 'common'
+  const pool = rewardPool(run).filter((c) => (c.rarity ?? 'common') === rarity && c.id !== card.def.id)
+  if (pool.length === 0) return run
+  const [idx, rng] = nextInt(run.rng, 0, pool.length - 1)
+  const eggs = new Set(run.relics.flatMap((id) => getRelicDef(id).bonus?.upgradeOnAdd ?? []))
+  let replacement: CardInstance = { uid: `trans_a${run.act}_r${run.row}_${index}_${pool[idx].id}`, def: pool[idx] }
+  if ((upgrade || eggs.has(replacement.def.type)) && canUpgradeCard(replacement)) replacement = upgradeCard(replacement)
+  return { ...run, rng, deck: run.deck.map((c, i) => (i === index ? replacement : c)) }
+}
+
+/** 取得時に札を選ぶレリックの保留があれば relic-choose フェーズへ入る (無ければそのまま) */
+function enterPendingChoice(run: RunState, resume: RunPhase): RunState {
+  if (run.pendingRelicChoice === undefined) return run
+  return { ...run, phase: 'relic-choose', pendingRelicChoice: { ...run.pendingRelicChoice, resume } }
+}
+
+/**
+ * レリックを取得する唯一の口 (2026-09-12 本家形): B型ボーナス・取得時一回効果・ラン内状態の初期化・呪いの鍵の烙印を
+ * ここで一度だけ適用する。相手 (宝箱・エリート・ボス・ショップ・イベント・発掘・呼び鈴) を問わない。
+ * 取得時に札を選ぶレリック (空の鳥籠・星読みの盤) は pendingRelicChoice を積む = 呼び出し側が enterPendingChoice で phase を切り替える
+ */
+export function gainRelic(run: RunState, relicId: string): RunState {
+  const before = run
+  const def = getRelicDef(relicId)
+  let next: RunState = { ...run, relics: [...run.relics, relicId] }
+  next = applyRelicBonus(next, relicId)
+  next = applyRandomUpgradesOnPickup(next, relicId)
+  const b = def.bonus
+  if ((b?.wingBoots ?? 0) > 0) next = withRelicState(next, 'wingBoots', relicStateOf(next, 'wingBoots') + (b?.wingBoots ?? 0))
+  if ((b?.brandWard ?? 0) > 0) next = withRelicState(next, 'brandWard', relicStateOf(next, 'brandWard') + (b?.brandWard ?? 0))
+  if (def.expiresAfterBattles !== undefined) next = withRelicState(next, `exp_${relicId}`, def.expiresAfterBattles)
+  if (b?.healFullOnPickup === true) next = { ...next, hp: next.maxHp }
+  if (b?.transformBasicsOnPickup === true) {
+    // 古代の匣 (本家 Pandora's Box): 基本札 (打撃・防御) をすべて同レア度の別札へ
+    for (let i = 0; i < next.deck.length; i++) if (isBasicCard(next.deck[i])) next = transformCardAt(next, i, false)
+  }
+  if ((b?.brandsOnPickup ?? 0) > 0) {
+    next = addCardsToRunDeck(
+      next,
+      Array.from({ length: b?.brandsOnPickup ?? 0 }, (_, i) => ({ uid: `brand_relic_${relicId}_a${next.act}_r${next.row}_${i}`, def: BRAND_DEF })),
+    )
+  }
+  if ((b?.relicsOnPickup ?? 0) > 0) {
+    // 呼び鈴 (本家 Calling Bell): 宝箱と同じ層からN個をそのまま受け取る
+    const [drawn, rng] = drawRelicOptions(next, 'chest', b?.relicsOnPickup ?? 0)
+    next = { ...next, rng }
+    for (const id of drawn) next = gainRelic(next, id)
+  }
+  // 呪いの鍵 (取った瞬間は数えない = before の所持で判定)
+  next = withRelicGainBrands(next, before)
+  if ((b?.removeOnPickup ?? 0) > 0 || (b?.transformOnPickup ?? 0) > 0) {
+    next = {
+      ...next,
+      pendingRelicChoice: {
+        relicId,
+        mode: (b?.removeOnPickup ?? 0) > 0 ? 'remove' : 'transform',
+        count: (b?.removeOnPickup ?? 0) > 0 ? (b?.removeOnPickup ?? 0) : (b?.transformOnPickup ?? 0),
+        resume: 'map',
+      },
+    }
+  }
+  return next
 }
 
 export function createRun(
@@ -801,9 +996,10 @@ export function createRun(
   const canSet = allCards.some(
     (c) => leader.colors.includes(c.color) && c.type === 'reaction',
   )
+  // 色ゲート (2026-09-12): リーダーの色に合わない固有レリックは候補列にも入れない
   const [relicQueue, rngAfterRelics] = shuffle(
     rngAfterMap,
-    allRelics.map((r) => r.id).filter((id) => canSet || !SET_RELICS.has(id)),
+    allRelics.filter((r) => relicAllowedForColors(r, leader.colors)).map((r) => r.id).filter((id) => canSet || !SET_RELICS.has(id)),
   )
   return {
     seed,
@@ -944,7 +1140,9 @@ export function createDebugCheckpointRun(
   }
   for (const id of opts.relicIds ?? []) {
     getRelicDef(id) // 未定義なら throw
-    run = applyRelicBonus({ ...run, relics: [...run.relics, id], relicQueue: run.relicQueue.filter((q) => q !== id) }, id)
+    run = gainRelic({ ...run, relicQueue: run.relicQueue.filter((q) => q !== id) }, id)
+    // チェックポイントは選択を挟まない (空の鳥籠・星読みの盤の保留は捨てる)
+    if (run.pendingRelicChoice !== undefined) { const { pendingRelicChoice: _p, ...rest } = run; run = rest }
   }
   const ratio = Math.min(1, Math.max(0.05, opts.hpRatio ?? 1))
   return { ...run, hp: Math.max(1, Math.round(run.maxHp * ratio)) }
@@ -1123,7 +1321,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
         : c,
     )
     .filter((c) => c.expiresAfterBattles === undefined || c.expiresAfterBattles > 0)
-  const next: RunState = {
+  let next: RunState = {
     ...run,
     rng,
     combat,
@@ -1133,6 +1331,16 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     battlesWon: run.battlesWon + 1,
     // 盗みの喪失で負になりうるので0でクランプ
     gold: Math.max(0, run.gold + gained),
+    // 祈りの車輪 (2026-09-12 本家 Prayer Wheel): 通常戦だけカード報酬をもう1組
+    rewardRoundsLeft: !run.currentElite && !isBoss ? relicBonusSum(run, 'extraRewardRounds') : 0,
+  }
+  // 蜥蜴の尾 (2026-09-12): この戦闘で砕けたらランで使用済み
+  if (combat.deathSaveUsed === true) next = withRelicState(next, 'lizardUsed', 1)
+  // 時限レリック (旅の蝋燭 2026-09-12): 勝つたび残り-1・0で所持から消える
+  for (const id of next.relics) {
+    if (getRelicDef(id).expiresAfterBattles === undefined) continue
+    const left = relicStateOf(next, `exp_${id}`) - 1
+    next = left > 0 ? withRelicState(next, `exp_${id}`, left) : { ...withRelicState(next, `exp_${id}`, 0), relics: next.relics.filter((r) => r !== id) }
   }
   // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
   if (run.currentElite || isBoss) {
@@ -1180,13 +1388,10 @@ export { canUpgradeCard, isUpgraded, upgradeCard, upgradeTier }
 function withRelicGainBrands(next: RunState, before: RunState): RunState {
   const brands = before.relics.reduce((a, id) => a + (getRelicDef(id).bonus?.brandOnRelic ?? 0), 0)
   if (brands <= 0) return next
-  return {
-    ...next,
-    deck: [
-      ...next.deck,
-      ...Array.from({ length: brands }, (_, i) => ({ uid: `brand_key_a${next.act}_r${next.row}_${next.relics.length}_${i}`, def: BRAND_DEF })),
-    ],
-  }
+  return addCardsToRunDeck(
+    next,
+    Array.from({ length: brands }, (_, i) => ({ uid: `brand_key_a${next.act}_r${next.row}_${next.relics.length}_${i}`, def: BRAND_DEF })),
+  )
 }
 
 function applyRelicBonus(run: RunState, relicId: string): RunState {
@@ -1249,23 +1454,35 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const cardId = run.rewardOptions[command.index]
       if (cardId === undefined) throw new Error(`不正な報酬指定: ${command.index}`)
       // uid は行番号で一意化 (1行につき1ノードしか訪れないため衝突しない)
-      const card: CardInstance = { uid: `pick_a${run.act}_r${run.row}_${cardId}`, def: getCardDef(cardId) }
-      return advanceActIfBossCleared({
-        ...run,
-        deck: [...run.deck, card],
-        picks: [...run.picks, cardId],
-        rewardOptions: null,
-      })
+      // 2枚目以降の組は uid に組番号を足す (祈りの車輪で同じ札を2度取れる)
+      const round = run.rewardRoundsLeft ?? 0
+      const card: CardInstance = { uid: `pick_a${run.act}_r${run.row}_${cardId}${round > 0 ? `_x${round}` : ''}`, def: getCardDef(cardId) }
+      const picked = addCardsToRunDeck({ ...run, picks: [...run.picks, cardId], rewardOptions: null }, [card]) // 卵 (2026-09-12) はここで乗る
+      // 祈りの車輪 (2026-09-12): 通常戦の報酬をもう1組
+      if (round > 0) return rollRewards({ ...picked, rewardRoundsLeft: round - 1 })
+      return advanceActIfBossCleared(picked)
     }
     case 'SkipReward': {
       if (run.phase !== 'reward') throw new Error('報酬フェーズではない')
-      return advanceActIfBossCleared({ ...run, rewardOptions: null })
+      // 鳴り鉢 (2026-09-12 本家 Singing Bowl): 見送るたび最大HP+N
+      const bowl = relicBonusSum(run, 'skipRewardMaxHp')
+      const skipped: RunState = { ...run, rewardOptions: null, maxHp: run.maxHp + bowl, hp: run.hp + bowl }
+      const round = run.rewardRoundsLeft ?? 0
+      if (round > 0) return rollRewards({ ...skipped, rewardRoundsLeft: round - 1 })
+      return advanceActIfBossCleared(skipped)
     }
     case 'ChooseNode': {
       if (run.phase !== 'map') throw new Error('マップフェーズではない')
       const candidates = nextChoices(run)
-      if (!candidates.includes(command.col)) throw new Error(`進めないノード: ${command.col}`)
-      return enterNode({ ...run, row: run.row + 1, col: command.col })
+      let next = run
+      if (!candidates.includes(command.col)) {
+        // 翼の靴 (2026-09-12 本家 Wing Boots): 線の無い先へ残回数を1つ使って進む
+        if (!wingChoices(run).includes(command.col)) throw new Error(`進めないノード: ${command.col}`)
+        next = withRelicState(next, 'wingBoots', relicStateOf(next, 'wingBoots') - 1)
+      }
+      // 大口の貯金箱 (2026-09-12 本家 Maw Bank): 1行進むたび+N G (ショップで買い物をすると止まる)
+      if (relicStateOf(next, 'mawBroken') === 0) next = { ...next, gold: next.gold + relicBonusSum(next, 'goldPerRow') }
+      return enterNode({ ...next, row: next.row + 1, col: command.col })
     }
     case 'PickRelic': {
       if (run.phase !== 'relic-reward' || run.relicOptions === null) {
@@ -1273,20 +1490,37 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       }
       const relicId = run.relicOptions[command.index]
       if (relicId === undefined) throw new Error(`不正なレリック指定: ${command.index}`)
-      let next: RunState = { ...run, relics: [...run.relics, relicId], relicOptions: null }
-      next = applyRelicBonus(next, relicId)
-      next = applyRandomUpgradesOnPickup(next, relicId)
+      // 取得は gainRelic の一本道 (2026-09-12: B型・取得時一回効果・呪いの鍵・ラン内状態)
+      const next: RunState = gainRelic({ ...run, relicOptions: null }, relicId)
       // ?マスの宝箱はレリックのみでカード報酬は付かない (2026-08-29)。
       // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (afterVictory は必ず combat を渡す)
-      next = withRelicGainBrands(next, run)
       // 黒星の欠片 (2026-09-06): 強個体の3択から残りをもう1つ選べる (relicPicksLeft は afterVictory が立てる)
       const picksLeft = (run.relicPicksLeft ?? 1) - 1
       const remaining = run.relicOptions.filter((id) => id !== relicId)
-      if (run.combat !== null && run.currentElite && picksLeft > 0 && remaining.length > 0) {
-        return { ...next, phase: 'relic-reward', relicOptions: remaining, relicPicksLeft: picksLeft }
+      const after: RunState =
+        run.combat !== null && run.currentElite && picksLeft > 0 && remaining.length > 0
+          ? { ...next, phase: 'relic-reward', relicOptions: remaining, relicPicksLeft: picksLeft }
+          : run.combat === null
+            ? { ...next, relicOptions: null, phase: 'map' }
+            : rollRewards({ ...next, relicPicksLeft: undefined })
+      // 空の鳥籠・星読みの盤: 札を選んでから続きへ
+      return enterPendingChoice(after, after.phase)
+    }
+    case 'RelicChooseCards': {
+      if (run.phase !== 'relic-choose' || run.pendingRelicChoice === undefined) throw new Error('レリックの対象選択フェーズではない')
+      const p = run.pendingRelicChoice
+      const idx = [...new Set(command.indices)]
+      if (idx.length > p.count) throw new Error(`選べるのは${p.count}枚まで`)
+      if (idx.some((i) => run.deck[i] === undefined)) throw new Error('不正な対象指定')
+      let next: RunState = run
+      if (p.mode === 'remove') {
+        if (run.deck.length - idx.length < 5) throw new Error('これ以上デッキを減らせない')
+        next = { ...next, deck: next.deck.filter((_, i) => !idx.includes(i)) }
+      } else {
+        for (const i of idx) next = transformCardAt(next, i, true)
       }
-      if (run.combat === null) return { ...next, relicOptions: null, phase: 'map' }
-      return rollRewards({ ...next, relicPicksLeft: undefined })
+      const { pendingRelicChoice: _p, ...rest } = next
+      return { ...rest, phase: p.resume }
     }
     case 'SkipRelic': {
       if (run.phase !== 'relic-reward') throw new Error('レリック報酬フェーズではない')
@@ -1311,6 +1545,8 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const card = run.deck[command.index]
       if (card === undefined) throw new Error(`不正な強化指定: ${command.index}`)
       if (isUpgraded(card)) throw new Error('すでに鍛えられている')
+      // 融合の鎚 (2026-09-12 本家 Fusion Hammer): 焚き火では鍛えられない
+      if (relicFlag(run, 'noForge')) throw new Error('融合の鎚を持っている間、焚き火では鍛えられない')
       // 2026-08-28 修正: 強化不可札 (上限ランプ) を受理して「+」だけ付ける事故の再発防止。
       // 焚き火の選択権 (4回しかない希少資源) を無言で浪費させない
       if (upgradeTier(card.def) === 'none') {
@@ -1341,10 +1577,15 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const price = workshopFusePrice(run)
       if (run.gold < price) throw new Error(`ゴールドが足りない (合成${price}G・所持${run.gold}G)`)
       const fusedDef = fuseCards(a, b)
-      const fused: CardInstance = { uid: `fused_a${run.act}_r${run.row}_${fusedDef.id}`, def: fusedDef }
+      let fused: CardInstance = { uid: `fused_a${run.act}_r${run.row}_${(run.workshopFusesUsed ?? 0) > 0 ? `${run.workshopFusesUsed}_` : ''}${fusedDef.id}`, def: fusedDef }
+      // 鍛冶の火種 (2026-09-12): 合成した札は鍛えた状態になる (素材の鍛えの引き継ぎとは別口。二重鍛えはしない)
+      if (relicFlag(run, 'fusionUpgraded') && canUpgradeCard(fused)) fused = upgradeCard(fused)
       // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる (2026-09-03 から有料)
       const deck = run.deck.filter((_, i) => i !== command.indexA && i !== command.indexB)
-      return { ...run, deck: [...deck, fused], gold: run.gold - price, phase: 'map' }
+      // 職人の手袋 (2026-09-12): 1回の訪問で 1+N 回合成できる
+      const used = (run.workshopFusesUsed ?? 0) + 1
+      const allowed = 1 + relicBonusSum(run, 'workshopFuses')
+      return { ...run, deck: [...deck, fused], gold: run.gold - price, workshopFusesUsed: used, phase: used < allowed ? 'workshop' : 'map' }
     }
     case 'WorkshopSkip': {
       if (run.phase !== 'workshop') throw new Error('工房フェーズではない')
@@ -1353,8 +1594,32 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
     case 'CampfireRemove': {
       if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
       // 2026-09-03 ユーザー裁定「焚き火での除去を削除」: 除去はショップ専売 (50G+逓増) = ゴールドシンクへ一本化。
-      // コマンド型は旧セーブ/ジャーナル互換のため残し、常に拒否する
-      throw new Error('焚き火では除去できない (除去はショップのみ。焚き火は 休む/鍛える の二択)')
+      // 唯一の例外 = 安らぎの煙管 (2026-09-12 本家 Peace Pipe。レリック限定の第3選択肢。休む/鍛えると排他)
+      if (!relicFlag(run, 'campfireRemove')) throw new Error('焚き火では除去できない (除去はショップのみ。焚き火は 休む/鍛える の二択)')
+      if ((run.campfireUpgradesUsed ?? 0) > 0) throw new Error('この焚き火ではもう鍛えた (取り除くのは休む/鍛えると排他)')
+      const card = run.deck[command.index]
+      if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
+      if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
+      return { ...run, deck: run.deck.filter((_, i) => i !== command.index), phase: 'map' }
+    }
+    case 'CampfireDig': {
+      if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      // 発掘の鶴嘴 (2026-09-12 本家 Shovel): レリックを1個掘る (宝箱と同じ層。休む/鍛えると排他)
+      if (!relicFlag(run, 'campfireDig')) throw new Error('発掘の鶴嘴が無い')
+      if ((run.campfireUpgradesUsed ?? 0) > 0) throw new Error('この焚き火ではもう鍛えた (発掘は休む/鍛えると排他)')
+      const [drawn, rng] = drawRelicOptions(run, 'chest', 1)
+      let next: RunState = { ...run, rng, phase: 'map' }
+      const id = drawn[0]
+      if (id !== undefined) next = gainRelic(next, id)
+      return enterPendingChoice(next, 'map')
+    }
+    case 'CampfireTrain': {
+      if (run.phase !== 'campfire') throw new Error('焚き火フェーズではない')
+      // 重石 (2026-09-12 本家 Girya): 鍛錬=以後の戦闘開始時の成長+1 (N回まで。休む/鍛えると排他)
+      const opt = campfireOptions(run)
+      if (opt.trainLeft <= 0) throw new Error('鍛錬できない (重石が無いか、もう鍛錬し尽くした)')
+      if ((run.campfireUpgradesUsed ?? 0) > 0) throw new Error('この焚き火ではもう鍛えた (鍛錬は休む/鍛えると排他)')
+      return { ...withRelicState(run, 'train', relicStateOf(run, 'train') + 1), phase: 'map' }
     }
     case 'ShopBuyCard': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
@@ -1363,30 +1628,33 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (item.sold === true) throw new Error('その商品は売り切れ')
       if (run.gold < item.price) throw new Error(`ゴールドが足りない (${item.price}G)`)
       const card: CardInstance = { uid: `buy_a${run.act}_r${run.row}_${item.id}`, def: getCardDef(item.id) }
-      return {
-        ...run,
-        gold: run.gold - item.price,
-        deck: [...run.deck, card],
-        picks: [...run.picks, item.id],
-        // index を詰めない = 売切マーク (2026-08-31 黒ラン: 連続購入で別商品を掴んだ事故)
-        shop: {
-          ...run.shop,
-          cards: run.shop.cards.map((c, i) => (i === command.index ? { ...c, sold: true } : c)),
-        },
-      }
+      return addCardsToRunDeck(
+        breakMawBank({
+          ...run,
+          gold: run.gold - item.price,
+          picks: [...run.picks, item.id],
+          // index を詰めない = 売切マーク (2026-08-31 黒ラン: 連続購入で別商品を掴んだ事故)
+          shop: {
+            ...run.shop,
+            cards: run.shop.cards.map((c, i) => (i === command.index ? { ...c, sold: true } : c)),
+          },
+        }),
+        [card], // 卵 (2026-09-12) はここで乗る
+      )
     }
     case 'ShopBuyRelic': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
       if (run.shop.relicId === null) throw new Error('レリックの在庫がない')
       if (run.gold < run.shop.relicPrice) throw new Error(`ゴールドが足りない (${run.shop.relicPrice}G)`)
       const relicId = run.shop.relicId
-      let next: RunState = {
-        ...run,
-        gold: run.gold - run.shop.relicPrice,
-        relics: [...run.relics, relicId],
-        shop: { ...run.shop, relicId: null },
-      }
-      next = applyRelicBonus(next, relicId)
+      let next: RunState = gainRelic(
+        breakMawBank({
+          ...run,
+          gold: run.gold - run.shop.relicPrice,
+          shop: { ...run.shop, relicId: null },
+        }),
+        relicId,
+      )
       // 会員証をその店で買ったら、まだ売れていない在庫もその場で値下げする (2026-09-05 Opusラン Q: 「全価格が半額」の文言と在庫据え置きの矛盾)
       const ratio = getRelicDef(relicId).bonus?.shopPriceRatio
       if (ratio !== undefined && ratio !== 1 && next.shop !== null) {
@@ -1395,7 +1663,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
           shop: { ...next.shop, cards: next.shop.cards.map((c) => (c.sold === true ? c : { ...c, price: Math.floor(c.price * ratio) })) },
         }
       }
-      return withRelicGainBrands(next, run)
+      return enterPendingChoice(next, 'shop')
     }
     case 'ShopRemove': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
@@ -1404,12 +1672,12 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const card = run.deck[command.index]
       if (card === undefined) throw new Error(`不正な除去指定: ${command.index}`)
       if (run.deck.length <= 5) throw new Error('これ以上デッキを減らせない')
-      return {
+      return breakMawBank({
         ...run,
         gold: run.gold - price,
         deck: run.deck.filter((_, i) => i !== command.index),
         removalCount: (run.removalCount ?? 0) + 1,
-      }
+      })
     }
     case 'ShopUpgrade': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
@@ -1422,12 +1690,12 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       if (upgradeTier(card.def) === 'none') {
         throw new Error(`${card.def.name} は鍛えられない (エナジー上限を上げる札は強化対象外)`)
       }
-      return {
+      return breakMawBank({
         ...run,
         gold: run.gold - price,
         deck: run.deck.map((c, i) => (i === command.index ? upgradeCard(c) : c)),
         upgradeCount: (run.upgradeCount ?? 0) + 1,
-      }
+      })
     }
     case 'ShopLeave': {
       if (run.phase !== 'shop') throw new Error('ショップではない')

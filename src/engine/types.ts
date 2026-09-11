@@ -148,6 +148,10 @@ export interface PlayerState extends CombatantState {
   readonly perfectBlockLastPhase?: boolean
   /** 反復トークン (青: 呪文コピー)。次に唱える呪文の効果を2回解決する。自ターン終了時にリセット (勢いと同じ持続則 = 敵フェーズに得た分は次の自ターンまで持つ) */
   readonly spellEchoes: number
+  /** アーティファクト (時計仕掛けの土産 2026-09-12): 状態異常の付与をN回弾く (弱体・脆弱・虚弱・拘束・霞み・重り。負傷・火傷・がらくたは札なので弾かない) */
+  readonly artifact?: number
+  /** このターン (自ターン開始〜次の自ターン開始) に敵の攻撃で失ったHPの累計 (脈打つ欠片=1ターンの損失上限の参照) */
+  readonly hpLostThisTurn?: number
 }
 
 export interface EnemyState extends CombatantState {
@@ -309,6 +313,14 @@ export interface EffectCondition {
   readonly lastActionNoHpLoss?: boolean
   /** このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn>0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W) */
   readonly healedThisTurn?: boolean
+  /** 戦闘のターン番号がちょうどNなら (角の留め具=T2・舵輪=T3・石の暦=T7。本家の「T2/T3 発火」型 2026-09-12) */
+  readonly turn?: number
+  /** 自分のブロックが0なら (山銅の板=本家 Orichalcum。onTurnEnd で読む) */
+  readonly blockZero?: boolean
+  /** このターンに攻撃札を1枚もプレイしていなければ (兵法書=本家 Art of War) */
+  readonly noAttackThisTurn?: boolean
+  /** このターンの実プレイ枚数がN枚以下なら (懐中時計=本家 Pocketwatch) */
+  readonly maxPlaysThisTurn?: number
 }
 
 /**
@@ -369,6 +381,34 @@ export interface GameState {
   readonly energyMaxRefBonus?: number
   /** C型レリック (収穫の鎌 2026-09-03): 成長放出のあと成長がN残る */
   readonly harvestKeep?: number
+  // ---- レリック本家形 (2026-09-12 docs/relic-analysis-2026-09-12.md)。すべて旧セーブに無いので optional ----
+  /** 次の自ターン開始時に追加でドロー/一時マナ/ブロック (百年の謎かけ・兵法書・自ら固まる粘土。適用したら消える) */
+  readonly nextTurnDraw?: number
+  readonly nextTurnEnergy?: number
+  readonly nextTurnBlock?: number
+  /** C型: 手札を捨てない (ルーンの角錐。火傷の1回きり・衝動の失効は従来どおり) */
+  readonly retainHand?: boolean
+  /** C型: 余ったエナジーを次の自ターンへ持ち越す (溶けない氷菓) */
+  readonly energyCarry?: boolean
+  /** C型: 自ターン開始時にブロックをN持ち越す (頑丈な留め具) */
+  readonly blockKeep?: number
+  /** C型: X札の X に+N (増幅の薬。支払いは増えない) */
+  readonly xBonus?: number
+  /** C型: 敵の攻撃の各ヒットのHP損失-N (重金の棒。最低0) */
+  readonly hpLossReduce?: number
+  /** C型: 敵の攻撃の1ヒットの未ブロック分がN以下なら1になる (古い門柱=本家 Torii) */
+  readonly smallHitToOne?: number
+  /** C型: 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片=StS2 Beating Remnant。免疫は作らない裁定の器) */
+  readonly maxHpLossPerTurn?: number
+  /** C型: 致死ダメージを1度だけ耐えて最大HPの半分で立つ (蜥蜴の尾。ランで1度 = run 層が deathSaveUsed を読んで以後注入しない) */
+  readonly deathSave?: boolean
+  readonly deathSaveUsed?: boolean
+  /** C型: 1ターンにプレイできる枚数の上限 (天鵞絨の首輪=6。拘束の3と併存=小さい方) */
+  readonly playCap?: number
+  /** C型: 敵の意図を表示しない (ルーンの円蓋。エンジンの宣言・分岐・確認ウィンドウは不変 = 表示層だけが隠す) */
+  readonly hideIntents?: boolean
+  /** C型: 烙印をプレイできる (青い蝋燭: 0E・HP-1・消滅) */
+  readonly brandsPlayable?: boolean
 }
 
 // ============================================================
@@ -548,6 +588,10 @@ export type GameEvent =
   | { readonly type: 'ReactionWhiffed'; readonly cardId: string } // 空振り (伏せは無期限持続が現ルール)
   | { readonly type: 'SetCardDestroyed'; readonly cardId: string } // 伏せ破壊型の仕事
   | { readonly type: 'EnemyPhaseEnded'; readonly turn: number } // 空振り計上などのフック点
+  | { readonly type: 'DeckShuffled' } // 山札の切り直し (onShuffle の発火点 2026-09-12)
+  | { readonly type: 'EnemyDied'; readonly enemyIndex: number } // 敵が倒れた (onEnemyDied の発火点。分裂・残機は倒れた後に別個体として出る)
+  | { readonly type: 'DeathSaved'; readonly hp: number } // 蜥蜴の尾: 致死を1度だけ耐えた
+  | { readonly type: 'PlayerArtifactBlocked'; readonly status: string } // 時計仕掛けの土産: プレイヤー側のアーティファクトが状態異常を1回弾いた
   | { readonly type: 'CombatEnded'; readonly result: 'won' | 'lost' }
 
 // ============================================================
@@ -612,8 +656,21 @@ export interface DeclarativeEffect {
     | 'onGrowthGained' // 成長を得るたび (緑の接着剤 2026-09-02: 棘葉の茂み。addGrowth/doubleGrowth の加算のたび。再入は1段で止める)
     | 'onMomentumGained' // 勢いを得るたび (緑の接着剤 2026-09-02: 風渡り。addMomentum/doubleMomentum の加算のたび)
     | 'onSelfExhausted' // 亡骸効果 (黒 2026-08-31): この札が「プレイ以外の経路」(ミル・消滅コスト・衝動失効) で消滅した時。プレイして消滅した場合は発火しない (onPlayが仕事を終えているため)
+    | 'onTurnEnd' // 自ターン終了時 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦。TurnEnded の直後・勢いのリセットより前に発火)
+    | 'onShuffle' // 山札を切り直すたび (日時計・算盤。DeckShuffled の発火点)
+    | 'onEnemyDied' // 敵が倒れるたび (小鬼の角笛。プレイヤーの与ダメ・延焼ティックのどちらでも。逃走は倒れていない)
+    | 'onDamageTaken' // 敵の攻撃でHPを失った後 (百年の謎かけ・自ら固まる粘土・ルーンの立方体。HP損失0なら発火しない = onAttacked との差)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
+  /**
+   * N回目の誘発ごとに1回だけ解決する (本家のカウンター型 2026-09-12: 投げ刃の束=攻撃3枚ごと・墨壺=10枚ごと・陽気な花=3ターンごと)。
+   * カウンタは置物インスタンスが持つ (CardInstance.triggerCounts / turnTriggerCounts)。条件 (condition) を満たした誘発だけ数える
+   */
+  readonly every?: number
+  /** every のカウンタの寿命。'turn'=自ターン開始でリセット (1ターンに攻撃3枚)・'combat'=戦闘内累計 (既定) */
+  readonly everyScope?: 'turn' | 'combat'
+  /** 戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ) */
+  readonly once?: 'combat' | 'turn'
   /** ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03) */
   readonly growthMultiplier?: number
   /** 勢いが×Nで乗る (猛進の角=大牙の勢い版。緑 勢いの網 2026-09-04)。dealDamage 専用 */
@@ -709,6 +766,10 @@ export interface DeclarativeEffect {
     | 'dischargeMomentumVolley' // 連なる角 (緑 2026-09-04 裁定B): 勢いを全て失い、勢い×amount のダメージを volleyHits 回 (装甲=1ヒット上限への勢いの答え)
     | 'momentumCarryHalf' // 疾風の王 (緑レア置物 2026-09-05): この置物がある間、自ターン終了時に勢いの半分 (切り捨て) を次のターンへ持ち越す (常在。トリガー解決では何もしない)
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
+    | 'drawCardsNextTurn' // 次の自ターンの開始時にX枚多くドロー (百年の謎かけ・懐中時計 2026-09-12。GameState.nextTurnDraw に積む)
+    | 'gainEnergyNextTurn' // 次の自ターンの開始時に一時マナ+X (兵法書)
+    | 'gainBlockNextTurn' // 次の自ターンの開始時にブロック+X (自ら固まる粘土)
+    | 'gainBlockPerHandCard' // 手札の枚数×X のブロック (外套の留め金=本家 Cloak Clasp)
     | 'drawCards'
     | 'script'
   readonly amount?: number
@@ -904,6 +965,10 @@ export interface CardInstance {
    * (2026-08-26。確定済みルール表「置物数参照」)。パッシブが召喚したトークンは生得ではない。
    */
   readonly innate?: boolean
+  /** every/once の誘発カウンタ (戦闘内累計。キーは効果の添字。置物インスタンスだけが持つ 2026-09-12) */
+  readonly triggerCounts?: Readonly<Record<string, number>>
+  /** every/once の誘発カウンタ (ターン内。自ターン開始でリセット) */
+  readonly turnTriggerCounts?: Readonly<Record<string, number>>
 }
 
 export type EnemyArchetype =
@@ -1218,6 +1283,13 @@ export interface RelicDef {
   readonly actMax?: number
   /** この幕以降でしか候補に出ない (2026-09-09 黒星の欠片。早く取るほど増分が乗算する代償なしボスレリックの供給側の絞り) */
   readonly actMin?: number
+  /**
+   * 色ゲート (2026-09-12 本家のキャラ固有レリック): リーダーの色アイデンティティにこの色が1つでも含まれる時だけ候補列に入る。
+   * 省略=全リーダー。凍結色の固有レリックは解凍時に刷る (緑ランの検証を汚さない)
+   */
+  readonly colors?: readonly CardColor[]
+  /** 時限レリック (旅の蝋燭 2026-09-12 StS2 の消耗型): 戦闘に勝つたび残り-1・0で所持から消える (run.relicState に残数) */
+  readonly expiresAfterBattles?: number
   /** A型: 戦闘開始時に不可視の置物として注入される宣言的効果 */
   readonly effects?: readonly DeclarativeEffect[]
   /** B型: ラン定数の恒久変更 */
@@ -1256,6 +1328,51 @@ export interface RelicDef {
     readonly goldMultiplier?: number
     /** ショップ除去の逓増幅に加算 (除去の鑿=-25 で +50→+25) */
     readonly removalStepDelta?: number
+    // ---- レリック本家形 (2026-09-12 docs/relic-analysis-2026-09-12.md §3) ----
+    /** マップを1行進むたび+N G。ショップで何か買うと止まる (大口の貯金箱=本家 Maw Bank。relicState.mawBroken) */
+    readonly goldPerRow?: number
+    /** ?に入るたび+N G (蛇の頭骨=本家 Ssserpent Head) */
+    readonly goldPerUnknown?: number
+    /** ?のN回目は必ず宝箱 (小さな宝箱=本家 Tiny Chest。relicState.unknownsSinceChest) */
+    readonly unknownChestEvery?: number
+    /** ショップに入るたびHP+N (行商の食券=本家 Meal Ticket) */
+    readonly shopHeal?: number
+    /** 焚き火に「発掘」(レリック1個) が出る (発掘の鶴嘴=本家 Shovel) */
+    readonly campfireDig?: boolean
+    /** 焚き火に「取り除く」が出る (安らぎの煙管=本家 Peace Pipe。除去はショップ専売の裁定の唯一の例外=レリック限定) */
+    readonly campfireRemove?: boolean
+    /** 焚き火に「鍛錬」(戦闘開始時の成長+1。N回まで) が出る (重石=本家 Girya。relicState.train) */
+    readonly campfireTrain?: number
+    /** 線の無い先へN回まで進める (翼の靴=本家 Wing Boots。relicState.wingBoots) */
+    readonly wingBoots?: number
+    /** 通常戦の勝利でカード報酬をもうN組 (祈りの車輪=本家 Prayer Wheel) */
+    readonly extraRewardRounds?: number
+    /** カード報酬を見送るたび最大HP+N (鳴り鉢=本家 Singing Bowl) */
+    readonly skipRewardMaxHp?: number
+    /** デッキに加わる札のうちこのタイプは鍛えた状態になる (卵=本家 Molten/Frozen/Toxic Egg) */
+    readonly upgradeOnAdd?: readonly CardType[]
+    /** 取った時に全回復 (行商の菓子=本家 Lee's Waffle) */
+    readonly healFullOnPickup?: boolean
+    /** 取った時にレリックをN個受け取る (呼び鈴=本家 Calling Bell。宝箱と同じ層から) */
+    readonly relicsOnPickup?: number
+    /** 取った時に烙印をN枚受け取る (呼び鈴の代償) */
+    readonly brandsOnPickup?: number
+    /** 取った時にデッキからN枚を選んで取り除く (空の鳥籠=本家 Empty Cage。pendingRelicChoice) */
+    readonly removeOnPickup?: number
+    /** 取った時にデッキからN枚を選んで同レア度の別の札に変え、鍛える (星読みの盤=本家 Astrolabe) */
+    readonly transformOnPickup?: number
+    /** 取った時に基本札 (打撃・防御=スターターの共通札) をすべて同レア度の別の札に変える (古代の匣=本家 Pandora's Box) */
+    readonly transformBasicsOnPickup?: boolean
+    /** 焚き火で鍛えられない (融合の鎚=本家 Fusion Hammer) */
+    readonly noForge?: boolean
+    /** 工房で1回の訪問にN回合成できる (職人の手袋。既定1) */
+    readonly workshopFuses?: number
+    /** 合成した札が鍛えた状態になる (鍛冶の火種) */
+    readonly fusionUpgraded?: boolean
+    /** 烙印 (呪いの烙印・仮初の烙印) を受け取るたび最大HP+N (黒曜の護符=本家 Darkstone Periapt) */
+    readonly maxHpPerBrand?: number
+    /** 次のN回の烙印を無効にする (厄除けの札=本家 Omamori。relicState.brandWard) */
+    readonly brandWard?: number
   }
   /**
    * C型: 戦闘ルールの改変 (少数精鋭)。launchCombat が所持レリックから集計して
@@ -1274,6 +1391,31 @@ export interface RelicDef {
     readonly harvestKeep?: number
     /** 伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す) */
     readonly revealOnSet?: boolean
+    // ---- レリック本家形 (2026-09-12)。GameState の同名フラグへ集計される ----
+    /** 手札を捨てない (ルーンの角錐) */
+    readonly retainHand?: boolean
+    /** 余ったエナジーを次のターンへ持ち越す (溶けない氷菓) */
+    readonly energyCarry?: boolean
+    /** ターン開始時にブロックをN持ち越す (頑丈な留め具) */
+    readonly blockKeep?: number
+    /** X札の X に+N (増幅の薬) */
+    readonly xBonus?: number
+    /** 敵の攻撃の各ヒットのHP損失-N (重金の棒) */
+    readonly hpLossReduce?: number
+    /** 敵の攻撃の1ヒットの未ブロック分がN以下なら1 (古い門柱) */
+    readonly smallHitToOne?: number
+    /** 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片) */
+    readonly maxHpLossPerTurn?: number
+    /** 致死を1度だけ耐える (蜥蜴の尾。ランで1度) */
+    readonly deathSave?: boolean
+    /** 1ターンにプレイできる枚数の上限 (天鵞絨の首輪) */
+    readonly playCap?: number
+    /** 敵の意図を表示しない (ルーンの円蓋) */
+    readonly hideIntents?: boolean
+    /** 烙印をプレイできる (青い蝋燭) */
+    readonly brandsPlayable?: boolean
+    /** 戦闘開始時にアーティファクトN (時計仕掛けの土産) */
+    readonly artifact?: number
   }
 }
 
