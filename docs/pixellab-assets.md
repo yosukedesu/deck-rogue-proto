@@ -307,3 +307,12 @@ PixelLab のタイル生成（Pro の tileset）で「top-down tile, seamless, 3
 
 カードは 412 種。1枚ずつのイラストは最後（ゲートを越えてから）。それまでは枠＋タイプアイコン＋名前で成立させる。
 タイプ別の枠色: 物理=茶／呪文=紫／リアクション=青緑／置物=金。色（緑青赤白黒）は枠の縁取り。
+
+
+## レリック本家形の第1波（2026-09-12）
+
+在庫39→102 に伴う新レリック63個の 32×32。発注書は `docs/pixellab/relics-2026-09-12.json`（説明の原本は `relics-2026-09-12-descriptions.json`）で、
+B7–D18 のレリックと同じ定型（`ancient mine relic, single object centered, muted cream and ink palette` ＋ `TAIL_OBJ`／`NEG_OBJ`。view=side・selective outline・detailed shading）。
+`scripts/art-b7d18.py orders` は `b7d18-*.json` を上書きするので発注書は別名で自前生成し、`node scripts/pixellab.mjs gen` → `art-b7d18.py sheet <scratch> <out> relics` → 判定 → `art-b7d18.py apply` の順。
+判定は63/63採用（B=seed41 を選んだのは15: 増幅の薬・連節棍・鍛冶の火種・融合の鎚・角の留め具・大きな果実・大口の貯金箱・行商の食券・苔むした卵・安らぎの煙管・祈りの車輪・蛇の頭骨・石の暦・頑丈な留め具・旅の蝋燭）。
+教訓: 「hand」「mask」は人型を呼ぶので negative に `person, arm, body`（干からびた手は seed41 が腕、赤面の面は両シードとも面だけで可）。「bank」は豚でなく蛙の口で指定した（B が口を開けた蛙で本家 Maw の意図に近い）。

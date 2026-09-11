@@ -1,0 +1,30 @@
+{
+ "id": "relic_calling_bell__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a small brass handbell with a dark wooden handle, slightly tilted as if just rung, faint sound rings, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, person, hand, text, church",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T20:30:30.090Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-12",
+  "note": ""
+ }
+}

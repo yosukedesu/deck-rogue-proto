@@ -1,0 +1,30 @@
+{
+ "id": "relic_flail__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a short two-section wooden flail joined by a small iron chain, dark polished wood with brass caps, laid diagonally, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, hand, person, weapon blood, text",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T20:11:24.980Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-12",
+  "note": ""
+ }
+}
