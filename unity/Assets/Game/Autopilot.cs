@@ -311,6 +311,19 @@ namespace DeckRogue.Game
             g.Rebuild();
             yield return WaitPresentation();
             yield return Shot(Get("name") ?? ("state-" + phase), 10);
+            // resize=WxH: ウィンドウの大きさを変えて数フレーム待ち、もう1枚 (キャラの足元が地面に着いたままかの確認。2026-09-12)
+            if (Get("resize") != null)
+            {
+                var wh = Get("resize").ToLowerInvariant().Split('x');
+                int rw, rh;
+                if (wh.Length == 2 && int.TryParse(wh[0], out rw) && int.TryParse(wh[1], out rh))
+                {
+                    Screen.SetResolution(rw, rh, false);
+                    for (int i = 0; i < 12; i++) yield return null;
+                    yield return WaitPresentation();
+                    yield return Shot((Get("name") ?? ("state-" + phase)) + "-resized", 10);
+                }
+            }
         }
 
         /// <summary>ランを始めて即 工房の状態に差し替えて撮る (⭐レシピの相手札の光・結果の札)。run 巡回は強個体戦で時間切れになりやすいので単独の口</summary>

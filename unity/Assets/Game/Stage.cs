@@ -677,9 +677,26 @@ namespace DeckRogue.Game
         class StageDriver : MonoBehaviour
         {
             public float ShakeAmp, ShakeT, ShakeDur = 0.3f;
+            int _lastW, _lastH, _settle;
             void LateUpdate()
             {
                 if (_cam == null) return;
+                // ウィンドウの大きさが変わったら、カメラの係数 (_k・_camBase = 描いた時の画面高さで固定していた) を即座に引き直し、
+                // UI の枡 (ProjectFeet の座席→UI 座標) は大きさが2フレーム落ち着いてから作り直す (CanvasScaler の scaleFactor は次のフレームで更新されるので、
+                // 同じフレームで Rebuild すると古い倍率で枡が置かれた)。放置すると UI 座標→舞台の面の写像が旧高さの比率でずれ、
+                // キャラが地面から浮いたり埋まったりした (2026-09-12 ユーザー報告「ウィンドウの大きさを変更するとキャラが浮いたり埋まったり」)
+                int sw = Screen.width, sh = Screen.height;
+                if (sw > 0 && sh > 0 && (sw != _lastW || sh != _lastH))
+                {
+                    bool first = _lastW == 0;
+                    _lastW = sw; _lastH = sh;
+                    if (!first) { LayoutCamera(); _settle = 2; }
+                }
+                else if (_settle > 0 && --_settle == 0)
+                {
+                    LayoutCamera();
+                    if (GameRoot.I != null) GameRoot.I.Rebuild();
+                }
                 if (_waterMat != null) _waterMat.mainTextureOffset = new Vector2(Time.time * 0.02f, Time.time * 0.045f);   // 小川の流れ
                 Vector3 off = Vector3.zero;
                 if (ShakeT > 0f)
