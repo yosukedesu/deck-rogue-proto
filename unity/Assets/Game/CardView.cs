@@ -60,7 +60,7 @@ namespace DeckRogue.Game
             var winIn = UiKit.Pan(win, UiKit.Hex("#20233a"), "night");
             UiKit.Stretch(winIn.rectTransform, 1.5f, 1.5f, 1.5f, 1.5f);
             winIn.raycastTarget = false;
-            var art = Theme.Art("cards", def.Id);
+            var art = Theme.Art("cards", def.Id) ?? ThemeFx.FusedArt(def.Id);   // 工房産は素材2枚の絵を溶かし合わせる (2026-09-11)
             if (art != null)
             {
                 // 80×48 を2倍 (整数倍)。それ以外の寸法でも縦横比を保って収める

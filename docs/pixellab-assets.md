@@ -275,6 +275,12 @@ attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / stea
 - **Unity の差し替え口（同日）**: マップの駒＝32 を 1倍・ボス 2倍（`MapScreen`）／意図＝2倍 64・吹き出しを 68 高に（`BattleScreen`）／レリック＝20→32・84→64（`RunUi.RelicArt`）／コスト玉 `Art/ui/cost_orb.png` 26 ドット×2・宝石 `gem_<rarity>.png` 12×2（`CardView`）／紋章 `crest_<type>` は 32×2／幕2/3の小物 `Art/props/act2_{crystal,minecart,stalactite,roots}`・`act3_{spire,gate,aqueduct,pillar_fallen}`（`Stage.PropTexRaw`＝透明率の検査なし。幕3の小結晶は幕2の絵を共用）／背景の板 `Art/bg/act<N>`（幕2/3も `Stage.BgTex`）／**情景の窓** `RunUi.SceneWindow`（見出しの左に 500×290 の紙の枠、絵は 2倍。焚き火は札を 40px 下げ、ショップの棚と工房のデッキは `RunUi.SceneBottom` から）・イベントは挿絵つきの頁（左に絵・右に名前と本文）／上部バーの左端にリーダーの顔 `Art/leaders/<id>_icon.png` を 2倍。
 - **判定の教訓**: タイルは「穴」「土の塊」「縁つき」が出やすい（act2_dirt は2回とも失敗→幕1の土を暗く灰寄せして派生）。垂れ根は「苔の島」に、鍾乳石は「切り株」に流れる（「上端に付く」「upright/stump を negative」で直る）。倒れた柱は地面を描きたがる（「floating, nothing beneath」）。背景は「月は舞台側で描く」ので描かせない。情景は seed によって上下に黒帯が入る（不採用）。
 
+## 合成札の絵（2026-09-11 ユーザー裁定）
+
+- **計算合成（`fused_<A>__<B>`）＝素材2枚の絵をその場で溶かし合わせる**（`ThemeFx.FusedArt`）: 左半分に素材A・右半分に素材Bを、下36→上44ドットの斜めの継ぎ目で繋ぎ、継ぎ目に1ドットの青緑（マナ）と両脇のほのかな光。決定的・キャッシュ・コストゼロで全ペア（緑だけで約3,700）を賄う。素材の絵が片方でも無い色は紋章のまま。id の照合は engine（`fusion.ts resolveFusedDef`）と同じ貪欲一致＝工房産を素材にした入れ子も辿る。
+- **同名2枚の「真・」化**＝元の絵に青緑の内枠（1ドット）と内側へ薄れる光。
+- **レシピ産（`fusion_*`）＝PixelLab で専用の挿絵**。ただしユーザー「もっと魅力的なレシピが欲しい」＝レシピの作り直しが先（`docs/fusion-recipes-proposal.md`）。絵はレシピ確定後に緑のカードと同じ style で発注。
+
 ## 画面の肌（2026-09-07 決定・デザインカンバス「戦闘画面 作り直し」第5版）
 
 日本一ソフトウェアの絵本調の空気を自作の意匠で: クリーム色の紙（#f4ecd6）に鉛筆の二重線、水彩のにじみ、手書き風の文字（本文 Klee One／名前 Kaisei Decol）、夜の背景は水彩の群青。

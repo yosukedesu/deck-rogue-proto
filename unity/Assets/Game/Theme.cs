@@ -725,12 +725,100 @@ namespace DeckRogue.Game
             return s;
         }
 
+        // ---- 合成札の絵 (2026-09-11 ユーザー裁定「素材2枚の絵をその場で溶かし合わせる」) ----
+
+        static readonly System.Text.RegularExpressions.Regex FusedId = new System.Text.RegularExpressions.Regex("^fused_(.+)__(.+)$");
+        static readonly Color ManaTeal = new Color(0.42f, 0.95f, 0.86f, 1f);
+
+        /// <summary>計算合成 (fused_&lt;A&gt;__&lt;B&gt;) の絵: 素材2枚の 80×48 を斜めの継ぎ目で溶かし合わせる (左=A・右=B・継ぎ目にマナの線)。
+        /// 同名2枚 (真・) は元の絵に青緑の内枠と光。素材の絵が片方でも無ければ null (呼び手は紋章へ)。engine の id 規則 (fusion.ts resolveFusedDef) と同じ貪欲一致で入れ子 (工房産を素材にした札) も辿る。決定的・キャッシュ</summary>
+        public static Sprite FusedArt(string cardId)
+        {
+            if (string.IsNullOrEmpty(cardId) || !cardId.StartsWith("fused_")) return null;
+            string key = "fusedart:" + cardId;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            var m = FusedId.Match(cardId);
+            if (!m.Success) { _cache[key] = null; return null; }
+            string ida = m.Groups[1].Value, idb = m.Groups[2].Value;
+            var a = Theme.Art("cards", ida) ?? FusedArt(ida);
+            var b = Theme.Art("cards", idb) ?? FusedArt(idb);
+            if (a == null || b == null) { _cache[key] = null; return null; }
+            try { s = ida == idb ? TrueForm(a) : Melt(a, b); }
+            catch (Exception e) { Debug.LogWarning("[ThemeFx] 合成札の絵を作れなかった " + cardId + ": " + e.Message); s = null; }
+            _cache[key] = s;
+            return s;
+        }
+
+        static Color[] PixelsOf(Sprite sp, int w, int h)
+        {
+            // スプライトの矩形を w×h に (寸法が違えば最近傍で詰める)
+            var tex = sp.texture; var r = sp.rect;
+            int sw = (int)r.width, sh = (int)r.height;
+            var src = tex.GetPixels((int)r.x, (int)r.y, sw, sh);
+            if (sw == w && sh == h) return src;
+            var outp = new Color[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                    outp[y * w + x] = src[Math.Min(sh - 1, y * sh / h) * sw + Math.Min(sw - 1, x * sw / w)];
+            return outp;
+        }
+
+        static Sprite MakeSprite(Color[] px, int w, int h, string name)
+        {
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+            tex.SetPixels(px); tex.Apply(false, false);
+            var sp = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            sp.name = name;
+            return sp;
+        }
+
+        /// <summary>左=A・右=B。継ぎ目は下 36 → 上 44 の斜線 (1ドットの青緑＋両脇にほのかな光)。「溶け合う」を継ぎ目の1本で言う</summary>
+        static Sprite Melt(Sprite a, Sprite b)
+        {
+            const int w = 80, h = 48;
+            var pa = PixelsOf(a, w, h); var pb = PixelsOf(b, w, h);
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                float xs = 36f + 8f * y / (h - 1f);   // texture 座標 (y=0 が下)
+                for (int x = 0; x < w; x++)
+                {
+                    float d = (x + 0.5f) - xs;
+                    Color c = d < 0f ? pa[y * w + x] : pb[y * w + x];
+                    float ad = Math.Abs(d);
+                    if (ad < 0.75f) c = Color.Lerp(c, ManaTeal, 0.95f);
+                    else if (ad < 1.75f) c = Color.Lerp(c, ManaTeal, 0.45f);
+                    else if (ad < 2.75f) c = Color.Lerp(c, ManaTeal, 0.15f);
+                    px[y * w + x] = c;
+                }
+            }
+            return MakeSprite(px, w, h, "fused:" + a.name + "+" + b.name);
+        }
+
+        /// <summary>真・化 (同名2枚): 元の絵に青緑の内枠 (1ドット) と内側へ薄れる光</summary>
+        static Sprite TrueForm(Sprite a)
+        {
+            int w = (int)a.rect.width, h = (int)a.rect.height;
+            var px = PixelsOf(a, w, h);
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    int inset = Math.Min(Math.Min(x, w - 1 - x), Math.Min(y, h - 1 - y));
+                    float k = inset == 1 ? 0.85f : inset == 2 ? 0.35f : inset == 3 ? 0.12f : 0f;
+                    if (k > 0f) px[y * w + x] = Color.Lerp(px[y * w + x], ManaTeal, k);
+                }
+            return MakeSprite(px, w, h, "true:" + a.name);
+        }
+
         public static Sprite CardArt(string cardId, Color tint)
         {
             string key = "cardart:" + cardId;
             Sprite s;
             if (_cache.TryGetValue(key, out s)) return s;
             s = Theme.Art("cards", cardId);
+            if (s == null) s = FusedArt(cardId);
             if (s == null)
             {
                 const int w = 24, h = 16;
