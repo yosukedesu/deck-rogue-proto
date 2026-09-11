@@ -229,7 +229,6 @@ namespace DeckRogue.Game
             ViewPile = null;
             ViewDeck = false;
             ViewMap = false;
-            Doodles = new Dictionary<int, List<DoodleStroke>>(); DoodleMode = false; DoodlePen = 0;
             SubMode = null;
             if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Play(Rs.Phase == RunPhases.Lost ? "lose" : "win", 0.8f, 0f);
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
@@ -255,6 +254,7 @@ namespace DeckRogue.Game
 
         public void StartRun()
         {
+            Doodles = new Dictionary<int, List<DoodleStroke>>(); DoodleMode = false; DoodlePen = 0;   // 落書きは新しいランで白紙 (ランの間は保持)
             Error = null;
             Notice = null;
             Pending = null;
