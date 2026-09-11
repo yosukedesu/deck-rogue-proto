@@ -1,0 +1,30 @@
+{
+ "id": "act2_minecart__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "an old iron mine cart on small wheels, rusted dark steel with tarnished brass rivets, heaped with ore lumps faintly tinted teal, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, rails, track, tunnel, horse, outer glow, hands",
+  "image_size": {
+   "width": 48,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:43:09.074Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": "錆びた鉄と光る鉱"
+ }
+}

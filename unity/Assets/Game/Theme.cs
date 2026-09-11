@@ -190,14 +190,29 @@ namespace DeckRogue.Game
                 "..-#--#--#--#...", "..-#########-...", "..-----------...", "................", "................", "................", "................", "................", "................" } },
         };
 
-        /// <summary>16px アイコン。差し替えは Resources/Art/icons/<name>.png</summary>
-        public static Sprite Icon(string name)
+        /// <summary>アイコン。差し替えは Resources/Art/icons/<name>.png (PixelLab は 32 ドット。2026-09-11)。
+        /// size を渡すと 32px 未満の置き場では従来の 16px ビットマップを返す (縮小してつぶれたドットを出さない)</summary>
+        public static Sprite Icon(string name, float size = 0f)
         {
+            if (size > 0f && size < 32f) return IconBitmap(name);
             var key = "icon:" + name;
             Sprite s;
             if (_cache.TryGetValue(key, out s)) return s;
             s = Art("icons", name);
-            if (s == null)
+            if (s == null) s = IconBitmap(name);
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>PixelLab の絵があるか (呼び手が整数倍の寸法を選ぶため)</summary>
+        public static bool HasIconArt(string name) { return Art("icons", name) != null; }
+
+        /// <summary>コード描画の 16px アイコン (絵が無い時と、小さく置く時)</summary>
+        public static Sprite IconBitmap(string name)
+        {
+            var key = "iconbmp:" + name;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
             {
                 string[] rows;
                 if (!IconArt.TryGetValue(name, out rows)) rows = IconArt["exposed"];

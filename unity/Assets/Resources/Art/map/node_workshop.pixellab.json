@@ -1,0 +1,30 @@
+{
+ "id": "node_workshop__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a squat iron anvil with a brass cogwheel leaning against its side, dark steel anvil with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, no hammer, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, hammer, sparks, round badge background, circle border",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T06:04:10.526Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

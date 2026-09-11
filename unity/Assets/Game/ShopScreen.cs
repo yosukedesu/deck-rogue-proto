@@ -54,11 +54,12 @@ namespace DeckRogue.Game
             }
 
             RunUi.Heading(root, "ショップ", "カードをクリックで購入。所持金 " + run.Gold + "G");
+            float shelfTop = RunUi.SceneWindow(root, "shop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があれば棚をその下へ
 
             // 棚 (カード)
             // 棚は左端〜右パネルの手前 (画面幅から出す。スマホの 1800 幅では中央固定だと6枚目がパネルに隠れた。2026-09-09)
             var shelf = UiKit.NewRect("shelf", root);
-            UiKit.Anchor(shelf, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -RunUi.TopH - 520f), new Vector2(-480f, -RunUi.TopH - 110f));
+            UiKit.Anchor(shelf, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -shelfTop - 410f), new Vector2(-480f, -shelfTop));
             float rootW = root.rect.width > 0f ? root.rect.width : 1920f;
             float availW = rootW - 40f - 480f;
             int n = shop.Cards.Count;

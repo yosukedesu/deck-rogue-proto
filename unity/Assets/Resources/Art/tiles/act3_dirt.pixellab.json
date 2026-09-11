@@ -1,0 +1,30 @@
+{
+ "id": "act3_dirt__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "black rubble and fine grey ash, crushed dark stone fragments with a few tiny flakes of tarnished brass and dark steel, dusty and cold, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+  "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, plants, glow, warm light, objects, letters",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "high top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:41:02.285Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

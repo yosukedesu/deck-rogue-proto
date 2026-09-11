@@ -1,0 +1,30 @@
+{
+ "id": "act3_spire__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a tall teal mana crystal spire, one tapering faceted blade lit from within, its base clamped by a ring of tarnished brass, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tower, building, castle, windows, cluster, outer glow, halo, hands",
+  "image_size": {
+   "width": 48,
+   "height": 96
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:44:30.440Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "歯車の台座"
+ }
+}

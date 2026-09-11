@@ -1,0 +1,30 @@
+{
+ "id": "act2_stone__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "old way-station paving of uneven flagstones, worn grey-blue slabs of different sizes with dark ink mortar gaps and a little moss in the cracks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+  "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, brick wall, side view, grass, objects, letters",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "high top-down",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:39:55.427Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": "A は白すぎる"
+ }
+}

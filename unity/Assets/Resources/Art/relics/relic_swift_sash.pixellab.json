@@ -1,0 +1,30 @@
+{
+ "id": "relic_swift_sash__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a folded cloth sash of moss green with honey-colored trim and a small tarnished brass buckle, both ends fluttering as if in wind, a faint teal spark at one end, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, waist, body, wearing, person",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:45:06.387Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

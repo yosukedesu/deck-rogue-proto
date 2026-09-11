@@ -1,0 +1,30 @@
+{
+ "id": "intent_attack__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a short sword slashing diagonally down to the left, bold thick silhouette, dusty rose blade with a cream edge highlight and a small brass crossguard, dark ink outline, flat pixel art intent icon for an enemy attack, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, blood, two swords, upright sword",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:53:53.403Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

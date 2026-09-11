@@ -1,0 +1,30 @@
+{
+ "id": "counter__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a single thick arrow curling back in a tight U-turn, its tip pointing left after the bend, muted teal fill with a cream highlight, thick dark ink outline, flat bold pixel art status icon for a counterattack, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sword, shield, plate, two arrows, straight arrow, circular arrows",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:50:35.158Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

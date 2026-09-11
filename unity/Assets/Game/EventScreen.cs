@@ -45,15 +45,29 @@ namespace DeckRogue.Game
             var panel = UiKit.Frame(root, Theme.Panel, Color.white, "event", 3f);
             UiKit.Anchor(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-520f, -panelH / 2f), new Vector2(520f, panelH / 2f + 20f));
             var prt = panel.rectTransform;
-            var icon = UiKit.Icon(prt, "question", 64f);
-            icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0f, 1f);
-            icon.rectTransform.anchoredPosition = new Vector2(60f, -60f);
+            // 情景の絵 (Art/scenes/event.png 240×135 を 2倍) があれば挿絵つきの頁に: 左に絵、右に名前と本文 (2026-09-11)
+            var sceneArt = Theme.Art("scenes", "event");
+            float textX = 40f;
+            if (sceneArt != null)
+            {
+                var sc = new GameObject("scene", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+                sc.transform.SetParent(prt, false);
+                sc.sprite = sceneArt; sc.preserveAspect = true; sc.raycastTarget = false;
+                UiKit.Anchor(sc.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(40f, -40f - 270f), new Vector2(40f + 480f, -40f));
+                textX = 40f + 480f + 30f;
+            }
+            else
+            {
+                var icon = UiKit.Icon(prt, "question", 64f);
+                icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0f, 1f);
+                icon.rectTransform.anchoredPosition = new Vector2(60f, -60f);
+            }
             var name = UiKit.Deco(prt, def.Name, 34, UiKit.ColInk, TextAnchor.MiddleLeft);
-            UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(110f, -100f), new Vector2(-30f, -24f));
+            UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(sceneArt != null ? textX : 110f, -100f), new Vector2(-30f, -24f));
             var flavor = UiKit.Txt(prt, def.Flavor, 18, UiKit.ColInk, TextAnchor.UpperLeft);
             flavor.textWrappingMode = TextWrappingModes.Normal;
             flavor.lineSpacing = 8f;
-            UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -330f), new Vector2(-40f, -120f));
+            UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textX, -330f), new Vector2(-40f, -120f));
 
             var list = UiKit.NewRect("choices", prt);
             UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, 30f), new Vector2(-40f, -350f));

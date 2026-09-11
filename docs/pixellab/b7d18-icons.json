@@ -1,0 +1,1697 @@
+{
+ "_note": "B7–D18 の発注書 (icons)。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す",
+ "items": [
+  {
+   "id": "sword__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/sword__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short straight sword pointing up, dark steel blade with a dusty rose tint and a cream edge highlight, small brass crossguard, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, blood, shield, dagger",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "sword__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/sword__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short straight sword pointing up, dark steel blade with a dusty rose tint and a cream edge highlight, small brass crossguard, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, blood, shield, dagger",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "shield__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/shield__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a tall rounded kite shield seen straight on, muted sky blue front with a cream highlight stripe and a thin brass rim, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, heraldry, sword, arm, round shield",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "shield__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/shield__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a tall rounded kite shield seen straight on, muted sky blue front with a cream highlight stripe and a thin brass rim, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, heraldry, sword, arm, round shield",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "heart__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/heart__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a plump rounded heart shape, muted brick red fill with one soft cream highlight near the top, thick dark ink outline, flat bold pixel art status icon for health, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, anatomical heart, veins, arrow, wings, cross mark",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "heart__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/heart__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a plump rounded heart shape, muted brick red fill with one soft cream highlight near the top, thick dark ink outline, flat bold pixel art status icon for health, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, anatomical heart, veins, arrow, wings, cross mark",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "energy__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/energy__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single upright faceted mana crystal shard, six-sided teal gem with a pale cream highlight and a soft glow kept inside the outline, thick dark ink outline, flat bold pixel art status icon for energy, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, flame, lightning bolt, battery, coin, round bead, outer glow, bloom",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "energy__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/energy__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single upright faceted mana crystal shard, six-sided teal gem with a pale cream highlight and a soft glow kept inside the outline, thick dark ink outline, flat bold pixel art status icon for energy, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, flame, lightning bolt, battery, coin, round bead, outer glow, bloom",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "draw__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/draw__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a blank cream paper card sliding up out of a small squared stack of cards, slight tilt, cream fill with a pale sage edge, thick dark ink outline, flat bold pixel art status icon for drawing, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, numbers, suit symbols, playing card pips, writing, smoke",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "draw__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/draw__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a blank cream paper card sliding up out of a small squared stack of cards, slight tilt, cream fill with a pale sage edge, thick dark ink outline, flat bold pixel art status icon for drawing, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, numbers, suit symbols, playing card pips, writing, smoke",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "growth__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/growth__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a young sprout with two round moss green leaves rising from a tiny mound of dark soil, cream highlight on each leaf, thick dark ink outline, flat bold pixel art status icon for growth, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, flower, tree, pot, vine",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "growth__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/growth__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a young sprout with two round moss green leaves rising from a tiny mound of dark soil, cream highlight on each leaf, thick dark ink outline, flat bold pixel art status icon for growth, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, flower, tree, pot, vine",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "momentum__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/momentum__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "three sweeping wind streaks curving to the right like a gust, honey colored strokes tapering to cream tips, no arrowhead, thick dark ink outline, flat bold pixel art status icon for momentum, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arrow, arrowhead, cloud, tornado, leaf, paw print",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "momentum__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/momentum__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "three sweeping wind streaks curving to the right like a gust, honey colored strokes tapering to cream tips, no arrowhead, thick dark ink outline, flat bold pixel art status icon for momentum, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arrow, arrowhead, cloud, tornado, leaf, paw print",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "burn__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/burn__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single upright flame with two small side licks, muted ember orange body with a honey core and a cream highlight, thick dark ink outline, flat bold pixel art status icon for burning, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, logs, campfire, smoke, torch, candle",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "burn__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/burn__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single upright flame with two small side licks, muted ember orange body with a honey core and a cream highlight, thick dark ink outline, flat bold pixel art status icon for burning, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, logs, campfire, smoke, torch, candle",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "exposed__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/exposed__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a round target ring with a cracked center, dusty rose ring around a cream middle split by one jagged dark crack, thick dark ink outline, flat bold pixel art status icon for a weak point, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arrow, crosshair lines, eye, bullseye dots, coin",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "exposed__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/exposed__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a round target ring with a cracked center, dusty rose ring around a cream middle split by one jagged dark crack, thick dark ink outline, flat bold pixel art status icon for a weak point, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arrow, crosshair lines, eye, bullseye dots, coin",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "gold__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/gold__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single round pellet of hardened mana, flat honey colored disc with a small teal glint at the center and a cream rim highlight, thick dark ink outline, flat bold pixel art status icon for gold, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, numbers, engraving, portrait, stack of coins, dollar sign, crystal, facets",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "gold__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/gold__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single round pellet of hardened mana, flat honey colored disc with a small teal glint at the center and a cream rim highlight, thick dark ink outline, flat bold pixel art status icon for gold, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, numbers, engraving, portrait, stack of coins, dollar sign, crystal, facets",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "exhaust__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/exhaust__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pale grey paper card dissolving upward into three wisps of smoke, its top edge fading away, muted grey tones only, thick dark ink outline, flat bold pixel art status icon for a card being exhausted, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, flame, fire, ash pile, skull, stack of cards",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "exhaust__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/exhaust__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pale grey paper card dissolving upward into three wisps of smoke, its top edge fading away, muted grey tones only, thick dark ink outline, flat bold pixel art status icon for a card being exhausted, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, flame, fire, ash pile, skull, stack of cards",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "pierce__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/pierce__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a straight arrow piercing clean through a small round grey shield, cream shaft with a dark steel tip poking out the far side, thick dark ink outline, flat bold pixel art status icon for piercing, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, bow, blood, feathers flying, curved arrow",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "pierce__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/pierce__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a straight arrow piercing clean through a small round grey shield, cream shaft with a dark steel tip poking out the far side, thick dark ink outline, flat bold pixel art status icon for piercing, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, bow, blood, feathers flying, curved arrow",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "skull__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/skull__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small rounded animal skull seen from the front, bone white with pale cream highlights and two dark hollow sockets, no lower jaw, no horns, thick dark ink outline, flat bold pixel art status icon for defeat, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, human skull, crossbones, teeth grin, pirate, horns",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "skull__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/skull__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small rounded animal skull seen from the front, bone white with pale cream highlights and two dark hollow sockets, no lower jaw, no horns, thick dark ink outline, flat bold pixel art status icon for defeat, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, human skull, crossbones, teeth grin, pirate, horns",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crown__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crown__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a simple three-pointed crown, honey gold with a cream highlight along the top edge and one small teal gem on the middle point, thick dark ink outline, flat bold pixel art status icon for a boss, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, head, king, cushion, plinth",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crown__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crown__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a simple three-pointed crown, honey gold with a cream highlight along the top edge and one small teal gem on the middle point, thick dark ink outline, flat bold pixel art status icon for a boss, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, head, king, cushion, plinth",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "hammer__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/hammer__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a stout smith's hammer standing upright on its short wooden handle, tarnished brass hammerhead with a cream highlight on the striking end, thick dark ink outline, flat bold pixel art status icon for forging, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, anvil, sparks, gavel, arm",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "hammer__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/hammer__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a stout smith's hammer standing upright on its short wooden handle, tarnished brass hammerhead with a cream highlight on the striking end, thick dark ink outline, flat bold pixel art status icon for forging, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, anvil, sparks, gavel, arm",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "question__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/question__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a large bold question mark symbol, cream core with a soft teal glow kept inside the outline, thick dark ink outline, flat bold pixel art status icon for the unknown, centered, nothing else, empty transparent background, no other symbols, no words, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, words, sentences, multiple symbols, exclamation mark",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "question__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/question__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a large bold question mark symbol, cream core with a soft teal glow kept inside the outline, thick dark ink outline, flat bold pixel art status icon for the unknown, centered, nothing else, empty transparent background, no other symbols, no words, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, words, sentences, multiple symbols, exclamation mark",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "chest__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/chest__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, cream highlight on the lid, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, open lid, coins, gems spilling, lock keyhole, cogwheel, flat square box",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "chest__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/chest__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, cream highlight on the lid, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, open lid, coins, gems spilling, lock keyhole, cogwheel, flat square box",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "flag__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/flag__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small triangular pennant flag fluttering to the right on a short dark pole, dusty rose cloth with a cream highlight stripe, thick dark ink outline, flat bold pixel art status icon for a goal, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, national flag, stripes pattern, arm",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "flag__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/flag__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small triangular pennant flag fluttering to the right on a short dark pole, dusty rose cloth with a cream highlight stripe, thick dark ink outline, flat bold pixel art status icon for a goal, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, national flag, stripes pattern, arm",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "map__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/map__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a partly unrolled parchment scroll, cream paper between two wooden roller ends with a faint dotted sage path drawn across it, thick dark ink outline, flat bold pixel art status icon for a map, centered, nothing else, empty transparent background, no writing, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, writing, compass rose, X mark, playing card",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "map__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/map__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a partly unrolled parchment scroll, cream paper between two wooden roller ends with a faint dotted sage path drawn across it, thick dark ink outline, flat bold pixel art status icon for a map, centered, nothing else, empty transparent background, no writing, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, writing, compass rose, X mark, playing card",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "star__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/star__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a plump five-pointed star, honey gold fill with a cream highlight on the upper left point, thick dark ink outline, flat bold pixel art status icon for rarity, centered, nothing else, empty transparent background, no text, no sparkles, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sparkles, multiple stars, glow rays",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "star__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/star__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a plump five-pointed star, honey gold fill with a cream highlight on the upper left point, thick dark ink outline, flat bold pixel art status icon for rarity, centered, nothing else, empty transparent background, no text, no sparkles, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sparkles, multiple stars, glow rays",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "counter__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/counter__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single thick arrow curling back in a tight U-turn, its tip pointing left after the bend, muted teal fill with a cream highlight, thick dark ink outline, flat bold pixel art status icon for a counterattack, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sword, shield, plate, two arrows, straight arrow, circular arrows",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "counter__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/counter__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single thick arrow curling back in a tight U-turn, its tip pointing left after the bend, muted teal fill with a cream highlight, thick dark ink outline, flat bold pixel art status icon for a counterattack, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sword, shield, plate, two arrows, straight arrow, circular arrows",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "set__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/set__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an open square wooden box with its flat lid flipped up, a brass cogwheel and a coiled spring inside, muted teal glow kept inside the box, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, robot, doll, clock face, key, outer glow, domed lid, treasure chest",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "set__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/set__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an open square wooden box with its flat lid flipped up, a brass cogwheel and a coiled spring inside, muted teal glow kept inside the box, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, robot, doll, clock face, key, outer glow, domed lid, treasure chest",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_physical__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_physical__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a crossed axe and pickaxe emblem, simple ink line drawing filled with flat cream paper color and a single muted sand tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, shading, gradient, metallic shine, second color, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_physical__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_physical__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a crossed axe and pickaxe emblem, simple ink line drawing filled with flat cream paper color and a single muted sand tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, shading, gradient, metallic shine, second color, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_spell__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_spell__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a spiral of mana curling outward from a center dot, simple ink line drawing filled with flat cream paper color and a single muted wisteria tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no letters, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, alphabet, rune, pentagram, shading, gradient, second color, circle with a line",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_spell__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_spell__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a spiral of mana curling outward from a center dot, simple ink line drawing filled with flat cream paper color and a single muted wisteria tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no letters, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, alphabet, rune, pentagram, shading, gradient, second color, circle with a line",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_reaction__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_reaction__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a cogwheel with a coiled spring standing beside it, simple ink line drawing filled with flat cream paper color and a single muted teal tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, box, clock face, shading, gradient, second color",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_reaction__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_reaction__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a cogwheel with a coiled spring standing beside it, simple ink line drawing filled with flat cream paper color and a single muted teal tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, box, clock face, shading, gradient, second color",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_permanent__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_permanent__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small standing lantern on a squat stone pedestal, simple ink line drawing filled with flat cream paper color and a single muted honey tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, outer glow, bloom, shading, gradient, second color, hanging hook, chain",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "crest_permanent__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/crest_permanent__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small standing lantern on a squat stone pedestal, simple ink line drawing filled with flat cream paper color and a single muted honey tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, outer glow, bloom, shading, gradient, second color, hanging hook, chain",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_attack__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_attack__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short sword slashing diagonally down to the left, bold thick silhouette, dusty rose blade with a cream edge highlight and a small brass crossguard, dark ink outline, flat pixel art intent icon for an enemy attack, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, blood, two swords, upright sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_attack__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_attack__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short sword slashing diagonally down to the left, bold thick silhouette, dusty rose blade with a cream edge highlight and a small brass crossguard, dark ink outline, flat pixel art intent icon for an enemy attack, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, blood, two swords, upright sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_defend__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_defend__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a broad round shield seen straight on, bold thick silhouette, muted sky blue front with a cream highlight and a dark steel rim, dark ink outline, flat pixel art intent icon for an enemy defending, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, heraldry, sword, arm, kite shield",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_defend__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_defend__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a broad round shield seen straight on, bold thick silhouette, muted sky blue front with a cream highlight and a dark steel rim, dark ink outline, flat pixel art intent icon for an enemy defending, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, heraldry, sword, arm, kite shield",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_buff__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_buff__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a bold upward arrow with two short chevron marks stacked beneath it, thick silhouette, honey gold fill with a cream highlight, dark ink outline, flat pixel art intent icon for an enemy gaining strength, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, muscle, fist, curved arrow",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_buff__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_buff__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a bold upward arrow with two short chevron marks stacked beneath it, thick silhouette, honey gold fill with a cream highlight, dark ink outline, flat pixel art intent icon for an enemy gaining strength, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, arm, muscle, fist, curved arrow",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_rally__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_rally__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round war drum with a mallet resting across its top, bold thick silhouette, honey colored drum with dark rim bands and a cream highlight, dark ink outline, flat pixel art intent icon for rallying allies, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, drumsticks crossed, music notes, arm",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_rally__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_rally__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round war drum with a mallet resting across its top, bold thick silhouette, honey colored drum with dark rim bands and a cream highlight, dark ink outline, flat pixel art intent icon for rallying allies, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, drumsticks crossed, music notes, arm",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_heal__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_heal__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a plump heart with a small cream cross mark in its center, bold thick silhouette, muted moss green fill with a cream highlight, dark ink outline, flat pixel art intent icon for an enemy healing, centered, nothing else, empty transparent background, no text, no red, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, red, arrow, wings, medical kit",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_heal__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_heal__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a plump heart with a small cream cross mark in its center, bold thick silhouette, muted moss green fill with a cream highlight, dark ink outline, flat pixel art intent icon for an enemy healing, centered, nothing else, empty transparent background, no text, no red, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, red, arrow, wings, medical kit",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_hex__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_hex__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a wide low puddle of purple sludge with three curling wisps of miasma rising, bold thick silhouette, muted wisteria fill with a cream highlight, dark ink outline, flat pixel art intent icon for a cursing enemy, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, skull, cauldron, bubbles, bright neon purple, egg, upright oval",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_hex__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_hex__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a wide low puddle of purple sludge with three curling wisps of miasma rising, bold thick silhouette, muted wisteria fill with a cream highlight, dark ink outline, flat pixel art intent icon for a cursing enemy, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, skull, cauldron, bubbles, bright neon purple, egg, upright oval",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_destroy-set__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_destroy-set__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a square wooden box smashed open, a cogwheel and a broken spring tumbling out of its cracked lid, bold silhouette, muted teal glow inside with dusty rose crack lines, dark ink outline, flat pixel art intent icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, hammer, robot, explosion cloud, outer glow, intact box",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_destroy-set__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_destroy-set__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a square wooden box smashed open, a cogwheel and a broken spring tumbling out of its cracked lid, bold silhouette, muted teal glow inside with dusty rose crack lines, dark ink outline, flat pixel art intent icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, hammer, robot, explosion cloud, outer glow, intact box",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_destroy-token__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_destroy-token__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an empty small iron cage with thick vertical bars, bold thick silhouette, dark steel bars with a dusty rose tint and a cream highlight, dark ink outline, flat pixel art intent icon for hunting a summoned ally, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, creature, bird, lock, chain, birdcage dome",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_destroy-token__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_destroy-token__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an empty small iron cage with thick vertical bars, bold thick silhouette, dark steel bars with a dusty rose tint and a cream highlight, dark ink outline, flat pixel art intent icon for hunting a summoned ally, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, creature, bird, lock, chain, birdcage dome",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_steal-gold__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_steal-gold__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small tied cloth sack with two round honey coins tucked against its side, bold thick silhouette, muted sage sack with a cream highlight, dark ink outline, flat pixel art intent icon for stealing gold, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, dollar sign, numbers on coins, arm, open sack",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_steal-gold__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_steal-gold__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small tied cloth sack with two round honey coins tucked against its side, bold thick silhouette, muted sage sack with a cream highlight, dark ink outline, flat pixel art intent icon for stealing gold, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, dollar sign, numbers on coins, arm, open sack",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_flee__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_flee__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "three round paw prints running to the right with two trailing wind streaks behind them, bold thick silhouette, cream fill with a pale sage tint, dark ink outline, flat pixel art intent icon for fleeing, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, feet, legs, boots, human footprints, shoe prints",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_flee__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_flee__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "three round paw prints running to the right with two trailing wind streaks behind them, bold thick silhouette, cream fill with a pale sage tint, dark ink outline, flat pixel art intent icon for fleeing, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, feet, legs, boots, human footprints, shoe prints",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_mill__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_mill__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a blank cream paper card with a big ragged bite taken out of one corner, bold thick silhouette, muted wisteria tint along the bite edge, dark ink outline, flat pixel art intent icon for devouring the deck, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, teeth, mouth, numbers, suit symbols, smoke",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_mill__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_mill__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a blank cream paper card with a big ragged bite taken out of one corner, bold thick silhouette, muted wisteria tint along the bite edge, dark ink outline, flat pixel art intent icon for devouring the deck, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, teeth, mouth, numbers, suit symbols, smoke",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_rest__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_rest__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small plump pillow with three z-shaped sleep marks floating up from it, bold thick silhouette, muted sky blue pillow with a cream highlight, dark ink outline, flat pixel art intent icon for resting, centered, nothing else, empty transparent background, no other letters, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, eye, nose, mouth, words, sentences, bed, blanket",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_rest__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_rest__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small plump pillow with three z-shaped sleep marks floating up from it, bold thick silhouette, muted sky blue pillow with a cream highlight, dark ink outline, flat pixel art intent icon for resting, centered, nothing else, empty transparent background, no other letters, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, eye, nose, mouth, words, sentences, bed, blanket",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_hatch__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_hatch__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an upright tall egg with a jagged crack down its front and a sliver of teal glow inside, bold silhouette, muted sage shell with a cream highlight, dark ink outline, flat pixel art intent icon for hatching, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, chick, bird, creature, nest, outer glow, puddle, drips",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "intent_hatch__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/icons/intent_hatch__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an upright tall egg with a jagged crack down its front and a sliver of teal glow inside, bold silhouette, muted sage shell with a cream highlight, dark ink outline, flat pixel art intent icon for hatching, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, chick, bird, creature, nest, outer glow, puddle, drips",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "single color black outline",
+   "shading": "basic shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 9
+  },
+  {
+   "id": "node_battle__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_battle__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a crossed axe and pickaxe emblem, chunky rounded shapes with thick fill like a painted map token, dark steel blades on worn wooden handles with cream highlights, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sword, skull, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_battle__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_battle__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a crossed axe and pickaxe emblem, chunky rounded shapes with thick fill like a painted map token, dark steel blades on worn wooden handles with cream highlights, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sword, skull, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_elite__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_elite__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a horned beast skull seen from the front, two curved dark horns, bone white with cream highlights and dark hollow sockets, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, human skull, crossbones, crown, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_elite__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_elite__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a horned beast skull seen from the front, two curved dark horns, bone white with cream highlights and dark hollow sockets, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, human skull, crossbones, crown, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_boss__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_boss__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a five-pointed crown resting on a dark stone plinth split by a glowing teal seam, honey gold crown with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, skull, horns, king, cushion, outer glow, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_boss__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_boss__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a five-pointed crown resting on a dark stone plinth split by a glowing teal seam, honey gold crown with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, skull, horns, king, cushion, outer glow, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_shop__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_shop__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a merchant's balance scale, two hanging pans on a brass beam over a short post, tarnished brass with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, coins, arm, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_shop__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_shop__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a merchant's balance scale, two hanging pans on a brass beam over a short post, tarnished brass with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, coins, arm, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_campfire__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_campfire__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a campfire of three crossed logs with one plump upright flame, muted ember orange with a honey core and cream highlight, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, smoke, pot, tent, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_campfire__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_campfire__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a campfire of three crossed logs with one plump upright flame, muted ember orange with a honey core and cream highlight, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, smoke, pot, tent, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_workshop__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_workshop__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a squat iron anvil with a brass cogwheel leaning against its side, dark steel anvil with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, no hammer, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, hammer, sparks, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_workshop__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_workshop__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a squat iron anvil with a brass cogwheel leaning against its side, dark steel anvil with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, no hammer, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, hammer, sparks, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_unknown__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_unknown__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a big bold question mark symbol, cream paper fill with a soft teal glow kept inside the outline, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no other symbols, no words, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, words, sentences, multiple symbols, exclamation mark, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_unknown__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_unknown__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a big bold question mark symbol, cream paper fill with a soft teal glow kept inside the outline, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no other symbols, no words, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, words, sentences, multiple symbols, exclamation mark, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_treasure__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_treasure__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, open lid, coins, gems spilling, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "node_treasure__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/map/node_treasure__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, open lid, coins, gems spilling, round badge background, circle border",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  }
+ ]
+}

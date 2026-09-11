@@ -353,10 +353,11 @@ namespace DeckRogue.Game
         {
             var rt = NewRect("icon-" + name, parent);
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = Theme.Icon(name);
+            img.sprite = Theme.Icon(name, size);
             img.preserveAspect = true;
             img.raycastTarget = false;
-            img.color = tint.HasValue ? tint.Value : Color.white;
+            bool art = size >= 32f && Theme.HasIconArt(name);   // PixelLab の絵は色を持つので tint は alpha だけ (2026-09-11)
+            img.color = tint.HasValue ? (art ? new Color(1f, 1f, 1f, tint.Value.a) : tint.Value) : Color.white;
             rt.sizeDelta = new Vector2(size, size);
             Le(rt, size, size, size, size);
             return img;

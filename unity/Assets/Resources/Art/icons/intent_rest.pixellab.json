@@ -1,0 +1,30 @@
+{
+ "id": "intent_rest__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a small plump pillow with three z-shaped sleep marks floating up from it, bold thick silhouette, muted sky blue pillow with a cream highlight, dark ink outline, flat pixel art intent icon for resting, centered, nothing else, empty transparent background, no other letters, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, eye, nose, mouth, words, sentences, bed, blanket",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T06:00:45.337Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

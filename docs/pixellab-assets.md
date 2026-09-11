@@ -12,19 +12,19 @@
 | 敵（エリート） | enemies | 80×80（4倍で320px） | 13 | 密度は同じで一回り大きい |
 | 敵（幕ボス） | enemies | 96×96（4倍で384px） | 8 | 密度は同じで大きく。第2形態は色替えで代用 |
 | リーダー（戦闘内ちび） | leaders | **64×64**（4倍で256px） | 15 | 頭身低め（確定済みルール表「絵柄の頭身」）。立ち絵は人間の絵師へ外注 |
-| リーダー（アイコン） | leaders | 32×32 | 15 | `<id>_icon.png`。セットアップ・ラン画面用 |
-| レリック | relics | 32×32 | 38 | |
+| リーダー（アイコン） | leaders | 32×32 | 15 | `<id>_icon.png`。上部バーの左端に2倍（このは済＝ちびの顔の切り出し。2026-09-11） |
+| レリック | relics | 32×32 | 39 | **済（2026-09-11 一括）** |
 | 紙の9スライス | ui | 52×52 / 48×48 / 32×32 / 40×40 | 4 | `paper_card.png`（カード。角丸14・border16）／`paper_panel.png`（頁・吹き出し。角丸12・border14）／`paper_tag.png`（札。角丸8・border10）／`paper_button.png`（ボタン。下に厚み。角丸10・border12）。クリーム色の紙＋鉛筆の二重線。**2026-09-07 の絵本調決定でタイプ×色の枠は廃止**——タイプは左上の「しおり」、色は台紙の縁で出す |
 | カードのしおり（タイプ） | ui | 16×24 | 4 | `bookmark_<type>.png`。物理=砂色／呪文=藤色／リアクション=青緑／置物=蜂蜜色。コストの数字は文字で乗せる |
 | 役割のにじみ（剣・盾・返し） | ui | 32×20 | 3 | `blob_<dmg|block|counter>.png`。水彩のにじみ形。カード左下＝与ダメ、右下＝ブロック。数字は文字 |
 | カード挿絵 | cards | **80×48** | 412（最後） | `<id>.png`（例 `green_strike.png`）。**2倍で 160×96、紙の台紙（168×104）に貼る**。絵が無い札はタイプの紋章 16×16 を3倍 |
-| レア度の宝石 | ui | 12×12 | 3 | `gem_common/uncommon/rare.png` |
-| コスト玉 | ui | 20×20 | 1 | `cost_orb.png`（数字は文字で乗せる） |
-| 状態アイコン（16px） | icons | 16×16 | 下表 | インライン用（カード文面・意図・バフ欄） |
-| 意図アイコン | icons | 24×24 | 13 | `intent_<kind>.png`（吹き出しでは2倍）。無い間は状態アイコンで代用 |
-| マップのノード | map | 32×32 | 8 | `node_<type>.png`（battle/elite/boss/shop/campfire/workshop/unknown/treasure） |
-| 背景（幕） | bg | 480×270 | 3 | `act1/act2/act3.png`。4倍で 1920×1080 |
-| 焚き火・工房・ショップの情景 | scenes | 240×135 | 4 | `campfire/workshop/shop/event.png` |
+| レア度の宝石 | ui | 12×12 | 3 | `gem_common/uncommon/rare.png`（済。32 で生成し 12 に詰める） |
+| コスト玉 | ui | 26×26 | 1 | `cost_orb.png`（済。2倍で 52 ＝ カードの玉。数字は文字で乗せる） |
+| 状態アイコン | icons | **32×32**（API の下限） | 下表 | 32px 以上の置き場（焚き火の札・マップ・浮き絵）で絵。16px のインライン（カード文面・バフ欄）は `Theme.IconArt` のビットマップのまま。済 22＋紋章4（2026-09-11） |
+| 意図アイコン | icons | **32×32** | 13 | `intent_<kind>.png`（吹き出しに2倍＝64）。済 13/13（2026-09-11） |
+| マップのノード | map | 32×32 | 8 | `node_<type>.png`（通常1倍・ボス2倍）。済 8/8 |
+| 背景（幕） | bg | **384×216**（API 上限 400） | 3 | `act1/act2/act3.png`。舞台の一番奥の板（幕2/3も）。済 3/3 |
+| 焚き火・工房・ショップ・イベントの情景 | scenes | **240×132**（4の倍数） | 4 | `campfire/workshop/shop/event.png`。見出しの左の窓に2倍／イベントは挿絵つきの頁。済 4/4 |
 | UI 部品 | ui | 各種 | 約10 | パネル9スライス（`panel.png` 24×24 角6）・ボタン3態（`btn_normal/hover/pressed.png` 24×24 角6）・HPバー枠 |
 
 ## 状態アイコン（icons/16px）
@@ -265,6 +265,15 @@ attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / stea
 - **待機の2コマ目**（`<id>_idle.png` のシート）は後回し。まず1コマで並べて相性を見る。
 - **書き出し**は PNG・透過・実寸（拡大しない）。ファイル名は表の id に揃える（`Assets/Resources/Art/<種別>/` に置くだけで差し替わる）。
 - **Create 画面の使い分け**: S–XL (Pro) は1回20生成で16案（最終の1枚を選ぶ用）、M–XL は安価で試行錯誤用。Pro の画面には Outline/Shading の欄が無いので、絵柄の指定は Description に書く。
+
+## B7–D18 の一括生産（2026-09-11 ユーザー「b7-d18まですべて作成して」）
+
+`docs/art-todo.md` の B7〜D18（レリック39・リーダーのアイコン・マップの駒8・意図13・状態26・幕2/3のタイル8と小物8・背景3・情景4・コスト玉と宝石・斬撃）を一括で作った。裁定（ask_user 4件）: 14人のリーダーのアイコンは外見が未定なので保留（このはだけ顔の切り出し）／紙の9スライスは作らない（規約「紙はなめらか」）・コスト玉と宝石だけドット／情景4枚は画面に組み込む／幕2/3の小物は差し替え口を作って描く。
+
+- **手順**: ①workflow で発注文を起草→査読（`docs/pixellab/b7d18-descriptions.json`。世界観・単一主題・人物と文字の禁止・シルエットの重複を検査） ②`python3 scripts/art-b7d18.py orders <descriptions> <scratch>` が発注書 `docs/pixellab/b7d18-{relics,icons,env,ui}.json`（各2シード 23/41）を書く ③`node scripts/pixellab.mjs gen …` ④`art-b7d18.py sheet <scratch> <out> [cats]` で A/B 比較シート（市松の下地・整数倍） ⑤判定 JSON（`{id, pick: A|B|none, passed, problem, fix_hint}`。作り直し分は `seed`/`dir` を行に書く） ⑥`art-b7d18.py apply <judge> <scratch>` が `Art/<種別>/` へ写す（コスト玉は内容を 26×26 に・宝石は 12×12 に詰める後処理つき）。
+- **API の制約**: pixflux は **面積 32×32 以上**（16×16・24×24・48×12 は 422）、**幅と高さは 4 の倍数**（240×135 → **240×132**）、上限は 400。よって状態アイコンと意図アイコンは **32 ドット**で作り、UI は整数倍で置く（`UiKit.Icon` は 32px 未満の置き場では従来の 16px ビットマップ、32 以上で絵。TMP のインライン `<sprite>` も 16px ビットマップのまま）。背景の板は 480×270 でなく **384×216**（5倍で 1920×1080）。
+- **Unity の差し替え口（同日）**: マップの駒＝32 を 1倍・ボス 2倍（`MapScreen`）／意図＝2倍 64・吹き出しを 68 高に（`BattleScreen`）／レリック＝20→32・84→64（`RunUi.RelicArt`）／コスト玉 `Art/ui/cost_orb.png` 26 ドット×2・宝石 `gem_<rarity>.png` 12×2（`CardView`）／紋章 `crest_<type>` は 32×2／幕2/3の小物 `Art/props/act2_{crystal,minecart,stalactite,roots}`・`act3_{spire,gate,aqueduct,pillar_fallen}`（`Stage.PropTexRaw`＝透明率の検査なし。幕3の小結晶は幕2の絵を共用）／背景の板 `Art/bg/act<N>`（幕2/3も `Stage.BgTex`）／**情景の窓** `RunUi.SceneWindow`（見出しの左に 500×290 の紙の枠、絵は 2倍。焚き火は札を 40px 下げ、ショップの棚と工房のデッキは `RunUi.SceneBottom` から）・イベントは挿絵つきの頁（左に絵・右に名前と本文）／上部バーの左端にリーダーの顔 `Art/leaders/<id>_icon.png` を 2倍。
+- **判定の教訓**: タイルは「穴」「土の塊」「縁つき」が出やすい（act2_dirt は2回とも失敗→幕1の土を暗く灰寄せして派生）。垂れ根は「苔の島」に、鍾乳石は「切り株」に流れる（「上端に付く」「upright/stump を negative」で直る）。倒れた柱は地面を描きたがる（「floating, nothing beneath」）。背景は「月は舞台側で描く」ので描かせない。情景は seed によって上下に黒帯が入る（不採用）。
 
 ## 画面の肌（2026-09-07 決定・デザインカンバス「戦闘画面 作り直し」第5版）
 

@@ -1,0 +1,30 @@
+{
+ "id": "flag__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a small triangular pennant flag fluttering to the right on a short dark pole, dusty rose cloth with a cream highlight stripe, thick dark ink outline, flat bold pixel art status icon for a goal, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, national flag, stripes pattern, arm",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:48:37.192Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

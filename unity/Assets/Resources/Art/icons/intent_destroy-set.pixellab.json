@@ -1,0 +1,30 @@
+{
+ "id": "intent_destroy-set__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a square wooden box smashed open, a cogwheel and a broken spring tumbling out of its cracked lid, bold silhouette, muted teal glow inside with dusty rose crack lines, dark ink outline, flat pixel art intent icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, hammer, robot, explosion cloud, outer glow, intact box",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:57:09.445Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

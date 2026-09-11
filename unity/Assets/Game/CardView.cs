@@ -78,7 +78,7 @@ namespace DeckRogue.Game
                 wash.raycastTarget = false;
                 var crestRt = UiKit.NewRect("crest", win);
                 crestRt.anchorMin = crestRt.anchorMax = new Vector2(0.5f, 0.5f);
-                crestRt.sizeDelta = new Vector2(48f, 48f);
+                crestRt.sizeDelta = Theme.HasIconArt("crest_" + def.Type) ? new Vector2(64f, 64f) : new Vector2(48f, 48f);   // 絵は 32 ドット×2
                 crestRt.anchoredPosition = Vector2.zero;
                 var crest = crestRt.gameObject.AddComponent<Image>();
                 crest.sprite = Theme.Icon("crest_" + def.Type);
@@ -96,7 +96,8 @@ namespace DeckRogue.Game
             var orb = UiKit.NewRect("cost", root);
             UiKit.Anchor(orb, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(-6f, -46f), new Vector2(46f, 6f));
             var orbImg = orb.gameObject.AddComponent<Image>();
-            orbImg.sprite = PaperFx.Orb(PaperFx.Honey);
+            var orbArt = Theme.Art("ui", "cost_orb");   // PixelLab の玉 (26 ドット×2=52。2026-09-11)。無ければ水彩の玉
+            orbImg.sprite = orbArt != null ? orbArt : PaperFx.Orb(PaperFx.Honey);
             orbImg.preserveAspect = true; orbImg.raycastTarget = false;
             if (!playable) orbImg.color = new Color(0.82f, 0.82f, 0.82f, 1f);
             var costT = UiKit.Deco(orb, costLabel, 22, discounted ? UiKit.Hex("#276a34") : raised ? UiKit.Hex("#a33a30") : ink, TextAnchor.MiddleCenter);
@@ -123,7 +124,8 @@ namespace DeckRogue.Game
             var gem = UiKit.NewRect("gem", row);
             var gImg = gem.gameObject.AddComponent<Image>();
             gImg.sprite = ThemeFx.Gem(rarity); gImg.preserveAspect = true; gImg.raycastTarget = false;
-            UiKit.Le(gem, 16f, 16f, 16f, 16f);
+            float gemSz = Theme.Art("ui", "gem_" + rarity) != null ? 24f : 16f;   // PixelLab の宝石は 12 ドット×2 (2026-09-11)
+            UiKit.Le(gem, gemSz, gemSz, gemSz, gemSz);
             var typeT = UiKit.Txt(row, CardText.TypeJa(def.Type), 14, PaperFx.Ink, TextAnchor.MiddleCenter, true);
             typeT.characterSpacing = 2f;
             UiKit.Le(typeT, -1f, 22f, -1f, 22f);

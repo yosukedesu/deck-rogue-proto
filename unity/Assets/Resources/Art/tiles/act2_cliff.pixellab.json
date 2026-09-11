@@ -1,0 +1,30 @@
+{
+ "id": "act2_cliff__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "rough mine tunnel rock wall, dark grey-brown stone hewn with chisel marks, cracks and a few small ledges, dim cool light, seamless tileable pixel art cliff wall texture, no timber, no objects, no border, repeating tile",
+  "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, timber, beams, ladder, grass on top, sky, moss, objects, letters",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:40:23.099Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": "A は紫の玉石で壁に見えない"
+ }
+}

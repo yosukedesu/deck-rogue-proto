@@ -1,0 +1,30 @@
+{
+ "id": "shield__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a tall rounded kite shield seen straight on, muted sky blue front with a cream highlight stripe and a thin brass rim, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, heraldry, sword, arm, round shield",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:39:28.587Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

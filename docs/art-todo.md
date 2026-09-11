@@ -1,4 +1,4 @@
-# 作成が必要な画像一覧（2026-09-11 時点）
+# 作成が必要な画像一覧（2026-09-11 時点。同日夜 B7〜D18 を一括作成＝下の「済んでいるもの」に移動）
 
 `docs/pixellab-assets.md` の発注書と `unity/Assets/Resources/Art/` の実物を突き合わせた**未作成リスト**。
 無い絵はすべてコード生成のプレースホルダーで動いている（ゲームは止まらない）。寸法は実寸、画面には整数倍で置く。
@@ -11,7 +11,8 @@
 | 敵 | **84/84**（幕1〜3・エリート・ボス。2026-09-11 に幕2/3の59体を追加、向きを検算済み） |
 | カード挿絵（緑） | **91/91**（打撃・打ち据えは魔導の大斧版に更新済み） |
 | このは | ちび1・アニメ4種（待機3/被弾3/防御3/攻撃4） |
-| 舞台の小物・タイル | 幕1: タイル6（bark/cliff/dirt/grass/grass2/stone）・小物15／幕2: 小物5（barrel/crate/gear/lantern/stall）／幕3: 小物4（brazier/chain/pillar/statue） |
+| 舞台の小物・タイル | 幕1: タイル6（bark/cliff/dirt/grass/grass2/stone）・小物15／幕2: タイル4・小物9（barrel/crate/gear/lantern/stall + crystal/minecart/stalactite/roots）／幕3: タイル4・小物8（brazier/chain/pillar/statue + spire/gate/aqueduct/pillar_fallen） |
+| B7〜D18（2026-09-11 一括） | レリック 39/39・このはのアイコン1（14人は外見未定で保留）・マップの駒 8/8・意図 13/13・状態と紋章 26/26・背景3・情景4（画面に組み込み済み）・コスト玉1・宝石3・斬撃1。**API の下限が 32×32 面積なので状態と意図は 32 ドット**（16px の置き場と TMP のインラインは従来のビットマップ）。紙の9スライスは規約どおり作らない。手順は `docs/pixellab-assets.md`「B7–D18 の一括生産」・`scripts/art-b7d18.py` |
 
 ## 未作成（優先度順）
 
@@ -30,28 +31,28 @@
 
 | # | 種別 | 置き場・名前 | 実寸 | 枚数 | 備考 |
 |---|---|---|---|---|---|
-| 7 | レリック | `Art/relics/<id>.png` | 32×32 | **39** | 今はコード描画の紋（`ThemeFx.RelicGlyph`）。世界観: 坑で出るもの＝古代の遺物／店のもの＝行商の品 |
-| 8 | リーダーのアイコン | `Art/leaders/<id>_icon.png` | 32×32 | **15** | セットアップ・ラン画面用（ちびの顔の切り出しでも可） |
-| 9 | マップのノード | `Art/map/node_<type>.png`（battle/elite/boss/shop/campfire/workshop/unknown/treasure） | 32×32 | **8** | 今はアイコンの絵文字＋枠 |
-| 10 | 意図アイコン | `Art/icons/intent_<kind>.png`（attack/buff/defend/destroy-set/flee/hatch/heal/hex/mill/rally/rest/steal-gold） | 24×24 | **12** | 今は状態アイコンで代用 |
-| 11 | 状態アイコン | `Art/icons/<name>.png`（sword/shield/heart/energy/draw/growth/momentum/burn/exposed/gold/exhaust/pierce/skull/crown/hammer/question/chest/flag/map/star + set/crest_permanent） | 16×16 | **22** | 今はコード描画（`Theme.IconArt` のビットマップ）で成立しているので後回し可 |
+| 7 | レリック | `Art/relics/<id>.png` | 32×32 | ~~39~~ **済 39/39** | 2026-09-11 一括作成 |
+| 8 | リーダーのアイコン | `Art/leaders/<id>_icon.png` | 32×32 | **14**（このは済） | ちびの顔の切り出し（このは＝`leader_green.png` の (30,5)–(62,37)）。上部バーの左端に2倍で表示。14人はちびができた時に一緒に |
+| 9 | マップのノード | `Art/map/node_<type>.png` | 32×32 | ~~8~~ **済 8/8** | 通常1倍・ボス2倍 |
+| 10 | 意図アイコン | `Art/icons/intent_<kind>.png`（13種・destroy-token 含む） | ~~24×24~~ 32×32 | ~~12~~ **済 13/13** | API の下限で 32 ドット。吹き出しに2倍 |
+| 11 | 状態アイコン | `Art/icons/<name>.png`（22種＋紋章4） | ~~16×16~~ 32×32 | ~~22~~ **済 26/26** | 32px 以上の置き場で絵、16px の置き場と TMP インラインは従来のビットマップ |
 
 ### C. 舞台（幕2/3を潜った時だけ）
 
 | # | 種別 | 置き場・名前 | 実寸 | 枚数 | 備考 |
 |---|---|---|---|---|---|
-| 12 | 幕2/3のタイル | `Art/tiles/act{2,3}_{grass,dirt,stone,cliff}.png` | 32×32 Repeat | **8** | 今はコード生成の石床。2026-09-11 のハイディテール舞台はコード生成で成立しているので急がない |
-| 13 | 幕2/3の小物の追加 | `Art/props/act2_*`・`act3_*` | 任意 | 任意 | 結晶・トロッコ・鍾乳石・大門・水道橋はコード生成（`Px.*`）。差し替えるなら同名で置く |
-| 14 | 背景（空の板） | `Art/bg/act{1,2,3}.png` | 480×270 | 3 | 今はグラデーション。幕2/3は岩天井なので不要になった可能性が高い |
+| 12 | 幕2/3のタイル | `Art/tiles/act{2,3}_{grass,dirt,stone,cliff}.png` | 32×32 Repeat | ~~8~~ **済 8/8** | act2_dirt は幕1の土から派生 |
+| 13 | 幕2/3の小物の追加 | `Art/props/act2_{crystal,minecart,stalactite,roots}`・`act3_{spire,gate,aqueduct,pillar_fallen}` | 各種 | **済 8/8** | `Stage.PropTexRaw` の差し替え口を新設 |
+| 14 | 背景（空の板） | `Art/bg/act{1,2,3}.png` | ~~480×270~~ 384×216 | **済 3/3** | API 上限で 384×216（5倍で 1920×1080）。幕2/3も `Stage.BgTex` で貼る |
 
 ### D. UI の部品（コード生成で完成しているもの＝任意）
 
 | # | 種別 | 置き場・名前 | 実寸 | 枚数 | 備考 |
 |---|---|---|---|---|---|
-| 15 | 紙の9スライス | `Art/ui/paper_{card,panel,tag,button}.png` | 52/48/32/40 | 4 | 今は `PaperFx` が紙と鉛筆の二重線を描く。差し替え不要の判断でよい |
-| 16 | コスト玉・レア度の宝石 | `Art/ui/cost_orb.png`・`gem_{common,uncommon,rare}.png` | 20／12 | 4 | 同上 |
-| 17 | 攻撃のエフェクト | `Art/fx/slash.png` | 任意 | 1 | 今はコード描画 |
-| 18 | 焚き火・工房・ショップ・イベントの情景 | `Art/scenes/{campfire,workshop,shop,event}.png` | 240×135 | 4 | 現状の画面は紙のパネルだけで成立。世界観（宿場の炉・行商）を見せるなら |
+| 15 | 紙の9スライス | `Art/ui/paper_{card,panel,tag,button}.png` | 52/48/32/40 | 4 | **作らない（2026-09-11 ユーザー裁定）**。規約「紙はなめらか」＝コード描画が完成形 |
+| 16 | コスト玉・レア度の宝石 | `Art/ui/cost_orb.png`・`gem_{common,uncommon,rare}.png` | 26／12 | **済 4/4** | 32 で生成し内容を 26／12 に詰める（2倍で 52／24） |
+| 17 | 攻撃のエフェクト | `Art/fx/slash.png` | 64×16 | **済 1/1** | |
+| 18 | 焚き火・工房・ショップ・イベントの情景 | `Art/scenes/{campfire,workshop,shop,event}.png` | ~~240×135~~ 240×132 | **済 4/4** | 画面に組み込み済み（`RunUi.SceneWindow`／イベントは挿絵つきの頁） |
 
 ### 外注（AI 不採用）
 
@@ -62,8 +63,7 @@
 
 ## 合計（PixelLab で作る分）
 
-- 必須級（A+B）: カード 321・ちび 14・アニメ 14人分・レリック 39・アイコン 15・マップ 8・意図 12 ＝ **約 410 枚＋アニメ**
-- 任意（C+D）: タイル 8・背景 3・UI 部品 8・エフェクト 1・情景 4
+- 残り: カード 321・ちび 14・アニメ 14人分・リーダーのアイコン 14（ちびと一緒に）＝ **約 335 枚＋アニメ**（B7〜D18 は 2026-09-11 に済）
 
 ## 手順の参照
 

@@ -1,0 +1,30 @@
+{
+ "id": "chest__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, cream highlight on the lid, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, open lid, coins, gems spilling, lock keyhole, cogwheel, flat square box",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:47:43.545Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

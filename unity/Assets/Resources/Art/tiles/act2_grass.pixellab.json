@@ -1,0 +1,30 @@
+{
+ "id": "act2_grass__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "damp tunnel moss clinging to wet grey rock, muted sage and moss green with small pebbles and a faint cool sheen, seamless tileable pixel art ground texture seen from directly above, dark low contrast, no objects, no border, repeating tile",
+  "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, flowers, bright green, warm light, lantern, objects, letters",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "high top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:39:00.114Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

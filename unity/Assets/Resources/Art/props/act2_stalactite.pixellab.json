@@ -1,0 +1,30 @@
+{
+ "id": "act2_stalactite__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "a cluster of three grey-brown stone stalactites hanging point-down from the top edge of the frame, their wide bases touching the top edge, wet dripping tips faintly glowing teal, isolated pixel art game sprite, centered, completely empty transparent background, no scenery, no ground, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "stump, tree, upright, pointing up, ground, base, floor, rock on ground, scene, background, frame, text, people",
+  "image_size": {
+   "width": 48,
+   "height": 48
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:53:18.350Z",
+ "judge": {
+  "pick": "A",
+  "seed": 7,
+  "at": "2026-09-11",
+  "note": "岩塊から垂れる房・先端が青緑"
+ }
+}

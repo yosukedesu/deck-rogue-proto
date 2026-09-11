@@ -1,0 +1,30 @@
+{
+ "id": "act3_stone__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "ancient black paving of large smooth dark ink slabs, thin engraved grooves in a plain geometric pattern with hairline teal light in a few grooves, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+  "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, letters, runes, readable symbols, warm light",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "high top-down",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:41:33.363Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

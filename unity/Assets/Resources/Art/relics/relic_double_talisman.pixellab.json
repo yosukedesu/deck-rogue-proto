@@ -1,0 +1,30 @@
+{
+ "id": "relic_double_talisman__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "TWO separate blank cream paper strips fanned apart side by side like two playing cards, clearly two pieces, pinned together at the top corner by a small tarnished brass cog clip, edges glowing faint teal, isolated pixel art game sprite, centered, completely empty transparent background, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "single sheet, one paper, scroll, writing, runes, symbols, glyphs, calligraphy, text, letters, scene, background, frame, people, hands",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T06:05:27.730Z",
+ "judge": {
+  "pick": "A",
+  "seed": 7,
+  "at": "2026-09-11",
+  "note": "短冊2枚が並ぶ"
+ }
+}

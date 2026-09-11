@@ -1,0 +1,30 @@
+{
+ "id": "act2_roots__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "a bundle of thin dark tree roots hanging straight down from the top edge of the frame, tangled fibrous strands with loose frayed ends, dark brown with pale root tips, only roots and nothing else, isolated pixel art game sprite, centered, completely empty transparent background, no scenery, no ground, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "moss, grass, island, floating island, ground, dirt, leaves, tree, trunk, canopy, rock, scene, background, frame, text, people",
+  "image_size": {
+   "width": 48,
+   "height": 48
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:52:49.940Z",
+ "judge": {
+  "pick": "A",
+  "seed": 7,
+  "at": "2026-09-11",
+  "note": "上端に付く根の束"
+ }
+}

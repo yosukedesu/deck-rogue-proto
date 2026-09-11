@@ -1,0 +1,30 @@
+{
+ "id": "cost_orb__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a round polished honey-amber glass orb with a soft inner glow and a small white specular highlight at the upper left, thin dark brass rim, the orb fills the frame edge to edge, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T06:01:35.571Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "琥珀の玉・左上のハイライト"
+ }
+}

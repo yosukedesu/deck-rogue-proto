@@ -1,0 +1,30 @@
+{
+ "id": "relic_quiet_bell__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a small round tarnished brass bell hanging from a short teal cord, its rim wrapped in a soft sage cloth muffler tied with twine, a faint teal gleam on the brass, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, church, tower, mouth",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:48:14.322Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

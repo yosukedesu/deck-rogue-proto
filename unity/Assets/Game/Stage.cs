@@ -1216,14 +1216,14 @@ namespace DeckRogue.Game
                 var ceil = new MB(); ceil.Floor(64f, 4f, -50f, 40f, 6.2f);
                 var mCeil = Lit(Tex(_paintedAct, "cliff", Px.Cliff(p, rng))); mCeil.SetColor("_BaseColor", new Color(0.3f, 0.26f, 0.26f));
                 Solid("ceiling", ceil, mCeil);
-                var stal = Px.Stalactites(p, rng);
+                var stal = PropTexRaw(_paintedAct, "stalactite", Px.Stalactites(p, rng));
                 for (int i = 0; i < 9; i++)
                 {
                     var w = OnPath(-22f + i * 5.5f + ((float)rng.NextDouble() - 0.5f) * 3f, 4f + (float)rng.NextDouble() * 6f);
                     var g = Plane("stalactite", stal, new Vector3(w.x, 6.2f - 3.3f, w.z), 3.3f, 0.5f, false);
                     g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 }
-                var roots = Px.HangingRoots(p, rng);
+                var roots = PropTexRaw(_paintedAct, "roots", Px.HangingRoots(p, rng));
                 for (int i = 0; i < 6; i++)
                 {
                     var w = OnPath(-18f + i * 7.5f, 3f + (float)rng.NextDouble() * 5f);
@@ -1239,7 +1239,7 @@ namespace DeckRogue.Game
                 if (sv < 0f && t > -12f && t < 14f) sv = 7.8f;   // 手前の真ん中はカメラに近いので奥へ
                 var w = OnPath(t, sv);
                 float hgt = 0.9f + (float)rng.NextDouble() * 0.9f;
-                var cr = Prop("crystal", Px.Crystal(veinC, rng), w, hgt, 0.5f);
+                var cr = Prop("crystal", PropTexRaw(_paintedAct, "crystal", Px.Crystal(veinC, rng)), w, hgt, 0.5f);
                 cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
                 Halo("crystal-halo", w + new Vector3(0f, hgt * 0.45f, -0.2f), hgt * 2.2f, new Color(veinC.r, veinC.g, veinC.b, 0.5f));
                 var lgo = new GameObject("crystal-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, hgt * 0.5f, 0f);
@@ -1247,7 +1247,7 @@ namespace DeckRogue.Game
             }
             {
                 var w = OnPath(15f, 9.4f);
-                var big = Prop("crystal-big", Px.Crystal(veinC, rng), w, 4.2f, 0.5f);
+                var big = Prop("crystal-big", PropTexRaw(_paintedAct, "crystal", Px.Crystal(veinC, rng)), w, 4.2f, 0.5f);
                 big.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
                 Halo("crystal-halo", w + new Vector3(0f, 1.9f, -0.3f), 9f, new Color(veinC.r, veinC.g, veinC.b, 0.55f));
                 var lgo = new GameObject("crystal-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, 2f, -0.5f);
@@ -1265,7 +1265,7 @@ namespace DeckRogue.Game
             }
             // トロッコ: 軌道の上に 1 台 (鉱が光る)、遠くにもう 1 台
             {
-                var cartTex = Px.MineCart(veinC, rng);
+                var cartTex = PropTexRaw(_paintedAct, "minecart", Px.MineCart(veinC, rng));
                 var w1 = OnPath(4f, 8.7f); Plane("minecart", cartTex, w1 + new Vector3(0f, 0.12f, 0f), 1.15f, 0.5f, true);
                 Halo("ore-glow", w1 + new Vector3(0f, 1.0f, -0.2f), 2.2f, new Color(veinC.r, veinC.g, veinC.b, 0.35f));
                 var w2 = OnPath(-17f, 8.7f); var cart2 = Plane("minecart", cartTex, w2 + new Vector3(0f, 0.12f, 0f), 1.05f, 0.5f, true);
@@ -1345,7 +1345,7 @@ namespace DeckRogue.Game
             var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.25f)), lampBase, 1f, 1f);
             mp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; mp.transform.rotation = Quaternion.Euler(90f, 0f, 0f); mp.transform.position = lampBase + new Vector3(0f, 0.035f, 0f); mp.transform.localScale = new Vector3(5f, 4.4f, 1f);
             // 天井: 暗い岩天井の板 (空の代わり)
-            var sky = Prop("sky", Px.Gradient(UiKit.Hex("#1a1014"), UiKit.Hex("#050305")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
+            var sky = Prop("sky", BgTex(_paintedAct, Px.Gradient(UiKit.Hex("#1a1014"), UiKit.Hex("#050305"))), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             // 露頭 (2026-09-10。旧・高い窓からの月光を置換): 岩の割れ目から漏れるマナの光。
             // 光のルールどおり色で分ける = 暖色は提灯の範囲だけ、脈は青緑
@@ -1383,6 +1383,9 @@ namespace DeckRogue.Game
             Solid("corridor-edge", edge, mDark);
             // 石像と古代の灯 (冷たい青の火。暖色は無い = 人のいない場所)
             if (statue != null) { Plane("statue", statue, OnPath(-20f, 3.2f), 3.2f, 0.5f, true); var s2 = Plane("statue", statue, OnPath(22f, 3.4f), 3.2f, 0.5f, true); s2.transform.localScale = new Vector3(-s2.transform.localScale.x, s2.transform.localScale.y, 1f); }
+            // 倒れた柱 (PixelLab の絵がある時だけ。場の外の縁石の向こう。2026-09-11)
+            var fallen = PropTexRaw(_paintedAct, "pillar_fallen", null);
+            if (fallen != null) { Plane("pillar-fallen", fallen, OnPath(-13f, 7.4f), 1.3f, 0.5f, true); var f2 = Plane("pillar-fallen", fallen, OnPath(11f, -7.2f), 1.2f, 0.5f, true); f2.transform.localScale = new Vector3(-f2.transform.localScale.x, f2.transform.localScale.y, 1f); }
             float[] bt = { -10f, 8f, 16f, -2f };
             for (int i = 0; i < bt.Length; i++)
             {
@@ -1408,7 +1411,7 @@ namespace DeckRogue.Game
                 for (int i = 0; i < ct.Length; i++)
                 {
                     var w = OnPath(ct[i], cs[i]);
-                    var cr = Prop("crystal-spire", Px.Crystal(veinC, rng), w, ch[i], 0.5f);
+                    var cr = Prop("crystal-spire", PropTexRaw(_paintedAct, "spire", Px.Crystal(veinC, rng)), w, ch[i], 0.5f);
                     cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.3f);
                     Halo("crystal-halo", w + new Vector3(0f, ch[i] * 0.5f, -0.4f), ch[i] * 2.4f, new Color(veinC.r, veinC.g, veinC.b, 0.4f));
                     var lgo = new GameObject("crystal-light"); lgo.transform.SetParent(_world, false); lgo.transform.position = w + new Vector3(0f, ch[i] * 0.45f, -1f);
@@ -1418,17 +1421,17 @@ namespace DeckRogue.Game
                 {
                     var w = OnPath(-22f + i * 6.3f + ((float)rng.NextDouble() - 0.5f) * 2f, (i % 2 == 0) ? 6.9f : -6.6f);
                     float hgt = 0.6f + (float)rng.NextDouble() * 0.7f;
-                    var cr = Prop("crystal", Px.Crystal(veinC, rng), w, hgt, 0.5f); cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
+                    var cr = Prop("crystal", PropTexRaw(2, "crystal", Px.Crystal(veinC, rng)), w, hgt, 0.5f); cr.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);   // 小結晶は幕2の絵を共用
                     Halo("crystal-halo", w + new Vector3(0f, hgt * 0.45f, -0.2f), hgt * 2f, new Color(veinC.r, veinC.g, veinC.b, 0.45f));
                 }
             }
             // 大門と水道橋: 奥の段の上に古代の門 (紋が光る)、その両脇に半円アーチの列
             {
                 var gw = OnPath(3f, 19f);   // 第2版: 近すぎると半円がカメラの上端から切れる (z≈20 で y 7.3 まで入る)
-                var arch = Prop("great-arch", Px.Arch(p, veinC), new Vector3(gw.x, 0.4f, gw.z), 6.6f, 0.4f);
+                var arch = Prop("great-arch", PropTexRaw(_paintedAct, "gate", Px.Arch(p, veinC)), new Vector3(gw.x, 0.4f, gw.z), 6.6f, 0.4f);
                 arch.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); arch.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.35f);
                 Halo("arch-glow", new Vector3(gw.x, 3.6f, gw.z - 0.3f), 5.5f, new Color(veinC.r, veinC.g, veinC.b, 0.22f));
-                var arc = Px.Arcade(p, 9);
+                var arc = PropTexRaw(_paintedAct, "aqueduct", Px.Arcade(p, 9));
                 var al = Prop("arcade", arc, new Vector3(gw.x - 20f, 0.6f, gw.z + 7f), 4.6f, 0.4f); al.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
                 var ar = Prop("arcade", arc, new Vector3(gw.x + 22f, 0.6f, gw.z + 9f), 5.0f, 0.4f); ar.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
                 var st = new MB(); var b = OnPath(3f, 16f);   // 門へ上る幅広の階段
@@ -1479,7 +1482,7 @@ namespace DeckRogue.Game
             var mp = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.22f)), lampBase, 1f, 1f);
             mp.GetComponent<MeshFilter>().sharedMesh = _quadCentered; mp.transform.rotation = Quaternion.Euler(90f, 0f, 0f); mp.transform.position = lampBase + new Vector3(0f, 0.035f, 0f); mp.transform.localScale = new Vector3(5f, 4.4f, 1f);
             // 岩天井と、脈の光にぼんやり浮かぶ古代都市 (2026-09-10。旧・空を埋める月と月光の帯を置換。ここは坑の底なので空は無い)
-            var sky = Prop("sky", Px.Gradient(UiKit.Hex("#08181c"), UiKit.Hex("#02070a")), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
+            var sky = Prop("sky", BgTex(_paintedAct, Px.Gradient(UiKit.Hex("#08181c"), UiKit.Hex("#02070a"))), new Vector3(0f, -30f, 90f), 130f, 0f, 260f);
             sky.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f); sky.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             // 地平の脈の光: 街の輪郭が黒く抜けて読めるように、街の後ろに広い青緑の光の帯を敷く (旧世界の月の代わりの明るい背景)
             Glow("vein-horizon", Px.Radial(new Color(0.35f, 0.9f, 0.82f, 0.7f)), new Vector3(4f, 2.5f, 66f), 22f, 170f);
@@ -1515,6 +1518,18 @@ namespace DeckRogue.Game
         }
 
         static bool HasTile(int act, string kind) { return Theme.Art("tiles", "act" + act + "_" + kind) != null; }
+        /// <summary>Art/props/act&lt;N&gt;_&lt;name&gt;.png があればそれ、無ければ fallback (透明率の検査なし。結晶・大門など塗りの多い絵用。2026-09-11)</summary>
+        static Texture2D PropTexRaw(int act, string name, Texture2D fallback)
+        {
+            var sp = Theme.Art("props", "act" + act + "_" + name);
+            return sp != null ? sp.texture : fallback;
+        }
+        /// <summary>幕の背景の板 (Art/bg/act&lt;N&gt;.png・384×216)。無ければ fallback のグラデーション</summary>
+        static Texture2D BgTex(int act, Texture2D fallback)
+        {
+            var sp = Theme.Art("bg", "act" + act);
+            return sp != null ? sp.texture : fallback;
+        }
         /// <summary>Art/props/act<N>_<name>.png があればそれ、無ければ仮の絵 (null なら置かない)</summary>
         static readonly Dictionary<string, bool> _propOk = new Dictionary<string, bool>();
         static Texture2D PropTex(int act, string name, Texture2D fallback)

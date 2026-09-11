@@ -1,0 +1,30 @@
+{
+ "id": "act3_gate__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "an ancient black stone gate, tall stepped archway of fitted dark blocks with a carved abstract band glowing teal, opening left empty, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, door, wooden doors, round arch, letters, runes, readable symbols, figures, statues, hands",
+  "image_size": {
+   "width": 96,
+   "height": 96
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:45:18.452Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "B はポータルすぎる"
+ }
+}

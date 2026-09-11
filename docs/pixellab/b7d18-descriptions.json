@@ -1,0 +1,662 @@
+{
+ "relics": [
+  {
+   "id": "relic_thorn_crown",
+   "description": "a circlet of twisted dark bramble thorns woven into a ring, a few small sage-green leaves, the sharpest thorn tips glowing faint teal, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "head, hair, wearing, jesus, cross",
+   "note": "茨の輪だけ。頭に乗せない。鎖の首輪（開いたC形）と区別＝閉じた細い輪"
+  },
+  {
+   "id": "relic_sage_scroll",
+   "description": "a rolled cream parchment scroll with tarnished brass end caps, tied with a thin sage ribbon, the paper left blank, one edge slightly unrolled, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "writing, runes, symbols, glyphs, text",
+   "note": "紙は白紙。文字が出たら不合格"
+  },
+  {
+   "id": "relic_swift_boots",
+   "description": "a pair of low worn dark leather mining boots with tarnished brass buckles and moss-green laces, standing side by side, a faint teal spark at the heels, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "legs, feet, wearing, person",
+   "note": "くるぶし丈の2足。金の靴（丈の高い1足）と形で分ける。脚は描かない"
+  },
+  {
+   "id": "relic_shield_shard",
+   "description": "a curved crescent-shaped fragment broken from the rim of a large dark steel shield, chipped tarnished brass edge, a faint engraved cog pattern, cracks glowing dim teal, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "complete shield, round shield",
+   "note": "三日月形の縁の欠片。先手の盾（丸い完品）・王冠の欠片（尖った3山）・黒星（星形）と形で分ける"
+  },
+  {
+   "id": "relic_vanguard_shield",
+   "description": "a small round buckler of dark steel with a domed brass center boss and a ring of rivets, a few scratches and dents, a thin sage strap behind it, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "arm, wearing, person",
+   "note": "丸い完品の小盾"
+  },
+  {
+   "id": "relic_iron_heart",
+   "description": "a heart-shaped mechanism of riveted dark iron plates with a small tarnished brass cog on its side and a tiny teal mana crystal set in the center, faintly glowing, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "blood, gore, veins, organ, valentine",
+   "note": "機械の心臓。生々しい臓器にしない。大樹の心（年輪の輪切り）とは形が別"
+  },
+  {
+   "id": "relic_hunters_boon",
+   "description": "a fang charm: a curved pale fang tied with a dark leather cord to a tarnished brass ring, one small sage feather hanging beside it, a faint teal glow inside the fang, single object centered, muted palette, transparent background",
+   "negative": "animal, beast, head, skull, arrow, bow, hunter, person",
+   "note": "牙と輪と羽の小さなお守り。動物も人も描かない"
+  },
+  {
+   "id": "relic_collectors_bag",
+   "description": "a worn dark leather mining satchel with a tarnished brass clasp and a moss-green shoulder strap, rectangular with its flap half open and a few glowing teal ore chunks peeking out, single object centered, muted palette, transparent background",
+   "negative": "",
+   "note": "角ばった肩掛け鞄。袋類（戦利品袋・財布・薬草袋・符師の懐）と形で分ける"
+  },
+  {
+   "id": "relic_deep_breath",
+   "description": "a small round tarnished brass incense burner with a pierced lid, a single thin curl of pale smoke rising from it, a soft honey-colored ember glowing inside, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "fire, flames, candle",
+   "note": "煙は細く1本。炎は出さない"
+  },
+  {
+   "id": "relic_growth_seed",
+   "description": "a single large smooth seed of dark ink brown, a tiny pale sprout with two small sage leaves emerging from its top, the sprout tip glowing faint teal, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "soil, pot, ground",
+   "note": "芽つきの種。大樹の心には葉を付けないので被らない"
+  },
+  {
+   "id": "relic_swift_sash",
+   "description": "a folded cloth sash of moss green with honey-colored trim and a small tarnished brass buckle, both ends fluttering as if in wind, a faint teal spark at one end, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "waist, body, wearing, person",
+   "note": ""
+  },
+  {
+   "id": "relic_oldroot_cup",
+   "description": "an ancient goblet carved from a gnarled dark root, bound with two tarnished brass bands, filled to the brim with glowing teal mana liquid, small moss patches on the stem, boss treasure, single object centered, muted palette, transparent background",
+   "negative": "",
+   "note": ""
+  },
+  {
+   "id": "relic_raptor_eye",
+   "description": "a hawk's-eye gem pendant: a round polished honey-amber orb with a dark vertical slit, held in a tarnished brass clasp shaped like a curled talon, hanging from a short chain, a faint teal gleam on the glass, single object centered, muted palette, transparent background",
+   "negative": "bird, head, face, eyelid, eyelashes, realistic eyeball",
+   "note": "宝石の垂れ飾りとして描く。生身の眼球にしない。賢者の石（台座に立つ結晶）と形で分ける"
+  },
+  {
+   "id": "relic_merchant_scale",
+   "description": "a small polished brass balance scale with two hanging pans on chains, one pan holding a few honey-colored mana grains, the beam tilted slightly, new and well kept, a trade good for sale, single object centered, muted palette, transparent background",
+   "negative": "rust, crack, person",
+   "note": "行商の品（world.md）＝古代の遺物ではない。手入れされた道具として。魔女の秤（吊り皿1枚）と形で分ける"
+  },
+  {
+   "id": "relic_smith_whetstone",
+   "description": "a rectangular grey whetstone worn concave in the middle, resting in a small dark wooden cradle, a sheen of honey-colored oil on its surface and a few tiny metal filings, single object centered, muted cream and ink palette, transparent background",
+   "negative": "blade, sword, knife",
+   "note": "砥石だけ。刃物は描かない"
+  },
+  {
+   "id": "relic_talisman_pouch",
+   "description": "a flat folded cloth wrap of dark ink fabric, like a breast-fold wallet, tied shut with a teal cord, three blank cream paper strips tucked into the fold with their edges glowing faint teal, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "writing, runes, symbols, glyphs, calligraphy",
+   "note": "懐＝平たい折り畳みの布入れ（丸い巾着にしない＝薬草袋と形で分ける）。符は白紙の短冊。文字が出たら不合格"
+  },
+  {
+   "id": "relic_quiet_bell",
+   "description": "a small round tarnished brass bell hanging from a short teal cord, its rim wrapped in a soft sage cloth muffler tied with twine, a faint teal gleam on the brass, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "church, tower, mouth",
+   "note": ""
+  },
+  {
+   "id": "relic_double_talisman",
+   "description": "two blank cream paper strips overlapping in a shallow V, pinned together at the top by a small tarnished brass cog clip, edges glowing faint teal, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "writing, runes, symbols, glyphs, calligraphy",
+   "note": "白紙の短冊2枚。文字が出たら不合格"
+  },
+  {
+   "id": "relic_crown_shard",
+   "description": "a broken arc segment of an ancient tarnished brass crown, three sharp points remaining, one teal mana crystal still set in it and glowing brightly, dark steel inlay, boss treasure, single object centered, muted palette, transparent background",
+   "negative": "head, wearing, complete crown",
+   "note": "欠片＝完全な冠にしない。尖った3山の弧＝大盾の欠片（三日月）と形で分ける"
+  },
+  {
+   "id": "relic_cursed_key",
+   "description": "an old dark iron key with a cog-shaped bow, wrapped loosely in a thin dark chain, sickly teal light seeping from cracks in the metal, tiny wisps of teal haze, boss treasure, single object centered, muted palette, transparent background",
+   "negative": "skull, lock, door",
+   "note": ""
+  },
+  {
+   "id": "relic_philosopher_stone",
+   "description": "a faceted teal mana crystal the size of an egg standing upright on a flat tarnished brass cog pedestal, glowing strongly from within with a few small sparks drifting around it, boss treasure, single object centered, muted palette, transparent background",
+   "negative": "claw, animal, pendant, chain",
+   "note": "歯車の台座に立つ結晶。猛禽の眼（爪の留め具の垂れ飾り）と形で分ける"
+  },
+  {
+   "id": "relic_slaver_collar",
+   "description": "an open heavy dark iron collar, hinged with its two halves spread apart into a C shape, a short length of chain and a small tarnished brass padlock, teal light glowing in the keyhole, boss treasure, single object centered, muted palette, transparent background",
+   "negative": "neck, throat, body, wearing, dog, person",
+   "note": "開いたC形の首輪だけ。首や犬は描かない。茨の冠（閉じた輪）と形で分ける"
+  },
+  {
+   "id": "relic_whetstone_chip",
+   "description": "a small triangular chip of grey whetstone with fine grit texture, one edge smoothed by use, a few tiny honey-colored sparks at the tip, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "blade, sword, knife",
+   "note": "鍛冶の砥石（完品）と区別＝小さな三角の欠片"
+  },
+  {
+   "id": "relic_herb_pouch",
+   "description": "a small cream cloth bag with its wide top folded open, packed with a bushy bundle of dried sage-green herbs and one pale flower, clean and new, a trade good for sale, single object centered, muted palette, transparent background",
+   "negative": "person",
+   "note": "行商の品（world.md）。口を開けた小袋に草が茂る形＝戦利品袋（口を縛った大袋）と形で分ける"
+  },
+  {
+   "id": "relic_old_purse",
+   "description": "a worn dark leather coin purse with a tarnished brass clasp, its top open and a few honey-colored mana grains spilling out with a faint teal sheen, an old trade good, single object centered, muted palette, transparent background",
+   "negative": "coins with faces, printed coins, person",
+   "note": "行商の品（world.md）。粒＝マナを固めた粒（硬貨の刻印なし）"
+  },
+  {
+   "id": "relic_momentum_whip",
+   "description": "a coiled dark leather whip with a tarnished brass handle, its tip lifted mid-flick with a small teal spark, the coil resting in a loose spiral, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "hand, person",
+   "note": "渦巻きの形。回収の紐（束ねた綛）と形で分ける"
+  },
+  {
+   "id": "relic_reading_glasses",
+   "description": "a pair of round brass-rimmed spectacles with teal-tinted glass lenses, folded flat, a faint teal gleam on the glass, small and delicate, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "nose, eyes, head, face, wearing",
+   "note": "眼鏡だけ。顔に掛けない"
+  },
+  {
+   "id": "relic_retrieve_cord",
+   "description": "a hank of sage-green cord folded into a tight loop and bound around the middle with twine, a tarnished brass hook dangling from the loose end, a faint teal gleam on the hook, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "spiral, coil",
+   "note": "中央を縛った綛（かせ）の形＝勢いの鞭（渦巻き）・巻物（筒）と形で分ける"
+  },
+  {
+   "id": "relic_mortar",
+   "description": "an herb grinder wheel: a boat-shaped dark iron trough with a disc-shaped tarnished brass roller wheel on a short wooden axle, crushed sage-green herbs inside the trough, single object centered, muted cream and ink palette, transparent background",
+   "negative": "pestle, bowl, cup, mortar",
+   "note": "薬研＝舟形の溝と円盤の車輪。すり鉢にしない"
+  },
+  {
+   "id": "relic_loot_bag",
+   "description": "a bulging burlap sack of muted tan tied shut with rope at the top, slumped to one side, a tarnished brass cog and a glowing teal crystal shard poking out of the top, ancient mine loot, single object centered, muted palette, transparent background",
+   "negative": "",
+   "note": "口を縛った大袋。薬草袋（口を開けた小袋）と形で分ける"
+  },
+  {
+   "id": "relic_great_tree_heart",
+   "description": "a round cross-cut slice of dark wood from a great tree, concentric growth rings across the flat side, the heartwood at the center glowing soft teal through a small crack, moss on the bark edge, single object centered, muted palette, transparent background",
+   "negative": "heart shape, blood, organ, leaf, sprout",
+   "note": "年輪の輪切り。鉄の心臓（ハート形）・成長の種（芽）と形で分ける。葉は付けない"
+  },
+  {
+   "id": "relic_steadfast_root",
+   "description": "a thick gnarled dark root coiled tightly around a grey stone, small moss patches on top, tiny teal glow in the root's cracks, heavy and immovable, ancient mine relic, single object centered, muted palette, transparent background",
+   "negative": "tree, trunk, leaves",
+   "note": ""
+  },
+  {
+   "id": "relic_harvest_sickle",
+   "description": "an ancient sickle with a curved dark steel blade and a short wooden handle bound with tarnished brass, a small teal mana crystal set where blade meets handle, the blade edge worn bright, single object centered, muted palette, transparent background",
+   "negative": "scythe, skeleton, reaper, death, grass, hand",
+   "note": "小型の鎌1本だけ。死神の大鎌にしない（草の株は主題が割れるので外した）"
+  },
+  {
+   "id": "relic_membership_card",
+   "description": "a small rectangular wooden plaque hanging vertically on a short cord, stamped with a brass cog emblem near the top and a teal wax seal below it, left blank, a trade good for sale, single object centered, muted palette, transparent background",
+   "negative": "writing, letters, numbers, text, portrait, photo",
+   "note": "行商の品（world.md）。文字は禁止＝紋章と封蝋だけ。縦に吊るす＝砥石（横長の板）と形で分ける"
+  },
+  {
+   "id": "relic_golden_boots",
+   "description": "a single tall knee-high boot of polished honey-gold leather with shiny brass buckles and cream trim, standing upright, a bit gaudy and new, a trade good for sale, single object centered, muted palette with one gold accent, transparent background",
+   "negative": "legs, feet, wearing, pair, person",
+   "note": "行商の品（world.md）。丈の高い金色の1足＝早駆けの靴（くるぶし丈の2足）と形で分ける"
+  },
+  {
+   "id": "relic_removal_chisel",
+   "description": "a stone chisel with a dark steel blade and a short wooden handle capped with a brass ring, the edge freshly sharpened, a few tiny honey-colored sparks at the tip, a trade good for sale, single object centered, muted palette, transparent background",
+   "negative": "hammer, mallet, hand",
+   "note": "行商の品。鑿1本だけ"
+  },
+  {
+   "id": "relic_witch_scale",
+   "description": "an ancient hanging scale: a single cog-shaped black iron pan suspended by three thin chains from a crooked hook, a glowing teal crystal resting in the pan, the whole thing faintly haloed in teal, boss treasure, single object centered, muted palette, transparent background",
+   "negative": "witch, hat, broom, two pans, balance beam",
+   "note": "吊り皿1枚の古代の秤＝商人の秤（皿2枚の天秤）と形で分ける"
+  },
+  {
+   "id": "relic_black_star",
+   "description": "a jagged shard of black star-stone shaped roughly like a five-pointed star, glossy obsidian surface, teal light glowing from the cracks between its facets, boss treasure, single object centered, muted cream and ink palette, transparent background",
+   "negative": "sky, night sky, sparkle, cartoon star",
+   "note": "石の欠片。空の星の記号にしない"
+  },
+  {
+   "id": "relic_tiny_house",
+   "description": "a tiny wooden model of a cottage with a tarnished brass chimney and a moss-green roof, a warm honey glow in its one small window, a small trade trinket, single object centered, muted cream and ink palette, transparent background",
+   "negative": "real building, landscape, ground, garden, person",
+   "note": "行商の品（world.md）＝ボス層だが青緑の古代の宝ではない。窓の暖色は灯の範囲だけの規約どおり小さく"
+  }
+ ],
+ "icons": [
+  {
+   "id": "sword",
+   "description": "a short straight sword pointing up, dark steel blade with a dusty rose tint and a cream edge highlight, small brass crossguard, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text",
+   "negative": "arm, blood, shield, dagger",
+   "note": "役割色は薔薇 #d97b7b（刃の面）。筋力にも使うので剣1本だけ。intent_attack（左下へ斬る）とは向きで区別＝こちらは直立"
+  },
+  {
+   "id": "shield",
+   "description": "a tall rounded kite shield seen straight on, muted sky blue front with a cream highlight stripe and a thin brass rim, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text, no emblem",
+   "negative": "emblem, heraldry, sword, arm, round shield",
+   "note": "役割色は空 #7fa7c9。「face」は顔を呼ぶので「front」に。intent_defend（丸盾）とは形で区別＝縦長カイト"
+  },
+  {
+   "id": "heart",
+   "description": "a plump rounded heart shape, muted brick red fill with one soft cream highlight near the top, thick dark ink outline, flat bold pixel art status icon for health, centered, nothing else, empty transparent background, no text",
+   "negative": "anatomical heart, veins, arrow, wings, cross mark",
+   "note": "赤は彩度を落とした煉瓦色。intent_heal（苔緑＋十字）と混ざらないよう十字は negative へ"
+  },
+  {
+   "id": "energy",
+   "description": "a single upright faceted mana crystal shard, six-sided teal gem with a pale cream highlight and a soft glow kept inside the outline, thick dark ink outline, flat bold pixel art status icon for energy, centered, nothing else, empty transparent background, no text",
+   "negative": "flame, lightning bolt, battery, coin, round bead, outer glow, bloom",
+   "note": "草稿の「丸い蜂蜜色の粒＋青緑の光点」は gold と同じ輪郭・同じ色だった。世界のマナ＝脈の結晶（このはの斧に埋まる欠片と同じ物）なので縦長の青緑の結晶片に変更。光は輪郭の内側だけ"
+  },
+  {
+   "id": "draw",
+   "description": "a blank cream paper card sliding up out of a small squared stack of cards, slight tilt, cream fill with a pale sage edge, thick dark ink outline, flat bold pixel art status icon for drawing, centered, nothing else, empty transparent background, no text",
+   "negative": "numbers, suit symbols, playing card pips, writing, smoke",
+   "note": "札の面は白紙（本家の札は世界に存在しないので記号を載せない）。exhaust（灰色の1枚が煙に溶ける）とは山札の有無と色で区別"
+  },
+  {
+   "id": "growth",
+   "description": "a young sprout with two round moss green leaves rising from a tiny mound of dark soil, cream highlight on each leaf, thick dark ink outline, flat bold pixel art status icon for growth, centered, nothing else, empty transparent background, no text",
+   "negative": "flower, tree, pot, vine",
+   "note": "役割色は苔 #8fae7b"
+  },
+  {
+   "id": "momentum",
+   "description": "three sweeping wind streaks curving to the right like a gust, honey colored strokes tapering to cream tips, no arrowhead, thick dark ink outline, flat bold pixel art status icon for momentum, centered, nothing else, empty transparent background, no text",
+   "negative": "arrow, arrowhead, cloud, tornado, leaf, paw print",
+   "note": "役割色は蜂蜜 #e0b25a。右向き（プレイヤー→敵の向き）。counter（折り返す矢）と混ざらないよう矢尻なし"
+  },
+  {
+   "id": "burn",
+   "description": "a single upright flame with two small side licks, muted ember orange body with a honey core and a cream highlight, thick dark ink outline, flat bold pixel art status icon for burning, centered, nothing else, empty transparent background, no text",
+   "negative": "logs, campfire, smoke, torch, candle",
+   "note": "焚き火ノードと区別するため薪なし"
+  },
+  {
+   "id": "exposed",
+   "description": "a round target ring with a cracked center, dusty rose ring around a cream middle split by one jagged dark crack, thick dark ink outline, flat bold pixel art status icon for a weak point, centered, nothing else, empty transparent background, no text",
+   "negative": "arrow, crosshair lines, eye, bullseye dots, coin",
+   "note": "役割色は薔薇。ひび割れが主・標的の輪が従。gold（丸い粒）と混ざらないよう中心は割れた面"
+  },
+  {
+   "id": "gold",
+   "description": "a single round pellet of hardened mana, flat honey colored disc with a small teal glint at the center and a cream rim highlight, thick dark ink outline, flat bold pixel art status icon for gold, centered, nothing else, empty transparent background, no text",
+   "negative": "numbers, engraving, portrait, stack of coins, dollar sign, crystal, facets",
+   "note": "世界ではゴールド＝マナを固めた粒なので中心に青緑の光点。energy（縦長の結晶片）とは丸い粒の形で区別"
+  },
+  {
+   "id": "exhaust",
+   "description": "a pale grey paper card dissolving upward into three wisps of smoke, its top edge fading away, muted grey tones only, thick dark ink outline, flat bold pixel art status icon for a card being exhausted, centered, nothing else, empty transparent background, no text",
+   "negative": "flame, fire, ash pile, skull, stack of cards",
+   "note": "灰色主体。燃える絵にしない（延焼と混ざる）。draw とは1枚だけ・灰色で区別"
+  },
+  {
+   "id": "pierce",
+   "description": "a straight arrow piercing clean through a small round grey shield, cream shaft with a dark steel tip poking out the far side, thick dark ink outline, flat bold pixel art status icon for piercing, centered, nothing else, empty transparent background, no text",
+   "negative": "bow, blood, feathers flying, curved arrow",
+   "note": "役割色はクリーム（矢）。盾は灰で脇役に。counter は受け板をやめたので「矢＋板」はこの札だけ"
+  },
+  {
+   "id": "skull",
+   "description": "a small rounded animal skull seen from the front, bone white with pale cream highlights and two dark hollow sockets, no lower jaw, no horns, thick dark ink outline, flat bold pixel art status icon for defeat, centered, nothing else, empty transparent background, no text",
+   "negative": "human skull, crossbones, teeth grin, pirate, horns",
+   "note": "人型を避けるため獣の頭骨。node_elite（角つき）とは角なしで区別"
+  },
+  {
+   "id": "crown",
+   "description": "a simple three-pointed crown, honey gold with a cream highlight along the top edge and one small teal gem on the middle point, thick dark ink outline, flat bold pixel art status icon for a boss, centered, nothing else, empty transparent background, no text",
+   "negative": "head, king, cushion, plinth",
+   "note": "16px なので宝石は中央の1つだけに減らした。node_boss（五叉の王冠＋台座）とは三叉・台座なしで区別"
+  },
+  {
+   "id": "hammer",
+   "description": "a stout smith's hammer standing upright on its short wooden handle, tarnished brass hammerhead with a cream highlight on the striking end, thick dark ink outline, flat bold pixel art status icon for forging, centered, nothing else, empty transparent background, no text",
+   "negative": "anvil, sparks, gavel, arm",
+   "note": "工房ノード（金床）と区別するため槌だけ。「head」単独は頭を呼ぶので「hammerhead」に"
+  },
+  {
+   "id": "question",
+   "description": "a large bold question mark symbol, cream core with a soft teal glow kept inside the outline, thick dark ink outline, flat bold pixel art status icon for the unknown, centered, nothing else, empty transparent background, no other symbols, no words",
+   "negative": "words, sentences, multiple symbols, exclamation mark",
+   "note": "主題が記号なので negative の text/letters は defaults から外して掛けること"
+  },
+  {
+   "id": "chest",
+   "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, cream highlight on the lid, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text",
+   "negative": "open lid, coins, gems spilling, lock keyhole, cogwheel, flat square box",
+   "note": "set（平たい角箱・蓋が開いている）と輪郭が被らないよう蓋を丸い樽型に"
+  },
+  {
+   "id": "flag",
+   "description": "a small triangular pennant flag fluttering to the right on a short dark pole, dusty rose cloth with a cream highlight stripe, thick dark ink outline, flat bold pixel art status icon for a goal, centered, nothing else, empty transparent background, no text, no emblem",
+   "negative": "emblem, national flag, stripes pattern, arm",
+   "note": ""
+  },
+  {
+   "id": "map",
+   "description": "a partly unrolled parchment scroll, cream paper between two wooden roller ends with a faint dotted sage path drawn across it, thick dark ink outline, flat bold pixel art status icon for a map, centered, nothing else, empty transparent background, no writing",
+   "negative": "writing, compass rose, X mark, playing card",
+   "note": "draw / exhaust の札と混ざらないよう両端のローラーを必ず出す"
+  },
+  {
+   "id": "star",
+   "description": "a plump five-pointed star, honey gold fill with a cream highlight on the upper left point, thick dark ink outline, flat bold pixel art status icon for rarity, centered, nothing else, empty transparent background, no text, no sparkles",
+   "negative": "sparkles, multiple stars, glow rays",
+   "note": ""
+  },
+  {
+   "id": "counter",
+   "description": "a single thick arrow curling back in a tight U-turn, its tip pointing left after the bend, muted teal fill with a cream highlight, thick dark ink outline, flat bold pixel art status icon for a counterattack, centered, nothing else, empty transparent background, no text",
+   "negative": "sword, shield, plate, two arrows, straight arrow, circular arrows",
+   "note": "役割色は青緑 #7ab8b0。草稿の「矢＋受け板」は pierce（矢＋盾）と同じ部品で 16px では区別できないため、板をやめて折り返す矢1本に変更（受けて返す）"
+  },
+  {
+   "id": "set",
+   "description": "an open square wooden box with its flat lid flipped up, a brass cogwheel and a coiled spring inside, muted teal glow kept inside the box, thick dark ink outline, flat bold pixel art status icon, centered, nothing else, empty transparent background, no text",
+   "negative": "robot, doll, clock face, key, outer glow, domed lid, treasure chest",
+   "note": "からくり＝足元の木の匣。舞台の実物と同じ物を描く。chest（丸蓋・閉）とは平たい角箱・開で区別"
+  },
+  {
+   "id": "crest_physical",
+   "description": "a crossed axe and pickaxe emblem, simple ink line drawing filled with flat cream paper color and a single muted sand tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text",
+   "negative": "shading, gradient, metallic shine, second color, sword",
+   "note": "紙の上の紋章。線＝墨・塗り＝紙色＋砂色1色のみ。鶴嘴は坑の道具"
+  },
+  {
+   "id": "crest_spell",
+   "description": "a spiral of mana curling outward from a center dot, simple ink line drawing filled with flat cream paper color and a single muted wisteria tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no letters",
+   "negative": "alphabet, rune, pentagram, shading, gradient, second color, circle with a line",
+   "note": "草稿の「円＋斜線のルーン」は Ø/Q の文字に見えるので渦巻きに変更（術＝体から直にマナを通す）。塗りは藤色 #a98cc4 1色"
+  },
+  {
+   "id": "crest_reaction",
+   "description": "a cogwheel with a coiled spring standing beside it, simple ink line drawing filled with flat cream paper color and a single muted teal tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text",
+   "negative": "box, clock face, shading, gradient, second color",
+   "note": "仕込み札の紋章。匣は描かず発条と歯車だけ（status の set と区別）"
+  },
+  {
+   "id": "crest_permanent",
+   "description": "a small standing lantern on a squat stone pedestal, simple ink line drawing filled with flat cream paper color and a single muted honey tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no text",
+   "negative": "outer glow, bloom, shading, gradient, second color, hanging hook, chain",
+   "note": "置物＝地へ据える作り物。吊り提灯（舞台の小物）と区別して台座に立てる"
+  },
+  {
+   "id": "intent_attack",
+   "description": "a short sword slashing diagonally down to the left, bold thick silhouette, dusty rose blade with a cream edge highlight and a small brass crossguard, dark ink outline, flat pixel art intent icon for an enemy attack, centered, nothing else, empty transparent background, no text",
+   "negative": "arm, blood, two swords, upright sword",
+   "note": "左向き（敵→プレイヤー）。status の sword（直立）と向きで区別"
+  },
+  {
+   "id": "intent_defend",
+   "description": "a broad round shield seen straight on, bold thick silhouette, muted sky blue front with a cream highlight and a dark steel rim, dark ink outline, flat pixel art intent icon for an enemy defending, centered, nothing else, empty transparent background, no text, no emblem",
+   "negative": "emblem, heraldry, sword, arm, kite shield",
+   "note": "status の shield（縦長カイト）と形で区別＝丸盾。「face」は顔を呼ぶので「front」に"
+  },
+  {
+   "id": "intent_buff",
+   "description": "a bold upward arrow with two short chevron marks stacked beneath it, thick silhouette, honey gold fill with a cream highlight, dark ink outline, flat pixel art intent icon for an enemy gaining strength, centered, nothing else, empty transparent background, no text",
+   "negative": "arm, muscle, fist, curved arrow",
+   "note": "腕は体の一部なので不採用＝上矢印。意図の中で矢はこれ1つ"
+  },
+  {
+   "id": "intent_rally",
+   "description": "a small round war drum with a mallet resting across its top, bold thick silhouette, honey colored drum with dark rim bands and a cream highlight, dark ink outline, flat pixel art intent icon for rallying allies, centered, nothing else, empty transparent background, no text",
+   "negative": "drumsticks crossed, music notes, arm",
+   "note": "鼓吹きコボルトの太鼓"
+  },
+  {
+   "id": "intent_heal",
+   "description": "a plump heart with a small cream cross mark in its center, bold thick silhouette, muted moss green fill with a cream highlight, dark ink outline, flat pixel art intent icon for an enemy healing, centered, nothing else, empty transparent background, no text, no red",
+   "negative": "red, arrow, wings, medical kit",
+   "note": "赤い heart（HP）と区別するため苔緑＋十字"
+  },
+  {
+   "id": "intent_hex",
+   "description": "a wide low puddle of purple sludge with three curling wisps of miasma rising, bold thick silhouette, muted wisteria fill with a cream highlight, dark ink outline, flat pixel art intent icon for a cursing enemy, centered, nothing else, empty transparent background, no text",
+   "negative": "skull, cauldron, bubbles, bright neon purple, egg, upright oval",
+   "note": "役割色は藤 #a98cc4（妖術師の泥呪い）。草稿の「垂れる塊」は hatch（縦長の卵）と丸い輪郭が被るので、横に広い水たまりに変更"
+  },
+  {
+   "id": "intent_destroy-set",
+   "description": "a square wooden box smashed open, a cogwheel and a broken spring tumbling out of its cracked lid, bold silhouette, muted teal glow inside with dusty rose crack lines, dark ink outline, flat pixel art intent icon, centered, nothing else, empty transparent background, no text",
+   "negative": "hammer, robot, explosion cloud, outer glow, intact box",
+   "note": "status の set（無傷の匣）の壊れた版＝からくり壊し。青緑＋薔薇の2色"
+  },
+  {
+   "id": "intent_destroy-token",
+   "description": "an empty small iron cage with thick vertical bars, bold thick silhouette, dark steel bars with a dusty rose tint and a cream highlight, dark ink outline, flat pixel art intent icon for hunting a summoned ally, centered, nothing else, empty transparent background, no text",
+   "negative": "creature, bird, lock, chain, birdcage dome",
+   "note": "従者狩り＝檻。中は空"
+  },
+  {
+   "id": "intent_steal-gold",
+   "description": "a small tied cloth sack with two round honey coins tucked against its side, bold thick silhouette, muted sage sack with a cream highlight, dark ink outline, flat pixel art intent icon for stealing gold, centered, nothing else, empty transparent background, no text",
+   "negative": "dollar sign, numbers on coins, arm, open sack",
+   "note": "粒（ゴールド）は status の gold と同じ丸い蜂蜜色"
+  },
+  {
+   "id": "intent_flee",
+   "description": "three round paw prints running to the right with two trailing wind streaks behind them, bold thick silhouette, cream fill with a pale sage tint, dark ink outline, flat pixel art intent icon for fleeing, centered, nothing else, empty transparent background, no text",
+   "negative": "feet, legs, boots, human footprints, shoe prints",
+   "note": "敵は獣なので足跡は肉球。右向き＝画面外へ逃げる"
+  },
+  {
+   "id": "intent_mill",
+   "description": "a blank cream paper card with a big ragged bite taken out of one corner, bold thick silhouette, muted wisteria tint along the bite edge, dark ink outline, flat pixel art intent icon for devouring the deck, centered, nothing else, empty transparent background, no text",
+   "negative": "teeth, mouth, numbers, suit symbols, smoke",
+   "note": "札の面は白紙"
+  },
+  {
+   "id": "intent_rest",
+   "description": "a small plump pillow with three z-shaped sleep marks floating up from it, bold thick silhouette, muted sky blue pillow with a cream highlight, dark ink outline, flat pixel art intent icon for resting, centered, nothing else, empty transparent background, no other letters",
+   "negative": "eye, nose, mouth, words, sentences, bed, blanket",
+   "note": "草稿の「閉じた片目＋まつ毛」は顔の部品で顔を呼ぶので、枕＋z に変更。z は主題の一部＝negative の letters/text は defaults から外して掛けること"
+  },
+  {
+   "id": "intent_hatch",
+   "description": "an upright tall egg with a jagged crack down its front and a sliver of teal glow inside, bold silhouette, muted sage shell with a cream highlight, dark ink outline, flat pixel art intent icon for hatching, centered, nothing else, empty transparent background, no text",
+   "negative": "chick, bird, creature, nest, outer glow, puddle, drips",
+   "note": "抱卵の走竜の卵。中身は見せない。hex（横に広い水たまり）とは縦長で区別"
+  },
+  {
+   "id": "node_battle",
+   "description": "a crossed axe and pickaxe emblem, chunky rounded shapes with thick fill like a painted map token, dark steel blades on worn wooden handles with cream highlights, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text",
+   "negative": "sword, skull, round badge background, circle border",
+   "note": "UI 側（MapScreen）が紙の駒の丸い枠を描くので、絵は紋章だけ。塗りは厚め。crest_physical と同じ意匠（坑の道具）"
+  },
+  {
+   "id": "node_elite",
+   "description": "a horned beast skull seen from the front, two curved dark horns, bone white with cream highlights and dark hollow sockets, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text",
+   "negative": "human skull, crossbones, crown, round badge background, circle border",
+   "note": "status の skull（角なし）に角を足した強個体版。ボス駒は頭骨を使わない"
+  },
+  {
+   "id": "node_boss",
+   "description": "a five-pointed crown resting on a dark stone plinth split by a glowing teal seam, honey gold crown with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text",
+   "negative": "skull, horns, king, cushion, outer glow, round badge background, circle border",
+   "note": "草稿の「王冠＋角つきの獣の頭」は node_elite（角つき頭骨）と輪郭が被るので獣の頭をやめ、王冠が脈の上に座る形に（幕3の主は一番濃い脈の上に座っている）。UI ではボス駒だけ大きく描く（56px）"
+  },
+  {
+   "id": "node_shop",
+   "description": "a merchant's balance scale, two hanging pans on a brass beam over a short post, tarnished brass with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text",
+   "negative": "coins, arm, round badge background, circle border",
+   "note": "世界では行商の店。レリック「商人の秤」と同じ物なので形を揃えてよい"
+  },
+  {
+   "id": "node_campfire",
+   "description": "a campfire of three crossed logs with one plump upright flame, muted ember orange with a honey core and cream highlight, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text",
+   "negative": "smoke, pot, tent, round badge background, circle border",
+   "note": "status の burn（薪なし）と区別するため薪あり"
+  },
+  {
+   "id": "node_workshop",
+   "description": "a squat iron anvil with a brass cogwheel leaning against its side, dark steel anvil with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, no hammer",
+   "negative": "hammer, sparks, round badge background, circle border",
+   "note": "status の hammer（槌だけ）と区別するため金床＋歯車"
+  },
+  {
+   "id": "node_unknown",
+   "description": "a big bold question mark symbol, cream paper fill with a soft teal glow kept inside the outline, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no other symbols, no words",
+   "negative": "words, sentences, multiple symbols, exclamation mark, round badge background, circle border",
+   "note": "主題が記号なので negative の text/letters は defaults から外して掛けること"
+  },
+  {
+   "id": "node_treasure",
+   "description": "a closed treasure chest with a domed barrel lid, honey colored planks with dark steel bands and a brass clasp, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text",
+   "negative": "open lid, coins, gems spilling, round badge background, circle border",
+   "note": "status の chest と同じ物（丸蓋）。駒なので塗りを厚く"
+  }
+ ],
+ "env": [
+  {
+   "id": "act2_grass",
+   "description": "damp tunnel moss clinging to wet grey rock, muted sage and moss green with small pebbles and a faint cool sheen, seamless tileable pixel art ground texture seen from directly above, dark low contrast, no objects, no border, repeating tile",
+   "negative": "flowers, bright green, warm light, lantern, objects, letters",
+   "note": "view=high top-down。act1_grass2 と同型（主題を文頭に）。64 で生成して継ぎ目の良い 32 窓を切る。注意: Stage.cs は幕2/3の床に stone を使う（BuildTerrain(mFloor=stone)）ので grass は現状未接続＝発注順は stone を先に"
+  },
+  {
+   "id": "act2_dirt",
+   "description": "hard-packed mine tunnel floor of trodden warm-tinted grey-brown earth with grit and a few small dull ore chips, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "grass, moss, plants, warm orange, glow, bloom, teal glints, objects, letters",
+   "note": "view=high top-down。鉱屑は光らせない（草稿の青緑の点は削除＝道はキャラの立つ帯なので暗く保つ。青緑の光は act3_stone の溝に譲る）。act3_dirt との差は色相＝こちらは暖みのある灰茶の土、幕3は冷たい灰と黒"
+  },
+  {
+   "id": "act2_stone",
+   "description": "old way-station paving of uneven flagstones, worn grey-blue slabs of different sizes with dark ink mortar gaps and a little moss in the cracks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "brick wall, side view, grass, objects, letters",
+   "note": "view=high top-down で正しい: Stage.cs は幕2の主床にこのタイルを使う（暖かい灰茶に tint）。同じタイルが宿場の壁（1162 mWall）にも貼られるので、目地は太めに＝側面から見ても石積みに読める形にする"
+  },
+  {
+   "id": "act2_cliff",
+   "description": "rough mine tunnel rock wall, dark grey-brown stone hewn with chisel marks, cracks and a few small ledges, dim cool light, seamless tileable pixel art cliff wall texture, no timber, no objects, no border, repeating tile",
+   "negative": "timber, beams, ladder, grass on top, sky, moss, objects, letters",
+   "note": "view=side。草稿の支保工は外した＝32px ごとに梁が立って柵に見える上、同じタイルが幕2の岩天井（Stage 1217 mCeil）にも貼られる。支保工は別小物（act2_timber 等）として発注する方が安全"
+  },
+  {
+   "id": "act3_grass",
+   "description": "ash-dusted black cavern stone, near-black dark ink rock with sparse patches of faintly glowing teal lichen and pale grey specks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "green grass, flowers, warm light, objects, letters",
+   "note": "view=high top-down。地衣の光を残すため negative の glow/bloom は外す。地衣はまばらに（面積 2〜3 割）。act2_grass と同じく現状 Stage は幕3の床に stone を使うので未接続（stone を先に）"
+  },
+  {
+   "id": "act3_dirt",
+   "description": "black rubble and fine grey ash, crushed dark stone fragments with a few tiny flakes of tarnished brass and dark steel, dusty and cold, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "grass, moss, plants, glow, warm light, objects, letters",
+   "note": "view=high top-down。黄銅の欠片は小さく少なめ（道の帯なので暗く）。act2_dirt との差は色相（冷たい灰と黒）"
+  },
+  {
+   "id": "act3_stone",
+   "description": "ancient black paving of large smooth dark ink slabs, thin engraved grooves in a plain geometric pattern with hairline teal light in a few grooves, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "grass, moss, letters, runes, readable symbols, warm light",
+   "note": "view=high top-down。Stage は幕3の主床（冷たい黒石に tint）と回廊の暗い石（1367 mDark）にこれを使う。大きく平らな板＝act3_cliff（小さめの互い違いの積み石）とシルエットを分ける。刻印が文字に流れたら letters/runes を厚く"
+  },
+  {
+   "id": "act3_cliff",
+   "description": "ancient black stone wall of fitted dark ink blocks in staggered courses, worn edges and one narrow band of carved abstract geometric ornament with a faint teal glow in its grooves, seamless tileable pixel art cliff wall texture, no objects, no border, repeating tile",
+   "negative": "letters, runes, readable symbols, grass, sky, objects, bright glow",
+   "note": "view=side。「互い違いの積み石」を足して床の act3_stone（大判の平板）と区別。帯は 32px ごとに繰り返すので細めに（1タイル中央に1本）。act3_gate の帯と同じ意匠。文字に見えたら letters/runes を厚く"
+  },
+  {
+   "id": "act2_crystal",
+   "description": "a low cluster of small teal mana crystals leaning at different angles from a dark rock base, softly lit from within, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "outer glow, halo, bloom, ground plane, cave, hands, bright saturated colors",
+   "note": "32×48。小物の末尾定型は 23 語に圧縮（元の 33 語だと主題込みで 60 語前後＝上限超え）。shading/outline は API 引数で指定。光は面の色で出す＝輪郭の外側にハローを描かない（Stage が crystal-halo と点光源を足す）。「低い群れ・角度ばらばら」で act3_spire（一本の刃）とシルエットを分ける"
+  },
+  {
+   "id": "act2_minecart",
+   "description": "an old iron mine cart on small wheels, rusted dark steel with tarnished brass rivets, heaped with ore lumps faintly tinted teal, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "rails, track, tunnel, horse, outer glow, hands",
+   "note": "3/4 向き（view=low top-down）。レールは描かない（舞台側で置く）。鉱の光は面の色だけ＝Stage が ore-glow のハローを足す"
+  },
+  {
+   "id": "act2_stalactite",
+   "description": "a cluster of stalactites of differing lengths hanging point-down from the top edge, wet grey-brown rock with pale drip tips, isolated pixel art game sprite of a single object, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "stalagmite, pointing up, floor, cave interior, hands",
+   "note": "上端をキャンバス上端に付ける。末尾定型から centered を外した（hanging from the top edge と衝突するため）。長さを揃えない＝act2_roots（曲がる束）と区別。上向き（石筍）で出たら上下反転して使う"
+  },
+  {
+   "id": "act2_roots",
+   "description": "a tangled bundle of thick tree roots hanging down from the top edge, dark brown twisting forking strands with loose ends and moss, isolated pixel art game sprite of a single object, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "tree, trunk, leaves, canopy, ground, soil, hands",
+   "note": "stalactite と同じく centered を外し上端から垂らす。「ねじれ・枝分かれ」で鍾乳石（硬い円錐）とシルエットを分ける。木の全体像（幹・葉）に流れやすいので negative を厚く"
+  },
+  {
+   "id": "act3_spire",
+   "description": "a tall teal mana crystal spire, one tapering faceted blade lit from within, its base clamped by a ring of tarnished brass, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "tower, building, castle, windows, cluster, outer glow, halo, hands",
+   "note": "48×96 の縦長。act2_crystal と同じ結晶の色味だが形を変えた＝一本の刃＋足元に古代の黄銅の締め輪（採掘機械が脈を締めている＝古代都市の識別）。塔・建物に流れたら negative を厚く。Stage が crystal-halo と点光源を足すのでハローは描かない"
+  },
+  {
+   "id": "act3_gate",
+   "description": "an ancient black stone gate, tall stepped archway of fitted dark blocks with a carved abstract band glowing teal, opening left empty, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "door, wooden doors, round arch, letters, runes, readable symbols, figures, statues, hands",
+   "note": "開口部は透明にして舞台が透けるようにする。アーチを「段々（stepped）」にして act3_aqueduct の丸アーチの列と形を分ける。紋は抽象の帯（act3_cliff と同じ意匠）で、文字に見えたら letters/runes を厚く。Stage の great-arch 差し替え口"
+  },
+  {
+   "id": "act3_aqueduct",
+   "description": "an ancient black stone aqueduct, row of four round arches on square piers, worn pale edges, faint teal line along the top, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "water, river, bridge, landscape, hills, letters, hands",
+   "note": "128×48 の横長。アーチの下は透明に。丸アーチ×4 の横長＝段々アーチ1つの act3_gate と区別（舞台の奥に横に並べる）"
+  },
+  {
+   "id": "act3_pillar_fallen",
+   "description": "a fallen ancient black stone pillar lying on its side, broken into two cracked segments with chipped fluting, dusty pale edges, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text",
+   "negative": "standing, upright, vertical, letters, runes, hands",
+   "note": "64×32 の横長。act3_pillar（立ち柱・刻印あり）と同じ石の色味に揃えるが、倒れた側は刻印を描かせない（文字化を避ける）"
+  },
+  {
+   "id": "act1",
+   "description": "deep navy night sky backdrop edge to edge, smooth gradient from dark ink above to a faintly paler blue-grey haze below, sparse faint stars, a few thin wispy clouds, no moon, no horizon, muted low contrast, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "moon, sun, mountains, hills, trees, silhouette, foreground, buildings, warm light, bright stars, big stars",
+   "note": "480×270・no_background=false（Stage.cs の注記は 384×216＝発注前に実寸を確認）。草稿の山の稜線は削除: Stage が月・星（Px.Stars）・山2列（Px.Mountains）・街の輪郭・坑口の櫓を板の手前に描くので、板に山を入れると稜線が二重になる。板は空だけ。星は Stage 側にもあるので小さく少なめ"
+  },
+  {
+   "id": "act2",
+   "description": "rough black rock ceiling of a deep mine tunnel filling the upper half, thin faint teal mana veins running through the stone, fading to pure black at the bottom, very low contrast, no warm light, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "lantern, fire, torch, warm orange light, sky, stars, timber, bright",
+   "note": "暖色ゼロ（提灯は小物で置く）。脈は細く控えめ、下 1/3 は黒。Stage は幕2に 3D の岩天井（cliff タイル）と壁の脈光を別に置くので、板はその奥で沈む暗さに。no_background=false"
+  },
+  {
+   "id": "act3",
+   "description": "vast black cavern backdrop of a buried city, a few soft teal mana veins drifting overhead like faint aurora bands, tiny pale lights of a distant city skyline along the bottom edge, low contrast, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "sky, stars, moon, clouds, sunlight, warm orange, rainbow, foreground buildings",
+   "note": "街の灯は淡い青緑〜白の点で、ごく少なく（Stage が街の輪郭と回る櫓を手前に描くので、板の灯は隙間から覗く程度）。帯は柔らかく、オーロラの虹色には振らない（Stage の aurora グローと重なるので板の帯は控えめに）。no_background=false"
+  },
+  {
+   "id": "campfire",
+   "description": "a campfire in a dark mine tunnel, log fire casting warm orange light on rough rock walls, a small iron pot hanging over the flames, a wooden box with a brass winding key beside it, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "axe, pickaxe, weapon, tools, tent, backpack, apron, daylight, sky, letters",
+   "note": "240×135・no_background=false。道具は置かない（斧・つるはしは negative）。暖色は炎の範囲だけで壁の奥は青灰に落とす。木の匣＝からくり（ぜんまいの鍵付き。実物として置いてよい唯一の札の器）"
+  },
+  {
+   "id": "workshop",
+   "description": "a makeshift workshop in a mine way-station, a wooden workbench with brass cogs and a glowing teal mana crystal, a stone forge with warm embers at the back, hammers and tongs hanging on the wall, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "apron, daylight, sunlit window, letters",
+   "note": "240×135・no_background=false。草稿の「mine-town」は世界観と齟齬（ランの工房は宿場跡の仮設の火床。里の工房ではない）ので way-station へ。作業中の人物と手が出やすいので negative を厚く。炉の火だけ暖色、結晶は青緑"
+  },
+  {
+   "id": "shop",
+   "description": "a covered wooden cart set up as a shop in a dark mine tunnel, canvas hood, wares laid out on a fold-down counter, a hanging paper lantern glowing warm orange, a small brass balance scale, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "merchant, peddler, vendor, shopkeeper, horse, donkey, signboard, price tags, letters, daylight",
+   "note": "240×135・no_background=false。「peddler's」は人物を呼ぶので description から外し、行商の気配は幌の荷車＋秤（商人の秤）で出す。看板・値札の文字は禁止。提灯の暖色は幌の下だけ（act2_lantern と同じ提灯）"
+  },
+  {
+   "id": "event",
+   "description": "a fork in a dark mine tunnel, two passages splitting left and right, a wooden signpost with blank boards, one passage lit faint teal by a glowing crack in the rock, the other pitch black, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "letters, writing, arrows, lantern, torch, warm light, daylight",
+   "note": "240×135・no_background=false。道標の板は無地（文字を書かせない）。暖色なし＝光は割れ目の青緑（露頭）だけ"
+  }
+ ]
+}

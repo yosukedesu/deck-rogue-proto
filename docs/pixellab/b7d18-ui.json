@@ -1,0 +1,185 @@
+{
+ "_note": "B7–D18 の発注書 (ui)。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す",
+ "items": [
+  {
+   "id": "cost_orb__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/cost_orb__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a round polished honey-amber glass orb with a soft inner glow and a small white specular highlight at the upper left, thin dark brass rim, the orb fills the frame edge to edge, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "cost_orb__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/cost_orb__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a round polished honey-amber glass orb with a soft inner glow and a small white specular highlight at the upper left, thin dark brass rim, the orb fills the frame edge to edge, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gem_common__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/gem_common__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small faceted gray-silver gemstone, diamond cut seen from the front, subtle light facets, the gem fills the frame, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gem_common__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/gem_common__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small faceted gray-silver gemstone, diamond cut seen from the front, subtle light facets, the gem fills the frame, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gem_uncommon__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/gem_uncommon__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small faceted sky-blue sapphire gemstone, diamond cut seen from the front, bright light facets, the gem fills the frame, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gem_uncommon__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/gem_uncommon__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small faceted sky-blue sapphire gemstone, diamond cut seen from the front, bright light facets, the gem fills the frame, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gem_rare__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/gem_rare__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small faceted honey-gold gemstone, diamond cut seen from the front, bright light facets, the gem fills the frame, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gem_rare__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/ui/gem_rare__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small faceted honey-gold gemstone, diamond cut seen from the front, bright light facets, the gem fills the frame, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "medium detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "slash__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/fx/slash__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    16
+   ],
+   "description": "a horizontal white slash streak of light, bright cream-white center thinning to sharp points at both ends, faint teal edge, motion trail, nothing else, pixel art game effect sprite, completely empty transparent background, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "flat shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "slash__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/fx/slash__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    16
+   ],
+   "description": "a horizontal white slash streak of light, bright cream-white center thinning to sharp points at both ends, faint teal edge, motion trail, nothing else, pixel art game effect sprite, completely empty transparent background, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "flat shading",
+   "detail": "low detail",
+   "no_background": true,
+   "guidance": 8
+  }
+ ]
+}

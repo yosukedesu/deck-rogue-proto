@@ -1,0 +1,5 @@
+{
+ "id": "act2_dirt",
+ "derived_from": "act1_dirt.png",
+ "note": "PixelLab の2回 (seed23/41, 7/57) がどれもタイルでなく穴や縁つきを出したので、幕1の土を暗く灰寄せして派生 (2026-09-11)"
+}

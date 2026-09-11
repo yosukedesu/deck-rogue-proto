@@ -1,0 +1,30 @@
+{
+ "id": "act3_pillar_fallen__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "a broken ancient pillar of dark grey-black stone lying on its side, snapped into two pieces with cracked ends, thin engraved bands, floating in empty space with nothing beneath it, isolated pixel art game sprite of a single object, centered, completely empty transparent background, no ground, no shadow, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, frame, text, people",
+  "image_size": {
+   "width": 64,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:54:11.226Z",
+ "judge": {
+  "pick": "A",
+  "seed": 7,
+  "at": "2026-09-11",
+  "note": "横たわる刻印の石。B は瓦礫に溶ける"
+ }
+}

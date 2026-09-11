@@ -46,14 +46,15 @@ namespace DeckRogue.Game
             }
 
             RunUi.Heading(root, "焚き火", "どちらか1つ。鍛えた後は回復なしで立ち去る");
+            float optY = RunUi.SceneWindow(root, "campfire") ? -40f : 0f;   // 情景の窓 (左上) と札が触れないよう少し下げる
 
             // 休む
             var rest = Option(root, "burn", "休む", restHeals ? "HP +" + heal + " (最大HPの " + (int)Math.Round(run.CampfireRatio * 100) + "%)" : noRest ? "レリックの効果で回復できない" : "すでに鍛えたので回復なし",
                 restHeals ? "今のHP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "立ち去る",
-                new Vector2(-260f, 0f), delegate { Audio.Play("heal", 0.8f); g.Do(new RunCommand_CampfireRest()); }, true);
+                new Vector2(-260f, optY), delegate { Audio.Play("heal", 0.8f); g.Do(new RunCommand_CampfireRest()); }, true);
             // 鍛える
             Option(root, "hammer", "鍛える", remain > 0 ? "デッキの1枚を強化 (残り " + remain + " 回)" : "この焚き火ではもう鍛えられない",
-                remain > 0 ? "鍛えると数値が伸びる・コストが下がる" : "", new Vector2(260f, 0f),
+                remain > 0 ? "鍛えると数値が伸びる・コストが下がる" : "", new Vector2(260f, optY),
                 delegate { g.SubMode = "forge"; g.Rebuild(); }, remain > 0);
         }
 

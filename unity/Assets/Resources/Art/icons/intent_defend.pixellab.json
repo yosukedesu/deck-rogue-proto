@@ -1,0 +1,30 @@
+{
+ "id": "intent_defend__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a broad round shield seen straight on, bold thick silhouette, muted sky blue front with a cream highlight and a dark steel rim, dark ink outline, flat pixel art intent icon for an enemy defending, centered, nothing else, empty transparent background, no text, no emblem, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, emblem, heraldry, sword, arm, kite shield",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:54:33.509Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

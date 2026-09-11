@@ -1,0 +1,30 @@
+{
+ "id": "act2__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "rough black rock ceiling of a deep mine tunnel filling the upper half, thin faint teal mana veins running through the stone, fading to pure black at the bottom, very low contrast, no warm light, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, lantern, fire, torch, warm orange light, sky, stars, timber, bright",
+  "image_size": {
+   "width": 384,
+   "height": 216
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:48:33.512Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "暗い岩に青緑の脈。B のトンネルは明るすぎて舞台の壁と喧嘩する"
+ }
+}

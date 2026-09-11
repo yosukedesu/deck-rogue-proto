@@ -1,0 +1,30 @@
+{
+ "id": "node_battle__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a crossed axe and pickaxe emblem, chunky rounded shapes with thick fill like a painted map token, dark steel blades on worn wooden handles with cream highlights, dark ink outline, pixel art board game piece, centered, nothing else, empty transparent background, no text, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, sword, skull, round badge background, circle border",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T06:01:59.642Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

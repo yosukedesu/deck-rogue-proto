@@ -1,0 +1,30 @@
+{
+ "id": "shop__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a covered wooden cart set up as a shop in a dark mine tunnel, canvas hood, wares laid out on a fold-down counter, a hanging paper lantern glowing warm orange, a small brass balance scale, no people, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, merchant, peddler, vendor, shopkeeper, horse, donkey, signboard, price tags, letters, daylight",
+  "image_size": {
+   "width": 240,
+   "height": 132
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:51:47.180Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "幌の荷車と吊り提灯"
+ }
+}

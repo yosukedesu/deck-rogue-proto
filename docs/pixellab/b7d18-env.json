@@ -1,0 +1,833 @@
+{
+ "_note": "B7–D18 の発注書 (env)。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す",
+ "items": [
+  {
+   "id": "act2_grass__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_grass__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "damp tunnel moss clinging to wet grey rock, muted sage and moss green with small pebbles and a faint cool sheen, seamless tileable pixel art ground texture seen from directly above, dark low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, flowers, bright green, warm light, lantern, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_grass__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_grass__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "damp tunnel moss clinging to wet grey rock, muted sage and moss green with small pebbles and a faint cool sheen, seamless tileable pixel art ground texture seen from directly above, dark low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, flowers, bright green, warm light, lantern, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_dirt__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_dirt__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "hard-packed mine tunnel floor of trodden warm-tinted grey-brown earth with grit and a few small dull ore chips, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, plants, warm orange, glow, bloom, teal glints, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_dirt__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_dirt__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "hard-packed mine tunnel floor of trodden warm-tinted grey-brown earth with grit and a few small dull ore chips, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, plants, warm orange, glow, bloom, teal glints, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_stone__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_stone__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "old way-station paving of uneven flagstones, worn grey-blue slabs of different sizes with dark ink mortar gaps and a little moss in the cracks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, brick wall, side view, grass, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_stone__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_stone__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "old way-station paving of uneven flagstones, worn grey-blue slabs of different sizes with dark ink mortar gaps and a little moss in the cracks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, brick wall, side view, grass, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_cliff__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_cliff__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "rough mine tunnel rock wall, dark grey-brown stone hewn with chisel marks, cracks and a few small ledges, dim cool light, seamless tileable pixel art cliff wall texture, no timber, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, timber, beams, ladder, grass on top, sky, moss, objects, letters",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_cliff__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act2_cliff__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "rough mine tunnel rock wall, dark grey-brown stone hewn with chisel marks, cracks and a few small ledges, dim cool light, seamless tileable pixel art cliff wall texture, no timber, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, timber, beams, ladder, grass on top, sky, moss, objects, letters",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_grass__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_grass__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "ash-dusted black cavern stone, near-black dark ink rock with sparse patches of faintly glowing teal lichen and pale grey specks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, green grass, flowers, warm light, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_grass__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_grass__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "ash-dusted black cavern stone, near-black dark ink rock with sparse patches of faintly glowing teal lichen and pale grey specks, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, green grass, flowers, warm light, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_dirt__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_dirt__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "black rubble and fine grey ash, crushed dark stone fragments with a few tiny flakes of tarnished brass and dark steel, dusty and cold, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, plants, glow, warm light, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_dirt__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_dirt__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "black rubble and fine grey ash, crushed dark stone fragments with a few tiny flakes of tarnished brass and dark steel, dusty and cold, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, plants, glow, warm light, objects, letters",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_stone__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_stone__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "ancient black paving of large smooth dark ink slabs, thin engraved grooves in a plain geometric pattern with hairline teal light in a few grooves, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, letters, runes, readable symbols, warm light",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_stone__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_stone__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "ancient black paving of large smooth dark ink slabs, thin engraved grooves in a plain geometric pattern with hairline teal light in a few grooves, seamless tileable pixel art ground texture seen from directly above, low contrast, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, grass, moss, letters, runes, readable symbols, warm light",
+   "engine": "pixflux",
+   "view": "high top-down",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_cliff__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_cliff__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "ancient black stone wall of fitted dark ink blocks in staggered courses, worn edges and one narrow band of carved abstract geometric ornament with a faint teal glow in its grooves, seamless tileable pixel art cliff wall texture, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, letters, runes, readable symbols, grass, sky, objects, bright glow",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3_cliff__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/tiles/act3_cliff__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "ancient black stone wall of fitted dark ink blocks in staggered courses, worn edges and one narrow band of carved abstract geometric ornament with a faint teal glow in its grooves, seamless tileable pixel art cliff wall texture, no objects, no border, repeating tile",
+   "negative": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, letters, runes, readable symbols, grass, sky, objects, bright glow",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2_crystal__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_crystal__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    48
+   ],
+   "description": "a low cluster of small teal mana crystals leaning at different angles from a dark rock base, softly lit from within, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, outer glow, halo, bloom, ground plane, cave, hands, bright saturated colors",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_crystal__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_crystal__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    48
+   ],
+   "description": "a low cluster of small teal mana crystals leaning at different angles from a dark rock base, softly lit from within, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, outer glow, halo, bloom, ground plane, cave, hands, bright saturated colors",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_minecart__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_minecart__23.png",
+   "seed": 23,
+   "size": [
+    48,
+    32
+   ],
+   "description": "an old iron mine cart on small wheels, rusted dark steel with tarnished brass rivets, heaped with ore lumps faintly tinted teal, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, rails, track, tunnel, horse, outer glow, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_minecart__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_minecart__41.png",
+   "seed": 41,
+   "size": [
+    48,
+    32
+   ],
+   "description": "an old iron mine cart on small wheels, rusted dark steel with tarnished brass rivets, heaped with ore lumps faintly tinted teal, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, rails, track, tunnel, horse, outer glow, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_stalactite__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_stalactite__23.png",
+   "seed": 23,
+   "size": [
+    48,
+    48
+   ],
+   "description": "a cluster of stalactites of differing lengths hanging point-down from the top edge, wet grey-brown rock with pale drip tips, isolated pixel art game sprite of a single object, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, stalagmite, pointing up, floor, cave interior, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_stalactite__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_stalactite__41.png",
+   "seed": 41,
+   "size": [
+    48,
+    48
+   ],
+   "description": "a cluster of stalactites of differing lengths hanging point-down from the top edge, wet grey-brown rock with pale drip tips, isolated pixel art game sprite of a single object, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, stalagmite, pointing up, floor, cave interior, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_roots__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_roots__23.png",
+   "seed": 23,
+   "size": [
+    48,
+    48
+   ],
+   "description": "a tangled bundle of thick tree roots hanging down from the top edge, dark brown twisting forking strands with loose ends and moss, isolated pixel art game sprite of a single object, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tree, trunk, leaves, canopy, ground, soil, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act2_roots__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act2_roots__41.png",
+   "seed": 41,
+   "size": [
+    48,
+    48
+   ],
+   "description": "a tangled bundle of thick tree roots hanging down from the top edge, dark brown twisting forking strands with loose ends and moss, isolated pixel art game sprite of a single object, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tree, trunk, leaves, canopy, ground, soil, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_spire__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_spire__23.png",
+   "seed": 23,
+   "size": [
+    48,
+    96
+   ],
+   "description": "a tall teal mana crystal spire, one tapering faceted blade lit from within, its base clamped by a ring of tarnished brass, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tower, building, castle, windows, cluster, outer glow, halo, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_spire__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_spire__41.png",
+   "seed": 41,
+   "size": [
+    48,
+    96
+   ],
+   "description": "a tall teal mana crystal spire, one tapering faceted blade lit from within, its base clamped by a ring of tarnished brass, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tower, building, castle, windows, cluster, outer glow, halo, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_gate__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_gate__23.png",
+   "seed": 23,
+   "size": [
+    96,
+    96
+   ],
+   "description": "an ancient black stone gate, tall stepped archway of fitted dark blocks with a carved abstract band glowing teal, opening left empty, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, door, wooden doors, round arch, letters, runes, readable symbols, figures, statues, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_gate__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_gate__41.png",
+   "seed": 41,
+   "size": [
+    96,
+    96
+   ],
+   "description": "an ancient black stone gate, tall stepped archway of fitted dark blocks with a carved abstract band glowing teal, opening left empty, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, door, wooden doors, round arch, letters, runes, readable symbols, figures, statues, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_aqueduct__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_aqueduct__23.png",
+   "seed": 23,
+   "size": [
+    128,
+    48
+   ],
+   "description": "an ancient black stone aqueduct, row of four round arches on square piers, worn pale edges, faint teal line along the top, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, water, river, bridge, landscape, hills, letters, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_aqueduct__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_aqueduct__41.png",
+   "seed": 41,
+   "size": [
+    128,
+    48
+   ],
+   "description": "an ancient black stone aqueduct, row of four round arches on square piers, worn pale edges, faint teal line along the top, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, water, river, bridge, landscape, hills, letters, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_pillar_fallen__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_pillar_fallen__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    32
+   ],
+   "description": "a fallen ancient black stone pillar lying on its side, broken into two cracked segments with chipped fluting, dusty pale edges, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, standing, upright, vertical, letters, runes, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act3_pillar_fallen__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/props/act3_pillar_fallen__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    32
+   ],
+   "description": "a fallen ancient black stone pillar lying on its side, broken into two cracked segments with chipped fluting, dusty pale edges, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, standing, upright, vertical, letters, runes, hands",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "act1__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/bg/act1__23.png",
+   "seed": 23,
+   "size": [
+    384,
+    216
+   ],
+   "description": "deep navy night sky backdrop edge to edge, smooth gradient from dark ink above to a faintly paler blue-grey haze below, sparse faint stars, a few thin wispy clouds, no moon, no horizon, muted low contrast, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, moon, sun, mountains, hills, trees, silhouette, foreground, buildings, warm light, bright stars, big stars",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act1__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/bg/act1__41.png",
+   "seed": 41,
+   "size": [
+    384,
+    216
+   ],
+   "description": "deep navy night sky backdrop edge to edge, smooth gradient from dark ink above to a faintly paler blue-grey haze below, sparse faint stars, a few thin wispy clouds, no moon, no horizon, muted low contrast, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, moon, sun, mountains, hills, trees, silhouette, foreground, buildings, warm light, bright stars, big stars",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/bg/act2__23.png",
+   "seed": 23,
+   "size": [
+    384,
+    216
+   ],
+   "description": "rough black rock ceiling of a deep mine tunnel filling the upper half, thin faint teal mana veins running through the stone, fading to pure black at the bottom, very low contrast, no warm light, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, lantern, fire, torch, warm orange light, sky, stars, timber, bright",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act2__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/bg/act2__41.png",
+   "seed": 41,
+   "size": [
+    384,
+    216
+   ],
+   "description": "rough black rock ceiling of a deep mine tunnel filling the upper half, thin faint teal mana veins running through the stone, fading to pure black at the bottom, very low contrast, no warm light, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, lantern, fire, torch, warm orange light, sky, stars, timber, bright",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/bg/act3__23.png",
+   "seed": 23,
+   "size": [
+    384,
+    216
+   ],
+   "description": "vast black cavern backdrop of a buried city, a few soft teal mana veins drifting overhead like faint aurora bands, tiny pale lights of a distant city skyline along the bottom edge, low contrast, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, sky, stars, moon, clouds, sunlight, warm orange, rainbow, foreground buildings",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "act3__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/bg/act3__41.png",
+   "seed": 41,
+   "size": [
+    384,
+    216
+   ],
+   "description": "vast black cavern backdrop of a buried city, a few soft teal mana veins drifting overhead like faint aurora bands, tiny pale lights of a distant city skyline along the bottom edge, low contrast, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, sky, stars, moon, clouds, sunlight, warm orange, rainbow, foreground buildings",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "lineless",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "campfire__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/campfire__23.png",
+   "seed": 23,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a campfire in a dark mine tunnel, log fire casting warm orange light on rough rock walls, a small iron pot hanging over the flames, a wooden box with a brass winding key beside it, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, axe, pickaxe, weapon, tools, tent, backpack, apron, daylight, sky, letters",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "campfire__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/campfire__41.png",
+   "seed": 41,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a campfire in a dark mine tunnel, log fire casting warm orange light on rough rock walls, a small iron pot hanging over the flames, a wooden box with a brass winding key beside it, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, axe, pickaxe, weapon, tools, tent, backpack, apron, daylight, sky, letters",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "workshop__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/workshop__23.png",
+   "seed": 23,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a makeshift workshop in a mine way-station, a wooden workbench with brass cogs and a glowing teal mana crystal, a stone forge with warm embers at the back, hammers and tongs hanging on the wall, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, apron, daylight, sunlit window, letters",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "workshop__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/workshop__41.png",
+   "seed": 41,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a makeshift workshop in a mine way-station, a wooden workbench with brass cogs and a glowing teal mana crystal, a stone forge with warm embers at the back, hammers and tongs hanging on the wall, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, apron, daylight, sunlit window, letters",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "shop__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/shop__23.png",
+   "seed": 23,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a covered wooden cart set up as a shop in a dark mine tunnel, canvas hood, wares laid out on a fold-down counter, a hanging paper lantern glowing warm orange, a small brass balance scale, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, merchant, peddler, vendor, shopkeeper, horse, donkey, signboard, price tags, letters, daylight",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "shop__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/shop__41.png",
+   "seed": 41,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a covered wooden cart set up as a shop in a dark mine tunnel, canvas hood, wares laid out on a fold-down counter, a hanging paper lantern glowing warm orange, a small brass balance scale, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, merchant, peddler, vendor, shopkeeper, horse, donkey, signboard, price tags, letters, daylight",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "event__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/event__23.png",
+   "seed": 23,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a fork in a dark mine tunnel, two passages splitting left and right, a wooden signpost with blank boards, one passage lit faint teal by a glowing crack in the rock, the other pitch black, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, letters, writing, arrows, lantern, torch, warm light, daylight",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  },
+  {
+   "id": "event__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/scenes/event__41.png",
+   "seed": 41,
+   "size": [
+    240,
+    132
+   ],
+   "description": "a fork in a dark mine tunnel, two passages splitting left and right, a wooden signpost with blank boards, one passage lit faint teal by a glowing crack in the rock, the other pitch black, no people, HD-2D Octopath Traveler style pixel art, no text",
+   "negative": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, letters, writing, arrows, lantern, torch, warm light, daylight",
+   "engine": "pixflux",
+   "view": "low top-down",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": false,
+   "guidance": 8
+  }
+ ]
+}

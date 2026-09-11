@@ -198,7 +198,9 @@ namespace DeckRogue.Game
                 var it = e.Intent;
                 var bubble = UiKit.NewRect("intent", pan);
                 // 頭上の順: 絵 → 状態の札 (spriteTop+2〜30) → 吹き出しの尾 → 吹き出し (+54〜108) → 分岐などの詳細 (+112〜)
-                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, spriteTop + 54f), new Vector2(130f, spriteTop + 108f));
+                bool hasIntentArt = it != null && Theme.Art("icons", "intent_" + it.Kind) != null;
+                float bubbleH = hasIntentArt ? 68f : 54f;   // 意図の絵 (32 ドット×2=64) が入る高さ (2026-09-11)
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, spriteTop + 54f), new Vector2(130f, spriteTop + 54f + bubbleH));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
                 bImg.raycastTarget = false;
@@ -216,7 +218,7 @@ namespace DeckRogue.Game
                 {
                     var intentArt = Theme.Art("icons", "intent_" + it.Kind);
                     var ic = UiKit.Icon(row, IntentIcon(it.Kind), 32f, intentArt != null ? Color.white : IntentColor(it.Kind));
-                    if (intentArt != null) { ic.sprite = intentArt; ic.rectTransform.sizeDelta = new Vector2(48f, 48f); UiKit.Le(ic, 48f, 48f, 48f, 48f); }
+                    if (intentArt != null) { ic.sprite = intentArt; ic.rectTransform.sizeDelta = new Vector2(64f, 64f); UiKit.Le(ic, 64f, 64f, 64f, 64f); }
                     else UiKit.Le(ic, 32f, 32f, 32f, 32f);
                     var itT = UiKit.Deco(row, IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft);
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
@@ -232,7 +234,7 @@ namespace DeckRogue.Game
                     // 舞台の上の文字は夜の札に乗せる (縁取りだけでは草と月光の上で読めなかった。2026-09-09)
                     var detail = PaperFx.NightNote(pan, detailText, 14, 340f);
                     detail.anchorMin = detail.anchorMax = new Vector2(0.5f, 0f); detail.pivot = new Vector2(0.5f, 0f);
-                    detail.anchoredPosition = new Vector2(0f, spriteTop + 112f);
+                    detail.anchoredPosition = new Vector2(0f, spriteTop + 58f + bubbleH);
                 }
             }
 

@@ -1,0 +1,30 @@
+{
+ "id": "act3__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "vast black cavern backdrop of a buried city, a few soft teal mana veins drifting overhead like faint aurora bands, tiny pale lights of a distant city skyline along the bottom edge, low contrast, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, sky, stars, moon, clouds, sunlight, warm orange, rainbow, foreground buildings",
+  "image_size": {
+   "width": 384,
+   "height": 216
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:49:15.331Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "街の輪郭と脈の光の帯"
+ }
+}

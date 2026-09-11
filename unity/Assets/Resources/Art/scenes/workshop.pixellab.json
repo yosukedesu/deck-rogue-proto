@@ -1,0 +1,30 @@
+{
+ "id": "workshop__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a makeshift workshop in a mine way-station, a wooden workbench with brass cogs and a glowing teal mana crystal, a stone forge with warm embers at the back, hammers and tongs hanging on the wall, no people, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, apron, daylight, sunlit window, letters",
+  "image_size": {
+   "width": 240,
+   "height": 132
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:50:42.518Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "作業台・炉・吊るした道具"
+ }
+}

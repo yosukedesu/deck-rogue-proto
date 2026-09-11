@@ -25,6 +25,17 @@ namespace DeckRogue.Game
             hg.childForceExpandHeight = false;
             hg.childForceExpandWidth = false;
 
+            var leaderIcon = Theme.Art("leaders", run.LeaderId + "_icon");   // 32 ドットの顔 (2026-09-11)。2倍=64 で上部バーの左端に
+            if (leaderIcon != null)
+            {
+                var li = new GameObject("leader-icon", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+                li.transform.SetParent(bar, false);
+                li.sprite = leaderIcon; li.preserveAspect = true; li.raycastTarget = false;
+                UiKit.Le(li.rectTransform, 64f, 64f, 64f, 64f);
+                string ltip = run.LeaderId;
+                try { var lname = Content.GetLeaderDef(run.LeaderId); if (lname != null) ltip = "<b>" + lname.Name + "</b>"; } catch (Exception) { }
+                Tooltip.Attach(li.gameObject, delegate { return ltip; });
+            }
             var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
             var tl = UiKit.Txt(t1, "幕 " + run.Act + " · 行 " + (run.Row + 1) + " / " + run.Map.Count, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             tl.characterSpacing = 2f;
@@ -86,6 +97,7 @@ namespace DeckRogue.Game
             var art = Theme.Art("relics", relicId);
             img.sprite = art != null ? art : ThemeFx.RelicGlyph(relicId);
             img.preserveAspect = true;
+            if (art != null) size = size <= 40f ? 32f : 64f;   // PixelLab のレリックは 32 ドット。整数倍で置く (2026-09-11)
             var rt = img.rectTransform;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(size, size);
@@ -177,6 +189,25 @@ namespace DeckRogue.Game
                     }
                 }
             }
+        }
+
+        /// <summary>情景の窓 (2026-09-11 ユーザー裁定「作って画面に組み込む」): Art/scenes/&lt;name&gt;.png (240×135) を見出しの左に 2倍 (480×270) で貼る。
+        /// 絵が無ければ何も置かず false (画面は従来の配置のまま)。true なら中身の上端を SceneBottom まで下げる</summary>
+        public const float SceneBottom = TopH + 8f + 290f + 12f;
+        public static bool SceneWindow(RectTransform root, string name)
+        {
+            var art = Theme.Art("scenes", name);
+            if (art == null) return false;
+            var cell = UiKit.NewRect("scene-" + name, root);
+            UiKit.Anchor(cell, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(40f, -(TopH + 8f + 290f)), new Vector2(40f + 500f, -(TopH + 8f)));
+            var frame = UiKit.Frame(cell, Theme.Panel, Color.white, "frame", 3f);
+            UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
+            frame.raycastTarget = false;
+            var img = new GameObject("scene", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            img.transform.SetParent(cell, false);
+            img.sprite = art; img.preserveAspect = true; img.raycastTarget = false;
+            UiKit.Anchor(img.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(10f, 10f), new Vector2(-10f, -10f));
+            return true;
         }
 
         /// <summary>画面の見出し (大きな題と小さな説明)</summary>

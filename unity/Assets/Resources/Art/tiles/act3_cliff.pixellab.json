@@ -1,0 +1,30 @@
+{
+ "id": "act3_cliff__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "ancient black stone wall of fitted dark ink blocks in staggered courses, worn edges and one narrow band of carved abstract geometric ornament with a faint teal glow in its grooves, seamless tileable pixel art cliff wall texture, no objects, no border, repeating tile",
+  "negative_description": "blurry, glow, bloom, gradient background, text, watermark, extra limbs, side profile, realistic, object, border, frame, letters, runes, readable symbols, grass, sky, objects, bright glow",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:41:59.191Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

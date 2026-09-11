@@ -1,0 +1,30 @@
+{
+ "id": "campfire__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a campfire in a dark mine tunnel, log fire casting warm orange light on rough rock walls, a small iron pot hanging over the flames, a wooden box with a brass winding key beside it, no people, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, axe, pickaxe, weapon, tools, tent, backpack, apron, daylight, sky, letters",
+  "image_size": {
+   "width": 240,
+   "height": 132
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:50:11.861Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "炎・小鍋・木の匣。B は上下に黒帯"
+ }
+}

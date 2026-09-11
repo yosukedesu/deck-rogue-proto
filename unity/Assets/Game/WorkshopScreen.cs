@@ -22,8 +22,9 @@ namespace DeckRogue.Game
             if (g.WorkshopA >= 0) marked.Add(g.WorkshopA);
             if (g.WorkshopB >= 0) marked.Add(g.WorkshopB);
 
+            float deckTop = RunUi.SceneWindow(root, "workshop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があればデッキをその下へ
             var area = UiKit.NewRect("deck", root);
-            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, 40f), new Vector2(-520f, -(RunUi.TopH + 110f)));
+            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, 40f), new Vector2(-520f, -deckTop));
             UiKit.Vert(area, 0, 0);
             RunUi.CardGrid(g, area, run.Deck,
                 delegate (int i, CardInstance c) { return marked.Contains(i) ? "外す" : "選ぶ"; },

@@ -1,0 +1,30 @@
+{
+ "id": "event__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a fork in a dark mine tunnel, two passages splitting left and right, a wooden signpost with blank boards, one passage lit faint teal by a glowing crack in the rock, the other pitch black, no people, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, letters, writing, arrows, lantern, torch, warm light, daylight",
+  "image_size": {
+   "width": 240,
+   "height": 132
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:52:31.411Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": "道標と奥の青緑の割れ目"
+ }
+}

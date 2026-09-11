@@ -1,0 +1,30 @@
+{
+ "id": "crest_spell__41",
+ "engine": "pixflux",
+ "request": {
+  "description": "a spiral of mana curling outward from a center dot, simple ink line drawing filled with flat cream paper color and a single muted wisteria tint, thick dark ink outline, no shading, no gradient, flat crest icon, centered, nothing else, empty transparent background, no letters, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, alphabet, rune, pentagram, shading, gradient, second color, circle with a line",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 41
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:52:33.319Z",
+ "judge": {
+  "pick": "B",
+  "seed": 41,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

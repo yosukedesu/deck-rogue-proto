@@ -1,0 +1,30 @@
+{
+ "id": "map__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a partly unrolled parchment scroll, cream paper between two wooden roller ends with a faint dotted sage path drawn across it, thick dark ink outline, flat bold pixel art status icon for a map, centered, nothing else, empty transparent background, no writing, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, writing, compass rose, X mark, playing card",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:48:50.343Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

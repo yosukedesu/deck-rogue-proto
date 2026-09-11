@@ -1,0 +1,30 @@
+{
+ "id": "intent_hatch__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "an upright tall egg with a jagged crack down its front and a sliver of teal glow inside, bold silhouette, muted sage shell with a cream highlight, dark ink outline, flat pixel art intent icon for hatching, centered, nothing else, empty transparent background, no text, flat pixel art game icon, bold simple silhouette readable at a small size, thin dark ink outline, one muted accent color with a cream highlight, completely empty transparent background, no text, no frame",
+  "negative_description": "text, letters, number, frame, border, background, scene, gradient background, people, character, face, hands, blurry, photo, realistic, 3d render, chick, bird, creature, nest, outer glow, puddle, drips",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "single color black outline",
+  "shading": "basic shading",
+  "detail": "low detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T06:01:03.165Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": ""
+ }
+}

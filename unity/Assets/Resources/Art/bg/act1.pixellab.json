@@ -1,0 +1,30 @@
+{
+ "id": "act1__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "deep navy night sky backdrop edge to edge, smooth gradient from dark ink above to a faintly paler blue-grey haze below, sparse faint stars, a few thin wispy clouds, no moon, no horizon, muted low contrast, HD-2D Octopath Traveler style pixel art, no text",
+  "negative_description": "person, human, figure, silhouette of a person, hands, face, portrait, text, letters, watermark, border, frame, ui, blurry, daylight, bright saturated colors, moon, sun, mountains, hills, trees, silhouette, foreground, buildings, warm light, bright stars, big stars",
+  "image_size": {
+   "width": 384,
+   "height": 216
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "lineless",
+  "shading": "medium shading",
+  "detail": "medium detail",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T05:47:33.474Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-11",
+  "note": "遠い山並みと薄い雲。月は舞台側で描く"
+ }
+}

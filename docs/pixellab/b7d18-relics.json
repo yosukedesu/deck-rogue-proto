@@ -1,0 +1,1409 @@
+{
+ "_note": "B7–D18 の発注書 (relics)。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す",
+ "items": [
+  {
+   "id": "relic_thorn_crown__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_thorn_crown__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a circlet of twisted dark bramble thorns woven into a ring, a few small sage-green leaves, the sharpest thorn tips glowing faint teal, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, head, hair, wearing, jesus, cross",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_thorn_crown__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_thorn_crown__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a circlet of twisted dark bramble thorns woven into a ring, a few small sage-green leaves, the sharpest thorn tips glowing faint teal, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, head, hair, wearing, jesus, cross",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_sage_scroll__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_sage_scroll__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a rolled cream parchment scroll with tarnished brass end caps, tied with a thin sage ribbon, the paper left blank, one edge slightly unrolled, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, runes, symbols, glyphs, text",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_sage_scroll__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_sage_scroll__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a rolled cream parchment scroll with tarnished brass end caps, tied with a thin sage ribbon, the paper left blank, one edge slightly unrolled, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, runes, symbols, glyphs, text",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_swift_boots__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_swift_boots__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pair of low worn dark leather mining boots with tarnished brass buckles and moss-green laces, standing side by side, a faint teal spark at the heels, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, legs, feet, wearing, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_swift_boots__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_swift_boots__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pair of low worn dark leather mining boots with tarnished brass buckles and moss-green laces, standing side by side, a faint teal spark at the heels, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, legs, feet, wearing, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_shield_shard__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_shield_shard__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a curved crescent-shaped fragment broken from the rim of a large dark steel shield, chipped tarnished brass edge, a faint engraved cog pattern, cracks glowing dim teal, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, complete shield, round shield",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_shield_shard__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_shield_shard__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a curved crescent-shaped fragment broken from the rim of a large dark steel shield, chipped tarnished brass edge, a faint engraved cog pattern, cracks glowing dim teal, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, complete shield, round shield",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_vanguard_shield__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_vanguard_shield__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round buckler of dark steel with a domed brass center boss and a ring of rivets, a few scratches and dents, a thin sage strap behind it, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, arm, wearing, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_vanguard_shield__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_vanguard_shield__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round buckler of dark steel with a domed brass center boss and a ring of rivets, a few scratches and dents, a thin sage strap behind it, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, arm, wearing, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_iron_heart__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_iron_heart__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a heart-shaped mechanism of riveted dark iron plates with a small tarnished brass cog on its side and a tiny teal mana crystal set in the center, faintly glowing, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, blood, gore, veins, organ, valentine",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_iron_heart__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_iron_heart__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a heart-shaped mechanism of riveted dark iron plates with a small tarnished brass cog on its side and a tiny teal mana crystal set in the center, faintly glowing, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, blood, gore, veins, organ, valentine",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_hunters_boon__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_hunters_boon__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a fang charm: a curved pale fang tied with a dark leather cord to a tarnished brass ring, one small sage feather hanging beside it, a faint teal glow inside the fang, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, animal, beast, head, skull, arrow, bow, hunter, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_hunters_boon__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_hunters_boon__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a fang charm: a curved pale fang tied with a dark leather cord to a tarnished brass ring, one small sage feather hanging beside it, a faint teal glow inside the fang, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, animal, beast, head, skull, arrow, bow, hunter, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_collectors_bag__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_collectors_bag__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a worn dark leather mining satchel with a tarnished brass clasp and a moss-green shoulder strap, rectangular with its flap half open and a few glowing teal ore chunks peeking out, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_collectors_bag__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_collectors_bag__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a worn dark leather mining satchel with a tarnished brass clasp and a moss-green shoulder strap, rectangular with its flap half open and a few glowing teal ore chunks peeking out, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_deep_breath__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_deep_breath__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round tarnished brass incense burner with a pierced lid, a single thin curl of pale smoke rising from it, a soft honey-colored ember glowing inside, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, fire, flames, candle",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_deep_breath__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_deep_breath__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round tarnished brass incense burner with a pierced lid, a single thin curl of pale smoke rising from it, a soft honey-colored ember glowing inside, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, fire, flames, candle",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_growth_seed__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_growth_seed__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single large smooth seed of dark ink brown, a tiny pale sprout with two small sage leaves emerging from its top, the sprout tip glowing faint teal, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, soil, pot, ground",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_growth_seed__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_growth_seed__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single large smooth seed of dark ink brown, a tiny pale sprout with two small sage leaves emerging from its top, the sprout tip glowing faint teal, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, soil, pot, ground",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_swift_sash__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_swift_sash__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a folded cloth sash of moss green with honey-colored trim and a small tarnished brass buckle, both ends fluttering as if in wind, a faint teal spark at one end, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, waist, body, wearing, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_swift_sash__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_swift_sash__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a folded cloth sash of moss green with honey-colored trim and a small tarnished brass buckle, both ends fluttering as if in wind, a faint teal spark at one end, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, waist, body, wearing, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_oldroot_cup__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_oldroot_cup__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ancient goblet carved from a gnarled dark root, bound with two tarnished brass bands, filled to the brim with glowing teal mana liquid, small moss patches on the stem, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_oldroot_cup__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_oldroot_cup__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ancient goblet carved from a gnarled dark root, bound with two tarnished brass bands, filled to the brim with glowing teal mana liquid, small moss patches on the stem, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_raptor_eye__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_raptor_eye__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a hawk's-eye gem pendant: a round polished honey-amber orb with a dark vertical slit, held in a tarnished brass clasp shaped like a curled talon, hanging from a short chain, a faint teal gleam on the glass, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, bird, head, face, eyelid, eyelashes, realistic eyeball",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_raptor_eye__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_raptor_eye__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a hawk's-eye gem pendant: a round polished honey-amber orb with a dark vertical slit, held in a tarnished brass clasp shaped like a curled talon, hanging from a short chain, a faint teal gleam on the glass, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, bird, head, face, eyelid, eyelashes, realistic eyeball",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_merchant_scale__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_merchant_scale__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small polished brass balance scale with two hanging pans on chains, one pan holding a few honey-colored mana grains, the beam tilted slightly, new and well kept, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, rust, crack, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_merchant_scale__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_merchant_scale__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small polished brass balance scale with two hanging pans on chains, one pan holding a few honey-colored mana grains, the beam tilted slightly, new and well kept, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, rust, crack, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_smith_whetstone__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_smith_whetstone__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a rectangular grey whetstone worn concave in the middle, resting in a small dark wooden cradle, a sheen of honey-colored oil on its surface and a few tiny metal filings, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, blade, sword, knife",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_smith_whetstone__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_smith_whetstone__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a rectangular grey whetstone worn concave in the middle, resting in a small dark wooden cradle, a sheen of honey-colored oil on its surface and a few tiny metal filings, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, blade, sword, knife",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_talisman_pouch__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_talisman_pouch__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a flat folded cloth wrap of dark ink fabric, like a breast-fold wallet, tied shut with a teal cord, three blank cream paper strips tucked into the fold with their edges glowing faint teal, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, runes, symbols, glyphs, calligraphy",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_talisman_pouch__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_talisman_pouch__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a flat folded cloth wrap of dark ink fabric, like a breast-fold wallet, tied shut with a teal cord, three blank cream paper strips tucked into the fold with their edges glowing faint teal, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, runes, symbols, glyphs, calligraphy",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_quiet_bell__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_quiet_bell__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round tarnished brass bell hanging from a short teal cord, its rim wrapped in a soft sage cloth muffler tied with twine, a faint teal gleam on the brass, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, church, tower, mouth",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_quiet_bell__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_quiet_bell__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round tarnished brass bell hanging from a short teal cord, its rim wrapped in a soft sage cloth muffler tied with twine, a faint teal gleam on the brass, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, church, tower, mouth",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_double_talisman__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_double_talisman__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "two blank cream paper strips overlapping in a shallow V, pinned together at the top by a small tarnished brass cog clip, edges glowing faint teal, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, runes, symbols, glyphs, calligraphy",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_double_talisman__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_double_talisman__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "two blank cream paper strips overlapping in a shallow V, pinned together at the top by a small tarnished brass cog clip, edges glowing faint teal, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, runes, symbols, glyphs, calligraphy",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_crown_shard__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_crown_shard__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a broken arc segment of an ancient tarnished brass crown, three sharp points remaining, one teal mana crystal still set in it and glowing brightly, dark steel inlay, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, head, wearing, complete crown",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_crown_shard__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_crown_shard__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a broken arc segment of an ancient tarnished brass crown, three sharp points remaining, one teal mana crystal still set in it and glowing brightly, dark steel inlay, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, head, wearing, complete crown",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_cursed_key__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_cursed_key__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an old dark iron key with a cog-shaped bow, wrapped loosely in a thin dark chain, sickly teal light seeping from cracks in the metal, tiny wisps of teal haze, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, skull, lock, door",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_cursed_key__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_cursed_key__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an old dark iron key with a cog-shaped bow, wrapped loosely in a thin dark chain, sickly teal light seeping from cracks in the metal, tiny wisps of teal haze, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, skull, lock, door",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_philosopher_stone__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_philosopher_stone__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a faceted teal mana crystal the size of an egg standing upright on a flat tarnished brass cog pedestal, glowing strongly from within with a few small sparks drifting around it, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, claw, animal, pendant, chain",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_philosopher_stone__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_philosopher_stone__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a faceted teal mana crystal the size of an egg standing upright on a flat tarnished brass cog pedestal, glowing strongly from within with a few small sparks drifting around it, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, claw, animal, pendant, chain",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_slaver_collar__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_slaver_collar__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an open heavy dark iron collar, hinged with its two halves spread apart into a C shape, a short length of chain and a small tarnished brass padlock, teal light glowing in the keyhole, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, neck, throat, body, wearing, dog, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_slaver_collar__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_slaver_collar__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an open heavy dark iron collar, hinged with its two halves spread apart into a C shape, a short length of chain and a small tarnished brass padlock, teal light glowing in the keyhole, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, neck, throat, body, wearing, dog, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_whetstone_chip__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_whetstone_chip__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small triangular chip of grey whetstone with fine grit texture, one edge smoothed by use, a few tiny honey-colored sparks at the tip, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, blade, sword, knife",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_whetstone_chip__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_whetstone_chip__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small triangular chip of grey whetstone with fine grit texture, one edge smoothed by use, a few tiny honey-colored sparks at the tip, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, blade, sword, knife",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_herb_pouch__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_herb_pouch__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small cream cloth bag with its wide top folded open, packed with a bushy bundle of dried sage-green herbs and one pale flower, clean and new, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_herb_pouch__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_herb_pouch__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small cream cloth bag with its wide top folded open, packed with a bushy bundle of dried sage-green herbs and one pale flower, clean and new, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_old_purse__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_old_purse__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a worn dark leather coin purse with a tarnished brass clasp, its top open and a few honey-colored mana grains spilling out with a faint teal sheen, an old trade good, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, coins with faces, printed coins, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_old_purse__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_old_purse__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a worn dark leather coin purse with a tarnished brass clasp, its top open and a few honey-colored mana grains spilling out with a faint teal sheen, an old trade good, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, coins with faces, printed coins, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_momentum_whip__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_momentum_whip__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a coiled dark leather whip with a tarnished brass handle, its tip lifted mid-flick with a small teal spark, the coil resting in a loose spiral, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, hand, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_momentum_whip__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_momentum_whip__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a coiled dark leather whip with a tarnished brass handle, its tip lifted mid-flick with a small teal spark, the coil resting in a loose spiral, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, hand, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_reading_glasses__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_reading_glasses__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pair of round brass-rimmed spectacles with teal-tinted glass lenses, folded flat, a faint teal gleam on the glass, small and delicate, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, nose, eyes, head, face, wearing",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_reading_glasses__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_reading_glasses__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pair of round brass-rimmed spectacles with teal-tinted glass lenses, folded flat, a faint teal gleam on the glass, small and delicate, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, nose, eyes, head, face, wearing",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_retrieve_cord__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_retrieve_cord__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a hank of sage-green cord folded into a tight loop and bound around the middle with twine, a tarnished brass hook dangling from the loose end, a faint teal gleam on the hook, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, spiral, coil",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_retrieve_cord__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_retrieve_cord__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a hank of sage-green cord folded into a tight loop and bound around the middle with twine, a tarnished brass hook dangling from the loose end, a faint teal gleam on the hook, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, spiral, coil",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_mortar__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_mortar__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an herb grinder wheel: a boat-shaped dark iron trough with a disc-shaped tarnished brass roller wheel on a short wooden axle, crushed sage-green herbs inside the trough, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, pestle, bowl, cup, mortar",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_mortar__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_mortar__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an herb grinder wheel: a boat-shaped dark iron trough with a disc-shaped tarnished brass roller wheel on a short wooden axle, crushed sage-green herbs inside the trough, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, pestle, bowl, cup, mortar",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_loot_bag__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_loot_bag__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a bulging burlap sack of muted tan tied shut with rope at the top, slumped to one side, a tarnished brass cog and a glowing teal crystal shard poking out of the top, ancient mine loot, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_loot_bag__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_loot_bag__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a bulging burlap sack of muted tan tied shut with rope at the top, slumped to one side, a tarnished brass cog and a glowing teal crystal shard poking out of the top, ancient mine loot, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_great_tree_heart__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_great_tree_heart__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a round cross-cut slice of dark wood from a great tree, concentric growth rings across the flat side, the heartwood at the center glowing soft teal through a small crack, moss on the bark edge, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, heart shape, blood, organ, leaf, sprout",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_great_tree_heart__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_great_tree_heart__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a round cross-cut slice of dark wood from a great tree, concentric growth rings across the flat side, the heartwood at the center glowing soft teal through a small crack, moss on the bark edge, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, heart shape, blood, organ, leaf, sprout",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_steadfast_root__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_steadfast_root__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a thick gnarled dark root coiled tightly around a grey stone, small moss patches on top, tiny teal glow in the root's cracks, heavy and immovable, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tree, trunk, leaves",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_steadfast_root__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_steadfast_root__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a thick gnarled dark root coiled tightly around a grey stone, small moss patches on top, tiny teal glow in the root's cracks, heavy and immovable, ancient mine relic, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, tree, trunk, leaves",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_harvest_sickle__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_harvest_sickle__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ancient sickle with a curved dark steel blade and a short wooden handle bound with tarnished brass, a small teal mana crystal set where blade meets handle, the blade edge worn bright, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, scythe, skeleton, reaper, death, grass, hand",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_harvest_sickle__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_harvest_sickle__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ancient sickle with a curved dark steel blade and a short wooden handle bound with tarnished brass, a small teal mana crystal set where blade meets handle, the blade edge worn bright, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, scythe, skeleton, reaper, death, grass, hand",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_membership_card__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_membership_card__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small rectangular wooden plaque hanging vertically on a short cord, stamped with a brass cog emblem near the top and a teal wax seal below it, left blank, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, letters, numbers, text, portrait, photo",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_membership_card__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_membership_card__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small rectangular wooden plaque hanging vertically on a short cord, stamped with a brass cog emblem near the top and a teal wax seal below it, left blank, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, writing, letters, numbers, text, portrait, photo",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_golden_boots__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_golden_boots__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single tall knee-high boot of polished honey-gold leather with shiny brass buckles and cream trim, standing upright, a bit gaudy and new, a trade good for sale, single object centered, muted palette with one gold accent, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, legs, feet, wearing, pair, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_golden_boots__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_golden_boots__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single tall knee-high boot of polished honey-gold leather with shiny brass buckles and cream trim, standing upright, a bit gaudy and new, a trade good for sale, single object centered, muted palette with one gold accent, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, legs, feet, wearing, pair, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_removal_chisel__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_removal_chisel__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a stone chisel with a dark steel blade and a short wooden handle capped with a brass ring, the edge freshly sharpened, a few tiny honey-colored sparks at the tip, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, hammer, mallet, hand",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_removal_chisel__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_removal_chisel__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a stone chisel with a dark steel blade and a short wooden handle capped with a brass ring, the edge freshly sharpened, a few tiny honey-colored sparks at the tip, a trade good for sale, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, hammer, mallet, hand",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_witch_scale__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_witch_scale__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ancient hanging scale: a single cog-shaped black iron pan suspended by three thin chains from a crooked hook, a glowing teal crystal resting in the pan, the whole thing faintly haloed in teal, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, witch, hat, broom, two pans, balance beam",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_witch_scale__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_witch_scale__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ancient hanging scale: a single cog-shaped black iron pan suspended by three thin chains from a crooked hook, a glowing teal crystal resting in the pan, the whole thing faintly haloed in teal, boss treasure, single object centered, muted palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, witch, hat, broom, two pans, balance beam",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_black_star__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_black_star__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a jagged shard of black star-stone shaped roughly like a five-pointed star, glossy obsidian surface, teal light glowing from the cracks between its facets, boss treasure, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, sky, night sky, sparkle, cartoon star",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_black_star__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_black_star__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a jagged shard of black star-stone shaped roughly like a five-pointed star, glossy obsidian surface, teal light glowing from the cracks between its facets, boss treasure, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, sky, night sky, sparkle, cartoon star",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_tiny_house__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_tiny_house__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a tiny wooden model of a cottage with a tarnished brass chimney and a moss-green roof, a warm honey glow in its one small window, a small trade trinket, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, real building, landscape, ground, garden, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "relic_tiny_house__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/b7d18/relics/relic_tiny_house__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a tiny wooden model of a cottage with a tarnished brass chimney and a moss-green roof, a warm honey glow in its one small window, a small trade trinket, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, real building, landscape, ground, garden, person",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  }
+ ]
+}
