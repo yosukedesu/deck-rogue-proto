@@ -263,6 +263,30 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>現在ノードの戦闘を開始する (戦闘シードはラン RNG から決定的に生成)。elite でエリート補正</summary>
+        // ---- デバッグ用の入口 (2026-09-12 ユーザー「あなたの確認用にデバッグメニュー」→ 自動巡回 shots state)。
+        // 通常のコマンド経路 (ApplyRunCommand) を通さずに任意のフェーズへ跳ぶ。純関数のまま private の規則を呼ぶだけで、TS 側との等価性契約 (ゴールデン) の外
+        public static RunState DebugLaunchCombat(RunState run, string encounterId)
+        {
+            // 行 -1 (開始前) からでも撃てるように、地図の最初の戦闘ノードに立ってから始める (LaunchCombat はノードの種別で倍率を読む)
+            var r = run;
+            if (CurrentNode(r) == null)
+            {
+                bool placed = false;
+                for (int row = 0; row < r.Map.Count && !placed; row++)
+                    for (int col = 0; col < r.Map[row].Count && !placed; col++)
+                        if (r.Map[row][col].Type == MapNodeTypes.Battle) { r = r with { Row = row, Col = col }; placed = true; }
+            }
+            return LaunchCombat(r, false, encounterId);
+        }
+        public static RunState DebugOpenTreasure(RunState run) => OpenTreasure(run);
+        public static RunState DebugRollRewards(RunState run) => RollRewards(run);
+        public static RunState DebugOpenEvent(RunState run, string? eventId)
+        {
+            string id = eventId ?? (Content.AllEvents.Count > 0 ? Content.AllEvents[0].Id : throw new InvalidOperationException("イベントが無い"));
+            Content.GetEventDef(id); // 未定義なら throw
+            return run with { EventId = id, Phase = RunPhases.Event, Combat = null, RewardOptions = null };
+        }
+
         private static RunState LaunchCombat(RunState run, bool elite, string? encounterOverride = null)
         {
             var node = CurrentNode(run);

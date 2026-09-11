@@ -365,6 +365,9 @@ npm run build        # 本番ビルド (型チェック込み)
 npm run goldens      # ゴールデンマスター生成 (goldens/runs/。Unity移植の等価性契約。goldens:verify で照合)
 npm run gen:csharp   # types.ts → unity/.../Generated/Types.g.cs (C# record を生成。手で編集しない)
 scripts/unity-win.sh android && scripts/unity-win.sh install   # Android: APK をビルドして USB のスマホへ (2026-09-09 実機動作確認済み。Hub の Android Build Support が要る)
+STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意の状態へ跳んで1枚撮る (2026-09-12。phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost
+                     #   act/deck/relics/hp/gold/difficulty/leader=チェックポイント開始・enemy=<encounterId>(combat)・event=<id>・pick=<idx,idx>・submode=forge・shopmode=upgrade|remove・viewmap/viewdeck/log=1・name=)
+                     #   例: STATE="phase=combat;enemy=enemy_probe;viewmap=1" … shots state 4242 2 ／ STATE="phase=shop;act=2;deck=deck_big_mana;relics=relic_oldroot_cup;hp=40" … shots state 7
 ```
 
 ### worktree 並列 (方式分岐実験が必要になった場合のみ)

@@ -81,6 +81,7 @@ namespace DeckRogue.Game
                         break;
                     case "run": yield return RunTour(g); break;
                     case "workshop": yield return WorkshopOnly(g); break;   // 工房だけ (⭐レシピの提示の確認。2026-09-12)
+                    case "state": yield return StateJump(g, Arg("-state") ?? ""); break;   // 任意の状態へ跳んで撮る (2026-09-12)
                     case "tour":
                     default:
                         yield return Tour(g);
@@ -215,6 +216,91 @@ namespace DeckRogue.Game
             yield return WaitPresentation();
             yield return new WaitForSeconds(0.6f);
             yield return Shot("battle-turn2");
+        }
+
+        /// <summary>
+        /// 任意の状態へ跳んで1枚撮る (2026-09-12 ユーザー「あなたの確認用にデバッグメニュー」)。
+        /// -state "key=value;key=value" で指定。キー:
+        ///   phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost  act=1..3  deck=<deckId>  relics=<id,id>  hp=<%>  gold=<n>  difficulty=<n>  leader=<id>
+        ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
+        ///   viewmap=1  viewdeck=1  log=1  name=<shot名>
+        /// act/deck/relics/hp/gold/difficulty のどれかがあればチェックポイント開始 (CreateDebugCheckpointRun)、無ければ通常開始
+        /// </summary>
+        IEnumerator StateJump(GameRoot g, string spec)
+        {
+            var kv = new Dictionary<string, string>();
+            foreach (var part in spec.Split(';'))
+            {
+                int eq = part.IndexOf('=');
+                if (eq > 0) kv[part.Substring(0, eq).Trim().ToLowerInvariant()] = part.Substring(eq + 1).Trim();
+            }
+            string Get(string k, string dflt = null) { string v; return kv.TryGetValue(k, out v) ? v : dflt; }
+            string phase = (Get("phase", "map") ?? "map").ToLowerInvariant();
+            g.SetSeed(_seed);
+            if (Get("leader") != null) g.LeaderId = Get("leader");
+            if (Get("difficulty") != null) { int d; if (int.TryParse(Get("difficulty"), out d)) g.Difficulty = d; }
+            bool checkpoint = Get("act") != null || Get("deck") != null || Get("relics") != null || Get("hp") != null || Get("gold") != null;
+            string startErr = null;   // catch の中では yield できないので外で撮る
+            try
+            {
+                if (checkpoint)
+                {
+                    int act; if (!int.TryParse(Get("act", "1"), out act)) act = 1;
+                    int gold; bool hasGold = int.TryParse(Get("gold", ""), out gold);
+                    double hpPct; bool hasHp = double.TryParse(Get("hp", ""), out hpPct);
+                    var relics = Get("relics") != null ? new List<string>(Get("relics").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0)) : null;
+                    var opts = new ReplayOriginCheckpoint
+                    {
+                        Act = act,
+                        DeckId = Get("deck") ?? (act >= 2 ? "deck_big_mana" : g.LeaderId == "leader_green" ? "starter" : "starter_" + g.LeaderId.Replace("leader_", "")),   // 緑のスターターの id は "starter"
+                        RelicIds = relics,
+                        HpRatio = hasHp ? hpPct / 100.0 : (double?)null,
+                        Gold = hasGold ? gold : (int?)null,
+                        Difficulty = g.Difficulty,
+                    };
+                    g.Rs = DeckRogue.Engine.Run.CreateDebugCheckpointRun(_seed, ReactionModes.SetConfirm, g.LeaderId, opts);
+                }
+                else g.StartRun();
+            }
+            catch (Exception ex) { startErr = ex.Message; }
+            if (startErr != null) { Debug.LogError("[Autopilot] state: 開始に失敗 " + startErr); yield return Shot("state-error"); yield break; }
+            if (g.Rs == null) { yield return Shot("state-no-run"); yield break; }
+
+            var rs = g.Rs;
+            try
+            {
+                switch (phase)
+                {
+                    case "combat":
+                        if (Get("enemy") != null) g.Rs = DeckRogue.Engine.Run.DebugLaunchCombat(rs, Get("enemy"));
+                        else
+                        {   // 最初に選べる戦闘ノードへ進む (通常経路)
+                            var choices = DeckRogue.Engine.Run.NextChoices(rs);
+                            int col = choices.Count > 0 ? choices[0] : 0;
+                            for (int i = 0; i < choices.Count; i++) { var n = rs.Map[rs.Row + 1][choices[i]]; if (n.Type == MapNodeTypes.Battle) { col = choices[i]; break; } }
+                            g.Do(new RunCommand_ChooseNode { Col = col });
+                        }
+                        break;
+                    case "reward": g.Rs = DeckRogue.Engine.Run.DebugRollRewards(rs); break;
+                    case "relic": g.Rs = DeckRogue.Engine.Run.DebugOpenTreasure(rs); break;
+                    case "shop": g.Rs = DeckRogue.Engine.Run.OpenShop(rs); g.ShopMode = Get("shopmode"); break;
+                    case "event": g.Rs = DeckRogue.Engine.Run.DebugOpenEvent(rs, Get("event")); break;
+                    case "campfire": g.Rs = rs with { Phase = RunPhases.Campfire, Combat = null }; g.SubMode = Get("submode"); break;
+                    case "workshop": g.Rs = rs with { Phase = RunPhases.Workshop, Combat = null }; break;
+                    case "won": g.Rs = rs with { Phase = RunPhases.Won, Combat = null }; break;
+                    case "lost": g.Rs = rs with { Phase = RunPhases.Lost, Combat = null }; break;
+                    default: break;   // map
+                }
+            }
+            catch (Exception ex) { Debug.LogError("[Autopilot] state: フェーズへ跳べない " + ex.Message); }
+            var picks = (Get("pick") ?? "").Split(',').Select(x => { int v; return int.TryParse(x.Trim(), out v) ? v : -1; }).Where(v => v >= 0).ToList();
+            if (phase == "workshop") { g.WorkshopA = picks.Count > 0 ? picks[0] : -1; g.WorkshopB = picks.Count > 1 ? picks[1] : -1; }
+            if (Get("viewmap") == "1") g.ViewMap = true;
+            if (Get("viewdeck") == "1") g.ViewDeck = true;
+            if (Get("log") == "1") g.ShowLog = true;
+            g.Rebuild();
+            yield return WaitPresentation();
+            yield return Shot(Get("name") ?? ("state-" + phase), 10);
         }
 
         /// <summary>ランを始めて即 工房の状態に差し替えて撮る (⭐レシピの相手札の光・結果の札)。run 巡回は強個体戦で時間切れになりやすいので単独の口</summary>
