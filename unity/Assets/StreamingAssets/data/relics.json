@@ -487,5 +487,817 @@
       "goldOnPickup": 60,
       "upgradeRandomOnPickup": 1
     }
+  },
+  {
+    "id": "relic_horn_cleat",
+    "name": "角の留め具",
+    "sprite": "⚓",
+    "description": "2ターン目の開始時、ブロック12",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainBlock",
+        "amount": 12,
+        "condition": {
+          "turn": 2
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_mercury_hourglass",
+    "name": "水銀の砂時計",
+    "sprite": "⏳",
+    "description": "毎ターン開始時、敵全体に3ダメージ",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 3,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "relic_red_mask",
+    "name": "赤面の面",
+    "sprite": "🎭",
+    "description": "戦闘開始時、敵全体に威圧1",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "weakenEnemy",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "relic_orichalcum",
+    "name": "山銅の板",
+    "sprite": "🟫",
+    "description": "ターン終了時、ブロックが0なら6得る",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onTurnEnd",
+        "effect": "gainBlock",
+        "amount": 6,
+        "condition": {
+          "blockZero": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_happy_flower",
+    "name": "陽気な花",
+    "sprite": "🌼",
+    "description": "3ターンごとに一時マナ+1",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainEnergy",
+        "amount": 1,
+        "every": 3
+      }
+    ]
+  },
+  {
+    "id": "relic_maw_bank",
+    "name": "大口の貯金箱",
+    "sprite": "🐷",
+    "description": "マップを1行進むたび+12G。ショップで何か買うと止まる（幕1〜2で見つかる）",
+    "rarity": "common",
+    "actMax": 2,
+    "bonus": {
+      "goldPerRow": 12
+    }
+  },
+  {
+    "id": "relic_serpent_skull",
+    "name": "蛇の頭骨",
+    "sprite": "🐍",
+    "description": "?に入るたび+30G（幕1〜2で見つかる）",
+    "rarity": "common",
+    "actMax": 2,
+    "bonus": {
+      "goldPerUnknown": 30
+    }
+  },
+  {
+    "id": "relic_tiny_chest",
+    "name": "小さな宝箱",
+    "sprite": "🧰",
+    "description": "?の4回目は必ず宝箱になる",
+    "rarity": "common",
+    "bonus": {
+      "unknownChestEvery": 4
+    }
+  },
+  {
+    "id": "relic_old_coin",
+    "name": "古い金貨",
+    "sprite": "🪙",
+    "description": "取った時、+120G",
+    "rarity": "common",
+    "bonus": {
+      "goldOnPickup": 120
+    }
+  },
+  {
+    "id": "relic_apprentice_bill",
+    "name": "見習いの請求書",
+    "sprite": "🧾",
+    "description": "工房の合成が50G安くなる",
+    "rarity": "common",
+    "bonus": {
+      "fusionDiscount": 50
+    }
+  },
+  {
+    "id": "relic_throwing_blades",
+    "name": "投げ刃の束",
+    "sprite": "🔪",
+    "description": "1ターンに攻撃札を3枚プレイするたび、成長+1",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addGrowth",
+        "amount": 1,
+        "every": 3,
+        "everyScope": "turn"
+      }
+    ]
+  },
+  {
+    "id": "relic_ornate_fan",
+    "name": "飾り扇",
+    "sprite": "🪭",
+    "description": "1ターンに攻撃札を3枚プレイするたび、ブロック4",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainBlock",
+        "amount": 4,
+        "every": 3,
+        "everyScope": "turn"
+      }
+    ]
+  },
+  {
+    "id": "relic_letter_knife",
+    "name": "封切りの小刀",
+    "sprite": "🗡️",
+    "description": "1ターンに呪文を3枚プレイするたび、敵全体に5ダメージ",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "dealDamage",
+        "amount": 5,
+        "target": "all",
+        "every": 3,
+        "everyScope": "turn"
+      }
+    ]
+  },
+  {
+    "id": "relic_ink_pot",
+    "name": "墨壺",
+    "sprite": "🖋️",
+    "description": "カードを10枚プレイするたび、1枚ドロー",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onCardPlayed",
+        "effect": "drawCards",
+        "amount": 1,
+        "every": 10
+      }
+    ]
+  },
+  {
+    "id": "relic_flail",
+    "name": "連節棍",
+    "sprite": "🥢",
+    "description": "攻撃札を10枚プレイするたび、一時マナ+1",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainEnergy",
+        "amount": 1,
+        "every": 10
+      }
+    ]
+  },
+  {
+    "id": "relic_sundial",
+    "name": "日時計",
+    "sprite": "🕰️",
+    "description": "山札を3回切り直すたび、一時マナ+2",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onShuffle",
+        "effect": "gainEnergy",
+        "amount": 2,
+        "every": 3
+      }
+    ]
+  },
+  {
+    "id": "relic_gremlin_horn",
+    "name": "小鬼の角笛",
+    "sprite": "📯",
+    "description": "敵を倒すたび、一時マナ+1と1枚ドロー",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onEnemyDied",
+        "effect": "gainEnergy",
+        "amount": 1
+      },
+      {
+        "trigger": "onEnemyDied",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_centennial_puzzle",
+    "name": "百年の謎かけ",
+    "sprite": "🧩",
+    "description": "戦闘で最初に攻撃でHPを失った時、次のターンのドロー+3",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onDamageTaken",
+        "effect": "drawCardsNextTurn",
+        "amount": 3,
+        "once": "combat"
+      }
+    ]
+  },
+  {
+    "id": "relic_self_forming_clay",
+    "name": "自ら固まる粘土",
+    "sprite": "🧱",
+    "description": "攻撃でHPを失うたび、次のターンの開始時にブロック+3",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onDamageTaken",
+        "effect": "gainBlockNextTurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "relic_art_of_war",
+    "name": "兵法書",
+    "sprite": "📕",
+    "description": "攻撃札を1枚もプレイせずにターンを終えると、次のターンの一時マナ+1",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnEnd",
+        "effect": "gainEnergyNextTurn",
+        "amount": 1,
+        "condition": {
+          "noAttackThisTurn": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_mummified_hand",
+    "name": "干からびた手",
+    "sprite": "✋",
+    "description": "置物を場に出すたび、次のカード-1",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPermanentEntered",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_twin_band",
+    "name": "表裏の帯",
+    "sprite": "🎗️",
+    "description": "攻撃札をプレイするたび、ブロック1",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "gainBlock",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_forge_ember",
+    "name": "鍛冶の火種",
+    "sprite": "🔥",
+    "description": "工房で合成した札は鍛えた状態になる",
+    "rarity": "uncommon",
+    "bonus": {
+      "fusionUpgraded": true
+    }
+  },
+  {
+    "id": "relic_captains_wheel",
+    "name": "舵輪",
+    "sprite": "🛞",
+    "description": "3ターン目の開始時、ブロック18",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainBlock",
+        "amount": 18,
+        "condition": {
+          "turn": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_stone_calendar",
+    "name": "石の暦",
+    "sprite": "📅",
+    "description": "7ターン目の終了時、敵全体に52ダメージ",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnEnd",
+        "effect": "dealDamage",
+        "amount": 52,
+        "target": "all",
+        "condition": {
+          "turn": 7
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_abacus",
+    "name": "算盤",
+    "sprite": "🧮",
+    "description": "山札を切り直すたび、ブロック6",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onShuffle",
+        "effect": "gainBlock",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "relic_sturdy_clamp",
+    "name": "頑丈な留め具",
+    "sprite": "🗜️",
+    "description": "ターン開始時、ブロックを10まで持ち越す",
+    "rarity": "rare",
+    "combatRule": {
+      "blockKeep": 10
+    }
+  },
+  {
+    "id": "relic_tungsten_rod",
+    "name": "重金の棒",
+    "sprite": "🪨",
+    "description": "敵の攻撃の各ヒットのHP損失-1",
+    "rarity": "rare",
+    "combatRule": {
+      "hpLossReduce": 1
+    }
+  },
+  {
+    "id": "relic_old_gatepost",
+    "name": "古い門柱",
+    "sprite": "⛩️",
+    "description": "敵の攻撃の1ヒットで受ける未ブロック分が5以下なら1になる",
+    "rarity": "rare",
+    "combatRule": {
+      "smallHitToOne": 5
+    }
+  },
+  {
+    "id": "relic_beating_remnant",
+    "name": "脈打つ欠片",
+    "sprite": "💓",
+    "description": "1ターンに敵の攻撃で失うHPは20まで",
+    "rarity": "rare",
+    "combatRule": {
+      "maxHpLossPerTurn": 20
+    }
+  },
+  {
+    "id": "relic_lizard_tail",
+    "name": "蜥蜴の尾",
+    "sprite": "🦎",
+    "description": "ランで1度だけ、致死ダメージを耐えて最大HPの半分で立つ",
+    "rarity": "rare",
+    "combatRule": {
+      "deathSave": true
+    }
+  },
+  {
+    "id": "relic_prayer_wheel",
+    "name": "祈りの車輪",
+    "sprite": "☸️",
+    "description": "通常戦の勝利でカード報酬がもう1組出る",
+    "rarity": "rare",
+    "bonus": {
+      "extraRewardRounds": 1
+    }
+  },
+  {
+    "id": "relic_singing_bowl",
+    "name": "鳴り鉢",
+    "sprite": "🥣",
+    "description": "カード報酬を見送るたび、最大HP+2",
+    "rarity": "rare",
+    "bonus": {
+      "skipRewardMaxHp": 2
+    }
+  },
+  {
+    "id": "relic_cloak_clasp",
+    "name": "外套の留め金",
+    "sprite": "🧥",
+    "description": "ターン終了時、手札1枚につきブロック1",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnEnd",
+        "effect": "gainBlockPerHandCard",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_pocketwatch",
+    "name": "懐中時計",
+    "sprite": "⌚",
+    "description": "3枚以下のプレイで終えたターンの次のターン、ドロー+3",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onTurnEnd",
+        "effect": "drawCardsNextTurn",
+        "amount": 3,
+        "condition": {
+          "maxPlaysThisTurn": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "relic_runic_cube",
+    "name": "ルーンの立方体",
+    "sprite": "🎲",
+    "description": "攻撃でHPを失うたび、1枚ドロー",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onDamageTaken",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "relic_wing_boots",
+    "name": "翼の靴",
+    "sprite": "🪽",
+    "description": "3回まで、線の無い次の行のノードへ進める",
+    "rarity": "rare",
+    "bonus": {
+      "wingBoots": 3
+    }
+  },
+  {
+    "id": "relic_peace_pipe",
+    "name": "安らぎの煙管",
+    "sprite": "🎋",
+    "description": "焚き火で「取り除く」が選べる（休む/鍛えると排他）",
+    "rarity": "rare",
+    "bonus": {
+      "campfireRemove": true
+    }
+  },
+  {
+    "id": "relic_girya",
+    "name": "重石",
+    "sprite": "🏋️",
+    "description": "焚き火で「鍛錬」が選べる（以後の戦闘開始時の成長+1。3回まで。休む/鍛えると排他）",
+    "rarity": "rare",
+    "bonus": {
+      "campfireTrain": 3
+    }
+  },
+  {
+    "id": "relic_mango",
+    "name": "大きな果実",
+    "sprite": "🥭",
+    "description": "取った時、最大HP+14",
+    "rarity": "rare",
+    "bonus": {
+      "maxHp": 14
+    }
+  },
+  {
+    "id": "relic_runic_pyramid",
+    "name": "ルーンの角錐",
+    "sprite": "🔺",
+    "description": "ターン終了時に手札を捨てない",
+    "rarity": "boss",
+    "combatRule": {
+      "retainHand": true
+    }
+  },
+  {
+    "id": "relic_astrolabe",
+    "name": "星読みの盤",
+    "sprite": "🔭",
+    "description": "取った時、デッキから3枚を選んで同レア度の別の札に変え、鍛える",
+    "rarity": "boss",
+    "bonus": {
+      "transformOnPickup": 3
+    }
+  },
+  {
+    "id": "relic_empty_cage",
+    "name": "空の鳥籠",
+    "sprite": "🪹",
+    "description": "取った時、デッキから2枚を選んで取り除く",
+    "rarity": "boss",
+    "bonus": {
+      "removeOnPickup": 2
+    }
+  },
+  {
+    "id": "relic_calling_bell",
+    "name": "呼び鈴",
+    "sprite": "🔔",
+    "description": "取った時、レリックを3個と呪いの烙印1枚を受け取る",
+    "rarity": "boss",
+    "bonus": {
+      "relicsOnPickup": 3,
+      "brandsOnPickup": 1
+    }
+  },
+  {
+    "id": "relic_runic_dome",
+    "name": "ルーンの円蓋",
+    "sprite": "🏛️",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。敵の意図が見えない（からくりの確認の窓では実値が見える）",
+    "rarity": "boss",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ],
+    "combatRule": {
+      "hideIntents": true
+    }
+  },
+  {
+    "id": "relic_ancient_box",
+    "name": "古代の匣",
+    "sprite": "📦",
+    "description": "取った時、デッキの打撃と防御をすべて同レア度の別の札に変える",
+    "rarity": "boss",
+    "bonus": {
+      "transformBasicsOnPickup": true
+    }
+  },
+  {
+    "id": "relic_ice_cream",
+    "name": "溶けない氷菓",
+    "sprite": "🍨",
+    "description": "余ったエナジーを次のターンへ持ち越す",
+    "rarity": "boss",
+    "combatRule": {
+      "energyCarry": true
+    }
+  },
+  {
+    "id": "relic_velvet_choker",
+    "name": "天鵞絨の首輪",
+    "sprite": "📿",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。1ターンにプレイできるカードは6枚まで",
+    "rarity": "boss",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ],
+    "combatRule": {
+      "playCap": 6
+    }
+  },
+  {
+    "id": "relic_fusion_hammer",
+    "name": "融合の鎚",
+    "sprite": "🔨",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。焚き火で鍛えられない",
+    "rarity": "boss",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ],
+    "bonus": {
+      "noForge": true
+    }
+  },
+  {
+    "id": "relic_molten_egg",
+    "name": "溶けた卵",
+    "sprite": "🥚",
+    "description": "デッキに加わる物理の札が鍛えた状態になる",
+    "rarity": "shop",
+    "bonus": {
+      "upgradeOnAdd": [
+        "physical"
+      ]
+    }
+  },
+  {
+    "id": "relic_frozen_egg",
+    "name": "凍った卵",
+    "sprite": "🧊",
+    "description": "デッキに加わる呪文の札が鍛えた状態になる",
+    "rarity": "shop",
+    "bonus": {
+      "upgradeOnAdd": [
+        "spell"
+      ]
+    }
+  },
+  {
+    "id": "relic_mossy_egg",
+    "name": "苔むした卵",
+    "sprite": "🪺",
+    "description": "デッキに加わる置物の札が鍛えた状態になる",
+    "rarity": "shop",
+    "bonus": {
+      "upgradeOnAdd": [
+        "permanent"
+      ]
+    }
+  },
+  {
+    "id": "relic_amplifier_draught",
+    "name": "増幅の薬",
+    "sprite": "⚗️",
+    "description": "X札のXが+2（支払いは増えない）",
+    "rarity": "shop",
+    "combatRule": {
+      "xBonus": 2
+    }
+  },
+  {
+    "id": "relic_clockwork_charm",
+    "name": "時計仕掛けの土産",
+    "sprite": "⚙️",
+    "description": "戦闘開始時、アーティファクト1（状態異常の付与を1回弾く）",
+    "rarity": "shop",
+    "combatRule": {
+      "artifact": 1
+    }
+  },
+  {
+    "id": "relic_dig_pick",
+    "name": "発掘の鶴嘴",
+    "sprite": "⛏️",
+    "description": "焚き火で「発掘」（レリックを1個）が選べる（休む/鍛えると排他）",
+    "rarity": "shop",
+    "bonus": {
+      "campfireDig": true
+    }
+  },
+  {
+    "id": "relic_sulfur_shard",
+    "name": "硫黄の欠片",
+    "sprite": "🌋",
+    "description": "毎ターン開始時、成長+1。戦闘開始時、敵全員が筋力+1",
+    "rarity": "shop",
+    "colors": [
+      "green"
+    ],
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onCombatStart",
+        "effect": "strengthenEnemy",
+        "amount": 1,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "relic_artisan_gloves",
+    "name": "職人の手袋",
+    "sprite": "🧤",
+    "description": "工房で1回の訪問に2回合成できる",
+    "rarity": "shop",
+    "bonus": {
+      "workshopFuses": 1
+    }
+  },
+  {
+    "id": "relic_meal_ticket",
+    "name": "行商の食券",
+    "sprite": "🎫",
+    "description": "ショップに入るたびHP+15",
+    "rarity": "shop",
+    "bonus": {
+      "shopHeal": 15
+    }
+  },
+  {
+    "id": "relic_obsidian_periapt",
+    "name": "黒曜の護符",
+    "sprite": "🔮",
+    "description": "呪いの烙印を受け取るたび、最大HP+6",
+    "rarity": "event",
+    "bonus": {
+      "maxHpPerBrand": 6
+    }
+  },
+  {
+    "id": "relic_ward_charm",
+    "name": "厄除けの札",
+    "sprite": "🏷️",
+    "description": "次に受け取る呪いの烙印2枚を無効にする",
+    "rarity": "event",
+    "bonus": {
+      "brandWard": 2
+    }
+  },
+  {
+    "id": "relic_blue_candle",
+    "name": "青い蝋燭",
+    "sprite": "🕯️",
+    "description": "呪いの烙印をプレイできる（0E・HP-1・消滅）",
+    "rarity": "event",
+    "combatRule": {
+      "brandsPlayable": true
+    }
+  },
+  {
+    "id": "relic_travel_candle",
+    "name": "旅の蝋燭",
+    "sprite": "🪔",
+    "description": "5戦の間、戦闘開始時にブロック6。戦闘に勝つたび残りが減り、尽きると消える",
+    "rarity": "event",
+    "expiresAfterBattles": 5,
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainBlock",
+        "amount": 6
+      }
+    ]
+  },
+  {
+    "id": "relic_rusty_anchor",
+    "name": "錆びた錨",
+    "sprite": "⚓",
+    "description": "戦闘開始時、ブロック3",
+    "rarity": "event",
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainBlock",
+        "amount": 3
+      }
+    ]
   }
 ]
