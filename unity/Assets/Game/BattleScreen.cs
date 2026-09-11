@@ -222,7 +222,7 @@ namespace DeckRogue.Game
                     var ic = UiKit.Icon(row, IntentIcon(it.Kind), 32f, intentArt != null ? Color.white : IntentColor(it.Kind));
                     if (intentArt != null) { ic.sprite = intentArt; ic.rectTransform.sizeDelta = new Vector2(64f, 64f); UiKit.Le(ic, 64f, 64f, 64f, 64f); }
                     else UiKit.Le(ic, 32f, 32f, 32f, 32f);
-                    var itT = UiKit.Deco(row, IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft);
+                    var itT = UiKit.Deco(row, st.HideIntents == true ? "？" : IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft); // ルーンの円蓋 (2026-09-12): 意図を隠す
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
                     // デバフ・筋力・盾の予告は吹き出しの中に (2026-09-09「敵行動表示にダメージだけでなくデバフも予告」)
                     if (it.Inflict != null) BubblePill(row, "exposed", CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));

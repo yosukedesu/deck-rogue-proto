@@ -559,7 +559,8 @@ function simulateRuns(count: number, baseSeed: number): void {
         run.phase === 'workshop' ||
         run.phase === 'shop' ||
         run.phase === 'event' ||
-        run.phase === 'relic-reward'
+        run.phase === 'relic-reward' ||
+        run.phase === 'relic-choose'
       ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
         if (run.phase === 'map') {
@@ -609,6 +610,10 @@ function simulateRuns(count: number, baseSeed: number): void {
         }
         if (run.phase === 'relic-reward') {
           run = applyRunCommand(run, { type: 'PickRelic', index: 0 })
+          continue
+        }
+        if (run.phase === 'relic-choose') {
+          run = applyRunCommand(run, { type: 'RelicChooseCards', indices: [] }) // ボットは選ばない (判断が要るため)
           continue
         }
         if (run.phase === 'reward') {

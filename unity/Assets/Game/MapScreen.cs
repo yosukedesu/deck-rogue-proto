@@ -58,6 +58,9 @@ namespace DeckRogue.Game
             var choices = DeckRogue.Engine.Run.NextChoices(run);
             var choiceSet = new HashSet<int>();
             for (int i = 0; i < choices.Count; i++) choiceSet.Add(choices[i]);
+            // 翼の靴 (2026-09-12 本家 Wing Boots): 残回数があれば線の無い次の行のノードも選べる (線は引かない = ノードだけ押せる)
+            var wings = DeckRogue.Engine.Run.WingChoices(run);
+            for (int i = 0; i < wings.Count; i++) choiceSet.Add(wings[i]);
             int nextRow = run.Row + 1;
 
             // 通ってきた道 (現在地から親を逆に辿る。複数の親があれば列が近い方)

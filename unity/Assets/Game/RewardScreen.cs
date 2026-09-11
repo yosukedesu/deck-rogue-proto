@@ -88,6 +88,37 @@ namespace DeckRogue.Game
             RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipRelic()); }, 18, 260f, 52f);
         }
 
+        /// <summary>relic-choose (2026-09-12 本家形): 空の鳥籠=除去 / 星読みの盤=変成+鍛え の対象をデッキから選ぶ (選ばなくてもよい)</summary>
+        public static void RelicChoose(GameRoot g, RectTransform root)
+        {
+            var run = g.Rs;
+            var p = run.PendingRelicChoice;
+            if (p == null) return;
+            RelicDef rd = null;
+            try { rd = Content.GetRelicDef(p.RelicId); } catch (Exception) { }
+            Backdrop(g, root, rd != null ? rd.Name : "レリック");
+            bool remove = p.Mode == "remove";
+            string verb = remove ? "取り除く" : "変成して鍛える";
+            RunUi.Heading(root, rd != null ? rd.Name : "レリック",
+                p.Count + "枚まで選んで「決定」。" + (remove ? "デッキは5枚を下回れない" : "同レア度の別の札にランダムで変わり、鍛えた状態で入る") + "（選ばなくてもよい）");
+            var area = UiKit.NewRect("choose", root);
+            UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
+            UiKit.Vert(area, 0, 0);
+            RunUi.CardGrid(g, area, run.Deck,
+                delegate (int i, CardInstance c) { return g.RelicChoosePicks.Contains(i) ? "✓ " + verb : "選ぶ"; },
+                delegate (int i, CardInstance c) { return g.RelicChoosePicks.Contains(i) || g.RelicChoosePicks.Count < p.Count; },
+                delegate (int i)
+                {
+                    if (g.RelicChoosePicks.Contains(i)) g.RelicChoosePicks.Remove(i);
+                    else if (g.RelicChoosePicks.Count < p.Count) g.RelicChoosePicks.Add(i);
+                    Audio.Play("card_play", 0.5f);
+                    g.Rebuild();
+                },
+                400f);
+            RunUi.BottomButton(root, "決定 (" + g.RelicChoosePicks.Count + "/" + p.Count + "枚を" + verb + ")",
+                delegate { Audio.Play("buff", 0.7f); g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>(g.RelicChoosePicks) }); }, 18, 420f, 52f);
+        }
+
         /// <summary>レリック1個のパネル (絵文字・名前・レア度・説明)</summary>
         public static RectTransform RelicPanel(Transform parent, RelicDef rd, string id, float w, float h)
         {

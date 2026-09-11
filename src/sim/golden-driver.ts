@@ -10,7 +10,7 @@ import { applyRunCommand, canUpgradeCard, createRun, eventChoiceNeedsCard, nextC
 import type { ReplayOrigin, RunCommand, RunState } from '../engine/run.ts'
 import { chooseCommand } from './run.ts'
 
-const ACTIVE = new Set(['combat', 'reward', 'map', 'campfire', 'workshop', 'shop', 'event', 'relic-reward'])
+const ACTIVE = new Set(['combat', 'reward', 'map', 'campfire', 'workshop', 'shop', 'event', 'relic-reward', 'relic-choose'])
 
 /** 現在のフェーズに対するボットの次の一手 (終了フェーズなら null)。候補は優先順に並べ、不正なら次へ倒す */
 export function botRunCandidates(run: RunState): readonly RunCommand[] {
@@ -33,6 +33,8 @@ export function botRunCandidates(run: RunState): readonly RunCommand[] {
       return (run.rewardOptions?.length ?? 0) > 0 ? [{ type: 'PickReward', index: 0 }, { type: 'SkipReward' }] : [{ type: 'SkipReward' }]
     case 'relic-reward':
       return (run.relicOptions?.length ?? 0) > 0 ? [{ type: 'PickRelic', index: 0 }, { type: 'SkipRelic' }] : [{ type: 'SkipRelic' }]
+    case 'relic-choose':
+      return [{ type: 'RelicChooseCards', indices: [] }]
     case 'campfire': {
       const up = run.deck.findIndex((c) => canUpgradeCard(c))
       return up >= 0 && run.hp >= run.maxHp * 0.6 ? [{ type: 'CampfireUpgrade', index: up }, { type: 'CampfireRest' }] : [{ type: 'CampfireRest' }]

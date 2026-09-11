@@ -395,6 +395,7 @@ namespace DeckRogue.Game
                 {
                     case RunPhases.Reward: g.Do(new RunCommand_PickReward { Index = 0 }); break;
                     case RunPhases.RelicReward: g.Do(new RunCommand_PickRelic { Index = 0 }); break;
+                    case RunPhases.RelicChoose: g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>() }); break;
                     case RunPhases.Campfire: g.Do(new RunCommand_CampfireRest()); break;
                     case RunPhases.Shop: g.Do(new RunCommand_ShopLeave()); break;
                     case RunPhases.Workshop: g.Do(new RunCommand_WorkshopSkip()); break;
@@ -509,6 +510,7 @@ namespace DeckRogue.Game
                     case RunPhases.Campfire: cmd = new RunCommand_CampfireRest(); break;
                     case RunPhases.Workshop: cmd = new RunCommand_WorkshopSkip(); break;
                     case RunPhases.RelicReward: cmd = new RunCommand_SkipRelic(); break;
+                    case RunPhases.RelicChoose: cmd = new RunCommand_RelicChooseCards { Indices = new List<int>() }; break;
                     case RunPhases.Reward: cmd = new RunCommand_SkipReward(); break;
                 }
                 if (cmd == null) break;

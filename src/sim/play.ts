@@ -36,7 +36,7 @@ function cname(cardId: string): string {
   }
 }
 import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -178,6 +178,7 @@ function branchText(it: { kind: string; shownMin: number; shownMax: number; hits
 function intentLine(s: GameState, i: number): string {
   const e = s.enemies[i]
   if (!e.intent) return '---'
+  if (s.hideIntents === true) return '❓見えない (ルーンの円蓋。からくりの確認窓では実値が出る)'
   // 条件付き意図: 両分岐を予告する (プレイヤーが自ターン中にどちらを選ばせるか決められる)
   if (e.intent.conditionalOn === 'set' && e.intent.alt && !playerCanSet(s)) {
     // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)
@@ -315,7 +316,9 @@ function renderBattle(s: GameState, logFrom: number): string {
     void e
     worst += worstIncomingFrom(s, i) // 式は engine/summary.ts に1本化 (2026-09-02)
   })
-  {
+  if (s.hideIntents === true) {
+    L.push(`⚠️ 今フェーズの最悪被ダメ予測: ？ (ルーンの円蓋: 意図は見えない。現在の防御 ${p.block + p.iceBlock} / HP ${p.hp})`)
+  } else {
     // 0でも行を出す (2026-09-02 Opusラン: 非攻撃ターンに行ごと消えると「表示漏れ」と迷う)
     const defense = p.block + p.iceBlock
     const through = Math.max(0, worst - defense)
@@ -603,15 +606,17 @@ const NODE_LABEL: Record<string, string> = { campfire: '焚き火', workshop: '�
 function renderMapBrief(run: RunState): string {
   const L: string[] = []
   const cands = nextChoices(run)
+  const wings = wingChoices(run)
   const reach = reachableSet(run)
   L.push(`🗺 マップ簡易表示 (幕${run.act}/3。全図は show <file> full)`)
+  if (wings.length > 0) L.push(`  🪽翼の靴: 残り${relicStateOf(run, 'wingBoots')}回。線の無い次の行 [col:${wings.join(',')}] へも進める`)
   const from = run.row + 1
   for (let r = Math.min(run.map.length - 1, from + 2); r >= Math.max(0, from); r--) {
     const cells = run.map[r].map((n, c) => {
       const label = n.encounterId !== null ? `${NODE_ICON[n.type]}${encounterName(n.encounterId)}` : `${NODE_ICON[n.type]}${NODE_LABEL[n.type] ?? n.type}`
       const edges = n.next.length > 0 ? `→${n.next.join('·')}` : ''
       const unreachable = r > run.row && !reach.has(`${r}:${c}`) ? '(到達不可)' : ''
-      const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : ''
+      const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : r === run.row + 1 && wingChoices(run).includes(c) ? `←🪽翼で選べる[col:${c}]` : ''
       return `[${c}]${label}${edges}${unreachable}${choice}`
     })
     L.push(` ${r === from ? '→' : '  '}行${String(r + 1).padStart(2)}: ${cells.join(' | ')}`)
@@ -658,7 +663,7 @@ function renderMap(run: RunState): string {
       const edges = n.next.length > 0 ? `→${n.next.join('·')}` : ''
       const here = r === run.row && c === run.col ? '【現在地】' : ''
       const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`) ? '(到達不可)' : ''
-      const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : ''
+      const choice = r === run.row + 1 && cands.includes(c) ? `←選べる[col:${c}]` : r === run.row + 1 && wingChoices(run).includes(c) ? `←🪽翼で選べる[col:${c}]` : ''
       return `[${c}]${label}${edges}${here}${unreachable}${choice}`
     })
     const mark = r === run.row + 1 ? '→' : '  '
@@ -722,7 +727,16 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
         ? '  強化 (CampfireUpgrade) → デッキの1枚を鍛える (量の効果が+50%。同じ札は1回だけ)'
         : '  強化 (CampfireUpgrade) はこの焚き火では使えない (使用済み)',
     )
-    L.push('  除去はショップのみ (2026-09-03 焚き火の「取り除く」は廃止。休む/鍛えるの二択)')
+    {
+      // レリック限定の第3選択肢 (2026-09-12 本家形)
+      const opt = campfireOptions(run)
+      const fresh = (run.campfireUpgradesUsed ?? 0) === 0
+      if (!opt.forge) L.push('  ⚠ 融合の鎚: 焚き火では鍛えられない')
+      if (opt.dig && fresh) L.push('  発掘 (CampfireDig) → 発掘の鶴嘴: レリックを1個掘って立ち去る (休む/鍛えると排他)')
+      if (opt.trainLeft > 0 && fresh) L.push(`  鍛錬 (CampfireTrain) → 重石: 以後の戦闘開始時の成長+1 (現在+${relicStateOf(run, 'train')}・あと${opt.trainLeft}回。休む/鍛えると排他)`)
+      if (opt.remove && fresh) L.push('  取り除く (CampfireRemove index:N) → 安らぎの煙管: デッキの1枚を永久に除去 (休む/鍛えると排他)')
+      else L.push('  除去はショップのみ (2026-09-03 焚き火の「取り除く」は廃止。休む/鍛えるの二択)')
+    }
     run.deck.forEach((c, i) => {
       const mark =
         forgeLeftHere <= 0 ? '' : canUpgradeCard(c) ? ` → 鍛えると: ${cardLine(upgradeCard(c).def)}` : ' 【鍛えられない】'
@@ -770,6 +784,13 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
     L.push('   (同じ色同士。効果の合体=2枚の効果を全部持つ札。コストは合計−1〔最低1・上限5。0E素材は値引きにならない〕。同名2枚は量を合算した「真・」化)')
     L.push('   特定の組み合わせは手書きレシピ(⭐)にヒットし、計算値より少し強い一品になる')
+  } else if (run.phase === 'relic-choose' && run.pendingRelicChoice) {
+    const p = run.pendingRelicChoice
+    const rd = getRelicDef(p.relicId)
+    L.push(`🔮 ${rd.name}: ${rd.description}`)
+    L.push(`  デッキから${p.count}枚まで選んで${p.mode === 'remove' ? '取り除く (5枚は下回れない)' : '同レア度の別札に変成して鍛える'}。選ばなくてもよい`)
+    run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
+    L.push('→ {"type":"RelicChooseCards","indices":[N,...]}')
   } else if (run.phase === 'relic-reward' && run.relicOptions) {
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
     L.push('レリック報酬 (1つ選ぶ or スキップ):')
@@ -876,7 +897,7 @@ if (mode === 'new-run') {
   if (sf.kind === 'run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
-      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
+      ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'RelicChooseCards', 'CampfireDig', 'CampfireTrain', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }

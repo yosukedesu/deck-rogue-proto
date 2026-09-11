@@ -880,3 +880,6 @@ button:disabled { cursor: not-allowed; }
   .turn-controls .btn-endturn { width: 100%; }
   .keyhelp { left: 0; right: 0; min-width: 0; }
 }
+
+/* 翼の靴 (2026-09-12): 線の無い先へ進めるノード = 破線の輪 */
+.map-node-wing circle { stroke-dasharray: 5 3; }

@@ -292,7 +292,7 @@ describe('報酬・マップ・経済', () => {
   })
 
   it('大口の貯金箱: 1行進むたび+12G。ショップで買うと止まる', () => {
-    let run = { ...createRun(11, 'set-confirm'), relics: ['relic_maw_bank'] }
+    let run: RunState = { ...createRun(11, 'set-confirm'), relics: ['relic_maw_bank'] }
     const gold = run.gold
     run = applyRunCommand(run, { type: 'ChooseNode', col: nextChoices(run)[0] })
     expect(run.gold).toBe(gold + 12)
@@ -332,7 +332,7 @@ describe('焚き火の第3選択肢 (レリック限定) と工房', () => {
     const dig = applyRunCommand({ ...run, relics: ['relic_dig_pick'] }, { type: 'CampfireDig' })
     expect(dig.relics.length).toBe(2)
     expect(['map', 'relic-choose']).toContain(dig.phase)
-    let g = { ...run, relics: ['relic_girya'] }
+    let g: RunState = { ...run, relics: ['relic_girya'] }
     expect(campfireOptions(g).trainLeft).toBe(3)
     g = applyRunCommand(g, { type: 'CampfireTrain' })
     expect(relicStateOf(g, 'train')).toBe(1)
@@ -352,7 +352,7 @@ describe('焚き火の第3選択肢 (レリック限定) と工房', () => {
   })
 
   it('職人の手袋: 工房で2回合成できる。鍛冶の火種: 合成結果が鍛えられている', () => {
-    let run = skipUntil(createRun(11, 'set-confirm'), 'workshop', 'workshop')
+    let run: RunState = skipUntil(createRun(11, 'set-confirm'), 'workshop', 'workshop')
     if (run.phase !== 'workshop') return
     run = { ...run, relics: ['relic_artisan_gloves', 'relic_forge_ember'], gold: 999 }
     const a = run.deck.findIndex((c) => c.def.id === 'green_strike')

@@ -485,6 +485,8 @@ namespace DeckRogue.Game
         public static string IntentText(GameState st, int enemyIndex)
         {
             if (st == null || enemyIndex < 0 || enemyIndex >= st.Enemies.Count) return "---";
+            // ルーンの円蓋 (2026-09-12 本家 Runic Dome): 意図は表示しない (からくりの確認の窓では実値が見える)
+            if (st.HideIntents == true) return "？ 意図は見えない（ルーンの円蓋）";
             var raw = st.Enemies[enemyIndex].Intent;
             var eff = Effects.EffectiveIntent(st, enemyIndex);
             string s = IntentLine(eff);

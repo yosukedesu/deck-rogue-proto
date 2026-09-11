@@ -70,6 +70,8 @@ namespace DeckRogue.Game
         public int WorkshopA = -1;
         public int WorkshopB = -1;
         public string ShopMode;      // null / "remove" / "upgrade"
+        /// <summary>relic-choose (2026-09-12): 空の鳥籠/星読みの盤で選んだデッキの添字 (画面を離れたら捨てる)</summary>
+        public List<int> RelicChoosePicks = new List<int>();
         public int EventChoiceIndex = -1;   // カード指定待ちの選択肢
 
         RectTransform _root;
@@ -234,6 +236,7 @@ namespace DeckRogue.Game
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
+            if (Rs == null || Rs.Phase != RunPhases.RelicChoose) RelicChoosePicks.Clear();
             if (Rs == null || Rs.Phase != RunPhases.Event) EventChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
             // 演出キュー: 敵フェーズを含むコマンドは古い盤面の上で順に見せてから組み直す。それ以外は即組み直して差分を浮き文字に
@@ -472,6 +475,7 @@ namespace DeckRogue.Game
                 {
                     case RunPhases.Reward: RewardScreen.Reward(this, ScreenRoot); break;
                     case RunPhases.RelicReward: RewardScreen.Relic(this, ScreenRoot); break;
+                    case RunPhases.RelicChoose: RewardScreen.RelicChoose(this, ScreenRoot); break;
                     case RunPhases.Campfire: CampfireScreen.Build(this, ScreenRoot); break;
                     case RunPhases.Workshop: WorkshopScreen.Build(this, ScreenRoot); break;
                     case RunPhases.Shop: ShopScreen.Build(this, ScreenRoot); break;

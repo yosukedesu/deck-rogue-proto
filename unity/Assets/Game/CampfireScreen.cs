@@ -26,6 +26,25 @@ namespace DeckRogue.Game
                 catch (Exception) { }
             }
             bool restHeals = !noRest && run.CampfireUpgradesUsed == 0;
+            // レリック限定の第3選択肢 (2026-09-12 本家形): 発掘 (鶴嘴) / 鍛錬 (重石) / 取り除く (煙管)。融合の鎚は鍛えられない
+            var opt = DeckRogue.Engine.Run.CampfireOptions(run);
+            bool fresh = run.CampfireUpgradesUsed == 0;
+            if (!opt.Forge) remain = 0;
+
+            if (g.SubMode == "remove")
+            {
+                RunUi.Heading(root, "取り除く", "安らぎの煙管: デッキの1枚を永久に取り除く (休む/鍛えるとは排他)");
+                var area = UiKit.NewRect("remove", root);
+                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
+                UiKit.Vert(area, 0, 0);
+                RunUi.CardGrid(g, area, run.Deck,
+                    delegate (int i, CardInstance c) { return "取り除く"; },
+                    delegate (int i, CardInstance c) { return run.Deck.Count > 5; },
+                    delegate (int i) { Audio.Play("card_play", 0.7f); g.Do(new RunCommand_CampfireRemove { Index = i }); },
+                    400f);
+                RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f);
+                return;
+            }
 
             if (g.SubMode == "forge")
             {
@@ -45,22 +64,39 @@ namespace DeckRogue.Game
                 return;
             }
 
-            RunUi.Heading(root, "焚き火", "どちらか1つ。鍛えた後は回復なしで立ち去る");
+            int extra = (opt.Dig && fresh ? 1 : 0) + (opt.TrainLeft > 0 && fresh ? 1 : 0) + (opt.Remove && fresh ? 1 : 0);
+            RunUi.Heading(root, "焚き火", extra > 0 ? "どれか1つ。鍛えた後は回復なしで立ち去る" : "どちらか1つ。鍛えた後は回復なしで立ち去る");
             float optY = RunUi.SceneWindow(root, "campfire") ? -40f : 0f;   // 情景の窓 (左上) と札が触れないよう少し下げる
+            // 選択肢が3つ以上なら幅を詰めて横に並べる (レリックの第3選択肢 2026-09-12)
+            int count = 2 + extra;
+            float w = count <= 2 ? 440f : count == 3 ? 400f : 320f;
+            float gap = count <= 2 ? 80f : 24f;
+            float x0 = -((count - 1) * (w + gap)) / 2f;
+            int slot = 0;
+            Vector2 Pos() { return new Vector2(x0 + (slot++) * (w + gap), optY); }
 
             // 休む
             var rest = Option(root, "burn", "休む", restHeals ? "HP +" + heal + " (最大HPの " + (int)Math.Round(run.CampfireRatio * 100) + "%)" : noRest ? "レリックの効果で回復できない" : "すでに鍛えたので回復なし",
                 restHeals ? "今のHP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "立ち去る",
-                new Vector2(-260f, optY), delegate { Audio.Play("heal", 0.8f); g.Do(new RunCommand_CampfireRest()); }, true);
+                Pos(), delegate { Audio.Play("heal", 0.8f); g.Do(new RunCommand_CampfireRest()); }, true, w);
             // 鍛える
-            Option(root, "hammer", "鍛える", remain > 0 ? "デッキの1枚を強化 (残り " + remain + " 回)" : "この焚き火ではもう鍛えられない",
-                remain > 0 ? "鍛えると数値が伸びる・コストが下がる" : "", new Vector2(260f, optY),
-                delegate { g.SubMode = "forge"; g.Rebuild(); }, remain > 0);
+            Option(root, "hammer", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの1枚を強化 (残り " + remain + " 回)" : "この焚き火ではもう鍛えられない",
+                remain > 0 ? "鍛えると数値が伸びる・コストが下がる" : "", Pos(),
+                delegate { g.SubMode = "forge"; g.Rebuild(); }, remain > 0, w);
+            if (opt.Dig && fresh)
+                Option(root, "chest", "発掘", "発掘の鶴嘴: レリックを1個掘る", "休む・鍛えるとは排他", Pos(),
+                    delegate { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireDig()); }, true, w);
+            if (opt.TrainLeft > 0 && fresh)
+                Option(root, "growth", "鍛錬", "重石: 以後の戦闘開始時の成長+1", "現在 +" + DeckRogue.Engine.Run.RelicStateOf(run, "train") + "・あと " + opt.TrainLeft + " 回", Pos(),
+                    delegate { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireTrain()); }, true, w);
+            if (opt.Remove && fresh)
+                Option(root, "skull", "取り除く", "安らぎの煙管: デッキの1枚を永久に除去", "休む・鍛えるとは排他", Pos(),
+                    delegate { g.SubMode = "remove"; g.Rebuild(); }, run.Deck.Count > 5, w);
         }
 
-        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled)
+        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 440f)
         {
-            float w = 440f, h = 360f;
+            float h = 360f;
             var cell = UiKit.NewRect("opt-" + title, root);
             cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
             cell.sizeDelta = new Vector2(w, h);

@@ -120,6 +120,7 @@ export function createRunInBattle(
     } else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
     else if (run.phase === 'relic-reward') run = applyRunCommand(run, { type: 'SkipRelic' }) // 宝箱行
+    else if (run.phase === 'relic-choose') run = applyRunCommand(run, { type: 'RelicChooseCards', indices: [] })
     else break
   }
   return run

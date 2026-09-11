@@ -65,7 +65,7 @@ import {
 } from '../engine/content.ts'
 import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, shopRemovalPrice, shopUpgradePrice, upgradeCard, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -633,6 +633,8 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
 
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
 function conditionalIntentText(s: GameState, i: number): string {
+  // ルーンの円蓋 (2026-09-12 本家 Runic Dome): 意図は表示しない (エンジンの宣言は不変。からくりの確認の窓では実値が見える)
+  if (s.hideIntents === true) return '❓ 意図は見えない（ルーンの円蓋。からくりの確認の窓では実値が見える）'
   const text = conditionalIntentTextRaw(s, i)
   const w = s.enemies[i]?.weak ?? 0
   const it = s.enemies[i]?.intent
@@ -1872,7 +1874,7 @@ function BattleScreen({
                       {enemy.confusion > 0 && enemy.intent?.kind === 'attack' ? '😵仲間に向かう: ' : ''}
                       {kw(conditionalIntentText(s, i))}
                       {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn + (player.setsThisTurn ?? 0)}枚。仕込みも数える）` : ''}
-                      {worstIncomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
+                      {s.hideIntents !== true && worstIncomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
                         ? ' 💀致死級'
                         : null}
                     </div>
@@ -2102,7 +2104,10 @@ function BattleScreen({
             })()}
             {/* 今フェーズの最悪被ダメ予測 (複数体の暗算を不要にする。2026-08-25)。式は engine/summary.ts の worstIncomingTotal に1本化。
                 2026-09-06 UI整理: 画面下に流れていた独立パネルをHPの直下へ (0でも出す=非攻撃ターンに行が消えると迷う) */}
-            {s.phase === 'player-turn' &&
+            {s.phase === 'player-turn' && s.hideIntents === true && (
+              <div className="forecast-inline forecast-warn">⚠️ 最悪被ダメ ？（ルーンの円蓋: 意図は見えない）</div>
+            )}
+            {s.phase === 'player-turn' && s.hideIntents !== true &&
               (() => {
                 const worst = worstIncomingTotal(s)
                 const defense = player.block + player.iceBlock
@@ -2810,6 +2815,43 @@ function mapRecordVisit(run: RunState): ReadonlyMap<number, number> {
 }
 
 /** マップ本体。engine 無変更・純関数レイアウト (RunMap → 座標) */
+/** relic-choose (2026-09-12 本家形): 空の鳥籠=除去 / 星読みの盤=変成+鍛え の対象をデッキから選ぶ */
+function RelicChooseScreen({ run, dispatch, ctx }: { run: RunState; dispatch: (c: RunCommand) => void; ctx?: EffectCtx }) {
+  const [picked, setPicked] = useState<number[]>([])
+  const p = run.pendingRelicChoice!
+  const relic = getRelicDef(p.relicId)
+  const toggle = (i: number) => setPicked((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : prev.length < p.count ? [...prev, i] : prev))
+  const verb = p.mode === 'remove' ? '取り除く' : '変成して鍛える'
+  return (
+    <div className="app setup">
+      <h1>{relic.sprite} {relic.name}</h1>
+      <p className="hint">
+        {relic.description}。{p.count}枚まで選んで「決定」（選ばなくてもよい。{p.mode === 'remove' ? 'デッキは5枚を下回れない' : '同レア度の別の札にランダムで変わり、鍛えた状態で入る'}）
+      </p>
+      <div style={{ margin: '8px 0' }}>
+        <button className="btn btn-primary" onClick={() => dispatch({ type: 'RelicChooseCards', indices: picked })}>
+          決定（{picked.length}/{p.count}枚を{verb}）
+        </button>
+      </div>
+      <div className="hand-cards" style={{ margin: '12px 0' }}>
+        {run.deck.map((c, i) => (
+          <CardFrame
+            key={c.uid}
+            card={c}
+            dim={picked.length >= p.count && !picked.includes(i)}
+            ctx={ctx}
+            actions={
+              <button className={`btn${picked.includes(i) ? ' btn-primary' : ''}`} onClick={() => toggle(i)}>
+                {picked.includes(i) ? `✓ ${verb}` : '選ぶ'}
+              </button>
+            }
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function RunMapView({
   run,
   onChoose,
@@ -2824,6 +2866,8 @@ function RunMapView({
   editable?: boolean
 }) {
   const cands = interactive ? nextChoices(run) : []
+  // 翼の靴 (2026-09-12 本家 Wing Boots): 残回数があれば線の無い次の行のノードも選べる
+  const wings = interactive ? wingChoices(run) : []
   // ---- 落書き (2026-09-12): 右ドラッグ、またはペンモード中の左ドラッグ (指) で描く。線は幕ごとに mapDoodles の store が持つ
   const { book, penMode, tool } = useDoodles()
   const strokes = book[String(run.act)] ?? []
@@ -2973,12 +3017,15 @@ function RunMapView({
               const here = r === run.row && c === run.col
               const onPath = !here && path.get(r) === c && r < run.row
               const passed = r <= run.row && !here && !onPath
-              const clickable = r === run.row + 1 && cands.includes(c)
-              const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`)
+              const viaWings = r === run.row + 1 && !cands.includes(c) && wings.includes(c)
+              const clickable = r === run.row + 1 && (cands.includes(c) || viaWings)
+              const unreachable = !here && r > run.row && !reach.has(`${r}:${c}`) && !viaWings
               const name = mapNodeName(n)
               // 2行目のバッジ: 文字でも読めるようにする (👑/金枠だけだと初見・タッチ端末で伝わらない)
               const badge = here
                 ? '現在地'
+                : viaWings
+                  ? '翼で行ける'
                 : unreachable
                   ? '到達不可'
                   : n.type === 'elite'
@@ -3010,6 +3057,7 @@ function RunMapView({
                 here ? 'map-node-here' : '',
                 onPath ? 'map-node-taken' : '',
                 clickable ? 'map-node-open' : '',
+                viaWings ? 'map-node-wing' : '',
                 passed || unreachable ? 'map-node-dim' : '',
               ]
                 .filter(Boolean)
@@ -3285,7 +3333,7 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
   return out
 }
 
-const RELIC_BONUS_JA: Record<string, string> = { noRest: '焚き火で休めない', brandOnRelic: 'レリック取得ごとに烙印', victoryHealFlat: '勝利時HP+', shopUpgradeDiscount: 'ショップ鍛える-G', restMaxHp: '休むと最大HP+', eliteGoldBonus: 'エリート金+', fusionDiscount: '合成-G', shopPriceRatio: 'ショップ価格×', goldMultiplier: '勝利金×', removalStepDelta: '除去の逓増幅', maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数（1幕に1回）', goldOnPickup: '取った時に金+', upgradeRandomOnPickup: '取った時にランダム鍛え', eliteRelicPicks: '強個体のレリック3択から追加で取れる数' }
+const RELIC_BONUS_JA: Record<string, string> = { noRest: '焚き火で休めない', brandOnRelic: 'レリック取得ごとに烙印', victoryHealFlat: '勝利時HP+', shopUpgradeDiscount: 'ショップ鍛える-G', restMaxHp: '休むと最大HP+', eliteGoldBonus: 'エリート金+', fusionDiscount: '合成-G', shopPriceRatio: 'ショップ価格×', goldMultiplier: '勝利金×', removalStepDelta: '除去の逓増幅', maxHp: '最大HP+(現在HPも同量増える)', victoryHeal: '勝利時回復', rewardChoices: 'ピック候補+', campfireRatio: '焚き火回復率', goldPerVictory: '勝利ゴールド+', campfireForge: '鍛える追加回数（1幕に1回）', goldOnPickup: '取った時に金+', upgradeRandomOnPickup: '取った時にランダム鍛え', eliteRelicPicks: '強個体のレリック3択から追加で取れる数', goldPerRow: '1行進むごとに金+（店で買うと停止）', goldPerUnknown: '?に入るごとに金+', unknownChestEvery: '?のN回目は宝箱', shopHeal: 'ショップ入店でHP+', campfireTrain: '焚き火の鍛錬の回数', wingBoots: '線の無い先へ進める回数', extraRewardRounds: '通常戦の報酬の追加組数', skipRewardMaxHp: '報酬を見送ると最大HP+', relicsOnPickup: '取った時にレリック+N個', brandsOnPickup: '取った時に烙印+N枚', removeOnPickup: '取った時に選んで除去N枚', transformOnPickup: '取った時に選んで変成+鍛えN枚', workshopFuses: '工房の追加合成回数', maxHpPerBrand: '烙印ごとに最大HP+', brandWard: '烙印を無効にする回数' }
 
 function relicTunerFields(def: RelicDef): { key: string; label: string; cur: number }[] {
   const out: { key: string; label: string; cur: number }[] = []
@@ -4509,6 +4557,10 @@ function RunScreen({
     )
   }
 
+  if (run.phase === 'relic-choose' && run.pendingRelicChoice) {
+    return <RelicChooseScreen run={run} dispatch={dispatch} ctx={ctx} />
+  }
+
   if (run.phase === 'shop' && run.shop) {
     return (
       <div className="app setup">
@@ -4700,12 +4752,15 @@ function RunScreen({
     const noRest = run.relics.some((id) => getRelicDef(id).bonus?.noRest === true)
     // 鍛えるが使えない焚き火 (この焚き火で使用済み) では強化UIを丸ごと畳む
     // (2026-08-31 再検証ラン指摘④)。幕1の通算制限は撤廃 (2026-09-01 ユーザー指示)
-    const canForgeHere = campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0) > 0
+    // レリック限定の第3選択肢 (2026-09-12 本家形): 発掘 (鶴嘴) / 鍛錬 (重石) / 取り除く (煙管)。融合の鎚は鍛えられない
+    const opt = campfireOptions(run)
+    const fresh = (run.campfireUpgradesUsed ?? 0) === 0
+    const canForgeHere = opt.forge && campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0) > 0
     return (
       <div className="app setup">
         <h1>🔥 焚き火</h1>
         <p className="hint">
-          「休む」「鍛える」から1つを選ぶ（除去はショップのみ。2026-09-03）。
+          「休む」「鍛える」{opt.dig ? '「発掘」' : ''}{opt.trainLeft > 0 ? '「鍛錬」' : ''}{opt.remove ? '「取り除く」' : ''}から1つを選ぶ（除去はショップのみ。2026-09-03。レリックの第3選択肢は 2026-09-12）。
           {(run.campfireForgeBonus ?? 0) > 0 &&
             (campfireForgeAllowed(run) > 1
               ? Math.max(0, campfireForgeAllowed(run) - (run.campfireUpgradesUsed ?? 0)) > 0 &&
@@ -4728,11 +4783,25 @@ function RunScreen({
                   : `HP+${heal} 回復して先へ（現在 ${run.hp}/${run.maxHp}）`}
             </div>
           </button>
+          {opt.dig && fresh && (
+            <button className="choice" onClick={() => dispatch({ type: 'CampfireDig' })}>
+              <div className="choice-title"><span className="choice-sprite">⛏️</span>発掘</div>
+              <div className="choice-desc">発掘の鶴嘴: レリックを1個掘って立ち去る（休む・鍛えるとは排他）</div>
+            </button>
+          )}
+          {opt.trainLeft > 0 && fresh && (
+            <button className="choice" onClick={() => dispatch({ type: 'CampfireTrain' })}>
+              <div className="choice-title"><span className="choice-sprite">🏋️</span>鍛錬</div>
+              <div className="choice-desc">重石: 以後の戦闘開始時の成長+1（現在 +{relicStateOf(run, 'train')}・あと{opt.trainLeft}回。休む・鍛えるとは排他）</div>
+            </button>
+          )}
         </div>
         <div className="setup-section-title" style={{ marginTop: 20 }}>
           {canForgeHere
-            ? `デッキの1枚を「鍛える」（デッキ${run.deck.length}枚。除去はショップのみ）`
-            : '鍛えるはこの焚き火では使用済み（除去はショップのみ）'}
+            ? `デッキの1枚を「鍛える」${opt.remove && fresh ? 'か「取り除く」（安らぎの煙管）' : ''}（デッキ${run.deck.length}枚${opt.remove ? '' : '。除去はショップのみ'}）`
+            : !opt.forge
+              ? `融合の鎚を持っている間、焚き火では鍛えられない${opt.remove && fresh ? '（取り除くは可）' : ''}`
+              : '鍛えるはこの焚き火では使用済み（除去はショップのみ）'}
         </div>
         <div className="hand-cards" style={{ margin: '12px 0' }}>
           {run.deck.map((c, i) => (
@@ -4755,6 +4824,15 @@ function RunScreen({
                       onClick={() => dispatch({ type: 'CampfireUpgrade', index: i })}
                     >
                       {isUpgraded(c) ? '鍛済' : canUpgradeCard(c) ? '鍛える' : '鍛不可'}
+                    </button>
+                  )}
+                  {opt.remove && fresh && (
+                    <button
+                      className="btn"
+                      disabled={run.deck.length <= 5}
+                      onClick={() => dispatch({ type: 'CampfireRemove', index: i })}
+                    >
+                      取り除く
                     </button>
                   )}
                 </>
