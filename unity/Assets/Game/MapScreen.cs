@@ -133,6 +133,7 @@ namespace DeckRogue.Game
             var doodleRt = UiKit.NewRect("doodle", content);
             doodleRt.anchorMin = new Vector2(0f, 0f); doodleRt.anchorMax = new Vector2(1f, 1f); doodleRt.pivot = new Vector2(0f, 0f);
             doodleRt.offsetMin = Vector2.zero; doodleRt.offsetMax = Vector2.zero;
+            doodleRt.gameObject.AddComponent<CanvasRenderer>();   // Graphic の前提 (エディタは自動で足さない)
             var doodle = doodleRt.gameObject.AddComponent<DoodleLayer>();
             doodle.Root = g; doodle.Strokes = g.DoodlesFor(run.Act); doodle.Editable = !overlay; doodle.raycastTarget = !overlay;
 

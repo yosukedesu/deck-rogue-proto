@@ -16,6 +16,9 @@ namespace DeckRogue.Game
         public List<Vector2> Points = new List<Vector2>();
     }
 
+    // Graphic は CanvasRenderer が要る。Image は自分に [RequireComponent] を持つが MaskableGraphic の派生には継承されず、
+    // エディタでは AddComponent 時に付かず MissingComponentException になった (プレイヤーは黙って足すので気づけなかった。2026-09-12 ユーザー報告「背景しか表示されない」)
+    [RequireComponent(typeof(CanvasRenderer))]
     public class DoodleLayer : MaskableGraphic, IPointerDownHandler, IDragHandler, IPointerUpHandler, IBeginDragHandler, ICanvasRaycastFilter
     {
         public GameRoot Root;
