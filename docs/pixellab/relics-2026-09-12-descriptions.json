@@ -1,0 +1,319 @@
+{
+ "relics": [
+  {
+   "id": "relic_horn_cleat",
+   "description": "a curved bronze horn-shaped cleat fitting, weathered metal with two bolt holes, faint teal glow along the inner curve, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "people, ship, rope, text"
+  },
+  {
+   "id": "relic_mercury_hourglass",
+   "description": "a small brass-framed hourglass filled with silvery liquid mercury instead of sand, a drop falling through the neck, faint teal glow, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, numbers, clock face"
+  },
+  {
+   "id": "relic_red_mask",
+   "description": "a small round carved wooden mask with an angry brow and plain hollow eye slits, painted dull red with worn edges, hung on a short cord, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "face of a person, human head, hair, realistic face"
+  },
+  {
+   "id": "relic_orichalcum",
+   "description": "a thick square plate of orichalcum metal, greenish-copper alloy with a hammered surface and a bright pale sheen at one edge, rivet at each corner, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, runes, coin, round"
+  },
+  {
+   "id": "relic_happy_flower",
+   "description": "a small cheerful yellow flower in a tiny clay pot, petals wide open, one leaf, a soft warm glow in the center, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "face, eyes, smile, mouth, character"
+  },
+  {
+   "id": "relic_maw_bank",
+   "description": "a round clay piggy-bank shaped like a fat toad with a wide open mouth slot, a gold coin half inside the mouth, worn glaze, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "pig, pink, face of a person, text"
+  },
+  {
+   "id": "relic_serpent_skull",
+   "description": "a small bleached snake skull with long curved fangs, seen from the side, a gold coin resting under the jaw, faint teal in the eye socket, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "living snake, scales, body, text"
+  },
+  {
+   "id": "relic_tiny_chest",
+   "description": "a tiny wooden treasure chest with iron bands, lid slightly open with a warm glow leaking out, small and cute proportions, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, coins spilling, gems pile"
+  },
+  {
+   "id": "relic_old_coin",
+   "description": "a single large old gold coin, worn edges, plain blank face with a faint engraved circle, warm glow, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, numbers, face, portrait, pile of coins"
+  },
+  {
+   "id": "relic_apprentice_bill",
+   "description": "a small folded cream paper bill with a wax seal and a thin brass clip, one corner torn, plain blank paper, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, writing, letters, numbers"
+  },
+  {
+   "id": "relic_throwing_blades",
+   "description": "a bundle of three small dark steel throwing blades tied with a sage cord, points upward, faint teal edge highlights, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "hand, person, blood, text"
+  },
+  {
+   "id": "relic_ornate_fan",
+   "description": "a small folding hand fan half open, cream paper with a sage-green leaf pattern, dark wooden ribs and a brass pin, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "hand, person, text, letters"
+  },
+  {
+   "id": "relic_letter_knife",
+   "description": "a slender brass letter-opening knife with a leaf-shaped blade and a twisted handle, faint teal edge glow, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "hand, person, blood, text, envelope"
+  },
+  {
+   "id": "relic_ink_pot",
+   "description": "a small squat glass ink bottle with dark ink inside and a brass cap, a single drop of ink on the rim, cork stopper beside it, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, writing, quill, letters, paper"
+  },
+  {
+   "id": "relic_flail",
+   "description": "a short two-section wooden flail joined by a small iron chain, dark polished wood with brass caps, laid diagonally, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "hand, person, weapon blood, text"
+  },
+  {
+   "id": "relic_sundial",
+   "description": "a small round stone sundial with a brass gnomon casting a short shadow, moss on one edge, faint teal tick marks, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, numbers, clock, letters"
+  },
+  {
+   "id": "relic_gremlin_horn",
+   "description": "a small curled goblin war horn made of dark bone with brass bands and a leather strap, mouthpiece at the narrow end, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, face, goblin, creature, text"
+  },
+  {
+   "id": "relic_centennial_puzzle",
+   "description": "a small wooden puzzle cube with sliding pieces of pale and dark wood, one piece slid out, a faint teal glow in the gap, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, numbers, dice dots"
+  },
+  {
+   "id": "relic_self_forming_clay",
+   "description": "a lump of gray-brown clay slowly shaping itself into a smooth rounded shield shape, soft edges, a faint teal shimmer, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hands, face, text"
+  },
+  {
+   "id": "relic_art_of_war",
+   "description": "a small closed book bound in dark red leather with brass corners and a plain sage ribbon bookmark, no title, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, writing, open pages"
+  },
+  {
+   "id": "relic_mummified_hand",
+   "description": "a small dried mummified hand wrapped in cream linen bandages, fingers curled, a brass ring on one finger, resting on nothing, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "arm, body, person, blood, gore, skin realistic"
+  },
+  {
+   "id": "relic_twin_band",
+   "description": "a two-tone woven cloth armband, half cream and half deep ink-blue, tied with a small brass buckle, gently curved, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, arm, hand, text"
+  },
+  {
+   "id": "relic_forge_ember",
+   "description": "a single glowing orange ember cradled in a small iron tongs, sparks and a soft warm glow, dark ash around, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "fire scene, forge, person, hands, text"
+  },
+  {
+   "id": "relic_captains_wheel",
+   "description": "a small wooden ship wheel with eight spokes and a brass hub, weathered dark wood, faint teal glow at the hub, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "ship, sea, person, text, steering scene"
+  },
+  {
+   "id": "relic_stone_calendar",
+   "description": "a round carved stone disc with a ring of small notches around the rim and a single deep groove, ancient grey stone, moss in the cracks, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, numbers, letters, calendar grid, faces"
+  },
+  {
+   "id": "relic_abacus",
+   "description": "a small wooden abacus with brass rails and dark beads, a few beads slid to one side, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, numbers, person, hands"
+  },
+  {
+   "id": "relic_sturdy_clamp",
+   "description": "a heavy iron carpenter clamp, screw and wooden jaws, worn metal with a brass turn handle, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hands, text"
+  },
+  {
+   "id": "relic_tungsten_rod",
+   "description": "a short dense dark-grey metal rod with a dull metallic sheen, slightly hexagonal, resting diagonally, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, wood, light saber, glow"
+  },
+  {
+   "id": "relic_old_gatepost",
+   "description": "a small weathered stone gatepost pair joined by a short lintel, mossy cracks, a tiny bell hanging under the lintel, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "torii red, text, people, building scene"
+  },
+  {
+   "id": "relic_beating_remnant",
+   "description": "a small dark heart-shaped stone fragment with a warm red pulse glowing from its cracks, veins of teal light, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "anatomical heart, blood, gore, person, text"
+  },
+  {
+   "id": "relic_lizard_tail",
+   "description": "a single detached lizard tail curled in a spiral, sage-green scales fading to pale cream at the tip, a faint teal glow at the cut end, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "whole lizard, head, legs, blood, text"
+  },
+  {
+   "id": "relic_prayer_wheel",
+   "description": "a small brass prayer wheel on a short wooden handle, engraved bands, gently spinning with a faint motion blur, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, symbols, hands, person"
+  },
+  {
+   "id": "relic_singing_bowl",
+   "description": "a small brass singing bowl with a wooden striker resting on the rim, faint rings of sound above the rim, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hands, text, food"
+  },
+  {
+   "id": "relic_cloak_clasp",
+   "description": "an ornate brass cloak clasp shaped like two curling leaves joined by a small teal gem, no cloth, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "cloak, person, body, text"
+  },
+  {
+   "id": "relic_pocketwatch",
+   "description": "a small brass pocket watch with the lid open showing a plain blank cream face and two hands, a short chain, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "numbers, text, letters, roman numerals"
+  },
+  {
+   "id": "relic_runic_cube",
+   "description": "a small dark stone cube with a single simple glowing teal groove pattern on each visible face, floating slightly, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "dice dots, numbers, text, letters"
+  },
+  {
+   "id": "relic_wing_boots",
+   "description": "a pair of small worn leather boots with a tiny pale feathered wing on each ankle, laces loose, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, legs, feet visible, text"
+  },
+  {
+   "id": "relic_peace_pipe",
+   "description": "a long slender wooden smoking pipe with a small carved bowl and a sage feather tied to the stem, a thin curl of smoke, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, face, mouth, text"
+  },
+  {
+   "id": "relic_girya",
+   "description": "a heavy round iron kettlebell weight with a thick handle, dark cast iron with a worn shine on the handle, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hands, gym, text, numbers"
+  },
+  {
+   "id": "relic_mango",
+   "description": "a single large ripe mango fruit, orange-red skin fading to yellow, a small green leaf on the stem, soft glow, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "cut fruit, slices, plate, person, text"
+  },
+  {
+   "id": "relic_runic_pyramid",
+   "description": "a small dark stone pyramid with faint glowing teal grooves on the faces, floating slightly above a soft shadow, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, hieroglyphs, egypt scene"
+  },
+  {
+   "id": "relic_astrolabe",
+   "description": "a small brass astrolabe with nested rings and a pointer arm, a tiny teal star gem at the center, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, numbers, letters, person"
+  },
+  {
+   "id": "relic_empty_cage",
+   "description": "a small empty round brass birdcage with the little door open, no bird inside, a swing perch hanging, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "bird, animal, person, text"
+  },
+  {
+   "id": "relic_calling_bell",
+   "description": "a small brass handbell with a dark wooden handle, slightly tilted as if just rung, faint sound rings, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hand, text, church"
+  },
+  {
+   "id": "relic_runic_dome",
+   "description": "a small dark stone dome like an upturned bowl with faint glowing teal grooves, a smooth solid surface with no openings, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "building, city, text, letters, windows"
+  },
+  {
+   "id": "relic_ancient_box",
+   "description": "a small ornate ancient box of dark wood and tarnished brass with a closed lid and a faint teal light seeping from the seam, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "open box, contents, text, letters, person"
+  },
+  {
+   "id": "relic_ice_cream",
+   "description": "a small cone of pale cream ice cream that never melts, frosty pale blue sheen, tiny ice crystals, a sage wafer, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hand, dripping, text"
+  },
+  {
+   "id": "relic_velvet_choker",
+   "description": "a short deep-purple velvet choker band with a small brass clasp, curved as if around an invisible neck, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, neck, face, body, text"
+  },
+  {
+   "id": "relic_fusion_hammer",
+   "description": "a heavy blacksmith hammer with a glowing molten-orange head and a dark iron handle, sparks, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hands, anvil scene, text"
+  },
+  {
+   "id": "relic_molten_egg",
+   "description": "a single large egg with a cracked shell leaking slow molten orange glow, resting upright, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "chick, bird, person, text, nest"
+  },
+  {
+   "id": "relic_frozen_egg",
+   "description": "a single large egg encased in pale blue frost and tiny ice crystals, resting upright, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "chick, bird, person, text, nest"
+  },
+  {
+   "id": "relic_mossy_egg",
+   "description": "a single large egg covered in soft sage-green moss and a tiny sprout on top, resting upright, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "chick, bird, person, text, nest"
+  },
+  {
+   "id": "relic_amplifier_draught",
+   "description": "a small round glass vial of bright teal liquid with a cork and a paper tag, bubbles rising, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, x mark, person, hands"
+  },
+  {
+   "id": "relic_clockwork_charm",
+   "description": "a small brass clockwork charm with visible tiny gears and a teal jewel at the center, on a short chain, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "clock face, numbers, text, person"
+  },
+  {
+   "id": "relic_dig_pick",
+   "description": "a small miner pickaxe with a wooden handle and a dark iron head, a tiny teal crystal chip stuck on the tip, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hands, mine scene, text"
+  },
+  {
+   "id": "relic_sulfur_shard",
+   "description": "a jagged bright yellow sulfur crystal shard with a faint orange glow and a wisp of smoke, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "fire scene, person, text, lemon"
+  },
+  {
+   "id": "relic_artisan_gloves",
+   "description": "a pair of worn brown leather work gloves with brass rivets, folded together, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "hands inside, person, arms, text"
+  },
+  {
+   "id": "relic_meal_ticket",
+   "description": "a small rectangular cream paper ticket with a scalloped edge and a sage stamp mark, plain blank, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, numbers, food"
+  },
+  {
+   "id": "relic_obsidian_periapt",
+   "description": "a small polished black obsidian amulet on a dark cord, a faint deep-purple glow in its depth, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, neck, text, letters"
+  },
+  {
+   "id": "relic_ward_charm",
+   "description": "a small folded cream paper charm tied with red thread, a sage wax seal, a faint protective glow, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "text, letters, writing, kanji, person"
+  },
+  {
+   "id": "relic_blue_candle",
+   "description": "a short stubby blue candle in a small brass holder, a small blue-teal flame, a drip of wax, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hand, text, cake"
+  },
+  {
+   "id": "relic_travel_candle",
+   "description": "a small travel candle in a tin with a folding brass lid, a warm small flame, a leather strap, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "person, hand, text, cake"
+  },
+  {
+   "id": "relic_rusty_anchor",
+   "description": "a small rusty iron anchor with a frayed rope loop, orange rust patches and barnacles, ancient mine relic, single object centered, muted cream and ink palette, transparent background",
+   "negative": "ship, sea, person, text"
+  }
+ ]
+}

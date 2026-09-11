@@ -963,7 +963,22 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
     }
     case 'CampfireRemove': {
       const c = prev.deck[cmd.index]
-      return c ? { at, text: `焚き火: ${c.def.name} を取り除いた` } : null
+      return c ? { at, text: `焚き火: ${c.def.name} を取り除いた（安らぎの煙管）` } : null
+    }
+    case 'CampfireDig': {
+      // 発掘の鶴嘴 (2026-09-12): 掘ったレリックは next.relics の差分
+      const dug = next.relics.filter((id) => !prev.relics.includes(id))
+      const names = dug.map((id) => { try { return getRelicDef(id).name } catch { return id } })
+      return { at, text: `焚き火: 発掘 → ${names.length > 0 ? names.join('・') : 'レリックは尽きていた'}` }
+    }
+    case 'CampfireTrain':
+      return { at, text: `焚き火: 鍛錬（重石。戦闘開始時の成長 +${next.relicState?.train ?? 0}）` }
+    case 'RelicChooseCards': {
+      const p = prev.pendingRelicChoice
+      const relicName = p ? (() => { try { return getRelicDef(p.relicId).name } catch { return p.relicId } })() : 'レリック'
+      const names = cmd.indices.map((i) => prev.deck[i]?.def.name).filter((n): n is string => n !== undefined)
+      if (names.length === 0) return { at, text: `${relicName}: 何も選ばなかった` }
+      return { at, text: `${relicName}: ${names.join('・')} を${p?.mode === 'remove' ? '取り除いた' : '変成して鍛えた'}` }
     }
     case 'WorkshopFuse': {
       const a = prev.deck[cmd.indexA]
