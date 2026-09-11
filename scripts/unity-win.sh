@@ -31,10 +31,16 @@ if [ "$MODE" = "pull" ]; then
 fi
 mkdir -p "$WIN_DIR"
 # 作業コピーへ同期 (Library/Temp/Logs/obj/bin は作業コピー側の生成物なので触らない)
+# Packages/manifest.json と packages-lock.json は作業コピー側 (GUI の Package Manager) が書き換えることがあるので --delete の対象から外し、
+# manifest はリポジトリ側が新しい時だけ上書きする (2026-09-12: 同期が GUI で入れた Unity AI のパッケージを消し、コンパイル DAG が古い参照を抱えて CS2001 の嵐になった)。
+# GUI で足したパッケージをリポジトリへ戻すのは scripts/unity-win.sh pull Packages/manifest.json
 rsync -a --delete \
   --exclude 'Library/' --exclude 'Temp/' --exclude 'Logs/' --exclude 'UserSettings/' --exclude 'obj/' --exclude 'bin/' \
   --exclude 'EngineTests/' --exclude '*.csproj' --exclude '*.sln' --exclude 'unity-batch.log' --exclude 'goldens/' --exclude 'Build/' --exclude 'Shots/' --exclude 'player.log' \
+  --exclude 'Packages/manifest.json' --exclude 'Packages/packages-lock.json' \
   "$REPO/unity/" "$WIN_DIR/"
+mkdir -p "$WIN_DIR/Packages"
+rsync -a --update "$REPO/unity/Packages/manifest.json" "$WIN_DIR/Packages/manifest.json"
 mkdir -p "$WIN_DIR/goldens"
 rsync -a --delete "$REPO/goldens/" "$WIN_DIR/goldens/"
 echo "synced → $WIN_DIR (Unity: $UNITY)"
