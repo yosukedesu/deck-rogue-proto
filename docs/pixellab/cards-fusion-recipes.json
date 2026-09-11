@@ -1,0 +1,500 @@
+{
+ "_note": "工房レシピ産カード24枚の挿絵 (2026-09-12)。workflow fusion-recipe-card-art-descriptions の発注文。2シード 11/37 → シート → 判定 → Art/cards/<id>.png",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "fusion_vine_wheel__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_vine_wheel__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, the flat top of a cut tree stump turned toward the viewer like a wheel, its concentric growth rings glowing faint green, two long green vine whips lashing out from the rim like spinning spokes with circular motion streaks, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cart, wagon, carriage, hands, arms"
+  },
+  {
+   "id": "fusion_vine_wheel__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_vine_wheel__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, the flat top of a cut tree stump turned toward the viewer like a wheel, its concentric growth rings glowing faint green, two long green vine whips lashing out from the rim like spinning spokes with circular motion streaks, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cart, wagon, carriage, hands, arms"
+  },
+  {
+   "id": "fusion_bloom_dance__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_bloom_dance__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a giant flower seen from above, its long petals unfurling into whirling vines that spiral outward with motion streaks, pink petals and green light flung off the vine tips, the whole bloom filling the view, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, bouquet, vase, single still flower"
+  },
+  {
+   "id": "fusion_bloom_dance__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_bloom_dance__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a giant flower seen from above, its long petals unfurling into whirling vines that spiral outward with motion streaks, pink petals and green light flung off the vine tips, the whole bloom filling the view, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, bouquet, vase, single still flower"
+  },
+  {
+   "id": "fusion_thorn_bastion__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_thorn_bastion__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a low fortress wall woven entirely from thick vines, its top edge notched like a battlement, long sharp thorns bristling outward from every gap in the weave toward the viewer, faint green glow deep inside, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, castle, tower, stone wall, bricks"
+  },
+  {
+   "id": "fusion_thorn_bastion__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_thorn_bastion__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a low fortress wall woven entirely from thick vines, its top edge notched like a battlement, long sharp thorns bristling outward from every gap in the weave toward the viewer, faint green glow deep inside, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, castle, tower, stone wall, bricks"
+  },
+  {
+   "id": "fusion_wild_stampede__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_wild_stampede__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a horned beast head charging low toward the viewer, its neck and mane trailing off into a long gale of wind and leaves as if the body itself were made of wind, dust streaking in one diagonal, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, rider, herd of animals, full body animal"
+  },
+  {
+   "id": "fusion_wild_stampede__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_wild_stampede__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a horned beast head charging low toward the viewer, its neck and mane trailing off into a long gale of wind and leaves as if the body itself were made of wind, dust streaking in one diagonal, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, rider, herd of animals, full body animal"
+  },
+  {
+   "id": "fusion_sapling_maul__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_sapling_maul__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a colossal maul made from an uprooted young tree, its head a dense knot of roots and dark earth slamming down onto cracked stone, cracks and dust radiating from the impact, a fresh two-leaf sprout unfurling at the top of the haft, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, metal hammer, arm, hands, hooves"
+  },
+  {
+   "id": "fusion_sapling_maul__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_sapling_maul__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a colossal maul made from an uprooted young tree, its head a dense knot of roots and dark earth slamming down onto cracked stone, cracks and dust radiating from the impact, a fresh two-leaf sprout unfurling at the top of the haft, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, metal hammer, arm, hands, hooves"
+  },
+  {
+   "id": "fusion_raging_chief__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_raging_chief__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a great stag lowering its head, its enormous antlers forged into dark steel axe blades with glowing teal mana crystal shards and brass cogwheels at their roots, one blade biting into a dark tree trunk, bark chips flying, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, rider, hunter, full body deer, hands"
+  },
+  {
+   "id": "fusion_raging_chief__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_raging_chief__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a great stag lowering its head, its enormous antlers forged into dark steel axe blades with glowing teal mana crystal shards and brass cogwheels at their roots, one blade biting into a dark tree trunk, bark chips flying, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, rider, hunter, full body deer, hands"
+  },
+  {
+   "id": "fusion_red_flame_fang__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_flame_fang__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, the open jaws of a serpent made of living flame, one long fang glowing white-hot, a trail of fire and embers streaming back from its body like the tail of a fire bolt, gray ash drifting, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, dragon, teal light, green glow, plants, vines"
+  },
+  {
+   "id": "fusion_red_flame_fang__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_flame_fang__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, the open jaws of a serpent made of living flame, one long fang glowing white-hot, a trail of fire and embers streaming back from its body like the tail of a fire bolt, gray ash drifting, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, dragon, teal light, green glow, plants, vines"
+  },
+  {
+   "id": "fusion_red_ember_dance__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_ember_dance__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a round iron shield crusted in gray ash, a swirl of glowing orange sparks and embers dancing up from its rim into the dark, a few sparks shooting forward toward the viewer, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal light, green glow, vines, leaves, hands"
+  },
+  {
+   "id": "fusion_red_ember_dance__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_ember_dance__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a round iron shield crusted in gray ash, a swirl of glowing orange sparks and embers dancing up from its rim into the dark, a few sparks shooting forward toward the viewer, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal light, green glow, vines, leaves, hands"
+  },
+  {
+   "id": "fusion_red_wrath_mail__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_wrath_mail__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a dark iron chest plate hung on a plain wooden rack, wreathed in living flame, jagged spikes of fire jutting from its shoulders and collar like thorns, embers and gray ash drifting upward, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, mannequin, torso with head, helmet, knight, teal light, green glow, vines"
+  },
+  {
+   "id": "fusion_red_wrath_mail__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_wrath_mail__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a dark iron chest plate hung on a plain wooden rack, wreathed in living flame, jagged spikes of fire jutting from its shoulders and collar like thorns, embers and gray ash drifting upward, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, mannequin, torso with head, helmet, knight, teal light, green glow, vines"
+  },
+  {
+   "id": "fusion_practice_swing__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_practice_swing__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a magitech great axe (long wooden haft with brass bands, brass cogwheel at the eye, wide dark steel blade with three small glowing teal mana crystal shards) standing upright, its broad blade turned flat toward the viewer like a shield, still and unmoving, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, motion blur, swing, sparks, second axe, hands, arms"
+  },
+  {
+   "id": "fusion_practice_swing__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_practice_swing__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a magitech great axe (long wooden haft with brass bands, brass cogwheel at the eye, wide dark steel blade with three small glowing teal mana crystal shards) standing upright, its broad blade turned flat toward the viewer like a shield, still and unmoving, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, motion blur, swing, sparks, second axe, hands, arms"
+  },
+  {
+   "id": "fusion_harvest_fork__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_harvest_fork__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a cut tree stump showing concentric growth rings with a faint green glow, two vines growing out of it in opposite directions, the left one tipped with a blooming pink flower, the right one tipped with a curved sickle-like thorn, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, signpost, road, arrows"
+  },
+  {
+   "id": "fusion_harvest_fork__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_harvest_fork__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a cut tree stump showing concentric growth rings with a faint green glow, two vines growing out of it in opposite directions, the left one tipped with a blooming pink flower, the right one tipped with a curved sickle-like thorn, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, signpost, road, arrows"
+  },
+  {
+   "id": "fusion_sprint_strike__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_sprint_strike__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a magitech great axe (long wooden haft with brass bands, brass cogwheel at the eye, wide dark steel blade with three small glowing teal mana crystal shards) streaking forward low over the ground with speed lines, a long trail of kicked-up dust behind it, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, horse, hooves, animal, rider, hands, arms"
+  },
+  {
+   "id": "fusion_sprint_strike__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_sprint_strike__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a magitech great axe (long wooden haft with brass bands, brass cogwheel at the eye, wide dark steel blade with three small glowing teal mana crystal shards) streaking forward low over the ground with speed lines, a long trail of kicked-up dust behind it, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, horse, hooves, animal, rider, hands, arms"
+  },
+  {
+   "id": "fusion_bramble_fence__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_bramble_fence__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a fence of weathered wooden posts with thick thorny vines strung between them like rails, long sharp thorns bristling outward toward the viewer, a few small leaves on the vines, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, castle, stone wall, metal fence, barbed wire, garden, lawn"
+  },
+  {
+   "id": "fusion_bramble_fence__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_bramble_fence__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a fence of weathered wooden posts with thick thorny vines strung between them like rails, long sharp thorns bristling outward toward the viewer, a few small leaves on the vines, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, castle, stone wall, metal fence, barbed wire, garden, lawn"
+  },
+  {
+   "id": "fusion_lash_thicket__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_lash_thicket__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a dense round thicket of thorny vines, two long thorny vine whips shooting straight out of it toward the viewer with motion streaks, small leaves shaken loose, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, wooden post, whip handle, hands, arms"
+  },
+  {
+   "id": "fusion_lash_thicket__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_lash_thicket__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a dense round thicket of thorny vines, two long thorny vine whips shooting straight out of it toward the viewer with motion streaks, small leaves shaken loose, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, wooden post, whip handle, hands, arms"
+  },
+  {
+   "id": "fusion_windward_vine__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_windward_vine__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a round shield woven from vines and bark, its weave unraveling on one side into long loose tendrils streaming sideways in a strong wind, leaves caught in the gust, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, sail, boat, flag, hands"
+  },
+  {
+   "id": "fusion_windward_vine__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_windward_vine__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a round shield woven from vines and bark, its weave unraveling on one side into long loose tendrils streaming sideways in a strong wind, leaves caught in the gust, straight on, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, sail, boat, flag, hands"
+  },
+  {
+   "id": "fusion_dappled_hedge__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_dappled_hedge__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a tall hedge of tightly woven vines, warm dappled light leaking through gaps in the weave in soft beams onto the mossy ground at its foot, the shadow of the weave patterned across the moss, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, bright daylight, sun disc, window, sky"
+  },
+  {
+   "id": "fusion_dappled_hedge__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_dappled_hedge__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a tall hedge of tightly woven vines, warm dappled light leaking through gaps in the weave in soft beams onto the mossy ground at its foot, the shadow of the weave patterned across the moss, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, bright daylight, sun disc, window, sky"
+  },
+  {
+   "id": "fusion_gale_echo__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_gale_echo__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a curved beast horn instrument overgrown with vines, long vine tendrils and leaves streaming out of its bell in a gale, faint fading rings of sound lingering in the air behind them, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, beast head, animal, mouth, lips"
+  },
+  {
+   "id": "fusion_gale_echo__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_gale_echo__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a curved beast horn instrument overgrown with vines, long vine tendrils and leaves streaming out of its bell in a gale, faint fading rings of sound lingering in the air behind them, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, beast head, animal, mouth, lips"
+  },
+  {
+   "id": "fusion_ringed_bark__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_ringed_bark__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, extreme close-up of thick overlapping bark plates, concentric growth rings glowing faint green on every plate, sharp thorn-shaped leaves sprouting from the seams between the plates and curling outward",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, knight, helmet, mannequin, wooden stand"
+  },
+  {
+   "id": "fusion_ringed_bark__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_ringed_bark__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, extreme close-up of thick overlapping bark plates, concentric growth rings glowing faint green on every plate, sharp thorn-shaped leaves sprouting from the seams between the plates and curling outward",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, knight, helmet, mannequin, wooden stand"
+  },
+  {
+   "id": "fusion_rooting_vine__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_rooting_vine__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a thick green vine standing upright in tight coils, its lower coils turning into roots that plunge into a cross-section of dark soil, a fresh two-leaf sprout unfurling at its top, one loose tendril lashing sideways with a motion streak, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, flowers, tree trunk, wooden post"
+  },
+  {
+   "id": "fusion_rooting_vine__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_rooting_vine__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a thick green vine standing upright in tight coils, its lower coils turning into roots that plunge into a cross-section of dark soil, a fresh two-leaf sprout unfurling at its top, one loose tendril lashing sideways with a motion streak, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, flowers, tree trunk, wooden post"
+  },
+  {
+   "id": "fusion_reading_wedge__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_reading_wedge__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a wedge-shaped vine tipped with a single sharp leaf blade, driven with a motion streak into a narrow gap between dark armor plates, cracks spreading outward from the gap, chips of armor flying, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, hammer, arm, knight, hands"
+  },
+  {
+   "id": "fusion_reading_wedge__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_reading_wedge__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a wedge-shaped vine tipped with a single sharp leaf blade, driven with a motion streak into a narrow gap between dark armor plates, cracks spreading outward from the gap, chips of armor flying, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, hammer, arm, knight, hands"
+  },
+  {
+   "id": "fusion_clinging_bark__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_clinging_bark__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, heavy layered bark plates stacked like armor and bound tight by green vines coiling around them like straps, the loose ends of the vines whipping outward with motion streaks, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, mannequin, torso, wooden stand"
+  },
+  {
+   "id": "fusion_clinging_bark__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_clinging_bark__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, heavy layered bark plates stacked like armor and bound tight by green vines coiling around them like straps, the loose ends of the vines whipping outward with motion streaks, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, mannequin, torso, wooden stand"
+  },
+  {
+   "id": "fusion_red_ash_mantle__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_ash_mantle__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a round iron shield half buried under a thick mantle of gray ash, orange embers glowing through cracks in the ash like coals under a dead fire, a few sparks drifting up into the dark, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cloak, hooded figure, mannequin, teal light, green glow, vines, campfire logs"
+  },
+  {
+   "id": "fusion_red_ash_mantle__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_ash_mantle__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a round iron shield half buried under a thick mantle of gray ash, orange embers glowing through cracks in the ash like coals under a dead fire, a few sparks drifting up into the dark, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cloak, hooded figure, mannequin, teal light, green glow, vines, campfire logs"
+  },
+  {
+   "id": "fusion_red_ember_shift__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_ember_shift__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a dark iron shield tilted like a scoop, glowing embers sliding across its surface and pouring off one edge into a rising flame, sparks streaming with long momentum lines, gray ash on the shield rim, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal light, green glow, vines, leaves, hands, arms"
+  },
+  {
+   "id": "fusion_red_ember_shift__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_ember_shift__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a dark iron shield tilted like a scoop, glowing embers sliding across its surface and pouring off one edge into a rising flame, sparks streaming with long momentum lines, gray ash on the shield rim, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal light, green glow, vines, leaves, hands, arms"
+  },
+  {
+   "id": "fusion_red_spark_fork__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_spark_fork__11.png",
+   "seed": 11,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a single flying spark splitting into three trails at a fork, one settling into a bed of glowing coals, one racing ahead as a streak of fire with speed lines, one cooling into a drift of gray ash, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, signpost, road, arrows, teal light, green glow, vines, leaves"
+  },
+  {
+   "id": "fusion_red_spark_fork__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/recipes/fusion_red_spark_fork__37.png",
+   "seed": 37,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a single flying spark splitting into three trails at a fork, one settling into a bed of glowing coals, one racing ahead as a streak of fire with speed lines, one cooling into a drift of gray ash, close-up",
+   "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, signpost, road, arrows, teal light, green glow, vines, leaves"
+  }
+ ],
+ "descriptions": [
+  {
+   "id": "fusion_vine_wheel",
+   "description": "the flat top of a cut tree stump turned toward the viewer like a wheel, its concentric growth rings glowing faint green, two long green vine whips lashing out from the rim like spinning spokes with circular motion streaks, close-up",
+   "negative": "cart, wagon, carriage, hands, arms",
+   "note": "年輪の切り株を正面から車輪として見せ、二連の蔦打ちの二本の鞭を縁から回る輻に。既存の年輪（切り株の上面）とは『回る輻の鞭』で分ける"
+  },
+  {
+   "id": "fusion_bloom_dance",
+   "description": "a giant flower seen from above, its long petals unfurling into whirling vines that spiral outward with motion streaks, pink petals and green light flung off the vine tips, the whole bloom filling the view, close-up",
+   "negative": "bouquet, vase, single still flower",
+   "note": "開花の儀の花弁がそのまま蔦の乱舞の渦になる（花＝中心、蔦＝花弁）。乱舞の既存絵『光る中心を巡る蔦の渦』の中心を花に置き換えるだけだと丸被りなので、花弁が蔦へ変わる一体の物にした"
+  },
+  {
+   "id": "fusion_thorn_bastion",
+   "description": "a low fortress wall woven entirely from thick vines, its top edge notched like a battlement, long sharp thorns bristling outward from every gap in the weave toward the viewer, faint green glow deep inside, straight on, close-up",
+   "negative": "castle, tower, stone wall, bricks",
+   "note": "守りの蔓の格子を砦の胸壁（狭間つき）に組み直し、茨の返しの棘を編み目から突き出させた。胸壁の切り欠きで『砦』を読ませ、既存の茨の壁・蔦の格子と分ける"
+  },
+  {
+   "id": "fusion_wild_stampede",
+   "description": "a horned beast head charging low toward the viewer, its neck and mane trailing off into a long gale of wind and leaves as if the body itself were made of wind, dust streaking in one diagonal, close-up",
+   "negative": "rider, herd of animals, full body animal",
+   "note": "突進の助走の角の獣の胴を追い風そのものにした（首から後ろが風と葉に溶ける）。既存の突進の助走（頭を下げて土煙）・猛進の角（正面突進）とは『体が風』で分ける"
+  },
+  {
+   "id": "fusion_sapling_maul",
+   "description": "a colossal maul made from an uprooted young tree, its head a dense knot of roots and dark earth slamming down onto cracked stone, cracks and dust radiating from the impact, a fresh two-leaf sprout unfurling at the top of the haft, close-up",
+   "negative": "metal hammer, arm, hands, hooves",
+   "note": "若木そのものを巨槌にした（根と土の塊が槌頭、柄の先に芽吹きの若芽）。巨獣の踏みつけ＝爪の足とは物が違う"
+  },
+  {
+   "id": "fusion_raging_chief",
+   "description": "a great stag lowering its head, its enormous antlers forged into dark steel axe blades with glowing teal mana crystal shards and brass cogwheels at their roots, one blade biting into a dark tree trunk, bark chips flying, close-up",
+   "negative": "rider, hunter, full body deer, hands",
+   "note": "大角の群長の枝角を魔導の大斧の刃（黒鋼・結晶・真鍮の歯車）に鍛え直し、打撃の絵『幹に食い込む斧』を角で再現。既存の群長（頭と肩の立ち姿）とは『頭を下げて幹を打つ』で分ける"
+  },
+  {
+   "id": "fusion_red_flame_fang",
+   "description": "the open jaws of a serpent made of living flame, one long fang glowing white-hot, a trail of fire and embers streaming back from its body like the tail of a fire bolt, gray ash drifting, close-up",
+   "negative": "dragon, teal light, green glow, plants, vines",
+   "note": "火弾の軌跡を炎の蛇の胴、着火の火を白熱する牙にした。赤の語彙（炎・燠・灰）。緑の大蛇の丸呑みとは色と素材（炎）で分かれる"
+  },
+  {
+   "id": "fusion_red_ember_dance",
+   "description": "a round iron shield crusted in gray ash, a swirl of glowing orange sparks and embers dancing up from its rim into the dark, a few sparks shooting forward toward the viewer, straight on, close-up",
+   "negative": "teal light, green glow, vines, leaves, hands",
+   "note": "灰の盾の縁から火花が舞い上がる＝守りの盾が火花を撒く一枚"
+  },
+  {
+   "id": "fusion_red_wrath_mail",
+   "description": "a dark iron chest plate hung on a plain wooden rack, wreathed in living flame, jagged spikes of fire jutting from its shoulders and collar like thorns, embers and gray ash drifting upward, close-up",
+   "negative": "mannequin, torso with head, helmet, knight, teal light, green glow, vines",
+   "note": "火纏いの炎を鎧に纏わせ、棘火の帳の棘を肩と襟の炎の棘にした。人型を呼ばないよう『架けてある』胸甲だけ"
+  },
+  {
+   "id": "fusion_practice_swing",
+   "description": "a magitech great axe (long wooden haft with brass bands, brass cogwheel at the eye, wide dark steel blade with three small glowing teal mana crystal shards) standing upright, its broad blade turned flat toward the viewer like a shield, still and unmoving, close-up",
+   "negative": "motion blur, swing, sparks, second axe, hands, arms",
+   "note": "打撃の魔導の大斧を防御の盾のように正面に立てた静止の一枚（振らない素振り）。打撃の既存絵『幹に食い込む斧』とは静止・正面で分ける"
+  },
+  {
+   "id": "fusion_harvest_fork",
+   "description": "a cut tree stump showing concentric growth rings with a faint green glow, two vines growing out of it in opposite directions, the left one tipped with a blooming pink flower, the right one tipped with a curved sickle-like thorn, close-up",
+   "negative": "signpost, road, arrows",
+   "note": "年輪の切り株から開花の蔦が左右に伸び、片方は花（蒔く）・片方は鎌の棘（刈る）。既存の年輪とは『左右に伸びる二本の蔦』で分ける"
+  },
+  {
+   "id": "fusion_sprint_strike",
+   "description": "a magitech great axe (long wooden haft with brass bands, brass cogwheel at the eye, wide dark steel blade with three small glowing teal mana crystal shards) streaking forward low over the ground with speed lines, a long trail of kicked-up dust behind it, close-up",
+   "negative": "horse, hooves, animal, rider, hands, arms",
+   "note": "打撃の大斧に疾駆の土煙と速度線を纏わせ、斧そのものが駆ける。疾駆の既存絵（蹄）を呼ばないよう蹄・馬は negative へ"
+  },
+  {
+   "id": "fusion_bramble_fence",
+   "description": "a fence of weathered wooden posts with thick thorny vines strung between them like rails, long sharp thorns bristling outward toward the viewer, a few small leaves on the vines, straight on, close-up",
+   "negative": "castle, stone wall, metal fence, barbed wire, garden, lawn",
+   "note": "棘の蔓の杭を横に並べ、茨の返しの棘壁を杭の間に張った生垣。杭1本の既存絵（棘の蔓）とは『複数の杭と横の柵』で分ける"
+  },
+  {
+   "id": "fusion_lash_thicket",
+   "description": "a dense round thicket of thorny vines, two long thorny vine whips shooting straight out of it toward the viewer with motion streaks, small leaves shaken loose, close-up",
+   "negative": "wooden post, whip handle, hands, arms",
+   "note": "棘の蔓の茂みから二連の蔦打ちの二本の鞭が飛び出す。杭を外し（棘の蔓と丸被りを避ける）、鞭はXでなく視点へ真っすぐ（二連の蔦打ち・蔦車輪のXと分ける）"
+  },
+  {
+   "id": "fusion_windward_vine",
+   "description": "a round shield woven from vines and bark, its weave unraveling on one side into long loose tendrils streaming sideways in a strong wind, leaves caught in the gust, straight on, close-up",
+   "negative": "sail, boat, flag, hands",
+   "note": "防御の蔓の盾の編み目が風上側でほどけて疾風の蔓になる＝盾そのものが風を受ける。既存の防御（編んだ丸盾）とは『ほどけて流れる編み目』で分ける"
+  },
+  {
+   "id": "fusion_dappled_hedge",
+   "description": "a tall hedge of tightly woven vines, warm dappled light leaking through gaps in the weave in soft beams onto the mossy ground at its foot, the shadow of the weave patterned across the moss, close-up",
+   "negative": "bright daylight, sun disc, window, sky",
+   "note": "守りの蔓の格子を生垣にして木漏れ日を通し、格子の影が苔に落ちる。既存の守りの蔓（格子）・木漏れ日（苔の光の斑）とは『生垣の足元に落ちる光と影』で分ける"
+  },
+  {
+   "id": "fusion_gale_echo",
+   "description": "a curved beast horn instrument overgrown with vines, long vine tendrils and leaves streaming out of its bell in a gale, faint fading rings of sound lingering in the air behind them, close-up",
+   "negative": "beast head, animal, mouth, lips",
+   "note": "疾風の号砲の角笛に疾風の蔓が生え、朝顔から蔦と葉が風で流れ出る。吹き終わった余韻の輪が残る（勢いの持ち越し）。既存の3本の角笛とは『蔦が生えて流れる』で分ける"
+  },
+  {
+   "id": "fusion_ringed_bark",
+   "description": "extreme close-up of thick overlapping bark plates, concentric growth rings glowing faint green on every plate, sharp thorn-shaped leaves sprouting from the seams between the plates and curling outward",
+   "negative": "knight, helmet, mannequin, wooden stand",
+   "note": "樹皮の鎧の板に年輪が浮き、継ぎ目から棘葉の茂みの葉が芽吹く（成長→棘の2ダメ）。既存の樹皮の鎧（架台の胸甲）と丸被りしないよう架台を外し板の近景にした"
+  },
+  {
+   "id": "fusion_rooting_vine",
+   "description": "a thick green vine standing upright in tight coils, its lower coils turning into roots that plunge into a cross-section of dark soil, a fresh two-leaf sprout unfurling at its top, one loose tendril lashing sideways with a motion streak, close-up",
+   "negative": "flowers, tree trunk, wooden post",
+   "note": "絡み蔦が自分で根を張った姿（下は根、上は若芽、一本は鞭）。既存の絡み蔦（杭に絡む蔦）と丸被りしないよう杭を外した。根を張る／蔦を振るの両モードが一枚に"
+  },
+  {
+   "id": "fusion_reading_wedge",
+   "description": "a wedge-shaped vine tipped with a single sharp leaf blade, driven with a motion streak into a narrow gap between dark armor plates, cracks spreading outward from the gap, chips of armor flying, close-up",
+   "negative": "hammer, arm, knight, hands",
+   "note": "蔦の楔の先を見切り撃ちの葉の刃にして一つの物にし、鎧の隙間へ打ち込む（守りを割る）。楔と葉を別々に置くと主題が二つになるので合体"
+  },
+  {
+   "id": "fusion_clinging_bark",
+   "description": "heavy layered bark plates stacked like armor and bound tight by green vines coiling around them like straps, the loose ends of the vines whipping outward with motion streaks, close-up",
+   "negative": "mannequin, torso, wooden stand",
+   "note": "樹皮の重鎧の重ねた板を絡み蔦で縛り上げ、余った蔦の先が鞭になる（X回のブロック＋X回のダメージ）。既存の重鎧（積んだ板）とは『縛る蔦と鞭』で分ける"
+  },
+  {
+   "id": "fusion_red_ash_mantle",
+   "description": "a round iron shield half buried under a thick mantle of gray ash, orange embers glowing through cracks in the ash like coals under a dead fire, a few sparks drifting up into the dark, close-up",
+   "negative": "cloak, hooded figure, mannequin, teal light, green glow, vines, campfire logs",
+   "note": "灰の盾を火纏いの燠が眠る灰の外套で覆う＝灰の下で燠が息をし、猛り火で目を覚ます。『外套を架台に』は人影を呼ぶので、盾に灰を被せる形にした"
+  },
+  {
+   "id": "fusion_red_ember_shift",
+   "description": "a dark iron shield tilted like a scoop, glowing embers sliding across its surface and pouring off one edge into a rising flame, sparks streaming with long momentum lines, gray ash on the shield rim, close-up",
+   "negative": "teal light, green glow, vines, leaves, hands, arms",
+   "note": "余勢の構えの盾を火移しの器にし、勢い（燠）が盾の面を流れて炎に移る"
+  },
+  {
+   "id": "fusion_red_spark_fork",
+   "description": "a single flying spark splitting into three trails at a fork, one settling into a bed of glowing coals, one racing ahead as a streak of fire with speed lines, one cooling into a drift of gray ash, close-up",
+   "negative": "signpost, road, arrows, teal light, green glow, vines, leaves",
+   "note": "火花が焚の岐路で三つに分かれる＝燠火（延焼）・疾火（勢い＋ダメージ）・灰（ブロック）の3モード"
+  }
+ ]
+}

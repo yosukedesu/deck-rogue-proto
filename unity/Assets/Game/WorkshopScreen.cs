@@ -21,6 +21,25 @@ namespace DeckRogue.Game
             var marked = new List<int>();
             if (g.WorkshopA >= 0) marked.Add(g.WorkshopA);
             if (g.WorkshopB >= 0) marked.Add(g.WorkshopB);
+            // ⭐ レシピの提示 (2026-09-12 ユーザー裁定): 素材を選ぶ前はレシピ対に含まれる札が全部、1枚目を選んだらその相手札だけが光る
+            var pairs = new List<Fusion.RecipePair>();
+            try { pairs = Fusion.RecipePairsInDeck(run.Deck); } catch (Exception) { }
+            var starred = new List<int>();
+            var partnerNames = new List<string>();
+            if (g.WorkshopA >= 0 && g.WorkshopB < 0)
+            {
+                foreach (var p in pairs)
+                {
+                    int other = p.IndexA == g.WorkshopA ? p.IndexB : p.IndexB == g.WorkshopA ? p.IndexA : -1;
+                    if (other < 0) continue;
+                    starred.Add(other);
+                    partnerNames.Add("⭐ " + p.Recipe.Name + "（相手: " + run.Deck[other].Def.Name + "）");
+                }
+            }
+            else if (g.WorkshopA < 0 && g.WorkshopB < 0)
+            {
+                foreach (var p in pairs) { if (!starred.Contains(p.IndexA)) starred.Add(p.IndexA); if (!starred.Contains(p.IndexB)) starred.Add(p.IndexB); }
+            }
 
             float deckTop = RunUi.SceneWindow(root, "workshop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があればデッキをその下へ
             var area = UiKit.NewRect("deck", root);
@@ -39,7 +58,7 @@ namespace DeckRogue.Game
                     Audio.Play("card_set", 0.6f);
                     g.Rebuild();
                 },
-                500f, marked);
+                500f, marked, starred);
 
             // 右の追従パネル
             var side = UiKit.Frame(root, Theme.Panel, Color.white, "fuse", 3f);
@@ -101,7 +120,10 @@ namespace DeckRogue.Game
             }
             else
             {
-                var msg = UiKit.Txt(srt, blocked != null ? "合成できない: " + blocked : "デッキから2枚選ぶ", 16, blocked != null ? UiKit.ColBadInk : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                string guide = blocked != null ? "合成できない: " + blocked
+                    : partnerNames.Count > 0 ? "この札で作れる一品:\n" + string.Join("\n", partnerNames.ToArray())
+                    : (pairs.Count > 0 && a == null ? "デッキから2枚選ぶ（⭐の札はレシピの素材）" : "デッキから2枚選ぶ");
+                var msg = UiKit.Txt(srt, guide, 16, blocked != null ? UiKit.ColBadInk : partnerNames.Count > 0 ? UiKit.Hex("#7a4e12") : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 msg.textWrappingMode = TextWrappingModes.Normal;
                 UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -440f), new Vector2(-20f, -340f));
             }

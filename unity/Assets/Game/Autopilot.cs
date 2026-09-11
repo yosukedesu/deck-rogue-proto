@@ -107,6 +107,7 @@ namespace DeckRogue.Game
             }
             if (g.Rs == null || g.Rs.Phase != RunPhases.Combat) { yield return Shot("no-combat"); yield break; }
             yield return Shot("battle");
+            g.ViewMap = true; g.Rebuild(); yield return Shot("battle-map"); g.ViewMap = false; g.Rebuild();   // 戦闘中のマップ常時閲覧 (2026-09-12)
 
             // 手札ホバー (EventTrigger へ PointerEnter を送る)
             var hand0 = GameObject.Find("hand1");
@@ -295,6 +296,7 @@ namespace DeckRogue.Game
             {
                 var keep = g.Rs;
                 g.Rs = g.Rs with { Phase = RunPhases.Workshop, Combat = null };
+                g.WorkshopA = 0; g.WorkshopB = -1; g.Rebuild(); yield return Shot("workshop-star");   // 1枚目だけ選んだ状態 = ⭐レシピの相手札が光る (2026-09-12)
                 g.WorkshopA = 0; g.WorkshopB = 1;
                 for (int i = 1; i < g.Rs.Deck.Count; i++) if (g.Rs.Deck[i].Def.Id != g.Rs.Deck[0].Def.Id) { g.WorkshopB = i; break; }
                 g.Rebuild();

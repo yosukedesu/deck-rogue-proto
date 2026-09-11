@@ -103,6 +103,8 @@ namespace DeckRogue.Game
                 var tip = rd != null ? "<b>" + rd.Name + "</b>\n" + rd.Description : run.Relics[i];
                 Tooltip.Attach(cell.gameObject, delegate { return tip; });
             }
+            var mapBtn = UiKit.Btn(bar, "マップ", delegate { g.ViewMap = !g.ViewMap; g.Rebuild(); }, 13);   // 戦闘中も地図を確かめられる (2026-09-12)
+            SetSize(mapBtn, 84f, 34f);
             var logBtn = UiKit.Btn(bar, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 13);
             SetSize(logBtn, g.ShowLog ? 130f : 84f, 34f);
 

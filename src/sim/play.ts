@@ -20,7 +20,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
-import { fuseBlockReason, fuseCards, fusionNotes, resolveFusedDef } from '../engine/fusion.ts'
+import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
@@ -756,6 +756,10 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       '   タイプ跨ぎも可: 結果は持続する側 (置物＞リアクション＞呪文＞物理)。置物化は量÷3で毎ターン化',
     )
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
+    const pairs = recipePairsInDeck(run.deck)
+    if (pairs.length > 0) {
+      L.push(`⭐ レシピ候補 (手書きの一品が作れる対): ${pairs.map((p) => `[${p.indexA}]${run.deck[p.indexA].def.name}×[${p.indexB}]${run.deck[p.indexB].def.name}→${p.recipe.name}`).join(' / ')}`)
+    }
     L.push('→ {"type":"WorkshopFuse","indexA":N,"indexB":M} か {"type":"WorkshopSkip"}')
     L.push('   確定前の確認: {"type":"FusePreview","indexA":N,"indexB":M} (状態を変えずに結果を表示)')
     L.push('   (同じ色同士。効果の合体=2枚の効果を全部持つ札。コストは合計−1〔最低1・上限5。0E素材は値引きにならない〕。同名2枚は量を合算した「真・」化)')

@@ -42,7 +42,7 @@ namespace DeckRogue.Game
             var def = c.Def;
             var typeCol = PaperFx.TypeColor(def.Type);
             var ink = playable ? PaperFx.Ink : new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.7f);
-            string rarity = def.Rarity ?? "common";
+            string rarity = def.Rarity ?? (def.Id != null && def.Id.StartsWith("fusion_") ? "rare" : "common");   // レシピ産 (手書きの一品) は蜂蜜の外線 (2026-09-12)
 
             // 紙 (外側の線の色がレア度: C 墨・U 空・R 蜂蜜)
             var paper = PaperFx.Sheet(root, PaperFx.CardOf(rarity), "paper", playable ? Color.white : new Color(0.82f, 0.8f, 0.76f, 1f));

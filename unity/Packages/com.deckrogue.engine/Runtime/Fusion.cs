@@ -148,6 +148,22 @@ namespace DeckRogue.Engine
             return "祝福";
         }
 
+        /// <summary>デッキ内でレシピが成立している素材の対 (⭐提示。TS の recipePairsInDeck と同じ)。UI 専用で状態遷移には関与しない</summary>
+        public sealed record RecipePair(int IndexA, int IndexB, CardDef Recipe);
+
+        public static List<RecipePair> RecipePairsInDeck(IReadOnlyList<CardInstance> deck)
+        {
+            var out_ = new List<RecipePair>();
+            for (int i = 0; i < deck.Count; i++)
+                for (int j = i + 1; j < deck.Count; j++)
+                {
+                    if (deck[i].Def.Id == deck[j].Def.Id) continue;
+                    var r = RecipeFor(deck[i].Def, deck[j].Def);
+                    if (r != null) out_.Add(new RecipePair(i, j, r));
+                }
+            return out_;
+        }
+
         private static CardDef? RecipeFor(CardDef a, CardDef b)
         {
             foreach (var r in RECIPES)

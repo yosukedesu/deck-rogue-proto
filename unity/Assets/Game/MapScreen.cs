@@ -18,19 +18,26 @@ namespace DeckRogue.Game
         const float BossSize = 92f;
         const int Cols = 7;
 
-        public static void Build(GameRoot g, RectTransform root)
+        /// <summary>他の画面の上に重ねる読み取り専用の地図 (2026-09-12 ユーザー「マップは常に見れるようにして」)。進路は選べない・閉じるだけ</summary>
+        public static void Overlay(GameRoot g, RectTransform root) { Build(g, root, true); }
+
+        public static void Build(GameRoot g, RectTransform root) { Build(g, root, false); }
+
+        static void Build(GameRoot g, RectTransform root, bool overlay)
         {
             var run = g.Rs;
-            BattleScreen.BuildBackground(root, run.Act);
-            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.42f), "dim");
-            dim.raycastTarget = false;
+            if (!overlay) BattleScreen.BuildBackground(root, run.Act);
+            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, overlay ? 0.82f : 0.42f), "dim");   // 重ねる時は下の画面 (手札・吹き出し) が地図の線と混ざらない濃さ
+            dim.raycastTarget = overlay;   // 重ねる時は下の画面のボタンを塞ぐ
             UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
+            int recipeCount = 0;   // ⭐ いま手元で作れるレシピ対の数 (工房ノードに添える。2026-09-12)
+            try { recipeCount = Fusion.RecipePairsInDeck(run.Deck).Count; } catch (Exception) { }
 
             // 地図本体 (縦スクロール)
             var view = UiKit.NewRect("mapview", root);
-            UiKit.Anchor(view, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-MapW / 2f, 0f), new Vector2(MapW / 2f, -RunUi.TopH));
+            UiKit.Anchor(view, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-MapW / 2f, overlay ? 90f : 0f), new Vector2(MapW / 2f, -RunUi.TopH - (overlay ? 56f : 0f)));   // 重ねる時は見出しと「閉じる」の分だけ狭める
             var viewImg = view.gameObject.AddComponent<Image>();
-            viewImg.color = new Color(0f, 0f, 0f, 0.18f);
+            viewImg.color = new Color(0f, 0f, 0f, overlay ? 0.5f : 0.18f);
             var mask = view.gameObject.AddComponent<RectMask2D>();
             var content = UiKit.NewRect("content", view);
             int rows = run.Map.Count;
@@ -133,7 +140,7 @@ namespace DeckRogue.Game
                     bool avail = r == nextRow && choiceSet.Contains(i);
                     bool taken = path.Contains(Key(r, i));
                     bool passed = r <= run.Row;
-                    Node(g, content, n, r, i, cur, avail, taken, passed);
+                    Node(g, content, n, r, i, cur, avail, taken, passed, !overlay, recipeCount);
                 }
             }
 
@@ -152,7 +159,7 @@ namespace DeckRogue.Game
             }
 
             // 現在行が下から1/3に来るようにスクロール
-            float viewH = 1080f - RunUi.TopH;
+            float viewH = 1080f - RunUi.TopH - (overlay ? 146f : 0f);
             float curY = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row).y : startPos.y;
             float target = curY - viewH * 0.38f;
             float maxScroll = Math.Max(0f, contentH - viewH);
@@ -161,6 +168,15 @@ namespace DeckRogue.Game
             var fixer = view.gameObject.AddComponent<ScrollFix>();
             fixer.Scroll = scroll; fixer.Norm = norm;
 
+            if (overlay)
+            {
+                // 見出しと閉じるだけ (進路は選べない)。上部バーは下の画面のものが透けて見える
+                var head = UiKit.Deco(root, "マップ — 現在地と道筋", 26, UiKit.ColText, TextAnchor.MiddleCenter);
+                head.outlineWidth = 0.2f; head.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+                UiKit.Anchor(head.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -RunUi.TopH - 44f), new Vector2(0f, -RunUi.TopH - 4f));
+                RunUi.BottomButton(root, "閉じる", delegate { g.ViewMap = false; g.Rebuild(); }, 18, 220f, 50f, 0f, 28f);
+                return;
+            }
             RunUi.TopBar(g, root, "マップ");
             RunUi.Message(g, root);
 
@@ -228,7 +244,7 @@ namespace DeckRogue.Game
                 : new Color(1f, 1f, 1f, 0.32f);
         }
 
-        static void Node(GameRoot g, RectTransform parent, MapNode n, int row, int index, bool cur, bool avail, bool taken, bool passed)
+        static void Node(GameRoot g, RectTransform parent, MapNode n, int row, int index, bool cur, bool avail, bool taken, bool passed, bool interactive = true, int recipeCount = 0)
         {
             bool boss = n.Type == MapNodeTypes.Boss;
             float size = boss ? BossSize : NodeSize;
@@ -274,9 +290,20 @@ namespace DeckRogue.Game
             }
 
             string tip = NodeTip(n);
+            // ⭐ 工房: いま手元でレシピが成立する対があれば駒の右上に星 (2026-09-12「レシピは誰も踏まなかった」への提示)
+            if (n.Type == MapNodeTypes.Workshop && recipeCount > 0 && !passed)
+            {
+                var star = UiKit.Icon(cell, "star", 32f);
+                star.raycastTarget = false;
+                star.rectTransform.anchorMin = star.rectTransform.anchorMax = new Vector2(1f, 1f);
+                star.rectTransform.anchoredPosition = new Vector2(6f, 6f);
+                int price = 0;
+                try { price = DeckRogue.Engine.Run.WorkshopFusePrice(g.Rs); } catch (Exception) { }
+                tip += "\n⭐ 今の手札でレシピ（手書きの一品）が " + recipeCount + " 組 作れる" + (g.Rs.Gold < price ? "（所持金が " + price + "G に足りない）" : "（" + price + "G）");
+            }
             Tooltip.Attach(cell.gameObject, delegate { return tip; });
 
-            if (avail)
+            if (avail && interactive)
             {
                 var btn = frame.gameObject.AddComponent<Button>();
                 btn.targetGraphic = frame;

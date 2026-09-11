@@ -87,6 +87,8 @@ namespace DeckRogue.Game
         public string ViewPile;
         /// <summary>ラン画面のデッキ一覧モーダル (M3)</summary>
         public bool ViewDeck;
+        /// <summary>マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」): 上部バーの「マップ」で、どの画面の上にも読み取り専用の地図を重ねる</summary>
+        public bool ViewMap;
         /// <summary>ラン画面の下位モード (焚き火の「鍛える」一覧など)。フェーズが変わると消える</summary>
         public string SubMode;
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
@@ -221,6 +223,7 @@ namespace DeckRogue.Game
             ModeChoiceUid = null;
             ViewPile = null;
             ViewDeck = false;
+            ViewMap = false;
             SubMode = null;
             if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Play(Rs.Phase == RunPhases.Lost ? "lose" : "win", 0.8f, 0f);
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
@@ -450,6 +453,7 @@ namespace DeckRogue.Game
             if (Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null)
             {
                 BattleScreen.Build(this, ScreenRoot);
+                if (ViewMap) MapScreen.Overlay(this, ScreenRoot);
                 return;
             }
             // タイトルとマップも新画面 (M3)
@@ -472,7 +476,8 @@ namespace DeckRogue.Game
                 }
                 if (built)
                 {
-                    if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
+                    if (ViewMap) MapScreen.Overlay(this, ScreenRoot);      // 読み取り専用の地図を重ねる
+                    else if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
                     return;
                 }
             }

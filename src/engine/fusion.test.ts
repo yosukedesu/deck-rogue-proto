@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEventDef } from './content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes } from './fusion.ts'
+import fusionsJson from '../data/fusions.json'
 import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand, createInitialState } from './state.ts'
@@ -519,16 +520,73 @@ describe('合成の魅力の型 (2026-09-05 ユーザー裁定: 軸一致ボー�
     expect(none.effects.some((e) => ['addGrowth', 'addMomentum', 'discountNext'].includes(e.effect))).toBe(false)
   })
 
-  it('鍛えの引き継ぎ: 打撃+ × 防御 → 素で合体してから結果を1回鍛える (9ダメ+ブロック8・名前に+)', () => {
+  it('鍛えの引き継ぎ: 打撃+ × 蔦の楔 → 素で合体してから結果を1回鍛える (9ダメ+8ダメ・名前に+)。打撃×防御はレシピ 素振り になったので素材を変えた (2026-09-12)', () => {
     const up = upgradeCard(inst('green_strike'))
     expect(up.def.name).toBe('打撃+')
-    const def = fuseCards(up, inst('green_guard'))
+    const def = fuseCards(up, inst('green_vine_wedge'))
     expect(def.name.endsWith('+')).toBe(true)
-    expect(def.effects.find((e) => e.effect === 'dealDamage')?.amount).toBe(9)
-    expect(def.effects.find((e) => e.effect === 'gainBlock')?.amount).toBe(8)
+    expect(def.effects.filter((e) => e.effect === 'dealDamage').map((e) => e.amount)).toEqual([9, 8])
     // 鍛えていない素材同士なら鍛えられない
-    const plain = fuseCards(inst('green_strike'), inst('green_guard'))
+    const plain = fuseCards(inst('green_strike'), inst('green_vine_wedge'))
     expect(plain.name.endsWith('+')).toBe(false)
+  })
+})
+
+describe('手書きレシピの作り直し (2026-09-12 ユーザー裁定「上位15を全部採用」・docs/fusion-recipes-proposal.md)', () => {
+  const recipes = fusionsJson as ReadonlyArray<{ a: string; b: string; result: { id: string; name: string; cost: number; type: string; effects: ReadonlyArray<{ effect: string }>; modes?: ReadonlyArray<unknown> } }>
+
+  it('レシピは24件 (既存9+新15)。素材は現行データに実在する = 死にレシピ (素材が撤去済み) を作らない', () => {
+    expect(recipes).toHaveLength(24)
+    const ids = new Set<string>()
+    for (const r of recipes) {
+      expect(() => getCardDef(r.a), `${r.result.name}: 素材 ${r.a}`).not.toThrow()
+      expect(() => getCardDef(r.b), `${r.result.name}: 素材 ${r.b}`).not.toThrow()
+      expect(r.a).not.toBe(r.b)
+      expect(getCardDef(r.a).color).toBe(getCardDef(r.b).color)
+      expect(ids.has(r.result.id), `id 重複 ${r.result.id}`).toBe(false)
+      ids.add(r.result.id)
+      expect(r.result.id.startsWith('fusion_')).toBe(true)
+      // 規約: 0〜5E・リアクションは2E以下・効果は3行まで (選択式は共通部が空でよい)
+      expect(r.result.cost).toBeGreaterThanOrEqual(0)
+      expect(r.result.cost).toBeLessThanOrEqual(5)
+      if (r.result.type === 'reaction') expect(r.result.cost).toBeLessThanOrEqual(2)
+      expect(new Set(r.result.effects.map((e) => e.effect)).size, `${r.result.name}: 効果の種類は3まで (多段の行は同種)`).toBeLessThanOrEqual(3)
+    }
+  })
+
+  it('スターター×スターター: 打撃×防御 → 素振り (1E・ブロック5・7ダメ・手札が全部物理なら0E)。鍛えた素材なら 素振り+ (8/11)', () => {
+    const plain = fuseCards(inst('green_strike'), inst('green_guard'))
+    expect(plain.id).toBe('fusion_practice_swing')
+    expect(plain.freeIfHandAllPhysical).toBe(true)
+    expect(plain.effects.map((e) => `${e.effect}:${e.amount}`)).toEqual(['gainBlock:5', 'dealDamage:7'])
+    const up = fuseCards(upgradeCard(inst('green_strike')), inst('green_guard'))
+    expect(up.name).toBe('素振り+')
+    expect(up.effects.map((e) => e.amount)).toEqual([8, 11])
+    expect(up.freeIfHandAllPhysical).toBe(true)
+  })
+
+  it('選択式のレシピ (収穫の岐路・根を張る蔦) は計算合成では出ない形で、片方だけがランプする 根を張る蔦 は非消滅 (陽光の恵みの裁定)', () => {
+    const fork = fuseCards(inst('green_growth_ring'), inst('green_bloom_lash'))
+    expect(fork.id).toBe('fusion_harvest_fork')
+    expect(fork.modes?.length).toBe(2)
+    const root = fuseCards(inst('green_ramp_sprout'), inst('green_entangle'))
+    expect(root.id).toBe('fusion_rooting_vine')
+    expect(root.cost).toBe(2)
+    expect(root.exhaust).not.toBe(true)
+    expect(root.modes?.[0].effects.some((e) => e.effect === 'gainEnergyMax')).toBe(true)
+  })
+
+  it('置物化のレシピは計算合成の÷3でなく「攻撃ごと」「守り成功参照」の形 (蔦打ちの茂み・茨の生垣・疾風の残響は登場時の勢いなし)', () => {
+    const thicket = fuseCards(inst('green_double_lash'), inst('green_perm_thorn_vine'))
+    expect(thicket.id).toBe('fusion_lash_thicket')
+    expect(thicket.effects.every((e) => e.trigger === 'onAttackPlayed')).toBe(true)
+    const fence = fuseCards(inst('green_reaction_thorns'), inst('green_perm_thorn_vine'))
+    expect(fence.id).toBe('fusion_bramble_fence')
+    expect(fence.effects.find((e) => e.effect === 'counter')?.condition?.lastActionNoHpLoss).toBe(true)
+    const echo = fuseCards(inst('green_gale_horn'), inst('green_perm_gale_vine'))
+    expect(echo.id).toBe('fusion_gale_echo')
+    expect(echo.effects.some((e) => e.trigger === 'onPlay')).toBe(false)
+    expect(echo.effects.some((e) => e.effect === 'momentumCarryHalf')).toBe(true)
   })
 })
 

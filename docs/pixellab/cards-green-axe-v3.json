@@ -1,0 +1,190 @@
+{
+ "_note": "打撃・打ち据えの挿絵 作り直し (2026-09-12 ユーザー「ダサいので作り直して」): 4構図×2シード",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "strike_A_slash__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_A_slash__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) in mid-swing, the blade streaking diagonally from upper left to lower right, a curved teal crescent of mana light trailing the edge, dark leaves and wood splinters flying, blurred night forest behind, motion",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_A_slash__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_A_slash__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) in mid-swing, the blade streaking diagonally from upper left to lower right, a curved teal crescent of mana light trailing the edge, dark leaves and wood splinters flying, blurred night forest behind, motion",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_B_cleave__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_B_cleave__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) buried deep in a thick dark tree trunk, the split glowing teal along the cut, bark chips frozen in the air, moss and roots at the base, close-up on the impact",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_B_cleave__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_B_cleave__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) buried deep in a thick dark tree trunk, the split glowing teal along the cut, bark chips frozen in the air, moss and roots at the base, close-up on the impact",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_C_planted__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_C_planted__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) planted head-down in mossy forest ground at night, the haft leaning, teal mana veins glowing in the soil around the blade, fireflies, calm and heavy",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_C_planted__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_C_planted__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) planted head-down in mossy forest ground at night, the haft leaning, teal mana veins glowing in the soil around the blade, fireflies, calm and heavy",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_D_edge__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_D_edge__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, extreme close-up of the blade edge and brass cogwheel hub of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards), three teal crystals glowing and reflecting on the dark steel, a few sparks, the blade fills the whole frame",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "strike_D_edge__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/strike_D_edge__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, extreme close-up of the blade edge and brass cogwheel hub of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards), three teal crystals glowing and reflecting on the dark steel, a few sparks, the blade fills the whole frame",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_A_slam__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_A_slam__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the blunt hammer poll of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) slamming straight down onto dark rock, a ring-shaped shockwave of dust and teal light spreading outward, cracks radiating from the impact point, low angle",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_A_slam__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_A_slam__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the blunt hammer poll of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) slamming straight down onto dark rock, a ring-shaped shockwave of dust and teal light spreading outward, cracks radiating from the impact point, low angle",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_B_crack__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_B_crack__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, a dark armored shell of stone with a bright teal crack spreading across it (the exposed weak point), the brass poll of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) pressed into the crack, chips and sparks flying, close-up",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_B_crack__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_B_crack__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, a dark armored shell of stone with a bright teal crack spreading across it (the exposed weak point), the brass poll of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) pressed into the crack, chips and sparks flying, close-up",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_C_sweep__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_C_sweep__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) sweeping horizontally through tall night grass and reeds, the plants bent flat by a ring of force, teal glow at the cogwheel, motion blur at the blade",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_C_sweep__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_C_sweep__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) sweeping horizontally through tall night grass and reeds, the plants bent flat by a ring of force, teal glow at the cogwheel, motion blur at the blade",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_D_gear__11",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_D_gear__11.png",
+   "seed": 11,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, close-up of the brass cogwheel hub of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) at the instant of impact, gears turning, a burst of teal mana light and orange sparks between the teeth, dark steel around it",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  },
+  {
+   "id": "bash_D_gear__37",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/px/axe2/bash_D_gear__37.png",
+   "seed": 37,
+   "size": [
+    80,
+    48
+   ],
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, close-up of the brass cogwheel hub of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) at the instant of impact, gears turning, a burst of teal mana light and orange sparks between the teeth, dark steel around it",
+   "negative": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background"
+  }
+ ]
+}

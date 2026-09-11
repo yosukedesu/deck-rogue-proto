@@ -58,7 +58,12 @@ namespace DeckRogue.Game
             UiKit.Le(gt, -1f, 30f, -1f, 30f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 30f, -1f, 30f);
-            var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.Rebuild(); }, 13);
+            if (run.Phase != RunPhases.Map)
+            {   // マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」)
+                var mapBtn = UiKit.Btn(bar, "マップ", delegate { g.ViewMap = !g.ViewMap; g.ViewDeck = false; g.Rebuild(); }, 13);
+                BattleScreen.SetSize(mapBtn, 84f, 36f);
+            }
+            var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
             BattleScreen.SetSize(deckBtn, 110f, 36f);
 
             for (int i = 0; i < run.Relics.Count && i < 10; i++)
@@ -140,7 +145,7 @@ namespace DeckRogue.Game
 
         /// <summary>カードのグリッド (スクロール)。btnLabel が null を返す札はボタンなし。marked は強調</summary>
         public static void CardGrid(GameRoot g, Transform parent, IReadOnlyList<CardInstance> cards,
-            Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null)
+            Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null, List<int> starred = null)
         {
             var content = UiKit.Scroll(parent, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
             UiKit.Le(UiKit.ScrollRoot(content), -1f, minH, -1f, minH, -1f, 1f);
@@ -169,6 +174,17 @@ namespace DeckRogue.Game
                 float lift = withBtn ? 24f : 0f;
                 if (lift > 0f) cv.anchoredPosition = new Vector2(0f, lift);
                 CardPopup.Attach(g, cell, c, delegate { return g.Rs != null && g.Rs.Phase == RunPhases.Combat ? g.Rs.Combat : null; }, true);
+                if (!mark && starred != null && starred.Contains(i))
+                {   // ⭐ レシピの相手札 (2026-09-12): 蜂蜜色の細い枠と星
+                    var sring = UiKit.Frame(cell, Theme.Panel, new Color(0.88f, 0.7f, 0.35f, 0.85f), "star-ring", 3f);
+                    UiKit.Anchor(sring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-CardView.W * 0.4f - 6f, -CardView.H * 0.4f - 6f + lift), new Vector2(CardView.W * 0.4f + 6f, CardView.H * 0.4f + 6f + lift));
+                    sring.raycastTarget = false;
+                    sring.transform.SetAsFirstSibling();
+                    var st = UiKit.Icon(cell, "star", 32f);
+                    st.raycastTarget = false;
+                    st.rectTransform.anchorMin = st.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                    st.rectTransform.anchoredPosition = new Vector2(-CardView.W * 0.4f + 4f, CardView.H * 0.4f + lift - 4f);
+                }
                 if (mark)
                 {
                     var ring = UiKit.Frame(cell, Theme.Panel, new Color(1f, 0.85f, 0.3f, 0.6f), "mark", 3f);

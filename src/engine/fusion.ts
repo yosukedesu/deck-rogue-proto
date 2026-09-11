@@ -116,6 +116,29 @@ function recipeFor(a: CardDef, b: CardDef): CardDef | null {
   return hit ? hit.result : null
 }
 
+/** デッキ内でレシピが成立している素材の対 (⭐提示。2026-09-12 ユーザー裁定「工房で相手札が光る＋マップの工房ノードに⭐」) */
+export interface RecipePair {
+  readonly indexA: number
+  readonly indexB: number
+  readonly recipe: CardDef
+}
+
+/**
+ * デッキの全ペアに recipeFor を掛ける (30枚で435回・純関数・決定的)。同名同士はレシピ対にならない。
+ * UI/CLI が「今この工房で作れる一品」を光らせるためだけに使う。engine の状態遷移には関与しない
+ */
+export function recipePairsInDeck(deck: readonly CardInstance[]): RecipePair[] {
+  const out: RecipePair[] = []
+  for (let i = 0; i < deck.length; i++) {
+    for (let j = i + 1; j < deck.length; j++) {
+      if (deck[i].def.id === deck[j].def.id) continue
+      const recipe = recipeFor(deck[i].def, deck[j].def)
+      if (recipe) out.push({ indexA: i, indexB: j, recipe })
+    }
+  }
+  return out
+}
+
 /** タイプの支配順位 (確定済みルール表「カード合成（工房）」): 置物 > リアクション > 呪文 > 物理 */
 const TYPE_RANK: Record<string, number> = { permanent: 3, reaction: 2, spell: 1, physical: 0 }
 const REACTION_WINDOWS = new Set([

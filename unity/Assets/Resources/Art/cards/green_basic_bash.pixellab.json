@@ -1,24 +1,29 @@
 {
-  "id": "green_basic_bash_5",
-  "engine": "pixflux",
-  "request": {
-    "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, the blunt back of a huge two-handed magitech axe with a long wooden handle bound with brass bands, a brass cogwheel at the eye of the axe, a wide dark steel blade with three small glowing teal mana crystal shards embedded in it slamming down onto cracked rock with a shockwave, teal light leaking from the crystal shards, close-up, no hands",
-    "negative_description": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors",
-    "image_size": {
-      "width": 80,
-      "height": 48
-    },
-    "text_guidance_scale": 8,
-    "no_background": false,
-    "outline": "selective outline",
-    "shading": "detailed shading",
-    "detail": "highly detailed",
-    "view": "side",
-    "seed": 5
+ "id": "bash_B_crack__11",
+ "engine": "pixflux",
+ "request": {
+  "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, painterly detailed shading, muted night palette with a teal mana accent, dramatic composition, the subject fills the frame, no text, no letters, no border, no frame, no people, no characters, no hands, a dark armored shell of stone with a bright teal crack spreading across it (the exposed weak point), the brass poll of the huge two-handed magitech great axe (long wooden haft bound with brass bands, a brass cogwheel at the eye, a wide dark steel blade with three small glowing teal mana crystal shards) pressed into the crack, chips and sparks flying, close-up",
+  "negative_description": "person, human, man, woman, hero, warrior, figure, silhouette of a person, hands, arms, face, portrait, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, cartoon, item icon on plain background",
+  "image_size": {
+   "width": 80,
+   "height": 48
   },
-  "usage": {
-    "type": "generations",
-    "generations": 1
-  },
-  "at": "2026-09-10T17:34:25.874Z"
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 11
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-11T15:11:03.928Z",
+ "judge": {
+  "pick": "bash_B_crack__11",
+  "at": "2026-09-12",
+  "note": "ユーザー「ダサいので作り直して」→4構図×2シードのシートから裁定 (打撃=B2 断ち割り・打ち据え=B1 急所のひび)"
+ }
 }

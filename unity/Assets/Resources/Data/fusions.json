@@ -165,29 +165,6 @@
     }
   },
   {
-    "a": "green_reaction_vine",
-    "b": "green_perm_thorn_thicket",
-    "result": {
-      "id": "fusion_bramble_hedge",
-      "name": "宿茨の生垣",
-      "cost": 2,
-      "type": "permanent",
-      "color": "green",
-      "effects": [
-        {
-          "trigger": "onAttackIncoming",
-          "effect": "gainBlock",
-          "amount": 5
-        },
-        {
-          "trigger": "onAttacked",
-          "effect": "counter",
-          "amount": 5
-        }
-      ]
-    }
-  },
-  {
     "a": "red_strike",
     "b": "red_ignite",
     "result": {
@@ -273,6 +250,471 @@
           "trigger": "onPlay",
           "effect": "gainBlock",
           "amount": 5
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_strike",
+    "b": "green_guard",
+    "result": {
+      "id": "fusion_practice_swing",
+      "name": "素振り",
+      "cost": 1,
+      "type": "physical",
+      "color": "green",
+      "freeIfHandAllPhysical": true,
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "gainBlock",
+          "amount": 5
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 7
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_growth_ring",
+    "b": "green_bloom_lash",
+    "result": {
+      "id": "fusion_harvest_fork",
+      "name": "収穫の岐路",
+      "cost": 2,
+      "type": "spell",
+      "color": "green",
+      "effects": [],
+      "modes": [
+        {
+          "name": "蒔く",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "addGrowth",
+              "amount": 3
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 4
+            }
+          ]
+        },
+        {
+          "name": "刈る",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dischargeGrowth",
+              "amount": 3,
+              "target": "all"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_strike",
+    "b": "green_sprint",
+    "result": {
+      "id": "fusion_sprint_strike",
+      "name": "疾走の打撃",
+      "cost": 1,
+      "type": "physical",
+      "color": "green",
+      "freeIfMomentumAtLeast": 5,
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "addMomentum",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 6,
+          "pierce": true
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_reaction_thorns",
+    "b": "green_perm_thorn_vine",
+    "result": {
+      "id": "fusion_bramble_fence",
+      "name": "茨の生垣",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "gainBlock",
+          "amount": 3
+        },
+        {
+          "trigger": "onAttacked",
+          "effect": "counter",
+          "amount": 8,
+          "condition": {
+            "lastActionNoHpLoss": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_double_lash",
+    "b": "green_perm_thorn_vine",
+    "result": {
+      "id": "fusion_lash_thicket",
+      "name": "蔦打ちの茂み",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "gainBlock",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_guard",
+    "b": "green_perm_gale_vine",
+    "result": {
+      "id": "fusion_windward_vine",
+      "name": "風受けの蔓",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "axis": [
+        "trample"
+      ],
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "gainBlock",
+          "amount": 5
+        },
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "addMomentum",
+          "amount": 1
+        },
+        {
+          "trigger": "onMomentumGained",
+          "effect": "gainBlock",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_dappled_light",
+    "b": "green_reaction_vine",
+    "result": {
+      "id": "fusion_dappled_hedge",
+      "name": "木漏れ日の生垣",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onAttackIncoming",
+          "effect": "gainBlock",
+          "amount": 4
+        },
+        {
+          "trigger": "onTurnStart",
+          "effect": "drawCards",
+          "amount": 1,
+          "condition": {
+            "perfectBlockLastPhase": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_gale_horn",
+    "b": "green_perm_gale_vine",
+    "result": {
+      "id": "fusion_gale_echo",
+      "name": "疾風の残響",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "addMomentum",
+          "amount": 1
+        },
+        {
+          "trigger": "onTurnStart",
+          "effect": "momentumCarryHalf"
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_bark_armor",
+    "b": "green_perm_thorn_leaves",
+    "result": {
+      "id": "fusion_ringed_bark",
+      "name": "年輪の樹皮",
+      "cost": 2,
+      "type": "permanent",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onTurnStart",
+          "effect": "addGrowth",
+          "amount": 1
+        },
+        {
+          "trigger": "onGrowthGained",
+          "effect": "dealDamage",
+          "amount": 2
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_ramp_sprout",
+    "b": "green_entangle",
+    "result": {
+      "id": "fusion_rooting_vine",
+      "name": "根を張る蔦",
+      "cost": 2,
+      "type": "spell",
+      "color": "green",
+      "effects": [],
+      "modes": [
+        {
+          "name": "根を張る",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainEnergyMax",
+              "amount": 1
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "name": "蔦を振る",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 10
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_vine_wedge",
+    "b": "green_leaf_strike",
+    "result": {
+      "id": "fusion_reading_wedge",
+      "name": "見切りの楔",
+      "cost": 1,
+      "type": "physical",
+      "color": "green",
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "shatterBlockConvert"
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 6
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 8,
+          "condition": {
+            "enemyIntent": "defend"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "a": "green_entangle",
+    "b": "green_x_bark_armor",
+    "result": {
+      "id": "fusion_clinging_bark",
+      "name": "絡みつく重鎧",
+      "cost": 1,
+      "type": "spell",
+      "color": "green",
+      "xCost": true,
+      "axis": [
+        "ramp"
+      ],
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "gainBlock",
+          "amount": 3,
+          "xHits": true
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 4,
+          "xHits": true
+        }
+      ]
+    }
+  },
+  {
+    "a": "red_guard",
+    "b": "red_perm_flarecoat",
+    "result": {
+      "id": "fusion_red_ash_mantle",
+      "name": "灰纏い",
+      "cost": 2,
+      "type": "permanent",
+      "color": "red",
+      "effects": [
+        {
+          "trigger": "onAttacked",
+          "effect": "applyBurn",
+          "amount": 2
+        },
+        {
+          "trigger": "onTurnStart",
+          "effect": "impulseDraw",
+          "amount": 2,
+          "condition": {
+            "blaze": true
+          }
+        },
+        {
+          "trigger": "onTurnStart",
+          "effect": "gainBlock",
+          "amount": 3,
+          "condition": {
+            "blaze": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "a": "red_fire_shift",
+    "b": "red_ember_stance",
+    "result": {
+      "id": "fusion_red_ember_shift",
+      "name": "余勢の火移し",
+      "cost": 1,
+      "type": "spell",
+      "color": "red",
+      "effects": [],
+      "modes": [
+        {
+          "name": "盾へ移す",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 4
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "dischargeMomentumBlock",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "name": "火へ移す",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "applyBurn",
+              "amount": 2
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "dischargeMomentumBurn",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "a": "red_spark",
+    "b": "red_mode_crossroad",
+    "result": {
+      "id": "fusion_red_spark_fork",
+      "name": "火花の岐路",
+      "cost": 0,
+      "type": "spell",
+      "color": "red",
+      "effects": [],
+      "modes": [
+        {
+          "name": "燠火",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "applyBurn",
+              "amount": 3
+            }
+          ]
+        },
+        {
+          "name": "疾火",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 3
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "addMomentum",
+              "amount": 3
+            }
+          ]
+        },
+        {
+          "name": "灰",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 3
+            }
+          ]
         }
       ]
     }
