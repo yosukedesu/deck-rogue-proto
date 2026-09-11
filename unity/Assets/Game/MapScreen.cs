@@ -129,6 +129,13 @@ namespace DeckRogue.Game
             startLbl.rectTransform.sizeDelta = new Vector2(120f, 20f);
             startLbl.rectTransform.anchoredPosition = startPos + new Vector2(0f, -34f);
 
+            // 落書きの層 (線の下・ノードの上に見せるため、ノードの後に作って最前面へ。左クリックは素通し = ICanvasRaycastFilter)
+            var doodleRt = UiKit.NewRect("doodle", content);
+            doodleRt.anchorMin = new Vector2(0f, 0f); doodleRt.anchorMax = new Vector2(1f, 1f); doodleRt.pivot = new Vector2(0f, 0f);
+            doodleRt.offsetMin = Vector2.zero; doodleRt.offsetMax = Vector2.zero;
+            var doodle = doodleRt.gameObject.AddComponent<DoodleLayer>();
+            doodle.Root = g; doodle.Strokes = g.DoodlesFor(run.Act); doodle.Editable = !overlay; doodle.raycastTarget = !overlay;
+
             // ノード
             for (int r = 0; r < rows; r++)
             {
@@ -143,6 +150,8 @@ namespace DeckRogue.Game
                     Node(g, content, n, r, i, cur, avail, taken, passed, !overlay, recipeCount);
                 }
             }
+
+            doodleRt.SetAsLastSibling();   // 落書きはノードの上に (右ドラッグ/ペンモードの時だけ入力を受ける)
 
             // 現在地マーカー (リーダーの小さな絵)
             {
@@ -195,6 +204,9 @@ namespace DeckRogue.Game
             var ale = abandon.GetComponent<LayoutElement>();
             if (ale != null) UnityEngine.Object.Destroy(ale);
             UiKit.Anchor(abandon.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 20f), new Vector2(170f, 56f));
+
+            // 右下: 落書きの道具 (2026-09-12 StS2 の移植。右ドラッグで描く／ペンを押すと指でも描ける)
+            DoodleToolbar(g, root);
 
             // 右下: 幕の進み
             var prog = UiKit.Txt(root, "幕 " + run.Act + " / 3   勝利 " + run.BattlesWon + " 戦", 15, UiKit.ColDim, TextAnchor.MiddleRight);
@@ -316,6 +328,33 @@ namespace DeckRogue.Game
                 });
                 Tween.Punch(cell, 0.1f, 0.8f);
             }
+        }
+
+        /// <summary>落書きの道具: 紙色ペン・朱ペン・消しゴム・全消し。押したペンが光る (=ペンモード。同じものを押すと解除)</summary>
+        static void DoodleToolbar(GameRoot g, RectTransform root)
+        {
+            var bar = UiKit.NewRect("doodle-tools", root);
+            UiKit.Anchor(bar, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f - 4f * 78f - 3f * 8f, 62f), new Vector2(-24f, 100f));
+            var hg = UiKit.Horz(bar, 8, 0);
+            hg.childAlignment = TextAnchor.MiddleRight; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            string[] labels = { "紙ペン", "朱ペン", "消しゴム", "全消し" };   // ✎ はフォントに無い
+            for (int i = 0; i < labels.Length; i++)
+            {
+                int idx = i;
+                bool active = g.DoodleMode && g.DoodlePen == idx;
+                Color? bg = active ? (Color?)(idx == 1 ? UiKit.Hex("#e9b8ae") : idx == 2 ? UiKit.Hex("#d8d2c4") : UiKit.Hex("#dfe8dc")) : null;
+                var b = UiKit.Btn(bar, labels[i], delegate
+                {
+                    Audio.Play("click", 0.5f);
+                    if (idx == 3) { g.DoodlesFor(g.Rs.Act).Clear(); g.Rebuild(); return; }
+                    if (g.DoodleMode && g.DoodlePen == idx) g.DoodleMode = false;   // 同じ道具をもう一度 = ペンモード解除
+                    else { g.DoodleMode = true; g.DoodlePen = idx; }
+                    g.Rebuild();
+                }, 14, true, bg);
+                BattleScreen.SetSize(b, idx == 2 || idx == 3 ? 82f : 70f, 36f);
+            }
+            var hint = UiKit.Txt(root, g.DoodleMode ? (g.DoodlePen == 2 ? "消しゴム: 線に触れると消える（もう一度押すと解除）" : "ペン: ドラッグで地図に描ける（もう一度押すと解除）") : "右ドラッグで地図に描ける（ペンを押すと指でも）", 13, UiKit.ColDim, TextAnchor.MiddleRight);
+            UiKit.Anchor(hint.rectTransform, new Vector2(0.55f, 0f), new Vector2(1f, 0f), new Vector2(0f, 104f), new Vector2(-24f, 126f));
         }
 
         static Color NodeTint(string type, bool avail, bool cur, bool taken, bool passed)

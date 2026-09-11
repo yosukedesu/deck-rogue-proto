@@ -69,6 +69,8 @@ case "$MODE" in
     if [ ! -f "$EXE" ]; then echo "ビルドが無い: $EXE (先に scripts/unity-win.sh build)"; exit 2; fi
     SCENARIO="${2:-tour}"; SEED="${3:-4242}"; STAGEACT="${4:-}"   # 4つ目: 舞台の幕だけ差し替え (-stageact)
     rm -rf "$WIN_DIR/Shots"; mkdir -p "$WIN_DIR/Shots"
+    # 直前のプレイヤーが残っていると次の起動が D3D の初期化で固まる (2026-09-12 連続撮影で2回目が 300 秒タイムアウト) → 先に落として少し待つ
+    taskkill.exe /IM DeckRogue.exe /F >/dev/null 2>&1; sleep 2
     # SHOT_W/SHOT_H で窓の寸法、UISCALE でスマホの倍率を PC で再現 (例: SHOT_W=1920 SHOT_H=886 UISCALE=1.3 = S25 の 1800×831 キャンバス)
     # STATE="phase=workshop;pick=0;viewmap=1" scripts/unity-win.sh shots state 4242  = 任意の状態へ跳んで1枚撮る (キーは Autopilot.StateJump の説明)
     timeout -k 5 300 "$EXE" -autopilot "$SCENARIO" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" ${STAGEACT:+-stageact "$STAGEACT"} ${UISCALE:+-uiscale "$UISCALE"} ${STATE:+-state "$STATE"} \

@@ -295,6 +295,16 @@ namespace DeckRogue.Game
             catch (Exception ex) { Debug.LogError("[Autopilot] state: フェーズへ跳べない " + ex.Message); }
             var picks = (Get("pick") ?? "").Split(',').Select(x => { int v; return int.TryParse(x.Trim(), out v) ? v : -1; }).Where(v => v >= 0).ToList();
             if (phase == "workshop") { g.WorkshopA = picks.Count > 0 ? picks[0] : -1; g.WorkshopB = picks.Count > 1 ? picks[1] : -1; }
+            if (Get("doodle") == "1")
+            {   // 見本の落書き: 現在地の丸と、右上へ向かう波線 (描画の確認用)
+                var l = g.DoodlesFor(g.Rs.Act);
+                var ring = new DoodleStroke { Color = 1 };
+                for (int i = 0; i <= 24; i++) { float a = i / 24f * Mathf.PI * 2f; ring.Points.Add(new Vector2(550f + Mathf.Cos(a) * 52f, 146f + Mathf.Sin(a) * 52f)); }
+                var wave = new DoodleStroke { Color = 0 };
+                for (int i = 0; i <= 40; i++) wave.Points.Add(new Vector2(560f + i * 9f, 240f + i * 11f + Mathf.Sin(i * 0.8f) * 12f));
+                l.Add(ring); l.Add(wave);
+                if (Get("pen") != null) { g.DoodleMode = true; int pen; if (int.TryParse(Get("pen"), out pen)) g.DoodlePen = pen; }
+            }
             if (Get("viewmap") == "1") g.ViewMap = true;
             if (Get("viewdeck") == "1") g.ViewDeck = true;
             if (Get("log") == "1") g.ShowLog = true;

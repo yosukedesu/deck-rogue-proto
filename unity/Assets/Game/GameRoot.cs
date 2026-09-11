@@ -89,6 +89,11 @@ namespace DeckRogue.Game
         public bool ViewDeck;
         /// <summary>マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」): 上部バーの「マップ」で、どの画面の上にも読み取り専用の地図を重ねる</summary>
         public bool ViewMap;
+        /// <summary>マップへの落書き (2026-09-12。StS2 の移植): 幕ごとの線の列。ランの間保持し、新しいランで白紙。UI 層の状態でエンジンには無い</summary>
+        public Dictionary<int, List<DoodleStroke>> Doodles = new Dictionary<int, List<DoodleStroke>>();
+        public bool DoodleMode;      // ペンボタンが押されている (左ドラッグ・指でも描ける)
+        public int DoodlePen;        // 0=紙色 1=朱 2=消しゴム
+        public List<DoodleStroke> DoodlesFor(int act) { List<DoodleStroke> l; if (!Doodles.TryGetValue(act, out l)) { l = new List<DoodleStroke>(); Doodles[act] = l; } return l; }
         /// <summary>ラン画面の下位モード (焚き火の「鍛える」一覧など)。フェーズが変わると消える</summary>
         public string SubMode;
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
@@ -224,6 +229,7 @@ namespace DeckRogue.Game
             ViewPile = null;
             ViewDeck = false;
             ViewMap = false;
+            Doodles = new Dictionary<int, List<DoodleStroke>>(); DoodleMode = false; DoodlePen = 0;
             SubMode = null;
             if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Play(Rs.Phase == RunPhases.Lost ? "lose" : "win", 0.8f, 0f);
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
