@@ -1,25 +1,26 @@
 {
-  "id": "enemy_kin_follower__23",
-  "engine": "pixflux",
-  "request": {
-    "description": "a slender MOTH-like creature with flowing ribbon-like wings around its body, mid-dance pose with one leg raised, holding a curved knife, bead eyes, graceful, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
-    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile",
-    "image_size": {
-      "width": 96,
-      "height": 96
-    },
-    "text_guidance_scale": 9,
-    "no_background": true,
-    "outline": "selective outline",
-    "shading": "medium shading",
-    "detail": "highly detailed",
-    "view": "low top-down",
-    "direction": "south-west",
-    "seed": 23
+ "id": "enemy_kin_follower__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a slender MOTH-like creature with flowing ribbon-like wings around its body, mid-dance pose with one leg raised, holding a curved knife, bead eyes, graceful, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile",
+  "image_size": {
+   "width": 96,
+   "height": 96
   },
-  "usage": {
-    "type": "generations",
-    "generations": 1
-  },
-  "at": "2026-09-08T04:29:50.333Z"
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-08T04:29:50.333Z",
+ "postprocess": "flip_left_right (2026-09-11 向きの検算: 右向きに出たので反転＝敵はプレイヤー側=左を向く)"
 }

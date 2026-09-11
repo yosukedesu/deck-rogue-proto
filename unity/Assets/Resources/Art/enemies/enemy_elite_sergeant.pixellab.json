@@ -1,26 +1,26 @@
 {
-  "id": "enemy_elite_sergeant__23",
-  "engine": "pixflux",
-  "request": {
-    "description": "a stout heavy ogre-like BEAST with a boar snout and small tusks, thick arms, spiked shoulder plates, holding a long coiled whip, stomping forward, no human face, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
-    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile",
-    "image_size": {
-      "width": 80,
-      "height": 80
-    },
-    "text_guidance_scale": 9,
-    "no_background": true,
-    "outline": "selective outline",
-    "shading": "medium shading",
-    "detail": "highly detailed",
-    "view": "low top-down",
-    "direction": "south-west",
-    "seed": 23
+ "id": "enemy_elite_sergeant__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a stout heavy ogre-like BEAST with a boar snout and small tusks, thick arms, spiked shoulder plates, holding a long coiled whip, stomping forward, no human face, pixel art in the style of a gentle watercolor picture book illustration of a pale moonlit forest creature, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, muted palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, clean readable silhouette, 12 color palette, transparent background, seen slightly from above, three-quarter front view facing left",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile",
+  "image_size": {
+   "width": 80,
+   "height": 80
   },
-  "usage": {
-    "type": "generations",
-    "generations": 1
-  },
-  "at": "2026-09-08T04:25:11.279Z",
-  "postprocess": "右向きに出ていたので左右反転 (敵は左＝リーダーの方を向く。2026-09-08 ユーザー指摘)"
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-08T04:25:11.279Z",
+ "postprocess": "flip_left_right (2026-09-11 向きの検算: 右向きに出たので反転＝敵はプレイヤー側=左を向く)"
 }
