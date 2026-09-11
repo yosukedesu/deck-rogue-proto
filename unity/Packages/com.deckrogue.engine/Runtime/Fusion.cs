@@ -838,7 +838,7 @@ namespace DeckRogue.Engine
         public static IReadOnlyList<string> FusionNotes(CardInstance a, CardInstance b)
         {
             var notes = new List<string>();
-            if (RecipeFor(a.Def, b.Def) != null) notes.Add("⭐レシピ: 手書きの一品");
+            if (RecipeFor(a.Def, b.Def) != null) notes.Add("★レシピ: 手書きの一品");
             var axesB = Run.AxesOf(b.Def);
             string? shared = Run.AxesOf(a.Def).FirstOrDefault(ax => axesB.Contains(ax));
             if (shared != null && AXIS_JA.TryGetValue(shared, out var ja)) notes.Add($"軸一致 ({shared}): {ja} のおまけ");

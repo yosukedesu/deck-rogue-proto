@@ -299,7 +299,7 @@ namespace DeckRogue.Game
                 star.rectTransform.anchoredPosition = new Vector2(6f, 6f);
                 int price = 0;
                 try { price = DeckRogue.Engine.Run.WorkshopFusePrice(g.Rs); } catch (Exception) { }
-                tip += "\n⭐ 今の手札でレシピ（手書きの一品）が " + recipeCount + " 組 作れる" + (g.Rs.Gold < price ? "（所持金が " + price + "G に足りない）" : "（" + price + "G）");
+                tip += "\n★ 今の手札でレシピ（手書きの一品）が " + recipeCount + " 組 作れる" + (g.Rs.Gold < price ? "（所持金が " + price + "G に足りない）" : "（" + price + "G）");
             }
             Tooltip.Attach(cell.gameObject, delegate { return tip; });
 

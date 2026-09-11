@@ -80,6 +80,7 @@ namespace DeckRogue.Game
                         yield return Battle(g);
                         break;
                     case "run": yield return RunTour(g); break;
+                    case "workshop": yield return WorkshopOnly(g); break;   // 工房だけ (⭐レシピの提示の確認。2026-09-12)
                     case "tour":
                     default:
                         yield return Tour(g);
@@ -214,6 +215,20 @@ namespace DeckRogue.Game
             yield return WaitPresentation();
             yield return new WaitForSeconds(0.6f);
             yield return Shot("battle-turn2");
+        }
+
+        /// <summary>ランを始めて即 工房の状態に差し替えて撮る (⭐レシピの相手札の光・結果の札)。run 巡回は強個体戦で時間切れになりやすいので単独の口</summary>
+        IEnumerator WorkshopOnly(GameRoot g)
+        {
+            g.SetSeed(_seed);
+            g.StartRun();
+            if (g.Rs == null) { yield return Shot("no-run"); yield break; }
+            g.Rs = g.Rs with { Phase = RunPhases.Workshop, Combat = null };
+            g.WorkshopA = -1; g.WorkshopB = -1; g.Rebuild(); yield return Shot("workshop-none");   // 未選択: レシピ対の札が全部光る
+            g.WorkshopA = 0; g.WorkshopB = -1; g.Rebuild(); yield return Shot("workshop-star");   // 1枚目だけ: 相手札だけが光り、候補の名前
+            g.WorkshopA = 0;
+            for (int i = 1; i < g.Rs.Deck.Count; i++) if (g.Rs.Deck[i].Def.Id == "green_guard") { g.WorkshopB = i; break; }
+            g.Rebuild(); yield return Shot("workshop-recipe");   // 打撃×防御 = レシピ 素振り
         }
 
         /// <summary>ラン画面の走査 (M3): タイトル→マップ→戦闘は自動で勝つ→報酬/焚き火/店/工房/?/レリックを踏んだ順に撮る。最後に敗北画面</summary>

@@ -28,13 +28,18 @@ namespace DeckRogue.Game
             var partnerNames = new List<string>();
             if (g.WorkshopA >= 0 && g.WorkshopB < 0)
             {
+                var seenRecipe = new Dictionary<string, int>();   // 同じ相手札が複数枚あっても一品は1行 (防御×3 → 「素振り（相手: 防御 ×3）」)
+                var order = new List<string>();
                 foreach (var p in pairs)
                 {
                     int other = p.IndexA == g.WorkshopA ? p.IndexB : p.IndexB == g.WorkshopA ? p.IndexA : -1;
                     if (other < 0) continue;
                     starred.Add(other);
-                    partnerNames.Add("⭐ " + p.Recipe.Name + "（相手: " + run.Deck[other].Def.Name + "）");
+                    string key = p.Recipe.Name + "（相手: " + run.Deck[other].Def.Name;
+                    if (!seenRecipe.ContainsKey(key)) { seenRecipe[key] = 0; order.Add(key); }
+                    seenRecipe[key]++;
                 }
+                foreach (var key in order) partnerNames.Add("★ " + key + (seenRecipe[key] > 1 ? " ×" + seenRecipe[key] : "") + "）");   // ⭐ は絵文字でフォントに無いので ★
             }
             else if (g.WorkshopA < 0 && g.WorkshopB < 0)
             {
@@ -122,7 +127,7 @@ namespace DeckRogue.Game
             {
                 string guide = blocked != null ? "合成できない: " + blocked
                     : partnerNames.Count > 0 ? "この札で作れる一品:\n" + string.Join("\n", partnerNames.ToArray())
-                    : (pairs.Count > 0 && a == null ? "デッキから2枚選ぶ（⭐の札はレシピの素材）" : "デッキから2枚選ぶ");
+                    : (pairs.Count > 0 && a == null ? "デッキから2枚選ぶ（★の札はレシピの素材）" : "デッキから2枚選ぶ");
                 var msg = UiKit.Txt(srt, guide, 16, blocked != null ? UiKit.ColBadInk : partnerNames.Count > 0 ? UiKit.Hex("#7a4e12") : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 msg.textWrappingMode = TextWrappingModes.Normal;
                 UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -440f), new Vector2(-20f, -340f));
