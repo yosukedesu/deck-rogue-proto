@@ -237,7 +237,7 @@ namespace DeckRogue.Game
             string Get(string k, string dflt = null) { string v; return kv.TryGetValue(k, out v) ? v : dflt; }
             string phase = (Get("phase", "map") ?? "map").ToLowerInvariant();
             g.SetSeed(_seed);
-            if (Get("leader") != null) g.LeaderId = Get("leader");
+            g.LeaderId = Get("leader") ?? "leader_green";   // 前回の選択 (PlayerPrefs) に左右されないよう既定は緑
             if (Get("difficulty") != null) { int d; if (int.TryParse(Get("difficulty"), out d)) g.Difficulty = d; }
             bool checkpoint = Get("act") != null || Get("deck") != null || Get("relics") != null || Get("hp") != null || Get("gold") != null;
             string startErr = null;   // catch の中では yield できないので外で撮る
