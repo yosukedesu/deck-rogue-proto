@@ -70,7 +70,7 @@ import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBran
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { FusionLabPage } from './FusionLab.tsx'
-import { fusionNotes, fuseBlockReason, fuseCards } from '../engine/fusion.ts'
+import { fusionNotes, fuseBlockReason, fuseCards, recipePairsInDeck } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import { RESTRAIN_PLAY_CAP, startCombatWithOptions } from '../engine/combat.ts'
@@ -159,6 +159,8 @@ const COLOR_LABEL: Record<CardColor, string> = { green: '🌿 緑', blue: '💧 
 // ---- キーワード能力のツールチップ ----
 
 import { KEYWORD_HELP } from './keywordHelp.ts'
+import { clearDoodles, doodleBookForSave, getDoodleBook, resetDoodles, restoreDoodles, setStrokes, strokeNear, strokesFor, togglePen, useDoodles } from './mapDoodles.ts'
+import type { DoodleBook, DoodleTool } from './mapDoodles.ts'
 
 const KW_PATTERN = new RegExp(
   `(${Object.keys(KEYWORD_HELP)
@@ -2786,13 +2788,85 @@ function RunMapView({
   run,
   onChoose,
   interactive = true,
+  editable = false,
 }: {
   run: RunState
   onChoose: (col: number) => void
   /** false = 閲覧のみ (戦闘中のマップ確認。ノードは押せない) */
   interactive?: boolean
+  /** 落書きを描ける (マップ画面だけ。閲覧オーバーレイでは表示のみ) 2026-09-12 StS2 の移植 */
+  editable?: boolean
 }) {
   const cands = interactive ? nextChoices(run) : []
+  // ---- 落書き (2026-09-12): 右ドラッグ、またはペンモード中の左ドラッグ (指) で描く。線は幕ごとに mapDoodles の store が持つ
+  const { book, penMode, tool } = useDoodles()
+  const strokes = book[String(run.act)] ?? []
+  const svgRef = useRef<SVGSVGElement | null>(null)
+  const drawing = useRef<{ color: 0 | 1; points: [number, number][] } | null>(null)
+  const erasing = useRef(false)
+  const toUser = (ev: { clientX: number; clientY: number }): [number, number] | null => {
+    const svg = svgRef.current
+    if (svg === null) return null
+    const m = svg.getScreenCTM()
+    if (m === null) return null
+    const pt = svg.createSVGPoint()
+    pt.x = ev.clientX
+    pt.y = ev.clientY
+    const u = pt.matrixTransform(m.inverse())
+    return [Math.round(u.x * 10) / 10, Math.round(u.y * 10) / 10]
+  }
+  const eraseAt = (pnt: [number, number]) => {
+    const cur = strokesFor(run.act)
+    const kept = cur.filter((st) => !strokeNear(st, pnt, 9))
+    if (kept.length !== cur.length) setStrokes(run.act, kept)
+  }
+  const onPointerDown = (ev: React.PointerEvent<SVGSVGElement>) => {
+    if (!editable) return
+    const right = ev.button === 2
+    const left = ev.button === 0 && penMode
+    if (!right && !left) return
+    const pnt = toUser(ev)
+    if (pnt === null) return
+    ev.preventDefault()
+    svgRef.current?.setPointerCapture(ev.pointerId)
+    if (penMode && tool === 2) {
+      erasing.current = true
+      eraseAt(pnt)
+      return
+    }
+    const color: 0 | 1 = penMode ? (tool === 1 ? 1 : 0) : 0
+    drawing.current = { color, points: [pnt] }
+    setStrokes(run.act, [...strokesFor(run.act), { color, points: [pnt] }])
+  }
+  const onPointerMove = (ev: React.PointerEvent<SVGSVGElement>) => {
+    if (!editable) return
+    const pnt = toUser(ev)
+    if (pnt === null) return
+    if (erasing.current) {
+      eraseAt(pnt)
+      return
+    }
+    const d = drawing.current
+    if (d === null) return
+    const last = d.points[d.points.length - 1]
+    if (Math.hypot(pnt[0] - last[0], pnt[1] - last[1]) < 1.5) return
+    d.points.push(pnt)
+    const cur = strokesFor(run.act)
+    setStrokes(run.act, [...cur.slice(0, -1), { color: d.color, points: [...d.points] }])
+  }
+  const onPointerUp = () => {
+    if (!editable) return
+    const d = drawing.current
+    if (d !== null && d.points.length === 1) {
+      const cur = strokesFor(run.act)
+      const p0 = d.points[0]
+      setStrokes(run.act, [...cur.slice(0, -1), { color: d.color, points: [p0, [p0[0] + 0.5, p0[1]]] }]) // 点も描ける
+    }
+    drawing.current = null
+    erasing.current = false
+  }
+  // ★ 工房: いま手元でレシピ (手書きの一品) が成立する対があるか (2026-09-12「レシピは誰も踏まなかった」への提示)
+  const recipeStar = recipePairsInDeck(run.deck).length > 0
   const reach = mapReachable(run)
   const path = mapRecordVisit(run)
   // 全長 ~1050 units (実寸 ≈1050px) あるので、開いた時に現在地が画面中央に来るようにする。
@@ -2845,10 +2919,16 @@ function RunMapView({
 
   return (
     <svg
-      className="map-svg"
+      ref={svgRef}
+      className={`map-svg${editable && penMode ? ' map-svg-pen' : ''}${editable && penMode && tool === 2 ? ' map-svg-erase' : ''}`}
       viewBox={`0 0 ${MAP_VW} ${mapVh(rows)}`}
       role="group"
       aria-label={`ランのマップ 第${run.act}幕`}
+      onPointerDown={editable ? onPointerDown : undefined}
+      onPointerMove={editable ? onPointerMove : undefined}
+      onPointerUp={editable ? onPointerUp : undefined}
+      onPointerCancel={editable ? onPointerUp : undefined}
+      onContextMenu={editable ? (ev) => ev.preventDefault() : undefined}
     >
       {edges}
       {run.map.map((row, r) => {
@@ -2888,7 +2968,7 @@ function RunMapView({
                     : n.type === 'campfire'
                       ? '焚き火: 休む(25%回復)/鍛える/取り除く の択一'
                       : n.type === 'workshop'
-                        ? '工房: デッキの2枚を合成して1枚にする'
+                        ? `工房: デッキの2枚を合成して1枚にする${recipeStar ? '／★ 今の手札でレシピ（手書きの一品）が作れる' : ''}`
                         : n.type === 'shop'
                           ? 'ショップ: カード/レリック/除去/鍛える'
                           : n.type === 'event'
@@ -2938,6 +3018,11 @@ function RunMapView({
                   <text className="map-icon" y={5} textAnchor="middle">
                     {MAP_ICON[n.type]}
                   </text>
+                  {n.type === 'workshop' && recipeStar && r > run.row ? (
+                    <text className="map-star" x={MAP_NODE_R - 3} y={-MAP_NODE_R + 5} textAnchor="middle">
+                      ★
+                    </text>
+                  ) : null}
                   <text
                     className="map-label"
                     y={MAP_NODE_R + 11}
@@ -2957,6 +3042,16 @@ function RunMapView({
           </g>
         )
       })}
+      {/* 落書き (線の上・ノードの上)。当たり判定は持たない */}
+      <g className="map-doodles">
+        {strokes.map((st, i) => (
+          <polyline
+            key={`d${i}`}
+            className={`map-doodle map-doodle-${st.color}`}
+            points={st.points.map(([x, y]) => `${x},${y}`).join(' ')}
+          />
+        ))}
+      </g>
       {run.row < 0 ? (
         <text
           className="map-start"
@@ -3060,6 +3155,49 @@ function MapOverlay({ run, onClose }: { run: RunState; onClose: () => void }) {
         </div>
       </div>
     </div>
+  )
+}
+
+/** 落書きの道具 (2026-09-12 StS2 の移植): 紙ペン・朱ペン (押すとペンモード=左ドラッグ・指でも描ける。同じものでもう一度押すと解除)・消しゴム・全消し */
+function MapDoodleTools({ act }: { act: number }) {
+  const { penMode, tool } = useDoodles()
+  const tools: { t: DoodleTool; label: string }[] = [
+    { t: 0, label: '紙ペン' },
+    { t: 1, label: '朱ペン' },
+    { t: 2, label: '消しゴム' },
+  ]
+  return (
+    <div className="map-tools">
+      <span className="hint" style={{ margin: 0 }}>
+        {penMode ? (tool === 2 ? '消しゴム: 線に触れると消える（もう一度押すと解除）' : 'ペン: ドラッグで地図に描ける（もう一度押すと解除）') : '右ドラッグで地図に描ける（ペンを押すと指でも）'}
+      </span>
+      {tools.map(({ t, label }) => (
+        <button
+          key={t}
+          className={`btn btn-mini${penMode && tool === t ? ' btn-primary' : ''}`}
+          aria-pressed={penMode && tool === t}
+          onClick={() => togglePen(t)}
+        >
+          {label}
+        </button>
+      ))}
+      <button className="btn btn-mini" onClick={() => clearDoodles(act)}>
+        全消し
+      </button>
+    </div>
+  )
+}
+
+/** 「マップを見る」チップ (マップ以外のラン画面から現在地と道筋を確かめる。2026-09-12「マップは常に見れるように」の web 版) */
+function MapChip({ run }: { run: RunState }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button className="chip chip-btn" onClick={() => setOpen(true)}>
+        🗺 マップを見る
+      </button>
+      {open && <MapOverlay run={run} onClose={() => setOpen(false)} />}
+    </>
   )
 }
 
@@ -4288,12 +4426,13 @@ function RunScreen({
           </div>
           {relicChips}
         </div>
+        <MapDoodleTools act={run.act} />
         <div className="map-wrap">
-          <RunMapView run={run} onChoose={(col) => dispatch({ type: 'ChooseNode', col })} />
+          <RunMapView run={run} onChoose={(col) => dispatch({ type: 'ChooseNode', col })} editable />
         </div>
         <div style={{ marginTop: 12 }}>
           <button className="btn" onClick={() => saveReport(run, null, history, notes, choices ?? [], journal ?? null)}>📄 状況を書き出す</button>{' '}
-          <button className="btn" onClick={() => saveRunFile(run, history, notes, journal ?? null, choices ?? [])}>💾 セーブを書き出す</button>{' '}
+          <button className="btn" onClick={() => saveRunFile(run, history, notes, journal ?? null, choices ?? [], doodleBookForSave())}>💾 セーブを書き出す</button>{' '}
           <button className="btn" onClick={onExit}>ランを放棄（自動保存は残る）</button>
         </div>
       </div>
@@ -4351,7 +4490,7 @@ function RunScreen({
         <div className="panel">
           <span className="chip">💰 {run.gold}G</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
-          <DeckChip run={run} />
+          <DeckChip run={run} /> <MapChip run={run} />
           <div className="choice-desc" style={{ marginTop: 6 }}>
             買わずに出てもよい。除去・鍛えるは回数無制限（除去は使うたび+25G、鍛えるは+50G逓増）。
           </div>
@@ -4455,7 +4594,7 @@ function RunScreen({
             <span className="chip">💰 {run.gold}G</span>
             {/* デッキ確認 (2026-09-01 ユーザー指摘「イベント画面に強化確認する方法がない」。
                 ビューアの「鍛えた姿(+)で表示」トグルで強化後の姿も確認できる) */}
-            <DeckChip run={run} />
+            <DeckChip run={run} /> <MapChip run={run} />
           </div>
         </div>
         <div style={{ marginTop: 12 }}>
@@ -4633,7 +4772,7 @@ function RunScreen({
         <div className="panel">
           <span className="chip">戦闘 {run.battlesWon}勝</span>
           <span className="chip">HP {run.hp}/{run.maxHp}</span>
-          <DeckChip run={run} />
+          <DeckChip run={run} /> <MapChip run={run} />
           {relicChips}
         </div>
         <div className="setup-section-title">
@@ -4751,6 +4890,8 @@ export default function App() {
   const [replaying, setReplaying] = useState<RunJournal | null>(null)
   // 選択履歴 (2026-09-01): ピック・鍛錬・合成・購入などの意思決定を人間向けの1行で積む
   const [choiceLog, setChoiceLog] = useState<readonly RunChoice[]>([])
+  // マップの落書き (2026-09-12): store の変化でバックアップを書き直すために購読する
+  const doodleSnap = useDoodles()
 
   // 書き出しの保険 (2026-08-30): ダウンロードもクリップボードも塞がれる環境向けに、
   // 開発者ツールのコンソールから常に最新レポートを取れる口を開けておく。
@@ -4788,15 +4929,15 @@ export default function App() {
       // 進行が無い時は書かない (2026-09-01 修正: マウント直後や放棄後に null で上書きすると
       // リロード後の復元・「続きから」が消える — 従来この上書きでリロード復元が実は効いていなかった)
       if (run !== null || state !== null) {
-        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, journal, choices: choiceLog, fingerprint: dataFingerprint() }))
+        localStorage.setItem('deckRogueBackup', JSON.stringify({ run, state, history: runHistory, playNotes, journal, choices: choiceLog, doodles: getDoodleBook(), fingerprint: dataFingerprint() }))
       }
     } catch {
       /* no-op */
     }
-  }, [run, state, runHistory, playNotes, journal, choiceLog])
+  }, [run, state, runHistory, playNotes, journal, choiceLog, doodleSnap])
 
   /** セーブ復帰の共通処理 (続きから/ファイル読み込み)。データ指紋が違えば警告して選ばせる */
-  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string, j: RunJournal | null = null, choices: readonly RunChoice[] = []): void => {
+  const restoreRun = (r: RunState, history: readonly BattleArchive[], notes: readonly PlayNote[], fingerprint?: string, j: RunJournal | null = null, choices: readonly RunChoice[] = [], doodles: DoodleBook | null = null): void => {
     if (fingerprint !== undefined && fingerprint !== dataFingerprint()) {
       const ok = window.confirm(
         'このセーブは別のデータバージョンで作られています。カード・敵の定義が変わっていると正しく動かない可能性がありますが、読み込みますか？',
@@ -4807,6 +4948,7 @@ export default function App() {
     setPlayNotes(notes)
     setJournal(j)
     setChoiceLog(choices)
+    restoreDoodles(doodles)
     setState(null)
     setConfig(null)
     setRun(r)
@@ -4817,9 +4959,9 @@ export default function App() {
     try {
       const raw = localStorage.getItem('deckRogueBackup')
       if (raw === null) return
-      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string; journal?: RunJournal | null; choices?: RunChoice[] }
+      const b = JSON.parse(raw) as { run?: RunState | null; history?: BattleArchive[]; playNotes?: PlayNote[]; fingerprint?: string; journal?: RunJournal | null; choices?: RunChoice[]; doodles?: DoodleBook }
       if (b.run == null) return
-      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint, b.journal ?? null, b.choices ?? [])
+      restoreRun(b.run, b.history ?? [], b.playNotes ?? [], b.fingerprint, b.journal ?? null, b.choices ?? [], b.doodles ?? null)
     } catch (e) {
       alert(`復帰に失敗しました: ${String(e)}`)
     }
@@ -4835,7 +4977,7 @@ export default function App() {
           alert('ランのセーブファイル (kind:"run") ではありません。単発戦闘のセーブはCLI (sim/play.ts) で開けます')
           return
         }
-        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint, sf.journal ?? null, sf.choices ?? [])
+        restoreRun(sf.run, sf.history ?? [], sf.playNotes ?? [], sf.fingerprint, sf.journal ?? null, sf.choices ?? [], sf.doodles ?? null)
       })
       .catch((e) => alert(`読み込みに失敗しました: ${String(e)}`))
   }
@@ -4989,6 +5131,7 @@ export default function App() {
           setRunHistory([])
           setPlayNotes([])
           setChoiceLog([])
+          resetDoodles()
           setJournal(run !== null ? { origin: { kind: 'run', seed, leaderId: run.leaderId, difficulty: run.difficulty ?? DEFAULT_DIFFICULTY }, commands: [] } : null)
           // 難易度はリスタートでも引き継ぐ (旧セーブ由来の欠落は既定3)
           setRun((prev) => createRun(seed, ADOPTED_MODE, prev?.leaderId ?? 'leader_green', undefined, prev?.difficulty ?? DEFAULT_DIFFICULTY))
@@ -5047,12 +5190,14 @@ export default function App() {
         setRunHistory([])
         setPlayNotes([])
         setChoiceLog([])
+        resetDoodles()
         setJournal({ origin: { kind: 'checkpoint', seed: opts.seed, leaderId: opts.leaderId, checkpoint: { act: opts.act, deckId: opts.deckId, relicIds: opts.relicIds, hpRatio: opts.hpRatio, gold: opts.gold, difficulty: opts.difficulty } }, commands: [] })
         setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
       }} onStartRun={(seed, leaderId, runDeckId, difficulty, revealIntents, setAnyCards) => {
         setRunHistory([])
         setPlayNotes([])
         setChoiceLog([])
+        resetDoodles()
         setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty, ...(revealIntents ? { revealIntents: true } : {}), ...(setAnyCards ? { setAnyCards: true } : {}) }, commands: [] })
         setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty, { ...(revealIntents ? { revealIntents: true } : {}), ...(setAnyCards ? { setAnyCards: true } : {}) }))
       }} />
@@ -5486,9 +5631,34 @@ function WorkshopScreen({
   const preview = a && b && reason === null ? fuseCards(a, b) : null
   const price = workshopFusePrice(run)
   const notes = a && b ? fusionNotes(a, b) : []
+  // ★ レシピの提示 (2026-09-12): 素材を選ぶ前はレシピ対に含まれる札が全部、1枚目を選んだらその相手札だけが光る
+  const pairs = recipePairsInDeck(run.deck)
+  const starred = new Set<number>()
+  const partnerLines: string[] = []
+  if (selected.length === 1) {
+    const seen = new Map<string, number>()
+    for (const p of pairs) {
+      const other = p.indexA === selected[0] ? p.indexB : p.indexB === selected[0] ? p.indexA : -1
+      if (other < 0) continue
+      starred.add(other)
+      const key = `${p.recipe.name}（相手: ${run.deck[other].def.name}`
+      seen.set(key, (seen.get(key) ?? 0) + 1)
+    }
+    for (const [k, n] of seen) partnerLines.push(`★ ${k}${n > 1 ? ` ×${n}` : ''}）`)
+  } else if (selected.length === 0) {
+    for (const p of pairs) {
+      starred.add(p.indexA)
+      starred.add(p.indexB)
+    }
+  }
   return (
     <div className="app setup workshop-screen">
       <h1>🔨 工房</h1>
+      <div style={{ marginBottom: 6 }}>
+        <span className="chip">HP {run.hp}/{run.maxHp}</span>
+        <span className="chip">💰 {run.gold}G</span>
+        <MapChip run={run} />
+      </div>
       <p className="hint">
         デッキの2枚を選んで合成する。素材2枚は消え、合成された1枚がデッキに入る（圧縮と強化が同時）。
         効果の合体＝2枚の効果を全部持つ札。コストは合計−1（最低1・上限5。0E素材は値引きにならない）。
@@ -5500,7 +5670,8 @@ function WorkshopScreen({
           {run.deck.map((c, i) => (
             <div
               key={c.uid}
-              className={`workshop-pick${selected.includes(i) ? ' workshop-pick-on' : ''}`}
+              className={`workshop-pick${selected.includes(i) ? ' workshop-pick-on' : ''}${starred.has(i) ? ' workshop-pick-star' : ''}`}
+              title={starred.has(i) ? '★ レシピ（手書きの一品）の素材' : undefined}
               onClick={() => toggle(i)}
             >
               <CardFrame
@@ -5549,6 +5720,17 @@ function WorkshopScreen({
               )
             })}
           </div>
+          {partnerLines.length > 0 && (
+            <div className="choice-desc workshop-recipe-hint">
+              この札で作れる一品:
+              {partnerLines.map((l) => (
+                <div key={l}>{l}</div>
+              ))}
+            </div>
+          )}
+          {selected.length === 0 && pairs.length > 0 && (
+            <div className="hint" style={{ margin: '4px 0 0' }}>★の札はレシピ（手書きの一品）の素材。1枚選ぶと相手札が光る</div>
+          )}
           <div className="setup-section-title">
             {preview
               ? `${preview.id.startsWith('fusion_') ? '⭐ レシピ発見！ ' : ''}合成結果${preview.exhaust ? '（消滅つき）' : ''}`

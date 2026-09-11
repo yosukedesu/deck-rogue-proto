@@ -593,6 +593,20 @@ button:disabled { cursor: default; }
 .map-node-workshop .map-disc { stroke: var(--block); }
 .map-node-event .map-disc { stroke: #7fd8e8; stroke-dasharray: 3 3; }
 
+/* 落書き (2026-09-12 StS2 の移植): 紙色=メモ・朱=強調。当たり判定は持たない */
+.map-doodle { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; opacity: 0.95; }
+.map-doodle-0 { stroke: #f4ecd6; }
+.map-doodle-1 { stroke: #e0705e; }
+.map-svg-pen { touch-action: none; cursor: crosshair; }   /* ペンモード: 指のドラッグはスクロールでなく線 */
+.map-svg-pen .map-node { pointer-events: none; }          /* ペンモード中はノードを押さない */
+.map-svg-erase { cursor: cell; }
+.map-star { font-size: 11px; fill: #e0b25a; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+.map-tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; margin-top: 8px; }
+/* 工房: ★ レシピの素材 (相手札) */
+.workshop-pick-star { position: relative; outline: 2px solid #e0b25a; border-radius: 8px; }
+.workshop-pick-star::before { content: '★'; position: absolute; top: -9px; left: -6px; color: #e0b25a; font-size: 16px; z-index: 1; text-shadow: 0 0 3px var(--bg); }
+.workshop-recipe-hint { color: #e0b25a; }
+
 /* 状態 */
 .map-node-taken { opacity: 0.6; }
 .map-node-taken .map-disc { stroke: var(--energy); }

@@ -1052,6 +1052,7 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
 export { replayInitialRun, replayStates } from '../engine/run.ts'
 export type { ReplayOrigin, RunJournal } from '../engine/run.ts'
 import type { RunJournal } from '../engine/run.ts'
+import type { DoodleBook } from './mapDoodles.ts'
 
 /**
  * ランのセーブファイル (sim/play.ts の SaveFile 互換 = CLIでもそのまま開ける)。
@@ -1068,6 +1069,8 @@ export interface RunSaveFile {
   readonly journal?: RunJournal
   /** 選択履歴 (ピック・鍛錬・合成・購入などの意思決定ログ) */
   readonly choices?: readonly RunChoice[]
+  /** マップへの落書き (2026-09-12。幕→線の列。UI 層の状態で CLI は無視する) */
+  readonly doodles?: DoodleBook
 }
 
 /** ランのセーブを直列化する (純関数)。戦闘ログはスナップショット上限で切り詰める (engineは読まない) */
@@ -1077,6 +1080,7 @@ export function buildRunSaveFile(
   playNotes: readonly PlayNote[] = [],
   journal: RunJournal | null = null,
   choices: readonly RunChoice[] = [],
+  doodles?: DoodleBook,
 ): string {
   const r = run.combat ? { ...run, combat: trimLog(run.combat) } : run
   const sf: RunSaveFile = {
@@ -1088,6 +1092,7 @@ export function buildRunSaveFile(
     playNotes,
     ...(journal !== null ? { journal } : {}),
     ...(choices.length > 0 ? { choices } : {}),
+    ...(doodles !== undefined ? { doodles } : {}),
   }
   return JSON.stringify(sf)
 }
@@ -1099,8 +1104,9 @@ export function saveRunFile(
   playNotes: readonly PlayNote[] = [],
   journal: RunJournal | null = null,
   choices: readonly RunChoice[] = [],
+  doodles?: DoodleBook,
 ): void {
-  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes, journal, choices))
+  deliverText(`save-${stampNow()}.json`, buildRunSaveFile(run, history, playNotes, journal, choices, doodles))
 }
 
 /** 調整案一式の書き出し (ダウンロード + クリップボード) */
