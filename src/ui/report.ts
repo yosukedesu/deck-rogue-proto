@@ -1042,11 +1042,14 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
       })
       const prevUidSet = new Set(prev.deck.map((c) => c.uid))
       const gotCards = next.deck.filter((c) => !prevUidSet.has(c.uid)).map((c) => c.def.name)
+      const warded = (prev.relicState?.brandWard ?? 0) - (next.relicState?.brandWard ?? 0)
       const outcome = [
         gotRelics.length > 0 ? `獲得レリック: ${gotRelics.join('・')}` : '',
         gotCards.length > 0 ? `獲得: ${gotCards.join('・')}` : '',
         hpDiff !== 0 ? `HP${hpDiff > 0 ? '+' : ''}${hpDiff}` : '',
         goldDiff !== 0 ? `${goldDiff > 0 ? '+' : ''}${goldDiff}G` : '',
+        // 厄除けの札 (2026-09-13 Opusラン Y2: 烙印を吸った時に無言だった)
+        warded > 0 ? `🏷️厄除けの札が烙印${warded}枚を防いだ（残り${next.relicState?.brandWard ?? 0}）` : '',
       ].filter(Boolean).join('・')
       return { at, text: `イベント[${evName}]: ${label}${target ? `（対象: ${target.def.name}）` : ''}${outcome ? `（${outcome}）` : ''}` }
     }

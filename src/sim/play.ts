@@ -148,6 +148,8 @@ function describeEventOutcome(prev: RunState, next: RunState): string | null {
     gained.length > 0 ? `デッキに追加: ${gained.join('・')}` : '',
     lost.length > 0 ? `デッキから除去: ${lost.join('・')}` : '',
     next.hp !== prev.hp ? `HP${next.hp - prev.hp > 0 ? '+' : ''}${next.hp - prev.hp}` : '',
+    // 厄除けの札 (2026-09-13 Opusラン Y2: 烙印を吸った時に無言だった)
+    (prev.relicState?.brandWard ?? 0) > (next.relicState?.brandWard ?? 0) ? `🏷️厄除けの札が烙印${(prev.relicState?.brandWard ?? 0) - (next.relicState?.brandWard ?? 0)}枚を防いだ (残り${next.relicState?.brandWard ?? 0})` : '',
     next.maxHp !== prev.maxHp ? `最大HP${next.maxHp - prev.maxHp > 0 ? '+' : ''}${next.maxHp - prev.maxHp}` : '',
     next.gold !== prev.gold ? `${next.gold - prev.gold > 0 ? '+' : ''}${next.gold - prev.gold}G` : '',
   ].filter(Boolean)
@@ -288,7 +290,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'ArtifactBlocked') L.push(` 🔮アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた(チャージ-1)=この効果は消えた`)
       else if (e.type === 'BurrowBroken') L.push(' 🪺潜伏の殻が割れた! 次の行動は噛みつきに差し替わる')
       else if (e.type === 'DeckShuffled') L.push(' 🔀山札を切り直した')
-      else if (e.type === 'EnemyDied') L.push(` ☠敵${e.enemyIndex + 1}を倒した`)
+      else if (e.type === 'EnemyDied') L.push(` ☠敵${e.enemyIndex}を倒した`) // CLI の敵番号は0始まり (Opusラン Y2: 盤面と1ズレ)
       else if (e.type === 'DeathSaved') L.push(` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
