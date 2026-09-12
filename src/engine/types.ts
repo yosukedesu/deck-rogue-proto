@@ -929,7 +929,7 @@ export interface CardDef {
    * echo=結果のプレイ時効果を2回解決 (X・置物も対象。リアクションには付かない) / retain=結果が保持を持つ。
    * 触媒自身は基本札並みの弱い札 = 「工房を踏めるか」の賭けとして拾う (供給は1ピックの選択肢に1枚まで)
    */
-  readonly fusionCatalyst?: 'cheaper' | 'echo' | 'retain'
+  readonly fusionCatalyst?: 'cheaper' | 'echo' | 'retain' | 'aoe' // aoe=結果の単体ダメージが全体になる (2026-09-12 ユーザー「全体攻撃いいね」。旧・特性伝播をこの札だけに限定して復活)
   /** 反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回) */
   readonly echo?: boolean
 }

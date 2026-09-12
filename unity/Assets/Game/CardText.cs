@@ -437,6 +437,7 @@ namespace DeckRogue.Game
             if (def.FusionCatalyst == "cheaper") n.Add("触媒: 素材にすると結果のコスト−1");
             else if (def.FusionCatalyst == "echo") n.Add("触媒: 素材にすると結果の効果を2回解決");
             else if (def.FusionCatalyst == "retain") n.Add("触媒: 素材にすると結果が保持");
+            else if (def.FusionCatalyst == "aoe") n.Add("触媒: 素材にすると結果のダメージが全体に");
             if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
             if (def.Retainer == true) n.Add("従者");
             if (def.ShivToken == true) n.Add("骨のナイフ");

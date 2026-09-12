@@ -657,6 +657,13 @@ namespace DeckRogue.Engine
             var catalysts = new[] { a.Def.FusionCatalyst, b.Def.FusionCatalyst };
             int cheaper = catalysts.Count(c => c == "cheaper");
             if (cheaper > 0 && !bothX) cost = Math.Max(0, cost - cheaper);
+            // 全体の触媒 (2026-09-12): 結果の単体ダメージが全体になる。放出・キル連鎖・ブロック変換など「敵ループと干渉する」効果は据え置き
+            if (catalysts.Contains("aoe"))
+            {
+                DeclarativeEffect ToAll(DeclarativeEffect e) => (AOE_CATALYST_OK.Contains(e.Effect) && e.Target == null) ? e with { Target = "all" } : e;
+                for (int i = 0; i < effects.Count; i++) effects[i] = ToAll(effects[i]);
+                if (modes != null) modes = modes.Select(m => m with { Effects = m.Effects.Select(ToAll).ToList() }).ToList();
+            }
 
             // --- 歯止め (現行のまま) ---
             var all = new List<DeclarativeEffect>(effects);
@@ -829,6 +836,14 @@ namespace DeckRogue.Engine
             if (!anyUpgraded) return merged;
             return merged.Name.EndsWith("+", StringComparison.Ordinal) ? merged : merged with { Name = merged.Name + "+" };
         }
+
+        /// <summary>全体の触媒で全体化してよいダメージ効果 (状態を消費せず、敵ごとに独立して解決できるもの)</summary>
+        private static readonly HashSet<string> AOE_CATALYST_OK = new HashSet<string>
+        {
+            "dealDamage", "dealDamageRandom", "dealDamageDrain", "dealDamageExecute", "dealDamagePerMomentum", "dealDamagePerEnergyMax",
+            "dealDamagePerAttackPlayed", "dealDamagePerHandCard", "dealDamagePerExhaust", "dealDamagePerSelfHpLost", "dealDamagePerPermanent",
+            "dealDamagePerHeal", "dealDamagePerWeak", "dealDamagePerCardPlayed", "dealDamagePerCardPlayedTotal", "dealDamagePerRandomPlayed",
+        };
 
         private static readonly Dictionary<string, string> AXIS_JA = new Dictionary<string, string>
         {

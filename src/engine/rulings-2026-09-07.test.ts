@@ -122,8 +122,8 @@ describe('⑤床の数値と研ぎ澄まし', () => {
     expect(names).toContain('防御+')
     expect(names).toContain('年輪の大樹') // レアは鍛えない
   })
-  it('プール: 緑94種・報酬対象の 連なる角/風駆け/風切りの一撃 はコモン', () => {
-    expect(green).toHaveLength(94) // 2026-09-12 合成の触媒+3 (軽石の盾・谺の種・根付きの盾)
+  it('プール: 緑95種・報酬対象の 連なる角/風駆け/風切りの一撃 はコモン', () => {
+    expect(green).toHaveLength(95) // 2026-09-12 合成の触媒+4 (軽石の盾・谺の種・根付きの盾・胞子の風)
     for (const id of ['green_horn_volley', 'green_wind_dash', 'green_wind_cutter', 'green_perm_gale_vine']) expect(getCardDef(id).rarity, id).toBe('common')
   })
 })

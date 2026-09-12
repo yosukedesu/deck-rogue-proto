@@ -95,6 +95,13 @@ function wordOf(def: CardDef): string {
   const FALLBACK: Record<string, string> = { red: '火', blue: '水', white: '光', black: '影' }
   return FALLBACK[def.color ?? ''] ?? '樹'
 }
+/** 全体の触媒で全体化してよいダメージ効果 (状態を消費せず、敵ごとに独立して解決できるもの) */
+const AOE_CATALYST_OK = new Set([
+  'dealDamage', 'dealDamageRandom', 'dealDamageDrain', 'dealDamageExecute', 'dealDamagePerMomentum', 'dealDamagePerEnergyMax',
+  'dealDamagePerAttackPlayed', 'dealDamagePerHandCard', 'dealDamagePerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerPermanent',
+  'dealDamagePerHeal', 'dealDamagePerWeak', 'dealDamagePerCardPlayed', 'dealDamagePerCardPlayedTotal', 'dealDamagePerRandomPlayed',
+])
+
 function suffixOf(effects: readonly DeclarativeEffect[]): string {
   const dmgs = effects.filter((e) => e.effect === 'dealDamage' || e.effect === 'dealDamageRandom')
   const blk = effects.some((e) => e.effect === 'gainBlock' || e.effect === 'gainIceBlock')
@@ -385,6 +392,12 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const catalysts = [a.def.fusionCatalyst, b.def.fusionCatalyst]
   const cheaper = catalysts.filter((c) => c === 'cheaper').length
   if (cheaper > 0 && !bothX) cost = Math.max(0, cost - cheaper)
+  // 全体の触媒 (2026-09-12): 結果の単体ダメージが全体になる。放出・キル連鎖・ブロック変換など「敵ループと干渉する」効果は据え置き
+  if (catalysts.includes('aoe')) {
+    const toAll = (e: DeclarativeEffect): DeclarativeEffect => (AOE_CATALYST_OK.has(e.effect) && e.target === undefined ? { ...e, target: 'all' } : e)
+    for (let i = 0; i < effects.length; i++) effects[i] = toAll(effects[i])
+    if (modes !== undefined) modes = modes.map((m) => ({ ...m, effects: m.effects.map(toAll) }))
+  }
 
   // --- 歯止め (現行のまま) ---
   const all = [...effects, ...(modes ?? []).flatMap((m) => m.effects)]
@@ -488,7 +501,7 @@ export function fusionNotes(a: CardInstance, b: CardInstance): string[] {
   const AXIS_JA: Record<string, string> = { growth: '成長+1', trample: '勢い+2', ramp: '次のカード-1', burn: '延焼+2', ice: '氷壁+2', aether: '霊気+1', storm: '詠唱+1', heal: '回復+2', fortress: 'ブロック+3', retinue: 'ブロック+2', graveyard: 'ミル1' }
   if (shared && AXIS_JA[shared]) notes.push(`軸一致 (${shared}): ${AXIS_JA[shared]} のおまけ`)
   if (isUpgraded(a) || isUpgraded(b)) notes.push('鍛えの引き継ぎ: 鍛えていない側の素材も鍛えてから合体 (結果は+)')
-  const CATALYST_JA: Record<string, string> = { cheaper: '軽くなる触媒: 結果のコストがさらに−1 (0Eまで)', echo: '反復の触媒: 結果のプレイ時効果を2回解決 (X・置物も。リアクションには付かない)', retain: '保持の触媒: 結果が保持を持つ (置物には付かない)' }
+  const CATALYST_JA: Record<string, string> = { cheaper: '軽くなる触媒: 結果のコストがさらに−1 (0Eまで)', echo: '反復の触媒: 結果のプレイ時効果を2回解決 (X・置物も。リアクションには付かない)', retain: '保持の触媒: 結果が保持を持つ (置物には付かない)', aoe: '全体の触媒: 結果の単体ダメージが全体になる (放出・キル連鎖・ブロック変換は据え置き)' }
   for (const c of [a.def.fusionCatalyst, b.def.fusionCatalyst]) if (c !== undefined && CATALYST_JA[c]) notes.push(CATALYST_JA[c])
   const ca = a.def.xCost === true ? 3 : a.def.cost
   const cb = b.def.xCost === true ? 3 : b.def.cost

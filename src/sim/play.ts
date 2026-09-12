@@ -120,7 +120,7 @@ function cardLine(def: CardDef): string {
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
     def.retainer ? '従者' : '',
-    def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ' } as Record<string, string>)[def.fusionCatalyst]}` : '',
+    def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ', aoe: '単体ダメージが全体に' } as Record<string, string>)[def.fusionCatalyst]}` : '',
     def.echo === true ? '🔁反復内蔵(効果を2回解決)' : '',
   ].filter(Boolean).join('・')
   // 選択式の共通部 (工房「効果の合体」で相手の効果が入る場所) はモードの前に描く (2026-09-05 Opusラン R: 合成の目玉が不可視だった)

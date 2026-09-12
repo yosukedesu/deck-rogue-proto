@@ -52,6 +52,21 @@ describe('合成の触媒', () => {
     expect(fuseCards(ci(perm.id), ci('green_catalyst_root')).retain).toBeUndefined()
   })
 
+  it('胞子の風 (全体の触媒): 結果の単体ダメージが全体になる。放出は据え置き', () => {
+    const r = fuseCards(ci('green_strike'), ci('green_catalyst_spore'))
+    expect(r.effects.filter((e) => e.effect === 'dealDamage').every((e) => e.target === 'all')).toBe(true)
+    const harvest = allCards.find((c) => c.color === 'green' && c.effects.some((e) => e.effect === 'dischargeGrowth' && e.target === undefined))
+    if (harvest) {
+      const h = fuseCards(ci(harvest.id), ci('green_catalyst_spore'))
+      expect(h.effects.find((e) => e.effect === 'dischargeGrowth')?.target).toBeUndefined()
+    }
+    let s: GameState = startCombatWithOptions(7, 'set-confirm', 'enc_probe_pair', { deck: [ci('green_strike')] })
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 999, maxHp: 999, block: 0 })) }
+    s = { ...s, player: { ...s.player, hand: [{ uid: 'f', def: r }], energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 'f' })
+    expect(s.enemies.every((e) => e.hp === 999 - 6 - 3)).toBe(true)
+  })
+
   it('触媒同士も合成できる (両方の恩恵が乗る)', () => {
     const r = fuseCards(ci('green_catalyst_light'), ci('green_catalyst_echo'))
     expect(r.cost).toBe(0)

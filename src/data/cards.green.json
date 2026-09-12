@@ -1912,5 +1912,20 @@
         "amount": 4
       }
     ]
+  },
+  {
+    "id": "green_catalyst_spore",
+    "name": "胞子の風",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "fusionCatalyst": "aoe",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      }
+    ]
   }
 ]
