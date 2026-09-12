@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
+import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
@@ -1952,6 +1952,9 @@ function BattleScreen({
                     {c.def.type !== 'reaction' && (
                       <span title="通常カードの伏せ (実験): 誘発したら印字コストを払って発動">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
                     )}
+                    {setCardLiveDamage(s, c.def) && (
+                      <div className="hint" title="成長・弱体を掛けた実値 (手札と同じ式。勢いは乗らない)">［{setCardLiveDamage(s, c.def)}］</div>
+                    )}
                   </div>
                   {s.phase === 'player-turn' && (
                     <button
@@ -2049,12 +2052,13 @@ function BattleScreen({
                           }),
                         )}
                         ）{' '}
+                        {setCardLiveDamage(s, c.def) && <span className="hint">［{setCardLiveDamage(s, c.def)}］ </span>}
                         <button
                           className="btn btn-primary"
                           {...(candIdx < 9 ? { 'data-hotkey': `num-${candIdx + 1}` } : {})}
                           onClick={() => dispatch({ type: 'ConfirmReaction', fire: true, cardUid: c.uid })}
                         >
-                          {setFireCost(c) > 0 ? `発動（${setFireCost(c)}E・残り${player.energy}E）` : '発動る'}
+                          {setFireCost(c) > 0 ? `発動（${setFireCost(c)}E・残り${player.energy}E）` : '発動'}
                           {candIdx < 9 && <span className="keycap">{candIdx === 0 ? 'F' : String(candIdx + 1)}</span>}
                         </button>
                       </div>

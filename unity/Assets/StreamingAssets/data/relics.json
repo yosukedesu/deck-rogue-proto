@@ -1189,16 +1189,6 @@
     }
   },
   {
-    "id": "relic_dig_pick",
-    "name": "発掘の鶴嘴",
-    "sprite": "⛏️",
-    "description": "焚き火で「発掘」（レリックを1個）が選べる（休む/鍛えると排他）",
-    "rarity": "shop",
-    "bonus": {
-      "campfireDig": true
-    }
-  },
-  {
     "id": "relic_sulfur_shard",
     "name": "硫黄の欠片",
     "sprite": "🌋",

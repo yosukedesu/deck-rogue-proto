@@ -661,6 +661,26 @@ export function playerDamageAfterModifiers(state: GameState, baseAmount: number)
 }
 
 /**
+ * 伏せ札 (からくり) の返し・ダメージに「いま発動したら何点か」(成長・弱体込み) を添える純関数
+ * (2026-09-13 Opusラン Y: 弱体1で茨の返し「返し10」が実値7だったが、伏せ場の札と確認ウィンドウには
+ *  手札のような実値行が無かった = 表示の嘘の残り1件)。リアクションの解決はカードのプレイではないので
+ *  勢いは乗らず、敵フェーズ中に付いた弱体はそのフェーズの返しに乗らない = playerDamageAfterModifiers と同じ式。
+ * 敵側の装甲・ブロックは対象が決まらないので含めない。基礎値と同じなら null (UI は何も出さない)
+ */
+export function setCardLiveDamage(state: GameState, def: CardDef): string | null {
+  const vals: string[] = []
+  for (const e of def.effects) {
+    if ((e.effect !== 'dealDamage' && e.effect !== 'counter') || e.amount === undefined) continue
+    const live = playerDamageAfterModifiers(state, e.amount)
+    if (live !== e.amount) vals.push(`${e.effect === 'counter' ? '返し' : 'ダメ'}${live}`)
+  }
+  if (vals.length === 0) return null
+  const weak = state.phase === 'player-turn' ? state.player.weak : state.player.weak - (state.player.weakFreshThisPhase ?? 0)
+  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', weak > 0 ? '弱体-25%' : ''].filter(Boolean)
+  return `実値: ${vals.join('・')}(${parts.join('・')})`
+}
+
+/**
  * カードホバー用のダメージ内訳 (2026-09-01 ユーザー要望)。dealDamageToEnemy と同じ手順を
  * 数字だけで辿る純関数 — 表示が実処理とずれたらこちらのバグ。敵が倒れていれば null
  */

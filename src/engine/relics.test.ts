@@ -177,10 +177,10 @@ describe('レリック効果', () => {
 
   it('在庫は102個・IDは一意（2026-09-12 本家形の第1波 +63）', () => {
     // 2026-09-12 本家形 +63 (C22/U24/R22/Boss17/Shop12/Event5。docs/relic-analysis-2026-09-12.md §3-1) // 2026-09-09 二重の符 // 2026-09-05 大工の道具を撤去 // 2026-09-03 ボスレリック+4・蜃気楼の面を撤去
-    expect(allRelics).toHaveLength(102)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(102)
+    expect(allRelics).toHaveLength(101)
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(101)
     const count = (r: string) => allRelics.filter((x) => (x.rarity ?? 'common') === r).length
-    expect([count('common'), count('uncommon'), count('rare'), count('boss'), count('shop'), count('event')]).toEqual([22, 24, 22, 17, 12, 5])
+    expect([count('common'), count('uncommon'), count('rare'), count('boss'), count('shop'), count('event')]).toEqual([22, 24, 22, 17, 11, 5])
   })
 
   // 2026-09-09 友人のフルランの診断（docs/playtest-2026-09-09-friend-run-analysis.md）への処方

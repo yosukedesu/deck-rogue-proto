@@ -35,7 +35,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -376,7 +376,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       ? '【見切られ中。ただし罰型の' + stalePun.join('・') + 'は伏せ札がある限り反応する。破壊は来る】'
       : '【見切られ=敵は反応しない。破壊は来る】'
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : staleTag}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${setCardLiveDamage(s, c.def) ? `［${setCardLiveDamage(s, c.def)}］` : ''}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : staleTag}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
   }
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
@@ -396,7 +396,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it, enemy.weak ?? 0) : '---'}」実値=${it ? (it.kind === 'attack' ? applyEnemyWeak(it.actual, enemy.weak ?? 0) : it.actual) : '?'}${it && it.kind === 'attack' && (enemy.weak ?? 0) > 0 ? `(威圧前${it.actual})` : ''}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
     const win = windowFromPending(s)
     const cands = win ? usableSetCards(s, win) : []
-    L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
+    L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setCardLiveDamage(s, c.def) ? `［${setCardLiveDamage(s, c.def)}］` : ''}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
     // post窓の誤認防止 (2026-08-29 検証ラン: 瀕死時に返し札を「防御」と誤認して発動→敗死の報告)。
     // 文言は攻撃窓のみ (2026-08-31 再検証ラン指摘②: 敵強化時の窓に「被弾は取り消せない」が出ていた)
     if (s.pendingWindow.stage === 'post') {

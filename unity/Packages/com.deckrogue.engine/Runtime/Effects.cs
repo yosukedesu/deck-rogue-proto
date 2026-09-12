@@ -737,6 +737,31 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>
+        /// 伏せ札の返し・ダメージに「いま発動したら何点か」(成長・弱体込み) を添える (2026-09-13 Opusラン Y。TS の setCardLiveDamage と同形)。
+        /// 勢いは乗らず、敵フェーズ中に付いた弱体はそのフェーズの返しに乗らない = PlayerDamageAfterModifiers と同じ式。基礎値と同じなら null
+        /// </summary>
+        public static string SetCardLiveDamage(GameState state, CardDef def)
+        {
+            var vals = new List<string>();
+            if (def.Effects != null)
+            {
+                for (int i = 0; i < def.Effects.Count; i++)
+                {
+                    var e = def.Effects[i];
+                    if ((e.Effect != "dealDamage" && e.Effect != "counter") || !e.Amount.HasValue) continue;
+                    int live = PlayerDamageAfterModifiers(state, e.Amount.Value);
+                    if (live != e.Amount.Value) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live);
+                }
+            }
+            if (vals.Count == 0) return null;
+            int weak = state.Phase == CombatPhases.PlayerTurn ? state.Player.Weak : state.Player.Weak - (state.Player.WeakFreshThisPhase ?? 0);
+            var parts = new List<string>();
+            if (state.Player.Growth > 0) parts.Add("成長+" + state.Player.Growth);
+            if (weak > 0) parts.Add("弱体-25%");
+            return "実値: " + string.Join("・", vals.ToArray()) + "(" + string.Join("・", parts.ToArray()) + ")";
+        }
+
+        /// <summary>
         /// カードホバー用のダメージ内訳 (2026-09-01)。dealDamageToEnemy と同じ手順を数字だけで辿る純関数。
         /// 敵が倒れていれば null
         /// </summary>

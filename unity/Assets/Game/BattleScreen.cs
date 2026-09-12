@@ -600,6 +600,10 @@ namespace DeckRogue.Game
                     var ct = UiKit.Deco(slot, "仕込み札", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
                     UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(4f, -28f), new Vector2(-4f, -4f));
                     string tip = "<b>" + sc.Def.Name + "</b>\n" + CardText.Body(sc.Def);
+                    // 成長・弱体を掛けた実値 (手札と同じ読み方。2026-09-13 Opusラン Y: 弱体1で「返し10」が実値7)
+                    string liveTip = null;
+                    try { liveTip = Effects.SetCardLiveDamage(st, sc.Def); } catch (Exception) { }
+                    if (liveTip != null) tip += "\n<color=#7a4e12>" + liveTip + "</color>";
                     pocket.raycastTarget = true;
                     Tooltip.Attach(pocket.gameObject, delegate { return tip; });
                 }
@@ -1027,6 +1031,16 @@ namespace DeckRogue.Game
                 CardPopup.Attach(g, cv, c, delegate { return g.Rs != null ? g.Rs.Combat : null; }, true);
                 cv.anchoredPosition = new Vector2(0f, 26f);
                 cv.localScale = Vector3.one * 0.86f;
+                // 成長・弱体を掛けた実値 (2026-09-13 Opusラン Y: 確認ウィンドウにも手札と同じ実値を)
+                string live = null;
+                try { live = Effects.SetCardLiveDamage(st, c.Def); } catch (Exception) { }
+                if (live != null)
+                {
+                    var lt = UiKit.Txt(wrap, live, 13, PaperFx.GoldInk, TextAnchor.MiddleCenter, true);
+                    var lle = lt.GetComponent<LayoutElement>();
+                    if (lle != null) UnityEngine.Object.Destroy(lle);
+                    UiKit.Anchor(lt.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 44f), new Vector2(110f, 64f));
+                }
                 var fb = UiKit.Btn(wrap, "発動", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 18, true, UiKit.Hex("#f6dd98"));
                 var fle = fb.GetComponent<LayoutElement>();
                 if (fle != null) UnityEngine.Object.Destroy(fle);

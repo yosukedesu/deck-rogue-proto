@@ -27,6 +27,11 @@ const play = (s: GameState, uid: string, extra: Record<string, unknown> = {}): G
 const endTurn = (s: GameState, intent: EnemyIntent): GameState => applyCommand(withIntent(s, intent), { type: 'EndTurn' })
 const strikes = (n: number): string[] => Array.from({ length: n }, () => 'green_strike')
 
+/** 発掘の鶴嘴の撤去 (2026-09-13): 在庫のどのレリックも campfireDig を持たない */
+function allRelicsHaveNoDig(): boolean {
+  return allRelics.every((r) => r.bonus?.campfireDig !== true)
+}
+
 describe('every/once カウンタ (投げ刃の束・墨壺・百年の謎かけ)', () => {
   it('投げ刃の束: 1ターンに攻撃札3枚ごとに成長+1。4枚目では増えず、次のターンは0から数え直す', () => {
     let s = energize(tough(withHand(combatWith(['relic_throwing_blades']), strikes(4))), 9)
@@ -325,13 +330,11 @@ describe('報酬・マップ・経済', () => {
 })
 
 describe('焚き火の第3選択肢 (レリック限定) と工房', () => {
-  it('発掘の鶴嘴: レリックを1個掘って立ち去る。重石: 鍛錬3回まで=戦闘開始時の成長', () => {
+  it('発掘 (CampfireDig) は鶴嘴が無いので常に拒否 (2026-09-13 発掘の鶴嘴は撤去・機構だけ残置)。重石: 鍛錬3回まで=戦闘開始時の成長', () => {
     let run = skipUntil(createRun(11, 'set-confirm'), 'campfire', 'campfire')
     if (run.phase !== 'campfire') return
     expect(() => applyRunCommand(run, { type: 'CampfireDig' })).toThrow()
-    const dig = applyRunCommand({ ...run, relics: ['relic_dig_pick'] }, { type: 'CampfireDig' })
-    expect(dig.relics.length).toBe(2)
-    expect(['map', 'relic-choose']).toContain(dig.phase)
+    expect(allRelicsHaveNoDig()).toBe(true)
     let g: RunState = { ...run, relics: ['relic_girya'] }
     expect(campfireOptions(g).trainLeft).toBe(3)
     g = applyRunCommand(g, { type: 'CampfireTrain' })
