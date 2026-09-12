@@ -1608,6 +1608,7 @@ function BattleScreen({
   const [pendingSacrifice, setPendingSacrifice] = useState<{ cardUid: string; modeIndex?: number } | null>(null)
   // キーボード操作の凡例 (2026-09-06 UI整理: 手札行の常設テキストが領域を取っていたので ⌨ ボタンで折りたたみ)
   const [showKeys, setShowKeys] = useState(false)
+  const [showLog, setShowLog] = useState(false) // スマホ縦 (2026-09-12): ログは重ね窓。PC では常時表示
   const activeSacrifice =
     pendingSacrifice && s.phase === 'player-turn' && player.hand.some((c) => c.uid === pendingSacrifice.cardUid)
       ? pendingSacrifice
@@ -1701,7 +1702,7 @@ function BattleScreen({
         <span className="topbar-title">
           <span className="chip chip-mode">{s.reactionMode}</span>
           {config.leaderId && (
-            <span className="chip">
+            <span className="chip chip-leader">
               {getLeaderDef(config.leaderId).sprite} {getLeaderDef(config.leaderId).name}
             </span>
           )}
@@ -1711,16 +1712,19 @@ function BattleScreen({
             <span className="chip">{getDeckDef(config.deckId).name}</span>
           )}
           <span className="chip">ターン {s.turn}</span>
-          <span className="chip">seed {config.seed}</span>
+          <span className="chip chip-seed">seed {config.seed}</span>
         </span>
-        <span>
-          <button className="btn" title="キーボード操作の凡例" aria-expanded={showKeys} onClick={() => setShowKeys((v) => !v)}>
+        <span className="topbar-actions">
+          <button className="btn mobile-only" title="戦闘ログ" aria-expanded={showLog} onClick={() => setShowLog((v) => !v)}>
+            📜
+          </button>{' '}
+          <button className="btn desktop-only" title="キーボード操作の凡例" aria-expanded={showKeys} onClick={() => setShowKeys((v) => !v)}>
             ⌨
           </button>{' '}
           <button className="btn" onClick={onExport}>
-            📄 状況を書き出す
+            📄<span className="btn-label"> 状況を書き出す</span>
           </button>{' '}
-          <button className="btn" onClick={onBack}>
+          <button className="btn btn-back" onClick={onBack}>
             {backLabel ?? '設定に戻る'}
           </button>
         </span>
@@ -2674,8 +2678,11 @@ function BattleScreen({
       </div>
 
       {/* ログ (新しい順) */}
-      <div className="panel area-log">
-        <div className="stat-label">戦闘ログ（新しい順）</div>
+      <div className={`panel area-log${showLog ? ' log-open' : ''}`}>
+        <div className="stat-label log-head">
+          <span>戦闘ログ（新しい順）</span>
+          <button className="btn mobile-only" onClick={() => setShowLog(false)}>閉じる</button>
+        </div>
         <div className="log">
           {[...lines].reverse().map((l, i) => (
             <div key={i} className={l.cls}>

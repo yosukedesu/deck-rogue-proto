@@ -895,3 +895,80 @@ button:disabled { cursor: not-allowed; }
   .card { width: 148px; }
   .card-art, .card-art img, .card-art-fused::after { width: 132px; height: 79px; }
 }
+
+/* ---------- スマホ縦: 戦場を1画面に固定 (2026-09-12 ユーザー「縦長で毎回スクロールがめんどくさい」) ----------
+   敵=1行の帯・伏せ場と置物=1行・HP/エナジー/ターン終了=1行・手札=画面下の横スクロール帯・ログ=📜で開く重ね窓。
+   戦場だけ body のスクロールを止める (:has)。伏せの確認窓や X の入力は伏せ場の帯に出るので、その帯だけ最大 38dvh で内側スクロール */
+.mobile-only { display: none; }
+@media (max-width: 700px) {
+  .mobile-only { display: inline-block; }
+  .desktop-only { display: none; }
+  body:has(.battle) { overflow: hidden; height: 100dvh; }
+  .app:has(.battle) { padding: 4px; height: 100dvh; box-sizing: border-box; overflow: hidden; }
+  .battle {
+    height: 100%;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+    grid-template-areas: 'topbar' 'enemy' 'field' 'player' 'hand';
+    gap: 4px;
+  }
+  .area-log { display: none; }
+  .area-log.log-open { display: block; position: fixed; inset: 44px 6px 6px 6px; z-index: 60; overflow: auto; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.5); }
+  .area-log .log { max-height: none; }
+  /* 上部バー: 1行。方式・リーダー・seed は畳む */
+  .area-topbar { flex-wrap: nowrap; gap: 4px; }
+  .topbar-title { display: flex; gap: 4px; overflow: hidden; white-space: nowrap; min-width: 0; }
+  .chip-mode, .chip-seed, .chip-leader { display: none; }
+  .topbar-actions { white-space: nowrap; flex-shrink: 0; }
+  .btn-label { display: none; }
+  .area-topbar .btn { padding: 3px 7px; font-size: 12px; }
+  .keyhelp { display: none; }
+  /* 敵: 名前・HP・意図だけ (説明文は図鑑へ) */
+  .enemy-archetype { display: none; }
+  .enemy-card { padding: 2px 4px; gap: 6px; }
+  .enemy-sprite { width: 36px; height: 36px; font-size: 22px; }
+  .intent { margin-top: 2px; padding: 1px 6px; font-size: 12px; }
+  /* 伏せ場・置物: 1行。窓 (確認・X入力) が出たらこの帯の中でスクロール */
+  .area-field { max-height: 38dvh; overflow: auto; }
+  .field { gap: 6px; align-items: center; min-height: 0; }
+  .card-back, .set-slot-empty { width: 44px; min-height: 56px; font-size: 11px; }
+  .set-slot-label { font-size: 9px; margin-top: 2px; }
+  .permanents { gap: 4px; }
+  .permanent { font-size: 10px; padding: 2px 4px; max-width: 150px; max-height: 46px; overflow: hidden; }
+  /* プレイヤー: HP・予測・エナジー・終了を1行に */
+  .area-player { padding: 6px; }
+  .player-row { flex-wrap: nowrap; align-items: center; gap: 6px; }
+  .player-hp { min-width: 0; flex: 1; }
+  .player-hp .stat-label { display: none; }
+  .phase-summary { font-size: 10px; margin-top: 2px; }
+  .forecast-inline { font-size: 11px; margin-top: 2px; }
+  .player-row > div { flex: 0 0 auto; }
+  .player-row .chip { font-size: 10px; padding: 0 4px; margin: 1px 2px 1px 0; }
+  .btn-endturn { width: auto; padding: 8px 10px; font-size: 13px; }
+  /* 手札: 残りの高さを全部使う横スクロール帯。札は小さく、挿絵は等倍 (80×48) */
+  .area-hand { min-height: 0; overflow: hidden; display: flex; flex-direction: column; padding: 6px; }
+  .hand-row { min-height: 0; flex: 1; }
+  .hand-cards { overflow-x: auto; overflow-y: hidden; align-items: stretch; height: 100%; padding-bottom: 2px; }
+  .card { width: 120px; min-width: 120px; min-height: 0; padding: 6px; }
+  .card-art, .card-art img, .card-art-fused::after { width: 80px; height: 48px; }
+  .card-art { margin: 2px auto 0; }
+  .card-name { font-size: 12px; margin: 2px 0 0 14px; }
+  .card-category { font-size: 9px; margin-left: 14px; }
+  .card-text { font-size: 10px; }
+  .card-cost { width: 24px; height: 24px; font-size: 12px; top: -6px; left: -6px; }
+  .card-actions .btn { padding: 4px 6px; font-size: 11px; }
+}
+.log-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+@media (max-width: 700px) {
+  /* 山札/捨て札/デッキ/マップの小ボタンは右端で折り返し、はみ出さない */
+  .pile-info { display: flex; flex-wrap: wrap; gap: 2px; max-width: 34%; justify-content: flex-end; }
+  .pile-info br { display: none; }
+  .pile-info .btn-mini { font-size: 10px; padding: 1px 5px; }
+}
+@media (max-width: 700px) {
+  /* 山札/捨て札/デッキ/マップは2行目に横並び (右端に押し出されて切れていた) */
+  .player-row { flex-wrap: wrap; }
+  .pile-info { flex: 1 1 100%; max-width: none; justify-content: flex-start; }
+  /* ログの重ね窓: 幅を画面に合わせ、閉じるボタンが枠の外に出ない */
+  .area-log.log-open { width: calc(100vw - 12px); box-sizing: border-box; }
+  .log-head .btn { flex-shrink: 0; }
+}
