@@ -292,7 +292,7 @@ button:disabled { cursor: default; }
 
 /* カードフレーム */
 .card {
-  width: 148px;
+  width: 176px; /* 2026-09-12 挿絵 (80×48 の2倍=160px) が収まる幅 */
   min-height: 190px;
   background: var(--panel2);
   border: 1px solid var(--border-strong);
@@ -883,3 +883,15 @@ button:disabled { cursor: not-allowed; }
 
 /* 翼の靴 (2026-09-12): 線の無い先へ進めるノード = 破線の輪 */
 .map-node-wing circle { stroke-dasharray: 5 3; }
+
+/* カードの挿絵 (2026-09-12): Unity と同じドット絵を整数倍で。計算合成は斜めの継ぎ目、真・は青緑の内枠 */
+.card-art { width: 160px; height: 96px; margin: 4px auto 2px; background: #121826; border-radius: 4px; overflow: hidden; position: relative; flex: none; }
+.card-art img { width: 160px; height: 96px; image-rendering: pixelated; display: block; }
+.card-art-fused .card-art-a { position: absolute; left: 0; top: 0; clip-path: polygon(0 0, 62% 0, 38% 100%, 0 100%); }
+.card-art-fused .card-art-b { position: absolute; left: 0; top: 0; clip-path: polygon(62% 0, 100% 0, 100% 100%, 38% 100%); }
+.card-art-fused::after { content: ''; position: absolute; left: 0; top: 0; width: 160px; height: 96px; background: linear-gradient(to bottom right, transparent 47%, #3fb8b0 49%, #3fb8b0 51%, transparent 53%); pointer-events: none; }
+.card-art-true { box-shadow: inset 0 0 0 2px #3fb8b0; }
+@media (max-width: 700px) {
+  .card { width: 148px; }
+  .card-art, .card-art img, .card-art-fused::after { width: 132px; height: 79px; }
+}

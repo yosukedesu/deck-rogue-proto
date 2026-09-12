@@ -813,6 +813,32 @@ function permanentLiveDamage(state: GameState, def: CardDef): string | null {
   return `いま誘発したら ${vals.join('・')}ダメ（${parts.join('・')}。勢いは乗らない）`
 }
 
+/**
+ * カードの挿絵 (2026-09-12 ユーザー「プロトにもカード画像入れること出来る？」)。Unity 用の 80×48 ドット絵を public/art/cards に複製して
+ * (scripts/sync-web-art.sh) 2倍の整数倍で出す。計算合成 (fused_A__B) は Unity の FusedArt と同じく素材2枚を斜めの継ぎ目で合わせ、
+ * 真・ (同名合成) は青緑の内枠。絵が無い札 (負傷・凍結色) は img の onError で窓ごと畳む
+ */
+const CARD_ART_BASE = `${import.meta.env.BASE_URL}art/cards/`
+function CardArt({ id }: { id: string }) {
+  const [broken, setBroken] = useState(false)
+  if (broken) return null
+  const m = id.startsWith('fused_') ? /^fused_(.+)__(.+)$/.exec(id) : null
+  const fail = () => setBroken(true)
+  if (m) {
+    const [a, b] = [m[1], m[2]]
+    if (a === b) {
+      return <div className="card-art card-art-true"><img src={`${CARD_ART_BASE}${a}.png`} alt="" onError={fail} /></div>
+    }
+    return (
+      <div className="card-art card-art-fused">
+        <img src={`${CARD_ART_BASE}${a}.png`} alt="" className="card-art-a" onError={fail} />
+        <img src={`${CARD_ART_BASE}${b}.png`} alt="" className="card-art-b" onError={fail} />
+      </div>
+    )
+  }
+  return <div className="card-art"><img src={`${CARD_ART_BASE}${id}.png`} alt="" onError={fail} /></div>
+}
+
 function CardFrame({
   card,
   dim,
@@ -842,6 +868,7 @@ function CardFrame({
       </div>
       {hotkey !== undefined && <div className="card-hotkey" title="キーボードで選ぶ番号">{hotkey}</div>}
       <div className="card-name">{card.def.name}</div>
+      <CardArt id={card.def.id} />
       <div className={`card-category type-${card.def.type}`}>{TYPE_LABEL[card.def.type]}</div>
       <div className="card-text">
         <EffectLines def={card.def} ctx={ctx} />
