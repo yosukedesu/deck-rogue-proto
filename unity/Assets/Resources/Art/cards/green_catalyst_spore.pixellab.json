@@ -1,0 +1,24 @@
+{
+  "id": "green_catalyst_spore",
+  "engine": "pixflux",
+  "request": {
+    "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky, a cluster of large pale mushrooms on a mossy log releasing a wide fan of glowing green spores into the night air, spores drifting to all sides",
+    "negative_description": "person, figure, character, human, silhouette, walking, path",
+    "image_size": {
+      "width": 80,
+      "height": 48
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-12T04:49:01.712Z"
+}

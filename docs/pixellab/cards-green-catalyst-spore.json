@@ -1,0 +1,27 @@
+{
+ "_note": "全体の触媒 (2026-09-12)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8,
+  "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors"
+ },
+ "style": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky",
+ "items": [
+  {
+   "id": "green_catalyst_spore",
+   "out": "unity/Assets/Resources/Art/cards/green_catalyst_spore.png",
+   "description": "{style}, a cluster of large pale mushrooms on a mossy log releasing a wide fan of glowing green spores into the night air, spores drifting to all sides",
+   "negative": "person, figure, character, human, silhouette, walking, path",
+   "seed": 23
+  }
+ ]
+}
