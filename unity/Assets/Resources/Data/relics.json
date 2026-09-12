@@ -837,16 +837,16 @@
     "id": "relic_stone_calendar",
     "name": "石の暦",
     "sprite": "📅",
-    "description": "7ターン目の終了時、敵全体に52ダメージ",
+    "description": "5ターン目の開始時、敵全体に40ダメージ",
     "rarity": "rare",
     "effects": [
       {
-        "trigger": "onTurnEnd",
+        "trigger": "onTurnStart",
         "effect": "dealDamage",
-        "amount": 52,
+        "amount": 40,
         "target": "all",
         "condition": {
-          "turn": 7
+          "turn": 5
         }
       }
     ]
