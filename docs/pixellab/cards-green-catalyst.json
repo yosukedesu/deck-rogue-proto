@@ -1,0 +1,35 @@
+{
+ "_note": "合成の触媒3枚 (2026-09-12)。cards-green.json と同じ style/defaults",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8,
+  "negative": "person, human, man, woman, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, moon, sun, sky, landscape, scenery, forest clearing, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors"
+ },
+ "style": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark green-gray background with a subtle vignette, painterly detailed shading, muted palette with one accent color, no text, no letters, no border, no frame, no people, no characters, no moon, no landscape, no sky",
+ "items": [
+  {
+   "id": "green_catalyst_light",
+   "out": "unity/Assets/Resources/Art/cards/green_catalyst_light.png",
+   "description": "{style}, a rough pale pumice stone shaped like a small round shield resting on mossy ground, tiny bubbles in the stone, soft teal light seeping from its pores"
+  },
+  {
+   "id": "green_catalyst_echo",
+   "out": "unity/Assets/Resources/Art/cards/green_catalyst_echo.png",
+   "description": "{style}, a single glowing seed hovering above the forest floor with two faint teal echo rings rippling outward from it, twin motion ghosts of the seed"
+  },
+  {
+   "id": "green_catalyst_root",
+   "out": "unity/Assets/Resources/Art/cards/green_catalyst_root.png",
+   "description": "{style}, a small wooden shield half sunk into the ground with thick roots growing out of its bottom edge and gripping the soil, moss on the rim"
+  }
+ ]
+}
