@@ -120,6 +120,8 @@ function cardLine(def: CardDef): string {
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
     def.retainer ? '従者' : '',
+    def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ' } as Record<string, string>)[def.fusionCatalyst]}` : '',
+    def.echo === true ? '🔁反復内蔵(効果を2回解決)' : '',
   ].filter(Boolean).join('・')
   // 選択式の共通部 (工房「効果の合体」で相手の効果が入る場所) はモードの前に描く (2026-09-05 Opusラン R: 合成の目玉が不可視だった)
   const common = def.effects.map((e) => fx(e, def.type)).join('、')
@@ -178,7 +180,7 @@ function branchText(it: { kind: string; shownMin: number; shownMax: number; hits
 function intentLine(s: GameState, i: number): string {
   const e = s.enemies[i]
   if (!e.intent) return '---'
-  if (s.hideIntents === true) return '❓見えない (ルーンの円蓋。からくりの確認窓では実値が出る)'
+  if (s.hideIntents === true) return '❓見えない (ルーンの円蓋。発動確認窓では実値が出る)'
   // 条件付き意図: 両分岐を予告する (プレイヤーが自ターン中にどちらを選ばせるか決められる)
   if (e.intent.conditionalOn === 'set' && e.intent.alt && !playerCanSet(s)) {
     // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)

@@ -1162,7 +1162,9 @@ export function playCard(
     s = { ...s, player: { ...s.player, spellEchoes: s.player.spellEchoes - 1 } }
     s = emit(s, { type: 'SpellEchoed', cardId: card.def.id })
   }
-  for (let echoPass = 0; echoPass < (echoed ? 2 : 1); echoPass++) {
+  // 反復内蔵 (反復の触媒の合成札 2026-09-12): 反復トークンとは加算 (両方なら3回)
+  const echoPasses = 1 + (echoed ? 1 : 0) + (card.def.echo === true ? 1 : 0)
+  for (let echoPass = 0; echoPass < echoPasses; echoPass++) {
     if (chosenMode) {
       // 虚弱の判定用フラグ (resolveOnPlayEffects と同じ扱い。モード効果もカードのプレイ)
       s = { ...s, resolvingCardPlay: true, angerFiredThisPlay: false }

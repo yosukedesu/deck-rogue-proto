@@ -653,6 +653,10 @@ namespace DeckRogue.Engine
             // 補償先の量効果が無い時はコストで返す (T2: 打ち消しが跡形もなく消えてコストだけ上がる下位互換)。下限は素材の高い方のコスト
             if (unpaidVp >= 6 && !bothX) cost = Math.Max(Math.Max(ca, cb), cost - (int)Math.Floor(unpaidVp / 6.0));
             if (costCut > 0) cost = Math.Max(Math.Max(ca, cb), cost - costCut);
+            // 合成の触媒 (2026-09-12): 軽くなる触媒は結果のコストをさらに−1 (0Eまで。0E+補充の消滅は下の歯止めが自動で付ける)
+            var catalysts = new[] { a.Def.FusionCatalyst, b.Def.FusionCatalyst };
+            int cheaper = catalysts.Count(c => c == "cheaper");
+            if (cheaper > 0 && !bothX) cost = Math.Max(0, cost - cheaper);
 
             // --- 歯止め (現行のまま) ---
             var all = new List<DeclarativeEffect>(effects);
@@ -719,7 +723,9 @@ namespace DeckRogue.Engine
                 Modes = modes,
                 XCost = bothX ? true : (bool?)null,
                 Exhaust = exhaust ? true : (bool?)null,
-                Retain = ((a.Def.Retain == true || b.Def.Retain == true) && resultType != "permanent") ? true : (bool?)null,
+                // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
+                Retain = ((a.Def.Retain == true || b.Def.Retain == true || catalysts.Contains("retain")) && resultType != "permanent") ? true : (bool?)null,
+                Echo = ((a.Def.Echo == true || b.Def.Echo == true || catalysts.Contains("echo")) && resultType != "reaction") ? true : (bool?)null,
                 DiscardCost = ((a.Def.DiscardCost ?? 0) != 0 || (b.Def.DiscardCost ?? 0) != 0)
                     ? (a.Def.DiscardCost ?? 0) + (b.Def.DiscardCost ?? 0)
                     : (int?)null,

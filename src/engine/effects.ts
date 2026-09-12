@@ -252,13 +252,16 @@ export function runPermanentTriggers(
         // (2026-08-31 焚べ型ラン: みぞれの自動氷壁が止められない怒り=「みぞれは戦うな」に
         // なっていた。怒りはプレイヤーが選んだカード由来の守りにだけ反応する)
         const isInnate = permanent.innate === true
-        let next = resolveEffectTargeted(
-          isInnate ? { ...s, innateResolving: true } : s,
-          boosted,
-          alive,
-        )
-        if (isInnate) next = { ...next, innateResolving: false }
-        s = next
+        // 反復内蔵の置物 (反復の触媒 2026-09-12): 誘発ごとに効果を2回解決
+        for (let rep = 0; rep < (permanent.def.echo === true ? 2 : 1); rep++) {
+          let next = resolveEffectTargeted(
+            isInnate ? { ...s, innateResolving: true } : s,
+            boosted,
+            alive,
+          )
+          if (isInnate) next = { ...next, innateResolving: false }
+          s = next
+        }
       }
     }
   }

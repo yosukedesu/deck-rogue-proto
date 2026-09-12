@@ -1273,7 +1273,9 @@ namespace DeckRogue.Engine
                 s = s with { Player = s.Player with { SpellEchoes = s.Player.SpellEchoes - 1 } };
                 s = Events.Emit(s, new GameEvent_SpellEchoed { CardId = card.Def.Id });
             }
-            for (int echoPass = 0; echoPass < (echoed ? 2 : 1); echoPass++)
+            // 反復内蔵 (反復の触媒の合成札 2026-09-12): 反復トークンとは加算 (両方なら3回)
+            int echoPasses = 1 + (echoed ? 1 : 0) + (card.Def.Echo == true ? 1 : 0);
+            for (int echoPass = 0; echoPass < echoPasses; echoPass++)
             {
                 if (chosenMode != null)
                 {

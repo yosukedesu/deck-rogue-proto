@@ -923,6 +923,15 @@ export interface CardDef {
   readonly retainer?: boolean
   /** 骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札 */
   readonly shivToken?: boolean
+  /**
+   * 合成の触媒 (2026-09-12 ユーザー案「素材にするとリターンが大きい札」): 工房の素材にすると結果にこの恩恵が乗る。
+   * cheaper=結果のコストがさらに−1 (合計−1の上から。0Eまで。0E規約の消滅は歯止めが自動で付ける) /
+   * echo=結果のプレイ時効果を2回解決 (X・置物も対象。リアクションには付かない) / retain=結果が保持を持つ。
+   * 触媒自身は基本札並みの弱い札 = 「工房を踏めるか」の賭けとして拾う (供給は1ピックの選択肢に1枚まで)
+   */
+  readonly fusionCatalyst?: 'cheaper' | 'echo' | 'retain'
+  /** 反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回) */
+  readonly echo?: boolean
 }
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */

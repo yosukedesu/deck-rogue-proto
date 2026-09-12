@@ -1867,5 +1867,50 @@
         "amount": 1
       }
     ]
+  },
+  {
+    "id": "green_catalyst_light",
+    "name": "軽石の盾",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "fusionCatalyst": "cheaper",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "green_catalyst_echo",
+    "name": "谺の種",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "fusionCatalyst": "echo",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      }
+    ]
+  },
+  {
+    "id": "green_catalyst_root",
+    "name": "根付きの盾",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "fusionCatalyst": "retain",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      }
+    ]
   }
 ]

@@ -327,12 +327,16 @@ namespace DeckRogue.Engine
                                 : effect;
                         // innate置物 (リーダーパッシブ・レリック) の解決中は鬼軍曹の怒りを立てない (2026-08-31)
                         bool isInnate = permanent.Innate == true;
-                        GameState next = ResolveEffectTargeted(
-                            isInnate ? s with { InnateResolving = true } : s,
-                            boosted,
-                            alive);
-                        if (isInnate) next = next with { InnateResolving = false };
-                        s = next;
+                        // 反復内蔵の置物 (反復の触媒 2026-09-12): 誘発ごとに効果を2回解決
+                        for (int rep = 0; rep < (permanent.Def.Echo == true ? 2 : 1); rep++)
+                        {
+                            GameState next = ResolveEffectTargeted(
+                                isInnate ? s with { InnateResolving = true } : s,
+                                boosted,
+                                alive);
+                            if (isInnate) next = next with { InnateResolving = false };
+                            s = next;
+                        }
                     }
                 }
             }

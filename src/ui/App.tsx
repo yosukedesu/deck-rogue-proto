@@ -65,6 +65,7 @@ import {
 } from '../engine/content.ts'
 import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
+import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -100,14 +101,14 @@ const ADOPTED_MODE: ReactionMode = 'set-confirm'
 const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   'wide-power': '幅威力型',
   probe: '探り型（ローテーション）',
-  'set-wary': 'からくり警戒型',
-  'set-breaker': 'からくり壊し型',
+  'set-wary': '伏せ警戒型',
+  'set-breaker': '伏せ破壊型',
   brute: '脳筋型（筋力ループ）',
   charger: 'チャージ型（大技予告）',
   hexer: '妖術師型（状態異常）',
   flurry: '連撃型',
   regenerator: '再生型（HP半分で豹変）',
-  taunter: '挑発型（からくりが無いと大振り）',
+  taunter: '挑発型（伏せ札が無いと大振り）',
   enrager: '激昂型（毎ターン筋力+）',
   support: '応援型（味方全体の筋力+）',
   thorned: 'とげ型（攻撃ヒットごとに反射）',
@@ -170,7 +171,7 @@ const KW_PATTERN = new RegExp(
 )
 
 /** テキスト中のキーワード能力を吹き出し付き <span> に置き換える */
-const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': 'からくり壊し', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化' }
+const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化' }
 
 function kw(text: string): React.ReactNode {
   return text.split(KW_PATTERN).map((part, i) =>
@@ -219,7 +220,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onCombatStart: '戦闘開始時: ',
   onAttackPlayed: '攻撃プレイ後: ',
   onSpellPlayed: '呪文をプレイした時: ',
-  onSetDestroyed: 'このからくりが壊された時: ',
+  onSetDestroyed: 'この伏せ場が壊された時: ',
   onHealed: 'HPが回復するたび (満タンでも誘発): ',
   onHpLost: 'カード効果でHPを失うたび: ',
   onCardExhausted: 'カードが消滅するたび: ',
@@ -228,8 +229,8 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onImpulsePlayed: '衝動カードをプレイするたび: ',
   onRandomPlayed: '運任せの札をプレイするたび: ',
   onAetherGained: '霊気を得るたび: ',
-  onCardSet: 'カードを仕込むたび: ',
-  onReactionFired: 'からくりを動かすたび: ',
+  onCardSet: 'カードを伏せるたび: ',
+  onReactionFired: '発動するたび: ',
   onSelfExhausted: '亡骸 (この札がプレイ以外で消滅した時): ',
   onGrowthGained: '成長を得るたび: ',
   onMomentumGained: '勢いを得るたび: ',
@@ -421,7 +422,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'upgradeInHand':
       return `${trigger}🔨 手札の${e.amount ?? 1}枚をこの戦闘中鍛える（自身・レア・工房産は選べない）`
     case 'gainSetSlot':
-      return holderType === 'permanent' ? `🃏 【常在】仕込み枠+${e.amount ?? 1}（この置物がある間）` : `${trigger}🃏 この戦闘中、仕込み枠+${e.amount ?? 1}`
+      return holderType === 'permanent' ? `🃏 【常在】伏せ枠+${e.amount ?? 1}（この置物がある間）` : `${trigger}🃏 この戦闘中、伏せ枠+${e.amount ?? 1}`
     case 'dealDamagePerExhaust':
       return ctx
         ? `${trigger}⚔️ ${aoe}消滅した枚数×${e.amount}ダメージ${pierce} [現在${(e.amount ?? 0) * ctx.exhausted + atkBonus}]`
@@ -612,7 +613,15 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.requiresRetainer === true) lines.push('プレイ条件: 場に従者が1体以上')
   if (def.freeIfMomentumAtLeast !== undefined) lines.push(`勢いが${def.freeIfMomentumAtLeast}以上ならコスト0`)
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
+  // 合成の触媒 / 反復内蔵 (2026-09-12)
+  if (def.fusionCatalyst !== undefined) lines.push(CATALYST_LINE[def.fusionCatalyst])
+  if (def.echo === true) lines.push('🔁 反復内蔵: プレイ時の効果を2回解決（置物なら誘発ごとに2回）')
   return lines
+}
+const CATALYST_LINE: Record<NonNullable<CardDef['fusionCatalyst']>, string> = {
+  cheaper: '⚗️ 触媒: 工房の素材にすると、結果のコストがさらに−1（0Eまで）',
+  echo: '⚗️ 触媒: 工房の素材にすると、結果のプレイ時の効果を2回解決（X・置物も）',
+  retain: '⚗️ 触媒: 工房の素材にすると、結果が保持（手札に残る）を持つ',
 }
 
 /** インライン (文章中) 用: 1行に結合 */
@@ -633,8 +642,8 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
 
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
 function conditionalIntentText(s: GameState, i: number): string {
-  // ルーンの円蓋 (2026-09-12 本家 Runic Dome): 意図は表示しない (エンジンの宣言は不変。からくりの確認の窓では実値が見える)
-  if (s.hideIntents === true) return '❓ 意図は見えない（ルーンの円蓋。からくりの確認の窓では実値が見える）'
+  // ルーンの円蓋 (2026-09-12 本家 Runic Dome): 意図は表示しない (エンジンの宣言は不変。発動確認の窓では実値が見える)
+  if (s.hideIntents === true) return '❓ 意図は見えない（ルーンの円蓋。発動確認の窓では実値が見える）'
   const text = conditionalIntentTextRaw(s, i)
   const w = s.enemies[i]?.weak ?? 0
   const it = s.enemies[i]?.intent
@@ -645,7 +654,7 @@ function conditionalIntentTextRaw(s: GameState, i: number): string {
   const intent = s.enemies[i]?.intent
   if (!intent) return '---'
   if (!intent.conditionalOn || !intent.alt) return intentText(intent)
-  // 仕込めないデッキには「からくりあり」分岐を予告しない (到達不能な選択肢の常時表示は
+  // 伏せられないデッキには「伏せ札あり」分岐を予告しない (到達不能な選択肢の常時表示は
   // 「お前にはこの選択肢は無い」の掲示になる — 2026-08-30 Opusラン報告)
   if (intent.conditionalOn === 'set' && !playerCanSet(s)) {
     return intentText({ ...intent, conditionalOn: undefined, alt: undefined })
@@ -658,13 +667,13 @@ function conditionalIntentTextRaw(s: GameState, i: number): string {
   if (intentText({ ...intent.alt }) === baseOnly) {
     const def = getEnemyDef(s.enemies[i].enemyId)
     const why = enemyPunishesSet(def)
-      ? '。※罰型=ターンによってからくり壊しや大技の分岐になる'
+      ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
       : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
     // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
-    return `${baseOnly}（からくりがあっても今回は同じ行動。ただしロールは別で、仕込むと実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
+    return `${baseOnly}（伏せ場があっても今回は同じ行動。ただしロールは別で、伏せると実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
   }
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
-  const cond = intent.conditionalOn === 'set' ? `からくりあり${note ? `（${note}）` : ''}` : '従者あり'
+  const cond = intent.conditionalOn === 'set' ? `伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
   return `【${cond}】${intentText({ ...intent.alt })}${isAlt ? '◀今これ' : ''} ／【なし】${intentText({ ...intent, conditionalOn: undefined, alt: undefined })}${isAlt ? '' : '◀今これ'}`
@@ -681,7 +690,7 @@ function confirmedIntentText(intent: EnemyIntent | null, weak = 0): string {
     case 'defend':
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
     case 'destroy-set':
-      return '💥 からくり壊し'
+      return '💥 伏せ破壊'
     case 'destroy-token':
       return '🪓 従者狩り'
     case 'buff':
@@ -1002,7 +1011,7 @@ function CheckpointPanel({
       </div>
       <div style={{ marginTop: 6, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {allRelics.map((r) => (
-          <label key={r.id} style={{ fontSize: 11 }} title={r.description}>
+          <label key={r.id} style={{ fontSize: 11 }} title={webVocab(r.description)}>
             <input
               type="checkbox"
               checked={relicIds.includes(r.id)}
@@ -1061,7 +1070,7 @@ function SetupScreen({
   // 難易度 (確定済みルール表「難易度」): 1〜10・既定3=現状維持
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
   const [revealIntents, setRevealIntents] = useState(false) // 判定実験: 意図を常時実値表示 (2026-09-02)
-  const [setAnyCards, setSetAnyCards] = useState(false) // 実験: 全カード仕込み可 (2026-09-02)
+  const [setAnyCards, setSetAnyCards] = useState(false) // 実験: 全カード伏せ可 (2026-09-02)
   const leader = getLeaderDef(leaderId)
   const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
   const [deckId, setDeckId] = useState(allowedDecks[0].id)
@@ -1084,9 +1093,9 @@ function SetupScreen({
         </button>
       </h1>
       <div className="panel">
-        <div className="choice-title">採用方式: set-confirm（仕込む＋動かす/巻いたままの選択）</div>
+        <div className="choice-title">採用方式: set-confirm（伏せる＋発動/温存の選択）</div>
         <div className="choice-desc">
-          仕込み札はコストを先に払ってからくりに仕込む。敵の行動が確定したら（実値公開後）、動かすか巻いたままにするかを選ぶ。
+          伏せ札はコストを先に払って伏せ場に伏せる。敵の行動が確定したら（実値公開後）、発動か温存するかを選ぶ。
         </div>
       </div>
 
@@ -1105,7 +1114,7 @@ function SetupScreen({
             <div className="choice-desc">
               HP {l.maxHp} / ドロー{l.drawPerTurn}枚 / ピック候補{l.rewardChoices}枚
             </div>
-            <div className="choice-desc">{l.description}</div>
+            <div className="choice-desc">{webVocab(l.description)}</div>
           </button>
         ))}
       </div>
@@ -1188,7 +1197,7 @@ function SetupScreen({
                   onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty, revealIntents, setAnyCards)}
                 >
                   <div className="choice-title">{leader.sprite} {deck?.name ?? deckId}で開始</div>
-                  <div className="choice-desc">{deck?.description}</div>
+                  <div className="choice-desc">{webVocab(deck?.description ?? '')}</div>
                 </button>
               )
             })}
@@ -1216,7 +1225,7 @@ function SetupScreen({
             <div className="choice-title">
               {COLOR_LABEL[d.color]} {d.name}（{deckSize(d)}枚）
             </div>
-            <div className="choice-desc">{d.description}</div>
+            <div className="choice-desc">{webVocab(d.description)}</div>
             <div className="choice-desc">{deckComposition(d.id)}</div>
           </button>
         ))}
@@ -1238,7 +1247,7 @@ function SetupScreen({
               {e.flavor && (
                 <>
                   <br />
-                  {e.flavor}
+                  {webVocab(e.flavor)}
                 </>
               )}
             </div>
@@ -1326,8 +1335,8 @@ function SetupScreen({
               <label className="hint" style={{ display: 'block', marginTop: 8 }} title="退屈診断④の判定実験: 幅あり意図（例: 攻撃6〜12）を常時実値にして遊び、幅表示の有無で体感がどう変わるかを比べる。仕様は変えず計測だけ（レポートに記録される）">
                 <input type="checkbox" checked={revealIntents} onChange={(e) => setRevealIntents(e.target.checked)} /> 🔍 意図を常時実値表示（幅あり意図の判定実験）
               </label>
-              <label className="hint" style={{ display: 'block', marginTop: 4 }} title="実験 (2026-09-02): 攻撃・防御の通常カードも1Eで仕込める。誘発したら印字コストを敵ターンに持ち越したエナジーから払って動かす。専用の仕込み札は従来どおり仕込む時に支払い・動かすのは無料">
-                <input type="checkbox" checked={setAnyCards} onChange={(e) => setSetAnyCards(e.target.checked)} /> 🃏 全カード仕込み可（通常カードは1Eで仕込み、動かす時に印字コスト）
+              <label className="hint" style={{ display: 'block', marginTop: 4 }} title="実験 (2026-09-02): 攻撃・防御の通常カードも1Eで伏せられる。誘発したら印字コストを敵ターンに持ち越したエナジーから払って発動。専用の伏せ札は従来どおり伏せる時に支払い・発動のは無料">
+                <input type="checkbox" checked={setAnyCards} onChange={(e) => setSetAnyCards(e.target.checked)} /> 🃏 全カード伏せ可（通常カードは1Eで伏せ、発動時に印字コスト）
               </label>
               <CheckpointPanel leaderId={leaderId} difficulty={difficulty} onStart={onStartCheckpoint} />
             </>
@@ -1692,9 +1701,9 @@ function BattleScreen({
             <div className="keyhelp-title">キーボード操作 <span className="pile-info">（入力欄にフォーカスがある間は無効）</span></div>
             <table>
               <tbody>
-                <tr><td><span className="keycap">1</span>〜<span className="keycap">9</span></td><td>手札をプレイ／仕込む・対象を選ぶ・動かす候補・報酬ピック（各カードの右上の数字）</td></tr>
+                <tr><td><span className="keycap">1</span>〜<span className="keycap">9</span></td><td>手札をプレイ／伏せる・対象を選ぶ・発動候補・報酬ピック（各カードの右上の数字）</td></tr>
                 <tr><td><span className="keycap">E</span></td><td>ターン終了</td></tr>
-                <tr><td><span className="keycap">F</span></td><td>動かす（候補が1つの時）</td></tr>
+                <tr><td><span className="keycap">F</span></td><td>発動（候補が1つの時）</td></tr>
                 <tr><td><span className="keycap">H</span></td><td>温存</td></tr>
                 <tr><td><span className="keycap">S</span></td><td>報酬を見送る</td></tr>
                 <tr><td><span className="keycap">Esc</span></td><td>取消</td></tr>
@@ -1755,7 +1764,7 @@ function BattleScreen({
                   {s.enemies.length === 1 && (
                     <div className="enemy-archetype">
                       {ARCHETYPE_LABEL[enemyDef.archetype]}
-                      {enemyDef.flavor && <> — {enemyDef.flavor}</>}
+                      {enemyDef.flavor && <> — {webVocab(enemyDef.flavor)}</>}
                     </div>
                   )}
                   <Bar value={Math.max(0, enemy.hp)} max={enemy.maxHp} />
@@ -1873,7 +1882,7 @@ function BattleScreen({
                     <div className={`intent${enemy.intent?.kind === 'defend' ? ' intent-defend' : ''}`}>
                       {enemy.confusion > 0 && enemy.intent?.kind === 'attack' ? '😵仲間に向かう: ' : ''}
                       {kw(conditionalIntentText(s, i))}
-                      {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn + (player.setsThisTurn ?? 0)}枚。仕込みも数える）` : ''}
+                      {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn + (player.setsThisTurn ?? 0)}枚。伏せも数える）` : ''}
                       {s.hideIntents !== true && worstIncomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
                         ? ' 💀致死級'
                         : null}
@@ -1886,7 +1895,7 @@ function BattleScreen({
         </div>
       </div>
 
-      {/* 中央フィールド: からくり / 割り込み / 勝敗 */}
+      {/* 中央フィールド: 伏せ場 / 割り込み / 勝敗 */}
       <div className="panel area-field">
         <div className="field">
           {isSetMode && (
@@ -1909,14 +1918,14 @@ function BattleScreen({
                         )
                       })()}
                     {c.def.type !== 'reaction' && (
-                      <span title="通常カードの仕込み (実験): 誘発したら印字コストを払って動かす">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
+                      <span title="通常カードの伏せ (実験): 誘発したら印字コストを払って発動">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
                     )}
                   </div>
                   {s.phase === 'player-turn' && (
                     <button
                       className="btn"
                       disabled={player.energy < 1}
-                      title="1E払って取り出す (仕込みコストは返らない)"
+                      title="1E払って回収 (伏せコストは返らない)"
                       onClick={() => dispatch({ type: 'RetrieveSetCard', cardUid: c.uid })}
                     >
                       回収(1E)
@@ -1926,7 +1935,7 @@ function BattleScreen({
               ))}
               {Array.from({ length: Math.max(0, player.setSlots - player.setCards.length) }).map((_, i) => (
                 <span key={`empty${i}`}>
-                  <div className="set-slot-empty">からくり</div>
+                  <div className="set-slot-empty">伏せ場</div>
                   <div className="set-slot-label">（なし）</div>
                 </span>
               ))}
@@ -1985,7 +1994,7 @@ function BattleScreen({
               {s.reactionMode === 'set-confirm' && setCard ? (
                 <>
                   {(() => {
-                    // 仕込み2枚 (かすみ): 窓に合致する仕込み札ごとに動かすボタンを出す
+                    // 伏せ2枚 (かすみ): 窓に合致する伏せ札ごとに発動ボタンを出す
                     const win = windowFromPending(s)
                     const candidates = win ? usableSetCards(s, win) : []
                     return candidates.map((c, candIdx) => (
@@ -2013,7 +2022,7 @@ function BattleScreen({
                           {...(candIdx < 9 ? { 'data-hotkey': `num-${candIdx + 1}` } : {})}
                           onClick={() => dispatch({ type: 'ConfirmReaction', fire: true, cardUid: c.uid })}
                         >
-                          {setFireCost(c) > 0 ? `動かす（${setFireCost(c)}E・残り${player.energy}E）` : '動かする'}
+                          {setFireCost(c) > 0 ? `発動（${setFireCost(c)}E・残り${player.energy}E）` : '発動る'}
                           {candIdx < 9 && <span className="keycap">{candIdx === 0 ? 'F' : String(candIdx + 1)}</span>}
                         </button>
                       </div>
@@ -2028,18 +2037,18 @@ function BattleScreen({
                     const gain = comparable && after < before
                     return (
                       <div key={ri} className="choice-desc" style={{ margin: '6px 0', color: gain ? 'var(--good, #7ec97e)' : 'var(--warn, #e0a458)' }}>
-                        {gain ? '💡' : '⚠'} 動かすとからくりが空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【からくりなし】分岐（{intentText(s.enemies[ri].intent)}）に変わる{gain ? '（弱くなる=利得）' : comparable && after > before ? '（強くなる）' : ''}
+                        {gain ? '💡' : '⚠'} 発動すると伏せ場が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せ札なし】分岐（{intentText(s.enemies[ri].intent)}）に変わる{gain ? '（弱くなる=利得）' : comparable && after > before ? '（強くなる）' : ''}
                       </div>
                     )
                   })}
                   <button className="btn" data-hotkey="hold" onClick={() => dispatch({ type: 'ConfirmReaction', fire: false })}>
-                    巻いたまま<span className="keycap">H</span>
+                    温存<span className="keycap">H</span>
                   </button>
                 </>
               ) : (
                 <>
                   <div style={{ marginBottom: 10 }}>
-                    手札から動かす（残エナジー <EnergyOrbs energy={player.energy} energyMax={player.energyMax} />）
+                    手札から発動（残エナジー <EnergyOrbs energy={player.energy} energyMax={player.energyMax} />）
                   </div>
                   {playableReactions(s).map((c) => (
                     <button
@@ -2323,7 +2332,7 @@ function BattleScreen({
         )}
         {activeX && (
           <div className="discard-banner">
-            「{player.hand.find((c) => c.uid === activeX.cardUid)?.def.name}」: 払うXを選んでください（最大{player.energy}＝全部。残したエナジーは他の札や仕込みに使える）{' '}
+            「{player.hand.find((c) => c.uid === activeX.cardUid)?.def.name}」: 払うXを選んでください（最大{player.energy}＝全部。残したエナジーは他の札や伏せに使える）{' '}
             {Array.from({ length: player.energy }, (_, i) => i + 1).map((x) => (
               <button
                 key={x}
@@ -2592,7 +2601,7 @@ function BattleScreen({
                       player.impulseUids.includes(c.uid)
                         ? '⏳ 衝動: このターン限り（未使用なら消滅）'
                         : heldReaction
-                          ? '敵ターンに手札から動かす'
+                          ? '敵ターンに手札から発動'
                           : undefined
                     }
                     actions={
@@ -2619,11 +2628,11 @@ function BattleScreen({
                           <button
                             className="btn"
                             disabled={!canSet}
-                            title={c.def.type !== 'reaction' ? `1Eで仕込む。被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に誘発し、発動時に${c.def.cost}Eを払う` : undefined}
+                            title={c.def.type !== 'reaction' ? `1Eで伏せる。被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に誘発し、発動時に${c.def.cost}Eを払う` : undefined}
                             {...(handIdx < 9 && !activeTarget && !isPlayableFromHand(c) ? { 'data-hotkey': `num-${handIdx + 1}` } : {})}
                             onClick={() => dispatch({ type: 'SetCard', cardUid: c.uid })}
                           >
-                            {c.def.type !== 'reaction' ? '仕込む(1E)' : '仕込む'}
+                            {c.def.type !== 'reaction' ? '伏せる(1E)' : '伏せる'}
                           </button>
                         )}
                       </>
@@ -2826,7 +2835,7 @@ function RelicChooseScreen({ run, dispatch, ctx }: { run: RunState; dispatch: (c
     <div className="app setup">
       <h1>{relic.sprite} {relic.name}</h1>
       <p className="hint">
-        {relic.description}。{p.count}枚まで選んで「決定」（選ばなくてもよい。{p.mode === 'remove' ? 'デッキは5枚を下回れない' : '同レア度の別の札にランダムで変わり、鍛えた状態で入る'}）
+        {webVocab(relic.description)}。{p.count}枚まで選んで「決定」（選ばなくてもよい。{p.mode === 'remove' ? 'デッキは5枚を下回れない' : '同レア度の別の札にランダムで変わり、鍛えた状態で入る'}）
       </p>
       <div style={{ margin: '8px 0' }}>
         <button className="btn btn-primary" onClick={() => dispatch({ type: 'RelicChooseCards', indices: picked })}>
@@ -3291,12 +3300,12 @@ const ENEMY_VOCAB = (() => {
 })()
 
 const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時筋力💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥からくり壊し', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
   const inflict = mv.inflict ? ` ＋${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}${mv.inflict.amount}` : ''
-  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${inflict}${mv.setAlt !== undefined ? '【からくりあり分岐】' : ''}`
+  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${inflict}${mv.setAlt !== undefined ? '【伏せ札あり分岐】' : ''}`
 }
 
 /** 敵の数値フィールド (実データのパス+現行値)。存在するものだけ編集対象 */
@@ -3308,7 +3317,7 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
   }
   const tables: readonly (readonly [string, string, readonly EnemyMove[] | undefined])[] = [
     ['m', '', def.moves],
-    ['vs', 'からくりへの反応', def.movesVsSet],
+    ['vs', '伏せへの反応', def.movesVsSet],
     ['tk', '従者反応', def.movesVsTokens],
     ['bh', '半分以下', def.movesBelowHalf],
   ]
@@ -3324,9 +3333,9 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
       if (sa !== undefined) {
         for (const f of ['min', 'max', 'hits'] as const) {
           const v = sa[f]
-          if (typeof v === 'number') out.push({ key: `${pfx}${i}.alt.${f}`, label: `${base}からくりあり時${MOVE_FIELD_JA[f]}`, cur: v })
+          if (typeof v === 'number') out.push({ key: `${pfx}${i}.alt.${f}`, label: `${base}伏せ札あり時${MOVE_FIELD_JA[f]}`, cur: v })
         }
-        if (sa.inflict) out.push({ key: `${pfx}${i}.alt.inflict.amount`, label: `${base}からくりあり時${STATUS_LABEL[sa.inflict.status] ?? sa.inflict.status}量`, cur: sa.inflict.amount })
+        if (sa.inflict) out.push({ key: `${pfx}${i}.alt.inflict.amount`, label: `${base}伏せ札あり時${STATUS_LABEL[sa.inflict.status] ?? sa.inflict.status}量`, cur: sa.inflict.amount })
       }
     })
   }
@@ -3345,7 +3354,7 @@ function relicTunerFields(def: RelicDef): { key: string; label: string; cur: num
     if (typeof v === 'number') out.push({ key: `bonus.${k}`, label: ja, cur: v })
   }
   if (typeof def.combatRule?.setDamageReduction === 'number') {
-    out.push({ key: 'rule.setDamageReduction', label: 'からくりがある間 敵攻撃-N', cur: def.combatRule.setDamageReduction })
+    out.push({ key: 'rule.setDamageReduction', label: '伏せ札がある間 敵攻撃-N', cur: def.combatRule.setDamageReduction })
   }
   return out
 }
@@ -3447,7 +3456,7 @@ function EnemyDraftEditor({ value, onChange, onDelete }: { value: EnemyDraft; on
         <label style={{ ...S, flex: 1 }}>ローテーション(idカンマ区切り・空=重み抽選) <input value={value.sequence ?? ''} onChange={(e) => onChange({ ...value, sequence: e.target.value === '' ? undefined : e.target.value })} style={{ width: '55%', fontSize: 11 }} /></label>
         <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
       </div>
-      <div className="choice-desc" style={{ fontSize: 10 }}>高度な仕掛け (setAlt=からくりあり分岐・からくり/従者反応テーブル・フェーズ変化) は補足/メモに書けば実装時に起こします</div>
+      <div className="choice-desc" style={{ fontSize: 10 }}>高度な仕掛け (setAlt=伏せ札あり分岐・伏せ場/従者反応テーブル・フェーズ変化) は補足/メモに書けば実装時に起こします</div>
     </div>
   )
 }
@@ -3479,7 +3488,7 @@ function RelicDraftEditor({ value, onChange, onDelete }: { value: RelicDraft; on
         {Object.entries(RELIC_BONUS_JA).map(([k, ja]) => (
           <label key={k} style={S}>{ja} <input type="number" step="any" style={{ width: 44 }} value={(value as unknown as Record<string, number | undefined>)[k] ?? ''} onChange={(e) => onChange({ ...value, [k]: numOrUndef(e.target.value) } as RelicDraft)} /></label>
         ))}
-        <label style={S}>からくり中攻撃-N <input type="number" style={{ width: 38 }} value={value.setDamageReduction ?? ''} onChange={(e) => onChange({ ...value, setDamageReduction: numOrUndef(e.target.value) })} /></label>
+        <label style={S}>伏せ中攻撃-N <input type="number" style={{ width: 38 }} value={value.setDamageReduction ?? ''} onChange={(e) => onChange({ ...value, setDamageReduction: numOrUndef(e.target.value) })} /></label>
         <label style={S}><input type="checkbox" checked={value.revealIntents === true} onChange={(e) => onChange({ ...value, revealIntents: e.target.checked || undefined })} /> 実値公開</label>
         <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
       </div>
@@ -3527,7 +3536,7 @@ function LeaderDraftEditor({ value, onChange, onDelete }: { value: LeaderDraft; 
         <label style={S}>ドロー <input type="number" style={{ width: 40 }} value={value.drawPerTurn} onChange={(e) => onChange({ ...value, drawPerTurn: Number(e.target.value) || 0 })} /></label>
         <label style={S}>エナジー <input type="number" style={{ width: 40 }} value={value.energyMax} onChange={(e) => onChange({ ...value, energyMax: Number(e.target.value) || 0 })} /></label>
         <label style={S}>ピック候補 <input type="number" style={{ width: 40 }} value={value.rewardChoices} onChange={(e) => onChange({ ...value, rewardChoices: Number(e.target.value) || 0 })} /></label>
-        <label style={S}>仕込み枠 <input type="number" style={{ width: 38 }} value={value.setSlots ?? ''} placeholder="1" onChange={(e) => onChange({ ...value, setSlots: numOrUndef(e.target.value) })} /></label>
+        <label style={S}>伏せ枠 <input type="number" style={{ width: 38 }} value={value.setSlots ?? ''} placeholder="1" onChange={(e) => onChange({ ...value, setSlots: numOrUndef(e.target.value) })} /></label>
         <label style={S}>初期デッキid <input value={value.runDeckId ?? ''} placeholder="run_basic" onChange={(e) => onChange({ ...value, runDeckId: e.target.value === '' ? undefined : e.target.value })} style={{ width: 110 }} /></label>
       </div>
       <label style={{ ...S, display: 'flex', gap: 4 }}>説明 <input value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} style={{ flex: 1, fontSize: 11 }} /></label>
@@ -3622,7 +3631,7 @@ const EFFECT_JA: Record<string, string> = {
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
   duplicateRetainers: '場の従者を1体ずつ複製', sacrificeRetainer: '従者1体を選んで破壊', triggerRetainersNow: '従者のターン開始効果を今すぐ解決', activateEnteredRetainer: '場に出た従者が即1回動く(駆けつけ)',
   blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
-  gainSetSlot: '仕込み枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
+  gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
   strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', dealDamagePerWeak: '対象の威圧×N追加ダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
 }
 function effectJa(e: string): string {
@@ -4196,7 +4205,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                     </span>
                     <div className="choice-desc" style={{ fontSize: 11 }}>
                       {e.moves.map(moveLine).join('　')}
-                      {e.movesVsSet !== undefined ? `　◆からくりへの反応: ${e.movesVsSet.map(moveLine).join(' ')}` : ''}
+                      {e.movesVsSet !== undefined ? `　◆伏せへの反応: ${e.movesVsSet.map(moveLine).join(' ')}` : ''}
                       {e.movesVsTokens !== undefined ? `　◆従者反応: ${e.movesVsTokens.map(moveLine).join(' ')}` : ''}
                       {e.movesBelowHalf !== undefined ? `　◆半分以下: ${e.movesBelowHalf.map(moveLine).join(' ')}` : ''}
                       {e.sequence !== undefined ? `　◇ローテ: ${e.sequence.join('→')}` : ''}
@@ -4218,7 +4227,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 return (
                   <div key={r.id} className="panel" style={{ padding: 6, background: dirty ? 'rgba(120,160,255,0.10)' : undefined }}>
                     <b>{r.sprite} {r.name}</b> <span className="choice-desc">{r.id}</span>
-                    <div className="choice-desc" style={{ fontSize: 11 }}>{r.description}</div>
+                    <div className="choice-desc" style={{ fontSize: 11 }}>{webVocab(r.description)}</div>
                     {tuner && (
                       <SimpleMarkEditor fields={relicTunerFields(r)} mark={draft.relicMarks[r.id] ?? {}} onChange={(m) => setRelicMark(r.id, m)} />
                     )}
@@ -4238,9 +4247,9 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                   <div key={l.id} className="panel" style={{ padding: 6, background: dirty ? 'rgba(120,160,255,0.10)' : undefined }}>
                     <b>{l.sprite} {l.name}</b>{' '}
                     <span className="choice-desc">
-                      {l.id} / {l.colors.map((c) => COLOR_JA[c] ?? c).join('')} / HP{l.maxHp} / ドロー{l.drawPerTurn} / エナジー{l.energyMax} / ピック{l.rewardChoices}{(l.setSlots ?? 1) > 1 ? ` / 仕込み枠${l.setSlots}` : ''}
+                      {l.id} / {l.colors.map((c) => COLOR_JA[c] ?? c).join('')} / HP{l.maxHp} / ドロー{l.drawPerTurn} / エナジー{l.energyMax} / ピック{l.rewardChoices}{(l.setSlots ?? 1) > 1 ? ` / 伏せ枠${l.setSlots}` : ''}
                     </span>
-                    <div className="choice-desc" style={{ fontSize: 11 }}>{l.description}</div>
+                    <div className="choice-desc" style={{ fontSize: 11 }}>{webVocab(l.description)}</div>
                     <div className="choice-desc" style={{ fontSize: 11 }}>
                       パッシブ: {l.passive.length > 0 ? l.passive.map((e) => renderEffectItem(e)).join('、') : '（なし）'} ／ 初期デッキ: {l.runDeckId}
                     </div>
@@ -4474,7 +4483,7 @@ function RunScreen({
             <span key={id} className="chip">
               <span className="kw">
                 {r.sprite} {r.name}
-                <span className="kw-tip">{r.description}</span>
+                <span className="kw-tip">{webVocab(r.description)}</span>
               </span>
             </span>
           )
@@ -4540,7 +4549,7 @@ function RunScreen({
                   {r.name}
                   {relicRarityTag(r) && <span className="chip" style={{ marginLeft: 6 }}>{relicRarityTag(r)}</span>}
                 </div>
-                <div className="choice-desc">{r.description}</div>
+                <div className="choice-desc">{webVocab(r.description)}</div>
               </button>
             )
           })}
@@ -4602,7 +4611,7 @@ function RunScreen({
               return (
                 <div>
                   <span className="chip">{r.sprite} {r.name}</span>
-                  <span className="choice-desc"> {r.description}</span>{' '}
+                  <span className="choice-desc"> {webVocab(r.description)}</span>{' '}
                   <button
                     className="btn btn-primary"
                     disabled={run.gold < run.shop!.relicPrice}

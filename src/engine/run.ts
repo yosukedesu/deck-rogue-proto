@@ -1262,8 +1262,10 @@ function rollRewards(run: RunState): RunState {
     const [idx, r2] = nextInt(rng, 0, candidates.length - 1)
     rng = r2
     const chosen = candidates[idx]
-    picked.push(chosen.id)
     remaining.splice(remaining.indexOf(chosen), 1)
+    // 合成の触媒 (2026-09-12 ユーザー裁定): 1回の提示に触媒は1枚まで (2枚目は引き直し)
+    if (chosen.fusionCatalyst !== undefined && picked.some((id) => getCardDef(id).fusionCatalyst !== undefined)) continue
+    picked.push(chosen.id)
   }
   return { ...run, rng, rewardOptions: picked, phase: 'reward' }
 }

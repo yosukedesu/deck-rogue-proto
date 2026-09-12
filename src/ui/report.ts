@@ -197,7 +197,7 @@ function renderBoard(s: GameState): string[] {
     const ok = isPlayableFromHand(c) && cost <= p.energy
     return `${c.def.name}(${cost})${ok ? '' : '✕'}`
   }).join('、') || '（なし）'}`)
-  out.push(`からくり(${p.setCards.length}/${p.setSlots}): ${names(p.setCards)}`)
+  out.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${names(p.setCards)}`)
   out.push(`置物: ${names(p.permanents)}`)
   out.push(`山札${p.drawPile.length} / 捨札${p.discardPile.length} / 消滅${p.exhaustPile.length}`)
   s.enemies.forEach((e, i) => {
@@ -317,7 +317,7 @@ export function buildReport(
   }
   L.push('')
   L.push('## 計測（機械可読）')
-  L.push('戦闘ごとのターン別 与ダメ/返し/被ダメ/仕込み/動かす と幕別サマリー (engine/analysis.ts)。')
+  L.push('戦闘ごとのターン別 与ダメ/返し/被ダメ/伏せ/発動 と幕別サマリー (engine/analysis.ts)。')
   L.push('`npm run analyze -- <このmd>` で表に展開できる。物差し: 良いデッキで通常戦4〜6T・ボス6〜10T。')
   L.push('```json')
   L.push(JSON.stringify(metricsExport(run, history)))
@@ -622,7 +622,7 @@ export const LEADER_TOP_FIELDS: readonly (readonly [string, string])[] = [
   ['drawPerTurn', '毎ターンドロー'],
   ['energyMax', 'エナジー上限'],
   ['rewardChoices', 'ピック候補数'],
-  ['setSlots', '仕込み枠'],
+  ['setSlots', '伏せ枠'],
 ]
 
 /** リーダーの新規作成ドラフト。パッシブはカードと同じ EffectDraft */

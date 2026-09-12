@@ -381,6 +381,10 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   // 補償先の量効果が無い時はコストで返す (T2: 打ち消しが跡形もなく消えてコストだけ上がる下位互換)。下限は素材の高い方のコスト
   if (unpaidVp >= 6 && !bothX) cost = Math.max(Math.max(ca, cb), cost - Math.floor(unpaidVp / 6))
   if (costCut > 0) cost = Math.max(Math.max(ca, cb), cost - costCut)
+  // 合成の触媒 (2026-09-12): 軽くなる触媒は結果のコストをさらに−1 (0Eまで。0E+補充の消滅は下の歯止めが自動で付ける)
+  const catalysts = [a.def.fusionCatalyst, b.def.fusionCatalyst]
+  const cheaper = catalysts.filter((c) => c === 'cheaper').length
+  if (cheaper > 0 && !bothX) cost = Math.max(0, cost - cheaper)
 
   // --- 歯止め (現行のまま) ---
   const all = [...effects, ...(modes ?? []).flatMap((m) => m.effects)]
@@ -427,7 +431,9 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     ...(modes !== undefined ? { modes } : {}),
     ...(bothX ? { xCost: true } : {}),
     ...(exhaust ? { exhaust: true } : {}),
-    ...((a.def.retain === true || b.def.retain === true) && resultType !== 'permanent' ? { retain: true } : {}),
+    // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
+    ...((a.def.retain === true || b.def.retain === true || catalysts.includes('retain')) && resultType !== 'permanent' ? { retain: true } : {}),
+    ...((a.def.echo === true || b.def.echo === true || catalysts.includes('echo')) && resultType !== 'reaction' ? { echo: true } : {}),
     ...(a.def.discardCost || b.def.discardCost ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) } : {}),
     ...(a.def.exhaustCost || b.def.exhaustCost ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) } : {}),
     ...(necroCost !== undefined ? { necroCost } : {}),
@@ -482,6 +488,8 @@ export function fusionNotes(a: CardInstance, b: CardInstance): string[] {
   const AXIS_JA: Record<string, string> = { growth: '成長+1', trample: '勢い+2', ramp: '次のカード-1', burn: '延焼+2', ice: '氷壁+2', aether: '霊気+1', storm: '詠唱+1', heal: '回復+2', fortress: 'ブロック+3', retinue: 'ブロック+2', graveyard: 'ミル1' }
   if (shared && AXIS_JA[shared]) notes.push(`軸一致 (${shared}): ${AXIS_JA[shared]} のおまけ`)
   if (isUpgraded(a) || isUpgraded(b)) notes.push('鍛えの引き継ぎ: 鍛えていない側の素材も鍛えてから合体 (結果は+)')
+  const CATALYST_JA: Record<string, string> = { cheaper: '軽くなる触媒: 結果のコストがさらに−1 (0Eまで)', echo: '反復の触媒: 結果のプレイ時効果を2回解決 (X・置物も。リアクションには付かない)', retain: '保持の触媒: 結果が保持を持つ (置物には付かない)' }
+  for (const c of [a.def.fusionCatalyst, b.def.fusionCatalyst]) if (c !== undefined && CATALYST_JA[c]) notes.push(CATALYST_JA[c])
   const ca = a.def.xCost === true ? 3 : a.def.cost
   const cb = b.def.xCost === true ? 3 : b.def.cost
   if ((a.def.xCost === true) !== (b.def.xCost === true)) notes.push('X札は片方だけなら X=3 の固定量に畳む')

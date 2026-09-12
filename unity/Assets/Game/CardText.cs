@@ -432,6 +432,11 @@ namespace DeckRogue.Game
             var n = new List<string>();
             if (def.Exhaust == true) n.Add("消滅");
             if (def.Retain == true) n.Add("保持");
+            if (def.Echo == true) n.Add("反復内蔵 (効果を2回解決)");
+            // 合成の触媒 (2026-09-12): 工房の素材にすると結果に乗る恩恵
+            if (def.FusionCatalyst == "cheaper") n.Add("触媒: 素材にすると結果のコスト−1");
+            else if (def.FusionCatalyst == "echo") n.Add("触媒: 素材にすると結果の効果を2回解決");
+            else if (def.FusionCatalyst == "retain") n.Add("触媒: 素材にすると結果が保持");
             if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
             if (def.Retainer == true) n.Add("従者");
             if (def.ShivToken == true) n.Add("骨のナイフ");

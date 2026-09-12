@@ -1266,8 +1266,10 @@ namespace DeckRogue.Engine
                 var (idx, r2) = Rng.NextInt(rng, 0, candidates.Count - 1);
                 rng = r2;
                 var chosen = candidates[idx];
-                picked.Add(chosen.Id);
                 remaining.RemoveAt(remaining.FindIndex(x => ReferenceEquals(x, chosen))); // TS の indexOf は参照比較
+                // 合成の触媒 (2026-09-12 ユーザー裁定): 1回の提示に触媒は1枚まで (2枚目は引き直し)
+                if (chosen.FusionCatalyst != null && picked.Any(id => Content.GetCardDef(id).FusionCatalyst != null)) continue;
+                picked.Add(chosen.Id);
             }
             return run with { Rng = rng, RewardOptions = picked, Phase = RunPhases.Reward };
         }
