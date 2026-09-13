@@ -1,0 +1,113 @@
+{
+ "_note": "マップの戦闘アイコンを獣に (2026-09-14 ユーザー「戦闘アイコンが工房に見える」)",
+ "items": [
+  {
+   "id": "node_battle_a__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/mapicon/node_battle_a__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round beast head facing forward, soft moss-green fur with a faint inner glow, two tiny black bean eyes, two short curved horns, no mouth, calm and slightly lonely, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, human, hands, blurry, photo, realistic, 3d render, weapon, tool, axe, pickaxe, anvil, round badge background, circle border",
+   "engine": "pixflux",
+   "text_guidance_scale": 8,
+   "no_background": true,
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "view": "side"
+  },
+  {
+   "id": "node_battle_a__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/mapicon/node_battle_a__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round beast head facing forward, soft moss-green fur with a faint inner glow, two tiny black bean eyes, two short curved horns, no mouth, calm and slightly lonely, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, human, hands, blurry, photo, realistic, 3d render, weapon, tool, axe, pickaxe, anvil, round badge background, circle border",
+   "engine": "pixflux",
+   "text_guidance_scale": 8,
+   "no_background": true,
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "view": "side"
+  },
+  {
+   "id": "node_battle_b__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/mapicon/node_battle_b__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a fanged maw emblem: a dark round silhouette of a beast with two small black bean eyes and two pale fangs peeking below, moss-green tint with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, human, hands, blurry, photo, realistic, 3d render, weapon, tool, axe, pickaxe, anvil, round badge background, circle border",
+   "engine": "pixflux",
+   "text_guidance_scale": 8,
+   "no_background": true,
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "view": "side"
+  },
+  {
+   "id": "node_battle_b__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/mapicon/node_battle_b__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a fanged maw emblem: a dark round silhouette of a beast with two small black bean eyes and two pale fangs peeking below, moss-green tint with cream highlights, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, human, hands, blurry, photo, realistic, 3d render, weapon, tool, axe, pickaxe, anvil, round badge background, circle border",
+   "engine": "pixflux",
+   "text_guidance_scale": 8,
+   "no_background": true,
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "view": "side"
+  },
+  {
+   "id": "node_battle_c__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/mapicon/node_battle_c__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pair of glowing pale-green beast eyes and pointed ears inside a dark round bush silhouette, lurking creature marker, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, human, hands, blurry, photo, realistic, 3d render, weapon, tool, axe, pickaxe, anvil, round badge background, circle border",
+   "engine": "pixflux",
+   "text_guidance_scale": 8,
+   "no_background": true,
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "view": "side"
+  },
+  {
+   "id": "node_battle_c__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/f0d23a20-ac3d-446f-b924-b60257bea3e9/scratchpad/mapicon/node_battle_c__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a pair of glowing pale-green beast eyes and pointed ears inside a dark round bush silhouette, lurking creature marker, chunky thick fill like a painted map token, dark ink outline, pixel art board game piece, centered, nothing else, pixel art map marker icon, chunky readable silhouette, painterly shading, thin dark ink outline, muted storybook palette, completely empty transparent background, no text, no frame",
+   "negative": "text, letters, number, frame, border, background, scene, gradient background, people, human, hands, blurry, photo, realistic, 3d render, weapon, tool, axe, pickaxe, anvil, round badge background, circle border",
+   "engine": "pixflux",
+   "text_guidance_scale": 8,
+   "no_background": true,
+   "outline": "selective outline",
+   "shading": "medium shading",
+   "detail": "medium detail",
+   "view": "side"
+  }
+ ]
+}
