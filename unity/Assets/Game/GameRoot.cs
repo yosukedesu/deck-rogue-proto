@@ -407,25 +407,19 @@ namespace DeckRogue.Game
                 {
                     string nodeType = null;
                     try { var node = DeckRogue.Engine.Run.CurrentNode(Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
-                    string name = nodeType == "boss" ? Audio.BgmFor("boss" + Rs.Act)
-                        : nodeType == "elite" ? (Audio.BgmFor("elite") ?? Audio.BgmFor("battle" + Rs.Act))
-                        : Audio.BgmFor("battle" + Rs.Act);
+                    // 本家形: 通常戦闘は幕の探索曲が流れ続ける。専用曲はエリートとボスだけ (2026-09-14 ユーザー裁定)
+                    string act = Audio.BgmFor("act" + Rs.Act) ?? Audio.BgmFor("map" + Rs.Act);
+                    string name = nodeType == "boss" ? (Audio.BgmFor("boss" + Rs.Act) ?? act)
+                        : nodeType == "elite" ? (Audio.BgmFor("elite") ?? act)
+                        : act;
                     Audio.Bgm(name);
                     return;
                 }
                 if (Rs.Phase == RunPhases.Won) { Audio.Bgm(Audio.BgmFor("won") ?? Audio.BgmFor("title")); return; }
                 if (Rs.Phase == RunPhases.Lost) { Audio.Bgm(Audio.BgmFor("lost") ?? Audio.BgmFor("map" + Rs.Act)); return; }
-                // 休息は場面ごとに別の曲 (2026-09-14 ユーザー「焚火・ショップ・イベント・工房はそれぞれ別BGM」)。無ければ rest → マップの順に落ちる
-                string mapName = Audio.BgmFor("map" + Rs.Act);
-                string restName = Audio.BgmFor("rest") ?? mapName;
-                string scene =
-                    Rs.Phase == RunPhases.Campfire ? "campfire" :
-                    Rs.Phase == RunPhases.Shop ? "shop" :
-                    Rs.Phase == RunPhases.Event ? "event" :
-                    Rs.Phase == RunPhases.Workshop ? "workshop" :
-                    (Rs.Phase == RunPhases.Reward || Rs.Phase == RunPhases.RelicReward || Rs.Phase == RunPhases.RelicChoose) ? "reward" : null;
-                if (scene == null) { Audio.Bgm(mapName); return; }
-                Audio.Bgm(Audio.BgmFor(scene) ?? (scene == "reward" ? mapName : restName));
+                // 本家形 (2026-09-14 ユーザー「本家と同じように BGM をコロコロ変えない」): 戦闘以外は幕の探索曲 1 本が
+                // マップ・報酬・焚き火・店・イベント・工房を通して流れ続ける (同じ名前なら Audio.Bgm は何もしない = 途切れない)
+                Audio.Bgm(Audio.BgmFor("act" + Rs.Act) ?? Audio.BgmFor("map" + Rs.Act));
             }
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
         }

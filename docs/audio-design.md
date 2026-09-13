@@ -141,3 +141,9 @@ ask_user: **統一の色＝静かで物悲しい（ピアノ・弦・ハープ�
 場面は18（title・map1-3・reward・campfire・shop・event・workshop・battle1-3・elite・boss1-3・won・lost）。
 `docs/design/audio/bgm-sheet-unified.html`（98曲）。PeriTune の物悲しい戦闘曲は少ない（「戦闘×切ない」9曲）ので、戦闘は「切ない×激しい」のオーケストラで補う。
 音の肌（§1）は「オクトラ寄り」から**「静かで物悲しい・夜の坑」**へ改める。
+
+### 11-1. 本家形に縮める（同日）
+
+ユーザー「本家と同じように BGM をコロコロ変えないでいい」「幕の戦闘曲も探索曲流しっぱなしじゃない？」＝StS は**幕ごとに1曲がマップ・休息・店・イベント・通常戦闘を通して流れ続け、専用曲はエリートとボスだけ**。
+場面を **8**（title・act1-3・elite・boss1-3）に縮め、通常戦闘曲・報酬・焚き火の曲は撤去（`GameRoot.UpdateBgm`: 通常戦闘は `act<N>`、エリートは `elite`、ボスは `boss<N>`）。同じ名前なら `Audio.Bgm` は何もしないので画面遷移で途切れない。
+`docs/design/audio/bgm-sheet-unified2.html`。
