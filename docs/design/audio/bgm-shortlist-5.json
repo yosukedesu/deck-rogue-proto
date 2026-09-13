@@ -1,0 +1,459 @@
+[
+ {
+  "key": "shop",
+  "label": "ショップ",
+  "note": "ものさみしいピアノ",
+  "items": [
+   {
+    "slug": "piano_melancholy",
+    "url": "https://peritune.com/blog/2016/07/05/piano_melancholy/",
+    "title": "切ないピアノソロ「Piano_Melancholy」",
+    "tags": [
+     "きれい",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 83,
+    "yt": "y0SOo_nqw9E"
+   },
+   {
+    "slug": "piano_sad2",
+    "url": "https://peritune.com/blog/2018/09/06/piano_sad2/",
+    "title": "Piano_Sad2 / 物悲しいピアノ曲",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "pKUhcVfyJGU"
+   },
+   {
+    "slug": "raindrop",
+    "url": "https://peritune.com/blog/2022/07/11/raindrop/",
+    "title": "感傷的なピアノアンビエント「RainDrop」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "切ない",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "XbLjzSiblnE"
+   },
+   {
+    "slug": "dark_moon",
+    "url": "https://peritune.com/blog/2022/01/30/dark_moon/",
+    "title": "切ないクラシカルBGM「Dark_Moon」",
+    "tags": [
+     "ヒーリング",
+     "ピアノ",
+     "フォーク",
+     "不思議",
+     "冷たい",
+     "切ない",
+     "室内楽",
+     "悲しい",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "JpJzjRzXFVE"
+   },
+   {
+    "slug": "tender_gaze",
+    "url": "https://peritune.com/blog/2024/05/17/tender_gaze/",
+    "title": "造語コーラスのピアノ曲「Tender_Gaze」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ヒーリング",
+     "ピアノ",
+     "不思議",
+     "優しい",
+     "切ない",
+     "幻想",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 105,
+    "yt": "ktTKcZGGrnE"
+   },
+   {
+    "slug": "starry",
+    "url": "https://peritune.com/blog/2018/10/20/starry/",
+    "title": "Starry / 優しいヒーリング",
+    "tags": [
+     "きれい",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "vYb2209s6Hg"
+   },
+   {
+    "slug": "last_embrace",
+    "url": "https://peritune.com/blog/2025/04/01/last_embrace/",
+    "title": "造語コーラスのピアノ曲「Last_Embrace」",
+    "tags": [
+     "きれい",
+     "ヒーリング",
+     "ピアノ",
+     "不思議",
+     "優しい",
+     "切ない",
+     "幻想",
+     "穏やか"
+    ],
+    "bpm": 110,
+    "yt": "VYp6YaAkqJg"
+   },
+   {
+    "slug": "pale_warmth",
+    "url": "https://peritune.com/blog/2024/12/05/pale_warmth/",
+    "title": "穏やかな冬の朝の小曲「Pale_Warmth」",
+    "tags": [
+     "アンビエント",
+     "シネマティック",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "不思議",
+     "優しい",
+     "幻想",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "WOhhJWcc9KA"
+   }
+  ]
+ },
+ {
+  "key": "event",
+  "label": "?イベント",
+  "note": "ものさみしいピアノ",
+  "items": [
+   {
+    "slug": "piano_melancholy2",
+    "url": "https://peritune.com/blog/2016/10/21/piano_melancholy2/",
+    "title": "【無料フリーBGM・ピアノソロ(切ない)】Piano_Melancholy2",
+    "tags": [
+     "きれい",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 83,
+    "yt": "PH_-nQbGmxA"
+   },
+   {
+    "slug": "deep_valley2",
+    "url": "https://peritune.com/blog/2018/08/15/deep_valley2/",
+    "title": "Deep_Valley2 / 幻想的で淋しげな曲",
+    "tags": [
+     "きれい",
+     "シネマティック",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "不思議",
+     "冷たい",
+     "切ない",
+     "幻想",
+     "民族音楽",
+     "淋しい",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "iStkj9BMmWw"
+   },
+   {
+    "slug": "cerulean_relics",
+    "url": "https://peritune.com/blog/2023/07/21/cerulean_relics/",
+    "title": "幻想的な海のアンビエント「Cerulean_Relics」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "冷たい",
+     "幻想",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "jfC823DIgMs"
+   },
+   {
+    "slug": "snowy_day3",
+    "url": "https://peritune.com/blog/2018/12/12/snowy_day3/",
+    "title": "ピアノ＆弦の幻想的なワルツ「Snowy_Day3」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "冷たい",
+     "切ない",
+     "室内楽",
+     "幻想",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "aEtc-L7Eadg"
+   },
+   {
+    "slug": "entangle",
+    "url": "https://peritune.com/blog/2021/07/12/entangle/",
+    "title": "ダーク＆クラシカルBGM「Entangle」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "シネマティック",
+     "ヒーリング",
+     "ピアノ",
+     "冷たい",
+     "切ない",
+     "室内楽",
+     "悲しい"
+    ],
+    "bpm": null,
+    "yt": "5mmHy8AoHTA"
+   },
+   {
+    "slug": "memories6",
+    "url": "https://peritune.com/blog/2021/06/10/memories6/",
+    "title": "ピアノ＆弦の優しい曲「Memories6」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "室内楽",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "5Vi9owBY2Bc"
+   },
+   {
+    "slug": "recollection",
+    "url": "https://peritune.com/blog/2022/05/03/recollection/",
+    "title": "優しいピアノソロ「Recollection」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "希望",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "Ii7_xeg51TA"
+   },
+   {
+    "slug": "holy_place2",
+    "url": "https://peritune.com/blog/2019/04/23/holy_place2/",
+    "title": "幻想的なヒーリング「Holy_Place2」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "フォーク",
+     "不思議",
+     "切ない",
+     "民族音楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "98nsnCivNd0"
+   }
+  ]
+ },
+ {
+  "key": "workshop",
+  "label": "工房",
+  "note": "ものさみしいピアノ（上の2場面と同じ曲でもよい）",
+  "items": [
+   {
+    "slug": "piano_sad2",
+    "url": "https://peritune.com/blog/2018/09/06/piano_sad2/",
+    "title": "Piano_Sad2 / 物悲しいピアノ曲",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "pKUhcVfyJGU"
+   },
+   {
+    "slug": "piano_melancholy",
+    "url": "https://peritune.com/blog/2016/07/05/piano_melancholy/",
+    "title": "切ないピアノソロ「Piano_Melancholy」",
+    "tags": [
+     "きれい",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 83,
+    "yt": "y0SOo_nqw9E"
+   },
+   {
+    "slug": "raindrop",
+    "url": "https://peritune.com/blog/2022/07/11/raindrop/",
+    "title": "感傷的なピアノアンビエント「RainDrop」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "切ない",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "XbLjzSiblnE"
+   },
+   {
+    "slug": "tender_gaze",
+    "url": "https://peritune.com/blog/2024/05/17/tender_gaze/",
+    "title": "造語コーラスのピアノ曲「Tender_Gaze」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ヒーリング",
+     "ピアノ",
+     "不思議",
+     "優しい",
+     "切ない",
+     "幻想",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 105,
+    "yt": "ktTKcZGGrnE"
+   },
+   {
+    "slug": "dark_moon",
+    "url": "https://peritune.com/blog/2022/01/30/dark_moon/",
+    "title": "切ないクラシカルBGM「Dark_Moon」",
+    "tags": [
+     "ヒーリング",
+     "ピアノ",
+     "フォーク",
+     "不思議",
+     "冷たい",
+     "切ない",
+     "室内楽",
+     "悲しい",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "JpJzjRzXFVE"
+   },
+   {
+    "slug": "starry",
+    "url": "https://peritune.com/blog/2018/10/20/starry/",
+    "title": "Starry / 優しいヒーリング",
+    "tags": [
+     "きれい",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "vYb2209s6Hg"
+   },
+   {
+    "slug": "snowy_day3",
+    "url": "https://peritune.com/blog/2018/12/12/snowy_day3/",
+    "title": "ピアノ＆弦の幻想的なワルツ「Snowy_Day3」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "冷たい",
+     "切ない",
+     "室内楽",
+     "幻想",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "aEtc-L7Eadg"
+   },
+   {
+    "slug": "memories6",
+    "url": "https://peritune.com/blog/2021/06/10/memories6/",
+    "title": "ピアノ＆弦の優しい曲「Memories6」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "室内楽",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "5Vi9owBY2Bc"
+   }
+  ]
+ }
+]
