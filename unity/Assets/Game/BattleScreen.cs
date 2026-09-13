@@ -601,16 +601,37 @@ namespace DeckRogue.Game
                 if (i < p.SetCards.Count)
                 {
                     var sc = p.SetCards[i];
-                    var back = PaperFx.Sheet(slot, PaperFx.Tag, "back", UiKit.Hex("#2b2d4d"));
+                    // 罠の3状態を絵で分ける (2026-09-14 ユーザー「伏せが有効になることが GUI 上でもっと分かりやすく」):
+                    //   準備中 = 暗い札・灰の帯「準備中」／生きている = 蜂蜜色の光る縁＋緑の帯「鳴る」＋今ターン鳴るかの一言／期限なし = 同じく光る縁
+                    bool live = Effects.IsTrapLive(st, sc);
+                    bool canFireNow = live && Effects.TrapCanFireThisPhase(st, sc);
+                    if (live)
+                    {
+                        var glow = PaperFx.Sheet(slot, PaperFx.Tag, "glow", canFireNow ? UiKit.Hex("#f0d58a") : UiKit.Hex("#c9b26a"));
+                        UiKit.Stretch(glow.rectTransform, -7f, -7f, -7f, -7f);
+                        glow.raycastTarget = false;
+                        if (canFireNow)
+                        {
+                            var gimg = glow; float t0 = UnityEngine.Random.value;
+                            Tween.Run(1.2f, k => { if (gimg != null) { var c = gimg.color; c.a = 0.75f + 0.25f * Mathf.Sin((k + t0) * Mathf.PI * 2f); gimg.color = c; } }, Ease.Linear, null);
+                        }
+                    }
+                    var back = PaperFx.Sheet(slot, PaperFx.Tag, "back", live ? UiKit.Hex("#2b2d4d") : UiKit.Hex("#5a5a66"));
                     UiKit.Stretch(back.rectTransform, 0f, 0f, 0f, 0f);
                     back.raycastTarget = false;
-                    var q = UiKit.Icon(slot, "question", 32f, PaperFx.Paper);
-                    UiKit.Anchor(q.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-16f, 4f), new Vector2(16f, 36f));
-                    var ct = UiKit.Deco(slot, "仕込み札", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
-                    UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(4f, -28f), new Vector2(-4f, -4f));
-                    // 罠モデル (2026-09-13): 寿命を札の下に出す (巻いている / 鳴るまで あと N回 / ほどけない)。世界の言葉で
+                    var q = UiKit.Icon(slot, live ? "set" : "question", 32f, live ? UiKit.Hex("#f0d58a") : PaperFx.Paper);
+                    UiKit.Anchor(q.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-16f, 10f), new Vector2(16f, 42f));
+                    var ct = UiKit.Deco(slot, live ? "鳴る" : "準備中", 15, live ? UiKit.Hex("#f0d58a") : PaperFx.Paper, TextAnchor.MiddleCenter);
+                    UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(4f, -22f), new Vector2(-4f, 2f));
+                    // 帯: 準備中=灰「次のターンから」／生きている=「今ターン鳴る！」か「今の構えでは鳴らない」＋残り回数
                     string trapLife = Effects.TrapStatusTextKarakuri(st, sc);
-                    var lifeT = UiKit.Txt(slot, trapLife, 13, PaperFx.Paper, TextAnchor.MiddleCenter, true);
+                    int? left = Effects.TrapWindowsLeft(st, sc);
+                    string band = !live ? "次のターンから" : canFireNow ? "今ターン鳴る！" : "今の構えでは鳴らない";
+                    string sub = !live ? "" : left.HasValue ? "あと" + left.Value + "回" : "期限なし";
+                    var bandImg = PaperFx.Sheet(slot, PaperFx.Tag, "band", !live ? UiKit.Hex("#8a8a94") : canFireNow ? UiKit.Hex("#3f8a4a") : UiKit.Hex("#7a6a3a"));
+                    UiKit.Anchor(bandImg.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(2f, 4f), new Vector2(-2f, 46f));
+                    bandImg.raycastTarget = false;
+                    var lifeT = UiKit.Txt(slot, band + (sub.Length > 0 ? "\n" + sub : ""), 13, PaperFx.Paper, TextAnchor.MiddleCenter, true);
                     var lifeLe = lifeT.GetComponent<LayoutElement>();
                     if (lifeLe != null) UnityEngine.Object.Destroy(lifeLe);
                     UiKit.Anchor(lifeT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(2f, 4f), new Vector2(-2f, 46f));

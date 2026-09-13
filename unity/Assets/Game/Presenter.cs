@@ -259,6 +259,17 @@ namespace DeckRogue.Game
                 case GameEvent_TurnStarted ts:
                     Audio.Key("TurnStarted");
                     Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", UiKit.ColAccent);
+                    // 罠が生きた瞬間 (準備ターン明け) を伏せ場の上に浮かせる (2026-09-14 ユーザー「伏せが有効になることを GUI で分かりやすく」)
+                    {
+                        var st = g.Rs != null ? g.Rs.Combat : null;
+                        if (st != null)
+                            for (int si = 0; si < st.Player.SetCards.Count; si++)
+                                if (Effects.TrapAge(st, st.Player.SetCards[si]) == 1)
+                                {
+                                    var slot = g.Anchor("setslot" + si);
+                                    if (slot != null) Tween.Float(fx, Tween.CenterIn(slot, fx) + new Vector2(0f, 90f), "罠が鳴る準備完了", UiKit.Hex("#f0d58a"), 24, 40f, 1.2f);
+                                }
+                    }
                     break;
                 case GameEvent_TurnEnded _:
                     Audio.Key("TurnEnded");
