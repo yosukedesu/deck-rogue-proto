@@ -205,7 +205,11 @@ describe('敵・レリックの調整サイクル (2026-09-01)', () => {
     expect(doc.relics.changes[0].current.effects[0].amount).toBe(5) // 現行値はdef同梱から読める
     expect(doc.relics.changes[0].proposal.fields).toEqual({ 'e0.amount': 6 })
     const ne = doc.enemies.new[0]
-    expect(ne.sequence).toEqual(['slash', 'slash'])
+    // 下書きのローテは実データの形 (行動グラフ 2026-09-14: nodes/start) に変換されて出る
+    expect(ne.start).toBe('slash')
+    expect(ne.nodes.slash).toEqual({ move: 'slash', next: 'slash_2' })
+    expect(ne.nodes.slash_2).toEqual({ move: 'slash', next: 'slash' })
+    expect(ne.sequence).toBeUndefined()
     expect(ne.thorns).toBe(2)
     expect(ne.moves[0].inflict).toEqual({ status: 'weak', amount: 1 })
     const nr = doc.relics.new[0]

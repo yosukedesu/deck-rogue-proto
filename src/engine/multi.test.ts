@@ -36,8 +36,8 @@ describe('エンカウンター編成', () => {
     expect(hpWithin(s.enemies[0].maxHp, getEnemyDef('enemy_probe'), 0.5)).toBe(true)
     expect(hpWithin(s.enemies[1].maxHp, getEnemyDef('enemy_probe'), 0.5)).toBe(true)
     expect(s.enemies.every((e) => e.intent !== null)).toBe(true)
-    // patternOffset: 2体目はローテーションがズレて開始 (同時lunge防止)
-    expect(s.enemies[1].patternIndex).toBeGreaterThan(s.enemies[0].patternIndex)
+    // member.start: 2体目はローテーションがズレて開始 (同時lunge防止。行動グラフ 2026-09-14)
+    expect(s.enemies[0].node).not.toBe(s.enemies[1].node)
   })
 
   it('敵ID直指定は従来どおりソロ編成 (後方互換)', () => {

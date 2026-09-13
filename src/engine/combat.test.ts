@@ -1,6 +1,5 @@
 // 戦闘フローのテスト。「確定済みルール」表の項目をここで固定する (仕様＝テスト)。
 import { describe, expect, it } from 'vitest'
-import { selectMoveTable } from './combat.ts'
 import { getEnemyDef } from './content.ts'
 import { applyCommand, createInitialState } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent, hpWithin } from './test-helpers.ts'
@@ -143,13 +142,13 @@ describe('カードプレイ', () => {
   })
 })
 
-describe('敵の行動テーブル', () => {
-  it('伏せがあると movesVsSet を使う (2026-09-13 罠モデル以降は罠壊し・道化の破壊分岐だけ)', () => {
+describe('敵の反応テーブル', () => {
+  it('伏せ分岐 (movesVsSet) は腕の配列で、着地先は技の id (2026-09-14 行動グラフ)', () => {
     const breaker = getEnemyDef('enemy_set_breaker')
-    expect(selectMoveTable(breaker, true)).toBe(breaker.movesVsSet)
-    expect(selectMoveTable(breaker, false)).toBe(breaker.moves)
-    const brute = getEnemyDef('enemy_brute') // movesVsSet を持たない敵は常に moves
-    expect(selectMoveTable(brute, true)).toBe(brute.moves)
+    expect(breaker.movesVsSet?.map((a) => a.to)).toEqual(['break_trap', 'smash'])
+    expect(breaker.movesVsSet?.every((a) => breaker.moves.some((m) => m.id === a.to))).toBe(true)
+    const brute = getEnemyDef('enemy_brute') // 反応テーブルを持たない敵
+    expect(brute.movesVsSet).toBeUndefined()
   })
 })
 

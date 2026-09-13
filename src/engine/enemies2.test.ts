@@ -1,6 +1,7 @@
 // 敵拡充+6体と新機構 (2026-08-29 ユーザー指示「敵の面白さのクオリティを上げたい・種類も増やしたい」) のテスト。
 // 確定済みルール表「とげ（敵の報復）」「盗みと逃走」「回復役（敵）」「攻防一体・隙」「ランの敵並び」を固定する。
 import { describe, expect, it } from 'vitest'
+import { chainFromStart, randomNodeOf } from './enemyGraph.ts'
 import { applyCommand } from './state.ts'
 import { getEnemyDef, resolveEncounter } from './content.ts'
 import * as contentModule from './content.ts'
@@ -65,11 +66,11 @@ describe('盗みと逃走 (こそ泥ゴブリン)', () => {
   it('盗みの打ち消しは抱えた額を取り戻す (2026-08-31。宣言即成立でも打ち消し=盗みの解除)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_thief', 42), [])
     s = withIntent(s, intent({ kind: 'steal-gold', shownMin: 15, shownMax: 25, actual: 20 }))
-    // patternIndex を小突きの位置へ = 次ターンの宣言が盗みにならないようにする
+    // カーソルを小突きの節へ = 次ターンの宣言が盗みにならないようにする
     // (返金の検証が「翌ターンの新しい盗み」に上書きされるのを防ぐ)
     s = {
       ...s,
-      enemies: s.enemies.map((e) => ({ ...e, stolenGold: 20, patternIndex: 2 })),
+      enemies: s.enemies.map((e) => ({ ...e, stolenGold: 20, node: 'mug' })),
       negateNextAction: true,
     }
     s = applyCommand(s, { type: 'EndTurn' })
@@ -87,7 +88,7 @@ describe('盗みと逃走 (こそ泥ゴブリン)', () => {
 
   it('ローテーションは4拍 (隠れ身→盗み→小突き→逃走) で逃走が最後', () => {
     const def = getEnemyDef('enemy_thief')
-    expect(def.sequence).toEqual(['sneak', 'snatch', 'mug', 'run_off'])
+    expect(chainFromStart(def, 4)).toEqual(['sneak', 'snatch', 'mug', 'run_off'])
     expect(def.moves.find((m) => m.id === 'run_off')!.kind).toBe('flee')
   })
 })
@@ -178,7 +179,8 @@ describe('回復役 (苔の癒し手) と 攻防一体・隙', () => {
 
 describe('防御割合の監査 (2026-08-29 ユーザー指摘「既存敵の防御選択割合が低くない？」)', () => {
   it('うねる獣: 防御重みは1に戻す (2026-08-31 緑ランで4連続防御の無音化を実測。休符が無音になっていた)', () => {
-    const coil = getEnemyDef('enemy_wide_power').moves.find((m) => m.id === 'coil')!
+    const def = getEnemyDef('enemy_wide_power')
+    const coil = randomNodeOf(def)!.random!.find((a) => def.nodes[a.to]?.move === 'coil')!
     expect(coil.weight).toBe(1)
   })
 
@@ -218,7 +220,8 @@ describe('幕1ボスの第2形態 (2026-08-30 Opusテスターの指摘「サン
     const def = getEnemyDef('enemy_brute')
     // 重み抽選だと「追い詰めた瞬間に雄叫びを連続で引く」事故が起きる (実プレイで4ターン中3バフを観測)。
     // 「起こしてしまったら、もう眠らない」= 乱打→乱打→雄叫び の見境なしを固定する
-    expect(def.sequenceBelowHalf).toEqual(['rage_flurry', 'rage_flurry', 'war_roar'])
+    const half = def.interrupts!.find((it) => it.on === 'hpBelowHalf')!
+    expect(chainFromStart(def, 3, half.goto)).toEqual(['rage_flurry', 'rage_flurry', 'war_roar'])
   })
 })
 

@@ -3,6 +3,7 @@
 // 表現できない効果だけ scriptId で名前付きスクリプトに逃がす (現状は未登録)。
 
 import { getCardDef, getEnemyDef } from './content.ts'
+import { applyInterruptsTo } from './enemyGraph.ts'
 import { emit } from './events.ts'
 import { setEffectsOf, setFireCost } from './setany.ts'
 import { nextInt, shuffle } from './rng.ts'
@@ -814,15 +815,16 @@ export function breakBurrowIfCracked(state: GameState, enemyIndex: number): Game
   return emit({ ...state, enemies }, { type: 'BurrowBroken', enemyIndex })
 }
 
-export function applyWakeCheck(state: GameState, enemyIndex: number): GameState {
+/**
+ * 被弾の瞬間の割り込み (2026-09-14 行動グラフ。旧 wakeOnDamage): 累計被弾のしきい値を跨いだらカーソルを飛ばす
+ * (眠りの前奏を打ち切る)。宣言済みの意図はそのまま = 次の宣言から目覚める (第1段=等価移行)
+ */
+export function applyDamageInterrupts(state: GameState, enemyIndex: number): GameState {
   const e = state.enemies[enemyIndex]
-  if (!e || e.hp <= 0 || e.woken === true) return state
-  const wake = getEnemyDef(e.enemyId).wakeOnDamage
-  if (wake === undefined) return state
-  if ((e.damageTakenTotal ?? 0) < wake.damage || e.patternIndex >= wake.resumeAt) return state
-  const enemies = state.enemies.map((x, i) =>
-    i === enemyIndex ? { ...x, patternIndex: wake.resumeAt, woken: true } : x,
-  )
+  if (!e || e.hp <= 0) return state
+  const r = applyInterruptsTo(state, enemyIndex, e.node, e.firedInterrupts ?? [], ['damageTaken'])
+  if (r.firedNow.length === 0) return state
+  const enemies = state.enemies.map((x, i) => (i === enemyIndex ? { ...x, node: r.cursor, firedInterrupts: r.fired } : x))
   return emit({ ...state, enemies }, { type: 'EnemyWoken', enemyIndex })
 }
 
@@ -914,7 +916,7 @@ export function dealDamageToEnemy(
       ...(nemesisCut > 0 ? { nemesisCut } : {}),
     },
   )
-  s = applyWakeCheck(s, enemyIndex)
+  s = applyDamageInterrupts(s, enemyIndex)
   s = breakBurrowIfCracked(s, enemyIndex)
   // 倒れた (2026-09-12 onEnemyDied): この呼び出しでHPが0以下になった時だけ (冒頭で倒れた敵は弾いている)
   if (hpLoss > 0 && s.enemies[enemyIndex].hp <= 0) s = fireEnemyDied(s, enemyIndex)

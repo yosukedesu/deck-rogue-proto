@@ -9,6 +9,8 @@ import cardsBlackJson from '../data/cards.black.json' with { type: 'json' }
 import decksJson from '../data/decks.json' with { type: 'json' }
 import encountersJson from '../data/encounters.json' with { type: 'json' }
 import enemiesJson from '../data/enemies.json' with { type: 'json' }
+import { bindEnemyDefLookup, normalizeEnemyDef } from './enemyGraph.ts'
+import type { LegacyEnemyDef } from './enemyGraph.ts'
 import leadersJson from '../data/leaders.json' with { type: 'json' }
 import relicsJson from '../data/relics.json' with { type: 'json' }
 import eventsJson from '../data/events.json' with { type: 'json' }
@@ -36,7 +38,9 @@ export const allCards: readonly CardDef[] = [
   ...withColor(cardsWhiteJson, 'white'),
   ...withColor(cardsBlackJson, 'black'),
 ]
-export const allEnemies = enemiesJson as unknown as readonly EnemyDef[] // hpRange は JSON では number[] (readonly tuple へ) 2026-09-14
+// 行動グラフ (2026-09-14): data は新形。旧形 (sequence/weight/opener…) はテスト・調整モードの新規敵が持ち込むので読込時に変換する
+export const allEnemies: readonly EnemyDef[] = (enemiesJson as unknown as readonly LegacyEnemyDef[]).map((e) => normalizeEnemyDef(e)) // hpRange は JSON では number[] (readonly tuple へ)
+bindEnemyDefLookup((id) => getEnemyDef(id))
 export const allEncounters = encountersJson as readonly EncounterDef[]
 
 /**
@@ -262,7 +266,7 @@ function patchArray<T extends { readonly id: string }>(arr: readonly T[], items:
 
 export function applyDebugOverrides(o: {
   readonly cards?: readonly CardDef[]
-  readonly enemies?: readonly EnemyDef[]
+  readonly enemies?: readonly (EnemyDef | LegacyEnemyDef)[]
   readonly relics?: readonly RelicDef[]
   readonly leaders?: readonly LeaderDef[]
 }): { replaced: number; added: number } {
@@ -273,7 +277,7 @@ export function applyDebugOverrides(o: {
   let added = 0
   for (const [arr, items] of [
     [allCards, o.cards],
-    [allEnemies, o.enemies],
+    [allEnemies, o.enemies?.map((e) => normalizeEnemyDef(e))],
     [allRelics, o.relics],
     [allLeaders, o.leaders],
   ] as const) {

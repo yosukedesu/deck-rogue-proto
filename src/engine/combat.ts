@@ -7,14 +7,14 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
+import { applyDamageInterrupts, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
+import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
 import type { CardDef, DeclarativeEffect,
   CardInstance,
-  EnemyDef,
   EnemyIntent,
   EnemyMove,
   GameState,
@@ -171,7 +171,7 @@ export function startCombatWithOptions(
   const [deck, rngAfterShuffle] = shuffle(state.rng, options.deck)
   let rng = rngAfterShuffle
   // 群れ補正 (member.hpScale/strength) とランの深度スケーリングは乗算/加算で重なる
-  const enemies = members.map((m) => {
+  const enemies = members.map((m, slot) => {
     const def = getEnemyDef(m.enemyId)
     // HPの幅 (2026-09-14 本家形): hpRange があれば戦闘開始時に一様ロール (シードRNG=リプレイ不変)
     let baseHp = def.maxHp
@@ -196,7 +196,8 @@ export function startCombatWithOptions(
       burn: 0,
       confusion: 0,
       exposed: 0,
-      patternIndex: m.patternOffset ?? 0,
+      // 開始節: 編成の上書き > スロット別 (役割分化・位相ずらし) > start (2026-09-14 行動グラフ)
+      node: startNodeFor(def, slot, m.start),
       ...(m.noReactTable === true ? { noReactTable: true } : {}),
       // とげは def からコピーして状態に持つ (effects.ts が content 参照なしで反射できる)
       ...(def.thorns !== undefined ? { thorns: def.thorns } : {}),
@@ -276,20 +277,6 @@ export function buildDeckFromIds(ids: readonly string[]): CardInstance[] {
 }
 
 /**
- * 敵の行動テーブル選択: 伏せがあれば movesVsSet、召喚トークンがいれば movesVsTokens を優先
- * (優先度: 伏せ反応 > トークン反応 > 通常。確定済みルール表「トークン破壊」)
- */
-export function selectMoveTable(
-  def: EnemyDef,
-  playerHasSetCards: boolean,
-  playerHasTokens = false,
-): readonly EnemyMove[] {
-  if (playerHasSetCards && def.movesVsSet && def.movesVsSet.length > 0) return def.movesVsSet
-  if (playerHasTokens && def.movesVsTokens && def.movesVsTokens.length > 0) return def.movesVsTokens
-  return def.moves
-}
-
-/**
  * 時喰らい型タイマー (確定済みルール表「激昂」)。
  * プレイヤーの累計詠唱数が enrageEveryCards の倍数に達したタイミングで強化する。
  * 時間ではなくプレイヤーのテンポに紐づくので、低速デッキほど誘発が遅くなる = 自己調整する。
@@ -317,228 +304,134 @@ function tickCardTimers(state: GameState): GameState {
 
 /**
  * 全敵の意図を宣言する。行動と実値は宣言時にロールし、実値は非公開 (幅のみ表示)。
- * 伏せの有無は宣言時点の状態で判定する — 直前の自ターンに伏せた札や
- * 空振りで残った札に敵が反応する、というブラフの駆け引きがここで生まれる。
- * - sequence を持つ敵は固定ローテーションで行動 (movesVsSet 割り込み時はローテーションを進めない)
+ * 行動の選び方は行動グラフ (2026-09-14 本家式の状態機械): 割り込み (HP半分・単独時・被弾覚醒) を判定して
+ * カーソルを飛ばし、カーソルから技の節まで辿る (乱択は RNG 1回・条件はその場で評価)。
  * - 強化 (strength) は攻撃の実値と幅表示の両方に加算する
  */
 function declareIntents(state: GameState): GameState {
   let s = state
   for (let i = 0; i < s.enemies.length; i++) {
-    const rawEnemy = s.enemies[i]
-    if (rawEnemy.hp <= 0) continue
-    const def = getEnemyDef(rawEnemy.enemyId)
-    // 連携 (2026-09-02): 他の仲間が生存中は攻撃+N (宣言時判定 = 宣言時固定の既存則)
-    const bond =
-      def.bondStrength !== undefined && s.enemies.some((o, j) => j !== i && o.hp > 0)
-        ? def.bondStrength
-        : 0
-    const enemy = bond > 0 ? { ...rawEnemy, strength: rawEnemy.strength + bond } : rawEnemy
-    // 盗んだ敵は次の宣言で必ず逃走する (2026-08-30。宣言即成立の盗みが「倒せば全額戻る」で
-    // 無害化していた実測への処方 = 「1ターン以内に倒せ」のレースを尖らせる)
-    // flee の move を持たない盗人 (金羽の大鴉) でも合成の逃走を宣言する (2026-08-31 青ラン発見:
-    // 大鴉が盗んだ後も防御を続け、レース設計が丸ごと空振りしていた)
-    const fleeMove = def.moves.find((m) => m.kind === 'flee') ?? {
-      id: 'forced_flee',
-      kind: 'flee' as const,
-      weight: 1,
-    }
-    // 潜伏の殻が敵フェーズ中に割れていたら、この宣言は噛みつき (2026-09-03 Burrowed)
-    const biteMove = def.burrow ? def.moves.find((m) => m.id === def.burrow!.bite) : undefined
-    if (enemy.biteNext === true && biteMove) {
-      const [biteIntent, rngB] = buildIntent(s.rng, biteMove, enemy.strength, enemy.atkScale ?? 1)
-      const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false } : e))
-      s = emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
-      continue
-    }
-    // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (2026-09-04。ローテは進めない=次のターンに再開)
-    if (enemy.staggeredNext === true) {
-      const staggerMove = { id: 'stagger', kind: 'rest' as const, weight: 1 }
-      const [restIntent, rngS] = buildIntent(s.rng, staggerMove, enemy.strength, enemy.atkScale ?? 1)
-      const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false } : e))
-      s = emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
-      continue
-    }
-    if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
-      const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
-      const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
-      s = emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
-      continue
-    }
-    // フェーズ変化: HP50%以下の行動テーブルが最優先 (確定済みルール表「敵フェーズ変化」)
-    const belowHalf =
-      enemy.hp <= enemy.maxHp * 0.5 &&
-      (def.movesBelowHalf !== undefined || def.sequenceBelowHalf !== undefined)
-    // 単独時テーブル (2026-09-02 StS2 LivingShield式転職): 仲間が全滅したら切替。
-    // 優先度は HP半分 > 単独時 > 通常。反応テーブル・setAltは無効化 = 転職後は素直に殴る
-    const whenAlone =
-      !belowHalf &&
-      (def.movesWhenAlone !== undefined || def.sequenceWhenAlone !== undefined) &&
-      !s.enemies.some((o, j) => j !== i && o.hp > 0)
-    // 回数カウンタのフェーズ変化 (2026-09-02 StS2 KnowledgeDemon式): 対象行動を規定回数
-    // 宣言したら恒久切替 (切替時に patternIndex は 0 へ巻き戻し済み)
-    const phaseSwitched =
-      def.phaseAfterUses !== undefined && (enemy.keyMoveUses ?? 0) >= def.phaseAfterUses.uses
-    const sequence = belowHalf
-      ? def.sequenceBelowHalf
-      : whenAlone
-        ? def.sequenceWhenAlone
-        : phaseSwitched
-          ? def.phaseAfterUses?.sequence
-          : def.sequence
-    // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する
-    // (確定済みルール表「条件付き意図」。実行時の盤面で分岐 = プレイヤーが自ターン中に選べる)
-    // 両テーブルを持つ敵 (罠壊し) は conditionalOn を1つしか持てないので、宣言時の盤面で片方を選ぶ。
-    // 優先度は 伏せ反応 > 従者反応 (確定済みルール表「従者狩り」)。どちらの条件も満たしていない時は
-    // 伏せ反応を既定にして「伏せれば行動が変わる」の予告を残す。
-    // 2026-08-26 修正: 旧実装は `def.movesVsSet ?? def.movesVsTokens` で、両テーブルを持つ唯一の敵では
-    // movesVsSet が常に勝つため destroy-token が production から到達不能だった。
-    // 編成で反応テーブルを無効化された個体は分岐を持たない (群れで全員が同時に反応しない)
-    const vsSet = enemy.noReactTable !== true && def.movesVsSet?.length ? def.movesVsSet : undefined
-    const vsTokens =
-      enemy.noReactTable !== true && def.movesVsTokens?.length ? def.movesVsTokens : undefined
-    const preferTokens = s.player.setCards.length === 0 && hasHuntableTokens(s)
-    const reactTable = belowHalf || whenAlone
-      ? undefined
-      : preferTokens
-        ? (vsTokens ?? vsSet)
-        : (vsSet ?? vsTokens)
-    const conditionalOn: 'set' | 'tokens' | undefined = !reactTable
-      ? undefined
-      : reactTable === vsSet
-        ? 'set'
-        : 'tokens'
-    const baseTable = belowHalf
-      ? (def.movesBelowHalf ?? def.moves)
-      : whenAlone
-        ? (def.movesWhenAlone ?? def.moves)
-        : def.moves
-
-    let rng = s.rng
-    let nextPatternIndex = enemy.patternIndex
-    // 通常分岐: sequence を持つ敵は固定ローテーション
-    let move: EnemyMove
-    if (sequence && sequence.length > 0) {
-      // sequenceLoopFrom (2026-09-02): 一度きりの前奏→ループ。最後まで進んだら loopFrom へ戻る
-      const loopFrom = belowHalf
-        ? (def.sequenceBelowHalfLoopFrom ?? 0)
-        : whenAlone || phaseSwitched
-          ? 0
-          : (def.sequenceLoopFrom ?? 0)
-      const len = sequence.length
-      const idx =
-        enemy.patternIndex < len
-          ? enemy.patternIndex
-          : loopFrom + ((enemy.patternIndex - loopFrom) % (len - loopFrom))
-      const moveId = sequence[idx]
-      const found = baseTable.find((m) => m.id === moveId)
-      if (!found) throw new Error(`敵 ${def.id} の sequence が未定義の行動を参照: ${moveId}`)
-      move = found
-      nextPatternIndex = enemy.patternIndex + 1
-    } else if (enemy.patternIndex === 0 && def.opener !== undefined && !belowHalf && !whenAlone) {
-      // 初手固定 (2026-09-02 StS2行動文法): 最初の宣言だけ指定の行動 = その敵の問いをT1に見せる
-      const found = baseTable.find((m) => m.id === def.opener)
-      if (!found) throw new Error(`敵 ${def.id} の opener が未定義の行動を参照: ${def.opener}`)
-      move = found
-      nextPatternIndex = enemy.patternIndex + 1
-    } else {
-      // noRepeat=直前と同じ技は引かない / once=1戦闘1回 (2026-09-02 StS2の「読める揺らぎ」)。
-      // 除外で候補が空になる時は制約なしで引く (スタール防止)
-      const usable = baseTable.filter(
-        (m) =>
-          !(m.once === true && (enemy.usedOnce ?? []).includes(m.id)) &&
-          !(m.noRepeat === true && m.id === enemy.lastMoveId),
-      )
-      const table = usable.length > 0 ? usable : baseTable
-      const [moveIdx, rngAfter] = weightedIndex(rng, table.map((m) => m.weight))
-      move = table[moveIdx]
-      rng = rngAfter
-      nextPatternIndex = enemy.patternIndex + 1
-    }
-    // 回数カウンタ: 対象行動の宣言を数え、しきい値到達の瞬間に patternIndex を 0 へ
-    // (次の宣言から phaseAfterUses.sequence の先頭で始まる)
-    const pau = def.phaseAfterUses
-    let nextKeyUses = enemy.keyMoveUses ?? 0
-    if (pau !== undefined && !phaseSwitched && move.id === pau.moveId) {
-      nextKeyUses += 1
-      if (nextKeyUses >= pau.uses) nextPatternIndex = 0
-    }
-    const usesSoFar = enemy.moveGrowth?.[move.id] ?? 0
-    const [intentRaw, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar)
-    // 潜伏中は殻が育たない (2026-09-06 ユーザー裁定。Opusラン W: 甲虫の攻防一体で殻12→33、「割る」が「殻レースに勝つ」に化けた):
-    // 殻は土であって盾ではない = 攻防一体のブロックは宣言から外す (表示と実処理を一致させる。割れた後の宣言からは普通に得る)
-    // 防御行動そのものも潜伏中は殻を育てない = 宣言時に「隙」に置き換える (「🛡️防御」と見せて何も起きない嘘を作らない)
-    const intent =
-      enemy.burrowActive !== true
-        ? intentRaw
-        : intentRaw.kind === 'defend'
-          ? { ...intentRaw, kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0, alsoBuff: undefined }
-          : intentRaw.alsoDefend !== undefined
-            ? { ...intentRaw, alsoDefend: undefined }
-            : intentRaw
-    rng = rngA
-    const growsMove = move.growPerUse !== undefined || move.growHitsPerUse !== undefined
-    const nextGrowth = growsMove ? { ...(enemy.moveGrowth ?? {}), [move.id]: usesSoFar + 1 } : enemy.moveGrowth
-
-    let alt: ReturnType<typeof buildIntent>[0] | undefined
-    let condOn = conditionalOn
-    if (reactTable && reactTable.length > 0) {
-      const [altIdx, rngB] = weightedIndex(rng, reactTable.map((m) => m.weight))
-      rng = rngB
-      const [altIntent, rngC] = buildIntent(rng, reactTable[altIdx], enemy.strength, enemy.atkScale ?? 1)
-      rng = rngC
-      alt = altIntent
-    } else if (!belowHalf && !whenAlone && enemy.noReactTable !== true && move.setAlt !== undefined) {
-      // 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
-      // 伏せ札があるとこの行動が setAlt の行動に変わる。既存の条件付き意図の配管に乗せる
-      const sa = move.setAlt
-      const altMove: EnemyMove = {
-        id: `${move.id}@set`,
-        weight: 1,
-        kind: sa.kind,
-        ...(sa.min !== undefined ? { min: sa.min } : {}),
-        ...(sa.max !== undefined ? { max: sa.max } : {}),
-        ...(sa.hits !== undefined ? { hits: sa.hits } : {}),
-        ...(sa.inflict !== undefined ? { inflict: sa.inflict } : {}),
-        ...(sa.alsoDefend !== undefined ? { alsoDefend: sa.alsoDefend } : {}),
-        ...(sa.alsoBuff !== undefined ? { alsoBuff: sa.alsoBuff } : {}),
-      }
-      const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
-      rng = rngC
-      alt = altIntent
-      condOn = 'set'
-    }
-
-    // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む。
-    // 表示層 (UI/CLI/最悪被ダメ予測) は shownMin/shownMax を読むだけなので変更不要で、
-    // 条件分岐 (alt) の両側も自動で実値になる
-    const reveal = <T extends { shownMin: number; shownMax: number; actual: number }>(it: T): T =>
-      s.revealIntents ? { ...it, shownMin: it.actual, shownMax: it.actual } : it
-    const shown = reveal(intent)
-    if (alt !== undefined) alt = reveal(alt)
-    const declared = condOn && alt ? { ...shown, conditionalOn: condOn, alt } : shown
-    // 盗みは宣言と同時に成立する (2026-08-30 「宣言ターン内に仕事をする」パッケージ)。
-    // 旧実装は実行時成立のため、宣言ターンに倒すと盗み・逃走の設計が丸ごと空振りしていた
-    // (3幕フルラン実測: こそ泥4戦で盗み・逃走を一度も見ていない)。宣言時に抱えれば
-    // 「今すぐ倒して取り返す (+懸賞金) か、放置して失うか」のレースが必ず発生する
-    const stolen = declared.kind === 'steal-gold' ? declared.actual : 0
-    const enemies = s.enemies.map((e, j) =>
-      j === i
-        ? {
-            ...e,
-            intent: declared,
-            patternIndex: nextPatternIndex,
-            keyMoveUses: nextKeyUses,
-            lastMoveId: move.id,
-            ...(nextGrowth !== undefined ? { moveGrowth: nextGrowth } : {}),
-            ...(move.once === true ? { usedOnce: [...(e.usedOnce ?? []), move.id] } : {}),
-            ...(stolen > 0 ? { stolenGold: (e.stolenGold ?? 0) + stolen } : {}),
-          }
-        : e,
-    )
-    s = emit({ ...s, rng, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: declared })
-    if (stolen > 0) s = emit(s, { type: 'GoldStolen', enemyIndex: i, amount: stolen })
+    if (s.enemies[i].hp <= 0) continue
+    s = declareOne(s, i)
   }
+  return s
+}
+
+/**
+ * 1体の意図を宣言する (通常の宣言・分裂体の出現時・孵化直後が共用)。
+ * 強制の宣言 (潜伏の噛みつき・体勢崩しの隙・盗んだ後の逃走) はカーソルを進めない
+ */
+function declareOne(state: GameState, i: number): GameState {
+  let s = state
+  const rawEnemy = s.enemies[i]
+  const def = getEnemyDef(rawEnemy.enemyId)
+  // 連携 (2026-09-02): 他の仲間が生存中は攻撃+N (宣言時判定 = 宣言時固定の既存則)
+  const bond =
+    def.bondStrength !== undefined && s.enemies.some((o, j) => j !== i && o.hp > 0)
+      ? def.bondStrength
+      : 0
+  const enemy = bond > 0 ? { ...rawEnemy, strength: rawEnemy.strength + bond } : rawEnemy
+  // 盗んだ敵は次の宣言で必ず逃走する (2026-08-30。宣言即成立の盗みが「倒せば全額戻る」で
+  // 無害化していた実測への処方 = 「1ターン以内に倒せ」のレースを尖らせる)
+  // flee の move を持たない盗人 (金羽の大鴉) でも合成の逃走を宣言する (2026-08-31 青ラン発見:
+  // 大鴉が盗んだ後も防御を続け、レース設計が丸ごと空振りしていた)
+  const fleeMove: EnemyMove = def.moves.find((m) => m.kind === 'flee') ?? { id: 'forced_flee', kind: 'flee' }
+  // 潜伏の殻が敵フェーズ中に割れていたら、この宣言は噛みつき (2026-09-03 Burrowed)
+  const biteMove = def.burrow ? def.moves.find((m) => m.id === def.burrow!.bite) : undefined
+  if (enemy.biteNext === true && biteMove) {
+    const [biteIntent, rngB] = buildIntent(s.rng, biteMove, enemy.strength, enemy.atkScale ?? 1)
+    const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false } : e))
+    return emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
+  }
+  // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (2026-09-04。カーソルは進めない=次のターンに再開)
+  if (enemy.staggeredNext === true) {
+    const staggerMove: EnemyMove = { id: 'stagger', kind: 'rest' }
+    const [restIntent, rngS] = buildIntent(s.rng, staggerMove, enemy.strength, enemy.atkScale ?? 1)
+    const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false } : e))
+    return emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
+  }
+  if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
+    const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
+    const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
+    return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
+  }
+  // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
+  // 被弾覚醒は被弾の瞬間にも判定している (effects.ts applyDamageInterrupts) = 旧 wakeOnDamage と同じ拍
+  const jumped = applyInterruptsTo(s, i, enemy.node, enemy.firedInterrupts ?? [])
+  // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する
+  // (確定済みルール表「条件付き意図」。実行時の盤面で分岐 = プレイヤーが自ターン中に選べる)
+  // 両テーブルを持つ敵 (罠壊し) は conditionalOn を1つしか持てないので、宣言時の盤面で片方を選ぶ。
+  // 優先度は 伏せ反応 > 従者反応 (確定済みルール表「従者狩り」)。どちらの条件も満たしていない時は
+  // 伏せ反応を既定にして「伏せれば行動が変わる」の予告を残す。
+  // 編成で反応テーブルを無効化された個体は分岐を持たない (群れで全員が同時に反応しない)
+  const vsSet = enemy.noReactTable !== true && def.movesVsSet?.length ? def.movesVsSet : undefined
+  const vsTokens = enemy.noReactTable !== true && def.movesVsTokens?.length ? def.movesVsTokens : undefined
+  const preferTokens = s.player.setCards.length === 0 && hasHuntableTokens(s)
+  const reactTable = preferTokens ? (vsTokens ?? vsSet) : (vsSet ?? vsTokens)
+  const conditionalOn: 'set' | 'tokens' | undefined = !reactTable ? undefined : reactTable === vsSet ? 'set' : 'tokens'
+
+  // カーソルから技の節まで辿る (乱択は RNG 1回。noRepeat/once/maxRepeat は腕で判定)
+  const walked = walkToMove(s, i, jumped.cursor, s.rng)
+  let rng = walked.rng
+  const move = walked.move
+  const landedNode = def.nodes[walked.nodeId]
+  const nextCursor = landedNode.next ?? walked.nodeId
+  const usesSoFar = enemy.moveUses?.[move.id] ?? 0
+  const [intentRaw, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar)
+  // 潜伏中は殻が育たない (2026-09-06 ユーザー裁定。Opusラン W: 甲虫の攻防一体で殻12→33、「割る」が「殻レースに勝つ」に化けた):
+  // 殻は土であって盾ではない = 攻防一体のブロックは宣言から外す (表示と実処理を一致させる。割れた後の宣言からは普通に得る)
+  // 防御行動そのものも潜伏中は殻を育てない = 宣言時に「隙」に置き換える (「🛡️防御」と見せて何も起きない嘘を作らない)
+  const intent =
+    enemy.burrowActive !== true
+      ? intentRaw
+      : intentRaw.kind === 'defend'
+        ? { ...intentRaw, kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0, alsoBuff: undefined }
+        : intentRaw.alsoDefend !== undefined
+          ? { ...intentRaw, alsoDefend: undefined }
+          : intentRaw
+  rng = rngA
+  const nextUses = { ...(enemy.moveUses ?? {}), [move.id]: usesSoFar + 1 }
+
+  let alt: ReturnType<typeof buildIntent>[0] | undefined
+  if (reactTable && reactTable.length > 0) {
+    const [altIdx, rngB] = weightedIndex(rng, reactTable.map((m) => m.weight))
+    rng = rngB
+    const altMove = def.moves.find((m) => m.id === reactTable[altIdx].to)
+    if (!altMove) throw new Error(`敵 ${def.id} の反応テーブルが未定義の技を参照: ${reactTable[altIdx].to}`)
+    const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
+    rng = rngC
+    alt = altIntent
+  }
+
+  // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む。
+  // 表示層 (UI/CLI/最悪被ダメ予測) は shownMin/shownMax を読むだけなので変更不要で、
+  // 条件分岐 (alt) の両側も自動で実値になる
+  const reveal = <T extends { shownMin: number; shownMax: number; actual: number }>(it: T): T =>
+    s.revealIntents ? { ...it, shownMin: it.actual, shownMax: it.actual } : it
+  const shown = reveal(intent)
+  if (alt !== undefined) alt = reveal(alt)
+  const declared = conditionalOn && alt ? { ...shown, conditionalOn, alt } : shown
+  // 盗みは宣言と同時に成立する (2026-08-30 「宣言ターン内に仕事をする」パッケージ)。
+  // 旧実装は実行時成立のため、宣言ターンに倒すと盗み・逃走の設計が丸ごと空振りしていた
+  // (3幕フルラン実測: こそ泥4戦で盗み・逃走を一度も見ていない)。宣言時に抱えれば
+  // 「今すぐ倒して取り返す (+懸賞金) か、放置して失うか」のレースが必ず発生する
+  const stolen = declared.kind === 'steal-gold' ? declared.actual : 0
+  const enemies = s.enemies.map((e, j) =>
+    j === i
+      ? {
+          ...e,
+          intent: declared,
+          node: nextCursor,
+          lastMoves: [move.id, ...(e.lastMoves ?? [])].slice(0, 3),
+          moveUses: nextUses,
+          ...(jumped.firedNow.length > 0 ? { firedInterrupts: jumped.fired } : {}),
+          ...(walked.onceMoveIds.length > 0 ? { usedOnce: [...(e.usedOnce ?? []), ...walked.onceMoveIds] } : {}),
+          ...(stolen > 0 ? { stolenGold: (e.stolenGold ?? 0) + stolen } : {}),
+        }
+      : e,
+  )
+  s = emit({ ...s, rng, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: declared })
+  if (stolen > 0) s = emit(s, { type: 'GoldStolen', enemyIndex: i, amount: stolen })
   return s
 }
 
@@ -649,7 +542,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
 /**
  * 分裂 (2026-09-02): 倒れた分裂親から小型を場に出す。勝利判定より先に走る =
  * 親を倒しても分裂体が残れば戦闘は続く。分裂体は生成時に意図を宣言し、その敵フェーズから行動する
- * (本家Slime準拠)。分裂体は素の値・親の atkScale (難易度) を継承・patternIndex をずらして同期を防ぐ
+ * (本家Slime準拠)。分裂体は素の値・親の atkScale (難易度) を継承・開始節を startBySlot でずらして同期を防ぐ
  */
 function processSplits(state: GameState): GameState {
   let s = state
@@ -668,36 +561,30 @@ function processSplits(state: GameState): GameState {
     const hpRatio = def.maxHp > 0 ? e.maxHp / def.maxHp : 1
     const scaledChildHp = Math.max(1, Math.round(childDef.maxHp * hpRatio))
     for (let k = 0; k < splitInto.count; k++) {
-      const moveId = childDef.sequence?.[k % (childDef.sequence.length || 1)]
-      const move = childDef.moves.find((m) => m.id === moveId) ?? childDef.moves[0]
-      // stunned (2026-09-02 罰型分裂の緩和版): 分裂体の初回意図は「隙」= 出現ターンは動かない
+      // stunned (2026-09-02 罰型分裂の緩和版): 分裂体の初回意図は「隙」= 出現ターンは動かない (開始節は start)。
+      // それ以外は k 体目の開始節 (startBySlot=位相ずらし) から即座に宣言する (行動グラフ 2026-09-14)
       const childStrength = splitInto.strength ?? 0
-      const [intent, rng2] =
-        splitInto.stunned === true
-          ? ([
-              { kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0 },
-              s.rng,
-            ] as const)
-          : buildIntent(s.rng, move, childStrength, e.atkScale ?? 1)
+      const stunned = splitInto.stunned === true
       const child = {
         enemyId: splitInto.enemyId,
         hp: scaledChildHp,
         maxHp: scaledChildHp,
         block: childDef.burrow?.block ?? childDef.startingBlock ?? 0,
         ...(childDef.burrow ? { burrowActive: true } : {}),
-        intent,
+        intent: stunned ? { kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0 } : null,
         strength: childStrength,
         ...(e.atkScale !== undefined ? { atkScale: e.atkScale } : {}),
         burn: 0,
         confusion: 0,
         exposed: 0,
-        patternIndex: splitInto.stunned === true ? 0 : (k + 1) % (childDef.sequence?.length ?? 1),
+        node: stunned ? childDef.start : startNodeFor(childDef, k),
         ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
         ...(childDef.artifact !== undefined ? { artifact: childDef.artifact } : {}),
         ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
       }
-      s = { ...s, rng: rng2, enemies: [...s.enemies, child] }
-      s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent })
+      s = { ...s, enemies: [...s.enemies, child] }
+      if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent! })
+      else s = declareOne(s, s.enemies.length - 1)
     }
   }
   return s
@@ -1478,7 +1365,7 @@ export function endTurn(state: GameState): GameState {
     }
     s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
     if (s.enemies[i].hp <= 0) s = fireEnemyDied(s, i) // 焼き切って倒れた (onEnemyDied 2026-09-12)
-    s = applyWakeCheck(s, i) // 被弾覚醒はどの経路の被弾でも (2026-09-02)
+    s = applyDamageInterrupts(s, i) // 被弾覚醒はどの経路の被弾でも (2026-09-02)
     // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
     {
       const struck = s.enemies[i]
@@ -2024,12 +1911,11 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
                 maxHp: hatchedHp,
                 block: 0,
                 strength: 0,
-                patternIndex: 0,
-                keyMoveUses: 0,
-                lastMoveId: undefined,
+                node: newDef.start,
+                lastMoves: undefined,
                 usedOnce: [],
-                moveGrowth: {},
-                woken: false,
+                moveUses: {},
+                firedInterrupts: [],
                 ...(newDef.artifact !== undefined ? { artifact: newDef.artifact } : { artifact: 0 }),
                 intent: null,
               }

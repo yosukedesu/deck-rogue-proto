@@ -3,6 +3,7 @@
 // 確定済みルール表「敵の設計原則」「状態異常」「連撃」「再生」「敵フェーズ変化」「激昂」を固定する。
 import { afterEach, describe, expect, it } from 'vitest'
 import { allEnemies, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { chainFromStart } from './enemyGraph.ts'
 import { tierFor } from './map.ts'
 import { applyCommand } from './state.ts'
 import { damageBreakdown, dealDamageToEnemy } from './effects.ts'
@@ -210,17 +211,18 @@ describe('挑発 (嘲る道化)', () => {
   it('伏せがあると別の行動になる (2026-09-03 賭け型化。2026-09-04 嘲り防御を撤去=弱腰の取りこぼし是正・用心の一撃13-17)', () => {
     const def = getEnemyDef('enemy_joker')
     expect(def.movesVsSet).toBeDefined()
-    expect(def.movesVsSet!.some((m) => m.id === 'wild_swing')).toBe(false) // 大振り(15-19+脆弱2)は無い
-    const jab = def.movesVsSet!.find((m) => m.id === 'cautious_jab')!
+    const vsMoves = def.movesVsSet!.map((a) => def.moves.find((m) => m.id === a.to)!)
+    expect(vsMoves.some((m) => m.id === 'wild_swing')).toBe(false) // 大振り(15-19+脆弱2)は無い
+    const jab = vsMoves.find((m) => m.id === 'cautious_jab')!
     expect([jab.min, jab.max]).toEqual([13, 17])
-    expect(def.movesVsSet!.some((m) => m.kind === 'defend')).toBe(false) // 嘲り防御=1Eで大技を消すスイッチだった (Opusラン M)
+    expect(vsMoves.some((m) => m.kind === 'defend')).toBe(false) // 嘲り防御=1Eで大技を消すスイッチだった (Opusラン M)
     expect(jab.inflict).toEqual({ status: 'vulnerable', amount: 1 }) // 旧7-10=「1Eで押せるスイッチ」の是正
   })
 
   it('ただし、はったりを見破る手段を持つ (伏せっぱなしで完封できない)', () => {
     const def = getEnemyDef('enemy_joker')
     // 2026-09-14: 見破りは「壊しつつ平手」(attack + alsoDestroySet)。0ダメの壊しは 1E の囮で大技を消すスイッチだった
-    expect(def.movesVsSet!.some((m) => m.kind === 'attack' && m.alsoDestroySet === true)).toBe(true)
+    expect(def.movesVsSet!.map((a) => def.moves.find((m) => m.id === a.to)!).some((m) => m.kind === 'attack' && m.alsoDestroySet === true)).toBe(true)
   })
 })
 
@@ -232,9 +234,9 @@ describe('伏せへの罰 (2026-08-26。無期限温存で敵を弱い分岐に�
   it('伏せに反応する敵は必ず「伏せっぱなしを罰する手段」を持つ', () => {
     const offenders: string[] = []
     for (const def of allEnemies) {
-      const vsSet = def.movesVsSet
-      if (!vsSet || vsSet.length === 0) continue
-      const breaksStandoff = vsSet.some((m) => m.kind === 'destroy-set')
+      if (!def.movesVsSet || def.movesVsSet.length === 0) continue
+      const vsSet = def.movesVsSet.map((a) => def.moves.find((m) => m.id === a.to)!)
+      const breaksStandoff = vsSet.some((m) => m.kind === 'destroy-set' || m.alsoDestroySet === true)
       const normalMin = Math.min(
         ...def.moves.filter((m) => m.kind === 'attack').map((m) => m.min ?? 99),
       )
@@ -350,7 +352,7 @@ describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解�
 
   it('酸吐きの蛞蝓は状態異常の教師 (舐め=弱体 → 酸=虚弱 → 体当たりのローテーション)', () => {
     const def = getEnemyDef('enemy_slug')
-    expect(def.sequence).toEqual(['lick', 'guard', 'acid_spit', 'tackle']) // 構えは2拍目 (2026-09-14。末尾だと幕1で見えない)
+    expect(chainFromStart(def, 4)).toEqual(['lick', 'guard', 'acid_spit', 'tackle']) // 構えは2拍目 (2026-09-14。末尾だと幕1で見えない)
     expect(def.moves.find((m) => m.id === 'lick')!.inflict).toEqual({ status: 'weak', amount: 2 })
     expect(def.moves.find((m) => m.id === 'acid_spit')!.inflict).toEqual({ status: 'frail', amount: 1 })
   })
@@ -378,10 +380,7 @@ describe('デバフ圧の本家水準化 (2026-09-01 第2弾。確定済みル�
         const members = resolveEncounter(encId)
         const has = members.some((mem) => {
           const d = getEnemyDef(mem.enemyId)
-          const tables = [d.moves, d.movesVsSet ?? [], d.movesBelowHalf ?? []]
-          return tables.some((t) =>
-            t.some((m) => m.inflict !== undefined || m.setAlt?.inflict !== undefined),
-          )
+          return d.moves.some((m) => m.inflict !== undefined)
         })
         if (has) carriers++
       }
@@ -444,7 +443,7 @@ describe('火傷 (2026-09-02 敵ギミック第1波。本家Burn相当)', () => 
 
   it('焚きつけのインプ: 火の粉(攻撃+火傷1)→煽り(火傷2)→噛みつき のローテ', () => {
     const def = getEnemyDef('enemy_cinder_imp')
-    expect(def.sequence).toEqual(['spark_toss', 'guard', 'fan_flames', 'bite']) // 構えは2拍目 (2026-09-14)
+    expect(chainFromStart(def, 4)).toEqual(['spark_toss', 'guard', 'fan_flames', 'bite']) // 構えは2拍目 (2026-09-14)
     expect(def.moves.find((m) => m.id === 'spark_toss')?.inflict).toEqual({ status: 'scald', amount: 1 })
     expect(def.moves.find((m) => m.id === 'fan_flames')?.inflict).toEqual({ status: 'scald', amount: 2 })
   })
@@ -790,7 +789,7 @@ describe('ギミック変種 (2026-09-02 全体改善・第6波)', () => {
     let s = freshCombat('set-confirm', 'test_loopfrom', 7)
     const kinds: string[] = []
     for (let t = 0; t < 6 && s.phase === 'player-turn'; t++) {
-      kinds.push(s.enemies[0].lastMoveId ?? '?')
+      kinds.push(s.enemies[0].lastMoves?.[0] ?? '?')
       s = withHand(s, [])
       s = applyCommand(s, { type: 'EndTurn' })
     }
@@ -898,12 +897,12 @@ describe('敵ギミック第3波 (2026-09-02 残件議論: 量の問いの器・
     expect(s.enemies[0].intent?.kind).toBe('defend') // 眠り=殻を積む
     // しきい値未満では眠り続ける
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0, damageTakenTotal: 10 })) }
-    expect(s.enemies[0].woken).toBeUndefined()
+    expect(s.enemies[0].firedInterrupts ?? []).toEqual([])
     // 20以上のHP損失を与える (装甲22で1ヒット上限22 = 丸呑み1発で20超え)
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = withHand(s, ['green_serpent_gulp', 'green_strike'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid, discardUids: [s.player.hand[1].uid] })
-    expect(s.enemies[0].woken).toBe(true)
+    expect(s.enemies[0].firedInterrupts).toEqual([0])
     expect(s.enemies[0].intent?.kind).toBe('defend') // 宣言済みの意図は変わらない (宣言時固定則)
     s = withHand(s, [])
     s = applyCommand(s, { type: 'EndTurn' })
@@ -936,9 +935,10 @@ describe('代替ボス3体 (2026-09-02 本家同等バリエーション: TheKin
     s = withHand(s, [])
     s = applyCommand(s, { type: 'EndTurn' })
     const def = getEnemyDef('enemy_kin_priest')
-    const aloneIds = new Set((def.movesWhenAlone ?? []).map((m) => m.id))
+    const alone = def.interrupts!.find((it) => it.on === 'alone')!
+    const aloneIds = new Set(chainFromStart(def, 4, alone.goto))
     expect(aloneIds.size).toBeGreaterThan(0)
-    expect(aloneIds.has(s.enemies[0].lastMoveId ?? '')).toBe(true)
+    expect(aloneIds.has(s.enemies[0].lastMoves?.[0] ?? '')).toBe(true)
   })
 
   it('双腕の巨蟹: 片腕を倒すと残る腕が弔い+3', () => {
@@ -973,9 +973,11 @@ describe('代替ボス3体 (2026-09-02 本家同等バリエーション: TheKin
 
 
 describe('道化と妖術師 (2026-09-04 案A: T1の弱体3+脆弱2の重なりを解く)', () => {
-  it('妖術師は patternOffset 1 で呪いから始まる (泥=弱体3は3ターン目)', () => {
+  it('妖術師は開始節をずらして呪いから始まる (泥=弱体3は3ターン目。旧 patternOffset 1 = 行動グラフでは member.start)', () => {
     const enc = resolveEncounter('enc_joker_hexer')
     const hexer = enc.find((m) => m.enemyId === 'enemy_hexer')!
-    expect(hexer.patternOffset).toBe(1)
+    const def = getEnemyDef('enemy_hexer')
+    expect(hexer.start).toBeDefined()
+    expect(chainFromStart(def, 3, hexer.start)).toEqual(['guard', 'curse']) // 呪いの後は回数カウンタの条件の節 (2回で殴りローテへ)
   })
 })

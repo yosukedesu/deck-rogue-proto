@@ -276,24 +276,21 @@ describe('かすみ (2枠): 準備中の札と生きた罠の重ね', () => {
 })
 
 describe('敵は伏せを見ない: 残るのは罠壊し・道化の破壊分岐だけ', () => {
-  it('データ: movesVsSet を持つ敵は罠壊しと道化だけ。setAlt を持つ敵はいない', () => {
+  it('データ: movesVsSet を持つ敵は罠壊しと道化だけ。setAlt の機構は撤去済み (2026-09-14 行動グラフ)', () => {
     const vsSet = allEnemies.filter((d) => (d.movesVsSet?.length ?? 0) > 0).map((d) => d.id).sort()
     expect(vsSet).toEqual(['enemy_joker', 'enemy_set_breaker'])
     const breaker = getEnemyDef('enemy_set_breaker')
-    expect(breaker.movesVsSet!.map((m) => [m.id, m.kind, m.weight])).toEqual([
+    const kindOf = (d: (typeof allEnemies)[number], id: string) => d.moves.find((m) => m.id === id)?.kind
+    expect(breaker.movesVsSet!.map((a) => [a.to, kindOf(breaker, a.to), a.weight])).toEqual([
       ['break_trap', 'attack', 2], // 壊しつつ殴る (2026-09-14 alsoDestroySet)
       ['smash', 'attack', 1],
     ])
     const joker = getEnemyDef('enemy_joker')
-    expect(joker.movesVsSet!.map((m) => [m.id, m.kind, m.weight])).toEqual([
+    expect(joker.movesVsSet!.map((a) => [a.to, kindOf(joker, a.to), a.weight])).toEqual([
       ['cautious_jab', 'attack', 2],
       ['call_bluff', 'attack', 1],
     ])
-    const tables = (d: (typeof allEnemies)[number]) => [
-      d.moves, d.movesBelowHalf ?? [], d.movesVsSet ?? [], d.movesVsTokens ?? [], d.movesWhenAlone ?? [],
-    ]
-    const withAlt = allEnemies.filter((d) => tables(d).some((t) => t.some((m) => m.setAlt !== undefined))).map((d) => d.id)
-    expect(withAlt).toEqual([])
+    expect(allEnemies.some((d) => 'setAlt' in d || d.moves.some((m) => 'setAlt' in m))).toBe(false)
     expect(allEnemies.some((d) => 'vsSetIgnoreFreshness' in d)).toBe(false)
   })
 
@@ -334,9 +331,9 @@ describe('敵は伏せを見ない: 残るのは罠壊し・道化の破壊分�
   })
 
   it('道化の見破り・罠壊しの壊しは attack + alsoDestroySet (0ダメの壊しは囮1枚で大技を消すスイッチだった)', () => {
-    const breaker = getEnemyDef('enemy_set_breaker').movesVsSet!.find((m) => m.id === 'break_trap')!
+    const breaker = getEnemyDef('enemy_set_breaker').moves.find((m) => m.id === 'break_trap')!
     expect([breaker.kind, breaker.alsoDestroySet, breaker.min, breaker.max]).toEqual(['attack', true, 8, 10])
-    const joker = getEnemyDef('enemy_joker').movesVsSet!.find((m) => m.id === 'call_bluff')!
+    const joker = getEnemyDef('enemy_joker').moves.find((m) => m.id === 'call_bluff')!
     expect([joker.kind, joker.alsoDestroySet]).toEqual(['attack', true])
   })
 

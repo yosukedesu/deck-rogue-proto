@@ -547,7 +547,18 @@ namespace DeckRogue.Game
             if (d.Burrow != null) t.Add("潜伏(殻" + d.Burrow.Block + ")");
             if (d.SplitInto != null) t.Add("分裂→" + d.SplitInto.Count + "体");
             if (d.HatchInto != null) t.Add("孵化");
-            if (d.WakeOnDamage != null) t.Add("被弾覚醒" + d.WakeOnDamage.Damage);
+            if (d.Interrupts != null)
+            {
+                // 行動グラフ (2026-09-14): 割り込み = HP半分の豹変・被弾覚醒・単独時の転職
+                for (int k = 0; k < d.Interrupts.Count; k++)
+                {
+                    var it = d.Interrupts[k];
+                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add("被弾覚醒" + (it.Amount ?? 0));
+                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add("HP半分で豹変");
+                    else if (it.On == EnemyInterruptTriggers.Alone) t.Add("仲間が全滅すると転職");
+                    else if (it.On == EnemyInterruptTriggers.AllyDied) t.Add("仲間が倒れると変化");
+                }
+            }
             if (d.EnrageEveryCards.HasValue) t.Add("激昂(" + d.EnrageEveryCards.Value + "枚ごと筋力+2)");
             if (d.EnrageEveryDamage.HasValue) t.Add("激昂(累計" + d.EnrageEveryDamage.Value + "ダメごと筋力+2)");
             if (d.Enrage.HasValue) t.Add("激昂(毎フェーズ筋力+" + d.Enrage.Value + ")");

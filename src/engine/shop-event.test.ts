@@ -1,6 +1,7 @@
 // ゴールド・ショップ・?マス (2026-08-28 設計会議) のテスト。
 // 確定済みルール表「ゴールド」「ショップ」「?マス（イベント）」を固定する。
 import { describe, expect, it } from 'vitest'
+import { chainFromStart } from './enemyGraph.ts'
 import { getEnemyDef, allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
 import { applyRunCommand, createRun, eventChoiceNeedsCard, shopRemovalPrice, shopUpgradePrice } from './run.ts'
 import type { RunState } from './run.ts'
@@ -393,7 +394,7 @@ describe('呪いイベント (2026-09-02 敵ギミック第1波D)', () => {
     expect(def.maxHp).toBe(30)
     expect(def.burrow?.block).toBe(12)
     expect(def.moves.some((m) => m.id === def.burrow?.bite)).toBe(true)
-    expect(def.sequence).toEqual(['horn_jab', 'harden', 'horn_jab']) // 攻撃ステップあり=膠着破り則
+    expect(chainFromStart(def, 3)).toEqual(['horn_jab', 'harden', 'horn_jab']) // 攻撃ステップあり=膠着破り則
   })
 })
 

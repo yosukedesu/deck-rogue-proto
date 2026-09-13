@@ -5,27 +5,47 @@
     "archetype": "wide-power",
     "flavor": "機嫌で振れ幅が変わる。今日の機嫌は誰も知らない。",
     "maxHp": 90,
+    "hpRange": [
+      84,
+      96
+    ],
     "moves": [
       {
         "id": "surge",
         "kind": "attack",
         "min": 8,
-        "max": 15,
-        "weight": 3
+        "max": 15
       },
       {
         "id": "coil",
         "kind": "defend",
         "min": 5,
-        "max": 9,
-        "weight": 1
+        "max": 9
       }
     ],
-    "opener": "surge",
-    "hpRange": [
-      84,
-      96
-    ]
+    "nodes": {
+      "surge": {
+        "move": "surge",
+        "next": "rand"
+      },
+      "coil": {
+        "move": "coil",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "surge",
+            "weight": 3
+          },
+          {
+            "to": "coil",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "surge"
   },
   {
     "id": "enemy_probe",
@@ -33,41 +53,50 @@
     "archetype": "probe",
     "flavor": "ちくちくは挨拶。三度目が本気。",
     "maxHp": 75,
+    "hpRange": [
+      70,
+      80
+    ],
     "moves": [
       {
         "id": "poke",
         "kind": "attack",
         "min": 5,
-        "max": 7,
-        "weight": 1
+        "max": 7
       },
       {
         "id": "lunge",
         "kind": "attack",
         "min": 12,
-        "max": 16,
-        "weight": 1
+        "max": 16
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 7,
         "max": 10,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "poke",
-      "guard",
-      "poke",
-      "lunge"
-    ],
-    "hpRange": [
-      70,
-      80
-    ]
+    "nodes": {
+      "poke": {
+        "move": "poke",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "poke_2"
+      },
+      "poke_2": {
+        "move": "poke",
+        "next": "lunge"
+      },
+      "lunge": {
+        "move": "lunge",
+        "next": "poke"
+      }
+    },
+    "start": "poke"
   },
   {
     "id": "enemy_set_wary",
@@ -75,29 +104,50 @@
     "archetype": "set-wary",
     "flavor": "臆病で、様子を見る——が、いつまでも我慢はできない。",
     "maxHp": 85,
+    "hpRange": [
+      79,
+      91
+    ],
     "moves": [
       {
         "id": "slash",
         "kind": "attack",
         "min": 11,
-        "max": 15,
-        "weight": 1
+        "max": 15
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 9,
         "max": 13,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "startingBlock": 6,
-    "hpRange": [
-      79,
-      91
-    ]
+    "nodes": {
+      "slash": {
+        "move": "slash",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "slash",
+            "weight": 1
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "rand",
+    "startingBlock": 6
   },
   {
     "id": "enemy_set_breaker",
@@ -105,13 +155,16 @@
     "archetype": "set-breaker",
     "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。巻いている途中の仕掛けには気づかない。",
     "maxHp": 90,
+    "hpRange": [
+      84,
+      96
+    ],
     "moves": [
       {
         "id": "smash",
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 2,
         "growPerUse": 3
       },
       {
@@ -119,7 +172,6 @@
         "kind": "attack",
         "min": 5,
         "max": 7,
-        "weight": 1,
         "inflict": {
           "status": "junk",
           "amount": 1
@@ -129,17 +181,13 @@
         "id": "ready_tools",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1
-      }
-    ],
-    "movesVsSet": [
+        "max": 9
+      },
       {
         "id": "break_trap",
         "kind": "attack",
         "min": 8,
         "max": 10,
-        "weight": 2,
         "alsoDestroySet": true,
         "inflict": {
           "status": "junk",
@@ -147,35 +195,62 @@
         }
       },
       {
-        "id": "smash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 1,
-        "growPerUse": 3
+        "id": "break_token",
+        "kind": "destroy-token"
+      }
+    ],
+    "nodes": {
+      "smash": {
+        "move": "smash",
+        "next": "rand"
+      },
+      "toss_junk": {
+        "move": "toss_junk",
+        "next": "rand"
+      },
+      "ready_tools": {
+        "move": "ready_tools",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "smash",
+            "weight": 2
+          },
+          {
+            "to": "toss_junk",
+            "weight": 1
+          },
+          {
+            "to": "ready_tools",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "smash",
+    "movesVsSet": [
+      {
+        "to": "break_trap",
+        "weight": 2
+      },
+      {
+        "to": "smash",
+        "weight": 1
       }
     ],
     "movesVsTokens": [
       {
-        "id": "break_token",
-        "kind": "destroy-token",
+        "to": "break_token",
         "weight": 2
       },
       {
-        "id": "smash",
-        "kind": "attack",
-        "min": 11,
-        "max": 15,
-        "weight": 1,
-        "growPerUse": 3
+        "to": "smash",
+        "weight": 1
       }
     ],
-    "opener": "smash",
-    "turnArmor": 35,
-    "hpRange": [
-      84,
-      96
-    ]
+    "turnArmor": 35
   },
   {
     "id": "enemy_brute",
@@ -183,71 +258,88 @@
     "archetype": "brute",
     "flavor": "雄叫びのあとの二発が本気。数えていれば読める——だが追い詰めれば見境がなくなる。",
     "maxHp": 130,
+    "hpRange": [
+      121,
+      139
+    ],
     "moves": [
       {
         "id": "warcry",
         "kind": "buff",
         "min": 2,
-        "max": 4,
-        "weight": 1
+        "max": 4
       },
       {
         "id": "club",
         "kind": "attack",
         "min": 9,
-        "max": 13,
-        "weight": 1
+        "max": 13
       },
       {
         "id": "club_wild",
         "kind": "attack",
         "min": 9,
-        "max": 13,
-        "weight": 1
+        "max": 13
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 8,
         "max": 11,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
-      }
-    ],
-    "sequence": [
-      "club",
-      "guard",
-      "warcry",
-      "club_wild"
-    ],
-    "movesBelowHalf": [
+        "alsoBuff": 1
+      },
       {
         "id": "rage_flurry",
         "kind": "attack",
         "min": 7,
         "max": 9,
-        "hits": 2,
-        "weight": 2
+        "hits": 2
       },
       {
         "id": "war_roar",
         "kind": "buff",
         "min": 2,
-        "max": 3,
-        "weight": 1
+        "max": 3
       }
     ],
-    "sequenceBelowHalf": [
-      "rage_flurry",
-      "rage_flurry",
-      "war_roar"
+    "nodes": {
+      "club": {
+        "move": "club",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "warcry"
+      },
+      "warcry": {
+        "move": "warcry",
+        "next": "club_wild"
+      },
+      "club_wild": {
+        "move": "club_wild",
+        "next": "club"
+      },
+      "half_rage_flurry": {
+        "move": "rage_flurry",
+        "next": "half_rage_flurry_2"
+      },
+      "half_rage_flurry_2": {
+        "move": "rage_flurry",
+        "next": "half_war_roar"
+      },
+      "half_war_roar": {
+        "move": "war_roar",
+        "next": "half_rage_flurry"
+      }
+    },
+    "start": "club",
+    "interrupts": [
+      {
+        "on": "hpBelowHalf",
+        "goto": "half_rage_flurry"
+      }
     ],
-    "armor": 25,
-    "hpRange": [
-      121,
-      139
-    ]
+    "armor": 25
   },
   {
     "id": "enemy_turtle",
@@ -255,54 +347,62 @@
     "archetype": "charger",
     "flavor": "二度眠り、三度目に薙ぐ。——起こしてしまったら、もう眠らない。",
     "maxHp": 140,
+    "hpRange": [
+      130,
+      150
+    ],
     "moves": [
       {
         "id": "shell",
         "kind": "defend",
         "min": 12,
-        "max": 16,
-        "weight": 1
+        "max": 16
       },
       {
         "id": "crush",
         "kind": "attack",
         "min": 24,
-        "max": 32,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "shell",
-      "shell",
-      "crush"
-    ],
-    "movesBelowHalf": [
+        "max": 32
+      },
       {
         "id": "awake_bite",
         "kind": "attack",
         "min": 9,
         "max": 12,
-        "hits": 2,
-        "weight": 1
-      },
-      {
-        "id": "crush",
-        "kind": "attack",
-        "min": 24,
-        "max": 32,
-        "weight": 1
+        "hits": 2
       }
     ],
-    "sequenceBelowHalf": [
-      "awake_bite",
-      "crush"
+    "nodes": {
+      "shell": {
+        "move": "shell",
+        "next": "shell_2"
+      },
+      "shell_2": {
+        "move": "shell",
+        "next": "crush"
+      },
+      "crush": {
+        "move": "crush",
+        "next": "shell"
+      },
+      "half_awake_bite": {
+        "move": "awake_bite",
+        "next": "half_crush"
+      },
+      "half_crush": {
+        "move": "crush",
+        "next": "half_awake_bite"
+      }
+    },
+    "start": "shell",
+    "interrupts": [
+      {
+        "on": "hpBelowHalf",
+        "goto": "half_awake_bite"
+      }
     ],
     "startingBlock": 10,
-    "armor": 30,
-    "hpRange": [
-      130,
-      150
-    ]
+    "armor": 30
   },
   {
     "id": "enemy_hexer",
@@ -310,13 +410,16 @@
     "archetype": "hexer",
     "flavor": "泥と呪いを投げてくる。手が汚いのは職業柄。",
     "maxHp": 80,
+    "hpRange": [
+      74,
+      86
+    ],
     "moves": [
       {
         "id": "mud",
         "kind": "attack",
         "min": 6,
         "max": 9,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 3
@@ -325,7 +428,6 @@
       {
         "id": "curse",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "wound",
           "amount": 2
@@ -335,36 +437,52 @@
         "id": "slap",
         "kind": "attack",
         "min": 10,
-        "max": 14,
-        "weight": 1
+        "max": 14
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 7,
-        "max": 10,
-        "weight": 1,
-        "noRepeat": true
+        "max": 10
       }
     ],
-    "sequence": [
-      "mud",
-      "guard",
-      "curse",
-      "slap"
-    ],
-    "phaseAfterUses": {
-      "moveId": "curse",
-      "uses": 2,
-      "sequence": [
-        "slap",
-        "mud"
-      ]
+    "nodes": {
+      "mud": {
+        "move": "mud",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "curse"
+      },
+      "curse": {
+        "move": "curse",
+        "next": "curse_check"
+      },
+      "slap": {
+        "move": "slap",
+        "next": "mud"
+      },
+      "p2_slap": {
+        "move": "slap",
+        "next": "p2_mud"
+      },
+      "p2_mud": {
+        "move": "mud",
+        "next": "p2_slap"
+      },
+      "curse_check": {
+        "if": {
+          "usesAtLeast": {
+            "move": "curse",
+            "count": 2
+          }
+        },
+        "then": "p2_slap",
+        "else": "slap"
+      }
     },
-    "hpRange": [
-      74,
-      86
-    ]
+    "start": "mud"
   },
   {
     "id": "enemy_wolf",
@@ -372,13 +490,16 @@
     "archetype": "flurry",
     "flavor": "群れはいない。牙の数だけで群れの働きをする。",
     "maxHp": 95,
+    "hpRange": [
+      88,
+      102
+    ],
     "moves": [
       {
         "id": "flurry",
         "kind": "attack",
         "min": 5,
         "max": 7,
-        "weight": 1,
         "hits": 3,
         "alsoBuff": 1
       },
@@ -386,36 +507,41 @@
         "id": "howl",
         "kind": "buff",
         "min": 1,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "rend",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "hits": 4
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 13,
-        "max": 19,
-        "weight": 1,
-        "noRepeat": true
+        "max": 19
       }
     ],
-    "sequence": [
-      "flurry",
-      "guard",
-      "howl",
-      "rend"
-    ],
-    "hpRange": [
-      88,
-      102
-    ]
+    "nodes": {
+      "flurry": {
+        "move": "flurry",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "howl"
+      },
+      "howl": {
+        "move": "howl",
+        "next": "rend"
+      },
+      "rend": {
+        "move": "rend",
+        "next": "flurry"
+      }
+    },
+    "start": "flurry"
   },
   {
     "id": "enemy_moss",
@@ -423,14 +549,16 @@
     "archetype": "regenerator",
     "flavor": "苔が癒やす、半分までは。剥がれたら、走れ。",
     "maxHp": 115,
-    "regen": 5,
+    "hpRange": [
+      107,
+      123
+    ],
     "moves": [
       {
         "id": "slam",
         "kind": "attack",
         "min": 10,
         "max": 14,
-        "weight": 2,
         "inflict": {
           "status": "frail",
           "amount": 1
@@ -440,27 +568,60 @@
         "id": "moss_shell",
         "kind": "defend",
         "min": 7,
-        "max": 10,
-        "weight": 1
-      }
-    ],
-    "movesBelowHalf": [
+        "max": 10
+      },
       {
         "id": "bite",
         "kind": "attack",
         "min": 15,
-        "max": 19,
-        "weight": 1
+        "max": 19
       }
     ],
+    "nodes": {
+      "slam": {
+        "move": "slam",
+        "next": "rand"
+      },
+      "moss_shell": {
+        "move": "moss_shell",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "slam",
+            "weight": 2
+          },
+          {
+            "to": "moss_shell",
+            "weight": 1
+          }
+        ]
+      },
+      "half_bite": {
+        "move": "bite",
+        "next": "half_rand"
+      },
+      "half_rand": {
+        "random": [
+          {
+            "to": "half_bite",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "slam",
+    "interrupts": [
+      {
+        "on": "hpBelowHalf",
+        "goto": "half_rand"
+      }
+    ],
+    "regen": 5,
     "burnResist": 2,
     "regenBreak": 30,
-    "opener": "slam",
-    "artifact": 1,
-    "hpRange": [
-      107,
-      123
-    ]
+    "artifact": 1
   },
   {
     "id": "enemy_joker",
@@ -468,13 +629,16 @@
     "archetype": "taunter",
     "flavor": "手ぶらの相手にだけ強気。仕掛けが動くと見るや、見破って平手を入れてくる。",
     "maxHp": 85,
+    "hpRange": [
+      79,
+      91
+    ],
     "moves": [
       {
         "id": "wild_swing",
         "kind": "attack",
         "min": 15,
         "max": 19,
-        "weight": 2,
         "inflict": {
           "status": "vulnerable",
           "amount": 2
@@ -484,17 +648,13 @@
         "id": "dodge_prance",
         "kind": "defend",
         "min": 5,
-        "max": 8,
-        "weight": 1
-      }
-    ],
-    "movesVsSet": [
+        "max": 8
+      },
       {
         "id": "cautious_jab",
         "kind": "attack",
         "min": 13,
         "max": 17,
-        "weight": 2,
         "inflict": {
           "status": "vulnerable",
           "amount": 1
@@ -505,14 +665,41 @@
         "kind": "attack",
         "min": 6,
         "max": 9,
-        "weight": 1,
         "alsoDestroySet": true
       }
     ],
-    "opener": "wild_swing",
-    "hpRange": [
-      79,
-      91
+    "nodes": {
+      "wild_swing": {
+        "move": "wild_swing",
+        "next": "rand"
+      },
+      "dodge_prance": {
+        "move": "dodge_prance",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "wild_swing",
+            "weight": 2
+          },
+          {
+            "to": "dodge_prance",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "wild_swing",
+    "movesVsSet": [
+      {
+        "to": "cautious_jab",
+        "weight": 2
+      },
+      {
+        "to": "call_bluff",
+        "weight": 1
+      }
     ]
   },
   {
@@ -521,6 +708,10 @@
     "archetype": "support",
     "flavor": "太鼓が鳴るたび、みんな元気になる。最初に黙らせたい。",
     "maxHp": 55,
+    "hpRange": [
+      51,
+      59
+    ],
     "moves": [
       {
         "id": "war_drum",
@@ -539,20 +730,24 @@
         "kind": "defend",
         "min": 4,
         "max": 5,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "war_drum",
-      "guard",
-      "thump"
-    ],
-    "hpRange": [
-      51,
-      59
-    ]
+    "nodes": {
+      "war_drum": {
+        "move": "war_drum",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "thump"
+      },
+      "thump": {
+        "move": "thump",
+        "next": "war_drum"
+      }
+    },
+    "start": "war_drum"
   },
   {
     "id": "enemy_warden",
@@ -560,76 +755,83 @@
     "archetype": "enrager",
     "flavor": "鐘は時間ではなく、お前が手を出した回数で鳴る。刻限が近づけば、乱打が始まる。",
     "maxHp": 155,
-    "enrage": 2,
+    "hpRange": [
+      144,
+      166
+    ],
     "moves": [
       {
         "id": "bell_strike",
         "kind": "attack",
         "min": 13,
-        "max": 17,
-        "weight": 1
+        "max": 17
       },
       {
         "id": "gate_guard",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "alsoDefend": 12
       },
       {
         "id": "bell_hushed",
         "kind": "attack",
         "min": 13,
-        "max": 17,
-        "weight": 1
+        "max": 17
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 9,
-        "max": 12,
-        "weight": 1,
-        "noRepeat": true
-      }
-    ],
-    "sequence": [
-      "bell_hushed",
-      "bell_strike",
-      "gate_guard",
-      "guard"
-    ],
-    "enrageEveryCards": 8,
-    "movesBelowHalf": [
+        "max": 12
+      },
       {
         "id": "bell_frenzy",
         "kind": "attack",
         "min": 8,
         "max": 11,
-        "hits": 2,
-        "weight": 1
-      },
-      {
-        "id": "gate_guard",
-        "kind": "attack",
-        "min": 6,
-        "max": 8,
-        "alsoDefend": 12,
-        "weight": 1
+        "hits": 2
       }
     ],
-    "sequenceBelowHalf": [
-      "bell_frenzy",
-      "gate_guard"
+    "nodes": {
+      "bell_hushed": {
+        "move": "bell_hushed",
+        "next": "bell_strike"
+      },
+      "bell_strike": {
+        "move": "bell_strike",
+        "next": "gate_guard"
+      },
+      "gate_guard": {
+        "move": "gate_guard",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "bell_hushed"
+      },
+      "half_bell_frenzy": {
+        "move": "bell_frenzy",
+        "next": "half_gate_guard"
+      },
+      "half_gate_guard": {
+        "move": "gate_guard",
+        "next": "half_bell_frenzy"
+      }
+    },
+    "start": "bell_hushed",
+    "interrupts": [
+      {
+        "on": "hpBelowHalf",
+        "goto": "half_bell_frenzy"
+      }
     ],
+    "enrage": 2,
+    "enrageEveryCards": 8,
     "startingBlock": 15,
     "enrageEveryDamage": 80,
     "armor": 35,
-    "turnArmor": 90,
-    "hpRange": [
-      144,
-      166
-    ]
+    "turnArmor": 90
   },
   {
     "id": "enemy_thorn_squirrel",
@@ -637,20 +839,34 @@
     "archetype": "thorned",
     "flavor": "触るたび刺さる。ちくちく削るか、一撃で仕留めるか。",
     "maxHp": 75,
-    "thorns": 2,
+    "hpRange": [
+      70,
+      80
+    ],
     "moves": [
       {
         "id": "gnaw",
         "kind": "attack",
         "min": 4,
-        "max": 6,
-        "weight": 2
+        "max": 6
       }
     ],
-    "hpRange": [
-      70,
-      80
-    ]
+    "nodes": {
+      "gnaw": {
+        "move": "gnaw",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "gnaw",
+            "weight": 2
+          }
+        ]
+      }
+    },
+    "start": "rand",
+    "thorns": 2
   },
   {
     "id": "enemy_thief",
@@ -658,44 +874,53 @@
     "archetype": "thief",
     "flavor": "隠れて、掴んで、走り去る。三歩目の前に捕まえろ。",
     "maxHp": 65,
+    "hpRange": [
+      60,
+      70
+    ],
     "moves": [
       {
         "id": "sneak",
         "kind": "defend",
         "min": 4,
-        "max": 6,
-        "weight": 1
+        "max": 6
       },
       {
         "id": "snatch",
         "kind": "steal-gold",
         "min": 12,
-        "max": 20,
-        "weight": 1
+        "max": 20
       },
       {
         "id": "mug",
         "kind": "attack",
         "min": 5,
-        "max": 7,
-        "weight": 1
+        "max": 7
       },
       {
         "id": "run_off",
-        "kind": "flee",
-        "weight": 1
+        "kind": "flee"
       }
     ],
-    "sequence": [
-      "sneak",
-      "snatch",
-      "mug",
-      "run_off"
-    ],
-    "hpRange": [
-      60,
-      70
-    ]
+    "nodes": {
+      "sneak": {
+        "move": "sneak",
+        "next": "snatch"
+      },
+      "snatch": {
+        "move": "snatch",
+        "next": "mug"
+      },
+      "mug": {
+        "move": "mug",
+        "next": "run_off"
+      },
+      "run_off": {
+        "move": "run_off",
+        "next": "sneak"
+      }
+    },
+    "start": "sneak"
   },
   {
     "id": "enemy_bomber",
@@ -703,43 +928,50 @@
     "archetype": "bomber",
     "flavor": "樽の導火線は三拍で燃え尽きる。庇い、投げ、そして——。",
     "maxHp": 85,
+    "hpRange": [
+      79,
+      91
+    ],
     "moves": [
       {
         "id": "shield_barrel",
         "kind": "defend",
         "min": 5,
-        "max": 8,
-        "weight": 1
+        "max": 8
       },
       {
         "id": "toss_ember",
         "kind": "attack",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       },
       {
         "id": "big_boom",
         "kind": "attack",
         "min": 20,
         "max": 24,
-        "weight": 1,
         "inflict": {
           "status": "scald",
           "amount": 2
         }
       }
     ],
-    "sequence": [
-      "shield_barrel",
-      "toss_ember",
-      "big_boom"
-    ],
-    "startingBlock": 12,
-    "hpRange": [
-      79,
-      91
-    ]
+    "nodes": {
+      "shield_barrel": {
+        "move": "shield_barrel",
+        "next": "toss_ember"
+      },
+      "toss_ember": {
+        "move": "toss_ember",
+        "next": "big_boom"
+      },
+      "big_boom": {
+        "move": "big_boom",
+        "next": "shield_barrel"
+      }
+    },
+    "start": "shield_barrel",
+    "startingBlock": 12
   },
   {
     "id": "enemy_moss_healer",
@@ -747,35 +979,63 @@
     "archetype": "healer",
     "flavor": "傷んだ仲間から順に苔を貼る。貼られた側は嫌そうな顔をする。",
     "maxHp": 65,
+    "hpRange": [
+      60,
+      70
+    ],
     "moves": [
       {
         "id": "mend",
         "kind": "heal",
         "min": 8,
-        "max": 12,
-        "weight": 2
+        "max": 12
       },
       {
         "id": "staff_poke",
         "kind": "attack",
         "min": 4,
-        "max": 6,
-        "weight": 1
+        "max": 6
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 4,
         "max": 5,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "hpRange": [
-      60,
-      70
-    ]
+    "nodes": {
+      "mend": {
+        "move": "mend",
+        "next": "rand"
+      },
+      "staff_poke": {
+        "move": "staff_poke",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "mend",
+            "weight": 2
+          },
+          {
+            "to": "staff_poke",
+            "weight": 1
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "rand"
   },
   {
     "id": "enemy_axe_ogre",
@@ -783,20 +1043,22 @@
     "archetype": "windup",
     "flavor": "振りかぶりは正直、一撃は苛烈、そのあと必ず息が切れる。",
     "maxHp": 110,
+    "hpRange": [
+      102,
+      118
+    ],
     "moves": [
       {
         "id": "windup",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       },
       {
         "id": "great_swing",
         "kind": "attack",
         "min": 24,
         "max": 28,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -804,20 +1066,25 @@
       },
       {
         "id": "gasp",
-        "kind": "rest",
-        "weight": 1
+        "kind": "rest"
       }
     ],
-    "sequence": [
-      "windup",
-      "great_swing",
-      "gasp"
-    ],
-    "artifact": 1,
-    "hpRange": [
-      102,
-      118
-    ]
+    "nodes": {
+      "windup": {
+        "move": "windup",
+        "next": "great_swing"
+      },
+      "great_swing": {
+        "move": "great_swing",
+        "next": "gasp"
+      },
+      "gasp": {
+        "move": "gasp",
+        "next": "windup"
+      }
+    },
+    "start": "windup",
+    "artifact": 1
   },
   {
     "id": "enemy_shell_guard",
@@ -825,13 +1092,16 @@
     "archetype": "shell",
     "flavor": "殻ごと押し潰しに来る。殻を割るか、殻ごと貫くか——割れたら中身は柔い。",
     "maxHp": 100,
+    "hpRange": [
+      93,
+      107
+    ],
     "moves": [
       {
         "id": "shell_bash",
         "kind": "attack",
         "min": 12,
         "max": 16,
-        "weight": 2,
         "alsoDefend": 10,
         "inflict": {
           "status": "frail",
@@ -842,25 +1112,58 @@
         "id": "harden",
         "kind": "defend",
         "min": 12,
-        "max": 16,
-        "weight": 1
-      }
-    ],
-    "movesBelowHalf": [
+        "max": 16
+      },
       {
         "id": "cracked_rage",
         "kind": "attack",
         "min": 16,
-        "max": 20,
-        "weight": 1
+        "max": 20
+      }
+    ],
+    "nodes": {
+      "shell_bash": {
+        "move": "shell_bash",
+        "next": "rand"
+      },
+      "harden": {
+        "move": "harden",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "shell_bash",
+            "weight": 2
+          },
+          {
+            "to": "harden",
+            "weight": 1
+          }
+        ]
+      },
+      "half_cracked_rage": {
+        "move": "cracked_rage",
+        "next": "half_rand"
+      },
+      "half_rand": {
+        "random": [
+          {
+            "to": "half_cracked_rage",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "rand",
+    "interrupts": [
+      {
+        "on": "hpBelowHalf",
+        "goto": "half_rand"
       }
     ],
     "startingBlock": 10,
-    "armor": 18,
-    "hpRange": [
-      93,
-      107
-    ]
+    "armor": 18
   },
   {
     "id": "enemy_apprentice_colossus",
@@ -868,31 +1171,36 @@
     "archetype": "windup",
     "flavor": "振るってから、構える。二拍子の型は崩さない。",
     "maxHp": 70,
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "brace",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       },
       {
         "id": "swing",
         "kind": "attack",
         "min": 14,
-        "max": 16,
-        "weight": 1
+        "max": 16
       }
     ],
-    "sequence": [
-      "swing",
-      "brace"
-    ],
-    "startingBlock": 8,
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "swing": {
+        "move": "swing",
+        "next": "brace"
+      },
+      "brace": {
+        "move": "brace",
+        "next": "swing"
+      }
+    },
+    "start": "swing",
+    "startingBlock": 8
   },
   {
     "id": "enemy_mimic_imp",
@@ -900,20 +1208,34 @@
     "archetype": "mimic",
     "flavor": "あなたの手数をけらけら笑いながら数えている。",
     "maxHp": 42,
+    "hpRange": [
+      39,
+      45
+    ],
     "moves": [
       {
         "id": "mimic",
         "kind": "attack",
         "min": 2,
         "max": 2,
-        "weight": 1,
         "mirrorHits": true
       }
     ],
-    "hpRange": [
-      39,
-      45
-    ]
+    "nodes": {
+      "mimic": {
+        "move": "mimic",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "mimic",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "rand"
   },
   {
     "id": "enemy_cultist",
@@ -921,29 +1243,50 @@
     "archetype": "enrager",
     "flavor": "祈るほどに刃が重くなる。囁きを止めるには、口を塞ぐしかない。",
     "maxHp": 65,
-    "enrage": 2,
+    "hpRange": [
+      60,
+      70
+    ],
     "moves": [
       {
         "id": "dark_blade",
         "kind": "attack",
         "min": 5,
-        "max": 7,
-        "weight": 1
+        "max": 7
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 4,
         "max": 6,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "hpRange": [
-      60,
-      70
-    ]
+    "nodes": {
+      "dark_blade": {
+        "move": "dark_blade",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "dark_blade",
+            "weight": 1
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "rand",
+    "enrage": 2
   },
   {
     "id": "enemy_slug",
@@ -951,11 +1294,14 @@
     "archetype": "hexer",
     "flavor": "舐められたら力が抜け、浴びせられたら鎧が緩む。ぬめりは全部が武器。",
     "maxHp": 70,
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "lick",
         "kind": "attack",
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 2
@@ -968,7 +1314,6 @@
         "kind": "attack",
         "min": 5,
         "max": 7,
-        "weight": 1,
         "inflict": {
           "status": "frail",
           "amount": 1
@@ -978,29 +1323,35 @@
         "id": "tackle",
         "kind": "attack",
         "min": 8,
-        "max": 10,
-        "weight": 1
+        "max": 10
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 4,
-        "max": 6,
-        "weight": 1,
-        "noRepeat": true
+        "max": 6
       }
     ],
-    "sequence": [
-      "lick",
-      "guard",
-      "acid_spit",
-      "tackle"
-    ],
-    "burnResist": 2,
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "lick": {
+        "move": "lick",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "acid_spit"
+      },
+      "acid_spit": {
+        "move": "acid_spit",
+        "next": "tackle"
+      },
+      "tackle": {
+        "move": "tackle",
+        "next": "lick"
+      }
+    },
+    "start": "lick",
+    "burnResist": 2
   },
   {
     "id": "enemy_whetstone_colossus",
@@ -1008,43 +1359,50 @@
     "archetype": "windup",
     "flavor": "三拍の後に刃が落ちる。数えられる死は、避けられる死だ。",
     "maxHp": 78,
+    "hpRange": [
+      73,
+      83
+    ],
     "moves": [
       {
         "id": "brace",
         "kind": "defend",
         "min": 10,
-        "max": 14,
-        "weight": 1
+        "max": 14
       },
       {
         "id": "hone",
         "kind": "buff",
         "min": 2,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "guillotine",
         "kind": "attack",
         "min": 26,
         "max": 30,
-        "weight": 1,
         "inflict": {
           "status": "frail",
           "amount": 1
         }
       }
     ],
-    "sequence": [
-      "brace",
-      "hone",
-      "guillotine"
-    ],
-    "startingBlock": 10,
-    "hpRange": [
-      73,
-      83
-    ]
+    "nodes": {
+      "brace": {
+        "move": "brace",
+        "next": "hone"
+      },
+      "hone": {
+        "move": "hone",
+        "next": "guillotine"
+      },
+      "guillotine": {
+        "move": "guillotine",
+        "next": "brace"
+      }
+    },
+    "start": "brace",
+    "startingBlock": 10
   },
   {
     "id": "enemy_mimic_jester",
@@ -1052,20 +1410,34 @@
     "archetype": "mimic",
     "flavor": "あなたが撃った数だけ、鏡の刃が返ってくる。",
     "maxHp": 68,
+    "hpRange": [
+      63,
+      73
+    ],
     "moves": [
       {
         "id": "mirror_dance",
         "kind": "attack",
         "min": 3,
         "max": 4,
-        "weight": 1,
         "mirrorHits": true
       }
     ],
-    "hpRange": [
-      63,
-      73
-    ]
+    "nodes": {
+      "mirror_dance": {
+        "move": "mirror_dance",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "mirror_dance",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "rand"
   },
   {
     "id": "enemy_cinder_imp",
@@ -1073,13 +1445,16 @@
     "archetype": "hexer",
     "flavor": "火の粉を投げて笑う小鬼。手札で火傷が疼く前に、捨てるか、燃やされるか。",
     "maxHp": 62,
+    "hpRange": [
+      58,
+      66
+    ],
     "moves": [
       {
         "id": "spark_toss",
         "kind": "attack",
         "min": 6,
         "max": 9,
-        "weight": 1,
         "inflict": {
           "status": "scald",
           "amount": 1
@@ -1088,7 +1463,6 @@
       {
         "id": "fan_flames",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "scald",
           "amount": 2
@@ -1098,28 +1472,34 @@
         "id": "bite",
         "kind": "attack",
         "min": 10,
-        "max": 14,
-        "weight": 1
+        "max": 14
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 7,
-        "max": 10,
-        "weight": 1,
-        "noRepeat": true
+        "max": 10
       }
     ],
-    "sequence": [
-      "spark_toss",
-      "guard",
-      "fan_flames",
-      "bite"
-    ],
-    "hpRange": [
-      58,
-      66
-    ]
+    "nodes": {
+      "spark_toss": {
+        "move": "spark_toss",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "fan_flames"
+      },
+      "fan_flames": {
+        "move": "fan_flames",
+        "next": "bite"
+      },
+      "bite": {
+        "move": "bite",
+        "next": "spark_toss"
+      }
+    },
+    "start": "spark_toss"
   },
   {
     "id": "enemy_rock_beetle",
@@ -1127,43 +1507,50 @@
     "archetype": "shell",
     "flavor": "小さな体を、身の丈に合わない岩の殻が包む。殻が残るうちは中身に届かない。貫いても殻に吸われる——割るしかなく、割った瞬間に噛みつかれる。",
     "maxHp": 30,
+    "hpRange": [
+      28,
+      32
+    ],
     "moves": [
       {
         "id": "harden",
         "kind": "defend",
         "min": 12,
-        "max": 15,
-        "weight": 1
+        "max": 15
       },
       {
         "id": "horn_jab",
         "kind": "attack",
         "min": 6,
         "max": 9,
-        "weight": 1,
         "alsoDefend": 8
       },
       {
         "id": "bite",
         "kind": "attack",
         "min": 10,
-        "max": 13,
-        "weight": 1
+        "max": 13
       }
     ],
-    "sequence": [
-      "horn_jab",
-      "harden",
-      "horn_jab"
-    ],
+    "nodes": {
+      "horn_jab": {
+        "move": "horn_jab",
+        "next": "harden"
+      },
+      "harden": {
+        "move": "harden",
+        "next": "horn_jab_2"
+      },
+      "horn_jab_2": {
+        "move": "horn_jab",
+        "next": "horn_jab"
+      }
+    },
+    "start": "horn_jab",
     "burrow": {
       "block": 12,
       "bite": "bite"
-    },
-    "hpRange": [
-      28,
-      32
-    ]
+    }
   },
   {
     "id": "enemy_big_slime",
@@ -1171,31 +1558,51 @@
     "archetype": "splitter",
     "flavor": "苔と泥の巨体。斬っても潰しても、中から小さいのが這い出してくる。",
     "maxHp": 72,
-    "splitInto": {
-      "enemyId": "enemy_moss_slime",
-      "count": 2
-    },
+    "hpRange": [
+      67,
+      77
+    ],
     "moves": [
       {
         "id": "slam",
         "kind": "attack",
         "min": 9,
-        "max": 13,
-        "weight": 2
+        "max": 13
       },
       {
         "id": "ooze_guard",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       }
     ],
-    "opener": "slam",
-    "hpRange": [
-      67,
-      77
-    ]
+    "nodes": {
+      "slam": {
+        "move": "slam",
+        "next": "rand"
+      },
+      "ooze_guard": {
+        "move": "ooze_guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "slam",
+            "weight": 2
+          },
+          {
+            "to": "ooze_guard",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "slam",
+    "splitInto": {
+      "enemyId": "enemy_moss_slime",
+      "count": 2
+    }
   },
   {
     "id": "enemy_moss_slime",
@@ -1203,29 +1610,38 @@
     "archetype": "splitter",
     "flavor": "大苔スライムのかけら。小さくても噛む。",
     "maxHp": 26,
+    "hpRange": [
+      24,
+      28
+    ],
     "moves": [
       {
         "id": "bump",
         "kind": "attack",
         "min": 5,
-        "max": 8,
-        "weight": 1
+        "max": 8
       },
       {
         "id": "ooze",
         "kind": "defend",
         "min": 4,
-        "max": 6,
-        "weight": 1
+        "max": 6
       }
     ],
-    "sequence": [
+    "nodes": {
+      "bump": {
+        "move": "bump",
+        "next": "ooze"
+      },
+      "ooze": {
+        "move": "ooze",
+        "next": "bump"
+      }
+    },
+    "start": "bump",
+    "startBySlot": [
       "bump",
       "ooze"
-    ],
-    "hpRange": [
-      24,
-      28
     ]
   },
   {
@@ -1234,21 +1650,22 @@
     "archetype": "elite",
     "flavor": "「盾を上げたな？」——縮こまる者を見ると、鞭の手が止まらない。",
     "maxHp": 82,
-    "angerOnBlock": 1,
+    "hpRange": [
+      76,
+      88
+    ],
     "moves": [
       {
         "id": "whip",
         "kind": "attack",
         "min": 8,
-        "max": 10,
-        "weight": 1
+        "max": 10
       },
       {
         "id": "double_whip",
         "kind": "attack",
         "min": 5,
         "max": 6,
-        "weight": 1,
         "hits": 2
       },
       {
@@ -1256,20 +1673,25 @@
         "kind": "defend",
         "min": 7,
         "max": 10,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "whip",
-      "guard",
-      "double_whip"
-    ],
-    "hpRange": [
-      76,
-      88
-    ]
+    "nodes": {
+      "whip": {
+        "move": "whip",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "double_whip"
+      },
+      "double_whip": {
+        "move": "double_whip",
+        "next": "whip"
+      }
+    },
+    "start": "whip",
+    "angerOnBlock": 1
   },
   {
     "id": "enemy_elite_sentry",
@@ -1277,13 +1699,16 @@
     "archetype": "elite",
     "flavor": "古代都市の秩序を守る石の番人。侵入者の鞄にがらくたを詰め込む。",
     "maxHp": 42,
+    "hpRange": [
+      39,
+      45
+    ],
     "moves": [
       {
         "id": "bolt",
         "kind": "attack",
         "min": 4,
         "max": 5,
-        "weight": 1,
         "inflict": {
           "status": "junk",
           "amount": 2
@@ -1293,27 +1718,30 @@
         "id": "beam",
         "kind": "attack",
         "min": 9,
-        "max": 11,
-        "weight": 1
+        "max": 11
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 5,
-        "max": 7,
-        "weight": 1,
-        "noRepeat": true
+        "max": 7
       }
     ],
-    "sequence": [
-      "bolt",
-      "beam",
-      "guard"
-    ],
-    "hpRange": [
-      39,
-      45
-    ]
+    "nodes": {
+      "bolt": {
+        "move": "bolt",
+        "next": "beam"
+      },
+      "beam": {
+        "move": "beam",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "bolt"
+      }
+    },
+    "start": "bolt"
   },
   {
     "id": "enemy_elite_iron_egg",
@@ -1321,12 +1749,14 @@
     "archetype": "elite",
     "flavor": "眠っている間も、殻は厚くなり続ける。殴れば目を覚ます。起こすか、育てるか。",
     "maxHp": 112,
-    "armor": 22,
+    "hpRange": [
+      104,
+      120
+    ],
     "moves": [
       {
         "id": "sleep",
         "kind": "defend",
-        "weight": 1,
         "min": 14,
         "max": 18
       },
@@ -1334,37 +1764,55 @@
         "id": "awaken",
         "kind": "buff",
         "min": 3,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "tail",
         "kind": "attack",
         "min": 18,
         "max": 22,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 2
         }
       }
     ],
-    "sequence": [
-      "sleep",
-      "sleep",
-      "sleep",
-      "awaken",
-      "tail"
-    ],
-    "sequenceLoopFrom": 4,
-    "wakeOnDamage": {
-      "damage": 20,
-      "resumeAt": 3
+    "nodes": {
+      "sleep": {
+        "move": "sleep",
+        "next": "sleep_2"
+      },
+      "sleep_2": {
+        "move": "sleep",
+        "next": "sleep_3"
+      },
+      "sleep_3": {
+        "move": "sleep",
+        "next": "awaken"
+      },
+      "awaken": {
+        "move": "awaken",
+        "next": "tail"
+      },
+      "tail": {
+        "move": "tail",
+        "next": "tail"
+      }
     },
-    "hpRange": [
-      104,
-      120
-    ]
+    "start": "sleep",
+    "interrupts": [
+      {
+        "on": "damageTaken",
+        "amount": 20,
+        "from": [
+          "sleep",
+          "sleep_2",
+          "sleep_3"
+        ],
+        "goto": "awaken"
+      }
+    ],
+    "armor": 22
   },
   {
     "id": "enemy_elite_slaver",
@@ -1372,13 +1820,16 @@
     "archetype": "elite",
     "flavor": "鎖は骨を砕かない。心を折るために振るう。",
     "maxHp": 120,
+    "hpRange": [
+      112,
+      128
+    ],
     "moves": [
       {
         "id": "chain",
         "kind": "attack",
         "min": 11,
         "max": 14,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 2
@@ -1387,7 +1838,6 @@
       {
         "id": "net",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "vulnerable",
           "amount": 3
@@ -1397,15 +1847,13 @@
         "id": "lash",
         "kind": "attack",
         "min": 12,
-        "max": 16,
-        "weight": 1
+        "max": 16
       },
       {
         "id": "weight",
         "kind": "attack",
         "min": 8,
         "max": 10,
-        "weight": 1,
         "inflict": {
           "status": "slow",
           "amount": 2
@@ -1415,22 +1863,32 @@
         "id": "guard",
         "kind": "defend",
         "min": 8,
-        "max": 12,
-        "weight": 1,
-        "noRepeat": true
+        "max": 12
       }
     ],
-    "sequence": [
-      "chain",
-      "net",
-      "weight",
-      "lash",
-      "guard"
-    ],
-    "hpRange": [
-      112,
-      128
-    ]
+    "nodes": {
+      "chain": {
+        "move": "chain",
+        "next": "net"
+      },
+      "net": {
+        "move": "net",
+        "next": "weight"
+      },
+      "weight": {
+        "move": "weight",
+        "next": "lash"
+      },
+      "lash": {
+        "move": "lash",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "chain"
+      }
+    },
+    "start": "chain"
   },
   {
     "id": "enemy_elite_stab_book",
@@ -1438,13 +1896,16 @@
     "archetype": "elite",
     "flavor": "頁をめくるたび、刺し方がひとつ増える。",
     "maxHp": 165,
+    "hpRange": [
+      153,
+      177
+    ],
     "moves": [
       {
         "id": "stab2",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "hits": 2
       },
       {
@@ -1452,7 +1913,6 @@
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "hits": 3
       },
       {
@@ -1460,7 +1920,6 @@
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "hits": 4
       },
       {
@@ -1468,22 +1927,29 @@
         "kind": "defend",
         "min": 15,
         "max": 21,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "stab2",
-      "stab3",
-      "stab4",
-      "guard"
-    ],
-    "startingBlock": 8,
-    "hpRange": [
-      153,
-      177
-    ]
+    "nodes": {
+      "stab2": {
+        "move": "stab2",
+        "next": "stab3"
+      },
+      "stab3": {
+        "move": "stab3",
+        "next": "stab4"
+      },
+      "stab4": {
+        "move": "stab4",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "stab2"
+      }
+    },
+    "start": "stab2",
+    "startingBlock": 8
   },
   {
     "id": "enemy_elite_giant_face",
@@ -1491,42 +1957,48 @@
     "archetype": "elite",
     "flavor": "睨まれたら、次は潰される。二拍子の死の予告。",
     "maxHp": 175,
+    "hpRange": [
+      163,
+      187
+    ],
     "moves": [
       {
         "id": "glare",
         "kind": "buff",
         "min": 2,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "crush",
         "kind": "attack",
         "min": 30,
         "max": 34,
-        "weight": 1,
         "growPerUse": 4
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 22,
-        "max": 32,
-        "weight": 1,
-        "noRepeat": true
+        "max": 32
       }
     ],
-    "sequence": [
-      "glare",
-      "crush",
-      "guard"
-    ],
+    "nodes": {
+      "glare": {
+        "move": "glare",
+        "next": "crush"
+      },
+      "crush": {
+        "move": "crush",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "glare"
+      }
+    },
+    "start": "glare",
     "turnArmor": 50,
-    "artifact": 2,
-    "hpRange": [
-      163,
-      187
-    ]
+    "artifact": 2
   },
   {
     "id": "enemy_elite_gold_raven",
@@ -1534,13 +2006,16 @@
     "archetype": "elite",
     "flavor": "光るものは全部おれのもの。舞い上がるたびに翼が重くなり、急降下は回を追うごとに鋭くなる。",
     "maxHp": 58,
+    "hpRange": [
+      54,
+      62
+    ],
     "moves": [
       {
         "id": "soar",
         "kind": "defend",
         "min": 8,
         "max": 8,
-        "weight": 1,
         "alsoBuff": 1
       },
       {
@@ -1548,26 +2023,30 @@
         "kind": "attack",
         "min": 14,
         "max": 18,
-        "weight": 1,
         "growPerUse": 4
       },
       {
         "id": "peck",
         "kind": "attack",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       }
     ],
-    "sequence": [
-      "soar",
-      "dive",
-      "peck"
-    ],
-    "hpRange": [
-      54,
-      62
-    ]
+    "nodes": {
+      "soar": {
+        "move": "soar",
+        "next": "dive"
+      },
+      "dive": {
+        "move": "dive",
+        "next": "peck"
+      },
+      "peck": {
+        "move": "peck",
+        "next": "soar"
+      }
+    },
+    "start": "soar"
   },
   {
     "id": "enemy_elite_mirror_djinn",
@@ -1575,19 +2054,21 @@
     "archetype": "elite",
     "flavor": "あなたの手数が、そのまま刃になって返る。鏡に映る自分と戦え。",
     "maxHp": 110,
+    "hpRange": [
+      102,
+      118
+    ],
     "moves": [
       {
         "id": "mirror",
         "kind": "attack",
         "min": 4,
         "max": 5,
-        "weight": 1,
         "mirrorHits": true
       },
       {
         "id": "gaze",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 3
@@ -1597,21 +2078,28 @@
         "id": "guard",
         "kind": "defend",
         "min": 3,
-        "max": 5,
-        "weight": 1,
-        "noRepeat": true
+        "max": 5
       }
     ],
-    "sequence": [
-      "mirror",
-      "guard",
-      "mirror",
-      "gaze"
-    ],
-    "hpRange": [
-      102,
-      118
-    ]
+    "nodes": {
+      "mirror": {
+        "move": "mirror",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "mirror_2"
+      },
+      "mirror_2": {
+        "move": "mirror",
+        "next": "gaze"
+      },
+      "gaze": {
+        "move": "gaze",
+        "next": "mirror"
+      }
+    },
+    "start": "mirror"
   },
   {
     "id": "enemy_elite_doom_chanter",
@@ -1619,43 +2107,52 @@
     "archetype": "elite",
     "flavor": "あなたが札を切るたび、詠唱は一節進む。急げ。歌が終わる前に。",
     "maxHp": 150,
-    "enrageEveryCards": 6,
+    "hpRange": [
+      140,
+      161
+    ],
     "moves": [
       {
         "id": "dual_chant",
         "kind": "attack",
         "min": 10,
         "max": 13,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "crescendo",
         "kind": "buff",
         "min": 2,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 16,
         "max": 23,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "dual_chant",
-      "dual_chant",
-      "crescendo",
-      "guard"
-    ],
-    "hpRange": [
-      140,
-      161
-    ]
+    "nodes": {
+      "dual_chant": {
+        "move": "dual_chant",
+        "next": "dual_chant_2"
+      },
+      "dual_chant_2": {
+        "move": "dual_chant",
+        "next": "crescendo"
+      },
+      "crescendo": {
+        "move": "crescendo",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "dual_chant"
+      }
+    },
+    "start": "dual_chant",
+    "enrageEveryCards": 6
   },
   {
     "id": "enemy_elite_devourer",
@@ -1663,49 +2160,60 @@
     "archetype": "elite",
     "flavor": "頁も刃も、腹に入れば同じこと。食べた分だけ、太る。",
     "maxHp": 70,
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "bite",
         "kind": "attack",
         "min": 8,
-        "max": 11,
-        "weight": 1
+        "max": 11
       },
       {
         "id": "devour",
         "kind": "mill",
         "min": 3,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "fatten",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 7,
         "max": 10,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "bite",
-      "devour",
-      "bite",
-      "fatten",
-      "guard"
-    ],
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "bite": {
+        "move": "bite",
+        "next": "devour"
+      },
+      "devour": {
+        "move": "devour",
+        "next": "bite_2"
+      },
+      "bite_2": {
+        "move": "bite",
+        "next": "fatten"
+      },
+      "fatten": {
+        "move": "fatten",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "bite"
+      }
+    },
+    "start": "bite"
   },
   {
     "id": "enemy_elite_owl",
@@ -1713,42 +2221,49 @@
     "archetype": "elite",
     "flavor": "羽撃ちで間合いを計り、構えてから急降下する。読まれているのはどちらか。",
     "maxHp": 110,
+    "hpRange": [
+      102,
+      118
+    ],
     "moves": [
       {
         "id": "wing",
         "kind": "attack",
         "min": 8,
-        "max": 11,
-        "weight": 1
+        "max": 11
       },
       {
         "id": "brace",
         "kind": "defend",
         "min": 8,
-        "max": 12,
-        "weight": 1
+        "max": 12
       },
       {
         "id": "talon_dive",
         "kind": "attack",
         "min": 18,
         "max": 24,
-        "weight": 1,
         "inflict": {
           "status": "mist",
           "amount": 1
         }
       }
     ],
-    "sequence": [
-      "wing",
-      "brace",
-      "talon_dive"
-    ],
-    "hpRange": [
-      102,
-      118
-    ]
+    "nodes": {
+      "wing": {
+        "move": "wing",
+        "next": "brace"
+      },
+      "brace": {
+        "move": "brace",
+        "next": "talon_dive"
+      },
+      "talon_dive": {
+        "move": "talon_dive",
+        "next": "wing"
+      }
+    },
+    "start": "wing"
   },
   {
     "id": "enemy_elite_deathless",
@@ -1756,43 +2271,49 @@
     "archetype": "elite",
     "flavor": "鎧の下は苔と誓い。半分を割るまでは、何度でも立つ。",
     "maxHp": 135,
-    "armor": 20,
-    "regen": 5,
-    "regenBreak": 33,
+    "hpRange": [
+      126,
+      144
+    ],
     "moves": [
       {
         "id": "cleave",
         "kind": "attack",
         "min": 16,
-        "max": 22,
-        "weight": 1
+        "max": 22
       },
       {
         "id": "stance",
         "kind": "attack",
         "min": 8,
         "max": 12,
-        "alsoDefend": 12,
-        "weight": 1
+        "alsoDefend": 12
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 10,
-        "max": 15,
-        "weight": 1,
-        "noRepeat": true
+        "max": 15
       }
     ],
-    "sequence": [
-      "cleave",
-      "stance",
-      "guard"
-    ],
-    "hpRange": [
-      126,
-      144
-    ]
+    "nodes": {
+      "cleave": {
+        "move": "cleave",
+        "next": "stance"
+      },
+      "stance": {
+        "move": "stance",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "cleave"
+      }
+    },
+    "start": "cleave",
+    "armor": 20,
+    "regen": 5,
+    "regenBreak": 33
   },
   {
     "id": "enemy_shield_squire",
@@ -1800,45 +2321,54 @@
     "archetype": "guardian",
     "flavor": "主を守るのが仕事。守る相手を失った盾は、ただの鈍器になる。",
     "maxHp": 105,
-    "guardian": true,
-    "startingBlock": 6,
+    "hpRange": [
+      98,
+      112
+    ],
     "moves": [
       {
         "id": "shield_bash",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "alsoDefend": 5
       },
       {
         "id": "brace",
         "kind": "defend",
         "min": 10,
-        "max": 13,
-        "weight": 1
-      }
-    ],
-    "sequence": [
-      "shield_bash",
-      "brace"
-    ],
-    "movesWhenAlone": [
+        "max": 13
+      },
       {
         "id": "avenging_rush",
         "kind": "attack",
         "min": 9,
-        "max": 12,
-        "weight": 1
+        "max": 12
       }
     ],
-    "sequenceWhenAlone": [
-      "avenging_rush"
+    "nodes": {
+      "shield_bash": {
+        "move": "shield_bash",
+        "next": "brace"
+      },
+      "brace": {
+        "move": "brace",
+        "next": "shield_bash"
+      },
+      "alone_avenging_rush": {
+        "move": "avenging_rush",
+        "next": "alone_avenging_rush"
+      }
+    },
+    "start": "shield_bash",
+    "interrupts": [
+      {
+        "on": "alone",
+        "goto": "alone_avenging_rush"
+      }
     ],
-    "hpRange": [
-      98,
-      112
-    ]
+    "guardian": true,
+    "startingBlock": 6
   },
   {
     "id": "enemy_crossbow_archer",
@@ -1846,20 +2376,22 @@
     "archetype": "charger",
     "flavor": "従士の陰から狙い撃つ。急所を射抜かれる前に、盾の陣を崩せるか。",
     "maxHp": 46,
+    "hpRange": [
+      43,
+      49
+    ],
     "moves": [
       {
         "id": "bolt",
         "kind": "attack",
         "min": 9,
-        "max": 13,
-        "weight": 1
+        "max": 13
       },
       {
         "id": "aimed_shot",
         "kind": "attack",
         "min": 14,
         "max": 18,
-        "weight": 1,
         "inflict": {
           "status": "vulnerable",
           "amount": 1
@@ -1869,21 +2401,28 @@
         "id": "guard",
         "kind": "defend",
         "min": 9,
-        "max": 14,
-        "weight": 1,
-        "noRepeat": true
+        "max": 14
       }
     ],
-    "sequence": [
-      "bolt",
-      "bolt",
-      "aimed_shot",
-      "guard"
-    ],
-    "hpRange": [
-      43,
-      49
-    ]
+    "nodes": {
+      "bolt": {
+        "move": "bolt",
+        "next": "bolt_2"
+      },
+      "bolt_2": {
+        "move": "bolt",
+        "next": "aimed_shot"
+      },
+      "aimed_shot": {
+        "move": "aimed_shot",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "bolt"
+      }
+    },
+    "start": "bolt"
   },
   {
     "id": "enemy_bond_wolf",
@@ -1891,40 +2430,47 @@
     "archetype": "flurry",
     "flavor": "二頭でひとつの獣。片方の牙が折れれば、残る牙も鈍る。",
     "maxHp": 105,
-    "bondStrength": 2,
+    "hpRange": [
+      98,
+      112
+    ],
     "moves": [
       {
         "id": "twin_bite",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "lunge",
         "kind": "attack",
         "min": 9,
-        "max": 12,
-        "weight": 1
+        "max": 12
       },
       {
         "id": "prowl",
         "kind": "defend",
         "min": 8,
-        "max": 12,
-        "weight": 1
+        "max": 12
       }
     ],
-    "sequence": [
-      "twin_bite",
-      "lunge",
-      "prowl"
-    ],
-    "hpRange": [
-      98,
-      112
-    ]
+    "nodes": {
+      "twin_bite": {
+        "move": "twin_bite",
+        "next": "lunge"
+      },
+      "lunge": {
+        "move": "lunge",
+        "next": "prowl"
+      },
+      "prowl": {
+        "move": "prowl",
+        "next": "twin_bite"
+      }
+    },
+    "start": "twin_bite",
+    "bondStrength": 2
   },
   {
     "id": "enemy_mud_lump",
@@ -1932,13 +2478,16 @@
     "archetype": "shell",
     "flavor": "急がない。泥は削っても削っても、また纏い直すだけ。",
     "maxHp": 105,
+    "hpRange": [
+      98,
+      112
+    ],
     "moves": [
       {
         "id": "slop",
         "kind": "attack",
         "min": 4,
         "max": 7,
-        "weight": 1,
         "inflict": {
           "status": "frail",
           "amount": 1
@@ -1948,35 +2497,41 @@
         "id": "mud_guard",
         "kind": "defend",
         "min": 8,
-        "max": 11,
-        "weight": 1
+        "max": 11
       },
       {
         "id": "slam",
         "kind": "attack",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       },
       {
         "id": "mud_toss",
         "kind": "attack",
         "min": 3,
         "max": 5,
-        "weight": 1,
         "alsoDefend": 8
       }
     ],
-    "sequence": [
-      "slop",
-      "mud_guard",
-      "slam",
-      "mud_toss"
-    ],
-    "hpRange": [
-      98,
-      112
-    ]
+    "nodes": {
+      "slop": {
+        "move": "slop",
+        "next": "mud_guard"
+      },
+      "mud_guard": {
+        "move": "mud_guard",
+        "next": "slam"
+      },
+      "slam": {
+        "move": "slam",
+        "next": "mud_toss"
+      },
+      "mud_toss": {
+        "move": "mud_toss",
+        "next": "slop"
+      }
+    },
+    "start": "slop"
   },
   {
     "id": "enemy_elite_husk_3",
@@ -1984,35 +2539,43 @@
     "archetype": "splitter",
     "flavor": "三度まで立ち上がる。骨が減るほど、剣筋は冴える。",
     "maxHp": 60,
-    "splitInto": {
-      "enemyId": "enemy_elite_husk_2",
-      "count": 1
-    },
+    "hpRange": [
+      56,
+      64
+    ],
     "moves": [
       {
         "id": "slash",
         "kind": "attack",
         "min": 14,
-        "max": 18,
-        "weight": 1
+        "max": 18
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 8,
-        "max": 11,
-        "weight": 1
+        "max": 11
       }
     ],
-    "sequence": [
-      "slash",
-      "guard",
-      "slash"
-    ],
-    "hpRange": [
-      56,
-      64
-    ]
+    "nodes": {
+      "slash": {
+        "move": "slash",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "slash_2"
+      },
+      "slash_2": {
+        "move": "slash",
+        "next": "slash"
+      }
+    },
+    "start": "slash",
+    "splitInto": {
+      "enemyId": "enemy_elite_husk_2",
+      "count": 1
+    }
   },
   {
     "id": "enemy_elite_husk_2",
@@ -2020,27 +2583,30 @@
     "archetype": "splitter",
     "flavor": "二度目の骸は軽い。軽い剣は速い。",
     "maxHp": 40,
-    "splitInto": {
-      "enemyId": "enemy_elite_husk_1",
-      "count": 1,
-      "strength": 2
-    },
+    "hpRange": [
+      37,
+      43
+    ],
     "moves": [
       {
         "id": "slash",
         "kind": "attack",
         "min": 12,
-        "max": 16,
-        "weight": 1
+        "max": 16
       }
     ],
-    "sequence": [
-      "slash"
-    ],
-    "hpRange": [
-      37,
-      43
-    ]
+    "nodes": {
+      "slash": {
+        "move": "slash",
+        "next": "slash"
+      }
+    },
+    "start": "slash",
+    "splitInto": {
+      "enemyId": "enemy_elite_husk_1",
+      "count": 1,
+      "strength": 2
+    }
   },
   {
     "id": "enemy_elite_husk_1",
@@ -2048,22 +2614,25 @@
     "archetype": "brute",
     "flavor": "最後の骨格。もう守るものが無い剣は、いちばん鋭い。",
     "maxHp": 25,
+    "hpRange": [
+      23,
+      27
+    ],
     "moves": [
       {
         "id": "slash",
         "kind": "attack",
         "min": 10,
-        "max": 14,
-        "weight": 1
+        "max": 14
       }
     ],
-    "sequence": [
-      "slash"
-    ],
-    "hpRange": [
-      23,
-      27
-    ]
+    "nodes": {
+      "slash": {
+        "move": "slash",
+        "next": "slash"
+      }
+    },
+    "start": "slash"
   },
   {
     "id": "enemy_brood_toad",
@@ -2071,18 +2640,16 @@
     "archetype": "splitter",
     "flavor": "腹の中で何かが蠢いている。潰せば、出てくる。",
     "maxHp": 90,
-    "splitInto": {
-      "enemyId": "enemy_broodling",
-      "count": 3,
-      "stunned": true
-    },
+    "hpRange": [
+      84,
+      96
+    ],
     "moves": [
       {
         "id": "tongue",
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -2092,18 +2659,25 @@
         "id": "squat",
         "kind": "defend",
         "min": 7,
-        "max": 10,
-        "weight": 1
+        "max": 10
       }
     ],
-    "sequence": [
-      "tongue",
-      "squat"
-    ],
-    "hpRange": [
-      84,
-      96
-    ]
+    "nodes": {
+      "tongue": {
+        "move": "tongue",
+        "next": "squat"
+      },
+      "squat": {
+        "move": "squat",
+        "next": "tongue"
+      }
+    },
+    "start": "tongue",
+    "splitInto": {
+      "enemyId": "enemy_broodling",
+      "count": 3,
+      "stunned": true
+    }
   },
   {
     "id": "enemy_broodling",
@@ -2111,22 +2685,25 @@
     "archetype": "flurry",
     "flavor": "生まれたてでも牙はある。",
     "maxHp": 18,
+    "hpRange": [
+      17,
+      19
+    ],
     "moves": [
       {
         "id": "gnaw",
         "kind": "attack",
         "min": 4,
-        "max": 6,
-        "weight": 1
+        "max": 6
       }
     ],
-    "sequence": [
-      "gnaw"
-    ],
-    "hpRange": [
-      17,
-      19
-    ]
+    "nodes": {
+      "gnaw": {
+        "move": "gnaw",
+        "next": "gnaw"
+      }
+    },
+    "start": "gnaw"
   },
   {
     "id": "enemy_brood_raptor",
@@ -2134,31 +2711,36 @@
     "archetype": "guardian",
     "flavor": "巣を守る母は、巣立ちの時間を稼ぐ。",
     "maxHp": 85,
-    "guardian": true,
+    "hpRange": [
+      79,
+      91
+    ],
     "moves": [
       {
         "id": "claw",
         "kind": "attack",
         "min": 8,
-        "max": 11,
-        "weight": 1
+        "max": 11
       },
       {
         "id": "shelter",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       }
     ],
-    "sequence": [
-      "claw",
-      "shelter"
-    ],
-    "hpRange": [
-      79,
-      91
-    ]
+    "nodes": {
+      "claw": {
+        "move": "claw",
+        "next": "shelter"
+      },
+      "shelter": {
+        "move": "shelter",
+        "next": "claw"
+      }
+    },
+    "start": "claw",
+    "guardian": true
   },
   {
     "id": "enemy_raptor_egg",
@@ -2166,33 +2748,40 @@
     "archetype": "charger",
     "flavor": "殻ごしに鼓動が速くなっていく。割るなら今のうち。",
     "maxHp": 16,
-    "hatchInto": {
-      "enemyId": "enemy_raptor_chick"
-    },
+    "hpRange": [
+      15,
+      17
+    ],
     "moves": [
       {
         "id": "quiver",
         "kind": "defend",
         "min": 4,
-        "max": 6,
-        "weight": 1
+        "max": 6
       },
       {
         "id": "hatch",
-        "kind": "hatch",
-        "weight": 1
+        "kind": "hatch"
       }
     ],
-    "sequence": [
-      "quiver",
-      "quiver",
-      "hatch"
-    ],
-    "sequenceLoopFrom": 2,
-    "hpRange": [
-      15,
-      17
-    ]
+    "nodes": {
+      "quiver": {
+        "move": "quiver",
+        "next": "quiver_2"
+      },
+      "quiver_2": {
+        "move": "quiver",
+        "next": "hatch"
+      },
+      "hatch": {
+        "move": "hatch",
+        "next": "hatch"
+      }
+    },
+    "start": "quiver",
+    "hatchInto": {
+      "enemyId": "enemy_raptor_chick"
+    }
   },
   {
     "id": "enemy_raptor_chick",
@@ -2200,22 +2789,25 @@
     "archetype": "flurry",
     "flavor": "孵ったばかりで腹ぺこ。",
     "maxHp": 40,
+    "hpRange": [
+      37,
+      43
+    ],
     "moves": [
       {
         "id": "peck",
         "kind": "attack",
         "min": 10,
-        "max": 13,
-        "weight": 1
+        "max": 13
       }
     ],
-    "sequence": [
-      "peck"
-    ],
-    "hpRange": [
-      37,
-      43
-    ]
+    "nodes": {
+      "peck": {
+        "move": "peck",
+        "next": "peck"
+      }
+    },
+    "start": "peck"
   },
   {
     "id": "enemy_mourn_beast",
@@ -2223,40 +2815,47 @@
     "archetype": "flurry",
     "flavor": "番いの片割れを失うと、悲しみは牙になる。",
     "maxHp": 95,
-    "mournStrength": 4,
+    "hpRange": [
+      88,
+      102
+    ],
     "moves": [
       {
         "id": "bite",
         "kind": "attack",
         "min": 5,
         "max": 7,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "leap",
         "kind": "attack",
         "min": 12,
-        "max": 16,
-        "weight": 1
+        "max": 16
       },
       {
         "id": "lick",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1
+        "max": 9
       }
     ],
-    "sequence": [
-      "bite",
-      "leap",
-      "lick"
-    ],
-    "hpRange": [
-      88,
-      102
-    ]
+    "nodes": {
+      "bite": {
+        "move": "bite",
+        "next": "leap"
+      },
+      "leap": {
+        "move": "leap",
+        "next": "lick"
+      },
+      "lick": {
+        "move": "lick",
+        "next": "bite"
+      }
+    },
+    "start": "bite",
+    "mournStrength": 4
   },
   {
     "id": "enemy_maw_hunter",
@@ -2264,12 +2863,14 @@
     "archetype": "flurry",
     "flavor": "糸で搦めてから、ゆっくり喰う。急ぐ理由が、向こうには無い。",
     "maxHp": 110,
-    "sequenceLoopFrom": 1,
+    "hpRange": [
+      102,
+      118
+    ],
     "moves": [
       {
         "id": "web",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "slow",
           "amount": 2
@@ -2280,7 +2881,6 @@
         "kind": "attack",
         "min": 15,
         "max": 19,
-        "weight": 1,
         "growPerUse": 2
       },
       {
@@ -2288,28 +2888,34 @@
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "hits": 3
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 13,
-        "max": 19,
-        "weight": 1,
-        "noRepeat": true
+        "max": 19
       }
     ],
-    "sequence": [
-      "web",
-      "bite",
-      "claws",
-      "guard"
-    ],
-    "hpRange": [
-      102,
-      118
-    ]
+    "nodes": {
+      "web": {
+        "move": "web",
+        "next": "bite"
+      },
+      "bite": {
+        "move": "bite",
+        "next": "claws"
+      },
+      "claws": {
+        "move": "claws",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "bite"
+      }
+    },
+    "start": "web"
   },
   {
     "id": "enemy_sludge_berserker",
@@ -2317,11 +2923,14 @@
     "archetype": "brute",
     "flavor": "泥を撒き、泥ごと殴る。あなたのデッキも、もう綺麗ではいられない。",
     "maxHp": 190,
+    "hpRange": [
+      177,
+      203
+    ],
     "moves": [
       {
         "id": "vomit",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "wound",
           "amount": 3
@@ -2332,7 +2941,6 @@
         "kind": "attack",
         "min": 5,
         "max": 6,
-        "weight": 1,
         "hits": 4
       },
       {
@@ -2340,7 +2948,6 @@
         "kind": "attack",
         "min": 8,
         "max": 10,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 2
@@ -2351,30 +2958,39 @@
         "kind": "attack",
         "min": 26,
         "max": 30,
-        "weight": 1,
         "growPerUse": 4
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 14,
-        "max": 20,
-        "weight": 1,
-        "noRepeat": true
+        "max": 20
       }
     ],
-    "sequence": [
-      "vomit",
-      "pummel",
-      "hug",
-      "smother",
-      "guard"
-    ],
-    "turnArmor": 45,
-    "hpRange": [
-      177,
-      203
-    ]
+    "nodes": {
+      "vomit": {
+        "move": "vomit",
+        "next": "pummel"
+      },
+      "pummel": {
+        "move": "pummel",
+        "next": "hug"
+      },
+      "hug": {
+        "move": "hug",
+        "next": "smother"
+      },
+      "smother": {
+        "move": "smother",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "vomit"
+      }
+    },
+    "start": "vomit",
+    "turnArmor": 45
   },
   {
     "id": "enemy_mudling",
@@ -2382,20 +2998,20 @@
     "archetype": "flurry",
     "flavor": "一匹なら踏める。三匹いると、靴が重くなる。",
     "maxHp": 14,
-    "opener": "bump",
+    "hpRange": [
+      13,
+      15
+    ],
     "moves": [
       {
         "id": "bump",
         "kind": "attack",
         "min": 3,
-        "max": 5,
-        "weight": 2
+        "max": 5
       },
       {
         "id": "slop",
         "kind": "hex",
-        "weight": 1,
-        "noRepeat": true,
         "inflict": {
           "status": "wound",
           "amount": 1
@@ -2405,15 +3021,42 @@
         "id": "guard",
         "kind": "defend",
         "min": 3,
-        "max": 4,
-        "weight": 1,
-        "noRepeat": true
+        "max": 4
       }
     ],
-    "hpRange": [
-      13,
-      15
-    ]
+    "nodes": {
+      "bump": {
+        "move": "bump",
+        "next": "rand"
+      },
+      "slop": {
+        "move": "slop",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "bump",
+            "weight": 2
+          },
+          {
+            "to": "slop",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "bump"
   },
   {
     "id": "enemy_gaping_maw",
@@ -2421,30 +3064,27 @@
     "archetype": "wide-power",
     "flavor": "同じ手は二度続かない。咆哮は一度きり——吠えた後の一噛みは、骨まで届く。",
     "maxHp": 95,
-    "opener": "claw",
+    "hpRange": [
+      88,
+      102
+    ],
     "moves": [
       {
         "id": "claw",
         "kind": "attack",
         "min": 4,
         "max": 5,
-        "weight": 1,
-        "hits": 2,
-        "noRepeat": true
+        "hits": 2
       },
       {
         "id": "rend",
         "kind": "attack",
         "min": 10,
-        "max": 12,
-        "weight": 1,
-        "noRepeat": true
+        "max": 12
       },
       {
         "id": "roar",
         "kind": "hex",
-        "weight": 1,
-        "once": true,
         "inflict": {
           "status": "vulnerable",
           "amount": 2
@@ -2454,15 +3094,52 @@
         "id": "guard",
         "kind": "defend",
         "min": 7,
-        "max": 10,
-        "weight": 1,
-        "noRepeat": true
+        "max": 10
       }
     ],
-    "hpRange": [
-      88,
-      102
-    ]
+    "nodes": {
+      "claw": {
+        "move": "claw",
+        "next": "rand"
+      },
+      "rend": {
+        "move": "rend",
+        "next": "rand"
+      },
+      "roar": {
+        "move": "roar",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "claw",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "rend",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "roar",
+            "weight": 1,
+            "once": true
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "claw"
   },
   {
     "id": "enemy_cog_construct",
@@ -2470,15 +3147,16 @@
     "archetype": "enrager",
     "flavor": "撃つたび歯車が噛み合い、次の一射が重くなる。初めの急所も威圧も、殻に弾かれる。",
     "maxHp": 80,
-    "startingBlock": 13,
-    "artifact": 1,
+    "hpRange": [
+      74,
+      86
+    ],
     "moves": [
       {
         "id": "repeater",
         "kind": "attack",
         "min": 5,
         "max": 6,
-        "weight": 1,
         "alsoBuff": 2
       },
       {
@@ -2486,36 +3164,46 @@
         "kind": "attack",
         "min": 3,
         "max": 4,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "charge_up",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 4,
-        "max": 6,
-        "weight": 1,
-        "noRepeat": true
+        "max": 6
       }
     ],
-    "sequence": [
-      "repeater",
-      "repeater",
-      "expel",
-      "charge_up",
-      "guard"
-    ],
-    "hpRange": [
-      74,
-      86
-    ]
+    "nodes": {
+      "repeater": {
+        "move": "repeater",
+        "next": "repeater_2"
+      },
+      "repeater_2": {
+        "move": "repeater",
+        "next": "expel"
+      },
+      "expel": {
+        "move": "expel",
+        "next": "charge_up"
+      },
+      "charge_up": {
+        "move": "charge_up",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "repeater"
+      }
+    },
+    "start": "repeater",
+    "startingBlock": 13,
+    "artifact": 1
   },
   {
     "id": "enemy_spore_cap",
@@ -2523,13 +3211,14 @@
     "archetype": "hexer",
     "flavor": "胞子を浴びた次のターンが本番。紫は傷を深くし、黄は鎧を緩める。",
     "maxHp": 70,
-    "opener": "frail_spores",
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "vuln_spores",
         "kind": "hex",
-        "weight": 3,
-        "noRepeat": true,
         "inflict": {
           "status": "vulnerable",
           "amount": 2
@@ -2540,8 +3229,6 @@
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 2,
-        "noRepeat": true,
         "inflict": {
           "status": "frail",
           "amount": 1
@@ -2551,23 +3238,58 @@
         "id": "smash",
         "kind": "attack",
         "min": 9,
-        "max": 11,
-        "weight": 1,
-        "noRepeat": true
+        "max": 11
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1,
-        "noRepeat": true
+        "max": 9
       }
     ],
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "vuln_spores": {
+        "move": "vuln_spores",
+        "next": "rand"
+      },
+      "frail_spores": {
+        "move": "frail_spores",
+        "next": "rand"
+      },
+      "smash": {
+        "move": "smash",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "vuln_spores",
+            "weight": 3,
+            "noRepeat": true
+          },
+          {
+            "to": "frail_spores",
+            "weight": 2,
+            "noRepeat": true
+          },
+          {
+            "to": "smash",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "frail_spores"
   },
   {
     "id": "enemy_strangler_serpent",
@@ -2575,13 +3297,16 @@
     "archetype": "hexer",
     "flavor": "巻かれて締められた次のターンは、三枚しか切れない。三枚で凌ぐか、三枚で殴り切るか。",
     "maxHp": 80,
+    "hpRange": [
+      74,
+      86
+    ],
     "moves": [
       {
         "id": "constrict",
         "kind": "attack",
         "min": 3,
         "max": 4,
-        "weight": 1,
         "inflict": {
           "status": "restrain",
           "amount": 1
@@ -2591,37 +3316,45 @@
         "id": "lash",
         "kind": "attack",
         "min": 10,
-        "max": 12,
-        "weight": 1
+        "max": 12
       },
       {
         "id": "thwack",
         "kind": "attack",
         "min": 6,
         "max": 7,
-        "weight": 1,
         "alsoDefend": 5
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 5,
-        "max": 7,
-        "weight": 1,
-        "noRepeat": true
+        "max": 7
       }
     ],
-    "sequence": [
-      "constrict",
-      "guard",
-      "lash",
-      "constrict",
-      "thwack"
-    ],
-    "hpRange": [
-      74,
-      86
-    ]
+    "nodes": {
+      "constrict": {
+        "move": "constrict",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "lash"
+      },
+      "lash": {
+        "move": "lash",
+        "next": "constrict_2"
+      },
+      "constrict_2": {
+        "move": "constrict",
+        "next": "thwack"
+      },
+      "thwack": {
+        "move": "thwack",
+        "next": "constrict"
+      }
+    },
+    "start": "constrict"
   },
   {
     "id": "enemy_snap_fruit",
@@ -2629,28 +3362,49 @@
     "archetype": "enrager",
     "flavor": "小さな口は一噛みごとに大きくなる。後回しにした分だけ、牙が伸びる。",
     "maxHp": 45,
+    "hpRange": [
+      42,
+      48
+    ],
     "moves": [
       {
         "id": "snap",
         "kind": "attack",
         "min": 3,
         "max": 3,
-        "weight": 1,
         "alsoBuff": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 3,
-        "max": 4,
-        "weight": 1,
-        "noRepeat": true
+        "max": 4
       }
     ],
-    "hpRange": [
-      42,
-      48
-    ]
+    "nodes": {
+      "snap": {
+        "move": "snap",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "snap",
+            "weight": 1
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "rand"
   },
   {
     "id": "enemy_vine_walker",
@@ -2658,53 +3412,61 @@
     "archetype": "charger",
     "flavor": "蔦が腕に絡み、物理の一振りが一マナ重い。呪文は絡まれない。三拍目の大顎までに決めろ。",
     "maxHp": 85,
-    "aura": {
-      "attacksOnly": true,
-      "costUp": 1
-    },
+    "hpRange": [
+      79,
+      91
+    ],
     "moves": [
       {
         "id": "swipe",
         "kind": "attack",
         "min": 4,
         "max": 5,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "grasping_vines",
         "kind": "attack",
         "min": 6,
-        "max": 8,
-        "weight": 1
+        "max": 8
       },
       {
         "id": "chomp",
         "kind": "attack",
         "min": 13,
-        "max": 15,
-        "weight": 1
+        "max": 15
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 7,
         "max": 10,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "swipe",
-      "guard",
-      "grasping_vines",
-      "chomp"
-    ],
-    "hpRange": [
-      79,
-      91
-    ]
+    "nodes": {
+      "swipe": {
+        "move": "swipe",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "grasping_vines"
+      },
+      "grasping_vines": {
+        "move": "grasping_vines",
+        "next": "chomp"
+      },
+      "chomp": {
+        "move": "chomp",
+        "next": "swipe"
+      }
+    },
+    "start": "swipe",
+    "aura": {
+      "attacksOnly": true,
+      "costUp": 1
+    }
   },
   {
     "id": "enemy_iron_clam",
@@ -2712,41 +3474,47 @@
     "archetype": "shell",
     "flavor": "殻は一撃を五までしか通さない。大振りより数で削れ。閉じて溜めた次の噴射は重い。",
     "maxHp": 58,
-    "armor": 5,
+    "hpRange": [
+      54,
+      62
+    ],
     "moves": [
       {
         "id": "jet",
         "kind": "attack",
         "min": 8,
-        "max": 10,
-        "weight": 1
+        "max": 10
       },
       {
         "id": "pressurize",
         "kind": "buff",
         "min": 3,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 6,
         "max": 9,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "jet",
-      "pressurize",
-      "guard"
-    ],
-    "hpRange": [
-      54,
-      62
-    ]
+    "nodes": {
+      "jet": {
+        "move": "jet",
+        "next": "pressurize"
+      },
+      "pressurize": {
+        "move": "pressurize",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "jet"
+      }
+    },
+    "start": "jet",
+    "armor": 5
   },
   {
     "id": "enemy_sludge_spider",
@@ -2754,15 +3522,16 @@
     "archetype": "hexer",
     "flavor": "油を浴びれば腕が鈍り、怒れば牙が育つ。同じ手は二度続けて来ない。",
     "maxHp": 55,
-    "opener": "oil_spray",
+    "hpRange": [
+      51,
+      59
+    ],
     "moves": [
       {
         "id": "oil_spray",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
-        "noRepeat": true,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -2772,32 +3541,65 @@
         "id": "slam",
         "kind": "attack",
         "min": 9,
-        "max": 11,
-        "weight": 1,
-        "noRepeat": true
+        "max": 11
       },
       {
         "id": "rage",
         "kind": "attack",
         "min": 5,
         "max": 6,
-        "weight": 1,
-        "alsoBuff": 2,
-        "noRepeat": true
+        "alsoBuff": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 5,
-        "max": 8,
-        "weight": 1,
-        "noRepeat": true
+        "max": 8
       }
     ],
-    "hpRange": [
-      51,
-      59
-    ]
+    "nodes": {
+      "oil_spray": {
+        "move": "oil_spray",
+        "next": "rand"
+      },
+      "slam": {
+        "move": "slam",
+        "next": "rand"
+      },
+      "rage": {
+        "move": "rage",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "oil_spray",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "slam",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "rage",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "oil_spray"
   },
   {
     "id": "enemy_axe_automaton",
@@ -2805,36 +3607,29 @@
     "archetype": "splitter",
     "flavor": "壊しても一度は起き上がる。二機ぶんの残機を、どう数えて削り切る。",
     "maxHp": 38,
-    "opener": "one_two",
-    "splitInto": {
-      "enemyId": "enemy_axe_automaton_reboot",
-      "count": 1,
-      "strength": 1
-    },
+    "hpRange": [
+      35,
+      41
+    ],
     "moves": [
       {
         "id": "one_two",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 2,
         "hits": 2
       },
       {
         "id": "sharpen",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1,
-        "once": true
+        "max": 2
       },
       {
         "id": "hammer_upper",
         "kind": "attack",
         "min": 8,
         "max": 10,
-        "weight": 2,
-        "noRepeat": true,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -2844,15 +3639,56 @@
         "id": "guard",
         "kind": "defend",
         "min": 7,
-        "max": 10,
-        "weight": 1,
-        "noRepeat": true
+        "max": 10
       }
     ],
-    "hpRange": [
-      35,
-      41
-    ]
+    "nodes": {
+      "one_two": {
+        "move": "one_two",
+        "next": "rand"
+      },
+      "sharpen": {
+        "move": "sharpen",
+        "next": "rand"
+      },
+      "hammer_upper": {
+        "move": "hammer_upper",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "one_two",
+            "weight": 2
+          },
+          {
+            "to": "sharpen",
+            "weight": 1,
+            "once": true
+          },
+          {
+            "to": "hammer_upper",
+            "weight": 2,
+            "noRepeat": true
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "one_two",
+    "splitInto": {
+      "enemyId": "enemy_axe_automaton_reboot",
+      "count": 1,
+      "strength": 1
+    }
   },
   {
     "id": "enemy_axe_automaton_reboot",
@@ -2860,20 +3696,22 @@
     "archetype": "brute",
     "flavor": "再起動の一手で殻を閉じる。起ききる前に殴るか、殻ごと叩き抜くか。",
     "maxHp": 26,
+    "hpRange": [
+      24,
+      28
+    ],
     "moves": [
       {
         "id": "boot_up",
         "kind": "defend",
         "min": 8,
-        "max": 8,
-        "weight": 1
+        "max": 8
       },
       {
         "id": "one_two",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "hits": 2
       },
       {
@@ -2881,23 +3719,27 @@
         "kind": "attack",
         "min": 8,
         "max": 10,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 1
         }
       }
     ],
-    "sequence": [
-      "boot_up",
-      "one_two",
-      "hammer_upper"
-    ],
-    "sequenceLoopFrom": 1,
-    "hpRange": [
-      24,
-      28
-    ]
+    "nodes": {
+      "boot_up": {
+        "move": "boot_up",
+        "next": "one_two"
+      },
+      "one_two": {
+        "move": "one_two",
+        "next": "hammer_upper"
+      },
+      "hammer_upper": {
+        "move": "hammer_upper",
+        "next": "one_two"
+      }
+    },
+    "start": "boot_up"
   },
   {
     "id": "enemy_thunder_globe",
@@ -2905,13 +3747,16 @@
     "archetype": "enrager",
     "flavor": "平手、雷、帯電。三拍ごとに雷は太る——数えて、虚弱の拍に殴り、雷の拍を凌げ。",
     "maxHp": 120,
+    "hpRange": [
+      112,
+      128
+    ],
     "moves": [
       {
         "id": "shock_slap",
         "kind": "attack",
         "min": 11,
         "max": 13,
-        "weight": 1,
         "inflict": {
           "status": "frail",
           "amount": 2
@@ -2922,7 +3767,6 @@
         "kind": "attack",
         "min": 6,
         "max": 7,
-        "weight": 1,
         "hits": 3
       },
       {
@@ -2930,29 +3774,35 @@
         "kind": "attack",
         "min": 15,
         "max": 18,
-        "weight": 1,
         "alsoBuff": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 11,
-        "max": 16,
-        "weight": 1,
-        "noRepeat": true
+        "max": 16
       }
     ],
-    "sequence": [
-      "shock_slap",
-      "thunder_strike",
-      "galvanic_burst",
-      "guard"
-    ],
-    "turnArmor": 35,
-    "hpRange": [
-      112,
-      128
-    ]
+    "nodes": {
+      "shock_slap": {
+        "move": "shock_slap",
+        "next": "thunder_strike"
+      },
+      "thunder_strike": {
+        "move": "thunder_strike",
+        "next": "galvanic_burst"
+      },
+      "galvanic_burst": {
+        "move": "galvanic_burst",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "shock_slap"
+      }
+    },
+    "start": "shock_slap",
+    "turnArmor": 35
   },
   {
     "id": "enemy_frog_knight",
@@ -2960,14 +3810,16 @@
     "archetype": "charger",
     "flavor": "板金は一撃を通さない。膝をついた瞬間、女王のために一度だけ全てを賭ける——半分を切る拍は、あなたが選べ。",
     "maxHp": 140,
-    "armor": 24,
+    "hpRange": [
+      130,
+      150
+    ],
     "moves": [
       {
         "id": "tongue_lash",
         "kind": "attack",
         "min": 12,
         "max": 14,
-        "weight": 1,
         "inflict": {
           "status": "frail",
           "amount": 2
@@ -2977,71 +3829,91 @@
         "id": "strike_down",
         "kind": "attack",
         "min": 18,
-        "max": 22,
-        "weight": 1
+        "max": 22
       },
       {
         "id": "for_the_queen",
         "kind": "buff",
         "min": 2,
-        "max": 3,
-        "weight": 1
+        "max": 3
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 12,
-        "max": 17,
-        "weight": 1,
-        "noRepeat": true
-      }
-    ],
-    "sequence": [
-      "tongue_lash",
-      "strike_down",
-      "for_the_queen",
-      "guard"
-    ],
-    "movesBelowHalf": [
+        "max": 17
+      },
       {
         "id": "beetle_charge",
         "kind": "attack",
         "min": 28,
-        "max": 30,
-        "weight": 16,
-        "once": true
-      },
-      {
-        "id": "strike_down",
-        "kind": "attack",
-        "min": 18,
-        "max": 22,
-        "weight": 2
-      },
-      {
-        "id": "tongue_lash",
-        "kind": "attack",
-        "min": 12,
-        "max": 14,
-        "weight": 1,
-        "inflict": {
-          "status": "frail",
-          "amount": 2
-        }
-      },
-      {
-        "id": "for_the_queen",
-        "kind": "buff",
-        "min": 2,
-        "max": 3,
-        "weight": 1,
-        "noRepeat": true
+        "max": 30
       }
     ],
-    "hpRange": [
-      130,
-      150
-    ]
+    "nodes": {
+      "tongue_lash": {
+        "move": "tongue_lash",
+        "next": "strike_down"
+      },
+      "strike_down": {
+        "move": "strike_down",
+        "next": "for_the_queen"
+      },
+      "for_the_queen": {
+        "move": "for_the_queen",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "tongue_lash"
+      },
+      "half_beetle_charge": {
+        "move": "beetle_charge",
+        "next": "half_rand"
+      },
+      "half_strike_down": {
+        "move": "strike_down",
+        "next": "half_rand"
+      },
+      "half_tongue_lash": {
+        "move": "tongue_lash",
+        "next": "half_rand"
+      },
+      "half_for_the_queen": {
+        "move": "for_the_queen",
+        "next": "half_rand"
+      },
+      "half_rand": {
+        "random": [
+          {
+            "to": "half_beetle_charge",
+            "weight": 16,
+            "once": true
+          },
+          {
+            "to": "half_strike_down",
+            "weight": 2
+          },
+          {
+            "to": "half_tongue_lash",
+            "weight": 1
+          },
+          {
+            "to": "half_for_the_queen",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "tongue_lash",
+    "interrupts": [
+      {
+        "on": "hpBelowHalf",
+        "goto": "half_rand"
+      }
+    ],
+    "armor": 24
   },
   {
     "id": "enemy_biting_scroll",
@@ -3049,46 +3921,80 @@
     "archetype": "flurry",
     "flavor": "一巻なら紙切れ。三巻、四巻と揃えば、放っておくほど牙が増える。",
     "maxHp": 30,
-    "opener": "chomp",
+    "hpRange": [
+      28,
+      32
+    ],
     "moves": [
       {
         "id": "chomp",
         "kind": "attack",
         "min": 7,
-        "max": 9,
-        "weight": 1,
-        "noRepeat": true
+        "max": 9
       },
       {
         "id": "chew",
         "kind": "attack",
         "min": 3,
         "max": 4,
-        "weight": 2,
         "hits": 2
       },
       {
         "id": "more_teeth",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1,
-        "noRepeat": true
+        "max": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 5,
         "max": 8,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "hpRange": [
-      28,
-      32
-    ]
+    "nodes": {
+      "chomp": {
+        "move": "chomp",
+        "next": "rand"
+      },
+      "chew": {
+        "move": "chew",
+        "next": "rand"
+      },
+      "more_teeth": {
+        "move": "more_teeth",
+        "next": "rand"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "chomp",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "chew",
+            "weight": 2
+          },
+          {
+            "to": "more_teeth",
+            "weight": 1,
+            "noRepeat": true
+          },
+          {
+            "to": "guard",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      }
+    },
+    "start": "chomp"
   },
   {
     "id": "enemy_lost_soul",
@@ -3096,13 +4002,16 @@
     "archetype": "hexer",
     "flavor": "息を吸われるたび、あなたの腕は鈍り、向こうの腕は太る。",
     "maxHp": 60,
+    "hpRange": [
+      56,
+      64
+    ],
     "moves": [
       {
         "id": "debilitating_smog",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "alsoBuff": 1,
         "inflict": {
           "status": "weak",
@@ -3114,27 +4023,30 @@
         "kind": "attack",
         "min": 5,
         "max": 6,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 6,
-        "max": 8,
-        "weight": 1,
-        "noRepeat": true
+        "max": 8
       }
     ],
-    "sequence": [
-      "debilitating_smog",
-      "eye_lasers",
-      "guard"
-    ],
-    "hpRange": [
-      56,
-      64
-    ]
+    "nodes": {
+      "debilitating_smog": {
+        "move": "debilitating_smog",
+        "next": "eye_lasers"
+      },
+      "eye_lasers": {
+        "move": "eye_lasers",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "debilitating_smog"
+      }
+    },
+    "start": "debilitating_smog"
   },
   {
     "id": "enemy_forgotten_soul",
@@ -3142,13 +4054,16 @@
     "archetype": "hexer",
     "flavor": "瘴気があなたの構えを溶かし、溶けた分だけ向こうの恐怖は重くなる。",
     "maxHp": 70,
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "miasma",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "alsoDefend": 5,
         "alsoBuff": 1,
         "inflict": {
@@ -3160,27 +4075,30 @@
         "id": "dread",
         "kind": "attack",
         "min": 10,
-        "max": 13,
-        "weight": 1
+        "max": 13
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 6,
-        "max": 8,
-        "weight": 1,
-        "noRepeat": true
+        "max": 8
       }
     ],
-    "sequence": [
-      "miasma",
-      "dread",
-      "guard"
-    ],
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "miasma": {
+        "move": "miasma",
+        "next": "dread"
+      },
+      "dread": {
+        "move": "dread",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "miasma"
+      }
+    },
+    "start": "miasma"
   },
   {
     "id": "enemy_devoted_sculptor",
@@ -3188,43 +4106,48 @@
     "archetype": "enrager",
     "flavor": "己の身に禁呪を刻む。鑿を振るうたび腕は太り、祈りは止まらない——止めるなら、早く。",
     "maxHp": 90,
-    "enrage": 2,
+    "hpRange": [
+      84,
+      96
+    ],
     "moves": [
       {
         "id": "carve_rite",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "alsoBuff": 3
       },
       {
         "id": "savage",
         "kind": "attack",
         "min": 9,
-        "max": 11,
-        "weight": 1
+        "max": 11
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1,
-        "noRepeat": true
+        "max": 9
       }
     ],
-    "sequence": [
-      "carve_rite",
-      "savage",
-      "guard"
-    ],
-    "sequenceLoopFrom": 1,
-    "turnArmor": 30,
-    "hpRange": [
-      84,
-      96
-    ]
+    "nodes": {
+      "carve_rite": {
+        "move": "carve_rite",
+        "next": "savage"
+      },
+      "savage": {
+        "move": "savage",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "savage"
+      }
+    },
+    "start": "carve_rite",
+    "enrage": 2,
+    "turnArmor": 30
   },
   {
     "id": "enemy_chomper",
@@ -3232,20 +4155,21 @@
     "archetype": "hexer",
     "flavor": "噛んで、叫ぶ。金切り声はあなたの山札に紛れ込む——急所も脅しも、この顎には二度まで通じない。",
     "maxHp": 60,
-    "artifact": 2,
+    "hpRange": [
+      56,
+      64
+    ],
     "moves": [
       {
         "id": "clamp",
         "kind": "attack",
         "min": 7,
         "max": 8,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "screech",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "junk",
           "amount": 2
@@ -3255,20 +4179,25 @@
         "id": "guard",
         "kind": "defend",
         "min": 11,
-        "max": 15,
-        "weight": 1,
-        "noRepeat": true
+        "max": 15
       }
     ],
-    "sequence": [
-      "clamp",
-      "screech",
-      "guard"
-    ],
-    "hpRange": [
-      56,
-      64
-    ]
+    "nodes": {
+      "clamp": {
+        "move": "clamp",
+        "next": "screech"
+      },
+      "screech": {
+        "move": "screech",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "clamp"
+      }
+    },
+    "start": "clamp",
+    "artifact": 2
   },
   {
     "id": "enemy_scald_gnat",
@@ -3276,11 +4205,14 @@
     "archetype": "hexer",
     "flavor": "火傷を吐いて手札を焼き、隙に吸って太る。捌いているうちに、噛みが重くなる。",
     "maxHp": 58,
+    "hpRange": [
+      54,
+      62
+    ],
     "moves": [
       {
         "id": "scald_spit",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "scald",
           "amount": 2
@@ -3290,36 +4222,41 @@
         "id": "bite",
         "kind": "attack",
         "min": 12,
-        "max": 14,
-        "weight": 1
+        "max": 14
       },
       {
         "id": "suck",
         "kind": "attack",
         "min": 4,
         "max": 5,
-        "weight": 1,
         "alsoBuff": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 6,
-        "max": 9,
-        "weight": 1,
-        "noRepeat": true
+        "max": 9
       }
     ],
-    "sequence": [
-      "scald_spit",
-      "guard",
-      "bite",
-      "suck"
-    ],
-    "hpRange": [
-      54,
-      62
-    ]
+    "nodes": {
+      "scald_spit": {
+        "move": "scald_spit",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "bite"
+      },
+      "bite": {
+        "move": "bite",
+        "next": "suck"
+      },
+      "suck": {
+        "move": "suck",
+        "next": "scald_spit"
+      }
+    },
+    "start": "scald_spit"
   },
   {
     "id": "enemy_kin_priest",
@@ -3327,14 +4264,16 @@
     "archetype": "hexer",
     "flavor": "従者の祈りで儀式を進める。祈り手を失えば、祈りは血に変わる——本気になる。",
     "maxHp": 85,
-    "mournStrength": 2,
+    "hpRange": [
+      79,
+      91
+    ],
     "moves": [
       {
         "id": "orb_frail",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "inflict": {
           "status": "frail",
           "amount": 1
@@ -3345,7 +4284,6 @@
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -3356,39 +4294,25 @@
         "kind": "attack",
         "min": 2,
         "max": 2,
-        "weight": 1,
         "hits": 3
       },
       {
         "id": "ritual",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 4,
-        "max": 5,
-        "weight": 1,
-        "noRepeat": true
-      }
-    ],
-    "sequence": [
-      "orb_frail",
-      "orb_weak",
-      "beam",
-      "ritual",
-      "guard"
-    ],
-    "movesWhenAlone": [
+        "max": 5
+      },
       {
         "id": "judgment_orb",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -3399,18 +4323,47 @@
         "kind": "attack",
         "min": 2,
         "max": 2,
-        "weight": 1,
         "hits": 3
       }
     ],
-    "sequenceWhenAlone": [
-      "judgment_orb",
-      "blood_beam"
+    "nodes": {
+      "orb_frail": {
+        "move": "orb_frail",
+        "next": "orb_weak"
+      },
+      "orb_weak": {
+        "move": "orb_weak",
+        "next": "beam"
+      },
+      "beam": {
+        "move": "beam",
+        "next": "ritual"
+      },
+      "ritual": {
+        "move": "ritual",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "orb_frail"
+      },
+      "alone_judgment_orb": {
+        "move": "judgment_orb",
+        "next": "alone_blood_beam"
+      },
+      "alone_blood_beam": {
+        "move": "blood_beam",
+        "next": "alone_judgment_orb"
+      }
+    },
+    "start": "orb_frail",
+    "interrupts": [
+      {
+        "on": "alone",
+        "goto": "alone_judgment_orb"
+      }
     ],
-    "hpRange": [
-      79,
-      91
-    ]
+    "mournStrength": 2
   },
   {
     "id": "enemy_kin_follower",
@@ -3418,49 +4371,57 @@
     "archetype": "flurry",
     "flavor": "踊るほど刃が冴える。踊りを止めるなら、先に落とすしかない。",
     "maxHp": 25,
+    "hpRange": [
+      23,
+      27
+    ],
     "moves": [
       {
         "id": "slash",
         "kind": "attack",
         "min": 3,
-        "max": 4,
-        "weight": 1
+        "max": 4
       },
       {
         "id": "boomerang",
         "kind": "attack",
         "min": 1,
         "max": 2,
-        "weight": 1,
         "hits": 2
       },
       {
         "id": "dance",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 3,
         "max": 4,
-        "weight": 1,
-        "alsoBuff": 1,
-        "noRepeat": true
+        "alsoBuff": 1
       }
     ],
-    "sequence": [
-      "slash",
-      "boomerang",
-      "dance",
-      "guard"
-    ],
-    "hpRange": [
-      23,
-      27
-    ]
+    "nodes": {
+      "slash": {
+        "move": "slash",
+        "next": "boomerang"
+      },
+      "boomerang": {
+        "move": "boomerang",
+        "next": "dance"
+      },
+      "dance": {
+        "move": "dance",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "slash"
+      }
+    },
+    "start": "slash"
   },
   {
     "id": "enemy_crab_crusher",
@@ -3468,21 +4429,22 @@
     "archetype": "brute",
     "flavor": "胴は壁の向こう、届くのは二本の腕だけ。左腕は砕き、刺し、膨れ、殻に籠る。",
     "maxHp": 75,
-    "mournStrength": 3,
+    "hpRange": [
+      70,
+      80
+    ],
     "moves": [
       {
         "id": "thrash",
         "kind": "attack",
         "min": 6,
-        "max": 8,
-        "weight": 1
+        "max": 8
       },
       {
         "id": "swell_strike",
         "kind": "attack",
         "min": 2,
         "max": 4,
-        "weight": 1,
         "growPerUse": 3
       },
       {
@@ -3490,7 +4452,6 @@
         "kind": "attack",
         "min": 2,
         "max": 3,
-        "weight": 1,
         "hits": 2,
         "inflict": {
           "status": "weak",
@@ -3501,38 +4462,50 @@
         "id": "adapt",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "guarded_strike",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "weight": 1,
         "alsoDefend": 15
       },
       {
         "id": "guard",
         "kind": "defend",
         "min": 4,
-        "max": 6,
-        "weight": 1,
-        "noRepeat": true
+        "max": 6
       }
     ],
-    "sequence": [
-      "thrash",
-      "swell_strike",
-      "bug_sting",
-      "adapt",
-      "guarded_strike",
-      "guard"
-    ],
-    "hpRange": [
-      70,
-      80
-    ]
+    "nodes": {
+      "thrash": {
+        "move": "thrash",
+        "next": "swell_strike"
+      },
+      "swell_strike": {
+        "move": "swell_strike",
+        "next": "bug_sting"
+      },
+      "bug_sting": {
+        "move": "bug_sting",
+        "next": "adapt"
+      },
+      "adapt": {
+        "move": "adapt",
+        "next": "guarded_strike"
+      },
+      "guarded_strike": {
+        "move": "guarded_strike",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "thrash"
+      }
+    },
+    "start": "thrash",
+    "mournStrength": 3
   },
   {
     "id": "enemy_crab_cannon",
@@ -3540,14 +4513,16 @@
     "archetype": "charger",
     "flavor": "右腕は照準し、撃ち、充填し、薙ぐ。五拍目の休みが唯一の隙——片腕を失えば、残る腕が猛る。",
     "maxHp": 70,
-    "mournStrength": 3,
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "reticle",
         "kind": "attack",
         "min": 2,
         "max": 3,
-        "weight": 1,
         "inflict": {
           "status": "vulnerable",
           "amount": 1
@@ -3557,40 +4532,49 @@
         "id": "precision_beam",
         "kind": "attack",
         "min": 6,
-        "max": 10,
-        "weight": 1
+        "max": 10
       },
       {
         "id": "charge",
         "kind": "buff",
         "min": 2,
-        "max": 2,
-        "weight": 1
+        "max": 2
       },
       {
         "id": "laser",
         "kind": "attack",
         "min": 16,
-        "max": 20,
-        "weight": 1
+        "max": 20
       },
       {
         "id": "recharge",
-        "kind": "rest",
-        "weight": 1
+        "kind": "rest"
       }
     ],
-    "sequence": [
-      "reticle",
-      "precision_beam",
-      "charge",
-      "laser",
-      "recharge"
-    ],
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "reticle": {
+        "move": "reticle",
+        "next": "precision_beam"
+      },
+      "precision_beam": {
+        "move": "precision_beam",
+        "next": "charge"
+      },
+      "charge": {
+        "move": "charge",
+        "next": "laser"
+      },
+      "laser": {
+        "move": "laser",
+        "next": "recharge"
+      },
+      "recharge": {
+        "move": "recharge",
+        "next": "reticle"
+      }
+    },
+    "start": "reticle",
+    "mournStrength": 3
   },
   {
     "id": "enemy_chimera_1",
@@ -3598,40 +4582,45 @@
     "archetype": "splitter",
     "flavor": "古代都市の実験体。殺しても終わらない。一の相は噛み、頭突きで急所を晒す。",
     "maxHp": 50,
-    "splitInto": {
-      "enemyId": "enemy_chimera_2",
-      "count": 1,
-      "stunned": true,
-      "strength": 2
-    },
+    "hpRange": [
+      47,
+      54
+    ],
     "moves": [
       {
         "id": "bite",
         "kind": "attack",
         "min": 14,
-        "max": 18,
-        "weight": 1
+        "max": 18
       },
       {
         "id": "skull_bash",
         "kind": "attack",
         "min": 9,
         "max": 12,
-        "weight": 1,
         "inflict": {
           "status": "vulnerable",
           "amount": 1
         }
       }
     ],
-    "sequence": [
-      "bite",
-      "skull_bash"
-    ],
-    "hpRange": [
-      47,
-      54
-    ]
+    "nodes": {
+      "bite": {
+        "move": "bite",
+        "next": "skull_bash"
+      },
+      "skull_bash": {
+        "move": "skull_bash",
+        "next": "bite"
+      }
+    },
+    "start": "bite",
+    "splitInto": {
+      "enemyId": "enemy_chimera_2",
+      "count": 1,
+      "stunned": true,
+      "strength": 2
+    }
   },
   {
     "id": "enemy_chimera_2",
@@ -3639,30 +4628,33 @@
     "archetype": "splitter",
     "flavor": "二度目の目覚め。爪は振るうたび一本ずつ増える——長引かせるほど、戻らない。",
     "maxHp": 55,
-    "splitInto": {
-      "enemyId": "enemy_chimera_3",
-      "count": 1,
-      "stunned": true,
-      "strength": 3
-    },
+    "hpRange": [
+      51,
+      59
+    ],
     "moves": [
       {
         "id": "swelling_claws",
         "kind": "attack",
         "min": 4,
         "max": 6,
-        "weight": 1,
         "hits": 3,
         "growHitsPerUse": 1
       }
     ],
-    "sequence": [
-      "swelling_claws"
-    ],
-    "hpRange": [
-      51,
-      59
-    ]
+    "nodes": {
+      "swelling_claws": {
+        "move": "swelling_claws",
+        "next": "swelling_claws"
+      }
+    },
+    "start": "swelling_claws",
+    "splitInto": {
+      "enemyId": "enemy_chimera_3",
+      "count": 1,
+      "stunned": true,
+      "strength": 3
+    }
   },
   {
     "id": "enemy_chimera_3",
@@ -3670,13 +4662,16 @@
     "archetype": "brute",
     "flavor": "三度目の躯。裂き、跳び、燃える唸りで手札を焼く。これが最後の命。",
     "maxHp": 70,
+    "hpRange": [
+      65,
+      75
+    ],
     "moves": [
       {
         "id": "lacerate",
         "kind": "attack",
         "min": 5,
         "max": 7,
-        "weight": 1,
         "hits": 3
       },
       {
@@ -3684,28 +4679,32 @@
         "kind": "attack",
         "min": 30,
         "max": 34,
-        "weight": 1,
         "alsoBuff": 2
       },
       {
         "id": "burning_growl",
         "kind": "hex",
-        "weight": 1,
         "inflict": {
           "status": "scald",
           "amount": 3
         }
       }
     ],
-    "sequence": [
-      "lacerate",
-      "pounce",
-      "burning_growl"
-    ],
-    "hpRange": [
-      65,
-      75
-    ]
+    "nodes": {
+      "lacerate": {
+        "move": "lacerate",
+        "next": "pounce"
+      },
+      "pounce": {
+        "move": "pounce",
+        "next": "burning_growl"
+      },
+      "burning_growl": {
+        "move": "burning_growl",
+        "next": "lacerate"
+      }
+    },
+    "start": "lacerate"
   },
   {
     "id": "enemy_burrow_worm",
@@ -3713,39 +4712,66 @@
     "archetype": "shell",
     "flavor": "土の下から地面ごと揺らす。殻が尽きるまで刃は届かず、割れた瞬間に大顎が来る。",
     "maxHp": 120,
-    "burrow": {
-      "block": 30,
-      "bite": "bite"
-    },
-    "opener": "tremor",
+    "hpRange": [
+      112,
+      128
+    ],
     "moves": [
       {
         "id": "tremor",
         "kind": "attack",
         "min": 9,
         "max": 12,
-        "hits": 2,
-        "weight": 2
+        "hits": 2
       },
       {
         "id": "bite",
         "kind": "attack",
         "min": 18,
-        "max": 22,
-        "weight": 1
+        "max": 22
       },
       {
         "id": "burrow_down",
         "kind": "defend",
         "min": 12,
-        "max": 15,
-        "weight": 1
+        "max": 15
       }
     ],
-    "hpRange": [
-      112,
-      128
-    ]
+    "nodes": {
+      "tremor": {
+        "move": "tremor",
+        "next": "rand"
+      },
+      "bite": {
+        "move": "bite",
+        "next": "rand"
+      },
+      "burrow_down": {
+        "move": "burrow_down",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "tremor",
+            "weight": 2
+          },
+          {
+            "to": "bite",
+            "weight": 1
+          },
+          {
+            "to": "burrow_down",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "tremor",
+    "burrow": {
+      "block": 30,
+      "bite": "bite"
+    }
   },
   {
     "id": "enemy_bowl_bug",
@@ -3753,37 +4779,64 @@
     "archetype": "wide-power",
     "flavor": "岩ごと転がって突っ込んでくる。受け止め切れば、勢い余って自分が転ぶ。",
     "maxHp": 78,
-    "imbalanced": true,
-    "opener": "roll",
+    "hpRange": [
+      73,
+      83
+    ],
     "moves": [
       {
         "id": "roll",
         "kind": "attack",
         "min": 15,
-        "max": 18,
-        "weight": 2,
-        "noRepeat": true
+        "max": 18
       },
       {
         "id": "tackle",
         "kind": "attack",
         "min": 6,
         "max": 8,
-        "hits": 2,
-        "weight": 1
+        "hits": 2
       },
       {
         "id": "curl",
         "kind": "defend",
         "min": 8,
-        "max": 11,
-        "weight": 1
+        "max": 11
       }
     ],
-    "hpRange": [
-      73,
-      83
-    ]
+    "nodes": {
+      "roll": {
+        "move": "roll",
+        "next": "rand"
+      },
+      "tackle": {
+        "move": "tackle",
+        "next": "rand"
+      },
+      "curl": {
+        "move": "curl",
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "roll",
+            "weight": 2,
+            "noRepeat": true
+          },
+          {
+            "to": "tackle",
+            "weight": 1
+          },
+          {
+            "to": "curl",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    "start": "roll",
+    "imbalanced": true
   },
   {
     "id": "enemy_nemesis_wraith",
@@ -3791,14 +4844,16 @@
     "archetype": "shell",
     "flavor": "ひとつ数えるたびに実体を失い、ふたつ数えるたびに戻ってくる。無形の夜は呪いで撫で、実体の夜に鎌を振る。",
     "maxHp": 100,
-    "nemesis": true,
+    "hpRange": [
+      93,
+      107
+    ],
     "moves": [
       {
         "id": "curse_touch",
         "kind": "attack",
         "min": 8,
         "max": 11,
-        "weight": 1,
         "inflict": {
           "status": "weak",
           "amount": 1
@@ -3808,17 +4863,20 @@
         "id": "scythe",
         "kind": "attack",
         "min": 22,
-        "max": 26,
-        "weight": 1
+        "max": 26
       }
     ],
-    "sequence": [
-      "curse_touch",
-      "scythe"
-    ],
-    "hpRange": [
-      93,
-      107
-    ]
+    "nodes": {
+      "curse_touch": {
+        "move": "curse_touch",
+        "next": "scythe"
+      },
+      "scythe": {
+        "move": "scythe",
+        "next": "curse_touch"
+      }
+    },
+    "start": "curse_touch",
+    "nemesis": true
   }
 ]

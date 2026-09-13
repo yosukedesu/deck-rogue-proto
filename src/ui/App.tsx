@@ -68,6 +68,7 @@ import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { FusionLabPage } from './FusionLab.tsx'
@@ -1872,11 +1873,11 @@ function BattleScreen({
                     {enemyDef.imbalanced === true && !dead && (
                       <span className="chip chip-block">🌀 {kw('バランス崩し')}{enemy.staggeredNext === true ? '（体勢を崩した！次の行動は隙）' : '（完全に防ぐと次の行動が隙）'}</span>
                     )}
-                    {enemyDef.wakeOnDamage !== undefined && enemy.woken !== true && enemy.patternIndex < enemyDef.wakeOnDamage.resumeAt && !dead && (
-                      <span className="chip">😴 {kw('眠り')}: 累計{enemyDef.wakeOnDamage.damage}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
+                    {sleepingInterrupt(enemyDef, enemy) !== undefined && !dead && (
+                      <span className="chip">😴 {kw('眠り')}: 累計{sleepingInterrupt(enemyDef, enemy)?.amount ?? 0}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
                     )}
                     {enemyDef.moves.some((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined) && !dead && (
-                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}/使用（現在${enemy.moveGrowth?.[m.id] ?? 0}回）`).join('・')}</span>
+                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}/使用（現在${enemy.moveUses?.[m.id] ?? 0}回）`).join('・')}</span>
                     )}
                     {enemyDef.guardian === true && !dead && (
                       <span className="chip chip-strength">🛡️ {kw('庇う')}</span>
@@ -1898,12 +1899,15 @@ function BattleScreen({
                         🏃 逃走済み{(enemy.stolenGold ?? 0) > 0 ? `（${enemy.stolenGold}G持ち逃げ）` : ''}
                       </span>
                     )}
-                    {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
+                    {enemyDef.interrupts?.some((it) => it.on === 'hpBelowHalf') &&
                       enemy.hp <= enemy.maxHp * 0.5 &&
                       !dead && <span className="chip chip-strength">😾 牙をむいている</span>}
-                    {(enemyDef.movesBelowHalf || enemyDef.sequenceBelowHalf) &&
+                    {enemyDef.interrupts?.some((it) => it.on === 'hpBelowHalf') &&
                       enemy.hp > enemy.maxHp * 0.5 &&
                       !dead && <span className="chip">😾 HP半分で豹変</span>}
+                    {enemyDef.interrupts?.some((it, k) => it.on === 'alone' && !(enemy.firedInterrupts ?? []).includes(k)) &&
+                      s.enemies.some((o, j) => j !== i && o.hp > 0) &&
+                      !dead && <span className="chip">😤 仲間が全滅すると転職</span>}
                     {enemyDef.enrage !== undefined && !dead && (
                       <span className="chip chip-strength">
                         😡 {kw('激昂')} +{enemyDef.enrage}
@@ -3313,9 +3317,7 @@ const ENEMY_VOCAB = (() => {
   const archetypes = new Set<string>()
   for (const e of allEnemies) {
     archetypes.add(e.archetype)
-    for (const t of [e.moves, e.movesVsSet ?? [], e.movesVsTokens ?? [], e.movesBelowHalf ?? []]) {
-      for (const m of t) kinds.add(m.kind)
-    }
+    for (const m of e.moves) kinds.add(m.kind)
   }
   return { kinds: [...kinds].sort(), archetypes: [...archetypes].sort(), statuses: Object.keys(STATUS_LABEL) }
 })()
@@ -3326,7 +3328,7 @@ const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend:
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
   const inflict = mv.inflict ? ` ＋${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}${mv.inflict.amount}` : ''
-  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${mv.alsoDestroySet === true ? '+💥伏せ破壊' : ''}${inflict}${mv.setAlt !== undefined ? '【伏せ札あり分岐】' : ''}`
+  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${mv.alsoDestroySet === true ? '+💥伏せ破壊' : ''}${inflict}`
 }
 
 /** 敵の数値フィールド (実データのパス+現行値)。存在するものだけ編集対象 */
@@ -3336,29 +3338,23 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
     const v = (def as unknown as Record<string, unknown>)[k]
     if (typeof v === 'number') out.push({ key: k, label: ja, cur: v })
   }
-  const tables: readonly (readonly [string, string, readonly EnemyMove[] | undefined])[] = [
-    ['m', '', def.moves],
-    ['vs', '伏せへの反応', def.movesVsSet],
-    ['tk', '従者反応', def.movesVsTokens],
-    ['bh', '半分以下', def.movesBelowHalf],
-  ]
-  for (const [pfx, ja, tbl] of tables) {
-    tbl?.forEach((mv, i) => {
-      const base = `${ja}「${mv.id}」`
-      for (const f of ['min', 'max', 'weight', 'hits', 'alsoDefend', 'alsoBuff'] as const) {
-        const v = mv[f]
-        if (typeof v === 'number') out.push({ key: `${pfx}${i}.${f}`, label: `${base}${MOVE_FIELD_JA[f]}`, cur: v })
-      }
-      if (mv.inflict) out.push({ key: `${pfx}${i}.inflict.amount`, label: `${base}${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}量`, cur: mv.inflict.amount })
-      const sa = mv.setAlt
-      if (sa !== undefined) {
-        for (const f of ['min', 'max', 'hits'] as const) {
-          const v = sa[f]
-          if (typeof v === 'number') out.push({ key: `${pfx}${i}.alt.${f}`, label: `${base}伏せ札あり時${MOVE_FIELD_JA[f]}`, cur: v })
-        }
-        if (sa.inflict) out.push({ key: `${pfx}${i}.alt.inflict.amount`, label: `${base}伏せ札あり時${STATUS_LABEL[sa.inflict.status] ?? sa.inflict.status}量`, cur: sa.inflict.amount })
-      }
+  def.moves.forEach((mv, i) => {
+    const base = `「${mv.id}」`
+    for (const f of ['min', 'max', 'hits', 'alsoDefend', 'alsoBuff'] as const) {
+      const v = mv[f]
+      if (typeof v === 'number') out.push({ key: `m${i}.${f}`, label: `${base}${MOVE_FIELD_JA[f]}`, cur: v })
+    }
+    if (mv.inflict) out.push({ key: `m${i}.inflict.amount`, label: `${base}${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}量`, cur: mv.inflict.amount })
+  })
+  // 行動グラフ (2026-09-14): 乱択の腕の重みも数値フィールド (n.<節>.<腕>.weight)
+  for (const [nodeId, node] of Object.entries(def.nodes)) {
+    node.random?.forEach((arm, k) => {
+      const target = def.nodes[arm.to]?.move ?? arm.to
+      out.push({ key: `n.${nodeId}.${k}.weight`, label: `乱択〔${nodeId}〕→「${target}」の重み`, cur: arm.weight })
     })
+  }
+  for (const [pfx, ja, arms] of [['vs', '伏せへの反応', def.movesVsSet], ['tk', '従者反応', def.movesVsTokens]] as const) {
+    arms?.forEach((arm, k) => out.push({ key: `${pfx}${k}.weight`, label: `${ja}「${arm.to}」の重み`, cur: arm.weight }))
   }
   return out
 }
@@ -4228,10 +4224,9 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                     </span>
                     <div className="choice-desc" style={{ fontSize: 11 }}>
                       {e.moves.map(moveLine).join('　')}
-                      {e.movesVsSet !== undefined ? `　◆伏せへの反応: ${e.movesVsSet.map(moveLine).join(' ')}` : ''}
-                      {e.movesVsTokens !== undefined ? `　◆従者反応: ${e.movesVsTokens.map(moveLine).join(' ')}` : ''}
-                      {e.movesBelowHalf !== undefined ? `　◆半分以下: ${e.movesBelowHalf.map(moveLine).join(' ')}` : ''}
-                      {e.sequence !== undefined ? `　◇ローテ: ${e.sequence.join('→')}` : ''}
+                      {describeGraph(e).map((line, k) => `　${k === 0 ? '◇行動' : '◆'}: ${line}`).join('')}
+                      {e.movesVsSet !== undefined ? `　◆伏せへの反応: ${e.movesVsSet.map((a) => `${a.to} ${a.weight}`).join('/')}` : ''}
+                      {e.movesVsTokens !== undefined ? `　◆従者反応: ${e.movesVsTokens.map((a) => `${a.to} ${a.weight}`).join('/')}` : ''}
                     </div>
                     {tuner && (
                       <SimpleMarkEditor fields={enemyTunerFields(e)} mark={draft.enemyMarks[e.id] ?? {}} onChange={(m) => setEnemyMark(e.id, m)} />

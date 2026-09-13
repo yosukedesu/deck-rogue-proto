@@ -1,6 +1,7 @@
 // 撃破サマリー (2026-08-29 面白さ5への処方③: ピーク体験) と ボスの第2形態のテスト。
 // 確定済みルール表「敵フェーズ変化」(ボス3体への適用) を固定する。
 import { describe, expect, it } from 'vitest'
+import { chainFromStart } from './enemyGraph.ts'
 import { battleSummary, cardCostLabel, setBranchNote, summaryLine, xHitsSuffix } from './summary.ts'
 import { allCards, getCardDef, getEnemyDef, allEnemies } from './content.ts'
 import { createRun } from './run.ts'
@@ -38,9 +39,12 @@ describe('ボスの第2形態 (2026-08-29 面白さ5への処方③。HP50%の�
   it('オーガ・大亀・門番の3ボスすべてが below-half テーブルを持ち、無条件の攻撃を含む', () => {
     for (const id of ['enemy_brute', 'enemy_turtle', 'enemy_warden']) {
       const def = getEnemyDef(id)
-      expect(def.movesBelowHalf, id).toBeDefined()
+      const half = def.interrupts?.find((it) => it.on === 'hpBelowHalf')
+      expect(half, id).toBeDefined()
+      // 第2形態の列 (行動グラフ 2026-09-14: 割り込みの goto から辿る)
+      const moves = chainFromStart(def, 8, half!.goto)
       expect(
-        def.movesBelowHalf!.some((m) => m.kind === 'attack'),
+        moves.some((m) => def.moves.find((x) => x.id === m)?.kind === 'attack'),
         `${id} は第2形態でも殴れる (膠着破り)`,
       ).toBe(true)
     }
@@ -48,8 +52,9 @@ describe('ボスの第2形態 (2026-08-29 面白さ5への処方③。HP50%の�
 
   it('大亀: HP半分を割ると防御サイクルが消え、噛みつき⇄大薙ぎの2拍になる', () => {
     const def = getEnemyDef('enemy_turtle')
-    expect(def.sequenceBelowHalf).toEqual(['awake_bite', 'crush'])
-    expect(def.movesBelowHalf!.every((m) => m.kind === 'attack')).toBe(true)
+    const half = def.interrupts!.find((it) => it.on === 'hpBelowHalf')!
+    expect(chainFromStart(def, 4, half.goto)).toEqual(['awake_bite', 'crush', 'awake_bite', 'crush'])
+    expect(['awake_bite', 'crush'].every((id) => def.moves.find((m) => m.id === id)?.kind === 'attack')).toBe(true)
   })
 
   it('半分を割った次の意図宣言から第2形態のテーブルが使われる (大亀で実測)', () => {
@@ -124,9 +129,9 @@ describe('setBranchNote: 伏せ分岐の型の注記 (2026-09-03 Opusラン F �
     const probe = getEnemyDef('enemy_probe')
     expect(probe.movesVsSet).toBeUndefined()
     expect(setBranchNote(probe)).toBeNull()
-    // 判定は「sequence あり × movesVsSet 2件以上」だけで決まる。残る反応テーブル持ち (罠壊し・道化) は重み抽選なので対象外
+    // 判定は「乱択の節なし × movesVsSet 2件以上」だけで決まる。残る反応テーブル持ち (罠壊し・道化) は乱択なので対象外
     for (const d of allEnemies) {
-      const expected = (d.sequence?.length ?? 0) > 0 && (d.movesVsSet?.length ?? 0) >= 2
+      const expected = !Object.values(d.nodes).some((n) => n.random !== undefined) && (d.movesVsSet?.length ?? 0) >= 2
       expect(setBranchNote(d) !== null, d.id).toBe(expected)
     }
     expect(allEnemies.filter((d) => setBranchNote(d) !== null)).toEqual([])

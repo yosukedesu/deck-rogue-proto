@@ -11,9 +11,7 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
   it('とげ持ちは防御行動を持たない (2026-08-30 裁定「とげの問いは殴らないで待つ、ではない」)', () => {
     const offenders = allEnemies
       .filter((e) => (e.thorns ?? 0) > 0)
-      .filter((e) =>
-        [...e.moves, ...(e.movesBelowHalf ?? [])].some((m) => m.kind === 'defend'),
-      )
+      .filter((e) => e.moves.some((m) => m.kind === 'defend'))
       .map((e) => e.id)
     expect(offenders).toEqual([])
   })
@@ -23,15 +21,14 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
     for (const e of allEnemies) {
       const hasRally = e.moves.some((m) => m.kind === 'rally')
       if (!hasRally) continue
-      const seq = e.sequence
-      if (!seq || seq.length === 0) {
-        offenders.push(`${e.id}: sequenceなし`)
+      // 行動グラフ (2026-09-14): 応援役は乱択の節を持たず (固定ローテ)、応援の技の節の next が応援でない
+      if (Object.values(e.nodes).some((n) => n.random !== undefined)) {
+        offenders.push(`${e.id}: 乱択あり`)
         continue
       }
-      const kindOf = (id: string) => e.moves.find((m) => m.id === id)?.kind
-      for (let i = 0; i < seq.length; i++) {
-        const next = seq[(i + 1) % seq.length]
-        if (kindOf(seq[i]) === 'rally' && kindOf(next) === 'rally') {
+      const kindOf = (nodeId: string | undefined) => (nodeId !== undefined ? e.moves.find((m) => m.id === e.nodes[nodeId]?.move)?.kind : undefined)
+      for (const [id, n] of Object.entries(e.nodes)) {
+        if (kindOf(id) === 'rally' && kindOf(n.next ?? id) === 'rally') {
           offenders.push(`${e.id}: rally 2連続`)
           break
         }
@@ -68,10 +65,7 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
       const has = resolveEncounter(encId).some((mem) => {
         const d = allEnemies.find((e) => e.id === mem.enemyId)
         if (!d) return false
-        const tables = [d.moves, d.movesVsSet ?? [], d.movesBelowHalf ?? []]
-        return tables.some((t) =>
-          t.some((m) => m.inflict !== undefined || m.setAlt?.inflict !== undefined),
-        )
+        return d.moves.some((m) => m.inflict !== undefined)
       })
       if (has) carriers++
     }
@@ -85,9 +79,9 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
     // 規約 (罰は筋力の漸増か予告付き大技のみ) との突き合わせを強制する
     const KNOWN = new Set([
       'hpRange', // HPの幅 (2026-09-14 本家形)
-      'id', 'name', 'archetype', 'flavor', 'maxHp', 'moves', 'sequence', 'sequenceLoopFrom',
-      'movesBelowHalf', 'sequenceBelowHalf', 'sequenceBelowHalfLoopFrom',
-      'movesVsSet', 'movesVsTokens', 'movesWhenAlone', 'sequenceWhenAlone', // vsSetIgnoreFreshness は 2026-09-13 罠モデルで撤去
+      'id', 'name', 'archetype', 'flavor', 'maxHp', 'moves',
+      'nodes', 'start', 'startBySlot', // 行動グラフ (2026-09-14。sequence/opener/movesBelowHalf/… は撤去)
+      'movesVsSet', 'movesVsTokens', // vsSetIgnoreFreshness は 2026-09-13 罠モデルで撤去
       ...ENEMY_GIMMICK_KEYS, // ギミック系は traits.ts と共有 (表示網羅テストと同じ一次資料)
     ])
     const offenders: string[] = []

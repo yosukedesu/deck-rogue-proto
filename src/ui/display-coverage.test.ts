@@ -5,11 +5,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { applyDebugOverrides, clearDebugOverrides } from '../engine/content.ts'
 import { ENEMY_GIMMICK_KEYS, GIMMICK_KEYWORDS, enemyTraitTags } from '../engine/traits.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
-import type { EnemyDef } from '../engine/types.ts'
+import type { LegacyEnemyDef } from '../engine/enemyGraph.ts'
 import { KEYWORD_HELP } from './keywordHelp.ts'
 
-/** キーごとの最小サンプル値 (タグが出る値) */
-const SAMPLE: Record<string, Partial<EnemyDef>> = {
+/** キーごとの最小サンプル値 (タグが出る値)。旧形 (sequence/weight) で書き、読込時に行動グラフへ変換される */
+const SAMPLE: Record<string, Partial<LegacyEnemyDef>> = {
   enrage: { enrage: 2 },
   enrageEveryCards: { enrage: 2, enrageEveryCards: 8 },
   enrageEveryDamage: { enrage: 2, enrageEveryDamage: 80 },
@@ -22,15 +22,14 @@ const SAMPLE: Record<string, Partial<EnemyDef>> = {
   angerOnBlock: { angerOnBlock: 1 },
   guardian: { guardian: true },
   bondStrength: { bondStrength: 2 },
-  opener: { opener: 'poke' },
-  phaseAfterUses: { phaseAfterUses: { moveId: 'poke', uses: 2, sequence: ['poke'] } },
+  // 割り込み: 被弾覚醒 (眠り) のサンプル (行動グラフ 2026-09-14。旧 wakeOnDamage)
+  interrupts: { wakeOnDamage: { damage: 10, resumeAt: 2 }, sequence: ['poke', 'poke', 'poke'] },
   splitInto: { splitInto: { enemyId: 'enemy_moss_slime', count: 2 } },
   hatchInto: { hatchInto: { enemyId: 'enemy_raptor_chick' } },
   mournStrength: { mournStrength: 3 },
   aura: { aura: { costUp: 1 } },
   turnArmor: { turnArmor: 30 },
   artifact: { artifact: 1 },
-  wakeOnDamage: { wakeOnDamage: { damage: 10, resumeAt: 2 }, sequence: ['poke', 'poke', 'poke'] },
   burrow: { burrow: { block: 8, bite: 'poke' } },
   nemesis: { nemesis: true },
   imbalanced: { imbalanced: true },
@@ -46,7 +45,7 @@ describe('予告表示の網羅性 (display-coverage)', () => {
       const term = GIMMICK_KEYWORDS[key]
       if (term !== null && KEYWORD_HELP[term] === undefined) missingHelp.push(`${key}→${term}`)
       if (term === null) continue // ローテの器は意図表示側で見える
-      const def: EnemyDef = {
+      const def: LegacyEnemyDef = {
         id: `test_cov_${key}`,
         name: 'テスト',
         archetype: 'brute',

@@ -1,5 +1,6 @@
 // 2026-09-06 人間ラン#7a/#7b のメモへの裁定: 静かな鈴−2／罠師の茂み1E常在／歩き木の重圧は攻撃札だけ／代償なしのボスレリック2つ
 import { describe, expect, it } from 'vitest'
+import { chainFromStart } from './enemyGraph.ts'
 import { getCardDef, getEnemyDef, getRelicDef } from './content.ts'
 import { splitChildHp } from './summary.ts'
 import { effectiveCost } from './effects.ts'
@@ -77,7 +78,7 @@ describe('金羽の大鴉の作り直し (2026-09-06 ユーザー「そもそも
   it('盗み・逃走を持たず、舞い上がる(防御8+筋力1)→急降下14〜18(+4/回)→つつき の時計', () => {
     const def = getEnemyDef('enemy_elite_gold_raven')
     expect(def.moves.some((m) => m.kind === 'steal-gold' || m.kind === 'flee')).toBe(false)
-    expect(def.sequence).toEqual(['soar', 'dive', 'peck'])
+    expect(chainFromStart(def, 3)).toEqual(['soar', 'dive', 'peck'])
     const dive = def.moves.find((m) => m.id === 'dive')
     expect(dive?.growPerUse).toBe(4)
     expect(def.moves.find((m) => m.id === 'soar')?.alsoBuff).toBe(1)

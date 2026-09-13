@@ -1,6 +1,8 @@
 import { relicRarityTag } from '../engine/summary.ts'
 import { actSummaries, battleMetrics, type BattleMetrics, type BattleRow } from '../engine/analysis.ts'
 import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { graphFromLegacy } from '../engine/enemyGraph.ts'
+import type { LegacyEnemyDef } from '../engine/enemyGraph.ts'
 
 /**
  * 名前解決の安全版 (2026-08-30)。レポートはプレイテストのデータ回収の道具なので、
@@ -573,7 +575,12 @@ export function enemyDraftToDefJson(d: EnemyDraft): Record<string, unknown> {
     const v = (d as unknown as Record<string, unknown>)[k]
     if (typeof v === 'number' && v > 0) j[k] = v
   }
-  return j
+  // 行動グラフ (2026-09-14): 下書きは旧形 (重み・ローテ) で書き、実データの形 (nodes/start) に変換して出す
+  try {
+    return graphFromLegacy(j as unknown as LegacyEnemyDef) as unknown as Record<string, unknown>
+  } catch {
+    return j
+  }
 }
 
 /** レリックの新規作成ドラフト。effects はカードと同じ EffectDraft を使い回す */
@@ -716,7 +723,7 @@ export function buildProposals(bundle: ProposalBundle): string {
     fingerprint: dataFingerprint(),
     howToRead:
       'fieldsのキーは実データのパス: e0.amount=effects[0].amount / e0.cond.X=effects[0].condition.X / ' +
-      'm0=moves[0]・vs=movesVsSet・tk=movesVsTokens・bh=movesBelowHalf・.alt.=setAlt / p0=passive[0] / ' +
+      'm0=moves[0]・n.<節>.<腕>.weight=行動グラフの乱択の重み・vs0/tk0.weight=反応テーブルの腕の重み / p0=passive[0] / ' +
       'bonus.*=レリックB型 / rule.*=combatRule。current はマーク時点の現行定義。new は配置先ファイルへそのまま貼れる形 ' +
       '(カードの color は配置先ファイルの指示で、実ファイルでは取り除く)。実装時は card-power.md の査定と機械テストを通すこと',
     cards: {
@@ -785,21 +792,31 @@ export function applyCardMark(def: (typeof allCards)[number], m: CardProposalMar
 /** 敵マーク → 適用済み定義。fields のパス (m0.min / vs1.alt.max / bh0.inflict.amount / maxHp 等) を書き戻す */
 export function applyEnemyMark(def: ReturnType<typeof getEnemyDef>, m: SimpleMark): ReturnType<typeof getEnemyDef> {
   const d = deepClone(def) as unknown as Record<string, unknown>
-  const TABLE: Record<string, string> = { m: 'moves', vs: 'movesVsSet', tk: 'movesVsTokens', bh: 'movesBelowHalf' }
   for (const [key, val] of Object.entries(m.fields ?? {})) {
-    const mm = /^(m|vs|tk|bh)(\d+)\.(?:(alt)\.)?(?:(inflict)\.)?(\w+)$/.exec(key)
-    if (!mm) {
-      d[key] = val
+    // 技の数値: m0.min / m0.inflict.amount
+    const mm = /^m(\d+)\.(?:(inflict)\.)?(\w+)$/.exec(key)
+    if (mm) {
+      const mv = (d.moves as Record<string, unknown>[] | undefined)?.[Number(mm[1])]
+      if (!mv) continue
+      const holder = mm[2] === 'inflict' ? (mv.inflict as Record<string, unknown> | undefined) : mv
+      if (holder) holder[mm[3]] = val
       continue
     }
-    const table = d[TABLE[mm[1]]] as Record<string, unknown>[] | undefined
-    const mv = table?.[Number(mm[2])]
-    if (!mv) continue
-    const base = mm[3] === 'alt' ? (mv.setAlt as Record<string, unknown> | undefined) : mv
-    if (!base) continue
-    const holder = mm[4] === 'inflict' ? (base.inflict as Record<string, unknown> | undefined) : base
-    if (!holder) continue
-    holder[mm[5]] = val
+    // 乱択の腕の重み: n.<節>.<腕>.weight (行動グラフ 2026-09-14) / 反応テーブルの腕: vs0.weight・tk0.weight
+    const arm = /^n\.([^.]+)\.(\d+)\.weight$/.exec(key)
+    if (arm) {
+      const node = (d.nodes as Record<string, Record<string, unknown>> | undefined)?.[arm[1]]
+      const arms = node?.random as Record<string, unknown>[] | undefined
+      if (arms?.[Number(arm[2])]) arms[Number(arm[2])].weight = val
+      continue
+    }
+    const react = /^(vs|tk)(\d+)\.weight$/.exec(key)
+    if (react) {
+      const arms = d[react[1] === 'vs' ? 'movesVsSet' : 'movesVsTokens'] as Record<string, unknown>[] | undefined
+      if (arms?.[Number(react[2])]) arms[Number(react[2])].weight = val
+      continue
+    }
+    d[key] = val
   }
   return d as unknown as ReturnType<typeof getEnemyDef>
 }

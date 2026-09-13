@@ -163,24 +163,22 @@ export interface EnemyState extends CombatantState {
   readonly confusion: number
   /** 急所 (敵版脆弱)。次に受けるプレイヤーダメージN回が+50%。1ヒットごとに1減る */
   readonly exposed: number
-  /** 行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用 */
-  readonly patternIndex: number
-  /** phaseAfterUses の対象行動を宣言した回数 (2026-09-02 回数カウンタのフェーズ変化) */
-  readonly keyMoveUses?: number
-  /** 直前に宣言した行動ID (noRepeat の判定用) */
-  readonly lastMoveId?: string
-  /** once 行動の使用済みID (1戦闘1回の判定用) */
+  /** 行動グラフのカーソル = 次の宣言で辿り始める節の id (2026-09-14 本家式の状態機械) */
+  readonly node: string
+  /** 直近に宣言した技の id (新しい順・最大3件。noRepeat / maxRepeat の判定用) */
+  readonly lastMoves?: readonly string[]
+  /** once の腕で着地した技の id (1戦闘1回の判定用) */
   readonly usedOnce?: readonly string[]
+  /** 発火済みの割り込み (def.interrupts の添字) */
+  readonly firedInterrupts?: readonly number[]
   /** この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる) */
   readonly mournProcessed?: boolean
   /** ターン装甲の累計 (このターンに受けたHP損失。自ターン開始でリセット) */
   readonly damageThisTurn?: number
   /** アーティファクトの残チャージ (戦闘開始時に def.artifact から) */
   readonly artifact?: number
-  /** 技の恒久成長: moveId → 宣言回数 */
-  readonly moveGrowth?: Readonly<Record<string, number>>
-  /** 被弾覚醒が発火済みか */
-  readonly woken?: boolean
+  /** 技ごとの宣言回数 (moveId → 回数)。技の恒久成長 (growPerUse) と条件 usesAtLeast が共有する */
+  readonly moveUses?: Readonly<Record<string, number>>
   /** 威圧 (2026-09-03 本家 Weak 化=案B): 次のN回の攻撃行動の与ダメ-25% (切り捨て・最低1)。攻撃行動を実行するたび1減る。旧セーブは undefined=0 */
   readonly weak?: number
   /** 潜伏中 (殻が残っている間 true。割れたら false) */
@@ -1037,14 +1035,11 @@ export interface StatusInflict {
   readonly amount: number
 }
 
-/** 敵の1行動。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし */
+/**
+ * 敵の1行動 (技の定義)。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし。
+ * どの順で出すかは技には無く、行動グラフ (EnemyDef.nodes) が決める (2026-09-14 本家式の状態機械)
+ */
 export interface EnemyMove {
-  /**
-   * 確率分岐の制約 (2026-09-02 StS2行動文法): noRepeat=直前と同じ技は引かない /
-   * once=1戦闘に1回だけ。weight抽選の敵のみ意味を持つ (sequenceの敵は並びが既に制約)
-   */
-  readonly noRepeat?: boolean
-  readonly once?: boolean
   /**
    * 技の恒久成長 (2026-09-02 StS2 TestSubject式「戻らない恐怖」): この技を宣言するたび、以降の
    * min/max に +growPerUse・ヒット数に +growHitsPerUse (この戦闘中ずっと)。長引くほど危険 =
@@ -1056,8 +1051,6 @@ export interface EnemyMove {
   readonly kind: EnemyActionKind
   readonly min?: number
   readonly max?: number
-  /** 重み抽選 (同テーブル内の相対値)。sequence を持つ敵では使われない */
-  readonly weight: number
   /** 連撃: 攻撃をN回のヒットに分割 (確定済みルール表「連撃」) */
   readonly hits?: number
   /** 手数の鏡 (物真似 2026-08-31): 実行時のヒット数=プレイヤーがこのターンにプレイした枚数 (最低1)。hits は無視される */
@@ -1070,20 +1063,69 @@ export interface EnemyMove {
   readonly alsoBuff?: number
   /** からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す */
   readonly alsoDestroySet?: true
-  /**
-   * 行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28):
-   * プレイヤーに伏せ札があると、この行動の代わりに setAlt の行動になる。
-   * 既存の条件付き意図 (両分岐予告・行動開始時確定) の配管にそのまま乗る
-   */
-  readonly setAlt?: {
-    readonly kind: EnemyActionKind
-    readonly min?: number
-    readonly max?: number
-    readonly hits?: number
-    readonly inflict?: StatusInflict
-    readonly alsoDefend?: number
-    readonly alsoBuff?: number
-  }
+}
+
+// ---- 行動グラフ (2026-09-14 本家式の状態機械。確定済みルール表「敵の行動グラフ」) ----
+
+/** 乱択の腕。to=遷移先の節 (noRepeat/once/maxRepeat は技の節を指す腕にだけ付けられる) */
+export interface EnemyRandomArm {
+  readonly to: string
+  readonly weight: number
+  /** 直前と同じ技に着地する腕は引かない (本家 CannotRepeat) */
+  readonly noRepeat?: boolean
+  /** 1戦闘に1回だけ (本家 UseOnlyOnce)。着地する技の id で記録する */
+  readonly once?: boolean
+  /** 同じ技の連続は N 回まで (StS1 の lastTwoMoves=2 相当。noRepeat は maxRepeat:1 と同じ) */
+  readonly maxRepeat?: number
+}
+
+/** 条件 (条件の節と割り込みが共用)。複数書けば全部を満たす時に真 */
+export interface EnemyCondition {
+  /** HPが最大の半分以下 */
+  readonly hpBelowHalf?: true
+  /** 他の仲間が全滅している */
+  readonly alone?: true
+  /** 他の仲間が1体以上生きている */
+  readonly allyAlive?: true
+  /** この技をこの戦闘で count 回以上宣言済み (回数カウンタのフェーズ変化 = KnowledgeDemon 式) */
+  readonly usesAtLeast?: { readonly move: string; readonly count: number }
+  /** この戦闘で受けた累計HP損失が N 以上 */
+  readonly damageTakenAtLeast?: number
+  /** ターン数の偶奇 (HauntedShip 式) */
+  readonly turnParity?: 'odd' | 'even'
+  /** 生存する敵 (自分を含む) が N 体未満 (召喚の判断 = Fabricator 式) */
+  readonly alliesFewerThan?: number
+}
+
+/**
+ * 行動グラフの節。3種のうち1つだけ持つ:
+ *  技   { move, next? }   — この技を宣言し、次の宣言は next の節から辿る (next 省略=同じ技を繰り返す)
+ *  乱択 { random }        — 宣言時にその場で重みで腕を1本引き (RNG 1回)、その先を辿る。技は行わない
+ *  条件 { if, then, else } — 宣言時に条件を評価して then / else を辿る。技は行わない
+ */
+export interface EnemyNode {
+  readonly move?: string
+  readonly next?: string
+  readonly random?: readonly EnemyRandomArm[]
+  readonly if?: EnemyCondition
+  readonly then?: string
+  readonly else?: string
+}
+
+/** 割り込みの引き金。hpBelowHalf/damageTaken=被弾の瞬間・allyDied/alone=仲間が倒れた瞬間 (判定はどちらも宣言時にも行う) */
+export type EnemyInterruptTrigger = 'hpBelowHalf' | 'damageTaken' | 'allyDied' | 'alone'
+
+/**
+ * 割り込み: 条件が立った瞬間にカーソル (次に辿る節) を goto へ飛ばす。1戦闘に1回。
+ * from を書くとカーソルがその節にある時だけ (鉄卵=眠りの節にいる間だけ被弾で目覚める)。
+ * 宣言済みの意図は差し替えない (第1段=等価移行。即時差し替えは第2段)
+ */
+export interface EnemyInterrupt {
+  readonly on: EnemyInterruptTrigger
+  /** damageTaken の累計しきい値 */
+  readonly amount?: number
+  readonly from?: readonly string[]
+  readonly goto: string
 }
 
 export interface EnemyDef {
@@ -1099,27 +1141,29 @@ export interface EnemyDef {
    * 戦闘開始時に一様にロールし、幕スケール・群れ補正を掛けて丸める。無ければ maxHp 固定
    */
   readonly hpRange?: readonly [number, number]
-  /** 行動定義。sequence がある場合は id 参照用の辞書を兼ねる */
+  /** 技の定義 (id で参照する辞書)。順序は持たない = 行動グラフが決める */
   readonly moves: readonly EnemyMove[]
+  /** 行動グラフの節 (id → 節)。start から辿る */
+  readonly nodes: Readonly<Record<string, EnemyNode>>
+  /** 開始節 (戦闘開始時のカーソル)。編成の member.start・startBySlot で個体ごとに上書きできる */
+  readonly start: string
   /**
-   * 行動ローテーション (StSのSentry等参考)。moves の id をこの順で繰り返す。
-   * 指定時は重み抽選しない。movesVsSet の割り込みではローテーションは進まない
+   * スロット (編成内の何体目か・分裂体の何体目か) ごとの開始節 (本家 Exoskeleton 式の役割分化・
+   * 分裂体の位相ずらし)。添字が範囲外なら start
    */
-  readonly sequence?: readonly string[]
-  /** プレイヤーに伏せカードがある時に優先する行動テーブル。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う。省略時は通常行動 */
-  readonly movesVsSet?: readonly EnemyMove[]
-  /** プレイヤーに召喚トークンがいる時の行動テーブル (優先度: HP半分以下 > 伏せ反応 > トークン反応 > 通常) */
-  readonly movesVsTokens?: readonly EnemyMove[]
+  readonly startBySlot?: readonly string[]
+  /** 割り込み (HP半分の豹変・被弾覚醒・単独時の転職)。上から順に判定し、それぞれ1戦闘1回 */
+  readonly interrupts?: readonly EnemyInterrupt[]
+  /** プレイヤーに伏せカードがある時の分岐 (腕の to は技の id)。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う */
+  readonly movesVsSet?: readonly EnemyRandomArm[]
+  /** プレイヤーに召喚トークンがいる時の分岐 (優先度: 伏せ反応 > トークン反応 > 通常) */
+  readonly movesVsTokens?: readonly EnemyRandomArm[]
   /** 延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」) */
   readonly burnResist?: number
   /** とげ: プレイヤーの攻撃ヒットごとにNダメ反射。敵カードに常時表示 (確定済みルール表「とげ（敵の報復）」) */
   readonly thorns?: number
   /** 鬼軍曹 (エリート 2026-08-31): プレイヤーが通常ブロックを得るたび強化+N (氷壁は対象外)。敵カードに常時表示 */
   readonly angerOnBlock?: number
-  /** HP50%以下で切り替わる行動テーブル (フェーズ変化)。優先度: 半分以下 > 伏せ反応 > 通常 */
-  readonly movesBelowHalf?: readonly EnemyMove[]
-  /** HP50%以下のローテーション (movesBelowHalf の id を参照) */
-  readonly sequenceBelowHalf?: readonly string[]
   /** 再生: 敵フェーズ終了時にHP回復。HP50%以下では停止 (確定済みルール表「再生」) */
   readonly regen?: number
   /**
@@ -1150,7 +1194,7 @@ export interface EnemyDef {
   /**
    * 分裂 (2026-09-02 敵ギミック第1波)。この敵が倒れた時、指定の敵N体が場に現れる (本家Slime)。
    * 分裂体は素の値 (深度スケール非適用)・親の atkScale (難易度) を継承・生成時に意図を宣言して
-   * その敵フェーズから行動する (本家準拠)。分裂体の定義は sequence 必須 (生成時宣言を決定的にするため)
+   * その敵フェーズから行動する (本家準拠)。分裂体の開始節は startBySlot[k] (無ければ start)
    */
   readonly splitInto?: {
     readonly enemyId: string
@@ -1172,34 +1216,6 @@ export interface EnemyDef {
    */
   readonly bondStrength?: number
   /**
-   * 初手固定 (2026-09-02 StS2行動文法「その敵の問いを最初のターンに必ず見せる」)。
-   * weight抽選の敵の最初の宣言だけこの行動IDを使う。sequenceの敵には不要 (並びの先頭が兼ねる)
-   */
-  readonly opener?: string
-  /**
-   * 回数カウンタのフェーズ変化 (2026-09-02 StS2 KnowledgeDemon式): moveId を uses 回宣言したら
-   * 行動ローテーションを sequence へ恒久切替 (patternIndexは0から)。HP半分テーブルが優先
-   */
-  readonly phaseAfterUses?: {
-    readonly moveId: string
-    readonly uses: number
-    readonly sequence: readonly string[]
-  }
-  /**
-   * 味方の生死で行動テーブル切替 (2026-09-02 StS2 LivingShield式転職): 他の仲間が全滅すると
-   * このテーブル/ローテへ切替 (優先度: HP半分 > 単独時 > 通常。反応テーブル・setAltは無効化 =
-   * 転職後は素直に殴る)。護衛が「守る相手を失って本気になる」等
-   */
-  readonly movesWhenAlone?: readonly EnemyMove[]
-  readonly sequenceWhenAlone?: readonly string[]
-  /**
-   * ローテーションの巻き戻し位置 (2026-09-02 StS2の「一度きりの前奏→ループ」を1フィールドで)。
-   * sequence を最後まで進んだら添字 loopFrom へ戻る (未指定=0 で完全後方互換)。
-   * 儀式1回→永久攻撃・盗み→逃走の一方通行・打ち消された孵化の即再試行などが書ける
-   */
-  readonly sequenceLoopFrom?: number
-  readonly sequenceBelowHalfLoopFrom?: number
-  /**
    * 孵化 (2026-09-02 StS2 ToughEgg式): kind:'hatch' の行動を解決すると、この敵が指定の敵へ
    * 変身する (HP全快・筋力0・ローテ先頭から。難易度 atkScale は継承)。打ち消せば1ターン遅らせられる
    */
@@ -1220,12 +1236,6 @@ export interface EnemyDef {
    * 延焼は弾かない (DoTはデバフでなくダメージ = 赤の解答を殺さない、のユーザー裁定)。敵カードに常時表示
    */
   readonly artifact?: number
-  /**
-   * 被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失が damage 以上になったら、ローテを resumeAt へ
-   * 飛ばす (眠りの前奏を打ち切る)。宣言済みの意図はそのまま (宣言時固定則) = 次の宣言から目覚める。
-   * 「寝ている間に削る (起こすリスク) か、放置して殻を積ませるか」の本物の二択
-   */
-  readonly wakeOnDamage?: { readonly damage: number; readonly resumeAt: number }
   /**
    * 潜伏 (2026-09-03 本家StS2 Burrowed): 戦闘開始時に block だけの殻を持ち、殻が尽きるまでHPにダメージが通らない
    * (超過ぶんは捨てる。貫通は通る・粉砕は殻を割る)。殻が割れた瞬間、次の行動が bite (moves の id) に差し替わる。
@@ -1264,8 +1274,11 @@ export interface EncounterMember {
   readonly hpScale?: number
   /** 個体の初期強化補正 (省略時0)。ランの深度補正とは加算で重なる */
   readonly strength?: number
-  /** ローテーション開始位置のズラし。同型2体の大技同期 (同時lunge等) を防ぐ */
-  readonly patternOffset?: number
+  /**
+   * この個体の開始節 (行動グラフの start を上書き)。同型2体の大技同期を防ぐ位相ずらしと、
+   * 本家 Exoskeleton 式の役割分化 (1体目は多段・2体目は単発…) の両方をこれで書く
+   */
+  readonly start?: string
   /**
    * 伏せ/従者への反応テーブル (movesVsSet / movesVsTokens) をこの個体では使わない。
    * 群れで全員が同時に反応すると、伏せ1枚のリスクが頭数に比例して跳ね上がるため、

@@ -10,9 +10,9 @@
       },
       {
         "enemyId": "enemy_probe",
+        "start": "guard",
         "hpScale": 0.5,
         "strength": -2,
-        "patternOffset": 1,
         "noReactTable": true
       }
     ]
@@ -28,16 +28,16 @@
       },
       {
         "enemyId": "enemy_probe",
+        "start": "guard",
         "hpScale": 0.38,
         "strength": -3,
-        "patternOffset": 1,
         "noReactTable": true
       },
       {
         "enemyId": "enemy_probe",
+        "start": "poke_2",
         "hpScale": 0.38,
         "strength": -3,
-        "patternOffset": 2,
         "noReactTable": true
       }
     ]
@@ -83,8 +83,8 @@
       },
       {
         "enemyId": "enemy_drummer",
-        "hpScale": 0.85,
-        "patternOffset": 1
+        "start": "guard",
+        "hpScale": 0.85
       }
     ]
   },
@@ -240,9 +240,9 @@
       },
       {
         "enemyId": "enemy_hexer",
+        "start": "guard",
         "hpScale": 0.55,
-        "strength": -2,
-        "patternOffset": 1
+        "strength": -2
       }
     ]
   },
@@ -257,9 +257,9 @@
       },
       {
         "enemyId": "enemy_hexer",
+        "start": "guard",
         "hpScale": 0.45,
-        "strength": -3,
-        "patternOffset": 1
+        "strength": -3
       },
       {
         "enemyId": "enemy_drummer",
@@ -323,11 +323,11 @@
       },
       {
         "enemyId": "enemy_elite_sentry",
-        "patternOffset": 1
+        "start": "beam"
       },
       {
         "enemyId": "enemy_elite_sentry",
-        "patternOffset": 2
+        "start": "guard"
       }
     ]
   },
@@ -355,8 +355,8 @@
       },
       {
         "enemyId": "enemy_bond_wolf",
-        "hpScale": 0.55,
-        "patternOffset": 1
+        "start": "lunge",
+        "hpScale": 0.55
       }
     ]
   },
@@ -372,7 +372,7 @@
       },
       {
         "enemyId": "enemy_raptor_egg",
-        "patternOffset": 1
+        "start": "quiver_2"
       }
     ]
   },
@@ -386,8 +386,8 @@
       },
       {
         "enemyId": "enemy_mourn_beast",
-        "hpScale": 0.55,
-        "patternOffset": 1
+        "start": "leap",
+        "hpScale": 0.55
       }
     ]
   },
@@ -417,16 +417,16 @@
       },
       {
         "enemyId": "enemy_thorn_squirrel",
+        "start": "rand",
         "hpScale": 0.4,
         "strength": -3,
-        "patternOffset": 1,
         "noReactTable": true
       },
       {
         "enemyId": "enemy_thorn_squirrel",
+        "start": "rand",
         "hpScale": 0.4,
         "strength": -3,
-        "patternOffset": 2,
         "noReactTable": true
       }
     ]
@@ -526,8 +526,8 @@
       },
       {
         "enemyId": "enemy_mourn_beast",
+        "start": "leap",
         "hpScale": 0.42,
-        "patternOffset": 1,
         "strength": -1
       },
       {
@@ -697,13 +697,13 @@
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "strength": -2,
-        "patternOffset": 1
+        "start": "rand",
+        "strength": -2
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "strength": -2,
-        "patternOffset": 2
+        "start": "rand",
+        "strength": -2
       }
     ]
   },
@@ -717,17 +717,17 @@
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "patternOffset": 1,
+        "start": "rand",
         "strength": -2
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "patternOffset": 2,
+        "start": "rand",
         "strength": -2
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "patternOffset": 3,
+        "start": "rand",
         "strength": -2
       }
     ]
@@ -753,7 +753,7 @@
       },
       {
         "enemyId": "enemy_chomper",
-        "patternOffset": 1
+        "start": "screech"
       }
     ]
   },
@@ -766,7 +766,7 @@
       },
       {
         "enemyId": "enemy_scald_gnat",
-        "patternOffset": 2
+        "start": "bite"
       }
     ]
   },
@@ -782,7 +782,7 @@
       },
       {
         "enemyId": "enemy_kin_follower",
-        "patternOffset": 2
+        "start": "dance"
       }
     ]
   },

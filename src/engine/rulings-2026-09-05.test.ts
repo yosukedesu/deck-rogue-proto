@@ -29,12 +29,11 @@ describe('置物トリガーのダメージと勢い (2026-09-05 裁定)', () =>
 })
 
 describe('罠壊しの締切 (2026-09-05 裁定: ターン装甲は締切と対で配る)', () => {
-  it('通常攻撃 smash は宣言するたび+3 (3テーブル共通の id なので成長カウンタも共有)', () => {
+  it('通常攻撃 smash は宣言するたび+3 (技の定義は1つ = 伏せ分岐・従者分岐から出しても成長カウンタは共有)', () => {
     const def = getEnemyDef('enemy_set_breaker')
     expect(def.turnArmor).toBe(35)
-    for (const tbl of [def.moves, def.movesVsSet ?? [], def.movesVsTokens ?? []]) {
-      const smash = tbl.find((m) => m.id === 'smash')
-      expect(smash?.growPerUse).toBe(3)
-    }
+    expect(def.moves.find((m) => m.id === 'smash')?.growPerUse).toBe(3)
+    expect(def.movesVsSet?.some((a) => a.to === 'smash')).toBe(true)
+    expect(def.movesVsTokens?.some((a) => a.to === 'smash')).toBe(true)
   })
 })

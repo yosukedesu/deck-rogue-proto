@@ -253,7 +253,8 @@ namespace DeckRogue.Engine
                     Burn = 0,
                     Confusion = 0,
                     Exposed = 0,
-                    PatternIndex = m.PatternOffset ?? 0,
+                    // 開始節: 編成の上書き > スロット別 (役割分化・位相ずらし) > start (2026-09-14 行動グラフ)
+                    Node = EnemyGraph.StartNodeFor(def, mi, m.Start),
                     NoReactTable = m.NoReactTable == true ? (bool?)true : null,
                     // とげは def からコピーして状態に持つ
                     Thorns = def.Thorns,
@@ -334,17 +335,6 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>
-        /// 敵の行動テーブル選択: 伏せがあれば movesVsSet、召喚トークンがいれば movesVsTokens を優先
-        /// (優先度: 伏せ反応 &gt; トークン反応 &gt; 通常)
-        /// </summary>
-        public static IReadOnlyList<EnemyMove> SelectMoveTable(EnemyDef def, bool playerHasSetCards, bool playerHasTokens = false)
-        {
-            if (playerHasSetCards && def.MovesVsSet != null && def.MovesVsSet.Count > 0) return def.MovesVsSet;
-            if (playerHasTokens && def.MovesVsTokens != null && def.MovesVsTokens.Count > 0) return def.MovesVsTokens;
-            return def.Moves;
-        }
-
-        /// <summary>
         /// 時喰らい型タイマー (激昂)。プレイヤーの累計詠唱数が enrageEveryCards の倍数に達した
         /// タイミングで強化する。時間ではなくプレイヤーのテンポに紐づく = 自己調整する。
         /// </summary>
@@ -374,227 +364,139 @@ namespace DeckRogue.Engine
         /// 全敵の意図を宣言する。行動と実値は宣言時にロールし、実値は非公開 (幅のみ表示)。
         /// 伏せの有無は宣言時点の状態で判定する。
         /// </summary>
+        /// <summary>
+        /// 全敵の意図を宣言する (行動グラフ 2026-09-14: 割り込みでカーソルを飛ばし、カーソルから技の節まで辿る)
+        /// </summary>
         private static GameState DeclareIntents(GameState state)
         {
             var s = state;
             for (int i = 0; i < s.Enemies.Count; i++)
             {
-                var rawEnemy = s.Enemies[i];
-                if (rawEnemy.Hp <= 0) continue;
-                var def = Content.GetEnemyDef(rawEnemy.EnemyId);
-                // 連携: 他の仲間が生存中は攻撃+N (宣言時判定)
-                bool anyOtherAlive = false;
-                for (int j = 0; j < s.Enemies.Count; j++) if (j != i && s.Enemies[j].Hp > 0) { anyOtherAlive = true; break; }
-                int bond = (def.BondStrength != null && anyOtherAlive) ? def.BondStrength.Value : 0;
-                var enemy = bond > 0 ? rawEnemy with { Strength = rawEnemy.Strength + bond } : rawEnemy;
-                // 盗んだ敵は次の宣言で必ず逃走する。flee の move を持たない盗人でも合成の逃走を宣言する
-                EnemyMove fleeMove = null;
-                for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Kind == EnemyActionKinds.Flee) { fleeMove = def.Moves[k]; break; }
-                if (fleeMove == null) fleeMove = new EnemyMove { Id = "forced_flee", Kind = EnemyActionKinds.Flee, Weight = 1 };
-                // 潜伏の殻が敵フェーズ中に割れていたら、この宣言は噛みつき
-                EnemyMove biteMove = null;
-                if (def.Burrow != null)
-                {
-                    for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Id == def.Burrow.Bite) { biteMove = def.Moves[k]; break; }
-                }
-                if (enemy.BiteNext == true && biteMove != null)
-                {
-                    var (biteIntent, rngB) = BuildIntent(s.Rng, biteMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                    var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false } : e);
-                    s = Events.Emit(s with { Rng = rngB, Enemies = enemiesB }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = biteIntent });
-                    continue;
-                }
-                // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (ローテは進めない)
-                if (enemy.StaggeredNext == true)
-                {
-                    var staggerMove = new EnemyMove { Id = "stagger", Kind = EnemyActionKinds.Rest, Weight = 1 };
-                    var (restIntent, rngS) = BuildIntent(s.Rng, staggerMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                    var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false } : e);
-                    s = Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent });
-                    continue;
-                }
-                if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent == null || enemy.Intent.Kind != EnemyActionKinds.Flee))
-                {
-                    var (fleeIntent, rngF) = BuildIntent(s.Rng, fleeMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                    var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent } : e);
-                    s = Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent });
-                    continue;
-                }
-                // フェーズ変化: HP50%以下の行動テーブルが最優先
-                bool belowHalf = enemy.Hp <= enemy.MaxHp * 0.5 && (def.MovesBelowHalf != null || def.SequenceBelowHalf != null);
-                // 単独時テーブル: 仲間が全滅したら切替。優先度は HP半分 > 単独時 > 通常
-                bool whenAlone = !belowHalf && (def.MovesWhenAlone != null || def.SequenceWhenAlone != null) && !anyOtherAlive;
-                // 回数カウンタのフェーズ変化: 対象行動を規定回数宣言したら恒久切替
-                bool phaseSwitched = def.PhaseAfterUses != null && (enemy.KeyMoveUses ?? 0) >= def.PhaseAfterUses.Uses;
-                IReadOnlyList<string> sequence = belowHalf
-                    ? def.SequenceBelowHalf
-                    : whenAlone
-                        ? def.SequenceWhenAlone
-                        : phaseSwitched
-                            ? def.PhaseAfterUses?.Sequence
-                            : def.Sequence;
-                // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する。
-                // 優先度は 伏せ反応 > 従者反応。編成で無効化された個体は分岐を持たない
-                var vsSet = (enemy.NoReactTable != true && def.MovesVsSet != null && def.MovesVsSet.Count > 0) ? def.MovesVsSet : null;
-                var vsTokens = (enemy.NoReactTable != true && def.MovesVsTokens != null && def.MovesVsTokens.Count > 0) ? def.MovesVsTokens : null;
-                bool preferTokens = s.Player.SetCards.Count == 0 && Effects.HasHuntableTokens(s);
-                IReadOnlyList<EnemyMove> reactTable = (belowHalf || whenAlone)
-                    ? null
-                    : preferTokens ? (vsTokens ?? vsSet) : (vsSet ?? vsTokens);
-                string conditionalOn = reactTable == null ? null : (ReferenceEquals(reactTable, vsSet) ? "set" : "tokens");
-                var baseTable = belowHalf
-                    ? (def.MovesBelowHalf ?? def.Moves)
-                    : whenAlone
-                        ? (def.MovesWhenAlone ?? def.Moves)
-                        : def.Moves;
-
-                var rng = s.Rng;
-                int nextPatternIndex = enemy.PatternIndex;
-                // 通常分岐: sequence を持つ敵は固定ローテーション
-                EnemyMove move;
-                if (sequence != null && sequence.Count > 0)
-                {
-                    // sequenceLoopFrom: 一度きりの前奏→ループ。最後まで進んだら loopFrom へ戻る
-                    int loopFrom = belowHalf
-                        ? (def.SequenceBelowHalfLoopFrom ?? 0)
-                        : (whenAlone || phaseSwitched) ? 0 : (def.SequenceLoopFrom ?? 0);
-                    int len = sequence.Count;
-                    int span = len - loopFrom;
-                    string moveId = enemy.PatternIndex < len
-                        ? sequence[enemy.PatternIndex]
-                        : (span > 0 ? sequence[loopFrom + ((enemy.PatternIndex - loopFrom) % span)] : null);
-                    EnemyMove found = null;
-                    for (int k = 0; k < baseTable.Count; k++) if (baseTable[k].Id == moveId) { found = baseTable[k]; break; }
-                    if (found == null) throw new InvalidOperationException($"敵 {def.Id} の sequence が未定義の行動を参照: {moveId}");
-                    move = found;
-                    nextPatternIndex = enemy.PatternIndex + 1;
-                }
-                else if (enemy.PatternIndex == 0 && def.Opener != null && !belowHalf && !whenAlone)
-                {
-                    // 初手固定: 最初の宣言だけ指定の行動 = その敵の問いをT1に見せる
-                    EnemyMove found = null;
-                    for (int k = 0; k < baseTable.Count; k++) if (baseTable[k].Id == def.Opener) { found = baseTable[k]; break; }
-                    if (found == null) throw new InvalidOperationException($"敵 {def.Id} の opener が未定義の行動を参照: {def.Opener}");
-                    move = found;
-                    nextPatternIndex = enemy.PatternIndex + 1;
-                }
-                else
-                {
-                    // noRepeat=直前と同じ技は引かない / once=1戦闘1回。除外で候補が空なら制約なしで引く
-                    var usable = new List<EnemyMove>();
-                    for (int k = 0; k < baseTable.Count; k++)
-                    {
-                        var m = baseTable[k];
-                        bool blockedOnce = m.Once == true && enemy.UsedOnce != null && enemy.UsedOnce.Contains(m.Id);
-                        bool blockedRepeat = m.NoRepeat == true && m.Id == enemy.LastMoveId;
-                        if (!blockedOnce && !blockedRepeat) usable.Add(m);
-                    }
-                    var table = usable.Count > 0 ? (IReadOnlyList<EnemyMove>)usable : baseTable;
-                    var weights = new List<double>(table.Count);
-                    for (int k = 0; k < table.Count; k++) weights.Add(table[k].Weight);
-                    var (moveIdx, rngAfter) = Rng.WeightedIndex(rng, weights);
-                    move = table[moveIdx];
-                    rng = rngAfter;
-                    nextPatternIndex = enemy.PatternIndex + 1;
-                }
-                // 回数カウンタ: 対象行動の宣言を数え、しきい値到達の瞬間に patternIndex を 0 へ
-                var pau = def.PhaseAfterUses;
-                int nextKeyUses = enemy.KeyMoveUses ?? 0;
-                if (pau != null && !phaseSwitched && move.Id == pau.MoveId)
-                {
-                    nextKeyUses += 1;
-                    if (nextKeyUses >= pau.Uses) nextPatternIndex = 0;
-                }
-                int usesSoFar = 0;
-                if (enemy.MoveGrowth != null && enemy.MoveGrowth.TryGetValue(move.Id, out var uso)) usesSoFar = uso;
-                var (intentRaw, rngA) = BuildIntent(rng, move, enemy.Strength, enemy.AtkScale ?? 1.0, usesSoFar);
-                // 潜伏中は殻が育たない: 攻防一体のブロックは宣言から外し、防御行動そのものは「隙」に置き換える
-                var intent =
-                    enemy.BurrowActive != true
-                        ? intentRaw
-                        : intentRaw.Kind == EnemyActionKinds.Defend
-                            ? intentRaw with { Kind = EnemyActionKinds.Rest, ShownMin = 0, ShownMax = 0, Actual = 0, AlsoBuff = null }
-                            : intentRaw.AlsoDefend != null
-                                ? intentRaw with { AlsoDefend = null }
-                                : intentRaw;
-                rng = rngA;
-                bool growsMove = move.GrowPerUse != null || move.GrowHitsPerUse != null;
-                IReadOnlyDictionary<string, int> nextGrowth;
-                if (growsMove)
-                {
-                    var d = enemy.MoveGrowth != null ? new Dictionary<string, int>((IDictionary<string, int>)enemy.MoveGrowth) : new Dictionary<string, int>();
-                    d[move.Id] = usesSoFar + 1;
-                    nextGrowth = d;
-                }
-                else nextGrowth = enemy.MoveGrowth;
-
-                EnemyIntentBranch alt = null;
-                string condOn = conditionalOn;
-                if (reactTable != null && reactTable.Count > 0)
-                {
-                    var weightsA = new List<double>(reactTable.Count);
-                    for (int k = 0; k < reactTable.Count; k++) weightsA.Add(reactTable[k].Weight);
-                    var (altIdx, rngB) = Rng.WeightedIndex(rng, weightsA);
-                    rng = rngB;
-                    var (altIntent, rngC) = BuildIntent(rng, reactTable[altIdx], enemy.Strength, enemy.AtkScale ?? 1.0);
-                    rng = rngC;
-                    alt = ToBranch(altIntent);
-                }
-                else if (!belowHalf && !whenAlone && enemy.NoReactTable != true && move.SetAlt != null)
-                {
-                    // 行動単位の条件分岐: 伏せ札があるとこの行動が setAlt の行動に変わる
-                    var sa = move.SetAlt;
-                    var altMove = new EnemyMove
-                    {
-                        Id = $"{move.Id}@set",
-                        Weight = 1,
-                        Kind = sa.Kind,
-                        Min = sa.Min,
-                        Max = sa.Max,
-                        Hits = sa.Hits,
-                        Inflict = sa.Inflict,
-                        AlsoDefend = sa.AlsoDefend,
-                        AlsoBuff = sa.AlsoBuff,
-                    };
-                    var (altIntent, rngC) = BuildIntent(rng, altMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                    rng = rngC;
-                    alt = ToBranch(altIntent);
-                    condOn = "set";
-                }
-
-                // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む
-                var shown = s.RevealIntents == true ? intent with { ShownMin = intent.Actual, ShownMax = intent.Actual } : intent;
-                if (alt != null && s.RevealIntents == true) alt = alt with { ShownMin = alt.Actual, ShownMax = alt.Actual };
-                var declared = (condOn != null && alt != null) ? shown with { ConditionalOn = condOn, Alt = alt } : shown;
-                // 盗みは宣言と同時に成立する
-                int stolen = declared.Kind == EnemyActionKinds.StealGold ? declared.Actual : 0;
-                var declaredMove = move;
-                var nextGrowthLocal = nextGrowth;
-                int nextPatternLocal = nextPatternIndex;
-                int nextKeyLocal = nextKeyUses;
-                var enemies = MapIdx(s.Enemies, (e, j) =>
-                {
-                    if (j != i) return e;
-                    var updated = e with
-                    {
-                        Intent = declared,
-                        PatternIndex = nextPatternLocal,
-                        KeyMoveUses = nextKeyLocal,
-                        LastMoveId = declaredMove.Id,
-                        MoveGrowth = nextGrowthLocal ?? e.MoveGrowth,
-                    };
-                    if (declaredMove.Once == true)
-                    {
-                        var uo = e.UsedOnce != null ? new List<string>(e.UsedOnce) : new List<string>();
-                        uo.Add(declaredMove.Id);
-                        updated = updated with { UsedOnce = uo };
-                    }
-                    if (stolen > 0) updated = updated with { StolenGold = (e.StolenGold ?? 0) + stolen };
-                    return updated;
-                });
-                s = Events.Emit(s with { Rng = rng, Enemies = enemies }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = declared });
-                if (stolen > 0) s = Events.Emit(s, new GameEvent_GoldStolen { EnemyIndex = i, Amount = stolen });
+                if (s.Enemies[i].Hp <= 0) continue;
+                s = DeclareOne(s, i);
             }
+            return s;
+        }
+
+        /// <summary>1体の意図を宣言する (通常の宣言・分裂体の出現時が共用)。強制の宣言はカーソルを進めない</summary>
+        private static GameState DeclareOne(GameState state, int i)
+        {
+            var s = state;
+            var rawEnemy = s.Enemies[i];
+            var def = Content.GetEnemyDef(rawEnemy.EnemyId);
+            // 連携: 他の仲間が生存中は攻撃+N (宣言時判定)
+            bool anyOtherAlive = false;
+            for (int j = 0; j < s.Enemies.Count; j++) if (j != i && s.Enemies[j].Hp > 0) { anyOtherAlive = true; break; }
+            int bond = (def.BondStrength != null && anyOtherAlive) ? def.BondStrength.Value : 0;
+            var enemy = bond > 0 ? rawEnemy with { Strength = rawEnemy.Strength + bond } : rawEnemy;
+            // 盗んだ敵は次の宣言で必ず逃走する。flee の move を持たない盗人でも合成の逃走を宣言する
+            EnemyMove fleeMove = null;
+            for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Kind == EnemyActionKinds.Flee) { fleeMove = def.Moves[k]; break; }
+            if (fleeMove == null) fleeMove = new EnemyMove { Id = "forced_flee", Kind = EnemyActionKinds.Flee };
+            // 潜伏の殻が敵フェーズ中に割れていたら、この宣言は噛みつき
+            EnemyMove biteMove = null;
+            if (def.Burrow != null)
+            {
+                for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Id == def.Burrow.Bite) { biteMove = def.Moves[k]; break; }
+            }
+            if (enemy.BiteNext == true && biteMove != null)
+            {
+                var (biteIntent, rngB) = BuildIntent(s.Rng, biteMove, enemy.Strength, enemy.AtkScale ?? 1.0);
+                var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false } : e);
+                return Events.Emit(s with { Rng = rngB, Enemies = enemiesB }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = biteIntent });
+            }
+            // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (カーソルは進めない)
+            if (enemy.StaggeredNext == true)
+            {
+                var staggerMove = new EnemyMove { Id = "stagger", Kind = EnemyActionKinds.Rest };
+                var (restIntent, rngS) = BuildIntent(s.Rng, staggerMove, enemy.Strength, enemy.AtkScale ?? 1.0);
+                var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false } : e);
+                return Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent });
+            }
+            if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent == null || enemy.Intent.Kind != EnemyActionKinds.Flee))
+            {
+                var (fleeIntent, rngF) = BuildIntent(s.Rng, fleeMove, enemy.Strength, enemy.AtkScale ?? 1.0);
+                var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent } : e);
+                return Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent });
+            }
+            // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす
+            var jumped = EnemyGraph.ApplyInterruptsTo(s, i, enemy.Node, enemy.FiredInterrupts);
+            // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する。
+            // 優先度は 伏せ反応 > 従者反応。編成で無効化された個体は分岐を持たない
+            var vsSet = (enemy.NoReactTable != true && def.MovesVsSet != null && def.MovesVsSet.Count > 0) ? def.MovesVsSet : null;
+            var vsTokens = (enemy.NoReactTable != true && def.MovesVsTokens != null && def.MovesVsTokens.Count > 0) ? def.MovesVsTokens : null;
+            bool preferTokens = s.Player.SetCards.Count == 0 && Effects.HasHuntableTokens(s);
+            IReadOnlyList<EnemyRandomArm> reactTable = preferTokens ? (vsTokens ?? vsSet) : (vsSet ?? vsTokens);
+            string conditionalOn = reactTable == null ? null : (ReferenceEquals(reactTable, vsSet) ? "set" : "tokens");
+
+            // カーソルから技の節まで辿る (乱択は RNG 1回)
+            var walked = EnemyGraph.WalkToMove(s, i, jumped.Cursor, s.Rng);
+            var rng = walked.Rng;
+            var move = walked.Move;
+            var landedNode = def.Nodes[walked.NodeId];
+            string nextCursor = landedNode.Next ?? walked.NodeId;
+            int usesSoFar = 0;
+            if (enemy.MoveUses != null) enemy.MoveUses.TryGetValue(move.Id, out usesSoFar);
+            var (intentRaw, rngA) = BuildIntent(rng, move, enemy.Strength, enemy.AtkScale ?? 1.0, usesSoFar);
+            // 潜伏中は殻が育たない: 攻防一体のブロックは宣言から外し、防御行動そのものは「隙」に置き換える
+            var intent =
+                enemy.BurrowActive != true
+                    ? intentRaw
+                    : intentRaw.Kind == EnemyActionKinds.Defend
+                        ? intentRaw with { Kind = EnemyActionKinds.Rest, ShownMin = 0, ShownMax = 0, Actual = 0, AlsoBuff = null }
+                        : intentRaw.AlsoDefend != null
+                            ? intentRaw with { AlsoDefend = null }
+                            : intentRaw;
+            rng = rngA;
+            var nextUses = enemy.MoveUses != null ? new Dictionary<string, int>((IDictionary<string, int>)enemy.MoveUses) : new Dictionary<string, int>();
+            nextUses[move.Id] = usesSoFar + 1;
+
+            EnemyIntentBranch alt = null;
+            if (reactTable != null && reactTable.Count > 0)
+            {
+                var weightsA = new List<double>(reactTable.Count);
+                for (int k = 0; k < reactTable.Count; k++) weightsA.Add(reactTable[k].Weight);
+                var (altIdx, rngB) = Rng.WeightedIndex(rng, weightsA);
+                rng = rngB;
+                var altMove = EnemyGraph.MoveById(def, reactTable[altIdx].To);
+                var (altIntent, rngC) = BuildIntent(rng, altMove, enemy.Strength, enemy.AtkScale ?? 1.0);
+                rng = rngC;
+                alt = ToBranch(altIntent);
+            }
+
+            // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む
+            var shown = s.RevealIntents == true ? intent with { ShownMin = intent.Actual, ShownMax = intent.Actual } : intent;
+            if (alt != null && s.RevealIntents == true) alt = alt with { ShownMin = alt.Actual, ShownMax = alt.Actual };
+            var declared = (conditionalOn != null && alt != null) ? shown with { ConditionalOn = conditionalOn, Alt = alt } : shown;
+            // 盗みは宣言と同時に成立する
+            int stolen = declared.Kind == EnemyActionKinds.StealGold ? declared.Actual : 0;
+            var declaredMove = move;
+            var nextUsesLocal = nextUses;
+            var nextCursorLocal = nextCursor;
+            var enemies = MapIdx(s.Enemies, (e, j) =>
+            {
+                if (j != i) return e;
+                var lastMoves = new List<string> { declaredMove.Id };
+                if (e.LastMoves != null) for (int k = 0; k < e.LastMoves.Count && lastMoves.Count < 3; k++) lastMoves.Add(e.LastMoves[k]);
+                var updated = e with
+                {
+                    Intent = declared,
+                    Node = nextCursorLocal,
+                    LastMoves = lastMoves,
+                    MoveUses = nextUsesLocal,
+                };
+                if (jumped.FiredNow.Count > 0) updated = updated with { FiredInterrupts = jumped.Fired };
+                if (walked.OnceMoveIds.Count > 0)
+                {
+                    var uo = e.UsedOnce != null ? new List<string>(e.UsedOnce) : new List<string>();
+                    uo.AddRange(walked.OnceMoveIds);
+                    updated = updated with { UsedOnce = uo };
+                }
+                if (stolen > 0) updated = updated with { StolenGold = (e.StolenGold ?? 0) + stolen };
+                return updated;
+            });
+            s = Events.Emit(s with { Rng = rng, Enemies = enemies }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = declared });
+            if (stolen > 0) s = Events.Emit(s, new GameEvent_GoldStolen { EnemyIndex = i, Amount = stolen });
             return s;
         }
 
@@ -718,31 +620,10 @@ namespace DeckRogue.Engine
                 int scaledChildHp = Math.Max(1, JsRound(childDef.MaxHp * hpRatio));
                 for (int k = 0; k < splitInto.Count; k++)
                 {
-                    string moveId = null;
-                    if (childDef.Sequence != null)
-                    {
-                        int mod = childDef.Sequence.Count != 0 ? childDef.Sequence.Count : 1;
-                        int idx = k % mod;
-                        moveId = idx < childDef.Sequence.Count ? childDef.Sequence[idx] : null;
-                    }
-                    EnemyMove move = null;
-                    for (int q = 0; q < childDef.Moves.Count; q++) if (childDef.Moves[q].Id == moveId) { move = childDef.Moves[q]; break; }
-                    if (move == null) move = childDef.Moves[0];
-                    // stunned: 分裂体の初回意図は「隙」= 出現ターンは動かない
+                    // stunned: 分裂体の初回意図は「隙」= 出現ターンは動かない (開始節は start)。
+                    // それ以外は k 体目の開始節 (startBySlot=位相ずらし) から即座に宣言する (行動グラフ 2026-09-14)
                     int childStrength = splitInto.Strength ?? 0;
-                    EnemyIntent intent;
-                    RngState rng2;
-                    if (splitInto.Stunned == true)
-                    {
-                        intent = new EnemyIntent { Kind = EnemyActionKinds.Rest, ShownMin = 0, ShownMax = 0, Actual = 0 };
-                        rng2 = s.Rng;
-                    }
-                    else
-                    {
-                        var r = BuildIntent(s.Rng, move, childStrength, e.AtkScale ?? 1.0);
-                        intent = r.Intent;
-                        rng2 = r.Rng;
-                    }
+                    bool stunned = splitInto.Stunned == true;
                     var child = new EnemyState
                     {
                         EnemyId = splitInto.EnemyId,
@@ -750,19 +631,20 @@ namespace DeckRogue.Engine
                         MaxHp = scaledChildHp,
                         Block = childDef.Burrow?.Block ?? childDef.StartingBlock ?? 0,
                         BurrowActive = childDef.Burrow != null ? (bool?)true : null,
-                        Intent = intent,
+                        Intent = stunned ? new EnemyIntent { Kind = EnemyActionKinds.Rest, ShownMin = 0, ShownMax = 0, Actual = 0 } : null,
                         Strength = childStrength,
                         AtkScale = e.AtkScale,
                         Burn = 0,
                         Confusion = 0,
                         Exposed = 0,
-                        PatternIndex = splitInto.Stunned == true ? 0 : (k + 1) % (childDef.Sequence?.Count ?? 1),
+                        Node = stunned ? childDef.Start : EnemyGraph.StartNodeFor(childDef, k),
                         Thorns = childDef.Thorns,
                         Artifact = childDef.Artifact,
                         Armor = childDef.Armor,
                     };
-                    s = s with { Rng = rng2, Enemies = Append(s.Enemies, child) };
-                    s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = intent });
+                    s = s with { Enemies = Append(s.Enemies, child) };
+                    if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent });
+                    else s = DeclareOne(s, s.Enemies.Count - 1);
                 }
             }
             return s;
@@ -1603,7 +1485,7 @@ namespace DeckRogue.Engine
                 });
                 s = Events.Emit(s, new GameEvent_BurnTick { EnemyIndex = i, Amount = amount });
                 if (s.Enemies[i].Hp <= 0) s = Effects.FireEnemyDied(s, i); // 焼き切って倒れた (onEnemyDied 2026-09-12)
-                s = Effects.ApplyWakeCheck(s, i); // 被弾覚醒はどの経路の被弾でも
+                s = Effects.ApplyDamageInterrupts(s, i); // 被弾覚醒はどの経路の被弾でも
                 // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
                 {
                     var struck = s.Enemies[i];
@@ -2111,12 +1993,11 @@ namespace DeckRogue.Engine
                                 MaxHp = hatchedHp,
                                 Block = 0,
                                 Strength = 0,
-                                PatternIndex = 0,
-                                KeyMoveUses = 0,
-                                LastMoveId = null,
+                                Node = newDef.Start,
+                                LastMoves = null,
                                 UsedOnce = new List<string>(),
-                                MoveGrowth = new Dictionary<string, int>(),
-                                Woken = false,
+                                MoveUses = new Dictionary<string, int>(),
+                                FiredInterrupts = new List<int>(),
                                 Artifact = newDef.Artifact ?? 0,
                                 Intent = null,
                             }

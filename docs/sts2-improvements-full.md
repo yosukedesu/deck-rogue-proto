@@ -115,37 +115,37 @@
 - 実装スケッチ: EnemyDef に `sequenceOnAllyDeath?: readonly string[]`（と参照先の追加moves）を追加。宣言時に「他の仲間が全滅している」ならこのローテへ恒久切替（判定は宣言時=宣言時固定の既存則と両立。belowHalfより低優先）。適用例: 盾持ちの従士に moves追加 {id:"masterless_rage", kind:"attack", min:10, max:13, alsoBuff:2} と sequenceOnAllyDeath:["masterless_rage"]＝「主なき怒り」。射手から倒す定石に「従士が転職する」対価が付き、従士から倒す（庇うを正面から剥がす）ルートと初めて拮抗する。図鑑・意図表示に「仲間が全滅すると→」の予告行（フェアネス）。
 
 ## [19] (behavior-grammar) Queen式SetMoveImmediate＝仲間死亡の瞬間に宣言済み意図を強制差し替え
-- 状態: 🔶 宣言時固定の既存則を破る
+- 状態: 🔶→採択（2026-09-14 ユーザー裁定「原因限定で即時差し替え」。行動グラフの第2段で実装）
 - 根拠: sts2-reference.md §3-4「味方の生死（Queen: 随伴が死んだ瞬間、次の予定行動を強制差し替えて激怒）」。monsters-m-z.md Queen: Amalgam死亡のAfterDeathフックで、次の予定行動が支援バフだった場合は即座にENRAGEへSetMoveImmediate。
 - 現状(採掘時点): 意図は宣言時に確定し以降再計算しない（確定済みルール表「条件付き意図」2026-08-26修正で「窓が嘘をつく」を排除した経緯）。仲間死亡で宣言済み意図が変わる機構は不在。双牙の狼のbondStrengthも「次の宣言から素に戻る」宣言時判定のみ。
 - 実装スケッチ: 敵インスタンスの死亡処理（checkCombatEnd/ダメージ解決後）に「生存仲間の宣言済み意図を差し替える」フック `onAllyDeathReplace?: { fromKinds: readonly EnemyActionKind[]; moveId: string }` を追加。例: 双牙の狼——相方が死んだ瞬間、防御(prowl)の意図が「弔いの咆哮」(buff+3)に変わる。差し替えはEnemyIntentDeclaredを再emitしてUI・最悪被ダメ予測も追随、意図表示に「仲間が倒れると→◯◯」の両分岐予告を出す（setAltの予告配管を流用）。
 
 ## [20] (behavior-grammar) EncounterMemberのprelude上書き＝スロット役割分化（Exoskeleton式）
-- 状態: 📋 S
+- 状態: 📋 S→採択（2026-09-14 行動グラフ: `member.start`／`EnemyDef.startBySlot` が器。役割分化のデータは第2段）
 - 根拠: sts2-reference.md §3-3「スロット位置で役割が変わる（Exoskeleton: 1体目=多段/2体目=単発/3体目=バフ）」。Myte(first→毒/second→吸収)・Wriggler(1,3→噛み/2,4→バフ)・PhantasmalGardener(4体で全役割分担)。位相ずらしでなく初動の役割そのものを変える。
 - 現状(採掘時点): EncounterMember は patternOffset（ローテ開始位置ずらし）のみ（types.ts L871-885で確認）。同型ペア（双牙の狼@1・栗鼠@1・歩哨@1）は同じループの位相違いで、役割の分担ではない。またpatternOffsetはweight敵には何の効果もない。
 - 実装スケッチ: 提案1のpreludeを前提に、EncounterMember に `prelude?: readonly string[]`（EnemyDefのpreludeを個体単位で上書き）を追加。適用例: 双牙の狼ペアを patternOffset方式から「1頭目 prelude:["twin_bite"]・2頭目 prelude:["prowl"]」に変更＝連撃役と守り役で開幕の顔が違い、以降は同じ3拍ローテに合流。実装は提案1の配管に EncounterMember 優先の1行を足すだけ。
 
 ## [21] (behavior-grammar) 技の恒久成長（growPerUse/growHitsPerUse）＝使うたび育つ技で「戻らない恐怖」を作る
-- 状態: 📋 M
+- 状態: ✅ 実装済み（EnemyMove.growPerUse/growHitsPerUse。罠壊し・巨面・大鴉・大顎・汚泥・巨蟹・合成獣の7体）
 - 根拠: monsters-m-z.md TestSubject: MULTI_CLAWは「このMoveを使うたびヒット数+1され戦闘中ずっと増加し続ける」。WaterfallGiant: PRESSURE_GUNは使うたびダメージ+5が恒久increase。単調増加のタイマーは「長引かせた自分のせい」という納得を作る。
 - 現状(採掘時点): 刺突の書は stab2→stab3→stab4 の3技をsequenceで並べた手書き実装で、ループすると2ヒットに戻る（enemies.json実測: sequence:["stab2","stab3","stab4"]）。技単位の使用回数参照は機構として不在。激昂タイマー（enrageEveryCards/Damage）はプレイヤー行動参照で、敵自身の行動回数参照は無い。
 - 実装スケッチ: EnemyMove に `growHitsPerUse?: number` と `growPerUse?: number` を追加（この技の累計使用回数×Nをヒット数/実値に加算。宣言時に幅表示へも乗せる=フェアネス）。使用回数は提案3のusedMoveIds回数記録を共用。適用例: 刺突の書を moves:[{id:"stab", 6-8, hits:2, growHitsPerUse:1}]+sequence:["stab"] に置換＝2→3→4→5…と戻らない成長になり「何ターンで抜けるか」の計算が単調で読める。既存エリートの挙動が強くなる方向なので実装後に幕2でsim確認。
 
 ## [22] (behavior-grammar) 敵の召喚行動（kind:'summon'）＝戦闘中に味方を補充する敵
-- 状態: 📋 L
+- 状態: 📋 L→採択（2026-09-14 ユーザー裁定「召喚も含めて両方」。行動グラフの第2段で実装）
 - 根拠: sts2-reference.md §3-7「1体で完結しない敵が多い」。Fabricator(味方4体未満なら防御ボット+攻撃ボット補充、満杯なら素の攻撃に転換)・LivingFog(GasBomb召喚)・Ovicopter(空きスロットに卵を最大3体)・TwoTailedRat(条件成立で75%重みの自己増殖・個体3回まで)・Fogmog(初手で幻影召喚)。
 - 現状(採掘時点): EnemyActionKind は attack/defend/destroy-set/destroy-token/buff/rally/hex/heal/steal-gold/flee/rest/mill の12種（types.ts L729-741で確認）。敵が敵を場に出す機構は splitInto（死亡時のみ）だけで、生存中の召喚・増殖は不在。処刑順パズルの供給源は応援役・回復役の2種に留まる。
 - 実装スケッチ: EnemyActionKind に 'summon' を追加し、EnemyMove に `summon?: { enemyId: string; count: number }` を追加。解決は processSplits の子生成コード（意図付き即出現・素の値・atkScale継承・patternIndexずらし）をそのまま関数化して共用。3体上限（戦闘形式ルール）で空きが無ければno-op（意図表示は出す=「潰すなら今」の合図）。意図表示「👶召喚: 苔スライム×1」。適用例: 幕2新敵「苔の産み手」(HP70・sequence: 召喚→攻撃9-12→防御)＝放置すると頭数=行動回数が増える処刑順の問い。ボットは召喚者優先の集中砲火を教える必要あり（sim/bot.tsに1分岐）。
 
 ## [23] (behavior-grammar) 眠りの被ダメ覚醒（wakeOnDamage）＝眠れる鉄卵の「起こす前に削るか」を本物の二択にする
-- 状態: 📋 M
+- 状態: ✅ 実装済み（2026-09-14 行動グラフで割り込み `{on:'damageTaken', amount, from, goto}` に統合）
 - 根拠: monsters-a-l.md LagavulinMatriarch: AsleepPower保持中は空ターン、外部から強制的に起こせるWakeUpMove構造。monsters-m-z.md SlumberingBeetle: 3ターン待てば自然覚醒＋「起こす前に削ればシールド(Plating)を剥がして攻撃が通る」＝眠りが本当の読み合いになっている。
 - 現状(採掘時点): 眠れる鉄卵（enemy_elite_iron_egg）は sequence:["sleep"(defend14-18),"awaken","tail"×8] の固定ローテで、眠り中にいくら殴っても覚醒は早まらない（declareIntentsはpatternIndexを進めるだけ。ダメージ起因のローテ操作は不在）。「起こす前に削るか」というフレーバー（flavor文言）と実機構が一致していない。
 - 実装スケッチ: EnemyDef に `wakeOnDamage?: number` を追加: patternIndexが眠り区間（preludeまたはsequence先頭のsleep行動）にある間、そのターンの累計被ダメージがN以上なら次の宣言でpatternIndexを覚醒位置（awaken）へスキップ＋「起こしてしまった」イベントをemit。鉄卵に wakeOnDamage:20 を設定＝「静かに1発ずつ削る（装甲22の下で少額×多ターン）か、大技で起こして短期決戦か」。図鑑・敵カードに「20以上のダメージで目覚める」を常時表示（regenBreakと同じフェアネス形式）。
 
 ## [24] (behavior-grammar) 敵のアーティファクト（デバフ無効チャージ）＝延焼・急所・威圧・混乱への構造的な問い
-- 状態: 🔶 延焼・威圧デッキへの実質ナーフ成分
+- 状態: ✅ 実装済み（EnemyDef.artifact。延焼は弾かない裁定。苔の主・斧鬼・巨面・箱兵・金切り顎）
 - 根拠: sts2-reference.md §3-5「ほぼ全敵が開幕パワー持ち」＋monsters-m-z.md MechaKnight「AfterAddedToRoomでArtifactPower 3付与（開幕デバフ無効3回）」・PunchConstruct(Artifact1)・TheAdversary系(0/1/2の段階設計)。本家はデバフデッキに「まず殻を剥げ」の1手を要求する。
 - 現状(採掘時点): プレイヤー→敵の付与（延焼applyBurn・急所exposeEnemy・混乱confuse・威圧weakenEnemy）を弾く機構は不在（combat.ts/effects.tsに無効化系フィールドなし。敵の静的性質はburnResist=延焼の減衰量のみで、付与自体は必ず通る）。バーン型はsim96%・「延焼はブロック無視+装甲無視の万能解答」と複数記録があり、数値でなく構造の受けが無い。
 - 実装スケッチ: EnemyDef に `artifactCharges?: number` を追加: プレイヤー由来のデバフ付与（burn/exposed/confusion/威圧のstrength減）を最初のN回無効化し1付与=1チャージ消費。敵カードに「⚙️無効×N」常時表示・消費のたびログ。適用例: 幕3の1〜2体（石殻の番人 artifact:1、幕3新エリート artifact:2）に限定配布——幕1・2には置かず「対策の対策」は終盤の問いにする。

@@ -910,17 +910,16 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>
-        /// 被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失がしきい値に達したら眠りの前奏を打ち切り、
-        /// ローテを resumeAt へ。宣言済みの意図は変えない (宣言時固定則)
+        /// 被弾の瞬間の割り込み (2026-09-14 行動グラフ。旧 wakeOnDamage): 累計被弾のしきい値を跨いだらカーソルを飛ばす。
+        /// 宣言済みの意図はそのまま = 次の宣言から目覚める (第1段=等価移行)
         /// </summary>
-        public static GameState ApplyWakeCheck(GameState state, int enemyIndex)
+        public static GameState ApplyDamageInterrupts(GameState state, int enemyIndex)
         {
             var e = EnemyAt(state, enemyIndex);
-            if (e == null || e.Hp <= 0 || e.Woken == true) return state;
-            var wake = Content.GetEnemyDef(e.EnemyId).WakeOnDamage;
-            if (wake == null) return state;
-            if ((e.DamageTakenTotal ?? 0) < wake.Damage || e.PatternIndex >= wake.ResumeAt) return state;
-            var enemies = MapEnemy(state.Enemies, enemyIndex, x => x with { PatternIndex = wake.ResumeAt, Woken = true });
+            if (e == null || e.Hp <= 0) return state;
+            var r = EnemyGraph.ApplyInterruptsTo(state, enemyIndex, e.Node, e.FiredInterrupts, new[] { EnemyInterruptTriggers.DamageTaken });
+            if (r.FiredNow.Count == 0) return state;
+            var enemies = MapEnemy(state.Enemies, enemyIndex, x => x with { Node = r.Cursor, FiredInterrupts = r.Fired });
             return Events.Emit(state with { Enemies = enemies }, new GameEvent_EnemyWoken { EnemyIndex = enemyIndex });
         }
 
@@ -1007,7 +1006,7 @@ namespace DeckRogue.Engine
                     BurrowCut = burrowCut > 0 ? burrowCut : (int?)null,
                     NemesisCut = nemesisCut > 0 ? nemesisCut : (int?)null,
                 });
-            s = ApplyWakeCheck(s, enemyIndex);
+            s = ApplyDamageInterrupts(s, enemyIndex);
             s = BreakBurrowIfCracked(s, enemyIndex);
             // 倒れた (2026-09-12 onEnemyDied): この呼び出しでHPが0以下になった時だけ (冒頭で倒れた敵は弾いている)
             if (hpLoss > 0 && s.Enemies[enemyIndex].Hp <= 0) s = FireEnemyDied(s, enemyIndex);

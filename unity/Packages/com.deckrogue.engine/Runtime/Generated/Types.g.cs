@@ -100,6 +100,14 @@ namespace DeckRogue.Engine.Generated
         public const string Slow = "slow";
     }
 
+    public static class EnemyInterruptTriggers
+    {
+        public const string HpBelowHalf = "hpBelowHalf";
+        public const string DamageTaken = "damageTaken";
+        public const string AllyDied = "allyDied";
+        public const string Alone = "alone";
+    }
+
     public static class RelicRaritys
     {
         public const string Common = "common";
@@ -337,18 +345,18 @@ namespace DeckRogue.Engine.Generated
         /// <summary>急所 (敵版脆弱)。次に受けるプレイヤーダメージN回が+50%。1ヒットごとに1減る</summary>
         [JsonProperty("exposed")]
         public int Exposed { get; init; }
-        /// <summary>行動ローテーション (sequence) の現在位置。sequence を持たない敵では未使用</summary>
-        [JsonProperty("patternIndex")]
-        public int PatternIndex { get; init; }
-        /// <summary>phaseAfterUses の対象行動を宣言した回数 (2026-09-02 回数カウンタのフェーズ変化)</summary>
-        [JsonProperty("keyMoveUses")]
-        public int? KeyMoveUses { get; init; }
-        /// <summary>直前に宣言した行動ID (noRepeat の判定用)</summary>
-        [JsonProperty("lastMoveId")]
-        public string? LastMoveId { get; init; }
-        /// <summary>once 行動の使用済みID (1戦闘1回の判定用)</summary>
+        /// <summary>行動グラフのカーソル = 次の宣言で辿り始める節の id (2026-09-14 本家式の状態機械)</summary>
+        [JsonProperty("node")]
+        public string Node { get; init; } = default!;
+        /// <summary>直近に宣言した技の id (新しい順・最大3件。noRepeat / maxRepeat の判定用)</summary>
+        [JsonProperty("lastMoves")]
+        public IReadOnlyList<string>? LastMoves { get; init; }
+        /// <summary>once の腕で着地した技の id (1戦闘1回の判定用)</summary>
         [JsonProperty("usedOnce")]
         public IReadOnlyList<string>? UsedOnce { get; init; }
+        /// <summary>発火済みの割り込み (def.interrupts の添字)</summary>
+        [JsonProperty("firedInterrupts")]
+        public IReadOnlyList<int>? FiredInterrupts { get; init; }
         /// <summary>この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる)</summary>
         [JsonProperty("mournProcessed")]
         public bool? MournProcessed { get; init; }
@@ -358,12 +366,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>アーティファクトの残チャージ (戦闘開始時に def.artifact から)</summary>
         [JsonProperty("artifact")]
         public int? Artifact { get; init; }
-        /// <summary>技の恒久成長: moveId → 宣言回数</summary>
-        [JsonProperty("moveGrowth")]
-        public IReadOnlyDictionary<string, int>? MoveGrowth { get; init; }
-        /// <summary>被弾覚醒が発火済みか</summary>
-        [JsonProperty("woken")]
-        public bool? Woken { get; init; }
+        /// <summary>技ごとの宣言回数 (moveId → 回数)。技の恒久成長 (growPerUse) と条件 usesAtLeast が共有する</summary>
+        [JsonProperty("moveUses")]
+        public IReadOnlyDictionary<string, int>? MoveUses { get; init; }
         /// <summary>威圧 (2026-09-03 本家 Weak 化=案B): 次のN回の攻撃行動の与ダメ-25% (切り捨て・最低1)。攻撃行動を実行するたび1減る。旧セーブは undefined=0</summary>
         [JsonProperty("weak")]
         public int? Weak { get; init; }
@@ -1961,33 +1966,9 @@ namespace DeckRogue.Engine.Generated
         public int Amount { get; init; }
     }
 
-    /// <summary>EnemyMove.setAlt のインライン型</summary>
-    public sealed record EnemyMoveSetAlt
-    {
-        [JsonProperty("kind")]
-        public string Kind { get; init; } = default!;
-        [JsonProperty("min")]
-        public int? Min { get; init; }
-        [JsonProperty("max")]
-        public int? Max { get; init; }
-        [JsonProperty("hits")]
-        public int? Hits { get; init; }
-        [JsonProperty("inflict")]
-        public StatusInflict? Inflict { get; init; }
-        [JsonProperty("alsoDefend")]
-        public int? AlsoDefend { get; init; }
-        [JsonProperty("alsoBuff")]
-        public int? AlsoBuff { get; init; }
-    }
-
-    /// <summary>敵の1行動。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし</summary>
+    /// <summary>敵の1行動 (技の定義)。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし。 どの順で出すかは技には無く、行動グラフ (EnemyDef.nodes) が決める (2026-09-14 本家式の状態機械)</summary>
     public sealed record EnemyMove
     {
-        /// <summary>確率分岐の制約 (2026-09-02 StS2行動文法): noRepeat=直前と同じ技は引かない / once=1戦闘に1回だけ。weight抽選の敵のみ意味を持つ (sequenceの敵は並びが既に制約)</summary>
-        [JsonProperty("noRepeat")]
-        public bool? NoRepeat { get; init; }
-        [JsonProperty("once")]
-        public bool? Once { get; init; }
         /// <summary>技の恒久成長 (2026-09-02 StS2 TestSubject式「戻らない恐怖」): この技を宣言するたび、以降の min/max に +growPerUse・ヒット数に +growHitsPerUse (この戦闘中ずっと)。長引くほど危険 = 速攻の理由を敵側の時間で作る (弱体・脆弱が短期戦で鳴らない問題の逆側からの受け)</summary>
         [JsonProperty("growPerUse")]
         public int? GrowPerUse { get; init; }
@@ -2001,9 +1982,6 @@ namespace DeckRogue.Engine.Generated
         public int? Min { get; init; }
         [JsonProperty("max")]
         public int? Max { get; init; }
-        /// <summary>重み抽選 (同テーブル内の相対値)。sequence を持つ敵では使われない</summary>
-        [JsonProperty("weight")]
-        public int Weight { get; init; }
         /// <summary>連撃: 攻撃をN回のヒットに分割 (確定済みルール表「連撃」)</summary>
         [JsonProperty("hits")]
         public int? Hits { get; init; }
@@ -2022,9 +2000,90 @@ namespace DeckRogue.Engine.Generated
         /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
         [JsonProperty("alsoDestroySet")]
         public bool? AlsoDestroySet { get; init; }
-        /// <summary>行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28): プレイヤーに伏せ札があると、この行動の代わりに setAlt の行動になる。 既存の条件付き意図 (両分岐予告・行動開始時確定) の配管にそのまま乗る</summary>
-        [JsonProperty("setAlt")]
-        public EnemyMoveSetAlt? SetAlt { get; init; }
+    }
+
+    /// <summary>乱択の腕。to=遷移先の節 (noRepeat/once/maxRepeat は技の節を指す腕にだけ付けられる)</summary>
+    public sealed record EnemyRandomArm
+    {
+        [JsonProperty("to")]
+        public string To { get; init; } = default!;
+        [JsonProperty("weight")]
+        public int Weight { get; init; }
+        /// <summary>直前と同じ技に着地する腕は引かない (本家 CannotRepeat)</summary>
+        [JsonProperty("noRepeat")]
+        public bool? NoRepeat { get; init; }
+        /// <summary>1戦闘に1回だけ (本家 UseOnlyOnce)。着地する技の id で記録する</summary>
+        [JsonProperty("once")]
+        public bool? Once { get; init; }
+        /// <summary>同じ技の連続は N 回まで (StS1 の lastTwoMoves=2 相当。noRepeat は maxRepeat:1 と同じ)</summary>
+        [JsonProperty("maxRepeat")]
+        public int? MaxRepeat { get; init; }
+    }
+
+    /// <summary>EnemyCondition.usesAtLeast のインライン型</summary>
+    public sealed record EnemyConditionUsesAtLeast
+    {
+        [JsonProperty("move")]
+        public string Move { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
+    /// <summary>条件 (条件の節と割り込みが共用)。複数書けば全部を満たす時に真</summary>
+    public sealed record EnemyCondition
+    {
+        /// <summary>HPが最大の半分以下</summary>
+        [JsonProperty("hpBelowHalf")]
+        public bool? HpBelowHalf { get; init; }
+        /// <summary>他の仲間が全滅している</summary>
+        [JsonProperty("alone")]
+        public bool? Alone { get; init; }
+        /// <summary>他の仲間が1体以上生きている</summary>
+        [JsonProperty("allyAlive")]
+        public bool? AllyAlive { get; init; }
+        /// <summary>この技をこの戦闘で count 回以上宣言済み (回数カウンタのフェーズ変化 = KnowledgeDemon 式)</summary>
+        [JsonProperty("usesAtLeast")]
+        public EnemyConditionUsesAtLeast? UsesAtLeast { get; init; }
+        /// <summary>この戦闘で受けた累計HP損失が N 以上</summary>
+        [JsonProperty("damageTakenAtLeast")]
+        public int? DamageTakenAtLeast { get; init; }
+        /// <summary>ターン数の偶奇 (HauntedShip 式)</summary>
+        [JsonProperty("turnParity")]
+        public string? TurnParity { get; init; }
+        /// <summary>生存する敵 (自分を含む) が N 体未満 (召喚の判断 = Fabricator 式)</summary>
+        [JsonProperty("alliesFewerThan")]
+        public int? AlliesFewerThan { get; init; }
+    }
+
+    /// <summary>行動グラフの節。3種のうち1つだけ持つ:  技   { move, next? }   — この技を宣言し、次の宣言は next の節から辿る (next 省略=同じ技を繰り返す)  乱択 { random }        — 宣言時にその場で重みで腕を1本引き (RNG 1回)、その先を辿る。技は行わない  条件 { if, then, else } — 宣言時に条件を評価して then / else を辿る。技は行わない</summary>
+    public sealed record EnemyNode
+    {
+        [JsonProperty("move")]
+        public string? Move { get; init; }
+        [JsonProperty("next")]
+        public string? Next { get; init; }
+        [JsonProperty("random")]
+        public IReadOnlyList<EnemyRandomArm>? Random { get; init; }
+        [JsonProperty("if")]
+        public EnemyCondition? If { get; init; }
+        [JsonProperty("then")]
+        public string? Then { get; init; }
+        [JsonProperty("else")]
+        public string? Else { get; init; }
+    }
+
+    /// <summary>割り込み: 条件が立った瞬間にカーソル (次に辿る節) を goto へ飛ばす。1戦闘に1回。 from を書くとカーソルがその節にある時だけ (鉄卵=眠りの節にいる間だけ被弾で目覚める)。 宣言済みの意図は差し替えない (第1段=等価移行。即時差し替えは第2段)</summary>
+    public sealed record EnemyInterrupt
+    {
+        [JsonProperty("on")]
+        public string On { get; init; } = default!;
+        /// <summary>damageTaken の累計しきい値</summary>
+        [JsonProperty("amount")]
+        public int? Amount { get; init; }
+        [JsonProperty("from")]
+        public IReadOnlyList<string>? From { get; init; }
+        [JsonProperty("goto")]
+        public string Goto { get; init; } = default!;
     }
 
     /// <summary>EnemyDef.splitInto のインライン型</summary>
@@ -2042,31 +2101,11 @@ namespace DeckRogue.Engine.Generated
         public int? Strength { get; init; }
     }
 
-    /// <summary>EnemyDef.phaseAfterUses のインライン型</summary>
-    public sealed record EnemyDefPhaseAfterUses
-    {
-        [JsonProperty("moveId")]
-        public string MoveId { get; init; } = default!;
-        [JsonProperty("uses")]
-        public int Uses { get; init; }
-        [JsonProperty("sequence")]
-        public IReadOnlyList<string> Sequence { get; init; } = default!;
-    }
-
     /// <summary>EnemyDef.hatchInto のインライン型</summary>
     public sealed record EnemyDefHatchInto
     {
         [JsonProperty("enemyId")]
         public string EnemyId { get; init; } = default!;
-    }
-
-    /// <summary>EnemyDef.wakeOnDamage のインライン型</summary>
-    public sealed record EnemyDefWakeOnDamage
-    {
-        [JsonProperty("damage")]
-        public int Damage { get; init; }
-        [JsonProperty("resumeAt")]
-        public int ResumeAt { get; init; }
     }
 
     /// <summary>EnemyDef.burrow のインライン型</summary>
@@ -2107,18 +2146,27 @@ namespace DeckRogue.Engine.Generated
         /// <summary>HPの幅 [min, max] (2026-09-14 本家形。ユーザー「敵ってHPが固定でブレがなくない？」)。 戦闘開始時に一様にロールし、幕スケール・群れ補正を掛けて丸める。無ければ maxHp 固定</summary>
         [JsonProperty("hpRange")]
         public IReadOnlyList<int>? HpRange { get; init; }
-        /// <summary>行動定義。sequence がある場合は id 参照用の辞書を兼ねる</summary>
+        /// <summary>技の定義 (id で参照する辞書)。順序は持たない = 行動グラフが決める</summary>
         [JsonProperty("moves")]
         public IReadOnlyList<EnemyMove> Moves { get; init; } = default!;
-        /// <summary>行動ローテーション (StSのSentry等参考)。moves の id をこの順で繰り返す。 指定時は重み抽選しない。movesVsSet の割り込みではローテーションは進まない</summary>
-        [JsonProperty("sequence")]
-        public IReadOnlyList<string>? Sequence { get; init; }
-        /// <summary>プレイヤーに伏せカードがある時に優先する行動テーブル。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う。省略時は通常行動</summary>
+        /// <summary>行動グラフの節 (id → 節)。start から辿る</summary>
+        [JsonProperty("nodes")]
+        public IReadOnlyDictionary<string, EnemyNode> Nodes { get; init; } = default!;
+        /// <summary>開始節 (戦闘開始時のカーソル)。編成の member.start・startBySlot で個体ごとに上書きできる</summary>
+        [JsonProperty("start")]
+        public string Start { get; init; } = default!;
+        /// <summary>スロット (編成内の何体目か・分裂体の何体目か) ごとの開始節 (本家 Exoskeleton 式の役割分化・ 分裂体の位相ずらし)。添字が範囲外なら start</summary>
+        [JsonProperty("startBySlot")]
+        public IReadOnlyList<string>? StartBySlot { get; init; }
+        /// <summary>割り込み (HP半分の豹変・被弾覚醒・単独時の転職)。上から順に判定し、それぞれ1戦闘1回</summary>
+        [JsonProperty("interrupts")]
+        public IReadOnlyList<EnemyInterrupt>? Interrupts { get; init; }
+        /// <summary>プレイヤーに伏せカードがある時の分岐 (腕の to は技の id)。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う</summary>
         [JsonProperty("movesVsSet")]
-        public IReadOnlyList<EnemyMove>? MovesVsSet { get; init; }
-        /// <summary>プレイヤーに召喚トークンがいる時の行動テーブル (優先度: HP半分以下 &gt; 伏せ反応 &gt; トークン反応 &gt; 通常)</summary>
+        public IReadOnlyList<EnemyRandomArm>? MovesVsSet { get; init; }
+        /// <summary>プレイヤーに召喚トークンがいる時の分岐 (優先度: 伏せ反応 &gt; トークン反応 &gt; 通常)</summary>
         [JsonProperty("movesVsTokens")]
-        public IReadOnlyList<EnemyMove>? MovesVsTokens { get; init; }
+        public IReadOnlyList<EnemyRandomArm>? MovesVsTokens { get; init; }
         /// <summary>延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」)</summary>
         [JsonProperty("burnResist")]
         public int? BurnResist { get; init; }
@@ -2128,12 +2176,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>鬼軍曹 (エリート 2026-08-31): プレイヤーが通常ブロックを得るたび強化+N (氷壁は対象外)。敵カードに常時表示</summary>
         [JsonProperty("angerOnBlock")]
         public int? AngerOnBlock { get; init; }
-        /// <summary>HP50%以下で切り替わる行動テーブル (フェーズ変化)。優先度: 半分以下 &gt; 伏せ反応 &gt; 通常</summary>
-        [JsonProperty("movesBelowHalf")]
-        public IReadOnlyList<EnemyMove>? MovesBelowHalf { get; init; }
-        /// <summary>HP50%以下のローテーション (movesBelowHalf の id を参照)</summary>
-        [JsonProperty("sequenceBelowHalf")]
-        public IReadOnlyList<string>? SequenceBelowHalf { get; init; }
         /// <summary>再生: 敵フェーズ終了時にHP回復。HP50%以下では停止 (確定済みルール表「再生」)</summary>
         [JsonProperty("regen")]
         public int? Regen { get; init; }
@@ -2152,7 +2194,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>開幕ブロック (2026-08-30 静的性質の配布)。戦闘開始時からこの量のブロックを持つ (甲羅・門・抱えた樽・積んだ殻)。敵の特性が「敵のターンが来て初めて情報になる」のに対し、 これはT1から問いを出せる — 貫通 (緑)・延焼 (赤)・粉砕が最初のターンから解答になる</summary>
         [JsonProperty("startingBlock")]
         public int? StartingBlock { get; init; }
-        /// <summary>分裂 (2026-09-02 敵ギミック第1波)。この敵が倒れた時、指定の敵N体が場に現れる (本家Slime)。 分裂体は素の値 (深度スケール非適用)・親の atkScale (難易度) を継承・生成時に意図を宣言して その敵フェーズから行動する (本家準拠)。分裂体の定義は sequence 必須 (生成時宣言を決定的にするため)</summary>
+        /// <summary>分裂 (2026-09-02 敵ギミック第1波)。この敵が倒れた時、指定の敵N体が場に現れる (本家Slime)。 分裂体は素の値 (深度スケール非適用)・親の atkScale (難易度) を継承・生成時に意図を宣言して その敵フェーズから行動する (本家準拠)。分裂体の開始節は startBySlot[k] (無ければ start)</summary>
         [JsonProperty("splitInto")]
         public EnemyDefSplitInto? SplitInto { get; init; }
         /// <summary>庇う (2026-09-02 陣形もの)。この敵が生存中、プレイヤーの単体対象カードは他の敵を選べず この敵に向かう (対象の強制=キル順の問い)。全体攻撃・延焼ティック・打ち消しは素通し=解答。 敵カードに常時表示 (フェアネス)</summary>
@@ -2161,22 +2203,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>連携 (2026-09-02 陣形もの)。他の仲間が1体でも生存している間、攻撃の実値と幅表示に+N (宣言時に判定=宣言時固定の既存則。仲間が倒れれば次の宣言から素に戻る=キル順の逆問い)</summary>
         [JsonProperty("bondStrength")]
         public int? BondStrength { get; init; }
-        /// <summary>初手固定 (2026-09-02 StS2行動文法「その敵の問いを最初のターンに必ず見せる」)。 weight抽選の敵の最初の宣言だけこの行動IDを使う。sequenceの敵には不要 (並びの先頭が兼ねる)</summary>
-        [JsonProperty("opener")]
-        public string? Opener { get; init; }
-        /// <summary>回数カウンタのフェーズ変化 (2026-09-02 StS2 KnowledgeDemon式): moveId を uses 回宣言したら 行動ローテーションを sequence へ恒久切替 (patternIndexは0から)。HP半分テーブルが優先</summary>
-        [JsonProperty("phaseAfterUses")]
-        public EnemyDefPhaseAfterUses? PhaseAfterUses { get; init; }
-        /// <summary>味方の生死で行動テーブル切替 (2026-09-02 StS2 LivingShield式転職): 他の仲間が全滅すると このテーブル/ローテへ切替 (優先度: HP半分 &gt; 単独時 &gt; 通常。反応テーブル・setAltは無効化 = 転職後は素直に殴る)。護衛が「守る相手を失って本気になる」等</summary>
-        [JsonProperty("movesWhenAlone")]
-        public IReadOnlyList<EnemyMove>? MovesWhenAlone { get; init; }
-        [JsonProperty("sequenceWhenAlone")]
-        public IReadOnlyList<string>? SequenceWhenAlone { get; init; }
-        /// <summary>ローテーションの巻き戻し位置 (2026-09-02 StS2の「一度きりの前奏→ループ」を1フィールドで)。 sequence を最後まで進んだら添字 loopFrom へ戻る (未指定=0 で完全後方互換)。 儀式1回→永久攻撃・盗み→逃走の一方通行・打ち消された孵化の即再試行などが書ける</summary>
-        [JsonProperty("sequenceLoopFrom")]
-        public int? SequenceLoopFrom { get; init; }
-        [JsonProperty("sequenceBelowHalfLoopFrom")]
-        public int? SequenceBelowHalfLoopFrom { get; init; }
         /// <summary>孵化 (2026-09-02 StS2 ToughEgg式): kind:'hatch' の行動を解決すると、この敵が指定の敵へ 変身する (HP全快・筋力0・ローテ先頭から。難易度 atkScale は継承)。打ち消せば1ターン遅らせられる</summary>
         [JsonProperty("hatchInto")]
         public EnemyDefHatchInto? HatchInto { get; init; }
@@ -2189,9 +2215,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>アーティファクト (2026-09-02 本家Artifact): デバフ付与 (急所・威圧・混乱) をN回無効化して1消費。 延焼は弾かない (DoTはデバフでなくダメージ = 赤の解答を殺さない、のユーザー裁定)。敵カードに常時表示</summary>
         [JsonProperty("artifact")]
         public int? Artifact { get; init; }
-        /// <summary>被弾覚醒 (2026-09-02 本家Lagavulin準拠): 累計HP損失が damage 以上になったら、ローテを resumeAt へ 飛ばす (眠りの前奏を打ち切る)。宣言済みの意図はそのまま (宣言時固定則) = 次の宣言から目覚める。 「寝ている間に削る (起こすリスク) か、放置して殻を積ませるか」の本物の二択</summary>
-        [JsonProperty("wakeOnDamage")]
-        public EnemyDefWakeOnDamage? WakeOnDamage { get; init; }
         /// <summary>潜伏 (2026-09-03 本家StS2 Burrowed): 戦闘開始時に block だけの殻を持ち、殻が尽きるまでHPにダメージが通らない (超過ぶんは捨てる。貫通は通る・粉砕は殻を割る)。殻が割れた瞬間、次の行動が bite (moves の id) に差し替わる。 通常戦の最短ターンを構造で決める器 (2T決着への処方。HPを盛らない)</summary>
         [JsonProperty("burrow")]
         public EnemyDefBurrow? Burrow { get; init; }
@@ -2220,9 +2243,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>個体の初期強化補正 (省略時0)。ランの深度補正とは加算で重なる</summary>
         [JsonProperty("strength")]
         public int? Strength { get; init; }
-        /// <summary>ローテーション開始位置のズラし。同型2体の大技同期 (同時lunge等) を防ぐ</summary>
-        [JsonProperty("patternOffset")]
-        public int? PatternOffset { get; init; }
+        /// <summary>この個体の開始節 (行動グラフの start を上書き)。同型2体の大技同期を防ぐ位相ずらしと、 本家 Exoskeleton 式の役割分化 (1体目は多段・2体目は単発…) の両方をこれで書く</summary>
+        [JsonProperty("start")]
+        public string? Start { get; init; }
         /// <summary>伏せ/従者への反応テーブル (movesVsSet / movesVsTokens) をこの個体では使わない。 群れで全員が同時に反応すると、伏せ1枚のリスクが頭数に比例して跳ね上がるため、 先頭の1体だけが反応するようにする (2026-08-26。確定済みルール表「編成の反応テーブル」)</summary>
         [JsonProperty("noReactTable")]
         public bool? NoReactTable { get; init; }

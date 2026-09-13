@@ -116,6 +116,7 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
 // ---- 最悪被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が
 // 3通りに割れていたのを1本化。合成順は実処理 combat.ts の攻撃解決と同一 = 鈴→脆弱→重り) ----
 import { effectiveIntent, applyEnemyWeak } from './effects.ts'
+import { peekMoves } from './enemyGraph.ts'
 import { getEnemyDef as getEnemyDefForSummary } from './content.ts'
 import type { GameState } from './types.ts'
 
@@ -156,13 +157,13 @@ export function turnsUntilHatch(s: GameState, enemyIndex: number): number | null
   const e = s.enemies[enemyIndex]
   if (!e || e.hp <= 0) return null
   const def = getEnemyDefForSummary(e.enemyId)
-  if (def.hatchInto === undefined || def.sequence === undefined) return null
+  if (def.hatchInto === undefined) return null
   if (e.intent?.kind === 'hatch') return 0
-  const len = def.sequence.length
-  const loopFrom = def.sequenceLoopFrom ?? 0
-  const idxAt = (k: number): number => (k < len ? k : loopFrom + ((k - loopFrom) % (len - loopFrom)))
-  for (let d = 0; d < len + 2; d++) {
-    const moveId = def.sequence[idxAt(e.patternIndex + d)]
+  // 行動グラフ (2026-09-14): カーソルから決定的に辿れる範囲で孵化の技を探す (乱択に当たったら分からない=null)
+  const ahead = peekMoves(def, s, enemyIndex, e.node, Object.keys(def.nodes).length + 2)
+  for (let d = 0; d < ahead.length; d++) {
+    const moveId = ahead[d]
+    if (moveId === null) return null
     if (def.moves.find((m) => m.id === moveId)?.kind === 'hatch') return d + 1
   }
   return null
@@ -175,7 +176,8 @@ export function turnsUntilHatch(s: GameState, enemyIndex: number): number | null
  * setAlt (行動単位の分岐) の敵は向きが固定なので注記しない。表示専用の純関数 (CLI/UI共用)
  */
 export function setBranchNote(def: EnemyDef): string | null {
-  if (!def.sequence || def.sequence.length === 0) return null
+  // 素の行動が固定 (乱択の節を持たない) で、伏せ分岐が2本以上ある敵だけ
+  if (Object.values(def.nodes).some((n) => n.random !== undefined)) return null
   if (!def.movesVsSet || def.movesVsSet.length < 2) return null
   return '順番を崩す=向きは毎ターン変わる'
 }

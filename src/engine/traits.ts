@@ -3,6 +3,7 @@
 // 「どのギミックにどの用語 (KEYWORD_HELP) を使うか」は GIMMICK_KEYWORDS で共有し、
 // display-coverage.test が「新しい EnemyDef キーに用語解説とタグの両方があること」を機械固定する。
 import { getEnemyDef } from './content.ts'
+import { sleepingInterrupt } from './enemyGraph.ts'
 import { splitChildHp, turnsUntilHatch } from './summary.ts'
 import type { EnemyDef, GameState } from './types.ts'
 
@@ -10,8 +11,8 @@ import type { EnemyDef, GameState } from './types.ts'
 export const ENEMY_GIMMICK_KEYS = [
   'enrage', 'enrageEveryCards', 'enrageEveryDamage', 'regen', 'regenBreak', 'burnResist',
   'thorns', 'armor', 'startingBlock', 'angerOnBlock', 'guardian', 'bondStrength',
-  'opener', 'phaseAfterUses', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
-  'turnArmor', 'artifact', 'wakeOnDamage', 'burrow', 'nemesis', 'imbalanced',
+  'interrupts', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
+  'turnArmor', 'artifact', 'burrow', 'nemesis', 'imbalanced',
 ] as const
 export type EnemyGimmickKey = (typeof ENEMY_GIMMICK_KEYS)[number]
 
@@ -32,15 +33,13 @@ export const GIMMICK_KEYWORDS: Record<EnemyGimmickKey, string | null> = {
   angerOnBlock: 'ブロック反応',
   guardian: '庇う',
   bondStrength: '連携',
-  opener: null,
-  phaseAfterUses: null,
+  interrupts: '眠り', // 割り込み (HP半分の豹変・被弾覚醒・単独時の転職)。被弾覚醒だけ用語解説があり、他は意図の予告で見える
   splitInto: '分裂',
   hatchInto: '孵化',
   mournStrength: '弔い',
   aura: '重圧',
   turnArmor: 'ターン装甲',
   artifact: 'アーティファクト',
-  wakeOnDamage: '眠り',
   burrow: '潜伏',
   nemesis: '因縁',
   imbalanced: 'バランス崩し',
@@ -128,12 +127,13 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     tags.push(`ターン装甲${def.turnArmor}(1ターンのHP損失は${def.turnArmor}以下。残り${remaining}。延焼は無視)${unkillable}`)
   }
   if ((e.artifact ?? 0) > 0) tags.push(`アーティファクト${e.artifact}(デバフ付与を${e.artifact}回弾く。延焼は通る)`)
-  if (def.wakeOnDamage && !e.woken && e.patternIndex < def.wakeOnDamage.resumeAt) {
-    tags.push(`眠り(累計${def.wakeOnDamage.damage}ダメで目覚める。現在${e.damageTakenTotal ?? 0})`)
+  const sleeping = sleepingInterrupt(def, e)
+  if (sleeping !== undefined) {
+    tags.push(`眠り(累計${sleeping.amount ?? 0}ダメで目覚める。現在${e.damageTakenTotal ?? 0})`)
   }
   const growing = def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined)
   if (growing.length > 0) {
-    tags.push(`育つ技(${growing.map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}・現在${e.moveGrowth?.[m.id] ?? 0}回`).join('/')})`)
+    tags.push(`育つ技(${growing.map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}・現在${e.moveUses?.[m.id] ?? 0}回`).join('/')})`)
   }
   if (def.angerOnBlock) tags.push(`ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)`)
   if (def.regen && e.hp > e.maxHp * 0.5) tags.push(`再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}`)

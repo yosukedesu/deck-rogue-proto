@@ -57,7 +57,7 @@ function findAll(term) {
       if (x.name.includes(term)) hits.push(`${x.name}(${JA[c]})`)
   for (const e of JSON.parse(readFileSync(new URL('../src/data/enemies.json', import.meta.url), 'utf8'))) {
     if (e.name?.includes(term)) hits.push(`${e.name}(敵)`)
-    for (const m of [...(e.moves ?? []), ...(e.movesVsSet ?? []), ...(e.movesBelowHalf ?? [])])
+    for (const m of e.moves ?? []) // 行動グラフ (2026-09-14): 技の定義は moves に一本化
       if (m.name?.includes(term)) hits.push(`${m.name}(敵の行動)`)
   }
   for (const r of JSON.parse(readFileSync(new URL('../src/data/relics.json', import.meta.url), 'utf8')))
