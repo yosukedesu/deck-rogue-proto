@@ -36,7 +36,7 @@ export const allCards: readonly CardDef[] = [
   ...withColor(cardsWhiteJson, 'white'),
   ...withColor(cardsBlackJson, 'black'),
 ]
-export const allEnemies = enemiesJson as readonly EnemyDef[]
+export const allEnemies = enemiesJson as unknown as readonly EnemyDef[] // hpRange は JSON では number[] (readonly tuple へ) 2026-09-14
 export const allEncounters = encountersJson as readonly EncounterDef[]
 
 /**

@@ -84,6 +84,7 @@ describe('敵設計規約の機械固定 (enemy-conventions)', () => {
     // キーのホワイトリスト走査に差し替え = 「countdownで敗北」等の新フィールドを足すと名指しで落ち、
     // 規約 (罰は筋力の漸増か予告付き大技のみ) との突き合わせを強制する
     const KNOWN = new Set([
+      'hpRange', // HPの幅 (2026-09-14 本家形)
       'id', 'name', 'archetype', 'flavor', 'maxHp', 'moves', 'sequence', 'sequenceLoopFrom',
       'movesBelowHalf', 'sequenceBelowHalf', 'sequenceBelowHalfLoopFrom',
       'movesVsSet', 'movesVsTokens', 'movesWhenAlone', 'sequenceWhenAlone', // vsSetIgnoreFreshness は 2026-09-13 罠モデルで撤去

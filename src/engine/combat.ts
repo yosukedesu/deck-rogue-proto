@@ -168,11 +168,19 @@ export function startCombatWithOptions(
       },
     }
   }
-  const [deck, rng] = shuffle(state.rng, options.deck)
+  const [deck, rngAfterShuffle] = shuffle(state.rng, options.deck)
+  let rng = rngAfterShuffle
   // 群れ補正 (member.hpScale/strength) とランの深度スケーリングは乗算/加算で重なる
   const enemies = members.map((m) => {
     const def = getEnemyDef(m.enemyId)
-    const maxHp = Math.round(def.maxHp * (options.enemyHpScale ?? 1) * (m.hpScale ?? 1))
+    // HPの幅 (2026-09-14 本家形): hpRange があれば戦闘開始時に一様ロール (シードRNG=リプレイ不変)
+    let baseHp = def.maxHp
+    if (def.hpRange !== undefined) {
+      const [rolled, r2] = nextInt(rng, def.hpRange[0], def.hpRange[1])
+      rng = r2
+      baseHp = rolled
+    }
+    const maxHp = Math.round(baseHp * (options.enemyHpScale ?? 1) * (m.hpScale ?? 1))
     return {
       enemyId: m.enemyId,
       hp: maxHp,

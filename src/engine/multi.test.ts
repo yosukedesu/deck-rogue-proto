@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
 import { getEnemyDef } from './content.ts'
-import { freshCombat, withHand } from './test-helpers.ts'
+import { freshCombat, withHand, hpWithin } from './test-helpers.ts'
 import type { EnemyIntent, GameState } from './types.ts'
 
 /** 全敵の意図を差し替える (複数体テスト用) */
@@ -32,9 +32,9 @@ describe('エンカウンター編成', () => {
   it('編成IDで複数体が出現し、群れ補正 (hpScale/strength/patternOffset) が個体に効く', () => {
     const s = freshCombat('set-confirm', 'enc_probe_pair', 42)
     expect(s.enemies).toHaveLength(2)
-    const pairHp = Math.round(getEnemyDef('enemy_probe').maxHp * 0.5) // 探り屋 maxHp × 群れ補正 (数値のピン留めをやめ def 参照に。2026-08-29 テンポ再校正でHPが動くため)
-    expect(s.enemies[0].maxHp).toBe(pairHp)
-    expect(s.enemies[1].maxHp).toBe(pairHp)
+    // 探り屋 hpRange × 群れ補正 0.5 (HPの幅 2026-09-14: 個体ごとにロールするので区間で見る)
+    expect(hpWithin(s.enemies[0].maxHp, getEnemyDef('enemy_probe'), 0.5)).toBe(true)
+    expect(hpWithin(s.enemies[1].maxHp, getEnemyDef('enemy_probe'), 0.5)).toBe(true)
     expect(s.enemies.every((e) => e.intent !== null)).toBe(true)
     // patternOffset: 2体目はローテーションがズレて開始 (同時lunge防止)
     expect(s.enemies[1].patternIndex).toBeGreaterThan(s.enemies[0].patternIndex)

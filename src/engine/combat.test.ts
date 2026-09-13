@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { selectMoveTable } from './combat.ts'
 import { getEnemyDef } from './content.ts'
 import { applyCommand, createInitialState } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, withHand, withIntent, hpWithin } from './test-helpers.ts'
 import type { GameEvent } from './types.ts'
 
 const types = (log: readonly GameEvent[]) => log.map((e) => e.type)
@@ -17,7 +17,7 @@ describe('StartCombat', () => {
     expect(s.player.drawPile).toHaveLength(10) // 初期デッキは15種×1枚 (確定済みルール)
     expect(s.player.energy).toBe(3)
     expect(s.player.energyMax).toBe(3)
-    expect(s.enemies[0].hp).toBe(getEnemyDef('enemy_brute').maxHp)
+    expect(hpWithin(s.enemies[0].hp, getEnemyDef('enemy_brute'))).toBe(true) // HPの幅 (2026-09-14)
     expect(s.enemies[0].intent).not.toBeNull()
   })
 

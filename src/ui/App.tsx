@@ -1273,7 +1273,7 @@ function SetupScreen({
               {e.name}
             </div>
             <div className="choice-desc">
-              {ARCHETYPE_LABEL[e.archetype]} / HP {e.maxHp}
+              {ARCHETYPE_LABEL[e.archetype]} / HP {e.hpRange ? `${e.hpRange[0]}〜${e.hpRange[1]}` : e.maxHp}
               {e.flavor && (
                 <>
                   <br />
@@ -4224,7 +4224,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                   <div key={e.id} className="panel" style={{ padding: 6, background: dirty ? 'rgba(120,160,255,0.10)' : undefined }}>
                     <b>{e.name}</b>{' '}
                     <span className="choice-desc">
-                      {e.id} / HP{e.maxHp} / {ARCHETYPE_LABEL[e.archetype] ?? e.archetype}
+                      {e.id} / HP{e.hpRange ? `${e.hpRange[0]}〜${e.hpRange[1]}` : e.maxHp} / {ARCHETYPE_LABEL[e.archetype] ?? e.archetype}
                     </span>
                     <div className="choice-desc" style={{ fontSize: 11 }}>
                       {e.moves.map(moveLine).join('　')}

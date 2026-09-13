@@ -1087,7 +1087,13 @@ export interface EnemyDef {
   readonly archetype: EnemyArchetype
   /** 1行フレーバー (顔付け)。行動の読み方のヒントを兼ねる。UI表示専用 */
   readonly flavor?: string
+  /** 公称HP (図鑑・査定・分裂体の倍率の基準)。戦闘での実HPは hpRange から引く */
   readonly maxHp: number
+  /**
+   * HPの幅 [min, max] (2026-09-14 本家形。ユーザー「敵ってHPが固定でブレがなくない？」)。
+   * 戦闘開始時に一様にロールし、幕スケール・群れ補正を掛けて丸める。無ければ maxHp 固定
+   */
+  readonly hpRange?: readonly [number, number]
   /** 行動定義。sequence がある場合は id 参照用の辞書を兼ねる */
   readonly moves: readonly EnemyMove[]
   /**

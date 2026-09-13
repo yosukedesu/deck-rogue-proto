@@ -6,7 +6,7 @@ import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalP
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
-import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIntent, setAndArm, passTurn } from './test-helpers.ts'
+import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIntent, setAndArm, passTurn, hpWithin } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 function forceWin(run: RunState): RunState {
@@ -86,8 +86,7 @@ describe('エリートノード (マップ化。opt-inオファーは廃止)', (
     expect(node.encounterId!.includes('elite')).toBe(true) // エリート専用プールから出る
     const members = resolveEncounter(node.encounterId!)
     const def = getEnemyDef(members[0].enemyId)
-    const expectHp = Math.round(def.maxHp * (members[0].hpScale ?? 1))
-    expect(elite.combat!.enemies[0].maxHp).toBe(expectHp)
+    expect(hpWithin(elite.combat!.enemies[0].maxHp, def, members[0].hpScale ?? 1)).toBe(true) // HPの幅 (2026-09-14)
     expect(elite.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })
 

@@ -5,7 +5,7 @@ import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_
 import { createRng } from './rng.ts'
 import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, isUpgraded, upgradeCard, rewardPool } from './run.ts'
 import type { RunState } from './run.ts'
-import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, defendIntent, withHand, withIntent, hpWithin } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 /** 現在の戦闘を外科的に「全滅寸前」にして薙ぎ払い (全体攻撃) で勝つ (プレイヤーHPは維持される) */
@@ -275,7 +275,7 @@ describe('ラン走破 (3幕構成)', () => {
     // 幕1ボスは編成 (血族の儀式) のこともある: 先頭メンバーの定義と群れ補正で読む
     const m0 = resolveEncounter(currentNode(run)!.encounterId!)[0] as { enemyId: string; hpScale?: number }
     const def = getEnemyDef(m0.enemyId)
-    expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * (m0.hpScale ?? 1) * 1.35)) // 幕1ボス×1.35 (2026-09-02 本家最弱ボス水準)
+    expect(hpWithin(run.combat!.enemies[0].maxHp, def, (m0.hpScale ?? 1) * 1.35)).toBe(true) // 幕1ボス×1.35 (2026-09-02 本家最弱ボス水準)。HPの幅 (2026-09-14)
     // 被弾した状態でボスを倒す → 全回復を確認
     run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 12 } } }
     run = forceWin(run)
@@ -299,7 +299,7 @@ describe('ラン走破 (3幕構成)', () => {
       expect(run.act).toBe(act)
       run = runTo(run, 'boss')
       const def = getEnemyDef(resolveEncounter(currentNode(run)!.encounterId!)[0].enemyId) // 編成ボス (血族/巨蟹) は先頭メンバーで検証
-      expect(run.combat!.enemies[0].maxHp).toBe(Math.round(def.maxHp * bossHpScale[act - 1]))
+      expect(hpWithin(run.combat!.enemies[0].maxHp, def, bossHpScale[act - 1])).toBe(true)
       expect(run.combat!.enemies[0].strength).toBe(bossStr[act - 1])
       run = forceWin(run)
       if (act < ACT_COUNT) {

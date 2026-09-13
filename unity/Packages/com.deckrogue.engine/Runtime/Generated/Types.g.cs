@@ -620,7 +620,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts)</summary>
         [JsonProperty("setAnyCards")]
         public bool? SetAnyCards { get; init; }
-        /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (ほどけた) 罠は捨て札でなく手札に戻る</summary>
+        /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (期限切れの) 罠は捨て札でなく手札に戻る</summary>
         [JsonProperty("expireToHand")]
         public bool? ExpireToHand { get; init; }
         /// <summary>罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする</summary>
@@ -1870,7 +1870,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする</summary>
         [JsonProperty("retain")]
         public bool? Retain { get; init; }
-        /// <summary>ほどけない罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない</summary>
+        /// <summary>期限なしの罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない</summary>
         [JsonProperty("trapPersist")]
         public bool? TrapPersist { get; init; }
         /// <summary>手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03)</summary>
@@ -2093,8 +2093,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>1行フレーバー (顔付け)。行動の読み方のヒントを兼ねる。UI表示専用</summary>
         [JsonProperty("flavor")]
         public string? Flavor { get; init; }
+        /// <summary>公称HP (図鑑・査定・分裂体の倍率の基準)。戦闘での実HPは hpRange から引く</summary>
         [JsonProperty("maxHp")]
         public int MaxHp { get; init; }
+        /// <summary>HPの幅 [min, max] (2026-09-14 本家形。ユーザー「敵ってHPが固定でブレがなくない？」)。 戦闘開始時に一様にロールし、幕スケール・群れ補正を掛けて丸める。無ければ maxHp 固定</summary>
+        [JsonProperty("hpRange")]
+        public IReadOnlyList<int>? HpRange { get; init; }
         /// <summary>行動定義。sequence がある場合は id 参照用の辞書を兼ねる</summary>
         [JsonProperty("moves")]
         public IReadOnlyList<EnemyMove> Moves { get; init; } = default!;

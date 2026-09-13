@@ -230,7 +230,15 @@ namespace DeckRogue.Engine
             {
                 var m = members[mi];
                 var def = Content.GetEnemyDef(m.EnemyId);
-                int maxHp = JsRound(def.MaxHp * (options.EnemyHpScale ?? 1.0) * (m.HpScale ?? 1.0));
+                // HPの幅 (2026-09-14 本家形): hpRange があれば戦闘開始時に一様ロール (TS と同じ順で RNG を消費)
+                double baseHp = def.MaxHp;
+                if (def.HpRange != null && def.HpRange.Count >= 2)
+                {
+                    var (rolled, r2) = Rng.NextInt(rng, def.HpRange[0], def.HpRange[1]);
+                    rng = r2;
+                    baseHp = rolled;
+                }
+                int maxHp = JsRound(baseHp * (options.EnemyHpScale ?? 1.0) * (m.HpScale ?? 1.0));
                 enemies.Add(new EnemyState
                 {
                     EnemyId = m.EnemyId,

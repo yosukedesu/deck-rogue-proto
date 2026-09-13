@@ -153,3 +153,10 @@ export function createRunInBattle(
   }
   return run
 }
+
+/** HPの幅 (2026-09-14 本家形): 期待値を「幅×倍率」の区間で見る (nominal=maxHp の時の値, def の hpRange から区間を出す) */
+export function hpWithin(actual: number, def: { readonly maxHp: number; readonly hpRange?: readonly [number, number] }, scale = 1): boolean {
+  const lo = def.hpRange ? def.hpRange[0] : def.maxHp
+  const hi = def.hpRange ? def.hpRange[1] : def.maxHp
+  return actual >= Math.round(lo * scale) - 1 && actual <= Math.round(hi * scale) + 1
+}
