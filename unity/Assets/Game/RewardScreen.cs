@@ -44,9 +44,9 @@ namespace DeckRogue.Game
                 var cv = CardView.Build(cell, ci, null, true, false, "reward-card");
                 cv.localScale = Vector3.one * scale;
                 cv.anchoredPosition = new Vector2(0f, 35f);
-                HoverRaise(cv, delegate { Audio.Play("card_play", 0.7f); g.Do(new RunCommand_PickReward { Index = idx }); });
+                HoverRaise(cv, delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); });
                 CardPopup.Attach(g, cv, ci, null, true);
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Play("card_play", 0.7f); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, UiKit.Hex("#cfeacc"));
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, UiKit.Hex("#cfeacc"));
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-90f, 0f), new Vector2(90f, 48f));
@@ -78,7 +78,7 @@ namespace DeckRogue.Game
                 var cell = RelicPanel(root, rd, opts[i], w, h);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
                 cell.anchoredPosition = new Vector2(x0 + i * (w + gap), 20f);
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Play("buff", 0.7f); g.Do(new RunCommand_PickRelic { Index = idx }); }, 18, true, UiKit.Hex("#f0d58a"));
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_PickRelic { Index = idx }); }, 18, true, UiKit.Hex("#f0d58a"));
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 16f), new Vector2(100f, 62f));
@@ -111,12 +111,12 @@ namespace DeckRogue.Game
                 {
                     if (g.RelicChoosePicks.Contains(i)) g.RelicChoosePicks.Remove(i);
                     else if (g.RelicChoosePicks.Count < p.Count) g.RelicChoosePicks.Add(i);
-                    Audio.Play("card_play", 0.5f);
+                    Audio.Ui("click");
                     g.Rebuild();
                 },
                 400f);
             RunUi.BottomButton(root, "決定 (" + g.RelicChoosePicks.Count + "/" + p.Count + "枚を" + verb + ")",
-                delegate { Audio.Play("buff", 0.7f); g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>(g.RelicChoosePicks) }); }, 18, 420f, 52f);
+                delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>(g.RelicChoosePicks) }); }, 18, 420f, 52f);
         }
 
         /// <summary>レリック1個のパネル (絵文字・名前・レア度・説明)</summary>

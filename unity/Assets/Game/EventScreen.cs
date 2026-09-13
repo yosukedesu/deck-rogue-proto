@@ -84,7 +84,7 @@ namespace DeckRogue.Game
                     delegate
                     {
                         if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
-                        else { Audio.Play("card_play", 0.6f); g.Do(new RunCommand_EventChoice { Index = idx }); }
+                        else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
                     }, 18, true, last ? null : (Color?)UiKit.Hex("#dfe8dc"));
                 UiKit.Le(b, -1f, hint.Length > 0 ? 70f : 52f, -1f, hint.Length > 0 ? 70f : 52f);
                 var tx = b.GetComponentInChildren<TMP_Text>();

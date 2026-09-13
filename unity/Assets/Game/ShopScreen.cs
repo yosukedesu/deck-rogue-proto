@@ -43,7 +43,7 @@ namespace DeckRogue.Game
                     {
                         bool rm = g.ShopMode == "remove";
                         g.ShopMode = null;
-                        Audio.Play(rm ? "card_set" : "buff", 0.8f);
+                        Audio.Ui(rm ? "remove" : "upgrade");
                         if (rm) g.Do(new RunCommand_ShopRemove { Index = i });
                         else g.Do(new RunCommand_ShopUpgrade { Index = i });
                     },
@@ -92,7 +92,7 @@ namespace DeckRogue.Game
                     var st = UiKit.Txt(cover.transform, "売切", 40, UiKit.ColBad, TextAnchor.MiddleCenter, true);
                     UiKit.Stretch(st.rectTransform, 0f, 0f, 0f, 0f);
                 }
-                else RewardScreen.HoverRaise(cv, delegate { if (canBuy) { Audio.Play("energy", 0.7f); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
+                else RewardScreen.HoverRaise(cv, delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
                 CardPopup.Attach(g, cv, ci, null, true);
                 PriceTag(cell, item.Price, sold ? "売切" : null, canBuy);
                 if (i == n - 1 && n >= 6)
@@ -115,7 +115,7 @@ namespace DeckRogue.Game
                 var rp = RewardScreen.RelicPanel(side.transform, rd, shop.RelicId, 340f, 250f);
                 UiKit.Le(rp, 340f, 250f, 340f, 250f);
                 bool canRelic = run.Gold >= shop.RelicPrice;
-                var rb = UiKit.Btn(rp, shop.RelicPrice + "G で買う", delegate { Audio.Play("buff", 0.7f); g.Do(new RunCommand_ShopBuyRelic()); }, 16, canRelic, UiKit.Hex("#f0d58a"));
+                var rb = UiKit.Btn(rp, shop.RelicPrice + "G で買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyRelic()); }, 16, canRelic, UiKit.Hex("#f0d58a"));
                 var rle = rb.GetComponent<LayoutElement>();
                 if (rle != null) UnityEngine.Object.Destroy(rle);
                 UiKit.Anchor(rb.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 12f), new Vector2(110f, 54f));

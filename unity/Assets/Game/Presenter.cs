@@ -54,6 +54,7 @@ namespace DeckRogue.Game
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
                 else if (IsStatusEvent(ev)) gap = 0.3f;
+                else if (TableSound(ev) != null) gap = 0.12f;   // 表 (audio.json) で音だけ鳴るイベント (罠の発動・期限切れ・打ち消し・撃破…)
                 else continue;
                 var captured = ev;
                 Tween.After(delay, () => { try { Show(g, fx, captured, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
@@ -87,7 +88,7 @@ namespace DeckRogue.Game
             {
                 var ev = log[i];
                 if (ev is GameEvent_CardPlayed) { var cp = ev; try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
-                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev))) continue;
+                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
@@ -114,6 +115,21 @@ namespace DeckRogue.Game
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
+        /// <summary>
+        /// 表 (audio.json) で鳴らすイベントの鍵。Show が絵で特別扱いするイベント (ダメージ・ブロック・回復・ターン・状態異常) は
+        /// そちらが鳴らすので null。それ以外は型名 "GameEvent_Xxx" → "Xxx" を鍵にして、表にあれば鳴らす
+        /// </summary>
+        static string TableSound(GameEvent ev)
+        {
+            if (ev == null) return null;
+            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev)) return null;
+            // 絵の側 (BattleView) が札の飛び・撃破の消えに合わせて鳴らすイベントは、ここでは二重に鳴らさない
+            if (ev is GameEvent_CardSet || ev is GameEvent_CardsDrawn || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled) return null;
+            var n = ev.GetType().Name;
+            if (n.StartsWith("GameEvent_")) n = n.Substring("GameEvent_".Length);
+            return Audio.HasKey(n) ? n : null;
+        }
+
         static bool IsStatusEvent(GameEvent ev)
         {
             return ev is GameEvent_StatusInflicted || ev is GameEvent_ExposedApplied || ev is GameEvent_EnemyWeakened || ev is GameEvent_BurnApplied || ev is GameEvent_StrengthGained || ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded;
@@ -131,6 +147,8 @@ namespace DeckRogue.Game
 
         static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp)
         {
+            var key = TableSound(ev);
+            if (key != null) { Audio.Key(key); return; }
             switch (ev)
             {
                 case GameEvent_DamageDealt d:

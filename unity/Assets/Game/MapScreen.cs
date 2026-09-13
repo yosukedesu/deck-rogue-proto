@@ -327,7 +327,7 @@ namespace DeckRogue.Game
                 int idx = index;
                 btn.onClick.AddListener(delegate
                 {
-                    Audio.Play("map", 0.8f);
+                    Audio.Ui("node");
                     g.Do(new RunCommand_ChooseNode { Col = idx });
                 });
                 Tween.Punch(cell, 0.1f, 0.8f);
@@ -349,7 +349,7 @@ namespace DeckRogue.Game
                 Color? bg = active ? (Color?)(idx == 1 ? UiKit.Hex("#e9b8ae") : idx == 2 ? UiKit.Hex("#d8d2c4") : UiKit.Hex("#dfe8dc")) : null;
                 var b = UiKit.Btn(bar, labels[i], delegate
                 {
-                    Audio.Play("click", 0.5f);
+                    Audio.Ui("click");
                     if (idx == 3) { g.DoodlesFor(g.Rs.Act).Clear(); g.Rebuild(); return; }
                     if (g.DoodleMode && g.DoodlePen == idx) g.DoodleMode = false;   // 同じ道具をもう一度 = ペンモード解除
                     else { g.DoodleMode = true; g.DoodlePen = idx; }

@@ -107,7 +107,7 @@ namespace DeckRogue.Game
             }
             var close = UiKit.Btn(row, "閉じる", delegate { Close(); }, 17);
             UiKit.Le(close, 120f, 46f, 120f, 46f);
-            Audio.Play("click", 0.4f, 0.1f);
+            Audio.Ui("click", 0.8f);
         }
 
         static void BuildCard()

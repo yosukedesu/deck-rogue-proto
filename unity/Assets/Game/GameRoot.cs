@@ -232,7 +232,7 @@ namespace DeckRogue.Game
             ViewDeck = false;
             ViewMap = false;
             SubMode = null;
-            if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Play(Rs.Phase == RunPhases.Lost ? "lose" : "win", 0.8f, 0f);
+            if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Ui(Rs.Phase == RunPhases.Lost ? "lose" : "win");
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
@@ -401,16 +401,22 @@ namespace DeckRogue.Game
         {
             try
             {
-                if (Rs == null) { Audio.Bgm("title"); return; }
+                // 場面名 → 表 (Resources/Audio/audio.json) → 素材名。elite/rest/lost は表に無ければ幕の曲・マップの曲へ落ちる
+                if (Rs == null) { Audio.Bgm(Audio.BgmFor("title")); return; }
                 if (Rs.Phase == RunPhases.Combat)
                 {
-                    bool boss = false;
-                    try { var node = DeckRogue.Engine.Run.CurrentNode(Rs); boss = node != null && node.Type == "boss"; } catch (Exception) { }
-                    Audio.Bgm(boss ? "boss" + Rs.Act : "battle" + Rs.Act);
+                    string nodeType = null;
+                    try { var node = DeckRogue.Engine.Run.CurrentNode(Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
+                    string name = nodeType == "boss" ? Audio.BgmFor("boss" + Rs.Act)
+                        : nodeType == "elite" ? (Audio.BgmFor("elite") ?? Audio.BgmFor("battle" + Rs.Act))
+                        : Audio.BgmFor("battle" + Rs.Act);
+                    Audio.Bgm(name);
                     return;
                 }
-                if (Rs.Phase == RunPhases.Won) { Audio.Bgm("title"); return; }
-                Audio.Bgm("map" + Rs.Act);
+                if (Rs.Phase == RunPhases.Won) { Audio.Bgm(Audio.BgmFor("won") ?? Audio.BgmFor("title")); return; }
+                if (Rs.Phase == RunPhases.Lost) { Audio.Bgm(Audio.BgmFor("lost") ?? Audio.BgmFor("map" + Rs.Act)); return; }
+                bool rest = Rs.Phase == RunPhases.Campfire || Rs.Phase == RunPhases.Shop || Rs.Phase == RunPhases.Event || Rs.Phase == RunPhases.Workshop;
+                Audio.Bgm(rest ? (Audio.BgmFor("rest") ?? Audio.BgmFor("map" + Rs.Act)) : Audio.BgmFor("map" + Rs.Act));
             }
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
         }

@@ -60,7 +60,7 @@ namespace DeckRogue.Game
                     else if (g.WorkshopA < 0) g.WorkshopA = i;
                     else if (g.WorkshopB < 0) g.WorkshopB = i;
                     else { g.WorkshopA = g.WorkshopB; g.WorkshopB = i; }  // 3枚目は古い方と入れ替える
-                    Audio.Play("card_set", 0.6f);
+                    Audio.Ui("fuse");
                     g.Rebuild();
                 },
                 500f, marked, starred);
@@ -163,7 +163,7 @@ namespace DeckRogue.Game
             var cv = CardView.Build(cell, c, null, true, true, "slot-card");
             CardPopup.Attach(g, cv, c, null, true);
             cv.localScale = Vector3.one * 0.62f;
-            var x = UiKit.Btn(cell, "×", delegate { Audio.Play("click", 0.5f); onClear(); }, 14, true, UiKit.Hex("#8a5a5a"));
+            var x = UiKit.Btn(cell, "×", delegate { Audio.Ui("click"); onClear(); }, 14, true, UiKit.Hex("#8a5a5a"));
             var le = x.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(x.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(2f, 2f));

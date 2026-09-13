@@ -1,0 +1,1130 @@
+[
+ {
+  "key": "title",
+  "label": "タイトル",
+  "note": "物語の入口。壮大だが静かに始まる。歯車の都の一曲は世界観（マナで動く機械）にそのまま重なる",
+  "items": [
+   {
+    "slug": "velmotha",
+    "url": "https://peritune.com/blog/2025/06/26/velmotha/",
+    "title": "Velmotha : 星降る歯車の都",
+    "tags": [
+     "オーケストラ",
+     "クラシカル",
+     "シネマティック",
+     "不思議",
+     "優しい",
+     "切ない",
+     "力強い",
+     "壮大"
+    ],
+    "bpm": null,
+    "yt": "Jtmjta5T9eA"
+   },
+   {
+    "slug": "dawning_tale",
+    "url": "https://peritune.com/blog/2023/04/04/dawning_tale/",
+    "title": "幻想的で壮大なオーケストラ「Dawning_Tale」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "ピアノ",
+     "ファンシー",
+     "壮大",
+     "幻想"
+    ],
+    "bpm": null,
+    "yt": "hbF0ZRFsCRY"
+   },
+   {
+    "slug": "moonlit_overture",
+    "url": "https://peritune.com/blog/2024/01/09/moonlit_overture/",
+    "title": "幻想的で壮大なオーケストラ「Moonlit_Overture」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "ケルト",
+     "ゴージャス",
+     "シネマティック",
+     "切ない",
+     "力強い",
+     "壮大"
+    ],
+    "bpm": null,
+    "yt": "ex7tqE1GZDg"
+   },
+   {
+    "slug": "world_op2",
+    "url": "https://peritune.com/blog/2020/10/09/world_op2/",
+    "title": "物語の始まりのような幻想的なワルツ「World_OP2」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "クラシカル",
+     "ケルト",
+     "シネマティック",
+     "フォーク",
+     "不思議",
+     "切ない",
+     "力強い",
+     "厳か",
+     "壮大",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "R4B-i9Mzf7Q"
+   }
+  ]
+ },
+ {
+  "key": "map1",
+  "label": "幕1 マップ「坑口の森」",
+  "note": "ケルト・フォークの木漏れ日。まだ怖くない",
+  "items": [
+   {
+    "slug": "emerald_hill",
+    "url": "https://peritune.com/blog/2026/08/17/emerald_hill/",
+    "title": "旅立ちの笛のオーケストラ「Emerald Hill」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ケルト",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "希望",
+     "爽やか"
+    ],
+    "bpm": 185,
+    "yt": "rbRsYrxlk6U"
+   },
+   {
+    "slug": "breeze",
+    "url": "https://peritune.com/blog/2017/03/02/breeze/",
+    "title": "【無料フリーBGM・爽やか】Breeze",
+    "tags": [
+     "かっこいい",
+     "ケルト",
+     "ナチュラル",
+     "フォーク",
+     "優しい",
+     "力強い",
+     "希望",
+     "民族音楽",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "RINkM_o-e4I"
+   },
+   {
+    "slug": "endless_woods",
+    "url": "https://peritune.com/blog/2021/06/16/endless_woods/",
+    "title": "造語コーラスの幻想的な森BGM「Endless_Woods」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "シネマティック",
+     "ピアノ",
+     "フォーク",
+     "不思議",
+     "優しい",
+     "切ない",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "oFLEplZrR1k"
+   },
+   {
+    "slug": "forest_sage",
+    "url": "https://peritune.com/blog/2023/07/02/forest_sage/",
+    "title": "幻想的なヒーリング「Forest_Sage」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "フォーク",
+     "優しい",
+     "切ない",
+     "幻想",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "0u-RShrOXSY"
+   }
+  ]
+ },
+ {
+  "key": "map2",
+  "label": "幕2 マップ「先代の坑道」",
+  "note": "不思議・静か・少し怪しい。露頭の光",
+  "items": [
+   {
+    "slug": "dual_illusions",
+    "url": "https://peritune.com/blog/2024/03/02/dual_illusions/",
+    "title": "未知のダンジョン探索BGM「Dual_Illusions」",
+    "tags": [
+     "きれい",
+     "シネマティック",
+     "ヒーリング",
+     "フォーク",
+     "不思議",
+     "切ない",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "SxysoK-Af8M"
+   },
+   {
+    "slug": "black_crystal",
+    "url": "https://peritune.com/blog/2023/11/23/black_crystal/",
+    "title": "未知のダンジョン探索BGM「Black_Crystal」",
+    "tags": [
+     "きれい",
+     "シネマティック",
+     "不思議",
+     "幻想",
+     "怪しい",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "GSKr6uYCJZ0"
+   },
+   {
+    "slug": "time-and-pray",
+    "url": "https://peritune.com/blog/2020/10/30/time_and_pray/",
+    "title": "神秘的なダンジョンBGM「Time and Pray」",
+    "tags": [
+     "オーケストラ",
+     "シネマティック",
+     "ヒーリング",
+     "不思議",
+     "切ない",
+     "厳か",
+     "壮大",
+     "幻想"
+    ],
+    "bpm": null,
+    "yt": "EY-sFXS8QCM"
+   },
+   {
+    "slug": "sylviranda",
+    "url": "https://peritune.com/blog/2025/05/17/sylviranda/",
+    "title": "Sylviranda : 碧い森の瀑布",
+    "tags": [
+     "きれい",
+     "シネマティック",
+     "ナチュラル",
+     "不思議",
+     "力強い",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "Ej3ROM-RLwU"
+   }
+  ]
+ },
+ {
+  "key": "map3",
+  "label": "幕3 マップ「埋もれた古代都市」",
+  "note": "厳か・幻想・機械の遺跡",
+  "items": [
+   {
+    "slug": "augury",
+    "url": "https://peritune.com/blog/2018/11/02/augury/",
+    "title": "コーラスメインの神秘的な曲「Augury」",
+    "tags": [
+     "かっこいい",
+     "ケルト",
+     "シネマティック",
+     "フォーク",
+     "不思議",
+     "厳か",
+     "壮大",
+     "怪しい",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "_aHf_pbGCKo"
+   },
+   {
+    "slug": "tir_sonas",
+    "url": "https://peritune.com/blog/2022/08/05/tir_sonas/",
+    "title": "造語ボーカルのシネマティック曲「Tír_sonas」",
+    "tags": [
+     "かっこいい",
+     "きれい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "希望"
+    ],
+    "bpm": null,
+    "yt": "FWX7_ALXRwU"
+   },
+   {
+    "slug": "dungeon_tower",
+    "url": "https://peritune.com/blog/2020/04/24/dungeon_tower/",
+    "title": "塔・神殿ダンジョンBGM「Dungeon_Tower」",
+    "tags": [
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "ピアノ",
+     "不思議",
+     "切ない",
+     "力強い",
+     "壮大"
+    ],
+    "bpm": null,
+    "yt": "C03wgPMeeUs"
+   },
+   {
+    "slug": "steam_fortress",
+    "url": "https://peritune.com/blog/2020/05/15/steam_fortress/",
+    "title": "スチームパンク要塞のテーマ「Steam_Fortress」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "厳か",
+     "壮大",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "odfg3GNRP0M"
+   }
+  ]
+ },
+ {
+  "key": "rest",
+  "label": "休息（焚き火・ショップ・イベント・工房）",
+  "note": "優しいハープ・フォーク。マップと分けて「一息」を作る",
+  "items": [
+   {
+    "slug": "sceal_realta",
+    "url": "https://peritune.com/blog/2022/08/09/sceal_realta/",
+    "title": "造語ボーカルの優しいハープ曲「Scéal_Réalta」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "ファンシー",
+     "優しい",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "5cFSnKS1WX8"
+   },
+   {
+    "slug": "poema",
+    "url": "https://peritune.com/blog/2020/01/04/poema/",
+    "title": "穏やかなケルト曲「Poema」",
+    "tags": [
+     "ケルト",
+     "ヒーリング",
+     "ファンシー",
+     "フォーク",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "民族音楽",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "bBVBmWvwhi8"
+   },
+   {
+    "slug": "cnoc_lore",
+    "url": "https://peritune.com/blog/2022/09/08/cnoc_lore/",
+    "title": "造語ボーカルの切ないフォーク「Cnoc_Lore」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "シネマティック",
+     "ナチュラル",
+     "ヒーリング",
+     "フォーク",
+     "優しい",
+     "切ない",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "WzGIjqvPFGI"
+   },
+   {
+    "slug": "village_fete",
+    "url": "https://peritune.com/blog/2024/04/12/village_fete/",
+    "title": "ほのぼのケルト音楽・のどかな村BGM「Village_Fete」",
+    "tags": [
+     "ほのぼの",
+     "ケルト",
+     "フォーク",
+     "優しい",
+     "希望",
+     "日常",
+     "楽しい",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "4qIjqhNigNI"
+   }
+  ]
+ },
+ {
+  "key": "battle1",
+  "label": "幕1 通常戦闘",
+  "note": "軽快なケルト。3ターンで終わる戦闘に合う速さ",
+  "items": [
+   {
+    "slug": "prairie5",
+    "url": "https://peritune.com/blog/2020/04/29/prairie5/",
+    "title": "草原を駆け抜ける戦闘曲「Prairie5」",
+    "tags": [
+     "かっこいい",
+     "ケルト",
+     "ゴージャス",
+     "フォーク",
+     "ポップ",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "XerGSyUXCUc"
+   },
+   {
+    "slug": "prairie4",
+    "url": "https://peritune.com/blog/2019/03/01/prairie4/",
+    "title": "疾走感のあるケルト曲「Prairie4」",
+    "tags": [
+     "かっこいい",
+     "ケルト",
+     "ナチュラル",
+     "フォーク",
+     "切ない",
+     "力強い",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "EOlXXpqlS5k"
+   },
+   {
+    "slug": "strategy",
+    "url": "https://peritune.com/blog/2015/08/01/strategy/",
+    "title": "勇壮で軽快なオーケストラ「Strategy」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "厳か",
+     "壮大",
+     "戦闘",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "foXgs0X4pZg"
+   },
+   {
+    "slug": "ancient_gust",
+    "url": "https://peritune.com/blog/2026/02/06/ancient_gust/",
+    "title": "【無料BGM】疾走感のあるエスニック曲「Ancient Gust」",
+    "tags": [
+     "かっこいい",
+     "エスニック",
+     "フォーク",
+     "壮大",
+     "戦闘",
+     "民族音楽",
+     "爽やか"
+    ],
+    "bpm": 152,
+    "yt": "0A9RRWHsnDc"
+   }
+  ]
+ },
+ {
+  "key": "battle2",
+  "label": "幕2 通常戦闘",
+  "note": "オーケストラ寄りに一段重く",
+  "items": [
+   {
+    "slug": "strategy6",
+    "url": "https://peritune.com/blog/2019/05/01/strategy6/",
+    "title": "勇ましい中世オーケストラ「Strategy6」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "フォーク",
+     "中世・古楽",
+     "力強い",
+     "厳か",
+     "壮大",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "5K2e8DnMZTw"
+   },
+   {
+    "slug": "sword_flash",
+    "url": "https://peritune.com/blog/2023/03/29/sword_flash/",
+    "title": "勇敢なるオーケストラ戦闘曲「Sword_Flash」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "qlUwyBwVt0E"
+   },
+   {
+    "slug": "battlefield4",
+    "url": "https://peritune.com/blog/2019/02/15/battlefield4/",
+    "title": "切ないメロディアスな戦闘曲「BattleField4」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ケルト",
+     "ゴージャス",
+     "ハードロック・ヘビーメタル",
+     "切ない",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "熱い",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "IR1aVoMOoRs"
+   },
+   {
+    "slug": "raid_folkmetal2",
+    "url": "https://peritune.com/blog/2020/01/17/raid_folkmetal2/",
+    "title": "熱いフォークメタル「Raid_FolkMetal2」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ケルト",
+     "ゴージャス",
+     "シネマティック",
+     "ハードロック・ヘビーメタル",
+     "切ない",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "熱い",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "0w-rRQq67HE"
+   }
+  ]
+ },
+ {
+  "key": "battle3",
+  "label": "幕3 通常戦闘",
+  "note": "壮大・激しい",
+  "items": [
+   {
+    "slug": "dramatic5",
+    "url": "https://peritune.com/blog/2020/06/10/dramatic5/",
+    "title": "荘厳で激しいオーケストラ戦闘曲「Dramatic5」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "K47UpyHDl2M"
+   },
+   {
+    "slug": "epicbattle2",
+    "url": "https://peritune.com/blog/2021/05/31/epicbattle2/",
+    "title": "壮大なシネマティック戦闘曲「EpicBattle2」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "切ない",
+     "壮大",
+     "幻想",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "_LLh5U9xiy0"
+   },
+   {
+    "slug": "demise",
+    "url": "https://peritune.com/blog/2018/11/06/demise/",
+    "title": "アップテンポな戦闘曲「Demise」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "ハードロック・ヘビーメタル",
+     "切ない",
+     "力強い",
+     "厳か",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "Ouj_cwWJdmo"
+   },
+   {
+    "slug": "valiant",
+    "url": "https://peritune.com/blog/2017/11/29/valiant/",
+    "title": "Valiant / 壮大なエピック・オーケストラ",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "厳か",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "KC77o7llM4k"
+   }
+  ]
+ },
+ {
+  "key": "elite",
+  "label": "強個体（エリート）",
+  "note": "通常戦と区別できる「嫌な予感」。ダークメルヘンは絵本の肌と相性がよい",
+  "items": [
+   {
+    "slug": "thunderclap",
+    "url": "https://peritune.com/blog/2021/06/30/thunderclap/",
+    "title": "ダークメルヘン戦闘曲「Thunderclap」",
+    "tags": [
+     "かっこいい",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "ファンシー",
+     "ホラー",
+     "ポップ",
+     "メルヘン",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "xImSpQ9I9gM"
+   },
+   {
+    "slug": "puppeteer",
+    "url": "https://peritune.com/blog/2021/01/21/puppeteer/",
+    "title": "ハイテンションなゴシック戦闘曲「Puppeteer」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "シネマティック",
+     "ホラー",
+     "ポップ",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "X3po362vhW0"
+   },
+   {
+    "slug": "crimson_moon",
+    "url": "https://peritune.com/blog/2023/12/07/crimson_moon/",
+    "title": "漆黒のゴシックロック「Crimson_Moon」",
+    "tags": [
+     "かっこいい",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "ハードロック・ヘビーメタル",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "38RvGvpb8Y0"
+   },
+   {
+    "slug": "swift_strike",
+    "url": "https://peritune.com/blog/2025/02/16/swift_strike/",
+    "title": "アップテンポなRPG戦闘曲「Swift_Strike」",
+    "tags": [
+     "かっこいい",
+     "ゴージャス",
+     "シネマティック",
+     "ハードロック・ヘビーメタル",
+     "ポップ",
+     "切ない",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "w5roRXWK96c"
+   }
+  ]
+ },
+ {
+  "key": "boss1",
+  "label": "幕1 ボス（脳筋オーガ／血族の儀式）",
+  "note": "勇壮。まだ物語の序盤",
+  "items": [
+   {
+    "slug": "strategy5",
+    "url": "https://peritune.com/blog/2017/12/30/strategy5/",
+    "title": "Strategy5 / 勇壮で軽快なオーケストラ",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "s7I9zn8zD58"
+   },
+   {
+    "slug": "dia_scriost",
+    "url": "https://peritune.com/blog/2023/06/09/dia_scriost/",
+    "title": "壮大なシネマティック戦闘曲「Dia_Scriost」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "ピアノ",
+     "切ない",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "wk5tpBHulVc"
+   },
+   {
+    "slug": "epicbattle",
+    "url": "https://peritune.com/blog/2020/08/28/epicbattle/",
+    "title": "壮大なシネマティック戦闘曲「EpicBattle」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ケルト",
+     "ゴージャス",
+     "シネマティック",
+     "ハードロック・ヘビーメタル",
+     "切ない",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "cbhGuc0l2rI"
+   },
+   {
+    "slug": "strategy2",
+    "url": "https://peritune.com/blog/2016/02/16/strategy2/",
+    "title": "SRPG向けヒロイックオーケストラ「Strategy2」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "厳か",
+     "壮大",
+     "戦闘"
+    ],
+    "bpm": 125,
+    "yt": "-hOaB-rs8JA"
+   }
+  ]
+ },
+ {
+  "key": "boss2",
+  "label": "幕2 ボス（大亀／双腕の巨蟹）",
+  "note": "重厚。切なさが混じる",
+  "items": [
+   {
+    "slug": "epicbattle_deity",
+    "url": "https://peritune.com/blog/2022/05/09/epicbattle_deity/",
+    "title": "壮大なシネマティック戦闘曲「EpicBattle_Deity」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ケルト",
+     "ゴージャス",
+     "シネマティック",
+     "切ない",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "pDl7uBMhWZg"
+   },
+   {
+    "slug": "dramatic4",
+    "url": "https://peritune.com/blog/2019/07/08/dramatic4/",
+    "title": "激しいドラマのオーケストラ曲「Dramatic4」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "dpBh5abRTh8"
+   },
+   {
+    "slug": "scene_tragic",
+    "url": "https://peritune.com/blog/2021/05/09/scene_tragic/",
+    "title": "壮大なシネマティック＆切ないコーラス「Scene_Tragic」",
+    "tags": [
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "優しい",
+     "力強い",
+     "幻想",
+     "戦闘",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "oG0_wr7arMo"
+   },
+   {
+    "slug": "taishoroman_battle",
+    "url": "https://peritune.com/blog/2021/04/29/taishoroman_battle/",
+    "title": "大正浪漫のオーケストラ戦闘曲「TaishoRoman_Battle」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "フォーク",
+     "切ない",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "民族音楽",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "H1-LuS7oVHY"
+   }
+  ]
+ },
+ {
+  "key": "boss3",
+  "label": "幕3 ボス（門番／蘇る合成獣）",
+  "note": "古代の機械。インダストリアルかゴシック",
+  "items": [
+   {
+    "slug": "rituale-machina",
+    "url": "https://peritune.com/blog/2026/07/30/rituale-machina/",
+    "title": "怪異に追われるインダストリアルテクノ「Rituale Machina」",
+    "tags": [
+     "エレクトロ",
+     "シネマティック",
+     "ホラー",
+     "力強い",
+     "怖い",
+     "戦闘",
+     "激しい"
+    ],
+    "bpm": 150,
+    "yt": "jyFF4OhjczY"
+   },
+   {
+    "slug": "undertaker",
+    "url": "https://peritune.com/blog/2019/12/20/undertaker/",
+    "title": "ポップなゴシックオーケストラ「Undertaker」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "ホラー",
+     "ポップ",
+     "中世・古楽",
+     "力強い",
+     "壮大",
+     "怪しい",
+     "戦闘",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "AI7WEn6X-Ng"
+   },
+   {
+    "slug": "obsession",
+    "url": "https://peritune.com/blog/2022/07/01/obsession/",
+    "title": "切なく激しいクラシカルワルツ「Obsession」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "クラシカル",
+     "シネマティック",
+     "ホラー",
+     "切ない",
+     "力強い",
+     "壮大",
+     "怖い",
+     "戦闘",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "PtbNauHIywc"
+   },
+   {
+    "slug": "firmament3",
+    "url": "https://peritune.com/blog/2020/07/01/firmament3/",
+    "title": "天空のシネマティック造語BGM「Firmament3」",
+    "tags": [
+     "かっこいい",
+     "きれい",
+     "エレクトロ",
+     "オーケストラ",
+     "ゴシック",
+     "ゴージャス",
+     "サイバー",
+     "シネマティック",
+     "切ない",
+     "力強い",
+     "戦闘",
+     "激しい",
+     "熱い",
+     "生録ボーカル"
+    ],
+    "bpm": null,
+    "yt": "mzKBNfqPaZc"
+   }
+  ]
+ },
+ {
+  "key": "won",
+  "label": "走破",
+  "note": "ケルトのリザルト（ジングル→ループ）",
+  "items": [
+   {
+    "slug": "result_celtic",
+    "url": "https://peritune.com/blog/2021/03/18/result_celtic/",
+    "title": "リザルトジングル＆ループBGM(ケルト)「Result_Celtic」",
+    "tags": [
+     "かっこいい",
+     "きれい",
+     "ケルト",
+     "ジングル",
+     "希望",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "_YFGbbITKIs"
+   },
+   {
+    "slug": "tsumugu",
+    "url": "https://peritune.com/blog/2020/12/17/songs_tsumugukiseki/",
+    "title": "壮大な民族調歌もの「紡ぐ軌跡」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "ケルト",
+     "シネマティック",
+     "フォーク",
+     "切ない",
+     "力強い",
+     "壮大",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "ClR3YD-pzpg"
+   },
+   {
+    "slug": "breeze",
+    "url": "https://peritune.com/blog/2017/03/02/breeze/",
+    "title": "【無料フリーBGM・爽やか】Breeze",
+    "tags": [
+     "かっこいい",
+     "ケルト",
+     "ナチュラル",
+     "フォーク",
+     "優しい",
+     "力強い",
+     "希望",
+     "民族音楽",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "RINkM_o-e4I"
+   }
+  ]
+ },
+ {
+  "key": "lost",
+  "label": "敗北",
+  "note": "オルゴール・ピアノの静かな曲",
+  "items": [
+   {
+    "slug": "grief2",
+    "url": "https://peritune.com/blog/2021/03/23/grief2/",
+    "title": "オルゴール＆弦の切ない小曲「Grief2」",
+    "tags": [
+     "クラシカル",
+     "ゴシック",
+     "ファンシー",
+     "優しい",
+     "切ない",
+     "室内楽",
+     "幻想",
+     "悲しい",
+     "淋しい",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "-MUrlQdlJxo"
+   },
+   {
+    "slug": "piano_melancholy",
+    "url": "https://peritune.com/blog/2016/07/05/piano_melancholy/",
+    "title": "切ないピアノソロ「Piano_Melancholy」",
+    "tags": [
+     "きれい",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 83,
+    "yt": "y0SOo_nqw9E"
+   },
+   {
+    "slug": "poema",
+    "url": "https://peritune.com/blog/2020/01/04/poema/",
+    "title": "穏やかなケルト曲「Poema」",
+    "tags": [
+     "ケルト",
+     "ヒーリング",
+     "ファンシー",
+     "フォーク",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "民族音楽",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "bBVBmWvwhi8"
+   },
+   {
+    "slug": "music-box_sad2",
+    "url": "https://peritune.com/blog/2016/08/07/music-box_sad2/",
+    "title": "悲しいオルゴール「Music-box_Sad2」",
+    "tags": [
+     "きれい",
+     "オルゴール",
+     "ヒーリング",
+     "ファンシー",
+     "悲しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 83,
+    "yt": "RG0tgjCtKG0"
+   }
+  ]
+ }
+]

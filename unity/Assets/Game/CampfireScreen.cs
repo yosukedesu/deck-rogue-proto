@@ -40,7 +40,7 @@ namespace DeckRogue.Game
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return "取り除く"; },
                     delegate (int i, CardInstance c) { return run.Deck.Count > 5; },
-                    delegate (int i) { Audio.Play("card_play", 0.7f); g.Do(new RunCommand_CampfireRemove { Index = i }); },
+                    delegate (int i) { Audio.Ui("remove"); g.Do(new RunCommand_CampfireRemove { Index = i }); },
                     400f);
                 RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f);
                 return;
@@ -56,7 +56,7 @@ namespace DeckRogue.Game
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c) ? "鍛える" : null; },
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c); },
-                    delegate (int i) { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireUpgrade { Index = i }); },
+                    delegate (int i) { Audio.Ui("upgrade"); g.Do(new RunCommand_CampfireUpgrade { Index = i }); },
                     400f);
                 AttachUpgradeTips(area, run.Deck);
                 AttachForgePreview(g, area, run.Deck, preview);
@@ -78,17 +78,17 @@ namespace DeckRogue.Game
             // 休む
             var rest = Option(root, "burn", "休む", restHeals ? "HP +" + heal + " (最大HPの " + (int)Math.Round(run.CampfireRatio * 100) + "%)" : noRest ? "レリックの効果で回復できない" : "すでに鍛えたので回復なし",
                 restHeals ? "今のHP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "立ち去る",
-                Pos(), delegate { Audio.Play("heal", 0.8f); g.Do(new RunCommand_CampfireRest()); }, true, w);
+                Pos(), delegate { Audio.Ui("rest"); g.Do(new RunCommand_CampfireRest()); }, true, w);
             // 鍛える
             Option(root, "hammer", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの1枚を強化 (残り " + remain + " 回)" : "この焚き火ではもう鍛えられない",
                 remain > 0 ? "鍛えると数値が伸びる・コストが下がる" : "", Pos(),
                 delegate { g.SubMode = "forge"; g.Rebuild(); }, remain > 0, w);
             if (opt.Dig && fresh)
                 Option(root, "chest", "発掘", "発掘の鶴嘴: レリックを1個掘る", "休む・鍛えるとは排他", Pos(),
-                    delegate { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireDig()); }, true, w);
+                    delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_CampfireDig()); }, true, w);
             if (opt.TrainLeft > 0 && fresh)
                 Option(root, "growth", "鍛錬", "重石: 以後の戦闘開始時の成長+1", "現在 +" + DeckRogue.Engine.Run.RelicStateOf(run, "train") + "・あと " + opt.TrainLeft + " 回", Pos(),
-                    delegate { Audio.Play("buff", 0.8f); g.Do(new RunCommand_CampfireTrain()); }, true, w);
+                    delegate { Audio.Ui("upgrade"); g.Do(new RunCommand_CampfireTrain()); }, true, w);
             if (opt.Remove && fresh)
                 Option(root, "skull", "取り除く", "安らぎの煙管: デッキの1枚を永久に除去", "休む・鍛えるとは排他", Pos(),
                     delegate { g.SubMode = "remove"; g.Rebuild(); }, run.Deck.Count > 5, w);
@@ -122,7 +122,7 @@ namespace DeckRogue.Game
                 var btn = frame.gameObject.AddComponent<Button>();
                 btn.targetGraphic = frame;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.1f, 1.1f, 1.1f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
-                btn.onClick.AddListener(delegate { Audio.Play("click", 0.5f); onClick(); });
+                btn.onClick.AddListener(delegate { Audio.Ui("click"); onClick(); });
                 var hintB = UiKit.Txt(cell, "クリックで選ぶ", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter);
                 hintB.raycastTarget = false;
                 UiKit.Anchor(hintB.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 18f), new Vector2(0f, 44f));

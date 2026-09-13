@@ -62,7 +62,7 @@ namespace DeckRogue.Game
                 var ld = leaders[i];
                 string id = ld.Id;
                 bool sel = ld.Id == g.LeaderId;
-                var cell = Portrait(content, ld, sel, delegate { g.LeaderId = id; Audio.Play("card_set", 0.6f); g.Rebuild(); });
+                var cell = Portrait(content, ld, sel, delegate { g.LeaderId = id; Audio.Ui("click"); g.Rebuild(); });
                 UiKit.Le(cell, PortraitW, PortraitH, PortraitW, PortraitH);
             }
 
@@ -82,7 +82,7 @@ namespace DeckRogue.Game
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
             var btn = frame.gameObject.AddComponent<Button>();
             btn.targetGraphic = frame;
-            btn.onClick.AddListener(delegate { Audio.Play("click", 0.5f); onClick(); });
+            btn.onClick.AddListener(delegate { Audio.Ui("click"); onClick(); });
             var cols = btn.colors; cols.highlightedColor = new Color(1.08f, 1.08f, 1.08f); cols.pressedColor = new Color(0.9f, 0.9f, 0.9f); btn.colors = cols;
 
             // 色の縁
@@ -181,7 +181,7 @@ namespace DeckRogue.Game
             note.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(note.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 108f), new Vector2(-24f, 146f));
 
-            var start = UiKit.Btn(side, "ランを開始", delegate { Audio.Play("turn", 0.7f); g.StartRun(); }, 24, true, UiKit.Hex("#f0d58a"));
+            var start = UiKit.Btn(side, "ランを開始", delegate { Audio.Ui("start_run"); g.StartRun(); }, 24, true, UiKit.Hex("#f0d58a"));
             var le = start.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(start.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 30f), new Vector2(-24f, 96f));
