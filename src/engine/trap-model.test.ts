@@ -8,7 +8,6 @@ import { applyCommand } from './state.ts'
 import {
   attackIntent,
   createRunInBattle,
-  destroySetIntent,
   freshCombat,
   passTurn,
   setAndArm,
@@ -282,13 +281,13 @@ describe('敵は伏せを見ない: 残るのは罠壊し・道化の破壊分�
     expect(vsSet).toEqual(['enemy_joker', 'enemy_set_breaker'])
     const breaker = getEnemyDef('enemy_set_breaker')
     expect(breaker.movesVsSet!.map((m) => [m.id, m.kind, m.weight])).toEqual([
-      ['break_trap', 'destroy-set', 2],
+      ['break_trap', 'attack', 2], // 壊しつつ殴る (2026-09-14 alsoDestroySet)
       ['smash', 'attack', 1],
     ])
     const joker = getEnemyDef('enemy_joker')
     expect(joker.movesVsSet!.map((m) => [m.id, m.kind, m.weight])).toEqual([
       ['cautious_jab', 'attack', 2],
-      ['call_bluff', 'destroy-set', 1],
+      ['call_bluff', 'attack', 1],
     ])
     const tables = (d: (typeof allEnemies)[number]) => [
       d.moves, d.movesBelowHalf ?? [], d.movesVsSet ?? [], d.movesVsTokens ?? [], d.movesWhenAlone ?? [],
@@ -298,26 +297,92 @@ describe('敵は伏せを見ない: 残るのは罠壊し・道化の破壊分�
     expect(allEnemies.some((d) => 'vsSetIgnoreFreshness' in d)).toBe(false)
   })
 
-  it('罠壊し: 準備中の札にも分岐が立ち (effectiveIntent は alt 側)、破壊は準備中の札も壊す', () => {
+  it('罠壊し: 準備中の札は見えない (分岐は本体側)。生きた罠になった翌ターンから分岐が alt 側に立つ (2026-09-14 「壊しは鳴る窓のターンだけ」)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), ['green_reaction_thorns'])
     expect(s.enemies[0].intent?.conditionalOn).toBe('set')
     expect(effectiveIntent(s, 0)!.kind).toBe(s.enemies[0].intent!.kind)
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
-    expect(effectiveIntent(s, 0)!.kind).toBe(s.enemies[0].intent!.alt!.kind)
-    s = withIntent(s, destroySetIntent())
+    expect(effectiveIntent(s, 0)).toBe(s.enemies[0].intent) // 準備中の札では分岐しない (本体そのまま)
+    s = passTurn(s)
+    expect(isTrapLive(s, s.player.setCards[0])).toBe(true)
+    const it = s.enemies[0].intent!
+    expect(it.conditionalOn).toBe('set')
+    expect(effectiveIntent(s, 0)).toEqual({ ...it.alt!, conditionalOn: 'set', alt: it.alt }) // 生きた罠 → alt 側
+  })
+
+  it('壊しつつ殴る (alsoDestroySet): 生きた罠を pre 窓より先に壊してから攻撃が当たる。壊された罠は鳴らない', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), ['green_reaction_vine'])
+    s = setAndArm(s, 't0_green_reaction_vine') // 守りの蔓 (被攻撃前ブロック12) が生きた罠
+    const hp = s.player.hp
+    s = withIntent(s, { ...attackIntent(9), alsoDestroySet: true })
     s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('player-turn') // 窓は開かない (先に壊されている)
     expect(types(s.eventLog)).toContain('SetCardDestroyed')
+    expect(types(s.eventLog)).not.toContain('ReactionTriggered')
     expect(s.player.setCards).toHaveLength(0)
+    expect(s.player.hp).toBe(hp - 9) // 攻撃はそのまま当たる
+    expect(s.player.discardPile.map((c) => c.uid)).toContain('t0_green_reaction_vine')
+  })
+
+  it('壊しつつ殴る: 準備中の札しか無ければ壊れず、攻撃だけが来る (仕込んだターンは安全)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), ['green_reaction_vine'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = withIntent(s, { ...attackIntent(9), alsoDestroySet: true })
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(types(s.eventLog)).not.toContain('SetCardDestroyed')
+    expect(s.player.setCards).toHaveLength(1)
+  })
+
+  it('道化の見破り・罠壊しの壊しは attack + alsoDestroySet (0ダメの壊しは囮1枚で大技を消すスイッチだった)', () => {
+    const breaker = getEnemyDef('enemy_set_breaker').movesVsSet!.find((m) => m.id === 'break_trap')!
+    expect([breaker.kind, breaker.alsoDestroySet, breaker.min, breaker.max]).toEqual(['attack', true, 8, 10])
+    const joker = getEnemyDef('enemy_joker').movesVsSet!.find((m) => m.id === 'call_bluff')!
+    expect([joker.kind, joker.alsoDestroySet]).toEqual(['attack', true])
   })
 
   it('道化: 伏せ札があれば (生きた罠でも) 反応テーブル側の行動を宣言する', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_joker', 42, 'starter'), ['green_reaction_thorns'])
     s = setAndArm(s, 't0_green_reaction_thorns')
     expect(s.enemies[0].intent?.conditionalOn).toBe('set')
-    expect(['cautious_jab', 'call_bluff']).toContain(
-      effectiveIntent(s, 0)!.kind === 'destroy-set' ? 'call_bluff' : 'cautious_jab',
-    )
+    expect(effectiveIntent(s, 0)!.kind).toBe('attack') // どちらの分岐も攻撃 (見破りは壊しつつ平手)
     expect(effectiveIntent(s, 0)).not.toEqual(expect.objectContaining({ kind: s.enemies[0].intent!.kind, alt: undefined }))
+  })
+})
+
+describe('窓ごとに1枚 (2026-09-14 ユーザー裁定): pre 窓で鳴っても post 窓は開く', () => {
+  it('かすみ: 守りの蔓 (被攻撃前) と茨の返し (被攻撃後) を同じ攻撃に1枚ずつ撃てる', () => {
+    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
+    let s = withHand(run.combat!, ['green_reaction_vine', 'green_reaction_thorns'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_green_reaction_thorns' })
+    s = passTurn(s) // 両方が生きた罠に
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, intent: attackIntent(12) })) }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    expect(s.pendingWindow?.stage).toBe('pre')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_vine' })
+    expect(s.phase).toBe('awaiting-reaction') // post 窓も開く
+    expect(s.pendingWindow?.stage).toBe('post')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't1_green_reaction_thorns' })
+    let guard = 0
+    while (s.phase === 'awaiting-reaction' && guard++ < 10) s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+    expect(count(s.eventLog, 'ReactionTriggered')).toBe(2)
+    expect(s.player.setCards).toHaveLength(0)
+  })
+
+  it('同じ窓には1枚まで (pre 窓で1枚撃ったら、もう1枚の被攻撃前の札は同じ行動には撃てない)', () => {
+    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
+    let s = withHand(run.combat!, ['green_reaction_vine', 'blue_frost_veil'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_frost_veil' })
+    s = passTurn(s)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, intent: attackIntent(12) })) }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.pendingWindow?.stage).toBe('pre')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_vine' })
+    expect(s.phase).toBe('player-turn') // pre で1枚撃った後、同じ行動の pre は再び開かない。post 候補も無い
+    expect(count(s.eventLog, 'ReactionTriggered')).toBe(1)
+    expect(s.player.setCards).toHaveLength(1)
   })
 })
 

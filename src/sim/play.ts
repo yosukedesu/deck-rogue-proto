@@ -157,13 +157,14 @@ function describeEventOutcome(prev: RunState, next: RunState): string | null {
   return parts.length > 0 ? `イベントの結果: ${parts.join('・')}` : 'イベントの結果: 変化なし'
 }
 
-function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number }, weak = 0): string {
+function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number; alsoDestroySet?: true }, weak = 0): string {
   const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
+  const breaks = it.alsoDestroySet === true ? '伏せ破壊+' : ''
   const kinds: Record<string, string> = {
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${weak > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, weak)}〜${applyEnemyWeak(it.shownMax, weak)}` : ''}${hits}${guard}${buff}`,
+    attack: `${breaks}攻撃${it.shownMin}〜${it.shownMax}${weak > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, weak)}〜${applyEnemyWeak(it.shownMax, weak)}` : ''}${hits}${guard}${buff}`,
     defend: `防御${it.shownMin}〜${it.shownMax}${buff}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
@@ -231,9 +232,10 @@ function intentLine(s: GameState, i: number): string {
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : '' // T3: 噛みつき果実 (育つ砲台) の同時強化が落ちていた
+  const breaks = it.alsoDestroySet === true ? '伏せ破壊(生きた罠を先に壊す)+' : ''
   const kinds: Record<string, string> = {
     // 威圧は分岐の有無を問わず出す (2026-09-06 Opusラン X: setAlt を持たない敵だけ「攻撃21〜26」と生値で、最悪被ダメ予測19と矛盾していた)
-    attack: `攻撃${it.shownMin}〜${it.shownMax}${(e.weak ?? 0) > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, e.weak ?? 0)}〜${applyEnemyWeak(it.shownMax, e.weak ?? 0)}` : ''}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}${buff}`, defend: `防御${it.shownMin}〜${it.shownMax}${buff}`, // 構えの筋力+1 (2026-09-14 Opus AA/AA2/AA3 3本一致「出ない」)
+    attack: `${breaks}攻撃${it.shownMin}〜${it.shownMax}${(e.weak ?? 0) > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, e.weak ?? 0)}〜${applyEnemyWeak(it.shownMax, e.weak ?? 0)}` : ''}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}${buff}`, defend: `防御${it.shownMin}〜${it.shownMax}${buff}`, // 構えの筋力+1 (2026-09-14 Opus AA/AA2/AA3 3本一致「出ない」)
     'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `筋力+${it.shownMin}〜${it.shownMax}`,
     rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
     heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,

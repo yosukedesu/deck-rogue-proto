@@ -547,9 +547,10 @@ export function effectiveIntent(state: GameState, enemyIndex: number): EnemyInte
   const intent = state.enemies[enemyIndex]?.intent
   if (!intent) return null
   if (!intent.conditionalOn || !intent.alt) return intent
+  // 罠モデル (2026-09-14 ユーザー裁定「壊しは鳴る窓のターンだけ」): 敵が見るのは生きた罠だけ。準備中 (仕込んだターン) は見えない
   const met =
     intent.conditionalOn === 'set'
-      ? state.player.setCards.length > 0
+      ? state.player.setCards.some((c) => isTrapLive(state, c))
       : hasHuntableTokens(state)
   if (!met) return intent
   return { ...intent.alt, conditionalOn: intent.conditionalOn, alt: intent.alt }

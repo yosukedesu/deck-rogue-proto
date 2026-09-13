@@ -471,7 +471,8 @@ namespace DeckRogue.Game
                     string hits = it.MirrorHits == true ? "×手数" : (it.Hits.HasValue && it.Hits.Value > 1 ? "×" + it.Hits.Value : "");
                     string guard = it.AlsoDefend.HasValue ? "+盾" + it.AlsoDefend.Value : "";
                     string buff = it.AlsoBuff.HasValue ? "+筋力" + it.AlsoBuff.Value : "";
-                    return "攻撃 " + it.ShownMin + "〜" + it.ShownMax + hits + guard + buff + InflictSuffix(it.Inflict);
+                    string breaks = it.AlsoDestroySet == true ? "壊し+" : ""; // 壊しつつ殴る (2026-09-14)
+                    return breaks + "攻撃 " + it.ShownMin + "〜" + it.ShownMax + hits + guard + buff + InflictSuffix(it.Inflict);
                 }
                 case "defend":
                     return "防御 " + it.ShownMin + "〜" + it.ShownMax + (it.AlsoBuff.HasValue ? " +筋力" + it.AlsoBuff.Value : "");
@@ -522,6 +523,7 @@ namespace DeckRogue.Game
                 Inflict = b.Inflict,
                 AlsoDefend = b.AlsoDefend,
                 AlsoBuff = b.AlsoBuff,
+                AlsoDestroySet = b.AlsoDestroySet,
             };
         }
 

@@ -32,7 +32,7 @@ export const setAutoSystem: ReactionSystem = {
         return state
       }
       case 'EnemyActionResolved': {
-        if (state.reactionUsedThisAction) return state
+        // 窓ごとに1枚 (2026-09-14): pre 窓で鳴っても post 窓は開く
         const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual } as const
         const card = usableSetCards(state, win)[0]
         if (card) {

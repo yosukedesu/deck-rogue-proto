@@ -194,15 +194,15 @@ namespace DeckRogue.Game
             float feetY = Stage.FeetOffset("enemy" + index, 130f);
             float spriteTop = feetY + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
 
-            // 意図 (頭上の紙の吹き出し)
+            // 意図 (頭上の紙の吹き出し)。条件付き意図は今の盤面で有効な側 (生きた罠があれば壊し側) を出す = 窓が嘘をつかない (2026-09-14)
             if (alive)
             {
-                var it = e.Intent;
+                var it = e.Intent != null ? (Effects.EffectiveIntent(st, index) ?? e.Intent) : null;
                 var bubble = UiKit.NewRect("intent", pan);
                 // 頭上の順: 絵 → 状態の札 (spriteTop+2〜30) → 吹き出しの尾 → 吹き出し (+54〜108) → 分岐などの詳細 (+112〜)
                 bool hasIntentArt = it != null && Theme.Art("icons", "intent_" + it.Kind) != null;
                 // ライダー (状態異常・筋力・盾) は数字の下に一段、大きめの札で出す (2026-09-14 ユーザー「ライダーが見えていない」)
-                bool hasRider = it != null && (it.Inflict != null || it.AlsoBuff.HasValue || it.AlsoDefend.HasValue);
+                bool hasRider = it != null && (it.Inflict != null || it.AlsoBuff.HasValue || it.AlsoDefend.HasValue || it.AlsoDestroySet == true);
                 float bubbleH = (hasIntentArt ? 68f : 54f) + (hasRider ? 40f : 0f);   // 意図の絵 (32 ドット×2=64) が入る高さ (2026-09-11)
                 UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-150f, spriteTop + 54f), new Vector2(150f, spriteTop + 54f + bubbleH));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
@@ -233,9 +233,13 @@ namespace DeckRogue.Game
                         UiKit.Anchor(rrow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 4f), new Vector2(-6f, 40f));
                         var rg = UiKit.Horz(rrow, 8, 0);
                         rg.childAlignment = TextAnchor.MiddleCenter; rg.childForceExpandWidth = false; rg.childForceExpandHeight = false;
-                        if (it.Inflict != null) BubblePill(rrow, "exposed", "あなたに" + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));
-                        if (it.AlsoBuff.HasValue) BubblePill(rrow, "sword", "同時に筋力+" + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
-                        if (it.AlsoDefend.HasValue) BubblePill(rrow, "shield", "同時にブロック" + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
+                        // 札が2つ以上なら短い言葉 (幅300の吹き出しに2枚並ぶ上限)
+                        int riders = (it.Inflict != null ? 1 : 0) + (it.AlsoBuff.HasValue ? 1 : 0) + (it.AlsoDefend.HasValue ? 1 : 0) + (it.AlsoDestroySet == true ? 1 : 0);
+                        bool terse = riders >= 2;
+                        if (it.Inflict != null) BubblePill(rrow, "exposed", (terse ? "" : "あなたに") + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));
+                        if (it.AlsoBuff.HasValue) BubblePill(rrow, "sword", (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
+                        if (it.AlsoDefend.HasValue) BubblePill(rrow, "shield", (terse ? "ブロック" : "同時にブロック") + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
+                        if (it.AlsoDestroySet == true) BubblePill(rrow, "exhaust", terse ? "先に壊す" : "先にからくりを壊す", UiKit.Hex("#7a2a2a"), new Color(0.98f, 0.86f, 0.84f, 1f)); // 壊しつつ殴る (2026-09-14)
                     }
                 }
                 // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)

@@ -688,7 +688,7 @@ function confirmedIntentText(intent: EnemyIntent | null, weak = 0): string {
   switch (intent.kind) {
     case 'attack': {
       const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      return `⚔️ 攻撃 ${applyEnemyWeak(intent.actual, weak)}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${weak > 0 ? '・威圧-25%' : ''}）${inflictSuffix(intent)}`
+      return `${intent.alsoDestroySet === true ? '💥伏せ破壊+' : ''}⚔️ 攻撃 ${applyEnemyWeak(intent.actual, weak)}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${weak > 0 ? '・威圧-25%' : ''}）${inflictSuffix(intent)}`
     }
     case 'defend':
       return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
@@ -3326,7 +3326,7 @@ const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend:
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
   const inflict = mv.inflict ? ` ＋${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}${mv.inflict.amount}` : ''
-  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${inflict}${mv.setAlt !== undefined ? '【伏せ札あり分岐】' : ''}`
+  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${mv.alsoDestroySet === true ? '+💥伏せ破壊' : ''}${inflict}${mv.setAlt !== undefined ? '【伏せ札あり分岐】' : ''}`
 }
 
 /** 敵の数値フィールド (実データのパス+現行値)。存在するものだけ編集対象 */

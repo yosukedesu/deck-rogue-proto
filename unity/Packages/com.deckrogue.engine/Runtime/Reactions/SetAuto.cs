@@ -41,7 +41,7 @@ namespace DeckRogue.Engine
                 }
                 case GameEvent_EnemyActionResolved e:
                 {
-                    if (state.ReactionUsedThisAction) return state;
+                    // 窓ごとに1枚 (2026-09-14): pre 窓で鳴っても post 窓は開く
                     var win = new ReactionWindow { Stage = "post", Kind = e.Kind, HpLoss = e.HpLoss, Actual = e.Actual };
                     var card = Effects.UsableSetCards(state, win).FirstOrDefault();
                     if (card != null)

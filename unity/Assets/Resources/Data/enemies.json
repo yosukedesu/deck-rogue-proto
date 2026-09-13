@@ -60,9 +60,9 @@
     ],
     "sequence": [
       "poke",
+      "guard",
       "poke",
-      "lunge",
-      "guard"
+      "lunge"
     ],
     "hpRange": [
       70,
@@ -103,7 +103,7 @@
     "id": "enemy_set_breaker",
     "name": "罠壊し",
     "archetype": "set-breaker",
-    "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。",
+    "flavor": "仕掛けを見ると壊したくなる性分。壊した残骸を投げつけてくる。巻いている途中の仕掛けには気づかない。",
     "maxHp": 90,
     "moves": [
       {
@@ -136,8 +136,11 @@
     "movesVsSet": [
       {
         "id": "break_trap",
-        "kind": "destroy-set",
+        "kind": "attack",
+        "min": 8,
+        "max": 10,
         "weight": 2,
+        "alsoDestroySet": true,
         "inflict": {
           "status": "junk",
           "amount": 1
@@ -214,9 +217,9 @@
     ],
     "sequence": [
       "club",
+      "guard",
       "warcry",
-      "club_wild",
-      "guard"
+      "club_wild"
     ],
     "movesBelowHalf": [
       {
@@ -346,9 +349,9 @@
     ],
     "sequence": [
       "mud",
+      "guard",
       "curse",
-      "slap",
-      "guard"
+      "slap"
     ],
     "phaseAfterUses": {
       "moveId": "curse",
@@ -405,9 +408,9 @@
     ],
     "sequence": [
       "flurry",
+      "guard",
       "howl",
-      "rend",
-      "guard"
+      "rend"
     ],
     "hpRange": [
       88,
@@ -463,7 +466,7 @@
     "id": "enemy_joker",
     "name": "嘲る道化",
     "archetype": "taunter",
-    "flavor": "手ぶらの相手にだけ強気。ただし、いつまでも巻いたままなら見破りにくる。",
+    "flavor": "手ぶらの相手にだけ強気。仕掛けが動くと見るや、見破って平手を入れてくる。",
     "maxHp": 85,
     "moves": [
       {
@@ -499,8 +502,11 @@
       },
       {
         "id": "call_bluff",
-        "kind": "destroy-set",
-        "weight": 1
+        "kind": "attack",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "alsoDestroySet": true
       }
     ],
     "opener": "wild_swing",
@@ -540,8 +546,8 @@
     ],
     "sequence": [
       "war_drum",
-      "thump",
-      "guard"
+      "guard",
+      "thump"
     ],
     "hpRange": [
       51,
@@ -986,9 +992,9 @@
     ],
     "sequence": [
       "lick",
+      "guard",
       "acid_spit",
-      "tackle",
-      "guard"
+      "tackle"
     ],
     "burnResist": 2,
     "hpRange": [
@@ -1106,9 +1112,9 @@
     ],
     "sequence": [
       "spark_toss",
+      "guard",
       "fan_flames",
-      "bite",
-      "guard"
+      "bite"
     ],
     "hpRange": [
       58,
@@ -1257,8 +1263,8 @@
     ],
     "sequence": [
       "whip",
-      "double_whip",
-      "guard"
+      "guard",
+      "double_whip"
     ],
     "hpRange": [
       76,
@@ -1598,9 +1604,9 @@
     ],
     "sequence": [
       "mirror",
+      "guard",
       "mirror",
-      "gaze",
-      "guard"
+      "gaze"
     ],
     "hpRange": [
       102,
@@ -2000,8 +2006,8 @@
     ],
     "sequence": [
       "slash",
-      "slash",
-      "guard"
+      "guard",
+      "slash"
     ],
     "hpRange": [
       56,
@@ -2607,10 +2613,10 @@
     ],
     "sequence": [
       "constrict",
+      "guard",
       "lash",
       "constrict",
-      "thwack",
-      "guard"
+      "thwack"
     ],
     "hpRange": [
       74,
@@ -2691,9 +2697,9 @@
     ],
     "sequence": [
       "swipe",
+      "guard",
       "grasping_vines",
-      "chomp",
-      "guard"
+      "chomp"
     ],
     "hpRange": [
       79,
@@ -3306,9 +3312,9 @@
     ],
     "sequence": [
       "scald_spit",
+      "guard",
       "bite",
-      "suck",
-      "guard"
+      "suck"
     ],
     "hpRange": [
       54,

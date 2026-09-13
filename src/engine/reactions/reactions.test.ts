@@ -89,9 +89,9 @@ describe('set-auto (セット式)', () => {
     expect(types(s.eventLog)).not.toContain('SetCardDestroyed')
   })
 
-  it('伏せ破壊は素直に通る (2026-08-30 逃がしルール廃止。2026-09-13 罠モデル: 準備中の札も壊される)', () => {
+  it('伏せ破壊は素直に通る (2026-08-30 逃がしルール廃止。2026-09-14 罠モデル: 壊されるのは生きた罠だけ)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_set_breaker'), ['green_reaction_thorns'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = setAndArm(s, 't0_green_reaction_thorns')
     s = withIntent(s, destroySetIntent())
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('SetCardDestroyed')

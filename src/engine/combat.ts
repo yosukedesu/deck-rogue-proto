@@ -589,6 +589,7 @@ function buildIntent(
       inflict: move.inflict,
       alsoDefend: move.alsoDefend,
       ...(move.alsoBuff !== undefined ? { alsoBuff: move.alsoBuff } : {}),
+      ...(move.alsoDestroySet === true ? { alsoDestroySet: true as const } : {}),
     },
     next,
   ]
@@ -1567,14 +1568,17 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
       ...(acting.inflict !== undefined ? { inflict: acting.inflict } : {}),
       ...(acting.alsoDefend !== undefined ? { alsoDefend: acting.alsoDefend } : {}),
       ...(acting.alsoBuff !== undefined ? { alsoBuff: acting.alsoBuff } : {}),
+      ...(acting.alsoDestroySet === true ? { alsoDestroySet: true as const } : {}),
     }
-    // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
+    // 行動ごとにリアクション消費フラグをリセット (pre 窓で1枚。post 窓は別に1枚 = 窓ごとに1枚 2026-09-14)
     s = {
       ...s,
       enemies: s.enemies.map((e, j) => (j === i ? { ...e, intent: locked } : e)),
       lastAction: null,
       reactionUsedThisAction: false,
     }
+    // からくり壊し＋攻撃 (2026-09-14): 生きた罠を pre 窓より先に壊してから殴る (壊した罠は鳴らない)
+    if (locked.alsoDestroySet === true) s = destroySetCards(s, i)
     // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
     const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: locked.kind } as const
     s = emit(s, executing)
@@ -2076,31 +2080,40 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
     }
     case 'destroy-set': {
       if (state.player.setCards.length === 0) return markResolved(state, 0)
-      let s: GameState = state
-      // 伏せ破壊への罰: onSetDestroyed 効果を破壊した敵に向けて発火 (確定済みルール表「伏せ破壊への罰」)
-      for (const card of state.player.setCards) {
-        for (const effect of card.def.effects) {
-          if (effect.trigger === 'onSetDestroyed') {
-            s = resolveEffectTargeted(s, effect, enemyIndex)
-          }
-        }
-      }
-      s = {
-        ...s,
-        player: {
-          ...s.player,
-          setCards: [],
-          discardPile: [...s.player.discardPile, ...state.player.setCards],
-        },
-      }
-      for (const card of state.player.setCards) {
-        s = emit(s, { type: 'SetCardDestroyed', cardId: card.def.id })
-      }
+      let s: GameState = destroySetCards(state, enemyIndex)
       // 伏せ破壊にも状態異常の付与が乗る (罠壊しの「がらくた」= 壊した残骸を投げつける)
       if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
       return markResolved(checkCombatEnd(s), 0)
     }
   }
+}
+
+/** 伏せ場の生きた罠を全て壊す (onSetDestroyed の罰は壊した敵へ)。destroy-set 行動と alsoDestroySet の共通部。
+ * 準備中 (仕込んだターン) の札は敵に見えないので壊れない (2026-09-14 ユーザー裁定「壊しは鳴る窓のターンだけ」) */
+function destroySetCards(state: GameState, enemyIndex: number): GameState {
+  const targets = state.player.setCards.filter((c) => isTrapLive(state, c))
+  if (targets.length === 0) return state
+  let s: GameState = state
+  // 伏せ破壊への罰: onSetDestroyed 効果を破壊した敵に向けて発火 (確定済みルール表「伏せ破壊への罰」)
+  for (const card of targets) {
+    for (const effect of card.def.effects) {
+      if (effect.trigger === 'onSetDestroyed') {
+        s = resolveEffectTargeted(s, effect, enemyIndex)
+      }
+    }
+  }
+  s = {
+    ...s,
+    player: {
+      ...s.player,
+      setCards: s.player.setCards.filter((c) => !targets.includes(c)),
+      discardPile: [...s.player.discardPile, ...targets],
+    },
+  }
+  for (const card of targets) {
+    s = emit(s, { type: 'SetCardDestroyed', cardId: card.def.id })
+  }
+  return s
 }
 
 /**

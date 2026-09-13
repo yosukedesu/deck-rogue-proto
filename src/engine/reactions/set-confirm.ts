@@ -88,7 +88,7 @@ export const setConfirmSystem: ReactionSystem = {
         return noteUnaffordable(state, win)
       }
       case 'EnemyActionResolved': {
-        if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
+        // 窓ごとに1枚 (2026-09-14 ユーザー裁定): pre 窓で鳴っても post 窓は開く (仕込み枠2の天井「1行動1リアクション」の解除)
         const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual } as const
         if (usableSetCards(state, win).length > 0) {
           return {

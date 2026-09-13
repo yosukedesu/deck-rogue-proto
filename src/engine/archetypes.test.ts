@@ -245,24 +245,28 @@ describe('敵特性 (StS参考)', () => {
     s = { ...s, player: { ...s.player, hp: 999, maxHp: 999 } } // 行動観察のため耐える
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(declaredIntents(s.eventLog).map((d) => d.intent.shownMin)).toEqual([5, 5, 12]) // poke, poke, lunge
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(declaredIntents(s.eventLog)[3].intent.kind).toBe('defend') // 4拍目は構え (2026-09-14 全敵に防御の拍)
+    // 構えは2拍目 (2026-09-14 ユーザー裁定: 末尾だと幕1の短い戦闘で見えず「殴り得の休符」になる)。構えの筋力+1 が3拍目から乗る
+    const d = declaredIntents(s.eventLog)
+    expect(d.map((x) => x.intent.kind)).toEqual(['attack', 'defend', 'attack', 'attack']) // poke, guard, poke, lunge
+    expect(d.map((x) => x.intent.shownMin)).toEqual([5, d[1].intent.shownMin, 6, 13])
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(declaredIntents(s.eventLog)[4].intent.shownMin).toBe(6) // ループして poke に戻る (構えの筋力+1 が乗って 5→6)
+    expect(declaredIntents(s.eventLog)[4].intent.shownMin).toBe(6) // ループして poke に戻る
   })
 
   it('強化 (筋力): 雄叫び後の攻撃は実値も幅表示も上がる', () => {
     // 2026-08-30 「宣言ターン内に仕事」: T1は club (攻撃)。無償の強化ターンを速攻に献上しない
     let s = freshCombat('set-confirm', 'enemy_brute')
     expect(s.enemies[0].intent?.kind).toBe('attack')
-    s = applyCommand(s, { type: 'EndTurn' }) // T2の意図が warcry (2〜4)
+    s = applyCommand(s, { type: 'EndTurn' }) // T2は構え (2拍目 2026-09-14)。筋力+1
+    expect(s.enemies[0].intent?.kind).toBe('defend')
+    s = applyCommand(s, { type: 'EndTurn' }) // T3の意図が warcry (2〜4)
     expect(s.enemies[0].intent?.kind).toBe('buff')
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('StrengthGained')
     const str = s.enemies[0].strength
-    expect(str).toBeGreaterThanOrEqual(2)
-    expect(str).toBeLessThanOrEqual(4)
+    expect(str).toBeGreaterThanOrEqual(3)
+    expect(str).toBeLessThanOrEqual(5)
     const intent = s.enemies[0].intent! // ターン3は club_wild (基礎 9〜13)
     expect(intent.kind).toBe('attack')
     expect(intent.shownMin).toBe(9 + str)

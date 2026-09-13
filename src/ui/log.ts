@@ -34,7 +34,8 @@ export function intentText(intent: EnemyIntent | null): string {
       const hits = intent.mirrorHits === true ? '×手数' : (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
       const guard = intent.alsoDefend !== undefined ? `+🛡️${intent.alsoDefend}` : ''
       const buff = intent.alsoBuff !== undefined ? `+💪${intent.alsoBuff}` : ''
-      return `⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${buff}${inflictSuffix(intent)}`
+      const breaks = intent.alsoDestroySet === true ? '💥伏せ破壊+' : '' // 壊しつつ殴る (2026-09-14)
+      return `${breaks}⚔️ 攻撃 ${intent.shownMin}〜${intent.shownMax}${hits}${guard}${buff}${inflictSuffix(intent)}`
     }
     case 'defend': return `🛡️ 防御 ${intent.shownMin}〜${intent.shownMax}${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
     case 'destroy-set': return '💥 伏せ破壊'

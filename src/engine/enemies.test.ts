@@ -6,7 +6,7 @@ import { allEnemies, getCardDef, getEnemyDef, resolveEncounter } from './content
 import { tierFor } from './map.ts'
 import { applyCommand } from './state.ts'
 import { damageBreakdown, dealDamageToEnemy } from './effects.ts'
-import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, destroySetIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import { applyDebugOverrides, clearDebugOverrides } from './content.ts'
 import { effectiveCost } from './effects.ts'
 import type { GameState } from './types.ts'
@@ -219,7 +219,8 @@ describe('挑発 (嘲る道化)', () => {
 
   it('ただし、はったりを見破る手段を持つ (伏せっぱなしで完封できない)', () => {
     const def = getEnemyDef('enemy_joker')
-    expect(def.movesVsSet!.some((m) => m.kind === 'destroy-set')).toBe(true)
+    // 2026-09-14: 見破りは「壊しつつ平手」(attack + alsoDestroySet)。0ダメの壊しは 1E の囮で大技を消すスイッチだった
+    expect(def.movesVsSet!.some((m) => m.kind === 'attack' && m.alsoDestroySet === true)).toBe(true)
   })
 })
 
@@ -254,7 +255,7 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
   it('破壊は素直に通り、がらくたが付与される (2026-08-30 窓は開かない)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
     s = withHand(s, ['green_reaction_vine'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = setAndArm(s, 't0_green_reaction_vine') // 生きた罠だけが壊される (2026-09-14: 準備中の札は敵に見えない)
     s = withIntent(s, {
       kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0,
       inflict: { status: 'junk', amount: 1 },
@@ -273,7 +274,7 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
     // 窮鼠の大牙は 2026-09-03 に撤去。条件付きリアクションの機構は合成defで固定
     s = withHand(s, ['green_reaction_thorns'])
     s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } }] } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
+    s = setAndArm(s, 't0_green_reaction_cornered')
     s = withIntent(s, destroySetIntent())
     s = applyCommand(s, { type: 'EndTurn' })
     // 候補ゼロなので窓は開かず、そのまま破壊される
@@ -283,7 +284,7 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
   it('弾け実の罠は破壊されると必ず爆ぜる (逃がしルール廃止で罰札が常に発火する)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
     s = withHand(s, ['green_reaction_powder_pod'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_powder_pod' })
+    s = setAndArm(s, 't0_green_reaction_powder_pod')
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
@@ -349,7 +350,7 @@ describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解�
 
   it('酸吐きの蛞蝓は状態異常の教師 (舐め=弱体 → 酸=虚弱 → 体当たりのローテーション)', () => {
     const def = getEnemyDef('enemy_slug')
-    expect(def.sequence).toEqual(['lick', 'acid_spit', 'tackle', 'guard']) // 4拍目は構え (2026-09-14 全敵に防御の拍)
+    expect(def.sequence).toEqual(['lick', 'guard', 'acid_spit', 'tackle']) // 構えは2拍目 (2026-09-14。末尾だと幕1で見えない)
     expect(def.moves.find((m) => m.id === 'lick')!.inflict).toEqual({ status: 'weak', amount: 2 })
     expect(def.moves.find((m) => m.id === 'acid_spit')!.inflict).toEqual({ status: 'frail', amount: 1 })
   })
@@ -443,7 +444,7 @@ describe('火傷 (2026-09-02 敵ギミック第1波。本家Burn相当)', () => 
 
   it('焚きつけのインプ: 火の粉(攻撃+火傷1)→煽り(火傷2)→噛みつき のローテ', () => {
     const def = getEnemyDef('enemy_cinder_imp')
-    expect(def.sequence).toEqual(['spark_toss', 'fan_flames', 'bite', 'guard']) // 4拍目は構え (2026-09-14)
+    expect(def.sequence).toEqual(['spark_toss', 'guard', 'fan_flames', 'bite']) // 構えは2拍目 (2026-09-14)
     expect(def.moves.find((m) => m.id === 'spark_toss')?.inflict).toEqual({ status: 'scald', amount: 1 })
     expect(def.moves.find((m) => m.id === 'fan_flames')?.inflict).toEqual({ status: 'scald', amount: 2 })
   })
@@ -594,10 +595,10 @@ describe('行動文法の器 (2026-09-02 StS2解析からの全体改善)', () =
       s = withHand(s, [])
       s = applyCommand(s, { type: 'EndTurn' })
     }
-    // 旧ローテ mud→curse→slap で curse(hex) は2回まで。7ターン目以降に hex が現れない
+    // ローテ mud→guard→curse→slap で curse(hex) は2回まで (2巡=8ターン)。9ターン目以降に hex が現れない
     const hexCount = kinds.filter((k) => k === 'hex').length
     expect(hexCount).toBe(2)
-    expect(kinds.slice(6)).not.toContain('hex')
+    expect(kinds.slice(8)).not.toContain('hex')
   })
 
   it('movesWhenAlone: 従士は射手が倒れると護りを捨てて殴りに転職する (LivingShield式)', () => {

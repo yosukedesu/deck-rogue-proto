@@ -615,7 +615,8 @@ namespace DeckRogue.Engine
             bool met;
             if (intent.ConditionalOn == "set")
             {
-                met = state.Player.SetCards.Count > 0;
+                // 罠モデル (2026-09-14): 敵が見るのは生きた罠だけ。準備中の札は見えない
+                met = state.Player.SetCards.Any(c => IsTrapLive(state, c));
             }
             else
             {
@@ -633,6 +634,7 @@ namespace DeckRogue.Engine
                 Inflict = intent.Alt.Inflict,
                 AlsoDefend = intent.Alt.AlsoDefend,
                 AlsoBuff = intent.Alt.AlsoBuff,
+                AlsoDestroySet = intent.Alt.AlsoDestroySet,
                 ConditionalOn = intent.ConditionalOn,
                 Alt = intent.Alt,
             };

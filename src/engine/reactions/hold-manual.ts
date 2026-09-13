@@ -103,7 +103,7 @@ export const holdManualSystem: ReactionSystem = {
         return state
       }
       case 'EnemyActionResolved': {
-        if (state.reactionUsedThisAction) return state // pre窓で発動済みなら post窓は開かない
+        // 窓ごとに1枚 (2026-09-14 ユーザー裁定): pre 窓で鳴っても post 窓は開く (仕込み枠2の天井「1行動1リアクション」の解除)
         if (anyPlayable(state, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual })) {
           return {
             ...state,

@@ -9,7 +9,7 @@ describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクシ
     let s = withHand(freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter'), [
       'green_reaction_powder_pod',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_powder_pod' })
+    s = setAndArm(s, 't0_green_reaction_powder_pod') // 生きた罠だけが壊される (2026-09-14)
     s = withIntent(s, destroySetIntent())
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' }) // 2026-08-30 逃がし廃止: 窓は開かず破壊が素直に通る

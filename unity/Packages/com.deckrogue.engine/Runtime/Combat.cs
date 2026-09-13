@@ -608,6 +608,7 @@ namespace DeckRogue.Engine
             Inflict = it.Inflict,
             AlsoDefend = it.AlsoDefend,
             AlsoBuff = it.AlsoBuff,
+            AlsoDestroySet = it.AlsoDestroySet,
         };
 
         /// <summary>行動1つから意図 (幅表示 + 非公開の実値) を組み立てる。強化は攻撃にのみ乗り、攻撃は最低1にクランプ</summary>
@@ -642,6 +643,7 @@ namespace DeckRogue.Engine
                 Inflict = move.Inflict,
                 AlsoDefend = move.AlsoDefend,
                 AlsoBuff = move.AlsoBuff,
+                AlsoDestroySet = move.AlsoDestroySet == true ? (bool?)true : null,
             };
             return (intent, next);
         }
@@ -1691,14 +1693,17 @@ namespace DeckRogue.Engine
                     Inflict = acting.Inflict,
                     AlsoDefend = acting.AlsoDefend,
                     AlsoBuff = acting.AlsoBuff,
+                    AlsoDestroySet = acting.AlsoDestroySet == true ? (bool?)true : null,
                 };
-                // 行動ごとにリアクション消費フラグをリセット (敵の1行動につき1回まで)
+                // 行動ごとにリアクション消費フラグをリセット (pre 窓で1枚。post 窓は別に1枚 = 窓ごとに1枚 2026-09-14)
                 s = s with
                 {
                     Enemies = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = locked } : e),
                     LastAction = null,
                     ReactionUsedThisAction = false,
                 };
+                // からくり壊し＋攻撃 (2026-09-14): 生きた罠を pre 窓より先に壊してから殴る
+                if (locked.AlsoDestroySet == true) s = DestroySetCards(s, i);
                 // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
                 var executing = new GameEvent_EnemyActionExecuting { EnemyIndex = i, Kind = locked.Kind };
                 s = Events.Emit(s, executing);
@@ -2158,28 +2163,7 @@ namespace DeckRogue.Engine
                 case EnemyActionKinds.DestroySet:
                 {
                     if (state.Player.SetCards.Count == 0) return markResolved(state, 0);
-                    var s = state;
-                    // 伏せ破壊への罰: onSetDestroyed 効果を破壊した敵に向けて発火
-                    foreach (var card in state.Player.SetCards)
-                    {
-                        for (int i = 0; i < card.Def.Effects.Count; i++)
-                        {
-                            var effect = card.Def.Effects[i];
-                            if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, enemyIndex);
-                        }
-                    }
-                    s = s with
-                    {
-                        Player = s.Player with
-                        {
-                            SetCards = new List<CardInstance>(),
-                            DiscardPile = Concat(s.Player.DiscardPile, state.Player.SetCards),
-                        },
-                    };
-                    foreach (var card in state.Player.SetCards)
-                    {
-                        s = Events.Emit(s, new GameEvent_SetCardDestroyed { CardId = card.Def.Id });
-                    }
+                    var s = DestroySetCards(state, enemyIndex);
                     // 伏せ破壊にも状態異常の付与が乗る (罠壊しの「がらくた」)
                     if (intent.Inflict != null) s = ApplyStatusToPlayer(s, intent.Inflict);
                     return markResolved(CheckCombatEnd(s), 0);
@@ -2187,6 +2171,35 @@ namespace DeckRogue.Engine
             }
             // TS の switch は EnemyActionKind を網羅しているので到達しない
             return state;
+        }
+
+        /// <summary>伏せ場の生きた罠を全て壊す (onSetDestroyed の罰は壊した敵へ)。準備中の札は敵に見えないので壊れない (2026-09-14)</summary>
+        private static GameState DestroySetCards(GameState state, int enemyIndex)
+        {
+            var targets = state.Player.SetCards.Where(c => Effects.IsTrapLive(state, c)).ToList();
+            if (targets.Count == 0) return state;
+            var s = state;
+            foreach (var card in targets)
+            {
+                for (int i = 0; i < card.Def.Effects.Count; i++)
+                {
+                    var effect = card.Def.Effects[i];
+                    if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, enemyIndex);
+                }
+            }
+            s = s with
+            {
+                Player = s.Player with
+                {
+                    SetCards = s.Player.SetCards.Where(c => !targets.Contains(c)).ToList(),
+                    DiscardPile = Concat(s.Player.DiscardPile, targets),
+                },
+            };
+            foreach (var card in targets)
+            {
+                s = Events.Emit(s, new GameEvent_SetCardDestroyed { CardId = card.Def.Id });
+            }
+            return s;
         }
 
         /// <summary>罠モデル (2026-09-13): 期限切れ (齢3以上・期限なしの札は除く) の罠を伏せ場から外す</summary>

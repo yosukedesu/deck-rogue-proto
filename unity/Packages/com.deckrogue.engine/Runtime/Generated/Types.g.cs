@@ -432,6 +432,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>攻撃と同時に強化+N (2026-09-01 敵圧監査。バフ専用ターン=無償ターンを作らずに雪だるまを初手から見せる)</summary>
         [JsonProperty("alsoBuff")]
         public int? AlsoBuff { get; init; }
+        /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
+        [JsonProperty("alsoDestroySet")]
+        public bool? AlsoDestroySet { get; init; }
         /// <summary>条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。 'set' = 伏せ札がある / 'tokens' = 従者・トークンが場にいる</summary>
         [JsonProperty("conditionalOn")]
         public string? ConditionalOn { get; init; }
@@ -459,6 +462,8 @@ namespace DeckRogue.Engine.Generated
         public int? AlsoDefend { get; init; }
         [JsonProperty("alsoBuff")]
         public int? AlsoBuff { get; init; }
+        [JsonProperty("alsoDestroySet")]
+        public bool? AlsoDestroySet { get; init; }
     }
 
     /// <summary>リアクション誘発の追加条件</summary>
@@ -2014,6 +2019,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>攻撃と同時に強化+N (2026-09-01。バフ専用ターンを作らずに短期戦でも雪だるまを見せる)</summary>
         [JsonProperty("alsoBuff")]
         public int? AlsoBuff { get; init; }
+        /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
+        [JsonProperty("alsoDestroySet")]
+        public bool? AlsoDestroySet { get; init; }
         /// <summary>行動単位の条件分岐 (確定済みルール表「読み合いの全敵展開」2026-08-28): プレイヤーに伏せ札があると、この行動の代わりに setAlt の行動になる。 既存の条件付き意図 (両分岐予告・行動開始時確定) の配管にそのまま乗る</summary>
         [JsonProperty("setAlt")]
         public EnemyMoveSetAlt? SetAlt { get; init; }
