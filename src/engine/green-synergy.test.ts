@@ -206,7 +206,7 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
           : s.player.permanents,
       },
     }
-    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 } } : e)) }
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', actual: 10 } } : e)) }
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase !== 'awaiting-reaction') throw new Error(`post窓が開いていない: ${s.phase}`)
     return applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 'set0' })
@@ -228,7 +228,7 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
         permanents: [...s.player.permanents, { uid: 'perm0', def: getCardDef('test_reaction_payoff') }],
       },
     }
-    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 } } : e)) }
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack', actual: 10 } } : e)) }
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'ConfirmReaction', fire: false }) // 温存
     expect(s.player.growth).toBe(0)

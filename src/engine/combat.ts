@@ -110,10 +110,6 @@ export interface CombatOptions {
   readonly relicPermanents?: readonly CardInstance[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N */
   readonly setDamageReduction?: number
-  /** デバッグ: 意図の実値を常時公開 */
-  readonly revealIntents?: boolean
-  /** C型レリック (蜃気楼の面): 伏せた瞬間からそのターンの実値を公開 */
-  readonly revealOnSet?: boolean
   /** 実験: 全カード伏せ可 */
   readonly setAnyCards?: boolean
   /** C型レリック (回収の紐): 回収が0E */
@@ -221,13 +217,11 @@ export function startCombatWithOptions(
       ...(options.artifact ? { artifact: options.artifact } : {}),
     },
     enemies,
-    // C型レリック。revealIntents は第1ターンの意図宣言 (startPlayerTurn) より前に立てる必要がある
+    // C型レリック
     ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
     ...(options.expireToHand ? { expireToHand: true } : {}),
     ...(options.energyMaxRefBonus ? { energyMaxRefBonus: options.energyMaxRefBonus } : {}),
     ...(options.harvestKeep ? { harvestKeep: options.harvestKeep } : {}),
-    ...(options.revealIntents ? { revealIntents: true } : {}),
-    ...(options.revealOnSet ? { revealOnSet: true } : {}),
     ...(options.setAnyCards ? { setAnyCards: true } : {}),
     // レリック本家形 (2026-09-12): 規則改変の C型キー
     ...(options.retainHand ? { retainHand: true } : {}),
@@ -385,7 +379,7 @@ function declareOne(state: GameState, i: number): GameState {
     enemy.burrowActive !== true
       ? intentRaw
       : intentRaw.kind === 'defend'
-        ? { ...intentRaw, kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0, alsoBuff: undefined }
+        ? { ...intentRaw, kind: 'rest' as const, actual: 0, alsoBuff: undefined }
         : intentRaw.alsoDefend !== undefined
           ? { ...intentRaw, alsoDefend: undefined }
           : intentRaw
@@ -403,14 +397,7 @@ function declareOne(state: GameState, i: number): GameState {
     alt = altIntent
   }
 
-  // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む。
-  // 表示層 (UI/CLI/最悪被ダメ予測) は shownMin/shownMax を読むだけなので変更不要で、
-  // 条件分岐 (alt) の両側も自動で実値になる
-  const reveal = <T extends { shownMin: number; shownMax: number; actual: number }>(it: T): T =>
-    s.revealIntents ? { ...it, shownMin: it.actual, shownMax: it.actual } : it
-  const shown = reveal(intent)
-  if (alt !== undefined) alt = reveal(alt)
-  const declared = conditionalOn && alt ? { ...shown, conditionalOn, alt } : shown
+  const declared = conditionalOn && alt ? { ...intent, conditionalOn, alt } : intent
   // 盗みは宣言と同時に成立する (2026-08-30 「宣言ターン内に仕事をする」パッケージ)。
   // 旧実装は実行時成立のため、宣言ターンに倒すと盗み・逃走の設計が丸ごと空振りしていた
   // (3幕フルラン実測: こそ泥4戦で盗み・逃走を一度も見ていない)。宣言時に抱えれば
@@ -435,7 +422,7 @@ function declareOne(state: GameState, i: number): GameState {
   return s
 }
 
-/** 行動1つから意図 (幅表示 + 非公開の実値) を組み立てる。強化は攻撃にのみ乗り、攻撃は最低1にクランプ */
+/** 行動1つから意図 (実値) を組み立てる。強化は攻撃にのみ乗り、攻撃は最低1にクランプ */
 function buildIntent(
   rng: GameState['rng'],
   move: EnemyMove,
@@ -445,8 +432,6 @@ function buildIntent(
 ): readonly [
   {
     kind: EnemyMove['kind']
-    shownMin: number
-    shownMax: number
     actual: number
     hits?: number
     inflict?: StatusInflict
@@ -474,8 +459,6 @@ function buildIntent(
   return [
     {
       kind: move.kind,
-      shownMin: clamp(scale(gMin ?? 0) + bonus),
-      shownMax: clamp(scale(gMax ?? 0) + bonus),
       actual: clamp(scale(actual) + bonus),
       hits: gHits,
       ...(move.mirrorHits === true ? { mirrorHits: true } : {}),
@@ -571,7 +554,7 @@ function processSplits(state: GameState): GameState {
         maxHp: scaledChildHp,
         block: childDef.burrow?.block ?? childDef.startingBlock ?? 0,
         ...(childDef.burrow ? { burrowActive: true } : {}),
-        intent: stunned ? { kind: 'rest' as const, shownMin: 0, shownMax: 0, actual: 0 } : null,
+        intent: stunned ? { kind: 'rest' as const, actual: 0 } : null,
         strength: childStrength,
         ...(e.atkScale !== undefined ? { atkScale: e.atkScale } : {}),
         burn: 0,
@@ -1447,8 +1430,6 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     // (確認ウィンドウが攻撃8と表示したのに実際は16で解決される = 窓が嘘をつく状態だった)。
     const locked: EnemyIntent = {
       kind: acting.kind,
-      shownMin: acting.shownMin,
-      shownMax: acting.shownMax,
       actual: acting.actual,
       ...(acting.hits !== undefined ? { hits: acting.hits } : {}),
       ...(acting.mirrorHits === true ? { mirrorHits: true } : {}),

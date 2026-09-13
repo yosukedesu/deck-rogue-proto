@@ -56,26 +56,7 @@ export function setCard(state: GameState, cardUid: string): GameState {
       setsThisTurn: (state.player.setsThisTurn ?? 0) + 1,
     },
   }
-  // 蜃気楼の面 (2026-09-02 作り直し): 伏せた瞬間からこのターンの意図の実値を公開する。
-  // 「幅を見て伏せる」前半の読みは残し、伏せた後の発動/温存だけが実値で決められる
-  const revealed: GameState = s.revealOnSet === true
-    ? {
-        ...s,
-        enemies: s.enemies.map((e) =>
-          e.intent
-            ? {
-                ...e,
-                intent: {
-                  ...e.intent,
-                  shownMin: e.intent.actual,
-                  shownMax: e.intent.actual,
-                  ...(e.intent.alt ? { alt: { ...e.intent.alt, shownMin: e.intent.alt.actual, shownMax: e.intent.alt.actual } } : {}),
-                },
-              }
-            : e,
-        ),
-      }
-    : s
+  const revealed: GameState = s
   // 伏せに反応する置物 (レリック: 符師の懐=伏せるたび1ドロー)
   return runPermanentTriggers(
     emit(revealed, { type: 'CardSet', cardId: card.def.id }),

@@ -293,8 +293,6 @@ export interface RunState {
   readonly colors: readonly CardColor[]
   /** 難易度 (1〜10・既定3=現状維持。確定済みルール表「難易度」。旧セーブに無いので読み取りは difficultyScale 経由) */
   readonly difficulty: number
-  /** デバッグ: 意図を常時実値表示 (2026-09-02 退屈診断④の判定実験。仕様は変えず計測だけ。ジャーナルに記録=リプレイ再現) */
-  readonly debugRevealIntents?: boolean
   /** 実験 (2026-09-02): 全カード伏せ可 (engine/setany.ts) */
   readonly setAnyCards?: boolean
   /** ラン専用RNG (敵並び・報酬・戦闘シードの決定に使う) */
@@ -466,8 +464,6 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     setDamageReduction: run.relics
       .map(getRelicDef)
       .reduce((sum, r) => sum + (r.combatRule?.setDamageReduction ?? 0), 0),
-    revealIntents: run.debugRevealIntents === true || run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
-    revealOnSet: run.relics.some((id) => getRelicDef(id).combatRule?.revealOnSet === true),
     expireToHand: run.relics.some((id) => getRelicDef(id).combatRule?.expireToHand === true),
     energyMaxRefBonus: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.energyMaxRefBonus ?? 0), 0),
     harvestKeep: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.harvestKeep ?? 0), 0),
@@ -976,7 +972,7 @@ export function createRun(
   leaderId = 'leader_green',
   deckId?: string,
   difficulty = DEFAULT_DIFFICULTY,
-  opts?: { readonly revealIntents?: boolean; readonly setAnyCards?: boolean },
+  opts?: { readonly setAnyCards?: boolean },
 ): RunState {
   const leader = getLeaderDef(leaderId)
   // 種の選択制 (確定済みルール表「ラン初期デッキ」): リーダーが許可する初期デッキのみ受け付ける
@@ -1005,7 +1001,6 @@ export function createRun(
     seed,
     mode,
     leaderId,
-    ...(opts?.revealIntents === true ? { debugRevealIntents: true } : {}),
     ...(opts?.setAnyCards === true ? { setAnyCards: true } : {}),
     colors: leader.colors,
     // 範囲外・非数は表の端/既定へ丸めて保存 (以降の読み取りも difficultyScale が守る)
@@ -1058,8 +1053,6 @@ export interface ReplayOrigin {
   readonly leaderId: string
   readonly deckId?: string
   readonly difficulty?: number
-  /** デバッグの実値表示トグル (2026-09-02)。shownMin/Max の状態値が変わるので再現に必要 */
-  readonly revealIntents?: boolean
   /** 実験: 全カード伏せ可 (2026-09-02)。伏せ可否とコストが変わるので再現に必要 */
   readonly setAnyCards?: boolean
   /** kind='checkpoint' の開始オプション (createDebugCheckpointRun の引数) */
@@ -1085,7 +1078,6 @@ export function replayInitialRun(origin: ReplayOrigin): RunState {
     return createDebugCheckpointRun(origin.seed, 'set-confirm', origin.leaderId, origin.checkpoint)
   }
   return createRun(origin.seed, 'set-confirm', origin.leaderId, origin.deckId, origin.difficulty, {
-    ...(origin.revealIntents ? { revealIntents: true } : {}),
     ...(origin.setAnyCards ? { setAnyCards: true } : {}),
   })
 }

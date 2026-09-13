@@ -2,7 +2,7 @@
 // 確定済みルール表「敵フェーズ変化」(ボス3体への適用) を固定する。
 import { describe, expect, it } from 'vitest'
 import { chainFromStart } from './enemyGraph.ts'
-import { battleSummary, cardCostLabel, setBranchNote, summaryLine, xHitsSuffix } from './summary.ts'
+import { battleSummary, cardCostLabel, displayedIntentValue, incomingFrom, incomingTotal, intentModifierNotes, setBranchNote, summaryLine, xHitsSuffix } from './summary.ts'
 import { allCards, getCardDef, getEnemyDef, allEnemies } from './content.ts'
 import { createRun } from './run.ts'
 import { applyCommand } from './state.ts'
@@ -138,5 +138,32 @@ describe('setBranchNote: 伏せ分岐の型の注記 (2026-09-03 Opusラン F �
     // 機構は残る: 固定ローテ+2件以上の反応テーブルを合成すれば付く
     const synthetic = { ...probe, movesVsSet: getEnemyDef('enemy_set_breaker').movesVsSet }
     expect(setBranchNote(synthetic)).toContain('順番を崩す')
+  })
+})
+
+describe('実値公開のライブ表示 (2026-09-14 本家形): 意図の数字は宣言した実値に威圧・脆弱・重りを掛けた値', () => {
+  it('displayedIntentValue は攻撃だけ補正し、注記はかかっている補正だけを列挙する', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [])
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack' as const, actual: 12 } } : e)) }
+    expect(displayedIntentValue(s, 0, s.enemies[0].intent!)).toBe(12)
+    expect(intentModifierNotes(s, 0, s.enemies[0].intent!)).toEqual([])
+    // 脆弱: +50% (切り捨て) → 18。威圧: -25% → 9 → 脆弱で 13 (実処理と同順: 威圧→脆弱)
+    const vuln = { ...s, player: { ...s.player, vulnerable: 1 } }
+    expect(displayedIntentValue(vuln, 0, vuln.enemies[0].intent!)).toBe(18)
+    expect(intentModifierNotes(vuln, 0, vuln.enemies[0].intent!)).toEqual(['脆弱+50%'])
+    const both = { ...vuln, enemies: vuln.enemies.map((e, i) => (i === 0 ? { ...e, weak: 1 } : e)) }
+    expect(displayedIntentValue(both, 0, both.enemies[0].intent!)).toBe(13)
+    expect(intentModifierNotes(both, 0, both.enemies[0].intent!)).toEqual(['威圧-25%', '脆弱+50%'])
+    // 防御の意図は補正されない
+    const guard = { ...both, enemies: both.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'defend' as const, actual: 9 } } : e)) }
+    expect(displayedIntentValue(guard, 0, guard.enemies[0].intent!)).toBe(9)
+    expect(intentModifierNotes(guard, 0, guard.enemies[0].intent!)).toEqual([])
+  })
+
+  it('incomingFrom は表示と同じ式×ヒット数 (被ダメ予測は実際に受ける量)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [])
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'attack' as const, actual: 7, hits: 3 } } : e)), player: { ...s.player, vulnerable: 2 } }
+    expect(incomingFrom(s, 0)).toBe(Math.floor(7 * 1.5) * 3)
+    expect(incomingTotal(s)).toBe(incomingFrom(s, 0))
   })
 })

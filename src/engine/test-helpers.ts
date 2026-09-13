@@ -36,20 +36,20 @@ export function withIntent(state: GameState, intent: EnemyIntent): GameState {
 }
 
 export function attackIntent(actual: number): EnemyIntent {
-  return { kind: 'attack', shownMin: actual, shownMax: actual, actual }
+  return { kind: 'attack', actual }
 }
 
 export function defendIntent(actual: number): EnemyIntent {
-  return { kind: 'defend', shownMin: actual, shownMax: actual, actual }
+  return { kind: 'defend', actual }
 }
 
 export function destroySetIntent(): EnemyIntent {
-  return { kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0 }
+  return { kind: 'destroy-set', actual: 0 }
 }
 
 /** 隙 (何もしない) の意図 */
 export function restIntent(): EnemyIntent {
-  return { kind: 'rest', shownMin: 0, shownMax: 0, actual: 0 }
+  return { kind: 'rest', actual: 0 }
 }
 
 /**

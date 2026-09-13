@@ -361,7 +361,7 @@ describe('骨刃 (2026-09-01 本家Shivの黒移植)', () => {
       'black_infinite_blades',
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_infinite_blades' })
-    s = withIntent(s, { kind: 'defend', shownMin: 0, shownMax: 0, actual: 0 })
+    s = withIntent(s, { kind: 'defend', actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hand.some((c) => c.def.id === 'black_shiv_token')).toBe(true)
   })

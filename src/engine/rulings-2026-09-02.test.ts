@@ -1,7 +1,7 @@
 // 2026-09-02 夜のユーザー裁定6件 (Opusラン3本の答え合わせ) の機械固定。docs/playtest-2026-09-02-opus-runs.md §5
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, getRelicDef } from './content.ts'
-import { worstIncomingFrom } from './summary.ts'
+import { incomingFrom } from './summary.ts'
 import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 import { canUpgradeInHand } from './upgrade.ts'
@@ -27,26 +27,22 @@ describe('鏡の敵 (mirrorHits) は伏せも手数に数える', () => {
   it('1枚プレイ+1枚伏せ = 2ヒット (伏せ+置物の抜け道を閉じる)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 12), ['green_strike', 'green_reaction_thorns'])
     s = withIntent(s, { ...attackIntent(3), mirrorHits: true })
-    expect(worstIncomingFrom(s, 0)).toBe(3) // 0枚でも最低1ヒット
+    expect(incomingFrom(s, 0)).toBe(3) // 0枚でも最低1ヒット
     s = play(s, 't0_green_strike')
-    expect(worstIncomingFrom(s, 0)).toBe(3)
+    expect(incomingFrom(s, 0)).toBe(3)
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_green_reaction_thorns' })
     expect(s.player.setsThisTurn).toBe(1)
-    expect(worstIncomingFrom(s, 0)).toBe(6)
+    expect(incomingFrom(s, 0)).toBe(6)
   })
 })
 
-describe('蜃気楼の面の作り直し: 伏せた瞬間からそのターンの実値が見える', () => {
-  it('伏せる前は幅表示、伏せた後は shownMin=shownMax=actual', () => {
-    // 2026-09-03: レリック自体は撤去 (作り直し後も確認ウィンドウを「はい」ボタンに退化させた)。機構 (revealOnSet) は残す
+describe('蜃気楼の面: レリックも機構も撤去済み (2026-09-14 実値公開で役目を終えた)', () => {
+  it('relic_mirage_mask は無く、伏せても意図の形は変わらない', () => {
     expect(() => getRelicDef('relic_mirage_mask')).toThrow()
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 14), ['green_reaction_thorns'])
-    s = { ...s, revealOnSet: true }
-    s = withIntent(s, { ...attackIntent(7), shownMin: 5, shownMax: 9 })
-    expect(s.enemies[0].intent?.shownMin).toBe(5)
+    s = withIntent(s, attackIntent(7))
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
-    expect(s.enemies[0].intent?.shownMin).toBe(7)
-    expect(s.enemies[0].intent?.shownMax).toBe(7)
+    expect(s.enemies[0].intent?.actual).toBe(7)
   })
 })
 

@@ -113,39 +113,67 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
 }
 
 
-// ---- 最悪被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が
-// 3通りに割れていたのを1本化。合成順は実処理 combat.ts の攻撃解決と同一 = 鈴→脆弱→重り) ----
+// ---- 被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が3通りに割れていたのを1本化。
+// 2026-09-14 実値公開: 幅の上限でなく宣言した実値に補正 (威圧→鈴→脆弱→重り=実処理 combat.ts と同順) を掛けた
+// 「今フェーズに実際に受ける量」になった。意図の数字 (displayedIntentValue) と同じ式) ----
 import { effectiveIntent, applyEnemyWeak } from './effects.ts'
 import { peekMoves } from './enemyGraph.ts'
 import { getEnemyDef as getEnemyDefForSummary } from './content.ts'
-import type { GameState } from './types.ts'
+import type { EnemyIntent, EnemyIntentBranch, GameState } from './types.ts'
 
-/** 敵1体の「今フェーズの最悪合計ダメージ」。攻撃以外・死亡・混乱 (仲間に向かう) は0 */
-export function worstIncomingFrom(s: GameState, enemyIndex: number): number {
+/** 攻撃1ヒットに今の補正 (威圧・静かな鈴・脆弱・重り) を掛けた値 = 意図に出す数字 (本家形のライブ表示) */
+export function modifiedHit(s: GameState, enemyIndex: number, actual: number): number {
+  const e = s.enemies[enemyIndex]
+  let v = actual
+  // 威圧 (2026-09-03 Weak化): -25% (切り捨て・最低1)
+  v = applyEnemyWeak(v, e?.weak)
+  // 静かな鈴 (C型): 伏せ札がある間、各ヒット-N (最低1)
+  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) {
+    v = Math.max(1, v - (s.setDamageReduction ?? 0))
+  }
+  // 脆弱: +50% (切り捨て)
+  if (s.player.vulnerable > 0) v = Math.floor(v * 1.5)
+  // 重り: +10%×このターンの実プレイ枚数 (切り捨て)
+  if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) {
+    v = Math.floor(v * (1 + 0.1 * (s.player.playsThisTurn ?? 0)))
+  }
+  return v
+}
+
+/** 意図 (または分岐) の表示値: 攻撃は補正込みの1ヒット・それ以外は実値 */
+export function displayedIntentValue(s: GameState, enemyIndex: number, it: EnemyIntent | EnemyIntentBranch): number {
+  return it.kind === 'attack' ? modifiedHit(s, enemyIndex, it.actual) : it.actual
+}
+
+/** 補正が実値を変えている時の注記 (「威圧-25%」「脆弱+50%」「重り+N%」「鈴-N」)。無ければ空配列 */
+export function intentModifierNotes(s: GameState, enemyIndex: number, it: EnemyIntent | EnemyIntentBranch): string[] {
+  if (it.kind !== 'attack') return []
+  const e = s.enemies[enemyIndex]
+  const notes: string[] = []
+  if ((e?.weak ?? 0) > 0) notes.push('威圧-25%')
+  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) notes.push(`鈴-${s.setDamageReduction}`)
+  if (s.player.vulnerable > 0) notes.push('脆弱+50%')
+  if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) notes.push(`重り+${10 * (s.player.playsThisTurn ?? 0)}%`)
+  return notes
+}
+
+/** 実行時のヒット数 (手数の鏡は今のプレイ枚数+伏せ) */
+export function intentHits(s: GameState, it: EnemyIntent | EnemyIntentBranch): number {
+  return (it as EnemyIntent).mirrorHits === true ? Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0)) : (it.hits ?? 1)
+}
+
+/** 敵1体の「今フェーズに受ける合計ダメージ」。攻撃以外・死亡・混乱 (仲間に向かう) は0 */
+export function incomingFrom(s: GameState, enemyIndex: number): number {
   const e = s.enemies[enemyIndex]
   if (!e || e.hp <= 0 || e.confusion > 0) return 0
   const it = effectiveIntent(s, enemyIndex)
   if (it?.kind !== 'attack') return 0
-  let perHit = it.shownMax
-  // 威圧 (2026-09-03 Weak化): -25% (切り捨て・最低1)
-  perHit = applyEnemyWeak(perHit, e.weak)
-  // 静かな鈴 (C型): 伏せ札がある間、各ヒット-N (最低1)
-  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) {
-    perHit = Math.max(1, perHit - (s.setDamageReduction ?? 0))
-  }
-  // 脆弱: +50% (切り捨て)
-  if (s.player.vulnerable > 0) perHit = Math.floor(perHit * 1.5)
-  // 重り: +10%×このターンの実プレイ枚数 (切り捨て)
-  if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) {
-    perHit = Math.floor(perHit * (1 + 0.1 * (s.player.playsThisTurn ?? 0)))
-  }
-  const hits = it.mirrorHits === true ? Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0)) : (it.hits ?? 1)
-  return perHit * hits
+  return modifiedHit(s, enemyIndex, it.actual) * intentHits(s, it)
 }
 
-/** 全敵の最悪合計 (最悪被ダメ予測の分子) */
-export function worstIncomingTotal(s: GameState): number {
-  return s.enemies.reduce((sum, _e, i) => sum + worstIncomingFrom(s, i), 0)
+/** 全敵の合計 (被ダメ予測の分子) */
+export function incomingTotal(s: GameState): number {
+  return s.enemies.reduce((sum, _e, i) => sum + incomingFrom(s, i), 0)
 }
 
 /**

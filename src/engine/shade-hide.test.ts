@@ -12,7 +12,7 @@ describe('防御行動の alsoBuff (用心深い影の隠れる)', () => {
       ...s,
       enemies: s.enemies.map((e, i) =>
         i === 0
-          ? { ...e, intent: { ...base, kind: 'defend', actual: 7, shownMin: 6, shownMax: 9, alsoBuff: 2, conditionalOn: undefined, alt: undefined } }
+          ? { ...e, intent: { ...base, kind: 'defend', actual: 7, alsoBuff: 2, conditionalOn: undefined, alt: undefined } }
           : e,
       ),
     }

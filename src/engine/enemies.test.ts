@@ -66,8 +66,6 @@ describe('負傷 (死に札の混入)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_hexer', 42))
     s = withIntent(s, {
       kind: 'hex',
-      shownMin: 0,
-      shownMax: 0,
       actual: 0,
       inflict: { status: 'wound', amount: 2 },
     })
@@ -80,8 +78,6 @@ describe('負傷 (死に札の混入)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_hexer', 42))
     s = withIntent(s, {
       kind: 'hex',
-      shownMin: 0,
-      shownMax: 0,
       actual: 0,
       inflict: { status: 'wound', amount: 99 },
     })
@@ -94,8 +90,6 @@ describe('負傷 (死に札の混入)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_hexer', 42))
     s = withIntent(s, {
       kind: 'attack',
-      shownMin: 6,
-      shownMax: 9,
       actual: 7,
       inflict: { status: 'weak', amount: 2 },
     })
@@ -109,7 +103,7 @@ describe('負傷 (死に札の混入)', () => {
 describe('連撃 (multi-hit)', () => {
   it('連撃は1発の実値×ヒット数のダメージ', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_wolf', 42))
-    s = withIntent(s, { kind: 'attack', shownMin: 4, shownMax: 6, actual: 5, hits: 3 })
+    s = withIntent(s, { kind: 'attack', actual: 5, hits: 3 })
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(hpBefore - 15)
@@ -118,7 +112,7 @@ describe('連撃 (multi-hit)', () => {
   it('ブロックはヒット順に消費される', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_wolf', 42))
     s = { ...s, player: { ...s.player, block: 7 } }
-    s = withIntent(s, { kind: 'attack', shownMin: 4, shownMax: 6, actual: 5, hits: 3 })
+    s = withIntent(s, { kind: 'attack', actual: 5, hits: 3 })
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(hpBefore - 8) // 15 - 7
@@ -127,7 +121,7 @@ describe('連撃 (multi-hit)', () => {
   it('連撃は1発ずつ素の実値で解決される (威嚇は撤去済み)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_wolf', 42))
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5, hp: 999 })) }
-    s = withIntent(s, { kind: 'attack', shownMin: 4, shownMax: 6, actual: 5, hits: 3 })
+    s = withIntent(s, { kind: 'attack', actual: 5, hits: 3 })
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(hpBefore - 15) // 5 × 3
@@ -166,7 +160,7 @@ describe('再生とフェーズ変化 (苔まといの主)', () => {
     const intent = s.enemies[0].intent
     expect(intent).not.toBeNull()
     expect(intent!.kind).toBe('attack')
-    expect(intent!.shownMin).toBeGreaterThanOrEqual(14)
+    expect(intent!.actual).toBeGreaterThanOrEqual(14)
   })
 })
 
@@ -205,7 +199,7 @@ describe('挑発 (嘲る道化)', () => {
     const s = freshCombat('set-confirm', 'enemy_joker', 42)
     // 開始時は伏せ無し → moves (大振り) から宣言される
     expect(s.enemies[0].intent?.kind).toBe('attack')
-    expect(s.enemies[0].intent!.shownMin).toBeGreaterThanOrEqual(15)
+    expect(s.enemies[0].intent!.actual).toBeGreaterThanOrEqual(15)
   })
 
   it('伏せがあると別の行動になる (2026-09-03 賭け型化。2026-09-04 嘲り防御を撤去=弱腰の取りこぼし是正・用心の一撃13-17)', () => {
@@ -259,7 +253,7 @@ describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏�
     s = withHand(s, ['green_reaction_vine'])
     s = setAndArm(s, 't0_green_reaction_vine') // 生きた罠だけが壊される (2026-09-14: 準備中の札は敵に見えない)
     s = withIntent(s, {
-      kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0,
+      kind: 'destroy-set', actual: 0,
       inflict: { status: 'junk', amount: 1 },
     })
     s = applyCommand(s, { type: 'EndTurn' })
@@ -336,7 +330,7 @@ describe('alsoBuff (攻撃と同時の強化。2026-09-01 バフ専用ターン�
   it('攻撃の解決後に強化が乗る (次の攻撃から加算される)', () => {
     let s = noHand(freshCombat('set-confirm', 'enemy_brute', 42))
     const before = s.enemies[0].strength
-    s = withIntent(s, { kind: 'attack', shownMin: 5, shownMax: 7, actual: 5, alsoBuff: 1 })
+    s = withIntent(s, { kind: 'attack', actual: 5, alsoBuff: 1 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.enemies[0].strength).toBe(before + 1)
     expect(s.eventLog.some((e) => e.type === 'StrengthGained' && e.amount === 1)).toBe(true)
@@ -516,16 +510,14 @@ describe('陣形: 庇うと連携 (2026-09-02 敵ギミック第1波)', () => {
   it('連携: 仲間の生存中は攻撃+N、倒れたら次の宣言から素に戻る', () => {
     // 双牙の狼 bondStrength=2。sequence=[twin_bite(4-6×2), lunge(9-12), prowl(defend)]・2頭目はoffset1
     const s = freshCombat('set-confirm', 'enc_fang_twins', 42)
-    expect(s.enemies[0].intent?.shownMin).toBe(6) // twin_bite 4+2
-    expect(s.enemies[0].intent?.shownMax).toBe(8) // 6+2
-    expect(s.enemies[1].intent?.shownMin).toBe(11) // lunge 9+2
-    expect(s.enemies[1].intent?.shownMax).toBe(14) // 12+2
-    // 片方を倒してターンを進めると、次の宣言は素の幅 (宣言時判定)
+    const within = (v: number | undefined, lo: number, hi: number) => v !== undefined && v >= lo && v <= hi
+    expect(within(s.enemies[0].intent?.actual, 6, 8)).toBe(true) // twin_bite 4〜6 +2
+    expect(within(s.enemies[1].intent?.actual, 11, 14)).toBe(true) // lunge 9〜12 +2
+    // 片方を倒してターンを進めると、次の宣言は素の値 (宣言時判定)
     let t: GameState = { ...s, enemies: s.enemies.map((e, i) => (i === 1 ? { ...e, hp: 0 } : e)) }
     t = withHand(t, [])
     t = applyCommand(t, { type: 'EndTurn' })
-    expect(t.enemies[0].intent?.shownMin).toBe(9) // lunge 素
-    expect(t.enemies[0].intent?.shownMax).toBe(12)
+    expect(within(t.enemies[0].intent?.actual, 9, 12)).toBe(true) // lunge 素
   })
 })
 
@@ -609,7 +601,7 @@ describe('行動文法の器 (2026-09-02 StS2解析からの全体改善)', () =
     expect(s.phase).toBe('player-turn')
     const it = s.enemies[0].intent
     expect(it?.kind).toBe('attack')
-    expect(it?.shownMin).toBeGreaterThanOrEqual(9) // avenging_rush 9-12 (通常の盾打ち6-8ではない。2026-09-02 白スターターsim13%で半歩戻し)
+    expect(it?.actual).toBeGreaterThanOrEqual(9) // avenging_rush 9-12 (通常の盾打ち6-8ではない。2026-09-02 白スターターsim13%で半歩戻し)
   })
 
   it('拘束: 1ターンにプレイできるカードは3枚まで。伏せは制限されず、ターン終了で1減る', () => {
@@ -677,8 +669,6 @@ describe('正確性の修正 (2026-09-02 StS2解析ミニングで発見)', () =
     let s = freshCombat('set-confirm', 'enemy_brute', 42)
     s = withIntent(s, {
       kind: 'attack',
-      shownMin: 5,
-      shownMax: 5,
       actual: 5,
       inflict: { status: 'vulnerable', amount: 2 },
     })
@@ -693,7 +683,7 @@ describe('正確性の修正 (2026-09-02 StS2解析ミニングで発見)', () =
 
   it('火傷は敵ターン終了後の全捨てで消える = 1回きり (捨て札を循環しない)', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42)
-    s = withIntent(s, { kind: 'attack', shownMin: 3, shownMax: 3, actual: 3, inflict: { status: 'scald', amount: 2 } })
+    s = withIntent(s, { kind: 'attack', actual: 3, inflict: { status: 'scald', amount: 2 } })
     s = withHand(s, [])
     s = applyCommand(s, { type: 'EndTurn' })
     // 敵フェーズで火傷2枚が手札に注入され、次の自ターン開始時点では手札に残っている
@@ -701,7 +691,7 @@ describe('正確性の修正 (2026-09-02 StS2解析ミニングで発見)', () =
     expect(inHand).toBe(2)
     // 何もせずターンを回すと: 自ターン終了時に疼き→全捨てで火傷は消滅 (捨て札に行かない)
     const hpBefore = s.player.hp
-    s = withIntent(s, { kind: 'defend', shownMin: 5, shownMax: 5, actual: 5 })
+    s = withIntent(s, { kind: 'defend', actual: 5 })
     const scaldsUids = new Set(s.player.hand.filter((c) => c.def.id === 'status_scald').map((c) => c.uid))
     s = { ...s, player: { ...s.player, hand: s.player.hand.filter((c) => scaldsUids.has(c.uid)) } }
     s = applyCommand(s, { type: 'EndTurn' })
@@ -800,12 +790,12 @@ describe('ギミック変種 (2026-09-02 全体改善・第6波)', () => {
 describe('デバフ拡張と時限呪い (2026-09-02 全体改善・第7波)', () => {
   it('霞み: ドローが2枚減り (最低3)、自ターン終了時に1減る', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42)
-    s = withIntent(s, { kind: 'attack', shownMin: 3, shownMax: 3, actual: 3, inflict: { status: 'mist', amount: 2 } })
+    s = withIntent(s, { kind: 'attack', actual: 3, inflict: { status: 'mist', amount: 2 } })
     s = withHand(s, [])
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.mist).toBe(2)
     expect(s.player.hand.filter((c) => c.def.id !== 'status_scald')).toHaveLength(3) // 5-2=3
-    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'defend', actual: 3 })
     s = { ...s, player: { ...s.player, hand: [] } }
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.mist).toBe(1)
@@ -820,7 +810,7 @@ describe('デバフ拡張と時限呪い (2026-09-02 全体改善・第7波)', (
       const uid = s.player.hand[0].uid
       s = applyCommand(s, { type: 'PlayCard', cardUid: uid })
     }
-    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
+    s = withIntent(s, { kind: 'attack', actual: 10 })
     const hp0 = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(hp0 - s.player.hp).toBe(13)
@@ -829,7 +819,7 @@ describe('デバフ拡張と時限呪い (2026-09-02 全体改善・第7波)', (
   it('仮初の烙印: 手札滞留で烙印と同じHP-1、勝利を重ねると自然消滅する (run層)', () => {
     // combat側: GUILT_DEFが烙印tickに数えられる
     let s = freshCombat('set-confirm', 'enemy_brute', 42)
-    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'defend', actual: 3 })
     s = {
       ...s,
       player: {
@@ -914,13 +904,13 @@ describe('敵ギミック第3波 (2026-09-02 残件議論: 量の問いの器・
     const crushValues: number[] = []
     for (let t = 0; t < 6 && s.phase === 'player-turn'; t++) {
       const it = s.enemies[0].intent
-      if (it?.kind === 'attack') crushValues.push(it.shownMin)
+      if (it?.kind === 'attack') crushValues.push(it.actual)
       s = withHand(s, [])
       s = { ...s, player: { ...s.player, hp: 999, maxHp: 999 } }
       s = applyCommand(s, { type: 'EndTurn' })
     }
     expect(crushValues.length).toBeGreaterThanOrEqual(2)
-    // 睨みの筋力+2〜3も乗るので「+4以上ずつ増える」で固定
+    // 実値公開 (2026-09-14): 値は幅 (圧潰 34固定) からのロール。育つ技+4 と睨みの筋力+2〜3 が乗るので「+4以上ずつ増える」
     for (let i = 1; i < crushValues.length; i++) {
       expect(crushValues[i] - crushValues[i - 1]).toBeGreaterThanOrEqual(4)
     }

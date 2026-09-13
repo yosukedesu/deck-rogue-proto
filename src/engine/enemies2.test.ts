@@ -12,7 +12,7 @@ import { chooseToward, freshCombat, withHand, withIntent, setAndArm } from './te
 import type { EnemyIntent, GameState } from './types.ts'
 
 function intent(partial: Partial<EnemyIntent> & { kind: EnemyIntent['kind'] }): EnemyIntent {
-  return { shownMin: 0, shownMax: 0, actual: 0, ...partial }
+  return { actual: 0, ...partial }
 }
 
 describe('とげ (敵の報復。針毛の栗鼠)', () => {
@@ -46,7 +46,7 @@ describe('とげ (敵の報復。針毛の栗鼠)', () => {
 describe('盗みと逃走 (こそ泥ゴブリン)', () => {
   it('盗み: ロール額を敵が抱え込む (ゴールドはまだ減らない = combat層は金を知らない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_thief', 42), [])
-    s = withIntent(s, intent({ kind: 'steal-gold', shownMin: 12, shownMax: 20, actual: 16 }))
+    s = withIntent(s, intent({ kind: 'steal-gold', actual: 16 }))
     s = applyCommand(s, { type: 'EndTurn' })
     // 宣言即成立: EndTurn 後の「次の宣言」(snatch 12〜20のロール) が抱えた額になる
     expect(s.enemies[0].stolenGold).toBeGreaterThanOrEqual(12)
@@ -65,7 +65,7 @@ describe('盗みと逃走 (こそ泥ゴブリン)', () => {
 
   it('盗みの打ち消しは抱えた額を取り戻す (2026-08-31。宣言即成立でも打ち消し=盗みの解除)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_thief', 42), [])
-    s = withIntent(s, intent({ kind: 'steal-gold', shownMin: 15, shownMax: 25, actual: 20 }))
+    s = withIntent(s, intent({ kind: 'steal-gold', actual: 20 }))
     // カーソルを小突きの節へ = 次ターンの宣言が盗みにならないようにする
     // (返金の検証が「翌ターンの新しい盗み」に上書きされるのを防ぐ)
     s = {
@@ -145,7 +145,7 @@ describe('回復役 (苔の癒し手) と 攻防一体・隙', () => {
       enemies: s.enemies.map((e, i) =>
         i === 0
           ? { ...e, hp: 10 }
-          : { ...e, intent: intent({ kind: 'heal', shownMin: 8, shownMax: 12, actual: 10 }) },
+          : { ...e, intent: intent({ kind: 'heal', actual: 10 }) },
       ),
     }
     s = withIntent(s, intent({ kind: 'defend', actual: 0 }))
@@ -155,7 +155,7 @@ describe('回復役 (苔の癒し手) と 攻防一体・隙', () => {
 
   it('alsoDefend: 攻撃と同時に固定ブロックを得る (門番の改修と石殻の番人)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_shell_guard', 42), [])
-    s = withIntent(s, intent({ kind: 'attack', shownMin: 12, shownMax: 16, actual: 14, alsoDefend: 14 }))
+    s = withIntent(s, intent({ kind: 'attack', actual: 14, alsoDefend: 14 }))
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(hpBefore - 14)
@@ -230,7 +230,7 @@ describe('発火保証パッケージ (2026-08-30。3幕フルラン実測「設
     let s = freshCombat('set-confirm', 'enemy_thief', 42)
     // こそ泥の意図が steal-gold になるまでターンを送る (初手が盗みでないシードもある)
     for (let i = 0; i < 6 && s.enemies[0].intent?.kind !== 'steal-gold'; i++) {
-      s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+      s = withIntent(s, { kind: 'defend', actual: 1 })
       s = applyCommand(s, { type: 'EndTurn' })
     }
     if (s.enemies[0].intent?.kind === 'steal-gold') {
@@ -276,7 +276,7 @@ describe('装甲 (2026-08-30 n²スケーリングへのワクチン)', () => {
     let s = freshCombat('set-confirm', 'enemy_warden', 42)
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 50, block: 0 })) }
     const hpBefore = s.enemies[0].hp
-    s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+    s = withIntent(s, { kind: 'defend', actual: 1 })
     s = applyCommand(s, { type: 'EndTurn' })
     // 延焼50は装甲35を超えて丸ごと通る (敵フェーズ開始時のDoT)
     expect(hpBefore - s.enemies[0].hp).toBeGreaterThanOrEqual(50)
@@ -292,7 +292,7 @@ describe('山札喰い (2026-08-31 大喰らいの蟲。kind:mill)', () => {
     const drawBefore = s.player.drawPile.length
     const exhaustBefore = s.player.exhaustPile.length
     const enemyHp = s.enemies[0].hp
-    s = withIntent(s, { kind: 'mill', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'mill', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     // EndTurn後の自ターン開始ドローも drawPile を減らすので、消滅置き場の増分で判定する
     expect(s.player.exhaustPile.length).toBe(exhaustBefore + 3)
@@ -305,7 +305,7 @@ describe('山札喰い (2026-08-31 大喰らいの蟲。kind:mill)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_elite_devourer', 42), ['green_reaction_root_weave'])
     s = setAndArm(s, 't0_green_reaction_root_weave') // 罠モデル: 伏せた翌ターンに鳴る
     const drawBefore = s.player.drawPile.length
-    s = withIntent(s, { kind: 'mill', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'mill', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
     // 打ち消し成功 = 山札は減らない (ターン開始の5ドローぶんだけ動く)
@@ -326,10 +326,8 @@ describe('幕2/3の打点スケール (2026-09-01 ユーザー裁定「打点+15
     // 探り屋の小突き 5〜7 → 基礎×1.15を四捨五入 (6,8) + 強化1 = 7〜9
     const it0 = scaled.enemies[0].intent!
     expect(it0.kind).toBe('attack')
-    expect(it0.shownMin).toBe(Math.round(5 * 1.15) + 1)
-    expect(it0.shownMax).toBe(Math.round(7 * 1.15) + 1)
-    expect(it0.actual).toBeGreaterThanOrEqual(it0.shownMin)
-    expect(it0.actual).toBeLessThanOrEqual(it0.shownMax)
+    expect(it0.actual).toBeGreaterThanOrEqual(Math.round(5 * 1.15) + 1)
+    expect(it0.actual).toBeLessThanOrEqual(Math.round(7 * 1.15) + 1)
   })
 
   it('倍率なし (既定1) は従来どおり', () => {
@@ -339,7 +337,7 @@ describe('幕2/3の打点スケール (2026-09-01 ユーザー裁定「打点+15
       deck: buildDeck('starter'),
     })
     const it0 = base.enemies[0].intent!
-    expect(it0.shownMin).toBe(5)
-    expect(it0.shownMax).toBe(7)
+    expect(it0.actual).toBeGreaterThanOrEqual(5)
+    expect(it0.actual).toBeLessThanOrEqual(7)
   })
 })

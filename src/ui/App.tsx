@@ -9,7 +9,6 @@ import type { ReactElement } from 'react'
 import {
   archiveBattle,
   cardName,
-  inflictSuffix,
   intentText,
   logLine,
   buildReport,
@@ -63,11 +62,11 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
+import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -86,6 +85,7 @@ import type {
   EnemyArchetype,
   EnemyDef,
   EnemyIntent,
+  EnemyIntentBranch,
   EnemyMove,
   GameEvent,
   GameState,
@@ -646,76 +646,39 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
   )
 }
 
+/** 意図1つの表示 (実値公開 2026-09-14): 攻撃は威圧・脆弱・重り込みのライブ値。補正があれば「（威圧-25%: 実値12）」を添える */
+function liveIntentText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
+  const text = intentText(it, displayedIntentValue(s, i, it))
+  const notes = intentModifierNotes(s, i, it)
+  return notes.length > 0 ? `${text}（${notes.join('・')}: 実値${it.actual}）` : text
+}
+
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
 function conditionalIntentText(s: GameState, i: number): string {
   // ルーンの円蓋 (2026-09-12 本家 Runic Dome): 意図は表示しない (エンジンの宣言は不変。発動確認の窓では実値が見える)
   if (s.hideIntents === true) return '❓ 意図は見えない（ルーンの円蓋。発動確認の窓では実値が見える）'
-  const text = conditionalIntentTextRaw(s, i)
-  const w = s.enemies[i]?.weak ?? 0
-  const it = s.enemies[i]?.intent
-  // 威圧 (2026-09-03 Weak化): 攻撃なら-25%後の幅を添える (engine と同じ式)
-  return w > 0 && it?.kind === 'attack' ? `${text}（威圧-25%: ${applyEnemyWeak(it.shownMin, w)}〜${applyEnemyWeak(it.shownMax, w)}）` : text
-}
-function conditionalIntentTextRaw(s: GameState, i: number): string {
   const intent = s.enemies[i]?.intent
   if (!intent) return '---'
-  if (!intent.conditionalOn || !intent.alt) return intentText(intent)
+  const base: EnemyIntent = { ...intent, conditionalOn: undefined, alt: undefined }
+  if (!intent.conditionalOn || !intent.alt) return liveIntentText(s, i, intent)
   // 伏せられないデッキには「伏せ札あり」分岐を予告しない (到達不能な選択肢の常時表示は
   // 「お前にはこの選択肢は無い」の掲示になる — 2026-08-30 Opusラン報告)
-  if (intent.conditionalOn === 'set' && !playerCanSet(s)) {
-    return intentText({ ...intent, conditionalOn: undefined, alt: undefined })
-  }
-  // 表示も実値も同じ時だけ完全に畳む (2026-08-31: 実値だけ違う分岐を畳むと損分岐が不可視になる)
-  const baseOnly = intentText({ ...intent, conditionalOn: undefined, alt: undefined })
-  if (intentText({ ...intent.alt }) === baseOnly && intent.alt.actual === intent.actual) return baseOnly
-  // 表示が同値で実値だけ違う: 2分岐で予告するとノイズ (探り屋のローテ替え等) なので1行+注記に
-  // (2026-08-31 再検証ラン指摘③)。どちら向きかは判断材料なので添える (同日HP経済ラン指摘④)
-  if (intentText({ ...intent.alt }) === baseOnly) {
-    const def = getEnemyDef(s.enemies[i].enemyId)
-    const why = setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
-    // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
-    return `${baseOnly}（伏せ場があっても今回は同じ行動。ただしロールは別で、伏せると実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
-  }
+  if (intent.conditionalOn === 'set' && !playerCanSet(s)) return liveIntentText(s, i, base)
+  // 両分岐が同じ行動・同じ実値なら畳む (実値公開なので「表示は同じで実値だけ違う」は起きない)
+  const baseText = liveIntentText(s, i, base)
+  const altText = liveIntentText(s, i, intent.alt)
+  if (altText === baseText) return baseText
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
   const cond = intent.conditionalOn === 'set' ? `伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
   const active = effectiveIntent(s, i)!
-  const isAlt = active.kind === intent.alt.kind && active.shownMin === intent.alt.shownMin
-  return `【${cond}】${intentText({ ...intent.alt })}${isAlt ? '◀今これ' : ''} ／【なし】${intentText({ ...intent, conditionalOn: undefined, alt: undefined })}${isAlt ? '' : '◀今これ'}`
+  const isAlt = active.kind === intent.alt.kind && active.actual === intent.alt.actual && active.hits === intent.alt.hits
+  return `【${cond}】${altText}${isAlt ? '◀今これ' : ''} ／【なし】${baseText}${isAlt ? '' : '◀今これ'}`
 }
 
-/** 誘発確認ウィンドウ用: 敵の行動は確定済みなので実値を公開する (確定済みルール「誘発確認時の情報」) */
-function confirmedIntentText(intent: EnemyIntent | null, weak = 0): string {
+/** 誘発確認ウィンドウ用: 敵の行動は確定済み。表示は盤面の意図と同じ式 (威圧・脆弱・重り込み) */
+function confirmedIntentText(s: GameState, i: number, intent: EnemyIntent | null): string {
   if (!intent) return '---'
-  switch (intent.kind) {
-    case 'attack': {
-      const hits = (intent.hits ?? 1) > 1 ? `×${intent.hits}` : ''
-      return `${intent.alsoDestroySet === true ? '💥伏せ破壊+' : ''}⚔️ 攻撃 ${applyEnemyWeak(intent.actual, weak)}${hits}（宣言 ${intent.shownMin}〜${intent.shownMax}${weak > 0 ? '・威圧-25%' : ''}）${inflictSuffix(intent)}`
-    }
-    case 'defend':
-      return `🛡️ 防御 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
-    case 'destroy-set':
-      return '💥 伏せ破壊'
-    case 'destroy-token':
-      return '🪓 従者狩り'
-    case 'buff':
-      return `💪 筋力 +${intent.actual}（宣言 +${intent.shownMin}〜+${intent.shownMax}）`
-    case 'rally':
-      return `📣 応援 +${intent.actual}（味方全体。宣言 +${intent.shownMin}〜+${intent.shownMax}）`
-    case 'hex':
-      return `🧿 呪い${inflictSuffix(intent)}`
-    case 'heal':
-      return `💚 回復 ${intent.actual}（宣言 ${intent.shownMin}〜${intent.shownMax}）`
-    case 'steal-gold':
-      return `💰 盗み ${intent.actual}G（宣言 ${intent.shownMin}〜${intent.shownMax}G）`
-    case 'flee':
-      return '🏃 逃走'
-    case 'rest':
-      return '😮‍💨 隙だらけ'
-    case 'hatch':
-      return '🐣 孵化する'
-    case 'mill':
-      return `📖 山札喰い ${intent.actual}枚（宣言 ${intent.shownMin}〜${intent.shownMax}枚。消滅置き場へ）`
-  }
+  return liveIntentText(s, i, intent)
 }
 
 /**
@@ -1086,7 +1049,7 @@ function SetupScreen({
   onStartCheckpoint,
 }: {
   onStart: (cfg: Config) => void
-  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number, revealIntents?: boolean, setAnyCards?: boolean) => void
+  onStartRun: (seed: number, leaderId: string, runDeckId?: string, difficulty?: number, setAnyCards?: boolean) => void
   /** 「続きから」(localStorageバックアップにランがある時だけ非null) */
   resume?: { label: string; onResume: () => void } | null
   /** セーブファイル (.json) の読み込み */
@@ -1100,7 +1063,6 @@ function SetupScreen({
   const [leaderId, setLeaderId] = useState(allLeaders[0].id)
   // 難易度 (確定済みルール表「難易度」): 1〜10・既定3=現状維持
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
-  const [revealIntents, setRevealIntents] = useState(false) // 判定実験: 意図を常時実値表示 (2026-09-02)
   const [setAnyCards, setSetAnyCards] = useState(false) // 実験: 全カード伏せ可 (2026-09-02)
   const leader = getLeaderDef(leaderId)
   const allowedDecks = allDecks.filter((d) => deckAllowedForLeader(leader, d))
@@ -1225,7 +1187,7 @@ function SetupScreen({
                 <button
                   key={deckId}
                   className="choice"
-                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty, revealIntents, setAnyCards)}
+                  onClick={() => onStartRun(parseSeed(), leaderId, deckId, difficulty, setAnyCards)}
                 >
                   <div className="choice-title">{leader.sprite} {deck?.name ?? deckId}で開始</div>
                   <div className="choice-desc">{webVocab(deck?.description ?? '')}</div>
@@ -1237,7 +1199,7 @@ function SetupScreen({
           <button
             className="btn btn-primary"
             style={{ marginTop: 8 }}
-            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty, revealIntents, setAnyCards)}
+            onClick={() => onStartRun(parseSeed(), leaderId, undefined, difficulty, setAnyCards)}
           >
             {leader.sprite} {leader.name}でランを開始
           </button>
@@ -1363,10 +1325,7 @@ function SetupScreen({
           </div>
           {onStartCheckpoint !== undefined && (
             <>
-              <label className="hint" style={{ display: 'block', marginTop: 8 }} title="退屈診断④の判定実験: 幅あり意図（例: 攻撃6〜12）を常時実値にして遊び、幅表示の有無で体感がどう変わるかを比べる。仕様は変えず計測だけ（レポートに記録される）">
-                <input type="checkbox" checked={revealIntents} onChange={(e) => setRevealIntents(e.target.checked)} /> 🔍 意図を常時実値表示（幅あり意図の判定実験）
-              </label>
-              <label className="hint" style={{ display: 'block', marginTop: 4 }} title="実験 (2026-09-02): 攻撃・防御の通常カードも1Eで伏せられる。誘発したら印字コストを敵ターンに持ち越したエナジーから払って発動。専用の伏せ札は従来どおり伏せる時に支払い・発動のは無料">
+              <label className="hint" style={{ display: 'block', marginTop: 8 }} title="実験 (2026-09-02): 攻撃・防御の通常カードも1Eで伏せられる。誘発したら印字コストを敵ターンに持ち越したエナジーから払って発動。専用の伏せ札は従来どおり伏せる時に支払い・発動のは無料">
                 <input type="checkbox" checked={setAnyCards} onChange={(e) => setSetAnyCards(e.target.checked)} /> 🃏 全カード伏せ可（通常カードは1Eで伏せ、発動時に印字コスト）
               </label>
               <CheckpointPanel leaderId={leaderId} difficulty={difficulty} onStart={onStartCheckpoint} />
@@ -1921,7 +1880,7 @@ function BattleScreen({
                       {enemy.confusion > 0 && enemy.intent?.kind === 'attack' ? '😵仲間に向かう: ' : ''}
                       {kw(conditionalIntentText(s, i))}
                       {enemy.intent?.mirrorHits === true ? `（現在${player.cardsPlayedThisTurn + (player.setsThisTurn ?? 0)}枚。伏せも数える）` : ''}
-                      {s.hideIntents !== true && worstIncomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
+                      {s.hideIntents !== true && incomingFrom(s, i) - (player.block + player.iceBlock) >= player.hp
                         ? ' 💀致死級'
                         : null}
                     </div>
@@ -2003,7 +1962,7 @@ function BattleScreen({
                 {s.enemies.length > 1 && windowEnemy && (
                   <>{getEnemyDef(windowEnemy.enemyId).name}の </>
                 )}
-                {kw(confirmedIntentText(s.pendingWindow ? effectiveIntent(s, s.pendingWindow.enemyIndex) : (windowEnemy?.intent ?? null), s.pendingWindow ? (s.enemies[s.pendingWindow.enemyIndex]?.weak ?? 0) : 0))}
+                {kw(confirmedIntentText(s, s.pendingWindow?.enemyIndex ?? 0, s.pendingWindow ? effectiveIntent(s, s.pendingWindow.enemyIndex) : (windowEnemy?.intent ?? null)))}
               </div>
               {s.pendingWindow?.stage === 'post' && (
                 <div className="hint" style={{ marginBottom: 8 }}>
@@ -2053,8 +2012,8 @@ function BattleScreen({
                   {setBranchFlipRisks(s).map((ri) => {
                     const it = s.enemies[ri].intent!
                     const threat = (k: string, mx: number, h?: number) => (k === 'attack' ? mx * (h ?? 1) : 0)
-                    const after = threat(it.kind, it.shownMax, it.hits)
-                    const before = it.alt ? threat(it.alt.kind, it.alt.shownMax, it.alt.hits) : after
+                    const after = threat(it.kind, it.actual, it.hits)
+                    const before = it.alt ? threat(it.alt.kind, it.alt.actual, it.alt.hits) : after
                     const comparable = it.kind === 'attack' && it.alt?.kind === 'attack'
                     const gain = comparable && after < before
                     return (
@@ -2133,19 +2092,20 @@ function BattleScreen({
                 </div>
               )
             })()}
-            {/* 今フェーズの最悪被ダメ予測 (複数体の暗算を不要にする。2026-08-25)。式は engine/summary.ts の worstIncomingTotal に1本化。
+            {/* 今フェーズの被ダメ予測 (複数体の暗算を不要にする。2026-08-25)。式は engine/summary.ts の incomingTotal に1本化。
+                2026-09-14 実値公開: 幅の上限でなく宣言した実値 (威圧・脆弱・重り込み) の合計 = 実際に受ける量。
                 2026-09-06 UI整理: 画面下に流れていた独立パネルをHPの直下へ (0でも出す=非攻撃ターンに行が消えると迷う) */}
             {s.phase === 'player-turn' && s.hideIntents === true && (
-              <div className="forecast-inline forecast-warn">⚠️ 最悪被ダメ ？（ルーンの円蓋: 意図は見えない）</div>
+              <div className="forecast-inline forecast-warn">⚠️ 被ダメ予測 ？（ルーンの円蓋: 意図は見えない）</div>
             )}
             {s.phase === 'player-turn' && s.hideIntents !== true &&
               (() => {
-                const worst = worstIncomingTotal(s)
+                const incoming = incomingTotal(s)
                 const defense = player.block + player.iceBlock
-                const through = Math.max(0, worst - defense)
+                const through = Math.max(0, incoming - defense)
                 return (
                   <div className={`forecast-inline${through >= player.hp ? ' forecast-danger' : through > 0 ? ' forecast-warn' : ''}`}>
-                    ⚠️ 最悪被ダメ {worst} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
+                    ⚠️ 被ダメ予測 {incoming} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
                   </div>
                 )
               })()}
@@ -3506,7 +3466,6 @@ function RelicDraftEditor({ value, onChange, onDelete }: { value: RelicDraft; on
           <label key={k} style={S}>{ja} <input type="number" step="any" style={{ width: 44 }} value={(value as unknown as Record<string, number | undefined>)[k] ?? ''} onChange={(e) => onChange({ ...value, [k]: numOrUndef(e.target.value) } as RelicDraft)} /></label>
         ))}
         <label style={S}>伏せ中攻撃-N <input type="number" style={{ width: 38 }} value={value.setDamageReduction ?? ''} onChange={(e) => onChange({ ...value, setDamageReduction: numOrUndef(e.target.value) })} /></label>
-        <label style={S}><input type="checkbox" checked={value.revealIntents === true} onChange={(e) => onChange({ ...value, revealIntents: e.target.checked || undefined })} /> 実値公開</label>
         <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
       </div>
     </div>
@@ -5324,13 +5283,13 @@ export default function App() {
         resetDoodles()
         setJournal({ origin: { kind: 'checkpoint', seed: opts.seed, leaderId: opts.leaderId, checkpoint: { act: opts.act, deckId: opts.deckId, relicIds: opts.relicIds, hpRatio: opts.hpRatio, gold: opts.gold, difficulty: opts.difficulty } }, commands: [] })
         setRun(createDebugCheckpointRun(opts.seed, ADOPTED_MODE, opts.leaderId, opts))
-      }} onStartRun={(seed, leaderId, runDeckId, difficulty, revealIntents, setAnyCards) => {
+      }} onStartRun={(seed, leaderId, runDeckId, difficulty, setAnyCards) => {
         setRunHistory([])
         setPlayNotes([])
         setChoiceLog([])
         resetDoodles()
-        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty, ...(revealIntents ? { revealIntents: true } : {}), ...(setAnyCards ? { setAnyCards: true } : {}) }, commands: [] })
-        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty, { ...(revealIntents ? { revealIntents: true } : {}), ...(setAnyCards ? { setAnyCards: true } : {}) }))
+        setJournal({ origin: { kind: 'run', seed, leaderId, deckId: runDeckId, difficulty, ...(setAnyCards ? { setAnyCards: true } : {}) }, commands: [] })
+        setRun(createRun(seed, ADOPTED_MODE, leaderId, runDeckId, difficulty, { ...(setAnyCards ? { setAnyCards: true } : {}) }))
       }} />
   }
   return (

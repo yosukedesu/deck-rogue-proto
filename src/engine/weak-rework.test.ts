@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyEnemyWeak } from './effects.ts'
 import { applyCommand } from './state.ts'
-import { worstIncomingFrom } from './summary.ts'
+import { incomingFrom } from './summary.ts'
 import { attackIntent, defendIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
@@ -39,8 +39,8 @@ describe('威圧 (敵版弱体)', () => {
   it('最悪被ダメ予測にも-25%が乗る', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), [])
     s = withIntent(s, attackIntent(8))
-    const before = worstIncomingFrom(s, 0)
-    const after = worstIncomingFrom(weaken(s, 1), 0)
+    const before = incomingFrom(s, 0)
+    const after = incomingFrom(weaken(s, 1), 0)
     expect(after).toBe(Math.max(1, Math.floor(before * 0.75)))
   })
   it('アーティファクト持ちには弾かれる', () => {

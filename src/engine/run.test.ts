@@ -258,7 +258,7 @@ describe('HP持ち越しと焚き火', () => {
     const c = run.combat!
     // 敵の攻撃で確実に死ぬ状態を作る
     let surgical: GameState = { ...c, player: { ...c.player, hp: 1, block: 0, hand: [] } }
-    surgical = withIntent(surgical, { kind: 'attack', shownMin: 5, shownMax: 5, actual: 5 })
+    surgical = withIntent(surgical, { kind: 'attack', actual: 5 })
     run = { ...run, combat: surgical }
     run = applyRunCommand(run, { type: 'Combat', command: { type: 'EndTurn' } })
     expect(run.phase).toBe('lost')

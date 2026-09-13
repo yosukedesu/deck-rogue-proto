@@ -35,12 +35,12 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
-import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
+import type { CardDef, Command, DeclarativeEffect, EnemyIntent, EnemyIntentBranch, GameState } from '../engine/types.ts'
 import type { RunCommand, RunJournal, RunState } from '../engine/run.ts'
 
 interface SaveFile {
@@ -157,26 +157,33 @@ function describeEventOutcome(prev: RunState, next: RunState): string | null {
   return parts.length > 0 ? `イベントの結果: ${parts.join('・')}` : 'イベントの結果: 変化なし'
 }
 
-function branchText(it: { kind: string; shownMin: number; shownMax: number; hits?: number; mirrorHits?: boolean; inflict?: { status: string; amount: number }; alsoDefend?: number; alsoBuff?: number; alsoDestroySet?: true }, weak = 0): string {
-  const hits = it.mirrorHits === true ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
+/**
+ * 意図 (または分岐) の1行 (実値公開 2026-09-14 本家形)。攻撃の数字は威圧・脆弱・重り込みのライブ値
+ * (engine/summary.ts displayedIntentValue)。補正があれば「(威圧-25%: 実値12)」を添える
+ */
+function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
+  const mirror = (it as EnemyIntent).mirrorHits === true
+  const hits = mirror ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
   const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
   const breaks = it.alsoDestroySet === true ? '伏せ破壊+' : ''
+  const notes = intentModifierNotes(s, i, it)
+  const shown = displayedIntentValue(s, i, it)
   const kinds: Record<string, string> = {
-    attack: `${breaks}攻撃${it.shownMin}〜${it.shownMax}${weak > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, weak)}〜${applyEnemyWeak(it.shownMax, weak)}` : ''}${hits}${guard}${buff}`,
-    defend: `防御${it.shownMin}〜${it.shownMax}${buff}`,
+    attack: `${breaks}攻撃${shown}${notes.length > 0 ? `(${notes.join('・')}: 実値${it.actual})` : ''}${hits}${guard}${buff}`,
+    defend: `防御${it.actual}${buff}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
-    buff: `筋力+${it.shownMin}〜${it.shownMax}`,
-    rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`,
+    buff: `筋力+${it.actual}`,
+    rally: `応援+${it.actual}(味方全体)`,
     hex: '呪い',
-    heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`,
-    'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`,
+    heal: `回復${it.actual}(最も傷んだ味方)`,
+    'steal-gold': `盗み${it.actual}G`,
     flee: '逃走(倒すか打ち消せば阻止)',
     rest: '隙だらけ',
     hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
-    mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅置き場へ。亡骸は発火する)`,
+    mill: `📖山札喰い${it.actual}枚(消滅置き場へ。亡骸は発火する)`,
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -186,62 +193,28 @@ function intentLine(s: GameState, i: number): string {
   if (!e.intent) return '---'
   if (s.hideIntents === true) return '❓見えない (ルーンの円蓋。発動確認窓では実値が出る)'
   // 条件付き意図: 両分岐を予告する (プレイヤーが自ターン中にどちらを選ばせるか決められる)
+  const base: EnemyIntent = { ...e.intent, conditionalOn: undefined, alt: undefined }
   if (e.intent.conditionalOn === 'set' && e.intent.alt && !playerCanSet(s)) {
     // 伏せられないデッキには到達不能な分岐を予告しない (2026-08-30)
-    return branchText(e.intent, e.weak ?? 0) // branchText は素の値だけを読む
+    return branchText(s, i, base)
   }
-  if (
-    e.intent.conditionalOn &&
-    e.intent.alt &&
-    branchText(e.intent.alt, e.weak ?? 0) === branchText(e.intent, e.weak ?? 0) &&
-    e.intent.alt.actual === e.intent.actual
-  ) {
-    // 表示も実値も同じ時だけ完全に畳む (2026-08-31 黒ラン: 幅が同じで実値だけ違う分岐を畳むと
-    // 「伏せると実値が上がる」損分岐が不可視になっていた。実値が違えば分岐予告を残す)
-    return branchText(e.intent, e.weak ?? 0)
-  }
-  if (
-    e.intent.conditionalOn &&
-    e.intent.alt &&
-    branchText(e.intent.alt, e.weak ?? 0) === branchText(e.intent, e.weak ?? 0)
-  ) {
-    // 表示が同値で実値だけ違う: 2分岐の予告はノイズ (探り屋のローテ替え等) なので1行+注記。
-    // どちら向きに変わるかは判断材料なので添える (2026-08-31 HP経済ラン指摘④)
-    const dir = e.intent.alt.actual > e.intent.actual ? '上がる' : '下がる'
-    // 罰型 (罠壊し等) や順番崩し (探り屋) は「今回たまたま同じ行動を引いた」だけ (2026-09-03 Opusラン K:
-    // 「伏せると下がる」が旧弱腰型の文言に見えた)。別のターンは伏せ破壊や大技に化けることを添える
-    const def = getEnemyDef(e.enemyId)
-    const why = setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
-    // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
-    return `${branchText(e.intent, e.weak ?? 0)}(伏せ札ありでも今回は同じ行動。ただしロールは別で、伏せると実値は${dir}${why})`
+  if (e.intent.conditionalOn && e.intent.alt && branchText(s, i, e.intent.alt) === branchText(s, i, base)) {
+    // 両分岐が同じ行動・同じ実値なら畳む (実値公開 2026-09-14: 「表示は同じで実値だけ違う」は起きない)
+    return branchText(s, i, base)
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
     const cond = e.intent.conditionalOn === 'set' ? `伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
     const now = effectiveIntent(s, i)!
     // 罠モデル (2026-09-13): 敵の伏せ反応は破壊分岐だけ。伏せ札が1枚でもあれば (準備中も) その分岐
-    return `【${cond}】${branchText(e.intent.alt, e.weak ?? 0)} ／【なし】${branchText(e.intent, e.weak ?? 0)} → 今は「${branchText(now, e.weak ?? 0)}」`
+    return `【${cond}】${branchText(s, i, e.intent.alt)} ／【なし】${branchText(s, i, base)} → 今は「${branchText(s, i, now)}」`
   }
   const it = e.intent
-  const hits =
-    it.mirrorHits === true
-      ? `×手数(あなたが今ターンプレイした枚数+伏せた枚数ぶん。現在${Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0))}${s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0) === 0 ? '=最低値' : ''})`
-      : (it.hits ?? 1) > 1
-        ? `×${it.hits}回`
-        : ''
-  const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
-  const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
-  const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : '' // T3: 噛みつき果実 (育つ砲台) の同時強化が落ちていた
-  const breaks = it.alsoDestroySet === true ? '伏せ破壊(生きた罠を先に壊す)+' : ''
-  const kinds: Record<string, string> = {
-    // 威圧は分岐の有無を問わず出す (2026-09-06 Opusラン X: setAlt を持たない敵だけ「攻撃21〜26」と生値で、最悪被ダメ予測19と矛盾していた)
-    attack: `${breaks}攻撃${it.shownMin}〜${it.shownMax}${(e.weak ?? 0) > 0 ? `→威圧で${applyEnemyWeak(it.shownMin, e.weak ?? 0)}〜${applyEnemyWeak(it.shownMax, e.weak ?? 0)}` : ''}${hits ? (it.mirrorHits === true ? hits : `${hits}(値は1発あたり)`) : ''}${guard}${buff}`, defend: `防御${it.shownMin}〜${it.shownMax}${buff}`, // 構えの筋力+1 (2026-09-14 Opus AA/AA2/AA3 3本一致「出ない」)
-    'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', buff: `筋力+${it.shownMin}〜${it.shownMax}`,
-    rally: `応援+${it.shownMin}〜${it.shownMax}(味方全体)`, hex: '呪い',
-    heal: `回復${it.shownMin}〜${it.shownMax}(最も傷んだ味方)`, 'steal-gold': `盗み${it.shownMin}〜${it.shownMax}G`, mill: `📖山札喰い${it.shownMin}〜${it.shownMax}枚(消滅)`,
-    flee: '逃走(倒すか打ち消せば阻止)', rest: '隙だらけ', hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
+  if (it.mirrorHits === true) {
+    const n = Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0))
+    return `${branchText(s, i, it)} ← 現在${n}${s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0) === 0 ? '=最低値' : ''}(伏せた枚数も数える)`
   }
-  return `${kinds[it.kind] ?? it.kind}${inflict}`
+  return branchText(s, i, it)
 }
 
 function renderBattle(s: GameState, logFrom: number): string {
@@ -303,20 +276,16 @@ function renderBattle(s: GameState, logFrom: number): string {
     `山札${p.drawPile.length}/捨て札${p.discardPile.length}`,
   ].filter(Boolean).join(' | ')
   L.push(`自分: ${st}`)
-  // 予測被ダメ (最悪値): 複数体の同時攻撃を暗算しなくて済むように総量を出す
-  let worst = 0
-  s.enemies.forEach((e, i) => {
-    void e
-    worst += worstIncomingFrom(s, i) // 式は engine/summary.ts に1本化 (2026-09-02)
-  })
+  // 被ダメ予測 (実値公開 2026-09-14: 宣言した実値に威圧・脆弱・重りを掛けた「実際に受ける量」): 複数体の同時攻撃を暗算しなくて済むように総量を出す
+  const incoming = incomingTotal(s) // 式は engine/summary.ts に1本化 (2026-09-02)
   if (s.hideIntents === true) {
-    L.push(`⚠️ 今フェーズの最悪被ダメ予測: ？ (ルーンの円蓋: 意図は見えない。現在の防御 ${p.block + p.iceBlock} / HP ${p.hp})`)
+    L.push(`⚠️ 今フェーズの被ダメ予測: ？ (ルーンの円蓋: 意図は見えない。現在の防御 ${p.block + p.iceBlock} / HP ${p.hp})`)
   } else {
     // 0でも行を出す (2026-09-02 Opusラン: 非攻撃ターンに行ごと消えると「表示漏れ」と迷う)
     const defense = p.block + p.iceBlock
-    const through = Math.max(0, worst - defense)
+    const through = Math.max(0, incoming - defense)
     L.push(
-      `⚠️ 今フェーズの最悪被ダメ予測: ${worst}（現在の防御 ${defense} → 貫通 ${through} / HP ${p.hp}）`,
+      `⚠️ 今フェーズの被ダメ予測: ${incoming}（現在の防御 ${defense} → 貫通 ${through} / HP ${p.hp}）`,
     )
   }
   s.enemies.forEach((e, i) => {
@@ -374,7 +343,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]
     // 条件付き意図の解決後の分岐を表示する (素の intent を出すと実値が幅表示と食い違う)
     const it = effectiveIntent(s, s.pendingWindow.enemyIndex)
-    L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it, enemy.weak ?? 0) : '---'}」実値=${it ? (it.kind === 'attack' ? applyEnemyWeak(it.actual, enemy.weak ?? 0) : it.actual) : '?'}${it && it.kind === 'attack' && (enemy.weak ?? 0) > 0 ? `(威圧前${it.actual})` : ''}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
+    L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(s, s.pendingWindow.enemyIndex, it) : '---'}」`)
     const win = windowFromPending(s)
     const cands = win ? usableSetCards(s, win) : []
     L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setCardLiveDamage(s, c.def, s.pendingWindow?.enemyIndex) ? `［${setCardLiveDamage(s, c.def, s.pendingWindow?.enemyIndex)}］` : ''}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
@@ -392,12 +361,12 @@ function renderBattle(s: GameState, logFrom: number): string {
       const rEnemy = s.enemies[ri]
       const it = rEnemy.intent!
       const threat = (k: string, mx: number, h?: number) => (k === 'attack' ? mx * (h ?? 1) : 0)
-      const after = threat(it.kind, it.shownMax, it.hits)
-      const before = it.alt ? threat(it.alt.kind, it.alt.shownMax, it.alt.hits) : after
+      const after = threat(it.kind, it.actual, it.hits)
+      const before = it.alt ? threat(it.alt.kind, it.alt.actual, it.alt.hits) : after
       // 攻撃同士の比較のみ方向を出す (2026-08-31 白ラン: 応援+2を「弱くなる=利得」と誤表示)
       const comparable = it.kind === 'attack' && it.alt?.kind === 'attack'
       const mark = !comparable ? '⚠' : after < before ? '💡(弱くなる=利得)' : after > before ? '⚠(強くなる)' : '⚠'
-      L.push(`   ${mark} 発動すると伏せ枠が空く: ${getEnemyDef(rEnemy.enemyId).name}の行動が【伏せなし】分岐 (${branchText(it)}) に変わる`)
+      L.push(`   ${mark} 発動すると伏せ枠が空く: ${getEnemyDef(rEnemy.enemyId).name}の行動が【伏せなし】分岐 (${branchText(s, ri, { ...it, conditionalOn: undefined, alt: undefined })}) に変わる`)
     }
     L.push(`   → {"type":"ConfirmReaction","fire":true,"cardUid":"..."} か {"type":"ConfirmReaction","fire":false} (温存)`)
   }
@@ -804,10 +773,9 @@ function currentLogLength(sf: SaveFile): number {
 const [, , mode, ...args] = process.argv
 if (mode === 'new-run') {
   const [leaderId, seed, file, deckId, difficulty] = args
-  // フラグ: 6番目以降に 'reveal' (実値常時表示) / 'set-any' (全カード伏せ可の実験) を任意の順で置ける
+  // フラグ: 6番目以降に 'set-any' (全カード伏せ可の実験) を置ける ('reveal' は 2026-09-14 実値公開で不要に)
   const flags = new Set(process.argv.slice(8))
   const runOpts = {
-    ...(flags.has('reveal') ? { revealIntents: true } : {}),
     ...(flags.has('set-any') ? { setAnyCards: true } : {}),
   }
   const run = createRun(Number(seed), 'set-confirm', leaderId, deckId || undefined, difficulty ? Number(difficulty) : undefined, runOpts)

@@ -56,7 +56,7 @@ describe('潜伏 (burrow)', () => {
     expect(e.biteNext).toBe(false)
     const bite = getEnemyDef('enemy_rock_beetle').moves.find((m) => m.id === 'bite')!
     expect(e.intent?.kind).toBe('attack')
-    expect(e.intent!.shownMin).toBeGreaterThanOrEqual(bite.min ?? 0)
+    expect(e.intent!.actual).toBeGreaterThanOrEqual(bite.min ?? 0)
   })
 })
 

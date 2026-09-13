@@ -130,11 +130,9 @@ describe('条件付き意図とリアクションの相互作用 (2026-08-26 プ
     // 「伏せ札あり→攻撃8 / なし→攻撃16」の条件付き意図を直接作る
     const conditional: EnemyIntent = {
       kind: 'attack',
-      shownMin: 15,
-      shownMax: 19,
       actual: 16,
       conditionalOn: 'set',
-      alt: { kind: 'attack', shownMin: 7, shownMax: 10, actual: 8 },
+      alt: { kind: 'attack', actual: 8 },
     }
     let s = withHand(freshCombat('set-confirm', 'enemy_joker', 3, 'starter'), [
       'green_reaction_vine', // 1E・被攻撃前にブロック12 (pre窓)
@@ -167,11 +165,9 @@ describe('複数体戦の条件付き意図 (2026-08-28 seed601プレイテス�
     s = setAndArm(s, 't0_green_reaction_thorns') // 罠モデル: 伏せた翌ターンに鳴る
     const conditional: EnemyIntent = {
       kind: 'attack',
-      shownMin: 8,
-      shownMax: 12,
       actual: 12,
       conditionalOn: 'set',
-      alt: { kind: 'defend', shownMin: 6, shownMax: 9, actual: 6 },
+      alt: { kind: 'defend', actual: 6 },
     }
     s = {
       ...s,

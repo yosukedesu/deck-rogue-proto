@@ -122,7 +122,7 @@ describe('白の新リアクション', () => {
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = setAndArm(s, 't0_white_reaction_holy_wall')
-    s = withIntent(s, { kind: 'buff', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'buff', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })

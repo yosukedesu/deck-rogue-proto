@@ -115,7 +115,7 @@ function rollOnce(r: RunState): RunState {
   const c = r.combat!
   const surgical: GameState = { ...c, phase: 'player-turn', enemies: c.enemies.map((e) => ({ ...e, hp: 1, block: 0 })) }
   const hand = { uid: 't0_green_sweep', def: getCardDef('green_sweep') }
-  const s2: GameState = { ...surgical, player: { ...surgical.player, hand: [hand], energy: 9 }, enemies: surgical.enemies.map((e) => ({ ...e, intent: { kind: 'defend', shownMin: 0, shownMax: 0, actual: 0 } })) }
+  const s2: GameState = { ...surgical, player: { ...surgical.player, hand: [hand], energy: 9 }, enemies: surgical.enemies.map((e) => ({ ...e, intent: { kind: 'defend', actual: 0 } })) }
   let out = applyRunCommand({ ...r, phase: 'combat', combat: s2 }, { type: 'Combat', command: { type: 'PlayCard', cardUid: 't0_green_sweep' } })
   if (out.phase === 'relic-reward') out = applyRunCommand(out, { type: 'SkipRelic' })
   return out

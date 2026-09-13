@@ -410,16 +410,12 @@ namespace DeckRogue.Engine.Generated
         public bool? Split { get; init; }
     }
 
-    /// <summary>敵の意図。プレイヤーへは幅あり表示 (例: 攻撃6〜12)。実値は宣言時にロール済みで非公開</summary>
+    /// <summary>敵の意図。値は宣言時に技の [min, max] からロールした実値で、プレイヤーにもそのまま見せる (2026-09-14 実値公開=本家形。表示は威圧・脆弱・重りの補正込みをライブで出す。旧「幅あり表示・実値非公開」は撤去)</summary>
     public sealed record EnemyIntent
     {
         [JsonProperty("kind")]
         public string Kind { get; init; } = default!;
-        [JsonProperty("shownMin")]
-        public int ShownMin { get; init; }
-        [JsonProperty("shownMax")]
-        public int ShownMax { get; init; }
-        /// <summary>実際の値。UI には見せない。連撃 (hits&gt;1) では1ヒット分の値</summary>
+        /// <summary>実値 (筋力込み)。連撃 (hits&gt;1) では1ヒット分の値</summary>
         [JsonProperty("actual")]
         public int Actual { get; init; }
         /// <summary>連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」</summary>
@@ -453,10 +449,6 @@ namespace DeckRogue.Engine.Generated
     {
         [JsonProperty("kind")]
         public string Kind { get; init; } = default!;
-        [JsonProperty("shownMin")]
-        public int ShownMin { get; init; }
-        [JsonProperty("shownMax")]
-        public int ShownMax { get; init; }
         [JsonProperty("actual")]
         public int Actual { get; init; }
         [JsonProperty("hits")]
@@ -621,12 +613,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional</summary>
         [JsonProperty("setDamageReduction")]
         public int? SetDamageReduction { get; init; }
-        /// <summary>デバッグ (2026-09-02): 意図の実値を常時公開 (計測実験)。旧セーブに無いので optional</summary>
-        [JsonProperty("revealIntents")]
-        public bool? RevealIntents { get; init; }
-        /// <summary>C型レリック (蜃気楼の面 2026-09-02 作り直し): 伏せた瞬間からそのターンの実値を公開</summary>
-        [JsonProperty("revealOnSet")]
-        public bool? RevealOnSet { get; init; }
         /// <summary>実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts)</summary>
         [JsonProperty("setAnyCards")]
         public bool? SetAnyCards { get; init; }
@@ -2392,9 +2378,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>伏せ札がある間、敵の攻撃実値-N (最低1クランプ。静かな鈴)</summary>
         [JsonProperty("setDamageReduction")]
         public int? SetDamageReduction { get; init; }
-        /// <summary>敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用)</summary>
-        [JsonProperty("revealIntents")]
-        public bool? RevealIntents { get; init; }
         /// <summary>期限切れの罠が捨て札でなく手札に戻る (回収の紐 2026-09-13 作り直し)</summary>
         [JsonProperty("expireToHand")]
         public bool? ExpireToHand { get; init; }
@@ -2404,9 +2387,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>成長放出のあと成長がN残る (収穫の鎌 2026-09-03)</summary>
         [JsonProperty("harvestKeep")]
         public int? HarvestKeep { get; init; }
-        /// <summary>伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す)</summary>
-        [JsonProperty("revealOnSet")]
-        public bool? RevealOnSet { get; init; }
         /// <summary>手札を捨てない (ルーンの角錐)</summary>
         [JsonProperty("retainHand")]
         public bool? RetainHand { get; init; }
@@ -2612,9 +2592,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>難易度 (1〜10・既定3=現状維持。確定済みルール表「難易度」。旧セーブに無いので読み取りは difficultyScale 経由)</summary>
         [JsonProperty("difficulty")]
         public int Difficulty { get; init; }
-        /// <summary>デバッグ: 意図を常時実値表示 (2026-09-02 退屈診断④の判定実験。仕様は変えず計測だけ。ジャーナルに記録=リプレイ再現)</summary>
-        [JsonProperty("debugRevealIntents")]
-        public bool? DebugRevealIntents { get; init; }
         /// <summary>実験 (2026-09-02): 全カード伏せ可 (engine/setany.ts)</summary>
         [JsonProperty("setAnyCards")]
         public bool? SetAnyCards { get; init; }
@@ -2943,9 +2920,6 @@ namespace DeckRogue.Engine.Generated
         public string? DeckId { get; init; }
         [JsonProperty("difficulty")]
         public int? Difficulty { get; init; }
-        /// <summary>デバッグの実値表示トグル (2026-09-02)。shownMin/Max の状態値が変わるので再現に必要</summary>
-        [JsonProperty("revealIntents")]
-        public bool? RevealIntents { get; init; }
         /// <summary>実験: 全カード伏せ可 (2026-09-02)。伏せ可否とコストが変わるので再現に必要</summary>
         [JsonProperty("setAnyCards")]
         public bool? SetAnyCards { get; init; }

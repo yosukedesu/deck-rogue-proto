@@ -34,7 +34,7 @@ describe('回復 (白の専売)', () => {
   it('ひなたのパッシブ: 毎ターン開始時にHP1回復', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white')
     s = { ...s, player: { ...s.player, hp: 50, hand: [] } }
-    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'defend', actual: 3 })
     // リーダー付き戦闘でないのでパッシブなし → ラン経由で確認
     const run = createRunInBattle(3, 'set-confirm', 'leader_white')
     expect(

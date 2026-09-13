@@ -14,7 +14,7 @@ describe('トークン破壊 (敵メカニクス第1号)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_muster' })
     expect(s.player.permanents.filter((p) => p.token)).toHaveLength(2)
     // トークン破壊の意図を細工して実行
-    s = withIntent(s, { kind: 'destroy-token', shownMin: 0, shownMax: 0, actual: 0 })
+    s = withIntent(s, { kind: 'destroy-token', actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.permanents.filter((p) => p.token)).toHaveLength(1) // 1体破壊された
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(true)
@@ -25,7 +25,7 @@ describe('トークン破壊 (敵メカニクス第1号)', () => {
       'white_perm_squire',
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
-    s = withIntent(s, { kind: 'destroy-token', shownMin: 0, shownMax: 0, actual: 0 })
+    s = withIntent(s, { kind: 'destroy-token', actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.permanents).toHaveLength(0)
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(true)
@@ -37,7 +37,7 @@ describe('トークン破壊 (敵メカニクス第1号)', () => {
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_banner' })
-    s = withIntent(s, { kind: 'destroy-token', shownMin: 0, shownMax: 0, actual: 0 })
+    s = withIntent(s, { kind: 'destroy-token', actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.permanents).toHaveLength(1) // 旗は物なので狩られない
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(false)
@@ -50,7 +50,7 @@ describe('敵の耐性 (延焼耐性)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_moss', 42, 'starter_red'), [])
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5 })) }
     const hpBefore = s.enemies[0].hp
-    s = withIntent(s, { kind: 'defend', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'defend', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     // 延焼5のダメージは満額 → 減衰は 1+耐性2 = 3
     expect(s.enemies[0].burn).toBe(2)

@@ -14,10 +14,9 @@ using DeckRogue.Engine.Generated;
 
 namespace DeckRogue.Engine
 {
-    /// <summary>createRun の第6引数 opts (TS: { revealIntents?, setAnyCards? })</summary>
+    /// <summary>createRun の第6引数 opts (TS: { setAnyCards? })</summary>
     public sealed record RunOptions
     {
-        public bool? RevealIntents { get; init; }
         public bool? SetAnyCards { get; init; }
     }
 
@@ -526,9 +525,6 @@ namespace DeckRogue.Engine
             }
             int setDamageReduction = 0;
             foreach (var id in run.Relics) setDamageReduction += Content.GetRelicDef(id).CombatRule?.SetDamageReduction ?? 0;
-            bool revealIntents = run.DebugRevealIntents == true
-                || run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.RevealIntents == true);
-            bool revealOnSet = run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.RevealOnSet == true);
             bool expireToHand = run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.ExpireToHand == true);
             int energyMaxRefBonus = 0;
             foreach (var id in run.Relics) energyMaxRefBonus += Content.GetRelicDef(id).CombatRule?.EnergyMaxRefBonus ?? 0;
@@ -561,8 +557,6 @@ namespace DeckRogue.Engine
                 EnemyAtkScale = (elite || node.Type == MapNodeTypes.Boss ? 1.0 : atkByAct[run.Act - 1]) * diff.Atk,
                 RelicPermanents = relicPerms,
                 SetDamageReduction = setDamageReduction,
-                RevealIntents = revealIntents,
-                RevealOnSet = revealOnSet,
                 ExpireToHand = expireToHand,
                 EnergyMaxRefBonus = energyMaxRefBonus,
                 HarvestKeep = harvestKeep,
@@ -1049,7 +1043,6 @@ namespace DeckRogue.Engine
                 Seed = seed,
                 Mode = mode,
                 LeaderId = leaderId,
-                DebugRevealIntents = opts?.RevealIntents == true ? (bool?)true : null,
                 SetAnyCards = opts?.SetAnyCards == true ? (bool?)true : null,
                 Colors = leader.Colors,
                 // 範囲外は表の端へ丸めて保存 (以降の読み取りも DifficultyScale が守る)
@@ -1100,7 +1093,6 @@ namespace DeckRogue.Engine
                 origin.Difficulty ?? DEFAULT_DIFFICULTY,
                 new RunOptions
                 {
-                    RevealIntents = origin.RevealIntents == true ? (bool?)true : null,
                     SetAnyCards = origin.SetAnyCards == true ? (bool?)true : null,
                 });
         }

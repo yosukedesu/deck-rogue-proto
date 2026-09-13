@@ -69,24 +69,7 @@ namespace DeckRogue.Engine
                     SetsThisTurn = (state.Player.SetsThisTurn ?? 0) + 1,
                 },
             };
-            // 蜃気楼の面: 伏せた瞬間からこのターンの意図の実値を公開する
             var revealed = s;
-            if (s.RevealOnSet == true)
-            {
-                var enemies = new List<EnemyState>(s.Enemies.Count);
-                for (int i = 0; i < s.Enemies.Count; i++)
-                {
-                    var e = s.Enemies[i];
-                    if (e.Intent == null) { enemies.Add(e); continue; }
-                    var intent = e.Intent with { ShownMin = e.Intent.Actual, ShownMax = e.Intent.Actual };
-                    if (e.Intent.Alt != null)
-                    {
-                        intent = intent with { Alt = e.Intent.Alt with { ShownMin = e.Intent.Alt.Actual, ShownMax = e.Intent.Alt.Actual } };
-                    }
-                    enemies.Add(e with { Intent = intent });
-                }
-                revealed = s with { Enemies = enemies };
-            }
             // 伏せに反応する置物 (レリック: 符師の懐=伏せるたび1ドロー)
             int alive = -1;
             for (int i = 0; i < s.Enemies.Count; i++) if (s.Enemies[i].Hp > 0) { alive = i; break; }

@@ -35,7 +35,7 @@ describe('致死時の誘発 (回復付きの返し札で生き延びる)', () =
     ])
     s = setAndArm(s, 't0_black_reaction_last_stand') // 罠モデル: 伏せたターンは鳴らないので1ターン流す
     s = { ...s, player: { ...s.player, hp: 8 } } // HP半分以下 = 死中の活の条件を満たす
-    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
+    s = withIntent(s, { kind: 'attack', actual: 10 })
     s = applyCommand(s, { type: 'EndTurn' })
     // HPは0以下になっているが、窓が開いている
     expect(s.phase).toBe('awaiting-reaction')
@@ -51,7 +51,7 @@ describe('致死時の誘発 (回復付きの返し札で生き延びる)', () =
     ])
     s = setAndArm(s, 't0_black_reaction_last_stand')
     s = { ...s, player: { ...s.player, hp: 8 } }
-    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
+    s = withIntent(s, { kind: 'attack', actual: 10 })
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
     expect(s.phase).toBe('lost')
@@ -63,8 +63,6 @@ describe('がらくた (罠壊しの第2の特徴)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 42, 'starter_red')
     s = withIntent(s, {
       kind: 'attack',
-      shownMin: 5,
-      shownMax: 7,
       actual: 6,
       inflict: { status: 'junk', amount: 2 },
     })
@@ -87,7 +85,7 @@ describe('弱体の下限 (チップダメージが消えない)', () => {
     s = { ...s, player: { ...s.player, weak: 2 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
     const hpBefore = s.enemies[0].hp
-    s = withIntent(s, { kind: 'attack', shownMin: 3, shownMax: 3, actual: 3 })
+    s = withIntent(s, { kind: 'attack', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     // 従者の2ダメは floor(2*0.75)=1 に減るが 0 にはならない
     expect(s.enemies[0].hp).toBe(hpBefore - 1)
@@ -101,7 +99,7 @@ describe('致死時の窓の絞り込み (2026-08-26)', () => {
     ])
     s = setAndArm(s, 't0_green_reaction_thorns')
     s = { ...s, player: { ...s.player, hp: 5 } }
-    s = withIntent(s, { kind: 'attack', shownMin: 12, shownMax: 12, actual: 12 })
+    s = withIntent(s, { kind: 'attack', actual: 12 })
     s = applyCommand(s, { type: 'EndTurn' })
     // 「もう詰んでいるのに確認が出る」を防ぐ = 窓を開かず lost へ
     expect(s.phase).toBe('lost')
@@ -113,7 +111,7 @@ describe('致死時の窓の絞り込み (2026-08-26)', () => {
     ])
     s = setAndArm(s, 't0_black_reaction_curse')
     s = { ...s, player: { ...s.player, hp: 5 } }
-    s = withIntent(s, { kind: 'attack', shownMin: 7, shownMax: 7, actual: 7 })
+    s = withIntent(s, { kind: 'attack', actual: 7 })
     s = applyCommand(s, { type: 'EndTurn' }) // HP-2。回復3で1に届く = 救える
     expect(s.phase).toBe('awaiting-reaction')
   })
@@ -124,7 +122,7 @@ describe('致死時の窓の絞り込み (2026-08-26)', () => {
     ])
     s = setAndArm(s, 't0_black_reaction_curse')
     s = { ...s, player: { ...s.player, hp: 5 } }
-    s = withIntent(s, { kind: 'attack', shownMin: 14, shownMax: 14, actual: 14 })
+    s = withIntent(s, { kind: 'attack', actual: 14 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('lost')
   })
@@ -137,7 +135,7 @@ describe('盗んだ敵は次の宣言で必ず逃走 (2026-08-30。1ターン以
       ...s,
       enemies: s.enemies.map((e) => ({ ...e, stolenGold: 20 })),
     }
-    s = withIntent(s, { kind: 'defend', shownMin: 1, shownMax: 1, actual: 1 })
+    s = withIntent(s, { kind: 'defend', actual: 1 })
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'player-turn') {
       expect(s.enemies[0].intent?.kind).toBe('flee')

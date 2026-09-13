@@ -20,12 +20,13 @@ describe('StartCombat', () => {
     expect(s.enemies[0].intent).not.toBeNull()
   })
 
-  it('敵の意図: 実値は幅表示の範囲内にある (幅あり表示ルール)', () => {
+  it('敵の意図: 実値は技の [min, max] の範囲内にある (実値公開 2026-09-14: 値そのものを見せる)', () => {
+    const surge = getEnemyDef('enemy_wide_power').moves.find((m) => m.id === 'surge')!
     for (const seed of [1, 2, 3, 4, 5]) {
       const s = freshCombat('set-auto', 'enemy_wide_power', seed)
       const intent = s.enemies[0].intent!
-      expect(intent.actual).toBeGreaterThanOrEqual(intent.shownMin)
-      expect(intent.actual).toBeLessThanOrEqual(intent.shownMax)
+      expect(intent.actual).toBeGreaterThanOrEqual(surge.min!)
+      expect(intent.actual).toBeLessThanOrEqual(surge.max!)
     }
   })
 

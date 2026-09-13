@@ -248,7 +248,7 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_resonance'])
     s = setAndArm(s, 't0_green_reaction_resonance')
     // 2026-08-30 T1は club になったので、雄叫び (buff) を意図に細工して検証する
-    s = withIntent(s, { kind: 'buff', shownMin: 2, shownMax: 4, actual: 3 })
+    s = withIntent(s, { kind: 'buff', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).not.toContain('StrengthGained') // 打ち消される
     expect(types(s.eventLog)).toContain('ReactionTriggered')

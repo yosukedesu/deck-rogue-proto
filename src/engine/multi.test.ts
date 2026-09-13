@@ -17,14 +17,10 @@ function withIntents(state: GameState, intents: readonly EnemyIntent[]): GameSta
 
 const atk = (actual: number): EnemyIntent => ({
   kind: 'attack',
-  shownMin: actual,
-  shownMax: actual,
   actual,
 })
 const defend = (actual: number): EnemyIntent => ({
   kind: 'defend',
-  shownMin: actual,
-  shownMax: actual,
   actual,
 })
 
@@ -166,7 +162,7 @@ describe('応援 (ラリー)', () => {
     s = withHand(s, [])
     expect(s.enemies).toHaveLength(2)
     const before = s.enemies.map((e) => e.strength)
-    s = withIntents(s, [defend(5), { kind: 'rally', shownMin: 2, shownMax: 2, actual: 2 }])
+    s = withIntents(s, [defend(5), { kind: 'rally', actual: 2 }])
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.enemies[0].strength).toBe(before[0] + 2)
     expect(s.enemies[1].strength).toBe(before[1] + 2)

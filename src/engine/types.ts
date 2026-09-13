@@ -210,12 +210,13 @@ export interface EnemyState extends CombatantState {
   readonly split?: boolean
 }
 
-/** 敵の意図。プレイヤーへは幅あり表示 (例: 攻撃6〜12)。実値は宣言時にロール済みで非公開 */
+/**
+ * 敵の意図。値は宣言時に技の [min, max] からロールした実値で、プレイヤーにもそのまま見せる
+ * (2026-09-14 実値公開=本家形。表示は威圧・脆弱・重りの補正込みをライブで出す。旧「幅あり表示・実値非公開」は撤去)
+ */
 export interface EnemyIntent {
   readonly kind: EnemyActionKind
-  readonly shownMin: number
-  readonly shownMax: number
-  /** 実際の値。UI には見せない。連撃 (hits>1) では1ヒット分の値 */
+  /** 実値 (筋力込み)。連撃 (hits>1) では1ヒット分の値 */
   readonly actual: number
   /** 連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」 */
   readonly hits?: number
@@ -242,8 +243,6 @@ export interface EnemyIntent {
 /** 条件付き意図の分岐 (alt を再帰させないための素の形) */
 export interface EnemyIntentBranch {
   readonly kind: EnemyActionKind
-  readonly shownMin: number
-  readonly shownMax: number
   readonly actual: number
   readonly hits?: number
   readonly inflict?: StatusInflict
@@ -371,10 +370,6 @@ export interface GameState {
   readonly eventLog: readonly GameEvent[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional */
   readonly setDamageReduction?: number
-  /** デバッグ (2026-09-02): 意図の実値を常時公開 (計測実験)。旧セーブに無いので optional */
-  readonly revealIntents?: boolean
-  /** C型レリック (蜃気楼の面 2026-09-02 作り直し): 伏せた瞬間からそのターンの実値を公開 */
-  readonly revealOnSet?: boolean
   /** 実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts) */
   readonly setAnyCards?: boolean
   /** C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (期限切れの) 罠は捨て札でなく手札に戻る */
@@ -1415,16 +1410,12 @@ export interface RelicDef {
   readonly combatRule?: {
     /** 伏せ札がある間、敵の攻撃実値-N (最低1クランプ。静かな鈴) */
     readonly setDamageReduction?: number
-    /** 敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用) */
-    readonly revealIntents?: boolean
     /** 期限切れの罠が捨て札でなく手札に戻る (回収の紐 2026-09-13 作り直し) */
     readonly expireToHand?: boolean
     /** 上限参照札が読む値 (energyMaxAtTurnStart) に+N (大樹の心 2026-09-03) */
     readonly energyMaxRefBonus?: number
     /** 成長放出のあと成長がN残る (収穫の鎌 2026-09-03) */
     readonly harvestKeep?: number
-    /** 伏せた瞬間からそのターンの実値を公開 (蜃気楼の面 2026-09-02 作り直し: 読みの前半=幅を見て伏せる、を残す) */
-    readonly revealOnSet?: boolean
     // ---- レリック本家形 (2026-09-12)。GameState の同名フラグへ集計される ----
     /** 手札を捨てない (ルーンの角錐) */
     readonly retainHand?: boolean

@@ -461,9 +461,14 @@ namespace DeckRogue.Game
             return " +" + ja + inf.Amount + dest;
         }
 
-        public static string IntentLine(EnemyIntent it)
+        /// <summary>
+        /// 意図の1行 (実値公開 2026-09-14 本家形)。攻撃の数字は shownValue (威圧・脆弱・重り込みのライブ値。
+        /// Effects.DisplayedIntentValue) を渡す。負なら宣言した実値 (ログ行など状態が無い場所)
+        /// </summary>
+        public static string IntentLine(EnemyIntent it, int shownValue = -1)
         {
             if (it == null) return "---";
+            int v = shownValue >= 0 ? shownValue : it.Actual;
             switch (it.Kind)
             {
                 case "attack":
@@ -472,23 +477,32 @@ namespace DeckRogue.Game
                     string guard = it.AlsoDefend.HasValue ? "+盾" + it.AlsoDefend.Value : "";
                     string buff = it.AlsoBuff.HasValue ? "+筋力" + it.AlsoBuff.Value : "";
                     string breaks = it.AlsoDestroySet == true ? "壊し+" : ""; // 壊しつつ殴る (2026-09-14)
-                    return breaks + "攻撃 " + it.ShownMin + "〜" + it.ShownMax + hits + guard + buff + InflictSuffix(it.Inflict);
+                    return breaks + "攻撃 " + v + hits + guard + buff + InflictSuffix(it.Inflict);
                 }
                 case "defend":
-                    return "防御 " + it.ShownMin + "〜" + it.ShownMax + (it.AlsoBuff.HasValue ? " +筋力" + it.AlsoBuff.Value : "");
+                    return "防御 " + it.Actual + (it.AlsoBuff.HasValue ? " +筋力" + it.AlsoBuff.Value : "");
                 case "destroy-set": return "からくり壊し";
                 case "destroy-token": return "従者狩り";
-                case "buff": return "筋力 +" + it.ShownMin + "〜" + it.ShownMax;
-                case "rally": return "応援 +" + it.ShownMin + "〜" + it.ShownMax + " (味方全体の筋力)";
+                case "buff": return "筋力 +" + it.Actual;
+                case "rally": return "応援 +" + it.Actual + " (味方全体の筋力)";
                 case "hex": return "呪い" + InflictSuffix(it.Inflict);
-                case "heal": return "回復 " + it.ShownMin + "〜" + it.ShownMax + " (最も傷んだ味方)";
-                case "steal-gold": return "盗み " + it.ShownMin + "〜" + it.ShownMax + "G";
+                case "heal": return "回復 " + it.Actual + " (最も傷んだ味方)";
+                case "steal-gold": return "盗み " + it.Actual + "G";
                 case "flee": return "逃走 (倒すか打ち消せば阻止)";
                 case "rest": return "隙だらけ";
                 case "hatch": return "孵化する";
-                case "mill": return "山札喰い " + it.ShownMin + "〜" + it.ShownMax + "枚";
+                case "mill": return "山札喰い " + it.Actual + "枚";
                 default: return KindJa(it.Kind);
             }
+        }
+
+        /// <summary>意図1つの表示 (実値公開): 攻撃は補正込みのライブ値。補正があれば「(威圧-25%: 実値12)」を添える</summary>
+        public static string LiveIntentLine(GameState st, int enemyIndex, EnemyIntent it)
+        {
+            if (it == null) return "---";
+            string text = IntentLine(it, Effects.DisplayedIntentValue(st, enemyIndex, it.Kind, it.Actual));
+            var notes = Effects.IntentModifierNotes(st, enemyIndex, it.Kind);
+            return notes.Count > 0 ? text + " (" + string.Join("・", notes) + ": 実値" + it.Actual + ")" : text;
         }
 
         /// <summary>その敵の今の意図 (伏せ分岐の解決込み)</summary>
@@ -499,14 +513,14 @@ namespace DeckRogue.Game
             if (st.HideIntents == true) return "？ 意図は見えない（ルーンの円蓋）";
             var raw = st.Enemies[enemyIndex].Intent;
             var eff = Effects.EffectiveIntent(st, enemyIndex);
-            string s = IntentLine(eff);
+            string s = LiveIntentLine(st, enemyIndex, eff);
             if (raw != null && raw.ConditionalOn != null && raw.Alt != null)
             {
                 // EffectiveIntent は条件を満たさない時だけ raw をそのまま返す (参照が同じ)
                 bool altActive = !object.ReferenceEquals(eff, raw);
                 string what = raw.ConditionalOn == "set" ? "からくり" : "従者";
                 s += "  【" + what + (altActive ? "あり" : "なし") + "分岐】";
-                if (!altActive) s += " ※" + what + "があると: " + IntentLine(BranchToIntent(raw.Alt));
+                if (!altActive) s += " ※" + what + "があると: " + LiveIntentLine(st, enemyIndex, BranchToIntent(raw.Alt));
             }
             return s;
         }
@@ -516,8 +530,6 @@ namespace DeckRogue.Game
             return new EnemyIntent
             {
                 Kind = b.Kind,
-                ShownMin = b.ShownMin,
-                ShownMax = b.ShownMax,
                 Actual = b.Actual,
                 Hits = b.Hits,
                 Inflict = b.Inflict,

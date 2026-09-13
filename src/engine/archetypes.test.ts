@@ -249,9 +249,13 @@ describe('敵特性 (StS参考)', () => {
     // 構えは2拍目 (2026-09-14 ユーザー裁定: 末尾だと幕1の短い戦闘で見えず「殴り得の休符」になる)。構えの筋力+1 が3拍目から乗る
     const d = declaredIntents(s.eventLog)
     expect(d.map((x) => x.intent.kind)).toEqual(['attack', 'defend', 'attack', 'attack']) // poke, guard, poke, lunge
-    expect(d.map((x) => x.intent.shownMin)).toEqual([5, d[1].intent.shownMin, 6, 13])
+    // 実値公開 (2026-09-14): 意図の値は技の幅からロールした実値 (poke 5〜7・lunge 12〜16・構えの筋力+1 が3拍目から乗る)
+    const within = (v: number, lo: number, hi: number) => v >= lo && v <= hi
+    expect(within(d[0].intent.actual, 5, 7)).toBe(true)
+    expect(within(d[2].intent.actual, 6, 8)).toBe(true)
+    expect(within(d[3].intent.actual, 13, 17)).toBe(true)
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(declaredIntents(s.eventLog)[4].intent.shownMin).toBe(6) // ループして poke に戻る
+    expect(within(declaredIntents(s.eventLog)[4].intent.actual, 6, 8)).toBe(true) // ループして poke に戻る
   })
 
   it('強化 (筋力): 雄叫び後の攻撃は実値も幅表示も上がる', () => {
@@ -269,8 +273,6 @@ describe('敵特性 (StS参考)', () => {
     expect(str).toBeLessThanOrEqual(5)
     const intent = s.enemies[0].intent! // ターン3は club_wild (基礎 9〜13)
     expect(intent.kind).toBe('attack')
-    expect(intent.shownMin).toBe(9 + str)
-    expect(intent.shownMax).toBe(13 + str)
     expect(intent.actual).toBeGreaterThanOrEqual(9 + str)
     expect(intent.actual).toBeLessThanOrEqual(13 + str)
   })
@@ -278,7 +280,7 @@ describe('敵特性 (StS参考)', () => {
   it('打ち消しは強化 (バフ行動) も無効化できる', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_root_weave'])
     s = setAndArm(s, 't0_green_reaction_root_weave') // 罠モデル: 伏せた翌ターンに鳴る
-    s = withIntent(s, { kind: 'buff', shownMin: 2, shownMax: 4, actual: 3 }) // 雄叫び
+    s = withIntent(s, { kind: 'buff', actual: 3 }) // 雄叫び
     s = applyCommand(s, { type: 'EndTurn' }) // warcry に自動発動 → 無効化
     expect(types(s.eventLog)).toContain('ActionNegated')
     expect(s.enemies[0].strength).toBe(0)
@@ -292,8 +294,8 @@ describe('敵特性 (StS参考)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     const intent = s.enemies[0].intent!
     expect(intent.kind).toBe('attack')
-    expect(intent.shownMin).toBe(24)
-    expect(intent.shownMax).toBe(32)
+    expect(intent.actual).toBeGreaterThanOrEqual(24)
+    expect(intent.actual).toBeLessThanOrEqual(32)
   })
 })
 

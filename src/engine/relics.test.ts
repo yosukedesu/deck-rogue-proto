@@ -327,24 +327,18 @@ describe('第二弾レリック: 伏せシナジー (符師の懐・静かな鈴
     expect(setup(true).player.hp).toBe(hpStart - 9) // 伏せあり: -1
   })
 
-  it('蜃気楼の面: 意図の実値が常時公開される (shownMin=shownMax=actual)', () => {
+  it('実値公開 (2026-09-14): 意図は宣言した実値そのもの。蜃気楼の面・revealIntents の機構は撤去', () => {
     const deck = Array.from({ length: 10 }, (_, i) => ({
       uid: `d${i}`,
       def: getCardDef('green_sweep'),
     }))
-    const masked = startCombatWithOptions(7, 'set-confirm', 'enemy_wide_power', { deck })
-    const revealed = startCombatWithOptions(7, 'set-confirm', 'enemy_wide_power', {
-      deck,
-      revealIntents: true,
-    })
-    // うねる獣の幅 (攻撃8〜15) は素では幅表示
-    const m = masked.enemies[0].intent!
-    expect(m.shownMax).toBeGreaterThan(m.shownMin)
-    // 面があると実値へ畳まれる (同シードなので実値は同一)
-    const r = revealed.enemies[0].intent!
-    expect(r.shownMin).toBe(m.actual)
-    expect(r.shownMax).toBe(m.actual)
-    expect(r.actual).toBe(m.actual)
+    const s = startCombatWithOptions(7, 'set-confirm', 'enemy_wide_power', { deck })
+    const it = s.enemies[0].intent!
+    expect(it.kind).toBe('attack')
+    expect(it.actual).toBeGreaterThanOrEqual(8) // うねる獣の突進 8〜15 からロール
+    expect(it.actual).toBeLessThanOrEqual(15)
+    expect('shownMin' in it).toBe(false)
+    expect('revealIntents' in s).toBe(false)
   })
 })
 

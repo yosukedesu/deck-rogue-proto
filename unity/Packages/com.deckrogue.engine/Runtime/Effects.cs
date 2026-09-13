@@ -627,8 +627,6 @@ namespace DeckRogue.Engine
             return new EnemyIntent
             {
                 Kind = intent.Alt.Kind,
-                ShownMin = intent.Alt.ShownMin,
-                ShownMax = intent.Alt.ShownMax,
                 Actual = intent.Alt.Actual,
                 Hits = intent.Alt.Hits,
                 Inflict = intent.Alt.Inflict,
@@ -893,6 +891,52 @@ namespace DeckRogue.Engine
         public static int ApplyEnemyWeak(int value, int? weak)
         {
             return (weak ?? 0) > 0 ? Math.Max(1, (int)Math.Floor(value * 0.75)) : value;
+        }
+
+        /// <summary>攻撃1ヒットに今の補正 (威圧・静かな鈴・脆弱・重り) を掛けた値 = 意図に出す数字 (実値公開 2026-09-14 本家形のライブ表示。TS summary.ts modifiedHit)</summary>
+        public static int ModifiedHit(GameState s, int enemyIndex, int actual)
+        {
+            var e = enemyIndex >= 0 && enemyIndex < s.Enemies.Count ? s.Enemies[enemyIndex] : null;
+            int v = ApplyEnemyWeak(actual, e?.Weak);
+            if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) v = Math.Max(1, v - (s.SetDamageReduction ?? 0));
+            if (s.Player.Vulnerable > 0) v = (int)Math.Floor(v * 1.5);
+            if ((s.Player.Slow ?? 0) > 0 && (s.Player.PlaysThisTurn ?? 0) > 0) v = (int)Math.Floor(v * (1.0 + 0.1 * (s.Player.PlaysThisTurn ?? 0)));
+            return v;
+        }
+
+        /// <summary>意図 (または分岐) の表示値: 攻撃は補正込みの1ヒット・それ以外は実値</summary>
+        public static int DisplayedIntentValue(GameState s, int enemyIndex, string kind, int actual)
+        {
+            return kind == EnemyActionKinds.Attack ? ModifiedHit(s, enemyIndex, actual) : actual;
+        }
+
+        /// <summary>補正が実値を変えている時の注記 (威圧-25% / 鈴-N / 脆弱+50% / 重り+N%)</summary>
+        public static List<string> IntentModifierNotes(GameState s, int enemyIndex, string kind)
+        {
+            var notes = new List<string>();
+            if (kind != EnemyActionKinds.Attack) return notes;
+            var e = enemyIndex >= 0 && enemyIndex < s.Enemies.Count ? s.Enemies[enemyIndex] : null;
+            if ((e?.Weak ?? 0) > 0) notes.Add("威圧-25%");
+            if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) notes.Add("鈴-" + s.SetDamageReduction);
+            if (s.Player.Vulnerable > 0) notes.Add("脆弱+50%");
+            if ((s.Player.Slow ?? 0) > 0 && (s.Player.PlaysThisTurn ?? 0) > 0) notes.Add("重り+" + (10 * (s.Player.PlaysThisTurn ?? 0)) + "%");
+            return notes;
+        }
+
+        /// <summary>実行時のヒット数 (手数の鏡は今のプレイ枚数+伏せ)</summary>
+        public static int IntentHits(GameState s, bool? mirrorHits, int? hits)
+        {
+            return mirrorHits == true ? Math.Max(1, s.Player.CardsPlayedThisTurn + (s.Player.SetsThisTurn ?? 0)) : (hits ?? 1);
+        }
+
+        /// <summary>敵1体の「今フェーズに受ける合計ダメージ」。攻撃以外・死亡・混乱は0 (TS summary.ts incomingFrom)</summary>
+        public static int IncomingFrom(GameState s, int enemyIndex)
+        {
+            var e = s.Enemies[enemyIndex];
+            if (e.Hp <= 0 || e.Confusion > 0) return 0;
+            var it = EffectiveIntent(s, enemyIndex);
+            if (it == null || it.Kind != EnemyActionKinds.Attack) return 0;
+            return ModifiedHit(s, enemyIndex, it.Actual) * IntentHits(s, it.MirrorHits, it.Hits);
         }
 
         /// <summary>因縁 (Nemesis) の無形ターンか: 奇数ターン (1,3,5…) は無形、偶数ターンに実体化</summary>

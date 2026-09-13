@@ -224,7 +224,7 @@ namespace DeckRogue.Game
                     var ic = UiKit.Icon(row, IntentIcon(it.Kind), 32f, intentArt != null ? Color.white : IntentColor(it.Kind));
                     if (intentArt != null) { ic.sprite = intentArt; ic.rectTransform.sizeDelta = new Vector2(64f, 64f); UiKit.Le(ic, 64f, 64f, 64f, 64f); }
                     else UiKit.Le(ic, 32f, 32f, 32f, 32f);
-                    var itT = UiKit.Deco(row, st.HideIntents == true ? "？" : IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft); // ルーンの円蓋 (2026-09-12): 意図を隠す
+                    var itT = UiKit.Deco(row, st.HideIntents == true ? "？" : IntentShort(st, index, it), 26, PaperFx.Ink, TextAnchor.MiddleLeft); // ルーンの円蓋 (2026-09-12): 意図を隠す
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
                     // デバフ・筋力・盾の予告は吹き出しの中の二段目に、言葉で大きく (2026-09-09→2026-09-14 拡大)
                     if (hasRider)
@@ -498,20 +498,20 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>頭上の短い意図: 「3〜5」「3〜5×2」「防御」など (詳細は IntentText)</summary>
-        static string IntentShort(EnemyIntent it)
+        /// <summary>頭上の短い意図: 「12」「12 ×2」「防御 8」など (詳細は IntentText)。攻撃は補正込みのライブ値 (実値公開 2026-09-14)</summary>
+        static string IntentShort(GameState st, int index, EnemyIntent it)
         {
             switch (it.Kind)
             {
                 case "attack":
                 {
-                    string s = it.ShownMin == it.ShownMax ? it.ShownMin.ToString() : it.ShownMin + "〜" + it.ShownMax;
+                    string s = Effects.DisplayedIntentValue(st, index, it.Kind, it.Actual).ToString();
                     if ((it.Hits ?? 1) > 1) s += " ×" + it.Hits.Value;
                     if (it.MirrorHits == true) s += " ×手数";
                     return s;
                 }
-                case "defend": return "防御 " + (it.ShownMin == it.ShownMax ? it.ShownMin.ToString() : it.ShownMin + "〜" + it.ShownMax);   // 防御の量も頭上に (2026-09-14)
-                case "buff": return "筋力+" + (it.ShownMin == it.ShownMax ? it.ShownMin.ToString() : it.ShownMin + "〜" + it.ShownMax);
+                case "defend": return "防御 " + it.Actual;   // 防御の量も頭上に (2026-09-14)
+                case "buff": return "筋力+" + it.Actual;
                 case "rally": return "応援";
                 case "heal": return "回復";
                 case "hex": return "呪い";

@@ -31,10 +31,6 @@ namespace DeckRogue.Engine
         public IReadOnlyList<CardInstance> RelicPermanents { get; init; }
         /// <summary>C型レリック (静かな鈴)</summary>
         public int? SetDamageReduction { get; init; }
-        /// <summary>デバッグ: 意図の実値を常時公開</summary>
-        public bool? RevealIntents { get; init; }
-        /// <summary>C型レリック (蜃気楼の面)</summary>
-        public bool? RevealOnSet { get; init; }
         /// <summary>実験: 全カード伏せ可</summary>
         public bool? SetAnyCards { get; init; }
         /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れの罠が手札に戻る</summary>
@@ -282,8 +278,6 @@ namespace DeckRogue.Engine
                 ExpireToHand = options.ExpireToHand == true ? (bool?)true : null,
                 EnergyMaxRefBonus = (options.EnergyMaxRefBonus ?? 0) != 0 ? options.EnergyMaxRefBonus : null,
                 HarvestKeep = (options.HarvestKeep ?? 0) != 0 ? options.HarvestKeep : null,
-                RevealIntents = options.RevealIntents == true ? (bool?)true : null,
-                RevealOnSet = options.RevealOnSet == true ? (bool?)true : null,
                 SetAnyCards = options.SetAnyCards == true ? (bool?)true : null,
                 // レリック本家形 (2026-09-12): 規則改変の C型キー
                 RetainHand = options.RetainHand == true ? (bool?)true : null,
@@ -443,7 +437,7 @@ namespace DeckRogue.Engine
                 enemy.BurrowActive != true
                     ? intentRaw
                     : intentRaw.Kind == EnemyActionKinds.Defend
-                        ? intentRaw with { Kind = EnemyActionKinds.Rest, ShownMin = 0, ShownMax = 0, Actual = 0, AlsoBuff = null }
+                        ? intentRaw with { Kind = EnemyActionKinds.Rest, Actual = 0, AlsoBuff = null }
                         : intentRaw.AlsoDefend != null
                             ? intentRaw with { AlsoDefend = null }
                             : intentRaw;
@@ -464,10 +458,7 @@ namespace DeckRogue.Engine
                 alt = ToBranch(altIntent);
             }
 
-            // 蜃気楼の面 (C型レリック): 実値を常時公開 = 宣言時に幅を実値へ畳む
-            var shown = s.RevealIntents == true ? intent with { ShownMin = intent.Actual, ShownMax = intent.Actual } : intent;
-            if (alt != null && s.RevealIntents == true) alt = alt with { ShownMin = alt.Actual, ShownMax = alt.Actual };
-            var declared = (conditionalOn != null && alt != null) ? shown with { ConditionalOn = conditionalOn, Alt = alt } : shown;
+            var declared = (conditionalOn != null && alt != null) ? intent with { ConditionalOn = conditionalOn, Alt = alt } : intent;
             // 盗みは宣言と同時に成立する
             int stolen = declared.Kind == EnemyActionKinds.StealGold ? declared.Actual : 0;
             var declaredMove = move;
@@ -503,8 +494,6 @@ namespace DeckRogue.Engine
         private static EnemyIntentBranch ToBranch(EnemyIntent it) => new EnemyIntentBranch
         {
             Kind = it.Kind,
-            ShownMin = it.ShownMin,
-            ShownMax = it.ShownMax,
             Actual = it.Actual,
             Hits = it.Hits,
             Inflict = it.Inflict,
@@ -537,8 +526,6 @@ namespace DeckRogue.Engine
             var intent = new EnemyIntent
             {
                 Kind = move.Kind,
-                ShownMin = clamp(scale(gMin ?? 0) + bonus),
-                ShownMax = clamp(scale(gMax ?? 0) + bonus),
                 Actual = clamp(scale(actual) + bonus),
                 Hits = gHits,
                 MirrorHits = move.MirrorHits == true ? (bool?)true : null,
@@ -631,7 +618,7 @@ namespace DeckRogue.Engine
                         MaxHp = scaledChildHp,
                         Block = childDef.Burrow?.Block ?? childDef.StartingBlock ?? 0,
                         BurrowActive = childDef.Burrow != null ? (bool?)true : null,
-                        Intent = stunned ? new EnemyIntent { Kind = EnemyActionKinds.Rest, ShownMin = 0, ShownMax = 0, Actual = 0 } : null,
+                        Intent = stunned ? new EnemyIntent { Kind = EnemyActionKinds.Rest, Actual = 0 } : null,
                         Strength = childStrength,
                         AtkScale = e.AtkScale,
                         Burn = 0,
@@ -1567,8 +1554,6 @@ namespace DeckRogue.Engine
                 var locked = new EnemyIntent
                 {
                     Kind = acting.Kind,
-                    ShownMin = acting.ShownMin,
-                    ShownMax = acting.ShownMax,
                     Actual = acting.Actual,
                     Hits = acting.Hits,
                     MirrorHits = acting.MirrorHits == true ? (bool?)true : null,

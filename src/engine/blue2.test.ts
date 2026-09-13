@@ -20,8 +20,8 @@ describe('霊気獲得の誘発 (静電の帳)', () => {
       ...s,
       enemies: s.enemies.map((e, i) =>
         i === 0
-          ? { ...e, intent: { kind: 'attack' as const, shownMin: 5, shownMax: 5, actual: 5 } }
-          : { ...e, intent: { kind: 'defend' as const, shownMin: 3, shownMax: 3, actual: 3 } },
+          ? { ...e, intent: { kind: 'attack' as const, actual: 5 } }
+          : { ...e, intent: { kind: 'defend' as const, actual: 3 } },
       ),
     }
     s2 = applyCommand(s2, { type: 'EndTurn' })

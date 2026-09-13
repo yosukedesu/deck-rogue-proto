@@ -29,7 +29,7 @@ describe('威嚇の撤去 (2026-08-25: 延焼は純DoT)', () => {
   it('延焼を持つ敵の攻撃も実値そのまま (威嚇による軽減はない)', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5, hp: 999 })) }
-    s = withIntent(s, { kind: 'attack', shownMin: 10, shownMax: 10, actual: 10 })
+    s = withIntent(s, { kind: 'attack', actual: 10 })
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(hpBefore - 10)
@@ -38,7 +38,7 @@ describe('威嚇の撤去 (2026-08-25: 延焼は純DoT)', () => {
   it('pre窓の実値公開は素の実値を使う', () => {
     let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 6 })) }
-    s = withIntent(s, { kind: 'attack', shownMin: 13, shownMax: 13, actual: 13 })
+    s = withIntent(s, { kind: 'attack', actual: 13 })
     const win = windowFromPending({
       ...s,
       pendingWindow: { enemyIndex: 0, stage: 'pre' },
@@ -68,7 +68,7 @@ describe('延焼 (バーン)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), ['red_ignite'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ignite' })
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 2 })) } // 延焼4で焼き切れる
-    s = withIntent(s, { kind: 'attack', shownMin: 99, shownMax: 99, actual: 99 })
+    s = withIntent(s, { kind: 'attack', actual: 99 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('won')
     expect(s.player.hp).toBe(s.player.maxHp) // 攻撃は実行されない

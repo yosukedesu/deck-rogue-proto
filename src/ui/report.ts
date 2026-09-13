@@ -212,7 +212,7 @@ function renderBoard(s: GameState): string[] {
   if (s.pendingWindow) {
     const w = s.pendingWindow
     const en = s.enemies[w.enemyIndex]
-    out.push(`★確認ウィンドウ待ち: 敵${w.enemyIndex + 1} ${safeEnemyName(en.enemyId)} / ${w.stage}窓 / 実値 ${en.intent?.actual}（宣言 ${en.intent?.shownMin}〜${en.intent?.shownMax}）`)
+    out.push(`★確認ウィンドウ待ち: 敵${w.enemyIndex + 1} ${safeEnemyName(en.enemyId)} / ${w.stage}窓 / 実値 ${en.intent?.actual}`)
   }
   return out
 }
@@ -245,7 +245,7 @@ export function buildReport(
   if (run) {
     const leader = getLeaderDef(run.leaderId)
     L.push(`ラン ${leader.name}（${run.leaderId}） / seed ${run.seed} / mode ${run.mode} / 難易度 ${run.difficulty ?? 3}`)
-    L.push(`進行: ${run.phase}${run.debugRevealIntents ? ' / 🔍実値表示モード' : ''} / 幕${run.act}/3 行${run.row + 1}/${run.map.length}・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
+    L.push(`進行: ${run.phase} / 幕${run.act}/3 行${run.row + 1}/${run.map.length}・${run.battlesWon}勝${run.currentElite ? '（強個体）' : ''} / HP ${run.hp}/${run.maxHp} / 💰${run.gold}G / デッキ${run.deck.length}枚`)
     L.push(
       `マップ: ${run.map
         .map((row, r) => {
@@ -597,7 +597,6 @@ export interface RelicDraft {
   readonly goldPerVictory?: number
   readonly campfireForge?: number
   readonly setDamageReduction?: number
-  readonly revealIntents?: boolean
 }
 
 export function relicDraftToDefJson(d: RelicDraft): Record<string, unknown> {
@@ -618,7 +617,6 @@ export function relicDraftToDefJson(d: RelicDraft): Record<string, unknown> {
   if (Object.keys(bonus).length > 0) j.bonus = bonus
   const rule: Record<string, unknown> = {}
   if (typeof d.setDamageReduction === 'number' && d.setDamageReduction > 0) rule.setDamageReduction = d.setDamageReduction
-  if (d.revealIntents === true) rule.revealIntents = true
   if (Object.keys(rule).length > 0) j.combatRule = rule
   return j
 }
