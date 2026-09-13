@@ -1,0 +1,7464 @@
+[
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で斬る1",
+  "desc": "「ザシン」という金属感ある斬撃音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-slash1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で斬る2",
+  "desc": "ゲーム向けの短めの音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-slash2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で斬る3",
+  "desc": "モンスターを斬る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-slash3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で斬る4",
+  "desc": "2連続",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-slash4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で斬る5",
+  "desc": "乱舞攻撃。5連続",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-slash5.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で斬る6",
+  "desc": "力を溜めてから斬り裂く",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-slash6.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "大剣で斬る",
+  "desc": "3m近い剣。重さを利用し叩きつける",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/large-sword-slash1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣を抜く",
+  "desc": "鋭く響く金属音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-drawn1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣を鞘にしまう",
+  "desc": "緩急をつけてパチンと収める",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-storage1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣の戦い",
+  "desc": "激しく何度も打ち合う",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-battle1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で打ち合う1",
+  "desc": "鋭い高音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-clash1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で打ち合う2",
+  "desc": "カキイン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-clash2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で打ち合う3",
+  "desc": "地面が揺れるほどの衝撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-clash3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣で打ち合う4",
+  "desc": "リアル系",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-clash4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣の素振り1",
+  "desc": "大剣を振る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-gesture1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣の素振り2",
+  "desc": "剣を振る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-gesture2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "剣の素振り3",
+  "desc": "小剣を振る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sword-gesture3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鎧の騎士が歩く",
+  "desc": "ガチャガチャと音が鳴る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/armor-work-1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鎧の騎士が走る",
+  "desc": "実際に身にまとって収録",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/armor-dash-2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "盾で防御",
+  "desc": "鉄壁の守り",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shield1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で斬る1",
+  "desc": "時代劇の斬撃音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-slash1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で斬る2",
+  "desc": "重い一撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-slash2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で斬る3",
+  "desc": "引き裂く",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-slash3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で斬る4",
+  "desc": "突くイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-slash4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で斬る5",
+  "desc": "切れ味抜群の刀",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-slash5.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀の素振り1",
+  "desc": "素振り",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-gesture1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀の素振り2",
+  "desc": "ピュッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-gesture2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀の連続素振り",
+  "desc": "相手の刀をひたすら避ける",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-continuity1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "居合抜き1",
+  "desc": "一閃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/iainuki1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀を構える",
+  "desc": "チャキッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-hold1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀を鞘にしまう1",
+  "desc": "パチン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-storage1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀を鞘にしまう2",
+  "desc": "チャイン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-storage2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で打ち合う1",
+  "desc": "時代劇のチャンバラ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-clash1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で打ち合う2",
+  "desc": "鈍いチャンバラ音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-clash2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で打ち合う3",
+  "desc": "低いチャンバラ音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-clash3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "刀で打ち合う4",
+  "desc": "斬りつけるも弾き返される",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/katana-clash4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞘を持つ",
+  "desc": "金具が鳴る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sheath1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "ナイフで切る",
+  "desc": "軽めの斬撃音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/knife-slash-1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "ナイフで突き刺す1",
+  "desc": "血が出る音入り",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/knife-stab-1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "ナイフで突き刺す2",
+  "desc": "鈍い音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/knife-stab-2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "ナイフで突き刺す3",
+  "desc": "グサッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/knife-stab-3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "血がたれる1",
+  "desc": "ビチャビチャッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blood-drips1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "血がたれる2",
+  "desc": "ポタポタ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blood-drips2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "斧で斬る1",
+  "desc": "パワーのある重い一撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/ax-slash-1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "斧で斬る2",
+  "desc": "クリティカルヒット時",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/ax-slash-2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭で攻撃1",
+  "desc": "本物の鞭の炸裂音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-attack-1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭で攻撃2",
+  "desc": "先端が音速を超える",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-attack-2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭で攻撃3",
+  "desc": "ビシビシと2回連続で叩く",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-attack-3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭で攻撃4",
+  "desc": "数発連続して打ち付ける",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-attack-4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭で攻撃5",
+  "desc": "エコー入り。女王様のイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-attack-5.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭を振り回す1",
+  "desc": "ヒュッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-gesture1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭を振り回す2",
+  "desc": "2回転",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-gesture2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "鞭を振り回す3",
+  "desc": "10回転",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/whip-gesture3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "弓を引き絞る1",
+  "desc": "ギリギリギリ…",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bow-draw1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "弓を引き絞る2",
+  "desc": "長め",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bow-draw2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "弓矢を放つ",
+  "desc": "ヒュッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/arrow-release1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "武器",
+  "name": "弓矢が刺さる",
+  "desc": "ドスッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/arrow-pierce1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ドラゴンの鳴き声1",
+  "desc": "恐竜や怪獣の声にも使える",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dragon-cry1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ドラゴンの鳴き声2",
+  "desc": "短め。巨大生物感ある響き",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dragon-cry2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ドラゴンの羽ばたき",
+  "desc": "バサッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dragon-wing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ドラゴンが火を吐く",
+  "desc": "ブレス攻撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dragon-fire1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ゴブリンの鳴き声1",
+  "desc": "人間大のモンスター",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/goblin-cry1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ゴブリンの鳴き声2",
+  "desc": "グアーッと威嚇",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/goblin-cry2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ゴブリンの鳴き声3",
+  "desc": "グルルル…。唸り声",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/goblin-cry3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "翼竜の鳴き声1",
+  "desc": "キーッ。鋭く高い声",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/pterosaur-cry1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "翼竜の鳴き声2",
+  "desc": "クアーッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/pterosaur-cry2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "怪獣の足音",
+  "desc": "ズシンと地響きが起こる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/monster-footstep1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "眠りこけるモンスター",
+  "desc": "大きないびき",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/monster-sleep1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "ドラキュラの羽ばたき",
+  "desc": "6回羽ばたく",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dracula-wing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "スライムの攻撃",
+  "desc": "チュピピ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/slime1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "うごめく触手",
+  "desc": "大量の触手",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/tentacle1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "地響き",
+  "desc": "体重で地割れ発生",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/earth-tremor1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "モンスター（怪獣）",
+  "name": "人がモンスターに変化",
+  "desc": "グロテスクに変わる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/transform-monster1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃1",
+  "desc": "顔を殴る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃2",
+  "desc": "攻撃全般に使いやすい",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃3",
+  "desc": "ドン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃4",
+  "desc": "岩を砕く",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃5",
+  "desc": "斧で攻撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow5.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃6",
+  "desc": "ドカッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow6.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃7",
+  "desc": "血が飛び散る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow7.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "打撃",
+  "name": "打撃8",
+  "desc": "グチャッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/blow8.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "岩にヒビが入る",
+  "desc": "ビキビキビキ…",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rock-crack1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "岩が真っ二つに割れる",
+  "desc": "巨大な岩",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rock-break1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "パンチで壁を破壊",
+  "desc": "パラパラと木材が落ちる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/wall-destruction1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "建物が少し崩れる1",
+  "desc": "破片が落ちてくる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/building-collapse-little1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "建物が少し崩れる2",
+  "desc": "パラパラ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/building-collapse-little2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "建物が大きく崩れる1",
+  "desc": "揺れる+ヒビも入る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/building-collapse1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "破壊・衝撃",
+  "name": "建物が大きく崩れる2",
+  "desc": "大きな破片が降ってくる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/building-collapse2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "軽いパンチ1",
+  "desc": "アニメ風ではない殴打音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-light1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "軽いパンチ2",
+  "desc": "服越しに殴る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-light2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "重いパンチ1",
+  "desc": "強烈な殴打",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-heavy1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "重いパンチ2",
+  "desc": "顔面を殴る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-heavy2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "重いパンチ3",
+  "desc": "メキメキと顔面にめり込む",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-heavy3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "軽いキック1",
+  "desc": "パンチより重めの音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-light1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "軽いキック2",
+  "desc": "ズン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-light2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "重いキック1",
+  "desc": "重低音強め",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-heavy1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "激しい格闘シーン",
+  "desc": "11秒間戦い続ける",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/fighting-scene1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "ロボットを殴る1",
+  "desc": "鈍い金属音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machine-hit1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "ロボットを殴る2",
+  "desc": "ガン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machine-hit2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "ロボットを殴る3",
+  "desc": "金属の衝突",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machine-hit3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "ロボットを強く殴る1",
+  "desc": "ガキン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machine-hard-hit1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "ロボットを強く殴る2",
+  "desc": "火花が散る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machine-hard-hit2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "ロボットを強く殴る3",
+  "desc": "重い一撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machine-hard-hit3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "パンチの素振り1",
+  "desc": "少し重め",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-real-swing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "パンチの素振り2",
+  "desc": "フック",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-real-swing2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "パンチの素振り3",
+  "desc": "鋭い風切り音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-real-swing3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "キックの素振り1",
+  "desc": "ブォン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-real-swing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "キックの素振り2",
+  "desc": "風圧が来る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-real-swing2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "キックの素振り3",
+  "desc": "蹴り以外の動作音にも",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-real-swing3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "パンチの衣擦れ1",
+  "desc": "バッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rubbing-clothes-punch1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "パンチの衣擦れ2",
+  "desc": "ボッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rubbing-clothes-punch2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "キックの衣擦れ1",
+  "desc": "長めの衣擦れ音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rubbing-clothes-kick1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "キックの衣擦れ2",
+  "desc": "ジャンプ音などにも使える",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rubbing-clothes-kick2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "スローモーション",
+  "desc": "時が止まった表現にも",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/slow-motion1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "スローモーション終了",
+  "desc": "ズオオオ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/slow-motion-end1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "背負い投げ1",
+  "desc": "柔道の代表的な技",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shoulder-throw1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "背負い投げ2",
+  "desc": "巨大モンスターを投げる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shoulder-throw2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（リアル・映画風）",
+  "name": "倒れる",
+  "desc": "ドサッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/real-down1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "小パンチ",
+  "desc": "ビシッと炸裂するジャブ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-middle2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "中パンチ",
+  "desc": "ボディブロー",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-high1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "大パンチ",
+  "desc": "必殺技ヒット",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-high2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "小キック",
+  "desc": "ローキック",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-low1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "中キック",
+  "desc": "ミドルキック",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-middle1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "大キック",
+  "desc": "全力での重い蹴り",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/kick-high1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "必殺技ヒット",
+  "desc": "とてつもなく重い一撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/super-arts-hit1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "パンチを受け止める",
+  "desc": "攻撃をブロック",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-stop1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "超必殺技発動",
+  "desc": "一瞬の隙を見抜く",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/super-arts-motion1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "K.O.",
+  "desc": "フィニッシュ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/ko1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "バタンと倒れる",
+  "desc": "ダウン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/down1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "ジャンプ",
+  "desc": "風を切る音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/jump1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "ジャンプの着地",
+  "desc": "スタッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/landing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "パンチ素振り",
+  "desc": "フォッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/punch-swing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "パンチ寸止め",
+  "desc": "当たるううう",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dimension-stop.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "構えを取る",
+  "desc": "シュタッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/setup1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "高速移動",
+  "desc": "シュン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/highspeed-movement1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "腕を鳴らす",
+  "desc": "ボキボキ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/play-the-arm1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "胸ぐらをつかむ",
+  "desc": "投げ技をかける",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/grap1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "気弾1",
+  "desc": "腹に打ち込むイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/qigong1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "気弾2",
+  "desc": "溜めてから発射",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/qigong2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "気弾のせめぎ合い",
+  "desc": "エネルギーの衝突",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/qigong-fight1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "ズザーッと押し戻される",
+  "desc": "敵の攻撃に押される",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/pushed-back1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "締め付ける1",
+  "desc": "ギューッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/constriction1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "締め付ける2",
+  "desc": "超強力な締め付け",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/constriction2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "骨を折る",
+  "desc": "全身複雑骨折",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/fracture1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "踏み込む",
+  "desc": "ズザッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/step-into1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "全力で踏み込む",
+  "desc": "ドガッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/best-step-into1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "平手打ち1",
+  "desc": "ピシ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/slap1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "オーラ1",
+  "desc": "光を身にまとう",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/aura1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "格闘（ゲーム・アニメ風）",
+  "name": "オーラ2",
+  "desc": "ほとばしるエネルギー",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/aura2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "火炎魔法1",
+  "desc": "火の球を飛ばす",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-flame1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "火炎魔法2",
+  "desc": "強烈な火炎放射",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-flame2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "火炎魔法3",
+  "desc": "地獄の業火",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-flame3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "氷魔法1",
+  "desc": "氷のつぶて",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-ice1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "氷魔法2",
+  "desc": "凍結させる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-ice2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "氷魔法3",
+  "desc": "巨大な氷に閉じ込める",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-ice3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "氷魔法で凍結",
+  "desc": "体がだんだん凍っていく",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-ice-frozen1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "雷魔法1",
+  "desc": "電気発生",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-electron1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "雷魔法2",
+  "desc": "小雷撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-electron2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "雷魔法3",
+  "desc": "電撃がほとばしる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-electron3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "雷魔法4",
+  "desc": "太い雷が落ちる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-electron4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "暗黒魔法",
+  "desc": "ブラックホール発生",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-attack-darkness1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "聖魔法",
+  "desc": "悪を浄化する裁きの光",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-attack-holy1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "風魔法1",
+  "desc": "かまいたち",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-wind1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "風魔法2",
+  "desc": "風を圧縮した玉",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-wind2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "毒魔法1",
+  "desc": "毒を浴びる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-poison1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "毒魔法2",
+  "desc": "まとわりつく液体",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-poison2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "重力魔法1",
+  "desc": "押しつぶされる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-gravity1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "重力魔法2",
+  "desc": "反重力の玉",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-gravity2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "地震魔法1",
+  "desc": "地響き",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-quake1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "地震魔法2",
+  "desc": "地割れ発生",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-quake2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "魔法の弾を次々にかわす",
+  "desc": "空中戦などに",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-ball-dodge1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "魔法使いが空を飛ぶ",
+  "desc": "服がバタバタと音を立てる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/wizard-flight1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "回復魔法1",
+  "desc": "小回復",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-cure1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "回復魔法2",
+  "desc": "中回復",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-cure2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "回復魔法3",
+  "desc": "大回復",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-cure3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "回復魔法4",
+  "desc": "神聖な光",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-cure4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "ステータス治療1",
+  "desc": "毒回復",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-status-cure1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "ステータス治療2",
+  "desc": "ステータス全回復",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-status-cure2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "魔法反射",
+  "desc": "光の壁発生",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-reflection1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "HP吸収魔法1",
+  "desc": "何かを吸い取るイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-drain1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "HP吸収魔法2",
+  "desc": "エナジードレイン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-drain2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "魔法のステッキ",
+  "desc": "魔法少女のイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-stick1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "錫杖で地面を突く",
+  "desc": "杖に付けられた輪で音が鳴る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/tin-cane1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "パワーチャージ",
+  "desc": "集中",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-charge1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "ワープ",
+  "desc": "消えるイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-worp1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "魔法陣を展開",
+  "desc": "呪文を詠唱するシーンに",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-circle1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "ステータス上昇魔法1",
+  "desc": "理力が集中する",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-statusup1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "魔法",
+  "name": "ステータス上昇魔法2",
+  "desc": "上昇するイメージ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/magic-statusup2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "爆発1",
+  "desc": "チュドーン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bomb1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "爆発2",
+  "desc": "ドーン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bomb2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "爆発3",
+  "desc": "ドゴォン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bomb3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "爆発4",
+  "desc": "ドカーン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bomb4.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大爆発1",
+  "desc": "長め。建物の爆発などに",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/big-explosion1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大爆発2",
+  "desc": "ガラスの割れる音入り",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/big-explosion2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "拳銃をチャッと構える",
+  "desc": "スライドの音にも使える",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/handgun-ready1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "拳銃を撃つ",
+  "desc": "銃声",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/handgun-firing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "拳銃の弾切れ",
+  "desc": "引き金のカチッという音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/handgun-out-bullets1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "拳銃を落とす",
+  "desc": "ガチャッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/handgun-fall1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "拳銃を弾き飛ばされる",
+  "desc": "落ちてカラカラと回る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/handgun-blown-away1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "薬莢1",
+  "desc": "本物使用。1個落下",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/cartridge1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "薬莢2",
+  "desc": "複数落下",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/cartridge2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "ショットガン発射",
+  "desc": "爆音が響き渡る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shotgun-firing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "ショットガンのポンプアクション1",
+  "desc": "銃の下部をスライドして薬莢排出",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shotgun-pumpaction1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "ショットガンのポンプアクション2",
+  "desc": "チャキッ。金属音が混じる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shotgun-pumpaction2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "ショットガンの薬莢が落ちる",
+  "desc": "プラスチックケースの薬莢",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shotgun-shell1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "狙撃銃をチャッと構える",
+  "desc": "ポンプアクション音としても使える",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-ready1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "狙撃銃発射",
+  "desc": "スナイパーライフル",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle--firing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "狙撃銃発射（スロー演出）",
+  "desc": "必殺の一撃",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-slow-firing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "狙撃銃で撃たれる（スロー演出）",
+  "desc": "血が出る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-slow-firing2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "狙撃銃のボルトアクション",
+  "desc": "射撃後に薬莢排出",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-boltaction1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "弾倉に弾を込める",
+  "desc": "マガジンに一個一個入れる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bullet-put1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "サブマシンガンの弾倉を外す",
+  "desc": "リロード開始",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machinegun-magazine-remove1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "サブマシンガンの弾倉をセット",
+  "desc": "マガジンを手ではめ込む",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machinegun-magazine-set1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "サブマシンガンのボルトリリース",
+  "desc": "リロード後の撃つ準備",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machinegun-slide1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "サブマシンガン発射1",
+  "desc": "遠くまで反響する",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machinegun-firing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "サブマシンガン発射2",
+  "desc": "長めの連射",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/machinegun-firing2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "銃撃戦の跳弾音",
+  "desc": "チュイーンと弾が跳ね返る",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/bullets-bounce1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大型狙撃銃の弾倉をセット",
+  "desc": "対物ライフルともいう",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/largerifle-magazine1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大型狙撃銃のボルトアクション",
+  "desc": "ボルトハンドルを引く。本物の音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/largerifle-boltaction1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大型狙撃銃を発射",
+  "desc": "二脚付きの、伏せて撃つ銃。ほぼ大砲",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/largerifle-firing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大型狙撃銃の薬莢が落ちる1",
+  "desc": "12.7cmある薬莢",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-shell1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大型狙撃銃の薬莢が落ちる2",
+  "desc": "銃全般の薬莢音として使える",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-shell2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大型狙撃銃の薬莢が落ちる3",
+  "desc": "長めに転がる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/sniperrifle-shell3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "重機関銃を乱射1",
+  "desc": "マシンガン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/heavy-machine-gun1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "重機関銃を乱射2",
+  "desc": "長めに撃つ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/heavy-machine-gun2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大砲1",
+  "desc": "戦車の砲撃音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/cannon1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "大砲2",
+  "desc": "ズドン。アニメ風",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/cannon2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "ロケットランチャー",
+  "desc": "肩にかついで撃つ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/rocket-launcher1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "ミサイル",
+  "desc": "小型のものを発射",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/missile1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "戦争・銃",
+  "name": "野戦（戦争）",
+  "desc": "重機関銃、戦車、戦闘用ヘリが登場",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/land-battle1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ショット",
+  "desc": "ノーマル弾",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shot1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ショット命中",
+  "desc": "敵側の被弾音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/shot-struck1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "レーザー",
+  "desc": "80年代風",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/laser1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ビーム砲1",
+  "desc": "エネルギーがほとばしる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/beamgun1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ビーム砲2",
+  "desc": "ギュウウン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/beamgun2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ビーム砲3",
+  "desc": "宇宙に響く音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/beamgun3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ビーム砲チャージ",
+  "desc": "エネルギー充填120%",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/beam-gun-charge1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "スピードアップ",
+  "desc": "速度上昇",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/speed-up1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "パワーアップ",
+  "desc": "カプセル取得",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/power-up1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ビームガン",
+  "desc": "ビシューン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/beamgun-shot1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "ビームガン銃撃戦",
+  "desc": "ビシュビシューン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/beamgun-gunfight1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "SF・シューティングゲーム",
+  "name": "宇宙基地サイレン",
+  "desc": "侵入者あり！",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/base-siren1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビの声1",
+  "desc": "サバイバルホラーを意識",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-voice1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビの声2",
+  "desc": "肝試しでも効果的",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-voice2.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビの声3",
+  "desc": "動物的",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-voice3.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビの息遣い",
+  "desc": "かなり荒い",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-breath1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビの断末魔",
+  "desc": "力なく倒れる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-death-throes1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビに体をえぐられる",
+  "desc": "グロテスクなシーン",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-beat1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "ホラー",
+  "name": "ゾンビの食事",
+  "desc": "食べられてゲームオーバー",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/zombie-meal1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "手裏剣を投げる",
+  "desc": "ピシュッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/dart1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "ナイフを投げる",
+  "desc": "ヒュッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/knife-throw1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "武器をクルクル回す",
+  "desc": "風切り音",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/wepon-swing1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "ブーメラン",
+  "desc": "目の前を通り過ぎる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/boomerang1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "戦闘突入音",
+  "desc": "キュシュワワ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/encount1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "敵ユニット出現",
+  "desc": "シミュレーションRPGなどに",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/enemy-advent1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "逃走",
+  "desc": "戦闘から逃げ出す",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/flee1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "拳を握りしめる",
+  "desc": "ググググ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/clasped.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "マントを翻す",
+  "desc": "バサッ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/mantle1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "崖から石がパラパラ落ちる",
+  "desc": "追い詰められる",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/cliff-stone-falls1.mp3"
+ },
+ {
+  "cat": "battle",
+  "group": "その他",
+  "name": "殺人音波",
+  "desc": "ビビビビ",
+  "url": "https://soundeffect-lab.info/sound/battle/mp3/killer-sound-wave1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車のクラクション1",
+  "desc": "警笛。大きく鳴らす",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-horn1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車のクラクション2",
+  "desc": "発車の合図。小さく鳴らす",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-horn2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車通過1",
+  "desc": "クラクション入り",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車通過2",
+  "desc": "鉄橋を通過",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-pass2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車通過3",
+  "desc": "高架鉄道を通過",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-pass3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車のブレーキ",
+  "desc": "鉄のきしむ音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-brake1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車の発車ベル",
+  "desc": "ピロロロロ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-bell1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車発車1",
+  "desc": "中から録音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車発車2",
+  "desc": "外から録音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-start2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車走行中1",
+  "desc": "車内より",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-driving1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車走行中2",
+  "desc": "田舎の古い車両",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-driving2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車のドアが開く",
+  "desc": "プシュー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-door1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車停車",
+  "desc": "エンジン音減衰",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-stop1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車停車中",
+  "desc": "乗り降りの音なし",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-parked1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "電車",
+  "name": "電車の圧搾空気排出",
+  "desc": "プシューッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/train-steam1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "蒸気機関車",
+  "name": "蒸気機関車の汽笛1",
+  "desc": "昭和の哀愁漂う響き",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/locomotive-whistle1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "蒸気機関車",
+  "name": "蒸気機関車の汽笛2",
+  "desc": "近距離から",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/locomotive-whistle2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "蒸気機関車",
+  "name": "蒸気機関車発車",
+  "desc": "シュッポシュッポ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/locomotive-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "蒸気機関車",
+  "name": "蒸気機関車通過",
+  "desc": "汽笛とともに走り抜ける",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/locomotive-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "蒸気機関車",
+  "name": "蒸気機関車停車中",
+  "desc": "停車中も蒸気を出し続ける",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/locomotive-parked1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "モノレール",
+  "name": "モノレール発車1",
+  "desc": "モノレール内",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/monorail-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "モノレール",
+  "name": "モノレール発車2",
+  "desc": "モノレール外",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/monorail-start2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "モノレール",
+  "name": "モノレール走行中",
+  "desc": "タイヤの音がする",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/monorail-driving1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "モノレール",
+  "name": "モノレール停車中",
+  "desc": "モノレール外",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/monorail-stop1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "新幹線",
+  "name": "新幹線発車",
+  "desc": "あまり大きな音はしない",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bullet-train-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "新幹線",
+  "name": "新幹線走行中",
+  "desc": "中から録音。ほとんど音がしない",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bullet-train-driving1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "新幹線",
+  "name": "新幹線ホーム",
+  "desc": "アナウンスを混ぜるといい感じ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bullet-train-home1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "飛行機",
+  "name": "飛行機上空通過1",
+  "desc": "上空30m",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/airliner-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "飛行機",
+  "name": "飛行機上空通過2",
+  "desc": "上空1000m",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/airliner-pass2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "飛行機",
+  "name": "戦闘機上空通過1",
+  "desc": "ヴェイパーコーン発生",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/fighter-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "飛行機",
+  "name": "戦闘機上空通過2",
+  "desc": "長め",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/fighter-pass2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "飛行機",
+  "name": "戦闘機内（飛行中）",
+  "desc": "キーン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/fighter-cockpit1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "飛行機",
+  "name": "プロペラ機上空通過",
+  "desc": "軍用",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/propeller-aircraft-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプター上空通過",
+  "desc": "上空20m",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-pass2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプター飛行中（機外）",
+  "desc": "空を飛び続けるシーンに",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-flight1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプター飛行中（機内）",
+  "desc": "会話が難しいほどの騒音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-flight2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプターエンジン始動（機外）",
+  "desc": "プロペラの回転数を上げていく",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-engine-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプター乗降待機（機外）",
+  "desc": "人を乗せるためにプロペラ回転数を落とす",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-wait1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプターに乗り込む→飛び去る（機内）",
+  "desc": "途中から機内に切り替わる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-ride1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプターが基地から飛び去る（機外）",
+  "desc": "ゆっくり上昇したのち飛び去る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-take-off2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプター着陸（機外）",
+  "desc": "強い風が発生",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-landing1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプター着陸（機内）→外へ出る",
+  "desc": "ドアを開けた途端に風が入り込む",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-out1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ヘリコプター",
+  "name": "ヘリコプターのエンジンを切る（機外）",
+  "desc": "掃除機の音にも似ている",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/helicopter-engine-off1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "船",
+  "name": "大型船の汽笛1",
+  "desc": "遠距離から。船が大きいほど音が低い",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/ship-big-whistle1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "船",
+  "name": "大型船の汽笛2",
+  "desc": "近距離から。出航時は3回鳴らす",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/ship-big-whistle2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "船",
+  "name": "大型船航行中",
+  "desc": "後部付近甲板から",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/ship-big-underway1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "船",
+  "name": "大型船の面舵/取舵一杯",
+  "desc": "舵（かじ）を回す",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/ship-big-rudder1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "船",
+  "name": "SOSのモールス信号を打つ",
+  "desc": "古い技術",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/morsecode-sos1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "船",
+  "name": "船が岩に衝突",
+  "desc": "ガゴオォォン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/ship-collision1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットが変形",
+  "desc": "別の形態に変わる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/machine-deformation1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボット合体1",
+  "desc": "ロボットアニメのロゴ音風",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/union1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボット合体2",
+  "desc": "衝撃強め。着地音にも使える",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/union2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボット合体3",
+  "desc": "衝撃弱め",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/union3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットの足音1",
+  "desc": "ロボットアニメのイメージ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/robot-footstep1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットの足音2",
+  "desc": "ガション",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/robot-footstep2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットの足音3",
+  "desc": "巨大ロボット",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/robot-footstep3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットが腕を動かす1",
+  "desc": "ウイーン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/arm-action1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットが腕を動かす2",
+  "desc": "短め",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/arm-action2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "巨大ロボットが腕を動かす1",
+  "desc": "ロボットアニメ風",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/giant-arm-action1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "巨大ロボットが腕を動かす2",
+  "desc": "遠くで響く感じ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/giant-arm-action2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "巨大ロボットが腕を動かす3",
+  "desc": "リアル寄りの音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/giant-arm-action3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "巨大ロボットが倒れる",
+  "desc": "ガシャーン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/giant-robot-down1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "巨大モーター起動",
+  "desc": "ウイーン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/giant-motor1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ブースタージャンプ1",
+  "desc": "ダッシュにも使える",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/booster1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ブースタージャンプ2",
+  "desc": "長め",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/booster2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボット起動1",
+  "desc": "コンピュータが動き出す",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/robot-startup1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボット起動2",
+  "desc": "エネルギー充填完了",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/robot-startup2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "ロボットの目が光る",
+  "desc": "キューン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/robot-eye-flash1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "コンピューター音",
+  "desc": "AIが動く",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/computer1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "ロボット・メカ",
+  "name": "巨大シャッターが開く",
+  "desc": "ロボット発進",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/giant-shutter1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "電話の呼び出し音",
+  "desc": "トゥルルルル",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-tone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "電話の着信音",
+  "desc": "ピロリロリロ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-ringtone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "黒電話のベルが鳴る",
+  "desc": "古い電話機",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-black-ringtone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "受話器を取る",
+  "desc": "オフィス用の電話機",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-receiver-pickup1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "電話が切れる1",
+  "desc": "ブツッ、ツーツー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-cut1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "電話が切れる2",
+  "desc": "ブツッという音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-cut2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "受話器を置く",
+  "desc": "ガチャ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/phone-receiver-hangup1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話の呼び出し音",
+  "desc": "トゥルルルルの前",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-tone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話の着信音1",
+  "desc": "ピピピピピ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-ringtone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話の着信音2",
+  "desc": "バッハ パルティータ3番",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-ringtone2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話の着信音3",
+  "desc": "眠れる森の美女 第一幕より",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-ringtone3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話に出る",
+  "desc": "ピッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-pickup1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話をたたむ",
+  "desc": "いわゆるガラケー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-close1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話のバイブレーション1",
+  "desc": "ブイーン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-vibration1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "携帯電話のバイブレーション2",
+  "desc": "机の上",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mobile-phone-vibration2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "公衆電話のふたを閉める",
+  "desc": "お金を取り出す",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/publictelephone-close1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "公衆電話にお金を入れる",
+  "desc": "カチャッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/publictelephone-money1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "公衆電話の受話器を取る1",
+  "desc": "すばやく取る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/publictelephone-receiver1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "公衆電話の受話器を取る2",
+  "desc": "普通に取る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/publictelephone-receiver2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "電話をかける",
+  "desc": "ピポパ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/telephone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "モールス信号",
+  "desc": "ピーピッピピーッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/morse1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "トランシーバーのノイズ",
+  "desc": "ザザーッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/snow-noise1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "通信",
+  "name": "妨害電波",
+  "desc": "ガガ…ピー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/jammer1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "パソコンの電源を入れる",
+  "desc": "実際はかなり小さい音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/pc-on1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "パソコンの電源を切る",
+  "desc": "カッという音が印象的",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/pc-off1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "クリック",
+  "desc": "パソコンのマウス",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/click1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "ダブルクリック",
+  "desc": "パソコンのマウス",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/click2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "キーボード1",
+  "desc": "かなキー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/keyboard1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "キーボード2",
+  "desc": "Enterを「ッターン！」",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/keyboard2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "キーボードの早打ち1",
+  "desc": "デスクトップPC",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/keyboard-high-speed1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "キーボードの早打ち2",
+  "desc": "ノートPC",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/keyboard-high-speed2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "ディスクを入れる",
+  "desc": "ディスクトレイが入る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/disk-insert1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "トレイにディスクをセット",
+  "desc": "傷がつかないよう慎重に",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/disk-set1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "ディスクを取り出す",
+  "desc": "ディスクトレイが出る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/disk-takeout1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "マイクのホワイトノイズ",
+  "desc": "シャー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/mike-noise1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "ヘッドホンから音漏れ",
+  "desc": "音は小さくしましょう",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/headphone1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "パソコン",
+  "name": "プリンタで印刷",
+  "desc": "少し大きめのプリンタ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/printer-print1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "工事・土木",
+  "name": "チェーンソーの起動",
+  "desc": "紐を引っ張って起動",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/chainsaw-start-up1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "工事・土木",
+  "name": "チェーンソーで木を切る1",
+  "desc": "松の木を切断",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/chainsaw-cut1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "工事・土木",
+  "name": "チェーンソーで木を切る2",
+  "desc": "太い木を切る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/chainsaw-cut2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "工事・土木",
+  "name": "電気ドリル",
+  "desc": "主に穴を開けるのに使われる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/drill1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "カメラ",
+  "name": "カメラのシャッター1",
+  "desc": "ウィンウィン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/camera-shutter1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "カメラ",
+  "name": "カメラのシャッター2",
+  "desc": "カシャッと撮影",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/camera-shutter2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "カメラ",
+  "name": "カメラのシャッター3",
+  "desc": "駆動音大きめのフィルムカメラ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/camera-shutter3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "カメラ",
+  "name": "記者会見のシャッター音",
+  "desc": "色んなカメラの音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/camera-press-conference-shutter1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のエンジンをかける1",
+  "desc": "普通乗用車",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-engine1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のエンジンをかける2",
+  "desc": "車内で録音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-engine2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のエンジンを止める",
+  "desc": "車内で録音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-engine-stop2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のアイドリング",
+  "desc": "普通乗用車",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-idling1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のウインカーを出す",
+  "desc": "チッカンチッカン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-blinker1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車通過1",
+  "desc": "普通乗用車",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "スーパーカー通過",
+  "desc": "90年代のエンジンサウンド",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/f1-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車の鍵を開ける",
+  "desc": "4つのドアすべてのロック解除",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-door-unlocking1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のドアを開ける",
+  "desc": "車内、車外どちらのシーンでも",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-door-open1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のドアを閉める",
+  "desc": "外の空気がうまい",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-door-close1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のギアチェンジ",
+  "desc": "マニュアル車",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-gear-change1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車の中",
+  "desc": "ゆったり走行中",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-interior1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "雨の車の中",
+  "desc": "ワイパーの音が聞こえる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-interior-rain1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車が停車する",
+  "desc": "走ってきて停車",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-stop1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のブレーキ",
+  "desc": "キッ。弱めのブレーキ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-brake1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車の急ブレーキ1",
+  "desc": "本物の音を間近で録音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-sudden-braking1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車の急ブレーキ2",
+  "desc": "タイヤロックで大きく滑る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-sudden-braking2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のロケットスタート",
+  "desc": "キャキャキャキャ！",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-rocket-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車で急カーブを走り抜ける",
+  "desc": "車暴走癖のあるキャラに",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-sudden-curve1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "車のクラクション",
+  "desc": "ピーッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-horn1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "スーパーカーをふかす",
+  "desc": "VON ! VON !",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/f1-engine1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "自動車事故",
+  "desc": "ブレーキ音が空しく響く",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-accident1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "カークラッシュ",
+  "desc": "重々しい激突音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-clash1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "カーレーススタート",
+  "desc": "多種多様なエンジンサウンド",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/f1-race-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "カーチェイス",
+  "desc": "車同士の激しい競り合い",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/car-chase1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "ダンプカーのアイドリング",
+  "desc": "重低音あふれる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/dump-truck-idling1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自動車",
+  "name": "トラックの荷台扉を閉める",
+  "desc": "宅配便などの車",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/truck-carrier-door1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バス発車1",
+  "desc": "親子連れがいる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バス発車2",
+  "desc": "若干話し声がする",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-start2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バス発車3",
+  "desc": "車外から",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-start3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バス停車中1",
+  "desc": "みんな黙るが子供はしゃべる",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-stop1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バス停車中2",
+  "desc": "車外から",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-stop2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バスのドアが開く1",
+  "desc": "勢いよく開く",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-door1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バス",
+  "name": "バスのドアが開く2",
+  "desc": "普通に開く",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bus-door2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バイク",
+  "name": "バイクのエンジンをかける",
+  "desc": "自動二輪",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bike-start-up1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バイク",
+  "name": "バイク発進",
+  "desc": "自動二輪",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bike-start1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バイク",
+  "name": "バイク通過1",
+  "desc": "ブーン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bike-pass1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バイク",
+  "name": "バイク通過2",
+  "desc": "1とは別の車種",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bike-pass2.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "バイク",
+  "name": "バイク通過3",
+  "desc": "マフラー改造車の爆音",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bike-pass3.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自転車",
+  "name": "自転車走行中",
+  "desc": "カチャカチャ音がする",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bicycle-run1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自転車",
+  "name": "自転車で坂道を下る",
+  "desc": "ペダルはこがない",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bicycle-slope1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "自転車",
+  "name": "自転車のベル",
+  "desc": "チリン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/bicycle-bell1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "扇風機",
+  "name": "扇風機の電源を入れる",
+  "desc": "普通の風速",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electric-fan-on1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "扇風機",
+  "name": "扇風機の弱回転",
+  "desc": "そよ風",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electric-fan-low1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "扇風機",
+  "name": "扇風機の中回転",
+  "desc": "涼しい",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electric-fan-middle1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "扇風機",
+  "name": "扇風機の強回転",
+  "desc": "強風",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electric-fan-high1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "扇風機",
+  "name": "扇風機の電源を切る",
+  "desc": "シューン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electric-fan-off1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "レバーを倒す",
+  "desc": "ガシャン",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/lever1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "エアコン",
+  "desc": "ゴオオオ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/airconditioning1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "探知機",
+  "desc": "GPS機能付き",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/finder1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "ドライヤー",
+  "desc": "髪を乾かす",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/dryer1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "目覚まし時計のアラーム",
+  "desc": "ピピピピッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/alerm1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "交差点の音響信号",
+  "desc": "カッコー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/acoustic-signal1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "エスカレーター",
+  "desc": "自動階段",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/escalator1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "電気シェーバー",
+  "desc": "内刃で毛を剃る",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/shaving-operation1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "心電図1",
+  "desc": "ピッピッ",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electro-cardiogram1.mp3"
+ },
+ {
+  "cat": "machine",
+  "group": "その他",
+  "name": "心電図2",
+  "desc": "ピッ…ピッ…ピーー",
+  "url": "https://soundeffect-lab.info/sound/machine/mp3/electro-cardiogram2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "革靴で歩く",
+  "desc": "道路",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-leather-shoes1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "アスファルトの上を歩く1",
+  "desc": "スタンダード歩行音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-asphalt1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "アスファルトの上を歩く2",
+  "desc": "少し足を速める",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-asphalt2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "土の上を歩く",
+  "desc": "ザッザッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-soil1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "芝生の上を歩く",
+  "desc": "背の低い草",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-lawn1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "草むらを歩く",
+  "desc": "背の高い草",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-tussock1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "下駄で歩く",
+  "desc": "カランコロン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-geta1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "学校の廊下を歩く",
+  "desc": "上履き着用",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-school1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "フローリングの上を歩く1",
+  "desc": "裸足の足音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-flooring1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "フローリングの上を歩く2",
+  "desc": "靴下の足音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-flooring2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "畳の上を歩く",
+  "desc": "靴下の足音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-tatami1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "じゅうたんの上を歩く",
+  "desc": "やわらかい足音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-carpet1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "砂の上を歩く",
+  "desc": "砂漠や海岸のシーンに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-sand1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "砂利の上を歩く",
+  "desc": "ザッザッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-gravel1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "体育館で歩く",
+  "desc": "館内に響き渡る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-gymnasium1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "落ち葉の上を歩く",
+  "desc": "秋のイメージ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-fallen-leaves1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "雪の上を歩く1",
+  "desc": "ズボッズボッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-snow1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "雪の上を歩く2",
+  "desc": "溶けかけシェイク状",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-snow2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "スリッパで歩く",
+  "desc": "フローリングの上",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-slipper1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "プールサイドを歩く",
+  "desc": "プールの授業のシーンなどに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-poolside1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "雨で濡れた道路を歩く",
+  "desc": "ビチャビチャ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-wet1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "水に浸かりながら歩く",
+  "desc": "膝上まで浸かった状態",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-soak-water1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "軍隊の行進",
+  "desc": "ザッザッザッザッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-army1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "歩く（足音）",
+  "name": "家の階段を下りる",
+  "desc": "フローリング",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/walk-staircase-home-descend1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "革靴で走る",
+  "desc": "道路",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-leather-shoes1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "アスファルトの上を走る1",
+  "desc": "駆け足",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-asphalt1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "アスファルトの上を走る2",
+  "desc": "全力疾走",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-asphalt2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "土の上を走る",
+  "desc": "硬い土",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-soil1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "芝生の上を走る",
+  "desc": "背の低い草",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-lawn1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "草むらを走る",
+  "desc": "草をかき分けて進む",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-tussock1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "下駄で走る",
+  "desc": "石の上",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-geta1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "学校の廊下を走る",
+  "desc": "上履き着用",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-school1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "畳の上を走る",
+  "desc": "靴下の足音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-tatami1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "じゅうたんの上を走る",
+  "desc": "靴下の足音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-carpet1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "砂の上を走る",
+  "desc": "足が砂に沈む",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-sand1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "砂利の上を走る",
+  "desc": "小さな石が飛ぶ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-gravel1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "体育館で走る",
+  "desc": "上履き着用",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-gymnasium1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "落ち葉の上を走る",
+  "desc": "ザッザッザッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-fallen-leaves1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "雪の上を走る1",
+  "desc": "あまり速く走れない",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-snow1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "雪の上を走る2",
+  "desc": "シェイク状。走ると危険",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-snow2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "スリッパで走る",
+  "desc": "フローリングの上",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-slipper1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "雨で濡れた道路を走る",
+  "desc": "雨のシーンに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-wet1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "プールサイドを走る",
+  "desc": "濡れた足で",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-poolside1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "部屋に駆け込んでくる",
+  "desc": "緊迫したシーンに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-in-room1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "大勢の人が走る",
+  "desc": "軍隊の突撃などに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/manypeople-dash1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "大勢の人が走る→立ち止まる",
+  "desc": "取り囲む",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/manypeople-stop1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "下駄で着地",
+  "desc": "石の上",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/landing-geta1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "走る（足音）",
+  "name": "家の階段を駆け上る",
+  "desc": "狭い空間の響き",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dash-staircase-home-climb1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水滴1",
+  "desc": "ピッ。一滴の涙",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-drop1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水滴2",
+  "desc": "ピチャッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-drop2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水滴3",
+  "desc": "ぽちゃん",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-drop3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水滴がポタポタ",
+  "desc": "6秒間、水滴がしたたる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-drop-potapota1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水面に石投げ1",
+  "desc": "小さな石",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-throw-stone1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水面に石投げ2",
+  "desc": "巨大な石",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-throw-stone2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "ダイビング（水中）",
+  "desc": "水の中から聞いた音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/diving-underwater1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水面に浮かび上がる",
+  "desc": "顔を出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/float-water-surface1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "激しい水流（水中）",
+  "desc": "水中の戦闘シーンにも使える",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-flow1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水中で息を吐く1",
+  "desc": "ブクッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/underwater-breathing1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水中で息を吐く2",
+  "desc": "水中のこもった音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/underwater-breathing2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水中で息を吐く3",
+  "desc": "ゴボッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/underwater-breathing3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水中で溺れる",
+  "desc": "息を大量に吐き出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/underwater-drown1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "バタ足で泳ぐ",
+  "desc": "バシャバシャ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bataashi1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "海岸の波打ち際を走り回る",
+  "desc": "海のシーンに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/beach-flirt1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水をバシャッとかける1",
+  "desc": "海のシーンで",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sprinkle-water1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水をバシャッとかける2",
+  "desc": "海辺で遊ぶ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sprinkle-water2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水ぶくぶく1",
+  "desc": "フラスコの中の液体が泡立つ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-bukubuku1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水ぶくぶく2",
+  "desc": "水中で息を吐き出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-bukubuku3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "水",
+  "name": "水ちょろちょろ",
+  "desc": "蛇口少しだけひねる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-shed1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを開ける1",
+  "desc": "ガチャッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを開ける2",
+  "desc": "残響少なめ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-open2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを開ける3",
+  "desc": "室内",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-open3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを閉める1",
+  "desc": "木のドア",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを閉める2",
+  "desc": "室内",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-close2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを閉める3",
+  "desc": "室内",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-close3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "鍵を開ける1",
+  "desc": "カチャッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/key-in1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "自動ドアが開く",
+  "desc": "ウィーン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/autodoor-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "引き戸を開ける1",
+  "desc": "お風呂の戸",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/slidingdoor-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "引き戸を開ける2",
+  "desc": "玄関の古めかしい戸",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/slidingdoor-open2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "引き戸を開ける3",
+  "desc": "土蔵の戸",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/slidingdoor-open3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "引き戸を閉める",
+  "desc": "お風呂の戸",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/slidingdoor-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "教室の戸を開ける",
+  "desc": "スライド式",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/classroom-door-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "鉄の扉を開ける",
+  "desc": "サイズ大きめ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/iron-door-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "鉄の扉を閉める",
+  "desc": "ガシャン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/iron-door-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "門を開ける",
+  "desc": "ギギギギ…",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/gate-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "古びたドアを開ける",
+  "desc": "ギイイイ…",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-old-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "牢屋の扉を閉める",
+  "desc": "鉄の音が響く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/jail-door-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "開かないドア1",
+  "desc": "ドアノブをガチャガチャ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/donotopen1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "開かないドア2",
+  "desc": "押してみてもダメ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/donotopen2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアをドンドン叩く",
+  "desc": "脱出ゲームなどに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-dondon1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアを蹴破る",
+  "desc": "ドガッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-kick1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ふすまを開ける1",
+  "desc": "普通に開ける",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/fusuma-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ふすまを開ける2",
+  "desc": "勢いよく開ける",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/fusuma-open2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ふすまを閉める",
+  "desc": "和風素材",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/fusuma-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアノブをひねる1",
+  "desc": "鉄製の丸いもの",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/doorknob1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "木のドアをノック1",
+  "desc": "コンコン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-wood-knock1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "木のドアをノック2",
+  "desc": "5回連続",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-wood-knock2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "鉄のドアをノック1",
+  "desc": "カンカン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-iron-knock1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "鉄のドアをノック2",
+  "desc": "5回連続",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/door-iron-knock2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "石の壁がスライドする",
+  "desc": "遺跡の仕掛け",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/stone-wall-slide1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアチャイム1",
+  "desc": "玄関のピンポン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/doorchime1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "ドア",
+  "name": "ドアチャイム2",
+  "desc": "矩形波バージョン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/doorchime2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "レジスターで精算",
+  "desc": "お金が絡む演出にも使える",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/clearing1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "お金がジャラジャラ",
+  "desc": "一攫千金",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/money1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "財布を開ける",
+  "desc": "お金が入ってること前提",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wallet-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "財布を閉じる",
+  "desc": "ボタンの音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wallet-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "財布をジャラッ",
+  "desc": "ポケットから取り出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wallet1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "財布からお金を取り出す",
+  "desc": "じゃらじゃら",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/purse-in1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "財布にお金を入れる",
+  "desc": "ゴソゴソ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/purse-in2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "お金を落とす1",
+  "desc": "硬貨一枚",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/money-drop1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お金",
+  "name": "お金を落とす2",
+  "desc": "硬貨が散らばる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/money-drop2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "お風呂から上がる",
+  "desc": "ザバーッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bath-out1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "お風呂でごしごし1",
+  "desc": "泡立てたスポンジで",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bath-wash1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "お風呂でごしごし2",
+  "desc": "動作遅め",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bath-wash2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "お風呂でチャポン",
+  "desc": "湯船で起こる波",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bath-thapon1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "お風呂でシャワー",
+  "desc": "体に当てる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bath-shower1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "シャンプーを出す",
+  "desc": "掌の上に",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/shampoo-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "風呂桶でカポーン",
+  "desc": "お風呂の演出音に",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bathtub1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "タオルで手を拭く",
+  "desc": "パンパン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/towel-wipe-hand1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "タオルで身体を拭く",
+  "desc": "水分を拭き取る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/towel-wipe-body1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "お風呂に水を入れる",
+  "desc": "ドボボボ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bath-addwater1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "シャワー1",
+  "desc": "水を出すところから",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/shower1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "お風呂",
+  "name": "シャワー2",
+  "desc": "水の上にシャワー",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/shower2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機に服を入れる",
+  "desc": "ボフッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-laundry-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機から服を取り出す",
+  "desc": "ボタンが当たる音がする",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-laundry-takeout1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機スイッチオン",
+  "desc": "まずは水が入る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-switch1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機のふたを開ける",
+  "desc": "折り畳み式",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機のふたを閉める",
+  "desc": "プラスチックが当たる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機動作中",
+  "desc": "うなる重低音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-operation1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "洗濯機動作終了",
+  "desc": "ガコンピーッピーッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washing-machine-operation-completed1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "濡れた洗濯物を広げる",
+  "desc": "洗濯機から取り出したて",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/laundry-spread1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗濯",
+  "name": "濡れた洗濯物をバサッ",
+  "desc": "水を払う",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/laundry-basa1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "TV・映像",
+  "name": "ビデオディスクをケースから出す",
+  "desc": "カパッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dvd-case-takeout1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "TV・映像",
+  "name": "ビデオディスクのケースを開ける",
+  "desc": "はまっているディスクを出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dvd-case-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "TV・映像",
+  "name": "ビデオディスクをケースに入れる",
+  "desc": "ディスクをはめる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dvd-case-insert1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "TV・映像",
+  "name": "ビデオディスクのケースを閉める",
+  "desc": "パチッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dvd-case-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "窓",
+  "name": "窓を開ける",
+  "desc": "スライド式",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/window-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "窓",
+  "name": "窓を閉める",
+  "desc": "スライド式",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/window-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "窓",
+  "name": "窓をノック1",
+  "desc": "コンコン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wind-knock1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "窓",
+  "name": "窓をノック2",
+  "desc": "5回",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wind-knock2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "窓",
+  "name": "カーテンを開ける",
+  "desc": "シャッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/curtain-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "水道の水を出す",
+  "desc": "しばらくの間流す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "水道の水を止める",
+  "desc": "蛇口をひねる音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/water-stop1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "流しで皿洗い",
+  "desc": "食器同士が当たる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sink-dish-washing1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "炊飯器のふたを開ける",
+  "desc": "電子ジャー",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/rice-cooker-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "炊飯器のふたを閉める",
+  "desc": "カチッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/rice-cooker-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "電子レンジを開ける",
+  "desc": "引っ張る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/microwave-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "電子レンジを閉める",
+  "desc": "ガチャン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/microwave-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "冷蔵庫を開ける",
+  "desc": "冷気が噴き出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/refrigerator-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "冷蔵庫を閉める",
+  "desc": "バスン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/refrigerator-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "オーブンのダイヤルを回す",
+  "desc": "ギギギギ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/oven-dial1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "オーブンのタイマー",
+  "desc": "カチカチ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/oven-timer1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "アルミホイルをちぎる",
+  "desc": "ぎざぎざのフチでカット",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/aluminum-foil-cut1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "アルミホイルで包む",
+  "desc": "独特のパサパサ音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/aluminum-foil-wrap1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ラップをちぎる",
+  "desc": "ギザギザのフチでカット",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/saran-wrap-cut1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ラップで包む",
+  "desc": "ラップでなにかする音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/saran-wrap-wrap1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ガスコンロ点火",
+  "desc": "火がしばらく燃える",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/stove-burner-ignition1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ガスコンロの火を止める",
+  "desc": "カチッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/stove-burner-stop1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ぐつぐつ煮る",
+  "desc": "煮物の香りが漂う",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/cook1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ヤカンのふたを閉める",
+  "desc": "沸騰後だと熱い",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/kettle-top-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "ヤカンが沸騰",
+  "desc": "ピィ～～",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/kettle-boiling1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "包丁で切る1",
+  "desc": "タマネギを切る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/kitchen-knife-cut1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "包丁で切る2",
+  "desc": "タマネギを少し早く切る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/kitchen-knife-cut2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "包丁で切る3",
+  "desc": "タマネギを超高速で切る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/kitchen-knife-cut3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "卵をコンコン",
+  "desc": "割る前にひびを入れる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/egg-konkon1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "卵を割る",
+  "desc": "ひびを入れた殻を開く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/egg-break1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "目玉焼きを焼く",
+  "desc": "美味しそうな音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/fried-egg1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "台所",
+  "name": "餃子を揚げる",
+  "desc": "油がはねる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/fry-dumpling1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "お菓子を袋から出す",
+  "desc": "ビニール袋を開ける",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sweet-bag-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "お菓子の袋を開ける",
+  "desc": "ビニール袋をガサゴソ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sweet-bag-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "お菓子を食べる1",
+  "desc": "スナック",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sweet-eat1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "お菓子を食べる2",
+  "desc": "ポテチ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sweet-eat2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "ガムを噛む",
+  "desc": "くちゃくちゃ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/gum1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "リンゴをかじる",
+  "desc": "ガブッと丸かじり",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/apple1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "ラーメンを食べる",
+  "desc": "ズズ～ッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/ramen1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "グラスを置く",
+  "desc": "木の台の上に置く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/glass-place1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "コーヒーのソーサーを置く",
+  "desc": "コトン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/caffee-saucer-place1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "ソーサーにコーヒーカップを置く",
+  "desc": "カチャン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/saucer-caffee-place1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "氷の入ったグラス",
+  "desc": "氷の当たる音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/glass-ice1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "グラスに水を注ぐ",
+  "desc": "氷入り",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/glass-water1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "グラスに炭酸飲料を注ぐ",
+  "desc": "シュワーッと泡立つ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/glass-carbonated-drink1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "グラスにワインを注ぐ",
+  "desc": "クックックッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/glass-wine1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "グラスを合わせる",
+  "desc": "2人でチン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/glass1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "コルク栓を抜く1",
+  "desc": "スポッ。ギャグ音にも使える",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/cork-plug1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "コルク栓を抜く2",
+  "desc": "ポン。ワイン用",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/cork-plug2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "缶を開ける",
+  "desc": "仕事の後の一杯",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/can-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "飲む",
+  "desc": "ゴックン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/drink1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "きゅうすのふたを開ける",
+  "desc": "湯気が上がる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/teapot-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "きゅうすのふたを閉める",
+  "desc": "カポッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/teapot-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "バナナをむしる",
+  "desc": "房から切り離す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/banana-pluck1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "茶碗を置く",
+  "desc": "陶器",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/cup-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "箸でカチカチ",
+  "desc": "ご飯を催促",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/chopsticks-katikati1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "飲食",
+  "name": "ご飯を一気にかき込む",
+  "desc": "あわただしい食事",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/rice-eat1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗面所",
+  "name": "顔を洗う",
+  "desc": "朝の1コマ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/face-wash1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗面所",
+  "name": "歯磨き",
+  "desc": "シャカシャカ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dentifrice1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗面所",
+  "name": "洗面所の水道",
+  "desc": "室内で響く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/washroom-water1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗面所",
+  "name": "トイレを流す1",
+  "desc": "トイレ内",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/toilet1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "洗面所",
+  "name": "トイレを流す2",
+  "desc": "トイレ外",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/toilet2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "キュッキュッと拭く1",
+  "desc": "ぞうきん",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wipe1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "キュッキュッと拭く2",
+  "desc": "高速",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/wipe2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "ぞうきんを絞る",
+  "desc": "バケツの上で絞る音響",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/dustcloth-squeeze1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "ほうきで掃く",
+  "desc": "室内を掃除",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/sweep1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "ほうきで落ち葉を掃く1",
+  "desc": "4回",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/broom-fallen-leaves1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "ほうきで落ち葉を掃く2",
+  "desc": "1回",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/broom-fallen-leaves2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "雪かき1",
+  "desc": "4回",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/shoveling-snow1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "雪かき2",
+  "desc": "1回",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/shoveling-snow2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "バケツを持つ",
+  "desc": "プラスチック製",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bucket-possess1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "バケツを置く",
+  "desc": "プラスチック製",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bucket-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "バケツを持ち上げる",
+  "desc": "鉄の摩擦音",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/bucket1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "掃除機の電源を入れる",
+  "desc": "家の掃除シーンに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/vacuum-cleaner-on1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "掃除機の電源を切る",
+  "desc": "シュウウーン",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/vacuum-cleaner-off1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "掃除機動作中",
+  "desc": "意外と耳にくる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/vacuum-cleaner-operation1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "掃除機のコードをしまう",
+  "desc": "スイッチを押すと高速収納",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/vacuum-cleaner-cord-put1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "掃除機のコードを出す",
+  "desc": "引っ張って出す",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/vacuum-cleaner-cord-pull1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "掃除",
+  "name": "黒板消しをパンパン",
+  "desc": "学校での清掃シーンに",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/erase-blackboard-panpan1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "カッターの刃を出す",
+  "desc": "大きめのカッター",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/cutter1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "シャーペンで字を書く",
+  "desc": "カキカキ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/mechanical-pencil-write1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "シャーペンの芯を出す",
+  "desc": "カチカチカチ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/mechanical-pencil-core1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "鉛筆が転がる",
+  "desc": "サイコロ鉛筆で運試し",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/pencil-roll1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "油性マーカーのキャップを開ける",
+  "desc": "カパッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/magic-cap-open1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "油性マーカーのキャップを閉じる",
+  "desc": "黒い",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/magic-cap-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "油性マーカーで字を書く",
+  "desc": "紙に書く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/magic-cap-write1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "ページをめくる1",
+  "desc": "指で持ってからめくる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/page1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "ページをめくる2",
+  "desc": "早くめくる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/page2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "紙を広げる1",
+  "desc": "普通に広げる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/paper-take1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "紙を広げる2",
+  "desc": "ピンと広げる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/paper-take2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "紙を破く1",
+  "desc": "ビリッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/paper-tear1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "紙を破く2",
+  "desc": "素早く破く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/paper-tear2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "紙を破く3",
+  "desc": "一瞬で破く",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/paper-tear3.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "紙を丸める",
+  "desc": "クシャクシャ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/paper-round1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "新聞紙を広げる",
+  "desc": "勢いよく広げる",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/newspaper-take1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "新聞紙をめくる",
+  "desc": "大きくて薄い紙",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/newspaper-turn-over1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "本を閉じる1",
+  "desc": "大きめの本",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/book-close1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "本を閉じる2",
+  "desc": "ハードカバーの分厚い本",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/book-close2.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "本を積み重ねる",
+  "desc": "パサッ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/book-stack1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "ハサミでチョキチョキ",
+  "desc": "空を切る",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/scissors1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "ハサミで紙を切る",
+  "desc": "ジョキジョキ",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/scissors-paper1.mp3"
+ },
+ {
+  "cat": "various",
+  "group": "紙・文房具",
+  "name": "セロハンテープをちぎる",
+  "desc": "ギザギザのフチでカット",
+  "url": "https://soundeffect-lab.info/sound/various/mp3/cellophane-tape-cut1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す1",
+  "desc": "ピッ。アプリなどに",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す2",
+  "desc": "使いやすさ重視の電子音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す3",
+  "desc": "柔らかめ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す4",
+  "desc": "成功音にも使える",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision4.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す5",
+  "desc": "深い響き",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision5.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す6",
+  "desc": "控えめの電子音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision6.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す7",
+  "desc": "カシャッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision7.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す8",
+  "desc": "読み込み完了",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision8.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す9",
+  "desc": "金属音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision9.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す10",
+  "desc": "ゲームのスキル取得演出",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision10.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す11",
+  "desc": "ドズン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision11.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す12",
+  "desc": "可愛い音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision12.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す13",
+  "desc": "ピン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision13.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す14",
+  "desc": "RPGの装備品変更",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision14.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す15",
+  "desc": "ドギュン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision15.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す16",
+  "desc": "ガラスのような音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision16.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す17",
+  "desc": "デジタルチック",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision17.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す18",
+  "desc": "RPGのゲームスタート音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision18.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す19",
+  "desc": "ジャキッ。装備変更音にも",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision19.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す20",
+  "desc": "ドキュイーン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision20.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す21",
+  "desc": "長めのキラキラした音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision21.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す22",
+  "desc": "ピコッ。可愛らしい",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision22.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す23",
+  "desc": "控え目な決定音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision23.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す24",
+  "desc": "明るい長めの音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision24.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す25",
+  "desc": "残響深めの高音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision25.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す26",
+  "desc": "ポップなイメージ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision26.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す27",
+  "desc": "かなり長め",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision27.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す28",
+  "desc": "鉄琴の生演奏",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision28.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す29",
+  "desc": "木琴の生演奏",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision29.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す30",
+  "desc": "爽やかな電子音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision30.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す31",
+  "desc": "カチッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision31.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す32",
+  "desc": "指パッチンに近い",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision32.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す33",
+  "desc": "フォーン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision33.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す34",
+  "desc": "ポン。柔らかい音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision34.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す35",
+  "desc": "ポピッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision35.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す36",
+  "desc": "シュキーン。派手な音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision36.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す37",
+  "desc": "キラリーン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision37.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す38",
+  "desc": "カッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision38.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す39",
+  "desc": "ペチョッ。可愛い音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision39.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す40",
+  "desc": "ピロン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision40.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す41",
+  "desc": "高めのきらきらした音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision41.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す42",
+  "desc": "プホッ。可愛い音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision42.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す43",
+  "desc": "シュイーン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision43.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す44",
+  "desc": "コカッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision44.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す45",
+  "desc": "キュピッ。可愛い音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision45.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す46",
+  "desc": "キュルリッ。高い音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision46.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す47",
+  "desc": "木琴使用",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision47.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す48",
+  "desc": "キコッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision48.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す49",
+  "desc": "ピロン。ゲーム風",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision49.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す50",
+  "desc": "カコッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision50.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す51",
+  "desc": "木琴に近い音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision51.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す52",
+  "desc": "ポン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision52.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "決定ボタンを押す53",
+  "desc": "ピロリン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/decision53.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動1",
+  "desc": "クセの少ない電子音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動2",
+  "desc": "カシャ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動3",
+  "desc": "ピッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動4",
+  "desc": "カッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor4.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動5",
+  "desc": "ゲーム系",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor5.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動6",
+  "desc": "ツッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor6.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動7",
+  "desc": "可愛いイメージ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor7.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動8",
+  "desc": "カッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor8.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動9",
+  "desc": "パッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor9.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動10",
+  "desc": "ヒッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor10.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動11",
+  "desc": "ピロッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor11.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "カーソル移動12",
+  "desc": "コッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cursor12.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル1",
+  "desc": "ヒッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル2",
+  "desc": "ビッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル3",
+  "desc": "ピュッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル4",
+  "desc": "ヒュッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel4.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル5",
+  "desc": "チュン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel5.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル6",
+  "desc": "ポップなイメージ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel6.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル7",
+  "desc": "サイバー感強め",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel7.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル8",
+  "desc": "中世RPGにも合う",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel8.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "キャンセル9",
+  "desc": "ザッ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/cancel9.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ビープ音1",
+  "desc": "選択不可項目を押した時のエラー音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/beep1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ビープ音2",
+  "desc": "ズン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/beep2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ビープ音3",
+  "desc": "低音強め",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/beep3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ビープ音4",
+  "desc": "ブブー",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/beep4.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ビープ音5",
+  "desc": "短め",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/beep5.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メニューを開く1",
+  "desc": "高い電子音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/menu1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メニューを開く2",
+  "desc": "ブォン。重低音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/menu2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メニューを開く3",
+  "desc": "ブォン。サイバー感強め",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/menu3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メニューを開く4",
+  "desc": "ウインドウが開く",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/menu4.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メニューを開く5",
+  "desc": "電源を入れる",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/menu5.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "データ表示1",
+  "desc": "グラフ等を出すときに",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/data-display1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "データ表示2",
+  "desc": "ウインドウが開く",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/data-display2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "データ表示3",
+  "desc": "ゲームのスコア画面",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/data-display3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "データ表示4",
+  "desc": "ホログラム表示",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/data-display4.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "警告音1",
+  "desc": "ピンピンピン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/warning1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "警告音2",
+  "desc": "危機感をあおる",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/warning2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メッセージ表示音1",
+  "desc": "RPGのセリフ表示",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/message-display1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メッセージ表示音2",
+  "desc": "ピピピピ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/message-display2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "メッセージ表示音3",
+  "desc": "可愛いイメージ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/message-display3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ゲージ回復1",
+  "desc": "体力回復",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/gauge-recovery1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ゲージ回復2",
+  "desc": "エネルギーチャージ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/gauge-recovery2.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "ゲージ回復3",
+  "desc": "控えめな音",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/gauge-recovery3.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "成功音",
+  "desc": "ゲーム等で何かが成功した時",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/success1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "説明ウインドウが開く",
+  "desc": "説明文表示",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/description-window1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "電子ルーレット",
+  "desc": "回転から停止まで",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/electronic-roulette1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "電子ルーレット回転中",
+  "desc": "ピピピピ",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/electronic-roulette-wheel1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "電子ルーレット停止ボタンを押す",
+  "desc": "バン",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/electronic-roulette-button1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "電子ルーレットが徐々に止まる",
+  "desc": "ピッピッピッ…",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/electronic-roulette-stop1.mp3"
+ },
+ {
+  "cat": "button",
+  "group": null,
+  "name": "電子ルーレットの出目が点滅",
+  "desc": "停止後に",
+  "url": "https://soundeffect-lab.info/sound/button/mp3/electronic-roulette-flashing1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "街の道路",
+  "desc": "車がたくさん走る",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/town1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "大都会",
+  "desc": "都会のどこにいても聞こえるノイズ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/big-city-sky1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "大都会の道路",
+  "desc": "新宿駅付近の歩道で",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/big-city1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "交差点",
+  "desc": "スクランブル交差点",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/intersection1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "駅前広場",
+  "desc": "街の中心",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/station-square1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "閑静な住宅街1",
+  "desc": "遠くで車の音がする",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/quiet-residential-area1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "閑静な住宅街2",
+  "desc": "スズメが鳴く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/quiet-residential-area2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "夜の繁華街",
+  "desc": "見渡す限り人だらけ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/downtown-night1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "騒がしい高校の教室",
+  "desc": "ガヤガヤ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/high-school-class-room1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "シーンと静まり返る教室",
+  "desc": "わずかに音がする",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/class-room-quiet1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "高校のグラウンド",
+  "desc": "野球部が活動中",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/high-school-ground1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "雨の街の道路",
+  "desc": "車が水をはねる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/town-rain1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "雨が降る1",
+  "desc": "自然の中で録音",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/rain1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "雨が降る2",
+  "desc": "街の小雨",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/rain2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "街を襲う集中豪雨",
+  "desc": "台風直撃で土砂降り",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/towm-torrential-rain1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "雷雨",
+  "desc": "対決シーンにも使える",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/thunderstorm1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "動物園",
+  "desc": "鳥の鳴き声か聞こえる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/zoo1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "工業地帯",
+  "desc": "機械が駆動する",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/industrialzone1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "公園1",
+  "desc": "大きな公園",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/park1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "公園2",
+  "desc": "アスレチックあり",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/park2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "自然公園1",
+  "desc": "街中",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/natural-park1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "たき火",
+  "desc": "パチパチと燃える",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/fire1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "海岸1",
+  "desc": "さざ波",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wave1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "海岸2",
+  "desc": "消波ブロック付近（激しい波）",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wave2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "海岸3",
+  "desc": "消波ブロック付近（穏やかな波）",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wave3.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "海岸4",
+  "desc": "静かな海",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wave4.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "カモメが鳴くビーチ",
+  "desc": "リゾート地",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/beach-seagull1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "水中",
+  "desc": "ゴボゴボ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/underwater1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "嵐の海",
+  "desc": "台風で荒れ狂う海",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/sea-storm1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "港",
+  "desc": "中型船の汽笛が聞こえる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/port1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "小型船の船着き場",
+  "desc": "波でギシギシ揺れる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/ferry1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "宇宙空間",
+  "desc": "星々がきらめく",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/space1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "異次元空間",
+  "desc": "時の流れが違う",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/different-dimension1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "死後の世界",
+  "desc": "死者の声が響く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/after-death-word1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "ヘリポート",
+  "desc": "ヘリコプター稼働中",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/heliport1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "小川",
+  "desc": "小川のせせらぎ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/creek1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "渓流",
+  "desc": "カジカガエルが鳴く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/mountain-stream1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "河原",
+  "desc": "遠くから聞こえる水の音",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/riverside1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "滝1",
+  "desc": "ドドドド",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/waterfall-small1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "滝2",
+  "desc": "小さめ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/waterfall-small2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "山奥の池",
+  "desc": "冒頭でカワセミが飛び立つ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/pond1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "カエルの大合唱",
+  "desc": "トウキョウダルマガエル",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/toad1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "スズメが鳴く朝",
+  "desc": "ドラマやアニメの朝のシーンに",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/sparrow-morning1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "カラスが鳴く夕方",
+  "desc": "ハシブトガラスの鳴き声",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/evening-crow1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "春の山",
+  "desc": "野鳥たちのコーラス",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/spring-mountain1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "ミンミンゼミが鳴く雑木林",
+  "desc": "アニメやドラマに",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/hyalessa-maculaticollis-thickets1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "夏の山1",
+  "desc": "ニイニイゼミとオオルリが鳴く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/summer-mountain1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "夏の山2",
+  "desc": "夕暮れにヒグラシが鳴く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/summer-mountain2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "夏の田舎道",
+  "desc": "田んぼのあぜから",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/summer-countryside1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "夏の田舎の夜",
+  "desc": "虫の鳴き声が聞こえる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/summer-night-country1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風鈴が鳴る家1",
+  "desc": "2種類の風鈴の音",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/furin-house1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風鈴が鳴る家2",
+  "desc": "セミの声入り",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/furin-house2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "軽井沢の野鳥たち1",
+  "desc": "早朝のさえずり",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/karuizawa-birds-1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "軽井沢の野鳥たち2",
+  "desc": "センダイムシクイ、ヒガラ等",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/karuizawa-birds-2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "アカヒゲが鳴く奄美大島の森",
+  "desc": "ルリカケスの声も",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/amami-nature1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "リュウキュウコノハズクが鳴く奄美大島の森",
+  "desc": "",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/amami-nature-night1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風に揺れる草木1",
+  "desc": "弱風",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/plants-swaying1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風に揺れる草木2",
+  "desc": "風の強い日",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/plants-swaying2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風が吹く1",
+  "desc": "ヒュオオオ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wind1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風が吹く2",
+  "desc": "強風が吹き荒れる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wind2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風が吹く3",
+  "desc": "不気味な音を立てる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wind3.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "風が吹く4",
+  "desc": "竜巻発生",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/wind4.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "吹雪",
+  "desc": "冬の雪山",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/snow-storm1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "水のしたたる洞窟",
+  "desc": "ピチャ…ピチャ…",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/cave1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "下水道",
+  "desc": "狭い空間に反響する水音",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/sewer1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "空港ロビー",
+  "desc": "旅行鞄を引きずる音が聞こえる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/airport1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "スーパーマーケット1",
+  "desc": "がやがや",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/supermarket1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "スーパーマーケット2",
+  "desc": "レジ付近",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/supermarket2.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "地下通路",
+  "desc": "靴音が響く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/subway-passage1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "駅改札口",
+  "desc": "ピーンポーン",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/examination1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "休日でごった返す駅構内",
+  "desc": "帰省ラッシュ",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/station-yard-holiday1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "レストラン",
+  "desc": "駅ビルの中",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/restaurant1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "ボウリング場",
+  "desc": "ストライクの音が響く",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/bowling-alley1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "ビリヤード場",
+  "desc": "広くて人数多め",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/pool-hall1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "宇宙基地",
+  "desc": "コンピュータ音が聞こえる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/space-base1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "家で食事",
+  "desc": "食器の音が聞こえる",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/home-meal1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "お風呂",
+  "desc": "ポチャン",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/bath1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "大浴場",
+  "desc": "温泉",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/spa1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "イベントホール",
+  "desc": "騒がしい会場",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/eventhall1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "花火大会",
+  "desc": "打ち上げ花火の連発",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/fireworks-display1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "巨大ロボット工場",
+  "desc": "広大な空間に響く金属音",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/giant-robot-factory1.mp3"
+ },
+ {
+  "cat": "environment",
+  "group": null,
+  "name": "魔力に満ちた部屋",
+  "desc": "RPGなどに使える",
+  "url": "https://soundeffect-lab.info/sound/environment/mp3/magical-power-room1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "和太鼓でドン",
+  "desc": "生録音。重厚感がある",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/drum-japanese1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "和太鼓でドドン",
+  "desc": "登場の演出にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/drum-japanese2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "和太鼓でカカッ",
+  "desc": "太鼓のフチ部分を叩く",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/drum-japanese-kaka1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ラッパのファンファーレ",
+  "desc": "喜びの演出に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/trumpet1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "レベルアップ",
+  "desc": "テッテレー",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/levelup1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "呪いの旋律",
+  "desc": "デデデーン。失敗演出などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/curse-melody1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ドラムロール",
+  "desc": "ダラララ。生演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/drum-roll1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ティンパニロール",
+  "desc": "ドドドドド。生演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/tympani-roll1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ロールの閉め",
+  "desc": "シンバル。登場音にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/roll-finish1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ジャン！",
+  "desc": "何かを紹介する時などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/jean1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ジャジャーン",
+  "desc": "紹介・登場など様々な演出に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/jajean1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ちゃんちゃん♪1",
+  "desc": "木琴で演奏。オチに使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/chan-chan1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ちゃんちゃん♪2",
+  "desc": "コントの締めなどに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/chan-chan2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ちゃんちゃん♪3",
+  "desc": "昭和風。トランペット使用",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/chan-chan3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ドーン",
+  "desc": "和太鼓やビブラスラップを一斉に鳴らす",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/doon1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "男衆「オウ！」",
+  "desc": "暑苦しい男たちの叫び",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/mens-ou1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "男衆「イエーイ！」",
+  "desc": "男だらけの大歓声",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/mens-yeah1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "男衆「イヤッホー！」",
+  "desc": "喜びが爆発",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/mens-yahoo1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "男衆「喝！」",
+  "desc": "カーーツ！",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/mens-katsu1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ドンドンパフパフ",
+  "desc": "動画を盛り上げる効果音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/dondonpafupafu1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "パフ",
+  "desc": "ラッパの音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/pafu1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ピコッ",
+  "desc": "ハンマーのおもちゃ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/pico-pico-hammer1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ラーメン屋台のメロディ",
+  "desc": "江戸時代からある旋律",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/ramen-stall1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "DJのスクラッチ1",
+  "desc": "ズビズビ。音楽番組などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/dj-scratch1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "DJのスクラッチ2",
+  "desc": "レコードのバックスピン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/dj-scratch2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "シーン切り替え1",
+  "desc": "場面転換。木琴で演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/sceneswitch1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "シーン切り替え2",
+  "desc": "ブオッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/sceneswitch2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "金額表示",
+  "desc": "レジの清算音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/amount-display1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "タイプライターで文字を打つ1",
+  "desc": "タイトル表示音などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/typewriter-1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "タイプライターで文字を打つ2",
+  "desc": "連続で打つ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/typewriter-2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "タイトル表示",
+  "desc": "ビジネスでも使いやすい爽やかな音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/title1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "ピアノの単音",
+  "desc": "深い響きの落ち着いた演出音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/piano-single1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "不安（ピアノ演奏）",
+  "desc": "恐ろしいことが起こる前触れ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/anxiety-piano1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "鈴を鳴らす",
+  "desc": "シャン。残響入り",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/bell1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "時代劇演出1",
+  "desc": "カァ～ッ。ビラスラップ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/costume-drama1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "時代劇演出2",
+  "desc": "カァァッ！キハーダ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/costume-drama2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "時代劇演出3",
+  "desc": "カッ！キハーダ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/costume-drama3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "琴の滑奏",
+  "desc": "しゃらららん",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/koto-glissando1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "小鼓（こつづみ）",
+  "desc": "歌舞伎や能で使われる太鼓",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/kotsudumi1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "尺八",
+  "desc": "生演奏。吹くのはかなり難しい",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shakuhachi1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "拍子木1",
+  "desc": "木を打ち鳴らす和楽器",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hyoushigi1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "拍子木2",
+  "desc": "キキッと2回連続",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hyoushigi2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "拍子木3",
+  "desc": "キッキッキッ……キキッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hyoushigi3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "演出",
+  "name": "警報が鳴る",
+  "desc": "危険なシーンの前に流すと効果的",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/emergency-alert1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ニュース・プレゼン（ビジネス系）",
+  "name": "ニュースタイトル表示1",
+  "desc": "見出しが出る時の音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/news-title1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ニュース・プレゼン（ビジネス系）",
+  "name": "ニュースタイトル表示2",
+  "desc": "緊急速報",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/news-title2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ニュース・プレゼン（ビジネス系）",
+  "name": "ニュースタイトル表示3",
+  "desc": "主張弱め",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/news-title3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ニュース・プレゼン（ビジネス系）",
+  "name": "ニュースタイトル表示4",
+  "desc": "ピピッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/news-title4.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ニュース・プレゼン（ビジネス系）",
+  "name": "プレゼンタイトル表示1",
+  "desc": "明るいイメージ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/presentation-title1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ニュース・プレゼン（ビジネス系）",
+  "name": "プレゼンタイトル表示2",
+  "desc": "水のイメージ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/presentation-title2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "文字表示の衝撃音1",
+  "desc": "ザッ！という迫力ある音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/text-impact1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "文字表示の衝撃音2",
+  "desc": "映画のPV風",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/text-impact2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "文字表示の衝撃音3",
+  "desc": "ズン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/text-impact3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "金属タイトル表示1",
+  "desc": "ガキーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/metal-logo1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "金属タイトル表示2",
+  "desc": "衝撃音弱め",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/metal-logo2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "金属タイトル表示3",
+  "desc": "動きを出すときに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/metal-logo3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "文字アニメーション1",
+  "desc": "デジタル感強め",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/logo-animation1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "文字アニメーション2",
+  "desc": "可愛く",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/logo-animation2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "映画の予告編",
+  "name": "ブウーン",
+  "desc": "重低音。スローモーションの表現にも",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/buun1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "放送",
+  "name": "学校のチャイム",
+  "desc": "キンコンカンコン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/school-chime1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "放送",
+  "name": "放送開始チャイム",
+  "desc": "ピンポンパンポン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/broadcasting-start1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "放送",
+  "name": "放送終了チャイム",
+  "desc": "終了のお知らせ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/broadcasting-end1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "放送",
+  "name": "自主規制ピー音",
+  "desc": "セリフを隠す",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/self-regulation1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "対戦カード表示1",
+  "desc": "「VS」の表示。電気がバチバチ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/match-card1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "対戦カード表示2",
+  "desc": "金属音と電気",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/match-card2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "ほら貝を吹き鳴らす",
+  "desc": "戦闘開始の合図",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/conch1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "試合開始のゴング",
+  "desc": "ボクシングやプロレスの試合",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/gong-played1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "試合終了のゴング",
+  "desc": "カンカンカンカンカン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/gong-played2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "突撃ラッパ",
+  "desc": "試合開始の演出などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/trumpet2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "エアーホーン",
+  "desc": "プァーッ。レース開始時に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/air-horn1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "男衆「始めいッ！」",
+  "desc": "ゲームスタート",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/mens-hajimei1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "対戦演出",
+  "name": "カウントダウン電子音",
+  "desc": "プッ、プッ、プッ、ピー",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/electronic-countdown1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "ホラータイトル表示音",
+  "desc": "恐怖をあおる",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/horror-title1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "ホラー文字表示音",
+  "desc": "怖いフォントとセットで",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/horror-text1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "恐怖",
+  "desc": "息詰まる空気",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/fear1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "男性の悲鳴",
+  "desc": "肝試し中に大音量で流せ！",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/scream1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "魔の時計塔の鐘",
+  "desc": "不安を煽る鐘の音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/clock-tower-bell1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "真夜中に鳴り出すピアノ",
+  "desc": "ガーンゴーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/piano-midnight1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "バイオリン恐怖音1",
+  "desc": "ヒュイッ、ヒュイッ…",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/violin-horror1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "バイオリン恐怖音2",
+  "desc": "迫る危機",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/violin-horror2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "バイオリン恐怖音3",
+  "desc": "叫びのような音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/violin-horror3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "幽霊が現れる",
+  "desc": "ヒュー",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/ghost1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "鳥の奇声",
+  "desc": "けたたましい声",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/fear-bird1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "恐怖の不協和音",
+  "desc": "驚かせる演出に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/dissonance1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "迫り来る恐怖",
+  "desc": "だんだん大きくなる恐怖音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/approaching-fear1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "ひたひたと何かが近づく1",
+  "desc": "だんだんこっちに来る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hitahita1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "ホラー・お化け屋敷",
+  "name": "ひたひたと何かが近づく2",
+  "desc": "途中から猛ダッシュ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hitahita2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ出題1",
+  "desc": "デデン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/question1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ出題2",
+  "desc": "「次の問題です」",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/question2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ正解1",
+  "desc": "ピンポンピンポンピンポン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/correct1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ正解2",
+  "desc": "鉄琴",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/correct2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ正解3",
+  "desc": "ハープ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/correct3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ正解4",
+  "desc": "シンセサイザー",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/correct4.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ正解5",
+  "desc": "高めの音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/correct5.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ不正解1",
+  "desc": "ブブー",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/incorrect1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ不正解2",
+  "desc": "残念でした",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/incorrect2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "制限時間タイマー",
+  "desc": "少しポップな感じ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/quiz-timer1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "制限時間タイマー（倍速）",
+  "desc": "残り時間わずか",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/quiz-timer-x2-1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ早押しボタン1",
+  "desc": "すばやく押す",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/quiz-button1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "クイズ",
+  "name": "クイズ早押しボタン2",
+  "desc": "そっと押す",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/quiz-button2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "シャキーン1",
+  "desc": "ポーズを決める",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shakin1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "シャキーン2",
+  "desc": "光る音にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shakin2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "シャキーン3",
+  "desc": "爽快感重視。ゲームにも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shakin3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "可愛く輝く1",
+  "desc": "魔法の音にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/cute-pose1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "可愛く輝く2",
+  "desc": "アイドルがポーズを取る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/cute-pose2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらきら輝く1",
+  "desc": "美しさの演出に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shine1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらきら輝く2",
+  "desc": "ウインドチャイムの音・長め",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shine2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらきら輝く3",
+  "desc": "鉄琴で演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shine3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらきら輝く4",
+  "desc": "しゃらーん",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shine4.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらきら輝く5",
+  "desc": "透明感ある輝き",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shine5.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらきら輝く6",
+  "desc": "ハープの生演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shine6.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "パッ",
+  "desc": "可愛くメッセージ表示",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/pa1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "パパッ",
+  "desc": "柔らかい演出音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/papa1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ペタッ",
+  "desc": "スタンプをつく時などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/peta1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "木魚ポク・ポク・ポク",
+  "desc": "この後にチーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/wood-fish1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "チーン1",
+  "desc": "がっかりした時の演出に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/tin1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "チーン2",
+  "desc": "鋭い音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/tin2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ボヨヨーン",
+  "desc": "びっくり箱。ギャグ音にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/boyoyon1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ボヨン",
+  "desc": "何かに弾き返される",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/boyon1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらーん1",
+  "desc": "目が光る音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/eye-shine1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "きらーん2",
+  "desc": "刃物",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/eye-shine2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "キラッ1",
+  "desc": "鉄琴で演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/kira1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "キラッ2",
+  "desc": "一瞬だけ光る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/kira2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ピューンと逃げる",
+  "desc": "一瞬で視界から消え去る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/flee1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ヒューンと落下",
+  "desc": "物を投げる音にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hyun1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ビシッとツッコミ1",
+  "desc": "漫才演出に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/tsukkomi-1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ビシッとツッコミ3",
+  "desc": "ハリセンでどつく",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/feed1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け1",
+  "desc": "ドジを踏んだシーンに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け2",
+  "desc": "しょうもない",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け3",
+  "desc": "えっ？",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け4",
+  "desc": "ボケシーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid4.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け5",
+  "desc": "気の抜ける音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid5.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け6",
+  "desc": "ティンパニでドォーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid6.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "間抜け7",
+  "desc": "ほわんほわんほわん",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stupid7.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "お寺の鐘",
+  "desc": "ゴーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/temple-bell1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ニュッ1",
+  "desc": "何かを出す",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/nyu1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ニュッ2",
+  "desc": "ジャンプ音にも使える",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/nyu2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ニュッ3",
+  "desc": "可愛らしい感じ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/nyu3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ショック1",
+  "desc": "衝撃の一瞬",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shock1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ショック2",
+  "desc": "ピアノでガーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shock2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ショック3",
+  "desc": "ピアノでガガーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shock3.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ショック4",
+  "desc": "ギャガーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shock4.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ショック5",
+  "desc": "ドーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shock5.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ショック6",
+  "desc": "お先真っ暗",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shock6.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "絶望",
+  "desc": "何もかもが崩れる",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/despair1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "目が点になる",
+  "desc": "カーン、カァカァ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/stunned1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "目が回る",
+  "desc": "ヒヨコが頭の上を回る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/dizzy1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "驚く",
+  "desc": "頭の上に「！」が出る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/surprise1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ひらめく1",
+  "desc": "フレクサトーンで演奏",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/flash1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ひらめく2",
+  "desc": "電球がピカーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/flash2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "バーン",
+  "desc": "ドラ鳴らし",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/ban1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ちょこっと触る",
+  "desc": "ポインチョ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/touch1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ぷよん",
+  "desc": "弾力のある物体",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/puyon1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "くすぐる",
+  "desc": "こちょこちょ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/tickle1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "荘厳な雰囲気",
+  "desc": "ドラをゴーンと弱く鳴らす",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/solemnity1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "チリン",
+  "desc": "凛とした女性が登場",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/tirin1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "落ち込む",
+  "desc": "暗いイメージ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/drop1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "映写機",
+  "desc": "昔の映像を流す時に",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/projector1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "過去を思い出す",
+  "desc": "ヒィィン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/remember-the-past1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "蘇るトラウマ",
+  "desc": "暗いシーンに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/trauma1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ゴゴゴゴ",
+  "desc": "怒るシーンなどに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/gogogogo1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "狂気",
+  "desc": "非日常のイメージ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/madness1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "目をパチパチ",
+  "desc": "2回まばたき",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/blink1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ヒーローの決めポーズ",
+  "desc": "かっこよくキメる",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hero1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ジャンプ",
+  "desc": "身軽なキャラの跳躍",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/jump-anime1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "心臓の鼓動1",
+  "desc": "4回連続",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/heart1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "心臓の鼓動2",
+  "desc": "ドキッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/heart2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "カタカタ震える",
+  "desc": "恐怖する",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shivering1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "超高速ダッシュ",
+  "desc": "ギュ－ン！",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/machdash1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "可愛い動作",
+  "desc": "何かを取り出す",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/cute-motion1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "可愛い足音",
+  "desc": "よちよち歩き",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/cute-walk1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "可愛く座る",
+  "desc": "ちょこん",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/sit1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "しょげる",
+  "desc": "可愛いキャラがテンションダウン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/cute-sad1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "回想",
+  "desc": "吹き出しが出てきて思い出すイメージ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/recollection1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "食べ物をパクッ",
+  "desc": "食いしん坊",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/suck1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "スイッチを押す",
+  "desc": "ポチッとな",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/switch1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "涙のしずく",
+  "desc": "深い響き",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/teardrop1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "靴でブレーキ",
+  "desc": "キキキーッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/brake1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ずっこける",
+  "desc": "ドテーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/fall-down1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "足首がグキッ",
+  "desc": "変な方向に曲がる",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/ankle-spoil1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "伸びる",
+  "desc": "何かが飛び出る",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/extend1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "縮む",
+  "desc": "何かが引っ込む",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/shrink1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "肉を食べる",
+  "desc": "マンガ肉を思い切り食べる",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/eat-meat1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "噛みつく",
+  "desc": "ガブッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/bite1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "煙モクモク",
+  "desc": "柔らかい音",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/smoke1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ドーン",
+  "desc": "重い演出",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/don-1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "寒いギャグで突風が吹く",
+  "desc": "白けるシーンに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/gust1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "データ解析",
+  "desc": "画面にデータが表示される",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/data-analysis1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "ツルっとすべる",
+  "desc": "氷の上など",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/slide1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "アニメ",
+  "name": "アヒルが大笑い",
+  "desc": "グワーッグワッグワッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/duck-laugh1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "クリスマスの鈴",
+  "desc": "シャンシャン。サンタクロース",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/santaclaus-bell1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "開演ブザー",
+  "desc": "映画や演劇などに",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/buzzer-opening1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "スポットライトが当たる",
+  "desc": "照明スイッチ。残響音あり",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/spotlight1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "宝箱を開ける",
+  "desc": "パカッ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/treasure-chest1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "アイテムを入手1",
+  "desc": "お金",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/item-get1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "アイテムを入手2",
+  "desc": "お宝ザクザク",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/item-get2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "男声「ハイ！ハイ！...」",
+  "desc": "男たちが6回叫ぶ",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/hai-hai1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "トランペットのグリスダウン",
+  "desc": "音程を素早く下げる",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/trumpet-greasedown1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "へたくそトランペット",
+  "desc": "力が抜ける",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/trumpet-dub1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "運命1",
+  "desc": "ガガガーン。ヴェートーヴェン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/fate1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "運命2",
+  "desc": "ティラリー。トッカータとフーガニ短調",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/fate2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "教会の鐘1",
+  "desc": "ゴーン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/church-bell1.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "教会の鐘2",
+  "desc": "リンゴーン。結婚式",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/church-bell2.mp3"
+ },
+ {
+  "cat": "anime",
+  "group": "その他",
+  "name": "教会の祈り",
+  "desc": "重厚なパイプオルガン",
+  "url": "https://soundeffect-lab.info/sound/anime/mp3/prayer1.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "天気・自然現象",
+  "name": "突風が吹く",
+  "desc": "一陣の風",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/gust-wind1.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "ヒヨドリの鳴き声1",
+  "desc": "公園などにいる身近な鳥",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/hypsipetes-amaurotis-cry1.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "ヒヨドリの鳴き声2",
+  "desc": "ヒーヨヒーヨ",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/hypsipetes-amaurotis-cry2.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "ヒヨドリの鳴き声3",
+  "desc": "鳴きながら飛び去る",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/hypsipetes-amaurotis-cry3.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "ヒヨドリの鳴き声4",
+  "desc": "庭のシーンなどに",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/hypsipetes-amaurotis-cry4.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "ムクドリの鳴き声",
+  "desc": "集団でいることが多い鳥",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/sturnus-cineraceus-cry1.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "キジバトのさえずり1",
+  "desc": "デデッポポーと鳴く",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/streptopelia-orientalis-cry1.mp3"
+ },
+ {
+  "cat": "animal",
+  "group": "野鳥",
+  "name": "キジバトのさえずり2",
+  "desc": "背景ノイズあり",
+  "url": "https://soundeffect-lab.info/sound/animal/mp3/streptopelia-orientalis-cry2.mp3"
+ }
+]
