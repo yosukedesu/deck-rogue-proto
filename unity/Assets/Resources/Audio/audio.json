@@ -322,6 +322,11 @@
       "sfx": "hit_big",
       "volume": 0.9,
       "jitter": 0.0
+    },
+    "DamageDealt.blocked": {
+      "sfx": "block",
+      "volume": 0.8,
+      "_note": "敵の攻撃を完全に防いだ (HP損失0) 時の盾の音"
     }
   },
   "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"

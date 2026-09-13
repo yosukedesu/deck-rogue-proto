@@ -19,6 +19,24 @@ namespace DeckRogue.Game
 
         public static void Reset() { _seen = 0; _seenCombat = null; }
 
+        /// <summary>
+        /// この CardPlayed が実際に何をしたか (選択式の札は選んだモードで演出を分ける 2026-09-14 ユーザー指摘)。
+        /// 直後のイベント (次の CardPlayed / TurnEnded まで) を見て 1=攻撃した・2=守った・0=どちらでもない
+        /// </summary>
+        static int _playHint;
+        static int PlayOutcome(IReadOnlyList<GameEvent> log, int at)
+        {
+            bool atk = false, blk = false;
+            for (int j = at + 1; j < log.Count; j++)
+            {
+                var e = log[j];
+                if (e is GameEvent_CardPlayed || e is GameEvent_TurnEnded || e is GameEvent_CardSet) break;
+                if (e is GameEvent_DamageDealt dd && dd.Source == "player") atk = true;
+                if (e is GameEvent_BlockGained || e is GameEvent_IceBlockGained) blk = true;
+            }
+            return atk ? 1 : blk ? 2 : 0;
+        }
+
         /// <summary>入力を塞ぐ (決着の余韻の間に古い戦闘画面を触らせない)。戻り値を呼ぶと解除</summary>
         public static Action BlockInput(GameRoot g)
         {
@@ -75,7 +93,7 @@ namespace DeckRogue.Game
             {
                 var ev = log[i];
                 float gap;
-                if (ev is GameEvent_CardPlayed) { var cp = ev; try { Show(g, fx, cp, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
+                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); try { Show(g, fx, cp, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
                 if (ev is GameEvent_DamageDealt) gap = 0.4f;
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
@@ -113,7 +131,7 @@ namespace DeckRogue.Game
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
-                if (ev is GameEvent_CardPlayed) { var cp = ev; try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
+                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
@@ -209,7 +227,9 @@ namespace DeckRogue.Game
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                         if (pSpr != null) Tween.Slash(fx, Tween.CenterIn(pSpr, fx), UnityEngine.Random.Range(20f, 50f), new Color(1f, 0.6f, 0.5f, 0.95f));
                         Audio.Key("DamageDealt.enemy.swing");
-                        Audio.Key(d.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", d.HpLoss > 0 ? 1f : 0.5f);
+                        // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
+                        if (d.HpLoss <= 0 && d.Amount > 0) { Audio.Key("DamageDealt.blocked"); Stage.PlayAnim("player", "block"); }
+                        else Audio.Key(d.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", d.HpLoss > 0 ? 1f : 0.5f);
                         if (d.HpLoss > 0)
                         {
                             Stage.PlayAnim("player", "hurt");
@@ -255,7 +275,10 @@ namespace DeckRogue.Game
                         foreach (var e in def.Effects) { if (e.Trigger == null || e.Trigger == "onPlay") { if (e.Effect == "dealDamage" || e.Effect == "dealDamageRandom" || e.Effect == "dealDamageCleave") atk = true; if (e.Effect == "gainBlock" || e.Effect == "gainIceBlock") blk = true; } }
                         if (def.Modes != null) foreach (var m in def.Modes) foreach (var e in m.Effects) { if (e.Effect == "dealDamage") atk = true; if (e.Effect == "gainBlock") blk = true; }
                     }
-                    Debug.Log("[Presenter] CardPlayed " + cp.CardId + " atk=" + atk + " blk=" + blk);
+                    // 実際の結果が分かる時 (選択式・条件付き) はそちらを優先する
+                    if (_playHint == 1) { atk = true; blk = false; }
+                    else if (_playHint == 2) { atk = false; blk = true; }
+                    _playHint = 0;
                     if (atk)
                     {
                         Stage.PlayAnim("player", "attack");
