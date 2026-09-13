@@ -416,7 +416,9 @@ namespace DeckRogue.Game
                 if (Rs.Phase == RunPhases.Won) { Audio.Bgm(Audio.BgmFor("won") ?? Audio.BgmFor("title")); return; }
                 if (Rs.Phase == RunPhases.Lost) { Audio.Bgm(Audio.BgmFor("lost") ?? Audio.BgmFor("map" + Rs.Act)); return; }
                 bool rest = Rs.Phase == RunPhases.Campfire || Rs.Phase == RunPhases.Shop || Rs.Phase == RunPhases.Event || Rs.Phase == RunPhases.Workshop;
-                Audio.Bgm(rest ? (Audio.BgmFor("rest") ?? Audio.BgmFor("map" + Rs.Act)) : Audio.BgmFor("map" + Rs.Act));
+                bool reward = Rs.Phase == RunPhases.Reward || Rs.Phase == RunPhases.RelicReward || Rs.Phase == RunPhases.RelicChoose;
+                string mapName = Audio.BgmFor("map" + Rs.Act);
+                Audio.Bgm(rest ? (Audio.BgmFor("rest") ?? mapName) : reward ? (Audio.BgmFor("reward") ?? mapName) : mapName);
             }
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
         }

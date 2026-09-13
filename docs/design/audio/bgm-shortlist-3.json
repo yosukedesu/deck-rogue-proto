@@ -1,0 +1,346 @@
+[
+ {
+  "key": "map1",
+  "label": "幕1 マップ「坑口の森」（第3）",
+  "note": "未決の場面。前回2ラウンドで見送った分は外し、森・夜・ケルトを広めに",
+  "items": [
+   {
+    "slug": "misty_hollow",
+    "url": "https://peritune.com/blog/2024/10/23/misty_hollow/",
+    "title": "幻想的なフォーク「Misty_Hollow」",
+    "tags": [
+     "きれい",
+     "ナチュラル",
+     "ヒーリング",
+     "幻想",
+     "民族音楽",
+     "淋しい",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "twGQxZctajU"
+   },
+   {
+    "slug": "songs_tsumugukiseki",
+    "url": "https://peritune.com/blog/2020/12/17/songs_tsumugukiseki/",
+    "title": "壮大な民族調歌もの「紡ぐ軌跡」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "ケルト",
+     "シネマティック",
+     "フォーク",
+     "切ない",
+     "力強い",
+     "壮大",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "ClR3YD-pzpg"
+   },
+   {
+    "slug": "lost_in_the_woods",
+    "url": "https://peritune.com/blog/2023/04/20/lost_in_the_woods/",
+    "title": "幻想的なヒーリング「Lost_in_the_Woods」",
+    "tags": [
+     "きれい",
+     "トロピカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "フォーク",
+     "不思議",
+     "優しい",
+     "幻想",
+     "民族音楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "7WXWHf6Cp7Q"
+   },
+   {
+    "slug": "pale_warmth",
+    "url": "https://peritune.com/blog/2024/12/05/pale_warmth/",
+    "title": "穏やかな冬の朝の小曲「Pale_Warmth」",
+    "tags": [
+     "アンビエント",
+     "シネマティック",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "不思議",
+     "優しい",
+     "幻想",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "WOhhJWcc9KA"
+   },
+   {
+    "slug": "emerald_hill",
+    "url": "https://peritune.com/blog/2026/08/17/emerald_hill/",
+    "title": "旅立ちの笛のオーケストラ「Emerald Hill」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ケルト",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "希望",
+     "爽やか"
+    ],
+    "bpm": 185,
+    "yt": "rbRsYrxlk6U"
+   },
+   {
+    "slug": "moonforest",
+    "url": "https://peritune.com/blog/2022/11/05/moonforest/",
+    "title": "造語ボーカルの切ないフォーク「MoonForest」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "フォーク",
+     "切ない",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "C7oa2Sq9fZM"
+   }
+  ]
+ },
+ {
+  "key": "reward",
+  "label": "ピック（戦闘後の報酬・レリック）",
+  "note": "短く軽い。マップと分けて「戦闘が終わった」を鳴らす。ジングル→ループの Result_Celtic は本家形",
+  "items": [
+   {
+    "slug": "result_celtic",
+    "url": "https://peritune.com/blog/2021/03/18/result_celtic/",
+    "title": "リザルトジングル＆ループBGM(ケルト)「Result_Celtic」",
+    "tags": [
+     "かっこいい",
+     "きれい",
+     "ケルト",
+     "ジングル",
+     "希望",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "_YFGbbITKIs"
+   },
+   {
+    "slug": "pastorale2",
+    "url": "https://peritune.com/blog/2019/12/28/pastorale2/",
+    "title": "にぎやかなケルト曲「Pastorale2」",
+    "tags": [
+     "ほのぼの",
+     "ケルト",
+     "ヒーリング",
+     "ファンシー",
+     "フォーク",
+     "希望",
+     "日常",
+     "楽しい",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "TuCNhCOgLPU"
+   },
+   {
+    "slug": "poema2",
+    "url": "https://peritune.com/blog/2020/11/13/poema2/",
+    "title": "おだやかなケルト曲「Poema2」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ケルト",
+     "ヒーリング",
+     "ファンシー",
+     "フォーク",
+     "メルヘン",
+     "優しい",
+     "日常",
+     "民族音楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "ClSkj9028TM"
+   },
+   {
+    "slug": "snowy_village2",
+    "url": "https://peritune.com/blog/2021/01/08/snowy_village2/",
+    "title": "ほのぼのとした中世トラッド「Snowy_Village2」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "ファンシー",
+     "フォーク",
+     "メルヘン",
+     "中世・古楽",
+     "優しい",
+     "日常",
+     "民族音楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "RNx2zLpH5G4"
+   },
+   {
+    "slug": "whiteveil_streets",
+    "url": "https://peritune.com/blog/2025/11/12/whiteveil_streets/",
+    "title": "【無料BGM】ほのぼのケルト音楽「Whiteveil_Streets」",
+    "tags": [
+     "ほのぼの",
+     "ケルト",
+     "フォーク",
+     "優しい",
+     "希望",
+     "日常",
+     "楽しい",
+     "民族音楽"
+    ],
+    "bpm": 125,
+    "yt": "kDwZaYTKr9I"
+   },
+   {
+    "slug": "jingle_retro",
+    "url": "https://peritune.com/blog/2022/01/06/jingle_retro/",
+    "title": "大正ロマン＆バラエティ・ジングル「Jingle_Retro」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "優しい",
+     "室内楽",
+     "日常"
+    ],
+    "bpm": null,
+    "yt": "Cd9VpR_YJk0"
+   }
+  ]
+ },
+ {
+  "key": "rest",
+  "label": "休息（焚き火・ショップ・イベント・工房）（第3）",
+  "note": "未決。ハープ・小曲",
+  "items": [
+   {
+    "slug": "sceal_realta",
+    "url": "https://peritune.com/blog/2022/08/09/sceal_realta/",
+    "title": "造語ボーカルの優しいハープ曲「Scéal_Réalta」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "ファンシー",
+     "優しい",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "5cFSnKS1WX8"
+   },
+   {
+    "slug": "a-wish4",
+    "url": "https://peritune.com/blog/2016/12/03/a-wish4/",
+    "title": "【無料フリーBGM・ハープ】A Wish4",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "優しい",
+     "切ない",
+     "幻想",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "BqRw-KGqnvo"
+   },
+   {
+    "slug": "recollection",
+    "url": "https://peritune.com/blog/2022/05/03/recollection/",
+    "title": "優しいピアノソロ「Recollection」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "希望",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "Ii7_xeg51TA"
+   },
+   {
+    "slug": "afternoon_garden",
+    "url": "https://peritune.com/blog/2022/07/16/afternoon_garden/",
+    "title": "ほのぼのクラシカル＆メルヘン曲「Afternoon_Garden」",
+    "tags": [
+     "かわいい",
+     "ほのぼの",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "メルヘン",
+     "優しい",
+     "室内楽",
+     "希望"
+    ],
+    "bpm": null,
+    "yt": "vhmEXzNpsNI"
+   },
+   {
+    "slug": "glistening-ripples",
+    "url": "https://peritune.com/blog/2026/03/21/glistening-ripples/",
+    "title": "【無料BGM】情感を写す水鏡のピアノ曲「Glistening Ripples」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 90,
+    "yt": "DUWzOMtUoIE"
+   },
+   {
+    "slug": "portside-cafe",
+    "url": "https://peritune.com/blog/2026/03/13/portside-cafe/",
+    "title": "【無料BGM】輝く波と活気ある街の曲「Portside Café」",
+    "tags": [
+     "ほのぼの",
+     "ケルト",
+     "ヒーリング",
+     "フォーク",
+     "優しい",
+     "希望",
+     "日常",
+     "民族音楽"
+    ],
+    "bpm": 180,
+    "yt": "nF7Oymoy9Mc"
+   }
+  ]
+ }
+]

@@ -13,6 +13,7 @@
     "boss2": "boss2",
     "boss3": "boss3",
     "rest": null,
+    "reward": null,
     "won": "title",
     "lost": null
   },
@@ -307,5 +308,6 @@
       "volume": 0.6,
       "jitter": 0.03
     }
-  }
+  },
+  "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"
 }

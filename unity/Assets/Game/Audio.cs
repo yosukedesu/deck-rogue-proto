@@ -19,7 +19,7 @@ namespace DeckRogue.Game
 
         public static float Master { get { return PlayerPrefs.GetFloat("audio.master", 0.8f); } set { PlayerPrefs.SetFloat("audio.master", value); Apply(); } }
         public static float SfxVol { get { return PlayerPrefs.GetFloat("audio.sfx", 0.7f); } set { PlayerPrefs.SetFloat("audio.sfx", value); } }
-        public static float BgmVol { get { return PlayerPrefs.GetFloat("audio.bgm", 0.35f); } set { PlayerPrefs.SetFloat("audio.bgm", value); Apply(); } }
+        public static float BgmVol { get { return PlayerPrefs.GetFloat("audio.bgm", 0.3f); } set { PlayerPrefs.SetFloat("audio.bgm", value); Apply(); } }
 
         static Audio I
         {
