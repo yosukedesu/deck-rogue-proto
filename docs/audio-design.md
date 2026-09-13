@@ -40,8 +40,7 @@
 |---|---|---|---|
 | BGM 仮〜準本命 | **PeriTune**（日本・オーケストラ／民族） | 商用可・クレジット任意・改変可・Content ID 登録不可・再配布不可 | 361 曲の目録 `docs/design/audio/peritune-catalog.json`。ループ用ファイル同梱 |
 | SE 基礎 | Kenney（同梱済み） | CC0 | rpg-audio / impact / ui |
-| SE 追加 | 効果音ラボ | 商用可・クレジット不要 | 歯車・発条・紙・金床 |
-| SE 追加 | OtoLogic | CC-BY 4.0（クレジット必須） | 必要な時だけ |
+| **SE 本命** | **Sonniss GDC Game Audio Bundle**（GDC 2021-2023 の 14 パート） | 商用可・クレジット不要・改変可・再配布不可・AI 学習不可 | プロ音源メーカーの無償配布＝インディーの事実上の標準。**2026-09-13 ユーザー「効果音ラボはチープすぎる。デファクトから選びたい」→ 効果音ラボ案は撤回** |
 | 本命 BGM | Audiostock（1曲 3千〜1万円）／作曲家外注（3〜10万円/曲） | 買い切り | **ボス3曲＋タイトルの4曲だけ**。面白さ検証の後に投資判断（リーダー立ち絵と同じ枠） |
 
 `unity/Assets/Resources/Audio/bgm/CREDITS.md` に出典を残す（PeriTune はクレジット任意だが敬意として）。
@@ -67,3 +66,27 @@
   map2 の Sylviranda は **BOOTH ¥200 の有料曲**（フリー素材でない）＝購入判断待ち。
 - **第2ラウンド**: map1・rest・battle2・battle3・won・lost を `docs/design/audio/bgm-sheet-2.html` で再提示（前回と重ならない24曲）。
 - SE はシートに選択の仕組みが無かった（一覧のみ）。次は署名音3つから効果音ラボの候補を試聴できる形にする。
+
+## 8. SE の入手元を Sonniss に変更（2026-09-13）
+
+効果音ラボの候補（`se-sheet.html`）は「チープすぎる」で撤回。裁定＝**Sonniss GDC バンドル（無料）＋必要なら からくり だけ購入／予算は無料のみ／試聴は鍵ごとに候補3〜5のシート**。
+
+**バンドル内の当てになるライブラリ**（GDC 2021-2023 の目録 `docs/design/audio/sonniss-tracklist-2018-2024.json` から。目録は各ライブラリ4件だけの抜粋で、実体はもっと多い）:
+
+| 用途 | ライブラリ（供給元） |
+|---|---|
+| **からくり（仕込む・鳴る・期限切れ）** | Steampunk Mechanical Sounds（BluezoneCorp）／Steampunk Mech SFX（David Dumais）／Clocks and Mechanics（Justsoundeffects）／Essentials 02 Clocks（InspectorJ）／Nuts And Bolts（344 Audio＝ラチェット） |
+| 札（プレイ・ドロー・伏せる） | Board Games – Gamedesigners Audio Toolkit 01（CB Sound Design＝トランプの擦り）／Ultimate Chess SFX（344 Audio＝駒・掛け金）／Turning The Page（Sonic Bat） |
+| 打撃・斧・盾 | Melee Weapons Sound Effects Pack 1（David Dumais）／Epic Impacts Vol.1（344 Audio） |
+| 魔法・打ち消し・消滅 | Magic Sound FX Pack 2（David Dumais）／Druid Magic（Rogue Waves）／Whoosh And Push（CB） |
+| 回復・鈴 | Dreamcatcher（CB＝Enchanting Bells）／Cymbals From Hell Vol.3（344＝chimes） |
+| 金・レリック | Essential Sounds Vol.01 Coins（CB）／Videogame Foley Essentials Vol.I（Sonic Bat） |
+| 撃破 | Monster Sound FX Pack 2（David Dumais） |
+| 勝敗ジングル | **RPG Orchestral Essentials (Music FX)**（InspectorJ＝Discovery／Failure／Mystery のオーケストラ短句） |
+| 焚き火 | Pure Nature Ambiences（Campfire） |
+| UI | Organic User Interface（344）／Retro Game SFX（RYK） |
+
+**入手の手順**（ダウンロードは Cloudflare で curl から通らないので人が落とす）:
+1. https://sonniss.com/gameaudiogdc の「GDC 2021-2023」14 パート（zip。合計 30GB 級。トレントが速い）を Windows の1フォルダへ（例 `C:\Users\yosuke\Downloads\sonniss\`）。
+2. AI が WSL から zip の一覧を読み、上の表のライブラリだけを抜き出して鍵ごとに候補3〜5を並べた試聴シートを作る（前回と同じ形・ローカル再生）。
+3. 採用を選んだら ogg に変換して `Resources/Audio/sfx/<鍵の音名>.ogg` へ。CREDITS に出典（Sonniss はクレジット不要だが記録として）。
