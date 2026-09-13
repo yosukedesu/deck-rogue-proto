@@ -1,0 +1,168 @@
+[
+ {
+  "key": "ActionNegated",
+  "label": "打ち消し",
+  "want": "霧散・かき消す（第2）",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Ghost_Metallic_Whoosh_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Dark_Pulse_Echo_Subtle_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Fade_In_Wobble_Noise_Fade_Out_Subtle_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Wobble_Fast_01_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Wobble_Fast_02_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Wobble_Fast_03_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Wobble_Fast_04_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Metallic_Fusion_Fast_Fade_In_Out_mono.wav"
+  ]
+ },
+ {
+  "key": "CardsDrawn",
+  "label": "ドロー",
+  "want": "紙をめくる（第2）",
+  "cands": [
+   "FOLEY/BOOKS/BOOK_Turn_Page_01_mono.wav",
+   "FOLEY/BOOKS/BOOK_Turn_Page_02_mono.wav",
+   "FOLEY/BOOKS/BOOK_Turn_Page_03_mono.wav",
+   "FOLEY/BOOKS/BOOK_Turn_Page_04_mono.wav",
+   "FOLEY/PEN_PAPER/PAPER_Fold_01_mono.wav",
+   "CARDS/CARDS_Deal_01_RR3_mono.wav"
+  ]
+ },
+ {
+  "key": "DamageDealt.player",
+  "label": "与ダメ（斧）",
+  "want": "斧の打撃（第2）",
+  "cands": [
+   "TOOLS/Axe/AXE_Chop_Wood_01_mono.wav",
+   "TOOLS/Axe/AXE_Chop_Wood_02_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_02_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_03_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_04_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Stone_01_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Wood_02_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Wood_03_mono.wav",
+   "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Solid_Metal_mono.wav"
+  ]
+ },
+ {
+  "key": "HpHealed",
+  "label": "回復",
+  "want": "鈴ではない別の質感（第2）: 光が満ちる・温かい",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Distinct_Thrust_Bright_Pad_Subtle_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Metallic_Rain_Up_Subtle_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Slow_Fade_In_Bright_Pad_mono.wav",
+   "MUSIC_EFFECTS/Solo_Warm_Synth/MUSIC_EFFECT_Solo_Warm_Synth_Positive_01_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Warm_Synth/MUSIC_EFFECT_Solo_Warm_Synth_Positive_03_stereo.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Bright_Sci-Fi_Subtle_mono.wav",
+   "CHARGE_UPS_DOWNS/CHARGE_Servo_24_Semi_Up_1000ms_mono.wav",
+   "MUSIC_EFFECTS/Solo_EPiano/MUSIC_EFFECT_Solo_EPiano_Positive_01_stereo.wav"
+  ]
+ },
+ {
+  "key": "StatusInflicted",
+  "label": "状態異常（負）",
+  "want": "まとわりつく（第2）",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Deep_Tone_Bubbling_Zaps_Subtle_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Fade_In_Wobble_Noise_Fade_Out_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Metallic_Rain_Down_Subtle_mono.wav",
+   "GORE_SPLATS/GORE_Mid_Medium_Squish_01_mono.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Negative_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Negative_05_stereo.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Dark_Pulse_Echo_Subtle_mono.wav",
+   "ZAPS/ZAP_Bright_02_mono.wav"
+  ]
+ },
+ {
+  "key": "GrowthAdded",
+  "label": "成長・勢い（正）",
+  "want": "力が満ちる（第2）",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Metallic_Rain_Up_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Bending_Synth_Climb_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Gather_Blast_mono.wav",
+   "CHARGE_UPS_DOWNS/CHARGE_Servo_24_Semi_Up_1000ms_mono.wav",
+   "PUZZLES/PUZZLE_Success_Xylophone_2_Two_Note_Climb_Bright_Wet_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Warm_Synth/MUSIC_EFFECT_Solo_Warm_Synth_Positive_02_stereo.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Energy_Mehanical_01_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Clashing_Brightness_mono.wav"
+  ]
+ },
+ {
+  "key": "GoldStolen",
+  "label": "金",
+  "want": "粒がこぼれる（第2）",
+  "cands": [
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_02_mono.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_03_mono.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_04_mono.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_05_mono.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_06_mono.wav",
+   "MONEY_CASH_CURRENCY/CASH_REGISTER_Cha-ching_02_mono.wav",
+   "MONEY_CASH_CURRENCY/CASH_REGISTER_Cha-ching_03_mono.wav",
+   "CARDS/POKER_CHIP_Chips_02_mono.wav",
+   "CARDS/POKER_CHIP_Chips_03_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.upgrade",
+  "label": "鍛える・合成",
+  "want": "かんかんかん（3連打を合成）",
+  "cands": [
+   "__syn__/anvil3_sledge.wav",
+   "__syn__/anvil3_pickaxe.wav",
+   "__syn__/anvil3_nail.wav",
+   "__syn__/anvil3_blunt_metal.wav",
+   "__syn__/anvil3_hazard.wav",
+   "TOOLS/Various/TOOL_Hammer_Nail_x8_01_mono.wav",
+   "TOOLS/Various/TOOL_Hammer_Nail_RR1_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.rest",
+  "label": "休む",
+  "want": "安らかなハープ",
+  "cands": [
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_01_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_03_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_04_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_05_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_06_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_07_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_08_stereo.wav",
+   "PUZZLES/PUZZLE_Success_Harp_Two_Note_Deep_Wet_stereo.wav"
+  ]
+ },
+ {
+  "key": "ui.win",
+  "label": "勝利ジングル",
+  "want": "短い達成（第2）",
+  "cands": [
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_03_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_04_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_05_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Piano/MUSIC_EFFECT_Solo_Piano_Positive_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Piano/MUSIC_EFFECT_Solo_Piano_Positive_03_stereo.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Fanfare_01_mono.wav",
+   "MUSIC_EFFECTS/Solo_Xylophone/MUSIC_EFFECT_Solo_Xylophone_Positive_01_stereo.wav"
+  ]
+ },
+ {
+  "key": "ui.lose",
+  "label": "敗北ジングル",
+  "want": "静かな失敗（第2）",
+  "cands": [
+   "MUSIC_EFFECTS/Solo_Piano/MUSIC_EFFECT_Solo_Piano_Negative_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Piano/MUSIC_EFFECT_Solo_Piano_Negative_03_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Piano/MUSIC_EFFECT_Solo_Piano_Negative_04_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Piano/MUSIC_EFFECT_Solo_Piano_Negative_05_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Negative_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Negative_03_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Negative_04_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Negative_05_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Negative_02_stereo.wav"
+  ]
+ }
+]

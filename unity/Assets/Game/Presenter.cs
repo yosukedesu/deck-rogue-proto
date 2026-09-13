@@ -166,8 +166,8 @@ namespace DeckRogue.Game
                             Tween.Slash(fx, Tween.CenterIn(spr, fx), UnityEngine.Random.Range(-50f, -20f), new Color(1f, 0.95f, 0.8f, 0.95f));
                             Stage.Flash("enemy" + (d.EnemyIndex ?? 0));
                         }
-                        Audio.Play("slash", 0.6f);
-                        Audio.Play(d.Amount >= 15 ? "hit_big" : "hit", 0.9f);
+                        Audio.Key("DamageDealt.player.swing");
+                        Audio.Key(d.Amount >= 15 ? "DamageDealt.player.big" : "DamageDealt.player");
                         if (d.Amount >= 15) Stage.Shake(Mathf.Min(14f, d.Amount * 0.4f), 0.25f);
                         Tween.Float(fx, pos, d.Amount.ToString(), d.Amount > 0 ? UiKit.Hex("#ffd36b") : UiKit.ColDim, d.Amount >= 20 ? 46 : 36);
                         if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f));
@@ -182,8 +182,8 @@ namespace DeckRogue.Game
                         if (rt == null) return;
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                         if (pSpr != null) Tween.Slash(fx, Tween.CenterIn(pSpr, fx), UnityEngine.Random.Range(20f, 50f), new Color(1f, 0.6f, 0.5f, 0.95f));
-                        Audio.Play("lunge", 0.5f);
-                        Audio.Play(d.HpLoss >= 12 ? "hit_big" : "hit", d.HpLoss > 0 ? 0.9f : 0.45f);
+                        Audio.Key("DamageDealt.enemy.swing");
+                        Audio.Key(d.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", d.HpLoss > 0 ? 1f : 0.5f);
                         if (d.HpLoss > 0)
                         {
                             Stage.PlayAnim("player", "hurt");
@@ -204,18 +204,18 @@ namespace DeckRogue.Game
                     if (b.Target != "player") return;
                     var rt = g.Anchor("player");
                     if (rt == null) return;
-                    Audio.Play("block", 0.7f);
+                    Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
                     break;
                 }
                 case GameEvent_TurnStarted ts:
-                    Audio.Play("turn", 0.6f, 0f);
+                    Audio.Key("TurnStarted");
                     Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", UiKit.ColAccent);
                     break;
                 case GameEvent_TurnEnded _:
-                    Audio.Play("enemy_turn", 0.6f, 0f);
+                    Audio.Key("TurnEnded");
                     Banner(fx, "敵の番", UiKit.Hex("#ff6b57"));
                     break;
                 case GameEvent_CardPlayed cp:
@@ -245,7 +245,7 @@ namespace DeckRogue.Game
                     // 自分に状態異常: 紫の浮き文字で「いつ掛かったか」を見せる (2026-09-09「いつデバフをかけられたかも分からない」)
                     var rt = g.Anchor("player");
                     if (rt == null) return;
-                    Audio.Play("buff", 0.5f, 0.02f);
+                    Audio.Key(ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded ? "GrowthAdded" : "StatusInflicted");
                     var ps2 = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps2 != null) Tween.IconBurst(fx, Tween.CenterIn(ps2, fx) + new Vector2(0f, 30f), "exposed", new Color(0.72f, 0.5f, 0.85f, 0.9f), 110f);
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, UiKit.Hex("#b47ad6"), 32, 46f, 1.2f);
@@ -297,7 +297,7 @@ namespace DeckRogue.Game
                 {
                     var rt = g.Anchor("player");
                     if (rt == null) return;
-                    Audio.Play("heal", 0.7f);
+                    Audio.Key("HpHealed");
                     var hs = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (hs != null) Tween.IconBurst(fx, Tween.CenterIn(hs, fx) + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f);
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(-80f, 10f), "+" + h.Amount, UiKit.ColAccent, 30, 40f, 0.7f);
