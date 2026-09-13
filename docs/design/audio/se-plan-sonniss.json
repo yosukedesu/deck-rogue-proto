@@ -1,0 +1,300 @@
+[
+ {
+  "key": "CardSet",
+  "label": "仕込む（伏せる）",
+  "want": "歯車を巻く・掛け金を掛ける",
+  "cands": [
+   "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t1",
+   "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t2",
+   "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t4",
+   "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t1",
+   "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t4",
+   "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t5",
+   "closing_latches_4",
+   "bluezone_bc0282_steampunk_mechanical_gear_chain_element_start_stop_014",
+   "machmech_steampunk_gadget_reload_04_ddumais_none",
+   "clockmisc_wall_clock_handling_gearwheel_spinning_jse_cm_stereo"
+  ]
+ },
+ {
+  "key": "ReactionTriggered",
+  "label": "罠が鳴る（発動）",
+  "want": "発条が弾ける。署名音",
+  "cands": [
+   "bluezone_bc0282_steampunk_mechanical_mechanism_metal_039_03",
+   "bluezone_bc0282_steampunk_mechanical_mechanism_metal_008",
+   "equiptech_steampunk_high_tech_gadget_03_ddumais_none",
+   "sbvfe1_door_handle_d_002",
+   "closing_latches_4",
+   "hitting_chisel_with_hammer_close__t2",
+   "hitting_chisel_with_hammer_close__t3",
+   "swsh_woodstick_swish_03_jse_tw1__t1"
+  ]
+ },
+ {
+  "key": "SetCardExpired",
+  "label": "期限切れ",
+  "want": "発条が緩む・カタンと落ちる",
+  "cands": [
+   "bluezone_bc0282_steampunk_mechanical_metal_element_alarm_mechanism_001",
+   "bluezone_bc0282_steampunk_mechanical_gear_chain_element_start_stop_014",
+   "clocktick_insj_clock_07_ticking_single_01",
+   "whsh_whoosh_short_06_jse_tw1__t1",
+   "chess_pieces_rolling_on_chess_board_20__t3",
+   "bluezone_bc0275_building_collapse_debris_impact_glass_short_009",
+   "sbvfe1_jiggling_belt_buckle_004"
+  ]
+ },
+ {
+  "key": "SetCardDestroyed",
+  "label": "伏せ破壊",
+  "want": "木が割れる",
+  "cands": [
+   "woodimpt_impact_wood_23_ddumais_none",
+   "sbttp_paper_tearing_001__t3",
+   "sbttp_paper_tearing_001__t4",
+   "bluezone_bc0275_building_collapse_debris_falling_rock_rubble_glass_010",
+   "bluezone_bc0275_building_collapse_debris_impact_glass_short_009"
+  ]
+ },
+ {
+  "key": "ActionNegated",
+  "label": "打ち消し",
+  "want": "霧散・かき消す",
+  "cands": [
+   "w_a_p_spell_whoosh_19",
+   "teleporting_sound_5",
+   "swsh_dry_bamboo_leaf_swishes_1_roguewaves_druidmagic",
+   "whsh_whoosh_short_06_jse_tw1__t2",
+   "fui_navigation_swipe_2",
+   "magicpack2_air_soundscapes_broken002"
+  ]
+ },
+ {
+  "key": "CardPlayed",
+  "label": "札をプレイ",
+  "want": "紙。軽く短く",
+  "cands": [
+   "riffeling_playing_cards_on_cardboard_4",
+   "medium_wooden_pieces_on_cardboard_7",
+   "sbttp_regular_book_flip_through_001__t3",
+   "sbttp_regular_book_flip_through_001__t4",
+   "sbttp_typewriter_001__t2"
+  ]
+ },
+ {
+  "key": "CardsDrawn",
+  "label": "ドロー",
+  "want": "紙をめくる",
+  "cands": [
+   "riffeling_playing_cards_on_cardboard_4",
+   "sbttp_regular_book_flip_through_001__t1",
+   "sbttp_regular_book_flip_through_001__t5",
+   "sbttp_regular_book_flip_through_001__t6",
+   "plastic_pawns_on_cardboard_more_steps_4"
+  ]
+ },
+ {
+  "key": "DamageDealt.player",
+  "label": "与ダメ（斧）",
+  "want": "斧の打撃",
+  "cands": [
+   "swsh_sword_slash_impact_v2_assorted_18_ddumais_none",
+   "woodimpt_impact_wood_23_ddumais_none",
+   "impact_045",
+   "impact_059",
+   "swsh_swing_3_large_03_ddumais_none"
+  ]
+ },
+ {
+  "key": "DamageDealt.enemy",
+  "label": "被ダメ",
+  "want": "鈍い",
+  "cands": [
+   "impact_021",
+   "impact_038",
+   "monsterpack2_monster06_attack13",
+   "w_a_p_sci_fi_hit_3"
+  ]
+ },
+ {
+  "key": "BlockGained",
+  "label": "ブロック",
+  "want": "木の盾",
+  "cands": [
+   "metlfric_designed_metal_sword_sheath_04_ddumais_none",
+   "woodimpt_impact_wood_23_ddumais_none",
+   "castling_movements_08",
+   "sbvfe1_dragging_metal_plate_012",
+   "sbvfe1_jiggling_belt_buckle_004"
+  ]
+ },
+ {
+  "key": "HpHealed",
+  "label": "回復",
+  "want": "柔らかい鈴",
+  "cands": [
+   "enchanting_bells_4__t1",
+   "enchanting_bells_4__t2",
+   "bellmisc_chimes_atmos_dark_magic_unsetting_magical_01_344_audio_cymbal",
+   "bellmisc_chimes_atmos_dark_magic_unsetting_magical_06_344_audio_cymbal__t2",
+   "passive_gain_life_sound",
+   "harp_glissando_10b"
+  ]
+ },
+ {
+  "key": "CardExhausted",
+  "label": "消滅",
+  "want": "紙が燃えて消える",
+  "cands": [
+   "sbttp_paper_tearing_001__t1",
+   "sbttp_paper_tearing_001__t5",
+   "sbttp_paper_tearing_001__t6",
+   "w_a_p_epic_whoosh_8",
+   "magicpack2_air_soundscapes_broken002"
+  ]
+ },
+ {
+  "key": "PermanentPlayed",
+  "label": "置物を置く",
+  "want": "据える低音",
+  "cands": [
+   "impact_021",
+   "impact_038",
+   "bluezone_bc0275_building_collapse_debris_falling_rock_008__t1",
+   "plastic_pawns_on_cardboard_more_steps_4",
+   "bluezone_bc0282_steampunk_mechanical_mechanism_metal_008"
+  ]
+ },
+ {
+  "key": "EnemyDied",
+  "label": "撃破",
+  "want": "崩れる",
+  "cands": [
+   "monsterpack2_monster09_death02",
+   "monsterpack2_largemonster11_roar03",
+   "monsterpack2_monster10_call09",
+   "bluezone_bc0275_building_collapse_debris_falling_rock_rubble_008"
+  ]
+ },
+ {
+  "key": "StatusInflicted",
+  "label": "状態異常（負）",
+  "want": "まとわりつく",
+  "cands": [
+   "magevil_dark_spell_dark_energy_attack_roguewaves_druidmagic",
+   "magicpack2_electricityspells_spell2_002",
+   "bellmisc_chimes_atmos_dark_magic_unsetting_magical_01_344_audio_cymbal"
+  ]
+ },
+ {
+  "key": "GrowthAdded",
+  "label": "成長・勢い（正）",
+  "want": "力が満ちる",
+  "cands": [
+   "power_up_level_up_sound_2",
+   "collecting_orb_sound_2",
+   "short_rising_flutter",
+   "magicpack2_electricityspells_spell2_002",
+   "magelem_water_spell_splash_attack_medium_2_roguewaves_druidmagic"
+  ]
+ },
+ {
+  "key": "TurnStarted",
+  "label": "ターン開始の帯",
+  "want": "短い区切り",
+  "cands": [
+   "swsh_woodstick_swish_03_jse_tw1__t1",
+   "whsh_whoosh_short_06_jse_tw1__t3",
+   "fui_navigation_swipe_2",
+   "clocktick_insj_clock_07_ticking_single_01",
+   "castling_movements_08"
+  ]
+ },
+ {
+  "key": "GoldStolen",
+  "label": "金",
+  "want": "粒がこぼれる",
+  "cands": [
+   "coins_9",
+   "falling_coins_rotation_1",
+   "handling_coins_7",
+   "many_coins_12"
+  ]
+ },
+ {
+  "key": "ui.pick_relic",
+  "label": "レリック取得",
+  "want": "古代の遺物・低い共鳴",
+  "cands": [
+   "discovery_01_03_organ_a_wet",
+   "mystery_01_11_ensemble_large_wet",
+   "collecting_orb_sound_2",
+   "fui_hologram_ping_tone_echoed_2",
+   "enchanting_bells_4__t2"
+  ]
+ },
+ {
+  "key": "ui.upgrade",
+  "label": "鍛える・合成",
+  "want": "金床",
+  "cands": [
+   "hitting_chisel_with_hammer_close__t3",
+   "hitting_chisel_with_hammer_close__t4",
+   "hitting_chisel_with_hammer_close__t6",
+   "sbvfe1_dragging_metal_plate_012",
+   "machmech_steampunk_gadget_reload_04_ddumais_none"
+  ]
+ },
+ {
+  "key": "ui.rest",
+  "label": "休む",
+  "want": "焚き火",
+  "cands": [
+   "campfire",
+   "crickets"
+  ]
+ },
+ {
+  "key": "ui.node",
+  "label": "マップで進む",
+  "want": "足音1歩",
+  "cands": [
+   "plastic_pawns_on_cardboard_more_steps_4",
+   "medium_wooden_pieces_on_cardboard_7",
+   "chess_pieces_rolling_on_chess_board_20__t3",
+   "plastic_dice_on_wooden_board_2_dice_16"
+  ]
+ },
+ {
+  "key": "ui.click",
+  "label": "ボタン",
+  "want": "紙・柔らかい",
+  "cands": [
+   "fui_ease_into_position",
+   "sbvfe1_plastic_knob_c_018",
+   "sbttp_typewriter_001__t3"
+  ]
+ },
+ {
+  "key": "ui.win",
+  "label": "勝利ジングル",
+  "want": "短い達成",
+  "cands": [
+   "discovery_01_03_organ_a_wet",
+   "mystery_01_11_ensemble_large_wet",
+   "power_up_level_up_sound_2",
+   "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t2"
+  ]
+ },
+ {
+  "key": "ui.lose",
+  "label": "敗北ジングル",
+  "want": "静かな失敗",
+  "cands": [
+   "failure_01_10_ensemble_small_dry",
+   "failure_05_01_piano_a_dry",
+   "dream_drone_09"
+  ]
+ }
+]

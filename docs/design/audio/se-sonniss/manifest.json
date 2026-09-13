@@ -1,0 +1,1199 @@
+{
+ "bellmisc_chimes_atmos_dark_magic_unsetting_magical_01_344_audio_cymbal": {
+  "lib": "344 Audio - Cymbals From Hell Vol. 3",
+  "file": "BELLMisc_Chimes, Atmos, Dark Magic, Unsetting, Magical 01_344 Audio_Cymbals From Hell Vol 3.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "bellmisc_chimes_atmos_dark_magic_unsetting_magical_06_344_audio_cymbal__t1": {
+  "lib": "344 Audio - Cymbals From Hell Vol. 3",
+  "file": "BELLMisc_Chimes, Atmos, Dark Magic, Unsetting, Magical 06_344 Audio_Cymbals From Hell Vol 3.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "bellmisc_chimes_atmos_dark_magic_unsetting_magical_06_344_audio_cymbal__t2": {
+  "lib": "344 Audio - Cymbals From Hell Vol. 3",
+  "file": "BELLMisc_Chimes, Atmos, Dark Magic, Unsetting, Magical 06_344 Audio_Cymbals From Hell Vol 3.wav",
+  "start": 53.234,
+  "end": 53.74,
+  "dur": 0.51
+ },
+ "dsgndron_tibetan_bowl_and_rainstick_atmos_wind_2_344_audio_cymbals_fro": {
+  "lib": "344 Audio - Cymbals From Hell Vol. 3",
+  "file": "DSGNDron_Tibetan Bowl and Rainstick, Atmos, Wind 2_344 Audio _Cymbals From Hell Vol 3.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "dsgnmisc_tibetan_bowl_hits_nightmare_2_344_audio_cymbals_from_hell_vol": {
+  "lib": "344 Audio - Cymbals From Hell Vol. 3",
+  "file": "DSGNMisc_Tibetan Bowl, Hits, Nightmare 2_344 Audio_Cymbals From Hell Vol 3.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "impact_021": {
+  "lib": "344 Audio - Epic Impacts Vol. 1",
+  "file": "Impact 021.wav",
+  "start": 0,
+  "end": 1.672,
+  "dur": 1.67
+ },
+ "impact_038": {
+  "lib": "344 Audio - Epic Impacts Vol. 1",
+  "file": "Impact 038.wav",
+  "start": 0,
+  "end": 1.37,
+  "dur": 1.37
+ },
+ "impact_045": {
+  "lib": "344 Audio - Epic Impacts Vol. 1",
+  "file": "Impact 045.wav",
+  "start": 0,
+  "end": 1.49,
+  "dur": 1.49
+ },
+ "impact_059": {
+  "lib": "344 Audio - Epic Impacts Vol. 1",
+  "file": "Impact 059.wav",
+  "start": 0,
+  "end": 0.46,
+  "dur": 0.46
+ },
+ "brushing_carpet_floor_various__t1": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Brushing Carpet Floor Various.wav",
+  "start": 0,
+  "end": 0.2,
+  "dur": 0.2
+ },
+ "brushing_carpet_floor_various__t2": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Brushing Carpet Floor Various.wav",
+  "start": 0.313,
+  "end": 0.533,
+  "dur": 0.22
+ },
+ "brushing_carpet_floor_various__t3": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Brushing Carpet Floor Various.wav",
+  "start": 0.98,
+  "end": 1.183,
+  "dur": 0.2
+ },
+ "brushing_carpet_floor_various__t4": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Brushing Carpet Floor Various.wav",
+  "start": 1.496,
+  "end": 1.736,
+  "dur": 0.24
+ },
+ "brushing_carpet_floor_various__t5": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Brushing Carpet Floor Various.wav",
+  "start": 2.168,
+  "end": 2.41,
+  "dur": 0.24
+ },
+ "brushing_carpet_floor_various__t6": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Brushing Carpet Floor Various.wav",
+  "start": 2.875,
+  "end": 3.186,
+  "dur": 0.31
+ },
+ "electric_saw_through_wood__t1": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Electric Saw Through Wood.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "electric_saw_through_wood__t2": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Electric Saw Through Wood.wav",
+  "start": 12.949,
+  "end": 15.949,
+  "dur": 3.0
+ },
+ "electric_saw_through_wood__t3": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Electric Saw Through Wood.wav",
+  "start": 29.939,
+  "end": 32.939,
+  "dur": 3.0
+ },
+ "electric_saw_through_wood__t4": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Electric Saw Through Wood.wav",
+  "start": 55.978,
+  "end": 58.978,
+  "dur": 3.0
+ },
+ "hitting_chisel_with_hammer_close__t1": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Hitting Chisel With Hammer Close.wav",
+  "start": 0,
+  "end": 0.201,
+  "dur": 0.2
+ },
+ "hitting_chisel_with_hammer_close__t2": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Hitting Chisel With Hammer Close.wav",
+  "start": 0.429,
+  "end": 0.929,
+  "dur": 0.5
+ },
+ "hitting_chisel_with_hammer_close__t3": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Hitting Chisel With Hammer Close.wav",
+  "start": 1.143,
+  "end": 1.677,
+  "dur": 0.53
+ },
+ "hitting_chisel_with_hammer_close__t4": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Hitting Chisel With Hammer Close.wav",
+  "start": 1.865,
+  "end": 2.834,
+  "dur": 0.97
+ },
+ "hitting_chisel_with_hammer_close__t5": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Hitting Chisel With Hammer Close.wav",
+  "start": 3.038,
+  "end": 3.204,
+  "dur": 0.17
+ },
+ "hitting_chisel_with_hammer_close__t6": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Hitting Chisel With Hammer Close.wav",
+  "start": 3.38,
+  "end": 3.908,
+  "dur": 0.53
+ },
+ "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t1": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Ratchet Clicking, Spin Once To Slow, Spin Twice To Slow, Spin Intermittent.wav",
+  "start": 0,
+  "end": 0.784,
+  "dur": 0.78
+ },
+ "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t2": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Ratchet Clicking, Spin Once To Slow, Spin Twice To Slow, Spin Intermittent.wav",
+  "start": 1.546,
+  "end": 3.272,
+  "dur": 1.73
+ },
+ "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t3": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Ratchet Clicking, Spin Once To Slow, Spin Twice To Slow, Spin Intermittent.wav",
+  "start": 4.052,
+  "end": 7.052,
+  "dur": 3.0
+ },
+ "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t4": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Ratchet Clicking, Spin Once To Slow, Spin Twice To Slow, Spin Intermittent.wav",
+  "start": 8.542,
+  "end": 9.048,
+  "dur": 0.51
+ },
+ "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t5": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Ratchet Clicking, Spin Once To Slow, Spin Twice To Slow, Spin Intermittent.wav",
+  "start": 9.314,
+  "end": 10.055,
+  "dur": 0.74
+ },
+ "ratchet_clicking_spin_once_to_slow_spin_twice_to_slow_spin_intermitten__t6": {
+  "lib": "344 Audio - Nuts And Bolts",
+  "file": "Ratchet Clicking, Spin Once To Slow, Spin Twice To Slow, Spin Intermittent.wav",
+  "start": 11.714,
+  "end": 14.714,
+  "dur": 3.0
+ },
+ "uimisc_user_interface_vocalisation_robotic_futuristic_344_audio_organi": {
+  "lib": "344 Audio - Organic User Interface",
+  "file": "UIMisc_User Interface Vocalisation, Robotic, Futuristic,_344 Audio_Organic User Interface_33.wav",
+  "start": 0.0,
+  "end": 0.712,
+  "dur": 0.71
+ },
+ "castling_movements_08": {
+  "lib": "344 Audio - Ultimate Chess SFX",
+  "file": "Castling Movements 08.wav",
+  "start": 0.0,
+  "end": 2.005,
+  "dur": 2.0
+ },
+ "chess_pieces_rolling_on_chess_board_20__t1": {
+  "lib": "344 Audio - Ultimate Chess SFX",
+  "file": "Chess Pieces Rolling On Chess Board 20.wav",
+  "start": 0,
+  "end": 1.174,
+  "dur": 1.17
+ },
+ "chess_pieces_rolling_on_chess_board_20__t2": {
+  "lib": "344 Audio - Ultimate Chess SFX",
+  "file": "Chess Pieces Rolling On Chess Board 20.wav",
+  "start": 1.357,
+  "end": 3.29,
+  "dur": 1.93
+ },
+ "chess_pieces_rolling_on_chess_board_20__t3": {
+  "lib": "344 Audio - Ultimate Chess SFX",
+  "file": "Chess Pieces Rolling On Chess Board 20.wav",
+  "start": 5.043,
+  "end": 5.411,
+  "dur": 0.37
+ },
+ "closing_latches_4": {
+  "lib": "344 Audio - Ultimate Chess SFX",
+  "file": "Closing Latches 4.wav",
+  "start": 0.0,
+  "end": 0.637,
+  "dur": 0.64
+ },
+ "writing_with_pencil_04": {
+  "lib": "344 Audio - Ultimate Chess SFX",
+  "file": "Writing With Pencil 04.wav",
+  "start": 0.0,
+  "end": 2.828,
+  "dur": 2.83
+ },
+ "bluezone_bc0275_building_collapse_debris_falling_rock_008__t1": {
+  "lib": "BluezoneCorp - Building Collapse",
+  "file": "Bluezone_BC0275_building_collapse_debris_falling_rock_008.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "bluezone_bc0275_building_collapse_debris_falling_rock_008__t2": {
+  "lib": "BluezoneCorp - Building Collapse",
+  "file": "Bluezone_BC0275_building_collapse_debris_falling_rock_008.wav",
+  "start": 6.01,
+  "end": 6.182,
+  "dur": 0.17
+ },
+ "bluezone_bc0275_building_collapse_debris_falling_rock_008__t3": {
+  "lib": "BluezoneCorp - Building Collapse",
+  "file": "Bluezone_BC0275_building_collapse_debris_falling_rock_008.wav",
+  "start": 6.384,
+  "end": 7.337,
+  "dur": 0.95
+ },
+ "bluezone_bc0275_building_collapse_debris_falling_rock_rubble_008": {
+  "lib": "BluezoneCorp - Building Collapse",
+  "file": "Bluezone_BC0275_building_collapse_debris_falling_rock_rubble_008.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "bluezone_bc0275_building_collapse_debris_falling_rock_rubble_glass_010": {
+  "lib": "BluezoneCorp - Building Collapse",
+  "file": "Bluezone_BC0275_building_collapse_debris_falling_rock_rubble_glass_010.wav",
+  "start": 0.0,
+  "end": 2.554,
+  "dur": 2.55
+ },
+ "bluezone_bc0275_building_collapse_debris_impact_glass_short_009": {
+  "lib": "BluezoneCorp - Building Collapse",
+  "file": "Bluezone_BC0275_building_collapse_debris_impact_glass_short_009.wav",
+  "start": 0.0,
+  "end": 0.783,
+  "dur": 0.78
+ },
+ "bluezone_bc0282_steampunk_mechanical_gear_chain_element_start_stop_014": {
+  "lib": "BluezoneCorp - Steampunk Mechanical Sounds",
+  "file": "Bluezone_BC0282_steampunk_mechanical_gear_chain_element_start_stop_014.wav",
+  "start": 0.0,
+  "end": 1.181,
+  "dur": 1.18
+ },
+ "bluezone_bc0282_steampunk_mechanical_mechanism_metal_008": {
+  "lib": "BluezoneCorp - Steampunk Mechanical Sounds",
+  "file": "Bluezone_BC0282_steampunk_mechanical_mechanism_metal_008.wav",
+  "start": 0.0,
+  "end": 1.7,
+  "dur": 1.7
+ },
+ "bluezone_bc0282_steampunk_mechanical_mechanism_metal_039_03": {
+  "lib": "BluezoneCorp - Steampunk Mechanical Sounds",
+  "file": "Bluezone_BC0282_steampunk_mechanical_mechanism_metal_039_03.wav",
+  "start": 0.0,
+  "end": 0.7,
+  "dur": 0.7
+ },
+ "bluezone_bc0282_steampunk_mechanical_metal_element_alarm_mechanism_001": {
+  "lib": "BluezoneCorp - Steampunk Mechanical Sounds",
+  "file": "Bluezone_BC0282_steampunk_mechanical_metal_element_alarm_mechanism_001.wav",
+  "start": 0.0,
+  "end": 2.999,
+  "dur": 3.0
+ },
+ "medium_wooden_pieces_on_cardboard_7": {
+  "lib": "CB Sound Design - Board Games – Gamedesigners Audio Toolkit 01",
+  "file": "medium_wooden_pieces_on_cardboard_7.wav",
+  "start": 0.0,
+  "end": 0.85,
+  "dur": 0.85
+ },
+ "plastic_dice_on_wooden_board_2_dice_16": {
+  "lib": "CB Sound Design - Board Games – Gamedesigners Audio Toolkit 01",
+  "file": "Plastic_Dice_on_wooden_board_2_Dice_16.wav",
+  "start": 0.0,
+  "end": 1.13,
+  "dur": 1.13
+ },
+ "plastic_pawns_on_cardboard_more_steps_4": {
+  "lib": "CB Sound Design - Board Games – Gamedesigners Audio Toolkit 01",
+  "file": "plastic_pawns_on_cardboard_more_steps_4.wav",
+  "start": 0.0,
+  "end": 2.993,
+  "dur": 2.99
+ },
+ "riffeling_playing_cards_on_cardboard_4": {
+  "lib": "CB Sound Design - Board Games – Gamedesigners Audio Toolkit 01",
+  "file": "Riffeling_Playing_Cards_on_Cardboard_4.wav",
+  "start": 0.0,
+  "end": 1.626,
+  "dur": 1.63
+ },
+ "dream_drone_09": {
+  "lib": "CB Sound Design - Dreamcatcher - The Sound of Dreams & Magic",
+  "file": "Dream_Drone_09.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "enchanting_bells_4__t1": {
+  "lib": "CB Sound Design - Dreamcatcher - The Sound of Dreams & Magic",
+  "file": "Enchanting_Bells_4.wav",
+  "start": 0,
+  "end": 0.6,
+  "dur": 0.6
+ },
+ "enchanting_bells_4__t2": {
+  "lib": "CB Sound Design - Dreamcatcher - The Sound of Dreams & Magic",
+  "file": "Enchanting_Bells_4.wav",
+  "start": 0.789,
+  "end": 3.789,
+  "dur": 3.0
+ },
+ "harp_glissando_10b": {
+  "lib": "CB Sound Design - Dreamcatcher - The Sound of Dreams & Magic",
+  "file": "Harp_Glissando_10b.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "synth_pad_12": {
+  "lib": "CB Sound Design - Dreamcatcher - The Sound of Dreams & Magic",
+  "file": "Synth_Pad_12.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "coins_9": {
+  "lib": "CB Sound Design - Essential Sounds Vol.01 Coins",
+  "file": "coins_9.wav",
+  "start": 0.0,
+  "end": 2.428,
+  "dur": 2.43
+ },
+ "falling_coins_rotation_1": {
+  "lib": "CB Sound Design - Essential Sounds Vol.01 Coins",
+  "file": "falling_coins_rotation_1.wav",
+  "start": 0.0,
+  "end": 1.345,
+  "dur": 1.34
+ },
+ "handling_coins_7": {
+  "lib": "CB Sound Design - Essential Sounds Vol.01 Coins",
+  "file": "handling_coins_7.wav",
+  "start": 0.0,
+  "end": 0.507,
+  "dur": 0.51
+ },
+ "many_coins_12": {
+  "lib": "CB Sound Design - Essential Sounds Vol.01 Coins",
+  "file": "many_coins_12.wav",
+  "start": 0.0,
+  "end": 0.5,
+  "dur": 0.5
+ },
+ "w_a_p_cinematic_whoosh_hit_8": {
+  "lib": "CB Sound Design - Whoosh And Push",
+  "file": "W_a_P_Cinematic_Whoosh_Hit_8.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "w_a_p_epic_whoosh_8": {
+  "lib": "CB Sound Design - Whoosh And Push",
+  "file": "W_a_P_Epic_Whoosh_8.wav",
+  "start": 0.0,
+  "end": 3.596,
+  "dur": 3.6
+ },
+ "w_a_p_sci_fi_hit_3": {
+  "lib": "CB Sound Design - Whoosh And Push",
+  "file": "W_a_P_Sci_Fi_Hit_3.wav",
+  "start": 0.0,
+  "end": 3.395,
+  "dur": 3.39
+ },
+ "w_a_p_spell_whoosh_19": {
+  "lib": "CB Sound Design - Whoosh And Push",
+  "file": "W_a_P_Spell_Whoosh_19.wav",
+  "start": 0.0,
+  "end": 1.918,
+  "dur": 1.92
+ },
+ "magicpack2_air_soundscapes_broken002": {
+  "lib": "David Dumais Audio - Magic Sound FX Pack 2",
+  "file": "MagicPack2_Air_Soundscapes_Broken002.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "magicpack2_earth_meteorshower003": {
+  "lib": "David Dumais Audio - Magic Sound FX Pack 2",
+  "file": "MagicPack2_Earth_MeteorShower003.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "magicpack2_electricityspells_spell2_002": {
+  "lib": "David Dumais Audio - Magic Sound FX Pack 2",
+  "file": "MagicPack2_ElectricitySpells_Spell2-002.wav",
+  "start": 0.0,
+  "end": 2.764,
+  "dur": 2.76
+ },
+ "magicpack2_waterexplosions_explosion2_004": {
+  "lib": "David Dumais Audio - Magic Sound FX Pack 2",
+  "file": "MagicPack2_WaterExplosions_Explosion2-004.wav",
+  "start": 0.0,
+  "end": 3.369,
+  "dur": 3.37
+ },
+ "metlfric_designed_metal_sword_sheath_04_ddumais_none": {
+  "lib": "David Dumais Audio - Melee Weapons Sound Effects Pack 1",
+  "file": "METLFric_Designed Metal Sword Sheath 04_DDUMAIS_NONE.wav",
+  "start": 0.0,
+  "end": 0.916,
+  "dur": 0.92
+ },
+ "swsh_swing_3_large_03_ddumais_none": {
+  "lib": "David Dumais Audio - Melee Weapons Sound Effects Pack 1",
+  "file": "SWSH_Swing 3 Large 03_DDUMAIS_NONE.wav",
+  "start": 0.0,
+  "end": 0.666,
+  "dur": 0.67
+ },
+ "swsh_sword_slash_impact_v2_assorted_18_ddumais_none": {
+  "lib": "David Dumais Audio - Melee Weapons Sound Effects Pack 1",
+  "file": "SWSH_Sword Slash Impact V2 Assorted 18_DDUMAIS_NONE.wav",
+  "start": 0.0,
+  "end": 1.01,
+  "dur": 1.01
+ },
+ "woodimpt_impact_wood_23_ddumais_none": {
+  "lib": "David Dumais Audio - Melee Weapons Sound Effects Pack 1",
+  "file": "WOODImpt_Impact Wood 23_DDUMAIS_NONE.wav",
+  "start": 0.0,
+  "end": 1.18,
+  "dur": 1.18
+ },
+ "monsterpack2_largemonster11_roar03": {
+  "lib": "David Dumais Audio - Monster Sound FX Pack 2",
+  "file": "MonsterPack2_LargeMonster11_Roar03.wav",
+  "start": 0.0,
+  "end": 0.928,
+  "dur": 0.93
+ },
+ "monsterpack2_monster06_attack13": {
+  "lib": "David Dumais Audio - Monster Sound FX Pack 2",
+  "file": "MonsterPack2_Monster06_Attack13.wav",
+  "start": 0.0,
+  "end": 1.325,
+  "dur": 1.33
+ },
+ "monsterpack2_monster09_death02": {
+  "lib": "David Dumais Audio - Monster Sound FX Pack 2",
+  "file": "MonsterPack2_Monster09_Death02.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "monsterpack2_monster10_call09": {
+  "lib": "David Dumais Audio - Monster Sound FX Pack 2",
+  "file": "MonsterPack2_Monster10_Call09.wav",
+  "start": 0.0,
+  "end": 1.044,
+  "dur": 1.04
+ },
+ "clocktick_steampunk_loopable_clock_08_120bpm_ddumais_none__t1": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "CLOCKTick_Steampunk Loopable Clock 08 - 120BPM_DDUMAIS_NONE.wav",
+  "start": 0,
+  "end": 0.411,
+  "dur": 0.41
+ },
+ "clocktick_steampunk_loopable_clock_08_120bpm_ddumais_none__t2": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "CLOCKTick_Steampunk Loopable Clock 08 - 120BPM_DDUMAIS_NONE.wav",
+  "start": 0.628,
+  "end": 0.924,
+  "dur": 0.3
+ },
+ "clocktick_steampunk_loopable_clock_08_120bpm_ddumais_none__t3": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "CLOCKTick_Steampunk Loopable Clock 08 - 120BPM_DDUMAIS_NONE.wav",
+  "start": 1.06,
+  "end": 1.409,
+  "dur": 0.35
+ },
+ "clocktick_steampunk_loopable_clock_08_120bpm_ddumais_none__t4": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "CLOCKTick_Steampunk Loopable Clock 08 - 120BPM_DDUMAIS_NONE.wav",
+  "start": 1.554,
+  "end": 1.937,
+  "dur": 0.38
+ },
+ "clocktick_steampunk_loopable_clock_08_120bpm_ddumais_none__t5": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "CLOCKTick_Steampunk Loopable Clock 08 - 120BPM_DDUMAIS_NONE.wav",
+  "start": 2.064,
+  "end": 2.397,
+  "dur": 0.33
+ },
+ "clocktick_steampunk_loopable_clock_08_120bpm_ddumais_none__t6": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "CLOCKTick_Steampunk Loopable Clock 08 - 120BPM_DDUMAIS_NONE.wav",
+  "start": 2.54,
+  "end": 2.891,
+  "dur": 0.35
+ },
+ "equiptech_steampunk_high_tech_gadget_03_ddumais_none": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "EQUIPTech_Steampunk High Tech Gadget 03_DDUMAIS_NONE.wav",
+  "start": 0.0,
+  "end": 1.396,
+  "dur": 1.4
+ },
+ "machind_steampunk_large_factory_machine_09_ddumais_none": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "MACHInd_Steampunk Large Factory Machine 09_DDUMAIS_NONE.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "machmech_steampunk_gadget_reload_04_ddumais_none": {
+  "lib": "David Dumais Audio - Steampunk Mech SFX",
+  "file": "MACHMech_Steampunk Gadget Reload 04_DDUMAIS_NONE.wav",
+  "start": 0.0,
+  "end": 1.864,
+  "dur": 1.86
+ },
+ "clocktick_insj_clock_03_ticking_multi_loop__t1": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-03_Ticking_Multi_LOOP.wav",
+  "start": 0,
+  "end": 0.176,
+  "dur": 0.18
+ },
+ "clocktick_insj_clock_03_ticking_multi_loop__t2": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-03_Ticking_Multi_LOOP.wav",
+  "start": 0.98,
+  "end": 1.189,
+  "dur": 0.21
+ },
+ "clocktick_insj_clock_03_ticking_multi_loop__t3": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-03_Ticking_Multi_LOOP.wav",
+  "start": 1.98,
+  "end": 2.173,
+  "dur": 0.19
+ },
+ "clocktick_insj_clock_03_ticking_multi_loop__t4": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-03_Ticking_Multi_LOOP.wav",
+  "start": 2.979,
+  "end": 3.177,
+  "dur": 0.2
+ },
+ "clocktick_insj_clock_03_ticking_multi_loop__t5": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-03_Ticking_Multi_LOOP.wav",
+  "start": 3.984,
+  "end": 4.187,
+  "dur": 0.2
+ },
+ "clocktick_insj_clock_03_ticking_multi_loop__t6": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-03_Ticking_Multi_LOOP.wav",
+  "start": 4.98,
+  "end": 5.185,
+  "dur": 0.2
+ },
+ "clocktick_insj_clock_07_ticking_single_01": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-07_Ticking_Single-01.wav",
+  "start": 0.0,
+  "end": 1.0,
+  "dur": 1.0
+ },
+ "clocktick_insj_clock_12_ticking_multi_loop": {
+  "lib": "InspectorJ - Essentials 02 Clocks",
+  "file": "CLOCKTick_InsJ_Clock-12_Ticking_Multi_LOOP.wav",
+  "start": 0.0,
+  "end": 3.687,
+  "dur": 3.69
+ },
+ "discovery_01_03_organ_a_wet": {
+  "lib": "InspectorJ - RPG Orchestral Essentials (Music FX)",
+  "file": "Discovery_01-03_Organ-A_WET.wav",
+  "start": 0.0,
+  "end": 8.0,
+  "dur": 8.0
+ },
+ "failure_01_10_ensemble_small_dry": {
+  "lib": "InspectorJ - RPG Orchestral Essentials (Music FX)",
+  "file": "Failure_01-10_Ensemble-Small_DRY.wav",
+  "start": 0.0,
+  "end": 1.439,
+  "dur": 1.44
+ },
+ "failure_05_01_piano_a_dry": {
+  "lib": "InspectorJ - RPG Orchestral Essentials (Music FX)",
+  "file": "Failure_05-01_Piano-A_DRY.wav",
+  "start": 0.0,
+  "end": 3.02,
+  "dur": 3.02
+ },
+ "mystery_01_11_ensemble_large_wet": {
+  "lib": "InspectorJ - RPG Orchestral Essentials (Music FX)",
+  "file": "Mystery_01-11_Ensemble-Large_WET.wav",
+  "start": 0.0,
+  "end": 7.919,
+  "dur": 7.92
+ },
+ "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t1": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKChim_Old Wall Clock 1920 Chimes Ringing_JSE_CM_Stereo.wav",
+  "start": 0,
+  "end": 0.201,
+  "dur": 0.2
+ },
+ "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t2": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKChim_Old Wall Clock 1920 Chimes Ringing_JSE_CM_Stereo.wav",
+  "start": 1.167,
+  "end": 4.167,
+  "dur": 3.0
+ },
+ "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t3": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKChim_Old Wall Clock 1920 Chimes Ringing_JSE_CM_Stereo.wav",
+  "start": 9.075,
+  "end": 12.075,
+  "dur": 3.0
+ },
+ "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t4": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKChim_Old Wall Clock 1920 Chimes Ringing_JSE_CM_Stereo.wav",
+  "start": 17.004,
+  "end": 17.237,
+  "dur": 0.23
+ },
+ "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t5": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKChim_Old Wall Clock 1920 Chimes Ringing_JSE_CM_Stereo.wav",
+  "start": 18.261,
+  "end": 21.261,
+  "dur": 3.0
+ },
+ "clockchim_old_wall_clock_1920_chimes_ringing_jse_cm_stereo__t6": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKChim_Old Wall Clock 1920 Chimes Ringing_JSE_CM_Stereo.wav",
+  "start": 33.916,
+  "end": 34.136,
+  "dur": 0.22
+ },
+ "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t1": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMech_Antique Pocket Watch Winding Mechanism 03_JSE_CM_Stereo.wav",
+  "start": 0,
+  "end": 0.918,
+  "dur": 0.92
+ },
+ "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t2": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMech_Antique Pocket Watch Winding Mechanism 03_JSE_CM_Stereo.wav",
+  "start": 1.011,
+  "end": 2.705,
+  "dur": 1.69
+ },
+ "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t3": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMech_Antique Pocket Watch Winding Mechanism 03_JSE_CM_Stereo.wav",
+  "start": 2.798,
+  "end": 5.798,
+  "dur": 3.0
+ },
+ "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t4": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMech_Antique Pocket Watch Winding Mechanism 03_JSE_CM_Stereo.wav",
+  "start": 7.01,
+  "end": 8.52,
+  "dur": 1.51
+ },
+ "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t5": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMech_Antique Pocket Watch Winding Mechanism 03_JSE_CM_Stereo.wav",
+  "start": 8.613,
+  "end": 10.956,
+  "dur": 2.34
+ },
+ "clockmech_antique_pocket_watch_winding_mechanism_03_jse_cm_stereo__t6": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMech_Antique Pocket Watch Winding Mechanism 03_JSE_CM_Stereo.wav",
+  "start": 11.049,
+  "end": 14.037,
+  "dur": 2.99
+ },
+ "clockmisc_wall_clock_handling_gearwheel_spinning_jse_cm_stereo": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKMisc_Wall Clock Handling Gearwheel Spinning_JSE_CM_Stereo.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "clocktick_antique_pocket_watch_ticking_01_jse_cm_mono": {
+  "lib": "Justsoundeffects - Clocks and Mechanics",
+  "file": "CLOCKTick_Antique Pocket Watch Ticking 01_JSE_CM_Mono.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "swsh_woodstick_swish_03_jse_tw1__t1": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "SWSH_Woodstick Swish 03_JSE_TW1.wav",
+  "start": 0,
+  "end": 0.315,
+  "dur": 0.32
+ },
+ "swsh_woodstick_swish_03_jse_tw1__t2": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "SWSH_Woodstick Swish 03_JSE_TW1.wav",
+  "start": 2.03,
+  "end": 2.223,
+  "dur": 0.19
+ },
+ "swsh_woodstick_swish_03_jse_tw1__t3": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "SWSH_Woodstick Swish 03_JSE_TW1.wav",
+  "start": 3.946,
+  "end": 4.14,
+  "dur": 0.19
+ },
+ "swsh_woodstick_swish_03_jse_tw1__t4": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "SWSH_Woodstick Swish 03_JSE_TW1.wav",
+  "start": 6.116,
+  "end": 6.316,
+  "dur": 0.2
+ },
+ "whsh_whoosh_evolving_braam_jse_tw1": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Evolving Braam_JSE_TW1.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "whsh_whoosh_low_07_jse_tw1__t1": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Low 07_JSE_TW1.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "whsh_whoosh_low_07_jse_tw1__t2": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Low 07_JSE_TW1.wav",
+  "start": 6.911,
+  "end": 8.837,
+  "dur": 1.93
+ },
+ "whsh_whoosh_low_07_jse_tw1__t3": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Low 07_JSE_TW1.wav",
+  "start": 11.666,
+  "end": 13.874,
+  "dur": 2.21
+ },
+ "whsh_whoosh_low_07_jse_tw1__t4": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Low 07_JSE_TW1.wav",
+  "start": 16.836,
+  "end": 19.076,
+  "dur": 2.24
+ },
+ "whsh_whoosh_low_07_jse_tw1__t5": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Low 07_JSE_TW1.wav",
+  "start": 21.515,
+  "end": 23.838,
+  "dur": 2.32
+ },
+ "whsh_whoosh_short_06_jse_tw1__t1": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Short 06_JSE_TW1.wav",
+  "start": 0,
+  "end": 0.743,
+  "dur": 0.74
+ },
+ "whsh_whoosh_short_06_jse_tw1__t2": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Short 06_JSE_TW1.wav",
+  "start": 2.76,
+  "end": 3.374,
+  "dur": 0.61
+ },
+ "whsh_whoosh_short_06_jse_tw1__t3": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Short 06_JSE_TW1.wav",
+  "start": 5.448,
+  "end": 6.04,
+  "dur": 0.59
+ },
+ "whsh_whoosh_short_06_jse_tw1__t4": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Short 06_JSE_TW1.wav",
+  "start": 8.135,
+  "end": 8.744,
+  "dur": 0.61
+ },
+ "whsh_whoosh_short_06_jse_tw1__t5": {
+  "lib": "Justsoundeffects - Transition Whooshes Vol. 1",
+  "file": "WHSH_Whoosh Short 06_JSE_TW1.wav",
+  "start": 10.835,
+  "end": 11.782,
+  "dur": 0.95
+ },
+ "eleczap_bug_zapper_zapping_electricity_crackle_roguewaves_druidmagic_3": {
+  "lib": "Rogue Waves - Druid Magic",
+  "file": "ELECZap_Bug zapper zapping, electricity, crackle,_RogueWaves_DruidMagic_37.wav",
+  "start": 0.0,
+  "end": 1.084,
+  "dur": 1.08
+ },
+ "magelem_water_spell_splash_attack_medium_2_roguewaves_druidmagic": {
+  "lib": "Rogue Waves - Druid Magic",
+  "file": "MAGElem_Water Spell Splash Attack Medium 2_RogueWaves_DruidMagic.wav",
+  "start": 0.0,
+  "end": 3.648,
+  "dur": 3.65
+ },
+ "magevil_dark_spell_dark_energy_attack_roguewaves_druidmagic": {
+  "lib": "Rogue Waves - Druid Magic",
+  "file": "MAGEvil_Dark Spell Dark Energy Attack_RogueWaves_DruidMagic.wav",
+  "start": 0.0,
+  "end": 1.979,
+  "dur": 1.98
+ },
+ "swsh_dry_bamboo_leaf_swishes_1_roguewaves_druidmagic": {
+  "lib": "Rogue Waves - Druid Magic",
+  "file": "SWSH_Dry Bamboo Leaf Swishes 1_RogueWaves_DruidMagic.wav",
+  "start": 0.0,
+  "end": 3.488,
+  "dur": 3.49
+ },
+ "collecting_orb_sound_2": {
+  "lib": "RYK-Sounds - Retro Game SFX",
+  "file": "collecting orb-sound 2.wav",
+  "start": 0.0,
+  "end": 2.0,
+  "dur": 2.0
+ },
+ "passive_gain_life_sound": {
+  "lib": "RYK-Sounds - Retro Game SFX",
+  "file": "passive gain life-sound.wav",
+  "start": 0.0,
+  "end": 2.987,
+  "dur": 2.99
+ },
+ "power_up_level_up_sound_2": {
+  "lib": "RYK-Sounds - Retro Game SFX",
+  "file": "power up_level up-sound 2.wav",
+  "start": 0.0,
+  "end": 1.5,
+  "dur": 1.5
+ },
+ "teleporting_sound_5": {
+  "lib": "RYK-Sounds - Retro Game SFX",
+  "file": "teleporting-sound 5.wav",
+  "start": 0.0,
+  "end": 1.857,
+  "dur": 1.86
+ },
+ "fui_ease_into_position": {
+  "lib": "Shapeforms Audio - Future UI",
+  "file": "FUI Ease Into Position.wav",
+  "start": 0.0,
+  "end": 0.297,
+  "dur": 0.3
+ },
+ "fui_hologram_ping_tone_echoed_2": {
+  "lib": "Shapeforms Audio - Future UI",
+  "file": "FUI Hologram Ping Tone Echoed-2.wav",
+  "start": 0.0,
+  "end": 0.816,
+  "dur": 0.82
+ },
+ "fui_navigation_swipe_2": {
+  "lib": "Shapeforms Audio - Future UI",
+  "file": "FUI Navigation Swipe-2.wav",
+  "start": 0.0,
+  "end": 0.406,
+  "dur": 0.41
+ },
+ "short_rising_flutter": {
+  "lib": "Shapeforms Audio - Future UI",
+  "file": "Short Rising Flutter.wav",
+  "start": 0.0,
+  "end": 0.747,
+  "dur": 0.75
+ },
+ "sbttp_paper_tearing_001__t1": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Paper Tearing 001.wav",
+  "start": 0,
+  "end": 1.668,
+  "dur": 1.67
+ },
+ "sbttp_paper_tearing_001__t2": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Paper Tearing 001.wav",
+  "start": 1.822,
+  "end": 3.93,
+  "dur": 2.11
+ },
+ "sbttp_paper_tearing_001__t3": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Paper Tearing 001.wav",
+  "start": 4.566,
+  "end": 5.133,
+  "dur": 0.57
+ },
+ "sbttp_paper_tearing_001__t4": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Paper Tearing 001.wav",
+  "start": 5.493,
+  "end": 6.138,
+  "dur": 0.64
+ },
+ "sbttp_paper_tearing_001__t5": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Paper Tearing 001.wav",
+  "start": 7.625,
+  "end": 8.307,
+  "dur": 0.68
+ },
+ "sbttp_paper_tearing_001__t6": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Paper Tearing 001.wav",
+  "start": 11.02,
+  "end": 11.465,
+  "dur": 0.45
+ },
+ "sbttp_pencil_001__t1": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Pencil 001.wav",
+  "start": 0,
+  "end": 1.486,
+  "dur": 1.49
+ },
+ "sbttp_pencil_001__t2": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Pencil 001.wav",
+  "start": 1.601,
+  "end": 2.522,
+  "dur": 0.92
+ },
+ "sbttp_pencil_001__t3": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Pencil 001.wav",
+  "start": 2.822,
+  "end": 3.225,
+  "dur": 0.4
+ },
+ "sbttp_pencil_001__t4": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Pencil 001.wav",
+  "start": 3.457,
+  "end": 3.756,
+  "dur": 0.3
+ },
+ "sbttp_pencil_001__t5": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Pencil 001.wav",
+  "start": 3.936,
+  "end": 5.541,
+  "dur": 1.6
+ },
+ "sbttp_pencil_001__t6": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Pencil 001.wav",
+  "start": 6.151,
+  "end": 6.778,
+  "dur": 0.63
+ },
+ "sbttp_regular_book_flip_through_001__t1": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Regular Book Flip Through 001.wav",
+  "start": 0,
+  "end": 1.681,
+  "dur": 1.68
+ },
+ "sbttp_regular_book_flip_through_001__t2": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Regular Book Flip Through 001.wav",
+  "start": 1.789,
+  "end": 2.003,
+  "dur": 0.21
+ },
+ "sbttp_regular_book_flip_through_001__t3": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Regular Book Flip Through 001.wav",
+  "start": 3.047,
+  "end": 3.849,
+  "dur": 0.8
+ },
+ "sbttp_regular_book_flip_through_001__t4": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Regular Book Flip Through 001.wav",
+  "start": 4.041,
+  "end": 4.883,
+  "dur": 0.84
+ },
+ "sbttp_regular_book_flip_through_001__t5": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Regular Book Flip Through 001.wav",
+  "start": 5.063,
+  "end": 5.881,
+  "dur": 0.82
+ },
+ "sbttp_regular_book_flip_through_001__t6": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Regular Book Flip Through 001.wav",
+  "start": 6.61,
+  "end": 7.259,
+  "dur": 0.65
+ },
+ "sbttp_typewriter_001__t1": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Typewriter 001.wav",
+  "start": 0,
+  "end": 0.54,
+  "dur": 0.54
+ },
+ "sbttp_typewriter_001__t2": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Typewriter 001.wav",
+  "start": 1.149,
+  "end": 2.037,
+  "dur": 0.89
+ },
+ "sbttp_typewriter_001__t3": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Typewriter 001.wav",
+  "start": 2.164,
+  "end": 2.435,
+  "dur": 0.27
+ },
+ "sbttp_typewriter_001__t4": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Typewriter 001.wav",
+  "start": 2.816,
+  "end": 3.483,
+  "dur": 0.67
+ },
+ "sbttp_typewriter_001__t5": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Typewriter 001.wav",
+  "start": 3.676,
+  "end": 3.949,
+  "dur": 0.27
+ },
+ "sbttp_typewriter_001__t6": {
+  "lib": "Sonic Bat - Turning The Page",
+  "file": "SBttp_Typewriter 001.wav",
+  "start": 4.101,
+  "end": 4.399,
+  "dur": 0.3
+ },
+ "sbvfe1_door_handle_d_002": {
+  "lib": "Sonic Bat - Videogame Foley Essentials Vol. I",
+  "file": "SBvfe1_Door Handle D 002.wav",
+  "start": 0.0,
+  "end": 0.943,
+  "dur": 0.94
+ },
+ "sbvfe1_dragging_metal_plate_012": {
+  "lib": "Sonic Bat - Videogame Foley Essentials Vol. I",
+  "file": "SBvfe1_Dragging Metal Plate 012.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "sbvfe1_jiggling_belt_buckle_004": {
+  "lib": "Sonic Bat - Videogame Foley Essentials Vol. I",
+  "file": "SBvfe1_Jiggling Belt Buckle 004.wav",
+  "start": 0.0,
+  "end": 1.388,
+  "dur": 1.39
+ },
+ "sbvfe1_plastic_knob_c_018": {
+  "lib": "Sonic Bat - Videogame Foley Essentials Vol. I",
+  "file": "SBvfe1_Plastic Knob C 018.wav",
+  "start": 0.0,
+  "end": 1.237,
+  "dur": 1.24
+ },
+ "campfire": {
+  "lib": "Stefano Cremona - Pure Nature Ambiences",
+  "file": "Campfire.wav",
+  "start": 5.0,
+  "end": 25.0,
+  "dur": 20.0
+ },
+ "crickets": {
+  "lib": "Stefano Cremona - Pure Nature Ambiences",
+  "file": "Crickets.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "thunderpowerful": {
+  "lib": "Stefano Cremona - Pure Nature Ambiences",
+  "file": "ThunderPowerful.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ },
+ "wavesonriver": {
+  "lib": "Stefano Cremona - Pure Nature Ambiences",
+  "file": "WavesOnRiver.wav",
+  "start": 0,
+  "end": 3.0,
+  "dur": 3.0
+ }
+}
