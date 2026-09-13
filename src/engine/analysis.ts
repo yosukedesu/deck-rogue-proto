@@ -15,6 +15,8 @@ export interface TurnMetrics {
   readonly sets: number
   readonly fires: number
   readonly holds: number
+  /** 罠モデル (2026-09-13): 2窓で鳴らずにほどけた札の枚数 (旧ログは undefined) */
+  readonly expires?: number
   /** ターン開始時の手札 (保持で残った札+ドロー。2026-09-05 ログ拡充。旧ログは undefined) */
   readonly hand?: readonly string[]
   /** ターン終了時に手札に残った札 = 使わなかった札 */
@@ -31,17 +33,19 @@ export interface BattleMetrics {
   readonly sets: number
   readonly fires: number
   readonly holds: number
+  /** ほどけた罠の枚数 (2026-09-13) */
+  readonly expires?: number
   readonly perTurn: readonly TurnMetrics[]
 }
 
 export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
-  const turns = new Map<number, { dealt: number; counter: number; taken: number; plays: number; sets: number; fires: number; holds: number; hand?: string[]; unplayed?: string[] }>()
+  const turns = new Map<number, { dealt: number; counter: number; taken: number; plays: number; sets: number; fires: number; holds: number; expires: number; hand?: string[]; unplayed?: string[] }>()
   let cur = 0
   let enemyPhase = false
   let awaitingDraw = false
   const at = (t: number) => {
     let m = turns.get(t)
-    if (!m) turns.set(t, (m = { dealt: 0, counter: 0, taken: 0, plays: 0, sets: 0, fires: 0, holds: 0 }))
+    if (!m) turns.set(t, (m = { dealt: 0, counter: 0, taken: 0, plays: 0, sets: 0, fires: 0, holds: 0, expires: 0 }))
     return m
   }
   for (const e of log) {
@@ -71,11 +75,12 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
       case 'CardSet': at(cur).sets++; break
       case 'ReactionTriggered': at(cur).fires++; break
       case 'ReactionHeld': at(cur).holds++; break
+      case 'SetCardExpired': at(cur).expires++; break
       default: break
     }
   }
   const perTurn: TurnMetrics[] = [...turns.entries()].sort((a, b) => a[0] - b[0]).map(([turn, m]) => ({ turn, ...m }))
-  const sum = (k: 'dealt' | 'counter' | 'taken' | 'plays' | 'sets' | 'fires' | 'holds') => perTurn.reduce((a, m) => a + m[k], 0)
+  const sum = (k: 'dealt' | 'counter' | 'taken' | 'plays' | 'sets' | 'fires' | 'holds' | 'expires') => perTurn.reduce((a, m) => a + (m[k] ?? 0), 0)
   return {
     turns: perTurn.length,
     t1Damage: perTurn[0]?.dealt ?? 0,
@@ -85,6 +90,7 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
     sets: sum('sets'),
     fires: sum('fires'),
     holds: sum('holds'),
+    expires: sum('expires'),
     perTurn,
   }
 }

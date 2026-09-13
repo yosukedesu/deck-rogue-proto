@@ -51,22 +51,19 @@ namespace DeckRogue.Engine
                         ? $"{card.Def.Name} は伏せられない (X・モード・追加コスト・ドロー/マナ系は対象外)"
                         : $"{card.Def.Name} は伏せられない (リアクションタイプのみ)");
             }
-            // 回収ターンの伏せ直しは0E。屍集めで戻した札 (freeThisCombat) も0E。通常カード (実験) は固定1E
+            // 屍集めで戻した札 (freeThisCombat) は0E。通常カード (実験) は固定1E
             int setCost = SetCostOf(card);
-            bool freeReset = state.Player.FreeResetUid == card.Uid;
-            if (!freeReset && setCost > state.Player.Energy) throw new InvalidOperationException($"エナジー不足: {card.Def.Name}");
+            if (setCost > state.Player.Energy) throw new InvalidOperationException($"エナジー不足: {card.Def.Name}");
             var setCards = new List<CardInstance>(state.Player.SetCards)
             {
-                // 見切りの拡張: 一度伏せた札の伏せ直しは「新鮮」にならない = 敵は反応しない。
-                // 0Eで伏せた札 (毒針の囮・回収ターンの伏せ直し・屍集めの0E札) も「気配」にならない
-                card with { SetFresh = card.WasSet != true && !freeReset && setCost >= 1, WasSet = true },
+                // 罠モデル (2026-09-13): 伏せたターンを記録する。このターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる
+                card with { SetTurn = state.Turn },
             };
             var s = state with
             {
                 Player = state.Player with
                 {
-                    Energy = state.Player.Energy - (freeReset ? 0 : setCost),
-                    FreeResetUid = freeReset ? null : state.Player.FreeResetUid,
+                    Energy = state.Player.Energy - setCost,
                     Hand = state.Player.Hand.Where(c => c.Uid != cardUid).ToList(),
                     SetCards = setCards,
                     SetsThisTurn = (state.Player.SetsThisTurn ?? 0) + 1,
@@ -100,30 +97,12 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>
-        /// 回収: 1E払って伏せ札を手札に戻す。払った伏せコストは返らない。
-        /// 読み違いの代償を「枠の固定死」から「1E払って賭け直し」に変える
+        /// 回収 (2026-08-30 A2) は 2026-09-13 罠モデルで廃止: 罠は仕込んだら押し戻せない (期限切れで捨て札に戻る)。
+        /// 旧セーブ・ジャーナル互換のためコマンド型は残し、常に拒否する
         /// </summary>
         public static GameState RetrieveSetCard(GameState state, string cardUid)
         {
-            if (state.Phase != CombatPhases.PlayerTurn) throw new InvalidOperationException("回収は自ターンのみ");
-            var card = state.Player.SetCards.FirstOrDefault(c => c.Uid == cardUid);
-            if (card == null) throw new InvalidOperationException($"伏せ場にないカード: {cardUid}");
-            int cost = state.RetrieveFree == true ? 0 : 1; // 回収の紐: 回収が0E
-            if (state.Player.Energy < cost) throw new InvalidOperationException("エナジー不足: 回収には1E必要");
-            var restored = card with { SetFresh = null };
-            var hand = new List<CardInstance>(state.Player.Hand) { restored };
-            return Events.Emit(
-                state with
-                {
-                    Player = state.Player with
-                    {
-                        Energy = state.Player.Energy - cost,
-                        SetCards = state.Player.SetCards.Where(c => c.Uid != cardUid).ToList(),
-                        Hand = hand,
-                        FreeResetUid = cardUid, // このターン中の伏せ直しは0E
-                    },
-                },
-                new GameEvent_SetCardRetrieved { CardId = card.Def.Id });
+            throw new InvalidOperationException("回収は廃止された (2026-09-13 罠モデル): 罠は2窓で鳴らなければほどけて捨て札に戻る");
         }
 
         /// <summary>
@@ -159,12 +138,14 @@ namespace DeckRogue.Engine
             return s;
         }
 
-        /// <summary>空振り計上: 敵フェーズ終端に伏せが残っていれば、そのターンは発動しなかった</summary>
+        /// <summary>空振り計上: 敵フェーズ終端に「生きている窓」の罠が残っていれば、そのターンは発動しなかった。
+        /// 準備ターン (伏せたターン) は窓が原理的に開かないので数えない (2026-09-13 統計の嘘を作らない)</summary>
         public static GameState EmitWhiffForRemainingSet(GameState state)
         {
             var s = state;
             foreach (var card in state.Player.SetCards)
             {
+                if (!Effects.IsTrapLive(state, card)) continue;
                 s = Events.Emit(s, new GameEvent_ReactionWhiffed { CardId = card.Def.Id });
             }
             return s;

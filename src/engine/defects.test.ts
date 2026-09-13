@@ -6,7 +6,7 @@ import { startCombatWithOptions } from './combat.ts'
 import { applyDebugOverrides, buildDeck, clearDebugOverrides, getCardDef } from './content.ts'
 import { countedPermanents } from './effects.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import type { CardInstance, EnemyIntent, GameState } from './types.ts'
 
 /** 敵フェーズを最後まで進めて次の自ターン (=意図の再宣言後) まで到達させる */
@@ -76,7 +76,7 @@ describe('伏せ札の消滅が黙殺されていた件', () => {
     })
     try {
       let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), ['test_exhaust_reaction'])
-      s = applyCommand(s, { type: 'SetCard', cardUid: 't0_test_exhaust_reaction' })
+      s = setAndArm(s, 't0_test_exhaust_reaction')
       s = withIntent(s, attackIntent(6))
       s = applyCommand(s, { type: 'EndTurn' })
       s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_test_exhaust_reaction' })
@@ -139,7 +139,7 @@ describe('条件付き意図とリアクションの相互作用 (2026-08-26 プ
     let s = withHand(freshCombat('set-confirm', 'enemy_joker', 3, 'starter'), [
       'green_reaction_vine', // 1E・被攻撃前にブロック12 (pre窓)
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = setAndArm(s, 't0_green_reaction_vine') // 罠モデル: 伏せた翌ターンに鳴る
     s = withIntent(s, conditional)
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
@@ -164,7 +164,7 @@ describe('複数体戦の条件付き意図 (2026-08-28 seed601プレイテス�
   function twoEnemyState(): GameState {
     let s = freshCombat('set-confirm', 'enc_probe_pair', 42, 'starter')
     s = withHand(s, ['green_reaction_thorns'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = setAndArm(s, 't0_green_reaction_thorns') // 罠モデル: 伏せた翌ターンに鳴る
     const conditional: EnemyIntent = {
       kind: 'attack',
       shownMin: 8,

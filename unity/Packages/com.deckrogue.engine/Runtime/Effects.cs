@@ -540,22 +540,53 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>
-        /// この敵の伏せ分岐が見切り (setFresh) を無視するか = 破壊分岐・罰型。
-        /// effectiveIntent の判定と表示層 (CLI/UI の「見切られ」タグ) が同じ述語を読む
+        /// 罠モデル (2026-09-13): 伏せた札の齢。伏せたターン=0 (準備・鳴らない)、1・2=生きている窓、3以上=期限切れ。
+        /// 旧セーブ (setTurn 無し) は「今伏せた」として読む
         /// </summary>
-        public static bool SetReactionIgnoresFreshness(GameState state, int enemyIndex)
+        public static int TrapAge(GameState state, CardInstance card)
         {
-            var enemy = EnemyAt(state, enemyIndex);
-            var intent = enemy?.Intent;
-            if (enemy == null || intent == null || intent.ConditionalOn != "set" || intent.Alt == null) return false;
-            return intent.Alt.Kind == "destroy-set"
-                || intent.Alt.IgnoreFreshness == true
-                || Content.GetEnemyDef(enemy.EnemyId).VsSetIgnoreFreshness == true;
+            return state.Turn - (card.SetTurn ?? (state.Turn - 1)); // 旧セーブ (SetTurn 無し) は齢1の生きた罠として読む (TS と同形)
+        }
+
+        /// <summary>罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・ほどけない札は無期限)</summary>
+        public static bool IsTrapLive(GameState state, CardInstance card)
+        {
+            int age = TrapAge(state, card);
+            return age >= 1 && (age <= 2 || card.Def.TrapPersist == true);
+        }
+
+        /// <summary>罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)</summary>
+        public static string TrapStatusText(GameState state, CardInstance card)
+        {
+            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・ほどけない）" : "ほどけない";
+            int age = TrapAge(state, card);
+            if (age <= 0) return "準備中（次のターンから鳴る）";
+            int left = TrapWindowsLeft(state, card) ?? 0;
+            return left >= 2 ? "あと2回（鳴らなければ捨て札へ）" : "あと1回（このターンで鳴らなければ捨て札へ）";
+        }
+
+        /// <summary>罠モデル: 伏せ場の札の状態 (Unity の世界の言葉=「からくり」の語彙。TrapStatusText と同じ分岐)</summary>
+        public static string TrapStatusTextKarakuri(GameState state, CardInstance card)
+        {
+            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "巻いている（次のターンから鳴る・ほどけない）" : "ほどけない";
+            int age = TrapAge(state, card);
+            if (age <= 0) return "巻いている（次のターンから鳴る）";
+            int left = TrapWindowsLeft(state, card) ?? 0;
+            return left >= 2 ? "鳴るまで あと2回" : "あと1回（鳴らなければほどける）";
+        }
+
+        /// <summary>罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。ほどけない札は null</summary>
+        public static int? TrapWindowsLeft(GameState state, CardInstance card)
+        {
+            if (card.Def.TrapPersist == true) return null;
+            int age = TrapAge(state, card);
+            return Math.Max(0, 3 - Math.Max(1, age));
         }
 
         /// <summary>
         /// 条件付き意図の解決 (確定済みルール表「条件付き意図」)。
         /// 反応テーブルを持つ敵は宣言時に両分岐を確定しており、**実行時の盤面**でどちらになるかが決まる。
+        /// 2026-09-13 罠モデル: 敵の伏せ反応は破壊分岐 (罠壊し・道化) だけ。鮮度の概念は無く、伏せ札が1枚でもあれば (準備中も含む) 分岐が立つ
         /// </summary>
         public static EnemyIntent? EffectiveIntent(GameState state, int enemyIndex)
         {
@@ -565,11 +596,7 @@ namespace DeckRogue.Engine
             bool met;
             if (intent.ConditionalOn == "set")
             {
-                // 見切り (2026-08-30 A2): 敵の伏せ反応は**そのターンに伏せられた札**にだけ反応する。
-                // ただし破壊 (destroy-set) は鮮度を問わない
-                met = SetReactionIgnoresFreshness(state, enemyIndex)
-                    ? state.Player.SetCards.Count > 0
-                    : state.Player.SetCards.Any(c => c.SetFresh == true);
+                met = state.Player.SetCards.Count > 0;
             }
             else
             {
@@ -663,8 +690,9 @@ namespace DeckRogue.Engine
         public static IReadOnlyList<CardInstance> UsableSetCards(GameState state, ReactionWindow win)
         {
             // 全カード伏せ可 (実験): 通常カードは発動時に印字コストを払うので、払えない札は候補に出さない
+            // 罠モデル (2026-09-13): 準備ターン (伏せたターン) と期限切れの札は候補に載らない
             var matched = state.Player.SetCards
-                .Where(c => ReactionMatches(state, c, win) && SetAny.SetFireCost(c) <= state.Player.Energy)
+                .Where(c => IsTrapLive(state, c) && ReactionMatches(state, c, win) && SetAny.SetFireCost(c) <= state.Player.Energy)
                 .ToList();
             return state.Player.Hp <= 0
                 ? matched.Where(c => CanSaveFromLethal(c, state)).ToList()
@@ -675,7 +703,7 @@ namespace DeckRogue.Engine
         public static IReadOnlyList<CardInstance> UnaffordableSetCards(GameState state, ReactionWindow win)
         {
             return state.Player.SetCards
-                .Where(c => ReactionMatches(state, c, win) && SetAny.SetFireCost(c) > state.Player.Energy)
+                .Where(c => IsTrapLive(state, c) && ReactionMatches(state, c, win) && SetAny.SetFireCost(c) > state.Player.Energy)
                 .ToList();
         }
 
@@ -1129,6 +1157,12 @@ namespace DeckRogue.Engine
                 case "gainBlockPerHandCard":
                     // 外套の留め金 (レリック 2026-09-12 本家 Cloak Clasp): 手札の枚数 × amount のブロック
                     return GainPlayerBlock(state, (effect.Amount ?? 0) * state.Player.Hand.Count, enemyIndex);
+                case "staggerEnemy":
+                    // 体勢を崩す (蔦の陣 2026-09-13): 次の宣言が隙 (バランス崩しの staggeredNext と同じ配管)
+                    return state with
+                    {
+                        Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 ? e with { StaggeredNext = true } : e),
+                    };
                 case "drawCardsNextTurn":
                     // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。StartPlayerTurn が読んで消す
                     return state with { NextTurnDraw = (state.NextTurnDraw ?? 0) + (effect.Amount ?? 0) };
@@ -1782,6 +1816,7 @@ namespace DeckRogue.Engine
                 }
                 if (c.PerfectBlockLastPhase == true && state.Player.PerfectBlockLastPhase != true) return false;
                 if (c.TargetDead == true && !(e != null && e.Hp <= 0)) return false;
+                if (c.TargetAlive == true && !(e != null && e.Hp > 0)) return false;
                 if (c.LastActionNoHpLoss == true
                     && !(state.LastAction != null && state.LastAction.Kind == "attack" && state.LastAction.HpLoss == 0)) return false;
                 // レリック本家形 (2026-09-12): ターン番号・ブロック0・攻撃なし・プレイ枚数
@@ -1866,11 +1901,28 @@ namespace DeckRogue.Engine
             GameState s = Events.Emit(
                 state with { ResolvingCardPlay = false },
                 new GameEvent_ReactionTriggered { CardId = card.Def.Id, Mode = state.ReactionMode });
+            // 罠モデル (2026-09-13 茨の返し=実値10以上なら急所2): 効果ごとの窓条件 (行動の実値) もここで判定する。
+            // 発動可否 (ReactionMatches) は「どれか1つの効果が合致」なので、条件つきの副次効果だけを落とす必要がある
+            int actionActual = EffectiveIntent(s, enemyIndex)?.Actual ?? 0;
             foreach (var effect in SetAny.SetEffectsOf(card))
             {
                 // 効果ごとの条件 (2026-09-06 白 報復の光): 発動可否は eligible 側が見るが、
-                // 条件つきの効果だけを落とすのはここ。窓専用条件 (minActionValue 等) は BlazeConditionMet が見ないので通る
-                if (REACTION_TRIGGERS.Contains(effect.Trigger) && BlazeConditionMet(s, effect, enemyIndex))
+                // 条件つきの効果だけを落とすのはここ
+                if (!REACTION_TRIGGERS.Contains(effect.Trigger)) continue;
+                var c = effect.Condition;
+                if (c?.MinActionValue != null && actionActual < c.MinActionValue.Value) continue;
+                if (c?.MaxActionValue != null && actionActual > c.MaxActionValue.Value) continue;
+                if (c?.PerfectBlockThisPhase == true)
+                {
+                    // 「この敵フェーズを完全に凌いだら」: 今は解決せず敵フェーズ終端 (FinishEnemyPhase) へ遅延する
+                    var pending = s.PendingPhaseEffects != null
+                        ? new List<GameStatePendingPhaseEffects>(s.PendingPhaseEffects)
+                        : new List<GameStatePendingPhaseEffects>();
+                    pending.Add(new GameStatePendingPhaseEffects { Effect = effect, EnemyIndex = enemyIndex });
+                    s = s with { PendingPhaseEffects = pending };
+                    continue;
+                }
+                if (BlazeConditionMet(s, effect, enemyIndex))
                 {
                     // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
                     s = ResolveEffectTargeted(s, effect, enemyIndex);

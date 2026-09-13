@@ -156,14 +156,12 @@ namespace DeckRogue.Game
                 var t = UiKit.Txt(setRow, "(からくりは空)", 12, UiKit.ColDim, TextAnchor.MiddleLeft);
                 UiKit.Le(t, 160f, -1f, 160f, -1f);
             }
+            // 罠モデル (2026-09-13): 回収は廃止。札ごとに寿命 (巻いている / 鳴るまで あと N回 / ほどけない) を出す
             for (int i = 0; i < st.Player.SetCards.Count; i++)
             {
                 var c = st.Player.SetCards[i];
-                string uid = c.Uid;
-                var b = UiKit.Btn(setRow, c.Def.Name + " [回収1E]", delegate { g.DoCombat(new Command_RetrieveSetCard { CardUid = uid }); }, 12,
-                    st.Phase == CombatPhases.PlayerTurn);
-                var le = b.GetComponent<LayoutElement>();
-                if (le != null) { le.preferredWidth = 230f; le.minWidth = 160f; }
+                var t = UiKit.Txt(setRow, c.Def.Name + "  〔" + Effects.TrapStatusTextKarakuri(st, c) + "〕", 12, UiKit.ColText, TextAnchor.MiddleLeft);
+                UiKit.Le(t, 230f, -1f, 300f, -1f);
             }
 
             // 置物 + 亡骸プレイ
@@ -378,7 +376,9 @@ namespace DeckRogue.Game
             {
                 var c = usable[i];
                 string uid = c.Uid;
-                var b = UiKit.Btn(pan.transform, "発動: " + c.Def.Name + "  [ " + CardText.Short(CardText.Body(c.Def), 76) + " ]",
+                int? left = Effects.TrapWindowsLeft(st, c);
+                string life = left.HasValue ? "（あと" + left.Value + "回）" : "（ほどけない）";
+                var b = UiKit.Btn(pan.transform, "発動: " + c.Def.Name + life + "  [ " + CardText.Short(CardText.Body(c.Def), 76) + " ]",
                     delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 14, true, UiKit.Hex("#2f4d33"));
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) { le.minHeight = 34f; le.preferredHeight = 34f; }

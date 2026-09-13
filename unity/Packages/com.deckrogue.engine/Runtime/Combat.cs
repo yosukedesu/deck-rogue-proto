@@ -37,8 +37,8 @@ namespace DeckRogue.Engine
         public bool? RevealOnSet { get; init; }
         /// <summary>実験: 全カード伏せ可</summary>
         public bool? SetAnyCards { get; init; }
-        /// <summary>C型レリック (回収の紐): 回収が0E</summary>
-        public bool? RetrieveFree { get; init; }
+        /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れの罠が手札に戻る</summary>
+        public bool? ExpireToHand { get; init; }
         /// <summary>C型レリック (大樹の心)</summary>
         public int? EnergyMaxRefBonus { get; init; }
         /// <summary>C型レリック (収穫の鎌)</summary>
@@ -270,7 +270,7 @@ namespace DeckRogue.Engine
                 Enemies = enemies,
                 // C型レリック。revealIntents は第1ターンの意図宣言より前に立てる必要がある
                 SetDamageReduction = (options.SetDamageReduction ?? 0) != 0 ? options.SetDamageReduction : null,
-                RetrieveFree = options.RetrieveFree == true ? (bool?)true : null,
+                ExpireToHand = options.ExpireToHand == true ? (bool?)true : null,
                 EnergyMaxRefBonus = (options.EnergyMaxRefBonus ?? 0) != 0 ? options.EnergyMaxRefBonus : null,
                 HarvestKeep = (options.HarvestKeep ?? 0) != 0 ? options.HarvestKeep : null,
                 RevealIntents = options.RevealIntents == true ? (bool?)true : null,
@@ -530,7 +530,7 @@ namespace DeckRogue.Engine
                     rng = rngB;
                     var (altIntent, rngC) = BuildIntent(rng, reactTable[altIdx], enemy.Strength, enemy.AtkScale ?? 1.0);
                     rng = rngC;
-                    alt = ToBranch(altIntent, null);
+                    alt = ToBranch(altIntent);
                 }
                 else if (!belowHalf && !whenAlone && enemy.NoReactTable != true && move.SetAlt != null)
                 {
@@ -550,7 +550,7 @@ namespace DeckRogue.Engine
                     };
                     var (altIntent, rngC) = BuildIntent(rng, altMove, enemy.Strength, enemy.AtkScale ?? 1.0);
                     rng = rngC;
-                    alt = ToBranch(altIntent, sa.IgnoreFreshness == true ? (bool?)true : null);
+                    alt = ToBranch(altIntent);
                     condOn = "set";
                 }
 
@@ -590,9 +590,8 @@ namespace DeckRogue.Engine
             return s;
         }
 
-        private static EnemyIntentBranch ToBranch(EnemyIntent it, bool? ignoreFreshness) => new EnemyIntentBranch
+        private static EnemyIntentBranch ToBranch(EnemyIntent it) => new EnemyIntentBranch
         {
-            IgnoreFreshness = ignoreFreshness,
             Kind = it.Kind,
             ShownMin = it.ShownMin,
             ShownMax = it.ShownMax,
@@ -669,9 +668,6 @@ namespace DeckRogue.Engine
                     HealsThisTurn = 0,
                     WeakFreshThisPhase = 0,
                     HpLostThisTurn = 0,
-                    FreeResetUid = null,
-                    // 見切り: 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
-                    SetCards = MapIdx(state.Player.SetCards, (c, _) => c.SetFresh == true ? c with { SetFresh = false } : c),
                     // every/once のターン内カウンタをリセット (2026-09-12)
                     Permanents = MapIdx(state.Player.Permanents, (p, _) => p.TurnTriggerCounts == null ? p : p with { TurnTriggerCounts = null }),
                 },
@@ -1723,7 +1719,9 @@ namespace DeckRogue.Engine
         /// </summary>
         private static GameState FireSelfSetTriggers(GameState state, string trigger, int enemyIndex)
         {
-            var firing = state.Player.SetCards.Where(c => c.Def.Effects.Any(e => e.Trigger == trigger)).ToList();
+            // 罠モデル (2026-09-13): 準備ターン (伏せたターン) は自己誘発も鳴らない。期限切れの札も鳴らない
+            var firing = state.Player.SetCards
+                .Where(c => Effects.IsTrapLive(state, c) && c.Def.Effects.Any(e => e.Trigger == trigger)).ToList();
             if (firing.Count == 0) return state;
             var firingUids = new HashSet<string>(firing.Select(c => c.Uid));
             var s = state with
@@ -2183,6 +2181,43 @@ namespace DeckRogue.Engine
             return state;
         }
 
+        /// <summary>罠モデル (2026-09-13): 期限切れ (齢3以上・ほどけない札は除く) の罠を伏せ場から外す</summary>
+        private static GameState ExpireTraps(GameState state)
+        {
+            var expired = state.Player.SetCards
+                .Where(c => Effects.TrapAge(state, c) >= 2 && c.Def.TrapPersist != true).ToList(); // 2窓目の終端 (turn が進む前) = 齢2
+            if (expired.Count == 0) return state;
+            int firstAlive = Math.Max(0, FindAlive(state.Enemies));
+            var expiredUids = new HashSet<string>(expired.Select(c => c.Uid));
+            GameState s = state with
+            {
+                Player = state.Player with { SetCards = state.Player.SetCards.Where(c => !expiredUids.Contains(c.Uid)).ToList() },
+            };
+            foreach (var card in expired)
+            {
+                // 弾け実の罠: ほどけて弾ける (onSetDestroyed 相当。対象は生存先頭)
+                for (int i = 0; i < card.Def.Effects.Count; i++)
+                {
+                    var effect = card.Def.Effects[i];
+                    if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, firstAlive);
+                }
+                string to = s.ExpireToHand == true ? "hand" : card.Def.Exhaust == true ? "exhaust" : "discard";
+                var bare = card with { SetTurn = null };
+                if (to == "hand") s = s with { Player = s.Player with { Hand = Concat(s.Player.Hand, new List<CardInstance> { bare }) } };
+                else if (to == "discard") s = s with { Player = s.Player with { DiscardPile = Concat(s.Player.DiscardPile, new List<CardInstance> { bare }) } };
+                else s = s with { Player = s.Player with { ExhaustPile = Concat(s.Player.ExhaustPile, new List<CardInstance> { bare }) } };
+                s = Events.Emit(s, new GameEvent_SetCardExpired { CardId = card.Def.Id, To = to });
+                if (to == "exhaust")
+                {
+                    // 衝動失効と同じ順: 消滅の誘発 (亡者の合唱など) → 亡骸
+                    s = Events.Emit(s, new GameEvent_CardExhausted { CardId = card.Def.Id });
+                    s = Effects.FireExhaustTriggers(s, 1, firstAlive);
+                    s = Effects.FireNecroEffects(s, new List<CardInstance> { bare }, firstAlive);
+                }
+            }
+            return CheckCombatEnd(s);
+        }
+
         /// <summary>敵フェーズ終端: 空振り計上フック→手札全捨て (3方式共通)→次ターン開始</summary>
         private static GameState FinishEnemyPhase(GameState state)
         {
@@ -2197,6 +2232,22 @@ namespace DeckRogue.Engine
                 },
             };
             s = Hooks.DispatchHooks(s, ended); // 空振り (ReactionWhiffed) の計上は方式固有
+            // 罠モデル (2026-09-13): 「完全に凌いだら」の遅延効果 (守りの蔓=次ターン1ドロー・蔦の陣=体勢崩し) をここで判定して解決する
+            var pendingPhase = s.PendingPhaseEffects ?? (IReadOnlyList<GameStatePendingPhaseEffects>)new List<GameStatePendingPhaseEffects>();
+            if (pendingPhase.Count > 0)
+            {
+                s = s with { PendingPhaseEffects = null };
+                if (s.Player.PerfectBlockLastPhase == true)
+                {
+                    foreach (var pe in pendingPhase) s = Effects.ResolveEffectTargeted(s, pe.Effect, pe.EnemyIndex);
+                }
+            }
+            // 罠モデル: 2窓目の終端で鳴らなかった罠はほどける (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
+            // 回収の紐を持つ間は手札へ。弾け実の罠=onSetDestroyed は期限切れでも弾ける)。期限切れ由来で敵が死にうるので決着判定を挟む
+            // 回収の紐で手札に戻った札は、この後の全捨てを生き残らせる (TS と同形 2026-09-13)
+            var handBeforeExpire = new HashSet<string>(s.Player.Hand.Select(c => c.Uid));
+            s = ExpireTraps(s);
+            if (s.Phase == CombatPhases.Won || s.Phase == CombatPhases.Lost) return s;
             // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る。
             // ただしこのフェーズに付与された分は減らさない (justAppliedガード)
             s = s with
@@ -2249,7 +2300,8 @@ namespace DeckRogue.Engine
             // ルーンの角錐 (retainHand 2026-09-12): 手札を捨てない。自ターンを過ごした火傷だけは消える (1回きりの則は不変)
             bool retainAll = s.RetainHand == true;
             bool Keeps(CardInstance c) =>
-                (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id);
+                (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id)
+                || !handBeforeExpire.Contains(c.Uid); // 回収の紐でほどけて手札に戻った罠 (2026-09-13)
             s = s with
             {
                 Player = s.Player with

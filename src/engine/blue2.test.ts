@@ -2,7 +2,7 @@
 // 確定済みルール表「霊気獲得の誘発」「氷壁の換金」「魔力盗み」「置物の呪文プレイ誘発」を固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
-import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, defendIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 
 describe('霊気獲得の誘発 (静電の帳)', () => {
   it('霊気を得るたび敵全体に1ダメージ', () => {
@@ -12,7 +12,7 @@ describe('霊気獲得の誘発 (静電の帳)', () => {
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_perm_static' })
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_frost_veil' })
+    s = setAndArm(s, 't1_blue_frost_veil') // 罠モデル: 伏せたターンは鳴らない
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
     // 敵0の攻撃 → 霜の帳が発動 (氷壁8+霊気1) → 静電の帳が全体1ダメ
@@ -54,7 +54,7 @@ describe('魔力盗み (打ち消しの換金)', () => {
       'blue_spell_steal',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_spell_steal' })
+    s = setAndArm(s, 't0_blue_spell_steal')
     s = withIntent(s, attackIntent(13))
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
@@ -118,7 +118,7 @@ describe('心眼 (敵防御窓の換金)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_reaction_mind_eye',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_reaction_mind_eye' })
+    s = setAndArm(s, 't0_blue_reaction_mind_eye')
     s = withIntent(s, defendIntent(8))
     const handBefore = s.player.hand.length
     s = applyCommand(s, { type: 'EndTurn' })

@@ -468,7 +468,7 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
       .reduce((sum, r) => sum + (r.combatRule?.setDamageReduction ?? 0), 0),
     revealIntents: run.debugRevealIntents === true || run.relics.some((id) => getRelicDef(id).combatRule?.revealIntents === true),
     revealOnSet: run.relics.some((id) => getRelicDef(id).combatRule?.revealOnSet === true),
-    retrieveFree: run.relics.some((id) => getRelicDef(id).combatRule?.retrieveFree === true),
+    expireToHand: run.relics.some((id) => getRelicDef(id).combatRule?.expireToHand === true),
     energyMaxRefBonus: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.energyMaxRefBonus ?? 0), 0),
     harvestKeep: run.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.harvestKeep ?? 0), 0),
     ...(run.setAnyCards === true ? { setAnyCards: true } : {}),

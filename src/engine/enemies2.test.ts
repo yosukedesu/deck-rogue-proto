@@ -7,7 +7,7 @@ import * as contentModule from './content.ts'
 import * as combatModule from './combat.ts'
 import { applyRunCommand, createRun } from './run.ts'
 import type { RunState } from './run.ts'
-import { chooseToward, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, freshCombat, withHand, withIntent, setAndArm } from './test-helpers.ts'
 import type { EnemyIntent, GameState } from './types.ts'
 
 function intent(partial: Partial<EnemyIntent> & { kind: EnemyIntent['kind'] }): EnemyIntent {
@@ -300,8 +300,8 @@ describe('山札喰い (2026-08-31 大喰らいの蟲。kind:mill)', () => {
 
   it('打ち消しで山札喰いを止められる (敵の任意の行動の既存則)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_elite_devourer', 42), ['green_reaction_root_weave'])
+    s = setAndArm(s, 't0_green_reaction_root_weave') // 罠モデル: 伏せた翌ターンに鳴る
     const drawBefore = s.player.drawPile.length
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_weave' })
     s = withIntent(s, { kind: 'mill', shownMin: 3, shownMax: 3, actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })

@@ -2,7 +2,7 @@
 // 確定済みルール表「伏せ破壊への罰」「自己誘発リアクション」「急所」「成長放出」「キル連鎖」を固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
-import { attackIntent, destroySetIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, destroySetIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 
 describe('伏せ破壊への罰 (弾け実の罠。2026-08-30 赤のリアクション撤去で緑へ移管)', () => {
   it('罠壊しに破壊されると敵全体に14ダメージが爆ぜる (2026-09-07 12→14・返し3→10)', () => {
@@ -23,19 +23,16 @@ describe('自己誘発リアクション', () => {
   // 追い打ちの罠は赤のリアクション撤去 (2026-08-30) で削除。自己誘発の機構は反響の符が固定する
 
   it('反響の符: 呪文プレイで起爆し1ドロー+霊気2。物理では起爆しない', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
-      'blue_echo_seal',
-      'green_strike',
-      'blue_ponder',
-    ])
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), ['blue_echo_seal'])
+    s = setAndArm(s, 't0_blue_echo_seal') // 罠モデル: 伏せたターンは自己誘発も鳴らない
+    s = withHand(s, ['green_strike', 'blue_ponder'])
     s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_echo_seal' })
     // 物理 (打撃) では起爆しない
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
     expect(s.player.setCards).toHaveLength(1)
     // 呪文 (思案) で起爆
     const handBefore = s.player.hand.length
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_ponder' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
     expect(s.player.aether).toBe(2) // 2026-08-27 霊気1→2
     // 思案の2ドロー + 反響の1ドロー - プレイした思案1枚
     expect(s.player.hand.length).toBe(handBefore + 2 + 1 - 1)
@@ -105,7 +102,7 @@ describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
       'green_reaction_preempt',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_preempt' })
+    s = setAndArm(s, 't0_green_reaction_preempt')
     s = withIntent(s, attackIntent(10))
     const playerHp = s.player.hp
     const enemyHp = s.enemies[0].hp
@@ -120,7 +117,7 @@ describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
       'green_reaction_preempt',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_preempt' })
+    s = setAndArm(s, 't0_green_reaction_preempt')
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 5 })) }
     s = withIntent(s, attackIntent(10))
     const playerHp = s.player.hp

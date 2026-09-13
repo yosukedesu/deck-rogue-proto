@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import { allDecks, buildDeck, deckSize, getDeckDef } from './content.ts'
 import { applyCommand } from './state.ts'
-import { freshCombat, withHand } from './test-helpers.ts'
+import { freshCombat, withHand, setAndArm, withIntent } from './test-helpers.ts'
 import type { GameEvent } from './types.ts'
 
 const types = (log: readonly GameEvent[]) => log.map((e) => e.type)
@@ -271,7 +271,8 @@ describe('敵特性 (StS参考)', () => {
 
   it('打ち消しは強化 (バフ行動) も無効化できる', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_root_weave'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_weave' })
+    s = setAndArm(s, 't0_green_reaction_root_weave') // 罠モデル: 伏せた翌ターンに鳴る
+    s = withIntent(s, { kind: 'buff', shownMin: 2, shownMax: 4, actual: 3 }) // 雄叫び
     s = applyCommand(s, { type: 'EndTurn' }) // warcry に自動発動 → 無効化
     expect(types(s.eventLog)).toContain('ActionNegated')
     expect(s.enemies[0].strength).toBe(0)

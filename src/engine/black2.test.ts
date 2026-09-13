@@ -6,7 +6,7 @@ import { effectiveCost } from './effects.ts'
 import * as combatModule from './combat.ts'
 import * as contentModule from './content.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, withHand, withIntent, setAndArm } from './test-helpers.ts'
 
 describe('消滅コスト (exhaustCost)', () => {
   it('供物の火: 手札1枚を消滅させて13ダメージ。指定なしはエラー', () => {
@@ -210,8 +210,8 @@ describe('黒の新リアクション', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_reaction_last_stand',
     ])
+    s = setAndArm(s, 't0_black_reaction_last_stand')
     s = { ...s, player: { ...s.player, hp: 30 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_last_stand' })
     s = withIntent(s, attackIntent(6))
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
@@ -222,13 +222,11 @@ describe('黒の新リアクション', () => {
   })
 
   it('血の目覚め: 呪文プレイで起爆し、2枚消滅+3ダメージ (刻の前)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
-      'black_reaction_awakening',
-      'black_drain',
-    ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_awakening' })
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), ['black_reaction_awakening'])
+    s = setAndArm(s, 't0_black_reaction_awakening') // 罠モデル: 伏せたターンは自己誘発も鳴らない
+    s = withHand(s, ['black_drain'])
     const enemyHp = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_black_drain' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_black_drain' })
     // 生命吸収6 + 起爆 (忘却2 + 基礎3ダメ。消滅2枚では刻に届かない)
     expect(s.enemies[0].hp).toBe(enemyHp - 6 - 3)
     expect(s.player.exhaustPile).toHaveLength(2)

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { getLeaderDef } from './content.ts'
 
 import { applyCommand } from './state.ts'
-import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, passTurn, withHand, withIntent } from './test-helpers.ts'
 
 describe('かすみ (ディミア): 伏せ同時2枚', () => {
   it('2枚まで伏せられ、3枚目は拒否される', () => {
@@ -24,6 +24,7 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
     // 霜の帳 (被攻撃前) と呪詛返し (被攻撃後) を両方伏せる
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
+    s = passTurn(s) // 罠モデル: 伏せたターンは鳴らない
     s = withIntent(s, attackIntent(6))
     s = applyCommand(s, { type: 'EndTurn' })
     // pre窓: 霜の帳だけが合致
@@ -40,6 +41,7 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
     let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
+    s = passTurn(s) // 罠モデル: 伏せたターンは鳴らない
     s = withIntent(s, attackIntent(6))
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
@@ -58,20 +60,5 @@ describe('かすみ (ディミア): 伏せ同時2枚', () => {
     ])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     expect(() => applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_mana_leak' })).toThrow()
-  })
-
-  it('伏せ破壊の予告に対し「回収でどちらを救うか」を選べる (2026-08-30 逃がし廃止・回収へ)', () => {
-    // 逃がしルールは廃止。破壊が予告されたら、自ターン中に1E払って片方を回収するのが後継の選択。
-    // かすみの2枠は「どちらを救うか + 1Eの支払い」の決断になる
-    const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
-    let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
-    s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_blue_frost_veil' }) // 霜の帳を救う
-    expect(s.player.hand.some((c) => c.uid === 't0_blue_frost_veil')).toBe(true)
-    s = withIntent(s, { kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0 })
-    s = applyCommand(s, { type: 'EndTurn' })
-    const destroyed = s.eventLog.filter((e) => e.type === 'SetCardDestroyed')
-    expect(destroyed).toHaveLength(1) // 破壊されたのは残した1枚だけ
   })
 })

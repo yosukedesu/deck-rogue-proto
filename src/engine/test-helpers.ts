@@ -47,6 +47,34 @@ export function destroySetIntent(): EnemyIntent {
   return { kind: 'destroy-set', shownMin: 0, shownMax: 0, actual: 0 }
 }
 
+/** 隙 (何もしない) の意図 */
+export function restIntent(): EnemyIntent {
+  return { kind: 'rest', shownMin: 0, shownMax: 0, actual: 0 }
+}
+
+/**
+ * 罠モデル (2026-09-13): 生存する敵全員の意図を「隙」に差し替えて敵フェーズを流し、次の自ターンへ進める
+ * (確認窓が開けば全て温存)。伏せたばかりの札は「準備」を終えて鳴らせる状態 (窓1) になる。
+ * 敵フェーズに攻撃が無いので HP・ブロックは動かない (置物のターン開始効果は普通に鳴る)
+ */
+export function passTurn(state: GameState): GameState {
+  let s: GameState = {
+    ...state,
+    enemies: state.enemies.map((e) => (e.hp > 0 ? { ...e, intent: restIntent() } : e)),
+  }
+  s = applyCommand(s, { type: 'EndTurn' })
+  let guard = 0
+  while (s.phase === 'awaiting-reaction' && guard++ < 20) {
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+  }
+  return s
+}
+
+/** 伏せてから1ターン流す = 罠が鳴らせる状態 (窓1) にする (罠モデル 2026-09-13。伏せたターンは鳴らない) */
+export function setAndArm(state: GameState, cardUid: string): GameState {
+  return passTurn(applyCommand(state, { type: 'SetCard', cardUid }))
+}
+
 // ---- マップランのテスト用航法 (2026-08-28 マップ化) ----
 import { applyRunCommand, createRun, nextChoices } from './run.ts'
 import type { RunState } from './run.ts'

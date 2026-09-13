@@ -209,9 +209,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>伏せているカード (基本は同時1枚。setSlots で拡張)</summary>
         [JsonProperty("setCards")]
         public IReadOnlyList<CardInstance> SetCards { get; init; } = default!;
-        /// <summary>回収 (2026-08-30) したターン中、この uid の札は伏せ直しコスト不要 (自ターン終了でクリア)</summary>
-        [JsonProperty("freeResetUid")]
-        public string? FreeResetUid { get; init; }
         /// <summary>伏せ枠の数。既定1。かすみ (ディミア) のリーダー個性で2 (確定済みルール表「伏せ枚数」)</summary>
         [JsonProperty("setSlots")]
         public int SetSlots { get; init; }
@@ -446,9 +443,6 @@ namespace DeckRogue.Engine.Generated
     /// <summary>条件付き意図の分岐 (alt を再帰させないための素の形)</summary>
     public sealed record EnemyIntentBranch
     {
-        /// <summary>罰型 (2026-09-03): 伏せ札があれば鮮度を問わず反応する</summary>
-        [JsonProperty("ignoreFreshness")]
-        public bool? IgnoreFreshness { get; init; }
         [JsonProperty("kind")]
         public string Kind { get; init; } = default!;
         [JsonProperty("shownMin")]
@@ -514,6 +508,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り)</summary>
         [JsonProperty("lastActionNoHpLoss")]
         public bool? LastActionNoHpLoss { get; init; }
+        /// <summary>罠モデル (2026-09-13 守りの蔓・蔦の陣): この効果はリアクションの発動時には解決せず、その敵フェーズの終端で 「完全に凌いだ」(攻撃を1回以上受けてHP損失0) なら解決する。GameState.pendingPhaseEffects に積まれる</summary>
+        [JsonProperty("perfectBlockThisPhase")]
+        public bool? PerfectBlockThisPhase { get; init; }
+        /// <summary>対象の敵がこの解決の時点で生きていれば (先制の蔦槍=倒せなければ急所。targetDead の逆)</summary>
+        [JsonProperty("targetAlive")]
+        public bool? TargetAlive { get; init; }
         /// <summary>このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn&gt;0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W)</summary>
         [JsonProperty("healedThisTurn")]
         public bool? HealedThisTurn { get; init; }
@@ -552,6 +552,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>その行動の実値 (2026-08-31: post窓の minActionValue 判定用)</summary>
         [JsonProperty("actual")]
         public int Actual { get; init; }
+    }
+
+    /// <summary>GameState.pendingPhaseEffects のインライン型</summary>
+    public sealed record GameStatePendingPhaseEffects
+    {
+        [JsonProperty("effect")]
+        public DeclarativeEffect Effect { get; init; } = default!;
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
     }
 
     /// <summary>GameState</summary>
@@ -611,9 +620,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts)</summary>
         [JsonProperty("setAnyCards")]
         public bool? SetAnyCards { get; init; }
-        /// <summary>C型レリック (回収の紐 2026-09-03): 回収が0E</summary>
-        [JsonProperty("retrieveFree")]
-        public bool? RetrieveFree { get; init; }
+        /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (ほどけた) 罠は捨て札でなく手札に戻る</summary>
+        [JsonProperty("expireToHand")]
+        public bool? ExpireToHand { get; init; }
+        /// <summary>罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする</summary>
+        [JsonProperty("pendingPhaseEffects")]
+        public IReadOnlyList<GameStatePendingPhaseEffects>? PendingPhaseEffects { get; init; }
         /// <summary>カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット)</summary>
         [JsonProperty("resolvingExposedAtStart")]
         public IReadOnlyList<int>? ResolvingExposedAtStart { get; init; }
@@ -855,13 +867,15 @@ namespace DeckRogue.Engine.Generated
         public string CardId { get; init; } = default!;
     }
 
-    /// <summary>GameEvent: type="SetCardRetrieved"</summary>
-    public sealed record GameEvent_SetCardRetrieved : GameEvent
+    /// <summary>GameEvent: type="SetCardExpired"</summary>
+    public sealed record GameEvent_SetCardExpired : GameEvent
     {
-        public const string TypeTag = "SetCardRetrieved";
-        public GameEvent_SetCardRetrieved() { Type = TypeTag; }
+        public const string TypeTag = "SetCardExpired";
+        public GameEvent_SetCardExpired() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
+        [JsonProperty("to")]
+        public string To { get; init; } = default!;
     }
 
     /// <summary>GameEvent: type="EnemyIntentDeclared"</summary>
@@ -1856,6 +1870,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする</summary>
         [JsonProperty("retain")]
         public bool? Retain { get; init; }
+        /// <summary>ほどけない罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない</summary>
+        [JsonProperty("trapPersist")]
+        public bool? TrapPersist { get; init; }
         /// <summary>手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03)</summary>
         [JsonProperty("freeIfHandAllPhysical")]
         public bool? FreeIfHandAllPhysical { get; init; }
@@ -1916,12 +1933,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。 プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)</summary>
         [JsonProperty("growBonus")]
         public int? GrowBonus { get; init; }
-        /// <summary>伏せの鮮度 (2026-08-30 見切り)。このターンに伏せられた札だけ true。 敵の伏せ反応 (setAlt/movesVsSet) は**新しい札にだけ**反応する — 置きっぱなしの札は 「織り込み済み」で敵の行動を変えない (蓋の対処)。ただし破壊 (destroy-set) の判定は 鮮度を問わない = 晒し続けた札は壊されには行かれる。自ターン開始時に false へ</summary>
-        [JsonProperty("setFresh")]
-        public bool? SetFresh { get; init; }
-        /// <summary>この戦闘で一度伏せられた札 (2026-09-02 伏せ税の処方)。再伏せは setFresh にならない = 敵は同じ札の伏せ直しに反応しない</summary>
-        [JsonProperty("wasSet")]
-        public bool? WasSet { get; init; }
+        /// <summary>罠モデル (2026-09-13): 伏せた時の state.turn。伏せたターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる (2窓)、 2窓目の終端で期限切れ (捨て札。消滅持ちは消滅。trapPersist の札は期限が来ない)。判定は effects.ts の trapAge / isTrapLive。 旧セーブに無い場合は「今伏せた」として読む (NaN で永久死に枠にならないため)</summary>
+        [JsonProperty("setTurn")]
+        public int? SetTurn { get; init; }
         /// <summary>生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない (2026-08-26。確定済みルール表「置物数参照」)。パッシブが召喚したトークンは生得ではない。</summary>
         [JsonProperty("innate")]
         public bool? Innate { get; init; }
@@ -1945,9 +1959,6 @@ namespace DeckRogue.Engine.Generated
     /// <summary>EnemyMove.setAlt のインライン型</summary>
     public sealed record EnemyMoveSetAlt
     {
-        /// <summary>罰型 (2026-09-03): 伏せ札があれば見切り (鮮度) を問わず反応する。「触らなければ弱い」の逆転を消す</summary>
-        [JsonProperty("ignoreFreshness")]
-        public bool? IgnoreFreshness { get; init; }
         [JsonProperty("kind")]
         public string Kind { get; init; } = default!;
         [JsonProperty("min")]
@@ -2090,12 +2101,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>行動ローテーション (StSのSentry等参考)。moves の id をこの順で繰り返す。 指定時は重み抽選しない。movesVsSet の割り込みではローテーションは進まない</summary>
         [JsonProperty("sequence")]
         public IReadOnlyList<string>? Sequence { get; init; }
-        /// <summary>プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型・挑発型)。省略時は通常行動</summary>
+        /// <summary>プレイヤーに伏せカードがある時に優先する行動テーブル。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う。省略時は通常行動</summary>
         [JsonProperty("movesVsSet")]
         public IReadOnlyList<EnemyMove>? MovesVsSet { get; init; }
-        /// <summary>罰型の反応テーブル (2026-09-03): 伏せ札があれば鮮度を問わず反応する (罠壊し)</summary>
-        [JsonProperty("vsSetIgnoreFreshness")]
-        public bool? VsSetIgnoreFreshness { get; init; }
         /// <summary>プレイヤーに召喚トークンがいる時の行動テーブル (優先度: HP半分以下 &gt; 伏せ反応 &gt; トークン反応 &gt; 通常)</summary>
         [JsonProperty("movesVsTokens")]
         public IReadOnlyList<EnemyMove>? MovesVsTokens { get; init; }
@@ -2352,9 +2360,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用)</summary>
         [JsonProperty("revealIntents")]
         public bool? RevealIntents { get; init; }
-        /// <summary>回収 (RetrieveSetCard) が0E (回収の紐 2026-09-03)</summary>
-        [JsonProperty("retrieveFree")]
-        public bool? RetrieveFree { get; init; }
+        /// <summary>期限切れの罠が捨て札でなく手札に戻る (回収の紐 2026-09-13 作り直し)</summary>
+        [JsonProperty("expireToHand")]
+        public bool? ExpireToHand { get; init; }
         /// <summary>上限参照札が読む値 (energyMaxAtTurnStart) に+N (大樹の心 2026-09-03)</summary>
         [JsonProperty("energyMaxRefBonus")]
         public int? EnergyMaxRefBonus { get; init; }

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
 
 import { applyCommand } from './state.ts'
-import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 
 describe('黒のカラーパイ', () => {
   it('黒のカードとデッキが揃っている (5色完成)', () => {
@@ -37,8 +37,8 @@ describe('ドレイン (黒の専売)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_black'), [
       'black_reaction_curse',
     ])
+    s = setAndArm(s, 't0_black_reaction_curse')
     s = { ...s, player: { ...s.player, hp: 50 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_black_reaction_curse' })
     s = withIntent(s, attackIntent(6))
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })

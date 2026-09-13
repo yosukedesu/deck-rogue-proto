@@ -36,19 +36,6 @@ describe('鏡の敵 (mirrorHits) は伏せも手数に数える', () => {
   })
 })
 
-describe('見切りの拡張: 同じ札の伏せ直しに敵は反応しない (伏せ税の処方)', () => {
-  it('初回の伏せは setFresh、回収→伏せ直しは setFresh にならない', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 13), ['green_reaction_thorns'])
-    s = { ...s, player: { ...s.player, energy: 5 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
-    expect(s.player.setCards[0].setFresh).toBe(true)
-    s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_reaction_thorns' })
-    expect(s.player.hand[0].wasSet).toBe(true)
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
-    expect(s.player.setCards[0].setFresh).toBe(false)
-  })
-})
-
 describe('蜃気楼の面の作り直し: 伏せた瞬間からそのターンの実値が見える', () => {
   it('伏せる前は幅表示、伏せた後は shownMin=shownMax=actual', () => {
     // 2026-09-03: レリック自体は撤去 (作り直し後も確認ウィンドウを「はい」ボタンに退化させた)。機構 (revealOnSet) は残す

@@ -86,6 +86,7 @@ namespace DeckRogue.Game
             { "gainIceBlockPerCardPlayed", "詠唱数×N氷壁" },
             { "gainIceBlockPerHandCard", "手札数×N氷壁" },
             { "gainBlockPerHandCard", "手札数×Nブロック" },
+            { "staggerEnemy", "対象の体勢を崩す（次の行動が隙になる）" },
             { "drawCardsNextTurn", "次のターンの開始時にN枚多くドロー" },
             { "gainEnergyNextTurn", "次のターンの開始時に一時マナ+N" },
             { "gainBlockNextTurn", "次のターンの開始時にブロック+N" },
@@ -242,6 +243,8 @@ namespace DeckRogue.Game
             if (c.EnemyExposed == true) parts.Add("対象が急所持ち");
             if (c.PerfectBlockLastPhase == true) parts.Add("直前の敵フェーズを完全に凌いだ");
             if (c.TargetDead == true) parts.Add("とどめ");
+            if (c.TargetAlive == true) parts.Add("倒せなければ");
+            if (c.PerfectBlockThisPhase == true) parts.Add("この敵フェーズを完全に凌いだら");
             if (c.LastActionNoHpLoss == true) parts.Add("完全に凌いだ時");
             if (c.HealedThisTurn == true) parts.Add("このT先にカードで回復していたら");
             // レリック本家形 (2026-09-12)
@@ -562,7 +565,8 @@ namespace DeckRogue.Game
             var d = ev as GameEvent_CardsDrawn; if (d != null) return d.Count + "枚ドロー" + (d.Cards != null && d.Cards.Count > 0 ? ": " + Names(d.Cards) : "");
             var e = ev as GameEvent_CardPlayed; if (e != null) return "プレイ: " + CardName(e.CardId);
             var f = ev as GameEvent_CardSet; if (f != null) return "仕込んだ: " + CardName(f.CardId);
-            var g = ev as GameEvent_SetCardRetrieved; if (g != null) return "回収: " + CardName(g.CardId);
+            var g = ev as GameEvent_SetCardExpired;
+            if (g != null) return "ほどけた: " + CardName(g.CardId) + "（2回鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
             var h = ev as GameEvent_EnemyIntentDeclared; if (h != null) return "敵" + (h.EnemyIndex + 1) + "の意図: " + IntentLine(h.Intent);
             var i2 = ev as GameEvent_ActionNegated; if (i2 != null) return "敵の行動を打ち消した!";
             var j = ev as GameEvent_DamageDealt;

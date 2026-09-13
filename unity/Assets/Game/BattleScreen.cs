@@ -599,7 +599,13 @@ namespace DeckRogue.Game
                     UiKit.Anchor(q.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-16f, 4f), new Vector2(16f, 36f));
                     var ct = UiKit.Deco(slot, "仕込み札", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
                     UiKit.Anchor(ct.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(4f, -28f), new Vector2(-4f, -4f));
-                    string tip = "<b>" + sc.Def.Name + "</b>\n" + CardText.Body(sc.Def);
+                    // 罠モデル (2026-09-13): 寿命を札の下に出す (巻いている / 鳴るまで あと N回 / ほどけない)。世界の言葉で
+                    string trapLife = Effects.TrapStatusTextKarakuri(st, sc);
+                    var lifeT = UiKit.Txt(slot, trapLife, 13, PaperFx.Paper, TextAnchor.MiddleCenter, true);
+                    var lifeLe = lifeT.GetComponent<LayoutElement>();
+                    if (lifeLe != null) UnityEngine.Object.Destroy(lifeLe);
+                    UiKit.Anchor(lifeT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(2f, 4f), new Vector2(-2f, 46f));
+                    string tip = "<b>" + sc.Def.Name + "</b>\n" + CardText.Body(sc.Def) + "\n<color=#7a4e12>" + trapLife + "</color>";
                     // 成長・弱体を掛けた実値 (手札と同じ読み方。2026-09-13 Opusラン Y: 弱体1で「返し10」が実値7)
                     string liveTip = null;
                     try { liveTip = Effects.SetCardLiveDamage(st, sc.Def); } catch (Exception) { }
@@ -1041,6 +1047,12 @@ namespace DeckRogue.Game
                     if (lle != null) UnityEngine.Object.Destroy(lle);
                     UiKit.Anchor(lt.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 44f), new Vector2(110f, 64f));
                 }
+                // 罠モデル (2026-09-13): 残りの窓数を併記 (温存の判断材料)
+                int? winLeft = Effects.TrapWindowsLeft(st, c);
+                var wlt = UiKit.Txt(wrap, winLeft.HasValue ? "鳴るまで あと" + winLeft.Value + "回" : "ほどけない", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter, true);
+                var wlle = wlt.GetComponent<LayoutElement>();
+                if (wlle != null) UnityEngine.Object.Destroy(wlle);
+                UiKit.Anchor(wlt.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 64f), new Vector2(110f, 82f));
                 var fb = UiKit.Btn(wrap, "発動", delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 18, true, UiKit.Hex("#f6dd98"));
                 var fle = fb.GetComponent<LayoutElement>();
                 if (fle != null) UnityEngine.Object.Destroy(fle);

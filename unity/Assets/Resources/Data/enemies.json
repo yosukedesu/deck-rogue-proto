@@ -27,7 +27,7 @@
     "id": "enemy_probe",
     "name": "探り屋",
     "archetype": "probe",
-    "flavor": "ちくちくは挨拶。三度目が本気。ただし仕掛けを見たら、挨拶の順番は守らない。",
+    "flavor": "ちくちくは挨拶。三度目が本気。",
     "maxHp": 75,
     "moves": [
       {
@@ -49,29 +49,13 @@
       "poke",
       "poke",
       "lunge"
-    ],
-    "movesVsSet": [
-      {
-        "id": "lunge",
-        "kind": "attack",
-        "min": 12,
-        "max": 16,
-        "weight": 1
-      },
-      {
-        "id": "poke",
-        "kind": "attack",
-        "min": 5,
-        "max": 7,
-        "weight": 2
-      }
     ]
   },
   {
     "id": "enemy_set_wary",
     "name": "用心深い影",
     "archetype": "set-wary",
-    "flavor": "仕込み札が怖い。怖いから様子を見る——が、いつまでも我慢はできない。",
+    "flavor": "臆病で、様子を見る——が、いつまでも我慢はできない。",
     "maxHp": 85,
     "moves": [
       {
@@ -79,23 +63,6 @@
         "kind": "attack",
         "min": 11,
         "max": 15,
-        "weight": 1
-      }
-    ],
-    "movesVsSet": [
-      {
-        "id": "hide",
-        "kind": "defend",
-        "min": 6,
-        "max": 9,
-        "weight": 2,
-        "alsoBuff": 2
-      },
-      {
-        "id": "doubt_slash",
-        "kind": "attack",
-        "min": 16,
-        "max": 20,
         "weight": 1
       }
     ],
@@ -170,7 +137,6 @@
       }
     ],
     "opener": "smash",
-    "vsSetIgnoreFreshness": true,
     "turnArmor": 35
   },
   {
@@ -199,13 +165,7 @@
         "kind": "attack",
         "min": 9,
         "max": 13,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 12,
-          "max": 16,
-          "ignoreFreshness": true
-        }
+        "weight": 1
       }
     ],
     "sequence": [
@@ -256,16 +216,7 @@
         "kind": "attack",
         "min": 24,
         "max": 32,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 18,
-          "max": 24,
-          "inflict": {
-            "status": "vulnerable",
-            "amount": 1
-          }
-        }
+        "weight": 1
       }
     ],
     "sequence": [
@@ -313,15 +264,6 @@
         "inflict": {
           "status": "weak",
           "amount": 3
-        },
-        "setAlt": {
-          "kind": "attack",
-          "min": 6,
-          "max": 9,
-          "inflict": {
-            "status": "frail",
-            "amount": 2
-          }
         }
       },
       {
@@ -369,14 +311,7 @@
         "max": 7,
         "weight": 1,
         "hits": 3,
-        "alsoBuff": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 5,
-          "max": 7,
-          "hits": 2,
-          "alsoBuff": 2
-        }
+        "alsoBuff": 1
       },
       {
         "id": "howl",
@@ -391,17 +326,7 @@
         "min": 4,
         "max": 6,
         "weight": 1,
-        "hits": 4,
-        "setAlt": {
-          "kind": "attack",
-          "min": 4,
-          "max": 6,
-          "hits": 3,
-          "inflict": {
-            "status": "weak",
-            "amount": 1
-          }
-        }
+        "hits": 4
       }
     ],
     "sequence": [
@@ -508,13 +433,7 @@
         "id": "war_drum",
         "kind": "rally",
         "min": 1,
-        "max": 2,
-        "setAlt": {
-          "kind": "attack",
-          "min": 7,
-          "max": 10,
-          "ignoreFreshness": true
-        }
+        "max": 2
       },
       {
         "id": "thump",
@@ -556,17 +475,7 @@
         "kind": "attack",
         "min": 13,
         "max": 17,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 11,
-          "max": 15,
-          "inflict": {
-            "status": "weak",
-            "amount": 1
-          },
-          "ignoreFreshness": true
-        }
+        "weight": 1
       }
     ],
     "sequence": [
@@ -735,13 +644,7 @@
         "kind": "defend",
         "min": 6,
         "max": 9,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 14,
-          "max": 18,
-          "ignoreFreshness": true
-        }
+        "weight": 1
       },
       {
         "id": "great_swing",
@@ -1472,7 +1375,7 @@
     "id": "enemy_elite_owl",
     "name": "読み手の梟",
     "archetype": "elite",
-    "flavor": "仕込んだ瞬間だけ、羽が止まる。読まれているのはどちらか。",
+    "flavor": "羽撃ちで間合いを計り、構えてから急降下する。読まれているのはどちらか。",
     "maxHp": 110,
     "moves": [
       {
@@ -1495,15 +1398,6 @@
         "min": 18,
         "max": 24,
         "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "inflict": {
-            "status": "junk",
-            "amount": 1
-          },
-          "min": 16,
-          "max": 20
-        },
         "inflict": {
           "status": "mist",
           "amount": 1
@@ -2835,7 +2729,7 @@
     "id": "enemy_kin_follower",
     "name": "血族の踊り手",
     "archetype": "flurry",
-    "flavor": "踊るほど刃が冴える。仕込み札を見せれば踊りをやめて斬りかかる——釣り出すか、踊らせるか。",
+    "flavor": "踊るほど刃が冴える。踊りを止めるなら、先に落とすしかない。",
     "maxHp": 25,
     "moves": [
       {
@@ -2858,13 +2752,7 @@
         "kind": "buff",
         "min": 2,
         "max": 2,
-        "weight": 1,
-        "setAlt": {
-          "kind": "attack",
-          "min": 3,
-          "max": 4,
-          "ignoreFreshness": true
-        }
+        "weight": 1
       }
     ],
     "sequence": [

@@ -226,7 +226,8 @@ describe('挑発 (嘲る道化)', () => {
 describe('伏せへの罰 (2026-08-26。無期限温存で敵を弱い分岐に固定できた問題)', () => {
   // プレイテストで2人が独立に発見: リアクションを伏せたまま一度も発動しないことで
   // 嘲る道化・用心深い影を弱い行動に固定し続けられた (エリートを無傷で撃破)。
-  // 伏せは発動か破壊まで無期限に持続する仕様なので、敵側に膠着を破る手段が要る。
+  // 2026-09-13 罠モデルで伏せは2窓でほどけるようになったが、反応テーブルを持つ敵 (罠壊し・道化) は
+  // 引き続き膠着を破る手段 (伏せ破壊) を持つ。
   it('伏せに反応する敵は必ず「伏せっぱなしを罰する手段」を持つ', () => {
     const offenders: string[] = []
     for (const def of allEnemies) {
@@ -245,31 +246,11 @@ describe('伏せへの罰 (2026-08-26。無期限温存で敵を弱い分岐に�
     }
     expect(offenders).toEqual([])
   })
-
-  it('1〜3戦目のプールにも伏せへの罰がある (かつては皆無だった)', () => {
-    // tier1 = 探り屋 / うねる獣 / 探り屋の二人組
-    const probe = getEnemyDef('enemy_probe')
-    expect(probe.movesVsSet).toBeDefined()
-    const lunge = probe.movesVsSet!.find((m) => m.id === 'lunge')
-    expect(lunge).toBeDefined() // 伏せると探りの猶予 (poke×2) が消える
-  })
 })
 
 describe('伏せ破壊への応答 (2026-08-27。確定済みルール表「伏せ破壊への応答」)', () => {
   // 5色テストで3色が独立に「読み合いでなく一方的な没収」と報告した問題への対処。
-  // 逃がしルールは廃止 (2026-08-30 A2)。破壊されそうな札は回収 (1E) で事前に引き上げる —
-  // 「発動して逃がす」は破壊を敵の最弱行動にしていた (3幕フルラン実測)
-  it('回収: 1E払って伏せ札を手札に戻せる (払った伏せコストは返らない)', () => {
-    let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
-    s = withHand(s, ['green_reaction_vine'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
-    const energyBefore = s.player.energy
-    s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_reaction_vine' })
-    expect(s.player.energy).toBe(energyBefore - 1)
-    expect(s.player.setCards).toHaveLength(0)
-    expect(s.player.hand.some((c) => c.uid === 't0_green_reaction_vine')).toBe(true)
-  })
-
+  // 逃がしルールは廃止 (2026-08-30 A2)。後継だった回収も 2026-09-13 罠モデルで廃止 = 罠は仕込んだら押し戻せない
   it('破壊は素直に通り、がらくたが付与される (2026-08-30 窓は開かない)', () => {
     let s = freshCombat('set-confirm', 'enemy_set_breaker', 11, 'starter')
     s = withHand(s, ['green_reaction_vine'])
@@ -989,14 +970,6 @@ describe('代替ボス3体 (2026-09-02 本家同等バリエーション: TheKin
 
 
 
-
-describe('鼓吹きコボルトの伏せ分岐 (2026-09-04 弱腰型の取りこぼし是正)', () => {
-  it('太鼓は伏せを見ると応援でなく殴りに来る (7-10・見切り無視) = 応援を止める代わりに1発受ける賭け', () => {
-    const def = getEnemyDef('enemy_drummer')
-    const drum = def.moves.find((m) => m.id === 'war_drum')!
-    expect(drum.setAlt).toMatchObject({ kind: 'attack', min: 7, max: 10, ignoreFreshness: true })
-  })
-})
 
 describe('道化と妖術師 (2026-09-04 案A: T1の弱体3+脆弱2の重なりを解く)', () => {
   it('妖術師は patternOffset 1 で呪いから始まる (泥=弱体3は3ターン目)', () => {

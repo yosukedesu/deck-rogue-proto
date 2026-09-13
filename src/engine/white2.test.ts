@@ -2,7 +2,7 @@
 // 確定済みルール表「召喚」「置物登場の誘発」「威圧の換金」「隊列の盾」を固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 
 describe('召喚 (トークン再現)', () => {
   it('一斉召集: 従者の少年トークンを2体場に出し、集結の弾になる', () => {
@@ -121,7 +121,7 @@ describe('白の新リアクション', () => {
       'white_reaction_holy_wall',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_white_reaction_holy_wall' })
+    s = setAndArm(s, 't0_white_reaction_holy_wall')
     s = withIntent(s, { kind: 'buff', shownMin: 3, shownMax: 3, actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
@@ -135,12 +135,10 @@ describe('白の新リアクション', () => {
   })
 
   it('光盾の詠唱: 呪文プレイで起爆しブロック9', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
-      'white_reaction_chant',
-      'white_heal',
-    ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_white_reaction_chant' })
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), ['white_reaction_chant'])
+    s = setAndArm(s, 't0_white_reaction_chant') // 罠モデル: 伏せたターンは自己誘発も鳴らない
+    s = withHand(s, ['white_heal'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_heal' })
     expect(s.player.block).toBe(9) // 2026-08-27 7→9
     expect(s.player.setCards).toHaveLength(0)
   })

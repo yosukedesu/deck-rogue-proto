@@ -63,11 +63,11 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
+import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending, applyEnemyWeak } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, worstIncomingFrom, worstIncomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { FusionLabPage } from './FusionLab.tsx'
@@ -261,6 +261,8 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.perfectBlockLastPhase === true) parts.push('🛡直前の敵フェーズを完全に凌いだ')
   if (c.targetDead === true) parts.push('💀とどめ')
   if (c.lastActionNoHpLoss === true) parts.push('🛡完全に凌いだ時')
+  if (c.perfectBlockThisPhase === true) parts.push('🛡この敵フェーズを完全に凌いだら')
+  if (c.targetAlive === true) parts.push('対象が倒れていなければ')
   if (c.healedThisTurn === true) parts.push('💚このターン、先にカードで回復していたら')
   if (c.turn !== undefined) parts.push(`⏳${c.turn}ターン目`)
   if (c.blockZero === true) parts.push('🛡ブロックが0なら')
@@ -373,6 +375,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}🛡️ 手札の枚数×${e.amount}のブロック [現在${(e.amount ?? 0) * ctx.handCards}]`
         : `${trigger}🛡️ 手札の枚数×${e.amount}のブロック`
+    case 'staggerEnemy':
+      return `${trigger}🌀 対象の体勢を崩す（次の行動が隙になる）`
     case 'drawCardsNextTurn':
       return `${trigger}次のターンの開始時に${e.amount}枚多くドロー`
     case 'gainEnergyNextTurn':
@@ -667,9 +671,7 @@ function conditionalIntentTextRaw(s: GameState, i: number): string {
   // (2026-08-31 再検証ラン指摘③)。どちら向きかは判断材料なので添える (同日HP経済ラン指摘④)
   if (intentText({ ...intent.alt }) === baseOnly) {
     const def = getEnemyDef(s.enemies[i].enemyId)
-    const why = enemyPunishesSet(def)
-      ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
-      : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
+    const why = setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
     // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
     return `${baseOnly}（伏せ場があっても今回は同じ行動。ただしロールは別で、伏せると実値は${intent.alt.actual > intent.actual ? '上がる' : '下がる'}${why}）`
   }
@@ -1937,18 +1939,8 @@ function BattleScreen({
                   <div className="card card-back">伏</div>
                   <div className="set-slot-label">
                     {c.def.name}
-                    {c.setFresh !== true &&
-                      (() => {
-                        // 罰型 (見切り無視) の敵が生存中なら「反応しない」は嘘になる (2026-09-03 Opusラン I 指摘)
-                        const pun = s.enemies
-                          .filter((en) => en.hp > 0 && enemyPunishesSet(getEnemyDef(en.enemyId)))
-                          .map((en) => getEnemyDef(en.enemyId).name)
-                        return pun.length > 0 ? (
-                          <span title={`罰型の敵は見切りを無視する: ${pun.join('・')}`}>（見切られ・{pun.join('・')}は反応）</span>
-                        ) : (
-                          <span title="敵はこの札に反応しない (織り込み済み)">（見切られ）</span>
-                        )
-                      })()}
+                    {/* 罠モデル (2026-09-13): 伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ鳴る・鳴らなければ捨て札 */}
+                    <span className="hint" title="伏せたターンは鳴らない。翌ターンと翌々ターンの敵フェーズだけ発動できる。鳴らなければ捨て札へ戻る">（{trapStatusText(s, c)}）</span>
                     {c.def.type !== 'reaction' && (
                       <span title="通常カードの伏せ (実験): 誘発したら印字コストを払って発動">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
                     )}
@@ -1956,16 +1948,6 @@ function BattleScreen({
                       <div className="hint" title="成長・弱体を掛けた実値 (手札と同じ式。勢いは乗らない)">［{setCardLiveDamage(s, c.def)}］</div>
                     )}
                   </div>
-                  {s.phase === 'player-turn' && (
-                    <button
-                      className="btn"
-                      disabled={player.energy < 1}
-                      title="1E払って回収 (伏せコストは返らない)"
-                      onClick={() => dispatch({ type: 'RetrieveSetCard', cardUid: c.uid })}
-                    >
-                      回収(1E)
-                    </button>
-                  )}
                 </span>
               ))}
               {Array.from({ length: Math.max(0, player.setSlots - player.setCards.length) }).map((_, i) => (
@@ -3694,6 +3676,8 @@ const COND_JA: Record<string, string> = {
   perfectBlockLastPhase: '直前の敵フェーズを完全に凌いだ',
   targetDead: 'とどめ',
   lastActionNoHpLoss: '完全に凌いだ時',
+  perfectBlockThisPhase: 'この敵フェーズを完全に凌いだら(敵フェーズ終端で解決)',
+  targetAlive: '対象が倒れていなければ',
   healedThisTurn: 'このターン、先にカードで回復していたら(置物・パッシブの自動回復は数えない)',
 }
 function condJa(k: string): string {

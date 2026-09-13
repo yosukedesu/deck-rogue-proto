@@ -2,7 +2,7 @@
 // (hold-manual は伏せないので使わない)
 
 import { emit } from '../events.ts'
-import { fireExhaustTriggers, resolveReactionEffects, runPermanentTriggers } from '../effects.ts'
+import { fireExhaustTriggers, isTrapLive, resolveReactionEffects, runPermanentTriggers } from '../effects.ts'
 import type { CardInstance, GameState } from '../types.ts'
 import { SET_ANY_FEE, canSetAsNormal, setFireCost } from '../setany.ts'
 
@@ -42,24 +42,17 @@ export function setCard(state: GameState, cardUid: string): GameState {
         : `${card.def.name} は伏せられない (リアクションタイプのみ)`,
     )
   }
-  // 回収ターンの伏せ直しは0E (2026-08-30。回収1E+伏せ直しコストの二重払いが「常に攻撃2枚に負ける」
-  // 死に機構だった実測への処方 = 実質「1Eで伏せ替え」)。屍集めで戻した札 (freeThisCombat) も0E。
-  // 通常カード (実験) は固定1E
+  // 屍集めで戻した札 (freeThisCombat) は0E。通常カード (実験) は固定1E
   const setCost = setCostOf(card)
-  const freeReset = state.player.freeResetUid === card.uid
-  if (!freeReset && setCost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  if (setCost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
   const s: GameState = {
     ...state,
     player: {
       ...state.player,
-      energy: state.player.energy - (freeReset ? 0 : setCost),
-      ...(freeReset ? { freeResetUid: undefined } : {}),
+      energy: state.player.energy - setCost,
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
-      // 見切りの拡張 (2026-09-02 伏せ税の処方): 一度伏せた札の伏せ直しは「新鮮」にならない = 敵は反応しない。
-      // 回収→0E伏せ直しで弱分岐を毎ターン固定する蓋 (道化20→6) を閉じる。発動権・破壊判定は不変
-      // 0Eで伏せた札 (毒針の囮・回収ターンの伏せ直し・屍集めの0E札) は「気配」にならない = 敵は反応しない
-      // (2026-09-03 ユーザー裁定。D: 0E囮+符師の懐で用心深い影・罠壊しが片務的な必勝手順になっていた)
-      setCards: [...state.player.setCards, { ...card, setFresh: card.wasSet !== true && !freeReset && setCost >= 1, wasSet: true }],
+      // 罠モデル (2026-09-13): 伏せたターンを記録する。このターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる
+      setCards: [...state.player.setCards, { ...card, setTurn: state.turn }],
       setsThisTurn: (state.player.setsThisTurn ?? 0) + 1,
     },
   }
@@ -92,31 +85,11 @@ export function setCard(state: GameState, cardUid: string): GameState {
 }
 
 /**
- * 回収 (2026-08-30 A2): 1E払って伏せ札を手札に戻す。払った伏せコストは返らない。
- * 読み違いの代償を「枠の固定死」から「1E払って賭け直し」に変える。
- * 逃がしルール (伏せ破壊への応答) の廃止とセット — 破壊されそうな札は事前に自分で引き上げる
+ * 回収 (2026-08-30 A2) は 2026-09-13 罠モデルで廃止: 罠は仕込んだら押し戻せない (期限切れで捨て札に戻る)。
+ * 旧セーブ・ジャーナル互換のためコマンド型は残し、常に拒否する
  */
-export function retrieveSetCard(state: GameState, cardUid: string): GameState {
-  if (state.phase !== 'player-turn') throw new Error('回収は自ターンのみ')
-  const card = state.player.setCards.find((c) => c.uid === cardUid)
-  if (!card) throw new Error(`伏せ場にないカード: ${cardUid}`)
-  const cost = state.retrieveFree === true ? 0 : 1 // 回収の紐 (2026-09-03): 回収が0E
-  if (state.player.energy < cost) throw new Error('エナジー不足: 回収には1E必要')
-  const restored = { ...card }
-  delete (restored as { setFresh?: boolean }).setFresh
-  return emit(
-    {
-      ...state,
-      player: {
-        ...state.player,
-        energy: state.player.energy - cost,
-        setCards: state.player.setCards.filter((c) => c.uid !== cardUid),
-        hand: [...state.player.hand, restored],
-        freeResetUid: cardUid, // このターン中の伏せ直しは0E
-      },
-    },
-    { type: 'SetCardRetrieved', cardId: card.def.id },
-  )
+export function retrieveSetCard(_state: GameState, _cardUid: string): GameState {
+  throw new Error('回収は廃止された (2026-09-13 罠モデル): 罠は2窓で鳴らなければほどけて捨て札に戻る')
 }
 
 /** 伏せカードを発動する: 効果解決→伏せ場から捨て札 (消滅札なら消滅置き場) へ。
@@ -148,10 +121,12 @@ export function fireSetCard(state: GameState, card: CardInstance, enemyIndex: nu
   return s
 }
 
-/** 空振り計上: 敵フェーズ終端に伏せが残っていれば、そのターンは発動しなかった (伏せは無期限持続) */
+/** 空振り計上: 敵フェーズ終端に「生きている窓」の罠が残っていれば、そのターンは発動しなかった。
+ * 準備ターン (伏せたターン) は窓が原理的に開かないので数えない (2026-09-13 統計の嘘を作らない) */
 export function emitWhiffForRemainingSet(state: GameState): GameState {
   let s = state
   for (const card of state.player.setCards) {
+    if (!isTrapLive(state, card)) continue
     s = emit(s, { type: 'ReactionWhiffed', cardId: card.def.id })
   }
   return s

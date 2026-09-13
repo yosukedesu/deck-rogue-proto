@@ -490,38 +490,48 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
 }
 
 /**
- * 条件付き意図の解決 (確定済みルール表「条件付き意図」)。
- * 反応テーブルを持つ敵は宣言時に両分岐を確定しており、**実行時の盤面**でどちらになるかが決まる。
- * これによりプレイヤーは自ターン中に「伏せて弱腰にさせる / 出さずに殴らせる」を選べる。
+ * 罠モデル (2026-09-13): 伏せた札の齢。伏せたターン=0 (準備・鳴らない)、1・2=生きている窓。
+ * 期限切れは finishEnemyPhase (turn が進む前) で齢2以上を捨て札にする。
+ * 旧セーブ (setTurn 無し) は「前のターンに伏せた=齢1の生きた罠」として読む (齢0 だと永久に鳴らず・ほどけない死に枠になる)
  */
-/**
- * この敵の伏せ分岐が見切り (setFresh) を無視するか = 破壊分岐・罰型 (setAlt.ignoreFreshness / EnemyDef.vsSetIgnoreFreshness)。
- * effectiveIntent の判定と表示層 (CLI/UI の「見切られ」タグ) が同じ述語を読む
- * (2026-09-03 Opusラン I: 罰型の敵に「見切られ=敵は反応しない」と出ていた矛盾の処方)
- */
-export function setReactionIgnoresFreshness(state: GameState, enemyIndex: number): boolean {
-  const enemy = state.enemies[enemyIndex]
-  const intent = enemy?.intent
-  if (!enemy || !intent || intent.conditionalOn !== 'set' || !intent.alt) return false
-  return (
-    intent.alt.kind === 'destroy-set' ||
-    intent.alt.ignoreFreshness === true ||
-    getEnemyDef(enemy.enemyId).vsSetIgnoreFreshness === true
-  )
+export function trapAge(state: GameState, card: CardInstance): number {
+  return state.turn - (card.setTurn ?? state.turn - 1)
 }
 
+/** 罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・ほどけない札は無期限) */
+export function isTrapLive(state: GameState, card: CardInstance): boolean {
+  const age = trapAge(state, card)
+  return age >= 1 && (age <= 2 || card.def.trapPersist === true)
+}
+
+/** 罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙) */
+export function trapStatusText(state: GameState, card: CardInstance): string {
+  if (card.def.trapPersist === true) return trapAge(state, card) === 0 ? '準備中（次のターンから鳴る・ほどけない）' : 'ほどけない'
+  const age = trapAge(state, card)
+  if (age <= 0) return '準備中（次のターンから鳴る）'
+  const left = trapWindowsLeft(state, card) ?? 0
+  return left >= 2 ? 'あと2回（鳴らなければ捨て札へ）' : 'あと1回（このターンで鳴らなければ捨て札へ）'
+}
+
+/** 罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。ほどけない札は null */
+export function trapWindowsLeft(state: GameState, card: CardInstance): number | null {
+  if (card.def.trapPersist === true) return null
+  const age = trapAge(state, card)
+  return Math.max(0, 3 - Math.max(1, age))
+}
+
+/**
+ * 条件付き意図の解決 (確定済みルール表「条件付き意図」)。
+ * 反応テーブルを持つ敵は宣言時に両分岐を確定しており、**実行時の盤面**でどちらになるかが決まる。
+ * 2026-09-13 罠モデル: 敵の伏せ反応は破壊分岐 (罠壊し・道化) だけ。鮮度の概念は無く、伏せ札が1枚でもあれば (準備中も含む) 分岐が立つ
+ */
 export function effectiveIntent(state: GameState, enemyIndex: number): EnemyIntent | null {
   const intent = state.enemies[enemyIndex]?.intent
   if (!intent) return null
   if (!intent.conditionalOn || !intent.alt) return intent
   const met =
     intent.conditionalOn === 'set'
-      ? // 見切り (2026-08-30 A2): 敵の伏せ反応は**そのターンに伏せられた札**にだけ反応する。
-        // 置きっぱなしの札は「織り込み済み」= 蓋 (置くだけで攻撃が消え続ける) の対処。
-        // ただし破壊 (destroy-set) は鮮度を問わない — 晒し続けた札は壊されには行かれる
-        setReactionIgnoresFreshness(state, enemyIndex)
-        ? state.player.setCards.length > 0
-        : state.player.setCards.some((c) => c.setFresh === true)
+      ? state.player.setCards.length > 0
       : hasHuntableTokens(state)
   if (!met) return intent
   return { ...intent.alt, conditionalOn: intent.conditionalOn, alt: intent.alt }
@@ -593,8 +603,9 @@ export function usableSetCards(
   win: ReactionWindow,
 ): readonly CardInstance[] {
   // 全カード伏せ可 (実験): 通常カードは発動時に印字コストを払うので、払えない札は候補に出さない (窓も開かない)
+  // 罠モデル (2026-09-13): 準備ターン (伏せたターン) と期限切れの札は候補に載らない
   const matched = state.player.setCards.filter(
-    (c) => reactionMatches(state, c, win) && setFireCost(c) <= state.player.energy,
+    (c) => isTrapLive(state, c) && reactionMatches(state, c, win) && setFireCost(c) <= state.player.energy,
   )
   return state.player.hp <= 0 ? matched.filter((c) => canSaveFromLethal(c, state)) : matched
 }
@@ -602,7 +613,7 @@ export function usableSetCards(
 /** 窓に合致するが発動コストを払えない伏せ札 (全カード伏せ可の通常札)。窓が開かない理由の可視化用 */
 export function unaffordableSetCards(state: GameState, win: ReactionWindow): readonly CardInstance[] {
   return state.player.setCards.filter(
-    (c) => reactionMatches(state, c, win) && setFireCost(c) > state.player.energy,
+    (c) => isTrapLive(state, c) && reactionMatches(state, c, win) && setFireCost(c) > state.player.energy,
   )
 }
 
@@ -1085,6 +1096,12 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'gainBlockPerHandCard':
       // 外套の留め金 (レリック 2026-09-12 本家 Cloak Clasp): 手札の枚数 × amount のブロック
       return gainPlayerBlock(state, (effect.amount ?? 0) * state.player.hand.length, enemyIndex)
+    case 'staggerEnemy':
+      // 体勢を崩す (蔦の陣 2026-09-13): 次の宣言が隙 (バランス崩しの staggeredNext と同じ配管)
+      return {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === enemyIndex && e.hp > 0 ? { ...e, staggeredNext: true } : e)),
+      }
     case 'drawCardsNextTurn':
       // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。startPlayerTurn が読んで消す
       return { ...state, nextTurnDraw: (state.nextTurnDraw ?? 0) + (effect.amount ?? 0) }
@@ -1719,6 +1736,7 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
     }
     if (c.perfectBlockLastPhase === true && state.player.perfectBlockLastPhase !== true) return false
     if (c.targetDead === true && !(e !== undefined && e.hp <= 0)) return false
+    if (c.targetAlive === true && !(e !== undefined && e.hp > 0)) return false
     if (c.lastActionNoHpLoss === true && !(state.lastAction !== null && state.lastAction.kind === 'attack' && state.lastAction.hpLoss === 0)) return false
     // レリック本家形 (2026-09-12): ターン番号・ブロック0・攻撃なし・プレイ枚数
     if (c.turn !== undefined && state.turn !== c.turn) return false
@@ -1791,10 +1809,22 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   // リアクション (自己誘発で自ターン中に発動する場合も) は「カードのプレイ」ではない = 虚弱・勢いの対象外 (2026-09-05)
   const prevCardPlay = state.resolvingCardPlay === true
   let s = emit({ ...state, resolvingCardPlay: false }, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
+  // 罠モデル (2026-09-13 茨の返し=実値10以上なら急所2): 効果ごとの窓条件 (行動の実値) もここで判定する。
+  // 発動可否 (reactionMatches) は「どれか1つの効果が合致」なので、条件つきの副次効果だけを落とす必要がある
+  const actionActual = effectiveIntent(s, enemyIndex)?.actual ?? 0
   for (const effect of setEffectsOf(card)) {
     // 効果ごとの条件 (2026-09-06 白 報復の光=返し10+「完全に防いでいたら」+10 の混在): 発動可否は eligible 側が
-    // 見るが、条件つきの効果だけを落とすのはここ。窓専用条件 (minActionValue 等) は blazeConditionMet が見ないので通る
-    if (REACTION_TRIGGERS.has(effect.trigger) && blazeConditionMet(s, effect, enemyIndex)) {
+    // 見るが、条件つきの効果だけを落とすのはここ
+    if (!REACTION_TRIGGERS.has(effect.trigger)) continue
+    const c = effect.condition
+    if (c?.minActionValue !== undefined && actionActual < c.minActionValue) continue
+    if (c?.maxActionValue !== undefined && actionActual > c.maxActionValue) continue
+    if (c?.perfectBlockThisPhase === true) {
+      // 「この敵フェーズを完全に凌いだら」: 今は解決せず敵フェーズ終端 (finishEnemyPhase) へ遅延する
+      s = { ...s, pendingPhaseEffects: [...(s.pendingPhaseEffects ?? []), { effect, enemyIndex }] }
+      continue
+    }
+    if (blazeConditionMet(s, effect, enemyIndex)) {
       // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
       s = resolveEffectTargeted(s, effect, enemyIndex)
     }

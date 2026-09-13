@@ -529,7 +529,7 @@ namespace DeckRogue.Engine
             bool revealIntents = run.DebugRevealIntents == true
                 || run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.RevealIntents == true);
             bool revealOnSet = run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.RevealOnSet == true);
-            bool retrieveFree = run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.RetrieveFree == true);
+            bool expireToHand = run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.ExpireToHand == true);
             int energyMaxRefBonus = 0;
             foreach (var id in run.Relics) energyMaxRefBonus += Content.GetRelicDef(id).CombatRule?.EnergyMaxRefBonus ?? 0;
             int harvestKeep = 0;
@@ -563,7 +563,7 @@ namespace DeckRogue.Engine
                 SetDamageReduction = setDamageReduction,
                 RevealIntents = revealIntents,
                 RevealOnSet = revealOnSet,
-                RetrieveFree = retrieveFree,
+                ExpireToHand = expireToHand,
                 EnergyMaxRefBonus = energyMaxRefBonus,
                 HarvestKeep = harvestKeep,
                 SetAnyCards = run.SetAnyCards == true ? (bool?)true : null,

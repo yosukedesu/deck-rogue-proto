@@ -1,9 +1,10 @@
 // 実験「全カード伏せ可」(2026-09-02 ユーザー裁定) の機械固定。engine/setany.ts
+// 2026-09-13 罠モデル: 実験フラグの札も同じ規則 (伏せたターンは鳴らない・2窓・鳴らなければ捨て札・回収なし) に乗る
 import { describe, expect, it } from 'vitest'
 import { getCardDef } from './content.ts'
 import { canSetAsNormal, setWindowStage } from './setany.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, passTurn, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 const anyOn = (s: GameState): GameState => ({ ...s, setAnyCards: true })
@@ -33,7 +34,8 @@ describe('攻撃札の伏せ: 1Eで伏せ、被攻撃後に印字コストを払
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_strike' })
     expect(s.player.energy).toBe(2) // 3-1
     expect(s.player.setCards).toHaveLength(1)
-    // 残り2E → 発動コスト1Eは払える → 窓が開く
+    s = passTurn(s) // 罠モデル: 伏せたターンは鳴らない (翌ターンは3Eから)
+    // 残り3E → 発動コスト1Eは払える → 窓が開く
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
@@ -47,8 +49,10 @@ describe('攻撃札の伏せ: 1Eで伏せ、被攻撃後に印字コストを払
     expect(found?.def.type).toBe('physical')
   })
   it('エナジーを残していなければ発動できない (窓が開かない)', () => {
-    let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 23), ['green_strike', 'green_guard', 'green_guard']))
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_strike' }) // 1E
+    let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 23), ['green_strike']))
+    s = setAndArm(s, 't0_green_strike') // 1E。翌ターンに鳴らせる
+    s = withHand(s, ['green_guard', 'green_guard', 'green_guard'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_guard' }) // 1E
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_guard' }) // 1E
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_guard' }) // 1E → 残り0
     expect(s.player.energy).toBe(0)
@@ -63,7 +67,7 @@ describe('攻撃札の伏せ: 1Eで伏せ、被攻撃後に印字コストを払
     let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 24), ['green_perm_hunters_gaze', 'green_strike']))
     s = { ...s, player: { ...s.player, energy: 5 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_hunters_gaze' })
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_green_strike' })
+    s = setAndArm(s, 't1_green_strike')
     const g0 = s.player.growth
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
@@ -75,7 +79,7 @@ describe('攻撃札の伏せ: 1Eで伏せ、被攻撃後に印字コストを払
 describe('防御札の伏せ: 被攻撃前に印字コストを払ってブロック', () => {
   it('防御を伏せ、攻撃5の前に発動してブロック5で無傷', () => {
     let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 25), ['green_guard']))
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_guard' })
+    s = setAndArm(s, 't0_green_guard')
     const hp0 = s.player.hp
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
@@ -84,15 +88,19 @@ describe('防御札の伏せ: 被攻撃前に印字コストを払ってブロ�
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
     expect(s.player.hp).toBe(hp0)
   })
-  it('温存すれば札は残り、回収 (1E) で元の定義のまま手札に戻る', () => {
+  it('温存すれば札は残り、2窓で鳴らなければ元の定義のまま捨て札へ戻る (回収は無い。2026-09-13 罠モデル)', () => {
     let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 26), ['green_guard']))
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_guard' })
+    s = setAndArm(s, 't0_green_guard')
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: false }) // 窓1: 温存
     expect(s.player.setCards).toHaveLength(1)
-    s = applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_guard' })
-    expect(s.player.hand.some((c) => c.uid === 't0_green_guard' && c.def.type === 'physical')).toBe(true)
+    expect(() => applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_guard' })).toThrow()
+    s = passTurn(s) // 窓2: 鳴らない → ほどける
+    expect(s.player.setCards).toHaveLength(0)
+    expect(types(s.eventLog)).toContain('SetCardExpired')
+    const found = [...s.player.discardPile, ...s.player.hand, ...s.player.drawPile].find((c) => c.uid === 't0_green_guard')
+    expect(found?.def.type).toBe('physical')
   })
 })
 
@@ -101,6 +109,7 @@ describe('専用リアクションは従来どおり', () => {
     let s = anyOn(withHand(freshCombat('set-confirm', 'enemy_probe', 27), ['green_reaction_thorns']))
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     expect(s.player.energy).toBe(2)
+    s = passTurn(s)
     s = { ...s, player: { ...s.player, energy: 0 } } // 残り0Eでも撃てる
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })

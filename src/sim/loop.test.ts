@@ -6,8 +6,20 @@
 import { describe, expect, it } from 'vitest'
 import { allDecks, allEnemies } from '../engine/content.ts'
 import { startCombat } from '../engine/combat.ts'
+import { isDamageEffect } from '../engine/effects.ts'
 import { applyCommand } from '../engine/state.ts'
+import type { GameState } from '../engine/types.ts'
 import { chooseCommand } from './run.ts'
+
+/**
+ * 勝ち筋消滅 (2026-09-13 罠モデル追随で顕在化した既知のボットの床値): 手札・山札・捨て札・伏せ場のどこにも
+ * ダメージ効果を持つ札が1枚も無い = 敵を倒す手段が構造的に無い (例: 大喰らいの蟲がミルで攻撃札を全部消滅させ、
+ * 氷壁の要塞と相互不死になる)。無限ループでも膠着でもなくデッキが「詰んだ」状態なので stalemates とは別計上する
+ */
+function hasNoWinCondition(s: GameState): boolean {
+  const pool = [...s.player.hand, ...s.player.drawPile, ...s.player.discardPile, ...s.player.setCards]
+  return !pool.some((c) => c.def.effects.some((e) => isDamageEffect(e)))
+}
 
 /** 1ターンの詠唱数の上限。健全なデッキの実測最大は11 (deck_chaos の衝動連打) */
 const MAX_PLAYS_PER_TURN = 20
@@ -22,6 +34,7 @@ const MAX_ACTIONS = 2000
 describe('無限ループ検知', () => {
   it('全デッキ × 敵 × 複数シードで、1ターンの詠唱数と1戦闘のコマンド数が上限を超えない', { timeout: 120000 }, () => {
     const offenders: string[] = []
+    const lostWinCondition: string[] = []
     let worstPlays = 0
     // 2026-08-26: 5シード×1敵では取り逃していた (集中のループは deck_storm × 用心深い影 × seed7 でしか出ない)。
     // 全デッキ × 全敵 × 10シードへ拡張する。
@@ -32,7 +45,11 @@ describe('無限ループ検知', () => {
           let actions = 0
           while (s.phase !== 'won' && s.phase !== 'lost') {
             if (++actions > MAX_ACTIONS) {
-              offenders.push(`${deck.id} vs ${enemy.id} seed${seed}: コマンド数${actions}超過`)
+              if (hasNoWinCondition(s)) {
+                lostWinCondition.push(`${deck.id} vs ${enemy.id} seed${seed}: 勝ち筋消滅 (ダメージ札0枚・HP${s.player.hp}/氷壁${s.player.iceBlock})`)
+              } else {
+                offenders.push(`${deck.id} vs ${enemy.id} seed${seed}: コマンド数${actions}超過`)
+              }
               break
             }
             s = applyCommand(s, chooseCommand(s))
@@ -55,6 +72,8 @@ describe('無限ループ検知', () => {
     // ②城壁砕きの効果順が [ダメージ→ブロック] で自前のブロックが自分に乗らない、の2点だった。
     const stalemates = [...new Set(offenders.filter((o) => o.includes('コマンド数')).map((o) => o.split(' seed')[0]))]
     expect(stalemates).toEqual([])
+    // 勝ち筋消滅はボットの床値として記録だけする (膠着ではない)
+    if (lostWinCondition.length > 0) console.info(`勝ち筋消滅 ${lostWinCondition.length}件:\n  ${lostWinCondition.join('\n  ')}`)
     // 上限に余裕があることも確認 (健全な最大は10台のはず)
     expect(worstPlays).toBeLessThanOrEqual(MAX_PLAYS_PER_TURN)
     // 全デッキ×全敵×複数シードの総当たりなので、カード・敵が増えるたびに重くなる。

@@ -2,7 +2,7 @@
 // 統合パーミッション (消して稼いで放つ) の機構を固定する。
 import { describe, expect, it } from 'vitest'
 import { applyCommand, createInitialState } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 const withEnergy = (s: GameState, energy: number): GameState => ({
@@ -78,13 +78,11 @@ describe('反復 (呪文コピー)', () => {
 
   it('未使用の反復トークンは自ターン終了時に消える / 敵フェーズに得た分は次の自ターンまで持つ', () => {
     // 谺の構え: 被攻撃後に反復+1 (敵フェーズ中の獲得)
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
-      'blue_echo',
-      'blue_echo_stance',
-    ])
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), ['blue_echo_stance'])
+    s = setAndArm(s, 't0_blue_echo_stance') // 罠モデル: 前のターンに仕込む
+    s = withHand(s, ['blue_echo'])
     s = withEnergy(s, 9)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_echo' }) // 自ターンの獲得
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_echo_stance' })
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
@@ -95,12 +93,12 @@ describe('反復 (呪文コピー)', () => {
 
   it('リアクション (呪文でない) の解決は反復の対象にならない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
-      'blue_echo',
       'blue_frost_veil', // 反応: 被攻撃前に氷壁7+霊気1
     ])
+    s = setAndArm(s, 't0_blue_frost_veil') // 罠モデル: 前のターンに仕込む
+    s = withHand(s, ['blue_echo'])
     s = withEnergy(s, 9)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_echo' })
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_frost_veil' })
     s = withIntent(s, attackIntent(5))
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
@@ -113,7 +111,7 @@ describe('統合パーミッション (消して稼いで放つ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_undertow',
     ])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_undertow' })
+    s = setAndArm(s, 't0_blue_undertow')
     s = withIntent(s, attackIntent(14))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
@@ -130,7 +128,7 @@ describe('統合パーミッション (消して稼いで放つ)', () => {
     ])
     s = withEnergy(s, 9)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_perm_vortex_ring' })
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't1_blue_counterspell' })
+    s = setAndArm(s, 't1_blue_counterspell')
     s = withIntent(s, attackIntent(8))
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })

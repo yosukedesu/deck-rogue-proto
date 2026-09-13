@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet } from './effects.ts'
+import { applyWakeCheck, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -117,7 +117,7 @@ export interface CombatOptions {
   /** 実験: 全カード伏せ可 */
   readonly setAnyCards?: boolean
   /** C型レリック (回収の紐): 回収が0E */
-  readonly retrieveFree?: boolean
+  readonly expireToHand?: boolean
   /** C型レリック (大樹の心): 上限参照札が読む値に+N */
   readonly energyMaxRefBonus?: number
   /** C型レリック (収穫の鎌): 成長放出のあと成長がN残る */
@@ -214,7 +214,7 @@ export function startCombatWithOptions(
     enemies,
     // C型レリック。revealIntents は第1ターンの意図宣言 (startPlayerTurn) より前に立てる必要がある
     ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
-    ...(options.retrieveFree ? { retrieveFree: true } : {}),
+    ...(options.expireToHand ? { expireToHand: true } : {}),
     ...(options.energyMaxRefBonus ? { energyMaxRefBonus: options.energyMaxRefBonus } : {}),
     ...(options.harvestKeep ? { harvestKeep: options.harvestKeep } : {}),
     ...(options.revealIntents ? { revealIntents: true } : {}),
@@ -497,7 +497,7 @@ function declareIntents(state: GameState): GameState {
       }
       const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
       rng = rngC
-      alt = { ...altIntent, ...(sa.ignoreFreshness === true ? { ignoreFreshness: true } : {}) }
+      alt = altIntent
       condOn = 'set'
     }
 
@@ -610,9 +610,6 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       healsThisTurn: 0,
       weakFreshThisPhase: 0,
       hpLostThisTurn: 0,
-      freeResetUid: undefined,
-      // 見切り (2026-08-30): 前のターンから置きっぱなしの伏せ札は「織り込み済み」になる
-      setCards: state.player.setCards.map((c) => (c.setFresh ? { ...c, setFresh: false } : c)),
       // every/once のターン内カウンタをリセット (2026-09-12)
       permanents: state.player.permanents.map((p) => {
         if (p.turnTriggerCounts === undefined) return p
@@ -1601,8 +1598,9 @@ function fireSelfSetTriggers(
   trigger: 'onAttackPlayed' | 'onSpellPlayed',
   enemyIndex: number,
 ): GameState {
+  // 罠モデル (2026-09-13): 準備ターン (伏せたターン) は自己誘発も鳴らない。期限切れの札も鳴らない
   const firing = state.player.setCards.filter((c) =>
-    c.def.effects.some((e) => e.trigger === trigger),
+    isTrapLive(state, c) && c.def.effects.some((e) => e.trigger === trigger),
   )
   if (firing.length === 0) return state
   let s: GameState = {
@@ -2097,6 +2095,40 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   }
 }
 
+/**
+ * 罠モデル (2026-09-13): 期限切れの罠を伏せ場から外す。
+ * 敵フェーズ終端 (finishEnemyPhase) は state.turn がまだ進んでいないので、2窓目 = 齢2 の終端で「残っていれば」ほどける
+ * (齢3を待つと窓の無い敵フェーズを1回死んだまま過ごす)。ほどけない札 (trapPersist) は除く
+ */
+function expireTraps(state: GameState): GameState {
+  const expired = state.player.setCards.filter((c) => trapAge(state, c) >= 2 && c.def.trapPersist !== true)
+  if (expired.length === 0) return state
+  const firstAlive = Math.max(0, state.enemies.findIndex((e) => e.hp > 0))
+  let s: GameState = {
+    ...state,
+    player: { ...state.player, setCards: state.player.setCards.filter((c) => !expired.includes(c)) },
+  }
+  for (const card of expired) {
+    // 弾け実の罠: ほどけて弾ける (onSetDestroyed 相当。対象は生存先頭)
+    for (const effect of card.def.effects) {
+      if (effect.trigger === 'onSetDestroyed') s = resolveEffectTargeted(s, effect, firstAlive)
+    }
+    const to: 'discard' | 'exhaust' | 'hand' = s.expireToHand === true ? 'hand' : card.def.exhaust === true ? 'exhaust' : 'discard'
+    const { setTurn: _t, ...bare } = card
+    if (to === 'hand') s = { ...s, player: { ...s.player, hand: [...s.player.hand, bare] } }
+    else if (to === 'discard') s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, bare] } }
+    else s = { ...s, player: { ...s.player, exhaustPile: [...s.player.exhaustPile, bare] } }
+    s = emit(s, { type: 'SetCardExpired', cardId: card.def.id, to })
+    if (to === 'exhaust') {
+      // 衝動失効と同じ順: 消滅の誘発 (亡者の合唱など) → 亡骸
+      s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+      s = fireExhaustTriggers(s, 1, firstAlive)
+      s = fireNecroEffects(s, [bare], firstAlive)
+    }
+  }
+  return checkCombatEnd(s)
+}
+
 /** 敵フェーズ終端: 空振り計上フック→手札全捨て (敵ターン後・3方式共通)→次ターン開始 */
 function finishEnemyPhase(state: GameState): GameState {
   const ended = { type: 'EnemyPhaseEnded', turn: state.turn } as const
@@ -2110,6 +2142,20 @@ function finishEnemyPhase(state: GameState): GameState {
     },
   }
   s = dispatchHooks(s, ended) // 空振り (ReactionWhiffed) の計上は方式固有
+  // 罠モデル (2026-09-13): 「完全に凌いだら」の遅延効果 (守りの蔓=次ターン1ドロー・蔦の陣=体勢崩し) をここで判定して解決する
+  const pendingPhase = s.pendingPhaseEffects ?? []
+  if (pendingPhase.length > 0) {
+    s = { ...s, pendingPhaseEffects: undefined }
+    if (s.player.perfectBlockLastPhase === true) {
+      for (const { effect, enemyIndex } of pendingPhase) s = resolveEffectTargeted(s, effect, enemyIndex)
+    }
+  }
+  // 罠モデル: 2窓目の終端で鳴らなかった罠はほどける (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
+  // 回収の紐を持つ間は手札へ。弾け実の罠=onSetDestroyed は期限切れでも弾ける)。期限切れ由来で敵が死にうるので決着判定を挟む。
+  // 回収の紐で手札に戻った札は、この後の全捨てを生き残らせる (手札に戻した直後に捨てては紐が no-op になる)
+  const handBeforeExpire = new Set(s.player.hand.map((c) => c.uid))
+  s = expireTraps(s)
+  if (s.phase === 'won' || s.phase === 'lost') return s
   // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る (確定済みルール表「状態異常」)。
   // ただしこのフェーズに付与された分は減らさない (justAppliedガード 2026-09-02 —
   // 旧実装は「付与→同フェーズ末に即-1」で脆弱2が実効1になっていた)
@@ -2172,7 +2218,10 @@ function finishEnemyPhase(state: GameState): GameState {
   //   — 旧実装は捨て札を循環する本家Burn型の恒久汚染で、仕様「全捨てで消える」と乖離していた
   // ルーンの角錐 (retainHand 2026-09-12): 手札を捨てない。自ターンを過ごした火傷だけは消える (1回きりの則は不変)
   const keeps = (c: CardInstance): boolean =>
-    (c.def.id === SCALD_DEF.id && c.scaldFresh === true) || c.def.retain === true || (s.retainHand === true && c.def.id !== SCALD_DEF.id)
+    (c.def.id === SCALD_DEF.id && c.scaldFresh === true) ||
+    c.def.retain === true ||
+    (s.retainHand === true && c.def.id !== SCALD_DEF.id) ||
+    !handBeforeExpire.has(c.uid) // 回収の紐でほどけて手札に戻った罠 (2026-09-13)
   s = {
     ...s,
     player: {

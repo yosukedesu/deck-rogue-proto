@@ -6,7 +6,7 @@ import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalP
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
-import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIntent, setAndArm, passTurn } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 function forceWin(run: RunState): RunState {
@@ -531,15 +531,16 @@ describe('在庫拡充 第1波 (2026-09-03 docs/relic-redesign-proposal.md §3-3
     const boosted = forceWin({ ...run, relics: ['relic_golden_boots', 'relic_loot_bag'] })
     expect(boosted.gold - run.gold).toBe(Math.floor((plain.gold - run.gold + 20) * 1.5))
   })
-  it('回収の紐: 回収が0E。大樹の心: 上限参照が読む値+1。収穫の鎌: 放出後に成長2が残る', () => {
+  it('回収の紐 (2026-09-13 作り直し): ほどけた罠は捨て札でなく手札へ。大樹の心: 上限参照が読む値+1。収穫の鎌: 放出後に成長2が残る', () => {
     const cord = injectedIntoBattle('relic_retrieve_cord', 11).combat!
-    expect(cord.retrieveFree).toBe(true)
-    let c = withHand({ ...freshCombat('set-confirm', 'enemy_probe', 1), retrieveFree: true }, ['green_reaction_thorns'])
+    expect(cord.expireToHand).toBe(true)
+    let c = withHand({ ...freshCombat('set-confirm', 'enemy_probe', 1), expireToHand: true }, ['green_reaction_thorns'])
     const uid = c.player.hand[0].uid
-    c = applyCommand(c, { type: 'SetCard', cardUid: uid })
-    const e0 = c.player.energy
-    c = applyCommand(c, { type: 'RetrieveSetCard', cardUid: uid })
-    expect(c.player.energy).toBe(e0)
+    c = setAndArm(c, uid)
+    c = passTurn(passTurn(c)) // 2窓とも鳴らない → ほどけて手札へ
+    expect(c.player.setCards).toHaveLength(0)
+    expect(c.eventLog.find((e) => e.type === 'SetCardExpired')).toMatchObject({ to: 'hand' })
+    expect(c.player.hand.some((x) => x.uid === uid)).toBe(true)
     const heart = injectedIntoBattle('relic_great_tree_heart', 11).combat!
     const control = intoBattle(createRun(11, 'set-confirm')).combat!
     // このはのパッシブは energyMax を即時に+1するが、参照値 (ターン開始スナップショット) はT1は素の3。心はそこに+1

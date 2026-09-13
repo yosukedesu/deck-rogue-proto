@@ -119,15 +119,19 @@ describe('撃破サマリーの被ダメ集計 (2026-08-30 計測ランで発覚
 })
 
 describe('setBranchNote: 伏せ分岐の型の注記 (2026-09-03 Opusラン F 指摘)', () => {
-  it('固定ローテ+重み抽選の反応テーブルを持つ敵 (探り屋) にだけ「順番を崩す」が付く', () => {
-    expect(setBranchNote(getEnemyDef('enemy_probe'))).toContain('順番を崩す')
-    const noted = allEnemies.filter((d) => setBranchNote(d) !== null).map((d) => d.id)
-    expect(noted).toContain('enemy_probe')
-    // 判定は「sequence あり × movesVsSet 2件以上」だけで決まる (setAlt 型・単一置換の敵は対象外)
+  it('固定ローテ+重み抽選の反応テーブルを持つ敵にだけ「順番を崩す」が付く (2026-09-13 罠モデル以降は該当なし)', () => {
+    // 探り屋の反応テーブルは罠モデルで撤去 (敵は伏せを見ない) = 注記も付かない
+    const probe = getEnemyDef('enemy_probe')
+    expect(probe.movesVsSet).toBeUndefined()
+    expect(setBranchNote(probe)).toBeNull()
+    // 判定は「sequence あり × movesVsSet 2件以上」だけで決まる。残る反応テーブル持ち (罠壊し・道化) は重み抽選なので対象外
     for (const d of allEnemies) {
       const expected = (d.sequence?.length ?? 0) > 0 && (d.movesVsSet?.length ?? 0) >= 2
       expect(setBranchNote(d) !== null, d.id).toBe(expected)
     }
-    expect(setBranchNote({ ...getEnemyDef('enemy_probe'), movesVsSet: undefined })).toBeNull()
+    expect(allEnemies.filter((d) => setBranchNote(d) !== null)).toEqual([])
+    // 機構は残る: 固定ローテ+2件以上の反応テーブルを合成すれば付く
+    const synthetic = { ...probe, movesVsSet: getEnemyDef('enemy_set_breaker').movesVsSet }
+    expect(setBranchNote(synthetic)).toContain('順番を崩す')
   })
 })

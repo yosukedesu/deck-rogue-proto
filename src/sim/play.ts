@@ -12,7 +12,7 @@
 //
 // コマンドJSON例:
 //   {"type":"PlayCard","cardUid":"c12","targetIndex":0}
-//   {"type":"SetCard","cardUid":"c3"} / {"type":"RetrieveSetCard","cardUid":"c3"} (1E) / {"type":"EndTurn"}
+//   {"type":"SetCard","cardUid":"c3"} (伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ・鳴らなければ捨て札) / {"type":"EndTurn"}
 //   {"type":"ConfirmReaction","fire":true,"cardUid":"c3"} / {"type":"ConfirmReaction","fire":false}
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
@@ -35,9 +35,9 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, setReactionIgnoresFreshness, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { applyEnemyWeak, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, enemyPunishesSet, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, relicRarityTag, setBranchNote, summaryLine, worstIncomingFrom, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, Command, DeclarativeEffect, GameState } from '../engine/types.ts'
@@ -84,7 +84,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`, gainBlockPerHandCard: `手札の枚数×${a}ブロック`,
-    drawCardsNextTurn: `次T開始時に${a}枚多くドロー`, gainEnergyNextTurn: `次T開始時に一時マナ+${a}`, gainBlockNextTurn: `次T開始時にブロック+${a}`,
+    staggerEnemy: '対象の体勢を崩す(次の行動が隙)', drawCardsNextTurn: `次T開始時に${a}枚多くドロー`, gainEnergyNextTurn: `次T開始時に一時マナ+${a}`, gainBlockNextTurn: `次T開始時にブロック+${a}`,
     addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者の効果+${a}`,
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
@@ -102,7 +102,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
     : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
@@ -209,9 +209,7 @@ function intentLine(s: GameState, i: number): string {
     // 罰型 (罠壊し等) や順番崩し (探り屋) は「今回たまたま同じ行動を引いた」だけ (2026-09-03 Opusラン K:
     // 「伏せると下がる」が旧弱腰型の文言に見えた)。別のターンは伏せ破壊や大技に化けることを添える
     const def = getEnemyDef(e.enemyId)
-    const why = enemyPunishesSet(def)
-      ? '。※罰型=ターンによって伏せ破壊や大技の分岐になる'
-      : setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
+    const why = setBranchNote(def) ? `。※${setBranchNote(def)}` : ''
     // 「実値は下がる」だけでは何が下がるのか読めない (2026-09-05 Opusラン U): 同じ行動でもロールは分岐ごと別、と明記
     return `${branchText(e.intent, e.weak ?? 0)}(伏せ札ありでも今回は同じ行動。ただしロールは別で、伏せると実値は${dir}${why})`
   }
@@ -219,20 +217,8 @@ function intentLine(s: GameState, i: number): string {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
     const cond = e.intent.conditionalOn === 'set' ? `伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
     const now = effectiveIntent(s, i)!
-    // 破壊分岐は見切り (setFresh) を無視して発動する既存則。汎用の「伏せ直せば変わる」を
-    // 破壊分岐に出すと嘘になる (2026-08-31 HP経済ラン指摘①: 伏せ場の「敵は反応しない」と矛盾表示)
-    const staleNow =
-      e.intent.conditionalOn === 'set' &&
-      s.player.setCards.length > 0 &&
-      s.player.setCards.every((c) => c.setFresh !== true)
-    const stale = !staleNow
-      ? ''
-      : e.intent.alt.kind === 'destroy-set'
-        ? ' (破壊分岐は見切りを無視する=置きっぱなしでも壊しに来る)'
-        : setReactionIgnoresFreshness(s, i)
-          ? ' (この敵は罰型=見切りを無視する。伏せ札がある限りこの分岐)'
-          : ' (伏せ札は見切られ中=まだ伏せたことのない別の札を1E以上で伏せれば変わる。同じ札の伏せ直しは見切られたまま)'
-    return `【${cond}】${branchText(e.intent.alt, e.weak ?? 0)} ／【なし】${branchText(e.intent, e.weak ?? 0)} → 今は「${branchText(now, e.weak ?? 0)}」${stale}`
+    // 罠モデル (2026-09-13): 敵の伏せ反応は破壊分岐だけ。伏せ札が1枚でもあれば (準備中も) その分岐
+    return `【${cond}】${branchText(e.intent.alt, e.weak ?? 0)} ／【なし】${branchText(e.intent, e.weak ?? 0)} → 今は「${branchText(now, e.weak ?? 0)}」`
   }
   const it = e.intent
   const hits =
@@ -366,17 +352,9 @@ function renderBattle(s: GameState, logFrom: number): string {
     const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeInHand(c)).map((c) => `[${c.uid}]${c.def.name}`)
     L.push(`手札で鍛える候補(handUids): ${cands.join(' ') || 'なし(省略可)'}`)
   }
-  // 罰型 (見切り無視) の敵が生存中なら「敵は反応しない」は嘘になる (2026-09-03 Opusラン I 指摘)
-  // 静的判定 (敵定義) にする: 動的判定だと確認ウィンドウで意図が確定した後に「反応しない」へ戻り矛盾した (Opusラン J)
-  const stalePun = s.enemies
-    .filter((en) => en.hp > 0 && enemyPunishesSet(getEnemyDef(en.enemyId)))
-    .map((en) => getEnemyDef(en.enemyId).name)
-  const staleTag =
-    stalePun.length > 0
-      ? '【見切られ中。ただし罰型の' + stalePun.join('・') + 'は伏せ札がある限り反応する。破壊は来る】'
-      : '【見切られ=敵は反応しない。破壊は来る】'
   if (p.setCards.length > 0 || p.setSlots > 1) {
-    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${setCardLiveDamage(s, c.def) ? `［${setCardLiveDamage(s, c.def)}］` : ''}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}${c.setFresh === true ? '' : staleTag}`).join(' / ') || 'なし'}${p.setCards.length > 0 ? ' ※回収={"type":"RetrieveSetCard","cardUid":"..."} (1E)' : ''}`)
+    // 罠モデル (2026-09-13): 伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ・鳴らなければ捨て札。回収は無い
+    L.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${p.setCards.map((c) => `[${c.uid}] ${cardLine(c.def)}${setCardLiveDamage(s, c.def) ? `［${setCardLiveDamage(s, c.def)}］` : ''}${c.def.type !== 'reaction' ? `【通常札: 被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に解決・発動に${setFireCost(c)}E】` : ''}【${trapStatusText(s, c)}】`).join(' / ') || 'なし'}`)
   }
   if (p.permanents.length > 0) {
     // アンセム (blessRetainers): 従者の量つき効果は解決時に+Nされる。表示にも現在値を出す (2026-08-31)
@@ -460,7 +438,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           ? (c.def.type !== 'reaction' ? `伏せ可(1E・発動時に${c.def.cost}E)` : '伏せ可')
           : c.def.type === 'reaction'
             ? p.setCards.length >= p.setSlots
-              ? '伏せ枠が満杯(回収{"type":"RetrieveSetCard"}で空く)'
+              ? '伏せ枠が満杯(発動か期限切れで空く。回収は無い)'
               : c.def.cost > p.energy
                 ? '伏せるエナジー不足'
                 : ''

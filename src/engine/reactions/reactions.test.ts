@@ -1,5 +1,6 @@
 // リアクション3方式のテスト (本プロジェクトの主役)。
-// 方式ごとの挙動差と、方式共通ルール (同時1枚・空振り持続・打ち消し対象) をここで固定する。
+// 方式ごとの挙動差と、方式共通ルール (同時1枚・打ち消し対象) をここで固定する。
+// 2026-09-13 罠モデル: 伏せたターンは鳴らない (準備) ので、伏せ→ setAndArm (1ターン流す) →敵の攻撃、の順で鳴らす。寿命・期限切れは trap-model.test
 import { getCardDef } from '../content.ts'
 import { describe, expect, it } from 'vitest'
 import { applyCommand } from '../state.ts'
@@ -8,6 +9,8 @@ import {
   defendIntent,
   destroySetIntent,
   freshCombat,
+  passTurn,
+  setAndArm,
   withHand,
   withIntent,
 } from '../test-helpers.ts'
@@ -21,6 +24,7 @@ describe('set-auto (セット式)', () => {
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     expect(s.player.energy).toBe(2) // コスト事前払い
     expect(s.player.setCards).toHaveLength(1)
+    s = passTurn(s) // 罠モデル: 伏せたターンは鳴らない
     s = withIntent(s, attackIntent(12))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ReactionTriggered')
@@ -31,7 +35,7 @@ describe('set-auto (セット式)', () => {
 
   it('軽減リアクション (守りの蔓) は被攻撃前トリガーで、被弾直前にブロック12を得る', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_vine'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_vine' })
+    s = setAndArm(s, 't0_green_reaction_vine')
     s = withIntent(s, attackIntent(15))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(s.player.maxHp - (15 - 12))
@@ -51,19 +55,25 @@ describe('set-auto (セット式)', () => {
     expect(() => applyCommand(s, { type: 'SetCard', cardUid: 't0_green_strike' })).toThrow()
   })
 
-  it('空振りした伏せは無期限に持続する (確定済みルール)', () => {
+  it('空振りした伏せは2窓 (翌・翌々ターン) の間は持続し、鳴らなければほどけて捨て札へ (2026-09-13 罠モデル)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
-    s = withIntent(s, defendIntent(5)) // 攻撃されなかった → onAttacked は不成立
+    s = withIntent(s, defendIntent(5)) // 準備ターン: 攻撃されなかった (そもそも鳴らない・空振りにも数えない)
     s = applyCommand(s, { type: 'EndTurn' })
+    expect(types(s.eventLog)).not.toContain('ReactionWhiffed')
+    expect(s.player.setCards).toHaveLength(1)
+    s = applyCommand(withIntent(s, defendIntent(5)), { type: 'EndTurn' }) // 窓1: 空振り
     expect(types(s.eventLog)).toContain('ReactionWhiffed')
     expect(s.player.setCards).toHaveLength(1) // 次ターンも伏せたまま
     expect(s.player.setCards[0].uid).toBe('t0_green_reaction_thorns')
+    s = applyCommand(withIntent(s, defendIntent(5)), { type: 'EndTurn' }) // 窓2: 空振り → ほどける
+    expect(types(s.eventLog)).toContain('SetCardExpired')
+    expect(s.player.setCards).toHaveLength(0)
   })
 
   it('打ち消し (根の紡ぎ) は攻撃を無効化する', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_root_weave'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_weave' })
+    s = setAndArm(s, 't0_green_reaction_root_weave')
     s = withIntent(s, attackIntent(14))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')
@@ -72,14 +82,14 @@ describe('set-auto (セット式)', () => {
 
   it('打ち消しの対象は任意の行動: 伏せ破壊も無効化できる (確定済みルール)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_set_breaker'), ['green_reaction_root_weave'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_weave' })
+    s = setAndArm(s, 't0_green_reaction_root_weave')
     s = withIntent(s, destroySetIntent())
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')
     expect(types(s.eventLog)).not.toContain('SetCardDestroyed')
   })
 
-  it('伏せ破壊は素直に通る (2026-08-30 逃がしルール廃止。回収で事前に引き上げるのが後継)', () => {
+  it('伏せ破壊は素直に通る (2026-08-30 逃がしルール廃止。2026-09-13 罠モデル: 準備中の札も壊される)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_set_breaker'), ['green_reaction_thorns'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     s = withIntent(s, destroySetIntent())
@@ -92,7 +102,7 @@ describe('set-auto (セット式)', () => {
 describe('set-confirm (ハイブリッド)', () => {
   it('条件成立で「発動/温存」確認に中断し、発動を選ぶと解決される', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_reaction_thorns'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = setAndArm(s, 't0_green_reaction_thorns')
     s = withIntent(s, attackIntent(11))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
@@ -102,12 +112,12 @@ describe('set-confirm (ハイブリッド)', () => {
     expect(types(s.eventLog)).toContain('ReactionTriggered')
     expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp - 10)
     expect(s.player.hp).toBe(s.player.maxHp - 11)
-    expect(s.turn).toBe(2) // 敵フェーズが最後まで解決され次ターンへ
+    expect(s.turn).toBe(3) // 敵フェーズが最後まで解決され次ターンへ (伏せT1・発動T2)
   })
 
   it('温存を選ぶと伏せたまま残り、敵の行動は実行される (ブラフの種)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_reaction_thorns'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = setAndArm(s, 't0_green_reaction_thorns')
     s = withIntent(s, attackIntent(11))
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'ConfirmReaction', fire: false })
@@ -115,7 +125,7 @@ describe('set-confirm (ハイブリッド)', () => {
     expect(s.player.setCards).toHaveLength(1) // 温存
     expect(s.player.hp).toBe(s.player.maxHp - 11)
     expect(s.enemies[0].hp).toBe(s.enemies[0].maxHp)
-    expect(s.turn).toBe(2)
+    expect(s.turn).toBe(3)
   })
 
   it('確認待ち以外での ConfirmReaction は拒否される', () => {
@@ -194,7 +204,7 @@ describe('SetCard のエラーメッセージ (2026-08-29。汎用文言に化�
 describe('誘発タイミング: 返しはダメージの後 (2026-08-24 変更)', () => {
   it('返しで敵が倒れても、攻撃は先に受けている', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = setAndArm(s, 't0_green_reaction_thorns')
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 8 })) }
     s = withIntent(s, attackIntent(14))
     s = applyCommand(s, { type: 'EndTurn' })
@@ -206,7 +216,7 @@ describe('誘発タイミング: 返しはダメージの後 (2026-08-24 変更)
 describe('新しい誘発条件 (条件きつく・効果派手)', () => {
   it('打ち消し (敵行動時) は従来通り実行前に働き、ダメージを受けない', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_root_weave'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_root_weave' })
+    s = setAndArm(s, 't0_green_reaction_root_weave')
     s = withIntent(s, attackIntent(16))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')
@@ -216,7 +226,7 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
   it('窮鼠の大牙: HPが半分を超えていると発動しない', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
     s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } }] } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
+    s = setAndArm(s, 't0_green_reaction_cornered')
     s = withIntent(s, attackIntent(5)) // 被弾後もHP45 > 25
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).not.toContain('ReactionTriggered')
@@ -226,7 +236,7 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
   it('窮鼠の大牙: 被弾後にHP半分以下なら返し20が発動する', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_thorns'])
     s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_cornered', def: { ...getCardDef('green_reaction_thorns'), id: 'test_cornered', name: '窮鼠(テスト)', effects: [{ trigger: 'onAttacked' as const, condition: { hpAtOrBelowRatio: 0.5 }, effect: 'counter' as const, amount: 20 }] } }] } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_cornered' })
+    s = setAndArm(s, 't0_green_reaction_cornered')
     s = { ...s, player: { ...s.player, hp: 30 } }
     s = withIntent(s, attackIntent(10)) // 被弾後HP20 ≤ 25
     s = applyCommand(s, { type: 'EndTurn' })
@@ -236,7 +246,7 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
 
   it('共鳴する茨 (2026-09-07 限定打ち消しへ): 敵の強化・応援を打ち消して成長+3。強化は通らない', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute'), ['green_reaction_resonance'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_resonance' })
+    s = setAndArm(s, 't0_green_reaction_resonance')
     // 2026-08-30 T1は club になったので、雄叫び (buff) を意図に細工して検証する
     s = withIntent(s, { kind: 'buff', shownMin: 2, shownMax: 4, actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
@@ -251,7 +261,7 @@ describe('新しい誘発条件 (条件きつく・効果派手)', () => {
     const base = s.player.hand[0]
     const def = { ...base.def, id: 'test_backlash', name: '逆襲(テスト)', cost: 2, effects: [{ trigger: 'onAttacked' as const, condition: { minActionValue: 10 }, effect: 'counter' as const, amount: 24 }] }
     s = { ...s, player: { ...s.player, hand: [{ uid: 't0_green_reaction_backlash', def }] } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_backlash' })
+    s = setAndArm(s, 't0_green_reaction_backlash')
     const small = applyCommand(withIntent(s, attackIntent(9)), { type: 'EndTurn' })
     expect(types(small.eventLog)).not.toContain('ReactionTriggered')
     const big = applyCommand(withIntent(s, attackIntent(10)), { type: 'EndTurn' })

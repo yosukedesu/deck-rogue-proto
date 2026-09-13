@@ -62,8 +62,6 @@ export interface PlayerState extends CombatantState {
   readonly discardPile: readonly CardInstance[]
   /** 伏せているカード (基本は同時1枚。setSlots で拡張) */
   readonly setCards: readonly CardInstance[]
-  /** 回収 (2026-08-30) したターン中、この uid の札は伏せ直しコスト不要 (自ターン終了でクリア) */
-  readonly freeResetUid?: string
   /** 伏せ枠の数。既定1。かすみ (ディミア) のリーダー個性で2 (確定済みルール表「伏せ枚数」) */
   readonly setSlots: number
   /** 置物: プレイすると場に残り戦闘中ずっと効果を発揮 (破壊不可・伏せ破壊の対象外) */
@@ -243,8 +241,6 @@ export interface EnemyIntent {
 
 /** 条件付き意図の分岐 (alt を再帰させないための素の形) */
 export interface EnemyIntentBranch {
-  /** 罰型 (2026-09-03): 伏せ札があれば鮮度を問わず反応する */
-  readonly ignoreFreshness?: boolean
   readonly kind: EnemyActionKind
   readonly shownMin: number
   readonly shownMax: number
@@ -311,6 +307,13 @@ export interface EffectCondition {
   readonly actionKinds?: readonly EnemyActionKind[]
   /** 直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り) */
   readonly lastActionNoHpLoss?: boolean
+  /**
+   * 罠モデル (2026-09-13 守りの蔓・蔦の陣): この効果はリアクションの発動時には解決せず、その敵フェーズの終端で
+   * 「完全に凌いだ」(攻撃を1回以上受けてHP損失0) なら解決する。GameState.pendingPhaseEffects に積まれる
+   */
+  readonly perfectBlockThisPhase?: boolean
+  /** 対象の敵がこの解決の時点で生きていれば (先制の蔦槍=倒せなければ急所。targetDead の逆) */
+  readonly targetAlive?: boolean
   /** このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn>0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W) */
   readonly healedThisTurn?: boolean
   /** 戦闘のターン番号がちょうどNなら (角の留め具=T2・舵輪=T3・石の暦=T7。本家の「T2/T3 発火」型 2026-09-12) */
@@ -373,8 +376,10 @@ export interface GameState {
   readonly revealOnSet?: boolean
   /** 実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts) */
   readonly setAnyCards?: boolean
-  /** C型レリック (回収の紐 2026-09-03): 回収が0E */
-  readonly retrieveFree?: boolean
+  /** C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (ほどけた) 罠は捨て札でなく手札に戻る */
+  readonly expireToHand?: boolean
+  /** 罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする */
+  readonly pendingPhaseEffects?: readonly { readonly effect: DeclarativeEffect; readonly enemyIndex: number }[]
   /** カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット) */
   readonly resolvingExposedAtStart?: readonly number[]
   /** C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N */
@@ -451,7 +456,7 @@ export type Command =
       readonly permanentUid?: string
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
-  | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30): 1E払って伏せ札を手札に戻す
+  | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30〜2026-09-13 廃止)。旧セーブ・ジャーナル互換のため型だけ残し、常に拒否する
   | { readonly type: 'PlayNecro'; readonly cardUid: string; readonly targetIndex?: number } // 亡骸プレイ (黒 2026-08-31): 消滅置き場の necroCost 持ち札を一度だけプレイ (プレイ後はゲームから完全に取り除く)
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
   | {
@@ -473,7 +478,7 @@ export type GameEvent =
   | { readonly type: 'CardsDrawn'; readonly count: number; readonly cards?: readonly string[] } // cards=引いた札の名前 (2026-09-05 ログ拡充)
   | { readonly type: 'CardPlayed'; readonly cardId: string }
   | { readonly type: 'CardSet'; readonly cardId: string }
-  | { readonly type: 'SetCardRetrieved'; readonly cardId: string }
+  | { readonly type: 'SetCardExpired'; readonly cardId: string; readonly to: 'discard' | 'exhaust' | 'hand' } // 罠モデル (2026-09-13): 2窓で鳴らなかった罠がほどけた
   | { readonly type: 'EnemyIntentDeclared'; readonly enemyIndex: number; readonly intent: EnemyIntent }
   /** 敵行動の実行直前フック点 (pre窓)。ReactionSystem はこれを見て割り込む */
   | { readonly type: 'EnemyActionExecuting'; readonly enemyIndex: number; readonly kind: EnemyActionKind }
@@ -585,7 +590,7 @@ export type GameEvent =
       /** その窓で発動できた候補 (cardId) */
       readonly candidateIds: readonly string[]
     }
-  | { readonly type: 'ReactionWhiffed'; readonly cardId: string } // 空振り (伏せは無期限持続が現ルール)
+  | { readonly type: 'ReactionWhiffed'; readonly cardId: string } // 空振り (生きている窓で鳴らなかった罠。準備ターンは数えない 2026-09-13)
   | { readonly type: 'SetCardDestroyed'; readonly cardId: string } // 伏せ破壊型の仕事
   | { readonly type: 'EnemyPhaseEnded'; readonly turn: number } // 空振り計上などのフック点
   | { readonly type: 'DeckShuffled' } // 山札の切り直し (onShuffle の発火点 2026-09-12)
@@ -770,6 +775,7 @@ export interface DeclarativeEffect {
     | 'gainEnergyNextTurn' // 次の自ターンの開始時に一時マナ+X (兵法書)
     | 'gainBlockNextTurn' // 次の自ターンの開始時にブロック+X (自ら固まる粘土)
     | 'gainBlockPerHandCard' // 手札の枚数×X のブロック (外套の留め金=本家 Cloak Clasp)
+    | 'staggerEnemy' // 体勢を崩す (蔦の陣 2026-09-13): 対象の敵の次の宣言が隙 (バランス崩しと同じ staggeredNext)
     | 'drawCards'
     | 'script'
   readonly amount?: number
@@ -903,6 +909,8 @@ export interface CardDef {
   readonly exhaust?: boolean
   /** 保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする */
   readonly retain?: boolean
+  /** ほどけない罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない */
+  readonly trapPersist?: boolean
   /** 手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03) */
   readonly freeIfHandAllPhysical?: boolean
   /** 手札の他の札がすべてこのタイプなら0E (freeIfHandAllPhysical の一般化。白の大城壁='spell' 2026-09-06。判定は自身を除く手札) */
@@ -960,14 +968,11 @@ export interface CardInstance {
    */
   readonly growBonus?: number
   /**
-   * 伏せの鮮度 (2026-08-30 見切り)。このターンに伏せられた札だけ true。
-   * 敵の伏せ反応 (setAlt/movesVsSet) は**新しい札にだけ**反応する — 置きっぱなしの札は
-   * 「織り込み済み」で敵の行動を変えない (蓋の対処)。ただし破壊 (destroy-set) の判定は
-   * 鮮度を問わない = 晒し続けた札は壊されには行かれる。自ターン開始時に false へ
+   * 罠モデル (2026-09-13): 伏せた時の state.turn。伏せたターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる (2窓)、
+   * 2窓目の終端で期限切れ (捨て札。消滅持ちは消滅。trapPersist の札は期限が来ない)。判定は effects.ts の trapAge / isTrapLive。
+   * 旧セーブに無い場合は「今伏せた」として読む (NaN で永久死に枠にならないため)
    */
-  readonly setFresh?: boolean
-  /** この戦闘で一度伏せられた札 (2026-09-02 伏せ税の処方)。再伏せは setFresh にならない = 敵は同じ札の伏せ直しに反応しない */
-  readonly wasSet?: boolean
+  readonly setTurn?: number
   /**
    * 生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。
    * 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない
@@ -1066,8 +1071,6 @@ export interface EnemyMove {
    * 既存の条件付き意図 (両分岐予告・行動開始時確定) の配管にそのまま乗る
    */
   readonly setAlt?: {
-    /** 罰型 (2026-09-03): 伏せ札があれば見切り (鮮度) を問わず反応する。「触らなければ弱い」の逆転を消す */
-    readonly ignoreFreshness?: boolean
     readonly kind: EnemyActionKind
     readonly min?: number
     readonly max?: number
@@ -1092,10 +1095,8 @@ export interface EnemyDef {
    * 指定時は重み抽選しない。movesVsSet の割り込みではローテーションは進まない
    */
   readonly sequence?: readonly string[]
-  /** プレイヤーに伏せカードがある時に優先する行動テーブル (伏せ警戒型・伏せ破壊型・挑発型)。省略時は通常行動 */
+  /** プレイヤーに伏せカードがある時に優先する行動テーブル。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う。省略時は通常行動 */
   readonly movesVsSet?: readonly EnemyMove[]
-  /** 罰型の反応テーブル (2026-09-03): 伏せ札があれば鮮度を問わず反応する (罠壊し) */
-  readonly vsSetIgnoreFreshness?: boolean
   /** プレイヤーに召喚トークンがいる時の行動テーブル (優先度: HP半分以下 > 伏せ反応 > トークン反応 > 通常) */
   readonly movesVsTokens?: readonly EnemyMove[]
   /** 延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」) */
@@ -1392,8 +1393,8 @@ export interface RelicDef {
     readonly setDamageReduction?: number
     /** 敵の意図の実値を常時公開 (宣言時に shownMin=shownMax=actual へ畳む。デバッグ用) */
     readonly revealIntents?: boolean
-    /** 回収 (RetrieveSetCard) が0E (回収の紐 2026-09-03) */
-    readonly retrieveFree?: boolean
+    /** 期限切れの罠が捨て札でなく手札に戻る (回収の紐 2026-09-13 作り直し) */
+    readonly expireToHand?: boolean
     /** 上限参照札が読む値 (energyMaxAtTurnStart) に+N (大樹の心 2026-09-03) */
     readonly energyMaxRefBonus?: number
     /** 成長放出のあと成長がN残る (収穫の鎌 2026-09-03) */

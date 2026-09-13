@@ -199,7 +199,8 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
       ...s,
       player: {
         ...s.player,
-        setCards: [{ uid: 'set0', def: getCardDef(setCardId) }],
+        // 罠モデル (2026-09-13): 前のターンに伏せた札 (setTurn=0) = このターンの敵フェーズで鳴らせる
+        setCards: [{ uid: 'set0', def: getCardDef(setCardId), setTurn: 0 }],
         permanents: withGaze
           ? [...s.player.permanents, { uid: 'perm0', def: getCardDef('test_reaction_payoff') }]
           : s.player.permanents,
@@ -223,7 +224,7 @@ describe('読み勝ちの換金 (2026-08-29 面白さ5への処方②。確定�
       ...s,
       player: {
         ...s.player,
-        setCards: [{ uid: 'set0', def: getCardDef('green_reaction_thorns') }],
+        setCards: [{ uid: 'set0', def: getCardDef('green_reaction_thorns'), setTurn: 0 }],
         permanents: [...s.player.permanents, { uid: 'perm0', def: getCardDef('test_reaction_payoff') }],
       },
     }

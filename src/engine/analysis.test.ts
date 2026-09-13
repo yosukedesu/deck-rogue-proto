@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { actSummaries, battleMetrics } from './analysis.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, passTurn, withHand, withIntent } from './test-helpers.ts'
 
 describe('戦闘計測 (battleMetrics)', () => {
   it('ターンごとの与ダメ・被ダメ・プレイ数・伏せ/発動を数え、初手火力と最大ターン火力を出す', () => {
@@ -9,14 +9,24 @@ describe('戦闘計測 (battleMetrics)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_strike' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_strike' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't2_green_reaction_thorns' })
+    s = passTurn(s) // 罠モデル: 伏せたターンは鳴らない (T1 は伏せ1・発動0)
     s = withIntent(s, attackIntent(7))
     s = applyCommand(s, { type: 'EndTurn' })
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
     const m = battleMetrics(s.eventLog)
     expect(m.t1Damage).toBe(12)
-    expect(m.perTurn[0]).toMatchObject({ turn: 1, dealt: 12, counter: 10, taken: 7, plays: 2, sets: 1, fires: 1, holds: 0 })
+    expect(m.perTurn[0]).toMatchObject({ turn: 1, dealt: 12, counter: 0, taken: 0, plays: 2, sets: 1, fires: 0, holds: 0 })
+    expect(m.perTurn[1]).toMatchObject({ turn: 2, counter: 10, taken: 7, sets: 0, fires: 1, holds: 0 })
     expect(m.totalTaken).toBe(7)
-    expect(m.turns).toBeGreaterThanOrEqual(2)
+    expect(m.turns).toBeGreaterThanOrEqual(3)
+  })
+
+  it('期限切れ (SetCardExpired) はほどけたターンの expires に数える', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_probe', 5), ['green_reaction_thorns'])
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = passTurn(passTurn(passTurn(s)))
+    const m = battleMetrics(s.eventLog)
+    expect(m.perTurn[2]).toMatchObject({ turn: 3, expires: 1 })
   })
 })
 

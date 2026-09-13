@@ -293,6 +293,35 @@ namespace DeckRogue.Game
                 }
             }
             catch (Exception ex) { Debug.LogError("[Autopilot] state: フェーズへ跳べない " + ex.Message); }
+            // 罠モデルの確認用 (2026-09-13): set=<手札index> で1枚仕込み、endturn=N でターンを進める
+            // (敵フェーズは engine が自動解決。確認ウィンドウが開いたら止まる = 窓の残り回数の表示も撮れる)
+            if (phase == "combat" && g.Rs != null && g.Rs.Combat != null)
+            {
+                try
+                {
+                    int setIdx;
+                    var hand = g.Rs.Combat.Player.Hand;
+                    if (Get("set") == "r")
+                    {   // set=r: 手札の最初のリアクション
+                        setIdx = -1;
+                        for (int i = 0; i < hand.Count; i++) if (hand[i].Def.Type == CardTypes.Reaction) { setIdx = i; break; }
+                    }
+                    else if (!int.TryParse(Get("set") ?? "", out setIdx)) setIdx = -1;
+                    if (setIdx >= 0 && setIdx < hand.Count)
+                    {
+                        g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_Combat { Command = new Command_SetCard { CardUid = g.Rs.Combat.Player.Hand[setIdx].Uid } });
+                    }
+                    int turns;
+                    if (int.TryParse(Get("endturn") ?? "", out turns))
+                    {
+                        for (int i = 0; i < turns && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.PlayerTurn; i++)
+                        {
+                            g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_Combat { Command = new Command_EndTurn() });
+                        }
+                    }
+                }
+                catch (Exception ex) { Debug.LogError("[Autopilot] state: set/endturn " + ex.Message); }
+            }
             var picks = (Get("pick") ?? "").Split(',').Select(x => { int v; return int.TryParse(x.Trim(), out v) ? v : -1; }).Where(v => v >= 0).ToList();
             if (phase == "workshop") { g.WorkshopA = picks.Count > 0 ? picks[0] : -1; g.WorkshopB = picks.Count > 1 ? picks[1] : -1; }
             if (Get("doodle") == "1")

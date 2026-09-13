@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
 
 import { applyCommand } from './state.ts'
-import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 
 describe('白のカラーパイ', () => {
   it('白のカードとデッキが揃っている', () => {
@@ -105,8 +105,8 @@ describe('護りのリアクション', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_reaction_sanctuary',
     ])
+    s = setAndArm(s, 't0_white_reaction_sanctuary')
     s = { ...s, player: { ...s.player, hp: Math.floor(s.player.maxHp * 0.4) } }
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_white_reaction_sanctuary' })
     s = withIntent(s, attackIntent(10))
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })

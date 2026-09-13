@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { applyEnemyWeak } from './effects.ts'
 import { applyCommand } from './state.ts'
 import { worstIncomingFrom } from './summary.ts'
-import { attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, defendIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 const weaken = (s: GameState, n: number): GameState => ({ ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, weak: n } : e)) })
@@ -55,7 +55,7 @@ describe('威圧 (敵版弱体)', () => {
 describe('プレイヤー側の弱体の鮮度 (2026-09-04 Opusラン N)', () => {
   it('敵の攻撃で付いた弱体は、その敵フェーズの返し (茨の返し) には乗らず、次の自ターンの攻撃には乗る', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_reaction_thorns'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
+    s = setAndArm(s, 't0_green_reaction_thorns')
     s = withIntent(s, { ...attackIntent(5), inflict: { status: 'weak', amount: 1 } })
     const hp0 = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })

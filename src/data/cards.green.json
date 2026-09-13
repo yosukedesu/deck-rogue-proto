@@ -241,6 +241,14 @@
         "trigger": "onAttacked",
         "effect": "counter",
         "amount": 10
+      },
+      {
+        "trigger": "onAttacked",
+        "effect": "exposeEnemy",
+        "amount": 2,
+        "condition": {
+          "minActionValue": 10
+        }
       }
     ],
     "rarity": "common"
@@ -255,6 +263,14 @@
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
         "amount": 12
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "drawCardsNextTurn",
+        "amount": 1,
+        "condition": {
+          "perfectBlockThisPhase": true
+        }
       }
     ],
     "rarity": "common"
@@ -1049,6 +1065,14 @@
         "effect": "dealDamage",
         "amount": 16,
         "pierce": true
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "exposeEnemy",
+        "amount": 2,
+        "condition": {
+          "targetAlive": true
+        }
       }
     ]
   },
@@ -1487,6 +1511,13 @@
         "trigger": "onAttacked",
         "effect": "counter",
         "amount": 8
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "staggerEnemy",
+        "condition": {
+          "perfectBlockThisPhase": true
+        }
       }
     ]
   },
@@ -1507,7 +1538,8 @@
         "effect": "addGrowth",
         "amount": 2
       }
-    ]
+    ],
+    "trapPersist": true
   },
   {
     "id": "green_prey_strike",

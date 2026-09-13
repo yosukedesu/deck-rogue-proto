@@ -144,10 +144,10 @@ describe('カードプレイ', () => {
 })
 
 describe('敵の行動テーブル', () => {
-  it('伏せがあると movesVsSet を使う (伏せ警戒型・伏せ破壊型)', () => {
-    const wary = getEnemyDef('enemy_set_wary')
-    expect(selectMoveTable(wary, true)).toBe(wary.movesVsSet)
-    expect(selectMoveTable(wary, false)).toBe(wary.moves)
+  it('伏せがあると movesVsSet を使う (2026-09-13 罠モデル以降は罠壊し・道化の破壊分岐だけ)', () => {
+    const breaker = getEnemyDef('enemy_set_breaker')
+    expect(selectMoveTable(breaker, true)).toBe(breaker.movesVsSet)
+    expect(selectMoveTable(breaker, false)).toBe(breaker.moves)
     const brute = getEnemyDef('enemy_brute') // movesVsSet を持たない敵は常に moves
     expect(selectMoveTable(brute, true)).toBe(brute.moves)
   })

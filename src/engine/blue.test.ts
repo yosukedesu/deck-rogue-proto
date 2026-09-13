@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
 import { applyRunCommand } from './run.ts'
 import { applyCommand } from './state.ts'
-import { createRunInBattle, attackIntent, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, defendIntent, freshCombat, passTurn, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import type { GameEvent, GameState } from './types.ts'
 
 const types = (log: readonly GameEvent[]) => log.map((e) => e.type)
@@ -62,16 +62,12 @@ describe('ストーム (詠唱数参照)', () => {
   })
 
   it('嵐の残響: 詠唱数は敵フェーズ中も生きており、伏せた残響が詠唱数×3で返す (ストーム×伏せの橋)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
-      'blue_ponder',
-      'blue_guard',
-      'blue_storm_echo',
-    ])
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), ['blue_storm_echo'])
+    s = setAndArm(s, 't0_blue_storm_echo') // 罠モデル: 前のターンに仕込んでおく
+    s = withHand(s, ['blue_ponder', 'blue_guard'])
     s = { ...s, player: { ...s.player, energy: 6 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ponder' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_guard' })
-    // 伏せはプレイではないので詠唱数に数えない
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't2_blue_storm_echo' })
     expect(s.player.cardsPlayedThisTurn).toBe(2)
     s = withIntent(s, attackIntent(5))
     const enemyHp = s.enemies[0].hp
@@ -86,7 +82,7 @@ describe('ストーム (詠唱数参照)', () => {
 describe('青の打ち消し (本家)', () => {
   it('マナ漏出: 敵の行動の値が15以下なら打ち消せる (2026-08-31 ≤12→≤15。幕3打点帯で死んでいた是正)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_mana_leak'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_mana_leak' })
+    s = setAndArm(s, 't0_blue_mana_leak')
     s = withIntent(s, attackIntent(15))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')
@@ -95,7 +91,7 @@ describe('青の打ち消し (本家)', () => {
 
   it('マナ漏出: 16以上の攻撃は打ち消せず素通しになる (空振り)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_mana_leak'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_mana_leak' })
+    s = setAndArm(s, 't0_blue_mana_leak')
     s = withIntent(s, attackIntent(16))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).not.toContain('ActionNegated')
@@ -107,10 +103,11 @@ describe('青の打ち消し (本家)', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_cold_reading'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_cold_reading' })
     const energyAfterSet = s.player.energy
+    s = passTurn(s) // 罠モデル: 伏せたターンは鳴らない
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ReactionTriggered')
-    expect(s.turn).toBe(2)
+    expect(s.turn).toBe(3)
     expect(energyAfterSet).toBe(2) // 伏せコストの確認のみ
   })
 })
@@ -157,7 +154,7 @@ describe('青のラン', () => {
 describe('霊気 (妨害→フィニッシュ変換)', () => {
   it('対抗呪文: 打ち消しと同時に霊気+1が溜まる', () => {
     let s = withHand(freshCombat('set-auto', 'enemy_brute', 42, 'starter_blue'), ['blue_counterspell'])
-    s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_counterspell' })
+    s = setAndArm(s, 't0_blue_counterspell')
     s = withIntent(s, attackIntent(15))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(types(s.eventLog)).toContain('ActionNegated')

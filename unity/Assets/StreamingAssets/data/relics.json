@@ -360,10 +360,10 @@
     "id": "relic_retrieve_cord",
     "name": "回収の紐",
     "sprite": "🧵",
-    "description": "からくりから取り出すのが0Eになる",
+    "description": "ほどけたからくり（2回鳴らなかった仕込み札）は捨て札でなく手札に戻る",
     "rarity": "uncommon",
     "combatRule": {
-      "retrieveFree": true
+      "expireToHand": true
     }
   },
   {

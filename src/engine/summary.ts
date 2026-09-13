@@ -193,17 +193,6 @@ export function relicRarityTag(def: RelicDef): string {
 }
 
 /**
- * この敵は「伏せ札があれば見切りを無視して反応する」行動を持つか (静的。表示用 2026-09-03 Opusラン J:
- * 動的判定 (今の意図) だと確認ウィンドウで意図が確定した後にタグが「反応しない」へ戻り、自ターンの表示と矛盾した)。
- * 罰型 = EnemyDef.vsSetIgnoreFreshness か、どこかの行動の setAlt.ignoreFreshness
- */
-export function enemyPunishesSet(def: EnemyDef): boolean {
-  if (def.vsSetIgnoreFreshness === true) return true
-  const tables = [def.moves, def.movesBelowHalf ?? [], def.movesVsSet ?? [], def.movesVsTokens ?? [], def.movesWhenAlone ?? []]
-  return tables.some((t) => t.some((m) => m.setAlt?.ignoreFreshness === true))
-}
-
-/**
  * 残機・分裂の予告HP: 分裂体は素の値×親のHP倍率 (幕・ボス係数・難易度) で出る (確定済みルール表「敵ギミック第1波」)。
  * 表示は必ずこの実値を出す (2026-09-03 Opusラン K「二の相HP55」の予告に対し実際は132 → CLI は是正済みだったが
  * ブラウザUIは素の値のままだった = 2026-09-06 人間ラン#8「復活するときの体力の説明が違う」)
