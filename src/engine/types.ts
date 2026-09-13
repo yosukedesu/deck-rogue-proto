@@ -171,6 +171,8 @@ export interface EnemyState extends CombatantState {
   readonly usedOnce?: readonly string[]
   /** 発火済みの割り込み (def.interrupts の添字) */
   readonly firedInterrupts?: readonly number[]
+  /** 宣言済みの意図の技 id (即時差し替えで取り消す時に宣言回数を戻す) */
+  readonly intentMoveId?: string
   /** この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる) */
   readonly mournProcessed?: boolean
   /** ターン装甲の累計 (このターンに受けたHP損失。自ターン開始でリセット) */
@@ -529,7 +531,7 @@ export type GameEvent =
   | { readonly type: 'ArtifactBlocked'; readonly enemyIndex: number; readonly effect: string } // アーティファクトがデバフを弾いた (2026-09-02)
   | { readonly type: 'BurrowBroken'; readonly enemyIndex: number } // 潜伏の殻が割れた (次の行動が噛みつきに)
   | { readonly type: 'EnemyStaggered'; readonly enemyIndex: number } // バランス崩し (2026-09-04)
-  | { readonly type: 'EnemyWoken'; readonly enemyIndex: number } // 被弾覚醒 (2026-09-02) // 状態異常付与
+  | { readonly type: 'EnemyInterrupted'; readonly enemyIndex: number; readonly trigger: EnemyInterruptTrigger; readonly replaced: boolean } // 割り込み (2026-09-14 行動グラフ): HP半分の豹変・被弾覚醒・仲間の死亡。replaced=自ターン中に宣言済みの意図をその場で差し替えた
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
@@ -1113,7 +1115,9 @@ export type EnemyInterruptTrigger = 'hpBelowHalf' | 'damageTaken' | 'allyDied' |
 /**
  * 割り込み: 条件が立った瞬間にカーソル (次に辿る節) を goto へ飛ばす。1戦闘に1回。
  * from を書くとカーソルがその節にある時だけ (鉄卵=眠りの節にいる間だけ被弾で目覚める)。
- * 宣言済みの意図は差し替えない (第1段=等価移行。即時差し替えは第2段)
+ * **即時差し替え (2026-09-14 ユーザー裁定「原因限定で許す・既存も全部即時」)**: 自ターン中に立った割り込み
+ * (プレイヤーの行動が原因) は宣言済みの意図をその場で差し替える (本家 Champ の激怒・Guardian のモードシフト・
+ * Lagavulin の目覚め・Queen の随伴死亡)。敵フェーズ中に立った割り込みはカーソルだけ飛び、次の宣言から
  */
 export interface EnemyInterrupt {
   readonly on: EnemyInterruptTrigger

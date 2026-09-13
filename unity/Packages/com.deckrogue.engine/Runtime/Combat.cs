@@ -373,7 +373,7 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>1体の意図を宣言する (通常の宣言・分裂体の出現時が共用)。強制の宣言はカーソルを進めない</summary>
-        private static GameState DeclareOne(GameState state, int i)
+        internal static GameState DeclareOne(GameState state, int i)
         {
             var s = state;
             var rawEnemy = s.Enemies[i];
@@ -396,7 +396,7 @@ namespace DeckRogue.Engine
             if (enemy.BiteNext == true && biteMove != null)
             {
                 var (biteIntent, rngB) = BuildIntent(s.Rng, biteMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false } : e);
+                var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false, IntentMoveId = null } : e);
                 return Events.Emit(s with { Rng = rngB, Enemies = enemiesB }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = biteIntent });
             }
             // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (カーソルは進めない)
@@ -404,13 +404,13 @@ namespace DeckRogue.Engine
             {
                 var staggerMove = new EnemyMove { Id = "stagger", Kind = EnemyActionKinds.Rest };
                 var (restIntent, rngS) = BuildIntent(s.Rng, staggerMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false } : e);
+                var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false, IntentMoveId = null } : e);
                 return Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent });
             }
             if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent == null || enemy.Intent.Kind != EnemyActionKinds.Flee))
             {
                 var (fleeIntent, rngF) = BuildIntent(s.Rng, fleeMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent } : e);
+                var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent, IntentMoveId = null } : e);
                 return Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent });
             }
             // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす
@@ -472,6 +472,7 @@ namespace DeckRogue.Engine
                 var updated = e with
                 {
                     Intent = declared,
+                    IntentMoveId = declaredMove.Id,
                     Node = nextCursorLocal,
                     LastMoves = lastMoves,
                     MoveUses = nextUsesLocal,
@@ -692,6 +693,8 @@ namespace DeckRogue.Engine
             if (state.Phase == CombatPhases.Won || state.Phase == CombatPhases.Lost) return state;
             state = ProcessSplits(state);
             state = ProcessMourning(state);
+            // 仲間が倒れた瞬間の割り込み (行動グラフ 2026-09-14: allyDied / alone。自ターン中なら意図を即差し替え)
+            state = Effects.ApplyDeathInterrupts(state);
             if (state.Player.Hp <= 0)
             {
                 // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)

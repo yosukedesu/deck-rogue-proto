@@ -12,7 +12,9 @@ import type {
   DeclarativeEffect,
   EnemyActionKind,
   EnemyIntent,
-  GameState, CardDef } from './types.ts'
+  GameState, CardDef,
+  EnemyInterruptTrigger,
+} from './types.ts'
 
 /**
  * 猛り火のしきい値 (確定済みルール表「猛り火」)。全札で単一の8。
@@ -815,17 +817,54 @@ export function breakBurrowIfCracked(state: GameState, enemyIndex: number): Game
   return emit({ ...state, enemies }, { type: 'BurrowBroken', enemyIndex })
 }
 
+/** combat.ts が起動時に差し込む「1体の意図を宣言し直す」関数 (effects → combat の循環 import を避ける) */
+let redeclareHook: (state: GameState, enemyIndex: number) => GameState = (s) => s
+export function bindRedeclare(fn: (state: GameState, enemyIndex: number) => GameState): void {
+  redeclareHook = fn
+}
+
 /**
- * 被弾の瞬間の割り込み (2026-09-14 行動グラフ。旧 wakeOnDamage): 累計被弾のしきい値を跨いだらカーソルを飛ばす
- * (眠りの前奏を打ち切る)。宣言済みの意図はそのまま = 次の宣言から目覚める (第1段=等価移行)
+ * 割り込み (2026-09-14 行動グラフ): 引き金が立った瞬間にカーソルを飛ばす。
+ * **即時差し替え (ユーザー裁定「原因限定」)**: 自ターン中 (プレイヤーの行動が原因) なら宣言済みの意図をその場で
+ * 宣言し直す = 本家 Champ の激怒・Guardian のモードシフト・Lagavulin の目覚め・Queen の随伴死亡。取り消した
+ * 宣言の技は「使っていない」ので宣言回数 (moveUses・lastMoves) を戻す。敵フェーズ中はカーソルだけ飛び、次の宣言から
  */
-export function applyDamageInterrupts(state: GameState, enemyIndex: number): GameState {
+export function applyInterrupts(state: GameState, enemyIndex: number, only?: readonly EnemyInterruptTrigger[]): GameState {
   const e = state.enemies[enemyIndex]
   if (!e || e.hp <= 0) return state
-  const r = applyInterruptsTo(state, enemyIndex, e.node, e.firedInterrupts ?? [], ['damageTaken'])
+  const r = applyInterruptsTo(state, enemyIndex, e.node, e.firedInterrupts ?? [], only)
   if (r.firedNow.length === 0) return state
-  const enemies = state.enemies.map((x, i) => (i === enemyIndex ? { ...x, node: r.cursor, firedInterrupts: r.fired } : x))
-  return emit({ ...state, enemies }, { type: 'EnemyWoken', enemyIndex })
+  const def = getEnemyDef(e.enemyId)
+  const trigger = def.interrupts![r.firedNow[r.firedNow.length - 1]].on
+  const replace = state.phase === 'player-turn' && e.intent !== null
+  let s: GameState = {
+    ...state,
+    enemies: state.enemies.map((x, i) => {
+      if (i !== enemyIndex) return x
+      const moved = { ...x, node: r.cursor, firedInterrupts: r.fired }
+      if (!replace || x.intentMoveId === undefined) return moved
+      // 取り消す宣言の技の回数を戻す
+      const uses = { ...(x.moveUses ?? {}) }
+      uses[x.intentMoveId] = Math.max(0, (uses[x.intentMoveId] ?? 0) - 1)
+      const last = x.lastMoves ?? []
+      return { ...moved, moveUses: uses, lastMoves: last[0] === x.intentMoveId ? last.slice(1) : last, intentMoveId: undefined }
+    }),
+  }
+  s = emit(s, { type: 'EnemyInterrupted', enemyIndex, trigger, replaced: replace })
+  return replace ? redeclareHook(s, enemyIndex) : s
+}
+
+/** 被弾の瞬間の割り込み (HP半分の豹変・被弾覚醒)。どの経路の被弾でも (延焼ティック含む) */
+export function applyDamageInterrupts(state: GameState, enemyIndex: number): GameState {
+  return applyInterrupts(state, enemyIndex, ['hpBelowHalf', 'damageTaken'])
+}
+
+/** 仲間が倒れた瞬間の割り込み (allyDied・alone)。checkCombatEnd の死亡走査から全生存敵に */
+export function applyDeathInterrupts(state: GameState): GameState {
+  if (!state.enemies.some((e) => e.hp <= 0 && e.fled !== true)) return state
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) s = applyInterrupts(s, i, ['allyDied', 'alone'])
+  return s
 }
 
 /**

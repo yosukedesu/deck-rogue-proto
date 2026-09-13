@@ -6,7 +6,7 @@ import { allEncounters, allEnemies, applyDebugOverrides, clearDebugOverrides, ge
 import { advanceCursor, chainFromStart, describeGraph, graphFromLegacy, randomNodeOf, validateEnemyGraph } from './enemyGraph.ts'
 import type { LegacyEnemyDef } from './enemyGraph.ts'
 import { applyCommand } from './state.ts'
-import { freshCombat, withHand } from './test-helpers.ts'
+import { freshCombat, setAndArm, withHand } from './test-helpers.ts'
 import type { EnemyDef, GameState } from './types.ts'
 
 const base = { name: 'テスト', archetype: 'brute', maxHp: 200 } as const
@@ -175,5 +175,49 @@ describe('グラフの評価 (新しく書ける形)', () => {
     expect(def.start).toBe('a')
     expect(def.nodes.a_2).toEqual({ move: 'a', next: 'a' })
     expect(declaredMoves('test_legacy', 1, 3)).toEqual(['a', 'a', 'a'])
+  })
+})
+
+describe('即時差し替え (2026-09-14 ユーザー裁定「原因限定で許す・既存のHP半分/被弾覚醒も即時」)', () => {
+  it('オーガ: 自ターン中にHP半分を割ると、宣言済みの意図がその場で第2形態 (乱打) に変わり、取り消した技の回数は戻る', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42)
+    expect(s.enemies[0].intentMoveId).toBe('club')
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: Math.floor(e.maxHp * 0.5) + 3 })), player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid, targetIndex: 0 })
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(s.enemies[0].maxHp * 0.5)
+    expect(s.enemies[0].intentMoveId).toBe('rage_flurry')
+    expect(s.enemies[0].intent?.kind).toBe('attack')
+    expect(s.enemies[0].intent?.hits).toBe(2)
+    expect(s.enemies[0].moveUses?.club ?? 0).toBe(0) // 取り消した club は数えない
+    expect(s.enemies[0].lastMoves?.[0]).toBe('rage_flurry')
+    const ev = s.eventLog.find((e) => e.type === 'EnemyInterrupted')
+    expect(ev && ev.type === 'EnemyInterrupted' ? [ev.trigger, ev.replaced] : null).toEqual(['hpBelowHalf', true])
+  })
+
+  it('敵フェーズ中に半分を割った (返し) 時はカーソルだけ飛び、意図は次の宣言から', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_reaction_thorns'])
+    s = setAndArm(s, 't0_green_reaction_thorns')
+    // 返し10で半分を割る位置に。攻撃を受けて post 窓が開くよう意図を攻撃に
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: Math.floor(e.maxHp * 0.5) + 2, intent: { kind: 'attack' as const, actual: 9 } })) }
+    s = applyCommand(s, { type: 'EndTurn' })
+    if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_thorns' })
+    const ev = s.eventLog.filter((e) => e.type === 'EnemyInterrupted')
+    expect(ev.length).toBe(1)
+    expect(ev[0].type === 'EnemyInterrupted' && ev[0].replaced).toBe(false)
+    // 次の宣言 (自ターン開始) は第2形態
+    expect(s.phase).toBe('player-turn')
+    expect(s.enemies[0].intentMoveId).toBe('rage_flurry')
+  })
+
+  it('従士: 自ターン中に射手を倒すと、その場で弔い猛攻に差し替わる (Queen 式の随伴死亡)', () => {
+    let s = freshCombat('set-confirm', 'enc_squire_archer', 42)
+    expect(s.enemies[0].intentMoveId).toBe('shield_bash')
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 1 ? { ...e, hp: 1 } : e)), player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_sweep'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid })
+    expect(s.enemies[1].hp).toBeLessThanOrEqual(0)
+    expect(s.enemies[0].intentMoveId).toBe('avenging_rush')
+    expect(s.enemies[0].intent?.kind).toBe('attack')
   })
 })

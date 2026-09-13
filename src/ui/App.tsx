@@ -66,7 +66,7 @@ import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effe
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
@@ -1858,15 +1858,14 @@ function BattleScreen({
                         🏃 逃走済み{(enemy.stolenGold ?? 0) > 0 ? `（${enemy.stolenGold}G持ち逃げ）` : ''}
                       </span>
                     )}
-                    {enemyDef.interrupts?.some((it) => it.on === 'hpBelowHalf') &&
-                      enemy.hp <= enemy.maxHp * 0.5 &&
+                    {enemyDef.interrupts?.some((it, k) => it.on === 'hpBelowHalf' && (enemy.firedInterrupts ?? []).includes(k)) &&
                       !dead && <span className="chip chip-strength">😾 牙をむいている</span>}
-                    {enemyDef.interrupts?.some((it) => it.on === 'hpBelowHalf') &&
-                      enemy.hp > enemy.maxHp * 0.5 &&
-                      !dead && <span className="chip">😾 HP半分で豹変</span>}
-                    {enemyDef.interrupts?.some((it, k) => it.on === 'alone' && !(enemy.firedInterrupts ?? []).includes(k)) &&
-                      s.enemies.some((o, j) => j !== i && o.hp > 0) &&
-                      !dead && <span className="chip">😤 仲間が全滅すると転職</span>}
+                    {/* 割り込みの予告 (2026-09-14 即時差し替え): 引き金と最初の技を並べる。自ターン中に立てば意図がその場で変わる */}
+                    {!dead && interruptPreviews(enemyDef, enemy)
+                      .filter((p) => p.trigger !== 'damageTaken' && !(p.trigger === 'alone' && !s.enemies.some((o, j) => j !== i && o.hp > 0)))
+                      .map((p) => (
+                        <span key={p.index} className="chip">{p.trigger === 'hpBelowHalf' ? '😾' : '😤'} {p.text}</span>
+                      ))}
                     {enemyDef.enrage !== undefined && !dead && (
                       <span className="chip chip-strength">
                         😡 {kw('激昂')} +{enemyDef.enrage}

@@ -212,6 +212,21 @@ namespace DeckRogue.Engine
             return outp;
         }
 
+        /// <summary>節から決定的に辿って最初に着地する技 (乱択なら先頭の腕)。予告向け (TS firstMoveOf)</summary>
+        public static EnemyMove FirstMoveOf(EnemyDef def, string nodeId)
+        {
+            string cur = nodeId;
+            for (int i = 0; i < 32; i++)
+            {
+                if (!def.Nodes.TryGetValue(cur, out var node)) return null;
+                if (node.Move != null) { for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Id == node.Move) return def.Moves[k]; return null; }
+                if (node.Random != null) return node.Random.Count > 0 ? FirstMoveOf(def, node.Random[0].To) : null;
+                if (node.If != null) { cur = node.Then ?? cur; continue; }
+                return null;
+            }
+            return null;
+        }
+
         /// <summary>眠り (被弾で目覚める割り込み) が生きているか: カーソルが from にいて未発火</summary>
         public static EnemyInterrupt SleepingInterrupt(EnemyDef def, EnemyState e)
         {

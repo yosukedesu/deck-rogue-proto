@@ -411,6 +411,26 @@ export function randomNodeOf(def: EnemyDef, from: string = def.start): EnemyNode
   return undefined
 }
 
+/** 節から決定的に辿って最初に着地する技 (乱択ならその乱択の腕の技を列挙して先頭)。予告チップ向け */
+export function firstMoveOf(def: EnemyDef, nodeId: string): EnemyMove | undefined {
+  let cur = nodeId
+  for (let i = 0; i < 32; i++) {
+    const node = def.nodes[cur]
+    if (!node) return undefined
+    if (node.move !== undefined) return def.moves.find((m) => m.id === node.move)
+    if (node.random !== undefined) {
+      const first = node.random[0]
+      return first !== undefined ? firstMoveOf(def, first.to) : undefined
+    }
+    if (node.if !== undefined) {
+      cur = node.then ?? cur
+      continue
+    }
+    return undefined
+  }
+  return undefined
+}
+
 // ---- 図鑑・CLI 向けの1行化 ----
 
 function condText(c: EnemyCondition): string {

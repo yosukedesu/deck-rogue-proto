@@ -357,6 +357,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>発火済みの割り込み (def.interrupts の添字)</summary>
         [JsonProperty("firedInterrupts")]
         public IReadOnlyList<int>? FiredInterrupts { get; init; }
+        /// <summary>宣言済みの意図の技 id (即時差し替えで取り消す時に宣言回数を戻す)</summary>
+        [JsonProperty("intentMoveId")]
+        public string? IntentMoveId { get; init; }
         /// <summary>この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる)</summary>
         [JsonProperty("mournProcessed")]
         public bool? MournProcessed { get; init; }
@@ -1156,13 +1159,17 @@ namespace DeckRogue.Engine.Generated
         public int EnemyIndex { get; init; }
     }
 
-    /// <summary>GameEvent: type="EnemyWoken"</summary>
-    public sealed record GameEvent_EnemyWoken : GameEvent
+    /// <summary>GameEvent: type="EnemyInterrupted"</summary>
+    public sealed record GameEvent_EnemyInterrupted : GameEvent
     {
-        public const string TypeTag = "EnemyWoken";
-        public GameEvent_EnemyWoken() { Type = TypeTag; }
+        public const string TypeTag = "EnemyInterrupted";
+        public GameEvent_EnemyInterrupted() { Type = TypeTag; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
+        [JsonProperty("trigger")]
+        public string Trigger { get; init; } = default!;
+        [JsonProperty("replaced")]
+        public bool Replaced { get; init; }
     }
 
     /// <summary>GameEvent: type="RegenTicked"</summary>
@@ -2058,7 +2065,7 @@ namespace DeckRogue.Engine.Generated
         public string? Else { get; init; }
     }
 
-    /// <summary>割り込み: 条件が立った瞬間にカーソル (次に辿る節) を goto へ飛ばす。1戦闘に1回。 from を書くとカーソルがその節にある時だけ (鉄卵=眠りの節にいる間だけ被弾で目覚める)。 宣言済みの意図は差し替えない (第1段=等価移行。即時差し替えは第2段)</summary>
+    /// <summary>割り込み: 条件が立った瞬間にカーソル (次に辿る節) を goto へ飛ばす。1戦闘に1回。 from を書くとカーソルがその節にある時だけ (鉄卵=眠りの節にいる間だけ被弾で目覚める)。 **即時差し替え (2026-09-14 ユーザー裁定「原因限定で許す・既存も全部即時」)**: 自ターン中に立った割り込み (プレイヤーの行動が原因) は宣言済みの意図をその場で差し替える (本家 Champ の激怒・Guardian のモードシフト・ Lagavulin の目覚め・Queen の随伴死亡)。敵フェーズ中に立った割り込みはカーソルだけ飛び、次の宣言から</summary>
     public sealed record EnemyInterrupt
     {
         [JsonProperty("on")]

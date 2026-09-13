@@ -117,9 +117,9 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
 // 2026-09-14 実値公開: 幅の上限でなく宣言した実値に補正 (威圧→鈴→脆弱→重り=実処理 combat.ts と同順) を掛けた
 // 「今フェーズに実際に受ける量」になった。意図の数字 (displayedIntentValue) と同じ式) ----
 import { effectiveIntent, applyEnemyWeak } from './effects.ts'
-import { peekMoves } from './enemyGraph.ts'
+import { firstMoveOf, interruptTriggerText, peekMoves } from './enemyGraph.ts'
 import { getEnemyDef as getEnemyDefForSummary } from './content.ts'
-import type { EnemyIntent, EnemyIntentBranch, GameState } from './types.ts'
+import type { EnemyInterrupt, EnemyIntent, EnemyIntentBranch, EnemyMove, EnemyState, GameState } from './types.ts'
 
 /** 攻撃1ヒットに今の補正 (威圧・静かな鈴・脆弱・重り) を掛けた値 = 意図に出す数字 (本家形のライブ表示) */
 export function modifiedHit(s: GameState, enemyIndex: number, actual: number): number {
@@ -174,6 +174,32 @@ export function incomingFrom(s: GameState, enemyIndex: number): number {
 /** 全敵の合計 (被ダメ予測の分子) */
 export function incomingTotal(s: GameState): number {
   return s.enemies.reduce((sum, _e, i) => sum + incomingFrom(s, i), 0)
+}
+
+const MOVE_KIND_MARK: Record<string, string> = {
+  attack: '⚔️', defend: '🛡️', buff: '💪', rally: '📣', hex: '🧿', heal: '💚', 'steal-gold': '💰', flee: '🏃', rest: '😮‍💨', hatch: '🐣', mill: '📖', 'destroy-set': '💥', 'destroy-token': '🪓',
+}
+
+/** 技の短い表記「⚔️7〜9×2」「🛡️12〜17」「💪+2」 (予告チップ・図鑑向け。実値でなく技の幅) */
+export function moveShort(m: EnemyMove): string {
+  const mark = MOVE_KIND_MARK[m.kind] ?? m.kind
+  const range = m.min !== undefined ? (m.min === m.max ? `${m.min}` : `${m.min}〜${m.max}`) : ''
+  const sign = m.kind === 'buff' || m.kind === 'rally' ? '+' : ''
+  const hits = m.mirrorHits === true ? '×手数' : (m.hits ?? 1) > 1 ? `×${m.hits}` : ''
+  const inflict = m.inflict ? `+${m.inflict.status}${m.inflict.amount}` : ''
+  return `${mark}${sign}${range}${hits}${inflict}`
+}
+
+/**
+ * 割り込みの予告 (2026-09-14 即時差し替えの両分岐予告): 「HP半分で→⚔️7〜9×2」のように引き金と最初の技を並べる。
+ * 発火済み・条件が今は立たないもの (仲間がいない alone 等) は呼び出し側で絞る
+ */
+export function interruptPreviews(def: EnemyDef, e?: EnemyState): { readonly index: number; readonly trigger: EnemyInterrupt['on']; readonly text: string }[] {
+  return (def.interrupts ?? []).flatMap((it, index) => {
+    if (e !== undefined && (e.firedInterrupts ?? []).includes(index)) return []
+    const first = firstMoveOf(def, it.goto)
+    return [{ index, trigger: it.on, text: `${interruptTriggerText(it)}→${first ? moveShort(first) : '…'}` }]
+  })
 }
 
 /**

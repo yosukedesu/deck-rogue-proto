@@ -108,7 +108,15 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ArtifactBlocked': return { text: `🔮 アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた（チャージ-1・この効果は消えた）`, cls: 'log-bad' }
     case 'BurrowBroken': return { text: '🪺 潜伏の殻が割れた！ 次の行動は噛みつき', cls: 'log-bad' }
     case 'EnemyStaggered': return { text: '🌀 完全に防いだ！ 敵は体勢を崩し、次の行動は隙', cls: 'log-good' }
-    case 'EnemyWoken': return { text: '👁️ 目を覚ました！ 眠りの前奏が打ち切られた', cls: 'log-bad' }
+    case 'EnemyInterrupted': {
+      // 割り込み (2026-09-14 行動グラフ): 自ターン中なら意図がその場で差し替わる (本家 Champ/Guardian/Lagavulin 形)
+      const what =
+        e.trigger === 'damageTaken' ? '👁️ 目を覚ました！ 眠りの前奏が打ち切られた'
+          : e.trigger === 'hpBelowHalf' ? '😾 HPが半分を割った！ 牙をむく'
+            : e.trigger === 'alone' ? '😤 仲間が全滅した！ 転職する'
+              : '😤 仲間が倒れた！ 行動が変わる'
+      return { text: `${what}${e.replaced ? '（意図をその場で差し替え）' : '（次の宣言から）'}`, cls: 'log-bad' }
+    }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':
       return { text: e.status === 'wound' ? `負傷${e.amount}枚が捨て札に混入した` : e.status === 'scald' ? `火傷${e.amount}枚が手札に押し込まれた（ターン終了時に手札にあるとHP-2）` : `${STATUS_LABEL[e.status]}${e.amount}を付与された`, cls: 'log-bad' }

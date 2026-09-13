@@ -882,7 +882,7 @@ describe('敵ギミック第3波 (2026-09-02 残件議論: 量の問いの器・
     expect(t.enemies[0].artifact).toBe(1) // 消費されていない
   })
 
-  it('被弾覚醒: 鉄卵は累計20ダメで眠りの前奏を打ち切り、次の宣言が目覚め (awaken) になる', () => {
+  it('被弾覚醒: 鉄卵は累計20ダメで眠りの前奏を打ち切り、自ターン中ならその場で目覚め (awaken) に差し替わる (2026-09-14 即時差し替え)', () => {
     let s = freshCombat('set-confirm', 'enemy_elite_iron_egg', 42)
     expect(s.enemies[0].intent?.kind).toBe('defend') // 眠り=殻を積む
     // しきい値未満では眠り続ける
@@ -893,10 +893,12 @@ describe('敵ギミック第3波 (2026-09-02 残件議論: 量の問いの器・
     s = withHand(s, ['green_serpent_gulp', 'green_strike'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid, discardUids: [s.player.hand[1].uid] })
     expect(s.enemies[0].firedInterrupts).toEqual([0])
-    expect(s.enemies[0].intent?.kind).toBe('defend') // 宣言済みの意図は変わらない (宣言時固定則)
+    // 即時差し替え (2026-09-14 ユーザー裁定): プレイヤーの行動が原因なので、宣言済みの「眠り」がその場で awaken に変わる
+    expect(s.enemies[0].intent?.kind).toBe('buff')
+    expect(s.eventLog.some((e) => e.type === 'EnemyInterrupted' && e.replaced === true)).toBe(true)
     s = withHand(s, [])
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.enemies[0].intent?.kind).toBe('buff') // 次の宣言 = awaken
+    expect(s.enemies[0].intent?.kind).toBe('attack') // その次 = tail
   })
 
   it('技の恒久成長: 巨面の圧潰は使うたび+4 (幅表示・実値の両方に乗る)', () => {

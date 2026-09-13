@@ -4,7 +4,7 @@
 // display-coverage.test が「新しい EnemyDef キーに用語解説とタグの両方があること」を機械固定する。
 import { getEnemyDef } from './content.ts'
 import { sleepingInterrupt } from './enemyGraph.ts'
-import { splitChildHp, turnsUntilHatch } from './summary.ts'
+import { interruptPreviews, splitChildHp, turnsUntilHatch } from './summary.ts'
 import type { EnemyDef, GameState } from './types.ts'
 
 /** EnemyDef のギミック系キー (enemy-conventions.test のホワイトリストと共有) */
@@ -130,6 +130,12 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   const sleeping = sleepingInterrupt(def, e)
   if (sleeping !== undefined) {
     tags.push(`眠り(累計${sleeping.amount ?? 0}ダメで目覚める。現在${e.damageTakenTotal ?? 0})`)
+  }
+  // 割り込みの予告 (2026-09-14 即時差し替え): 自ターン中に立てば意図がその場で変わる
+  for (const p of interruptPreviews(def, e)) {
+    if (p.trigger === 'damageTaken') continue
+    if (p.trigger === 'alone' && !s.enemies.some((o, j) => j !== i && o.hp > 0)) continue
+    tags.push(`${p.text}(自ターン中に立てば意図がその場で変わる)`)
   }
   const growing = def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined)
   if (growing.length > 0) {

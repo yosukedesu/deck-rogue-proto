@@ -539,6 +539,17 @@ namespace DeckRogue.Game
             };
         }
 
+        /// <summary>技の短い表記「攻撃7〜9×2」「防御12〜17」「筋力+2」(予告向け。TS summary.ts moveShort)</summary>
+        public static string MoveShort(EnemyMove m)
+        {
+            string mark = KindJa(m.Kind);
+            string range = m.Min.HasValue ? (m.Min == m.Max ? m.Min.Value.ToString() : m.Min.Value + "〜" + m.Max) : "";
+            string sign = (m.Kind == "buff" || m.Kind == "rally") ? "+" : "";
+            string hits = m.MirrorHits == true ? "×手数" : ((m.Hits ?? 1) > 1 ? "×" + m.Hits.Value : "");
+            string inflict = m.Inflict != null ? "+" + m.Inflict.Status + m.Inflict.Amount : "";
+            return mark + sign + range + hits + inflict;
+        }
+
         /// <summary>敵カードに常時出す特性タグ (フェアネス)</summary>
         public static string EnemyTraits(EnemyDef d)
         {
@@ -561,14 +572,16 @@ namespace DeckRogue.Game
             if (d.HatchInto != null) t.Add("孵化");
             if (d.Interrupts != null)
             {
-                // 行動グラフ (2026-09-14): 割り込み = HP半分の豹変・被弾覚醒・単独時の転職
+                // 行動グラフ (2026-09-14): 割り込み = HP半分の豹変・被弾覚醒・単独時の転職。引き金と最初の技を並べる
                 for (int k = 0; k < d.Interrupts.Count; k++)
                 {
                     var it = d.Interrupts[k];
-                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add("被弾覚醒" + (it.Amount ?? 0));
-                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add("HP半分で豹変");
-                    else if (it.On == EnemyInterruptTriggers.Alone) t.Add("仲間が全滅すると転職");
-                    else if (it.On == EnemyInterruptTriggers.AllyDied) t.Add("仲間が倒れると変化");
+                    var first = EnemyGraph.FirstMoveOf(d, it.Goto);
+                    string arrow = first != null ? "→" + MoveShort(first) : "";
+                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add("累計" + (it.Amount ?? 0) + "ダメで目覚め" + arrow);
+                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add("HP半分で" + arrow);
+                    else if (it.On == EnemyInterruptTriggers.Alone) t.Add("仲間が全滅すると" + arrow);
+                    else if (it.On == EnemyInterruptTriggers.AllyDied) t.Add("仲間が倒れると" + arrow);
                 }
             }
             if (d.EnrageEveryCards.HasValue) t.Add("激昂(" + d.EnrageEveryCards.Value + "枚ごと筋力+2)");
@@ -651,7 +664,7 @@ namespace DeckRogue.Game
             var w2 = ev as GameEvent_GuardianRedirected; if (w2 != null) return "庇われた! 単体対象は護衛に向かった";
             var x2 = ev as GameEvent_BurrowBroken; if (x2 != null) return "潜伏の殻が割れた! 次の行動は噛みつき";
             var y2 = ev as GameEvent_EnemyStaggered; if (y2 != null) return "完全に防いだ! 敵は体勢を崩し、次の行動は隙";
-            var z2 = ev as GameEvent_EnemyWoken; if (z2 != null) return "目を覚ました!";
+            var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました!" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を割った! 牙をむく" : "仲間が倒れた! 行動が変わる") + (z2.Replaced ? " (意図をその場で差し替え)" : " (次の宣言から)");
             var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが弾いた (" + a3.Effect + ")";
             var b3 = ev as GameEvent_ScaldTick; if (b3 != null) return "火傷・烙印" + b3.Count + "枚が疼いた (HP-" + b3.Amount + ")";
             var c3 = ev as GameEvent_CombatEnded; if (c3 != null) return c3.Result == "won" ? "=== 勝利 ===" : "=== 敗北 ===";

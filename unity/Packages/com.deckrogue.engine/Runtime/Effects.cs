@@ -954,17 +954,50 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>
-        /// 被弾の瞬間の割り込み (2026-09-14 行動グラフ。旧 wakeOnDamage): 累計被弾のしきい値を跨いだらカーソルを飛ばす。
-        /// 宣言済みの意図はそのまま = 次の宣言から目覚める (第1段=等価移行)
+        /// 割り込み (2026-09-14 行動グラフ): 引き金が立った瞬間にカーソルを飛ばす。
+        /// 即時差し替え (ユーザー裁定「原因限定」): 自ターン中なら宣言済みの意図をその場で宣言し直す
+        /// (取り消した宣言の技は宣言回数・lastMoves を戻す)。敵フェーズ中はカーソルだけ飛び、次の宣言から
         /// </summary>
-        public static GameState ApplyDamageInterrupts(GameState state, int enemyIndex)
+        public static GameState ApplyInterrupts(GameState state, int enemyIndex, IReadOnlyList<string> only = null)
         {
             var e = EnemyAt(state, enemyIndex);
             if (e == null || e.Hp <= 0) return state;
-            var r = EnemyGraph.ApplyInterruptsTo(state, enemyIndex, e.Node, e.FiredInterrupts, new[] { EnemyInterruptTriggers.DamageTaken });
+            var r = EnemyGraph.ApplyInterruptsTo(state, enemyIndex, e.Node, e.FiredInterrupts, only);
             if (r.FiredNow.Count == 0) return state;
-            var enemies = MapEnemy(state.Enemies, enemyIndex, x => x with { Node = r.Cursor, FiredInterrupts = r.Fired });
-            return Events.Emit(state with { Enemies = enemies }, new GameEvent_EnemyWoken { EnemyIndex = enemyIndex });
+            var def = Content.GetEnemyDef(e.EnemyId);
+            string trigger = def.Interrupts[r.FiredNow[r.FiredNow.Count - 1]].On;
+            bool replace = state.Phase == "player-turn" && e.Intent != null;
+            var enemies = MapEnemy(state.Enemies, enemyIndex, x =>
+            {
+                var moved = x with { Node = r.Cursor, FiredInterrupts = r.Fired };
+                if (!replace || x.IntentMoveId == null) return moved;
+                var uses = x.MoveUses != null ? new Dictionary<string, int>((IDictionary<string, int>)x.MoveUses) : new Dictionary<string, int>();
+                int cur = 0;
+                uses.TryGetValue(x.IntentMoveId, out cur);
+                uses[x.IntentMoveId] = Math.Max(0, cur - 1);
+                var last = x.LastMoves != null ? new List<string>(x.LastMoves) : new List<string>();
+                if (last.Count > 0 && last[0] == x.IntentMoveId) last.RemoveAt(0);
+                return moved with { MoveUses = uses, LastMoves = last, IntentMoveId = null };
+            });
+            var s = Events.Emit(state with { Enemies = enemies }, new GameEvent_EnemyInterrupted { EnemyIndex = enemyIndex, Trigger = trigger, Replaced = replace });
+            return replace ? Combat.DeclareOne(s, enemyIndex) : s;
+        }
+
+        /// <summary>被弾の瞬間の割り込み (HP半分の豹変・被弾覚醒)。どの経路の被弾でも</summary>
+        public static GameState ApplyDamageInterrupts(GameState state, int enemyIndex)
+        {
+            return ApplyInterrupts(state, enemyIndex, new[] { EnemyInterruptTriggers.HpBelowHalf, EnemyInterruptTriggers.DamageTaken });
+        }
+
+        /// <summary>仲間が倒れた瞬間の割り込み (allyDied・alone)。CheckCombatEnd の死亡走査から全生存敵に</summary>
+        public static GameState ApplyDeathInterrupts(GameState state)
+        {
+            bool anyDead = false;
+            for (int i = 0; i < state.Enemies.Count; i++) if (state.Enemies[i].Hp <= 0 && state.Enemies[i].Fled != true) { anyDead = true; break; }
+            if (!anyDead) return state;
+            var s = state;
+            for (int i = 0; i < s.Enemies.Count; i++) s = ApplyInterrupts(s, i, new[] { EnemyInterruptTriggers.AllyDied, EnemyInterruptTriggers.Alone });
+            return s;
         }
 
         /// <summary>

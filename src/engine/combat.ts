@@ -9,6 +9,7 @@ import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } f
 import { resolveFusedDef } from './fusion.ts'
 import { applyDamageInterrupts, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
+import { applyDeathInterrupts, bindRedeclare } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -334,19 +335,19 @@ function declareOne(state: GameState, i: number): GameState {
   const biteMove = def.burrow ? def.moves.find((m) => m.id === def.burrow!.bite) : undefined
   if (enemy.biteNext === true && biteMove) {
     const [biteIntent, rngB] = buildIntent(s.rng, biteMove, enemy.strength, enemy.atkScale ?? 1)
-    const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false } : e))
+    const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false, intentMoveId: undefined } : e))
     return emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
   }
   // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (2026-09-04。カーソルは進めない=次のターンに再開)
   if (enemy.staggeredNext === true) {
     const staggerMove: EnemyMove = { id: 'stagger', kind: 'rest' }
     const [restIntent, rngS] = buildIntent(s.rng, staggerMove, enemy.strength, enemy.atkScale ?? 1)
-    const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false } : e))
+    const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false, intentMoveId: undefined } : e))
     return emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
   }
   if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
     const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
-    const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent } : e))
+    const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent, intentMoveId: undefined } : e))
     return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
   }
   // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
@@ -408,6 +409,7 @@ function declareOne(state: GameState, i: number): GameState {
       ? {
           ...e,
           intent: declared,
+          intentMoveId: move.id,
           node: nextCursor,
           lastMoves: [move.id, ...(e.lastMoves ?? [])].slice(0, 3),
           moveUses: nextUses,
@@ -627,6 +629,8 @@ export function checkCombatEnd(state: GameState): GameState {
   if (state.phase === 'won' || state.phase === 'lost') return state
   state = processSplits(state)
   state = processMourning(state)
+  // 仲間が倒れた瞬間の割り込み (行動グラフ 2026-09-14: allyDied / alone。自ターン中なら意図を即差し替え)
+  state = applyDeathInterrupts(state)
   if (state.player.hp <= 0) {
     // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
     if (state.deathSave === true && state.deathSaveUsed !== true) {
@@ -2126,3 +2130,6 @@ function finishEnemyPhase(state: GameState): GameState {
   }
   return startPlayerTurn(s, s.turn + 1)
 }
+
+// 割り込みの即時差し替え (effects.ts) が「宣言し直し」に使う (循環 import を避ける後結び)
+bindRedeclare(declareOne)

@@ -256,7 +256,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'DeathSaved') L.push(` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
-      else if (e.type === 'EnemyWoken') L.push(' 👁️目を覚ました! 眠りの前奏が打ち切られた')
+      else if (e.type === 'EnemyInterrupted') L.push(` ${e.trigger === 'damageTaken' ? '👁️目を覚ました!' : e.trigger === 'hpBelowHalf' ? '😾HPが半分を割った! 牙をむく' : '😤仲間が倒れた! 行動が変わる'}${e.replaced ? '(意図をその場で差し替え)' : '(次の宣言から)'}`)
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
       else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
