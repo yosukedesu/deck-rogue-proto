@@ -1,0 +1,325 @@
+[
+ {
+  "key": "CardSet",
+  "label": "仕込む（伏せる）",
+  "want": "歯車を巻く・掛け金を掛ける",
+  "cands": [
+   "MECHANICS/MECHANICS_Wind_Up_01_mono.wav",
+   "MECHANICS/MECHANICS_Wind_Up_02_mono.wav",
+   "MECHANICS/MECHANICS_Wind_Up_03_mono.wav",
+   "MECHANICS/MECHANICS_Wind_Up_04_mono.wav",
+   "MECHANICS/MECHANICS_Wind_Up_05_mono.wav",
+   "MECHANICS/MECHANICS_Wind_Up_06_mono.wav",
+   "MECHANICS/MECHANICS_Wind_Up_Subtle_01_mono.wav"
+  ]
+ },
+ {
+  "key": "ReactionTriggered",
+  "label": "罠が鳴る（発動）",
+  "want": "発条が弾ける。署名音",
+  "cands": [
+   "HAZARDS_TRAPS/TRAP_Close_01_mono.wav",
+   "HAZARDS_TRAPS/TRAP_Close_03_mono.wav",
+   "HAZARDS_TRAPS/TRAP_Close_05_mono.wav",
+   "HAZARDS_TRAPS/TRAP_Close_08_mono.wav",
+   "HAZARDS_TRAPS/TRAP_Metal_Snap_Crunch_01_mono.wav",
+   "HAZARDS_TRAPS/TRAP_Small_Close_01_mono.wav",
+   "MECHANICS/MECHANICS_Zoom_Metal_01_mono.wav",
+   "HAZARDS_TRAPS/HAZARD_Hammer_Impact_01_mono.wav"
+  ]
+ },
+ {
+  "key": "SetCardExpired",
+  "label": "期限切れ",
+  "want": "発条が緩む・カタンと落ちる",
+  "cands": [
+   "MECHANICS/MECHANICS_Cog_Spin_01_mono.wav",
+   "MECHANICS/MECHANICS_Cog_Spin_02_mono.wav",
+   "HAZARDS_TRAPS/HAZARD_Hammer_Retract_01_mono.wav",
+   "LOCKS_KEYS/LOCK_Metal_Padlock_Unlock_Pop_01_mono.wav",
+   "MECHANICS/MECHANICS_Metal_Mechanism_01_mono.wav",
+   "MECHANICS/MECHANICS_Metal_Mechanism_05_mono.wav",
+   "LOCKS_KEYS/LOCK_Metal_Sliding_02_Dark_Short_mono.wav"
+  ]
+ },
+ {
+  "key": "SetCardDestroyed",
+  "label": "伏せ破壊",
+  "want": "木が割れる",
+  "cands": [
+   "BREAKS_SNAPS/BREAK_Crack_01_mono.wav",
+   "BREAKS_SNAPS/BREAK_Bright_Splinters_mono.wav",
+   "BREAKS_SNAPS/BREAK_Fast_mono.wav",
+   "BREAKS_SNAPS/CRACK_Deep_Medium_01_mono.wav",
+   "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Wood_Shield_Break_mono.wav",
+   "FORESTRY_WOODWORKING/TREE_Falling_Tree_Only_Cracking_01_mono.wav"
+  ]
+ },
+ {
+  "key": "ActionNegated",
+  "label": "打ち消し",
+  "want": "霧散・かき消す",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Teleport_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Stutter_Out_Faded_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Stutter_Out_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Snappy_Distancing_mono.wav",
+   "WHOOSHES/Classic/WHOOSH_Miss_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Fading_Whoosh_mono.wav"
+  ]
+ },
+ {
+  "key": "CardPlayed",
+  "label": "札をプレイ",
+  "want": "紙。軽く短く",
+  "cands": [
+   "CARDS/CARDS_Deal_01_RR1_mono.wav",
+   "CARDS/CARDS_Deal_02_RR1_mono.wav",
+   "CARDS/CARDS_Deal_02_RR3_mono.wav",
+   "CARDS/CARDS_Deal_01_RR4_mono.wav",
+   "CARDS/POKER_CHIP_01_RR1_mono.wav"
+  ]
+ },
+ {
+  "key": "CardsDrawn",
+  "label": "ドロー",
+  "want": "紙をめくる",
+  "cands": [
+   "CARDS/CARDS_Deal_01_RR2_mono.wav",
+   "CARDS/CARDS_Deal_02_RR2_mono.wav",
+   "CARDS/CARDS_Shuffle_01_mono.wav",
+   "CARDS/CARDS_Deal_02_RR5_mono.wav"
+  ]
+ },
+ {
+  "key": "DamageDealt.player",
+  "label": "与ダメ（斧）",
+  "want": "斧の打撃",
+  "cands": [
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_01_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Wood_01_mono.wav",
+   "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Crack_01_mono.wav",
+   "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Solid_Metal_Deep_mono.wav",
+   "TOOLS/Axe/AXE_Chop_Wood_01_RR1_mono.wav",
+   "TOOLS/Axe/AXE_Chop_Wood_01_RR2_mono.wav",
+   "TOOLS/Axe/AXE_Chop_Wood_01_RR3_mono.wav"
+  ]
+ },
+ {
+  "key": "DamageDealt.enemy",
+  "label": "被ダメ",
+  "want": "鈍い",
+  "cands": [
+   "THUDS_THUMPS/THUD_Medium_01_mono.wav",
+   "THUDS_THUMPS/THUD_Dark_01_mono.wav",
+   "ACTIONS/ACTION_Punch_01_RR1_mono.wav",
+   "ACTIONS/ACTION_Punch_01_RR2_mono.wav",
+   "ACTIONS/ACTION_Punch_01_RR3_mono.wav",
+   "ACTIONS/ACTION_Punch_01_RR4_mono.wav"
+  ]
+ },
+ {
+  "key": "BlockGained",
+  "label": "ブロック",
+  "want": "木の盾",
+  "cands": [
+   "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Wood_Shield_mono.wav",
+   "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Wood_Shield_Cling_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Shield_mono.wav",
+   "ACTIONS/ACTION_Close_Metal_Hatch_01_mono.wav",
+   "ACTIONS/ACTION_Close_Metal_Hatch_02_mono.wav",
+   "ACTIONS/ACTION_Close_Metal_Hatch_03_mono.wav"
+  ]
+ },
+ {
+  "key": "HpHealed",
+  "label": "回復",
+  "want": "柔らかい鈴",
+  "cands": [
+   "USER_INTERFACES/Notifications/UI_Notification_Soft_Chime_01_stereo.wav",
+   "PUZZLES/PUZZLE_Success_Harp_Two_Note_Deep_Wet_stereo.wav",
+   "PUZZLES/PUZZLE_Success_Bell_Voice_Three_Note_Climb_Wet_stereo.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Soft_Slow_Bright_mono.wav",
+   "PUZZLES/PUZZLE_Success_Harp_Three_Note_Bright_Wet_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_01_stereo.wav"
+  ]
+ },
+ {
+  "key": "CardExhausted",
+  "label": "消滅",
+  "want": "紙が燃えて消える",
+  "cands": [
+   "RIPS_TEARS/RIP_Tear_01_mono.wav",
+   "RIPS_TEARS/RIP_Tear_03_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Short_Fast_Burst_Quick_Fade_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Fast_01_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Fast_02_mono.wav",
+   "WHOOSHES/Mixed/WHOOSH_Steam_Fast_03_mono.wav"
+  ]
+ },
+ {
+  "key": "PermanentPlayed",
+  "label": "置物を置く",
+  "want": "据える低音",
+  "cands": [
+   "THUDS_THUMPS/THUD_Deep_Noisy_01_mono.wav",
+   "THUDS_THUMPS/THUD_Dark_02_mono.wav",
+   "ELEMENTS/Earth/EARTH_Rocks_Pebbles_Move_01_mono.wav",
+   "IMPACTS/Wood/IMPACT_Wood_Plank_On_Wood_Pile_14_Smooth_mono.wav",
+   "ACTIONS/ACTION_Close_Chest_01_mono.wav",
+   "ACTIONS/ACTION_Close_Chest_02_mono.wav"
+  ]
+ },
+ {
+  "key": "EnemyDied",
+  "label": "撃破",
+  "want": "崩れる",
+  "cands": [
+   "MONSTERS_CREATURES/MONSTER_Pain_01_mono.wav",
+   "MONSTERS_CREATURES/MONSTER_Grunt_Deep_Hurt_mono.wav",
+   "MONSTERS_CREATURES/MONSTER_Squeel_Deep_mono.wav",
+   "MONSTERS_CREATURES/MONSTER_Slime_01_mono.wav",
+   "BREAKS_SNAPS/BREAK_Bone_or_Neck_mono.wav"
+  ]
+ },
+ {
+  "key": "StatusInflicted",
+  "label": "状態異常（負）",
+  "want": "まとわりつく",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Scary_Raising_Reverse_Rain_Subtle_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Scary_Raising_Reverse_Rain_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Slow_Fade_Metallic_Wobble_Echo_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Dark_Pulse_Echo_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Tonal_Isotope_mono.wav",
+   "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Negative_01_stereo.wav"
+  ]
+ },
+ {
+  "key": "GrowthAdded",
+  "label": "成長・勢い（正）",
+  "want": "力が満ちる",
+  "cands": [
+   "MAGIC_SPELLS/MAGIC_SPELL_Spawn_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Swooping_Bright_mono.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Attacking_Climbing_Bells_mono.wav",
+   "CHARGE_UPS_DOWNS/CHARGE_Servo_24_Semi_Up_500ms_mono.wav",
+   "PUZZLES/PUZZLE_Success_Xylophone_2_Two_Note_Climb_Bright_Dry_stereo.wav",
+   "MAGIC_SPELLS/MAGIC_SPELL_Build_Bang_mono.wav"
+  ]
+ },
+ {
+  "key": "TurnStarted",
+  "label": "ターン開始の帯",
+  "want": "短い区切り",
+  "cands": [
+   "WHOOSHES/Classic/WHOOSH_Short_01_Whistle_mono.wav",
+   "WHOOSHES/Classic/WHOOSH_Quick_mono.wav",
+   "USER_INTERFACES/Notifications/UI_Notification_Taps_01_x12_mono.wav",
+   "USER_INTERFACES/Notifications/UI_Notification_Taps_01_x16_mono.wav",
+   "USER_INTERFACES/Notifications/UI_Notification_Taps_01_x1_mono.wav",
+   "USER_INTERFACES/Digital/UI_Digital_Short_01_mono.wav"
+  ]
+ },
+ {
+  "key": "GoldStolen",
+  "label": "金",
+  "want": "粒がこぼれる",
+  "cands": [
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_01_mono.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Insert_Coin_01_mono.wav",
+   "MONEY_CASH_CURRENCY/CASH_REGISTER_Cha-ching_01_mono.wav",
+   "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coin_01_RR1_mono.wav",
+   "CARDS/POKER_CHIP_Chips_01_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.pick_relic",
+  "label": "レリック取得",
+  "want": "古代の遺物・低い共鳴",
+  "cands": [
+   "ACTIONS/ACTION_Open_Chest_01_mono.wav",
+   "ACTIONS/ACTION_Open_Chest_02_mono.wav",
+   "ACTIONS/ACTION_Open_Chest_03_mono.wav",
+   "ACTIONS/ACTION_Open_Chest_04_mono.wav",
+   "ACTIONS/ACTION_Open_Chest_05_mono.wav",
+   "ACTIONS/ACTION_Open_Chest_06_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.upgrade",
+  "label": "鍛える・合成",
+  "want": "金床",
+  "cands": [
+   "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR1_mono.wav",
+   "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR2_mono.wav",
+   "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR3_mono.wav",
+   "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR4_mono.wav",
+   "TOOLS/Pickaxe/PICKAXE_Impact_Unbreakable_Metal_01_RR1_mono.wav",
+   "TOOLS/Pickaxe/PICKAXE_Impact_Unbreakable_Metal_01_RR2_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.rest",
+  "label": "休む",
+  "want": "焚き火",
+  "cands": [
+   "ELEMENTS/Fire/FIRE_Campfire_Calm_01_loop_mono.wav",
+   "ELEMENTS/Fire/FIRE_Campfire_Active_Smooth_01_loop_mono.wav",
+   "ELEMENTS/Fire/FIRE_Campfire_Calm_02_loop_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.node",
+  "label": "マップで進む",
+  "want": "足音1歩",
+  "cands": [
+   "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR10_mono.wav",
+   "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR11_mono.wav",
+   "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR12_mono.wav",
+   "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR13_mono.wav",
+   "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR14_mono.wav",
+   "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR15_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.click",
+  "label": "ボタン",
+  "want": "紙・柔らかい",
+  "cands": [
+   "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_01_mono.wav",
+   "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_02_mono.wav",
+   "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_03_mono.wav",
+   "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_04_mono.wav",
+   "BUTTONS/BUTTON_Clean_Tap_mono.wav",
+   "BUTTONS/BUTTON_Deep_Smooth_Click_mono.wav",
+   "BUTTONS/BUTTON_Short_Dry_mono.wav"
+  ]
+ },
+ {
+  "key": "ui.win",
+  "label": "勝利ジングル",
+  "want": "短い達成",
+  "cands": [
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_01_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_03_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_04_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_05_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_06_stereo.wav"
+  ]
+ },
+ {
+  "key": "ui.lose",
+  "label": "敗北ジングル",
+  "want": "静かな失敗",
+  "cands": [
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_01_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_02_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_03_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_04_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_05_stereo.wav",
+   "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_06_stereo.wav"
+  ]
+ }
+]

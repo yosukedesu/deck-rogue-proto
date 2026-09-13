@@ -90,3 +90,17 @@
 1. https://sonniss.com/gameaudiogdc の「GDC 2021-2023」14 パート（zip。合計 30GB 級。トレントが速い）を Windows の1フォルダへ（例 `C:\Users\yosuke\Downloads\sonniss\`）。
 2. AI が WSL から zip の一覧を読み、上の表のライブラリだけを抜き出して鍵ごとに候補3〜5を並べた試聴シートを作る（前回と同じ形・ローカル再生）。
 3. 採用を選んだら ogg に変換して `Resources/Audio/sfx/<鍵の音名>.ogg` へ。CREDITS に出典（Sonniss はクレジット不要だが記録として）。
+
+## 9. SE の入手元を Universal Sound FX に確定（2026-09-14）
+
+Sonniss GDC バンドルは「各ライブラリ3〜4音のサンプラー」で、ゲーム向けの音はほぼ無かった（ユーザー「碌な音がない」＝正しい）。
+Asset Store の実勢（評価 1,071 件・お気に入り 5,861・2025 年更新）で **Universal Sound FX（Imphenzia・$49.95）が Unity の事実上の標準**。
+Pro Sound Collection（評価 89 件・2020 年で更新停止）を推したのは誤り。ユーザーが購入→ Package Manager で Download →
+`C:\Users\yosuke\AppData\Roaming\Unity\Asset Store-5.x\Imphenzia\AudioSound FX\Universal Sound FX.unitypackage` を WSL で展開（tar.gz）→ `D:\assets\usfx-files\`（10,101 wav・73 フォルダ）。
+
+当ての在庫: MECHANICS（Wind_Up・Cog_Spin・Metal_Mechanism）／HAZARDS_TRAPS（TRAP_Close×15・TRAP_Open・Snap）／LOCKS_KEYS／CARDS（Deal・Shuffle）／
+WEAPONS/Melee（Blunt・Swords）／BREAKS_SNAPS／MAGIC_SPELLS（106）／MUSIC_EFFECTS（Positive/Negative の楽器別ジングル）／PUZZLES（成功音）／
+MONSTERS_CREATURES／MONEY／ELEMENTS/Fire（Campfire loop）／HUMAN/Footsteps（地面別）／USER_INTERFACES・BUTTONS。
+試聴シート `docs/design/audio/se-sheet-usfx.html`（25 鍵×148 候補）。ライセンスは Asset Store 標準 EULA（ゲームへの組み込みは可・素材の再配布は不可）＝
+**wav の原本は git に入れない**（`Resources/Audio/sfx/` に置く採用分の ogg だけ。試聴用 mp3 は docs/design/audio/se-usfx/ に同梱＝レビュー用途）。
+カード専用の実録フォーリー（Gravity Sound「Card Sound Effects」）は CARDS フォルダで足りなければ追加購入を検討。

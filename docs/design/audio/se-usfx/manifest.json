@@ -1,0 +1,594 @@
+{
+ "mechanics_wind_up_01_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_01_mono.wav",
+  "dur": 0.71
+ },
+ "mechanics_wind_up_02_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_02_mono.wav",
+  "dur": 0.87
+ },
+ "mechanics_wind_up_03_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_03_mono.wav",
+  "dur": 0.68
+ },
+ "mechanics_wind_up_04_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_04_mono.wav",
+  "dur": 1.79
+ },
+ "mechanics_wind_up_05_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_05_mono.wav",
+  "dur": 0.96
+ },
+ "mechanics_wind_up_06_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_06_mono.wav",
+  "dur": 0.91
+ },
+ "mechanics_wind_up_subtle_01_mono": {
+  "rel": "MECHANICS/MECHANICS_Wind_Up_Subtle_01_mono.wav",
+  "dur": 0.46
+ },
+ "trap_close_01_mono": {
+  "rel": "HAZARDS_TRAPS/TRAP_Close_01_mono.wav",
+  "dur": 0.43
+ },
+ "trap_close_03_mono": {
+  "rel": "HAZARDS_TRAPS/TRAP_Close_03_mono.wav",
+  "dur": 0.57
+ },
+ "trap_close_05_mono": {
+  "rel": "HAZARDS_TRAPS/TRAP_Close_05_mono.wav",
+  "dur": 0.94
+ },
+ "trap_close_08_mono": {
+  "rel": "HAZARDS_TRAPS/TRAP_Close_08_mono.wav",
+  "dur": 0.59
+ },
+ "trap_metal_snap_crunch_01_mono": {
+  "rel": "HAZARDS_TRAPS/TRAP_Metal_Snap_Crunch_01_mono.wav",
+  "dur": 0.55
+ },
+ "trap_small_close_01_mono": {
+  "rel": "HAZARDS_TRAPS/TRAP_Small_Close_01_mono.wav",
+  "dur": 0.19
+ },
+ "mechanics_zoom_metal_01_mono": {
+  "rel": "MECHANICS/MECHANICS_Zoom_Metal_01_mono.wav",
+  "dur": 0.74
+ },
+ "hazard_hammer_impact_01_mono": {
+  "rel": "HAZARDS_TRAPS/HAZARD_Hammer_Impact_01_mono.wav",
+  "dur": 1.75
+ },
+ "mechanics_cog_spin_01_mono": {
+  "rel": "MECHANICS/MECHANICS_Cog_Spin_01_mono.wav",
+  "dur": 1.12
+ },
+ "mechanics_cog_spin_02_mono": {
+  "rel": "MECHANICS/MECHANICS_Cog_Spin_02_mono.wav",
+  "dur": 1.64
+ },
+ "hazard_hammer_retract_01_mono": {
+  "rel": "HAZARDS_TRAPS/HAZARD_Hammer_Retract_01_mono.wav",
+  "dur": 1.09
+ },
+ "lock_metal_padlock_unlock_pop_01_mono": {
+  "rel": "LOCKS_KEYS/LOCK_Metal_Padlock_Unlock_Pop_01_mono.wav",
+  "dur": 0.67
+ },
+ "mechanics_metal_mechanism_01_mono": {
+  "rel": "MECHANICS/MECHANICS_Metal_Mechanism_01_mono.wav",
+  "dur": 1.57
+ },
+ "mechanics_metal_mechanism_05_mono": {
+  "rel": "MECHANICS/MECHANICS_Metal_Mechanism_05_mono.wav",
+  "dur": 0.1
+ },
+ "lock_metal_sliding_02_dark_short_mono": {
+  "rel": "LOCKS_KEYS/LOCK_Metal_Sliding_02_Dark_Short_mono.wav",
+  "dur": 0.95
+ },
+ "break_crack_01_mono": {
+  "rel": "BREAKS_SNAPS/BREAK_Crack_01_mono.wav",
+  "dur": 0.86
+ },
+ "break_bright_splinters_mono": {
+  "rel": "BREAKS_SNAPS/BREAK_Bright_Splinters_mono.wav",
+  "dur": 0.86
+ },
+ "break_fast_mono": {
+  "rel": "BREAKS_SNAPS/BREAK_Fast_mono.wav",
+  "dur": 0.59
+ },
+ "crack_deep_medium_01_mono": {
+  "rel": "BREAKS_SNAPS/CRACK_Deep_Medium_01_mono.wav",
+  "dur": 2.07
+ },
+ "sword_swing_hit_wood_shield_break_mono": {
+  "rel": "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Wood_Shield_Break_mono.wav",
+  "dur": 0.95
+ },
+ "tree_falling_tree_only_cracking_01_mono": {
+  "rel": "FORESTRY_WOODWORKING/TREE_Falling_Tree_Only_Cracking_01_mono.wav",
+  "dur": 3.67
+ },
+ "magic_spell_teleport_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Teleport_mono.wav",
+  "dur": 0.92
+ },
+ "magic_spell_stutter_out_faded_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Stutter_Out_Faded_mono.wav",
+  "dur": 2.4
+ },
+ "magic_spell_stutter_out_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Stutter_Out_mono.wav",
+  "dur": 2.4
+ },
+ "magic_spell_snappy_distancing_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Snappy_Distancing_mono.wav",
+  "dur": 1.68
+ },
+ "whoosh_miss_mono": {
+  "rel": "WHOOSHES/Classic/WHOOSH_Miss_mono.wav",
+  "dur": 0.45
+ },
+ "magic_spell_fading_whoosh_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Fading_Whoosh_mono.wav",
+  "dur": 3.44
+ },
+ "cards_deal_01_rr1_mono": {
+  "rel": "CARDS/CARDS_Deal_01_RR1_mono.wav",
+  "dur": 0.27
+ },
+ "cards_deal_02_rr1_mono": {
+  "rel": "CARDS/CARDS_Deal_02_RR1_mono.wav",
+  "dur": 0.43
+ },
+ "cards_deal_02_rr3_mono": {
+  "rel": "CARDS/CARDS_Deal_02_RR3_mono.wav",
+  "dur": 0.42
+ },
+ "cards_deal_01_rr4_mono": {
+  "rel": "CARDS/CARDS_Deal_01_RR4_mono.wav",
+  "dur": 0.23
+ },
+ "poker_chip_01_rr1_mono": {
+  "rel": "CARDS/POKER_CHIP_01_RR1_mono.wav",
+  "dur": 0.26
+ },
+ "cards_deal_01_rr2_mono": {
+  "rel": "CARDS/CARDS_Deal_01_RR2_mono.wav",
+  "dur": 0.31
+ },
+ "cards_deal_02_rr2_mono": {
+  "rel": "CARDS/CARDS_Deal_02_RR2_mono.wav",
+  "dur": 0.43
+ },
+ "cards_shuffle_01_mono": {
+  "rel": "CARDS/CARDS_Shuffle_01_mono.wav",
+  "dur": 0.95
+ },
+ "cards_deal_02_rr5_mono": {
+  "rel": "CARDS/CARDS_Deal_02_RR5_mono.wav",
+  "dur": 0.39
+ },
+ "blunt_swing_hit_generic_01_mono": {
+  "rel": "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_01_mono.wav",
+  "dur": 0.77
+ },
+ "blunt_swing_hit_wood_01_mono": {
+  "rel": "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Wood_01_mono.wav",
+  "dur": 0.92
+ },
+ "blunt_swing_hit_crack_01_mono": {
+  "rel": "WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Crack_01_mono.wav",
+  "dur": 0.69
+ },
+ "sword_swing_hit_solid_metal_deep_mono": {
+  "rel": "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Solid_Metal_Deep_mono.wav",
+  "dur": 1.0
+ },
+ "axe_chop_wood_01_rr1_mono": {
+  "rel": "TOOLS/Axe/AXE_Chop_Wood_01_RR1_mono.wav",
+  "dur": 0.54
+ },
+ "axe_chop_wood_01_rr2_mono": {
+  "rel": "TOOLS/Axe/AXE_Chop_Wood_01_RR2_mono.wav",
+  "dur": 0.57
+ },
+ "axe_chop_wood_01_rr3_mono": {
+  "rel": "TOOLS/Axe/AXE_Chop_Wood_01_RR3_mono.wav",
+  "dur": 0.5
+ },
+ "thud_medium_01_mono": {
+  "rel": "THUDS_THUMPS/THUD_Medium_01_mono.wav",
+  "dur": 0.44
+ },
+ "thud_dark_01_mono": {
+  "rel": "THUDS_THUMPS/THUD_Dark_01_mono.wav",
+  "dur": 0.97
+ },
+ "action_punch_01_rr1_mono": {
+  "rel": "ACTIONS/ACTION_Punch_01_RR1_mono.wav",
+  "dur": 0.19
+ },
+ "action_punch_01_rr2_mono": {
+  "rel": "ACTIONS/ACTION_Punch_01_RR2_mono.wav",
+  "dur": 0.19
+ },
+ "action_punch_01_rr3_mono": {
+  "rel": "ACTIONS/ACTION_Punch_01_RR3_mono.wav",
+  "dur": 0.21
+ },
+ "action_punch_01_rr4_mono": {
+  "rel": "ACTIONS/ACTION_Punch_01_RR4_mono.wav",
+  "dur": 0.17
+ },
+ "sword_swing_hit_wood_shield_mono": {
+  "rel": "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Wood_Shield_mono.wav",
+  "dur": 0.43
+ },
+ "sword_swing_hit_wood_shield_cling_mono": {
+  "rel": "WEAPONS/Melee/Swords/SWORD_Swing_Hit_Wood_Shield_Cling_mono.wav",
+  "dur": 0.54
+ },
+ "magic_spell_shield_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Shield_mono.wav",
+  "dur": 0.98
+ },
+ "action_close_metal_hatch_01_mono": {
+  "rel": "ACTIONS/ACTION_Close_Metal_Hatch_01_mono.wav",
+  "dur": 1.08
+ },
+ "action_close_metal_hatch_02_mono": {
+  "rel": "ACTIONS/ACTION_Close_Metal_Hatch_02_mono.wav",
+  "dur": 0.86
+ },
+ "action_close_metal_hatch_03_mono": {
+  "rel": "ACTIONS/ACTION_Close_Metal_Hatch_03_mono.wav",
+  "dur": 0.79
+ },
+ "ui_notification_soft_chime_01_stereo": {
+  "rel": "USER_INTERFACES/Notifications/UI_Notification_Soft_Chime_01_stereo.wav",
+  "dur": 0.99
+ },
+ "puzzle_success_harp_two_note_deep_wet_stereo": {
+  "rel": "PUZZLES/PUZZLE_Success_Harp_Two_Note_Deep_Wet_stereo.wav",
+  "dur": 1.97
+ },
+ "puzzle_success_bell_voice_three_note_climb_wet_stereo": {
+  "rel": "PUZZLES/PUZZLE_Success_Bell_Voice_Three_Note_Climb_Wet_stereo.wav",
+  "dur": 1.6
+ },
+ "magic_spell_soft_slow_bright_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Soft_Slow_Bright_mono.wav",
+  "dur": 4.38
+ },
+ "puzzle_success_harp_three_note_bright_wet_stereo": {
+  "rel": "PUZZLES/PUZZLE_Success_Harp_Three_Note_Bright_Wet_stereo.wav",
+  "dur": 1.94
+ },
+ "music_effect_bell_voice_positive_01_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_01_stereo.wav",
+  "dur": 1.96
+ },
+ "rip_tear_01_mono": {
+  "rel": "RIPS_TEARS/RIP_Tear_01_mono.wav",
+  "dur": 0.85
+ },
+ "rip_tear_03_mono": {
+  "rel": "RIPS_TEARS/RIP_Tear_03_mono.wav",
+  "dur": 0.19
+ },
+ "magic_spell_short_fast_burst_quick_fade_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Short_Fast_Burst_Quick_Fade_mono.wav",
+  "dur": 0.88
+ },
+ "whoosh_steam_fast_01_mono": {
+  "rel": "WHOOSHES/Mixed/WHOOSH_Steam_Fast_01_mono.wav",
+  "dur": 1.96
+ },
+ "whoosh_steam_fast_02_mono": {
+  "rel": "WHOOSHES/Mixed/WHOOSH_Steam_Fast_02_mono.wav",
+  "dur": 1.66
+ },
+ "whoosh_steam_fast_03_mono": {
+  "rel": "WHOOSHES/Mixed/WHOOSH_Steam_Fast_03_mono.wav",
+  "dur": 2.07
+ },
+ "thud_deep_noisy_01_mono": {
+  "rel": "THUDS_THUMPS/THUD_Deep_Noisy_01_mono.wav",
+  "dur": 0.66
+ },
+ "thud_dark_02_mono": {
+  "rel": "THUDS_THUMPS/THUD_Dark_02_mono.wav",
+  "dur": 0.89
+ },
+ "earth_rocks_pebbles_move_01_mono": {
+  "rel": "ELEMENTS/Earth/EARTH_Rocks_Pebbles_Move_01_mono.wav",
+  "dur": 0.52
+ },
+ "impact_wood_plank_on_wood_pile_14_smooth_mono": {
+  "rel": "IMPACTS/Wood/IMPACT_Wood_Plank_On_Wood_Pile_14_Smooth_mono.wav",
+  "dur": 1.2
+ },
+ "action_close_chest_01_mono": {
+  "rel": "ACTIONS/ACTION_Close_Chest_01_mono.wav",
+  "dur": 0.5
+ },
+ "action_close_chest_02_mono": {
+  "rel": "ACTIONS/ACTION_Close_Chest_02_mono.wav",
+  "dur": 0.25
+ },
+ "monster_pain_01_mono": {
+  "rel": "MONSTERS_CREATURES/MONSTER_Pain_01_mono.wav",
+  "dur": 0.89
+ },
+ "monster_grunt_deep_hurt_mono": {
+  "rel": "MONSTERS_CREATURES/MONSTER_Grunt_Deep_Hurt_mono.wav",
+  "dur": 0.64
+ },
+ "monster_squeel_deep_mono": {
+  "rel": "MONSTERS_CREATURES/MONSTER_Squeel_Deep_mono.wav",
+  "dur": 1.33
+ },
+ "monster_slime_01_mono": {
+  "rel": "MONSTERS_CREATURES/MONSTER_Slime_01_mono.wav",
+  "dur": 6.48
+ },
+ "break_bone_or_neck_mono": {
+  "rel": "BREAKS_SNAPS/BREAK_Bone_or_Neck_mono.wav",
+  "dur": 0.29
+ },
+ "magic_spell_scary_raising_reverse_rain_subtle_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Scary_Raising_Reverse_Rain_Subtle_mono.wav",
+  "dur": 1.16
+ },
+ "magic_spell_scary_raising_reverse_rain_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Scary_Raising_Reverse_Rain_mono.wav",
+  "dur": 4.82
+ },
+ "magic_spell_slow_fade_metallic_wobble_echo_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Slow_Fade_Metallic_Wobble_Echo_mono.wav",
+  "dur": 3.54
+ },
+ "magic_spell_dark_pulse_echo_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Dark_Pulse_Echo_mono.wav",
+  "dur": 2.79
+ },
+ "magic_spell_tonal_isotope_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Tonal_Isotope_mono.wav",
+  "dur": 3.26
+ },
+ "music_effect_solo_harp_negative_01_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Negative_01_stereo.wav",
+  "dur": 2.41
+ },
+ "magic_spell_spawn_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Spawn_mono.wav",
+  "dur": 0.69
+ },
+ "magic_spell_swooping_bright_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Swooping_Bright_mono.wav",
+  "dur": 2.89
+ },
+ "magic_spell_attacking_climbing_bells_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Attacking_Climbing_Bells_mono.wav",
+  "dur": 2.98
+ },
+ "charge_servo_24_semi_up_500ms_mono": {
+  "rel": "CHARGE_UPS_DOWNS/CHARGE_Servo_24_Semi_Up_500ms_mono.wav",
+  "dur": 0.5
+ },
+ "puzzle_success_xylophone_2_two_note_climb_bright_dry_stereo": {
+  "rel": "PUZZLES/PUZZLE_Success_Xylophone_2_Two_Note_Climb_Bright_Dry_stereo.wav",
+  "dur": 0.33
+ },
+ "magic_spell_build_bang_mono": {
+  "rel": "MAGIC_SPELLS/MAGIC_SPELL_Build_Bang_mono.wav",
+  "dur": 4.03
+ },
+ "whoosh_short_01_whistle_mono": {
+  "rel": "WHOOSHES/Classic/WHOOSH_Short_01_Whistle_mono.wav",
+  "dur": 0.12
+ },
+ "whoosh_quick_mono": {
+  "rel": "WHOOSHES/Classic/WHOOSH_Quick_mono.wav",
+  "dur": 0.28
+ },
+ "ui_notification_taps_01_x12_mono": {
+  "rel": "USER_INTERFACES/Notifications/UI_Notification_Taps_01_x12_mono.wav",
+  "dur": 1.23
+ },
+ "ui_notification_taps_01_x16_mono": {
+  "rel": "USER_INTERFACES/Notifications/UI_Notification_Taps_01_x16_mono.wav",
+  "dur": 1.61
+ },
+ "ui_notification_taps_01_x1_mono": {
+  "rel": "USER_INTERFACES/Notifications/UI_Notification_Taps_01_x1_mono.wav",
+  "dur": 0.2
+ },
+ "ui_digital_short_01_mono": {
+  "rel": "USER_INTERFACES/Digital/UI_Digital_Short_01_mono.wav",
+  "dur": 0.14
+ },
+ "slot_machine_win_dispense_coins_01_mono": {
+  "rel": "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_01_mono.wav",
+  "dur": 1.34
+ },
+ "slot_machine_insert_coin_01_mono": {
+  "rel": "MONEY_CASH_CURRENCY/SLOT_MACHINE_Insert_Coin_01_mono.wav",
+  "dur": 0.32
+ },
+ "cash_register_cha_ching_01_mono": {
+  "rel": "MONEY_CASH_CURRENCY/CASH_REGISTER_Cha-ching_01_mono.wav",
+  "dur": 1.91
+ },
+ "slot_machine_win_dispense_coin_01_rr1_mono": {
+  "rel": "MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coin_01_RR1_mono.wav",
+  "dur": 0.3
+ },
+ "poker_chip_chips_01_mono": {
+  "rel": "CARDS/POKER_CHIP_Chips_01_mono.wav",
+  "dur": 0.45
+ },
+ "action_open_chest_01_mono": {
+  "rel": "ACTIONS/ACTION_Open_Chest_01_mono.wav",
+  "dur": 0.86
+ },
+ "action_open_chest_02_mono": {
+  "rel": "ACTIONS/ACTION_Open_Chest_02_mono.wav",
+  "dur": 0.88
+ },
+ "action_open_chest_03_mono": {
+  "rel": "ACTIONS/ACTION_Open_Chest_03_mono.wav",
+  "dur": 0.93
+ },
+ "action_open_chest_04_mono": {
+  "rel": "ACTIONS/ACTION_Open_Chest_04_mono.wav",
+  "dur": 0.58
+ },
+ "action_open_chest_05_mono": {
+  "rel": "ACTIONS/ACTION_Open_Chest_05_mono.wav",
+  "dur": 0.66
+ },
+ "action_open_chest_06_mono": {
+  "rel": "ACTIONS/ACTION_Open_Chest_06_mono.wav",
+  "dur": 0.4
+ },
+ "tool_sledge_hammer_metal_rr1_mono": {
+  "rel": "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR1_mono.wav",
+  "dur": 0.13
+ },
+ "tool_sledge_hammer_metal_rr2_mono": {
+  "rel": "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR2_mono.wav",
+  "dur": 0.13
+ },
+ "tool_sledge_hammer_metal_rr3_mono": {
+  "rel": "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR3_mono.wav",
+  "dur": 0.2
+ },
+ "tool_sledge_hammer_metal_rr4_mono": {
+  "rel": "TOOLS/Various/TOOL_Sledge_Hammer_Metal_RR4_mono.wav",
+  "dur": 0.17
+ },
+ "pickaxe_impact_unbreakable_metal_01_rr1_mono": {
+  "rel": "TOOLS/Pickaxe/PICKAXE_Impact_Unbreakable_Metal_01_RR1_mono.wav",
+  "dur": 0.64
+ },
+ "pickaxe_impact_unbreakable_metal_01_rr2_mono": {
+  "rel": "TOOLS/Pickaxe/PICKAXE_Impact_Unbreakable_Metal_01_RR2_mono.wav",
+  "dur": 0.52
+ },
+ "fire_campfire_calm_01_loop_mono": {
+  "rel": "ELEMENTS/Fire/FIRE_Campfire_Calm_01_loop_mono.wav",
+  "dur": 3.22
+ },
+ "fire_campfire_active_smooth_01_loop_mono": {
+  "rel": "ELEMENTS/Fire/FIRE_Campfire_Active_Smooth_01_loop_mono.wav",
+  "dur": 5.98
+ },
+ "fire_campfire_calm_02_loop_mono": {
+  "rel": "ELEMENTS/Fire/FIRE_Campfire_Calm_02_loop_mono.wav",
+  "dur": 4.22
+ },
+ "footstep_dirt_run_01_rr10_mono": {
+  "rel": "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR10_mono.wav",
+  "dur": 0.32
+ },
+ "footstep_dirt_run_01_rr11_mono": {
+  "rel": "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR11_mono.wav",
+  "dur": 0.29
+ },
+ "footstep_dirt_run_01_rr12_mono": {
+  "rel": "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR12_mono.wav",
+  "dur": 0.33
+ },
+ "footstep_dirt_run_01_rr13_mono": {
+  "rel": "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR13_mono.wav",
+  "dur": 0.32
+ },
+ "footstep_dirt_run_01_rr14_mono": {
+  "rel": "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR14_mono.wav",
+  "dur": 0.31
+ },
+ "footstep_dirt_run_01_rr15_mono": {
+  "rel": "HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR15_mono.wav",
+  "dur": 0.29
+ },
+ "ui_click_tap_01_mono": {
+  "rel": "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_01_mono.wav",
+  "dur": 0.07
+ },
+ "ui_click_tap_02_mono": {
+  "rel": "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_02_mono.wav",
+  "dur": 0.05
+ },
+ "ui_click_tap_03_mono": {
+  "rel": "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_03_mono.wav",
+  "dur": 0.05
+ },
+ "ui_click_tap_04_mono": {
+  "rel": "USER_INTERFACES/Clicks_Taps/UI_Click_Tap_04_mono.wav",
+  "dur": 0.05
+ },
+ "button_clean_tap_mono": {
+  "rel": "BUTTONS/BUTTON_Clean_Tap_mono.wav",
+  "dur": 0.13
+ },
+ "button_deep_smooth_click_mono": {
+  "rel": "BUTTONS/BUTTON_Deep_Smooth_Click_mono.wav",
+  "dur": 0.74
+ },
+ "button_short_dry_mono": {
+  "rel": "BUTTONS/BUTTON_Short_Dry_mono.wav",
+  "dur": 0.36
+ },
+ "music_effect_orchestral_brass_positive_01_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_01_stereo.wav",
+  "dur": 2.06
+ },
+ "music_effect_orchestral_brass_positive_02_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_02_stereo.wav",
+  "dur": 2.16
+ },
+ "music_effect_orchestral_brass_positive_03_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_03_stereo.wav",
+  "dur": 1.72
+ },
+ "music_effect_orchestral_brass_positive_04_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_04_stereo.wav",
+  "dur": 1.69
+ },
+ "music_effect_orchestral_brass_positive_05_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_05_stereo.wav",
+  "dur": 1.95
+ },
+ "music_effect_orchestral_brass_positive_06_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Positive_06_stereo.wav",
+  "dur": 1.77
+ },
+ "music_effect_orchestral_brass_negative_01_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_01_stereo.wav",
+  "dur": 2.66
+ },
+ "music_effect_orchestral_brass_negative_02_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_02_stereo.wav",
+  "dur": 2.65
+ },
+ "music_effect_orchestral_brass_negative_03_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_03_stereo.wav",
+  "dur": 1.71
+ },
+ "music_effect_orchestral_brass_negative_04_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_04_stereo.wav",
+  "dur": 2.26
+ },
+ "music_effect_orchestral_brass_negative_05_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_05_stereo.wav",
+  "dur": 1.73
+ },
+ "music_effect_orchestral_brass_negative_06_stereo": {
+  "rel": "MUSIC_EFFECTS/Solo_Orchestral_Brass/MUSIC_EFFECT_Orchestral_Brass_Negative_06_stereo.wav",
+  "dur": 3.5
+ }
+}
