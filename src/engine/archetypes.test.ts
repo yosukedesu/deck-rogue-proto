@@ -247,7 +247,9 @@ describe('敵特性 (StS参考)', () => {
     s = applyCommand(s, { type: 'EndTurn' })
     expect(declaredIntents(s.eventLog).map((d) => d.intent.shownMin)).toEqual([5, 5, 12]) // poke, poke, lunge
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(declaredIntents(s.eventLog)[3].intent.shownMin).toBe(5) // ループして poke に戻る
+    expect(declaredIntents(s.eventLog)[3].intent.kind).toBe('defend') // 4拍目は構え (2026-09-14 全敵に防御の拍)
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(declaredIntents(s.eventLog)[4].intent.shownMin).toBe(6) // ループして poke に戻る (構えの筋力+1 が乗って 5→6)
   })
 
   it('強化 (筋力): 雄叫び後の攻撃は実値も幅表示も上がる', () => {

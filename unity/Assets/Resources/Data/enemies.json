@@ -47,12 +47,22 @@
         "min": 12,
         "max": 16,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "poke",
       "poke",
-      "lunge"
+      "lunge",
+      "guard"
     ],
     "hpRange": [
       70,
@@ -72,6 +82,15 @@
         "min": 11,
         "max": 15,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 9,
+        "max": 13,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "startingBlock": 6,
@@ -182,12 +201,22 @@
         "min": 9,
         "max": 13,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 8,
+        "max": 11,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "club",
       "warcry",
-      "club_wild"
+      "club_wild",
+      "guard"
     ],
     "movesBelowHalf": [
       {
@@ -305,12 +334,21 @@
         "min": 10,
         "max": 14,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "mud",
       "curse",
-      "slap"
+      "slap",
+      "guard"
     ],
     "phaseAfterUses": {
       "moveId": "curse",
@@ -355,12 +393,21 @@
         "max": 6,
         "weight": 1,
         "hits": 4
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 13,
+        "max": 19,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "flurry",
       "howl",
-      "rend"
+      "rend",
+      "guard"
     ],
     "hpRange": [
       88,
@@ -480,11 +527,21 @@
         "kind": "attack",
         "min": 4,
         "max": 6
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 5,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "war_drum",
-      "thump"
+      "thump",
+      "guard"
     ],
     "hpRange": [
       51,
@@ -520,12 +577,21 @@
         "min": 13,
         "max": 17,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 9,
+        "max": 12,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "bell_hushed",
       "bell_strike",
-      "gate_guard"
+      "gate_guard",
+      "guard"
     ],
     "enrageEveryCards": 8,
     "movesBelowHalf": [
@@ -689,6 +755,15 @@
         "min": 4,
         "max": 6,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 5,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -848,6 +923,15 @@
         "min": 5,
         "max": 7,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 6,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -890,12 +974,21 @@
         "min": 8,
         "max": 10,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 6,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "lick",
       "acid_spit",
-      "tackle"
+      "tackle",
+      "guard"
     ],
     "burnResist": 2,
     "hpRange": [
@@ -1001,12 +1094,21 @@
         "min": 10,
         "max": 14,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "spark_toss",
       "fan_flames",
-      "bite"
+      "bite",
+      "guard"
     ],
     "hpRange": [
       58,
@@ -1142,11 +1244,21 @@
         "max": 6,
         "weight": 1,
         "hits": 2
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "whip",
-      "double_whip"
+      "double_whip",
+      "guard"
     ],
     "hpRange": [
       76,
@@ -1177,11 +1289,20 @@
         "min": 9,
         "max": 11,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 5,
+        "max": 7,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "bolt",
-      "beam"
+      "beam",
+      "guard"
     ],
     "hpRange": [
       39,
@@ -1283,13 +1404,22 @@
           "status": "slow",
           "amount": 2
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 8,
+        "max": 12,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "chain",
       "net",
       "weight",
-      "lash"
+      "lash",
+      "guard"
     ],
     "hpRange": [
       112,
@@ -1326,12 +1456,22 @@
         "max": 8,
         "weight": 1,
         "hits": 4
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 15,
+        "max": 21,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "stab2",
       "stab3",
-      "stab4"
+      "stab4",
+      "guard"
     ],
     "startingBlock": 8,
     "hpRange": [
@@ -1360,11 +1500,20 @@
         "max": 34,
         "weight": 1,
         "growPerUse": 4
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 22,
+        "max": 32,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "glare",
-      "crush"
+      "crush",
+      "guard"
     ],
     "turnArmor": 50,
     "artifact": 2,
@@ -1437,12 +1586,21 @@
           "status": "weak",
           "amount": 3
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 3,
+        "max": 5,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "mirror",
       "mirror",
-      "gaze"
+      "gaze",
+      "guard"
     ],
     "hpRange": [
       102,
@@ -1471,12 +1629,22 @@
         "min": 2,
         "max": 3,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 16,
+        "max": 23,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "dual_chant",
       "dual_chant",
-      "crescendo"
+      "crescendo",
+      "guard"
     ],
     "hpRange": [
       140,
@@ -1510,13 +1678,23 @@
         "min": 2,
         "max": 2,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "bite",
       "devour",
       "bite",
-      "fatten"
+      "fatten",
+      "guard"
     ],
     "hpRange": [
       65,
@@ -1590,11 +1768,20 @@
         "max": 12,
         "alsoDefend": 12,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 10,
+        "max": 15,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "cleave",
-      "stance"
+      "stance",
+      "guard"
     ],
     "hpRange": [
       126,
@@ -1671,12 +1858,21 @@
           "status": "vulnerable",
           "amount": 1
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 9,
+        "max": 14,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "bolt",
       "bolt",
-      "aimed_shot"
+      "aimed_shot",
+      "guard"
     ],
     "hpRange": [
       43,
@@ -2088,12 +2284,21 @@
         "max": 8,
         "weight": 1,
         "hits": 3
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 13,
+        "max": 19,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "web",
       "bite",
-      "claws"
+      "claws",
+      "guard"
     ],
     "hpRange": [
       102,
@@ -2142,13 +2347,22 @@
         "max": 30,
         "weight": 1,
         "growPerUse": 4
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 14,
+        "max": 20,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "vomit",
       "pummel",
       "hug",
-      "smother"
+      "smother",
+      "guard"
     ],
     "turnArmor": 45,
     "hpRange": [
@@ -2180,6 +2394,14 @@
           "status": "wound",
           "amount": 1
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 3,
+        "max": 4,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -2221,6 +2443,14 @@
           "status": "vulnerable",
           "amount": 2
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -2259,13 +2489,22 @@
         "min": 2,
         "max": 2,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 6,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "repeater",
       "repeater",
       "expel",
-      "charge_up"
+      "charge_up",
+      "guard"
     ],
     "hpRange": [
       74,
@@ -2309,6 +2548,14 @@
         "max": 11,
         "weight": 1,
         "noRepeat": true
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -2348,13 +2595,22 @@
         "max": 7,
         "weight": 1,
         "alsoDefend": 5
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 5,
+        "max": 7,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "constrict",
       "lash",
       "constrict",
-      "thwack"
+      "thwack",
+      "guard"
     ],
     "hpRange": [
       74,
@@ -2375,6 +2631,14 @@
         "max": 3,
         "weight": 1,
         "alsoBuff": 2
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 3,
+        "max": 4,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -2414,12 +2678,22 @@
         "min": 13,
         "max": 15,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "swipe",
       "grasping_vines",
-      "chomp"
+      "chomp",
+      "guard"
     ],
     "hpRange": [
       79,
@@ -2447,11 +2721,21 @@
         "min": 3,
         "max": 3,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "jet",
-      "pressurize"
+      "pressurize",
+      "guard"
     ],
     "hpRange": [
       54,
@@ -2493,6 +2777,14 @@
         "max": 6,
         "weight": 1,
         "alsoBuff": 2,
+        "noRepeat": true
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 5,
+        "max": 8,
+        "weight": 1,
         "noRepeat": true
       }
     ],
@@ -2541,6 +2833,14 @@
           "status": "weak",
           "amount": 1
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 7,
+        "max": 10,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -2626,12 +2926,21 @@
         "max": 18,
         "weight": 1,
         "alsoBuff": 2
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 11,
+        "max": 16,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "shock_slap",
       "thunder_strike",
-      "galvanic_burst"
+      "galvanic_burst",
+      "guard"
     ],
     "turnArmor": 35,
     "hpRange": [
@@ -2671,12 +2980,21 @@
         "min": 2,
         "max": 3,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 12,
+        "max": 17,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "tongue_lash",
       "strike_down",
-      "for_the_queen"
+      "for_the_queen",
+      "guard"
     ],
     "movesBelowHalf": [
       {
@@ -2750,6 +3068,15 @@
         "max": 2,
         "weight": 1,
         "noRepeat": true
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 5,
+        "max": 8,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "hpRange": [
@@ -2783,11 +3110,20 @@
         "max": 6,
         "weight": 1,
         "hits": 2
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 8,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "debilitating_smog",
-      "eye_lasers"
+      "eye_lasers",
+      "guard"
     ],
     "hpRange": [
       56,
@@ -2820,11 +3156,20 @@
         "min": 10,
         "max": 13,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 8,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "miasma",
-      "dread"
+      "dread",
+      "guard"
     ],
     "hpRange": [
       65,
@@ -2853,11 +3198,20 @@
         "min": 9,
         "max": 11,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "carve_rite",
-      "savage"
+      "savage",
+      "guard"
     ],
     "sequenceLoopFrom": 1,
     "turnArmor": 30,
@@ -2890,11 +3244,20 @@
           "status": "junk",
           "amount": 2
         }
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 11,
+        "max": 15,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "clamp",
-      "screech"
+      "screech",
+      "guard"
     ],
     "hpRange": [
       56,
@@ -2931,12 +3294,21 @@
         "max": 5,
         "weight": 1,
         "alsoBuff": 2
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "scald_spit",
       "bite",
-      "suck"
+      "suck",
+      "guard"
     ],
     "hpRange": [
       54,
@@ -2987,13 +3359,22 @@
         "min": 2,
         "max": 2,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 5,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "orb_frail",
       "orb_weak",
       "beam",
-      "ritual"
+      "ritual",
+      "guard"
     ],
     "movesWhenAlone": [
       {
@@ -3053,12 +3434,22 @@
         "min": 2,
         "max": 2,
         "weight": 1
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 3,
+        "max": 4,
+        "weight": 1,
+        "alsoBuff": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
       "slash",
       "boomerang",
-      "dance"
+      "dance",
+      "guard"
     ],
     "hpRange": [
       23,
@@ -3114,6 +3505,14 @@
         "max": 8,
         "weight": 1,
         "alsoDefend": 15
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 4,
+        "max": 6,
+        "weight": 1,
+        "noRepeat": true
       }
     ],
     "sequence": [
@@ -3121,7 +3520,8 @@
       "swell_strike",
       "bug_sting",
       "adapt",
-      "guarded_strike"
+      "guarded_strike",
+      "guard"
     ],
     "hpRange": [
       70,

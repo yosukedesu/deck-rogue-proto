@@ -349,7 +349,7 @@ describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解�
 
   it('酸吐きの蛞蝓は状態異常の教師 (舐め=弱体 → 酸=虚弱 → 体当たりのローテーション)', () => {
     const def = getEnemyDef('enemy_slug')
-    expect(def.sequence).toEqual(['lick', 'acid_spit', 'tackle'])
+    expect(def.sequence).toEqual(['lick', 'acid_spit', 'tackle', 'guard']) // 4拍目は構え (2026-09-14 全敵に防御の拍)
     expect(def.moves.find((m) => m.id === 'lick')!.inflict).toEqual({ status: 'weak', amount: 2 })
     expect(def.moves.find((m) => m.id === 'acid_spit')!.inflict).toEqual({ status: 'frail', amount: 1 })
   })
@@ -443,7 +443,7 @@ describe('火傷 (2026-09-02 敵ギミック第1波。本家Burn相当)', () => 
 
   it('焚きつけのインプ: 火の粉(攻撃+火傷1)→煽り(火傷2)→噛みつき のローテ', () => {
     const def = getEnemyDef('enemy_cinder_imp')
-    expect(def.sequence).toEqual(['spark_toss', 'fan_flames', 'bite'])
+    expect(def.sequence).toEqual(['spark_toss', 'fan_flames', 'bite', 'guard']) // 4拍目は構え (2026-09-14)
     expect(def.moves.find((m) => m.id === 'spark_toss')?.inflict).toEqual({ status: 'scald', amount: 1 })
     expect(def.moves.find((m) => m.id === 'fan_flames')?.inflict).toEqual({ status: 'scald', amount: 2 })
   })

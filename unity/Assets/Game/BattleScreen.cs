@@ -201,8 +201,10 @@ namespace DeckRogue.Game
                 var bubble = UiKit.NewRect("intent", pan);
                 // 頭上の順: 絵 → 状態の札 (spriteTop+2〜30) → 吹き出しの尾 → 吹き出し (+54〜108) → 分岐などの詳細 (+112〜)
                 bool hasIntentArt = it != null && Theme.Art("icons", "intent_" + it.Kind) != null;
-                float bubbleH = hasIntentArt ? 68f : 54f;   // 意図の絵 (32 ドット×2=64) が入る高さ (2026-09-11)
-                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-130f, spriteTop + 54f), new Vector2(130f, spriteTop + 54f + bubbleH));
+                // ライダー (状態異常・筋力・盾) は数字の下に一段、大きめの札で出す (2026-09-14 ユーザー「ライダーが見えていない」)
+                bool hasRider = it != null && (it.Inflict != null || it.AlsoBuff.HasValue || it.AlsoDefend.HasValue);
+                float bubbleH = (hasIntentArt ? 68f : 54f) + (hasRider ? 40f : 0f);   // 意図の絵 (32 ドット×2=64) が入る高さ (2026-09-11)
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-150f, spriteTop + 54f), new Vector2(150f, spriteTop + 54f + bubbleH));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
                 bImg.raycastTarget = false;
@@ -211,7 +213,7 @@ namespace DeckRogue.Game
                 var tImg = tail.gameObject.AddComponent<Image>();
                 tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
                 var row = UiKit.NewRect("row", bubble);
-                UiKit.Stretch(row, 0f, 0f, 0f, 0f);
+                UiKit.Stretch(row, 0f, hasRider ? 40f : 0f, 0f, 0f);   // ライダーの段のぶん上に寄せる
                 var ig = UiKit.Horz(row, 10, 0);
                 ig.childAlignment = TextAnchor.MiddleCenter;
                 ig.childForceExpandHeight = false;
@@ -224,10 +226,17 @@ namespace DeckRogue.Game
                     else UiKit.Le(ic, 32f, 32f, 32f, 32f);
                     var itT = UiKit.Deco(row, st.HideIntents == true ? "？" : IntentShort(it), 26, PaperFx.Ink, TextAnchor.MiddleLeft); // ルーンの円蓋 (2026-09-12): 意図を隠す
                     UiKit.Le(itT, 40f, 40f, -1f, 40f);
-                    // デバフ・筋力・盾の予告は吹き出しの中に (2026-09-09「敵行動表示にダメージだけでなくデバフも予告」)
-                    if (it.Inflict != null) BubblePill(row, "exposed", CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));
-                    if (it.AlsoBuff.HasValue) BubblePill(row, "sword", "筋力+" + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
-                    if (it.AlsoDefend.HasValue) BubblePill(row, "shield", "盾" + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
+                    // デバフ・筋力・盾の予告は吹き出しの中の二段目に、言葉で大きく (2026-09-09→2026-09-14 拡大)
+                    if (hasRider)
+                    {
+                        var rrow = UiKit.NewRect("riders", bubble);
+                        UiKit.Anchor(rrow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 4f), new Vector2(-6f, 40f));
+                        var rg = UiKit.Horz(rrow, 8, 0);
+                        rg.childAlignment = TextAnchor.MiddleCenter; rg.childForceExpandWidth = false; rg.childForceExpandHeight = false;
+                        if (it.Inflict != null) BubblePill(rrow, "exposed", "あなたに" + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));
+                        if (it.AlsoBuff.HasValue) BubblePill(rrow, "sword", "同時に筋力+" + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
+                        if (it.AlsoDefend.HasValue) BubblePill(rrow, "shield", "同時にブロック" + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
+                    }
                 }
                 // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)
                 var detailText = IntentDetail(st, index, it);
@@ -330,13 +339,13 @@ namespace DeckRogue.Game
             var pill = UiKit.NewRect("pill", row);
             var bg = pill.gameObject.AddComponent<Image>();
             bg.sprite = PaperFx.Tag; bg.type = Image.Type.Sliced; bg.color = paper; bg.raycastTarget = false;
-            UiKit.Le(pill, 60f, 30f, -1f, 30f);
-            var hg = UiKit.Horz(pill, 2, 4);
+            UiKit.Le(pill, 60f, 34f, -1f, 34f);
+            var hg = UiKit.Horz(pill, 3, 6);
             hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
-            var ic = UiKit.Icon(pill, icon, 14f, ink);
-            UiKit.Le(ic, 14f, 14f, 14f, 14f);
-            var t = UiKit.Txt(pill, text, 14, ink, TextAnchor.MiddleCenter, true);
-            UiKit.Le(t, 30f, 24f, -1f, 24f);
+            var ic = UiKit.Icon(pill, icon, 18f, ink);
+            UiKit.Le(ic, 18f, 18f, 18f, 18f);
+            var t = UiKit.Txt(pill, text, 17, ink, TextAnchor.MiddleCenter, true);
+            UiKit.Le(t, 30f, 26f, -1f, 26f);
             var fit = pill.gameObject.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
@@ -497,8 +506,8 @@ namespace DeckRogue.Game
                     if (it.MirrorHits == true) s += " ×手数";
                     return s;
                 }
-                case "defend": return "防御";
-                case "buff": return "筋力+";
+                case "defend": return "防御 " + (it.ShownMin == it.ShownMax ? it.ShownMin.ToString() : it.ShownMin + "〜" + it.ShownMax);   // 防御の量も頭上に (2026-09-14)
+                case "buff": return "筋力+" + (it.ShownMin == it.ShownMax ? it.ShownMin.ToString() : it.ShownMin + "〜" + it.ShownMax);
                 case "rally": return "応援";
                 case "heal": return "回復";
                 case "hex": return "呪い";
