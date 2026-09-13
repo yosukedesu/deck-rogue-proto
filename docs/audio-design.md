@@ -147,3 +147,8 @@ ask_user: **統一の色＝静かで物悲しい（ピアノ・弦・ハープ�
 ユーザー「本家と同じように BGM をコロコロ変えないでいい」「幕の戦闘曲も探索曲流しっぱなしじゃない？」＝StS は**幕ごとに1曲がマップ・休息・店・イベント・通常戦闘を通して流れ続け、専用曲はエリートとボスだけ**。
 場面を **8**（title・act1-3・elite・boss1-3）に縮め、通常戦闘曲・報酬・焚き火の曲は撤去（`GameRoot.UpdateBgm`: 通常戦闘は `act<N>`、エリートは `elite`、ボスは `boss<N>`）。同じ名前なら `Audio.Bgm` は何もしないので画面遷移で途切れない。
 `docs/design/audio/bgm-sheet-unified2.html`。
+
+### 11-2. BGM 確定（2026-09-14）
+
+title=World_OP2／act1=Frosylva／act2=Deep_Valley2／act3=UnknownWorld2／elite=無し（幕の曲）／boss1=Undertaker／boss2=Scene_Tragic／boss3=Rituale Machina。
+ファイルは `Resources/Audio/bgm/{title,act1-3,boss1-3}.ogg`（-16 LUFS）。出典は同ディレクトリの CREDITS.md。map2 の Sylviranda 購入案は不要になった。
