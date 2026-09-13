@@ -504,13 +504,31 @@ export function isTrapLive(state: GameState, card: CardInstance): boolean {
   return age >= 1 && (age <= 2 || card.def.trapPersist === true)
 }
 
-/** 罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙) */
+/**
+ * 罠モデル: この敵フェーズに (宣言済みの意図から見て) この札が鳴りうるか。
+ * 「あとN回」を敵フェーズの数でなく「鳴りうる窓」で読ませるための見込み (Opus Z/Z3: 防御・筋力上げのターンは窓を食い潰す)
+ */
+export function trapCanFireThisPhase(state: GameState, card: CardInstance): boolean {
+  return state.enemies.some((_, i) => {
+    const it = effectiveIntent(state, i)
+    if (!it || state.enemies[i].hp <= 0) return false
+    return (
+      reactionMatches(state, card, { stage: 'pre', kind: it.kind, actual: it.actual }) ||
+      reactionMatches(state, card, { stage: 'post', kind: it.kind, hpLoss: it.actual, actual: it.actual })
+    )
+  })
+}
+
+/** 罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)。
+ * 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン鳴らないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す) */
 export function trapStatusText(state: GameState, card: CardInstance): string {
   if (card.def.trapPersist === true) return trapAge(state, card) === 0 ? '準備中（次のターンから鳴る・ほどけない）' : 'ほどけない'
   const age = trapAge(state, card)
   if (age <= 0) return '準備中（次のターンから鳴る）'
   const left = trapWindowsLeft(state, card) ?? 0
-  return left >= 2 ? 'あと2回（鳴らなければ捨て札へ）' : 'あと1回（このターンで鳴らなければ捨て札へ）'
+  const quiet = state.phase === 'player-turn' && !trapCanFireThisPhase(state, card)
+  if (left >= 2) return quiet ? 'あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回' : 'あと2回の敵フェーズ（鳴らなければ捨て札へ）'
+  return quiet ? 'あと1回。今ターンの意図では鳴らない＝このターンの終わりにほどける' : 'あと1回（このターンで鳴らなければ捨て札へ）'
 }
 
 /** 罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。ほどけない札は null */
@@ -678,17 +696,22 @@ export function playerDamageAfterModifiers(state: GameState, baseAmount: number)
  *  勢いは乗らず、敵フェーズ中に付いた弱体はそのフェーズの返しに乗らない = playerDamageAfterModifiers と同じ式。
  * 敵側の装甲・ブロックは対象が決まらないので含めない。基礎値と同じなら null (UI は何も出さない)
  */
-export function setCardLiveDamage(state: GameState, def: CardDef): string | null {
+export function setCardLiveDamage(state: GameState, def: CardDef, enemyIndex?: number): string | null {
   const vals: string[] = []
   for (const e of def.effects) {
     if ((e.effect !== 'dealDamage' && e.effect !== 'counter') || e.amount === undefined) continue
     const live = playerDamageAfterModifiers(state, e.amount)
-    if (live !== e.amount) vals.push(`${e.effect === 'counter' ? '返し' : 'ダメ'}${live}`)
+    // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3: 「返し10」が実際は15)
+    const bd = enemyIndex !== undefined ? damageBreakdown(state, enemyIndex, e.amount, e.pierce === true) : null
+    if (bd) vals.push(`${e.effect === 'counter' ? '返し' : 'ダメ'}${live}→HP減${bd.hpLoss}`)
+    else if (live !== e.amount) vals.push(`${e.effect === 'counter' ? '返し' : 'ダメ'}${live}`)
   }
   if (vals.length === 0) return null
   const weak = state.phase === 'player-turn' ? state.player.weak : state.player.weak - (state.player.weakFreshThisPhase ?? 0)
-  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', weak > 0 ? '弱体-25%' : ''].filter(Boolean)
-  return `実値: ${vals.join('・')}(${parts.join('・')})`
+  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', weak > 0 ? '弱体-25%' : '', enemyIndex !== undefined ? '急所・装甲・ブロック込み' : ''].filter(Boolean)
+  // 伏せ場 (自ターン) の値は「今」の値。罠が鳴るのは次のターン以降なので弱体は切れているかもしれない (Opus Z2)
+  const note = enemyIndex === undefined && state.phase === 'player-turn' && weak > 0 ? '※鳴る時の弱体で変わる' : ''
+  return `実値: ${vals.join('・')}(${parts.join('・')})${note}`
 }
 
 /**

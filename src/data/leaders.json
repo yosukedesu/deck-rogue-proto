@@ -11,14 +11,15 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic",
     "sprite": "🌳",
-    "description": "大樹の坑匠。大樹の里の工房を出たての職人で、自分より大きな魔導の大斧（刃にマナの結晶・真鍮の歯車の付け根）を振る。タフで、根を張ってから戦う。2ターン目からエナジー上限4",
+    "description": "大樹の坑匠。大樹の里の工房を出たての職人で、自分より大きな魔導の大斧（刃にマナの結晶・真鍮の歯車の付け根）を振る。タフで、根を張ってから戦う。2ターン目からエナジー上限4。仕込み枠が2つある",
     "passive": [
       {
         "trigger": "onCombatStart",
         "effect": "gainEnergyMax",
         "amount": 1
       }
-    ]
+    ],
+    "setSlots": 2
   },
   {
     "id": "leader_blue",
@@ -320,8 +321,8 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_dimir",
     "sprite": "🌫️",
-    "description": "霞幕の密偵。青黒の複合（ディミア）。潮と宵闇、二つの里の工房を修めた。手の内は二重に隠す。仕込み枠が2つある（動かせるのは敵の1行動につき1枚まで）",
+    "description": "霞幕の密偵。青黒の複合（ディミア）。潮と宵闇、二つの里の工房を修めた。手の内は二重に隠す。仕込み枠が3つある（動かせるのは敵の1行動につき1枚まで）",
     "passive": [],
-    "setSlots": 2
+    "setSlots": 3
   }
 ]

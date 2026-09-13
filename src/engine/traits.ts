@@ -51,7 +51,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   const tags: string[] = []
   if (def.burnResist) tags.push(`延焼耐性${def.burnResist}`)
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
-  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
+  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=上限を超える分の急所・成長は切り捨て。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
   if (def.burrow) tags.push(`潜伏(殻${def.burrow.block}が尽きるまでHPにダメージが通らない。超過は捨てる・貫通も殻に吸われる・粉砕は殻を割る。割れると次の行動が噛みつきに変わる=割ったターンのうちに倒せば来ない)`)
   if (def.nemesis) tags.push('因縁(奇数ターンは無形=1ヒットのHP損失が1固定。偶数ターンに実体化。延焼は通る)')
@@ -82,7 +82,7 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   const tags: string[] = []
   if (def.burnResist) tags.push(`延焼耐性${def.burnResist}`)
   if (def.thorns) tags.push(`とげ${def.thorns}(攻撃ヒットごとに反射。倒せば無傷)`)
-  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=急所は装甲持ちに乗らない。延焼は無視)`)
+  if (def.armor) tags.push(`装甲${def.armor}(1ヒットの被ダメは${def.armor}以下。成長・勢い・急所を乗せた後で頭打ち=上限を超える分の急所・成長は切り捨て。延焼は無視)`)
   if (def.startingBlock) tags.push(`開幕ブロック${def.startingBlock}`)
   if (def.burrow) {
     tags.push(

@@ -195,9 +195,9 @@ describe('レリック効果', () => {
       // このは=伏せ枠1。onCombatStart の gainSetSlot で2枠になる
       // レリックを持ったまま戦闘に入ると onCombatStart で gainSetSlot が発火する
       const withRelic = intoBattle({ ...createRun(11, 'set-confirm'), relics: ['relic_double_talisman'] })
-      expect(withRelic.combat?.player.setSlots).toBe(2) // 既定1 + 二重の符
+      expect(withRelic.combat?.player.setSlots).toBe(3) // このは2 (2026-09-13 罠モデル) + 二重の符
       const bare = intoBattle(createRun(11, 'set-confirm'))
-      expect(bare.combat?.player.setSlots).toBe(1) // 無しなら1のまま
+      expect(bare.combat?.player.setSlots).toBe(2) // 無しなら2のまま
     })
 
     it('黒星の欠片は幕1では候補に出ない（actMin=2）', () => {

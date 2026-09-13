@@ -1039,7 +1039,7 @@ namespace DeckRogue.Game
                 cv.localScale = Vector3.one * 0.86f;
                 // 成長・弱体を掛けた実値 (2026-09-13 Opusラン Y: 確認ウィンドウにも手札と同じ実値を)
                 string live = null;
-                try { live = Effects.SetCardLiveDamage(st, c.Def); } catch (Exception) { }
+                try { live = Effects.SetCardLiveDamage(st, c.Def, st.PendingWindow != null ? (int?)st.PendingWindow.EnemyIndex : null); } catch (Exception) { }
                 if (live != null)
                 {
                     var lt = UiKit.Txt(wrap, live, 13, PaperFx.GoldInk, TextAnchor.MiddleCenter, true);

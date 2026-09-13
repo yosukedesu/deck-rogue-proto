@@ -95,7 +95,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
     onPlay: holderType === 'permanent' ? '登場時:' : '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
     onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
-    onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
+    onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時/期限切れ時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
@@ -104,7 +104,8 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
   const cond = e.condition
     ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
     : ''
-  return `${trig[e.trigger] ?? e.trigger}${cond}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
+  const every = e.every !== undefined ? `(${e.everyScope === 'turn' ? '1ターンに' : ''}${e.every}回ごとに1回)` : e.once !== undefined ? '(初回だけ)' : ''
+  return `${trig[e.trigger] ?? e.trigger}${cond}${every}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
 
 function cardLine(def: CardDef): string {
@@ -374,7 +375,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(`!! 確認ウィンドウ (${s.pendingWindow.stage === 'pre' ? '行動実行前' : '行動解決後'}): ${getEnemyDef(enemy.enemyId).name}の「${it ? branchText(it, enemy.weak ?? 0) : '---'}」実値=${it ? (it.kind === 'attack' ? applyEnemyWeak(it.actual, enemy.weak ?? 0) : it.actual) : '?'}${it && it.kind === 'attack' && (enemy.weak ?? 0) > 0 ? `(威圧前${it.actual})` : ''}${(it?.hits ?? 1) > 1 ? `×${it?.hits}回` : ''}`)
     const win = windowFromPending(s)
     const cands = win ? usableSetCards(s, win) : []
-    L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setCardLiveDamage(s, c.def) ? `［${setCardLiveDamage(s, c.def)}］` : ''}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
+    L.push(`   発動候補: ${cands.map((c) => `[${c.uid}] ${c.def.name}${setCardLiveDamage(s, c.def, s.pendingWindow?.enemyIndex) ? `［${setCardLiveDamage(s, c.def, s.pendingWindow?.enemyIndex)}］` : ''}${setFireCost(c) > 0 ? `(発動${setFireCost(c)}E・残${p.energy}E)` : ''}`).join(' / ') || 'なし'}`)
     // post窓の誤認防止 (2026-08-29 検証ラン: 瀕死時に返し札を「防御」と誤認して発動→敗死の報告)。
     // 文言は攻撃窓のみ (2026-08-31 再検証ラン指摘②: 敵強化時の窓に「被弾は取り消せない」が出ていた)
     if (s.pendingWindow.stage === 'post') {
@@ -438,7 +439,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           ? (c.def.type !== 'reaction' ? `伏せ可(1E・発動時に${c.def.cost}E)` : '伏せ可')
           : c.def.type === 'reaction'
             ? p.setCards.length >= p.setSlots
-              ? '伏せ枠が満杯(発動か期限切れで空く。回収は無い)'
+              ? '伏せ枠が満杯(発動か期限切れで空く。ほどけない札は残る。回収は無い)'
               : c.def.cost > p.energy
                 ? '伏せるエナジー不足'
                 : ''

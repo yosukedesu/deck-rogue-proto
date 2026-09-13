@@ -36,7 +36,7 @@ namespace DeckRogue.Game
             { "onCombatStart", "戦闘開始時" },
             { "onAttackPlayed", "攻撃プレイ後" },
             { "onSpellPlayed", "呪文をプレイした時" },
-            { "onSetDestroyed", "このからくりが壊された時" },
+            { "onSetDestroyed", "このからくりが壊された時・ほどけた時" },
             { "onHealed", "HPが回復するたび" },
             { "onHpLost", "カード効果でHPを失うたび" },
             { "onCardExhausted", "カードが消滅するたび" },

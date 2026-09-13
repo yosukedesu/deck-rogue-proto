@@ -7,15 +7,17 @@ import { applyCommand } from './state.ts'
 import { createRunInBattle, attackIntent, freshCombat, passTurn, withHand, withIntent } from './test-helpers.ts'
 
 describe('かすみ (ディミア): 伏せ同時2枚', () => {
-  it('2枚まで伏せられ、3枚目は拒否される', () => {
+  it('3枚まで伏せられ、4枚目は拒否される (2026-09-13 罠モデル: このはが2枠になったので、かすみは3枠で個性を保つ)', () => {
     const run = createRunInBattle(7, 'set-confirm', 'leader_dimir')
-    expect(getLeaderDef('leader_dimir').setSlots).toBe(2)
-    let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse', 'blue_mana_leak'])
+    expect(getLeaderDef('leader_dimir').setSlots).toBe(3)
+    let s = withHand(run.combat!, ['blue_frost_veil', 'black_reaction_curse', 'blue_mana_leak', 'blue_frost_veil'])
+    s = { ...s, player: { ...s.player, energy: 10 } }
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_blue_frost_veil' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_black_reaction_curse' })
-    expect(s.player.setCards).toHaveLength(2)
-    // 3枚目は canHandle 層で拒否される
-    expect(() => applyCommand(s, { type: 'SetCard', cardUid: 't2_blue_mana_leak' })).toThrow()
+    s = applyCommand(s, { type: 'SetCard', cardUid: 't2_blue_mana_leak' })
+    expect(s.player.setCards).toHaveLength(3)
+    // 4枚目は canHandle 層で拒否される
+    expect(() => applyCommand(s, { type: 'SetCard', cardUid: 't3_blue_frost_veil' })).toThrow()
   })
 
   it('窓に合致する伏せが2枚あれば cardUid で選んで発動し、残りは伏せたまま', () => {

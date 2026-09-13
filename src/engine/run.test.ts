@@ -349,8 +349,8 @@ describe('中立スターター (2026-08-29 道の選択制を撤回。確定済
     expect(count('green_double_lash')).toBe(0)
     expect(count('green_guard')).toBe(3)
     expect(count('green_entangle')).toBe(1)
-    expect(count('green_reaction_thorns')).toBe(1)
-    expect(count('green_reaction_vine')).toBe(0)
+    expect(count('green_reaction_vine')).toBe(1) // 2026-09-13 罠モデル: 教材を茨の返し (post窓) から守りの蔓 (pre窓) へ
+    expect(count('green_reaction_thorns')).toBe(0)
   })
 
   it('リーダーが許可しない初期デッキは拒否される (道は廃止済み)', () => {

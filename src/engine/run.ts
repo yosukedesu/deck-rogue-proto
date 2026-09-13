@@ -33,7 +33,7 @@ export const REWARD_EXCLUDED = new Set([
   'green_basic_bash', // 打ち据え (2026-08-29 テンポ再校正②: スターターのBash枠)
   // スターターのリアクション2枚 (2026-08-30。中立スターター化の追随漏れ = 既に持っている札が
   // ピックに出ていた。伏せ枠は1つなので2枚目の価値も低い)。凍結色のスターターリアクションは解凍時に追随
-  'green_reaction_thorns',
+  'green_reaction_vine', // 2026-09-13 罠モデル: 初期デッキの教材を茨の返し (post窓) から守りの蔓 (pre窓) へ
   'blue_strike',
   'blue_guard',
   'blue_counterspell', // 青スターターのリアクション2枚 (2026-08-30 中立化追随)

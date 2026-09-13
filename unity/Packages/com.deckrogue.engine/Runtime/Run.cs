@@ -61,7 +61,7 @@ namespace DeckRogue.Engine
             "green_guard",
             "green_basic_bash",  // 打ち据え (スターターのBash枠)
             // スターターのリアクション2枚 (中立スターター化の追随)
-            "green_reaction_thorns",
+            "green_reaction_vine", // 2026-09-13 罠モデル: 初期デッキの教材を守りの蔓へ (TS run.ts と同形)
             "blue_strike",
             "blue_guard",
             "blue_counterspell",

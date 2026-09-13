@@ -555,14 +555,31 @@ namespace DeckRogue.Engine
             return age >= 1 && (age <= 2 || card.Def.TrapPersist == true);
         }
 
-        /// <summary>罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)</summary>
+        /// <summary>罠モデル: この敵フェーズに (宣言済みの意図から見て) この札が鳴りうるか (TS の trapCanFireThisPhase と同形)</summary>
+        public static bool TrapCanFireThisPhase(GameState state, CardInstance card)
+        {
+            for (int i = 0; i < state.Enemies.Count; i++)
+            {
+                if (state.Enemies[i].Hp <= 0) continue;
+                var it = EffectiveIntent(state, i);
+                if (it == null) continue;
+                if (ReactionMatches(state, card, new ReactionWindow { Stage = "pre", Kind = it.Kind, Actual = it.Actual })) return true;
+                if (ReactionMatches(state, card, new ReactionWindow { Stage = "post", Kind = it.Kind, Actual = it.Actual, HpLoss = it.Actual })) return true;
+            }
+            return false;
+        }
+
+        /// <summary>罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)。
+        /// 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン鳴らないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す)</summary>
         public static string TrapStatusText(GameState state, CardInstance card)
         {
             if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・ほどけない）" : "ほどけない";
             int age = TrapAge(state, card);
             if (age <= 0) return "準備中（次のターンから鳴る）";
             int left = TrapWindowsLeft(state, card) ?? 0;
-            return left >= 2 ? "あと2回（鳴らなければ捨て札へ）" : "あと1回（このターンで鳴らなければ捨て札へ）";
+            bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
+            if (left >= 2) return quiet ? "あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回" : "あと2回の敵フェーズ（鳴らなければ捨て札へ）";
+            return quiet ? "あと1回。今ターンの意図では鳴らない＝このターンの終わりにほどける" : "あと1回（このターンで鳴らなければ捨て札へ）";
         }
 
         /// <summary>罠モデル: 伏せ場の札の状態 (Unity の世界の言葉=「からくり」の語彙。TrapStatusText と同じ分岐)</summary>
@@ -572,7 +589,9 @@ namespace DeckRogue.Engine
             int age = TrapAge(state, card);
             if (age <= 0) return "巻いている（次のターンから鳴る）";
             int left = TrapWindowsLeft(state, card) ?? 0;
-            return left >= 2 ? "鳴るまで あと2回" : "あと1回（鳴らなければほどける）";
+            bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
+            if (left >= 2) return quiet ? "鳴るまで あと2回。今の敵の構えでは鳴らない＝実質あと1回" : "鳴るまで あと2回";
+            return quiet ? "あと1回。今の敵の構えでは鳴らない＝このターンの終わりにほどける" : "あと1回（鳴らなければほどける）";
         }
 
         /// <summary>罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。ほどけない札は null</summary>
@@ -768,7 +787,7 @@ namespace DeckRogue.Engine
         /// 伏せ札の返し・ダメージに「いま発動したら何点か」(成長・弱体込み) を添える (2026-09-13 Opusラン Y。TS の setCardLiveDamage と同形)。
         /// 勢いは乗らず、敵フェーズ中に付いた弱体はそのフェーズの返しに乗らない = PlayerDamageAfterModifiers と同じ式。基礎値と同じなら null
         /// </summary>
-        public static string SetCardLiveDamage(GameState state, CardDef def)
+        public static string SetCardLiveDamage(GameState state, CardDef def, int? enemyIndex = null)
         {
             var vals = new List<string>();
             if (def.Effects != null)
@@ -778,7 +797,10 @@ namespace DeckRogue.Engine
                     var e = def.Effects[i];
                     if ((e.Effect != "dealDamage" && e.Effect != "counter") || !e.Amount.HasValue) continue;
                     int live = PlayerDamageAfterModifiers(state, e.Amount.Value);
-                    if (live != e.Amount.Value) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live);
+                    // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3)
+                    var bd = enemyIndex.HasValue ? DamageBreakdownOf(state, enemyIndex.Value, e.Amount.Value, e.Pierce == true) : null;
+                    if (bd != null) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live + "→HP減" + bd.HpLoss);
+                    else if (live != e.Amount.Value) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live);
                 }
             }
             if (vals.Count == 0) return null;
@@ -786,7 +808,10 @@ namespace DeckRogue.Engine
             var parts = new List<string>();
             if (state.Player.Growth > 0) parts.Add("成長+" + state.Player.Growth);
             if (weak > 0) parts.Add("弱体-25%");
-            return "実値: " + string.Join("・", vals.ToArray()) + "(" + string.Join("・", parts.ToArray()) + ")";
+            if (enemyIndex.HasValue) parts.Add("急所・装甲・ブロック込み");
+            // 伏せ場 (自ターン) の値は「今」の値。罠が鳴るのは次のターン以降なので弱体は切れているかもしれない (Opus Z2)
+            string note = !enemyIndex.HasValue && state.Phase == CombatPhases.PlayerTurn && weak > 0 ? "※鳴る時の弱体で変わる" : "";
+            return "実値: " + string.Join("・", vals.ToArray()) + "(" + string.Join("・", parts.ToArray()) + ")" + note;
         }
 
         /// <summary>
