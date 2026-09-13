@@ -60,3 +60,10 @@
 - `GameRoot.UpdateBgm`: 場面名→表。elite/rest/lost の落とし先。
 - `Presenter.TableSound`: 表にあるイベントは音だけ鳴らす（0.12s の間）。
 - `BattleView`/各画面: `Audio.Key`/`Audio.Ui` 経由。
+
+## 7. 選定の記録
+
+- **第1ラウンド（2026-09-13）**: title=World_OP2／map3=Augury／battle1=Prairie4／elite=Puppeteer（Thunderclap も好評＝控え）／boss1=TaishoRoman_Battle（ユーザー指名）／boss2=EpicBattle_Deity／boss3=Rituale Machina。実機に配置済み（`Resources/Audio/bgm/`・CREDITS.md）。
+  map2 の Sylviranda は **BOOTH ¥200 の有料曲**（フリー素材でない）＝購入判断待ち。
+- **第2ラウンド**: map1・rest・battle2・battle3・won・lost を `docs/design/audio/bgm-sheet-2.html` で再提示（前回と重ならない24曲）。
+- SE はシートに選択の仕組みが無かった（一覧のみ）。次は署名音3つから効果音ラボの候補を試聴できる形にする。

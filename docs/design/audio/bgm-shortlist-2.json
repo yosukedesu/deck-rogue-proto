@@ -1,0 +1,477 @@
+[
+ {
+  "key": "map1",
+  "label": "幕1 マップ「坑口の森」（第2）",
+  "note": "夜の森。マナは夜に濃く湧く＝潜るのは夜なので「夜の森」「月の森」を寄せた",
+  "items": [
+   {
+    "slug": "frosylva",
+    "url": "https://peritune.com/blog/2026/06/26/frosylva/",
+    "title": "静かな森の夜の曲「Frosylva」",
+    "tags": [
+     "きれい",
+     "ヒーリング",
+     "フォーク",
+     "切ない",
+     "幻想"
+    ],
+    "bpm": 62,
+    "yt": "ZIlzOkWaVO8"
+   },
+   {
+    "slug": "moonforest",
+    "url": "https://peritune.com/blog/2022/11/05/moonforest/",
+    "title": "造語ボーカルの切ないフォーク「MoonForest」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "フォーク",
+     "切ない",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "C7oa2Sq9fZM"
+   },
+   {
+    "slug": "limpid_water",
+    "url": "https://peritune.com/blog/2022/04/12/limpid_water/",
+    "title": "幻想的なヒーリング「Limpid_Water」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "シネマティック",
+     "ナチュラル",
+     "ピアノ",
+     "フォーク",
+     "メルヘン",
+     "不思議",
+     "優しい",
+     "切ない",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "wSA5a2FG09o"
+   },
+   {
+    "slug": "sacred_rite",
+    "url": "https://peritune.com/blog/2024/11/07/sacred_rite/",
+    "title": "造語ボーカルの切ないフォーク「Sacred_Rite」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "フォーク",
+     "切ない",
+     "幻想",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "gHodD2STBIg"
+   }
+  ]
+ },
+ {
+  "key": "rest",
+  "label": "休息（焚き火・ショップ・イベント・工房）（第2）",
+  "note": "ハープ・ピアノ・室内楽の小曲。短く軽い",
+  "items": [
+   {
+    "slug": "a-wish4",
+    "url": "https://peritune.com/blog/2016/12/03/a-wish4/",
+    "title": "【無料フリーBGM・ハープ】A Wish4",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "優しい",
+     "切ない",
+     "幻想",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "BqRw-KGqnvo"
+   },
+   {
+    "slug": "recollection",
+    "url": "https://peritune.com/blog/2022/05/03/recollection/",
+    "title": "優しいピアノソロ「Recollection」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "希望",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "Ii7_xeg51TA"
+   },
+   {
+    "slug": "afternoon_garden",
+    "url": "https://peritune.com/blog/2022/07/16/afternoon_garden/",
+    "title": "ほのぼのクラシカル＆メルヘン曲「Afternoon_Garden」",
+    "tags": [
+     "かわいい",
+     "ほのぼの",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "メルヘン",
+     "優しい",
+     "室内楽",
+     "希望"
+    ],
+    "bpm": null,
+    "yt": "vhmEXzNpsNI"
+   },
+   {
+    "slug": "glistening-ripples",
+    "url": "https://peritune.com/blog/2026/03/21/glistening-ripples/",
+    "title": "【無料BGM】情感を写す水鏡のピアノ曲「Glistening Ripples」",
+    "tags": [
+     "きれい",
+     "アンビエント",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": 90,
+    "yt": "DUWzOMtUoIE"
+   }
+  ]
+ },
+ {
+  "key": "battle2",
+  "label": "幕2 通常戦闘（第2）",
+  "note": "ケルト＋民族の疾走、または boss1 と同系の軽快なオーケストラ",
+  "items": [
+   {
+    "slug": "prairie3",
+    "url": "https://peritune.com/blog/2018/01/26/prairie3/",
+    "title": "Prairie3 / 疾走感のある民族音楽",
+    "tags": [
+     "かっこいい",
+     "ケルト",
+     "ナチュラル",
+     "フォーク",
+     "切ない",
+     "力強い",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "u7dZzMA8cE4"
+   },
+   {
+    "slug": "retroroman_battle",
+    "url": "https://peritune.com/blog/2022/02/08/retroroman_battle/",
+    "title": "大正ロマンの軽快な戦闘曲「RetroRoman_Battle」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴージャス",
+     "シネマティック",
+     "切ない",
+     "力強い",
+     "戦闘",
+     "激しい"
+    ],
+    "bpm": null,
+    "yt": "07F4kkyNEik"
+   },
+   {
+    "slug": "folk_roma2",
+    "url": "https://peritune.com/blog/2021/11/18/folk_roma2/",
+    "title": "ロマの情熱的なクレズマー「Folk_Roma2」",
+    "tags": [
+     "かっこいい",
+     "ゴージャス",
+     "フォーク",
+     "力強い",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "T3jHzHcRTUs"
+   },
+   {
+    "slug": "moonlit_dancer",
+    "url": "https://peritune.com/blog/2023/12/21/moonlit_dancer/",
+    "title": "ロマの軽快なエスニック曲「Moonlit_Dancer」",
+    "tags": [
+     "かっこいい",
+     "フォーク",
+     "切ない",
+     "力強い",
+     "戦闘",
+     "民族音楽",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "HWokrlFM4CA"
+   }
+  ]
+ },
+ {
+  "key": "battle3",
+  "label": "幕3 通常戦闘（第2）",
+  "note": "前回ボス候補で見送った重厚なオーケストラを通常戦へ",
+  "items": [
+   {
+    "slug": "dramatic4",
+    "url": "https://peritune.com/blog/2019/07/08/dramatic4/",
+    "title": "激しいドラマのオーケストラ曲「Dramatic4」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴシック",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "dpBh5abRTh8"
+   },
+   {
+    "slug": "dia_scriost",
+    "url": "https://peritune.com/blog/2023/06/09/dia_scriost/",
+    "title": "壮大なシネマティック戦闘曲「Dia_Scriost」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "ピアノ",
+     "切ない",
+     "壮大",
+     "戦闘",
+     "激しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "wk5tpBHulVc"
+   },
+   {
+    "slug": "strategy2",
+    "url": "https://peritune.com/blog/2016/02/16/strategy2/",
+    "title": "SRPG向けヒロイックオーケストラ「Strategy2」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "クラシカル",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "厳か",
+     "壮大",
+     "戦闘"
+    ],
+    "bpm": 125,
+    "yt": "-hOaB-rs8JA"
+   },
+   {
+    "slug": "minstrel2",
+    "url": "https://peritune.com/blog/2019/05/24/minstrel2/",
+    "title": "中世の切ない古楽・オーケストラ・ハープ「Minstrel2」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "クラシカル",
+     "ケルト",
+     "ゴシック",
+     "シネマティック",
+     "フォーク",
+     "中世・古楽",
+     "切ない",
+     "力強い",
+     "壮大",
+     "室内楽",
+     "幻想",
+     "悲しい",
+     "戦闘",
+     "民族音楽",
+     "淋しい",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "FLCe8BZRIOM"
+   }
+  ]
+ },
+ {
+  "key": "won",
+  "label": "走破（第2）",
+  "note": "明るく壮大、または穏やかな朝",
+  "items": [
+   {
+    "slug": "zephyr_fields",
+    "url": "https://peritune.com/blog/2024/01/20/zephyr_fields/",
+    "title": "明るく壮大なオーケストラ「Zephyr_Fields」",
+    "tags": [
+     "かっこいい",
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "希望",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "BQXsFtCObVo"
+   },
+   {
+    "slug": "overworld_orchestra",
+    "url": "https://peritune.com/blog/2021/11/04/overworld_orchestra/",
+    "title": "オーケストラ調RPGフィールド曲「OverWorld_Orchestra」",
+    "tags": [
+     "オーケストラ",
+     "ゴージャス",
+     "シネマティック",
+     "力強い",
+     "壮大",
+     "希望"
+    ],
+    "bpm": null,
+    "yt": "-FmtwhGUqrI"
+   },
+   {
+    "slug": "pv_emotional",
+    "url": "https://peritune.com/blog/2018/12/27/pv_emotional/",
+    "title": "ピアノ＆弦の感動的なBGM「PV_Emotional」",
+    "tags": [
+     "きれい",
+     "オーケストラ",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "力強い",
+     "壮大",
+     "希望",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "siUIzFDoS6U"
+   },
+   {
+    "slug": "harbor_morning",
+    "url": "https://peritune.com/blog/2026/07/18/harbor_morning/",
+    "title": "穏やかな港町の曲「Harbor Morning」",
+    "tags": [
+     "ほのぼの",
+     "ナチュラル",
+     "フォーク",
+     "優しい",
+     "希望",
+     "爽やか"
+    ],
+    "bpm": 145,
+    "yt": "8SMjMudOwwg"
+   }
+  ]
+ },
+ {
+  "key": "lost",
+  "label": "敗北（第2）",
+  "note": "静かなピアノ・チェレスタ・アカペラ",
+  "items": [
+   {
+    "slug": "piano_sad2",
+    "url": "https://peritune.com/blog/2018/09/06/piano_sad2/",
+    "title": "Piano_Sad2 / 物悲しいピアノ曲",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "切ない",
+     "悲しい",
+     "淋しい",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "pKUhcVfyJGU"
+   },
+   {
+    "slug": "grief",
+    "url": "https://peritune.com/blog/2021/02/06/grief/",
+    "title": "造語＆チェレスタの切ない小曲「Grief」",
+    "tags": [
+     "きれい",
+     "ナチュラル",
+     "ファンシー",
+     "切ない",
+     "幻想",
+     "悲しい",
+     "淋しい",
+     "生録ボーカル",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "hZCjLoEVPPU"
+   },
+   {
+    "slug": "dark_moon",
+    "url": "https://peritune.com/blog/2022/01/30/dark_moon/",
+    "title": "切ないクラシカルBGM「Dark_Moon」",
+    "tags": [
+     "ヒーリング",
+     "ピアノ",
+     "フォーク",
+     "不思議",
+     "冷たい",
+     "切ない",
+     "室内楽",
+     "悲しい",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "JpJzjRzXFVE"
+   },
+   {
+    "slug": "cold_light",
+    "url": "https://peritune.com/blog/2024/01/28/cold_light/",
+    "title": "造語コーラスの幻想的なアカペラ「Cold_Light」",
+    "tags": [
+     "きれい",
+     "不思議",
+     "冷たい",
+     "切ない",
+     "幻想",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "SxkzsQxtW8I"
+   }
+  ]
+ }
+]
