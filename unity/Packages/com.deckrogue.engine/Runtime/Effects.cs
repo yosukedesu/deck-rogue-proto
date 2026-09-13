@@ -548,7 +548,7 @@ namespace DeckRogue.Engine
             return state.Turn - (card.SetTurn ?? (state.Turn - 1)); // 旧セーブ (SetTurn 無し) は齢1の生きた罠として読む (TS と同形)
         }
 
-        /// <summary>罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・ほどけない札は無期限)</summary>
+        /// <summary>罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・期限なしの札は無期限)</summary>
         public static bool IsTrapLive(GameState state, CardInstance card)
         {
             int age = TrapAge(state, card);
@@ -573,28 +573,28 @@ namespace DeckRogue.Engine
         /// 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン鳴らないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す)</summary>
         public static string TrapStatusText(GameState state, CardInstance card)
         {
-            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・ほどけない）" : "ほどけない";
+            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・期限なし）" : "期限なし";
             int age = TrapAge(state, card);
             if (age <= 0) return "準備中（次のターンから鳴る）";
             int left = TrapWindowsLeft(state, card) ?? 0;
             bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
-            if (left >= 2) return quiet ? "あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回" : "あと2回の敵フェーズ（鳴らなければ捨て札へ）";
-            return quiet ? "あと1回。今ターンの意図では鳴らない＝このターンの終わりにほどける" : "あと1回（このターンで鳴らなければ捨て札へ）";
+            if (left >= 2) return quiet ? "あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回" : "あと2回の敵フェーズ（鳴らなければ期限切れで捨て札へ）";
+            return quiet ? "あと1回。今ターンの意図では鳴らない＝このターンの終わりに期限切れ" : "あと1回（このターンで鳴らなければ期限切れで捨て札へ）";
         }
 
         /// <summary>罠モデル: 伏せ場の札の状態 (Unity の世界の言葉=「からくり」の語彙。TrapStatusText と同じ分岐)</summary>
         public static string TrapStatusTextKarakuri(GameState state, CardInstance card)
         {
-            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "巻いている（次のターンから鳴る・ほどけない）" : "ほどけない";
+            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・期限なし）" : "期限なし";
             int age = TrapAge(state, card);
-            if (age <= 0) return "巻いている（次のターンから鳴る）";
+            if (age <= 0) return "準備中（次のターンから鳴る）";
             int left = TrapWindowsLeft(state, card) ?? 0;
             bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
-            if (left >= 2) return quiet ? "鳴るまで あと2回。今の敵の構えでは鳴らない＝実質あと1回" : "鳴るまで あと2回";
-            return quiet ? "あと1回。今の敵の構えでは鳴らない＝このターンの終わりにほどける" : "あと1回（鳴らなければほどける）";
+            if (left >= 2) return quiet ? "あと2回。今の敵の構えでは鳴らない＝実質あと1回" : "あと2回（鳴らなければ期限切れ）";
+            return quiet ? "あと1回。今の敵の構えでは鳴らない＝このターンの終わりに期限切れ" : "あと1回（鳴らなければ期限切れ）";
         }
 
-        /// <summary>罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。ほどけない札は null</summary>
+        /// <summary>罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。期限なしの札は null</summary>
         public static int? TrapWindowsLeft(GameState state, CardInstance card)
         {
             if (card.Def.TrapPersist == true) return null;

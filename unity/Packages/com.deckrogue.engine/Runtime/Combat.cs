@@ -2181,7 +2181,7 @@ namespace DeckRogue.Engine
             return state;
         }
 
-        /// <summary>罠モデル (2026-09-13): 期限切れ (齢3以上・ほどけない札は除く) の罠を伏せ場から外す</summary>
+        /// <summary>罠モデル (2026-09-13): 期限切れ (齢3以上・期限なしの札は除く) の罠を伏せ場から外す</summary>
         private static GameState ExpireTraps(GameState state)
         {
             var expired = state.Player.SetCards
@@ -2195,7 +2195,7 @@ namespace DeckRogue.Engine
             };
             foreach (var card in expired)
             {
-                // 弾け実の罠: ほどけて弾ける (onSetDestroyed 相当。対象は生存先頭)
+                // 弾け実の罠: 期限切れで弾ける (onSetDestroyed 相当。対象は生存先頭)
                 for (int i = 0; i < card.Def.Effects.Count; i++)
                 {
                     var effect = card.Def.Effects[i];
@@ -2242,7 +2242,7 @@ namespace DeckRogue.Engine
                     foreach (var pe in pendingPhase) s = Effects.ResolveEffectTargeted(s, pe.Effect, pe.EnemyIndex);
                 }
             }
-            // 罠モデル: 2窓目の終端で鳴らなかった罠はほどける (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
+            // 罠モデル: 2窓目の終端で鳴らなかった罠は期限切れになる (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
             // 回収の紐を持つ間は手札へ。弾け実の罠=onSetDestroyed は期限切れでも弾ける)。期限切れ由来で敵が死にうるので決着判定を挟む
             // 回収の紐で手札に戻った札は、この後の全捨てを生き残らせる (TS と同形 2026-09-13)
             var handBeforeExpire = new HashSet<string>(s.Player.Hand.Select(c => c.Uid));
@@ -2301,7 +2301,7 @@ namespace DeckRogue.Engine
             bool retainAll = s.RetainHand == true;
             bool Keeps(CardInstance c) =>
                 (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id)
-                || !handBeforeExpire.Contains(c.Uid); // 回収の紐でほどけて手札に戻った罠 (2026-09-13)
+                || !handBeforeExpire.Contains(c.Uid); // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
             s = s with
             {
                 Player = s.Player with

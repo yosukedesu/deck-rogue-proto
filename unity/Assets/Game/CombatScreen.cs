@@ -156,7 +156,7 @@ namespace DeckRogue.Game
                 var t = UiKit.Txt(setRow, "(からくりは空)", 12, UiKit.ColDim, TextAnchor.MiddleLeft);
                 UiKit.Le(t, 160f, -1f, 160f, -1f);
             }
-            // 罠モデル (2026-09-13): 回収は廃止。札ごとに寿命 (巻いている / 鳴るまで あと N回 / ほどけない) を出す
+            // 罠モデル (2026-09-13): 回収は廃止。札ごとに寿命 (準備中 / あと N回 / 期限切れ / ほどけない) を出す
             for (int i = 0; i < st.Player.SetCards.Count; i++)
             {
                 var c = st.Player.SetCards[i];
@@ -377,7 +377,7 @@ namespace DeckRogue.Game
                 var c = usable[i];
                 string uid = c.Uid;
                 int? left = Effects.TrapWindowsLeft(st, c);
-                string life = left.HasValue ? "（あと" + left.Value + "回）" : "（ほどけない）";
+                string life = left.HasValue ? "（あと" + left.Value + "回）" : "（期限なし）";
                 var b = UiKit.Btn(pan.transform, "発動: " + c.Def.Name + life + "  [ " + CardText.Short(CardText.Body(c.Def), 76) + " ]",
                     delegate { g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = uid }); }, 14, true, UiKit.Hex("#2f4d33"));
                 var le = b.GetComponent<LayoutElement>();

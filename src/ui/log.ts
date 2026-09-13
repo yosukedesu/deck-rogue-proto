@@ -71,7 +71,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardsDrawn': return { text: `${e.count}枚ドロー`, cls: 'log-line' }
     case 'CardPlayed': return { text: `プレイ: ${cardName(e.cardId)}`, cls: 'log-line' }
     case 'CardSet': return { text: `伏せた: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'SetCardExpired': return { text: `ほどけた: ${cardName(e.cardId)}（2回鳴らなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'}）`, cls: 'log-line' }
+    case 'SetCardExpired': return { text: `期限切れ: ${cardName(e.cardId)}（2回鳴らなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'}）`, cls: 'log-line' }
     case 'EnemyIntentDeclared': return { text: `敵の意図: ${intentText(e.intent)}`, cls: 'log-line' }
     case 'EnemyActionExecuting':
     case 'EnemyActionResolved': return null

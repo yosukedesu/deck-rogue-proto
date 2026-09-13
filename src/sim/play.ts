@@ -439,7 +439,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           ? (c.def.type !== 'reaction' ? `伏せ可(1E・発動時に${c.def.cost}E)` : '伏せ可')
           : c.def.type === 'reaction'
             ? p.setCards.length >= p.setSlots
-              ? '伏せ枠が満杯(発動か期限切れで空く。ほどけない札は残る。回収は無い)'
+              ? '伏せ枠が満杯(発動か期限切れで空く。期限なしの札は残る。回収は無い)'
               : c.def.cost > p.energy
                 ? '伏せるエナジー不足'
                 : ''

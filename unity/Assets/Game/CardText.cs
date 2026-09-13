@@ -36,7 +36,7 @@ namespace DeckRogue.Game
             { "onCombatStart", "戦闘開始時" },
             { "onAttackPlayed", "攻撃プレイ後" },
             { "onSpellPlayed", "呪文をプレイした時" },
-            { "onSetDestroyed", "このからくりが壊された時・ほどけた時" },
+            { "onSetDestroyed", "このからくりが壊された時・期限切れの時" },
             { "onHealed", "HPが回復するたび" },
             { "onHpLost", "カード効果でHPを失うたび" },
             { "onCardExhausted", "カードが消滅するたび" },
@@ -566,7 +566,7 @@ namespace DeckRogue.Game
             var e = ev as GameEvent_CardPlayed; if (e != null) return "プレイ: " + CardName(e.CardId);
             var f = ev as GameEvent_CardSet; if (f != null) return "仕込んだ: " + CardName(f.CardId);
             var g = ev as GameEvent_SetCardExpired;
-            if (g != null) return "ほどけた: " + CardName(g.CardId) + "（2回鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
+            if (g != null) return "期限切れ: " + CardName(g.CardId) + "（2回鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
             var h = ev as GameEvent_EnemyIntentDeclared; if (h != null) return "敵" + (h.EnemyIndex + 1) + "の意図: " + IntentLine(h.Intent);
             var i2 = ev as GameEvent_ActionNegated; if (i2 != null) return "敵の行動を打ち消した!";
             var j = ev as GameEvent_DamageDealt;

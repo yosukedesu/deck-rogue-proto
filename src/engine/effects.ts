@@ -492,13 +492,13 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
 /**
  * 罠モデル (2026-09-13): 伏せた札の齢。伏せたターン=0 (準備・鳴らない)、1・2=生きている窓。
  * 期限切れは finishEnemyPhase (turn が進む前) で齢2以上を捨て札にする。
- * 旧セーブ (setTurn 無し) は「前のターンに伏せた=齢1の生きた罠」として読む (齢0 だと永久に鳴らず・ほどけない死に枠になる)
+ * 旧セーブ (setTurn 無し) は「前のターンに伏せた=齢1の生きた罠」として読む (齢0 だと永久に鳴らず・期限なしの死に枠になる)
  */
 export function trapAge(state: GameState, card: CardInstance): number {
   return state.turn - (card.setTurn ?? state.turn - 1)
 }
 
-/** 罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・ほどけない札は無期限) */
+/** 罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・期限なしの札は無期限) */
 export function isTrapLive(state: GameState, card: CardInstance): boolean {
   const age = trapAge(state, card)
   return age >= 1 && (age <= 2 || card.def.trapPersist === true)
@@ -522,16 +522,16 @@ export function trapCanFireThisPhase(state: GameState, card: CardInstance): bool
 /** 罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)。
  * 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン鳴らないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す) */
 export function trapStatusText(state: GameState, card: CardInstance): string {
-  if (card.def.trapPersist === true) return trapAge(state, card) === 0 ? '準備中（次のターンから鳴る・ほどけない）' : 'ほどけない'
+  if (card.def.trapPersist === true) return trapAge(state, card) === 0 ? '準備中（次のターンから鳴る・期限なし）' : '期限なし'
   const age = trapAge(state, card)
   if (age <= 0) return '準備中（次のターンから鳴る）'
   const left = trapWindowsLeft(state, card) ?? 0
   const quiet = state.phase === 'player-turn' && !trapCanFireThisPhase(state, card)
-  if (left >= 2) return quiet ? 'あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回' : 'あと2回の敵フェーズ（鳴らなければ捨て札へ）'
-  return quiet ? 'あと1回。今ターンの意図では鳴らない＝このターンの終わりにほどける' : 'あと1回（このターンで鳴らなければ捨て札へ）'
+  if (left >= 2) return quiet ? 'あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回' : 'あと2回の敵フェーズ（鳴らなければ期限切れで捨て札へ）'
+  return quiet ? 'あと1回。今ターンの意図では鳴らない＝このターンの終わりに期限切れ' : 'あと1回（このターンで鳴らなければ期限切れで捨て札へ）'
 }
 
-/** 罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。ほどけない札は null */
+/** 罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。期限なしの札は null */
 export function trapWindowsLeft(state: GameState, card: CardInstance): number | null {
   if (card.def.trapPersist === true) return null
   const age = trapAge(state, card)

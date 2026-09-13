@@ -102,7 +102,7 @@ namespace DeckRogue.Engine
         /// </summary>
         public static GameState RetrieveSetCard(GameState state, string cardUid)
         {
-            throw new InvalidOperationException("回収は廃止された (2026-09-13 罠モデル): 罠は2窓で鳴らなければほどけて捨て札に戻る");
+            throw new InvalidOperationException("回収は廃止された (2026-09-13 罠モデル): 罠は2窓で鳴らなければ期限切れで捨て札に戻る");
         }
 
         /// <summary>

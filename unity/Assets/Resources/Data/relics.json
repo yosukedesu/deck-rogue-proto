@@ -360,7 +360,7 @@
     "id": "relic_retrieve_cord",
     "name": "回収の紐",
     "sprite": "🧵",
-    "description": "ほどけたからくり（2回鳴らなかった仕込み札）は捨て札でなく手札に戻る",
+    "description": "期限切れのからくり（2回鳴らなかった仕込み札）は捨て札でなく手札に戻る",
     "rarity": "uncommon",
     "combatRule": {
       "expireToHand": true

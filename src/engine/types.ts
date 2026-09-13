@@ -376,7 +376,7 @@ export interface GameState {
   readonly revealOnSet?: boolean
   /** 実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts) */
   readonly setAnyCards?: boolean
-  /** C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (ほどけた) 罠は捨て札でなく手札に戻る */
+  /** C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (期限切れの) 罠は捨て札でなく手札に戻る */
   readonly expireToHand?: boolean
   /** 罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする */
   readonly pendingPhaseEffects?: readonly { readonly effect: DeclarativeEffect; readonly enemyIndex: number }[]
@@ -478,7 +478,7 @@ export type GameEvent =
   | { readonly type: 'CardsDrawn'; readonly count: number; readonly cards?: readonly string[] } // cards=引いた札の名前 (2026-09-05 ログ拡充)
   | { readonly type: 'CardPlayed'; readonly cardId: string }
   | { readonly type: 'CardSet'; readonly cardId: string }
-  | { readonly type: 'SetCardExpired'; readonly cardId: string; readonly to: 'discard' | 'exhaust' | 'hand' } // 罠モデル (2026-09-13): 2窓で鳴らなかった罠がほどけた
+  | { readonly type: 'SetCardExpired'; readonly cardId: string; readonly to: 'discard' | 'exhaust' | 'hand' } // 罠モデル (2026-09-13): 2窓で鳴らなかった罠が期限切れの
   | { readonly type: 'EnemyIntentDeclared'; readonly enemyIndex: number; readonly intent: EnemyIntent }
   /** 敵行動の実行直前フック点 (pre窓)。ReactionSystem はこれを見て割り込む */
   | { readonly type: 'EnemyActionExecuting'; readonly enemyIndex: number; readonly kind: EnemyActionKind }
@@ -909,7 +909,7 @@ export interface CardDef {
   readonly exhaust?: boolean
   /** 保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする */
   readonly retain?: boolean
-  /** ほどけない罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない */
+  /** 期限なしの罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない */
   readonly trapPersist?: boolean
   /** 手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03) */
   readonly freeIfHandAllPhysical?: boolean

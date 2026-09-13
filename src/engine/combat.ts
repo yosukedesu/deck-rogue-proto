@@ -2097,8 +2097,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
 
 /**
  * 罠モデル (2026-09-13): 期限切れの罠を伏せ場から外す。
- * 敵フェーズ終端 (finishEnemyPhase) は state.turn がまだ進んでいないので、2窓目 = 齢2 の終端で「残っていれば」ほどける
- * (齢3を待つと窓の無い敵フェーズを1回死んだまま過ごす)。ほどけない札 (trapPersist) は除く
+ * 敵フェーズ終端 (finishEnemyPhase) は state.turn がまだ進んでいないので、2窓目 = 齢2 の終端で「残っていれば」期限切れになる
+ * (齢3を待つと窓の無い敵フェーズを1回死んだまま過ごす)。期限なしの札 (trapPersist) は除く
  */
 function expireTraps(state: GameState): GameState {
   const expired = state.player.setCards.filter((c) => trapAge(state, c) >= 2 && c.def.trapPersist !== true)
@@ -2109,7 +2109,7 @@ function expireTraps(state: GameState): GameState {
     player: { ...state.player, setCards: state.player.setCards.filter((c) => !expired.includes(c)) },
   }
   for (const card of expired) {
-    // 弾け実の罠: ほどけて弾ける (onSetDestroyed 相当。対象は生存先頭)
+    // 弾け実の罠: 期限切れで弾ける (onSetDestroyed 相当。対象は生存先頭)
     for (const effect of card.def.effects) {
       if (effect.trigger === 'onSetDestroyed') s = resolveEffectTargeted(s, effect, firstAlive)
     }
@@ -2150,7 +2150,7 @@ function finishEnemyPhase(state: GameState): GameState {
       for (const { effect, enemyIndex } of pendingPhase) s = resolveEffectTargeted(s, effect, enemyIndex)
     }
   }
-  // 罠モデル: 2窓目の終端で鳴らなかった罠はほどける (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
+  // 罠モデル: 2窓目の終端で鳴らなかった罠は期限切れになる (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
   // 回収の紐を持つ間は手札へ。弾け実の罠=onSetDestroyed は期限切れでも弾ける)。期限切れ由来で敵が死にうるので決着判定を挟む。
   // 回収の紐で手札に戻った札は、この後の全捨てを生き残らせる (手札に戻した直後に捨てては紐が no-op になる)
   const handBeforeExpire = new Set(s.player.hand.map((c) => c.uid))
@@ -2221,7 +2221,7 @@ function finishEnemyPhase(state: GameState): GameState {
     (c.def.id === SCALD_DEF.id && c.scaldFresh === true) ||
     c.def.retain === true ||
     (s.retainHand === true && c.def.id !== SCALD_DEF.id) ||
-    !handBeforeExpire.has(c.uid) // 回収の紐でほどけて手札に戻った罠 (2026-09-13)
+    !handBeforeExpire.has(c.uid) // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
   s = {
     ...s,
     player: {

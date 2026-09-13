@@ -15,7 +15,7 @@ export interface TurnMetrics {
   readonly sets: number
   readonly fires: number
   readonly holds: number
-  /** 罠モデル (2026-09-13): 2窓で鳴らずにほどけた札の枚数 (旧ログは undefined) */
+  /** 罠モデル (2026-09-13): 2窓で鳴らずに期限切れの札の枚数 (旧ログは undefined) */
   readonly expires?: number
   /** ターン開始時の手札 (保持で残った札+ドロー。2026-09-05 ログ拡充。旧ログは undefined) */
   readonly hand?: readonly string[]
@@ -33,7 +33,7 @@ export interface BattleMetrics {
   readonly sets: number
   readonly fires: number
   readonly holds: number
-  /** ほどけた罠の枚数 (2026-09-13) */
+  /** 期限切れの罠の枚数 (2026-09-13) */
   readonly expires?: number
   readonly perTurn: readonly TurnMetrics[]
 }

@@ -122,14 +122,14 @@ describe('寿命2窓: 翌ターンと翌々ターンの敵フェーズだけ候�
   })
 })
 
-describe('期限切れ: 2窓目の敵フェーズ終端で鳴っていなければほどける', () => {
+describe('期限切れ: 2窓目の敵フェーズ終端で鳴っていなければ期限切れ', () => {
   it('3ターン目 (窓2) の終端で捨て札へ行き SetCardExpired {to:discard} が出る。空振りは2回だけ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_reaction_thorns'])
     s = setAndArm(s, 't0_green_reaction_thorns') // T1 伏せ → T2 (窓1)
     s = passTurn(s) // 窓1 空振り → T3 (窓2)
     expect(s.player.setCards).toHaveLength(1)
     expect(types(s.eventLog)).not.toContain('SetCardExpired')
-    s = passTurn(s) // 窓2 空振り → 終端でほどける
+    s = passTurn(s) // 窓2 空振り → 終端で期限切れ
     expect(s.turn).toBe(4)
     expect(s.player.setCards).toHaveLength(0)
     // 捨て札へ (T4 のドローで捨て札が切り直されるので山札・手札も含めて探す)
@@ -174,7 +174,7 @@ describe('期限切れ: 2窓目の敵フェーズ終端で鳴っていなけれ�
     }
   })
 
-  it('回収の紐 (expireToHand): ほどけた札は捨て札でなく手札に戻り、全捨てを生き残る', () => {
+  it('回収の紐 (expireToHand): 期限切れの札は捨て札でなく手札に戻り、全捨てを生き残る', () => {
     let s = withHand({ ...freshCombat('set-confirm', 'enemy_brute'), expireToHand: true }, ['green_reaction_thorns'])
     s = setAndArm(s, 't0_green_reaction_thorns')
     s = passTurn(s)
@@ -202,7 +202,7 @@ describe('期限切れ: 2窓目の敵フェーズ終端で鳴っていなけれ�
     expect(s.player.setCards).toHaveLength(1)
     expect(types(s.eventLog)).not.toContain('SetCardExpired')
     expect(isTrapLive(s, s.player.setCards[0])).toBe(true)
-    expect(trapStatusText(s, s.player.setCards[0])).toBe('ほどけない')
+    expect(trapStatusText(s, s.player.setCards[0])).toBe('期限なし')
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // 齢5でも鳴る

@@ -96,7 +96,7 @@ describe('防御札の伏せ: 被攻撃前に印字コストを払ってブロ�
     s = applyCommand(s, { type: 'ConfirmReaction', fire: false }) // 窓1: 温存
     expect(s.player.setCards).toHaveLength(1)
     expect(() => applyCommand(s, { type: 'RetrieveSetCard', cardUid: 't0_green_guard' })).toThrow()
-    s = passTurn(s) // 窓2: 鳴らない → ほどける
+    s = passTurn(s) // 窓2: 鳴らない → 期限切れ
     expect(s.player.setCards).toHaveLength(0)
     expect(types(s.eventLog)).toContain('SetCardExpired')
     const found = [...s.player.discardPile, ...s.player.hand, ...s.player.drawPile].find((c) => c.uid === 't0_green_guard')

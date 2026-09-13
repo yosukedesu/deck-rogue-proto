@@ -21,7 +21,7 @@ describe('戦闘計測 (battleMetrics)', () => {
     expect(m.turns).toBeGreaterThanOrEqual(3)
   })
 
-  it('期限切れ (SetCardExpired) はほどけたターンの expires に数える', () => {
+  it('期限切れ (SetCardExpired) は期限切れのターンの expires に数える', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 5), ['green_reaction_thorns'])
     s = applyCommand(s, { type: 'SetCard', cardUid: 't0_green_reaction_thorns' })
     s = passTurn(passTurn(passTurn(s)))

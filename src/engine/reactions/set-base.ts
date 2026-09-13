@@ -89,7 +89,7 @@ export function setCard(state: GameState, cardUid: string): GameState {
  * 旧セーブ・ジャーナル互換のためコマンド型は残し、常に拒否する
  */
 export function retrieveSetCard(_state: GameState, _cardUid: string): GameState {
-  throw new Error('回収は廃止された (2026-09-13 罠モデル): 罠は2窓で鳴らなければほどけて捨て札に戻る')
+  throw new Error('回収は廃止された (2026-09-13 罠モデル): 罠は2窓で鳴らなければ期限切れで捨て札に戻る')
 }
 
 /** 伏せカードを発動する: 効果解決→伏せ場から捨て札 (消滅札なら消滅置き場) へ。

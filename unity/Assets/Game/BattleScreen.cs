@@ -1049,7 +1049,7 @@ namespace DeckRogue.Game
                 }
                 // 罠モデル (2026-09-13): 残りの窓数を併記 (温存の判断材料)
                 int? winLeft = Effects.TrapWindowsLeft(st, c);
-                var wlt = UiKit.Txt(wrap, winLeft.HasValue ? "鳴るまで あと" + winLeft.Value + "回" : "ほどけない", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter, true);
+                var wlt = UiKit.Txt(wrap, winLeft.HasValue ? "あと" + winLeft.Value + "回" : "期限なし", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter, true);
                 var wlle = wlt.GetComponent<LayoutElement>();
                 if (wlle != null) UnityEngine.Object.Destroy(wlle);
                 UiKit.Anchor(wlt.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 64f), new Vector2(110f, 82f));

@@ -220,7 +220,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onCombatStart: '戦闘開始時: ',
   onAttackPlayed: '攻撃プレイ後: ',
   onSpellPlayed: '呪文をプレイした時: ',
-  onSetDestroyed: 'この伏せ場が壊された時・ほどけた時: ',
+  onSetDestroyed: 'この伏せ場が壊された時・期限切れの時: ',
   onHealed: 'HPが回復するたび (満タンでも誘発): ',
   onHpLost: 'カード効果でHPを失うたび: ',
   onCardExhausted: 'カードが消滅するたび: ',
