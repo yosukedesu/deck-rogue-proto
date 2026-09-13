@@ -133,3 +133,11 @@ MONSTERS_CREATURES／MONEY／ELEMENTS/Fire（Campfire loop）／HUMAN/Footsteps�
 | 鳴らさない | 勝敗ジングル（ユーザー「いらない」） |
 
 出典は `unity/Assets/Resources/Audio/sfx/CREDITS-usfx.md`。次＝実機で1ラン通して音量バランス（`audio.json` の volume）を詰める。
+
+## 11. BGM を「静かで物悲しい」に統一（2026-09-14 ユーザー裁定）
+
+ショップ・イベント・工房の候補が3ラウンド続けて却下され「すべてものさみし気なピアノ曲がいい」→「なんならほかの BGM も統一になるように選定しなおしたい」。
+ask_user: **統一の色＝静かで物悲しい（ピアノ・弦・ハープ）／既定の曲は全部白紙／戦闘は哀愁のある短調・中テンポ**。
+場面は18（title・map1-3・reward・campfire・shop・event・workshop・battle1-3・elite・boss1-3・won・lost）。
+`docs/design/audio/bgm-sheet-unified.html`（98曲）。PeriTune の物悲しい戦闘曲は少ない（「戦闘×切ない」9曲）ので、戦闘は「切ない×激しい」のオーケストラで補う。
+音の肌（§1）は「オクトラ寄り」から**「静かで物悲しい・夜の坑」**へ改める。
