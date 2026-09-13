@@ -303,6 +303,23 @@
       "sfx": "growth",
       "volume": 0.6,
       "jitter": 0.03
+    },
+    "ui.act_start": {
+      "sfx": "act_start",
+      "volume": 0.8,
+      "jitter": 0.0,
+      "_note": "幕の切り替わり (ランの開始・幕ボス撃破後の次の幕)"
+    },
+    "ui.combat_start": {
+      "sfx": "combat_start",
+      "volume": 0.7,
+      "jitter": 0.0,
+      "_note": "マップから戦闘へ"
+    },
+    "PlayerDied": {
+      "sfx": "hit_big",
+      "volume": 0.9,
+      "jitter": 0.0
     }
   },
   "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"

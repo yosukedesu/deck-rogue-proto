@@ -213,6 +213,8 @@ namespace DeckRogue.Game
 
         // ---- コマンド ----
 
+        int _lastAct = -1;
+
         public void Do(RunCommand cmd)
         {
             Error = null;
@@ -232,7 +234,36 @@ namespace DeckRogue.Game
             ViewDeck = false;
             ViewMap = false;
             SubMode = null;
-            if (wasCombat && Rs != null && Rs.Phase != RunPhases.Combat) Audio.Ui(Rs.Phase == RunPhases.Lost ? "lose" : "win");
+            bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
+            int prevAct = _lastAct;
+            if (Rs != null) _lastAct = Rs.Act;
+            // 幕の切り替わり (2026-09-14 ユーザー「ステージ切り替わり時に SE が必要」): 幕ボス撃破後の次の幕へ / ランの開始
+            if (Rs != null && prevAct != Rs.Act) Audio.Ui("act_start");
+            // 戦闘の始まり: マップから戦闘へ (同上)
+            if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat) Audio.Ui("combat_start");
+            // リーサル (2026-09-14 ユーザー「打撃 SE が鳴る前にピックに移ってしまい爽快感がなくなる」):
+            // 決着した戦闘の最後の出来事 (打撃・撃破) を古い戦闘画面の上で見せ切ってから、報酬/敗北の画面へ組み直す
+            if (combatEnded && Rs.Combat != null && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasNewEvents(Rs.Combat))
+            {
+                var finalSnapshot = Rs.Combat;
+                var endedRs = Rs;
+                Presenter.PlaySequenced(this, finalSnapshot, delegate
+                {
+                    Audio.Key(endedRs.Phase == RunPhases.Lost ? "PlayerDied" : "EnemyDied");
+                    var release = Presenter.BlockInput(this);
+                    Tween.After(0.7f, delegate
+                    {
+                        release();
+                        if (!ReferenceEquals(Rs, endedRs)) return;   // その間に別のコマンドが進んでいたら何もしない
+                        Audio.Ui(endedRs.Phase == RunPhases.Lost ? "lose" : "win");
+                        Pending = null; ViewPile = null; ViewDeck = false; ViewMap = false; SubMode = null;
+                        Rebuild();
+                        Presenter.Reset();
+                    });
+                });
+                return;
+            }
+            if (combatEnded) Audio.Ui(Rs.Phase == RunPhases.Lost ? "lose" : "win");
             // 画面をまたぐ一時選択は、その画面を離れたら捨てる (次に来た時に古い添字を使わない)
             if (Rs == null || Rs.Phase != RunPhases.Workshop) { WorkshopA = -1; WorkshopB = -1; }
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
@@ -274,6 +305,8 @@ namespace DeckRogue.Game
                     if (int.TryParse(_seedField.text, out parsed)) Seed = Mathf.Abs(parsed);
                 }
                 Rs = DeckRogue.Engine.Run.CreateRun(Seed, ReactionModes.SetConfirm, LeaderId, null, Difficulty, null);
+                _lastAct = Rs.Act;
+                Audio.Ui("act_start");
             }
             catch (Exception ex)
             {

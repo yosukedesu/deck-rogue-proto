@@ -19,6 +19,32 @@ namespace DeckRogue.Game
 
         public static void Reset() { _seen = 0; _seenCombat = null; }
 
+        /// <summary>入力を塞ぐ (決着の余韻の間に古い戦闘画面を触らせない)。戻り値を呼ぶと解除</summary>
+        public static Action BlockInput(GameRoot g)
+        {
+            var fx = g.FxLayer;
+            if (fx == null) return delegate { };
+            var block = UiKit.NewRect("inputblock2", fx);
+            UiKit.Stretch(block, 0f, 0f, 0f, 0f);
+            var bimg = block.gameObject.AddComponent<Image>();
+            bimg.color = new Color(0f, 0f, 0f, 0f);
+            bimg.raycastTarget = true;
+            var cg = fx.GetComponent<CanvasGroup>();
+            if (cg != null) cg.blocksRaycasts = true;
+            return delegate { if (block != null) UnityEngine.Object.Destroy(block.gameObject); if (cg != null) cg.blocksRaycasts = false; };
+        }
+
+        /// <summary>直前に見た位置より後に新しいイベントがあるか (決着の最後の打撃を見せ切るための判定 2026-09-14)</summary>
+        public static bool HasNewEvents(GameState combat)
+        {
+            if (combat == null) return false;
+            var log = combat.EventLog;
+            if (_seenCombat != null && log.Count < _seen) return false;
+            for (int i = Math.Min(_seen, log.Count); i < log.Count; i++)
+                if (log[i] is GameEvent_DamageDealt || log[i] is GameEvent_EnemyDied || log[i] is GameEvent_CardPlayed) return true;
+            return false;
+        }
+
         /// <summary>このコマンドで敵の行動 (TurnEnded 以降) が起きたか = 古い盤面の上で順に見せる価値がある</summary>
         public static bool HasEnemyPhase(GameState combat)
         {
