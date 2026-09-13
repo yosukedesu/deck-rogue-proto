@@ -29,6 +29,7 @@ Asset Store 標準 EULA: ゲームへの組み込みは可・素材そのもの�
 | debuff.ogg | GORE_SPLATS/GORE_Deep_Short_Squish_01（状態異常） |
 | act_start.ogg | WHOOSHES/Classic/WHOOSH_Wide_Deep_Slow（幕の切り替わり） |
 | combat_start.ogg | IMPACTS/Medieval_Armor/IMPACT_Medieval_Armor_Hit_01（戦闘の始まり） |
+| win.ogg | USER_INTERFACES/Notifications/UI_Notification_Soft_Chime_01（戦闘終了） |
 | rest.ogg | MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_07 |
 
-据え置き（Kenney）: card_draw（ドロー）・heal（回復）・hit_big・slash・lunge・energy・hover・enemy_turn。勝敗ジングルは鳴らさない（ユーザー裁定「いらない」）。未選定: burn（延焼ティック＝合成音のまま）。
+据え置き（Kenney）: card_draw（ドロー）・heal（回復）・hit_big・slash・lunge・energy・hover・enemy_turn。勝利は戦闘終了音 win（Soft_Chime）、敗北は無し。未選定: burn（延焼ティック＝合成音のまま）。
