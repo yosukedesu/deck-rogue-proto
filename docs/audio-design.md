@@ -104,3 +104,32 @@ MONSTERS_CREATURES／MONEY／ELEMENTS/Fire（Campfire loop）／HUMAN/Footsteps�
 試聴シート `docs/design/audio/se-sheet-usfx.html`（25 鍵×148 候補）。ライセンスは Asset Store 標準 EULA（ゲームへの組み込みは可・素材の再配布は不可）＝
 **wav の原本は git に入れない**（`Resources/Audio/sfx/` に置く採用分の ogg だけ。試聴用 mp3 は docs/design/audio/se-usfx/ に同梱＝レビュー用途）。
 カード専用の実録フォーリー（Gravity Sound「Card Sound Effects」）は CARDS フォルダで足りなければ追加購入を検討。
+
+## 10. SE の選定結果（2026-09-14・3ラウンドで確定）
+
+| 鍵 | 音（Universal Sound FX） |
+|---|---|
+| 仕込む CardSet | MECHANICS_Wind_Up_01 |
+| 罠が鳴る ReactionTriggered | TRAP_Close_08 |
+| 期限切れ SetCardExpired | MECHANICS_Cog_Spin_01 |
+| 伏せ破壊 SetCardDestroyed | SWORD_Swing_Hit_Wood_Shield_Break |
+| 打ち消し ActionNegated | WHOOSH_Steam_Wobble_Fast_02 |
+| 札をプレイ CardPlayed | CARDS_Deal_01 RR1〜5 |
+| 与ダメ DamageDealt.player | BLUNT_Swing_Hit_Generic_02〜04（大は Kenney hit_big のまま） |
+| 被ダメ DamageDealt.enemy | THUD_Medium_01, 02 |
+| ブロック BlockGained | SWORD_Swing_Hit_Wood_Shield, Cling |
+| 消滅 CardExhausted | RIP_Tear_03, 01 |
+| 置物 PermanentPlayed | ACTION_Close_Chest_01 |
+| 撃破 EnemyDied | BREAK_Bone_or_Neck |
+| 成長・勢い GrowthAdded | MAGIC_SPELL_Spawn（1秒以内の単発） |
+| ターン TurnStarted | WHOOSH_Quick |
+| 金 GoldStolen / ui.buy | SLOT_MACHINE_Win_Dispense_Coins_05 |
+| レリック ui.pick_relic | ACTION_Open_Chest_01 |
+| 鍛える・合成 ui.upgrade / ui.fuse | PICKAXE_Impact_Unbreakable_Metal_01_RR1 ×3（0.23s 間隔） |
+| 休む ui.rest | MUSIC_EFFECT_Solo_Harp_Positive_07 |
+| 進む ui.node | FOOTSTEP_Dirt_Run_01 RR14/03/07/11 |
+| ボタン ui.click | BUTTON_Clean_Tap |
+| 据え置き（Kenney） | ドロー・回復・状態異常・hit_big・slash・lunge・energy・hover・enemy_turn |
+| 鳴らさない | 勝敗ジングル（ユーザー「いらない」） |
+
+出典は `unity/Assets/Resources/Audio/sfx/CREDITS-usfx.md`。次＝実機で1ラン通して音量バランス（`audio.json` の volume）を詰める。

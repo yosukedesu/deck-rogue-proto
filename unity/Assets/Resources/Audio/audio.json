@@ -222,7 +222,8 @@
     },
     "ui.upgrade": {
       "sfx": "forge",
-      "volume": 0.8
+      "volume": 0.8,
+      "jitter": 0.0
     },
     "ui.rest": {
       "sfx": "rest",
@@ -230,7 +231,8 @@
     },
     "ui.fuse": {
       "sfx": "forge",
-      "volume": 0.9
+      "volume": 0.9,
+      "jitter": 0.0
     },
     "ui.node": {
       "sfx": "map",
@@ -301,9 +303,9 @@
       "jitter": 0.02
     },
     "GrowthAdded": {
-      "sfx": "buff",
-      "volume": 0.5,
-      "jitter": 0.02
+      "sfx": "growth",
+      "volume": 0.6,
+      "jitter": 0.03
     }
   }
 }
