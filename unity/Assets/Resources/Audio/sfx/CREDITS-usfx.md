@@ -26,6 +26,7 @@ Asset Store 標準 EULA: ゲームへの組み込みは可・素材そのもの�
 | gold.ogg | MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_05 |
 | growth.ogg | MAGIC_SPELLS/MAGIC_SPELL_Spawn（成長・勢い） |
 | forge.ogg | TOOLS/Pickaxe/PICKAXE_Impact_Unbreakable_Metal_01_RR1 を 0.23s 間隔で3回（鍛える・合成） |
+| debuff.ogg | GORE_SPLATS/GORE_Deep_Short_Squish_01（状態異常） |
 | rest.ogg | MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_07 |
 
-据え置き（Kenney）: card_draw（ドロー）・heal（回復）・buff（状態異常）・hit_big・slash・lunge・energy・hover・enemy_turn。勝敗ジングルは鳴らさない（ユーザー裁定「いらない」）。未選定: burn（延焼ティック＝合成音のまま）。
+据え置き（Kenney）: card_draw（ドロー）・heal（回復）・hit_big・slash・lunge・energy・hover・enemy_turn。勝敗ジングルは鳴らさない（ユーザー裁定「いらない」）。未選定: burn（延焼ティック＝合成音のまま）。

@@ -1,0 +1,343 @@
+[
+ {
+  "key": "shop",
+  "label": "ショップ（坑に住み着いた行商）",
+  "note": "市の賑わい・商い。軽快なケルト／中世の町",
+  "items": [
+   {
+    "slug": "harvest_festival",
+    "url": "https://peritune.com/blog/2021/06/21/harvest_festival/",
+    "title": "軽快な中世の町BGM「Harvest_Festival」",
+    "tags": [
+     "ほのぼの",
+     "ゴシック",
+     "ゴージャス",
+     "フォーク",
+     "中世",
+     "力強い",
+     "日常",
+     "楽しい",
+     "民族音楽",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "mLBBkRA47_E"
+   },
+   {
+    "slug": "pastorale3",
+    "url": "https://peritune.com/blog/2020/07/31/pastorale3/",
+    "title": "にぎやかなケルト曲「Pastorale3」",
+    "tags": [
+     "ほのぼの",
+     "ケルト",
+     "ファンシー",
+     "フォーク",
+     "優しい",
+     "希望",
+     "日常",
+     "楽しい",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "bVkfQDpA6Tg"
+   },
+   {
+    "slug": "firststep",
+    "url": "https://peritune.com/blog/2019/12/08/firststep/",
+    "title": "ファンシー＆軽快なオーケストラ「Firststep」",
+    "tags": [
+     "かっこいい",
+     "かわいい",
+     "ほのぼの",
+     "オーケストラ",
+     "ファンシー",
+     "メルヘン",
+     "中世・古楽",
+     "力強い",
+     "民族音楽",
+     "熱い"
+    ],
+    "bpm": null,
+    "yt": "Z-1PJQwm0TQ"
+   },
+   {
+    "slug": "soft_day2",
+    "url": "https://peritune.com/blog/2019/04/25/soft_day2/",
+    "title": "優しいケルト曲「Soft_Day2」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "フォーク",
+     "優しい",
+     "希望",
+     "日常",
+     "民族音楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "jazsUbOkPZg"
+   },
+   {
+    "slug": "cafe_seaside",
+    "url": "https://peritune.com/blog/2023/07/31/cafe_seaside/",
+    "title": "楽しいカフェBGM「Cafe_Seaside」",
+    "tags": [
+     "ほのぼの",
+     "ナチュラル",
+     "ファンシー",
+     "フォーク",
+     "希望",
+     "日常",
+     "楽しい",
+     "民族音楽",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "asSNRa1ppzk"
+   },
+   {
+    "slug": "snowy_village",
+    "url": "https://peritune.com/blog/2019/01/16/snowy_village/",
+    "title": "ほのぼのとしたトラッド「Snowy_Village」",
+    "tags": [
+     "きれい",
+     "ほのぼの",
+     "ケルト",
+     "ナチュラル",
+     "ヒーリング",
+     "メルヘン",
+     "不思議",
+     "幻想",
+     "日常",
+     "民族音楽",
+     "生録ボーカル",
+     "穏やか",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "Vgx2CwnQXWA"
+   }
+  ]
+ },
+ {
+  "key": "event",
+  "label": "?イベント（同業者・行商・古代の仕掛け）",
+  "note": "不思議・少し怪しい。洋館ミステリー／ダークメルヘン／砂漠",
+  "items": [
+   {
+    "slug": "wacky_witnes",
+    "url": "https://peritune.com/blog/2025/01/13/wacky_witnes/",
+    "title": "洋館ミステリーBGM「Wacky_Witnes」",
+    "tags": [
+     "クラシカル",
+     "シネマティック",
+     "不思議",
+     "室内楽",
+     "幻想",
+     "怪しい"
+    ],
+    "bpm": null,
+    "yt": "hWzHWqQ-DkE"
+   },
+   {
+    "slug": "bewitched_forest",
+    "url": "https://peritune.com/blog/2024/04/10/bewitched_forest/",
+    "title": "ミステリアスなダークメルヘンBGM「Bewitched_Forest」",
+    "tags": [
+     "かわいい",
+     "ゴシック",
+     "ファンシー",
+     "メルヘン",
+     "不思議",
+     "切ない",
+     "幻想"
+    ],
+    "bpm": null,
+    "yt": "57lWGSrXovY"
+   },
+   {
+    "slug": "silent_shadows",
+    "url": "https://peritune.com/blog/2023/10/09/silent_shadows/",
+    "title": "ミステリアスなクラシカル曲「Silent_Shadows」",
+    "tags": [
+     "クラシカル",
+     "ゴシック",
+     "ピアノ",
+     "ファンシー",
+     "メルヘン",
+     "不思議",
+     "室内楽",
+     "怪しい"
+    ],
+    "bpm": null,
+    "yt": "HvOdyxxhc5E"
+   },
+   {
+    "slug": "desert4",
+    "url": "https://peritune.com/blog/2019/11/18/desert4/",
+    "title": "砂漠のエスニック曲「Desert4」",
+    "tags": [
+     "ゴージャス",
+     "シネマティック",
+     "フォーク",
+     "不思議",
+     "力強い",
+     "幻想",
+     "怪しい",
+     "民族音楽"
+    ],
+    "bpm": null,
+    "yt": "8siLyH6CsOQ"
+   },
+   {
+    "slug": "cryptic_canvas",
+    "url": "https://peritune.com/blog/2023/09/15/cryptic_canvas/",
+    "title": "ミステリアスなクラシカル曲「Cryptic_Canvas」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ゴシック",
+     "ファンシー",
+     "フォーク",
+     "メルヘン",
+     "不思議",
+     "怪しい"
+    ],
+    "bpm": null,
+    "yt": "XYPpvr5PAcw"
+   },
+   {
+    "slug": "deep_woods4",
+    "url": "https://peritune.com/blog/2020/11/25/deep_woods4/",
+    "title": "寂しげなフォーク曲「Deep_Woods4」",
+    "tags": [
+     "きれい",
+     "ケルト",
+     "シネマティック",
+     "フォーク",
+     "不思議",
+     "力強い",
+     "幻想",
+     "民族音楽",
+     "淋しい"
+    ],
+    "bpm": null,
+    "yt": "vufaPGtVtsw"
+   }
+  ]
+ },
+ {
+  "key": "workshop",
+  "label": "工房（合成）",
+  "note": "からくりの仕事場。クラシカルな室内楽・マーチ・歯車の都",
+  "items": [
+   {
+    "slug": "retroroman_march",
+    "url": "https://peritune.com/blog/2022/01/11/retroroman_march/",
+    "title": "大正ロマンの軽快なマーチ「RetroRoman_March」",
+    "tags": [
+     "ほのぼの",
+     "オーケストラ",
+     "クラシカル",
+     "シネマティック",
+     "優しい",
+     "室内楽",
+     "日常",
+     "楽しい"
+    ],
+    "bpm": null,
+    "yt": "oQIzg07JWQc"
+   },
+   {
+    "slug": "retroroman_city",
+    "url": "https://peritune.com/blog/2021/07/20/retroroman_city/",
+    "title": "大正浪漫の軽快なマーチ「RetroRoman_City」",
+    "tags": [
+     "ほのぼの",
+     "オーケストラ",
+     "クラシカル",
+     "ゴージャス",
+     "シネマティック",
+     "希望",
+     "日常",
+     "楽しい",
+     "爽やか"
+    ],
+    "bpm": null,
+    "yt": "egPSCe3zRDI"
+   },
+   {
+    "slug": "velmotha",
+    "url": "https://peritune.com/blog/2025/06/26/velmotha/",
+    "title": "Velmotha : 星降る歯車の都",
+    "tags": [
+     "オーケストラ",
+     "クラシカル",
+     "シネマティック",
+     "不思議",
+     "優しい",
+     "切ない",
+     "力強い",
+     "壮大"
+    ],
+    "bpm": null,
+    "yt": "Jtmjta5T9eA"
+   },
+   {
+    "slug": "alleyway",
+    "url": "https://peritune.com/blog/2024/04/08/alleyway/",
+    "title": "街角のメルヘン日常BGM「Alleyway」",
+    "tags": [
+     "ナチュラル",
+     "ファンシー",
+     "メルヘン",
+     "不思議",
+     "優しい",
+     "切ない",
+     "室内楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "jxs0vpFn5l0"
+   },
+   {
+    "slug": "hesitation",
+    "url": "https://peritune.com/blog/2022/02/26/hesitation/",
+    "title": "切ないクラシカルワルツ「Hesitation」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ゴシック",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "ファンシー",
+     "室内楽",
+     "穏やか"
+    ],
+    "bpm": null,
+    "yt": "KcBRcEe_ZlA"
+   },
+   {
+    "slug": "memories6",
+    "url": "https://peritune.com/blog/2021/06/10/memories6/",
+    "title": "ピアノ＆弦の優しい曲「Memories6」",
+    "tags": [
+     "きれい",
+     "クラシカル",
+     "ナチュラル",
+     "ヒーリング",
+     "ピアノ",
+     "優しい",
+     "室内楽",
+     "静か"
+    ],
+    "bpm": null,
+    "yt": "5Vi9owBY2Bc"
+   }
+  ]
+ }
+]

@@ -415,10 +415,17 @@ namespace DeckRogue.Game
                 }
                 if (Rs.Phase == RunPhases.Won) { Audio.Bgm(Audio.BgmFor("won") ?? Audio.BgmFor("title")); return; }
                 if (Rs.Phase == RunPhases.Lost) { Audio.Bgm(Audio.BgmFor("lost") ?? Audio.BgmFor("map" + Rs.Act)); return; }
-                bool rest = Rs.Phase == RunPhases.Campfire || Rs.Phase == RunPhases.Shop || Rs.Phase == RunPhases.Event || Rs.Phase == RunPhases.Workshop;
-                bool reward = Rs.Phase == RunPhases.Reward || Rs.Phase == RunPhases.RelicReward || Rs.Phase == RunPhases.RelicChoose;
+                // 休息は場面ごとに別の曲 (2026-09-14 ユーザー「焚火・ショップ・イベント・工房はそれぞれ別BGM」)。無ければ rest → マップの順に落ちる
                 string mapName = Audio.BgmFor("map" + Rs.Act);
-                Audio.Bgm(rest ? (Audio.BgmFor("rest") ?? mapName) : reward ? (Audio.BgmFor("reward") ?? mapName) : mapName);
+                string restName = Audio.BgmFor("rest") ?? mapName;
+                string scene =
+                    Rs.Phase == RunPhases.Campfire ? "campfire" :
+                    Rs.Phase == RunPhases.Shop ? "shop" :
+                    Rs.Phase == RunPhases.Event ? "event" :
+                    Rs.Phase == RunPhases.Workshop ? "workshop" :
+                    (Rs.Phase == RunPhases.Reward || Rs.Phase == RunPhases.RelicReward || Rs.Phase == RunPhases.RelicChoose) ? "reward" : null;
+                if (scene == null) { Audio.Bgm(mapName); return; }
+                Audio.Bgm(Audio.BgmFor(scene) ?? (scene == "reward" ? mapName : restName));
             }
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
         }
