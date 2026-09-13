@@ -177,7 +177,7 @@ export function incomingTotal(s: GameState): number {
 }
 
 const MOVE_KIND_MARK: Record<string, string> = {
-  attack: '⚔️', defend: '🛡️', buff: '💪', rally: '📣', hex: '🧿', heal: '💚', 'steal-gold': '💰', flee: '🏃', rest: '😮‍💨', hatch: '🐣', mill: '📖', 'destroy-set': '💥', 'destroy-token': '🪓',
+  attack: '⚔️', defend: '🛡️', buff: '💪', rally: '📣', hex: '🧿', heal: '💚', 'steal-gold': '💰', flee: '🏃', rest: '😮‍💨', hatch: '🐣', mill: '📖', 'destroy-set': '💥', 'destroy-token': '🪓', summon: '👶',
 }
 
 /** 技の短い表記「⚔️7〜9×2」「🛡️12〜17」「💪+2」 (予告チップ・図鑑向け。実値でなく技の幅) */

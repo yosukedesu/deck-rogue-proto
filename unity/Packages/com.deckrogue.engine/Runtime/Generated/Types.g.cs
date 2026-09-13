@@ -85,6 +85,7 @@ namespace DeckRogue.Engine.Generated
         public const string Flee = "flee";
         public const string Rest = "rest";
         public const string Mill = "mill";
+        public const string Summon = "summon";
     }
 
     public static class PlayerStatuss
@@ -1106,6 +1107,19 @@ namespace DeckRogue.Engine.Generated
         public int Count { get; init; }
     }
 
+    /// <summary>GameEvent: type="EnemySummoned"</summary>
+    public sealed record GameEvent_EnemySummoned : GameEvent
+    {
+        public const string TypeTag = "EnemySummoned";
+        public GameEvent_EnemySummoned() { Type = TypeTag; }
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
+        [JsonProperty("into")]
+        public string Into { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
     /// <summary>GameEvent: type="EnemyHatched"</summary>
     public sealed record GameEvent_EnemyHatched : GameEvent
     {
@@ -1959,6 +1973,19 @@ namespace DeckRogue.Engine.Generated
         public int Amount { get; init; }
     }
 
+    /// <summary>EnemyMove.summon のインライン型</summary>
+    public sealed record EnemyMoveSummon
+    {
+        [JsonProperty("enemyId")]
+        public string EnemyId { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+        [JsonProperty("stunned")]
+        public bool? Stunned { get; init; }
+        [JsonProperty("strength")]
+        public int? Strength { get; init; }
+    }
+
     /// <summary>敵の1行動 (技の定義)。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし。 どの順で出すかは技には無く、行動グラフ (EnemyDef.nodes) が決める (2026-09-14 本家式の状態機械)</summary>
     public sealed record EnemyMove
     {
@@ -1993,6 +2020,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
         [JsonProperty("alsoDestroySet")]
         public bool? AlsoDestroySet { get; init; }
+        /// <summary>召喚 (kind:'summon' 2026-09-14): 場に出す敵。分裂と同じ器 (召喚体は素の値×召喚者のHP倍率・atkScale 継承・ k 体目の開始節は startBySlot・stunned なら出現ターンは隙・strength は初期筋力)。生存が上限 (4体) に達していれば出ない</summary>
+        [JsonProperty("summon")]
+        public EnemyMoveSummon? Summon { get; init; }
     }
 
     /// <summary>乱択の腕。to=遷移先の節 (noRepeat/once/maxRepeat は技の節を指す腕にだけ付けられる)</summary>

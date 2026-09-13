@@ -453,6 +453,7 @@ function buildIntent(
   if (gMin !== undefined && gMax !== undefined) {
     ;[actual, next] = nextInt(rng, gMin, gMax)
   }
+  if (move.kind === 'summon') actual = move.summon?.count ?? 0 // 召喚: 意図の数字は出す体数
   const bonus = move.kind === 'attack' ? strength : 0
   // 打点倍率 (幕2/3+15%): 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算 =
   // 幅表示・実値・per-hit のすべてに同じ規則で効く (alsoDefend・付与量は対象外)
@@ -539,38 +540,57 @@ function processSplits(state: GameState): GameState {
     if (splitInto === undefined) continue
     s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, split: true } : x)) }
     s = emit(s, { type: 'EnemySplit', enemyIndex: i, into: splitInto.enemyId, count: splitInto.count })
-    const childDef = getEnemyDef(splitInto.enemyId)
-    // HPスケール継承 (2026-09-02 代替ボス「蘇る合成獣」で発見): 分裂体が素のHPで出ると、ボス係数
-    // (×2.4) や幕・難易度倍率を受けた親の後継が桁違いに軟らかくなる。親の実効倍率 (maxHp/素)
-    // を子にも掛ける = 残機チェーンの合計HPが幕係数どおりに払われる
-    const hpRatio = def.maxHp > 0 ? e.maxHp / def.maxHp : 1
-    const scaledChildHp = Math.max(1, Math.round(childDef.maxHp * hpRatio))
-    for (let k = 0; k < splitInto.count; k++) {
-      // stunned (2026-09-02 罰型分裂の緩和版): 分裂体の初回意図は「隙」= 出現ターンは動かない (開始節は start)。
-      // それ以外は k 体目の開始節 (startBySlot=位相ずらし) から即座に宣言する (行動グラフ 2026-09-14)
-      const childStrength = splitInto.strength ?? 0
-      const stunned = splitInto.stunned === true
-      const child = {
-        enemyId: splitInto.enemyId,
-        hp: scaledChildHp,
-        maxHp: scaledChildHp,
-        block: childDef.burrow?.block ?? childDef.startingBlock ?? 0,
-        ...(childDef.burrow ? { burrowActive: true } : {}),
-        intent: stunned ? { kind: 'rest' as const, actual: 0 } : null,
-        strength: childStrength,
-        ...(e.atkScale !== undefined ? { atkScale: e.atkScale } : {}),
-        burn: 0,
-        confusion: 0,
-        exposed: 0,
-        node: stunned ? childDef.start : startNodeFor(childDef, k),
-        ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
-        ...(childDef.artifact !== undefined ? { artifact: childDef.artifact } : {}),
-        ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
-      }
-      s = { ...s, enemies: [...s.enemies, child] }
-      if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent! })
-      else s = declareOne(s, s.enemies.length - 1)
+    // 分裂は上限を見ない (親が消えた席に出る)
+    s = spawnEnemies(s, i, splitInto, Infinity)
+  }
+  return s
+}
+
+/** 場の生存上限 (召喚が空きを見る。編成の最大 = 巻物×4・小泥の大群×4) */
+export const MAX_ENEMIES_ON_FIELD = 4
+
+/**
+ * 親 (分裂の死体・召喚者) から敵を場に出す (分裂 2026-09-02・召喚 2026-09-14 が共用)。
+ * 子は素の値×親のHP倍率 (ボス係数・幕・難易度を受けた親の後継が桁違いに軟らかくならないように)・親の atkScale を継承・
+ * k 体目の開始節は startBySlot (位相ずらし)・stunned なら出現ターンは隙。出たら即座に宣言してその敵フェーズから動く。
+ * cap = 生存の上限 (召喚は MAX_ENEMIES_ON_FIELD・分裂は無制限)。戻り値の状態は出た数を EnemySummoned で数えない (呼び出し側)
+ */
+function spawnEnemies(
+  state: GameState,
+  parentIndex: number,
+  spawn: { readonly enemyId: string; readonly count: number; readonly stunned?: boolean; readonly strength?: number },
+  cap: number,
+): GameState {
+  let s = state
+  const parent = s.enemies[parentIndex]
+  const parentDef = getEnemyDef(parent.enemyId)
+  const childDef = getEnemyDef(spawn.enemyId)
+  const hpRatio = parentDef.maxHp > 0 ? parent.maxHp / parentDef.maxHp : 1
+  const scaledChildHp = Math.max(1, Math.round(childDef.maxHp * hpRatio))
+  for (let k = 0; k < spawn.count; k++) {
+    if (s.enemies.filter((e) => e.hp > 0).length >= cap) break
+    const childStrength = spawn.strength ?? 0
+    const stunned = spawn.stunned === true
+    const child = {
+      enemyId: spawn.enemyId,
+      hp: scaledChildHp,
+      maxHp: scaledChildHp,
+      block: childDef.burrow?.block ?? childDef.startingBlock ?? 0,
+      ...(childDef.burrow ? { burrowActive: true } : {}),
+      intent: stunned ? { kind: 'rest' as const, actual: 0 } : null,
+      strength: childStrength,
+      ...(parent.atkScale !== undefined ? { atkScale: parent.atkScale } : {}),
+      burn: 0,
+      confusion: 0,
+      exposed: 0,
+      node: stunned ? childDef.start : startNodeFor(childDef, k),
+      ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
+      ...(childDef.artifact !== undefined ? { artifact: childDef.artifact } : {}),
+      ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
     }
+    s = { ...s, enemies: [...s.enemies, child] }
+    if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent! })
+    else s = declareOne(s, s.enemies.length - 1)
   }
   return s
 }
@@ -1910,6 +1930,18 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       s = emit(s, { type: 'EnemyHatched', enemyIndex, fromId: def.id, intoId: into.enemyId })
       // 生まれた姿で即座に意図を宣言する (分裂と同じ「その敵フェーズから行動」の一貫則は
       // 取らない — 孵化はその敵の「行動」自体なので、次の宣言フェーズで初手が決まる)
+      return markResolved(s, 0)
+    }
+    case 'summon': {
+      // 召喚 (2026-09-14 本家 Fabricator/Reptomancer 型): 味方を場に出す。生存が上限なら出ない (意図は出す=「潰すなら今」の合図)。
+      // 打ち消し可 (negateNextAction は冒頭で処理済み)
+      const def = getEnemyDef(enemy.enemyId)
+      const move = def.moves.find((m) => m.id === enemy.intentMoveId) ?? def.moves.find((m) => m.kind === 'summon')
+      const spawn = move?.summon
+      if (spawn === undefined) return markResolved(state, 0)
+      const before = state.enemies.length
+      let s = spawnEnemies(state, enemyIndex, spawn, MAX_ENEMIES_ON_FIELD)
+      s = emit(s, { type: 'EnemySummoned', enemyIndex, into: spawn.enemyId, count: s.enemies.length - before })
       return markResolved(s, 0)
     }
     case 'mill': {

@@ -54,6 +54,7 @@ export function intentText(intent: EnemyIntent | EnemyIntentBranch | null, shown
     case 'rest': return '😮‍💨 隙だらけ'
     case 'hatch': return '🐣 孵化する'
     case 'mill': return `📖 山札喰い ${intent.actual}枚（消滅置き場へ。亡骸は発火する）`
+    case 'summon': return `👶 召喚 ×${intent.actual}（場が4体なら出ない=潰すなら今）`
   }
 }
 
@@ -103,6 +104,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
     case 'BurnTick': return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
     case 'EnemySplit': return { text: `🫠 分裂！ 倒した敵から${e.count}体が現れた`, cls: 'log-bad' }
+    case 'EnemySummoned': return { text: e.count > 0 ? `👶 召喚！ ${e.count}体が現れた` : '👶 召喚したが場が満杯で出なかった', cls: 'log-bad' }
     case 'EnemyHatched': return { text: '🐣 孵化した！', cls: 'log-bad' }
     case 'GuardianRedirected': return { text: '🛡️ 庇われた！ 単体対象は護衛に向かった', cls: 'log-info' }
     case 'ArtifactBlocked': return { text: `🔮 アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた（チャージ-1・この効果は消えた）`, cls: 'log-bad' }

@@ -526,6 +526,7 @@ export type GameEvent =
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
   | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)
   | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02)
+  | { readonly type: 'EnemySummoned'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 召喚 (2026-09-14)。count=実際に出た数 (上限で0もある)
   | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02)
   | { readonly type: 'GuardianRedirected'; readonly fromIndex: number; readonly toIndex: number } // 庇うのリダイレクト発生 (2026-09-02 検証ラン「無言で起きる」への処方)
   | { readonly type: 'ArtifactBlocked'; readonly enemyIndex: number; readonly effect: string } // アーティファクトがデバフを弾いた (2026-09-02)
@@ -1022,6 +1023,7 @@ export type EnemyActionKind =
   | 'flee' // 逃走: 戦闘から離脱 (hp:0+fled)。打ち消しで止められる
   | 'rest' // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば反撃の窓)
   | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
+  | 'summon' // 召喚 (2026-09-14 本家 Fabricator/Reptomancer 型): move.summon の敵を場に出す。場の生存が上限 (4体) なら no-op = 「潰すなら今」の合図。打ち消し可
 
 /** プレイヤーへの状態異常 (確定済みルール表「状態異常」) */
 export type PlayerStatus = 'weak' | 'vulnerable' | 'frail' | 'wound' | 'junk' | 'scald' | 'restrain' | 'mist' | 'slow'
@@ -1060,6 +1062,11 @@ export interface EnemyMove {
   readonly alsoBuff?: number
   /** からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す */
   readonly alsoDestroySet?: true
+  /**
+   * 召喚 (kind:'summon' 2026-09-14): 場に出す敵。分裂と同じ器 (召喚体は素の値×召喚者のHP倍率・atkScale 継承・
+   * k 体目の開始節は startBySlot・stunned なら出現ターンは隙・strength は初期筋力)。生存が上限 (4体) に達していれば出ない
+   */
+  readonly summon?: { readonly enemyId: string; readonly count: number; readonly stunned?: boolean; readonly strength?: number }
 }
 
 // ---- 行動グラフ (2026-09-14 本家式の状態機械。確定済みルール表「敵の行動グラフ」) ----

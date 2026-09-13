@@ -480,6 +480,7 @@ namespace DeckRogue.Game
                 case "steal-gold": return "gold";
                 case "flee": return "momentum";
                 case "mill": return "draw";
+                case "summon": return "growth";
                 case "rest": return "set";
                 default: return "exposed";
             }
@@ -520,6 +521,7 @@ namespace DeckRogue.Game
                 case "steal-gold": return "盗み";
                 case "flee": return "逃走";
                 case "mill": return "山札喰い";
+                case "summon": return "召喚";
                 case "rest": return "隙";
                 case "hatch": return "孵化";
                 default: return it.Kind;

@@ -156,7 +156,7 @@ namespace DeckRogue.Game
         {
             { "attack", "攻撃" }, { "defend", "防御" }, { "buff", "筋力上げ" }, { "rally", "応援" },
             { "heal", "回復" }, { "hex", "呪い" }, { "destroy-set", "からくり壊し" }, { "destroy-token", "従者狩り" },
-            { "steal-gold", "盗み" }, { "flee", "逃走" }, { "mill", "山札喰い" }, { "rest", "隙" }, { "hatch", "孵化" },
+            { "steal-gold", "盗み" }, { "flee", "逃走" }, { "mill", "山札喰い" }, { "rest", "隙" }, { "hatch", "孵化" }, { "summon", "召喚" },
         };
 
         static readonly Dictionary<string, string> StatusJa = new Dictionary<string, string>
@@ -492,6 +492,7 @@ namespace DeckRogue.Game
                 case "rest": return "隙だらけ";
                 case "hatch": return "孵化する";
                 case "mill": return "山札喰い " + it.Actual + "枚";
+                case "summon": return "召喚 ×" + it.Actual + " (場が4体なら出ない=潰すなら今)";
                 default: return KindJa(it.Kind);
             }
         }
@@ -664,6 +665,7 @@ namespace DeckRogue.Game
             var w2 = ev as GameEvent_GuardianRedirected; if (w2 != null) return "庇われた! 単体対象は護衛に向かった";
             var x2 = ev as GameEvent_BurrowBroken; if (x2 != null) return "潜伏の殻が割れた! 次の行動は噛みつき";
             var y2 = ev as GameEvent_EnemyStaggered; if (y2 != null) return "完全に防いだ! 敵は体勢を崩し、次の行動は隙";
+            var zs = ev as GameEvent_EnemySummoned; if (zs != null) return zs.Count > 0 ? "召喚! " + zs.Count + "体が現れた" : "召喚したが場が満杯で出なかった";
             var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました!" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を割った! 牙をむく" : "仲間が倒れた! 行動が変わる") + (z2.Replaced ? " (意図をその場で差し替え)" : " (次の宣言から)");
             var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが弾いた (" + a3.Effect + ")";
             var b3 = ev as GameEvent_ScaldTick; if (b3 != null) return "火傷・烙印" + b3.Count + "枚が疼いた (HP-" + b3.Amount + ")";

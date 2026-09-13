@@ -13,7 +13,7 @@
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
 import { canUpgradeInHand } from '../engine/upgrade.ts'
-import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef } from '../engine/content.ts'
+import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef, getEnemyDef } from '../engine/content.ts'
 import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
@@ -342,11 +342,14 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
     const cands = state.player.hand.filter((c) => c.uid !== card.uid && canUpgradeInHand(c)).sort((a, b) => b.def.cost - a.def.cost)
     handUids = cands.slice(0, Math.min(upgradeN, cands.length)).map((c) => c.uid)
   }
-  // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)
+  // 集中砲火: 最低HPの生存敵を対象にする (確定済みルール表「ターゲティング」の単純ボット方針)。
+  // 召喚者 (2026-09-14) がいれば最優先 = 頭数が増える前に潰す (壊れ検知の下限値が「召喚を放置する」で汚れないように)
   let targetIndex: number | undefined
   let bestHp = Infinity
+  const summoner = state.enemies.findIndex((e) => e.hp > 0 && getEnemyDef(e.enemyId).moves.some((m) => m.kind === 'summon'))
   for (let i = 0; i < state.enemies.length; i++) {
     const e = state.enemies[i]
+    if (summoner >= 0 && i !== summoner) continue
     if (e.hp > 0 && e.hp < bestHp) {
       bestHp = e.hp
       targetIndex = i

@@ -221,3 +221,50 @@ describe('即時差し替え (2026-09-14 ユーザー裁定「原因限定で許
     expect(s.enemies[0].intent?.kind).toBe('attack')
   })
 })
+
+describe('召喚 (2026-09-14 kind:summon。本家 Fabricator/Reptomancer 型)', () => {
+  afterEach(() => clearDebugOverrides())
+
+  const summoner: EnemyDef = {
+    ...base, id: 'test_summoner', maxHp: 100,
+    moves: [
+      { id: 'call', kind: 'summon', summon: { enemyId: 'enemy_moss_slime', count: 2 } },
+      { id: 'hit', kind: 'attack', min: 5, max: 5 },
+    ],
+    start: 'c',
+    // 味方が3体未満なら召喚、満杯なら殴る (Fabricator 型の条件の節)
+    nodes: { c: { if: { alliesFewerThan: 3 }, then: 'call', else: 'hit' }, call: { move: 'call', next: 'c' }, hit: { move: 'hit', next: 'c' } },
+  }
+
+  it('召喚の意図は出す体数。解決すると子が出て即座に宣言し、場が上限 (4体) なら出ない', () => {
+    applyDebugOverrides({ enemies: [summoner] })
+    let s = freshCombat('set-confirm', 'test_summoner', 42)
+    expect(s.enemies[0].intent).toEqual({ kind: 'summon', actual: 2 })
+    s = { ...s, player: { ...s.player, hp: 999, maxHp: 999 } }
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies).toHaveLength(3)
+    expect(s.enemies.slice(1).every((e) => e.enemyId === 'enemy_moss_slime' && e.intent !== null)).toBe(true)
+    expect(s.eventLog.some((e) => e.type === 'EnemySummoned' && e.count === 2)).toBe(true)
+    // 3体いるので次は殴り (条件の節)
+    expect(s.enemies[0].intent?.kind).toBe('attack')
+    // 上限: 4体いる状態で召喚しても出ない
+    let t: GameState = { ...s, enemies: [...s.enemies, { ...s.enemies[1] }], player: { ...s.player, hp: 999 } }
+    t = { ...t, enemies: t.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'summon' as const, actual: 2 }, intentMoveId: 'call' } : e)) }
+    t = withHand(t, [])
+    t = applyCommand(t, { type: 'EndTurn' })
+    expect(t.enemies.filter((e) => e.hp > 0)).toHaveLength(4)
+    expect(t.eventLog.some((e) => e.type === 'EnemySummoned' && e.count === 0)).toBe(true)
+  })
+
+  it('召喚は打ち消せる', () => {
+    applyDebugOverrides({ enemies: [summoner] })
+    let s = withHand(freshCombat('set-confirm', 'test_summoner', 42), ['green_reaction_root_weave'])
+    s = setAndArm(s, 't0_green_reaction_root_weave')
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, intent: { kind: 'summon' as const, actual: 2 }, intentMoveId: 'call' })) }
+    s = applyCommand(s, { type: 'EndTurn' })
+    if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_root_weave' })
+    expect(s.eventLog.some((e) => e.type === 'ActionNegated')).toBe(true)
+    expect(s.enemies).toHaveLength(1)
+  })
+})

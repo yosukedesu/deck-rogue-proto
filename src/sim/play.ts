@@ -26,7 +26,7 @@ import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts
 import { canSetCard } from '../engine/reactions/set-base.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
-const INTENT_KIND_JA: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化' }
+const INTENT_KIND_JA: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
 
 function cname(cardId: string): string {
   try {
@@ -184,6 +184,7 @@ function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch
     rest: '隙だらけ',
     hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
     mill: `📖山札喰い${it.actual}枚(消滅置き場へ。亡骸は発火する)`,
+    summon: `👶召喚×${it.actual}(場が4体なら出ない=潰すなら今)`,
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -247,6 +248,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)
       else if (e.type === 'ThornsReflected') L.push(` 🦔とげ反射${e.amount}(HP損失${e.hpLoss}。ブロックで吸収した分は損失に出ない)`)
       else if (e.type === 'EnemySplit') L.push(` 🫠分裂! 倒した敵から${e.count}体が現れた`)
+      else if (e.type === 'EnemySummoned') L.push(e.count > 0 ? ` 👶召喚! ${e.count}体が現れた` : ' 👶召喚したが場が満杯で出なかった')
       else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
       else if (e.type === 'ArtifactBlocked') L.push(` 🔮アーティファクトが${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた(チャージ-1)=この効果は消えた`)

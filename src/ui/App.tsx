@@ -172,7 +172,7 @@ const KW_PATTERN = new RegExp(
 )
 
 /** テキスト中のキーワード能力を吹き出し付き <span> に置き換える */
-const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化' }
+const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
 
 function kw(text: string): React.ReactNode {
   return text.split(KW_PATTERN).map((part, i) =>
@@ -3282,12 +3282,13 @@ const ENEMY_VOCAB = (() => {
 })()
 
 const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時筋力💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化', summon: '👶召喚' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
   const inflict = mv.inflict ? ` ＋${STATUS_LABEL[mv.inflict.status] ?? mv.inflict.status}${mv.inflict.amount}` : ''
-  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${mv.alsoDestroySet === true ? '+💥伏せ破壊' : ''}${inflict}`
+  const summon = mv.summon ? `→${(() => { try { return getEnemyDef(mv.summon.enemyId).name } catch { return mv.summon.enemyId } })()}×${mv.summon.count}` : ''
+  return `${mv.id}: ${MOVE_KIND_ICON[mv.kind] ?? mv.kind}${range}${summon}${mv.hits !== undefined && mv.hits > 1 ? `×${mv.hits}` : ''}${mv.mirrorHits === true ? '×手数' : ''}${mv.alsoDefend !== undefined ? `+🛡${mv.alsoDefend}` : ''}${mv.alsoBuff !== undefined ? `+💪${mv.alsoBuff}` : ''}${mv.alsoDestroySet === true ? '+💥伏せ破壊' : ''}${inflict}`
 }
 
 /** 敵の数値フィールド (実データのパス+現行値)。存在するものだけ編集対象 */

@@ -520,6 +520,7 @@ namespace DeckRogue.Engine
                 actual = r.Value;
                 next = r.Next;
             }
+            if (move.Kind == EnemyActionKinds.Summon) actual = move.Summon?.Count ?? 0; // 召喚: 意図の数字は出す体数
             int bonus = move.Kind == EnemyActionKinds.Attack ? strength : 0;
             // 打点倍率: 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算
             Func<int, int> scale = v => move.Kind == EnemyActionKinds.Attack ? JsRound(v * atkScale) : v;
@@ -602,38 +603,55 @@ namespace DeckRogue.Engine
                 if (splitInto == null) continue;
                 s = WithEnemy(s, i, x => x with { Split = true });
                 s = Events.Emit(s, new GameEvent_EnemySplit { EnemyIndex = i, Into = splitInto.EnemyId, Count = splitInto.Count });
-                var childDef = Content.GetEnemyDef(splitInto.EnemyId);
-                // HPスケール継承: 親の実効倍率 (maxHp/素) を子にも掛ける
-                double hpRatio = def.MaxHp > 0 ? (double)e.MaxHp / def.MaxHp : 1.0;
-                int scaledChildHp = Math.Max(1, JsRound(childDef.MaxHp * hpRatio));
-                for (int k = 0; k < splitInto.Count; k++)
+                // 分裂は上限を見ない (親が消えた席に出る)
+                s = SpawnEnemies(s, i, splitInto.EnemyId, splitInto.Count, splitInto.Stunned, splitInto.Strength, int.MaxValue);
+            }
+            return s;
+        }
+
+        /// <summary>場の生存上限 (召喚が空きを見る)</summary>
+        public const int MAX_ENEMIES_ON_FIELD = 4;
+
+        /// <summary>
+        /// 親 (分裂の死体・召喚者) から敵を場に出す (分裂・召喚 2026-09-14 が共用)。子は素の値×親のHP倍率・親の atkScale を継承・
+        /// k 体目の開始節は startBySlot・stunned なら出現ターンは隙。出たら即座に宣言。cap = 生存の上限
+        /// </summary>
+        private static GameState SpawnEnemies(GameState state, int parentIndex, string enemyId, int count, bool? stunnedFlag, int? strength, int cap)
+        {
+            var s = state;
+            var parent = s.Enemies[parentIndex];
+            var parentDef = Content.GetEnemyDef(parent.EnemyId);
+            var childDef = Content.GetEnemyDef(enemyId);
+            double hpRatio = parentDef.MaxHp > 0 ? (double)parent.MaxHp / parentDef.MaxHp : 1.0;
+            int scaledChildHp = Math.Max(1, JsRound(childDef.MaxHp * hpRatio));
+            for (int k = 0; k < count; k++)
+            {
+                int alive = 0;
+                for (int q = 0; q < s.Enemies.Count; q++) if (s.Enemies[q].Hp > 0) alive++;
+                if (alive >= cap) break;
+                int childStrength = strength ?? 0;
+                bool stunned = stunnedFlag == true;
+                var child = new EnemyState
                 {
-                    // stunned: 分裂体の初回意図は「隙」= 出現ターンは動かない (開始節は start)。
-                    // それ以外は k 体目の開始節 (startBySlot=位相ずらし) から即座に宣言する (行動グラフ 2026-09-14)
-                    int childStrength = splitInto.Strength ?? 0;
-                    bool stunned = splitInto.Stunned == true;
-                    var child = new EnemyState
-                    {
-                        EnemyId = splitInto.EnemyId,
-                        Hp = scaledChildHp,
-                        MaxHp = scaledChildHp,
-                        Block = childDef.Burrow?.Block ?? childDef.StartingBlock ?? 0,
-                        BurrowActive = childDef.Burrow != null ? (bool?)true : null,
-                        Intent = stunned ? new EnemyIntent { Kind = EnemyActionKinds.Rest, Actual = 0 } : null,
-                        Strength = childStrength,
-                        AtkScale = e.AtkScale,
-                        Burn = 0,
-                        Confusion = 0,
-                        Exposed = 0,
-                        Node = stunned ? childDef.Start : EnemyGraph.StartNodeFor(childDef, k),
-                        Thorns = childDef.Thorns,
-                        Artifact = childDef.Artifact,
-                        Armor = childDef.Armor,
-                    };
-                    s = s with { Enemies = Append(s.Enemies, child) };
-                    if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent });
-                    else s = DeclareOne(s, s.Enemies.Count - 1);
-                }
+                    EnemyId = enemyId,
+                    Hp = scaledChildHp,
+                    MaxHp = scaledChildHp,
+                    Block = childDef.Burrow?.Block ?? childDef.StartingBlock ?? 0,
+                    BurrowActive = childDef.Burrow != null ? (bool?)true : null,
+                    Intent = stunned ? new EnemyIntent { Kind = EnemyActionKinds.Rest, Actual = 0 } : null,
+                    Strength = childStrength,
+                    AtkScale = parent.AtkScale,
+                    Burn = 0,
+                    Confusion = 0,
+                    Exposed = 0,
+                    Node = stunned ? childDef.Start : EnemyGraph.StartNodeFor(childDef, k),
+                    Thorns = childDef.Thorns,
+                    Artifact = childDef.Artifact,
+                    Armor = childDef.Armor,
+                };
+                s = s with { Enemies = Append(s.Enemies, child) };
+                if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent });
+                else s = DeclareOne(s, s.Enemies.Count - 1);
             }
             return s;
         }
@@ -1993,6 +2011,20 @@ namespace DeckRogue.Engine
                     };
                     s = Events.Emit(s, new GameEvent_EnemyHatched { EnemyIndex = enemyIndex, FromId = def.Id, IntoId = into.EnemyId });
                     // 生まれた姿の初手は次の宣言フェーズで決まる
+                    return markResolved(s, 0);
+                }
+                case EnemyActionKinds.Summon:
+                {
+                    // 召喚 (2026-09-14): 味方を場に出す。生存が上限なら出ない (意図は出す)。打ち消し可
+                    var def = Content.GetEnemyDef(enemy.EnemyId);
+                    EnemyMove move = null;
+                    for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Id == enemy.IntentMoveId) { move = def.Moves[k]; break; }
+                    if (move == null) for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Kind == EnemyActionKinds.Summon) { move = def.Moves[k]; break; }
+                    var spawn = move?.Summon;
+                    if (spawn == null) return markResolved(state, 0);
+                    int before = state.Enemies.Count;
+                    var s = SpawnEnemies(state, enemyIndex, spawn.EnemyId, spawn.Count, spawn.Stunned, spawn.Strength, MAX_ENEMIES_ON_FIELD);
+                    s = Events.Emit(s, new GameEvent_EnemySummoned { EnemyIndex = enemyIndex, Into = spawn.EnemyId, Count = s.Enemies.Count - before });
                     return markResolved(s, 0);
                 }
                 case EnemyActionKinds.Mill:
