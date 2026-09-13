@@ -19,5 +19,11 @@ Asset Store 標準 EULA: ゲームへの組み込みは可・素材そのもの�
 | relic.ogg | ACTIONS/ACTION_Open_Chest_01 |
 | map.ogg 〜 _4 | HUMAN/Footsteps/_Dirt_Footsteps/FOOTSTEP_Dirt_Run_01_RR14, 03, 07, 11 |
 | click.ogg | BUTTONS/BUTTON_Clean_Tap |
+| negate.ogg | WHOOSHES/Mixed/WHOOSH_Steam_Wobble_Fast_02 |
+| hit.ogg | WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_02 |
+| hit_2.ogg | WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_03 |
+| hit_3.ogg | WEAPONS/Melee/Blunt/BLUNT_Swing_Hit_Generic_04 |
+| gold.ogg | MONEY_CASH_CURRENCY/SLOT_MACHINE_Win_Dispense_Coins_05 |
+| rest.ogg | MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_07 |
 
-未選定（Kenney / 合成のまま）: hit（与ダメ）・hit_big・slash・lunge・heal・buff・card_draw・energy・hover・win・lose・enemy_turn・negate・gold・forge・rest・burn。
+据え置き（Kenney）: card_draw（ドロー）・heal（回復）・buff（状態異常）・hit_big・slash・lunge・energy・hover・enemy_turn。勝敗ジングルは鳴らさない（ユーザー裁定「いらない」）。未選定: 成長（GrowthAdded・1秒以内の単発）・鍛える（forge）・burn。

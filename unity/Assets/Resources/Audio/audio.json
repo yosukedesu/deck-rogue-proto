@@ -245,14 +245,12 @@
       "volume": 0.7
     },
     "ui.win": {
-      "sfx": "win",
-      "volume": 0.8,
-      "jitter": 0.0
+      "sfx": null,
+      "_note": "ジングルは鳴らさない (2026-09-14 ユーザー裁定)"
     },
     "ui.lose": {
-      "sfx": "lose",
-      "volume": 0.8,
-      "jitter": 0.0
+      "sfx": null,
+      "_note": "ジングルは鳴らさない (2026-09-14 ユーザー裁定)"
     },
     "_presenter": "Presenter が絵に合わせて鳴らす鍵 (2026-09-14): DamageDealt.* / BlockGained / TurnStarted / TurnEnded / HpHealed / StatusInflicted / GrowthAdded",
     "DamageDealt.player.swing": {
