@@ -60,7 +60,7 @@ namespace DeckRogue.Game
                     else if (g.WorkshopA < 0) g.WorkshopA = i;
                     else if (g.WorkshopB < 0) g.WorkshopB = i;
                     else { g.WorkshopA = g.WorkshopB; g.WorkshopB = i; }  // 3枚目は古い方と入れ替える
-                    Audio.Ui("fuse");
+                    Audio.Ui("click");   // 素材を選ぶのは選択音 (2026-09-14 ユーザー「カードセット時はかんかんかんでなく選択音」)
                     g.Rebuild();
                 },
                 500f, marked, starred);
@@ -135,7 +135,7 @@ namespace DeckRogue.Game
 
             int ia = g.WorkshopA, ib = g.WorkshopB;
             bool can = a != null && b != null && blocked == null && run.Gold >= price;
-            var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Play("buff", 0.9f); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, UiKit.Hex("#f0d58a"));
+            var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Ui("fuse"); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, UiKit.Hex("#f0d58a"));
             var fle = fuse.GetComponent<LayoutElement>();
             if (fle != null) UnityEngine.Object.Destroy(fle);
             UiKit.Anchor(fuse.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, 80f), new Vector2(-20f, 136f));
