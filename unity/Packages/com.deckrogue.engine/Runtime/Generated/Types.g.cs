@@ -423,9 +423,12 @@ namespace DeckRogue.Engine.Generated
     {
         [JsonProperty("kind")]
         public string Kind { get; init; } = default!;
-        /// <summary>実値 (筋力込み)。連撃 (hits&gt;1) では1ヒット分の値</summary>
+        /// <summary>実値 (筋力込み)。連撃 (hits&gt;1) では1ヒット分の値。 **筋力はライブ (2026-09-14 ユーザー裁定「本家どおり」)**: 攻撃は base (筋力抜きの素の値) を持ち、筋力が動くたび actual = max(1, base + 今の筋力〔連携込み〕) に引き直す (effects.ts refreshIntentValues)。応援役が先に動けば 同じフェーズの味方が強く殴る = 本家と同じ。威圧・脆弱・重りは表示と実行の読み取り時に掛ける</summary>
         [JsonProperty("actual")]
         public int Actual { get; init; }
+        /// <summary>攻撃の素の値 (ロール×打点倍率。筋力抜き)。攻撃以外は無い</summary>
+        [JsonProperty("base")]
+        public int? Base { get; init; }
         /// <summary>連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」</summary>
         [JsonProperty("hits")]
         public int? Hits { get; init; }
@@ -459,6 +462,8 @@ namespace DeckRogue.Engine.Generated
         public string Kind { get; init; } = default!;
         [JsonProperty("actual")]
         public int Actual { get; init; }
+        [JsonProperty("base")]
+        public int? Base { get; init; }
         [JsonProperty("hits")]
         public int? Hits { get; init; }
         [JsonProperty("inflict")]
@@ -1191,6 +1196,10 @@ namespace DeckRogue.Engine.Generated
         public string Trigger { get; init; } = default!;
         [JsonProperty("replaced")]
         public bool Replaced { get; init; }
+        [JsonProperty("before")]
+        public EnemyIntent? Before { get; init; }
+        [JsonProperty("after")]
+        public EnemyIntent? After { get; init; }
     }
 
     /// <summary>GameEvent: type="RegenTicked"</summary>

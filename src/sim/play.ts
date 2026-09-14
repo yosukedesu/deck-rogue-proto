@@ -24,6 +24,7 @@ import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFuse
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
+import { STATUS_JA, describeGraph } from '../engine/enemyGraph.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
 const INTENT_KIND_JA: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
@@ -164,14 +165,14 @@ function describeEventOutcome(prev: RunState, next: RunState): string | null {
 function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
   const mirror = (it as EnemyIntent).mirrorHits === true
   const hits = mirror ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
-  const inflict = it.inflict ? `+状態異常(${it.inflict.status}${it.inflict.amount})` : ''
+  const inflict = it.inflict ? `+${STATUS_JA[it.inflict.status] ?? it.inflict.status}${it.inflict.amount}` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
   const breaks = it.alsoDestroySet === true ? '伏せ破壊+' : ''
   const notes = intentModifierNotes(s, i, it)
   const shown = displayedIntentValue(s, i, it)
   const kinds: Record<string, string> = {
-    attack: `${breaks}攻撃${shown}${notes.length > 0 ? `(${notes.join('・')}: 実値${it.actual})` : ''}${hits}${guard}${buff}`,
+    attack: `${breaks}攻撃${shown}${notes.length > 0 ? `(${notes.join('・')}・素${it.actual})` : ''}${hits}${guard}${buff}`,
     defend: `防御${it.actual}${buff}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
@@ -205,7 +206,7 @@ function intentLine(s: GameState, i: number): string {
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
-    const cond = e.intent.conditionalOn === 'set' ? `伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
+    const cond = e.intent.conditionalOn === 'set' ? `生きた伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
     const now = effectiveIntent(s, i)!
     // 罠モデル (2026-09-13): 敵の伏せ反応は破壊分岐だけ。伏せ札が1枚でもあれば (準備中も) その分岐
     return `【${cond}】${branchText(s, i, e.intent.alt)} ／【なし】${branchText(s, i, base)} → 今は「${branchText(s, i, now)}」`
@@ -247,7 +248,8 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'StatusInflicted') L.push(` 状態異常:${e.status}${e.amount}`)
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)
       else if (e.type === 'ThornsReflected') L.push(` 🦔とげ反射${e.amount}(HP損失${e.hpLoss}。ブロックで吸収した分は損失に出ない)`)
-      else if (e.type === 'EnemySplit') L.push(` 🫠分裂! 倒した敵から${e.count}体が現れた`)
+      else if (e.type === 'EnemySplit') L.push(e.count === 1 ? ' ♻️再起動! 倒した敵が次の姿で立ち上がった' : ` 🫠分裂! 倒した敵から${e.count}体が現れた`)
+      else if (e.type === 'SetCardExpired') L.push(` ⏳期限切れ: ${cname(e.cardId)}(2回鳴らなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'})`)
       else if (e.type === 'EnemySummoned') L.push(e.count > 0 ? ` 👶召喚! ${e.count}体が現れた` : ' 👶召喚したが場が満杯で出なかった')
       else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
@@ -258,7 +260,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'DeathSaved') L.push(` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
-      else if (e.type === 'EnemyInterrupted') L.push(` ${e.trigger === 'damageTaken' ? '👁️目を覚ました!' : e.trigger === 'hpBelowHalf' ? '😾HPが半分を割った! 牙をむく' : '😤仲間が倒れた! 行動が変わる'}${e.replaced ? '(意図をその場で差し替え)' : '(次の宣言から)'}`)
+      else if (e.type === 'EnemyInterrupted') L.push(` ${e.trigger === 'damageTaken' ? '👁️目を覚ました!' : e.trigger === 'hpBelowHalf' ? '😾HPが半分を割った! 牙をむく' : '😤仲間が倒れた! 行動が変わる'}${e.replaced ? `(意図をその場で差し替え${e.before && e.after ? `: ${branchText(s, e.enemyIndex, e.before)} → ${branchText(s, e.enemyIndex, e.after)}` : ''})` : '(次の宣言から)'}`)
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
       else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
@@ -287,7 +289,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const defense = p.block + p.iceBlock
     const through = Math.max(0, incoming - defense)
     L.push(
-      `⚠️ 今フェーズの被ダメ予測: ${incoming}（現在の防御 ${defense} → 貫通 ${through} / HP ${p.hp}）`,
+      `⚠️ 今フェーズの被ダメ予測: ${incoming}（現在の防御 ${defense} → 通る ${through} / HP ${p.hp}）`,
     )
   }
   s.enemies.forEach((e, i) => {
@@ -300,6 +302,8 @@ function renderBattle(s: GameState, logFrom: number): string {
       e.stolenGold ? `💰${e.stolenGold}G抱え込み(逃す前に倒せば取り返す)` : '',
     ].filter(Boolean).join(' ')
     L.push(`敵${i}: ${def.name} HP${Math.max(0, e.hp)}/${e.maxHp} ${tags} → 意図: ${intentLine(s, i)}`)
+    // 行動グラフを戦闘中にも (2026-09-14 Opus AB: 次の拍が攻撃かどうかで罠を置くか決まる=図鑑を開かずに読める)
+    if (s.hideIntents !== true) L.push(`   行動: ${describeGraph(def).join(' ／ ')}`)
   })
   // 消滅置き場・亡骸は伏せの有無と無関係に出す (旧実装は伏せ条件の if に巻き込まれていた)
   if (p.exhaustPile.length > 0) {
@@ -439,7 +443,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           : ''
       // 印字コストと実コストが違う時だけ注記 (2026-09-03 Opusラン G: 重圧で2E消費なのに「1E」表示のまま手順を組んで滑った)
       const costNote =
-        c.def.xCost === true || cost === c.def.cost
+        c.def.xCost === true || cost === c.def.cost || c.def.type === 'reaction' // 伏せるコストは割引の対象外 (Opus AB #3: リアクションに「割引/無料」の注記は嘘)
           ? ''
           : ` ⚠実コスト${cost}E(印字${c.def.cost}E${cost > c.def.cost ? '・重圧' : '・割引/無料'})`
       // 上限参照はターン開始時のスナップショットを読む (T1は素の上限)。その場の実値を出す (同ラン指摘②)

@@ -103,7 +103,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'DiscountGained': return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
     case 'BurnTick': return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
-    case 'EnemySplit': return { text: `🫠 分裂！ 倒した敵から${e.count}体が現れた`, cls: 'log-bad' }
+    case 'EnemySplit': return { text: e.count === 1 ? '♻️ 再起動！ 倒した敵が次の姿で立ち上がった' : `🫠 分裂！ 倒した敵から${e.count}体が現れた`, cls: 'log-bad' }
     case 'EnemySummoned': return { text: e.count > 0 ? `👶 召喚！ ${e.count}体が現れた` : '👶 召喚したが場が満杯で出なかった', cls: 'log-bad' }
     case 'EnemyHatched': return { text: '🐣 孵化した！', cls: 'log-bad' }
     case 'GuardianRedirected': return { text: '🛡️ 庇われた！ 単体対象は護衛に向かった', cls: 'log-info' }
@@ -117,7 +117,8 @@ export function logLine(e: GameEvent): LogLine | null {
           : e.trigger === 'hpBelowHalf' ? '😾 HPが半分を割った！ 牙をむく'
             : e.trigger === 'alone' ? '😤 仲間が全滅した！ 転職する'
               : '😤 仲間が倒れた！ 行動が変わる'
-      return { text: `${what}${e.replaced ? '（意図をその場で差し替え）' : '（次の宣言から）'}`, cls: 'log-bad' }
+      const pair = e.before !== undefined && e.after !== undefined ? `: ${intentText(e.before)} → ${intentText(e.after)}` : ''
+      return { text: `${what}${e.replaced ? `（意図をその場で差し替え${pair}）` : '（次の宣言から）'}`, cls: 'log-bad' }
     }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':

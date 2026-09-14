@@ -3,6 +3,7 @@
 // 絵文字はフォント次第で豆腐になるので使わず、角括弧のラベルで表す。
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
@@ -503,7 +504,7 @@ namespace DeckRogue.Game
             if (it == null) return "---";
             string text = IntentLine(it, Effects.DisplayedIntentValue(st, enemyIndex, it.Kind, it.Actual));
             var notes = Effects.IntentModifierNotes(st, enemyIndex, it.Kind);
-            return notes.Count > 0 ? text + " (" + string.Join("・", notes) + ": 実値" + it.Actual + ")" : text;
+            return notes.Count > 0 ? text + " (" + string.Join("・", notes) + "・素" + it.Actual + ")" : text;
         }
 
         /// <summary>その敵の今の意図 (伏せ分岐の解決込み)</summary>
@@ -519,7 +520,7 @@ namespace DeckRogue.Game
             {
                 // EffectiveIntent は条件を満たさない時だけ raw をそのまま返す (参照が同じ)
                 bool altActive = !object.ReferenceEquals(eff, raw);
-                string what = raw.ConditionalOn == "set" ? "からくり" : "従者";
+                string what = raw.ConditionalOn == "set" ? "鳴るからくり" : "従者";
                 s += "  【" + what + (altActive ? "あり" : "なし") + "分岐】";
                 if (!altActive) s += " ※" + what + "があると: " + LiveIntentLine(st, enemyIndex, BranchToIntent(raw.Alt));
             }
@@ -540,22 +541,34 @@ namespace DeckRogue.Game
             };
         }
 
-        /// <summary>技の短い表記「攻撃7〜9×2」「防御12〜17」「筋力+2」(予告向け。TS summary.ts moveShort)</summary>
-        public static string MoveShort(EnemyMove m)
+        /// <summary>技の短い表記「攻撃7〜9×2」「防御12〜17」「筋力+2」(予告向け。TS enemyGraph.ts moveLabel)。strength で攻撃の幅に今の筋力を足す</summary>
+        public static string MoveShort(EnemyMove m, int strength = 0)
         {
             string mark = KindJa(m.Kind);
-            string range = m.Min.HasValue ? (m.Min == m.Max ? m.Min.Value.ToString() : m.Min.Value + "〜" + m.Max) : "";
+            int add = m.Kind == "attack" ? strength : 0;
+            int? lo = m.Min.HasValue ? (int?)Math.Max(m.Kind == "attack" ? 1 : m.Min.Value, m.Min.Value + add) : null;
+            int? hi = m.Max.HasValue ? (int?)Math.Max(m.Kind == "attack" ? 1 : m.Max.Value, m.Max.Value + add) : null;
+            string range = lo.HasValue ? (lo == hi ? lo.Value.ToString() : lo.Value + "〜" + hi) : "";
             string sign = (m.Kind == "buff" || m.Kind == "rally") ? "+" : "";
             string hits = m.MirrorHits == true ? "×手数" : ((m.Hits ?? 1) > 1 ? "×" + m.Hits.Value : "");
-            string inflict = m.Inflict != null ? "+" + m.Inflict.Status + m.Inflict.Amount : "";
+            string inflict = m.Inflict != null ? "+" + StatusName(m.Inflict.Status) + m.Inflict.Amount : "";
             return mark + sign + range + hits + inflict;
         }
 
-        /// <summary>敵カードに常時出す特性タグ (フェアネス)</summary>
-        public static string EnemyTraits(EnemyDef d)
+        static bool HasOtherAlive(GameState st, int index)
+        {
+            if (st == null) return true;
+            for (int j = 0; j < st.Enemies.Count; j++) if (j != index && st.Enemies[j].Hp > 0) return true;
+            return false;
+        }
+
+        /// <summary>敵カードに常時出す特性タグ (フェアネス)。st/index を渡すと割り込みの予告に今の筋力・HP半分の線・残りを添える (2026-09-14)</summary>
+        public static string EnemyTraits(EnemyDef d, GameState st = null, int index = -1)
         {
             if (d == null) return "";
             var t = new List<string>();
+            var e = st != null && index >= 0 && index < st.Enemies.Count ? st.Enemies[index] : null;
+            int strength = e != null && st != null ? Effects.EffectiveStrength(st, index) : 0;
             if (d.Armor.HasValue) t.Add("装甲" + d.Armor.Value);
             if (d.TurnArmor.HasValue) t.Add("ターン装甲" + d.TurnArmor.Value);
             if (d.Thorns.HasValue) t.Add("とげ" + d.Thorns.Value);
@@ -577,11 +590,20 @@ namespace DeckRogue.Game
                 for (int k = 0; k < d.Interrupts.Count; k++)
                 {
                     var it = d.Interrupts[k];
+                    if (e != null && e.FiredInterrupts != null && e.FiredInterrupts.Contains(k)) continue; // 発火済み
+                    // 最初の2手を並べる。攻撃の幅には今の筋力を足す (未宣言の技は幅・宣言済みは実値、の2層)
                     var first = EnemyGraph.FirstMoveOf(d, it.Goto);
-                    string arrow = first != null ? "→" + MoveShort(first) : "";
-                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add("累計" + (it.Amount ?? 0) + "ダメで目覚め" + arrow);
-                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add("HP半分で" + arrow);
-                    else if (it.On == EnemyInterruptTriggers.Alone) t.Add("仲間が全滅すると" + arrow);
+                    string arrow = "";
+                    if (first != null)
+                    {
+                        arrow = "→" + MoveShort(first, strength);
+                        EnemyNode node; string nextId = d.Nodes.TryGetValue(it.Goto, out node) && node.Move != null ? node.Next : null;
+                        var second = nextId != null && nextId != it.Goto ? EnemyGraph.FirstMoveOf(d, nextId) : null;
+                        if (second != null) arrow += "→" + MoveShort(second, strength);
+                    }
+                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add("累計" + (it.Amount ?? 0) + "ダメ" + (e != null ? "(あと" + Math.Max(0, (it.Amount ?? 0) - (e.DamageTakenTotal ?? 0)) + ")" : "") + "で目覚め" + arrow);
+                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add("HP半分" + (e != null ? "(" + (e.MaxHp / 2) + ")" : "") + "で" + arrow);
+                    else if (it.On == EnemyInterruptTriggers.Alone) { if (e == null || HasOtherAlive(st, index)) t.Add("仲間が全滅すると" + arrow); }
                     else if (it.On == EnemyInterruptTriggers.AllyDied) t.Add("仲間が倒れると" + arrow);
                 }
             }
@@ -660,13 +682,13 @@ namespace DeckRogue.Game
             var r2 = ev as GameEvent_MomentumDischarged; if (r2 != null) return "勢い" + r2.Spent + "を全て放出!";
             var s2 = ev as GameEvent_AetherGained; if (s2 != null) return "霊気+" + s2.Amount;
             var t3 = ev as GameEvent_AetherDischarged; if (t3 != null) return "霊気" + t3.Spent + "を全て放出!";
-            var u2 = ev as GameEvent_EnemySplit; if (u2 != null) return "分裂! 倒した敵から" + u2.Count + "体が現れた";
+            var u2 = ev as GameEvent_EnemySplit; if (u2 != null) return u2.Count == 1 ? "再起動! 倒した敵が次の姿で立ち上がった" : "分裂! 倒した敵から" + u2.Count + "体が現れた";
             var v2 = ev as GameEvent_EnemyHatched; if (v2 != null) return "孵化した!";
             var w2 = ev as GameEvent_GuardianRedirected; if (w2 != null) return "庇われた! 単体対象は護衛に向かった";
             var x2 = ev as GameEvent_BurrowBroken; if (x2 != null) return "潜伏の殻が割れた! 次の行動は噛みつき";
             var y2 = ev as GameEvent_EnemyStaggered; if (y2 != null) return "完全に防いだ! 敵は体勢を崩し、次の行動は隙";
             var zs = ev as GameEvent_EnemySummoned; if (zs != null) return zs.Count > 0 ? "召喚! " + zs.Count + "体が現れた" : "召喚したが場が満杯で出なかった";
-            var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました!" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を割った! 牙をむく" : "仲間が倒れた! 行動が変わる") + (z2.Replaced ? " (意図をその場で差し替え)" : " (次の宣言から)");
+            var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました!" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を割った! 牙をむく" : "仲間が倒れた! 行動が変わる") + (z2.Replaced ? " (意図をその場で差し替え" + (z2.Before != null && z2.After != null ? ": " + IntentLine(z2.Before) + " → " + IntentLine(z2.After) : "") + ")" : " (次の宣言から)");
             var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが弾いた (" + a3.Effect + ")";
             var b3 = ev as GameEvent_ScaldTick; if (b3 != null) return "火傷・烙印" + b3.Count + "枚が疼いた (HP-" + b3.Amount + ")";
             var c3 = ev as GameEvent_CombatEnded; if (c3 != null) return c3.Result == "won" ? "=== 勝利 ===" : "=== 敗北 ===";

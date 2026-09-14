@@ -354,10 +354,7 @@ function angerGuardWatchers(state: GameState): GameState {
   for (let i = 0; i < s.enemies.length; i++) {
     const anger = getEnemyDef(s.enemies[i].enemyId).angerOnBlock
     if (s.enemies[i].hp > 0 && anger !== undefined) {
-      s = {
-        ...s,
-        enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + anger } : x)),
-      }
+      s = gainEnemyStrength(s, i, anger)
       s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: anger })
     }
   }
@@ -820,6 +817,45 @@ export function breakBurrowIfCracked(state: GameState, enemyIndex: number): Game
   return emit({ ...state, enemies }, { type: 'BurrowBroken', enemyIndex })
 }
 
+/** 今の筋力 (連携=他の仲間が生きている間 +N を含む)。宣言・表示・実行が同じ式を読む */
+export function effectiveStrength(state: GameState, enemyIndex: number): number {
+  const e = state.enemies[enemyIndex]
+  const def = getEnemyDef(e.enemyId)
+  const bond = def.bondStrength !== undefined && state.enemies.some((o, j) => j !== enemyIndex && o.hp > 0) ? def.bondStrength : 0
+  return e.strength + bond
+}
+
+/** 攻撃の実値 = max(1, 素の値 + 今の筋力) (筋力ライブ 2026-09-14) */
+export function attackValue(state: GameState, enemyIndex: number, it: { readonly kind: EnemyActionKind; readonly actual: number; readonly base?: number }): number {
+  if (it.kind !== 'attack' || it.base === undefined) return it.actual
+  return Math.max(1, it.base + effectiveStrength(state, enemyIndex))
+}
+
+/**
+ * 筋力込みの実値を引き直す (筋力ライブ 2026-09-14 ユーザー裁定「本家どおり」): 攻撃の意図 (分岐も) の actual を
+ * base + 今の筋力 (連携込み) で再計算する。筋力が動いた時・仲間が倒れた時 (連携) に呼ぶ
+ */
+export function refreshIntentValues(state: GameState): GameState {
+  let changed = false
+  const enemies = state.enemies.map((e, i) => {
+    const it = e.intent
+    if (!it || e.hp <= 0) return e
+    const actual = attackValue(state, i, it)
+    const alt = it.alt !== undefined ? { ...it.alt, actual: attackValue(state, i, it.alt) } : undefined
+    if (actual === it.actual && (alt === undefined || alt.actual === it.alt!.actual)) return e
+    changed = true
+    return { ...e, intent: { ...it, actual, ...(alt !== undefined ? { alt } : {}) } }
+  })
+  return changed ? { ...state, enemies } : state
+}
+
+/** 敵の筋力を増減して意図の実値を引き直す (全ての筋力の変化はここを通る) */
+export function gainEnemyStrength(state: GameState, enemyIndex: number, amount: number): GameState {
+  if (amount === 0) return state
+  const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, strength: e.strength + amount } : e))
+  return refreshIntentValues({ ...state, enemies })
+}
+
 /** combat.ts が起動時に差し込む「1体の意図を宣言し直す」関数 (effects → combat の循環 import を避ける) */
 let redeclareHook: (state: GameState, enemyIndex: number) => GameState = (s) => s
 export function bindRedeclare(fn: (state: GameState, enemyIndex: number) => GameState): void {
@@ -855,8 +891,11 @@ export function applyInterrupts(state: GameState, enemyIndex: number, only?: rea
       return { ...moved, moveUses: uses, lastMoves: last[0] === x.intentMoveId ? last.slice(1) : last, intentMoveId: undefined, intentNode: undefined }
     }),
   }
-  s = emit(s, { type: 'EnemyInterrupted', enemyIndex, trigger, replaced: replace })
-  return replace ? redeclareHook(s, enemyIndex) : s
+  if (!replace) return emit(s, { type: 'EnemyInterrupted', enemyIndex, trigger, replaced: false })
+  // 差し替え: 宣言し直してから前後を並べたログを出す (Opus AB3「防御14 → 攻撃20」)
+  const before = e.intent ?? undefined
+  s = redeclareHook(s, enemyIndex)
+  return emit(s, { type: 'EnemyInterrupted', enemyIndex, trigger, replaced: true, ...(before !== undefined ? { before } : {}), ...(s.enemies[enemyIndex].intent !== null ? { after: s.enemies[enemyIndex].intent! } : {}) })
 }
 
 /** 被弾の瞬間の割り込み (HP半分の豹変・被弾覚醒)。どの経路の被弾でも (延焼ティック含む) */
@@ -976,12 +1015,7 @@ export function dealDamageToEnemy(
         Math.floor(before / defE.enrageEveryDamage)
       const gain = crossings * (defE.enrage ?? 2)
       if (gain > 0) {
-        s = {
-          ...s,
-          enemies: s.enemies.map((e, i) =>
-            i === enemyIndex ? { ...e, strength: e.strength + gain } : e,
-          ),
-        }
+        s = gainEnemyStrength(s, enemyIndex, gain)
         s = emit(s, { type: 'StrengthGained', enemyIndex, amount: gain, reason: 'enrage-damage' })
       }
     }
@@ -1259,8 +1293,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.hp <= 0 || amount === 0) return state
-      const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, strength: e.strength + amount } : e))
-      return emit({ ...state, enemies }, { type: 'StrengthGained', enemyIndex, amount })
+      return emit(gainEnemyStrength(state, enemyIndex, amount), { type: 'StrengthGained', enemyIndex, amount })
     }
     case 'weakenEnemy': {
       // 威圧 (白): 敵の強化を下げる (確定済みルール表「威圧（白）」)

@@ -346,7 +346,7 @@ namespace DeckRogue.Engine
                 if (total == 0 || total % every.Value != 0) continue;
                 int amount = def.Enrage ?? 0;
                 if (amount <= 0) continue;
-                s = WithEnemy(s, i, x => x with { Strength = x.Strength + amount });
+                s = Effects.GainEnemyStrength(s, i, amount);
                 s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = i, Amount = amount, Reason = "enrage-cards" });
             }
             return s;
@@ -378,11 +378,8 @@ namespace DeckRogue.Engine
             var s = state;
             var rawEnemy = s.Enemies[i];
             var def = Content.GetEnemyDef(rawEnemy.EnemyId);
-            // 連携: 他の仲間が生存中は攻撃+N (宣言時判定)
-            bool anyOtherAlive = false;
-            for (int j = 0; j < s.Enemies.Count; j++) if (j != i && s.Enemies[j].Hp > 0) { anyOtherAlive = true; break; }
-            int bond = (def.BondStrength != null && anyOtherAlive) ? def.BondStrength.Value : 0;
-            var enemy = bond > 0 ? rawEnemy with { Strength = rawEnemy.Strength + bond } : rawEnemy;
+            // 連携: 筋力ライブ (2026-09-14) なので仲間が倒れた瞬間に素へ戻る
+            var enemy = rawEnemy with { Strength = Effects.EffectiveStrength(s, i) };
             // 盗んだ敵は次の宣言で必ず逃走する。flee の move を持たない盗人でも合成の逃走を宣言する
             EnemyMove fleeMove = null;
             for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Kind == EnemyActionKinds.Flee) { fleeMove = def.Moves[k]; break; }
@@ -453,9 +450,17 @@ namespace DeckRogue.Engine
                 var (altIdx, rngB) = Rng.WeightedIndex(rng, weightsA);
                 rng = rngB;
                 var altMove = EnemyGraph.MoveById(def, reactTable[altIdx].To);
-                var (altIntent, rngC) = BuildIntent(rng, altMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                rng = rngC;
-                alt = ToBranch(altIntent);
+                if (altMove.Id == move.Id)
+                {
+                    // 同じ技の両分岐は同じロール (2026-09-14 Opus AB3)
+                    alt = ToBranch(intent);
+                }
+                else
+                {
+                    var (altIntent, rngC) = BuildIntent(rng, altMove, enemy.Strength, enemy.AtkScale ?? 1.0);
+                    rng = rngC;
+                    alt = ToBranch(altIntent);
+                }
             }
 
             var declared = (conditionalOn != null && alt != null) ? intent with { ConditionalOn = conditionalOn, Alt = alt } : intent;
@@ -497,6 +502,7 @@ namespace DeckRogue.Engine
         {
             Kind = it.Kind,
             Actual = it.Actual,
+            Base = it.Base,
             Hits = it.Hits,
             Inflict = it.Inflict,
             AlsoDefend = it.AlsoDefend,
@@ -530,6 +536,8 @@ namespace DeckRogue.Engine
             {
                 Kind = move.Kind,
                 Actual = clamp(scale(actual) + bonus),
+                // 筋力ライブ (2026-09-14): 攻撃は素の値を持ち、筋力が動くたび Actual を引き直す (Effects.RefreshIntentValues)
+                Base = move.Kind == EnemyActionKinds.Attack ? (int?)scale(actual) : null,
                 Hits = gHits,
                 MirrorHits = move.MirrorHits == true ? (bool?)true : null,
                 Inflict = move.Inflict,
@@ -674,7 +682,7 @@ namespace DeckRogue.Engine
                     var amount = Content.GetEnemyDef(s.Enemies[j].EnemyId).MournStrength;
                     if (amount == null || amount <= 0) continue;
                     int amt = amount.Value;
-                    s = WithEnemy(s, j, x => x with { Strength = x.Strength + amt });
+                    s = Effects.GainEnemyStrength(s, j, amt);
                     s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = j, Amount = amt, Reason = "mourn" });
                 }
             }
@@ -716,6 +724,8 @@ namespace DeckRogue.Engine
             state = ProcessMourning(state);
             // 仲間が倒れた瞬間の割り込み (行動グラフ 2026-09-14: allyDied / alone。自ターン中なら意図を即差し替え)
             state = Effects.ApplyDeathInterrupts(state);
+            // 連携 (bondStrength) は仲間が倒れた瞬間に素へ戻る = 宣言済みの実値も引き直す (筋力ライブ)
+            state = Effects.RefreshIntentValues(state);
             if (state.Player.Hp <= 0)
             {
                 // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
@@ -1511,7 +1521,7 @@ namespace DeckRogue.Engine
                         int gain = crossings * (defE.Enrage ?? 2);
                         if (gain > 0)
                         {
-                            s = WithEnemy(s, i, e => e with { Strength = e.Strength + gain });
+                            s = Effects.GainEnemyStrength(s, i, gain);
                             s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = i, Amount = gain, Reason = "enrage-damage" });
                         }
                     }
@@ -1580,6 +1590,7 @@ namespace DeckRogue.Engine
                 {
                     Kind = acting.Kind,
                     Actual = acting.Actual,
+                    Base = acting.Base,
                     Hits = acting.Hits,
                     MirrorHits = acting.MirrorHits == true ? (bool?)true : null,
                     Inflict = acting.Inflict,
@@ -1906,7 +1917,7 @@ namespace DeckRogue.Engine
                     if (intent.AlsoBuff != null && enemyIndex < sa.Enemies.Count && sa.Enemies[enemyIndex] != null && sa.Enemies[enemyIndex].Hp > 0)
                     {
                         int ab = intent.AlsoBuff.Value;
-                        sa = WithEnemy(sa, enemyIndex, e => e with { Strength = e.Strength + ab });
+                        sa = Effects.GainEnemyStrength(sa, enemyIndex, ab);
                         sa = Events.Emit(sa, new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = ab });
                     }
                     // 威圧の消費: 攻撃行動を1回実行するたび1減る (多段は1行動で1)
@@ -1933,7 +1944,7 @@ namespace DeckRogue.Engine
                     if (intent.AlsoBuff != null && enemyIndex < s.Enemies.Count && s.Enemies[enemyIndex] != null && s.Enemies[enemyIndex].Hp > 0)
                     {
                         int ab = intent.AlsoBuff.Value;
-                        s = WithEnemy(s, enemyIndex, e => e with { Strength = e.Strength + ab });
+                        s = Effects.GainEnemyStrength(s, enemyIndex, ab);
                         s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = ab });
                     }
                     return markResolved(s, 0);
@@ -1941,7 +1952,7 @@ namespace DeckRogue.Engine
                 case EnemyActionKinds.Buff:
                 {
                     // 強化 (StSの筋力): 以降の攻撃宣言に加算される
-                    var enemies = MapIdx(state.Enemies, (e, i) => i == enemyIndex ? e with { Strength = e.Strength + intent.Actual } : e);
+                    var enemies = Effects.GainEnemyStrength(state, enemyIndex, intent.Actual).Enemies;
                     return markResolved(
                         Events.Emit(state with { Enemies = enemies }, new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = intent.Actual }),
                         0);
@@ -2040,12 +2051,12 @@ namespace DeckRogue.Engine
                 case EnemyActionKinds.Rally:
                 {
                     // 応援: 生存する味方全体の強化
-                    var enemies = MapIdx(state.Enemies, (e, _) => e.Hp > 0 ? e with { Strength = e.Strength + intent.Actual } : e);
-                    var s = state with { Enemies = enemies };
+                    var s = state;
                     for (int i = 0; i < s.Enemies.Count; i++)
                     {
                         if (s.Enemies[i].Hp > 0)
                         {
+                            s = Effects.GainEnemyStrength(s, i, intent.Actual);
                             s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = i, Amount = intent.Actual });
                         }
                     }
@@ -2217,7 +2228,7 @@ namespace DeckRogue.Engine
                 {
                     // 上限なし = 本家のソフトタイマー
                     int amount = def.Enrage.Value;
-                    s = WithEnemy(s, i, x => x with { Strength = x.Strength + amount });
+                    s = Effects.GainEnemyStrength(s, i, amount);
                     s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = i, Amount = amount, Reason = "enrage-phase" });
                 }
             }

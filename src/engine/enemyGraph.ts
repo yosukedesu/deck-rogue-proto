@@ -435,27 +435,75 @@ export function firstMoveOf(def: EnemyDef, nodeId: string): EnemyMove | undefine
 
 // ---- 図鑑・CLI 向けの1行化 ----
 
-function condText(c: EnemyCondition): string {
+function condText(def: EnemyDef, c: EnemyCondition, label: (moveId: string) => string): string {
   const parts: string[] = []
   if (c.hpBelowHalf) parts.push('HP半分以下')
   if (c.alone) parts.push('仲間が全滅')
   if (c.allyAlive) parts.push('仲間が生存')
-  if (c.usesAtLeast) parts.push(`${c.usesAtLeast.move}を${c.usesAtLeast.count}回使った`)
+  if (c.usesAtLeast) parts.push(`${def.moves.some((m) => m.id === c.usesAtLeast!.move) ? label(c.usesAtLeast.move) : c.usesAtLeast.move}を${c.usesAtLeast.count}回使った`)
   if (c.damageTakenAtLeast !== undefined) parts.push(`累計${c.damageTakenAtLeast}被弾`)
   if (c.turnParity) parts.push(c.turnParity === 'odd' ? '奇数ターン' : '偶数ターン')
   if (c.alliesFewerThan !== undefined) parts.push(`味方が${c.alliesFewerThan}体未満`)
   return parts.join('かつ') || '常に'
 }
 
+/** 状態異常の日本語名 (engine 側の表示用。UI の STATUS_LABEL と同じ語) */
+export const STATUS_JA: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた', scald: '火傷', restrain: '拘束', mist: '霞み', slow: '重り' }
+
 /**
- * start (または任意の節) から辿った行動の並びを文字列に。乱択は候補を「{a 2/b 1}」・条件は「(条件? then : else)」・
- * 既に通った節に戻ったら「→(id へ戻る)」で止める。技名は id で出す (表示側で名前に置き換えてよい)
+ * 技の既定の表記「⚔️12〜16×2+虚弱1」(2026-09-14 Opus AB/AB2/AB3: 図鑑の行動欄が生IDで読めなかった)。
+ * strength を渡すと攻撃の幅に今の筋力を足す (予告チップ: 未宣言の技は幅・宣言済みは実値、の2層)
  */
-export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: string) => string = (m) => m): string {
-  const seen = new Set<string>()
+export function moveLabel(def: EnemyDef, moveId: string, strength = 0): string {
+  const m = def.moves.find((x) => x.id === moveId)
+  if (!m) return moveId
+  const mark: Record<string, string> = { attack: '⚔️', defend: '🛡️', buff: '💪', rally: '📣', hex: '🧿', heal: '💚', 'steal-gold': '💰', flee: '🏃', rest: '😮‍💨', hatch: '🐣', mill: '📖', 'destroy-set': '💥', 'destroy-token': '🪓', summon: '👶' }
+  const add = m.kind === 'attack' ? strength : 0
+  const lo = m.min !== undefined ? Math.max(m.kind === 'attack' ? 1 : m.min, m.min + add) : undefined
+  const hi = m.max !== undefined ? Math.max(m.kind === 'attack' ? 1 : m.max, m.max + add) : undefined
+  const range = lo !== undefined ? (lo === hi ? `${lo}` : `${lo}〜${hi}`) : ''
+  const sign = m.kind === 'buff' || m.kind === 'rally' ? '+' : ''
+  const hits = m.mirrorHits === true ? '×手数' : (m.hits ?? 1) > 1 ? `×${m.hits}` : ''
+  const inflict = m.inflict ? `+${STATUS_JA[m.inflict.status] ?? m.inflict.status}${m.inflict.amount}` : ''
+  const riders = `${m.alsoDefend !== undefined ? `+盾${m.alsoDefend}` : ''}${m.alsoBuff !== undefined ? `+筋${m.alsoBuff}` : ''}${m.alsoDestroySet === true ? '+壊し' : ''}${m.growPerUse !== undefined ? `(+${m.growPerUse}/回)` : ''}${m.growHitsPerUse !== undefined ? `(ヒット+${m.growHitsPerUse}/回)` : ''}`
+  const summon = m.summon ? `${summonName(m.summon.enemyId)}×${m.summon.count}` : ''
+  return `${mark[m.kind] ?? m.kind}${sign}${range}${hits}${inflict}${riders}${summon}`
+}
+
+function summonName(enemyId: string): string {
+  try {
+    return enemyDefLookup(enemyId).name
+  } catch {
+    return enemyId
+  }
+}
+
+/** 節から決定的に辿れる最初の n 手の技 (乱択・条件に当たったらそこまで)。予告チップ向け */
+export function previewMoves(def: EnemyDef, nodeId: string, n: number): EnemyMove[] {
+  const out: EnemyMove[] = []
+  let cur = nodeId
+  for (let i = 0; i < n; i++) {
+    const first = firstMoveOf(def, cur)
+    if (!first) break
+    out.push(first)
+    // 次の節へ (技の節を辿った先。乱択/条件ならそこで止まる)
+    const node = def.nodes[cur]
+    if (!node || node.move === undefined) break
+    if (node.next === undefined || node.next === cur) break
+    cur = node.next
+  }
+  return out
+}
+
+/**
+ * start (または任意の節) から辿った行動の並びを文字列に。乱択は候補を「乱択{a 2/b 1}」・条件は両側を1段展開して
+ * 「(条件? A→… : B→…)」・既に通った節に戻ったら「→(◯へ戻る)」で止める。技は既定で moveLabel の表記
+ * (2026-09-14: 生IDと条件節が「条件」止まりで読めなかった、への処方)
+ */
+export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: string) => string = (m) => moveLabel(def, m), seen: Set<string> = new Set(), budget = 10): string {
   const out: string[] = []
   let cur = from
-  for (let guard = 0; guard < 24; guard++) {
+  for (let guard = 0; guard < budget; guard++) {
     const node = def.nodes[cur]
     if (!node) return `${out.join('→')}→?${cur}`
     if (seen.has(cur)) {
@@ -482,7 +530,9 @@ export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: s
       break
     }
     if (node.if !== undefined) {
-      out.push(`(${condText(node.if)}? ${node.then !== undefined ? labelOfNode(def, node.then, label) : '?'} : ${node.else !== undefined ? labelOfNode(def, node.else, label) : '?'})`)
+      const then = node.then !== undefined ? describeGraphFrom(def, node.then, label, new Set(seen), 4) : '?'
+      const els = node.else !== undefined ? describeGraphFrom(def, node.else, label, new Set(seen), 4) : '?'
+      out.push(`(${condText(def, node.if, label)}? ${then} : ${els})`)
       break
     }
     break

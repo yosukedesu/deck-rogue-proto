@@ -652,7 +652,7 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
 function liveIntentText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
   const text = intentText(it, displayedIntentValue(s, i, it))
   const notes = intentModifierNotes(s, i, it)
-  return notes.length > 0 ? `${text}（${notes.join('・')}: 実値${it.actual}）` : text
+  return notes.length > 0 ? `${text}（${notes.join('・')}・素${it.actual}）` : text
 }
 
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
@@ -671,7 +671,7 @@ function conditionalIntentText(s: GameState, i: number): string {
   const altText = liveIntentText(s, i, intent.alt)
   if (altText === baseText) return baseText
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
-  const cond = intent.conditionalOn === 'set' ? `伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
+  const cond = intent.conditionalOn === 'set' ? `生きた伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.actual === intent.alt.actual && active.hits === intent.alt.hits
   return `【${cond}】${altText}${isAlt ? '◀今これ' : ''} ／【なし】${baseText}${isAlt ? '' : '◀今これ'}`
@@ -1838,7 +1838,7 @@ function BattleScreen({
                       <span className="chip">😴 {kw('眠り')}: 累計{sleepingInterrupt(enemyDef, enemy)?.amount ?? 0}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
                     )}
                     {enemyDef.moves.some((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined) && !dead && (
-                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}/使用（現在${enemy.moveUses?.[m.id] ?? 0}回）`).join('・')}</span>
+                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}/使用（今${m.growPerUse ? `+${m.growPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}乗り）`).join('・')}</span>
                     )}
                     {enemyDef.guardian === true && !dead && (
                       <span className="chip chip-strength">🛡️ {kw('庇う')}</span>
@@ -1863,7 +1863,7 @@ function BattleScreen({
                     {enemyDef.interrupts?.some((it, k) => it.on === 'hpBelowHalf' && (enemy.firedInterrupts ?? []).includes(k)) &&
                       !dead && <span className="chip chip-strength">😾 牙をむいている</span>}
                     {/* 割り込みの予告 (2026-09-14 即時差し替え): 引き金と最初の技を並べる。自ターン中に立てば意図がその場で変わる */}
-                    {!dead && interruptPreviews(enemyDef, enemy)
+                    {!dead && interruptPreviews(enemyDef, enemy, s, i)
                       .filter((p) => p.trigger !== 'damageTaken' && !(p.trigger === 'alone' && !s.enemies.some((o, j) => j !== i && o.hp > 0)))
                       .map((p) => (
                         <span key={p.index} className="chip">{p.trigger === 'hpBelowHalf' ? '😾' : '😤'} {p.text}</span>

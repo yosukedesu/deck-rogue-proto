@@ -159,13 +159,19 @@ describe('グラフの評価 (新しく書ける形)', () => {
     expect([0, 1, 2].map((k) => advanceCursor(wide, k))).toEqual(['surge', 'rand', 'rand'])
   })
 
-  it('describeGraph: 図鑑向けの1行 (並び・乱択・割り込み)', () => {
-    expect(describeGraph(getEnemyDef('enemy_probe'))[0]).toBe('poke→guard→poke→lunge→(pokeへ戻る)')
-    expect(describeGraph(getEnemyDef('enemy_wide_power'))[0]).toBe('surge→乱択{surge 3/coil 1}')
-    const brute = describeGraph(getEnemyDef('enemy_brute'))
+  it('describeGraph: 図鑑向けの1行 (技の表記・乱択・条件の1段展開・割り込み。2026-09-14 Opus 3本「生IDで読めない」の処方)', () => {
+    const raw = (m: string) => m
+    expect(describeGraph(getEnemyDef('enemy_probe'), raw)[0]).toBe('poke→guard→poke→lunge→(pokeへ戻る)')
+    expect(describeGraph(getEnemyDef('enemy_probe'))[0]).toBe('⚔️5〜7→🛡️7〜10+筋1→⚔️5〜7→⚔️12〜16→(⚔️5〜7へ戻る)')
+    expect(describeGraph(getEnemyDef('enemy_wide_power'), raw)[0]).toBe('surge→乱択{surge 3/coil 1}')
+    const brute = describeGraph(getEnemyDef('enemy_brute'), raw)
     expect(brute[1]).toBe('HP半分で→rage_flurry→rage_flurry→war_roar→(rage_flurryへ戻る)')
-    const egg = describeGraph(getEnemyDef('enemy_elite_iron_egg'))
+    const egg = describeGraph(getEnemyDef('enemy_elite_iron_egg'), raw)
     expect(egg[1]).toBe('累計20被弾で→awaken→tail→(繰り返し)')
+    // 条件の節は両側を1段展開 (蛙の騎士: 一度きりの突進が見える)
+    expect(describeGraph(getEnemyDef('enemy_frog_knight'), raw)[0]).toContain('(HP半分以下? (beetle_chargeを1回使った? (tongue_lashへ戻る) : beetle_charge→(tongue_lashへ戻る)) : (tongue_lashへ戻る))')
+    // 召喚者は条件から始まり、両側の輪が見える
+    expect(describeGraph(getEnemyDef('enemy_moss_spawner'))[0]).toBe('(味方が3体未満? 👶苔スライム×1→⚔️9〜12→🛡️6〜9+筋1→(条件へ戻る) : ⚔️9〜12→🛡️6〜9+筋1→(条件へ戻る))')
   })
 
   it('旧形の定義 (テスト・調整モード) は読込時に同じ変換を受ける', () => {
@@ -324,5 +330,46 @@ describe('Opus AB の挙動の疑い2件 (2026-09-14)', () => {
     expect(s.negateNextAction).toBe(false)
     // 敵1 は普通に殴ってくる
     expect(s.eventLog.some((e) => e.type === 'DamageDealt' && e.source === 'enemy' && e.enemyIndex === 1)).toBe(true)
+  })
+})
+
+describe('筋力ライブ (2026-09-14 ユーザー裁定「本家どおり」): 宣言済みの攻撃の実値は筋力が動いた瞬間に引き直す', () => {
+  it('応援役が先に動くと、同じフェーズの味方の攻撃がその場で強くなる', () => {
+    let s = freshCombat('set-confirm', 'enc_probe_pair', 42)
+    s = { ...s, player: { ...s.player, hp: 500, maxHp: 500, block: 0 } }
+    const str1 = s.enemies[1].strength
+    s = {
+      ...s,
+      enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'rally' as const, actual: 3 } } : { ...e, intent: { kind: 'attack' as const, actual: 5 + str1, base: 5 } })),
+    }
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    const hits = s.eventLog.filter((e) => e.type === 'DamageDealt' && e.source === 'enemy' && e.enemyIndex === 1)
+    expect(hits.length).toBe(1)
+    expect(hits[0].type === 'DamageDealt' ? hits[0].amount : 0).toBe(5 + str1 + 3) // 素5 + 筋力 + 応援3 (旧: 宣言時固定で応援は乗らない)
+  })
+
+  it('自ターン中の筋力上昇 (鬼軍曹のブロック反応) は宣言済みの実値にその場で乗る', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_sergeant', 42)
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    const before = s.enemies[0].intent!
+    expect(before.kind).toBe('attack')
+    s = withHand(s, ['green_guard'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid })
+    expect(s.enemies[0].strength).toBe(1)
+    expect(s.enemies[0].intent!.actual).toBe(before.actual + 1)
+    expect(s.enemies[0].intent!.base).toBe(before.base)
+  })
+
+  it('連携 (双牙の狼): 相方を倒した瞬間に宣言済みの実値が素へ戻る', () => {
+    let s = freshCombat('set-confirm', 'enc_fang_twins', 42)
+    const it0 = s.enemies[0].intent!
+    expect(it0.kind).toBe('attack')
+    expect(it0.actual).toBe(it0.base! + 2)
+    s = { ...s, enemies: s.enemies.map((e, i) => (i === 1 ? { ...e, hp: 1 } : e)), player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid, targetIndex: 1 })
+    expect(s.enemies[1].hp).toBeLessThanOrEqual(0)
+    expect(s.enemies[0].intent!.actual).toBe(it0.base) // 連携+2 が落ちた
   })
 })

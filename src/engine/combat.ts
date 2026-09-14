@@ -9,7 +9,7 @@ import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } f
 import { resolveFusedDef } from './fusion.ts'
 import { applyDamageInterrupts, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
-import { applyDeathInterrupts, bindRedeclare } from './effects.ts'
+import { applyDeathInterrupts, bindRedeclare, effectiveStrength, gainEnemyStrength, refreshIntentValues } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -288,10 +288,7 @@ function tickCardTimers(state: GameState): GameState {
     if (total === 0 || total % every !== 0) continue
     const amount = def.enrage ?? 0
     if (amount <= 0) continue
-    s = {
-      ...s,
-      enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),
-    }
+    s = gainEnemyStrength(s, i, amount)
     s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount, reason: 'enrage-cards' })
   }
   return s
@@ -320,12 +317,8 @@ function declareOne(state: GameState, i: number): GameState {
   let s = state
   const rawEnemy = s.enemies[i]
   const def = getEnemyDef(rawEnemy.enemyId)
-  // 連携 (2026-09-02): 他の仲間が生存中は攻撃+N (宣言時判定 = 宣言時固定の既存則)
-  const bond =
-    def.bondStrength !== undefined && s.enemies.some((o, j) => j !== i && o.hp > 0)
-      ? def.bondStrength
-      : 0
-  const enemy = bond > 0 ? { ...rawEnemy, strength: rawEnemy.strength + bond } : rawEnemy
+  // 連携 (2026-09-02): 他の仲間が生存中は攻撃+N。筋力ライブ (2026-09-14) なので仲間が倒れた瞬間に素へ戻る
+  const enemy = { ...rawEnemy, strength: effectiveStrength(s, i) }
   // 盗んだ敵は次の宣言で必ず逃走する (2026-08-30。宣言即成立の盗みが「倒せば全額戻る」で
   // 無害化していた実測への処方 = 「1ターン以内に倒せ」のレースを尖らせる)
   // flee の move を持たない盗人 (金羽の大鴉) でも合成の逃走を宣言する (2026-08-31 青ラン発見:
@@ -393,9 +386,14 @@ function declareOne(state: GameState, i: number): GameState {
     rng = rngB
     const altMove = def.moves.find((m) => m.id === reactTable[altIdx].to)
     if (!altMove) throw new Error(`敵 ${def.id} の反応テーブルが未定義の技を参照: ${reactTable[altIdx].to}`)
-    const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
-    rng = rngC
-    alt = altIntent
+    if (altMove.id === move.id) {
+      // 同じ技の両分岐は同じロール (2026-09-14 Opus AB3: 「あり11／なし17」が同じ smash で「伏せると弱くなる」に見えた)
+      alt = intent
+    } else {
+      const [altIntent, rngC] = buildIntent(rng, altMove, enemy.strength, enemy.atkScale ?? 1)
+      rng = rngC
+      alt = altIntent
+    }
   }
 
   const declared = conditionalOn && alt ? { ...intent, conditionalOn, alt } : intent
@@ -457,13 +455,15 @@ function buildIntent(
   if (move.kind === 'summon') actual = move.summon?.count ?? 0 // 召喚: 意図の数字は出す体数
   const bonus = move.kind === 'attack' ? strength : 0
   // 打点倍率 (幕2/3+15%): 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算 =
-  // 幅表示・実値・per-hit のすべてに同じ規則で効く (alsoDefend・付与量は対象外)
+  // 実値・per-hit のすべてに同じ規則で効く (alsoDefend・付与量は対象外)
   const scale = (v: number) => (move.kind === 'attack' ? Math.round(v * atkScale) : v)
   const clamp = (v: number) => (move.kind === 'attack' ? Math.max(1, v) : v)
   return [
     {
       kind: move.kind,
       actual: clamp(scale(actual) + bonus),
+      // 筋力ライブ (2026-09-14): 攻撃は素の値を持ち、筋力が動くたび actual を引き直す (refreshIntentValues)
+      ...(move.kind === 'attack' ? { base: scale(actual) } : {}),
       hits: gHits,
       ...(move.mirrorHits === true ? { mirrorHits: true } : {}),
       inflict: move.inflict,
@@ -613,10 +613,7 @@ function processMourning(state: GameState): GameState {
       if (j === i || s.enemies[j].hp <= 0) continue
       const amount = getEnemyDef(s.enemies[j].enemyId).mournStrength
       if (amount === undefined || amount <= 0) continue
-      s = {
-        ...s,
-        enemies: s.enemies.map((x, k) => (k === j ? { ...x, strength: x.strength + amount } : x)),
-      }
+      s = gainEnemyStrength(s, j, amount)
       s = emit(s, { type: 'StrengthGained', enemyIndex: j, amount, reason: 'mourn' })
     }
   }
@@ -655,6 +652,8 @@ export function checkCombatEnd(state: GameState): GameState {
   state = processMourning(state)
   // 仲間が倒れた瞬間の割り込み (行動グラフ 2026-09-14: allyDied / alone。自ターン中なら意図を即差し替え)
   state = applyDeathInterrupts(state)
+  // 連携 (bondStrength) は仲間が倒れた瞬間に素へ戻る = 宣言済みの実値も引き直す (筋力ライブ)
+  state = refreshIntentValues(state)
   if (state.player.hp <= 0) {
     // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
     if (state.deathSave === true && state.deathSaveUsed !== true) {
@@ -1388,10 +1387,7 @@ export function endTurn(state: GameState): GameState {
           Math.floor(before / defE.enrageEveryDamage)
         const gain = crossings * (defE.enrage ?? 2)
         if (gain > 0) {
-          s = {
-            ...s,
-            enemies: s.enemies.map((e, j) => (j === i ? { ...e, strength: e.strength + gain } : e)),
-          }
+          s = gainEnemyStrength(s, i, gain)
           s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: gain, reason: 'enrage-damage' })
         }
       }
@@ -1459,6 +1455,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     const locked: EnemyIntent = {
       kind: acting.kind,
       actual: acting.actual,
+      ...(acting.base !== undefined ? { base: acting.base } : {}),
       ...(acting.hits !== undefined ? { hits: acting.hits } : {}),
       ...(acting.mirrorHits === true ? { mirrorHits: true } : {}),
       ...(acting.inflict !== undefined ? { inflict: acting.inflict } : {}),
@@ -1802,12 +1799,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       // 攻撃と同時の強化 (alsoBuff 2026-09-01): バフ専用ターン=無償ターンを作らずに雪だるまを見せる。
       // 打ち消せば強化ごと消える (行動単位の無効化に自然に乗る)
       if (intent.alsoBuff !== undefined && s.enemies[enemyIndex] && s.enemies[enemyIndex].hp > 0) {
-        s = {
-          ...s,
-          enemies: s.enemies.map((e, j) =>
-            j === enemyIndex ? { ...e, strength: e.strength + intent.alsoBuff! } : e,
-          ),
-        }
+        s = gainEnemyStrength(s, enemyIndex, intent.alsoBuff)
         s = emit(s, { type: 'StrengthGained', enemyIndex, amount: intent.alsoBuff })
       }
       // 威圧の消費: 攻撃行動を1回実行するたび1減る (多段は1行動で1)
@@ -1833,23 +1825,15 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       // 防御と同時の強化 (2026-09-03 用心深い影「隠れる」: 今守らせる代わりに次の斬撃が重くなる = 伏せ分岐を
       // 「押せるスイッチ」から交換に変える。攻撃の alsoBuff と同じく打ち消せば強化ごと消える)
       if (intent.alsoBuff !== undefined && s.enemies[enemyIndex] && s.enemies[enemyIndex].hp > 0) {
-        s = {
-          ...s,
-          enemies: s.enemies.map((e, j) =>
-            j === enemyIndex ? { ...e, strength: e.strength + intent.alsoBuff! } : e,
-          ),
-        }
+        s = gainEnemyStrength(s, enemyIndex, intent.alsoBuff)
         s = emit(s, { type: 'StrengthGained', enemyIndex, amount: intent.alsoBuff })
       }
       return markResolved(s, 0)
     }
     case 'buff': {
-      // 強化 (StSの筋力): 以降の攻撃宣言に加算される
-      const enemies = state.enemies.map((e, i) =>
-        i === enemyIndex ? { ...e, strength: e.strength + intent.actual } : e,
-      )
+      // 強化 (StSの筋力): 宣言済みの攻撃にもその場で乗る (筋力ライブ 2026-09-14)
       return markResolved(
-        emit({ ...state, enemies }, { type: 'StrengthGained', enemyIndex, amount: intent.actual }),
+        emit(gainEnemyStrength(state, enemyIndex, intent.actual), { type: 'StrengthGained', enemyIndex, amount: intent.actual }),
         0,
       )
     }
@@ -1957,13 +1941,11 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       return markResolved(millPlayerDeck(state, intent.actual, enemyIndex), 0)
     }
     case 'rally': {
-      // 応援: 生存する味方全体の強化 (確定済みルール表「応援（ラリー）」)
-      const enemies = state.enemies.map((e) =>
-        e.hp > 0 ? { ...e, strength: e.strength + intent.actual } : e,
-      )
-      let s: GameState = { ...state, enemies }
+      // 応援: 生存する味方全体の強化 (確定済みルール表「応援（ラリー）」)。宣言済みの味方の攻撃にもその場で乗る (筋力ライブ)
+      let s: GameState = state
       for (let i = 0; i < s.enemies.length; i++) {
         if (s.enemies[i].hp > 0) {
+          s = gainEnemyStrength(s, i, intent.actual)
           s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount: intent.actual })
         }
       }
@@ -2134,10 +2116,7 @@ function finishEnemyPhase(state: GameState): GameState {
       // 上限なし = 本家のソフトタイマー (2026-08-26)。長引かせるほど手が付けられなくなる。
       // 抑えているのは「積む敵は短命 (門番のHPを下げた)」と「威圧が全色にある」の2点
       const amount = def.enrage
-      s = {
-        ...s,
-        enemies: s.enemies.map((x, j) => (j === i ? { ...x, strength: x.strength + amount } : x)),
-      }
+      s = gainEnemyStrength(s, i, amount)
       s = emit(s, { type: 'StrengthGained', enemyIndex: i, amount, reason: 'enrage-phase' })
     }
   }

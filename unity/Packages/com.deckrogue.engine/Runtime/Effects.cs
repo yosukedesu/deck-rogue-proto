@@ -427,7 +427,7 @@ namespace DeckRogue.Engine
                 if (s.Enemies[i].Hp > 0 && anger != null)
                 {
                     int gain = anger.Value;
-                    s = s with { Enemies = MapEnemy(s.Enemies, i, x => x with { Strength = x.Strength + gain }) };
+                    s = GainEnemyStrength(s, i, gain);
                     s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = i, Amount = gain });
                 }
             }
@@ -954,6 +954,52 @@ namespace DeckRogue.Engine
             return Events.Emit(state with { Enemies = enemies }, new GameEvent_BurrowBroken { EnemyIndex = enemyIndex });
         }
 
+        /// <summary>今の筋力 (連携=他の仲間が生きている間 +N を含む)。宣言・表示・実行が同じ式を読む (筋力ライブ 2026-09-14)</summary>
+        public static int EffectiveStrength(GameState state, int enemyIndex)
+        {
+            var e = state.Enemies[enemyIndex];
+            var def = Content.GetEnemyDef(e.EnemyId);
+            bool anyOther = false;
+            for (int j = 0; j < state.Enemies.Count; j++) if (j != enemyIndex && state.Enemies[j].Hp > 0) { anyOther = true; break; }
+            int bond = (def.BondStrength != null && anyOther) ? def.BondStrength.Value : 0;
+            return e.Strength + bond;
+        }
+
+        /// <summary>攻撃の実値 = max(1, 素の値 + 今の筋力)</summary>
+        public static int AttackValue(GameState state, int enemyIndex, string kind, int actual, int? baseValue)
+        {
+            if (kind != EnemyActionKinds.Attack || baseValue == null) return actual;
+            return Math.Max(1, baseValue.Value + EffectiveStrength(state, enemyIndex));
+        }
+
+        /// <summary>筋力込みの実値を引き直す (攻撃の意図と分岐)。筋力が動いた時・仲間が倒れた時 (連携) に呼ぶ</summary>
+        public static GameState RefreshIntentValues(GameState state)
+        {
+            bool changed = false;
+            var enemies = new List<EnemyState>(state.Enemies.Count);
+            for (int i = 0; i < state.Enemies.Count; i++)
+            {
+                var e = state.Enemies[i];
+                var it = e.Intent;
+                if (it == null || e.Hp <= 0) { enemies.Add(e); continue; }
+                int actual = AttackValue(state, i, it.Kind, it.Actual, it.Base);
+                EnemyIntentBranch alt = it.Alt;
+                if (alt != null) alt = alt with { Actual = AttackValue(state, i, alt.Kind, alt.Actual, alt.Base) };
+                if (actual == it.Actual && (alt == null || alt.Actual == it.Alt.Actual)) { enemies.Add(e); continue; }
+                changed = true;
+                enemies.Add(e with { Intent = it with { Actual = actual, Alt = alt } });
+            }
+            return changed ? state with { Enemies = enemies } : state;
+        }
+
+        /// <summary>敵の筋力を増減して意図の実値を引き直す (全ての筋力の変化はここを通る)</summary>
+        public static GameState GainEnemyStrength(GameState state, int enemyIndex, int amount)
+        {
+            if (amount == 0) return state;
+            var enemies = MapEnemy(state.Enemies, enemyIndex, e => e with { Strength = e.Strength + amount });
+            return RefreshIntentValues(state with { Enemies = enemies });
+        }
+
         /// <summary>
         /// 割り込み (2026-09-14 行動グラフ): 引き金が立った瞬間にカーソルを飛ばす。
         /// 即時差し替え (ユーザー裁定「原因限定」): 自ターン中なら宣言済みの意図をその場で宣言し直す
@@ -981,8 +1027,12 @@ namespace DeckRogue.Engine
                 if (last.Count > 0 && last[0] == x.IntentMoveId) last.RemoveAt(0);
                 return moved with { MoveUses = uses, LastMoves = last, IntentMoveId = null, IntentNode = null };
             });
-            var s = Events.Emit(state with { Enemies = enemies }, new GameEvent_EnemyInterrupted { EnemyIndex = enemyIndex, Trigger = trigger, Replaced = replace });
-            return replace ? Combat.DeclareOne(s, enemyIndex) : s;
+            var s = state with { Enemies = enemies };
+            if (!replace) return Events.Emit(s, new GameEvent_EnemyInterrupted { EnemyIndex = enemyIndex, Trigger = trigger, Replaced = false });
+            // 差し替え: 宣言し直してから前後を並べたログを出す (Opus AB3「防御14 → 攻撃20」)
+            var before = e.Intent;
+            s = Combat.DeclareOne(s, enemyIndex);
+            return Events.Emit(s, new GameEvent_EnemyInterrupted { EnemyIndex = enemyIndex, Trigger = trigger, Replaced = true, Before = before, After = s.Enemies[enemyIndex].Intent });
         }
 
         /// <summary>被弾の瞬間の割り込み (HP半分の豹変・被弾覚醒)。どの経路の被弾でも</summary>
@@ -1102,7 +1152,7 @@ namespace DeckRogue.Engine
                     int gain = crossings * (defE.Enrage ?? 2);
                     if (gain > 0)
                     {
-                        s = s with { Enemies = MapEnemy(s.Enemies, enemyIndex, e => e with { Strength = e.Strength + gain }) };
+                        s = GainEnemyStrength(s, enemyIndex, gain);
                         s = Events.Emit(s, new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = gain, Reason = "enrage-damage" });
                     }
                 }
@@ -1350,8 +1400,7 @@ namespace DeckRogue.Engine
                     int amount = effect.Amount ?? 0;
                     var enemy = EnemyAt(state, enemyIndex);
                     if (enemy == null || enemy.Hp <= 0 || amount == 0) return state;
-                    var enemies = MapEnemy(state.Enemies, enemyIndex, e => e with { Strength = e.Strength + amount });
-                    return Events.Emit(state with { Enemies = enemies }, new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = amount });
+                    return Events.Emit(GainEnemyStrength(state, enemyIndex, amount), new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = amount });
                 }
                 case "weakenEnemy":
                 {

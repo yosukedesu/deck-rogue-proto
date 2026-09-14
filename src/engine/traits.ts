@@ -132,14 +132,14 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     tags.push(`眠り(累計${sleeping.amount ?? 0}ダメで目覚める。現在${e.damageTakenTotal ?? 0})`)
   }
   // 割り込みの予告 (2026-09-14 即時差し替え): 自ターン中に立てば意図がその場で変わる
-  for (const p of interruptPreviews(def, e)) {
+  for (const p of interruptPreviews(def, e, s, i)) {
     if (p.trigger === 'damageTaken') continue
     if (p.trigger === 'alone' && !s.enemies.some((o, j) => j !== i && o.hp > 0)) continue
     tags.push(`${p.text}(自ターン中に立てば意図がその場で変わる)`)
   }
   const growing = def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined)
   if (growing.length > 0) {
-    tags.push(`育つ技(${growing.map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}・現在${e.moveUses?.[m.id] ?? 0}回`).join('/')})`)
+    tags.push(`育つ技(${growing.map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}・今${m.growPerUse ? `+${m.growPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}乗り`).join('/')})`)
   }
   if (def.angerOnBlock) tags.push(`ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)`)
   if (def.regen && e.hp > e.maxHp * 0.5) tags.push(`再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}`)

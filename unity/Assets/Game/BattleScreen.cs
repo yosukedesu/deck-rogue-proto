@@ -303,7 +303,7 @@ namespace DeckRogue.Game
             if ((e.Weak ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("shield", "威圧" + e.Weak.Value));
             if ((e.Artifact ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("set", "AF" + e.Artifact.Value));
             if (e.BurrowActive == true) chips.Add(new KeyValuePair<string, string>("shield", "潜伏"));
-            string traits = CardText.EnemyTraits(def);
+            string traits = CardText.EnemyTraits(def, st, index);
             var chipRow = UiKit.NewRect("chips", pan);
             // 状態の札は頭の上 (2026-09-09「状態変化はキャラの頭の上に」)
             UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-40f, spriteTop + 2f), new Vector2(40f, spriteTop + 30f));
@@ -332,7 +332,7 @@ namespace DeckRogue.Game
             sb.Append("<b>").Append(def != null ? def.Name : ce.EnemyId).Append("</b>  HP ").Append(ce.Hp).Append(" / ").Append(ce.MaxHp);
             if (ce.Block > 0) sb.Append("  ブロック").Append(ce.Block);
             if (ce.Hp > 0) sb.Append("\n意図: ").Append(CardText.IntentText(cur, index));
-            string traits = CardText.EnemyTraits(def);
+            string traits = CardText.EnemyTraits(def, cur, index);
             if (traits.Length > 0) sb.Append("\n特性: ").Append(traits);
             return sb.ToString();
         }

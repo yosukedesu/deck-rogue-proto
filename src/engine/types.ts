@@ -220,8 +220,15 @@ export interface EnemyState extends CombatantState {
  */
 export interface EnemyIntent {
   readonly kind: EnemyActionKind
-  /** 実値 (筋力込み)。連撃 (hits>1) では1ヒット分の値 */
+  /**
+   * 実値 (筋力込み)。連撃 (hits>1) では1ヒット分の値。
+   * **筋力はライブ (2026-09-14 ユーザー裁定「本家どおり」)**: 攻撃は base (筋力抜きの素の値) を持ち、筋力が動くたび
+   * actual = max(1, base + 今の筋力〔連携込み〕) に引き直す (effects.ts refreshIntentValues)。応援役が先に動けば
+   * 同じフェーズの味方が強く殴る = 本家と同じ。威圧・脆弱・重りは表示と実行の読み取り時に掛ける
+   */
   readonly actual: number
+  /** 攻撃の素の値 (ロール×打点倍率。筋力抜き)。攻撃以外は無い */
+  readonly base?: number
   /** 連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」 */
   readonly hits?: number
   /** 手数の鏡: 実行時にヒット数=このターンのプレイ枚数 (最低1) になる。表示は「×手数」 */
@@ -248,6 +255,7 @@ export interface EnemyIntent {
 export interface EnemyIntentBranch {
   readonly kind: EnemyActionKind
   readonly actual: number
+  readonly base?: number
   readonly hits?: number
   readonly inflict?: StatusInflict
   readonly alsoDefend?: number
@@ -540,7 +548,7 @@ export type GameEvent =
   | { readonly type: 'ArtifactBlocked'; readonly enemyIndex: number; readonly effect: string } // アーティファクトがデバフを弾いた (2026-09-02)
   | { readonly type: 'BurrowBroken'; readonly enemyIndex: number } // 潜伏の殻が割れた (次の行動が噛みつきに)
   | { readonly type: 'EnemyStaggered'; readonly enemyIndex: number } // バランス崩し (2026-09-04)
-  | { readonly type: 'EnemyInterrupted'; readonly enemyIndex: number; readonly trigger: EnemyInterruptTrigger; readonly replaced: boolean } // 割り込み (2026-09-14 行動グラフ): HP半分の豹変・被弾覚醒・仲間の死亡。replaced=自ターン中に宣言済みの意図をその場で差し替えた
+  | { readonly type: 'EnemyInterrupted'; readonly enemyIndex: number; readonly trigger: EnemyInterruptTrigger; readonly replaced: boolean; readonly before?: EnemyIntent; readonly after?: EnemyIntent } // 割り込み (2026-09-14 行動グラフ): HP半分の豹変・被弾覚醒・仲間の死亡。replaced=自ターン中に宣言済みの意図をその場で差し替えた (before→after を並べてログに出す)
   | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
