@@ -809,7 +809,7 @@ namespace DeckRogue.Engine
             }
             int paidX = card.Def.XCost == true ? (xAmount ?? cost) : 0;
             // 増幅の薬 (2026-09-12 本家 Chemical X): X に+N (支払いは増えない)
-            int effX = paidX > 0 ? paidX + (state.XBonus ?? 0) : 0;
+            int effX = paidX > 0 ? paidX + (state.XBonus ?? 0) + (card.Def.XBonus ?? 0) : 0;   // 札側の X+N (触媒 cheaper × X。2026-09-14)
             var effCard = card;
             if (effX != 0)
             {

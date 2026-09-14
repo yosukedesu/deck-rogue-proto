@@ -19,6 +19,19 @@ if (args.Length > 0 && args[0] == "dump-save")
 {
     return DumpSave(args.Skip(1).ToArray());
 }
+if (args.Length > 0 && args[0] == "fuse")
+{
+    // 合成の照合 (2026-09-14): dotnet run -- fuse <cardIdA> <cardIdB> [--data dir] → 結果の CardDef を JSON で出す (TS の fuseCards と突き合わせる)
+    var dataDir = "../../src/data";
+    var ids = new List<string>();
+    for (int i = 1; i < args.Length; i++) { if (args[i] == "--data" && i + 1 < args.Length) { dataDir = args[++i]; continue; } ids.Add(args[i]); }
+    if (ids.Count != 2) { Console.Error.WriteLine("usage: dotnet run -- fuse <cardIdA> <cardIdB> [--data <src/data>]"); return 2; }
+    Content.Load(dataDir);
+    var fa = new CardInstance { Uid = "t_" + ids[0], Def = Content.GetCardDef(ids[0]) };
+    var fb = new CardInstance { Uid = "t_" + ids[1], Def = Content.GetCardDef(ids[1]) };
+    Console.WriteLine(JsonConvert.SerializeObject(Fusion.FuseCards(fa, fb), JsonUnions.Settings));
+    return 0;
+}
 
 var path = args.Length > 0 ? args[0] : "../../goldens/rng-golden.json";
 if (!File.Exists(path))

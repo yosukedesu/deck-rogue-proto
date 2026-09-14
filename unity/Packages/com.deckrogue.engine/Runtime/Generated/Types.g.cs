@@ -1874,6 +1874,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>Xコスト (確定済みルール表「Xコスト」2026-08-29): プレイ時に現在のエナジーを全て支払い、 支払った量Xを xHits 効果が参照する。プレイ条件はエナジー1以上。割引の対象外。 **払う量 X は 1〜現在のエナジーから選ぶ (PlayCard.xAmount。省略=全部)。上限は無い (2026-09-03 一時置いた上限4は同日撤廃=本家形: 効率を本家の比率〔1Eコモンの約80%〕に合わせ、X の大きさで制限しない)** cost フィールドは名目値 (カーブ集計用に1を置く)</summary>
         [JsonProperty("xCost", NullValueHandling = NullValueHandling.Ignore)]
         public bool? XCost { get; init; }
+        /// <summary>X札の解決時に払った量へ+N (2026-09-14 合成の触媒 cheaper × X 札 = 「X+1」。増幅の薬 GameState.xBonus と加算)</summary>
+        [JsonProperty("xBonus", NullValueHandling = NullValueHandling.Ignore)]
+        public int? XBonus { get; init; }
         /// <summary>猛り火 (延焼合計8以上) の間、このカードのコストがこの値だけ下がる (2026-08-30)</summary>
         [JsonProperty("blazeDiscount", NullValueHandling = NullValueHandling.Ignore)]
         public int? BlazeDiscount { get; init; }

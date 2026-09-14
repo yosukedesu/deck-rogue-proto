@@ -180,10 +180,15 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   // 引数の順序に依存しない (id順に正規化 = 決定性)
   const [a0, b0] = x.def.id <= y.def.id ? [x, y] : [y, x]
   const sameName = a0.def.id === b0.def.id
-  // X札は「両方がX」の時だけXのまま。片方だけなら典型X=3の固定量に畳む (机上レビュー S 提案1)
+  // X札は「両方がX」の時だけXのまま。片方だけなら典型X=3の固定量に畳む (机上レビュー S 提案1)。
+  // ただし X × 触媒は X のまま (2026-09-14 ユーザー「Xマナと触媒の合成で3マナになるのがクソ。Xのままで触媒を引き継ぐべき」):
+  // 触媒は基本札並みの小さな固定効果なので X に貼っても S の悪用 (5E札を1Eで) にならない。cheaper は「X+1」(CardDef.xBonus) に化ける
   const bothX = a0.def.xCost === true && b0.def.xCost === true
+  const oneX = (a0.def.xCost === true) !== (b0.def.xCost === true)
+  const catalystX = oneX && (a0.def.xCost === true ? b0 : a0).def.fusionCatalyst !== undefined
+  const keepX = bothX || catalystX
   const materialize = (c: CardInstance): CardInstance =>
-    c.def.xCost === true && !bothX
+    c.def.xCost === true && !keepX
       ? { ...c, def: { ...c.def, xCost: undefined, cost: 3, effects: c.def.effects.flatMap((e) => (e.xHits === true ? [0, 1, 2].map(() => ({ ...e, xHits: undefined })) : [e])) } }
       : c
   const a = materialize(a0)
@@ -200,7 +205,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   // 相手側のタイプで出してリアクションの効果をプレイ時へ変換する (旧「切り下げ分を量で払う」は量の無い効果の罠が無償で2Eになる穴)
   let domi = domi0
   let sub = sub0
-  if (domi0.def.type === 'reaction' && sub0.def.type !== 'reaction' && !bothX && rawSum > 2) {
+  if (domi0.def.type === 'reaction' && sub0.def.type !== 'reaction' && !keepX && rawSum > 2) {
     domi = sub0
     sub = domi0
   }
@@ -349,7 +354,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       const onPlayQ = effects.findIndex((e) => e.trigger === 'onPlay' && QUANTITY.has(e.effect) && e.amount !== undefined)
       if (onPlayQ >= 0) { effects[onPlayQ] = { ...effects[onPlayQ], amount: (effects[onPlayQ].amount ?? 0) + Math.round(unpaidVp) }; unpaidVp = 0 }
       else {
-        const slack = bothX ? 0 : Math.max(0, rawSum - Math.max(ca, cb))
+        const slack = keepX ? 0 : Math.max(0, rawSum - Math.max(ca, cb))
         costCut = Math.min(slack, Math.floor(unpaidVp / 6))
         unpaidVp -= costCut * 6
         if (unpaidVp >= 3) { effects.push({ trigger: 'onPlay', effect: 'gainBlock', amount: Math.round(unpaidVp) } as DeclarativeEffect) }
@@ -360,7 +365,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     }
   }
   // 5E上限で切った分は量を比例縮小して払う (S2: 真・巨獣の踏みつけ=5Eで100ダメ)
-  if (!bothX && rawSumUncapped > 5) {
+  if (!keepX && rawSumUncapped > 5) {
     const ratio = 5 / rawSumUncapped
     for (let i = 0; i < effects.length; i++) if (QUANTITY.has(effects[i].effect) && effects[i].amount !== undefined) effects[i] = { ...effects[i], amount: Math.max(1, Math.floor((effects[i].amount ?? 0) * ratio)) }
   }
@@ -379,19 +384,22 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     } else modes = [...(domi.def.modes ?? []), ...(sub.def.modes ?? [])]
   }
 
-  let cost = bothX ? 1 : rawSum
-  if (resultType === 'reaction' && !bothX && cost > 2) {
+  let cost = keepX ? 1 : rawSum
+  if (resultType === 'reaction' && !keepX && cost > 2) {
     // リアクション同士で2Eを超えた分は出力で払う (切り下げ1Eにつき最大の量効果−6)
     for (let cut = cost - 2; cut > 0; cut--) boostLargest(effects, -6)
     cost = 2
   }
   // 補償先の量効果が無い時はコストで返す (T2: 打ち消しが跡形もなく消えてコストだけ上がる下位互換)。下限は素材の高い方のコスト
-  if (unpaidVp >= 6 && !bothX) cost = Math.max(Math.max(ca, cb), cost - Math.floor(unpaidVp / 6))
-  if (costCut > 0) cost = Math.max(Math.max(ca, cb), cost - costCut)
-  // 合成の触媒 (2026-09-12): 軽くなる触媒は結果のコストをさらに−1 (0Eまで。0E+補充の消滅は下の歯止めが自動で付ける)
+  if (unpaidVp >= 6 && !keepX) cost = Math.max(Math.max(ca, cb), cost - Math.floor(unpaidVp / 6))
+  if (costCut > 0 && !keepX) cost = Math.max(Math.max(ca, cb), cost - costCut)
+  // 合成の触媒 (2026-09-12): 軽くなる触媒は結果のコストをさらに−1 (0Eまで。0E+補充の消滅は下の歯止めが自動で付ける)。
+  // X のまま (keepX) なら「X+1」= 払った量に+1 (2026-09-14。X は支払いが全額なので値引きの代わりに解決の量を増やす)
   const catalysts = [a.def.fusionCatalyst, b.def.fusionCatalyst]
   const cheaper = catalysts.filter((c) => c === 'cheaper').length
-  if (cheaper > 0 && !bothX) cost = Math.max(0, cost - cheaper)
+  let xBonus = (a.def.xBonus ?? 0) + (b.def.xBonus ?? 0)
+  if (cheaper > 0 && !keepX) cost = Math.max(0, cost - cheaper)
+  if (cheaper > 0 && keepX) xBonus += cheaper
   // 全体の触媒 (2026-09-12): 結果の単体ダメージが全体になる。放出・キル連鎖・ブロック変換など「敵ループと干渉する」効果は据え置き
   if (catalysts.includes('aoe')) {
     const toAll = (e: DeclarativeEffect): DeclarativeEffect => (AOE_CATALYST_OK.has(e.effect) && e.target === undefined ? { ...e, target: 'all' } : e)
@@ -416,7 +424,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const freeIfHandAll = a.def.freeIfHandAll ?? b.def.freeIfHandAll ?? (freeIfPhysical ? 'physical' : undefined)
   const freeIfMomentum = [a.def.freeIfMomentumAtLeast, b.def.freeIfMomentumAtLeast].filter((v): v is number => v !== undefined)
   const conditionalFree = freeIfHandAll !== undefined || freeIfMomentum.length > 0
-  if (!bothX && refills && (net - cost >= 0 || conditionalFree)) {
+  if (!keepX && refills && (net - cost >= 0 || conditionalFree)) {
     if (resultType !== 'permanent') exhaust = true
     else while (net - cost >= 0 && cost < 5) cost++
   }
@@ -442,7 +450,8 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     color: a.def.color,
     effects,
     ...(modes !== undefined ? { modes } : {}),
-    ...(bothX ? { xCost: true } : {}),
+    ...(keepX ? { xCost: true } : {}),
+    ...(keepX && xBonus > 0 ? { xBonus } : {}),
     ...(exhaust ? { exhaust: true } : {}),
     // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
     ...((a.def.retain === true || b.def.retain === true || catalysts.includes('retain')) && resultType !== 'permanent' ? { retain: true } : {}),
@@ -505,7 +514,11 @@ export function fusionNotes(a: CardInstance, b: CardInstance): string[] {
   for (const c of [a.def.fusionCatalyst, b.def.fusionCatalyst]) if (c !== undefined && CATALYST_JA[c]) notes.push(CATALYST_JA[c])
   const ca = a.def.xCost === true ? 3 : a.def.cost
   const cb = b.def.xCost === true ? 3 : b.def.cost
-  if ((a.def.xCost === true) !== (b.def.xCost === true)) notes.push('X札は片方だけなら X=3 の固定量に畳む')
+  if ((a.def.xCost === true) !== (b.def.xCost === true)) {
+    const other = a.def.xCost === true ? b.def : a.def
+    if (other.fusionCatalyst !== undefined) notes.push(other.fusionCatalyst === 'cheaper' ? '触媒 × X: X のまま。軽くなる触媒は「X+1」(払った量に+1して解決)' : '触媒 × X: X のまま (触媒の効果は固定量で乗る)')
+    else notes.push('X札は片方だけなら X=3 の固定量に畳む')
+  }
   if (ca === 0 || cb === 0) notes.push('0E素材は値引きにならない (高い方のコスト)')
   if (ca + cb - 1 > 5 && ca > 0 && cb > 0) notes.push('5E上限: 超えた分だけ量を比例縮小')
   const types = [a.def.type, b.def.type]

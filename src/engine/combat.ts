@@ -725,7 +725,7 @@ export function playCard(
   }
   const paidX = card.def.xCost === true ? (xAmount ?? cost) : 0
   // 増幅の薬 (2026-09-12 本家 Chemical X): X に+N (支払いは増えない)
-  const effX = paidX > 0 ? paidX + (state.xBonus ?? 0) : 0
+  const effX = paidX > 0 ? paidX + (state.xBonus ?? 0) + (card.def.xBonus ?? 0) : 0   // 札側の X+N (触媒 cheaper × X。2026-09-14) は増幅の薬と加算
   const expandX = (effects: readonly DeclarativeEffect[]): readonly DeclarativeEffect[] =>
     effX === 0
       ? effects

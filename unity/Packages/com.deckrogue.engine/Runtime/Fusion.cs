@@ -304,11 +304,15 @@ namespace DeckRogue.Engine
             CardInstance a0, b0;
             if (string.CompareOrdinal(x.Def.Id, y.Def.Id) <= 0) { a0 = x; b0 = y; } else { a0 = y; b0 = x; }
             bool sameName = a0.Def.Id == b0.Def.Id;
-            // X札は「両方がX」の時だけXのまま。片方だけなら典型X=3の固定量に畳む (机上レビュー S 提案1)
+            // X札は「両方がX」の時だけXのまま。片方だけなら典型X=3の固定量に畳む (机上レビュー S 提案1)。
+            // ただし X × 触媒は X のまま (2026-09-14 ユーザー「Xマナと触媒の合成で3マナになるのがクソ」)。cheaper は「X+1」(CardDef.XBonus)
             bool bothX = a0.Def.XCost == true && b0.Def.XCost == true;
+            bool oneX = (a0.Def.XCost == true) != (b0.Def.XCost == true);
+            bool catalystX = oneX && (a0.Def.XCost == true ? b0 : a0).Def.FusionCatalyst != null;
+            bool keepX = bothX || catalystX;
             CardInstance Materialize(CardInstance c)
             {
-                if (!(c.Def.XCost == true && !bothX)) return c;
+                if (!(c.Def.XCost == true && !keepX)) return c;
                 var eff = new List<DeclarativeEffect>();
                 foreach (var e in c.Def.Effects)
                 {
@@ -334,7 +338,7 @@ namespace DeckRogue.Engine
             // 相手側のタイプで出してリアクションの効果をプレイ時へ変換する (旧「切り下げ分を量で払う」は量の無い効果の罠が無償で2Eになる穴)
             var domi = domi0;
             var sub = sub0;
-            if (domi0.Def.Type == "reaction" && sub0.Def.Type != "reaction" && !bothX && rawSum > 2)
+            if (domi0.Def.Type == "reaction" && sub0.Def.Type != "reaction" && !keepX && rawSum > 2)
             {
                 domi = sub0;
                 sub = domi0;
@@ -581,7 +585,7 @@ namespace DeckRogue.Engine
                     }
                     else
                     {
-                        int slack = bothX ? 0 : Math.Max(0, rawSum - Math.Max(ca, cb));
+                        int slack = keepX ? 0 : Math.Max(0, rawSum - Math.Max(ca, cb));
                         costCut = Math.Min(slack, (int)Math.Floor(unpaidVp / 6.0));
                         unpaidVp -= costCut * 6;
                         if (unpaidVp >= 3)
@@ -598,7 +602,7 @@ namespace DeckRogue.Engine
                 }
             }
             // 5E上限で切った分は量を比例縮小して払う (S2: 真・巨獣の踏みつけ=5Eで100ダメ)
-            if (!bothX && rawSumUncapped > 5)
+            if (!keepX && rawSumUncapped > 5)
             {
                 double ratio = 5.0 / rawSumUncapped;
                 for (int i = 0; i < effects.Count; i++)
@@ -643,20 +647,23 @@ namespace DeckRogue.Engine
                 }
             }
 
-            int cost = bothX ? 1 : rawSum;
-            if (resultType == "reaction" && !bothX && cost > 2)
+            int cost = keepX ? 1 : rawSum;
+            if (resultType == "reaction" && !keepX && cost > 2)
             {
                 // リアクション同士で2Eを超えた分は出力で払う (切り下げ1Eにつき最大の量効果−6)
                 for (int cut = cost - 2; cut > 0; cut--) BoostLargest(effects, -6);
                 cost = 2;
             }
             // 補償先の量効果が無い時はコストで返す (T2: 打ち消しが跡形もなく消えてコストだけ上がる下位互換)。下限は素材の高い方のコスト
-            if (unpaidVp >= 6 && !bothX) cost = Math.Max(Math.Max(ca, cb), cost - (int)Math.Floor(unpaidVp / 6.0));
-            if (costCut > 0) cost = Math.Max(Math.Max(ca, cb), cost - costCut);
-            // 合成の触媒 (2026-09-12): 軽くなる触媒は結果のコストをさらに−1 (0Eまで。0E+補充の消滅は下の歯止めが自動で付ける)
+            if (unpaidVp >= 6 && !keepX) cost = Math.Max(Math.Max(ca, cb), cost - (int)Math.Floor(unpaidVp / 6.0));
+            if (costCut > 0 && !keepX) cost = Math.Max(Math.Max(ca, cb), cost - costCut);
+            // 合成の触媒 (2026-09-12): 軽くなる触媒は結果のコストをさらに−1 (0Eまで。0E+補充の消滅は下の歯止めが自動で付ける)。
+            // X のまま (keepX) なら「X+1」= 払った量に+1 (2026-09-14)
             var catalysts = new[] { a.Def.FusionCatalyst, b.Def.FusionCatalyst };
             int cheaper = catalysts.Count(c => c == "cheaper");
-            if (cheaper > 0 && !bothX) cost = Math.Max(0, cost - cheaper);
+            int xBonus = (a.Def.XBonus ?? 0) + (b.Def.XBonus ?? 0);
+            if (cheaper > 0 && !keepX) cost = Math.Max(0, cost - cheaper);
+            if (cheaper > 0 && keepX) xBonus += cheaper;
             // 全体の触媒 (2026-09-12): 結果の単体ダメージが全体になる。放出・キル連鎖・ブロック変換など「敵ループと干渉する」効果は据え置き
             if (catalysts.Contains("aoe"))
             {
@@ -690,7 +697,7 @@ namespace DeckRogue.Engine
             if (a.Def.FreeIfMomentumAtLeast != null) freeIfMomentum.Add(a.Def.FreeIfMomentumAtLeast.Value);
             if (b.Def.FreeIfMomentumAtLeast != null) freeIfMomentum.Add(b.Def.FreeIfMomentumAtLeast.Value);
             bool conditionalFree = freeIfHandAll != null || freeIfMomentum.Count > 0;
-            if (!bothX && refills && (net - cost >= 0 || conditionalFree))
+            if (!keepX && refills && (net - cost >= 0 || conditionalFree))
             {
                 if (resultType != "permanent") exhaust = true;
                 else while (net - cost >= 0 && cost < 5) cost++;
@@ -728,7 +735,8 @@ namespace DeckRogue.Engine
                 Color = a.Def.Color!,
                 Effects = effects,
                 Modes = modes,
-                XCost = bothX ? true : (bool?)null,
+                XCost = keepX ? true : (bool?)null,
+                XBonus = keepX && xBonus > 0 ? xBonus : (int?)null,
                 Exhaust = exhaust ? true : (bool?)null,
                 // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
                 Retain = ((a.Def.Retain == true || b.Def.Retain == true || catalysts.Contains("retain")) && resultType != "permanent") ? true : (bool?)null,
@@ -866,7 +874,12 @@ namespace DeckRogue.Engine
             if (Upgrade.IsUpgraded(a) || Upgrade.IsUpgraded(b)) notes.Add("鍛えの引き継ぎ: 鍛えていない側の素材も鍛えてから合体 (結果は+)");
             int ca = a.Def.XCost == true ? 3 : a.Def.Cost;
             int cb = b.Def.XCost == true ? 3 : b.Def.Cost;
-            if ((a.Def.XCost == true) != (b.Def.XCost == true)) notes.Add("X札は片方だけなら X=3 の固定量に畳む");
+            if ((a.Def.XCost == true) != (b.Def.XCost == true))
+            {
+                var other = a.Def.XCost == true ? b.Def : a.Def;
+                if (other.FusionCatalyst != null) notes.Add(other.FusionCatalyst == "cheaper" ? "触媒 × X: X のまま。軽くなる触媒は「X+1」(払った量に+1して解決)" : "触媒 × X: X のまま (触媒の効果は固定量で乗る)");
+                else notes.Add("X札は片方だけなら X=3 の固定量に畳む");
+            }
             if (ca == 0 || cb == 0) notes.Add("0E素材は値引きにならない (高い方のコスト)");
             if (ca + cb - 1 > 5 && ca > 0 && cb > 0) notes.Add("5E上限: 超えた分だけ量を比例縮小");
             var types = new[] { a.Def.Type, b.Def.Type };

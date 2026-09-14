@@ -94,8 +94,8 @@ export function summaryLine(s: BattleSummary): string {
  * すべてで X札が「1マナ」と表示されていた。CLIだけが独自に対応していたので共有関数に一本化した)。
  * discounted は「次のカード-N」適用後の実効コスト (素と違う時だけ渡す)。
  */
-export function cardCostLabel(def: { cost: number; xCost?: boolean }, discounted?: number): string {
-  if (def.xCost === true) return 'X' // 割引はXコストに効かない (確定済みルール表「Xコスト」)
+export function cardCostLabel(def: { cost: number; xCost?: boolean; xBonus?: number }, discounted?: number): string {
+  if (def.xCost === true) return (def.xBonus ?? 0) > 0 ? `X+${def.xBonus}` : 'X' // 割引はXコストに効かない (確定済みルール表「Xコスト」)。X+N は触媒 cheaper × X (2026-09-14)
   return String(discounted ?? def.cost)
 }
 

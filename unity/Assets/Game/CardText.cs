@@ -194,7 +194,7 @@ namespace DeckRogue.Game
         public static string CostLabel(CardDef def)
         {
             if (def == null) return "";
-            return def.XCost == true ? "X" : def.Cost.ToString();
+            return def.XCost == true ? ((def.XBonus ?? 0) > 0 ? "X+" + def.XBonus.Value : "X") : def.Cost.ToString();   // X+N は触媒 cheaper × X (2026-09-14)
         }
 
         /// <summary>カードIDから名前 (合成札は合成の解決器で復元する)</summary>
@@ -418,7 +418,7 @@ namespace DeckRogue.Game
         public static List<string> CostNotes(CardDef def)
         {
             var n = new List<string>();
-            if (def.XCost == true) n.Add("X: エナジーを全て払う");
+            if (def.XCost == true) n.Add((def.XBonus ?? 0) > 0 ? "X: エナジーを全て払う (払った量+" + def.XBonus.Value + "として解決)" : "X: エナジーを全て払う");
             if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.DiscardCost.Value + "枚を捨てる");
             if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.ExhaustCost.Value + "枚を消滅");
             if (def.NecroCost.HasValue) n.Add("亡骸プレイ " + def.NecroCost.Value + "E");

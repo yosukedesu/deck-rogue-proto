@@ -67,6 +67,35 @@ describe('合成の触媒', () => {
     expect(s.enemies.every((e) => e.hp === 999 - 6 - 3)).toBe(true)
   })
 
+  // 2026-09-14 ユーザー「Xマナと触媒の合成で3マナになるのがクソ。Xのままで触媒を引き継ぐべき」
+  it('X札 × 触媒は X のまま (X=3 の固定量に畳まない)。軽くなる触媒は「X+1」= 払った量に+1して解決', () => {
+    const r = fuseCards(ci('green_x_vine_flurry'), ci('green_catalyst_light')) // 蔦の連撃 (X: 4×X) × 軽石の盾 (cheaper・ブロック5)
+    expect(r.xCost).toBe(true)
+    expect(r.cost).toBe(1)
+    expect(r.xBonus).toBe(1)
+    expect(r.effects.some((e) => e.effect === 'dealDamage' && e.xHits === true)).toBe(true) // X参照は保つ
+    expect(r.effects.some((e) => e.effect === 'gainBlock')).toBe(true) // 触媒の効果は固定量で乗る
+    expect(fusionNotes(ci('green_x_vine_flurry'), ci('green_catalyst_light')).some((n) => n.includes('X+1'))).toBe(true)
+    // 実処理: 3E 払うと X=3+1=4 回ヒット
+    let s: GameState = startCombatWithOptions(7, 'set-confirm', 'enemy_probe', { deck: [ci('green_strike')] })
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 999, maxHp: 999, block: 0 })) }
+    s = { ...withHand(s, []), player: { ...s.player, hand: [{ uid: 'f', def: r }], energy: 3 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 'f' })
+    const perHit = r.effects.find((e) => e.effect === 'dealDamage' && e.xHits === true)!.amount ?? 0
+    expect(s.enemies[0].hp).toBe(999 - perHit * 4)
+    expect(s.player.energy).toBe(0)
+    // 他の触媒も X のまま: 反復・保持・全体
+    expect(fuseCards(ci('green_x_vine_flurry'), ci('green_catalyst_echo'))).toMatchObject({ xCost: true, echo: true })
+    expect(fuseCards(ci('green_x_vine_flurry'), ci('green_catalyst_root'))).toMatchObject({ xCost: true, retain: true })
+    const aoe = fuseCards(ci('green_x_vine_flurry'), ci('green_catalyst_spore'))
+    expect(aoe.xCost).toBe(true)
+    expect(aoe.effects.filter((e) => e.effect === 'dealDamage').every((e) => e.target === 'all')).toBe(true)
+    // 触媒でない片方だけの X は従来どおり X=3 の固定量 (S の悪用防止: 5E札を1Eで)
+    const plain = fuseCards(ci('green_x_vine_flurry'), ci('green_strike'))
+    expect(plain.xCost).toBeUndefined()
+    expect(plain.cost).toBe(3)
+  })
+
   it('触媒同士も合成できる (両方の恩恵が乗る)', () => {
     const r = fuseCards(ci('green_catalyst_light'), ci('green_catalyst_echo'))
     expect(r.cost).toBe(0)

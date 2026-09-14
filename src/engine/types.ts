@@ -903,6 +903,8 @@ export interface CardDef {
    * cost フィールドは名目値 (カーブ集計用に1を置く)
    */
   readonly xCost?: boolean
+  /** X札の解決時に払った量へ+N (2026-09-14 合成の触媒 cheaper × X 札 = 「X+1」。増幅の薬 GameState.xBonus と加算) */
+  readonly xBonus?: number
   /** 猛り火 (延焼合計8以上) の間、このカードのコストがこの値だけ下がる (2026-08-30) */
   readonly blazeDiscount?: number
   /**
