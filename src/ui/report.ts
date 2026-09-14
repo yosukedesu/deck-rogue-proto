@@ -968,8 +968,21 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
       }
       return { at, text: `レリック: 見送り（候補: ${opts.map(nameOf).join('・') || 'なし'}）` }
     }
-    case 'CampfireRest':
+    case 'CampfireRest': {
+      // 回復ゼロの休むは理由を残す (2026-09-14 人間ラン#11: 古根の杯で「休む（HP 15→15）」のままボスへ入って敗北)
+      if (next.hp === prev.hp && prev.hp < prev.maxHp) {
+        const cup = prev.relics.find((id) => {
+          try {
+            return getRelicDef(id).bonus?.noRest === true
+          } catch {
+            return false
+          }
+        })
+        const why = cup ? getRelicDef(cup).name + 'で休めない' : 'すでに鍛えたので回復なし'
+        return { at, text: `焚き火: 休む → 回復なしで立ち去った（${why}・HP ${prev.hp}/${prev.maxHp}）` }
+      }
       return { at, text: `焚き火: 休む（HP ${prev.hp}→${next.hp}）` }
+    }
     case 'CampfireUpgrade': {
       const before = prev.deck[cmd.index]
       const after = next.deck[cmd.index]

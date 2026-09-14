@@ -19,10 +19,10 @@ namespace DeckRogue.Game
             int allowed = DeckRogue.Engine.Run.CampfireForgeAllowed(run);
             int remain = Math.Max(0, allowed - run.CampfireUpgradesUsed);
             int heal = (int)Math.Floor(run.MaxHp * run.CampfireRatio);
-            bool noRest = false;
+            bool noRest = false; string noRestName = "レリック";
             for (int i = 0; i < run.Relics.Count; i++)
             {
-                try { var rd = Content.GetRelicDef(run.Relics[i]); if (rd.Bonus != null && rd.Bonus.NoRest == true) noRest = true; }
+                try { var rd = Content.GetRelicDef(run.Relics[i]); if (rd.Bonus != null && rd.Bonus.NoRest == true) { noRest = true; noRestName = rd.Name; } }
                 catch (Exception) { }
             }
             bool restHeals = !noRest && run.CampfireUpgradesUsed == 0;
@@ -79,8 +79,9 @@ namespace DeckRogue.Game
             Vector2 Pos() { return new Vector2(x0 + (slot++) * (w + gap), optY); }
 
             // 休む
-            var rest = Option(root, "burn", "休む", restHeals ? "HP +" + heal + " (最大HPの " + (int)Math.Round(run.CampfireRatio * 100) + "%)" : noRest ? "レリックの効果で回復できない" : "すでに鍛えたので回復なし",
-                restHeals ? "今のHP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "立ち去る",
+            // 休めない理由はレリックの名前で (2026-09-14 人間ラン#11: 古根の杯を持ったまま HP15 で「休む」を選んで回復ゼロ → ボスで敗北)
+            var rest = Option(root, "burn", "休む", restHeals ? "HP +" + heal + " (最大HPの " + (int)Math.Round(run.CampfireRatio * 100) + "%)" : noRest ? noRestName + ": 焚き火で休めない" : "すでに鍛えたので回復なし",
+                restHeals ? "今のHP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "回復なしで立ち去る (HP " + run.Hp + "/" + run.MaxHp + " のまま)",
                 Pos(), delegate { Audio.Ui("rest"); g.Do(new RunCommand_CampfireRest()); }, true, w);
             // 鍛える
             Option(root, "hammer", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの1枚を強化 (残り " + remain + " 回)" : "この焚き火ではもう鍛えられない",

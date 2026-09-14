@@ -567,7 +567,17 @@ namespace DeckRogue.Engine
                     return Mk("レリック: 見送り（候補: " + (t != "" ? t : "なし") + "）");
                 }
                 case RunCommand_CampfireRest _:
+                {
+                    // 回復ゼロの休むは理由を残す (2026-09-14 人間ラン#11: 古根の杯で「休む（HP 15→15）」のままボスへ入って敗北)
+                    if (next.Hp == prev.Hp && prev.Hp < prev.MaxHp)
+                    {
+                        string cup = null;
+                        foreach (var id in prev.Relics) { try { var rd = Content.GetRelicDef(id); if (rd.Bonus?.NoRest == true) { cup = rd.Name; break; } } catch (Exception) { } }
+                        string why = cup != null ? cup + "で休めない" : "すでに鍛えたので回復なし";
+                        return Mk("焚き火: 休む → 回復なしで立ち去った（" + why + "・HP " + prev.Hp + "/" + prev.MaxHp + "）");
+                    }
                     return Mk("焚き火: 休む（HP " + prev.Hp + "→" + next.Hp + "）");
+                }
                 case RunCommand_CampfireUpgrade cu:
                 {
                     if (cu.Index < 0 || cu.Index >= prev.Deck.Count || cu.Index >= next.Deck.Count) return null;

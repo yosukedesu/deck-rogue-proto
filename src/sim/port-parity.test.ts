@@ -4,8 +4,8 @@
 // (ゴールデン8本は幕2の地図の抽選でその添字を踏まなかった)。表の複製は必ずここで照合する。
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { ACT_BOSS_POOLS, ELITE_POOLS, ACT_MUST_APPEAR, encounterPoolsForParity } from './map.ts'
-import { REWARD_EXCLUDED } from './run.ts'
+import { ACT_BOSS_POOLS, ELITE_POOLS, ACT_MUST_APPEAR, encounterPoolsForParity } from '../engine/map.ts'
+import { REWARD_EXCLUDED } from '../engine/run.ts'
 
 const cs = readFileSync(new URL('../../unity/Packages/com.deckrogue.engine/Runtime/MapGen.cs', import.meta.url), 'utf8')
 const csRun = readFileSync(new URL('../../unity/Packages/com.deckrogue.engine/Runtime/Run.cs', import.meta.url), 'utf8')

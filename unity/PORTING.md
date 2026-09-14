@@ -92,7 +92,7 @@
 
 - `MapGen.cs` の `ACT_POOLS`/`WEAK_POOLS`/`ELITE_POOLS`/`ACT_BOSS_POOLS`/`ACT_MUST_APPEAR` と `Run.cs` の `REWARD_EXCLUDED` は
   TS の表の手書き複製。**並びも同じでないと抽選の添字が別の編成を指して地図が分岐する**（幕2に「苔の産み手」を足した時に C# へ追随漏れ）。
-  `src/engine/port-parity.test.ts` が C# ソースを読んで TS と照合する（`npm test` で落ちる）。
+  `src/sim/port-parity.test.ts` が C# ソースを読んで TS と照合する（`npm test` で落ちる）。
 - ゴールデンはボットが幕1で死ぬ8本しか無く、幕2/3の地図・ボスが一度も載っていなかった。
   `npm run goldens` は幕2/3のチェックポイント開始（`origin.kind='checkpoint'`）のゴールデン5本も作る
   （`scripts/dump-goldens.ts --checkpoint <act> <deckId> [relics]`。C# の verify は `Run.ReplayInitialRun` で両方の origin を読む）。
