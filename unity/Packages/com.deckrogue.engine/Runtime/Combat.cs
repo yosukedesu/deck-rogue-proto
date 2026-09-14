@@ -396,7 +396,7 @@ namespace DeckRogue.Engine
             if (enemy.BiteNext == true && biteMove != null)
             {
                 var (biteIntent, rngB) = BuildIntent(s.Rng, biteMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false, IntentMoveId = null } : e);
+                var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false, IntentMoveId = null, IntentNode = null } : e);
                 return Events.Emit(s with { Rng = rngB, Enemies = enemiesB }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = biteIntent });
             }
             // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (カーソルは進めない)
@@ -404,13 +404,13 @@ namespace DeckRogue.Engine
             {
                 var staggerMove = new EnemyMove { Id = "stagger", Kind = EnemyActionKinds.Rest };
                 var (restIntent, rngS) = BuildIntent(s.Rng, staggerMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false, IntentMoveId = null } : e);
+                var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false, IntentMoveId = null, IntentNode = null } : e);
                 return Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent });
             }
             if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent == null || enemy.Intent.Kind != EnemyActionKinds.Flee))
             {
                 var (fleeIntent, rngF) = BuildIntent(s.Rng, fleeMove, enemy.Strength, enemy.AtkScale ?? 1.0);
-                var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent, IntentMoveId = null } : e);
+                var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent, IntentMoveId = null, IntentNode = null } : e);
                 return Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent });
             }
             // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす
@@ -473,6 +473,7 @@ namespace DeckRogue.Engine
                 {
                     Intent = declared,
                     IntentMoveId = declaredMove.Id,
+                    IntentNode = walked.NodeId,
                     Node = nextCursorLocal,
                     LastMoves = lastMoves,
                     MoveUses = nextUsesLocal,
@@ -551,6 +552,7 @@ namespace DeckRogue.Engine
                 Turn = turn,
                 Phase = CombatPhases.PlayerTurn,
                 NextTurnDraw = null,
+                EnemyPhase = null,
                 NextTurnEnergy = null,
                 NextTurnBlock = null,
                 // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
@@ -651,7 +653,8 @@ namespace DeckRogue.Engine
                 };
                 s = s with { Enemies = Append(s.Enemies, child) };
                 if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent });
-                else s = DeclareOne(s, s.Enemies.Count - 1);
+                // 自ターン中の出現 (分裂) は即座に宣言。敵フェーズ中の出現 (召喚) は意図なし = そのフェーズでは動かず次の自ターン開始で宣言
+                else if (s.EnemyPhase != true) s = DeclareOne(s, s.Enemies.Count - 1);
             }
             return s;
         }
@@ -684,7 +687,7 @@ namespace DeckRogue.Engine
         /// </summary>
         public static GameState ApplyPendingBites(GameState state)
         {
-            if (state.Phase != CombatPhases.PlayerTurn) return state;
+            if (state.Phase != CombatPhases.PlayerTurn || state.EnemyPhase == true) return state; // 敵フェーズ中に割れたら次の宣言で噛みつく
             var s = state;
             for (int i = 0; i < s.Enemies.Count; i++)
             {
@@ -1414,7 +1417,8 @@ namespace DeckRogue.Engine
         public static GameState EndTurn(GameState state)
         {
             if (state.Phase != CombatPhases.PlayerTurn) throw new InvalidOperationException("自ターン以外はターン終了できない");
-            var s = Events.Emit(state, new GameEvent_TurnEnded { Turn = state.Turn, Unplayed = state.Player.Hand.Select(c => c.Def.Name).ToList() });
+            // 敵フェーズ中の旗 (2026-09-14): 割り込みの即時差し替え・出現した敵の宣言・潜伏の差し替えは自ターン中だけ
+            var s = Events.Emit(state with { EnemyPhase = true }, new GameEvent_TurnEnded { Turn = state.Turn, Unplayed = state.Player.Hand.Select(c => c.Def.Name).ToList() });
             // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
             // 勢いのリセット・弱体の減衰より前 = このターンの盤面を読む
             s = Effects.RunPermanentTriggers(s, "onTurnEnd", FirstAliveOrZero(s));
@@ -1763,7 +1767,8 @@ namespace DeckRogue.Engine
         private static GameState ExecuteEnemyAction(GameState state, int enemyIndex)
         {
             var enemy = state.Enemies[enemyIndex];
-            if (enemy.Hp <= 0 || enemy.Intent == null) return state;
+            // 窓の敵が行動前に倒れた時、打ち消しの旗はその行動に使い切る (Opus AB #10)
+            if (enemy.Hp <= 0 || enemy.Intent == null) return state.NegateNextAction ? state with { NegateNextAction = false } : state;
             if (state.NegateNextAction)
             {
                 // 打ち消しの成功に反応する置物 (青: 還流の水鏡)

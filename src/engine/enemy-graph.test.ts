@@ -2,7 +2,7 @@
 // 第1段=等価移行: 旧形からの変換が同じ挙動になること・全84体のグラフが整合すること・
 // 新しく書ける形 (固定の骨組みに決まった場所だけ揺らぎ・条件の節・割り込み) が動くこと。
 import { afterEach, describe, expect, it } from 'vitest'
-import { allEncounters, allEnemies, applyDebugOverrides, clearDebugOverrides, getEnemyDef } from './content.ts'
+import { allEncounters, allEnemies, applyDebugOverrides, clearDebugOverrides, getCardDef, getEnemyDef } from './content.ts'
 import { advanceCursor, describeGraph, firstMoveOf, graphFromLegacy, validateEnemyGraph } from './enemyGraph.ts'
 import type { LegacyEnemyDef } from './enemyGraph.ts'
 import { applyCommand } from './state.ts'
@@ -266,5 +266,63 @@ describe('召喚 (2026-09-14 kind:summon。本家 Fabricator/Reptomancer 型)', 
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_root_weave' })
     expect(s.eventLog.some((e) => e.type === 'ActionNegated')).toBe(true)
     expect(s.enemies).toHaveLength(1)
+  })
+})
+
+describe('敵フェーズ中に出現した敵はそのフェーズでは動かない (2026-09-14 Opus AB2: 召喚された子が同じフェーズに殴り被ダメ予測が嘘になった)', () => {
+  afterEach(() => clearDebugOverrides())
+
+  it('召喚された苔スライムは意図なしで現れ、次の自ターン開始で宣言する = 被ダメ予測は実被ダメと一致する', () => {
+    applyDebugOverrides({
+      enemies: [{
+        ...base, id: 'test_summoner2', maxHp: 100,
+        moves: [{ id: 'call', kind: 'summon', summon: { enemyId: 'enemy_moss_slime', count: 2 } }, { id: 'hit', kind: 'attack', min: 5, max: 5 }],
+        start: 'call', nodes: { call: { move: 'call', next: 'hit' }, hit: { move: 'hit', next: 'hit' } },
+      }],
+    })
+    let s = freshCombat('set-confirm', 'test_summoner2', 42)
+    s = { ...s, player: { ...s.player, hp: 500, maxHp: 500, block: 0 } }
+    const hpBefore = s.player.hp
+    s = withHand(s, [])
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies).toHaveLength(3)
+    expect(hpBefore - s.player.hp).toBe(0) // 召喚のターンは誰も殴らない (被ダメ予測0と一致)
+    expect(s.enemies.slice(1).every((e) => e.intent !== null)).toBe(true) // 次の自ターン開始で宣言済み
+    expect(s.eventLog.filter((e) => e.type === 'DamageDealt' && e.source === 'enemy')).toHaveLength(0)
+  })
+})
+
+describe('Opus AB の挙動の疑い2件 (2026-09-14)', () => {
+  it('鉄卵: 3拍目の眠り (カーソルは既に awaken) でも累計20で目覚め、その場で意図が awaken に変わる', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_iron_egg', 42)
+    s = { ...s, player: { ...s.player, hp: 999, maxHp: 999 } }
+    for (let t = 0; t < 2; t++) { s = withHand(s, []); s = applyCommand(s, { type: 'EndTurn' }) }
+    expect(s.enemies[0].intentMoveId).toBe('sleep')
+    expect(s.enemies[0].node).toBe('awaken') // カーソルは次の節へ進んでいる
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 0, damageTakenTotal: 15 })), player: { ...s.player, energy: 9 } }
+    s = withHand(s, ['green_strike'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: s.player.hand[0].uid, targetIndex: 0 })
+    expect(s.enemies[0].intentMoveId).toBe('awaken')
+    expect(s.enemies[0].intent?.kind).toBe('buff')
+  })
+
+  it('打ち消し: 窓の敵が行動前に倒れたら旗はその行動に使い切り、次の敵の行動には飛ばない (pre 窓の根の紡ぎ→成長→棘葉の全体で敵0が死ぬ)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42), ['green_reaction_root_weave'])
+    s = setAndArm(s, 't0_green_reaction_root_weave')
+    // 棘葉の茂み (成長を得るたび敵全体に2) を場に・敵0 は HP2・両方とも攻撃の意図
+    const thorn = { uid: 'perm_thorn', def: getCardDef('green_perm_thorn_leaves') }
+    s = {
+      ...s,
+      player: { ...s.player, permanents: [...s.player.permanents, thorn], hp: 999, maxHp: 999 },
+      enemies: s.enemies.map((e, i) => ({ ...e, block: 0, hp: i === 0 ? 2 : e.hp, intent: { kind: 'attack' as const, actual: 5 } })),
+    }
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_root_weave' })
+    expect(s.enemies[0].hp).toBeLessThanOrEqual(0) // 棘葉で死んだ
+    expect(s.eventLog.filter((e) => e.type === 'ActionNegated')).toHaveLength(0) // 死んだ敵の行動は無いので打ち消しは空振り
+    expect(s.negateNextAction).toBe(false)
+    // 敵1 は普通に殴ってくる
+    expect(s.eventLog.some((e) => e.type === 'DamageDealt' && e.source === 'enemy' && e.enemyIndex === 1)).toBe(true)
   })
 })

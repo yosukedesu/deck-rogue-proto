@@ -60,6 +60,7 @@ namespace DeckRogue.Engine.Generated
         public const string Support = "support";
         public const string Mimic = "mimic";
         public const string Elite = "elite";
+        public const string Summoner = "summoner";
         public const string Thorned = "thorned";
         public const string Thief = "thief";
         public const string Bomber = "bomber";
@@ -361,6 +362,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>宣言済みの意図の技 id (即時差し替えで取り消す時に宣言回数を戻す)</summary>
         [JsonProperty("intentMoveId")]
         public string? IntentMoveId { get; init; }
+        /// <summary>宣言済みの意図の節 id (割り込みの from 照合に使う: カーソルは次の節へ進んでいるが、敵はまだその節の技を構えている)</summary>
+        [JsonProperty("intentNode")]
+        public string? IntentNode { get; init; }
         /// <summary>この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる)</summary>
         [JsonProperty("mournProcessed")]
         public bool? MournProcessed { get; init; }
@@ -599,6 +603,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス)</summary>
         [JsonProperty("negateNextAction")]
         public bool NegateNextAction { get; init; }
+        /// <summary>敵フェーズ中 (2026-09-14)。phase は敵フェーズの同期処理中も 'player-turn' のままなので、「自ターン中か敵フェーズ中か」は この旗で読む。EndTurn で立ち、次の自ターン開始で降りる (確認ウィンドウで中断・再開しても持ち越す)。 割り込みの即時差し替え・出現した敵の宣言・潜伏の殻割れの差し替えは、この旗が降りている時 (自ターン中) だけ</summary>
+        [JsonProperty("enemyPhase")]
+        public bool? EnemyPhase { get; init; }
         /// <summary>敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」)</summary>
         [JsonProperty("reactionUsedThisAction")]
         public bool ReactionUsedThisAction { get; init; }

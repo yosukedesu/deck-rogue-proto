@@ -72,6 +72,8 @@ export function applyInterruptsTo(
   cursor: string,
   fired: readonly number[],
   only?: readonly EnemyInterrupt['on'][],
+  /** 宣言済みで未実行の意図の節 (自ターン中の割り込み判定に渡す)。from にその節が含まれていれば「まだその節にいる」扱い (Opus AB: 3拍目の眠りが起きなかった) */
+  pendingNode?: string,
 ): { readonly cursor: string; readonly fired: readonly number[]; readonly firedNow: readonly number[] } {
   const def = getDef(state, enemyIndex)
   let cur = cursor
@@ -80,7 +82,7 @@ export function applyInterruptsTo(
   ;(def.interrupts ?? []).forEach((it, k) => {
     if (f.includes(k)) return
     if (only !== undefined && !only.includes(it.on)) return
-    if (it.from !== undefined && !it.from.includes(cur)) return
+    if (it.from !== undefined && !it.from.includes(cur) && !(pendingNode !== undefined && it.from.includes(pendingNode))) return
     if (!interruptHolds(state, enemyIndex, it)) return
     cur = it.goto
     f = [...f, k]
@@ -520,8 +522,10 @@ export function interruptTriggerText(it: EnemyInterrupt): string {
 
 /** 眠り (被弾で目覚める割り込み) の残り: カーソルが from にいて未発火なら、その割り込み */
 export function sleepingInterrupt(def: EnemyDef, e: EnemyState): EnemyInterrupt | undefined {
+  // カーソルは次の節へ進んでいるので、構えている意図の節 (intentNode) も from の照合に入れる (3拍目の眠りにタグが消えていた)
+  const at = (from: readonly string[]): boolean => from.includes(e.node) || (e.intentNode !== undefined && from.includes(e.intentNode))
   return (def.interrupts ?? []).find(
-    (it, k) => it.on === 'damageTaken' && !(e.firedInterrupts ?? []).includes(k) && (it.from === undefined || it.from.includes(e.node)),
+    (it, k) => it.on === 'damageTaken' && !(e.firedInterrupts ?? []).includes(k) && (it.from === undefined || at(it.from)),
   )
 }
 

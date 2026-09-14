@@ -173,6 +173,8 @@ export interface EnemyState extends CombatantState {
   readonly firedInterrupts?: readonly number[]
   /** 宣言済みの意図の技 id (即時差し替えで取り消す時に宣言回数を戻す) */
   readonly intentMoveId?: string
+  /** 宣言済みの意図の節 id (割り込みの from 照合に使う: カーソルは次の節へ進んでいるが、敵はまだその節の技を構えている) */
+  readonly intentNode?: string
   /** この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる) */
   readonly mournProcessed?: boolean
   /** ターン装甲の累計 (このターンに受けたHP損失。自ターン開始でリセット) */
@@ -354,6 +356,12 @@ export interface GameState {
   readonly resolvingGainTrigger?: boolean
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
   readonly negateNextAction: boolean
+  /**
+   * 敵フェーズ中 (2026-09-14)。phase は敵フェーズの同期処理中も 'player-turn' のままなので、「自ターン中か敵フェーズ中か」は
+   * この旗で読む。EndTurn で立ち、次の自ターン開始で降りる (確認ウィンドウで中断・再開しても持ち越す)。
+   * 割り込みの即時差し替え・出現した敵の宣言・潜伏の殻割れの差し替えは、この旗が降りている時 (自ターン中) だけ
+   */
+  readonly enemyPhase?: true
   /** 敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」) */
   readonly reactionUsedThisAction: boolean
   /** 直前に解決された敵の行動 (行動解決後リアクションの条件判定用。行動開始時にリセット) */

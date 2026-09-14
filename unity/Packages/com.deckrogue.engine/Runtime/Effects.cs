@@ -963,11 +963,12 @@ namespace DeckRogue.Engine
         {
             var e = EnemyAt(state, enemyIndex);
             if (e == null || e.Hp <= 0) return state;
-            var r = EnemyGraph.ApplyInterruptsTo(state, enemyIndex, e.Node, e.FiredInterrupts, only);
+            bool inPlayerTurn = state.Phase == CombatPhases.PlayerTurn && state.EnemyPhase != true;
+            var r = EnemyGraph.ApplyInterruptsTo(state, enemyIndex, e.Node, e.FiredInterrupts, only, inPlayerTurn ? e.IntentNode : null);
             if (r.FiredNow.Count == 0) return state;
             var def = Content.GetEnemyDef(e.EnemyId);
             string trigger = def.Interrupts[r.FiredNow[r.FiredNow.Count - 1]].On;
-            bool replace = state.Phase == "player-turn" && e.Intent != null;
+            bool replace = inPlayerTurn && e.Intent != null;
             var enemies = MapEnemy(state.Enemies, enemyIndex, x =>
             {
                 var moved = x with { Node = r.Cursor, FiredInterrupts = r.Fired };
@@ -978,7 +979,7 @@ namespace DeckRogue.Engine
                 uses[x.IntentMoveId] = Math.Max(0, cur - 1);
                 var last = x.LastMoves != null ? new List<string>(x.LastMoves) : new List<string>();
                 if (last.Count > 0 && last[0] == x.IntentMoveId) last.RemoveAt(0);
-                return moved with { MoveUses = uses, LastMoves = last, IntentMoveId = null };
+                return moved with { MoveUses = uses, LastMoves = last, IntentMoveId = null, IntentNode = null };
             });
             var s = Events.Emit(state with { Enemies = enemies }, new GameEvent_EnemyInterrupted { EnemyIndex = enemyIndex, Trigger = trigger, Replaced = replace });
             return replace ? Combat.DeclareOne(s, enemyIndex) : s;

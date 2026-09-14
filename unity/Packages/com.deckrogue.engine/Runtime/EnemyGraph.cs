@@ -90,7 +90,7 @@ namespace DeckRogue.Engine
         /// 割り込みを上から順に判定してカーソルを飛ばす (1戦闘1回ずつ)。only で引き金の種別を絞れる
         /// (被弾の瞬間は damageTaken だけ、宣言時は全部)
         /// </summary>
-        public static InterruptResult ApplyInterruptsTo(GameState state, int enemyIndex, string cursor, IReadOnlyList<int> fired, IReadOnlyList<string> only = null)
+        public static InterruptResult ApplyInterruptsTo(GameState state, int enemyIndex, string cursor, IReadOnlyList<int> fired, IReadOnlyList<string> only = null, string pendingNode = null)
         {
             var def = Content.GetEnemyDef(state.Enemies[enemyIndex].EnemyId);
             string cur = cursor;
@@ -104,7 +104,7 @@ namespace DeckRogue.Engine
                     var it = its[k];
                     if (f.Contains(k)) continue;
                     if (only != null && !only.Contains(it.On)) continue;
-                    if (it.From != null && !it.From.Contains(cur)) continue;
+                    if (it.From != null && !it.From.Contains(cur) && !(pendingNode != null && it.From.Contains(pendingNode))) continue;
                     if (!InterruptHolds(state, enemyIndex, it)) continue;
                     cur = it.Goto;
                     f.Add(k);
@@ -236,7 +236,7 @@ namespace DeckRogue.Engine
                 var it = def.Interrupts[k];
                 if (it.On != EnemyInterruptTriggers.DamageTaken) continue;
                 if (e.FiredInterrupts != null && e.FiredInterrupts.Contains(k)) continue;
-                if (it.From != null && !it.From.Contains(e.Node)) continue;
+                if (it.From != null && !it.From.Contains(e.Node) && !(e.IntentNode != null && it.From.Contains(e.IntentNode))) continue;
                 return it;
             }
             return null;

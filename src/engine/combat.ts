@@ -335,19 +335,19 @@ function declareOne(state: GameState, i: number): GameState {
   const biteMove = def.burrow ? def.moves.find((m) => m.id === def.burrow!.bite) : undefined
   if (enemy.biteNext === true && biteMove) {
     const [biteIntent, rngB] = buildIntent(s.rng, biteMove, enemy.strength, enemy.atkScale ?? 1)
-    const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false, intentMoveId: undefined } : e))
+    const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false, intentMoveId: undefined, intentNode: undefined } : e))
     return emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
   }
   // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (2026-09-04。カーソルは進めない=次のターンに再開)
   if (enemy.staggeredNext === true) {
     const staggerMove: EnemyMove = { id: 'stagger', kind: 'rest' }
     const [restIntent, rngS] = buildIntent(s.rng, staggerMove, enemy.strength, enemy.atkScale ?? 1)
-    const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false, intentMoveId: undefined } : e))
+    const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false, intentMoveId: undefined, intentNode: undefined } : e))
     return emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
   }
   if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
     const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
-    const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent, intentMoveId: undefined } : e))
+    const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent, intentMoveId: undefined, intentNode: undefined } : e))
     return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
   }
   // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
@@ -410,6 +410,7 @@ function declareOne(state: GameState, i: number): GameState {
           ...e,
           intent: declared,
           intentMoveId: move.id,
+          intentNode: walked.nodeId,
           node: nextCursor,
           lastMoves: [move.id, ...(e.lastMoves ?? [])].slice(0, 3),
           moveUses: nextUses,
@@ -476,8 +477,8 @@ function buildIntent(
 
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
 function startPlayerTurn(state: GameState, turn: number): GameState {
-  // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す
-  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, ...rest } = state
+  // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す。enemyPhase の旗もここで降りる
+  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, ...rest } = state
   let s: GameState = {
     ...rest,
     turn,
@@ -590,7 +591,10 @@ function spawnEnemies(
     }
     s = { ...s, enemies: [...s.enemies, child] }
     if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent! })
-    else s = declareOne(s, s.enemies.length - 1)
+    // 自ターン中の出現 (分裂) は即座に宣言して次の敵フェーズから動く。敵フェーズ中の出現 (召喚・返しで割れた分裂) は
+    // 意図なしのまま = そのフェーズでは動かず、次の自ターン開始で宣言する (2026-09-14 Opus AB2: 産まれた子が同じ敵フェーズに
+    // 殴って被ダメ予測8→実被ダメ14 = 予告なしの被弾。本家も召喚された取り巻きはその手番では動かない)
+    else if (s.enemyPhase !== true) s = declareOne(s, s.enemies.length - 1)
   }
   return s
 }
@@ -625,7 +629,7 @@ function processMourning(state: GameState): GameState {
  * 宣言時固定則の例外だが「窓が嘘をつかない」は保たれる
  */
 export function applyPendingBites(state: GameState): GameState {
-  if (state.phase !== 'player-turn') return state
+  if (state.phase !== 'player-turn' || state.enemyPhase === true) return state // 敵フェーズ中に割れたら次の宣言で噛みつく
   let s = state
   for (let i = 0; i < s.enemies.length; i++) {
     const e = s.enemies[i]
@@ -1281,7 +1285,7 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
 /** EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する */
 export function endTurn(state: GameState): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
-  let s = emit(state, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
+  let s = emit({ ...state, enemyPhase: true as const }, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
   // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
   // 勢いのリセット・弱体の減衰より前 = このターンの盤面 (ブロック0・攻撃なし・プレイ枚数) を読む
   s = runPermanentTriggers(s, 'onTurnEnd', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
@@ -1655,7 +1659,9 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
 /** 敵1体の宣言済み行動を実行する (打ち消しフラグが立っていれば無効化) */
 function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   const enemy = state.enemies[enemyIndex]
-  if (enemy.hp <= 0 || enemy.intent === null) return state
+  // 窓の敵が行動前に倒れた (pre 窓の根の紡ぎ→成長→棘葉の全体ダメで死亡) 時、打ち消しの旗はその行動に使い切る
+  // (2026-09-14 Opus AB #10: 未消費のまま次の敵の行動に飛んでいた)
+  if (enemy.hp <= 0 || enemy.intent === null) return state.negateNextAction ? { ...state, negateNextAction: false } : state
   if (state.negateNextAction) {
     // 打ち消しの成功に反応する置物 (青: 還流の水鏡)。negate / negateConvertIce の両方がここを通る
     let base = { ...state, negateNextAction: false }

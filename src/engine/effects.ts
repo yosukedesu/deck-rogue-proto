@@ -835,11 +835,13 @@ export function bindRedeclare(fn: (state: GameState, enemyIndex: number) => Game
 export function applyInterrupts(state: GameState, enemyIndex: number, only?: readonly EnemyInterruptTrigger[]): GameState {
   const e = state.enemies[enemyIndex]
   if (!e || e.hp <= 0) return state
-  const r = applyInterruptsTo(state, enemyIndex, e.node, e.firedInterrupts ?? [], only)
+  // 自ターン中は宣言済み (未実行) の意図の節も「いる場所」に数える (敵フェーズ中は実行済み/実行中なので数えない)
+  const inPlayerTurn = state.phase === 'player-turn' && state.enemyPhase !== true
+  const r = applyInterruptsTo(state, enemyIndex, e.node, e.firedInterrupts ?? [], only, inPlayerTurn ? e.intentNode : undefined)
   if (r.firedNow.length === 0) return state
   const def = getEnemyDef(e.enemyId)
   const trigger = def.interrupts![r.firedNow[r.firedNow.length - 1]].on
-  const replace = state.phase === 'player-turn' && e.intent !== null
+  const replace = inPlayerTurn && e.intent !== null
   let s: GameState = {
     ...state,
     enemies: state.enemies.map((x, i) => {
@@ -850,7 +852,7 @@ export function applyInterrupts(state: GameState, enemyIndex: number, only?: rea
       const uses = { ...(x.moveUses ?? {}) }
       uses[x.intentMoveId] = Math.max(0, (uses[x.intentMoveId] ?? 0) - 1)
       const last = x.lastMoves ?? []
-      return { ...moved, moveUses: uses, lastMoves: last[0] === x.intentMoveId ? last.slice(1) : last, intentMoveId: undefined }
+      return { ...moved, moveUses: uses, lastMoves: last[0] === x.intentMoveId ? last.slice(1) : last, intentMoveId: undefined, intentNode: undefined }
     }),
   }
   s = emit(s, { type: 'EnemyInterrupted', enemyIndex, trigger, replaced: replace })
