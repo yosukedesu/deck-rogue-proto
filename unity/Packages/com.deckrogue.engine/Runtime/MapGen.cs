@@ -134,7 +134,7 @@ namespace DeckRogue.Engine
                 "enc_bomber_healer", "enc_hexer_shadow", "enc_joker_hexer", "enc_joker_hexer_drummer", "enc_wary_bomber",
                 "enc_bomber_drummer", "enemy_whetstone_colossus", "enemy_mimic_jester", "enemy_cinder_imp", "enemy_rock_beetle",
                 "enemy_big_slime", "enc_squire_archer", "enc_raptor_nest", "enemy_maw_hunter", "enemy_bowl_bug",
-                "enc_bowlbug_drummer", "enc_imp_jester", "enc_chomper_pair", "enc_scald_gnat_pair",
+                "enc_bowlbug_drummer", "enc_imp_jester", "enc_chomper_pair", "enc_scald_gnat_pair", "enc_moss_spawner_slime",   // 2026-09-14 召喚者=苔の産み手 (TS と同じ並び。抜けると幕2の地図が TS と分岐する)
             },
             // 3幕
             new[]

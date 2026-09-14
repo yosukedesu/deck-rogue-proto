@@ -167,23 +167,11 @@ int VerifyGoldenRuns(string[] argv)
             continue;
         }
 
-        var kind = (string)origin["kind"] ?? "run";
-        if (kind != "run")
-        {
-            Console.Error.WriteLine($"{name}: origin.kind=\"{kind}\" は未対応 (checkpoint 開始は移植対象外)");
-            failedFiles++;
-            continue;
-        }
-
-        var seed = (int)origin["seed"];
-        var leaderId = (string)origin["leaderId"];
-        var deckId = (string)origin["deckId"]; // 省略可 = リーダー既定
-        var difficulty = origin["difficulty"] != null ? (int)origin["difficulty"] : Run.DEFAULT_DIFFICULTY;
-
+        // origin は run (幕1から) と checkpoint (幕2/3のデバッグ開始。2026-09-14 幕2/3の照合) の両方 = TS の replayInitialRun と同じ入口
         RunState run;
         try
         {
-            run = Run.CreateRun(seed, ReactionModes.SetConfirm, leaderId, deckId, difficulty);
+            run = Run.ReplayInitialRun(JsonUnions.FromToken<ReplayOrigin>(origin));
         }
         catch (Exception e)
         {

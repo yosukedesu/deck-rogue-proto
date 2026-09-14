@@ -6,7 +6,7 @@ import { getEventDef, getCardDef } from '../engine/content.ts'
 import { fuseBlockReason } from '../engine/fusion.ts'
 import { runHash, runDigest } from '../engine/golden.ts'
 import type { RunDigest } from '../engine/golden.ts'
-import { applyRunCommand, canUpgradeCard, createRun, eventChoiceNeedsCard, nextChoices } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, eventChoiceNeedsCard, nextChoices, replayInitialRun } from '../engine/run.ts'
 import type { ReplayOrigin, RunCommand, RunState } from '../engine/run.ts'
 import { chooseCommand } from './run.ts'
 
@@ -72,10 +72,14 @@ export interface GoldenRun {
   readonly final: RunDigest
 }
 
-/** 1ランを決定的に進めてゴールデンを作る。maxSteps で打ち切り (途中まででも照合には使える) */
-export function generateGolden(seed: number, leaderId: string, maxSteps = 6000): GoldenRun {
-  const origin: ReplayOrigin = { kind: 'run', seed, leaderId }
-  let run = createRun(seed, 'set-confirm', leaderId)
+/**
+ * 1ランを決定的に進めてゴールデンを作る。maxSteps で打ち切り (途中まででも照合には使える)。
+ * origin を渡せば幕2/3のチェックポイント開始 (2026-09-14: 幕1で死ぬボットのゴールデン8本には幕2/3の地図・ボスが一度も無く、
+ * MapGen.cs の幕2プールの抜けが人間ランで初めて見つかった → 幕2/3の照合を足す)
+ */
+export function generateGolden(seed: number, leaderId: string, maxSteps = 6000, originIn?: ReplayOrigin): GoldenRun {
+  const origin: ReplayOrigin = originIn ?? { kind: 'run', seed, leaderId }
+  let run = originIn ? replayInitialRun(origin) : createRun(seed, 'set-confirm', leaderId)
   const commands: RunCommand[] = []
   const hashes: string[] = []
   let steps = 0

@@ -17,7 +17,7 @@
     "ratings": "tsx scripts/aggregate-ratings.ts",
     "picks": "tsx scripts/aggregate-picks.ts",
     "analyze": "tsx scripts/analyze-run.ts",
-    "goldens": "tsx scripts/dump-goldens.ts && tsx scripts/dump-goldens.ts 1 9101 leader_blue,leader_black,leader_red,leader_white",
+    "goldens": "tsx scripts/dump-goldens.ts && tsx scripts/dump-goldens.ts 1 9101 leader_blue,leader_black,leader_red,leader_white && tsx scripts/dump-goldens.ts --checkpoint 2 deck_big_mana relic_oldroot_cup 2 9201 && tsx scripts/dump-goldens.ts --checkpoint 3 deck_momentum relic_growth_seed,relic_shield_shard 2 9301 && tsx scripts/dump-goldens.ts --checkpoint 2 deck_harvest - 1 9401",
     "goldens:verify": "tsx scripts/verify-goldens.ts",
     "unity:sync": "tsx scripts/sync-unity-data.ts",
     "gen:csharp": "tsx scripts/gen-csharp-types.ts",

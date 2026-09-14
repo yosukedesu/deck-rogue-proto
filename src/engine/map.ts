@@ -204,6 +204,9 @@ export const ACT_BOSSES: readonly string[] = ACT_BOSS_POOLS.map((p) => p[0])
 export const ACT_COUNT = 3
 
 /** 幕とマップ行 → 敵抽選プール。ボス行は幕ボス1体 */
+/** C# 移植 (MapGen.cs) に手で複製した表の照合用 (port-parity.test)。ゲームのロジックからは参照しない */
+export const encounterPoolsForParity = { ACT_POOLS, WEAK_POOLS } as const
+
 export function tierFor(act: number, row: number): readonly string[] {
   if (row >= bossRowFor(act)) return ACT_BOSS_POOLS[act - 1]
   if (row < (WEAK_ROWS[act - 1] ?? 0)) return WEAK_POOLS[act - 1]
