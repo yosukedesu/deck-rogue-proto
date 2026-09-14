@@ -22,9 +22,21 @@ namespace DeckRogue.Game
         public const float Fov = 36f;                   // 広めの画角 = 手前が大きく奥が小さい (奥行きが読める)
         public const float Pitch = 12f;                         // 見下ろし。上端の視線は水平より 6° 上 = 空の帯に月と坑口の櫓が入る (16° では帯が 2° で遠景が山に隠れた)
         const float PathYaw = -22f;                     // 道の向き (手前左 → 奥右)。隊列もこの線に沿う
-        const float PlaneUnitsPerScreen = 10.8f;        // 基準深度で画面の高さ = 10.8 units
+        // 基準深度で画面の高さ = 10.8 units。スマホ (2026-09-15) は横幅の余裕ぶんズームして座席の間隔を広げる (高さ 675 のキャンバスでは舞台が縮み、
+        // 3〜4体の吹き出し・名前札・HPバーが重なっていた (敵の間隔 128〜165))。19.5:9 (S25) で 1.2倍 = 間隔 +20%、16:9 は等倍 (奥の座席が右端から出る)。
+        // 絵は UI の枡なので大きさは変わらない
+        static float PlaneUnitsPerScreen
+        {
+            get
+            {
+                if (!UiKit.Phone) return 10.8f;
+                float aspect = Screen.height > 0 ? (float)Screen.width / Screen.height : 1.78f;
+                float zoom = Mathf.Clamp(aspect / 1.8f, 1f, 1.2f);
+                return 10.8f / zoom;
+            }
+        }
         // 画面の下から何割に world 原点を置くか。スマホ (2026-09-14) は手札が画面の 43% を占めるので座席を上げる (絵は半分なので上端は余る)
-        static float GroundLineRatio { get { return UiKit.Phone ? 0.56f : 0.45f; } }
+        static float GroundLineRatio { get { return UiKit.Phone ? 0.54f : 0.45f; } }   // スマホ 0.56→0.54 (2026-09-15 吹き出しが頭の上に収まる高さを稼ぐ)
         const float Tile = 1.28f;                        // 32ドットのタイル1枚 = 1.28 units (基準深度で 4px/ドット)
         static readonly Color ShadowColor = new Color(0.02f, 0.02f, 0.08f, 0.92f);   // 接地影: 地面より暗く青寄り。幅0.8・高さ0.35・足元中心・地面とスプライトの間
 
@@ -417,7 +429,9 @@ namespace DeckRogue.Game
             n = Math.Max(1, n);
             var r = new Vector3[n];
             float[] t = n == 1 ? new[] { 4.6f } : n == 2 ? new[] { 3.2f, 7.6f } : n == 3 ? new[] { 2.2f, 5.8f, 9.4f } : new[] { 1.6f, 4.8f, 8.0f, 11.2f };
-            for (int i = 0; i < n; i++) r[i] = OnPath(t[i], (i % 2 == 0) ? -0.5f : 0.7f);
+            // スマホは横のずらしを小さく (2026-09-15): ずらしが大きいと画面上の間隔が 150/217/110 と偏り、狭い側で吹き出しが重なる
+            float sB = UiKit.Phone ? 0.1f : 0.7f;
+            for (int i = 0; i < n; i++) r[i] = OnPath(t[i], (i % 2 == 0) ? -0.5f : sB);
             return r;
         }
 

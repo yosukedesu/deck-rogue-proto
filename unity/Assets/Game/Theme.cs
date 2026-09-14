@@ -383,6 +383,35 @@ namespace DeckRogue.Game
             return s;
         }
 
+        static readonly Dictionary<Sprite, int> _topMargin = new Dictionary<Sprite, int>();
+        /// <summary>絵の上端の透明な行数 (ドット)。吹き出しを頭のすぐ上に置くため (2026-09-15 スマホ)。読めなければ 0</summary>
+        public static int TopMargin(Sprite s)
+        {
+            if (s == null) return 0;
+            int m;
+            if (_topMargin.TryGetValue(s, out m)) return m;
+            m = 0;
+            try
+            {
+                var tex = s.texture; var r = s.rect;   // rect はテクスチャ内の矩形 (左下原点)
+                int x0 = Mathf.RoundToInt(r.x), y0 = Mathf.RoundToInt(r.y), w = Mathf.RoundToInt(r.width), h = Mathf.RoundToInt(r.height);
+                var px = tex.GetPixels32();
+                int tw = tex.width;
+                for (int row = h - 1; row >= 0; row--)   // 上の行から
+                {
+                    bool any = false;
+                    int baseIdx = (y0 + row) * tw + x0;
+                    for (int x = 0; x < w; x++) if (baseIdx + x < px.Length && px[baseIdx + x].a >= 16) { any = true; break; }
+                    if (any) break;
+                    m++;
+                }
+                if (m >= h) m = 0;   // 全部透明 (仮の絵など) なら余白なし扱い
+            }
+            catch (Exception) { m = 0; }
+            _topMargin[s] = m;
+            return m;
+        }
+
         static uint Hash(string s)
         {
             uint h = 2166136261u;

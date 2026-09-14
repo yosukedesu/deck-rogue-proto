@@ -274,6 +274,11 @@ namespace DeckRogue.Game
                 switch (phase)
                 {
                     case "combat":
+                        if (Get("boss") == "1")
+                        {   // 幕ボスの節に立ってから始める (絵の大きさ・倍率がボスの値になる。2026-09-15)
+                            for (int row = 0; row < rs.Map.Count; row++) for (int col = 0; col < rs.Map[row].Count; col++)
+                                    if (rs.Map[row][col].Type == MapNodeTypes.Boss) { rs = rs with { Row = row, Col = col }; row = rs.Map.Count; break; }
+                        }
                         if (Get("enemy") != null) g.Rs = DeckRogue.Engine.Run.DebugLaunchCombat(rs, Get("enemy"));
                         else
                         {   // 最初に選べる戦闘ノードへ進む (通常経路)
@@ -353,6 +358,7 @@ namespace DeckRogue.Game
             }
             var picks = (Get("pick") ?? "").Split(',').Select(x => { int v; return int.TryParse(x.Trim(), out v) ? v : -1; }).Where(v => v >= 0).ToList();
             if (phase == "workshop") { g.WorkshopA = picks.Count > 0 ? picks[0] : -1; g.WorkshopB = picks.Count > 1 ? picks[1] : -1; }
+            if (phase == "event" && picks.Count > 0) g.EventChoiceIndex = picks[0];   // イベントの「デッキから1枚選ぶ」画面 (pick=選択肢の番号。2026-09-15)
             if (Get("doodle") == "1")
             {   // 見本の落書き: 現在地の丸と、右上へ向かう波線 (描画の確認用)
                 var l = g.DoodlesFor(g.Rs.Act);
