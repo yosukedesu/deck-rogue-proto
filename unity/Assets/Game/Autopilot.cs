@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
 
@@ -355,6 +356,13 @@ namespace DeckRogue.Game
                 for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) { var sp = g.Battle.EnemySprite(i); if (sp != null) sbd.Append(" enemy" + i + "=" + sp.rect.size + "@" + sp.offsetMin + " feet=" + Stage.FeetOffset("enemy" + i, -1f)); }
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
+            }
+            // scroll=1: 画面の一覧を一番下まで送る (最後の行が選べるかの確認。2026-09-14)
+            if (Get("scroll") == "1" && g.ScreenRoot != null)
+            {
+                yield return null;   // レイアウトを1フレーム待つ
+                foreach (var sr in g.ScreenRoot.GetComponentsInChildren<ScrollRect>(true)) if (sr.vertical) sr.verticalNormalizedPosition = 0f;
+                yield return null;
             }
             // tip=enemy: 敵をタップした説明パネル (スマホ) / popup=N: 手札 N 枚目の長押しポップアップ
             if (Get("tip") == "enemy" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)

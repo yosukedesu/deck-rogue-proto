@@ -195,14 +195,18 @@ namespace DeckRogue.Game
             Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null, List<int> starred = null)
         {
             var content = UiKit.Scroll(parent, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
-            UiKit.Le(UiKit.ScrollRoot(content), -1f, minH, -1f, minH, -1f, 1f);
+            // 一覧の高さは入れ物の残りいっぱい (flexibleHeight)。スマホは minH を付けない
+            // (2026-09-14 ユーザー「工房や焚き火で最下部のカード下部マージンがなく選べない」: 高さ 675 の入れ物より minH 500 の方が大きく、
+            //  一覧の下端が画面の外に出て最後の行までスクロールできなかった)
+            float mh = UiKit.Phone ? 0f : minH;
+            UiKit.Le(UiKit.ScrollRoot(content), -1f, mh, -1f, mh, -1f, 1f);
             var vg = content.GetComponent<VerticalLayoutGroup>();
             if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
             var grid = content.gameObject.AddComponent<GridLayoutGroup>();
             bool withBtn = btnLabel != null;
             grid.cellSize = new Vector2(CardView.W * 0.8f, CardView.H * 0.8f + (withBtn ? 48f : 0f));
             grid.spacing = new Vector2(14f, 14f);
-            grid.padding = new RectOffset(12, 12, 12, 12);
+            grid.padding = new RectOffset(12, 12, 12, 28);   // 下は多めに (最後の行のボタンが縁に触れない)
             grid.childAlignment = TextAnchor.UpperLeft;
             if (cards.Count == 0)
             {
