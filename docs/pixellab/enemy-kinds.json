@@ -113,6 +113,10 @@
    "name": "苔スライム",
    "kind": "beast"
   },
+  "enemy_moss_spawner": {
+   "name": "苔の産み手",
+   "kind": "beast"
+  },
   "enemy_elite_sergeant": {
    "name": "鞭打ちの鬼軍曹",
    "kind": "beast"

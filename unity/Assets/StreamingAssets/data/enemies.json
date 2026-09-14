@@ -216,7 +216,8 @@
         "random": [
           {
             "to": "smash",
-            "weight": 2
+            "weight": 2,
+            "maxRepeat": 2
           },
           {
             "to": "toss_junk",
@@ -590,7 +591,8 @@
         "random": [
           {
             "to": "slam",
-            "weight": 2
+            "weight": 2,
+            "maxRepeat": 2
           },
           {
             "to": "moss_shell",
@@ -681,7 +683,8 @@
         "random": [
           {
             "to": "wild_swing",
-            "weight": 2
+            "weight": 2,
+            "maxRepeat": 2
           },
           {
             "to": "dodge_prance",
@@ -1134,7 +1137,8 @@
         "random": [
           {
             "to": "shell_bash",
-            "weight": 2
+            "weight": 2,
+            "maxRepeat": 2
           },
           {
             "to": "harden",
@@ -1589,7 +1593,8 @@
         "random": [
           {
             "to": "slam",
-            "weight": 2
+            "weight": 2,
+            "maxRepeat": 2
           },
           {
             "to": "ooze_guard",
@@ -1643,6 +1648,62 @@
       "bump",
       "ooze"
     ]
+  },
+  {
+    "id": "enemy_moss_spawner",
+    "name": "苔の産み手",
+    "archetype": "summoner",
+    "flavor": "苔の塊から小さな苔を産み落とす。産むほど手が増える——産む前に潰すか、産ませて全体で薙ぐか。",
+    "maxHp": 70,
+    "hpRange": [
+      65,
+      75
+    ],
+    "moves": [
+      {
+        "id": "spawn",
+        "kind": "summon",
+        "summon": {
+          "enemyId": "enemy_moss_slime",
+          "count": 1
+        }
+      },
+      {
+        "id": "lash",
+        "kind": "attack",
+        "min": 9,
+        "max": 12
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 6,
+        "max": 9,
+        "alsoBuff": 1
+      }
+    ],
+    "nodes": {
+      "check": {
+        "if": {
+          "alliesFewerThan": 3
+        },
+        "then": "spawn",
+        "else": "lash"
+      },
+      "spawn": {
+        "move": "spawn",
+        "next": "lash"
+      },
+      "lash": {
+        "move": "lash",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "check"
+      }
+    },
+    "start": "check"
   },
   {
     "id": "enemy_elite_sergeant",
@@ -3056,7 +3117,13 @@
         ]
       }
     },
-    "start": "bump"
+    "start": "bump",
+    "startBySlot": [
+      "bump",
+      "slop",
+      "guard",
+      "rand"
+    ]
   },
   {
     "id": "enemy_gaping_maw",
@@ -3865,54 +3932,31 @@
       },
       "guard": {
         "move": "guard",
-        "next": "tongue_lash"
+        "next": "half_check"
       },
-      "half_beetle_charge": {
-        "move": "beetle_charge",
-        "next": "half_rand"
+      "half_check": {
+        "if": {
+          "hpBelowHalf": true
+        },
+        "then": "charge_check",
+        "else": "tongue_lash"
       },
-      "half_strike_down": {
-        "move": "strike_down",
-        "next": "half_rand"
-      },
-      "half_tongue_lash": {
-        "move": "tongue_lash",
-        "next": "half_rand"
-      },
-      "half_for_the_queen": {
-        "move": "for_the_queen",
-        "next": "half_rand"
-      },
-      "half_rand": {
-        "random": [
-          {
-            "to": "half_beetle_charge",
-            "weight": 16,
-            "once": true
-          },
-          {
-            "to": "half_strike_down",
-            "weight": 2
-          },
-          {
-            "to": "half_tongue_lash",
-            "weight": 1
-          },
-          {
-            "to": "half_for_the_queen",
-            "weight": 1,
-            "noRepeat": true
+      "charge_check": {
+        "if": {
+          "usesAtLeast": {
+            "move": "beetle_charge",
+            "count": 1
           }
-        ]
+        },
+        "then": "tongue_lash",
+        "else": "beetle_charge"
+      },
+      "beetle_charge": {
+        "move": "beetle_charge",
+        "next": "tongue_lash"
       }
     },
     "start": "tongue_lash",
-    "interrupts": [
-      {
-        "on": "hpBelowHalf",
-        "goto": "half_rand"
-      }
-    ],
     "armor": 24
   },
   {
@@ -3994,7 +4038,13 @@
         ]
       }
     },
-    "start": "chomp"
+    "start": "chomp",
+    "startBySlot": [
+      "chomp",
+      "chew",
+      "more_teeth",
+      "rand"
+    ]
   },
   {
     "id": "enemy_lost_soul",
@@ -4153,7 +4203,7 @@
     "id": "enemy_chomper",
     "name": "金切り顎",
     "archetype": "hexer",
-    "flavor": "噛んで、叫ぶ。金切り声はあなたの山札に紛れ込む——急所も脅しも、この顎には二度まで通じない。",
+    "flavor": "挟んで、金切り声で、守る。三拍の後は気分で挟むか鳴く。",
     "maxHp": 60,
     "hpRange": [
       56,
@@ -4193,7 +4243,29 @@
       },
       "guard": {
         "move": "guard",
-        "next": "clamp"
+        "next": "rand"
+      },
+      "rand": {
+        "random": [
+          {
+            "to": "r_clamp",
+            "weight": 2,
+            "maxRepeat": 2
+          },
+          {
+            "to": "r_screech",
+            "weight": 1,
+            "noRepeat": true
+          }
+        ]
+      },
+      "r_clamp": {
+        "move": "clamp",
+        "next": "rand"
+      },
+      "r_screech": {
+        "move": "screech",
+        "next": "rand"
       }
     },
     "start": "clamp",

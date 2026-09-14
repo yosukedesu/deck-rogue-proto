@@ -440,10 +440,12 @@
         "hpScale": 0.8
       },
       {
-        "enemyId": "enemy_mudling"
+        "enemyId": "enemy_mudling",
+        "start": "bump"
       },
       {
-        "enemyId": "enemy_mudling"
+        "enemyId": "enemy_mudling",
+        "start": "slop"
       }
     ]
   },
@@ -614,10 +616,12 @@
         "strength": -2
       },
       {
-        "enemyId": "enemy_mudling"
+        "enemyId": "enemy_mudling",
+        "start": "bump"
       },
       {
-        "enemyId": "enemy_mudling"
+        "enemyId": "enemy_mudling",
+        "start": "slop"
       }
     ]
   },
@@ -631,10 +635,12 @@
         "strength": -2
       },
       {
-        "enemyId": "enemy_mudling"
+        "enemyId": "enemy_mudling",
+        "start": "bump"
       },
       {
-        "enemyId": "enemy_mudling"
+        "enemyId": "enemy_mudling",
+        "start": "slop"
       }
     ]
   },
@@ -697,12 +703,10 @@
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "start": "rand",
         "strength": -2
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "start": "rand",
         "strength": -2
       }
     ]
@@ -717,17 +721,14 @@
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "start": "rand",
         "strength": -2
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "start": "rand",
         "strength": -2
       },
       {
         "enemyId": "enemy_biting_scroll",
-        "start": "rand",
         "strength": -2
       }
     ]
@@ -826,6 +827,19 @@
         "enemyId": "enemy_set_wary",
         "hpScale": 0.55,
         "strength": -2
+      }
+    ]
+  },
+  {
+    "id": "enc_moss_spawner_slime",
+    "name": "苔の産み手と苔スライム",
+    "members": [
+      {
+        "enemyId": "enemy_moss_spawner"
+      },
+      {
+        "enemyId": "enemy_moss_slime",
+        "start": "bump"
       }
     ]
   }

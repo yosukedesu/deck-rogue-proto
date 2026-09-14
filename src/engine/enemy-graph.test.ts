@@ -3,7 +3,7 @@
 // 新しく書ける形 (固定の骨組みに決まった場所だけ揺らぎ・条件の節・割り込み) が動くこと。
 import { afterEach, describe, expect, it } from 'vitest'
 import { allEncounters, allEnemies, applyDebugOverrides, clearDebugOverrides, getEnemyDef } from './content.ts'
-import { advanceCursor, chainFromStart, describeGraph, graphFromLegacy, randomNodeOf, validateEnemyGraph } from './enemyGraph.ts'
+import { advanceCursor, describeGraph, firstMoveOf, graphFromLegacy, validateEnemyGraph } from './enemyGraph.ts'
 import type { LegacyEnemyDef } from './enemyGraph.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, setAndArm, withHand } from './test-helpers.ts'
@@ -28,7 +28,7 @@ describe('データの整合 (全84体)', () => {
     const errs: string[] = []
     for (const e of allEnemies) {
       for (const err of validateEnemyGraph(e)) errs.push(`${e.id}: ${err}`)
-      if (chainFromStart(e, 1).length === 0 && randomNodeOf(e) === undefined) errs.push(`${e.id}: start から技に着地しない`)
+      if (firstMoveOf(e, e.start) === undefined) errs.push(`${e.id}: start から技に着地しない`)
     }
     expect(errs).toEqual([])
   })

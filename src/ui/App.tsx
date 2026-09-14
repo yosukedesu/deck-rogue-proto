@@ -122,6 +122,7 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   guardian: '護衛型（仲間への単体攻撃を庇う）',
   mimic: '物真似型（手数の鏡）',
   elite: 'エリート',
+  summoner: '召喚型（味方を産む）',
 }
 const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   'wide-power': '🐍',
@@ -146,6 +147,7 @@ const ARCHETYPE_SPRITE: Record<EnemyArchetype, string> = {
   shell: '🪨',
   splitter: '🫠',
   guardian: '🛡️',
+  summoner: '🌱',
 }
 
 // カードタイプの表示ラベル (2026-08-24決定。物理=武器・道具・身体/呪文=魔力の行使 → docs/card-power.md §0)
