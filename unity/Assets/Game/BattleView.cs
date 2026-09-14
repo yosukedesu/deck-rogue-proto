@@ -130,6 +130,7 @@ namespace DeckRogue.Game
             // 座席: 舞台 (HD-2D) が決める。手前左から奥右へ斜めに並び、足元 (パネル下端+130) がその座席の地面に来る。奥の敵ほど先に描く
             // 名前札・HPバー・チップは全員同じ線 (入れ物の下端 = StatusLineY・手札の上)。足元だけ座席の高さへ
             var slots = Stage.EnemySlots(st.Enemies.Count);
+            var centers = new float[st.Enemies.Count];
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 var feet = Stage.ProjectFeet("enemy" + i, slots[i]);
@@ -137,6 +138,7 @@ namespace DeckRogue.Game
                 UiKit.Anchor(_enemyPanels[i], new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, StatusLineY), new Vector2(feet.x + w / 2f, StatusLineY + h));
                 Stage.SetFeetOffset("enemy" + i, feet.y - StatusLineY);
                 _enemyPanels[i].SetSiblingIndex(st.Enemies.Count - 1 - i);
+                centers[i] = feet.x;
             }
             for (int i = 0; i < st.Enemies.Count; i++)
             {
@@ -147,7 +149,11 @@ namespace DeckRogue.Game
                 for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
                 g.RegisterAnchor("enemy" + i, pan);
                 bool wasAlive = _shownEnemyHp[i] > 0;
-                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i]);
+                // 隣の敵との間隔 (スマホで3体以上の吹き出しが重ならないよう、吹き出しの幅を間隔で絞る。2026-09-14)
+                float gap = float.MaxValue;
+                if (i > 0) gap = Mathf.Min(gap, Mathf.Abs(centers[i] - centers[i - 1]));
+                if (i + 1 < centers.Length) gap = Mathf.Min(gap, Mathf.Abs(centers[i + 1] - centers[i]));
+                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
                 if (wasAlive && !alive)
                 {

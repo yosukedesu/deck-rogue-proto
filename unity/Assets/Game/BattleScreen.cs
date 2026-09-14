@@ -197,7 +197,7 @@ namespace DeckRogue.Game
         // ---- 敵 ----
 
         /// <summary>敵パネルの中身 (入れ物 pan は BattleView が持ち越す)。shownHp は演出で先に減らした表示値 (実値と違えば滑らせる)</summary>
-        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp)
+        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, float neighborGap = float.MaxValue)
         {
             var e = st.Enemies[index];
             bool alive = e.Hp > 0;
@@ -233,10 +233,18 @@ namespace DeckRogue.Game
                 bool hasRider = it != null && (it.Inflict != null || it.AlsoBuff.HasValue || it.AlsoDefend.HasValue || it.AlsoDestroySet == true);
                 float bubbleH = (hasIntentArt ? 68f : 54f) + (hasRider ? 40f : 0f);   // 意図の絵 (32 ドット×2=64) が入る高さ (2026-09-11)
                 var detailText = IntentDetail(st, index, it);
-                float detailH = string.IsNullOrEmpty(detailText) ? 0f : 44f;
+                // スマホは敵の間隔が狭いので細く。3体以上は隣との間隔に合わせてさらに絞る (2026-09-14 ユーザー「吹き出し同士が重なる」)
+                float bubbleHalf = UiKit.Phone ? Mathf.Clamp(neighborGap / 2f - 6f, 66f, 108f) : 150f;
+                float detailW = UiKit.Phone ? Mathf.Min(230f, bubbleHalf * 2f + 14f) : 340f;
+                if (UiKit.Phone && detailText.Contains("【")) detailText = detailText.Substring(detailText.IndexOf('【'));   // 数字は吹き出しに出ているので分岐の注記だけ
+                float detailH = 0f;
+                if (!string.IsNullOrEmpty(detailText))
+                {   // 行数の見積り (14px の文字が幅に何字入るか)
+                    int cpl = Mathf.Max(6, (int)((detailW - 16f) / 14f));
+                    detailH = 12f + 17f * Mathf.CeilToInt(detailText.Length / (float)cpl);
+                }
                 float bubbleY = Mathf.Min(spriteTop + 54f, ceiling - bubbleH - detailH);
                 bool clamped = bubbleY < spriteTop + 54f - 0.5f;
-                float bubbleHalf = UiKit.Phone ? 108f : 150f;   // スマホは敵の間隔が狭いので細く (2026-09-14)
                 UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-bubbleHalf, bubbleY), new Vector2(bubbleHalf, bubbleY + bubbleH));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
@@ -282,7 +290,7 @@ namespace DeckRogue.Game
                 if (!string.IsNullOrEmpty(detailText))
                 {
                     // 舞台の上の文字は夜の札に乗せる (縁取りだけでは草と月光の上で読めなかった。2026-09-09)
-                    var detail = PaperFx.NightNote(pan, detailText, 14, UiKit.Phone ? 230f : 340f);
+                    var detail = PaperFx.NightNote(pan, detailText, 14, detailW);
                     detail.anchorMin = detail.anchorMax = new Vector2(0.5f, 0f); detail.pivot = new Vector2(0.5f, 0f);
                     detail.anchoredPosition = new Vector2(0f, bubbleY + 4f + bubbleH);
                 }
@@ -322,7 +330,8 @@ namespace DeckRogue.Game
             var nameTag = UiKit.NewRect("nametag", pan);
             // スマホは名前札と HP バーを手札のすぐ上に詰める (足元の高さが取れない。2026-09-14)
             float tagY = UiKit.Phone ? 30f : 90f, barY0 = UiKit.Phone ? 8f : 66f, barY1 = UiKit.Phone ? 26f : 84f;
-            UiKit.Anchor(nameTag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-72f, tagY), new Vector2(72f, tagY + 34f));
+            float tagHalf = UiKit.Phone ? Mathf.Clamp(neighborGap / 2f - 2f, 56f, 72f) : 72f;   // スマホの4体は名前札も間隔に合わせて絞る (2026-09-14)
+            UiKit.Anchor(nameTag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tagHalf, tagY), new Vector2(tagHalf, tagY + 34f));
             nameTag.localRotation = Quaternion.Euler(0f, 0f, index % 2 == 0 ? 1f : -1f);
             var ntImg = PaperFx.Sheet(nameTag, PaperFx.Tag, "paper", alive ? Color.white : new Color(0.8f, 0.8f, 0.8f, 1f));
             UiKit.Stretch(ntImg.rectTransform, 0f, 0f, 0f, 0f);
@@ -605,6 +614,9 @@ namespace DeckRogue.Game
                 UiKit.Anchor(ice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(256f, hpY - 2f), new Vector2(380f, hpY + 24f));
             }
 
+            // スマホ (2026-09-14 ユーザー裁定「案B 左に3段」): 資源・からくり・置物を画面の左の一角に3段でまとめる
+            if (UiKit.Phone) { PhoneSelfColumn(g, area, st); return; }
+
             // 資源・状態の札
             var col = UiKit.NewRect("chips", area);
             // 状態の札は頭の上 (絵の中心 x=130+128 に寄せる)
@@ -613,34 +625,15 @@ namespace DeckRogue.Game
             vg.childAlignment = TextAnchor.MiddleCenter;
             vg.childForceExpandWidth = false;
             vg.childForceExpandHeight = false;
-            var res = new List<KeyValuePair<string, string>>();
-            if (p.Growth > 0) res.Add(new KeyValuePair<string, string>("growth", "成長 " + p.Growth));
-            if (p.Momentum > 0) res.Add(new KeyValuePair<string, string>("momentum", "勢い " + p.Momentum));
-            if (p.Aether > 0) res.Add(new KeyValuePair<string, string>("energy", "霊気 " + p.Aether));
-            if (p.NextCardDiscount > 0) res.Add(new KeyValuePair<string, string>("energy", "次のカード -" + p.NextCardDiscount));
-            if (p.SpellEchoes > 0) res.Add(new KeyValuePair<string, string>("draw", "反復 " + p.SpellEchoes));
-            // 状態異常は「名前 残りNT」で、数字がターンだと一目で読めるように (2026-09-09「デバフ表示が分かりにくすぎる」)
-            if (p.Weak > 0) res.Add(new KeyValuePair<string, string>("exposed", "弱体 " + p.Weak + "T"));
-            if (p.Vulnerable > 0) res.Add(new KeyValuePair<string, string>("exposed", "脆弱 " + p.Vulnerable + "T"));
-            if (p.Frail > 0) res.Add(new KeyValuePair<string, string>("exposed", "虚弱 " + p.Frail + "T"));
-            if (p.Restrain > 0) res.Add(new KeyValuePair<string, string>("set", "拘束 " + p.Restrain + "T"));
-            if ((p.Mist ?? 0) > 0) res.Add(new KeyValuePair<string, string>("draw", "霞み " + p.Mist.Value + "T"));
-            if ((p.Slow ?? 0) > 0) res.Add(new KeyValuePair<string, string>("exposed", "重り " + p.Slow.Value + "T"));
+            var res = ResourceChips(p);
             for (int i = 0; i < res.Count; i++) SmallChip(col, res[i].Key, res[i].Value, PaperFx.Ink);
 
             // 伏せ場 (リーダーの右): 点線のポケットに伏せ札の裏。
-            // スマホ (2026-09-14) は画面の左端の列に置く (キャンバスが狭く、リーダーの右は敵の名前札と重なる)。枠は 0.85倍
             var setArea = UiKit.NewRect("setzone", area);
-            float slotW = 108f, slotH = 156f, slotStep = UiKit.Phone ? 116f : 124f;
-            if (UiKit.Phone)
-            {
-                float areaLeft = area.offsetMin.x;   // 入れ物の左端 (キャンバス座標) → キャンバス左 24 に置く
-                UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f - areaLeft, 20f), new Vector2(0f, 20f + slotH + 40f));
-            }
-            else UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(390f, 110f), new Vector2(0f, 300f));
+            float slotW = 108f, slotH = 156f, slotStep = 124f;
+            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(390f, 110f), new Vector2(0f, 300f));
             var setTag = Tag(setArea, 26f, -2f);
             UiKit.Anchor(setTag, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f));
-            if (UiKit.Phone) setTag.pivot = new Vector2(0f, 1f);   // 左端に置くので右へ伸ばす
             var stFit = setTag.GetComponent<ContentSizeFitter>();
             UiKit.Icon(setTag, "set", 14f, PaperFx.InkSoft);
             var setLabel = UiKit.Txt(setTag, "からくり " + p.SetCards.Count + " / " + p.SetSlots, 13, PaperFx.Ink, TextAnchor.MiddleLeft, true);
@@ -704,15 +697,9 @@ namespace DeckRogue.Game
                 }
             }
 
-            // 置物 (伏せ場の右): 紙の付箋。スマホは上部バーの下に名前だけの札を並べる (タップで説明。2026-09-14)
+            // 置物 (伏せ場の右): 紙の付箋
             var permRow = UiKit.NewRect("perms", setArea);
-            if (UiKit.Phone)
-            {
-                float canvasH = CanvasSize(area).y;
-                float rowBottom = canvasH - TopH - 44f - BattleView.StatusLineY - 20f;   // setArea の下端 (StatusLineY+20) 基準
-                UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, rowBottom), new Vector2(0f, rowBottom + 36f));
-            }
-            else UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(p.SetSlots * 124f + 12f, 40f), new Vector2(0f, 156f));
+            UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(p.SetSlots * 124f + 12f, 40f), new Vector2(0f, 156f));
             var pg = UiKit.Horz(permRow, 12, 0);
             pg.childAlignment = TextAnchor.UpperLeft;
             pg.childForceExpandWidth = false;
@@ -723,17 +710,6 @@ namespace DeckRogue.Game
                 var q = p.Permanents[i];
                 if (q.Innate == true) continue;
                 shown++;
-                if (UiKit.Phone)
-                {
-                    var tag = Tag(permRow, 34f, shown % 2 == 0 ? 0.8f : -0.8f);
-                    tag.GetComponent<Image>().raycastTarget = true;
-                    string ptip = "<b>" + q.Def.Name + "</b>\n" + CardText.Body(q.Def);
-                    Tooltip.Attach(tag.gameObject, delegate { return ptip; });
-                    UiKit.Icon(tag, "crest_permanent", 18f, PaperFx.Ink);
-                    var pt = UiKit.Txt(tag, q.Def.Name, 15, PaperFx.Ink, TextAnchor.MiddleLeft, true);
-                    UiKit.Le(pt, 30f, 28f, -1f, 28f);
-                    continue;
-                }
                 var note = UiKit.NewRect("perm", permRow);
                 UiKit.Le(note, 150f, 112f, 150f, 112f);
                 note.localRotation = Quaternion.Euler(0f, 0f, shown % 2 == 0 ? 1.2f : -1.5f);
@@ -753,6 +729,186 @@ namespace DeckRogue.Game
                 var body = UiKit.Txt(note, CardText.Short(CardText.Body(q.Def), 26), 11, PaperFx.InkSoft, TextAnchor.UpperLeft);
                 UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(12f, 8f), new Vector2(-10f, -44f));
             }
+        }
+
+        /// <summary>資源・状態の札の一覧 (アイコン名, 文言)</summary>
+        static List<KeyValuePair<string, string>> ResourceChips(PlayerState p)
+        {
+            var res = new List<KeyValuePair<string, string>>();
+            if (p.Growth > 0) res.Add(new KeyValuePair<string, string>("growth", "成長 " + p.Growth));
+            if (p.Momentum > 0) res.Add(new KeyValuePair<string, string>("momentum", "勢い " + p.Momentum));
+            if (p.Aether > 0) res.Add(new KeyValuePair<string, string>("energy", "霊気 " + p.Aether));
+            if (p.NextCardDiscount > 0) res.Add(new KeyValuePair<string, string>("energy", "次のカード -" + p.NextCardDiscount));
+            if (p.SpellEchoes > 0) res.Add(new KeyValuePair<string, string>("draw", "反復 " + p.SpellEchoes));
+            // 状態異常は「名前 残りNT」で、数字がターンだと一目で読めるように (2026-09-09「デバフ表示が分かりにくすぎる」)
+            if (p.Weak > 0) res.Add(new KeyValuePair<string, string>("exposed", "弱体 " + p.Weak + "T"));
+            if (p.Vulnerable > 0) res.Add(new KeyValuePair<string, string>("exposed", "脆弱 " + p.Vulnerable + "T"));
+            if (p.Frail > 0) res.Add(new KeyValuePair<string, string>("exposed", "虚弱 " + p.Frail + "T"));
+            if (p.Restrain > 0) res.Add(new KeyValuePair<string, string>("set", "拘束 " + p.Restrain + "T"));
+            if ((p.Mist ?? 0) > 0) res.Add(new KeyValuePair<string, string>("draw", "霞み " + p.Mist.Value + "T"));
+            if ((p.Slow ?? 0) > 0) res.Add(new KeyValuePair<string, string>("exposed", "重り " + p.Slow.Value + "T"));
+            return res;
+        }
+
+        // ---- スマホの「自分の欄」(2026-09-14 ユーザー裁定「案B 左に3段」。設計は docs/design/phone-battle) ----
+        // 画面の左の一角に上から 資源の札／からくり (仕込み札のトークン 68×74)／置物 (付箋 168×40 を2列) を積む。
+        // 旧: 置物は上部バーの下 = 敵の吹き出しと同じ帯で重なり、伏せ場は札の裏 108×156 が舞台の左を占めていた。
+        // 座標はキャンバスの左上から測った値 (S25 相当 1462×675) を area (左下が feet.x-130, StatusLineY) の座標へ写す。
+        const float PhoneTokenW = 68f, PhoneTokenH = 74f, PhoneChipW = 168f, PhoneChipH = 40f;
+
+        static void PhoneSelfColumn(GameRoot g, RectTransform area, GameState st)
+        {
+            var p = st.Player;
+            float ax = area.offsetMin.x;                  // area の左端 (キャンバス x)
+            float ay = BattleView.StatusLineY;            // area の下端 (キャンバス y・下から)
+            var cs = CanvasSize(area);
+            // キャンバス左上基準の (x, top, w, h) を area の Anchor (左下基準) に置く
+            Action<RectTransform, float, float, float, float> place = (rt, x, top, w, h) =>
+                UiKit.Anchor(rt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x - ax, cs.y - top - h - ay), new Vector2(x - ax + w, cs.y - top - ay));
+            const float left = 24f;
+
+            // 1段目: 資源・状態の札 (旧は頭上。頭上は敵側に伸びるので左上へ)
+            var res = ResourceChips(p);
+            if (res.Count > 0)
+            {
+                var col = UiKit.NewRect("chips", area);
+                place(col, left, 60f, 640f, 28f);
+                var vg = UiKit.Horz(col, 6, 0);
+                vg.childAlignment = TextAnchor.MiddleLeft; vg.childForceExpandWidth = false; vg.childForceExpandHeight = false;
+                for (int i = 0; i < res.Count; i++) SmallChip(col, res[i].Key, res[i].Value, PaperFx.Ink);
+            }
+
+            // 2段目: からくり = 仕込み札のトークン (挿絵・状態の一言・角に残り回数)
+            var setArea = UiKit.NewRect("setzone", area);
+            place(setArea, left, 92f, 640f, 30f + PhoneTokenH);   // 見出しの行 30 + トークン (角の数字が上に 9 はみ出す)
+            var setLabel = PaperFx.NightNote(setArea, "からくり " + p.SetCards.Count + " / " + p.SetSlots, 14, 200f);
+            setLabel.anchorMin = setLabel.anchorMax = new Vector2(0f, 1f); setLabel.pivot = new Vector2(0f, 1f);
+            setLabel.anchoredPosition = new Vector2(-4f, 2f);
+            for (int i = 0; i < p.SetSlots; i++)
+            {
+                var slot = UiKit.NewRect("slot" + i, setArea);
+                UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * (PhoneTokenW + 10f), 0f), new Vector2(i * (PhoneTokenW + 10f) + PhoneTokenW, PhoneTokenH));
+                g.RegisterAnchor("setslot" + i, slot);
+                if (i < p.SetCards.Count) PhoneSetToken(g, slot, st, p.SetCards[i]);
+                else
+                {   // 空きの枠: 点線のポケット (文字は置かない)
+                    var pocket = PaperFx.Sheet(slot, PaperFx.Tag, "pocket", new Color(1f, 1f, 1f, 0.35f));
+                    UiKit.Stretch(pocket.rectTransform, 0f, 0f, 0f, 0f);
+                    pocket.raycastTarget = false;
+                }
+            }
+
+            // 3段目: 置物 = 付箋 (挿絵 + 名前) を2列 (狭いキャンバスは1列)。4枚を超えたら4つ目は「+N …」
+            var perms = new List<CardInstance>();
+            for (int i = 0; i < p.Permanents.Count; i++) if (p.Permanents[i].Innate != true) perms.Add(p.Permanents[i]);
+            if (perms.Count > 0)
+            {
+                int cols = cs.x >= 1400f ? 2 : 1;
+                var permRow = UiKit.NewRect("perms", area);
+                place(permRow, left, 206f, cols * (PhoneChipW + 8f), 22f + 2f * (PhoneChipH + 6f));
+                var permLabel = PaperFx.NightNote(permRow, "置物 " + perms.Count, 14, 120f);
+                permLabel.anchorMin = permLabel.anchorMax = new Vector2(0f, 1f); permLabel.pivot = new Vector2(0f, 1f);
+                permLabel.anchoredPosition = new Vector2(-4f, 2f);
+                int cells = cols * 2;
+                int show = perms.Count <= cells ? perms.Count : cells - 1;
+                for (int i = 0; i < show; i++)
+                {
+                    var chip = UiKit.NewRect("perm", permRow);
+                    int cx = i % cols, cy = i / cols;
+                    UiKit.Anchor(chip, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(cx * (PhoneChipW + 8f), -22f - cy * (PhoneChipH + 6f) - PhoneChipH), new Vector2(cx * (PhoneChipW + 8f) + PhoneChipW, -22f - cy * (PhoneChipH + 6f)));
+                    PhonePermChip(chip, perms[i]);
+                }
+                if (show < perms.Count)
+                {   // 残りは「+N …」(タップで名前の一覧)
+                    var more = UiKit.NewRect("more", permRow);
+                    int cx = show % cols, cy = show / cols;
+                    UiKit.Anchor(more, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(cx * (PhoneChipW + 8f), -22f - cy * (PhoneChipH + 6f) - PhoneChipH), new Vector2(cx * (PhoneChipW + 8f) + 72f, -22f - cy * (PhoneChipH + 6f)));
+                    var mImg = PaperFx.Sheet(more, PaperFx.Tag, "paper");
+                    UiKit.Stretch(mImg.rectTransform, 0f, 0f, 0f, 0f);
+                    mImg.raycastTarget = true;
+                    var mt = UiKit.Txt(more, "+" + (perms.Count - show) + " …", 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                    UiKit.Stretch(mt.rectTransform, 4f, 4f, 0f, 0f);
+                    var sb = new System.Text.StringBuilder();
+                    for (int i = show; i < perms.Count; i++) { if (sb.Length > 0) sb.Append("\n"); sb.Append("<b>" + perms[i].Def.Name + "</b> " + CardText.Body(perms[i].Def)); }
+                    string mtip = sb.ToString();
+                    Tooltip.Attach(more.gameObject, delegate { return mtip; });
+                }
+            }
+        }
+
+        /// <summary>仕込み札のトークン (68×74): 上に挿絵 64×38、下に状態の帯 (準備中／あとN回／今ターン／期限なし)。生きている札は蜂蜜の縁、今ターン鳴る札は縁が脈打ち角に残り回数</summary>
+        static void PhoneSetToken(GameRoot g, RectTransform slot, GameState st, CardInstance sc)
+        {
+            bool live = Effects.IsTrapLive(st, sc);
+            bool canFireNow = live && Effects.TrapCanFireThisPhase(st, sc);
+            int? left = Effects.TrapWindowsLeft(st, sc);
+            // 縁 (状態の色) → 紙 → 挿絵 → 帯 → 角の数字
+            var edge = PaperFx.Sheet(slot, PaperFx.Tag, "edge", !live ? UiKit.Hex("#6a6a74") : canFireNow ? UiKit.Hex("#f0d58a") : UiKit.Hex("#c9b26a"));
+            UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+            edge.raycastTarget = false;
+            if (canFireNow)
+            {
+                var gimg = edge; float t0 = UnityEngine.Random.value;
+                Tween.Run(1.2f, k => { if (gimg != null) { var c = gimg.color; c.a = 0.75f + 0.25f * Mathf.Sin((k + t0) * Mathf.PI * 2f); gimg.color = c; } }, Ease.Linear, null);
+            }
+            var paper = PaperFx.Sheet(slot, PaperFx.Tag, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+            paper.raycastTarget = true;
+            var frame = UiKit.Pan(slot, PaperFx.Ink, "frame");
+            UiKit.Anchor(frame.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(1f, -41f), new Vector2(67f, -1f));
+            frame.raycastTarget = false;
+            var pic = UiKit.NewRect("pic", slot);
+            UiKit.Anchor(pic, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(2f, -40f), new Vector2(66f, -2f));
+            var pimg = pic.gameObject.AddComponent<Image>();
+            pimg.sprite = ThemeFx.CardArt(sc.Def.Id, Theme.CardTypeColor(sc.Def.Type)); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            if (!live) pimg.color = new Color(0.75f, 0.75f, 0.75f, 1f);
+            string band = !live ? "準備中" : canFireNow ? "今ターン" : left.HasValue ? "あと" + left.Value + "回" : "期限なし";
+            var bandImg = UiKit.Pan(slot, !live ? UiKit.Hex("#8a8a94") : canFireNow ? UiKit.Hex("#3f8a4a") : UiKit.Hex("#7a6a3a"), "band");
+            UiKit.Anchor(bandImg.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1f, 29f));
+            bandImg.raycastTarget = false;
+            var bt = UiKit.Deco(slot, band, 15, PaperFx.Paper, TextAnchor.MiddleCenter);
+            UiKit.Anchor(bt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 1f), new Vector2(0f, 29f));
+            bt.textWrappingMode = TextWrappingModes.NoWrap;
+            if (canFireNow)
+            {   // 角の数字 = 残りの窓 (期限なしは ∞)
+                var badge = UiKit.NewRect("badge", slot);
+                UiKit.Anchor(badge, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-13f, -13f), new Vector2(9f, 9f));
+                var bImg = badge.gameObject.AddComponent<Image>();
+                bImg.sprite = PaperFx.Disc(); bImg.preserveAspect = true; bImg.raycastTarget = false;
+                var bRing = UiKit.NewRect("ring", badge);
+                UiKit.Stretch(bRing, -1.5f, -1.5f, -1.5f, -1.5f);
+                var rImg = bRing.gameObject.AddComponent<Image>();
+                rImg.sprite = PaperFx.Ring(4); rImg.color = PaperFx.Ink; rImg.raycastTarget = false; rImg.preserveAspect = true;
+                var btx = UiKit.Deco(badge, left.HasValue ? left.Value.ToString() : "∞", 13, PaperFx.Ink, TextAnchor.MiddleCenter);
+                UiKit.Stretch(btx.rectTransform, 0f, 0f, 0f, 0f);
+            }
+            string trapLife = Effects.TrapStatusTextKarakuri(st, sc);
+            string tip = "<b>" + sc.Def.Name + "</b>\n" + CardText.Body(sc.Def) + "\n<color=#7a4e12>" + trapLife + "</color>";
+            string liveTip = null;
+            try { liveTip = Effects.SetCardLiveDamage(st, sc.Def); } catch (Exception) { }
+            if (liveTip != null) tip += "\n<color=#7a4e12>" + liveTip + "</color>";
+            Tooltip.Attach(paper.gameObject, delegate { return tip; });
+        }
+
+        /// <summary>置物の付箋 (168×40): 挿絵 48×29 + 名前 (長い名前は…)。タップで本文</summary>
+        static void PhonePermChip(RectTransform chip, CardInstance q)
+        {
+            var img = PaperFx.Sheet(chip, PaperFx.Tag, "paper");
+            UiKit.Stretch(img.rectTransform, 0f, 0f, 0f, 0f);
+            img.raycastTarget = true;
+            var frame = UiKit.Pan(chip, PaperFx.Ink, "frame");
+            UiKit.Anchor(frame.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(4f, -15.5f), new Vector2(54f, 15.5f));
+            frame.raycastTarget = false;
+            var pic = UiKit.NewRect("pic", chip);
+            UiKit.Anchor(pic, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(5f, -14.5f), new Vector2(53f, 14.5f));
+            var pimg = pic.gameObject.AddComponent<Image>();
+            pimg.sprite = ThemeFx.CardArt(q.Def.Id, Theme.CardTypeColor(q.Def.Type)); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            var nt = UiKit.Deco(chip, q.Def.Name, 15, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Anchor(nt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(60f, 0f), new Vector2(-8f, 0f));
+            nt.textWrappingMode = TextWrappingModes.NoWrap;
+            nt.overflowMode = TextOverflowModes.Ellipsis;
+            string ptip = "<b>" + q.Def.Name + "</b>\n" + CardText.Body(q.Def);
+            Tooltip.Attach(chip.gameObject, delegate { return ptip; });
         }
 
         // ---- 手札 (扇) ----

@@ -298,6 +298,33 @@ namespace DeckRogue.Game
             // (敵フェーズは engine が自動解決。確認ウィンドウが開いたら止まる = 窓の残り回数の表示も撮れる)
             if (phase == "combat" && g.Rs != null && g.Rs.Combat != null)
             {
+                // 置物・伏せ札を直接置く (配置の確認用。perms=<cardId,...>・sets=<cardId,...>。2026-09-14 スマホの戦闘レイアウト)
+                try
+                {
+                    var st0 = g.Rs.Combat;
+                    var pl = st0.Player;
+                    if (Get("perms") != null)
+                    {
+                        var list = new List<CardInstance>(pl.Permanents);
+                        int n = 0;
+                        foreach (var id in Get("perms").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0))
+                            list.Add(new CardInstance { Uid = id + "#dbgp" + (n++), Def = Content.GetCardDef(id) });
+                        pl = pl with { Permanents = list };
+                    }
+                    if (Get("sets") != null)
+                    {
+                        var list = new List<CardInstance>(pl.SetCards);
+                        int n = 0;
+                        foreach (var raw in Get("sets").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0))
+                        {   // 末尾の * は「前のターンに仕込んだ = 生きている罠」。無印は今ターン仕込んだ (準備中)
+                            bool live = raw.EndsWith("*"); string id = live ? raw.Substring(0, raw.Length - 1) : raw;
+                            list.Add(new CardInstance { Uid = id + "#dbgs" + (n++), Def = Content.GetCardDef(id), SetTurn = st0.Turn - (live ? 1 : 0) });
+                        }
+                        pl = pl with { SetCards = list, SetSlots = Math.Max(pl.SetSlots, list.Count) };
+                    }
+                    if (!ReferenceEquals(pl, st0.Player)) g.Rs = g.Rs with { Combat = st0 with { Player = pl } };
+                }
+                catch (Exception ex) { Debug.LogError("[Autopilot] state: perms/sets " + ex.Message); }
                 try
                 {
                     int setIdx;
@@ -356,6 +383,12 @@ namespace DeckRogue.Game
                 for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) { var sp = g.Battle.EnemySprite(i); if (sp != null) sbd.Append(" enemy" + i + "=" + sp.rect.size + "@" + sp.offsetMin + " feet=" + Stage.FeetOffset("enemy" + i, -1f)); }
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
+            }
+            // hidezone=1: 伏せ場と置物の欄を消して撮る (配置案のモックの下地用。2026-09-14)
+            if (Get("hidezone") == "1" && g.ScreenRoot != null)
+            {
+                foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true)) if (rt.name == "setzone" || rt.name == "chips" && rt.parent != null && rt.parent.name == "player") rt.gameObject.SetActive(false);
+                yield return null;
             }
             // scroll=1: 画面の一覧を一番下まで送る (最後の行が選べるかの確認。2026-09-14)
             if (Get("scroll") == "1" && g.ScreenRoot != null)
