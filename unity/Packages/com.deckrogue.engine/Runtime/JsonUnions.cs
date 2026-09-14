@@ -65,6 +65,33 @@ namespace DeckRogue.Engine
         }
     }
 
+    /// <summary>
+    /// IReadOnlyDictionary&lt;string, T&gt; を Dictionary&lt;string, T&gt; として読む (2026-09-14 Android)。
+    /// Newtonsoft は IReadOnlyDictionary を ReadOnlyDictionary の引数つきコンストラクタで作るが、IL2CPP (コード剥がしあり) では
+    /// そのコンストラクタが見つからず「Cannot deserialize readonly or fixed size dictionary」で enemies.json (nodes) が読めなかった
+    /// (Windows/Mono と .NET のテストでは通る)。Dictionary は IReadOnlyDictionary を実装しているのでそのまま返せる。
+    /// </summary>
+    public sealed class ReadOnlyDictionaryAsDictionaryConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) =>
+            objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>);
+
+        public override bool CanWrite => false;
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+            var args = objectType.GetGenericArguments();
+            var dictType = typeof(Dictionary<,>).MakeGenericType(args[0], args[1]);
+            return serializer.Deserialize(reader, dictType);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotSupportedException("CanWrite=false");
+        }
+    }
+
     public static class JsonUnions
     {
         /// <summary>3つの判別共用体のコンバータを載せた設定 (JSON のキーは camelCase のまま)</summary>
@@ -77,6 +104,7 @@ namespace DeckRogue.Engine
                 new TaggedUnionConverter<Command>(),
                 new TaggedUnionConverter<RunCommand>(),
                 new TaggedUnionConverter<GameEvent>(),
+                new ReadOnlyDictionaryAsDictionaryConverter(),
             },
         };
 

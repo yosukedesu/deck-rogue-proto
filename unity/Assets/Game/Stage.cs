@@ -3000,12 +3000,13 @@ namespace DeckRogue.Game
             var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
             vel.x = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f); vel.y = new ParticleSystem.MinMaxCurve(-0.08f, 0.14f); vel.z = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
             var noise = ps.noise; noise.enabled = true; noise.strength = 0.55f; noise.frequency = 0.5f; noise.scrollSpeed = 0.35f;
-            // 瞬き: 寿命の中で 3〜4 回ふわっと灯る (蛍の呼吸)
+            // 瞬き: 寿命の中で 3 回ふわっと灯る (蛍の呼吸)。Gradient のアルファキーは 8 個まで (9 個目は Android で
+            // 「Max number of alpha keys is 8」のエラーになり、ErrorOverlay を塞いでいた。2026-09-14)
             var col = ps.colorOverLifetime; col.enabled = true;
             var g = new Gradient();
             g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.08f), new GradientAlphaKey(0.05f, 0.2f), new GradientAlphaKey(1f, 0.34f), new GradientAlphaKey(0.05f, 0.48f),
-                              new GradientAlphaKey(1f, 0.62f), new GradientAlphaKey(0.05f, 0.76f), new GradientAlphaKey(1f, 0.88f), new GradientAlphaKey(0f, 1f) });
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.1f), new GradientAlphaKey(0.05f, 0.26f), new GradientAlphaKey(1f, 0.42f),
+                              new GradientAlphaKey(0.05f, 0.58f), new GradientAlphaKey(1f, 0.74f), new GradientAlphaKey(0.05f, 0.9f), new GradientAlphaKey(0f, 1f) });
             col.color = g;
             var sz = ps.sizeOverLifetime; sz.enabled = true;
             var curve = new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(0.08f, 1f), new Keyframe(0.2f, 0.5f), new Keyframe(0.34f, 1f), new Keyframe(0.48f, 0.5f), new Keyframe(0.62f, 1f), new Keyframe(0.76f, 0.5f), new Keyframe(0.88f, 1f), new Keyframe(1f, 0.6f));

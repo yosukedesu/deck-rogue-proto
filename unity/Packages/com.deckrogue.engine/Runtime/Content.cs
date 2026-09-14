@@ -52,6 +52,8 @@ namespace DeckRogue.Engine
             MissingMemberHandling = MissingMemberHandling.Ignore,
             // 日付らしき文字列を DateTime に化けさせない (カード名・説明文を素の string で読む)
             DateParseHandling = DateParseHandling.None,
+            // IReadOnlyDictionary (EnemyDef.nodes) は IL2CPP で ReadOnlyDictionary が作れないので Dictionary として読む (2026-09-14 Android)
+            Converters = new List<JsonConverter> { new ReadOnlyDictionaryAsDictionaryConverter() },
         };
 
         /// <summary>data/*.json を読み込む。テストは Content.Load("../../src/data")。</summary>

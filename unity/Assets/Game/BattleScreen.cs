@@ -49,8 +49,10 @@ namespace DeckRogue.Game
 
         public static void BuildBackground(RectTransform root, int act)
         {
-            // 背景は舞台 (別カメラ・ポスト処理と粒子つき) に描く。UI 側 (root) には何も置かない
-            Stage.Paint(act);
+            // 背景は舞台 (別カメラ・ポスト処理と粒子つき) に描く。UI 側 (root) には何も置かない。
+            // 舞台が組めなくても UI は組む (2026-09-14 実機: 舞台の例外で画面ごと消えていた疑い。原因は ErrorOverlay に出る)
+            try { Stage.Paint(act); }
+            catch (Exception e) { Debug.LogException(e); }
         }
 
         static void BuildTopBar(GameRoot g, RectTransform root, RunState run, GameState st)

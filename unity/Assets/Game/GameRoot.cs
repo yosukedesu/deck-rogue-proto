@@ -205,6 +205,7 @@ namespace DeckRogue.Game
             }
             catch (Exception ex)
             {
+                Debug.LogException(ex);
                 Error = "データ読み込み失敗: " + ex.Message;
             }
 
@@ -492,7 +493,9 @@ namespace DeckRogue.Game
             }
             catch (Exception ex)
             {
-                var t = UiKit.Txt(_root, "描画エラー: " + ex.Message + "\n" + ex.StackTrace, 14, UiKit.ColBad);
+                // ログにも出す (ErrorOverlay が実機で最前面に貼る。2026-09-14 APK が真っ暗＝この文字が 1.3倍の入れ物の外に出ていた)
+                Debug.LogException(ex);
+                var t = UiKit.Txt(ScreenRoot != null ? ScreenRoot : _root, "描画エラー: " + ex.Message + "\n" + ex.StackTrace, 14, UiKit.ColBad);
                 UiKit.Stretch(t.rectTransform, 12f, 12f, 12f, 12f);
             }
         }
