@@ -98,6 +98,7 @@ attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / stea
 | enemy_rock_beetle | 岩皮の甲虫 | 通常 | 64×64 |
 | enemy_big_slime | 大苔スライム | 通常 | 64×64 |
 | enemy_moss_slime | 苔スライム | 通常 | 64×64 |
+| enemy_moss_spawner | 苔の産み手 | 通常 | 64×64 |
 | enemy_elite_sergeant | 鞭打ちの鬼軍曹 | エリート | 80×80 |
 | enemy_elite_sentry | 歩哨 | エリート | 80×80 |
 | enemy_elite_iron_egg | 眠れる鉄卵 | エリート | 80×80 |

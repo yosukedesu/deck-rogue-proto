@@ -1,0 +1,31 @@
+{
+ "id": "enemy_moss_spawner__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a broad MOSS MOUND creature, the mother of the small moss slimes: a wide low heap of dark mud thickly blanketed in pale faintly glowing moss, three small round moss buds sprouting from its back like unborn little slimes, the bud on top already open with a tiny bead-eyed slime peeking out, two small bead eyes sunk into the front, a single drip at its side, no limbs, no ears, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, blob with arms, blob with legs, cartoon slime with a big grin, cube slime, gelatinous cube, green jelly, bright green, humanoid",
+  "image_size": {
+   "width": 64,
+   "height": 64
+  },
+  "text_guidance_scale": 9,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "view": "low top-down",
+  "direction": "south-west",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-14T00:28:17.195Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-14",
+  "why": "苔の丘に小さな芽 (顔つき) が数本＝「産み手」が一目で読める。s41 は大きな芽が茸/玉葱に見え、苔スライムの族に見えない"
+ }
+}
