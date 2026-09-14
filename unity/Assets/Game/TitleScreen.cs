@@ -31,12 +31,21 @@ namespace DeckRogue.Game
 
             RunUi.Message(g, root);
 
+            // 続きから (2026-09-15 本家形): 進行中のセーブがあれば、リーダー一覧の上に帯で出す (本家の Continue が最初に来るのと同じ)
+            float top = -210f;
+            string saveSummary = SaveGame.PeekSummary();
+            if (saveSummary != null)
+            {
+                ContinueBand(g, root, saveSummary);
+                top = -346f;
+            }
+
             // リーダー一覧 (横スクロール)
             var head = UiKit.Txt(root, "リーダーを選ぶ", 22, UiKit.ColText, TextAnchor.MiddleLeft, true);
-            UiKit.Anchor(head.rectTransform, new Vector2(0f, 1f), new Vector2(0.6f, 1f), new Vector2(64f, -200f), new Vector2(0f, -166f));
+            UiKit.Anchor(head.rectTransform, new Vector2(0f, 1f), new Vector2(0.6f, 1f), new Vector2(64f, top + 10f), new Vector2(0f, top + 44f));
 
             var listRoot = UiKit.NewRect("leaders", root);
-            UiKit.Anchor(listRoot, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(48f, 60f), new Vector2(-480f, -210f));
+            UiKit.Anchor(listRoot, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(48f, 60f), new Vector2(-480f, top));
             var content = UiKit.Scroll(listRoot, true, new Color(0f, 0f, 0f, 0.2f), 18, 18);
             UiKit.Stretch(UiKit.ScrollRoot(content), 0f, 0f, 0f, 0f);
             var vg = content.GetComponent<VerticalLayoutGroup>();
@@ -89,6 +98,56 @@ namespace DeckRogue.Game
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(360f, 14f), new Vector2(700f, 54f));
                 Tooltip.Attach(b.gameObject, delegate { return "置き場: " + Feedback.ReportsDir; });
             }
+        }
+
+        /// <summary>進行中のランの帯: 要約＋「続きから」＋「放棄」。y は -296〜-206 (副題の下)</summary>
+        static void ContinueBand(GameRoot g, RectTransform root, string summary)
+        {
+            var band = UiKit.Frame(root, Theme.Panel, new Color(1f, 0.92f, 0.6f, 1f), "continue", 3f);
+            UiKit.Anchor(band.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(48f, -302f), new Vector2(-480f, -206f));
+            var inner = UiKit.NewRect("inner", band.transform);
+            UiKit.Stretch(inner, 18f, 14f, 10f, 10f);
+            var hg = UiKit.Horz(inner, 14, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft;
+            hg.childForceExpandHeight = false;
+            hg.childForceExpandWidth = false;
+
+            string leaderId = null;
+            try { var sf = SaveGame.Peek(); leaderId = sf != null && sf.Run != null ? sf.Run.LeaderId : null; } catch (Exception) { }
+            var icon = leaderId != null ? Theme.Art("leaders", leaderId + "_icon") : null;
+            if (icon != null)
+            {
+                var li = new GameObject("leader-icon", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+                li.transform.SetParent(inner, false);
+                li.sprite = icon; li.preserveAspect = true; li.raycastTarget = false;
+                UiKit.Le(li.rectTransform, 64f, 64f, 64f, 64f);
+            }
+            var col = UiKit.NewRect("text", inner);
+            UiKit.Le(col, 200f, 74f, -1f, 74f, 1f, -1f);
+            var vg = UiKit.Vert(col, 2, 0);
+            vg.childAlignment = TextAnchor.MiddleLeft;
+            vg.childForceExpandHeight = false;
+            var t1 = UiKit.Txt(col, "進行中のラン", 13, UiKit.ColInkSoft, TextAnchor.MiddleLeft, true);
+            t1.characterSpacing = 2f;
+            UiKit.Le(t1, -1f, 20f, -1f, 20f);
+            var t2 = UiKit.Deco(col, summary, UiKit.Phone ? 17 : 19, UiKit.ColInk, TextAnchor.MiddleLeft);
+            t2.textWrappingMode = TextWrappingModes.NoWrap;
+            t2.overflowMode = TextOverflowModes.Ellipsis;
+            UiKit.Le(t2, -1f, 28f, -1f, 28f);
+            var at = SaveGame.SavedAt();
+            string detail = null;
+            try { detail = SaveGame.Detail(SaveGame.Peek()); } catch (Exception) { }
+            // 1行に収める (スマホは文字の最小が 15 なので短く: 「戦闘中 ターン3 の途中　最終保存 9/15 01:39　自動保存」)
+            var t3 = UiKit.Txt(col, (detail != null ? detail + "　" : "") + (at.HasValue ? "最終保存 " + at.Value.ToString("M/d HH:mm") + "　" : "") + "自動保存", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
+            t3.textWrappingMode = TextWrappingModes.NoWrap;
+            t3.overflowMode = TextOverflowModes.Ellipsis;
+            UiKit.Le(t3, -1f, 22f, -1f, 22f);
+
+            var resume = UiKit.Btn(inner, "▶ 続きから", delegate { Audio.Ui("start_run"); g.ResumeSave(); }, 22, true, UiKit.Hex("#f0d58a"));
+            BattleScreen.SetSize(resume, UiKit.Phone ? 220f : 240f, 60f);
+            var abandon = UiKit.Btn(inner, "放棄", delegate { g.AskAbandonSave(); }, 15, true, UiKit.Hex("#e8b8b0"));
+            BattleScreen.SetSize(abandon, 92f, 44f);
+            Tooltip.Attach(abandon.gameObject, delegate { return "このセーブを消す（確認あり）"; });
         }
 
         static RectTransform Portrait(Transform parent, LeaderDef ld, bool selected, Action onClick)
@@ -198,7 +257,9 @@ namespace DeckRogue.Game
             var note = UiKit.Txt(col, "難易度 3 が標準。上げると敵の打点とHPが増える (報酬は変わらない)", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             note.textWrappingMode = TextWrappingModes.Normal;
 
-            var start = UiKit.Btn(col, "ランを開始", delegate { Audio.Ui("start_run"); g.StartRun(); }, 24, true, UiKit.Hex("#f0d58a"));
+            // 進行中のセーブがあれば「新しいランを開始」= 捨てて始める確認を挟む (2026-09-15 本家形: 進行中のランは1本)
+            bool hasSave = SaveGame.Exists;
+            var start = UiKit.Btn(col, hasSave ? "新しいランを開始" : "ランを開始", delegate { Audio.Ui("start_run"); g.AskStartRun(); }, 24, true, hasSave ? (Color?)null : UiKit.Hex("#f0d58a"));
             var le = start.GetComponent<LayoutElement>();
             if (le != null) { le.minHeight = 64f; le.preferredHeight = 64f; }
         }

@@ -18,6 +18,8 @@ namespace DeckRogue.Game
         static object _seenCombat;
 
         public static void Reset() { _seen = 0; _seenCombat = null; }
+        /// <summary>続きから (2026-09-15): 読み戻した戦闘の既存のログは演出済みとして扱う (再開の一発目に古い浮き文字を出さない)</summary>
+        public static void MarkSeen(GameState combat) { _seen = combat != null ? combat.EventLog.Count : 0; _seenCombat = combat; }
 
         /// <summary>
         /// この CardPlayed が実際に何をしたか (選択式の札は選んだモードで演出を分ける 2026-09-14 ユーザー指摘)。

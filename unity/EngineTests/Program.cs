@@ -19,6 +19,10 @@ if (args.Length > 0 && args[0] == "dump-save")
 {
     return DumpSave(args.Skip(1).ToArray());
 }
+if (args.Length > 0 && args[0] == "roundtrip")
+{
+    return SaveRoundtrip(args.Skip(1).ToArray());
+}
 if (args.Length > 0 && args[0] == "fuse")
 {
     // 合成の照合 (2026-09-14): dotnet run -- fuse <cardIdA> <cardIdB> [--data dir] → 結果の CardDef を JSON で出す (TS の fuseCards と突き合わせる)
@@ -243,6 +247,117 @@ int VerifyGoldenRuns(string[] argv)
         return 0;
     }
     Console.Error.WriteLine($"照合失敗: {failedFiles}/{files.Count} ファイル");
+    return 1;
+}
+
+// ================= セーブ→読み戻しの等価性 (2026-09-15 Unity のセーブ/続きから) =================
+
+// ゴールデンを再生しながら、N手ごとに Report.BuildRunSaveFile → JsonUnions.Deserialize<RunSaveFile> で読み戻し、
+// 読み戻した状態から残りの手を続けても各手のハッシュがゴールデンに一致することを確かめる
+// (= 「セーブから続きを操作しても同じ結果」の機械固定。戦闘ログはスナップショット上限で切り詰めるが engine は読まない)。
+//   dotnet run -- roundtrip <golden.json...> [--every N] [--data <src/data>]
+int SaveRoundtrip(string[] argv)
+{
+    var dataDir = "../../src/data";
+    int every = 25;
+    var files = new List<string>();
+    for (int i = 0; i < argv.Length; i++)
+    {
+        if (argv[i] == "--data" && i + 1 < argv.Length) { dataDir = argv[++i]; continue; }
+        if (argv[i] == "--every" && i + 1 < argv.Length) { every = Math.Max(1, int.Parse(argv[++i])); continue; }
+        files.Add(argv[i]);
+    }
+    if (files.Count == 0) { Console.Error.WriteLine("usage: dotnet run -- roundtrip <golden.json...> [--every N] [--data <src/data>]"); return 2; }
+    Content.Load(dataDir);
+    int failed = 0;
+    foreach (var file in files)
+    {
+        var name = Path.GetFileName(file);
+        var golden = JObject.Parse(File.ReadAllText(file));
+        var origin = JsonUnions.FromToken<ReplayOrigin>(golden["origin"]!);
+        var commands = ((JArray)golden["commands"]!).Select(t => JsonUnions.FromToken<RunCommand>(t)).ToList();
+        var hashes = ((JArray)golden["hashes"]!).Select(t => (string)t!).ToList();
+        int count = Math.Min(commands.Count, hashes.Count);
+        var run = Run.ReplayInitialRun(origin);
+        int branches = 0, combatBranches = 0;
+        bool ok = true;
+        var journalCmds = new List<RunCommand>();
+        for (int i = 0; i <= count && ok; i++)
+        {
+            bool branch = i == count || i % every == 0;
+            if (branch)
+            {
+                // セーブ → 読み戻し
+                var journal = new RunJournal { Origin = origin, Commands = journalCmds.ToList(), Times = null };
+                string json;
+                RunSaveFile sf;
+                string? warn = null;
+                try
+                {
+                    json = Report.BuildRunSaveFile(run, new List<BattleArchive>(), new List<PlayNote>(), journal, new List<RunChoice>());
+                    sf = Report.ReadRunSaveFile(json, out warn);
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine($"{name}: {i}手目のセーブ/読み戻しで例外: {e.GetType().Name}: {e.Message}");
+                    ok = false; break;
+                }
+                if (sf == null || sf.Run == null) { Console.Error.WriteLine($"{name}: {i}手目の読み戻しが空: {warn}"); ok = false; break; }
+                if (warn != null) { Console.Error.WriteLine($"{name}: {i}手目の読み戻しが保険 (再生) に落ちた: {warn}"); ok = false; break; }
+                // 保険の経路: run の欄を壊した JSON はジャーナルの再生で同じ状態に戻る
+                {
+                    var broken = JObject.Parse(json);
+                    broken["run"] = new JObject();
+                    string? warn2;
+                    RunSaveFile? sf2 = null;
+                    try { sf2 = Report.ReadRunSaveFile(broken.ToString(Formatting.None), out warn2); }
+                    catch (Exception e) { Console.Error.WriteLine($"{name}: {i}手目の保険の読み戻しで例外: {e.Message}"); ok = false; break; }
+                    if (sf2 == null || sf2.Run == null || Golden.RunHash(sf2.Run) != Golden.RunHash(run))
+                    {
+                        Console.Error.WriteLine($"{name}: {i}手目の保険 (再生) が元と違う: {(sf2 == null ? warn2 : Golden.RunHash(sf2.Run))}");
+                        ok = false; break;
+                    }
+                }
+                if (Golden.RunHash(sf.Run) != Golden.RunHash(run))
+                {
+                    Console.Error.WriteLine($"{name}: {i}手目の読み戻しでハッシュ不一致 {Golden.RunHash(run)} → {Golden.RunHash(sf.Run)}");
+                    Console.Error.WriteLine($"  元: {Golden.RunDigest(run)}");
+                    Console.Error.WriteLine($"  後: {Golden.RunDigest(sf.Run)}");
+                    ok = false; break;
+                }
+                if (sf.Journal == null || sf.Journal.Commands.Count != journalCmds.Count) { Console.Error.WriteLine($"{name}: {i}手目のジャーナルが欠けた"); ok = false; break; }
+                branches++;
+                if (run.Combat != null && run.Phase == RunPhases.Combat) combatBranches++;
+                // 読み戻した状態から残りを続ける
+                var cont = sf.Run;
+                for (int j = i; j < count; j++)
+                {
+                    try { cont = Run.ApplyRunCommand(cont, commands[j]); }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine($"{name}: {i}手目のセーブから続けて index={j} で例外: {e.Message}");
+                        ok = false; break;
+                    }
+                    if (Golden.RunHash(cont) != hashes[j])
+                    {
+                        Console.Error.WriteLine($"{name}: {i}手目のセーブから続けて index={j} ({j + 1}手目) で不一致 期待{hashes[j]} 実際{Golden.RunHash(cont)}");
+                        Console.Error.WriteLine($"  → {Golden.RunDigest(cont)}");
+                        ok = false; break;
+                    }
+                }
+            }
+            if (i < count && ok)
+            {
+                run = Run.ApplyRunCommand(run, commands[i]);
+                journalCmds.Add(commands[i]);
+                if (Golden.RunHash(run) != hashes[i]) { Console.Error.WriteLine($"{name}: 素の再生が index={i} で不一致 (verify を先に)"); ok = false; }
+            }
+        }
+        if (ok) Console.WriteLine($"{name}: 全{count}手・分岐{branches}点 (うち戦闘中{combatBranches}) がセーブ経由でも一致 ✅");
+        else failed++;
+    }
+    if (failed == 0) { Console.WriteLine($"セーブの往復: {files.Count}ファイルすべて一致 ✅"); return 0; }
+    Console.Error.WriteLine($"往復失敗: {failed}/{files.Count} ファイル");
     return 1;
 }
 

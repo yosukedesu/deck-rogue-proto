@@ -44,6 +44,7 @@ namespace DeckRogue.Game
         void Start()
         {
             Directory.CreateDirectory(_dir);
+            SaveGame.Delete();   // 前回のスクショのセーブが残っているとタイトルに「続きから」が出る (2026-09-15)。撮る時は白紙から
             StartCoroutine(Run());
         }
 
@@ -433,6 +434,38 @@ namespace DeckRogue.Game
                 g.Notice = "レポートを書き出した: " + Feedback.LastExportPath;
                 g.Rebuild();
                 yield return Shot((Get("name") ?? ("state-" + phase)) + "-exported", 10);
+            }
+            // confirm=abandon: 「ランを放棄」の確認ダイアログを撮る (2026-09-15)
+            if (Get("confirm") == "abandon" && g.Rs != null)
+            {
+                g.AskAbandonRun();
+                yield return Shot((Get("name") ?? ("state-" + phase)) + "-confirm", 10);
+                g.Confirm = null; g.Rebuild();
+            }
+            // saveexit=1: 「セーブして終了」を通してタイトルの「続きから」の帯を撮る。resume=1 なら「続きから」で戻ってもう1枚
+            // (状態→セーブ→タイトル→読み戻し→同じ画面、がプレイヤーで通ることの確認)。confirm=newrun はタイトルで「新しいランを開始」の確認を撮る
+            if (Get("saveexit") == "1" && g.Rs != null)
+            {
+                string nm = Get("name") ?? ("state-" + phase);
+                var before = g.Rs;
+                g.SaveAndQuit();
+                yield return null;
+                Debug.Log("[Autopilot] saveexit file=" + SaveGame.FilePath + " exists=" + SaveGame.Exists + (SaveGame.Exists ? " bytes=" + new FileInfo(SaveGame.FilePath).Length : "") + " summary=" + SaveGame.PeekSummary());
+                yield return Shot(nm + "-title", 10);
+                if (Get("confirm") == "newrun")
+                {
+                    g.AskStartRun();
+                    yield return Shot(nm + "-confirm-newrun", 10);
+                    g.Confirm = null; g.Rebuild();
+                }
+                if (Get("resume") == "1")
+                {
+                    g.ResumeSave();
+                    yield return WaitPresentation();
+                    string same = g.Rs != null ? (Golden.RunHash(g.Rs) == Golden.RunHash(before) ? "same-hash" : "HASH DIFFERS " + Golden.RunHash(before) + " → " + Golden.RunHash(g.Rs)) : "NO RUN (" + g.Error + ")";
+                    Debug.Log("[Autopilot] resume " + same + " notice=" + g.Notice + " history=" + Feedback.History.Count + " journal=" + (Feedback.JournalOrNull() != null ? Feedback.JournalOrNull().Commands.Count.ToString() : "none"));
+                    yield return Shot(nm + "-resumed", 10);
+                }
             }
             // resize=WxH: ウィンドウの大きさを変えて数フレーム待ち、もう1枚 (キャラの足元が地面に着いたままかの確認。2026-09-12)
             if (Get("resize") != null)

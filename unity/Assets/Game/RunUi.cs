@@ -74,6 +74,7 @@ namespace DeckRogue.Game
                 var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
                 BattleScreen.SetSize(deckBtn, 110f, 36f);
                 FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
+                MenuButton(g, bar);   // PC も「≡」を持つ: セーブして終了・ランを放棄 (2026-09-15)
             }
 
             int relicMax = UiKit.Phone ? 6 : 10;
@@ -112,8 +113,16 @@ namespace DeckRogue.Game
             if (combat) items.Add(new KeyValuePair<string, Action>(g.ShowLog ? "ログを閉じる" : "戦闘ログ", delegate { g.MenuOpen = false; g.ShowLog = !g.ShowLog; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>(Feedback.Notes.Count > 0 ? "メモを書く（" + Feedback.Notes.Count + "件）" : "メモを書く", delegate { g.MenuOpen = false; Feedback.MemoOpen = true; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>("レポートを書き出す", delegate { g.MenuOpen = false; FeedbackUi.ExportNow(g); }));
+            // セーブ (2026-09-15 本家形): 自動保存なので「セーブする」は無い。終了と放棄だけ
+            bool ended = g.Rs != null && (g.Rs.Phase == RunPhases.Won || g.Rs.Phase == RunPhases.Lost);
+            int saveFrom = items.Count;
+            if (!ended)
+            {
+                items.Add(new KeyValuePair<string, Action>("セーブして終了", delegate { g.MenuOpen = false; g.SaveAndQuit(); }));
+                items.Add(new KeyValuePair<string, Action>("ランを放棄", delegate { g.AskAbandonRun(); }));
+            }
             float w = 360f, itemH = 56f, pad = 14f;
-            float h = pad * 2f + items.Count * (itemH + 8f) - 8f;
+            float h = pad * 2f + items.Count * (itemH + 8f) - 8f + (ended ? 0f : 12f);
             var pan = UiKit.Frame(root, Theme.Panel, Color.white, "menu", 3f);
             UiKit.Anchor(pan.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-w - 16f, -TopH - 8f - h), new Vector2(-16f, -TopH - 8f));
             var inner = UiKit.NewRect("inner", pan.transform);
@@ -121,10 +130,46 @@ namespace DeckRogue.Game
             UiKit.Vert(inner, 8, 0);
             for (int i = 0; i < items.Count; i++)
             {
+                if (!ended && i == saveFrom)
+                {   // 区切りの線 (上=見る/書く・下=終える)
+                    var rule = UiKit.Pan(inner, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.25f), "rule");
+                    UiKit.Le(rule, -1f, 4f, -1f, 4f);
+                }
                 var act = items[i].Value;
-                var b = UiKit.Btn(inner, items[i].Key, delegate { act(); }, 18);
+                bool danger = !ended && i == items.Count - 1;
+                var b = UiKit.Btn(inner, items[i].Key, delegate { act(); }, 18, true, danger ? UiKit.Hex("#e8b8b0") : (Color?)null);
                 UiKit.Le(b, -1f, itemH, -1f, itemH);
             }
+        }
+
+        /// <summary>
+        /// 確認ダイアログ (2026-09-15): ランの放棄・進行中のランを捨てて新しく始める・別のデータ版のセーブ。
+        /// 「はい」で OnOk、外側/キャンセルで閉じる。どの画面の最後にも重ねる (GameRoot.Confirm)
+        /// </summary>
+        public static void ConfirmDialog(GameRoot g, RectTransform root)
+        {
+            var c = g.Confirm;
+            if (c == null) return;
+            var inner = BattleScreen.Modal(root, 760f, 300f, "confirm");
+            UiKit.Head(inner, c.Title ?? "確認", 24);
+            var msg = UiKit.Txt(inner, c.Message ?? "", 17, UiKit.ColInk, TextAnchor.UpperLeft);
+            msg.textWrappingMode = TextWrappingModes.Normal;
+            UiKit.Le(msg, -1f, 60f, -1f, -1f, -1f, 1f);
+            var rows = UiKit.NewRect("btns", inner);
+            UiKit.Le(rows, -1f, 56f, -1f, 56f);
+            var hg = UiKit.Horz(rows, 14, 0);
+            hg.childAlignment = TextAnchor.MiddleRight;
+            hg.childForceExpandHeight = false;
+            hg.childForceExpandWidth = false;
+            var cancel = UiKit.Btn(rows, c.CancelLabel ?? "キャンセル", delegate { g.Confirm = null; g.Rebuild(); }, 18);
+            BattleScreen.SetSize(cancel, 200f, 50f);
+            var ok = UiKit.Btn(rows, c.OkLabel ?? "はい", delegate
+            {
+                var onOk = c.OnOk;
+                g.Confirm = null;
+                if (onOk != null) onOk(); else g.Rebuild();
+            }, 18, true, c.Danger ? UiKit.Hex("#e8b8b0") : UiKit.Hex("#f0d58a"));
+            BattleScreen.SetSize(ok, 240f, 50f);
         }
 
         /// <summary>エンジンの拒否理由・通知を画面上部に1行 (無ければ何も置かない)</summary>

@@ -49,6 +49,18 @@ namespace DeckRogue.Game
         }
     }
 
+    /// <summary>確認ダイアログの中身 (UI 層)。OnOk で閉じた後の処理を行う</summary>
+    public class ConfirmBox
+    {
+        public string Title;
+        public string Message;
+        public string OkLabel = "はい";
+        public string CancelLabel = "キャンセル";
+        /// <summary>取り消せない操作 (放棄など) は朱で</summary>
+        public bool Danger;
+        public Action OnOk;
+    }
+
     public class GameRoot : MonoBehaviour
     {
         public static GameRoot I;
@@ -100,6 +112,8 @@ namespace DeckRogue.Game
         public List<DoodleStroke> DoodlesFor(int act) { List<DoodleStroke> l; if (!Doodles.TryGetValue(act, out l)) { l = new List<DoodleStroke>(); Doodles[act] = l; } return l; }
         /// <summary>ラン画面の下位モード (焚き火の「鍛える」一覧など)。フェーズが変わると消える</summary>
         public string SubMode;
+        /// <summary>確認ダイアログ (2026-09-15 セーブ): ランの放棄・進行中のランを捨てて新しく始める・別のデータ版のセーブ。null = 出していない</summary>
+        public ConfirmBox Confirm;
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
         public BattleView Battle;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
@@ -245,6 +259,13 @@ namespace DeckRogue.Game
             SubMode = null;
             Feedback.MemoOpen = false;
             MenuOpen = false;
+            Confirm = null;
+            // 自動保存 (2026-09-15 本家形): 成功した手のたびに save/run.json を書く (別スレッド)。走破/敗北で終わったランは消す
+            if (Rs != null && !ReferenceEquals(Rs, prevRs))
+            {
+                if (Rs.Phase == RunPhases.Won || Rs.Phase == RunPhases.Lost) SaveGame.Delete();
+                else SaveGame.Write(this, Rs);
+            }
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             int prevAct = _lastAct;
             if (Rs != null) _lastAct = Rs.Act;
@@ -320,6 +341,10 @@ namespace DeckRogue.Game
                 Audio.Ui("act_start");
                 // フィードバックの記録を白紙に (ジャーナルの origin = リプレイの起点)
                 Feedback.BeginRun(new ReplayOrigin { Kind = "run", Seed = Seed, LeaderId = LeaderId, Difficulty = Difficulty });
+                // 進行中のランは1本 (2026-09-15): 前のセーブは消して、開始直後の状態から自動保存を始める
+                SaveGame.Delete();
+                SaveGame.Write(this, Rs);
+                Confirm = null;
             }
             catch (Exception ex)
             {
@@ -331,11 +356,131 @@ namespace DeckRogue.Game
 
         public void BackToSetup()
         {
+            // 走破/敗北で終わったランのセーブは残さない (進行中のランだけが「続きから」に出る。2026-09-15)
+            if (Rs != null && (Rs.Phase == RunPhases.Won || Rs.Phase == RunPhases.Lost)) SaveGame.Delete();
             Rs = null;
             Pending = null;
             Error = null;
             Notice = null;
+            Confirm = null;
+            MenuOpen = false;
             Seed = UnityEngine.Random.Range(1, 99999);
+            Rebuild();
+        }
+
+        // ---- セーブ/続きから (2026-09-15 本家形: 進行中のランは1本・自動保存) ----
+
+        /// <summary>「セーブして終了」: 最新の状態を同期で書いてからタイトルへ (自動保存なので押さなくても残るが、押した安心のために今書く)</summary>
+        public void SaveAndQuit()
+        {
+            if (Rs == null) { BackToSetup(); return; }
+            SaveGame.Flush(this, Rs);
+            Feedback.Autosave(Rs);
+            BackToSetup();
+            Notice = "セーブした。タイトルの「続きから」で再開できる";
+            Rebuild();
+        }
+
+        /// <summary>「ランを放棄」: 確認の後にセーブを消してタイトルへ (レポートの自動保存 = データ回収用は残す)</summary>
+        public void AskAbandonRun()
+        {
+            Confirm = new ConfirmBox
+            {
+                Title = "ランを放棄する？",
+                Message = "このランのセーブは消え、続きから再開できなくなります。\n（レポートの自動保存は残るので、タイトルから書き出せます）",
+                OkLabel = "放棄する",
+                Danger = true,
+                OnOk = delegate
+                {
+                    if (Rs != null) Feedback.Autosave(Rs);
+                    SaveGame.Delete();
+                    BackToSetup();
+                    Notice = "ランを放棄した";
+                    Rebuild();
+                },
+            };
+            MenuOpen = false;
+            Rebuild();
+        }
+
+        /// <summary>タイトルの「放棄」: セーブを消す (確認つき。ランは開いていない)</summary>
+        public void AskAbandonSave()
+        {
+            Confirm = new ConfirmBox
+            {
+                Title = "セーブを消す？",
+                Message = "進行中のランのセーブを消します。続きから再開できなくなります。\n（レポートの自動保存は残ります）",
+                OkLabel = "消す",
+                Danger = true,
+                OnOk = delegate { SaveGame.Delete(); Notice = "セーブを消した"; Rebuild(); },
+            };
+            Rebuild();
+        }
+
+        /// <summary>タイトルの「ランを開始」: 進行中のセーブがあれば「捨てて始める」の確認を挟む (本家形)</summary>
+        public void AskStartRun()
+        {
+            if (!SaveGame.Exists) { StartRun(); return; }
+            string sum = null;
+            try { sum = SaveGame.PeekSummary(); } catch (Exception) { }
+            Confirm = new ConfirmBox
+            {
+                Title = "進行中のランを捨てて始める？",
+                Message = "セーブがあります: " + (sum ?? "(読めないセーブ)") + "\n新しいランを始めると、このセーブは消えます。",
+                OkLabel = "捨てて始める",
+                Danger = true,
+                OnOk = delegate { StartRun(); },
+            };
+            Rebuild();
+        }
+
+        /// <summary>タイトルの「続きから」: セーブを読んで再開する。データ指紋が違えば警告して選ばせる (ブラウザ版と同じ)</summary>
+        public void ResumeSave()
+        {
+            Error = null; Notice = null;
+            string warning;
+            RunSaveFile sf = null;
+            try { sf = SaveGame.Load(out warning); }
+            catch (Exception e) { warning = e.Message; }
+            if (sf == null || sf.Run == null)
+            {
+                Error = "セーブを読めなかった: " + warning;
+                Rebuild();
+                return;
+            }
+            string fp = null;
+            try { fp = Report.DataFingerprint(); } catch (Exception) { }
+            if (!string.IsNullOrEmpty(sf.Fingerprint) && fp != null && sf.Fingerprint != fp)
+            {
+                var captured = sf;
+                Confirm = new ConfirmBox
+                {
+                    Title = "別のデータ版のセーブ",
+                    Message = "このセーブは別のデータバージョンで作られています。カード・敵の定義が変わっていると正しく動かない可能性がありますが、読み込みますか？",
+                    OkLabel = "読み込む",
+                    OnOk = delegate { ApplySave(captured, warning); },
+                };
+                Rebuild();
+                return;
+            }
+            ApplySave(sf, warning);
+        }
+
+        void ApplySave(RunSaveFile sf, string warning)
+        {
+            Doodles = SaveGame.DoodlesFromToken(sf.DoodlesUnity); DoodleMode = false; DoodlePen = 0;
+            Pending = null; PreferredTarget = -1; WorkshopA = -1; WorkshopB = -1; ShopMode = null; EventChoiceIndex = -1;
+            RelicChoosePicks.Clear(); ViewPile = null; ViewDeck = false; ViewMap = false; ShowLog = false; SubMode = null; MenuOpen = false; Confirm = null;
+            Feedback.Restore(sf);
+            Rs = sf.Run;
+            _lastAct = Rs.Act;
+            LeaderId = Rs.LeaderId;
+            Difficulty = Rs.Difficulty > 0 ? Rs.Difficulty : Difficulty;
+            SetSeed(Rs.Seed);
+            if (Battle != null) { Battle.Destroy(); Battle = null; }
+            // 戦闘の途中なら、読み戻したログは演出済みに (再開の一発目に古い浮き文字を出さない)
+            if (Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.MarkSeen(Rs.Combat); else Presenter.Reset();
+            Notice = warning != null ? "続きから再開した（" + warning + "）" : "続きから再開した";
             Rebuild();
         }
 
@@ -479,12 +624,12 @@ namespace DeckRogue.Game
 
         void OnApplicationPause(bool pause)
         {
-            if (pause && Rs != null) Feedback.Autosave(Rs);
+            if (pause && Rs != null) { SaveGame.Flush(this, Rs); Feedback.Autosave(Rs); }
         }
 
         void OnApplicationQuit()
         {
-            if (Rs != null) Feedback.Autosave(Rs);
+            if (Rs != null) { SaveGame.Flush(this, Rs); Feedback.Autosave(Rs); }
         }
 
         // ---- 描画 ----
@@ -542,11 +687,12 @@ namespace DeckRogue.Game
                 if (ViewMap) MapScreen.Overlay(this, over);
                 if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, over);
                 if (MenuOpen) RunUi.Menu(this, over);
+                if (Confirm != null) RunUi.ConfirmDialog(this, over);
                 return;
             }
             // タイトルとマップも新画面 (M3)
-            if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); return; }
-            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
             if (Content.IsLoaded)
             {
                 bool built = true;
@@ -571,6 +717,7 @@ namespace DeckRogue.Game
                     if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);   // 戦闘直後の評価 (1回だけ聞く)
                     if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot);
                     if (MenuOpen) RunUi.Menu(this, ScreenRoot);
+                    if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot);
                     return;
                 }
             }

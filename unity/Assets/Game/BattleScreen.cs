@@ -129,6 +129,7 @@ namespace DeckRogue.Game
                 var logBtn = UiKit.Btn(bar, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 13);
                 SetSize(logBtn, g.ShowLog ? 130f : 84f, 34f);
                 FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
+                RunUi.MenuButton(g, bar);   // PC も「≡」: セーブして終了・ランを放棄 (2026-09-15)
             }
 
             // エラー・通知は上部バーの下に (紙の札)

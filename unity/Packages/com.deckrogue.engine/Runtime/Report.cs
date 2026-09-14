@@ -72,6 +72,11 @@ namespace DeckRogue.Engine
         [JsonProperty("playNotes")] public List<PlayNote> PlayNotes = new List<PlayNote>();
         [JsonProperty("journal", NullValueHandling = NullValueHandling.Ignore)] public RunJournal? Journal;
         [JsonProperty("choices", NullValueHandling = NullValueHandling.Ignore)] public List<RunChoice>? Choices;
+        /// <summary>
+        /// Unity 版のマップの落書き (2026-09-15 Unity のセーブ)。ブラウザ版の doodles とは座標系が違うので別のキーに持つ (ブラウザは無視する)。
+        /// 形は UI 層 (SaveGame) が決める JSON のまま = エンジンは中身を読まない
+        /// </summary>
+        [JsonProperty("doodlesUnity", NullValueHandling = NullValueHandling.Ignore)] public Newtonsoft.Json.Linq.JToken? DoodlesUnity;
     }
 
     /// <summary>ログ行と意図の文言は表示層のもの (Unity は CardText)。省略時はイベント型名・意図の種別と実値</summary>
@@ -491,8 +496,17 @@ namespace DeckRogue.Engine
         /// <summary>ランのセーブを直列化する (ui/report.ts buildRunSaveFile)。戦闘ログはスナップショット上限で切り詰める</summary>
         public static string BuildRunSaveFile(RunState run, IReadOnlyList<BattleArchive> history, IReadOnlyList<PlayNote> playNotes, RunJournal? journal, IReadOnlyList<RunChoice> choices)
         {
+            return SerializeRunSaveFile(MakeRunSaveFile(run, history, playNotes, journal, choices, null));
+        }
+
+        /// <summary>
+        /// セーブの中身を組む (直列化はしない)。一覧は写しを取るので、返した物は呼び出し側のスレッドで後から直列化してよい
+        /// (RunState は不変・写した一覧は呼び出し側だけが持つ = Unity の SaveGame が別スレッドで書く用。2026-09-15)
+        /// </summary>
+        public static RunSaveFile MakeRunSaveFile(RunState run, IReadOnlyList<BattleArchive> history, IReadOnlyList<PlayNote> playNotes, RunJournal? journal, IReadOnlyList<RunChoice> choices, Newtonsoft.Json.Linq.JToken? doodlesUnity)
+        {
             var r = run.Combat != null ? run with { Combat = TrimLog(run.Combat) } : run;
-            var sf = new RunSaveFile
+            return new RunSaveFile
             {
                 Kind = "run",
                 Run = r,
@@ -502,8 +516,67 @@ namespace DeckRogue.Engine
                 PlayNotes = playNotes.ToList(),
                 Journal = journal,
                 Choices = choices.Count > 0 ? choices.ToList() : null,
+                DoodlesUnity = doodlesUnity,
             };
-            return JsonConvert.SerializeObject(sf, JsonUnions.Settings);
+        }
+
+        public static string SerializeRunSaveFile(RunSaveFile sf) => JsonConvert.SerializeObject(sf, JsonUnions.Settings);
+
+        /// <summary>読み戻した RunState が形をなしているか (欠けた JSON は MissingMemberHandling.Ignore で黙って空になるので、要の欄を確かめる)</summary>
+        public static bool IsSaneRun(RunState? run)
+        {
+            if (run == null) return false;
+            if (run.Rng == null || run.Deck == null || run.Map == null || run.Relics == null || run.Colors == null) return false;
+            if (string.IsNullOrEmpty(run.Phase) || string.IsNullOrEmpty(run.LeaderId)) return false;
+            if (run.Phase == RunPhases.Combat && run.Combat == null) return false;
+            if (run.Combat != null && (run.Combat.Player == null || run.Combat.Enemies == null || run.Combat.Rng == null)) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// セーブ (RunSaveFile の JSON) を読み戻す (2026-09-15 Unity の「続きから」)。
+        /// ①まず丸ごと読む ②run が読めなければジャーナル (origin+commands) を再生して復元する (IL2CPP で状態の直列化が
+        /// 壊れていても、コマンドの形は単純なので再生は通る = 二重の保険) ③どちらも駄目なら null と理由を返す。
+        /// history/playNotes/choices は欠けても本体の再開を妨げない (それぞれ独立に読む)。
+        /// </summary>
+        public static RunSaveFile? ReadRunSaveFile(string json, out string? warning)
+        {
+            warning = null;
+            var jo = Newtonsoft.Json.Linq.JObject.Parse(json);
+            var kind = (string?)jo["kind"];
+            if (kind != null && kind != "run") { warning = "ランのセーブ (kind:\"run\") ではない: " + kind; return null; }
+            RunSaveFile? sf = null;
+            string? firstError = null;
+            try
+            {
+                sf = jo.ToObject<RunSaveFile>(JsonUnions.Serializer);
+                if (sf != null && !IsSaneRun(sf.Run)) { firstError = "状態の欄が欠けている"; sf = null; }
+            }
+            catch (Exception e) { firstError = e.GetType().Name + ": " + e.Message; }
+            if (sf != null) return sf;
+
+            // 保険: ジャーナルの再生
+            var jt = jo["journal"];
+            if (jt == null || jt.Type == Newtonsoft.Json.Linq.JTokenType.Null) { warning = "状態を読めず、再生の記録 (journal) も無い: " + firstError; return null; }
+            RunJournal journal;
+            try { journal = JsonUnions.FromToken<RunJournal>(jt); }
+            catch (Exception e) { warning = "状態を読めず (" + firstError + ")、記録も読めない: " + e.Message; return null; }
+            var (states, err) = Run.ReplayStates(journal);
+            if (err != null) { warning = "状態を読めず (" + firstError + ")、記録の再生も途中で止まった: " + err; return null; }
+            var rebuilt = new RunSaveFile
+            {
+                Kind = "run",
+                Run = states[states.Count - 1],
+                LogIndex = states[states.Count - 1].Combat != null ? states[states.Count - 1].Combat!.EventLog.Count : 0,
+                Fingerprint = (string?)jo["fingerprint"] ?? "",
+                Journal = journal,
+                DoodlesUnity = jo["doodlesUnity"],
+            };
+            try { rebuilt.History = jo["history"]?.ToObject<List<BattleArchive>>(JsonUnions.Serializer) ?? new List<BattleArchive>(); } catch (Exception) { }
+            try { rebuilt.PlayNotes = jo["playNotes"]?.ToObject<List<PlayNote>>(JsonUnions.Serializer) ?? new List<PlayNote>(); } catch (Exception) { }
+            try { rebuilt.Choices = jo["choices"]?.ToObject<List<RunChoice>>(JsonUnions.Serializer); } catch (Exception) { }
+            warning = "状態を直接読めなかったので記録 (" + journal.Commands.Count + "手) を再生して復元した: " + firstError;
+            return rebuilt;
         }
 
         // ---- 選択履歴 (ui/report.ts describeRunChoice) ----

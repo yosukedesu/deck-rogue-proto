@@ -68,6 +68,27 @@ namespace DeckRogue.Game
 
         public static void ResetDraft() { DraftStrength = -1; DraftFun = -1; DraftLossFeel = null; DraftNote = ""; }
 
+        /// <summary>続きから (2026-09-15): セーブに同梱した戦闘の保管・メモ・選択履歴・ジャーナルを戻す (以後の手はその続きに記録される)</summary>
+        public static void Restore(RunSaveFile sf)
+        {
+            History.Clear(); Notes.Clear(); Choices.Clear();
+            _commands.Clear(); _times.Clear();
+            _origin = null;
+            if (sf.History != null) History.AddRange(sf.History);
+            if (sf.PlayNotes != null) Notes.AddRange(sf.PlayNotes);
+            if (sf.Choices != null) Choices.AddRange(sf.Choices);
+            if (sf.Journal != null && sf.Journal.Origin != null && sf.Journal.Commands != null)
+            {
+                _origin = sf.Journal.Origin;
+                _commands.AddRange(sf.Journal.Commands);
+                var times = sf.Journal.Times;
+                for (int i = 0; i < _commands.Count; i++) _times.Add(times != null && i < times.Count ? times[i] : (_times.Count > 0 ? _times[_times.Count - 1] : NowMs()));
+            }
+            MemoOpen = false; MemoDraft = "";
+            RatingOpen = false; ResetDraft();
+            LastExportPath = null;
+        }
+
         public static RunJournal JournalOrNull()
         {
             if (_origin == null) return null;
@@ -124,7 +145,7 @@ namespace DeckRogue.Game
             text = (text ?? "").Trim();
             if (text.Length == 0) return;
             Notes.Add(new PlayNote { At = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'"), Context = NoteContext(run), Text = text });
-            if (run != null) Autosave(run);
+            if (run != null) { Autosave(run); SaveGame.Write(GameRoot.I, run); }   // メモもセーブに同梱 (2026-09-15)
         }
 
         public static string NoteContext(RunState run)
@@ -182,7 +203,7 @@ namespace DeckRogue.Game
                 last.Rating = r;
             }
             RatingOpen = false;
-            if (run != null) Autosave(run);
+            if (run != null) { Autosave(run); SaveGame.Write(GameRoot.I, run); }   // 評価もセーブに同梱 (2026-09-15)
         }
 
         // ---- 書き出し ----

@@ -204,10 +204,16 @@ namespace DeckRogue.Game
             LegendRow(legend, MapNodeTypes.Campfire); LegendRow(legend, MapNodeTypes.Shop); LegendRow(legend, MapNodeTypes.Workshop);
             LegendRow(legend, MapNodeTypes.Treasure); LegendRow(legend, MapNodeTypes.Boss);
 
-            var abandon = UiKit.Btn(root, "ランを放棄", delegate { g.BackToSetup(); }, 14, true, UiKit.Hex("#8a5a5a"));
+            // セーブ (2026-09-15 本家形): 自動保存なので「セーブする」は無い。「セーブして終了」と「ランを放棄」(確認つき)
+            var quit = UiKit.Btn(root, "セーブして終了", delegate { g.SaveAndQuit(); }, 14);
+            var qle = quit.GetComponent<LayoutElement>();
+            if (qle != null) UnityEngine.Object.Destroy(qle);
+            UiKit.Anchor(quit.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 20f), new Vector2(190f, 56f));
+            Tooltip.Attach(quit.gameObject, delegate { return "タイトルへ戻る。ランは自動で保存されていて、「続きから」で再開できる"; });
+            var abandon = UiKit.Btn(root, "ランを放棄", delegate { g.AskAbandonRun(); }, 14, true, UiKit.Hex("#8a5a5a"));
             var ale = abandon.GetComponent<LayoutElement>();
             if (ale != null) UnityEngine.Object.Destroy(ale);
-            UiKit.Anchor(abandon.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 20f), new Vector2(170f, 56f));
+            UiKit.Anchor(abandon.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(200f, 20f), new Vector2(330f, 56f));
 
             // 右下: 落書きの道具 (2026-09-12 StS2 の移植。右ドラッグで描く／ペンを押すと指でも描ける)
             DoodleToolbar(g, root);
