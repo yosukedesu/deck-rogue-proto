@@ -380,7 +380,7 @@ unity status / unity command … --project-path 'C:\Users\yosuke\deck-rogue-unit
 STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意の状態へ跳んで1枚撮る (2026-09-12。phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost
                      #   act/deck/relics/hp/gold/difficulty/leader=チェックポイント開始・enemy=<encounterId>(combat)・event=<id>・pick=<idx,idx>・submode=forge・shopmode=upgrade|remove・viewmap/viewdeck/log=1・name=
                      #   rating=won|lost|rated(評価ダイアログ)・memo=1(メモの窓。memotext=)・export=1(レポート書き出し)・closemap=1(地図を閉じてもう1枚)・menu=1(≡)・tip=enemy(敵の説明パネル)・popup=N(手札の拡大)。2026-09-14
-                     #   perms=<cardId,...>(置物を直接置く)・sets=<cardId[*],...>(仕込み札を置く。*=前のターンに仕込んだ生きた罠)・hidezone=1(伏せ場と置物の欄を消す=配置案の下地)・set=<手札index|r>・endturn=N。2026-09-14 スマホの戦闘レイアウト
+                     #   perms=<cardId,...>(置物を直接置く)・sets=<cardId[*],...>(仕込み札を置く。*=前のターンに仕込んだ生きた罠)・hidezone=1(伏せ場と置物の欄を消す=配置案の下地)・hideui=1(UI を全部消して舞台と絵だけ=配置案の下地。2026-09-15 戦闘画面の見直し `docs/design/battle-v2`)・set=<手札index|r>・endturn=N。2026-09-14 スマホの戦闘レイアウト
                      #   boss=1(幕ボスの節に立ってから戦闘=ボスの絵の大きさで撮る)・event の pick=N(選択肢 N の「デッキから1枚選ぶ」画面)。2026-09-15)
                      #   例: STATE="phase=combat;enemy=enemy_probe;viewmap=1" … shots state 4242 2 ／ STATE="phase=shop;act=2;deck=deck_big_mana;relics=relic_oldroot_cup;hp=40" … shots state 7
 ```

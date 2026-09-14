@@ -391,6 +391,19 @@ namespace DeckRogue.Game
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
             }
+            // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)
+            if (Get("hideui") == "1" && g.ScreenRoot != null && g.Battle != null)
+            {
+                if (g.Battle.UiLayer != null) g.Battle.UiLayer.gameObject.SetActive(false);
+                if (g.Battle.HandLayer != null) g.Battle.HandLayer.gameObject.SetActive(false);
+                foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true))
+                {
+                    if (rt.parent == null || !(rt.parent.name.StartsWith("enemy") || rt.parent.name == "player")) continue;
+                    if (rt.name == "sprite" || rt.name == "ring") continue;
+                    rt.gameObject.SetActive(false);
+                }
+                yield return null;
+            }
             // hidezone=1: 伏せ場と置物の欄を消して撮る (配置案のモックの下地用。2026-09-14)
             if (Get("hidezone") == "1" && g.ScreenRoot != null)
             {
