@@ -2,7 +2,7 @@
 // 手札やの敵の意図を直接差し替えることで、シャッフル・重み抽選の乱数に
 // 依存しない決定的なルールテストを書けるようにする。
 
-import { getCardDef, getEventDef } from './content.ts'
+import { getCardDef } from './content.ts'
 import { applyCommand, createInitialState } from './state.ts'
 import type { EnemyIntent, GameState, ReactionMode } from './types.ts'
 
@@ -76,7 +76,7 @@ export function setAndArm(state: GameState, cardUid: string): GameState {
 }
 
 // ---- マップランのテスト用航法 (2026-08-28 マップ化) ----
-import { applyRunCommand, createRun, nextChoices } from './run.ts'
+import { applyRunCommand, createRun, defaultEventChoice, nextChoices } from './run.ts'
 import type { RunState } from './run.ts'
 import type { MapNodeType } from './map.ts'
 
@@ -142,9 +142,7 @@ export function createRunInBattle(
     if (run.phase === 'map') run = chooseToward(run, 'battle')
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
-      // 規約: 最後の選択肢は常に安全な「立ち去る」
-      const ev = getEventDef(run.eventId!)
-      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+      run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14 無料の「立ち去る」撤去)
     } else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
     else if (run.phase === 'relic-reward') run = applyRunCommand(run, { type: 'SkipRelic' }) // 宝箱行

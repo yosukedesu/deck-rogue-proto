@@ -585,9 +585,12 @@ namespace DeckRogue.Game
                 var ch = def.Choices[g.EventChoiceIndex];
                 UiKit.Head(body, "「" + ch.Label + "」の対象カードを選ぶ", 16);
                 int ci = g.EventChoiceIndex;
+                // 鍛えられない札・5枚以下のデッキの除去は選べない (engine が拒む手を押せないようにする 2026-09-14)
+                bool isUpgrade = ch.UpgradeCard == true;
+                bool canRemove = ch.RemoveCard != true || run.Deck.Count > 5;
                 DeckList(g, body, run.Deck,
-                    delegate (int i, CardInstance c) { return "これ"; },
-                    null,
+                    delegate (int i, CardInstance c) { return isUpgrade && !DeckRogue.Engine.Upgrade.CanUpgradeCard(c) ? "鍛えられない" : "これ"; },
+                    delegate (int i, CardInstance c) { return canRemove && (!isUpgrade || DeckRogue.Engine.Upgrade.CanUpgradeCard(c)); },
                     delegate (int i)
                     {
                         g.EventChoiceIndex = -1;
@@ -607,12 +610,15 @@ namespace DeckRogue.Game
                 int idx = i;
                 var ch = def.Choices[i];
                 bool needsCard = DeckRogue.Engine.Run.EventChoiceNeedsCard(ch);
-                string label = ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + ChoiceHint(ch);
+                // 所持金が足りない・対象カードが無い選択肢は押せない (無料の「立ち去る」が無いイベントでも engine と同じ判定 2026-09-14)
+                bool available = DeckRogue.Engine.Run.EventChoiceAvailable(run, ch);
+                string why = !available && ch.RequireGold != null && run.Gold < ch.RequireGold.Value ? "  (G不足)" : !available ? "  (対象がない)" : "";
+                string label = ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + ChoiceHint(ch) + why;
                 var b = UiKit.Btn(content, label, delegate
                 {
                     if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
                     else g.Do(new RunCommand_EventChoice { Index = idx });
-                }, 14, true, UiKit.ColPanel2);
+                }, 14, available, UiKit.ColPanel2);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) { le.minHeight = 40f; le.preferredHeight = 40f; }
             }

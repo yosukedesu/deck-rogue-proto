@@ -22,7 +22,7 @@ import {
 } from './content.ts'
 import { createRng, nextInt, shuffle } from './rng.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, GameState, ReactionMode, RngState, RelicDef, RelicRarity } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, EventDef, GameState, ReactionMode, RngState, RelicDef, RelicRarity } from './types.ts'
 
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 export const REWARD_EXCLUDED = new Set([
@@ -672,26 +672,30 @@ function resolveUnknown(run: RunState): RunState {
  * イベントの抽選 (本家 generateEvent): 25%で祠+ワンタイムのプール、75%で幕プール。
  * 幕専用とワンタイムは引いたら二度と出ない / 祠は幕をまたぐと復活する。
  */
-function pickEvent(run: RunState, rng0: RngState): readonly [string, RngState] {
+export function pickEvent(run: RunState, rng0: RngState): readonly [string, RngState] { // export はテスト用 (詰み防止の抽選 2026-09-14)
   const seen = run.seenEventIds ?? []
   const seenShrine = run.seenShrineIds ?? []
   const inAct = (e: { act?: number }): boolean => e.act === undefined || e.act === run.act
+  // 選べる選択肢が無いイベント (例: 全て鍛え済みのデッキに研ぎの祠) は引かない (2026-09-14 無料の「立ち去る」撤去の詰み防止。
+  // 本家 Joust が所持金50未満では出ないのと同じ。無料の「断る」を残した取引型は常に選べる)
   const shrinePool = allEvents.filter(
     (e) =>
       inAct(e) &&
+      eventPlayable(run, e) &&
       ((e.kind === 'shrine' && !seenShrine.includes(e.id)) ||
         (e.kind === 'oneTime' && !seen.includes(e.id))),
   )
   const actPool = allEvents.filter(
-    (e) => (e.kind ?? 'act') === 'act' && inAct(e) && !seen.includes(e.id),
+    (e) => (e.kind ?? 'act') === 'act' && inAct(e) && !seen.includes(e.id) && eventPlayable(run, e),
   )
   const [roll, rng] = nextInt(rng0, 0, 99)
   const useShrine = roll < SHRINE_CHANCE_PERCENT
   const primary = useShrine ? shrinePool : actPool
   const fallback = useShrine ? actPool : shrinePool
   const pool = primary.length > 0 ? primary : fallback
-  // 両方尽きた場合のみ既出から引き直す (実質到達しない)
-  const final = pool.length > 0 ? pool : allEvents.filter(inAct)
+  // 両方尽きた場合のみ既出から引き直す (実質到達しない)。選べるものが1つも無ければ全体から
+  const replay = allEvents.filter((e) => inAct(e) && eventPlayable(run, e))
+  const final = pool.length > 0 ? pool : replay.length > 0 ? replay : allEvents.filter(inAct)
   const [i, r2] = nextInt(rng, 0, final.length - 1)
   return [final[i].id, r2]
 }
@@ -774,6 +778,79 @@ export function eventChoiceNeedsCard(choice: EventChoiceDef): boolean {
     choice.transformCard === true ||
     choice.duplicateCard === true
   )
+}
+
+/**
+ * 選択肢が今のランで解決できるか (所持金・対象カードの有無)。
+ * 無料の「立ち去る」を持たないイベント (2026-09-14 本家形) が「選べる選択肢が無い」で詰まないよう、
+ * 抽選 (pickEvent) と UI の無効表示が同じ判定を読む
+ */
+export function eventChoiceAvailable(run: RunState, choice: EventChoiceDef): boolean {
+  if (choice.requireGold !== undefined && run.gold < choice.requireGold) return false
+  if (eventChoiceNeedsCard(choice)) return defaultEventCardIndex(run, choice) !== null
+  return true
+}
+
+/** そのイベントに解決できる選択肢が1つでもあるか (抽選の詰み防止。本家 Joust の「所持金で出現を絞る」の一般形) */
+export function eventPlayable(run: RunState, def: EventDef): boolean {
+  return def.choices.some((c) => eventChoiceAvailable(run, c))
+}
+
+/**
+ * 対象カードが要る選択肢の既定の対象 (ボット・テスト・ゴールデン生成用)。無ければ null。
+ * 除去・変成は状態異常札 (負傷・烙印) を優先し、鍛えるは鍛えられる先頭の札。
+ * 除去はデッキが5枚以下だと engine が拒むので、その時は null
+ */
+export function defaultEventCardIndex(run: RunState, choice: EventChoiceDef): number | null {
+  if (choice.upgradeCard === true) {
+    const i = run.deck.findIndex((c) => canUpgradeCard(c))
+    return i >= 0 ? i : null
+  }
+  if (choice.removeCard === true || choice.transformCard === true) {
+    if (run.deck.length === 0 || (choice.removeCard === true && run.deck.length <= 5)) return null
+    const status = run.deck.findIndex((c) => c.def.id.startsWith('status_'))
+    return status >= 0 ? status : 0
+  }
+  if (choice.duplicateCard === true) return run.deck.length > 0 ? 0 : null
+  return null
+}
+
+/** 選択肢 (または賭けの結果) が代償を持たないか (HP・最大HP・負傷・烙印・金の支払いが無い) */
+function eventOutcomeIsFree(o: { gold?: number; hp?: number; hpRatio?: number; wounds?: number; brands?: number; timedCurses?: number }): boolean {
+  return (o.gold ?? 0) >= 0 && (o.hp ?? 0) >= 0 && (o.hpRatio ?? 0) >= 0 && !o.wounds && !o.brands && !o.timedCurses
+}
+
+/** 選択肢 (賭けの外れを含む) の最悪のHP損失 */
+function eventWorstHpLoss(run: RunState, choice: EventChoiceDef): number {
+  const lossOf = (o: { hp?: number; hpRatio?: number }): number =>
+    Math.max(0, -(o.hp ?? 0), -Math.trunc(run.maxHp * (o.hpRatio ?? 0)))
+  const base = lossOf(choice)
+  return choice.gamble ? base + Math.max(lossOf(choice.gamble.win), lossOf(choice.gamble.lose)) : base
+}
+
+/**
+ * ボット・テスト・ゴールデン生成が使う既定の選択 (2026-09-14 「立ち去る」の撤去に伴い一本化。
+ * 旧規約「最後の選択肢は常に安全な立ち去る」の後継)。後ろの選択肢から順に
+ * ①解決でき代償の無いもの → ②解決でき致死でないもの → ③解決できるもの → 最後の選択肢。
+ * 対象カードが要る選択肢は defaultEventCardIndex で埋める
+ */
+export function defaultEventChoice(run: RunState): RunCommand {
+  const def = getEventDef(run.eventId ?? '')
+  const withCard = (index: number): RunCommand => {
+    const c = def.choices[index]
+    const cardIndex = eventChoiceNeedsCard(c) ? defaultEventCardIndex(run, c) : null
+    return cardIndex === null ? { type: 'EventChoice', index } : { type: 'EventChoice', index, cardIndex }
+  }
+  const order = def.choices.map((_, i) => i).reverse()
+  const free = order.find((i) => {
+    const c = def.choices[i]
+    return eventChoiceAvailable(run, c) && eventOutcomeIsFree(c) && (!c.gamble || (eventOutcomeIsFree(c.gamble.win) && eventOutcomeIsFree(c.gamble.lose)))
+  })
+  if (free !== undefined) return withCard(free)
+  const safe = order.find((i) => eventChoiceAvailable(run, def.choices[i]) && eventWorstHpLoss(run, def.choices[i]) < run.hp)
+  if (safe !== undefined) return withCard(safe)
+  const any = order.find((i) => eventChoiceAvailable(run, def.choices[i]))
+  return withCard(any ?? def.choices.length - 1)
 }
 
 function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number): RunState {

@@ -6,7 +6,7 @@ import { getEventDef, getCardDef } from '../engine/content.ts'
 import { fuseBlockReason } from '../engine/fusion.ts'
 import { runHash, runDigest } from '../engine/golden.ts'
 import type { RunDigest } from '../engine/golden.ts'
-import { applyRunCommand, canUpgradeCard, createRun, eventChoiceNeedsCard, nextChoices, replayInitialRun } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, defaultEventCardIndex, defaultEventChoice, eventChoiceNeedsCard, nextChoices, replayInitialRun } from '../engine/run.ts'
 import type { ReplayOrigin, RunCommand, RunState } from '../engine/run.ts'
 import { chooseCommand } from './run.ts'
 
@@ -50,13 +50,14 @@ export function botRunCandidates(run: RunState): readonly RunCommand[] {
     case 'shop':
       return [{ type: 'ShopBuyCard', index: 0 }, { type: 'ShopLeave' }]
     case 'event': {
+      // 先頭の選択肢 (機能を踏む) → 既定の選択 (2026-09-14: 後ろから「代償の無い」→「致死でない」。無料の「立ち去る」の後継)
       const def = run.eventId ? getEventDef(run.eventId) : null
       const choices = def?.choices ?? []
-      const out: RunCommand[] = []
-      choices.forEach((ch, i) => {
-        out.push(eventChoiceNeedsCard(ch) ? { type: 'EventChoice', index: i, cardIndex: 0 } : { type: 'EventChoice', index: i })
-      })
-      return out.length > 0 ? [out[0], out[out.length - 1]] : []
+      if (choices.length === 0) return []
+      const first = choices[0]
+      const ci = eventChoiceNeedsCard(first) ? defaultEventCardIndex(run, first) : null
+      const head: RunCommand = ci === null ? { type: 'EventChoice', index: 0 } : { type: 'EventChoice', index: 0, cardIndex: ci }
+      return [head, defaultEventChoice(run)]
     }
     default:
       return []

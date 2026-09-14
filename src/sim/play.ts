@@ -37,7 +37,7 @@ function cname(cardId: string): string {
   }
 }
 import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -724,8 +724,11 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     ev.choices.forEach((c, i) => {
       const locked = c.requireGold !== undefined && run.gold < c.requireGold ? ' 【G不足で選べない】' : ''
       const needCard = eventChoiceNeedsCard(c) ? ' 【要cardIndex(デッキ番号)】' : ''
-      L.push(` [${i}] ${c.label}${locked}${needCard}`)
+      // 対象カードが無い (全て鍛え済みなど) 選択肢は engine が拒む。無料の「立ち去る」が無いイベント (2026-09-14) でも同じ判定
+      const noTarget = locked === '' && needCard !== '' && !eventChoiceAvailable(run, c) ? ' 【対象が無く選べない】' : ''
+      L.push(` [${i}] ${c.label}${locked}${needCard}${noTarget}`)
     })
+    if (ev.choices.every((c) => Object.keys(c).some((k) => k !== 'label'))) L.push('   (立ち去るは無い＝踏んだら必ずどれかを選ぶ)')
     L.push('→ {"type":"EventChoice","index":N} (対象カードが要る選択肢は {"type":"EventChoice","index":N,"cardIndex":M})')
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))

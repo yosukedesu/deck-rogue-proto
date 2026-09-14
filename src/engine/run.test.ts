@@ -1,9 +1,9 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
-import { allCards, getCardDef, getEnemyDef, resolveEncounter, getEventDef } from './content.ts'
+import { allCards, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
 import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
-import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, isUpgraded, upgradeCard, rewardPool } from './run.ts'
+import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent, hpWithin } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -47,8 +47,7 @@ function runTo(run: RunState, target: 'campfire' | 'workshop' | 'elite' | 'boss'
     } else if (r.phase === 'shop') {
       r = applyRunCommand(r, { type: 'ShopLeave' })
     } else if (r.phase === 'event') {
-      const ev = getEventDef(r.eventId!)
-      r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
+      r = applyRunCommand(r, defaultEventChoice(r)) // 既定の選択 (2026-09-14)
     } else if (r.phase === 'relic-reward') {
       r = applyRunCommand(r, { type: 'SkipRelic' })
     } else if (r.phase === 'reward') {
@@ -188,8 +187,7 @@ describe('宝箱行 (2026-08-31)', () => {
       else if (r.phase === 'shop') r = applyRunCommand(r, { type: 'ShopLeave' })
       else if (r.phase === 'workshop') r = applyRunCommand(r, { type: 'WorkshopSkip' })
       else if (r.phase === 'event') {
-        const ev = getEventDef(r.eventId!)
-        r = applyRunCommand(r, { type: 'EventChoice', index: ev.choices.length - 1 })
+        r = applyRunCommand(r, defaultEventChoice(r)) // 既定の選択 (2026-09-14)
       } else break
     }
     expect(r.row).toBe(treasureRowFor(2))
@@ -234,8 +232,7 @@ describe('HP持ち越しと焚き火', () => {
       } else if (r2.phase === 'shop') {
         r2 = applyRunCommand(r2, { type: 'ShopLeave' })
       } else if (r2.phase === 'event') {
-        const ev = getEventDef(r2.eventId!)
-        r2 = applyRunCommand(r2, { type: 'EventChoice', index: ev.choices.length - 1 })
+        r2 = applyRunCommand(r2, defaultEventChoice(r2)) // 既定の選択 (2026-09-14)
       } else break
     }
     expect(r2.phase).toBe('campfire')

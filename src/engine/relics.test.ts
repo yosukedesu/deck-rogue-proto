@@ -1,8 +1,8 @@
 // エリートノードとレリック (2026-08-25。2026-08-28 マップ化) のテスト。
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
-import { allRelics, buildRelicPermanent, getCardDef, getEventDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice, campfireForgeAllowed } from './run.ts'
+import { allRelics, buildRelicPermanent, getCardDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
+import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice, campfireForgeAllowed, defaultEventChoice } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
@@ -46,8 +46,7 @@ function intoFirstElite(seed = 11): RunState {
     } else if (run.phase === 'shop') {
       run = applyRunCommand(run, { type: 'ShopLeave' })
     } else if (run.phase === 'event') {
-      const ev = getEventDef(run.eventId!)
-      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+      run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14)
     } else break
   }
   throw new Error('エリートノードに到達できない')
@@ -63,8 +62,7 @@ function intoBattle(run0: RunState): RunState {
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
-      const ev = getEventDef(run.eventId!)
-      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+      run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14)
     } else break
   }
   return run
@@ -254,8 +252,7 @@ function intoCampfire(run0: RunState): RunState {
     else if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
-      const ev = getEventDef(run.eventId!)
-      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+      run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14)
     } else break
   }
   throw new Error('焚き火に到達できない')

@@ -13,11 +13,11 @@
 //   - ランの報酬ピック: 常に先頭 (index 0)
 
 import { canUpgradeInHand } from '../engine/upgrade.ts'
-import { allDecks, allEnemies, allLeaders, getCardDef, getEventDef, getEnemyDef } from '../engine/content.ts'
+import { allDecks, allEnemies, allLeaders, getCardDef, getEnemyDef } from '../engine/content.ts'
 import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, createRun, isUpgraded, nextChoices } from '../engine/run.ts'
+import { applyRunCommand, createRun, defaultEventChoice, isUpgraded, nextChoices } from '../engine/run.ts'
 import { BOSS_ROW } from '../engine/map.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
@@ -606,9 +606,8 @@ function simulateRuns(count: number, baseSeed: number): void {
           continue
         }
         if (run.phase === 'event') {
-          // 規約: 最後の選択肢は常に安全な「立ち去る」(確定済みルール表「?マス（イベント）」)
-          const ev = getEventDef(run.eventId!)
-          run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+          // 既定の選択 (2026-09-14 無料の「立ち去る」撤去): 後ろから順に「代償の無い」→「致死でない」選択肢
+          run = applyRunCommand(run, defaultEventChoice(run))
           continue
         }
         if (run.phase === 'relic-reward') {

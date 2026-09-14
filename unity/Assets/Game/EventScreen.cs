@@ -32,8 +32,12 @@ namespace DeckRogue.Game
                 UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
                 UiKit.Vert(area, 0, 0);
                 int ci = g.EventChoiceIndex;
+                // 鍛えられない札・5枚以下のデッキの除去は選べない (engine が拒む手を押せないようにする 2026-09-14)
+                bool isUpgrade = ch.UpgradeCard == true;
+                bool canRemove = ch.RemoveCard != true || run.Deck.Count > 5;
                 RunUi.CardGrid(g, area, run.Deck,
-                    delegate (int i, CardInstance c) { return "これ"; }, null,
+                    delegate (int i, CardInstance c) { return isUpgrade && !DeckRogue.Engine.Upgrade.CanUpgradeCard(c) ? "鍛えられない" : "これ"; },
+                    delegate (int i, CardInstance c) { return canRemove && (!isUpgrade || DeckRogue.Engine.Upgrade.CanUpgradeCard(c)); },
                     delegate (int i) { g.EventChoiceIndex = -1; g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }); }, 500f);
                 RunUi.BottomButton(root, "選び直す", delegate { g.EventChoiceIndex = -1; g.Rebuild(); }, 18, 220f, 50f);
                 return;
@@ -78,18 +82,31 @@ namespace DeckRogue.Game
                 int idx = i;
                 var ch = def.Choices[i];
                 bool needsCard = DeckRogue.Engine.Run.EventChoiceNeedsCard(ch);
-                bool last = i == def.Choices.Count - 1;
+                // 無料の「立ち去る」(取引型だけに残る。2026-09-14) は ▶ も色も付けない。それ以外は全部が本物の選択肢
+                bool leave = IsFreeChoice(ch);
+                // 所持金が足りない・対象カードが無い選択肢は押せない (engine と同じ判定 EventChoiceAvailable)
+                bool available = DeckRogue.Engine.Run.EventChoiceAvailable(run, ch);
+                string why = available ? "" : (ch.RequireGold.HasValue && run.Gold < ch.RequireGold.Value ? "  (G不足)" : "  (対象がない)");
                 string hint = ChoiceHint(ch);
-                var b = UiKit.Btn(list, (last ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + (hint.Length > 0 ? "\n<size=14><color=#7a4e12>" + hint + "</color></size>" : ""),
+                var b = UiKit.Btn(list, (leave ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + why + (hint.Length > 0 ? "\n<size=14><color=#7a4e12>" + hint + "</color></size>" : ""),
                     delegate
                     {
                         if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
                         else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
-                    }, 18, true, last ? null : (Color?)UiKit.Hex("#dfe8dc"));
+                    }, 18, available, leave ? null : (Color?)UiKit.Hex("#dfe8dc"));
                 UiKit.Le(b, -1f, hint.Length > 0 ? 70f : 52f, -1f, hint.Length > 0 ? 70f : 52f);
                 var tx = b.GetComponentInChildren<TMP_Text>();
                 if (tx != null) { tx.alignment = TextAlignmentOptions.Left; tx.margin = new Vector4(18f, 0f, 12f, 0f); }
             }
+        }
+
+        /// <summary>効果を何も持たない選択肢 (無料の「立ち去る」)。取引型のイベントだけが最後に持つ</summary>
+        static bool IsFreeChoice(EventChoiceDef ch)
+        {
+            return !ch.Gold.HasValue && !ch.RequireGold.HasValue && !ch.Hp.HasValue && !ch.MaxHp.HasValue && !ch.HpRatio.HasValue
+                && !ch.Wounds.HasValue && !ch.Brands.HasValue && !ch.TimedCurses.HasValue && !ch.AddRandomCards.HasValue
+                && ch.Relic != true && ch.RemoveCard != true && ch.UpgradeCard != true && ch.TransformCard != true
+                && ch.DuplicateCard != true && ch.RemoveAllWounds != true && !ch.UpgradeRandomCards.HasValue && ch.Gamble == null;
         }
 
         static string ChoiceHint(EventChoiceDef ch)

@@ -65,7 +65,7 @@ import {
 import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceAvailable, eventChoiceNeedsCard, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -4667,6 +4667,18 @@ function RunScreen({
           {ev.choices.map((c, i) => {
             const goldLocked = c.requireGold !== undefined && run.gold < c.requireGold
             const needsCard = eventChoiceNeedsCard(c)
+            // 対象カードが無い (全て鍛え済み・5枚以下のデッキの除去) 選択肢は押せない。
+            // 無料の「立ち去る」が無いイベント (2026-09-14) でも engine と同じ判定 (抽選は eventPlayable で詰みを避けている)
+            if (needsCard && !eventChoiceAvailable(run, c)) {
+              return (
+                <div key={i} style={{ margin: '6px 0' }}>
+                  <button className="btn btn-primary" disabled>
+                    {c.label}
+                    {goldLocked ? '（G不足）' : '（対象がない）'}
+                  </button>
+                </div>
+              )
+            }
             if (!needsCard) {
               return (
                 <div key={i} style={{ margin: '6px 0' }}>

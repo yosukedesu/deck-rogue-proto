@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import { chainFromStart } from './enemyGraph.ts'
 import { getEnemyDef, allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
-import { applyRunCommand, createRun, eventChoiceNeedsCard, shopRemovalPrice, shopUpgradePrice } from './run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, defaultEventChoice, eventChoiceNeedsCard, eventPlayable, pickEvent, shopRemovalPrice, shopUpgradePrice, upgradeCard } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -46,8 +46,7 @@ function intoShop(seed: number): RunState {
     else if (run.phase === 'campfire') run = applyRunCommand(run, { type: 'CampfireRest' })
     else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
     else if (run.phase === 'event') {
-      const ev = getEventDef(run.eventId!)
-      run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+      run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14)
     } else break
   }
   throw new Error('ショップに到達できない')
@@ -80,8 +79,7 @@ describe('ゴールド', () => {
       else if (run.phase === 'workshop') run = applyRunCommand(run, { type: 'WorkshopSkip' })
       else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
       else if (run.phase === 'event') {
-        const ev = getEventDef(run.eventId!)
-        run = applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 })
+        run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14)
       } else break
     }
     const before = run.gold
@@ -199,19 +197,81 @@ describe('ショップ', () => {
 })
 
 describe('?マス (イベント)', () => {
-  it('規約: 全イベントの最後の選択肢は安全な「立ち去る」(既知の安全キー以外を一切持たない)', () => {
-    // ホワイトリスト方式 (2026-08-29)。旧実装は5フィールドを名指しで見るだけだったので
-    // removeCard/relic/maxHp と新フィールド (hpRatio/transformCard/duplicateCard/
-    // upgradeRandomCards/removeAllWounds) が全部素通りしていた。イベントを20個足すと
-    // simボットの壊れ検知が黙って死ぬので、未知のキーはすべて弾く
-    const SAFE_KEYS = new Set(['label', 'gold', 'hp'])
+  /**
+   * 無料の「立ち去る」を残す取引型 (2026-09-14 ユーザー裁定「?マスはスキップできない方がいい」→ 本家形:
+   * レリック/呪い/賭けを持ちかける取引だけ「断る」を残し〔本家 Golden Idol・Scrap Ooze・Old Beggar〕、
+   * 恵み型は撤去=踏んだら必ず何かが起きる〔本家 Big Fish・Falling・Wheel of Change〕)。
+   * 分類はここで機械固定する = 新しいイベントは無料の選択肢を持たないのが既定
+   */
+  const FREE_LEAVE_EVENTS = [
+    'event_ghost_peddler', 'event_dice_imp', 'event_lost_peddler', 'event_broken_stairs', 'event_fairy_market',
+    'event_wing_statue', 'event_old_beggar', 'event_forgotten_altar', 'event_mausoleum', 'event_moai',
+    'event_tower_tailor', 'event_obsidian_idol', 'event_blood_altar', 'event_guilty_bargain', 'event_three_cups',
+  ]
+  const isFreeChoice = (c: (typeof allEvents)[number]['choices'][number]): boolean =>
+    Object.keys(c).every((k) => k === 'label')
+
+  it('規約: 無料の「立ち去る」は取引型15件だけ。それ以外の選択肢は必ず何かを起こす', () => {
     for (const ev of allEvents) {
-      const last = ev.choices[ev.choices.length - 1]
-      const extra = Object.keys(last).filter((k) => !SAFE_KEYS.has(k))
-      expect(extra, `${ev.id} の「立ち去る」が未知のキーを持つ`).toEqual([])
-      expect(last.gold ?? 0, ev.id).toBeGreaterThanOrEqual(0)
-      expect(last.hp ?? 0, ev.id).toBeGreaterThanOrEqual(0)
+      const free = ev.choices.filter(isFreeChoice)
+      if (FREE_LEAVE_EVENTS.includes(ev.id)) {
+        expect(free.map((c) => c.label), ev.id).toEqual(['立ち去る'])
+        expect(ev.choices[ev.choices.length - 1].label, `${ev.id} の立ち去るは最後`).toBe('立ち去る')
+      } else {
+        expect(free, `${ev.id} に無料の選択肢がある`).toEqual([])
+      }
+      expect(ev.choices.length, ev.id).toBeGreaterThanOrEqual(1)
     }
+    expect(allEvents.filter((e) => FREE_LEAVE_EVENTS.includes(e.id))).toHaveLength(FREE_LEAVE_EVENTS.length)
+  })
+
+  it('規約: 全イベントは既定の状態で選べる選択肢を持ち、既定の選択 (defaultEventChoice) は必ず解決できる', () => {
+    // 旧規約「最後の選択肢=立ち去るを選ぶ」の後継。simボットは defaultEventChoice を選ぶので、1件でも throw すると壊れ検知が止まる
+    for (const ev of allEvents) {
+      const run = eventState(5, ev.id)
+      expect(eventPlayable(run, ev), ev.id).toBe(true)
+      expect(() => applyRunCommand(run, defaultEventChoice(run)), ev.id).not.toThrow()
+    }
+  })
+
+  it('既定の選択: 後ろから「代償の無い」選択肢を選び、無ければ致死でないものを選ぶ', () => {
+    // 黄金の祠: 最後は +190G+負傷2 (代償あり) なので、その手前の +90G を選ぶ
+    const gold = eventState(5, 'shrine_gold')
+    expect(defaultEventChoice(gold)).toEqual({ type: 'EventChoice', index: 0 })
+    // 淵の大魚: 籠 (負傷1) を避けて 雫 (最大HP+5) を選ぶ
+    const fish = eventState(5, 'event_big_fish')
+    expect(defaultEventChoice(fish)).toEqual({ type: 'EventChoice', index: 1 })
+    // 研ぎの祠 (1択・対象カードが要る): 鍛えられる先頭の札を対象にする
+    const whet = eventState(5, 'shrine_whetstone')
+    const cmd = defaultEventChoice(whet)
+    expect(cmd.type === 'EventChoice' && cmd.cardIndex !== undefined && canUpgradeCard(whet.deck[cmd.cardIndex])).toBe(true)
+    // 眠り茸 (両方に代償): HP-8 が致死なら 食べる (負傷1) 側へ
+    const low = { ...eventState(5, 'event_mushrooms'), hp: 8 }
+    expect(defaultEventChoice(low)).toEqual({ type: 'EventChoice', index: 0 })
+    expect(defaultEventChoice(eventState(5, 'event_mushrooms'))).toEqual({ type: 'EventChoice', index: 1 })
+    // 取引型は従来どおり最後の「立ち去る」
+    const idol = eventState(5, 'event_obsidian_idol')
+    expect(defaultEventChoice(idol)).toEqual({ type: 'EventChoice', index: 2 })
+  })
+
+  it('詰み防止: 選べる選択肢が無いイベントは抽選で引かれない (全て鍛え済みのデッキに研ぎの祠)', () => {
+    const base = createRun(5, 'set-confirm')
+    const allUpgraded: RunState = { ...base, deck: base.deck.map((c) => (canUpgradeCard(c) ? upgradeCard(c) : c)) }
+    expect(eventPlayable(allUpgraded, getEventDef('shrine_whetstone'))).toBe(false)
+    expect(eventPlayable(base, getEventDef('shrine_whetstone'))).toBe(true)
+    // 100回引いても研ぎの祠は出ない (祠プールを強制するため幕専用を全部既出にする)
+    const seenAll = allEvents.filter((e) => (e.kind ?? 'act') === 'act').map((e) => e.id)
+    let rng = allUpgraded.rng
+    const drawn = new Set<string>()
+    for (let i = 0; i < 100; i++) {
+      const [id, r] = pickEvent({ ...allUpgraded, seenEventIds: seenAll }, rng)
+      rng = r
+      drawn.add(id)
+    }
+    expect(drawn.has('shrine_whetstone')).toBe(false)
+    expect(drawn.size).toBeGreaterThan(3)
+    // 所持金が足りなくても「断る」を残した取引型は引かれる (本家 Old Beggar 型)
+    expect(eventPlayable({ ...base, gold: 0 }, getEventDef('event_old_beggar'))).toBe(true)
   })
 
   it('規約: eventChoiceNeedsCard が false の選択肢は cardIndex なしで必ず解決できる', () => {
@@ -231,17 +291,6 @@ describe('?マス (イベント)', () => {
       }
     }
     expect(missed).toEqual([])
-  })
-
-  it('規約: 全イベントの最後の選択肢は cardIndex も所持金も要求せず必ず解決できる', () => {
-    // simボットは常に最後を選ぶ約束なので、1件でも throw すると壊れ検知が止まる
-    for (const ev of allEvents) {
-      const run = eventState(5, ev.id)
-      expect(
-        () => applyRunCommand(run, { type: 'EventChoice', index: ev.choices.length - 1 }),
-        ev.id,
-      ).not.toThrow()
-    }
   })
 
   it('イベントプールは本家3層の員数を満たす (幕専用6個以上/幕・祠7・ワンタイム6)', () => {
@@ -318,8 +367,8 @@ describe('?マス (イベント)', () => {
     expect(run.deck[run.deck.length - 1].def.color).toBe('green')
   })
 
-  it('立ち去る: 何も変わらずマップへ', () => {
-    let run = eventState(3, 'event_mossy_chest')
+  it('立ち去る (取引型に残る無料の断り): 何も変わらずマップへ', () => {
+    let run = eventState(3, 'event_obsidian_idol')
     const snapshot = { hp: run.hp, gold: run.gold, deck: run.deck.length }
     run = applyRunCommand(run, { type: 'EventChoice', index: 2 })
     expect(run.phase).toBe('map')

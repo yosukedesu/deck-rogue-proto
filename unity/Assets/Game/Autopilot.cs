@@ -524,10 +524,10 @@ namespace DeckRogue.Game
                     case RunPhases.Workshop: g.Do(new RunCommand_WorkshopSkip()); break;
                     case RunPhases.Event:
                     {
-                        EventDef def = null;
-                        try { def = Content.GetEventDef(rs.EventId); } catch (Exception) { }
-                        int last = def != null ? def.Choices.Count - 1 : 0;
-                        g.Do(new RunCommand_EventChoice { Index = last });
+                        // 既定の選択 (2026-09-14 無料の「立ち去る」撤去): 後ろから「代償の無い」→「致死でない」選択肢
+                        RunCommand_EventChoice ec = null;
+                        try { ec = DeckRogue.Engine.Run.DefaultEventChoice(rs); } catch (Exception) { }
+                        g.Do(ec ?? new RunCommand_EventChoice { Index = 0 });
                         break;
                     }
                     case RunPhases.Won:
@@ -625,8 +625,7 @@ namespace DeckRogue.Game
                     case RunPhases.Map: cmd = new RunCommand_ChooseNode { Col = DeckRogue.Engine.Run.NextChoices(rs)[0] }; break;
                     case RunPhases.Event:
                     {
-                        var ev = Content.AllEvents.FirstOrDefault(e => e.Id == rs.EventId);
-                        cmd = new RunCommand_EventChoice { Index = ev != null ? ev.Choices.Count - 1 : 0 };
+                        try { cmd = DeckRogue.Engine.Run.DefaultEventChoice(rs); } catch (Exception) { cmd = new RunCommand_EventChoice { Index = 0 }; }
                         break;
                     }
                     case RunPhases.Shop: cmd = new RunCommand_ShopLeave(); break;

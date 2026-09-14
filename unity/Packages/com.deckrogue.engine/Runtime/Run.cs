@@ -781,24 +781,27 @@ namespace DeckRogue.Engine
         /// イベントの抽選 (本家 generateEvent): 25%で祠+ワンタイムのプール、75%で幕プール。
         /// 幕専用とワンタイムは引いたら二度と出ない / 祠は幕をまたぐと復活する。
         /// </summary>
-        private static (string Id, RngState Rng) PickEvent(RunState run, RngState rng0)
+        public static (string Id, RngState Rng) PickEvent(RunState run, RngState rng0) // public はテスト用 (詰み防止の抽選 2026-09-14)
         {
             var seen = run.SeenEventIds ?? new List<string>();
             var seenShrine = run.SeenShrineIds ?? new List<string>();
             bool InAct(EventDef e) => e.Act == null || e.Act == run.Act;
+            // 選べる選択肢が無いイベント (例: 全て鍛え済みのデッキに研ぎの祠) は引かない (2026-09-14 無料の「立ち去る」撤去の詰み防止。
+            // 本家 Joust が所持金50未満では出ないのと同じ。無料の「断る」を残した取引型は常に選べる)
             var shrinePool = Content.AllEvents
-                .Where(e => InAct(e) && ((e.Kind == "shrine" && !seenShrine.Contains(e.Id)) || (e.Kind == "oneTime" && !seen.Contains(e.Id))))
+                .Where(e => InAct(e) && EventPlayable(run, e) && ((e.Kind == "shrine" && !seenShrine.Contains(e.Id)) || (e.Kind == "oneTime" && !seen.Contains(e.Id))))
                 .ToList();
             var actPool = Content.AllEvents
-                .Where(e => (e.Kind ?? "act") == "act" && InAct(e) && !seen.Contains(e.Id))
+                .Where(e => (e.Kind ?? "act") == "act" && InAct(e) && !seen.Contains(e.Id) && EventPlayable(run, e))
                 .ToList();
             var (roll, rng) = Rng.NextInt(rng0, 0, 99);
             bool useShrine = roll < SHRINE_CHANCE_PERCENT;
             var primary = useShrine ? shrinePool : actPool;
             var fallback = useShrine ? actPool : shrinePool;
             var pool = primary.Count > 0 ? primary : fallback;
-            // 両方尽きた場合のみ既出から引き直す (実質到達しない)
-            var final = pool.Count > 0 ? pool : Content.AllEvents.Where(InAct).ToList();
+            // 両方尽きた場合のみ既出から引き直す (実質到達しない)。選べるものが1つも無ければ全体から
+            var replay = Content.AllEvents.Where(e => InAct(e) && EventPlayable(run, e)).ToList();
+            var final = pool.Count > 0 ? pool : replay.Count > 0 ? replay : Content.AllEvents.Where(InAct).ToList();
             var (i, r2) = Rng.NextInt(rng, 0, final.Count - 1);
             return (final[i].Id, r2);
         }
@@ -873,6 +876,93 @@ namespace DeckRogue.Engine
                 || choice.UpgradeCard == true
                 || choice.TransformCard == true
                 || choice.DuplicateCard == true;
+        }
+
+        /// <summary>
+        /// 選択肢が今のランで解決できるか (所持金・対象カードの有無)。
+        /// 無料の「立ち去る」を持たないイベント (2026-09-14 本家形) が「選べる選択肢が無い」で詰まないよう、
+        /// 抽選 (PickEvent) と UI の無効表示が同じ判定を読む
+        /// </summary>
+        public static bool EventChoiceAvailable(RunState run, EventChoiceDef choice)
+        {
+            if (choice.RequireGold != null && run.Gold < choice.RequireGold.Value) return false;
+            if (EventChoiceNeedsCard(choice)) return DefaultEventCardIndex(run, choice) != null;
+            return true;
+        }
+
+        /// <summary>そのイベントに解決できる選択肢が1つでもあるか (抽選の詰み防止。本家 Joust の「所持金で出現を絞る」の一般形)</summary>
+        public static bool EventPlayable(RunState run, EventDef def)
+        {
+            return def.Choices.Any(c => EventChoiceAvailable(run, c));
+        }
+
+        /// <summary>
+        /// 対象カードが要る選択肢の既定の対象 (ボット・テスト・ゴールデン生成用)。無ければ null。
+        /// 除去・変成は状態異常札 (負傷・烙印) を優先し、鍛えるは鍛えられる先頭の札。
+        /// 除去はデッキが5枚以下だと engine が拒むので、その時は null
+        /// </summary>
+        public static int? DefaultEventCardIndex(RunState run, EventChoiceDef choice)
+        {
+            if (choice.UpgradeCard == true)
+            {
+                for (int i = 0; i < run.Deck.Count; i++) if (Upgrade.CanUpgradeCard(run.Deck[i])) return i;
+                return null;
+            }
+            if (choice.RemoveCard == true || choice.TransformCard == true)
+            {
+                if (run.Deck.Count == 0 || (choice.RemoveCard == true && run.Deck.Count <= 5)) return null;
+                for (int i = 0; i < run.Deck.Count; i++) if (run.Deck[i].Def.Id.StartsWith("status_", StringComparison.Ordinal)) return i;
+                return 0;
+            }
+            if (choice.DuplicateCard == true) return run.Deck.Count > 0 ? 0 : (int?)null;
+            return null;
+        }
+
+        /// <summary>選択肢 (または賭けの結果) が代償を持たないか (HP・最大HP・負傷・烙印・金の支払いが無い)</summary>
+        private static bool EventOutcomeIsFree(int? gold, int? hp, double? hpRatio, int? wounds, int? brands, int? timedCurses)
+        {
+            return (gold ?? 0) >= 0 && (hp ?? 0) >= 0 && (hpRatio ?? 0) >= 0 && (wounds ?? 0) == 0 && (brands ?? 0) == 0 && (timedCurses ?? 0) == 0;
+        }
+
+        private static bool EventChoiceIsFree(EventChoiceDef c)
+        {
+            if (!EventOutcomeIsFree(c.Gold, c.Hp, c.HpRatio, c.Wounds, c.Brands, c.TimedCurses)) return false;
+            if (c.Gamble == null) return true;
+            return EventOutcomeIsFree(c.Gamble.Win.Gold, c.Gamble.Win.Hp, null, c.Gamble.Win.Wounds, null, null)
+                && EventOutcomeIsFree(c.Gamble.Lose.Gold, c.Gamble.Lose.Hp, null, c.Gamble.Lose.Wounds, null, null);
+        }
+
+        /// <summary>選択肢 (賭けの外れを含む) の最悪のHP損失</summary>
+        private static int EventWorstHpLoss(RunState run, EventChoiceDef c)
+        {
+            int LossOf(int? hp, double? hpRatio) => Math.Max(0, Math.Max(-(hp ?? 0), -(int)Math.Truncate(run.MaxHp * (hpRatio ?? 0))));
+            int baseLoss = LossOf(c.Hp, c.HpRatio);
+            if (c.Gamble == null) return baseLoss;
+            return baseLoss + Math.Max(LossOf(c.Gamble.Win.Hp, null), LossOf(c.Gamble.Lose.Hp, null));
+        }
+
+        /// <summary>
+        /// ボット・テスト・ゴールデン生成が使う既定の選択 (2026-09-14 「立ち去る」の撤去に伴い一本化。
+        /// 旧規約「最後の選択肢は常に安全な立ち去る」の後継)。後ろの選択肢から順に
+        /// ①解決でき代償の無いもの → ②解決でき致死でないもの → ③解決できるもの → 最後の選択肢。
+        /// 対象カードが要る選択肢は DefaultEventCardIndex で埋める。TS の defaultEventChoice と同形
+        /// </summary>
+        public static RunCommand_EventChoice DefaultEventChoice(RunState run)
+        {
+            var def = Content.GetEventDef(run.EventId ?? "");
+            RunCommand_EventChoice WithCard(int index)
+            {
+                var c = def.Choices[index];
+                int? ci = EventChoiceNeedsCard(c) ? DefaultEventCardIndex(run, c) : null;
+                return ci == null ? new RunCommand_EventChoice { Index = index } : new RunCommand_EventChoice { Index = index, CardIndex = ci };
+            }
+            for (int i = def.Choices.Count - 1; i >= 0; i--)
+                if (EventChoiceAvailable(run, def.Choices[i]) && EventChoiceIsFree(def.Choices[i])) return WithCard(i);
+            for (int i = def.Choices.Count - 1; i >= 0; i--)
+                if (EventChoiceAvailable(run, def.Choices[i]) && EventWorstHpLoss(run, def.Choices[i]) < run.Hp) return WithCard(i);
+            for (int i = def.Choices.Count - 1; i >= 0; i--)
+                if (EventChoiceAvailable(run, def.Choices[i])) return WithCard(i);
+            return WithCard(def.Choices.Count - 1);
         }
 
         private static RunState ApplyEventChoice(RunState run, int choiceIndex, int? cardIndex)
