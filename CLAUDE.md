@@ -373,6 +373,10 @@ npm run build        # 本番ビルド (型チェック込み)
 npm run goldens      # ゴールデンマスター生成 (goldens/runs/。Unity移植の等価性契約。goldens:verify で照合)
 npm run gen:csharp   # types.ts → unity/.../Generated/Types.g.cs (C# record を生成。手で編集しない)
 scripts/unity-win.sh android && scripts/unity-win.sh install   # Android: APK をビルドして USB のスマホへ (2026-09-09 実機動作確認済み。Hub の Android Build Support が要る)
+scripts/unity-win.sh live / stop   # 常駐のヘッドレス Editor (Pipeline サーバ) を起動/終了 (2026-09-15)。起動後は
+                     #   unity command recompile|recompile_status|run_tests|eval|console --project-path 'C:\Users\yosuke\deck-rogue-unity-batch' が 0.2〜2 秒で回る
+                     #   (compile/build/shots とはプロジェクトのロックを取り合うので同時には使えない。先に stop)
+unity status / unity command … --project-path 'C:\Users\yosuke\deck-rogue-unity'   # GUI で開いている Editor を直接操作 (下の「Unity 公式プラグイン」節)
 STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意の状態へ跳んで1枚撮る (2026-09-12。phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost
                      #   act/deck/relics/hp/gold/difficulty/leader=チェックポイント開始・enemy=<encounterId>(combat)・event=<id>・pick=<idx,idx>・submode=forge・shopmode=upgrade|remove・viewmap/viewdeck/log=1・name=
                      #   rating=won|lost|rated(評価ダイアログ)・memo=1(メモの窓。memotext=)・export=1(レポート書き出し)・closemap=1(地図を閉じてもう1枚)・menu=1(≡)・tip=enemy(敵の説明パネル)・popup=N(手札の拡大)。2026-09-14
@@ -380,6 +384,42 @@ STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意�
                      #   boss=1(幕ボスの節に立ってから戦闘=ボスの絵の大きさで撮る)・event の pick=N(選択肢 N の「デッキから1枚選ぶ」画面)。2026-09-15)
                      #   例: STATE="phase=combat;enemy=enemy_probe;viewmap=1" … shots state 4242 2 ／ STATE="phase=shop;act=2;deck=deck_big_mana;relics=relic_oldroot_cup;hp=40" … shots state 7
 ```
+
+### Unity 公式プラグイン・Unity CLI・Pipeline（2026-09-15 ユーザー「公式の Unity と AI の連携を構築して」→ ask_user 3件＝全部 A）
+
+実体は3層。**Claude Code は WSL、Unity は Windows** なので CLI も Windows 版を使う（WSL2 の NAT では Editor の `127.0.0.1:78xx` に届かない）。
+
+1. **プラグイン（スキル31個）** `unity@unity-agent-plugin` 0.1.2-beta をユーザースコープで導入（`~/.claude/settings.json` の enabledPlugins。
+   `/unity:` でスキル一覧。UI/uGUI/TMP/2D/スプライト/URP/オーディオ/ローカライズ 等の手順書＝Unity の公式文書の抜粋）。
+   更新は `claude plugin update unity@unity-agent-plugin`。マーケットプレイスは `Unity-Technologies/unity-agent-plugin`（`.claude-plugin/`＋`skills/` だけの純スキル集。MCP・フックは含まない）。
+2. **Unity CLI** ＝ Windows 側 `%LOCALAPPDATA%\Unity\bin\unity.exe`（1.0.0-beta.9。9/6 に beta.6 が入っていたのを `unity upgrade --channel beta --yes` で更新）。
+   **WSL からは `~/.local/bin/unity`（shim）で呼ぶ**＝unity.exe へ exec し、引数の `/mnt/c/…` `/home/…` を `wslpath -w` で Windows のパスに写す（0.25 秒）。
+   cwd は `\\wsl.localhost\…` の UNC になるので Editor の自動判別は効かない＝**`--project-path` は毎回付ける**（GUI コピー `C:\Users\yosuke\deck-rogue-unity`／バッチコピー `…-batch`）。
+   出力は `\r\n`・メッセージは日本語。JSON が要る時は `--format json --no-banner`。
+3. **Pipeline パッケージ** `com.unity.pipeline` 0.7.0-exp.1（Unity レジストリ・実験的）を `unity/Packages/manifest.json` に追加＝sync で両コピーに入る。
+   Editor が起動すると `127.0.0.1:7800〜7849` に HTTP サーバが立ち、記述子（`<project>/Library/Pipeline/.unity-pipeline-port`＝ポートと認証トークン）を書く。
+   バッチ起動（`-batchmode`）でも立つ（無害）。**リリースビルドには Runtime アセンブリが入らない**（asmdef の `UNITY_EDITOR || DEVELOPMENT_BUILD || ENABLE_RUNTIME_PIPELINE`。
+   Win64 ビルドで確認: Managed に入るのは属性だけの `Unity.Pipeline.Attributes.dll` 4.6KB。Android は未再確認＝属性だけなので IL2CPP でも問題ないはず）。
+   コマンドは 151 個（`unity command --project-path … --format json` が正典。console/console_status/recompile/recompile_status/run_tests/list_tests/eval/eval_file/run_script/
+   screenshot/capture_game_view/get_scene_hierarchy/find_gameobjects/create_gameobject/set_component_properties/package_add/build/menu/wait_for 等）。
+   パッケージ同梱のスキルは `.claude/skills/unity-pipeline/SKILL.md` に写した（`unity skill install --local` が書く場所と同じ。パッケージを上げたら PackageCache から写し直す）。
+4. **MCP** `unity mcp --project-path C:\Users\yosuke\deck-rogue-unity` を **local スコープ**（`~/.claude.json` のこのプロジェクト内・非コミット）で登録
+   （`claude mcp get unity`／外すなら `claude mcp remove unity -s local`）。Editor のコマンドがそのまま MCP ツール（151 個）になる。Editor が開いていなくてもサーバは起動する。
+   stdin が閉じれば exit 0＝Windows 側にゾンビは残らない（実測）。unity-cli スキルは Bash から `unity command …` を叩く設計なので、MCP は同じ機能の別入口。
+
+**使い方（2つの Editor）**:
+- **GUI の Editor（ユーザーが `deck-rogue-unity` を開いている時）**: `unity status` に state ready で載る。編集はリポジトリ → `WIN_DIR=/mnt/c/Users/yosuke/deck-rogue-unity scripts/unity-win.sh sync` →
+  `unity command recompile --project-path 'C:\Users\yosuke\deck-rogue-unity'` → `recompile_status` を completed/up_to_date まで poll（直後の `idle` は取り込み前＝もう一度 recompile）→ `console`。
+  `screenshot`/`capture_game_view` は GUI の Editor でだけ撮れる。**`.unity`/`.prefab` を手で書き換えない**（Editor が開いている間はコマンドで。うちは UI をコードで組むので出番は少ない）。
+- **常駐のヘッドレス Editor（Claude の反復用）**: `scripts/unity-win.sh live`（sync → `-batchmode -nographics` で `-quit` 無しに起動 → editor_status が ready になるまで待つ〔約45秒〕→ `set_autotick` 有効化）。
+  以後 `--project-path 'C:\Users\yosuke\deck-rogue-unity-batch'` でコンパイル確認が 17 秒のバッチ起動から 2 秒に。終わったら `scripts/unity-win.sh stop`（eval で `EditorApplication.Exit(0)`・20 秒で終わらなければ kill）。
+  `compile`/`build`/`verify`/`shots` はプロジェクトのロックを取り合うので **live 中は動かせない**（先に stop）。`unity status` には batchmode の Editor は載らない（記述子と `unity command` で確認）。
+- 2つ同時に開くとポートが 7800/7801 に分かれる。`--project-path` で選ぶ。Safe Mode（コンパイルエラーで起動）だとサーバが立たない＝`unity pipeline list` で確認して直す。
+- `unity-cli` スキルの「サンドボックスが Editor を隠す」注意は、このリポジトリでは該当しない（Bash から interop で届いた実測）。
+
+**設定の置き場**: shim `~/.local/bin/unity`（リポジトリ外）／プラグイン `~/.claude/settings.json`＋`~/.claude/plugins/`／MCP `~/.claude.json`（local）／
+パッケージ `unity/Packages/manifest.json`（コミット）／スキルの写し `.claude/skills/unity-pipeline/`（コミット）／`scripts/unity-win.sh live|stop`（コミット）。
+Windows の `C:\Users\yosuke\.unity\{mcp,relay}` は 9/12 に GUI で試した Unity AI（別物）の残骸で、この構成では使わない。
 
 ### worktree 並列 (方式分岐実験が必要になった場合のみ)
 

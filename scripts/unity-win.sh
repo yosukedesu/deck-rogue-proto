@@ -10,6 +10,9 @@
 #   scripts/unity-win.sh build     # Windows プレイヤー (Build/DeckRogue.exe) をビルド
 #   scripts/unity-win.sh shots [tour] [seed]  # プレイヤーを自動操縦で起動して各画面の PNG を unity/Shots/ に回収
 #   scripts/unity-win.sh sync      # 同期だけ
+#   scripts/unity-win.sh live      # 同期 → 常駐のヘッドレス Editor (-quit 無し) を起動して Pipeline サーバを立てる (2026-09-15)。
+#                                  #   以後 `unity command <名前> --project-path 'C:\Users\yosuke\deck-rogue-unity-batch'` で 0.5 秒で再コンパイル・テスト・eval
+#   scripts/unity-win.sh stop      # live の Editor を終わらせる
 # ログ: C:\Users\yosuke\deck-rogue-unity\unity-batch.log (WSL からは $WIN_DIR/unity-batch.log)
 set -u
 MODE="${1:-compile}"
@@ -19,6 +22,19 @@ WIN_DIR="${WIN_DIR:-/mnt/c/Users/yosuke/deck-rogue-unity-batch}"
 UNITY="${UNITY_EXE:-$(ls -d "/mnt/c/Program Files/Unity/Hub/Editor/"*/Editor/Unity.exe 2>/dev/null | sort | tail -1)}"
 if [ -z "$UNITY" ]; then echo "Unity.exe が見つからない (Hub の Editor フォルダ)"; exit 2; fi
 
+if [ "$MODE" = "stop" ]; then
+  # live で起動した常駐 Editor を終わらせる (先に eval で EditorApplication.Exit、駄目なら記述子の PID を kill)
+  DESC="$WIN_DIR/Library/Pipeline/.unity-pipeline-port"
+  if [ ! -f "$DESC" ]; then echo "常駐の Editor は無い ($DESC が無い)"; exit 0; fi
+  PID=$(python3 -c "import json;print(json.load(open('$DESC'))['pid'])" 2>/dev/null)
+  unity command eval 'UnityEditor.EditorApplication.Exit(0); return "bye";' --project-path "$(wslpath -w "$WIN_DIR")" --format json --no-banner --timeout 10 >/dev/null 2>&1
+  # 記述子はすぐ消えるがプロセス (と AssetImportWorker の子 Unity.exe) の終了は数秒かかる。次の compile/build がロックで待たされないよう終了まで待つ
+  for i in $(seq 1 20); do [ -n "$PID" ] && tasklist.exe /FI "PID eq $PID" 2>/dev/null | grep -q "^Unity.exe" || break; sleep 2; done
+  if [ -n "$PID" ] && tasklist.exe /FI "PID eq $PID" 2>/dev/null | grep -q "^Unity.exe"; then echo "終わらないので kill (PID $PID)"; taskkill.exe /PID "$PID" /F >/dev/null 2>&1; fi
+  rm -f "$DESC"
+  echo "stopped"
+  exit 0
+fi
 if [ "$MODE" = "pull" ]; then
   SRC="${2:?回収するパス (作業コピー相対。例: Assets/SomePack)}"
   GUI="${GUI_DIR:-/mnt/c/Users/yosuke/deck-rogue-unity}"
@@ -87,6 +103,26 @@ case "$MODE" in
     echo "player exit=$PCODE shots: $(ls "$REPO/unity/Shots" 2>/dev/null | tr '\n' ' ')"
     grep -E "\[Autopilot\]|Exception|error" "$WIN_DIR/player.log" 2>/dev/null | cut -c1-200 | head -20
     exit $PCODE
+    ;;
+  live)
+    # 常駐のヘッドレス Editor: -quit を付けずに起動すると Pipeline パッケージ (com.unity.pipeline) のサーバ (127.0.0.1:7800〜) が立ち、
+    # Windows 側の Unity CLI (WSL の ~/.local/bin/unity が橋渡し) で `unity command recompile|run_tests|eval|console` が 0.2〜2 秒で回る。
+    # -nographics なので screenshot/capture_game_view は撮れない (絵は shots か GUI の Editor で)。プロジェクトのロックを持つので compile/build と同時には使えない
+    DESC="$WIN_DIR/Library/Pipeline/.unity-pipeline-port"
+    if [ -f "$DESC" ]; then echo "既に常駐している: $DESC (止めるなら scripts/unity-win.sh stop)"; exit 0; fi
+    LIVELOG="$WIN_DIR/unity-live.log"; rm -f "$LIVELOG"
+    cmd.exe /c start "" /B "$(wslpath -w "$UNITY")" -batchmode -nographics -projectPath "$WIN_PROJ" -logFile "$(wslpath -w "$LIVELOG")" >/dev/null 2>&1 &
+    for i in $(seq 1 60); do [ -f "$DESC" ] && break; sleep 3; done
+    if [ ! -f "$DESC" ]; then echo "Pipeline サーバが立たない (3分)。ログ: $LIVELOG"; grep -E "error CS|Safe Mode|Aborting" "$LIVELOG" | head; exit 6; fi
+    # 記述子が出ても起動処理 (初期インポート・インデックス) の間はメインスレッドが塞がっている。editor_status が ready を返すまで待つ
+    for i in $(seq 1 60); do
+      ST=$(unity command editor_status --project-path "$WIN_PROJ" --format json --no-banner --timeout 5 2>/dev/null | tr -d '\r' | python3 -c "import json,sys;d=json.load(sys.stdin);r=d.get('data',{}).get('result') or {};print(r.get('status',''),r.get('compiling',''))" 2>/dev/null)
+      case "$ST" in "ready False") break;; esac
+      sleep 3
+    done
+    unity command set_autotick --enable true --project-path "$WIN_PROJ" --format json --no-banner >/dev/null 2>&1   # 非フォーカスでも tick を止めない
+    echo "live: $(python3 -c "import json;d=json.load(open('$DESC'));print('port', d['port'], 'pid', d['pid'])") → unity command <名前> --project-path '$WIN_PROJ'"
+    exit 0
     ;;
   *) echo "unknown mode: $MODE"; exit 2 ;;
 esac
