@@ -3,7 +3,7 @@
 // 「どのギミックにどの用語 (KEYWORD_HELP) を使うか」は GIMMICK_KEYWORDS で共有し、
 // display-coverage.test が「新しい EnemyDef キーに用語解説とタグの両方があること」を機械固定する。
 import { getEnemyDef } from './content.ts'
-import { sleepingInterrupt } from './enemyGraph.ts'
+import { moveLabel, sleepingInterrupt } from './enemyGraph.ts'
 import { interruptPreviews, splitChildHp, turnsUntilHatch } from './summary.ts'
 import type { EnemyDef, GameState } from './types.ts'
 
@@ -70,7 +70,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   if (def.angerOnBlock) tags.push(`ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)`)
   if (def.enrage) tags.push(def.enrageEveryCards ? `激昂+${def.enrage}/${def.enrageEveryCards}枚プレイ${def.enrageEveryDamage !== undefined ? `・+${def.enrage}/被ダメ${def.enrageEveryDamage}` : ''}` : `激昂+${def.enrage}/T`)
   const growing = def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined)
-  if (growing.length > 0) tags.push(`育つ技(${growing.map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}`).join('/')})`)
+  if (growing.length > 0) tags.push(`育つ技(${growing.map((m) => `${moveLabel(def, m.id)}: 使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}`).join('／')})`)
   return tags
 }
 
@@ -129,17 +129,17 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   if ((e.artifact ?? 0) > 0) tags.push(`アーティファクト${e.artifact}(デバフ付与を${e.artifact}回弾く。延焼は通る)`)
   const sleeping = sleepingInterrupt(def, e)
   if (sleeping !== undefined) {
-    tags.push(`眠り(累計${sleeping.amount ?? 0}ダメで目覚める。現在${e.damageTakenTotal ?? 0})`)
+    tags.push(`眠り(累計${sleeping.amount ?? 0}ダメージで目覚める。いま${e.damageTakenTotal ?? 0})`)
   }
-  // 割り込みの予告 (2026-09-14 即時差し替え): 自ターン中に立てば意図がその場で変わる
+  // 割り込みの予告 (2026-09-14 即時差し替え): 自分のターン中に起きればその場で行動が変わる
   for (const p of interruptPreviews(def, e, s, i)) {
     if (p.trigger === 'damageTaken') continue
     if (p.trigger === 'alone' && !s.enemies.some((o, j) => j !== i && o.hp > 0)) continue
-    tags.push(`${p.text}(自ターン中に立てば意図がその場で変わる)`)
+    tags.push(`${p.text}(自分のターン中に起きればその場で行動が変わる)`)
   }
   const growing = def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined)
   if (growing.length > 0) {
-    tags.push(`育つ技(${growing.map((m) => `${m.id}:使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}・今${m.growPerUse ? `+${m.growPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}乗り`).join('/')})`)
+    tags.push(`育つ技(${growing.map((m) => `${moveLabel(def, m.id)}: 使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}。いまは${m.growPerUse ? `+${m.growPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}`).join('／')})`)
   }
   if (def.angerOnBlock) tags.push(`ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)`)
   if (def.regen && e.hp > e.maxHp * 0.5) tags.push(`再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}`)

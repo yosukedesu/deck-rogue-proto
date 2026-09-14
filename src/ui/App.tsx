@@ -652,7 +652,7 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
 function liveIntentText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
   const text = intentText(it, displayedIntentValue(s, i, it))
   const notes = intentModifierNotes(s, i, it)
-  return notes.length > 0 ? `${text}（${notes.join('・')}・素${it.actual}）` : text
+  return notes.length > 0 ? `${text}（もとは${it.actual}・${notes.join('・')}）` : text
 }
 
 /** 条件付き意図の表示: 両分岐を予告し、いまどちらが有効かを示す */
@@ -671,7 +671,7 @@ function conditionalIntentText(s: GameState, i: number): string {
   const altText = liveIntentText(s, i, intent.alt)
   if (altText === baseText) return baseText
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
-  const cond = intent.conditionalOn === 'set' ? `生きた伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
+  const cond = intent.conditionalOn === 'set' ? `発動できる伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.actual === intent.alt.actual && active.hits === intent.alt.hits
   return `【${cond}】${altText}${isAlt ? '◀今これ' : ''} ／【なし】${baseText}${isAlt ? '' : '◀今これ'}`
@@ -1392,9 +1392,9 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
       const chain = bd.steps.map((st) => `${st.label}=${st.value}`).join(' → ')
       if (ef.effect === 'dealDamageRandom' && typeof ef.amountMax === 'number') {
         const bdMax = damageBreakdown(sm, i, ef.amountMax, ignoreBlock)
-        lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}〜${bdMax?.hpLoss ?? bd.hpLoss}（ロール幅）`)
+        lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP-${bd.hpLoss}〜${bdMax?.hpLoss ?? bd.hpLoss}（ロール幅）`)
       } else {
-        lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP減 ${bd.hpLoss}`)
+        lines.push(`${head}${alive.length > 1 ? `${name}: ` : ''}${chain} ⇒ HP-${bd.hpLoss}`)
       }
     }
   })
@@ -1835,10 +1835,10 @@ function BattleScreen({
                       <span className="chip chip-block">🌀 {kw('バランス崩し')}{enemy.staggeredNext === true ? '（体勢を崩した！次の行動は隙）' : '（完全に防ぐと次の行動が隙）'}</span>
                     )}
                     {sleepingInterrupt(enemyDef, enemy) !== undefined && !dead && (
-                      <span className="chip">😴 {kw('眠り')}: 累計{sleepingInterrupt(enemyDef, enemy)?.amount ?? 0}ダメで目覚める（現在{enemy.damageTakenTotal ?? 0}）</span>
+                      <span className="chip">😴 {kw('眠り')}: 累計{sleepingInterrupt(enemyDef, enemy)?.amount ?? 0}ダメージで目覚める（いま{enemy.damageTakenTotal ?? 0}）</span>
                     )}
                     {enemyDef.moves.some((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined) && !dead && (
-                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}/使用（今${m.growPerUse ? `+${m.growPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}乗り）`).join('・')}</span>
+                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}（いまは${m.growPerUse ? `+${m.growPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}）`).join('・')}</span>
                     )}
                     {enemyDef.guardian === true && !dead && (
                       <span className="chip chip-strength">🛡️ {kw('庇う')}</span>
@@ -1904,7 +1904,7 @@ function BattleScreen({
                   <div className="set-slot-label">
                     {c.def.name}
                     {/* 罠モデル (2026-09-13): 伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ鳴る・鳴らなければ捨て札 */}
-                    <span className="hint" title="伏せたターンは鳴らない。翌ターンと翌々ターンの敵フェーズだけ発動できる。鳴らなければ捨て札へ戻る">（{trapStatusText(s, c)}）</span>
+                    <span className="hint" title="伏せたターンは発動しない。翌ターンと翌々ターンの敵フェーズだけ発動できる。発動しなければ捨て札へ戻る">（{trapStatusText(s, c)}）</span>
                     {c.def.type !== 'reaction' && (
                       <span title="通常カードの伏せ (実験): 誘発したら印字コストを払って発動">（被攻撃{setWindowStage(c.def) === 'pre' ? '前' : '後'}・発動{setFireCost(c)}E）</span>
                     )}
@@ -2097,7 +2097,7 @@ function BattleScreen({
                 2026-09-14 実値公開: 幅の上限でなく宣言した実値 (威圧・脆弱・重り込み) の合計 = 実際に受ける量。
                 2026-09-06 UI整理: 画面下に流れていた独立パネルをHPの直下へ (0でも出す=非攻撃ターンに行が消えると迷う) */}
             {s.phase === 'player-turn' && s.hideIntents === true && (
-              <div className="forecast-inline forecast-warn">⚠️ 被ダメ予測 ？（ルーンの円蓋: 意図は見えない）</div>
+              <div className="forecast-inline forecast-warn">⚠️ このターンに受けるダメージ ？（ルーンの円蓋: 意図は見えない）</div>
             )}
             {s.phase === 'player-turn' && s.hideIntents !== true &&
               (() => {
@@ -2106,7 +2106,7 @@ function BattleScreen({
                 const through = Math.max(0, incoming - defense)
                 return (
                   <div className={`forecast-inline${through >= player.hp ? ' forecast-danger' : through > 0 ? ' forecast-warn' : ''}`}>
-                    ⚠️ 被ダメ予測 {incoming} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
+                    ⚠️ このターンに受けるダメージ {incoming} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
                   </div>
                 )
               })()}

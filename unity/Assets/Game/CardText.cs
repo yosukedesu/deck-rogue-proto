@@ -475,9 +475,9 @@ namespace DeckRogue.Game
                 case "attack":
                 {
                     string hits = it.MirrorHits == true ? "×手数" : (it.Hits.HasValue && it.Hits.Value > 1 ? "×" + it.Hits.Value : "");
-                    string guard = it.AlsoDefend.HasValue ? "+盾" + it.AlsoDefend.Value : "";
+                    string guard = it.AlsoDefend.HasValue ? "+ブロック" + it.AlsoDefend.Value : "";
                     string buff = it.AlsoBuff.HasValue ? "+筋力" + it.AlsoBuff.Value : "";
-                    string breaks = it.AlsoDestroySet == true ? "壊し+" : ""; // 壊しつつ殴る (2026-09-14)
+                    string breaks = it.AlsoDestroySet == true ? "からくり壊し+" : ""; // 壊しつつ殴る (2026-09-14)
                     return breaks + "攻撃 " + v + hits + guard + buff + InflictSuffix(it.Inflict);
                 }
                 case "defend":
@@ -493,18 +493,18 @@ namespace DeckRogue.Game
                 case "rest": return "隙だらけ";
                 case "hatch": return "孵化する";
                 case "mill": return "山札喰い " + it.Actual + "枚";
-                case "summon": return "召喚 ×" + it.Actual + " (場が4体なら出ない=潰すなら今)";
+                case "summon": return "召喚 ×" + it.Actual + " (場が4体なら出ない)";
                 default: return KindJa(it.Kind);
             }
         }
 
-        /// <summary>意図1つの表示 (実値公開): 攻撃は補正込みのライブ値。補正があれば「(威圧-25%: 実値12)」を添える</summary>
+        /// <summary>意図1つの表示 (実値公開): 攻撃は補正込みのライブ値。補正があれば「(もとは12・威圧で-25%)」を添える</summary>
         public static string LiveIntentLine(GameState st, int enemyIndex, EnemyIntent it)
         {
             if (it == null) return "---";
             string text = IntentLine(it, Effects.DisplayedIntentValue(st, enemyIndex, it.Kind, it.Actual));
             var notes = Effects.IntentModifierNotes(st, enemyIndex, it.Kind);
-            return notes.Count > 0 ? text + " (" + string.Join("・", notes) + "・素" + it.Actual + ")" : text;
+            return notes.Count > 0 ? text + " (もとは" + it.Actual + "・" + string.Join("・", notes) + ")" : text;
         }
 
         /// <summary>その敵の今の意図 (伏せ分岐の解決込み)</summary>
@@ -520,7 +520,7 @@ namespace DeckRogue.Game
             {
                 // EffectiveIntent は条件を満たさない時だけ raw をそのまま返す (参照が同じ)
                 bool altActive = !object.ReferenceEquals(eff, raw);
-                string what = raw.ConditionalOn == "set" ? "鳴るからくり" : "従者";
+                string what = raw.ConditionalOn == "set" ? "動かせるからくり" : "従者";
                 s += "  【" + what + (altActive ? "あり" : "なし") + "分岐】";
                 if (!altActive) s += " ※" + what + "があると: " + LiveIntentLine(st, enemyIndex, BranchToIntent(raw.Alt));
             }
@@ -551,8 +551,9 @@ namespace DeckRogue.Game
             string range = lo.HasValue ? (lo == hi ? lo.Value.ToString() : lo.Value + "〜" + hi) : "";
             string sign = (m.Kind == "buff" || m.Kind == "rally") ? "+" : "";
             string hits = m.MirrorHits == true ? "×手数" : ((m.Hits ?? 1) > 1 ? "×" + m.Hits.Value : "");
-            string inflict = m.Inflict != null ? "+" + StatusName(m.Inflict.Status) + m.Inflict.Amount : "";
-            return mark + sign + range + hits + inflict;
+            string inflict = m.Inflict != null ? (range != "" ? "+" : "") + StatusName(m.Inflict.Status) + m.Inflict.Amount : "";
+            string riders = (m.AlsoDefend.HasValue ? "+ブロック" + m.AlsoDefend.Value : "") + (m.AlsoBuff.HasValue ? "+筋力" + m.AlsoBuff.Value : "") + (m.AlsoDestroySet == true ? "+からくり壊し" : "") + (m.GrowPerUse.HasValue ? "(使うたび+" + m.GrowPerUse.Value + ")" : "") + (m.GrowHitsPerUse.HasValue ? "(使うたびヒット+" + m.GrowHitsPerUse.Value + ")" : "");
+            return mark + sign + range + hits + inflict + riders;
         }
 
         static bool HasOtherAlive(GameState st, int index)
@@ -596,13 +597,13 @@ namespace DeckRogue.Game
                     string arrow = "";
                     if (first != null)
                     {
-                        arrow = "→" + MoveShort(first, strength);
+                        arrow = ": " + MoveShort(first, strength);
                         EnemyNode node; string nextId = d.Nodes.TryGetValue(it.Goto, out node) && node.Move != null ? node.Next : null;
                         var second = nextId != null && nextId != it.Goto ? EnemyGraph.FirstMoveOf(d, nextId) : null;
                         if (second != null) arrow += "→" + MoveShort(second, strength);
                     }
-                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add("累計" + (it.Amount ?? 0) + "ダメ" + (e != null ? "(あと" + Math.Max(0, (it.Amount ?? 0) - (e.DamageTakenTotal ?? 0)) + ")" : "") + "で目覚め" + arrow);
-                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add("HP半分" + (e != null ? "(" + (e.MaxHp / 2) + ")" : "") + "で" + arrow);
+                    if (it.On == EnemyInterruptTriggers.DamageTaken) t.Add((e != null ? "あと" + Math.Max(0, (it.Amount ?? 0) - (e.DamageTakenTotal ?? 0)) + "ダメージで目覚める" : "累計" + (it.Amount ?? 0) + "ダメージを受けると") + arrow);
+                    else if (it.On == EnemyInterruptTriggers.HpBelowHalf) t.Add((e != null ? "HPが" + (e.MaxHp / 2) + "以下になると" : "HPが半分以下になると") + arrow);
                     else if (it.On == EnemyInterruptTriggers.Alone) { if (e == null || HasOtherAlive(st, index)) t.Add("仲間が全滅すると" + arrow); }
                     else if (it.On == EnemyInterruptTriggers.AllyDied) t.Add("仲間が倒れると" + arrow);
                 }
@@ -627,19 +628,19 @@ namespace DeckRogue.Game
             var e = ev as GameEvent_CardPlayed; if (e != null) return "プレイ: " + CardName(e.CardId);
             var f = ev as GameEvent_CardSet; if (f != null) return "仕込んだ: " + CardName(f.CardId);
             var g = ev as GameEvent_SetCardExpired;
-            if (g != null) return "期限切れ: " + CardName(g.CardId) + "（2回鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
+            if (g != null) return "期限切れ: " + CardName(g.CardId) + "（2回の敵ターンで鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
             var h = ev as GameEvent_EnemyIntentDeclared; if (h != null) return "敵" + (h.EnemyIndex + 1) + "の意図: " + IntentLine(h.Intent);
             var i2 = ev as GameEvent_ActionNegated; if (i2 != null) return "敵の行動を打ち消した!";
             var j = ev as GameEvent_DamageDealt;
             if (j != null)
             {
                 return j.Source == "player"
-                    ? "敵に" + j.Amount + "ダメージ (HP減 " + j.HpLoss + ")"
+                    ? "敵に" + j.Amount + "ダメージ (HP-" + j.HpLoss + ")"
                         + (j.ArmorCut.HasValue && j.ArmorCut.Value > 0 ? " [装甲で" + j.ArmorCut.Value + "切り捨て]" : "")
                         + (j.TurnArmorCut.HasValue && j.TurnArmorCut.Value > 0 ? " [ターン装甲で" + j.TurnArmorCut.Value + "]" : "")
                         + (j.BurrowCut.HasValue && j.BurrowCut.Value > 0 ? " [潜伏の殻で" + j.BurrowCut.Value + "]" : "")
                         + (j.NemesisCut.HasValue && j.NemesisCut.Value > 0 ? " [無形で1固定]" : "")
-                    : "敵の攻撃" + j.Amount + " → HP減 " + j.HpLoss;
+                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss;
             }
             var k = ev as GameEvent_BlockGained; if (k != null) return (k.Target == "player" ? "自分" : "敵") + "がブロック+" + k.Amount;
             var l = ev as GameEvent_IceBlockGained; if (l != null) return "氷壁+" + l.Amount;
@@ -688,7 +689,7 @@ namespace DeckRogue.Game
             var x2 = ev as GameEvent_BurrowBroken; if (x2 != null) return "潜伏の殻が割れた! 次の行動は噛みつき";
             var y2 = ev as GameEvent_EnemyStaggered; if (y2 != null) return "完全に防いだ! 敵は体勢を崩し、次の行動は隙";
             var zs = ev as GameEvent_EnemySummoned; if (zs != null) return zs.Count > 0 ? "召喚! " + zs.Count + "体が現れた" : "召喚したが場が満杯で出なかった";
-            var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました!" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を割った! 牙をむく" : "仲間が倒れた! 行動が変わる") + (z2.Replaced ? " (意図をその場で差し替え" + (z2.Before != null && z2.After != null ? ": " + IntentLine(z2.Before) + " → " + IntentLine(z2.After) : "") + ")" : " (次の宣言から)");
+            var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました! 眠りが終わった" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を切った!" : z2.Trigger == EnemyInterruptTriggers.Alone ? "仲間が全滅した!" : "仲間が倒れた!") + (z2.Replaced ? " 行動が変わった" + (z2.Before != null && z2.After != null ? ": " + IntentLine(z2.Before) + " → " + IntentLine(z2.After) : "") : " 次のターンから行動が変わる");
             var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが弾いた (" + a3.Effect + ")";
             var b3 = ev as GameEvent_ScaldTick; if (b3 != null) return "火傷・烙印" + b3.Count + "枚が疼いた (HP-" + b3.Amount + ")";
             var c3 = ev as GameEvent_CombatEnded; if (c3 != null) return c3.Result == "won" ? "=== 勝利 ===" : "=== 敗北 ===";

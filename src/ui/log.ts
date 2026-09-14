@@ -54,7 +54,7 @@ export function intentText(intent: EnemyIntent | EnemyIntentBranch | null, shown
     case 'rest': return '😮‍💨 隙だらけ'
     case 'hatch': return '🐣 孵化する'
     case 'mill': return `📖 山札喰い ${intent.actual}枚（消滅置き場へ。亡骸は発火する）`
-    case 'summon': return `👶 召喚 ×${intent.actual}（場が4体なら出ない=潰すなら今）`
+    case 'summon': return `👶 召喚 ×${intent.actual}（場が4体なら出ない）`
   }
 }
 
@@ -78,15 +78,15 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardsDrawn': return { text: `${e.count}枚ドロー`, cls: 'log-line' }
     case 'CardPlayed': return { text: `プレイ: ${cardName(e.cardId)}`, cls: 'log-line' }
     case 'CardSet': return { text: `伏せた: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'SetCardExpired': return { text: `期限切れ: ${cardName(e.cardId)}（2回鳴らなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'}）`, cls: 'log-line' }
+    case 'SetCardExpired': return { text: `期限切れ: ${cardName(e.cardId)}（2回の敵ターンで発動しなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'}）`, cls: 'log-line' }
     case 'EnemyIntentDeclared': return { text: `敵の意図: ${intentText(e.intent)}`, cls: 'log-line' }
     case 'EnemyActionExecuting':
     case 'EnemyActionResolved': return null
     case 'ActionNegated': return { text: '敵の行動は打ち消された！', cls: 'log-good' }
     case 'DamageDealt':
       return e.source === 'player'
-        ? { text: `敵に${e.amount}ダメージ (HP減 ${e.hpLoss})${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
-        : { text: `敵の攻撃${e.amount} → HP減 ${e.hpLoss}`, cls: 'log-bad' }
+        ? { text: `敵に${e.amount}ダメージ（HP-${e.hpLoss}）${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
+        : { text: `敵の攻撃${e.amount} → HP-${e.hpLoss}`, cls: 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': {
       // 激昂の発火は理由を明示する (2026-09-01 検証ラン「跨いだ瞬間を後から確認できない」への処方)
@@ -113,12 +113,12 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'EnemyInterrupted': {
       // 割り込み (2026-09-14 行動グラフ): 自ターン中なら意図がその場で差し替わる (本家 Champ/Guardian/Lagavulin 形)
       const what =
-        e.trigger === 'damageTaken' ? '👁️ 目を覚ました！ 眠りの前奏が打ち切られた'
-          : e.trigger === 'hpBelowHalf' ? '😾 HPが半分を割った！ 牙をむく'
-            : e.trigger === 'alone' ? '😤 仲間が全滅した！ 転職する'
-              : '😤 仲間が倒れた！ 行動が変わる'
+        e.trigger === 'damageTaken' ? '👁️ 目を覚ました！ 眠りが終わった'
+          : e.trigger === 'hpBelowHalf' ? '😾 HPが半分を切った！'
+            : e.trigger === 'alone' ? '😤 仲間が全滅した！'
+              : '😤 仲間が倒れた！'
       const pair = e.before !== undefined && e.after !== undefined ? `: ${intentText(e.before)} → ${intentText(e.after)}` : ''
-      return { text: `${what}${e.replaced ? `（意図をその場で差し替え${pair}）` : '（次の宣言から）'}`, cls: 'log-bad' }
+      return { text: `${what} ${e.replaced ? `行動が変わった${pair}` : '次のターンから行動が変わる'}`, cls: 'log-bad' }
     }
     case 'ScaldTick': return { text: `🔥 火傷・烙印${e.count}枚が疼いた（HP-${e.amount}）`, cls: 'log-bad' }
     case 'StatusInflicted':

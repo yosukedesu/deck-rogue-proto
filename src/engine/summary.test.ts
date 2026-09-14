@@ -150,10 +150,10 @@ describe('実値公開のライブ表示 (2026-09-14 本家形): 意図の数字
     // 脆弱: +50% (切り捨て) → 18。威圧: -25% → 9 → 脆弱で 13 (実処理と同順: 威圧→脆弱)
     const vuln = { ...s, player: { ...s.player, vulnerable: 1 } }
     expect(displayedIntentValue(vuln, 0, vuln.enemies[0].intent!)).toBe(18)
-    expect(intentModifierNotes(vuln, 0, vuln.enemies[0].intent!)).toEqual(['脆弱+50%'])
+    expect(intentModifierNotes(vuln, 0, vuln.enemies[0].intent!)).toEqual(['脆弱で+50%'])
     const both = { ...vuln, enemies: vuln.enemies.map((e, i) => (i === 0 ? { ...e, weak: 1 } : e)) }
     expect(displayedIntentValue(both, 0, both.enemies[0].intent!)).toBe(13)
-    expect(intentModifierNotes(both, 0, both.enemies[0].intent!)).toEqual(['威圧-25%', '脆弱+50%'])
+    expect(intentModifierNotes(both, 0, both.enemies[0].intent!)).toEqual(['威圧で-25%', '脆弱で+50%'])
     // 防御の意図は補正されない
     const guard = { ...both, enemies: both.enemies.map((e, i) => (i === 0 ? { ...e, intent: { kind: 'defend' as const, actual: 9 } } : e)) }
     expect(displayedIntentValue(guard, 0, guard.enemies[0].intent!)).toBe(9)

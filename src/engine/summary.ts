@@ -145,15 +145,15 @@ export function displayedIntentValue(s: GameState, enemyIndex: number, it: Enemy
   return it.kind === 'attack' ? modifiedHit(s, enemyIndex, it.actual) : it.actual
 }
 
-/** 補正が実値を変えている時の注記 (「威圧-25%」「脆弱+50%」「重り+N%」「鈴-N」)。無ければ空配列 */
+/** 補正が実値を変えている時の注記 (「威圧で-25%」「脆弱で+50%」「重りで+N%」「鈴で-N」)。無ければ空配列 */
 export function intentModifierNotes(s: GameState, enemyIndex: number, it: EnemyIntent | EnemyIntentBranch): string[] {
   if (it.kind !== 'attack') return []
   const e = s.enemies[enemyIndex]
   const notes: string[] = []
-  if ((e?.weak ?? 0) > 0) notes.push('威圧-25%')
-  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) notes.push(`鈴-${s.setDamageReduction}`)
-  if (s.player.vulnerable > 0) notes.push('脆弱+50%')
-  if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) notes.push(`重り+${10 * (s.player.playsThisTurn ?? 0)}%`)
+  if ((e?.weak ?? 0) > 0) notes.push('威圧で-25%')
+  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) notes.push(`鈴で-${s.setDamageReduction}`)
+  if (s.player.vulnerable > 0) notes.push('脆弱で+50%')
+  if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) notes.push(`重りで+${10 * (s.player.playsThisTurn ?? 0)}%`)
   return notes
 }
 
@@ -194,11 +194,11 @@ export function interruptPreviews(def: EnemyDef, e?: EnemyState, s?: GameState, 
     const chain = moves.length > 0 ? moves.map((m) => moveShort(def, m, strength)).join('→') : '…'
     const trig =
       it.on === 'hpBelowHalf' && e !== undefined
-        ? `HP半分(${Math.floor(e.maxHp / 2)})で`
+        ? `HPが${Math.floor(e.maxHp / 2)}以下になると`
         : it.on === 'damageTaken' && e !== undefined
-          ? `累計${it.amount ?? 0}ダメ(あと${Math.max(0, (it.amount ?? 0) - (e.damageTakenTotal ?? 0))})で`
+          ? `あと${Math.max(0, (it.amount ?? 0) - (e.damageTakenTotal ?? 0))}ダメージで目覚める`
           : interruptTriggerText(it)
-    return [{ index, trigger: it.on, text: `${trig}→${chain}` }]
+    return [{ index, trigger: it.on, text: `${trig}: ${chain}` }]
   })
 }
 

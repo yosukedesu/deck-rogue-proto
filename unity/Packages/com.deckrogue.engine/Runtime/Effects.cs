@@ -570,16 +570,16 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)。
-        /// 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン鳴らないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す)</summary>
+        /// 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン発動しないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す)</summary>
         public static string TrapStatusText(GameState state, CardInstance card)
         {
-            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・期限なし）" : "期限なし";
+            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから発動できる・期限なし）" : "期限なし";
             int age = TrapAge(state, card);
-            if (age <= 0) return "準備中（次のターンから鳴る）";
+            if (age <= 0) return "準備中（次のターンから発動できる）";
             int left = TrapWindowsLeft(state, card) ?? 0;
             bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
-            if (left >= 2) return quiet ? "あと2回の敵フェーズ。今ターンの意図では鳴らない＝実質あと1回" : "あと2回の敵フェーズ（鳴らなければ期限切れで捨て札へ）";
-            return quiet ? "あと1回。今ターンの意図では鳴らない＝このターンの終わりに期限切れ" : "あと1回（このターンで鳴らなければ期限切れで捨て札へ）";
+            if (left >= 2) return quiet ? "あと2回の敵ターン。今ターンの敵の行動では発動しない＝実質あと1回" : "あと2回の敵ターン（発動しなければ期限切れで捨て札へ）";
+            return quiet ? "あと1回。今ターンの敵の行動では発動しない＝このターンの終わりに期限切れ" : "あと1回（このターンで発動しなければ期限切れで捨て札へ）";
         }
 
         /// <summary>罠モデル: 伏せ場の札の状態 (Unity の世界の言葉=「からくり」の語彙。TrapStatusText と同じ分岐)</summary>
@@ -799,8 +799,8 @@ namespace DeckRogue.Engine
                     int live = PlayerDamageAfterModifiers(state, e.Amount.Value);
                     // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3)
                     var bd = enemyIndex.HasValue ? DamageBreakdownOf(state, enemyIndex.Value, e.Amount.Value, e.Pierce == true, true, false) : null; // 勢いはリアクションに乗らない (2026-09-14 Opus AB3)
-                    if (bd != null) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live + "→HP減" + bd.HpLoss);
-                    else if (live != e.Amount.Value) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live);
+                    if (bd != null) vals.Add((e.Effect == "counter" ? "返し" : "ダメージ") + live + " → HP-" + bd.HpLoss);
+                    else if (live != e.Amount.Value) vals.Add((e.Effect == "counter" ? "返し" : "ダメージ") + live);
                 }
             }
             if (vals.Count == 0) return null;
@@ -811,7 +811,7 @@ namespace DeckRogue.Engine
             if (enemyIndex.HasValue) parts.Add("急所・装甲・ブロック込み");
             // 伏せ場 (自ターン) の値は「今」の値。罠が鳴るのは次のターン以降なので弱体は切れているかもしれない (Opus Z2)
             string note = !enemyIndex.HasValue && state.Phase == CombatPhases.PlayerTurn && weak > 0 ? "※鳴る時の弱体で変わる" : "";
-            return "実値: " + string.Join("・", vals.ToArray()) + "(" + string.Join("・", parts.ToArray()) + ")" + note;
+            return "実際の値: " + string.Join("・", vals.ToArray()) + "（" + string.Join("・", parts.ToArray()) + "）" + note;
         }
 
         /// <summary>
@@ -911,16 +911,16 @@ namespace DeckRogue.Engine
             return kind == EnemyActionKinds.Attack ? ModifiedHit(s, enemyIndex, actual) : actual;
         }
 
-        /// <summary>補正が実値を変えている時の注記 (威圧-25% / 鈴-N / 脆弱+50% / 重り+N%)</summary>
+        /// <summary>補正が実値を変えている時の注記 (威圧で-25% / 鈴で-N / 脆弱で+50% / 重りで+N%)</summary>
         public static List<string> IntentModifierNotes(GameState s, int enemyIndex, string kind)
         {
             var notes = new List<string>();
             if (kind != EnemyActionKinds.Attack) return notes;
             var e = enemyIndex >= 0 && enemyIndex < s.Enemies.Count ? s.Enemies[enemyIndex] : null;
-            if ((e?.Weak ?? 0) > 0) notes.Add("威圧-25%");
-            if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) notes.Add("鈴-" + s.SetDamageReduction);
-            if (s.Player.Vulnerable > 0) notes.Add("脆弱+50%");
-            if ((s.Player.Slow ?? 0) > 0 && (s.Player.PlaysThisTurn ?? 0) > 0) notes.Add("重り+" + (10 * (s.Player.PlaysThisTurn ?? 0)) + "%");
+            if ((e?.Weak ?? 0) > 0) notes.Add("威圧で-25%");
+            if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) notes.Add("鈴で-" + s.SetDamageReduction);
+            if (s.Player.Vulnerable > 0) notes.Add("脆弱で+50%");
+            if ((s.Player.Slow ?? 0) > 0 && (s.Player.PlaysThisTurn ?? 0) > 0) notes.Add("重りで+" + (10 * (s.Player.PlaysThisTurn ?? 0)) + "%");
             return notes;
         }
 

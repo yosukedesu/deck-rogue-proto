@@ -159,19 +159,19 @@ describe('グラフの評価 (新しく書ける形)', () => {
     expect([0, 1, 2].map((k) => advanceCursor(wide, k))).toEqual(['surge', 'rand', 'rand'])
   })
 
-  it('describeGraph: 図鑑向けの1行 (技の表記・乱択・条件の1段展開・割り込み。2026-09-14 Opus 3本「生IDで読めない」の処方)', () => {
+  it('describeGraph: 図鑑向けの1行 (技の表記・どちらか・条件の1段展開・割り込み。2026-09-14 Opus 3本「生IDで読めない」の処方)', () => {
     const raw = (m: string) => m
-    expect(describeGraph(getEnemyDef('enemy_probe'), raw)[0]).toBe('poke→guard→poke→lunge→(pokeへ戻る)')
-    expect(describeGraph(getEnemyDef('enemy_probe'))[0]).toBe('⚔️5〜7→🛡️7〜10+筋1→⚔️5〜7→⚔️12〜16→(⚔️5〜7へ戻る)')
-    expect(describeGraph(getEnemyDef('enemy_wide_power'), raw)[0]).toBe('surge→乱択{surge 3/coil 1}')
+    expect(describeGraph(getEnemyDef('enemy_probe'), raw)[0]).toBe('poke→guard→poke→lunge→最初に戻る')
+    expect(describeGraph(getEnemyDef('enemy_probe'))[0]).toBe('⚔️5〜7→🛡️7〜10+筋力1→⚔️5〜7→⚔️12〜16→最初に戻る')
+    expect(describeGraph(getEnemyDef('enemy_wide_power'), raw)[0]).toBe('surge→どちらか{surge（出やすさ3）／coil（出やすさ1）}')
     const brute = describeGraph(getEnemyDef('enemy_brute'), raw)
-    expect(brute[1]).toBe('HP半分で→rage_flurry→rage_flurry→war_roar→(rage_flurryへ戻る)')
+    expect(brute[1]).toBe('HPが半分以下になると: rage_flurry→rage_flurry→war_roar→rage_flurryに戻る')
     const egg = describeGraph(getEnemyDef('enemy_elite_iron_egg'), raw)
-    expect(egg[1]).toBe('累計20被弾で→awaken→tail→(繰り返し)')
+    expect(egg[1]).toBe('累計20ダメージを受けると: awaken→tail→同じ技を繰り返す')
     // 条件の節は両側を1段展開 (蛙の騎士: 一度きりの突進が見える)
-    expect(describeGraph(getEnemyDef('enemy_frog_knight'), raw)[0]).toContain('(HP半分以下? (beetle_chargeを1回使った? (tongue_lashへ戻る) : beetle_charge→(tongue_lashへ戻る)) : (tongue_lashへ戻る))')
+    expect(describeGraph(getEnemyDef('enemy_frog_knight'), raw)[0]).toContain('(HP半分以下なら (beetle_chargeを1回使ったなら 最初に戻る、そうでなければ beetle_charge→最初に戻る)、そうでなければ 最初に戻る)')
     // 召喚者は条件から始まり、両側の輪が見える
-    expect(describeGraph(getEnemyDef('enemy_moss_spawner'))[0]).toBe('(味方が3体未満? 👶苔スライム×1→⚔️9〜12→🛡️6〜9+筋1→(条件へ戻る) : ⚔️9〜12→🛡️6〜9+筋1→(条件へ戻る))')
+    expect(describeGraph(getEnemyDef('enemy_moss_spawner'))[0]).toBe('(味方が3体未満なら 👶苔スライム×1→⚔️9〜12→🛡️6〜9+筋力1→最初に戻る、そうでなければ ⚔️9〜12→🛡️6〜9+筋力1→最初に戻る)')
   })
 
   it('旧形の定義 (テスト・調整モード) は読込時に同じ変換を受ける', () => {

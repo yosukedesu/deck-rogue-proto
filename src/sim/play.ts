@@ -172,7 +172,7 @@ function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch
   const notes = intentModifierNotes(s, i, it)
   const shown = displayedIntentValue(s, i, it)
   const kinds: Record<string, string> = {
-    attack: `${breaks}攻撃${shown}${notes.length > 0 ? `(${notes.join('・')}・素${it.actual})` : ''}${hits}${guard}${buff}`,
+    attack: `${breaks}攻撃${shown}${notes.length > 0 ? `(もとは${it.actual}・${notes.join('・')})` : ''}${hits}${guard}${buff}`,
     defend: `防御${it.actual}${buff}`,
     'destroy-set': '伏せ破壊',
     'destroy-token': '従者狩り',
@@ -185,7 +185,7 @@ function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch
     rest: '隙だらけ',
     hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
     mill: `📖山札喰い${it.actual}枚(消滅置き場へ。亡骸は発火する)`,
-    summon: `👶召喚×${it.actual}(場が4体なら出ない=潰すなら今)`,
+    summon: `👶召喚×${it.actual}(場が4体なら出ない)`,
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
 }
@@ -206,7 +206,7 @@ function intentLine(s: GameState, i: number): string {
   }
   if (e.intent.conditionalOn && e.intent.alt) {
     const note = e.intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(e.enemyId)) : null
-    const cond = e.intent.conditionalOn === 'set' ? `生きた伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
+    const cond = e.intent.conditionalOn === 'set' ? `発動できる伏せ札あり${note ? `(${note})` : ''}` : '従者あり'
     const now = effectiveIntent(s, i)!
     // 罠モデル (2026-09-13): 敵の伏せ反応は破壊分岐だけ。伏せ札が1枚でもあれば (準備中も) その分岐
     return `【${cond}】${branchText(s, i, e.intent.alt)} ／【なし】${branchText(s, i, base)} → 今は「${branchText(s, i, now)}」`
@@ -249,7 +249,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)
       else if (e.type === 'ThornsReflected') L.push(` 🦔とげ反射${e.amount}(HP損失${e.hpLoss}。ブロックで吸収した分は損失に出ない)`)
       else if (e.type === 'EnemySplit') L.push(e.count === 1 ? ' ♻️再起動! 倒した敵が次の姿で立ち上がった' : ` 🫠分裂! 倒した敵から${e.count}体が現れた`)
-      else if (e.type === 'SetCardExpired') L.push(` ⏳期限切れ: ${cname(e.cardId)}(2回鳴らなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'})`)
+      else if (e.type === 'SetCardExpired') L.push(` ⏳期限切れ: ${cname(e.cardId)}(2回の敵ターンで発動しなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'})`)
       else if (e.type === 'EnemySummoned') L.push(e.count > 0 ? ` 👶召喚! ${e.count}体が現れた` : ' 👶召喚したが場が満杯で出なかった')
       else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
@@ -260,7 +260,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'DeathSaved') L.push(` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
-      else if (e.type === 'EnemyInterrupted') L.push(` ${e.trigger === 'damageTaken' ? '👁️目を覚ました!' : e.trigger === 'hpBelowHalf' ? '😾HPが半分を割った! 牙をむく' : '😤仲間が倒れた! 行動が変わる'}${e.replaced ? `(意図をその場で差し替え${e.before && e.after ? `: ${branchText(s, e.enemyIndex, e.before)} → ${branchText(s, e.enemyIndex, e.after)}` : ''})` : '(次の宣言から)'}`)
+      else if (e.type === 'EnemyInterrupted') L.push(` ${e.trigger === 'damageTaken' ? '👁️目を覚ました!' : e.trigger === 'hpBelowHalf' ? '😾HPが半分を切った!' : e.trigger === 'alone' ? '😤仲間が全滅した!' : '😤仲間が倒れた!'} ${e.replaced ? `行動が変わった${e.before && e.after ? `: ${branchText(s, e.enemyIndex, e.before)} → ${branchText(s, e.enemyIndex, e.after)}` : ''}` : '次のターンから行動が変わる'}`)
       else if (e.type === 'GoldStolen') L.push(` 💰${e.amount}G盗まれた(逃がす前に倒せば取り返す)`)
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
       else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
@@ -289,7 +289,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     const defense = p.block + p.iceBlock
     const through = Math.max(0, incoming - defense)
     L.push(
-      `⚠️ 今フェーズの被ダメ予測: ${incoming}（現在の防御 ${defense} → 通る ${through} / HP ${p.hp}）`,
+      `⚠️ このターンに受けるダメージ: ${incoming}（防御${defense}を差し引いて${through} / HP ${p.hp}）`,
     )
   }
   s.enemies.forEach((e, i) => {

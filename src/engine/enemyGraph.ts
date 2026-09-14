@@ -464,8 +464,8 @@ export function moveLabel(def: EnemyDef, moveId: string, strength = 0): string {
   const range = lo !== undefined ? (lo === hi ? `${lo}` : `${lo}〜${hi}`) : ''
   const sign = m.kind === 'buff' || m.kind === 'rally' ? '+' : ''
   const hits = m.mirrorHits === true ? '×手数' : (m.hits ?? 1) > 1 ? `×${m.hits}` : ''
-  const inflict = m.inflict ? `+${STATUS_JA[m.inflict.status] ?? m.inflict.status}${m.inflict.amount}` : ''
-  const riders = `${m.alsoDefend !== undefined ? `+盾${m.alsoDefend}` : ''}${m.alsoBuff !== undefined ? `+筋${m.alsoBuff}` : ''}${m.alsoDestroySet === true ? '+壊し' : ''}${m.growPerUse !== undefined ? `(+${m.growPerUse}/回)` : ''}${m.growHitsPerUse !== undefined ? `(ヒット+${m.growHitsPerUse}/回)` : ''}`
+  const inflict = m.inflict ? `${range !== '' ? '+' : ''}${STATUS_JA[m.inflict.status] ?? m.inflict.status}${m.inflict.amount}` : ''
+  const riders = `${m.alsoDefend !== undefined ? `+ブロック${m.alsoDefend}` : ''}${m.alsoBuff !== undefined ? `+筋力${m.alsoBuff}` : ''}${m.alsoDestroySet === true ? '+伏せ破壊' : ''}${m.growPerUse !== undefined ? `(使うたび+${m.growPerUse})` : ''}${m.growHitsPerUse !== undefined ? `(使うたびヒット+${m.growHitsPerUse})` : ''}`
   const summon = m.summon ? `${summonName(m.summon.enemyId)}×${m.summon.count}` : ''
   return `${mark[m.kind] ?? m.kind}${sign}${range}${hits}${inflict}${riders}${summon}`
 }
@@ -497,7 +497,7 @@ export function previewMoves(def: EnemyDef, nodeId: string, n: number): EnemyMov
 
 /**
  * start (または任意の節) から辿った行動の並びを文字列に。乱択は候補を「乱択{a 2/b 1}」・条件は両側を1段展開して
- * 「(条件? A→… : B→…)」・既に通った節に戻ったら「→(◯へ戻る)」で止める。技は既定で moveLabel の表記
+ * 「(条件なら A→…、そうでなければ B→…)」・既に通った節に戻ったら「→◯に戻る」で止める。技は既定で moveLabel の表記
  * (2026-09-14: 生IDと条件節が「条件」止まりで読めなかった、への処方)
  */
 export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: string) => string = (m) => moveLabel(def, m), seen: Set<string> = new Set(), budget = 10): string {
@@ -507,14 +507,14 @@ export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: s
     const node = def.nodes[cur]
     if (!node) return `${out.join('→')}→?${cur}`
     if (seen.has(cur)) {
-      out.push(`(${labelOfNode(def, cur, label)}へ戻る)`)
+      out.push(cur === def.start ? '最初に戻る' : `${labelOfNode(def, cur, label)}に戻る`)
       break
     }
     seen.add(cur)
     if (node.move !== undefined) {
       out.push(label(node.move))
       if (node.next === undefined || node.next === cur) {
-        out.push('(繰り返し)')
+        out.push('同じ技を繰り返す')
         break
       }
       cur = node.next
@@ -522,17 +522,17 @@ export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: s
     }
     if (node.random !== undefined) {
       const arms = node.random.map((a) => {
-        const flags = [a.noRepeat ? '連続不可' : '', a.once ? '1回' : '', a.maxRepeat !== undefined ? `${a.maxRepeat}連まで` : ''].filter(Boolean)
-        return `${labelOfNode(def, a.to, label)} ${a.weight}${flags.length > 0 ? `(${flags.join('・')})` : ''}`
+        const flags = [`出やすさ${a.weight}`, a.noRepeat ? '続けて出ない' : '', a.once ? '1回だけ' : '', a.maxRepeat !== undefined ? `${a.maxRepeat}回まで続く` : ''].filter(Boolean)
+        return `${labelOfNode(def, a.to, label)}（${flags.join('・')}）`
       })
-      out.push(`乱択{${arms.join('/')}}`)
+      out.push(`どちらか{${arms.join('／')}}`)
       // 乱択の先は各腕の技 (次は乱択へ戻るのが普通) = ここで止める
       break
     }
     if (node.if !== undefined) {
       const then = node.then !== undefined ? describeGraphFrom(def, node.then, label, new Set(seen), 4) : '?'
       const els = node.else !== undefined ? describeGraphFrom(def, node.else, label, new Set(seen), 4) : '?'
-      out.push(`(${condText(def, node.if, label)}? ${then} : ${els})`)
+      out.push(`(${condText(def, node.if, label)}なら ${then}、そうでなければ ${els})`)
       break
     }
     break
@@ -544,13 +544,13 @@ function labelOfNode(def: EnemyDef, nodeId: string, label: (moveId: string) => s
   const n = def.nodes[nodeId]
   if (!n) return nodeId
   if (n.move !== undefined) return label(n.move)
-  if (n.random !== undefined) return '乱択'
-  return '条件'
+  if (n.random !== undefined) return 'どちらか'
+  return '判定'
 }
 
 const TRIGGER_TEXT: Record<EnemyInterrupt['on'], string> = {
-  hpBelowHalf: 'HP半分で',
-  damageTaken: '累計被弾で',
+  hpBelowHalf: 'HPが半分以下になると',
+  damageTaken: '累計ダメージを受けると',
   allyDied: '仲間が倒れると',
   alone: '仲間が全滅すると',
 }
@@ -559,15 +559,15 @@ const TRIGGER_TEXT: Record<EnemyInterrupt['on'], string> = {
 export function describeGraph(def: EnemyDef, label?: (moveId: string) => string): string[] {
   const lines = [describeGraphFrom(def, def.start, label)]
   for (const it of def.interrupts ?? []) {
-    const trig = it.on === 'damageTaken' ? `累計${it.amount ?? 0}被弾で` : TRIGGER_TEXT[it.on]
-    lines.push(`${trig}→${describeGraphFrom(def, it.goto, label)}`)
+    const trig = it.on === 'damageTaken' ? `累計${it.amount ?? 0}ダメージを受けると` : TRIGGER_TEXT[it.on]
+    lines.push(`${trig}: ${describeGraphFrom(def, it.goto, label)}`)
   }
   return lines
 }
 
 /** 割り込みの引き金の文言 (UI チップ・CLI タグ) */
 export function interruptTriggerText(it: EnemyInterrupt): string {
-  return it.on === 'damageTaken' ? `累計${it.amount ?? 0}ダメで` : TRIGGER_TEXT[it.on]
+  return it.on === 'damageTaken' ? `累計${it.amount ?? 0}ダメージを受けると` : TRIGGER_TEXT[it.on]
 }
 
 /** 眠り (被弾で目覚める割り込み) の残り: カーソルが from にいて未発火なら、その割り込み */
