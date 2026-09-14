@@ -798,7 +798,7 @@ namespace DeckRogue.Engine
                     if ((e.Effect != "dealDamage" && e.Effect != "counter") || !e.Amount.HasValue) continue;
                     int live = PlayerDamageAfterModifiers(state, e.Amount.Value);
                     // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3)
-                    var bd = enemyIndex.HasValue ? DamageBreakdownOf(state, enemyIndex.Value, e.Amount.Value, e.Pierce == true) : null;
+                    var bd = enemyIndex.HasValue ? DamageBreakdownOf(state, enemyIndex.Value, e.Amount.Value, e.Pierce == true, true, false) : null; // 勢いはリアクションに乗らない (2026-09-14 Opus AB3)
                     if (bd != null) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live + "→HP減" + bd.HpLoss);
                     else if (live != e.Amount.Value) vals.Add((e.Effect == "counter" ? "返し" : "ダメ") + live);
                 }
@@ -823,7 +823,8 @@ namespace DeckRogue.Engine
             int enemyIndex,
             int baseAmount,
             bool pierce = false,
-            bool applyExpose = true)
+            bool applyExpose = true,
+            bool withMomentum = true)
         {
             var enemy = EnemyAt(state, enemyIndex);
             if (enemy == null || enemy.Hp <= 0) return null;
@@ -835,8 +836,8 @@ namespace DeckRogue.Engine
                 amount += p.Growth;
                 steps.Add(new DamageBreakdownStep { Label = $"成長+{p.Growth}", Value = amount });
             }
-            // 手札のホバー = カードのプレイの見積り。勢いはカードプレイのダメージだけに乗る (2026-09-05)
-            if (p.Momentum > 0)
+            // 手札のホバー = カードのプレイの見積り。勢いはカードプレイのダメージだけに乗る (2026-09-05)。リアクションの見積りは withMomentum=false
+            if (withMomentum && p.Momentum > 0)
             {
                 amount += p.Momentum;
                 steps.Add(new DamageBreakdownStep { Label = $"勢い+{p.Momentum}", Value = amount });

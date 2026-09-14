@@ -706,7 +706,8 @@ export function setCardLiveDamage(state: GameState, def: CardDef, enemyIndex?: n
     if ((e.effect !== 'dealDamage' && e.effect !== 'counter') || e.amount === undefined) continue
     const live = playerDamageAfterModifiers(state, e.amount)
     // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3: 「返し10」が実際は15)
-    const bd = enemyIndex !== undefined ? damageBreakdown(state, enemyIndex, e.amount, e.pierce === true) : null
+    // 勢いはリアクションには乗らない (2026-09-05 裁定) = 内訳も勢い抜きで辿る (2026-09-14 Opus AB3: 疾風の王で持ち越した勢い7が「HP減27」に足されていた)
+    const bd = enemyIndex !== undefined ? damageBreakdown(state, enemyIndex, e.amount, e.pierce === true, true, false) : null
     if (bd) vals.push(`${e.effect === 'counter' ? '返し' : 'ダメ'}${live}→HP減${bd.hpLoss}`)
     else if (live !== e.amount) vals.push(`${e.effect === 'counter' ? '返し' : 'ダメ'}${live}`)
   }
@@ -737,6 +738,7 @@ export function damageBreakdown(
   baseAmount: number,
   pierce = false,
   applyExpose = true,
+  withMomentum = true,
 ): DamageBreakdown | null {
   const enemy = state.enemies[enemyIndex]
   if (!enemy || enemy.hp <= 0) return null
@@ -747,8 +749,9 @@ export function damageBreakdown(
     amount += p.growth
     steps.push({ label: `成長+${p.growth}`, value: amount })
   }
-  // 手札のホバー = カードのプレイの見積り。勢いはカードプレイのダメージだけに乗る (置物・リアクションには乗らない 2026-09-05)
-  if (p.momentum > 0) {
+  // 手札のホバー = カードのプレイの見積り。勢いはカードプレイのダメージだけに乗る (置物・リアクションには乗らない 2026-09-05)。
+  // リアクション (伏せ札) の見積りは withMomentum=false で呼ぶ
+  if (withMomentum && p.momentum > 0) {
     amount += p.momentum
     steps.push({ label: `勢い+${p.momentum}`, value: amount })
   }

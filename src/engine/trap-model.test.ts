@@ -3,7 +3,7 @@
 // 回収は廃止。敵は伏せを見ない (残るのは罠壊し・道化の破壊分岐だけ)。数値は据え置きで発火に「形」を足す。
 import { describe, expect, it } from 'vitest'
 import { allEnemies, applyDebugOverrides, clearDebugOverrides, getCardDef, getEnemyDef } from './content.ts'
-import { effectiveIntent, isTrapLive, trapAge, trapStatusText, trapWindowsLeft } from './effects.ts'
+import { effectiveIntent, isTrapLive, setCardLiveDamage, trapAge, trapStatusText, trapWindowsLeft } from './effects.ts'
 import { applyCommand } from './state.ts'
 import {
   attackIntent,
@@ -429,5 +429,17 @@ describe('発火の形 (数値据え置き・副次効果を1つ)', () => {
     const leaked = attackAndFire(arm(), 15)
     expect(leaked.player.hp).toBe(leaked.player.maxHp - 5)
     expect(leaked.enemies[0].intent?.kind).not.toBe('rest')
+  })
+})
+
+describe('伏せ札の実値表示 (2026-09-14 Opus AB3「先制の蔦槍 ダメ20→HP減27」= 持ち越した勢いが足されていた)', () => {
+  it('確認ウィンドウの HP減 は勢いを足さない (リアクションに勢いは乗らない裁定と同じ式)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_reaction_preempt'])
+    s = { ...s, player: { ...s.player, momentum: 7, growth: 0 }, enemies: s.enemies.map((e) => ({ ...e, block: 0, exposed: 0 })) }
+    const def = getCardDef('green_reaction_preempt')
+    const text = setCardLiveDamage(s, def, 0)
+    // 先制の蔦槍 16貫通: 勢い7を足すと 23 になるが、鳴る時の実処理は 16
+    expect(text ?? '').not.toContain('23')
+    expect(text ?? '').toContain('16')
   })
 })
