@@ -34,7 +34,8 @@ namespace DeckRogue.Game
                     removing ? "デッキから1枚を永久に取り除く" : "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
                 RectTransform preview = removing ? null : CampfireScreen.ForgePreviewArea(root);
                 var area = UiKit.NewRect("svc", root);
-                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + (removing ? 0f : CampfireScreen.ForgePreviewH))));
+                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(removing ? -24f : -460f, -(RunUi.TopH + 100f)));   // 並びは右の列 (2026-09-14)
+                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + (removing ? 0f : CampfireScreen.ForgePreviewH))));
                 UiKit.Vert(area, 0, 0);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return removing ? "除去" : (Upgrade.CanUpgradeCard(c) ? "鍛える" : null); },
@@ -49,11 +50,11 @@ namespace DeckRogue.Game
                     },
                     removing ? 500f : 400f);
                 if (!removing) { CampfireScreen.AttachUpgradeTips(area, run.Deck); CampfireScreen.AttachForgePreview(g, area, run.Deck, preview); }
-                RunUi.BottomButton(root, "戻る", delegate { g.ShopMode = null; g.Rebuild(); }, 18, 220f, 50f);
+                RunUi.BottomButton(root, "戻る", delegate { g.ShopMode = null; g.Rebuild(); }, 18, 220f, 50f, UiKit.Phone && !removing ? BattleScreen.CanvasSize(root).x / 2f - 232f : 0f, UiKit.Phone ? 24f : 40f);
                 return;
             }
 
-            RunUi.Heading(root, "ショップ", "カードをクリックで購入。所持金 " + run.Gold + "G");
+            RunUi.Heading(root, "ショップ", (UiKit.Phone ? "カードをタップで購入。所持金 " : "カードをクリックで購入。所持金 ") + run.Gold + "G", RunUi.TopH + 24f, UiKit.Phone ? 440f : 0f);
             float shelfTop = RunUi.SceneWindow(root, "shop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があれば棚をその下へ
 
             // 棚 (カード)
@@ -104,16 +105,19 @@ namespace DeckRogue.Game
 
             // レリック + サービス (右列)
             var side = UiKit.Frame(root, Theme.Panel, Color.white, "services", 3f);
-            UiKit.Anchor(side.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-420f, 120f), new Vector2(-40f, -(RunUi.TopH + 100f)));
-            var sv = UiKit.Vert(side.transform, 14, 20);
+            // スマホは上下いっぱいに使い、余白を詰める (高さ 675 では 250 のレリック札と 2 つのサービスが入らなかった。2026-09-14)
+            bool ph = UiKit.Phone;
+            UiKit.Anchor(side.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-420f, ph ? 100f : 120f), new Vector2(-40f, -(RunUi.TopH + (ph ? 12f : 100f))));
+            var sv = UiKit.Vert(side.transform, ph ? 8 : 14, ph ? 12 : 20);
             sv.childForceExpandHeight = false;
             UiKit.Head(side.transform, "店主のサービス", 20);
             if (shop.RelicId != null)
             {
                 RelicDef rd = null;
                 try { rd = Content.GetRelicDef(shop.RelicId); } catch (Exception) { }
-                var rp = RewardScreen.RelicPanel(side.transform, rd, shop.RelicId, 340f, 250f);
-                UiKit.Le(rp, 340f, 250f, 340f, 250f);
+                float rh = 250f;
+                var rp = RewardScreen.RelicPanel(side.transform, rd, shop.RelicId, 340f, rh);
+                UiKit.Le(rp, 340f, rh, 340f, rh);
                 bool canRelic = run.Gold >= shop.RelicPrice;
                 var rb = UiKit.Btn(rp, shop.RelicPrice + "G で買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyRelic()); }, 16, canRelic, UiKit.Hex("#f0d58a"));
                 var rle = rb.GetComponent<LayoutElement>();
@@ -127,10 +131,13 @@ namespace DeckRogue.Game
             }
             ServiceBtn(side.transform, "カード除去  " + rmPrice + "G", run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); });
             ServiceBtn(side.transform, "鍛える  " + upPrice + "G", run.Gold >= upPrice, delegate { g.ShopMode = "upgrade"; g.Rebuild(); });
-            var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
-            UiKit.Le(note, -1f, 24f, -1f, 24f);
+            if (!ph)
+            {
+                var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                UiKit.Le(note, -1f, 24f, -1f, 24f);
+            }
 
-            RunUi.BottomButton(root, "店を出る", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, -100f);
+            RunUi.BottomButton(root, "店を出る", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, ph ? -300f : -100f, ph ? 24f : 40f);
         }
 
         static void ServiceBtn(Transform parent, string label, bool enabled, Action onClick)

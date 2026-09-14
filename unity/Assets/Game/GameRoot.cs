@@ -91,6 +91,8 @@ namespace DeckRogue.Game
         public bool ViewDeck;
         /// <summary>マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」): 上部バーの「マップ」で、どの画面の上にも読み取り専用の地図を重ねる</summary>
         public bool ViewMap;
+        /// <summary>スマホの「≡」メニューを開いているか (2026-09-14)</summary>
+        public bool MenuOpen;
         /// <summary>マップへの落書き (2026-09-12。StS2 の移植): 幕ごとの線の列。ランの間保持し、新しいランで白紙。UI 層の状態でエンジンには無い</summary>
         public Dictionary<int, List<DoodleStroke>> Doodles = new Dictionary<int, List<DoodleStroke>>();
         public bool DoodleMode;      // ペンボタンが押されている (左ドラッグ・指でも描ける)
@@ -146,7 +148,10 @@ namespace DeckRogue.Game
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             // 基準 1920×1080 (本家と同じ。2026-09-07 裁定)。スマホは 1.3倍 (2026-09-09 ユーザー裁定「スマホだけ 1.3倍」):
             // 高さ 831 を基準に全体を大きく描き、横長端末の余りは横に逃がす (S25 2340×1080 → 1800×831 のキャンバス)。PC で確かめる時は -uiscale 1.3
-            float ui = Application.isMobilePlatform ? 1.3f : UiScaleArg();
+            // スマホは 1.6倍 (2026-09-14 ユーザー「字が小さい・アイコンも枠も小さい」→ 1.3倍から引き上げ。旧: 2026-09-09 裁定の 1.3倍)。
+            // 1.6倍のキャンバスは 1200×675 (16:9) / 1462×675 (S25)。戦闘の絵は半分 (1ドット=2px) にして吹き出しが画面に収まる
+            float ui = Application.isMobilePlatform ? 1.6f : UiScaleArg();
+            UiKit.Phone = ui > 1.001f;
             if (ui > 1.001f)
             {
                 scaler.referenceResolution = new Vector2(1920f / ui, 1080f / ui);
@@ -239,6 +244,7 @@ namespace DeckRogue.Game
             ViewMap = false;
             SubMode = null;
             Feedback.MemoOpen = false;
+            MenuOpen = false;
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             int prevAct = _lastAct;
             if (Rs != null) _lastAct = Rs.Act;
@@ -464,6 +470,11 @@ namespace DeckRogue.Game
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
         }
 
+        void Update()
+        {
+            if (UiKit.Phone) Tooltip.Tick();   // タップで開いた説明を、外を触ったら閉じる (2026-09-14)
+        }
+
         // ---- 落ちても失わない (2026-09-14): バックグラウンドへ回る/終了する時に自動保存 ----
 
         void OnApplicationPause(bool pause)
@@ -530,11 +541,12 @@ namespace DeckRogue.Game
                 var over = Battle != null && Battle.UiLayer != null ? Battle.UiLayer : ScreenRoot;
                 if (ViewMap) MapScreen.Overlay(this, over);
                 if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, over);
+                if (MenuOpen) RunUi.Menu(this, over);
                 return;
             }
             // タイトルとマップも新画面 (M3)
             if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); return; }
-            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); return; }
             if (Content.IsLoaded)
             {
                 bool built = true;
@@ -558,6 +570,7 @@ namespace DeckRogue.Game
                     else if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
                     if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);   // 戦闘直後の評価 (1回だけ聞く)
                     if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot);
+                    if (MenuOpen) RunUi.Menu(this, ScreenRoot);
                     return;
                 }
             }

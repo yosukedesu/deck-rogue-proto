@@ -337,6 +337,7 @@ namespace DeckRogue.Game
             if (Get("viewmap") == "1") g.ViewMap = true;
             if (Get("viewdeck") == "1") g.ViewDeck = true;
             if (Get("log") == "1") g.ShowLog = true;
+            if (Get("menu") == "1") g.MenuOpen = true;   // スマホの ≡ (2026-09-14)
             // フィードバックの画面 (2026-09-14): rating=won|lost で評価ダイアログ (最後の戦闘を仮に積む)、memo=1 でメモの窓
             if (Get("rating") != null && g.Rs != null)
             {
@@ -347,6 +348,28 @@ namespace DeckRogue.Game
             if (Get("memo") == "1") { Feedback.MemoOpen = true; Feedback.MemoDraft = Get("memotext") ?? ""; }
             g.Rebuild();
             yield return WaitPresentation();
+            // 配置の確認 (スマホ倍率の調整用): 絵の枠の大きさと足元の高さ
+            if (g.Battle != null && g.Rs != null && g.Rs.Combat != null)
+            {
+                var sbd = new System.Text.StringBuilder("[Autopilot] layout canvas=" + BattleScreen.CanvasSize(g.ScreenRoot) + " statusLine=" + BattleView.StatusLineY);
+                for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) { var sp = g.Battle.EnemySprite(i); if (sp != null) sbd.Append(" enemy" + i + "=" + sp.rect.size + "@" + sp.offsetMin + " feet=" + Stage.FeetOffset("enemy" + i, -1f)); }
+                var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
+                Debug.Log(sbd.ToString());
+            }
+            // tip=enemy: 敵をタップした説明パネル (スマホ) / popup=N: 手札 N 枚目の長押しポップアップ
+            if (Get("tip") == "enemy" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
+            {
+                var pan = g.Anchor("enemy0");
+                var body = BattleScreen.EnemyTip(g, 0);
+                if (pan != null && body != null) Tooltip.ShowPinned(body, pan.gameObject);
+                yield return null;
+            }
+            int popupIdx;
+            if (int.TryParse(Get("popup") ?? "", out popupIdx) && g.Rs != null && g.Rs.Combat != null && popupIdx < g.Rs.Combat.Player.Hand.Count)
+            {
+                CardPopup.Open(g, g.Rs.Combat.Player.Hand[popupIdx], g.Rs.Combat);
+                yield return null;
+            }
             yield return Shot(Get("name") ?? ("state-" + phase), 10);
             // closemap=1: 重ねた地図を「閉じる」と同じ手順で閉じてもう1枚 (2026-09-14 戦闘中に閉じない不具合の確認)
             if (Get("closemap") == "1")

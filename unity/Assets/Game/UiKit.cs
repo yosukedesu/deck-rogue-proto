@@ -26,7 +26,10 @@ namespace DeckRogue.Game
         /// <summary>紙の上に置く朱の文字 (ColBad は塗り用。紙の上では 3.6:1)</summary>
         public static readonly Color ColBadInk = Hex("#9c3a2a");
         /// <summary>文字の最小サイズ (1920×1080 基準)。これ未満は Txt が切り上げる (9〜11px の注記が読めなかった)</summary>
-        public const int MinFontSize = 13;
+        /// <summary>スマホ向けの画面 (2026-09-14 ユーザー「スマホ最適化するべき」): UI 1.6倍・戦闘の絵は半分・説明文はタップで上部の固定パネル。PC では -uiscale で再現する</summary>
+        public static bool Phone;
+        /// <summary>文字の最小サイズ (1920×1080 基準の単位)。スマホは 15 (1.6倍で 24px ≒ 読める下限)</summary>
+        public static int MinFontSize { get { return Phone ? 15 : 13; } }
         public static readonly Color ColAccent = Hex("#8fae7b");
         public static readonly Color ColHp = Hex("#d97b7b");
         public static readonly Color ColBlock = Hex("#7fa7c9");
@@ -193,7 +196,8 @@ namespace DeckRogue.Game
             if (onClick != null) btn.onClick.AddListener(delegate { onClick(); });
             var t = Txt(rt, label, size, ColInk, TextAnchor.MiddleCenter, true);
             Stretch(t.rectTransform, 8f, 8f, 2f, 6f);
-            Le(rt, -1f, size + 16f, -1f, size + 16f);
+            float h = Phone ? Math.Max(size + 16f, 48f) : size + 16f;   // スマホは指で押せる高さ (48 単位 ≒ 4mm。2026-09-14)
+            Le(rt, -1f, h, -1f, h);
             return btn;
         }
 

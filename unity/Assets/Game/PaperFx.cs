@@ -463,10 +463,18 @@ namespace DeckRogue.Game
             return Math.Max(1, Mathf.RoundToInt(target / w));
         }
 
+        /// <summary>絵の倍率。PC は整数倍 (1ドット=4px)、スマホは半分の目安をそのまま (96 ドットの絵が 1倍に落ちて豆粒になるのを避ける。画面の px 自体が 1.31倍なので整数の意味は薄い。2026-09-14)</summary>
+        public static float PixelScaleF(Sprite s, float target = 256f)
+        {
+            if (s == null) return 1f;
+            if (UiKit.Phone) return Mathf.Max(0.5f, target / s.rect.width);
+            return PixelScale(s, target);
+        }
+
         /// <summary>rt を絵の整数倍の寸法にする (足元 bottom を保ち、中心 cx に置く)</summary>
         public static void FitPixel(RectTransform rt, Sprite s, float cx, float bottom, float target = 256f)
         {
-            int k = PixelScale(s, target);
+            float k = PixelScaleF(s, target);
             float w = s.rect.width * k, h = s.rect.height * k;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f);
             rt.offsetMin = new Vector2(cx - w / 2f, bottom);

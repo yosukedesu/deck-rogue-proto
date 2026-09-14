@@ -23,7 +23,8 @@ namespace DeckRogue.Game
         public const float Pitch = 12f;                         // 見下ろし。上端の視線は水平より 6° 上 = 空の帯に月と坑口の櫓が入る (16° では帯が 2° で遠景が山に隠れた)
         const float PathYaw = -22f;                     // 道の向き (手前左 → 奥右)。隊列もこの線に沿う
         const float PlaneUnitsPerScreen = 10.8f;        // 基準深度で画面の高さ = 10.8 units
-        const float GroundLineRatio = 0.45f;            // 画面の下から何割に world 原点を置くか
+        // 画面の下から何割に world 原点を置くか。スマホ (2026-09-14) は手札が画面の 43% を占めるので座席を上げる (絵は半分なので上端は余る)
+        static float GroundLineRatio { get { return UiKit.Phone ? 0.56f : 0.45f; } }
         const float Tile = 1.28f;                        // 32ドットのタイル1枚 = 1.28 units (基準深度で 4px/ドット)
         static readonly Color ShadowColor = new Color(0.02f, 0.02f, 0.08f, 0.92f);   // 接地影: 地面より暗く青寄り。幅0.8・高さ0.35・足元中心・地面とスプライトの間
 

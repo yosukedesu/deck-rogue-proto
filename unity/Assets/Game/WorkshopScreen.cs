@@ -16,7 +16,7 @@ namespace DeckRogue.Game
             var run = g.Rs;
             RewardScreen.Backdrop(g, root, "工房");
             int price = DeckRogue.Engine.Run.WorkshopFusePrice(run);
-            RunUi.Heading(root, "工房", "同じ色のカード2枚を1枚に溶かす (" + price + "G)。素材は消え、合成札が入る");
+            RunUi.Heading(root, "工房", "同じ色のカード2枚を1枚に溶かす (" + price + "G)。素材は消え、合成札が入る", RunUi.TopH + 24f, UiKit.Phone ? 520f : 0f);
 
             var marked = new List<int>();
             if (g.WorkshopA >= 0) marked.Add(g.WorkshopA);
@@ -47,8 +47,9 @@ namespace DeckRogue.Game
             }
 
             float deckTop = RunUi.SceneWindow(root, "workshop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があればデッキをその下へ
+            bool ph = UiKit.Phone;   // スマホ (2026-09-14): 右パネルを上下いっぱいに、素材の枠と結果を小さく
             var area = UiKit.NewRect("deck", root);
-            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, 40f), new Vector2(-520f, -deckTop));
+            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, ph ? 16f : 40f), new Vector2(-520f, -deckTop));
             UiKit.Vert(area, 0, 0);
             RunUi.CardGrid(g, area, run.Deck,
                 delegate (int i, CardInstance c) { return marked.Contains(i) ? "外す" : "選ぶ"; },
@@ -67,18 +68,22 @@ namespace DeckRogue.Game
 
             // 右の追従パネル
             var side = UiKit.Frame(root, Theme.Panel, Color.white, "fuse", 3f);
-            UiKit.Anchor(side.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-500f, 40f), new Vector2(-40f, -(RunUi.TopH + 20f)));
+            UiKit.Anchor(side.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-500f, ph ? 16f : 40f), new Vector2(-40f, -(RunUi.TopH + (ph ? 8f : 20f))));
             var srt = side.rectTransform;
+            float slotScale = ph ? 0.5f : 0.62f;
+            float slotCy = ph ? -108f : -170f;          // 素材の枠の中心 (上端基準)
+            float arrowY = ph ? -196f : -300f;          // 「▼ 合成結果」の上端
+            float resultY = ph ? -232f : -340f;         // 結果の札の上端
 
             CardInstance a = (g.WorkshopA >= 0 && g.WorkshopA < run.Deck.Count) ? run.Deck[g.WorkshopA] : null;
             CardInstance b = (g.WorkshopB >= 0 && g.WorkshopB < run.Deck.Count) ? run.Deck[g.WorkshopB] : null;
 
             var ht = UiKit.Txt(srt, "素材", 18, UiKit.ColInk, TextAnchor.MiddleLeft, true);
-            UiKit.Anchor(ht.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -46f), new Vector2(-20f, -16f));
-            Slot(g, srt, a, "A", new Vector2(-105f, -170f), delegate { g.WorkshopA = -1; g.Rebuild(); });
-            Slot(g, srt, b, "B", new Vector2(105f, -170f), delegate { g.WorkshopB = -1; g.Rebuild(); });
+            UiKit.Anchor(ht.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, ph ? -36f : -46f), new Vector2(-20f, ph ? -8f : -16f));
+            Slot(g, srt, a, "A", new Vector2(-105f, slotCy), delegate { g.WorkshopA = -1; g.Rebuild(); }, slotScale);
+            Slot(g, srt, b, "B", new Vector2(105f, slotCy), delegate { g.WorkshopB = -1; g.Rebuild(); }, slotScale);
             var plus = UiKit.Txt(srt, "+", 40, UiKit.ColInkSoft, TextAnchor.MiddleCenter, true);
-            UiKit.Anchor(plus.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-20f, -195f), new Vector2(20f, -145f));
+            UiKit.Anchor(plus.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-20f, slotCy - 25f), new Vector2(20f, slotCy + 25f));
 
             string blocked = null;
             CardDef fused = null;
@@ -99,28 +104,28 @@ namespace DeckRogue.Game
             }
 
             var arrow = UiKit.Txt(srt, "▼ 合成結果", 16, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
-            UiKit.Anchor(arrow.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -330f), new Vector2(0f, -300f));
+            UiKit.Anchor(arrow.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, arrowY - 30f), new Vector2(0f, arrowY));
 
             if (fused != null)
             {
                 // 結果の札はパネルの高さに合わせて縮める (スマホの 831 高では 1.1倍だと合成ボタンに隠れた。2026-09-09)
                 float rootH = root.rect.height > 0f ? root.rect.height : 1080f;
-                float panelH = rootH - 40f - (RunUi.TopH + 20f);
-                float rs = Mathf.Clamp((panelH - 340f - 156f) / CardView.H, 0.7f, 1.1f);
+                float panelH = rootH - (ph ? 16f : 40f) - (RunUi.TopH + (ph ? 8f : 20f));
+                float rs = Mathf.Clamp((panelH + resultY - 156f - (ph ? 0f : 0f)) / CardView.H, ph ? 0.5f : 0.7f, 1.1f);
                 var cell = UiKit.NewRect("result", srt);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 1f);
                 cell.sizeDelta = new Vector2(CardView.W * rs, CardView.H * rs);
-                cell.anchoredPosition = new Vector2(0f, -340f - CardView.H * rs * 0.5f);
+                cell.anchoredPosition = new Vector2(0f, resultY - CardView.H * rs * 0.5f);
                 var ci = new CardInstance { Uid = "fused", Def = fused };
                 var cv = CardView.Build(cell, ci, null, true, true, "fused-card");
                 cv.localScale = Vector3.one * rs;
                 CardPopup.Attach(g, cv, ci, null, true);
                 Tween.Punch(cell, 0.08f, 0.5f);
-                if (notes.Count > 0)
+                if (notes.Count > 0 && !ph)   // スマホは注記を置く高さが無い (結果の札を長押しすれば本文が読める)
                 {
                     var nt = UiKit.Txt(srt, "注記: " + string.Join(" / ", notes.ToArray()), 12, UiKit.ColInkSoft, TextAnchor.UpperLeft);
                     nt.textWrappingMode = TextWrappingModes.Normal;
-                    UiKit.Anchor(nt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -340f - CardView.H * rs - 70f), new Vector2(-20f, -340f - CardView.H * rs - 6f));
+                    UiKit.Anchor(nt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, resultY - CardView.H * rs - 70f), new Vector2(-20f, resultY - CardView.H * rs - 6f));
                 }
             }
             else
@@ -130,7 +135,7 @@ namespace DeckRogue.Game
                     : (pairs.Count > 0 && a == null ? "デッキから2枚選ぶ（★の札はレシピの素材）" : "デッキから2枚選ぶ");
                 var msg = UiKit.Txt(srt, guide, 16, blocked != null ? UiKit.ColBadInk : partnerNames.Count > 0 ? UiKit.Hex("#7a4e12") : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 msg.textWrappingMode = TextWrappingModes.Normal;
-                UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -440f), new Vector2(-20f, -340f));
+                UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, resultY - 100f), new Vector2(-20f, resultY));
             }
 
             int ia = g.WorkshopA, ib = g.WorkshopB;
@@ -138,16 +143,16 @@ namespace DeckRogue.Game
             var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Ui("fuse"); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, UiKit.Hex("#f0d58a"));
             var fle = fuse.GetComponent<LayoutElement>();
             if (fle != null) UnityEngine.Object.Destroy(fle);
-            UiKit.Anchor(fuse.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, 80f), new Vector2(-20f, 136f));
+            UiKit.Anchor(fuse.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, ph ? 70f : 80f), new Vector2(-20f, ph ? 122f : 136f));
             var skip = UiKit.Btn(srt, "見送る", delegate { g.Do(new RunCommand_WorkshopSkip()); }, 16);
             var sle = skip.GetComponent<LayoutElement>();
             if (sle != null) UnityEngine.Object.Destroy(sle);
-            UiKit.Anchor(skip.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, 24f), new Vector2(-20f, 68f));
+            UiKit.Anchor(skip.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, ph ? 16f : 24f), new Vector2(-20f, ph ? 60f : 68f));
         }
 
-        static void Slot(GameRoot g, RectTransform parent, CardInstance c, string label, Vector2 pos, Action onClear)
+        static void Slot(GameRoot g, RectTransform parent, CardInstance c, string label, Vector2 pos, Action onClear, float scale = 0.62f)
         {
-            float w = CardView.W * 0.62f, h = CardView.H * 0.62f;
+            float w = CardView.W * scale, h = CardView.H * scale;
             var cell = UiKit.NewRect("slot" + label, parent);
             cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 1f);
             cell.sizeDelta = new Vector2(w, h);
@@ -162,7 +167,7 @@ namespace DeckRogue.Game
             }
             var cv = CardView.Build(cell, c, null, true, true, "slot-card");
             CardPopup.Attach(g, cv, c, null, true);
-            cv.localScale = Vector3.one * 0.62f;
+            cv.localScale = Vector3.one * scale;
             var x = UiKit.Btn(cell, "×", delegate { Audio.Ui("click"); onClear(); }, 14, true, UiKit.Hex("#8a5a5a"));
             var le = x.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);

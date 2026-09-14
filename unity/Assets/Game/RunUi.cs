@@ -58,16 +58,26 @@ namespace DeckRogue.Game
             UiKit.Le(gt, -1f, 30f, -1f, 30f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 30f, -1f, 30f);
-            if (run.Phase != RunPhases.Map)
-            {   // マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」)
-                var mapBtn = UiKit.Btn(bar, "マップ", delegate { g.ViewMap = !g.ViewMap; g.ViewDeck = false; g.Rebuild(); }, 13);
-                BattleScreen.SetSize(mapBtn, 84f, 36f);
+            if (UiKit.Phone)
+            {   // スマホ: デッキ以外は「≡」に畳む (2026-09-14)
+                var deckBtnP = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
+                BattleScreen.SetSize(deckBtnP, 110f, 40f);
+                MenuButton(g, bar);
             }
-            var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
-            BattleScreen.SetSize(deckBtn, 110f, 36f);
-            FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
+            else
+            {
+                if (run.Phase != RunPhases.Map)
+                {   // マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」)
+                    var mapBtn = UiKit.Btn(bar, "マップ", delegate { g.ViewMap = !g.ViewMap; g.ViewDeck = false; g.Rebuild(); }, 13);
+                    BattleScreen.SetSize(mapBtn, 84f, 36f);
+                }
+                var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
+                BattleScreen.SetSize(deckBtn, 110f, 36f);
+                FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
+            }
 
-            for (int i = 0; i < run.Relics.Count && i < 10; i++)
+            int relicMax = UiKit.Phone ? 6 : 10;
+            for (int i = 0; i < run.Relics.Count && i < relicMax; i++)
             {
                 RelicDef rd = null;
                 try { rd = Content.GetRelicDef(run.Relics[i]); } catch (Exception) { }
@@ -78,6 +88,42 @@ namespace DeckRogue.Game
                 RelicArt(cell, run.Relics[i], 20f);
                 var tip = rd != null ? "<b>" + rd.Name + "</b>\n" + rd.Description : run.Relics[i];
                 Tooltip.Attach(cell.gameObject, delegate { return tip; });
+            }
+        }
+
+        /// <summary>スマホの「≡」(2026-09-14): 上部バーの右端。押すと Menu が画面の右上に開く</summary>
+        public static void MenuButton(GameRoot g, Transform bar)
+        {
+            var b = UiKit.Btn(bar, g.MenuOpen ? "×" : "≡", delegate { g.MenuOpen = !g.MenuOpen; g.Rebuild(); }, 22, true, g.MenuOpen ? UiKit.Hex("#f0d58a") : (Color?)null);
+            BattleScreen.SetSize(b, 56f, 44f);
+        }
+
+        /// <summary>スマホのメニュー (≡ の中身): マップ・ログ (戦闘)・メモ・レポート。外側を触ると閉じる</summary>
+        public static void Menu(GameRoot g, RectTransform root)
+        {
+            var catcher = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.25f), "menu-catcher");
+            UiKit.Stretch(catcher.rectTransform, 0f, 0f, 0f, 0f);
+            var cb = catcher.gameObject.AddComponent<Button>();
+            cb.transition = Selectable.Transition.None;
+            cb.onClick.AddListener(delegate { g.MenuOpen = false; g.Rebuild(); });
+            bool combat = g.Rs != null && g.Rs.Phase == RunPhases.Combat;
+            var items = new List<KeyValuePair<string, Action>>();
+            if (g.Rs != null && g.Rs.Phase != RunPhases.Map) items.Add(new KeyValuePair<string, Action>("マップを見る", delegate { g.MenuOpen = false; g.ViewMap = true; g.ViewDeck = false; g.Rebuild(); }));
+            if (combat) items.Add(new KeyValuePair<string, Action>(g.ShowLog ? "ログを閉じる" : "戦闘ログ", delegate { g.MenuOpen = false; g.ShowLog = !g.ShowLog; g.Rebuild(); }));
+            items.Add(new KeyValuePair<string, Action>(Feedback.Notes.Count > 0 ? "メモを書く（" + Feedback.Notes.Count + "件）" : "メモを書く", delegate { g.MenuOpen = false; Feedback.MemoOpen = true; g.Rebuild(); }));
+            items.Add(new KeyValuePair<string, Action>("レポートを書き出す", delegate { g.MenuOpen = false; FeedbackUi.ExportNow(g); }));
+            float w = 360f, itemH = 56f, pad = 14f;
+            float h = pad * 2f + items.Count * (itemH + 8f) - 8f;
+            var pan = UiKit.Frame(root, Theme.Panel, Color.white, "menu", 3f);
+            UiKit.Anchor(pan.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-w - 16f, -TopH - 8f - h), new Vector2(-16f, -TopH - 8f));
+            var inner = UiKit.NewRect("inner", pan.transform);
+            UiKit.Stretch(inner, pad, pad, pad, pad);
+            UiKit.Vert(inner, 8, 0);
+            for (int i = 0; i < items.Count; i++)
+            {
+                var act = items[i].Value;
+                var b = UiKit.Btn(inner, items[i].Key, delegate { act(); }, 18);
+                UiKit.Le(b, -1f, itemH, -1f, itemH);
             }
         }
 
@@ -213,6 +259,7 @@ namespace DeckRogue.Game
         public const float SceneBottom = TopH + 8f + 290f + 12f;
         public static bool SceneWindow(RectTransform root, string name)
         {
+            if (UiKit.Phone) return false;   // スマホは情景の窓を出さない (高さ 675 の 43% を食う。2026-09-14)
             var art = Theme.Art("scenes", name);
             if (art == null) return false;
             var cell = UiKit.NewRect("scene-" + name, root);
@@ -228,15 +275,16 @@ namespace DeckRogue.Game
         }
 
         /// <summary>画面の見出し (大きな題と小さな説明)</summary>
-        public static void Heading(RectTransform root, string title, string sub, float y = TopH + 24f)
+        public static void Heading(RectTransform root, string title, string sub, float y = TopH + 24f, float rightInset = 0f)
         {
             var t = UiKit.Deco(root, title, 36, UiKit.ColText, TextAnchor.MiddleCenter);
             t.outlineWidth = 0.2f; t.outlineColor = new Color(0f, 0f, 0f, 0.7f);
-            UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -y - 50f), new Vector2(0f, -y));
+            UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -y - 50f), new Vector2(-rightInset, -y));
             if (!string.IsNullOrEmpty(sub))
             {
                 var s = UiKit.Txt(root, sub, 17, UiKit.ColDim, TextAnchor.MiddleCenter);
-                UiKit.Anchor(s.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -y - 80f), new Vector2(0f, -y - 50f));
+                s.textWrappingMode = TextWrappingModes.Normal;
+                UiKit.Anchor(s.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -y - 80f), new Vector2(-rightInset - 24f, -y - 50f));
             }
         }
 

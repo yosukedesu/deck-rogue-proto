@@ -133,7 +133,7 @@ namespace DeckRogue.Game
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 var feet = Stage.ProjectFeet("enemy" + i, slots[i]);
-                float w = 330f, h = 720f;
+                float w = UiKit.Phone ? 220f : 330f, h = 720f;   // スマホは敵の間隔が狭い (キャンバスの高さで横の広がりも決まる) ので名前札・HPバーの幅を絞る
                 UiKit.Anchor(_enemyPanels[i], new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, StatusLineY), new Vector2(feet.x + w / 2f, StatusLineY + h));
                 Stage.SetFeetOffset("enemy" + i, feet.y - StatusLineY);
                 _enemyPanels[i].SetSiblingIndex(st.Enemies.Count - 1 - i);
@@ -187,8 +187,8 @@ namespace DeckRogue.Game
             Stage.SetKarakuriBox(st.Player.SetCards.Count, fired);
         }
 
-        /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上</summary>
-        public const float StatusLineY = 300f;
+        /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上。スマホは等倍の札の上端 (14+290) に合わせる</summary>
+        public static float StatusLineY { get { return UiKit.Phone ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 6f : 300f; } }
 
         /// <summary>手札 UI に残っている札の数 (自動操作の検証用)</summary>
         public int HandCount { get { return _hand.Count; } }
@@ -250,7 +250,9 @@ namespace DeckRogue.Game
         {
             var hand = st.Player.Hand;
             int n = hand.Count;
-            float spacing = n > 0 ? Mathf.Min(CardView.W * BattleScreen.CardScale + 12f, 1180f / n) : 0f;
+            // 扇の幅: スマホはエナジーの円盤とターン終了の間 (キャンバス幅 − 560) に収める (2026-09-14)
+            float handSpan = UiKit.Phone ? BattleScreen.CanvasSize(Root).x - 560f : 1180f;
+            float spacing = n > 0 ? Mathf.Min(CardView.W * BattleScreen.CardScale + 12f, handSpan / n) : 0f;
             float center = (n - 1) / 2f;
             float areaH = CardView.H * BattleScreen.CardScale + 40f;
             bool myTurn = st.Phase == CombatPhases.PlayerTurn;

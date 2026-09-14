@@ -16,8 +16,24 @@ namespace DeckRogue.Game
     public static class BattleScreen
     {
         public const float TopH = 72f;
-        public const float HandY = 30f;        // 手札の下端 (キャンバス下からの距離)
-        public const float CardScale = 0.92f;
+        /// <summary>手札の下端 (キャンバス下からの距離)。スマホは詰める</summary>
+        public static float HandY { get { return UiKit.Phone ? 14f : 30f; } }
+        /// <summary>手札の札の倍率。スマホは等倍 (2026-09-14「字が小さい」= 札の本文が最も読まれる文字)</summary>
+        public static float CardScale { get { return UiKit.Phone ? 1.0f : 0.92f; } }
+        /// <summary>戦闘の絵の目安の幅 (通常 256・エリート 320・ボス 384 = 1ドット4px)。スマホは半分 (1ドット2px) = 吹き出しが画面に収まる</summary>
+        public static float ArtScale { get { return UiKit.Phone ? 0.5f : 1f; } }
+        /// <summary>キャンバスの実寸 (スマホ 1.6倍なら 1200〜1462×675)。組み立て中に画面の上端 (上部バーの下) を知るため</summary>
+        public static Vector2 CanvasSize(RectTransform any)
+        {
+            // 最初のフレーム (Awake の組み立て) はキャンバスの矩形がまだ px のままなので、スケーラーの式で毎回求める (CanvasScaler.ScaleWithScreenSize と同じ計算)
+            var canvas = any != null ? any.GetComponentInParent<Canvas>() : null;
+            var scaler = canvas != null ? canvas.GetComponent<CanvasScaler>() : null;
+            if (scaler == null || Screen.width <= 0 || Screen.height <= 0) return new Vector2(1920f, 1080f);
+            float logW = Mathf.Log(Screen.width / scaler.referenceResolution.x, 2f);
+            float logH = Mathf.Log(Screen.height / scaler.referenceResolution.y, 2f);
+            float scale = Mathf.Pow(2f, Mathf.Lerp(logW, logH, scaler.matchWidthOrHeight));
+            return new Vector2(Screen.width / scale, Screen.height / scale);
+        }
 
         public static void Build(GameRoot g, RectTransform root)
         {
@@ -105,11 +121,15 @@ namespace DeckRogue.Game
                 var tip = rd != null ? "<b>" + rd.Name + "</b>\n" + rd.Description : run.Relics[i];
                 Tooltip.Attach(cell.gameObject, delegate { return tip; });
             }
-            var mapBtn = UiKit.Btn(bar, "マップ", delegate { g.ViewMap = !g.ViewMap; g.Rebuild(); }, 13);   // 戦闘中も地図を確かめられる (2026-09-12)
-            SetSize(mapBtn, 84f, 34f);
-            var logBtn = UiKit.Btn(bar, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 13);
-            SetSize(logBtn, g.ShowLog ? 130f : 84f, 34f);
-            FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
+            if (UiKit.Phone) RunUi.MenuButton(g, bar);   // スマホは「≡」に畳む (マップ・ログ・メモ・レポート。2026-09-14)
+            else
+            {
+                var mapBtn = UiKit.Btn(bar, "マップ", delegate { g.ViewMap = !g.ViewMap; g.Rebuild(); }, 13);   // 戦闘中も地図を確かめられる (2026-09-12)
+                SetSize(mapBtn, 84f, 34f);
+                var logBtn = UiKit.Btn(bar, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 13);
+                SetSize(logBtn, g.ShowLog ? 130f : 84f, 34f);
+                FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
+            }
 
             // エラー・通知は上部バーの下に (紙の札)
             string msg = g.Error != null ? "! " + g.Error : (g.Notice != null ? g.Notice : null);
@@ -192,11 +212,16 @@ namespace DeckRogue.Game
             // 密度はオクトラ相当 (1ドット=画面4px): 通常 64→256・エリート 80→320・ボス 96→384 がどれも4倍になる目安
             string nodeType = null;
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
-            float artTarget = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
-            var artSprite = Creature.Get("enemies", e.EnemyId, false, (int)(artTarget / 4f));
+            float artDots = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
+            var artSprite = Creature.Get("enemies", e.EnemyId, false, (int)(artDots / 4f));
+            float artTarget = artDots * ArtScale;   // スマホは半分 (2026-09-14)
             float feetY = Stage.FeetOffset("enemy" + index, 130f);
-            float spriteTop = feetY + artSprite.rect.height * PaperFx.PixelScale(artSprite, artTarget);
+            float spriteTop = feetY + artSprite.rect.height * PaperFx.PixelScaleF(artSprite, artTarget);
+            // 頭上の物 (状態の札・吹き出し・詳細) が上部バーの下に収まる上限 (入れ物の下端 = StatusLineY 基準)。
+            // 収まらなければ吹き出しを絵の上半身に重ねる (紙は不透明なので読める。2026-09-14 スマホで幕ボスの吹き出しが切れていた)
+            float ceiling = CanvasSize(pan).y - TopH - 6f - BattleView.StatusLineY;
 
+            float chipTop = spriteTop + 2f;   // 状態の札の下端 (吹き出しを下げた時はさらに下がる)
             // 意図 (頭上の紙の吹き出し)。条件付き意図は今の盤面で有効な側 (生きた罠があれば壊し側) を出す = 窓が嘘をつかない (2026-09-14)
             if (alive)
             {
@@ -207,14 +232,22 @@ namespace DeckRogue.Game
                 // ライダー (状態異常・筋力・盾) は数字の下に一段、大きめの札で出す (2026-09-14 ユーザー「ライダーが見えていない」)
                 bool hasRider = it != null && (it.Inflict != null || it.AlsoBuff.HasValue || it.AlsoDefend.HasValue || it.AlsoDestroySet == true);
                 float bubbleH = (hasIntentArt ? 68f : 54f) + (hasRider ? 40f : 0f);   // 意図の絵 (32 ドット×2=64) が入る高さ (2026-09-11)
-                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-150f, spriteTop + 54f), new Vector2(150f, spriteTop + 54f + bubbleH));
+                var detailText = IntentDetail(st, index, it);
+                float detailH = string.IsNullOrEmpty(detailText) ? 0f : 44f;
+                float bubbleY = Mathf.Min(spriteTop + 54f, ceiling - bubbleH - detailH);
+                bool clamped = bubbleY < spriteTop + 54f - 0.5f;
+                float bubbleHalf = UiKit.Phone ? 108f : 150f;   // スマホは敵の間隔が狭いので細く (2026-09-14)
+                UiKit.Anchor(bubble, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-bubbleHalf, bubbleY), new Vector2(bubbleHalf, bubbleY + bubbleH));
                 var bImg = PaperFx.Sheet(bubble, PaperFx.Panel, "paper");
                 UiKit.Stretch(bImg.rectTransform, 0f, 0f, 0f, 0f);
                 bImg.raycastTarget = false;
-                var tail = UiKit.NewRect("tail", pan);
-                UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 38f), new Vector2(18f, spriteTop + 56f));
-                var tImg = tail.gameObject.AddComponent<Image>();
-                tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
+                if (!clamped)
+                {   // 尾は頭上に浮いている時だけ (絵に重ねた時は付けない)
+                    var tail = UiKit.NewRect("tail", pan);
+                    UiKit.Anchor(tail, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-12f, spriteTop + 38f), new Vector2(18f, spriteTop + 56f));
+                    var tImg = tail.gameObject.AddComponent<Image>();
+                    tImg.sprite = PaperFx.BubbleTail(); tImg.raycastTarget = false;
+                }
                 var row = UiKit.NewRect("row", bubble);
                 UiKit.Stretch(row, 0f, hasRider ? 40f : 0f, 0f, 0f);   // ライダーの段のぶん上に寄せる
                 var ig = UiKit.Horz(row, 10, 0);
@@ -238,7 +271,7 @@ namespace DeckRogue.Game
                         rg.childAlignment = TextAnchor.MiddleCenter; rg.childForceExpandWidth = false; rg.childForceExpandHeight = false;
                         // 札が2つ以上なら短い言葉 (幅300の吹き出しに2枚並ぶ上限)
                         int riders = (it.Inflict != null ? 1 : 0) + (it.AlsoBuff.HasValue ? 1 : 0) + (it.AlsoDefend.HasValue ? 1 : 0) + (it.AlsoDestroySet == true ? 1 : 0);
-                        bool terse = riders >= 2;
+                        bool terse = riders >= 2 || UiKit.Phone;
                         if (it.Inflict != null) BubblePill(rrow, "exposed", (terse ? "" : "あなたに") + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, PaperFx.PlumInk, new Color(0.93f, 0.86f, 0.97f, 1f));
                         if (it.AlsoBuff.HasValue) BubblePill(rrow, "sword", (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), new Color(0.98f, 0.92f, 0.78f, 1f));
                         if (it.AlsoDefend.HasValue) BubblePill(rrow, "shield", (terse ? "ブロック" : "同時にブロック") + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), new Color(0.84f, 0.9f, 0.98f, 1f));
@@ -246,14 +279,15 @@ namespace DeckRogue.Game
                     }
                 }
                 // 分岐・付与などの詳細は吹き出しの下に小さく (舞台の上なので紙色)
-                var detailText = IntentDetail(st, index, it);
                 if (!string.IsNullOrEmpty(detailText))
                 {
                     // 舞台の上の文字は夜の札に乗せる (縁取りだけでは草と月光の上で読めなかった。2026-09-09)
-                    var detail = PaperFx.NightNote(pan, detailText, 14, 340f);
+                    var detail = PaperFx.NightNote(pan, detailText, 14, UiKit.Phone ? 230f : 340f);
                     detail.anchorMin = detail.anchorMax = new Vector2(0.5f, 0f); detail.pivot = new Vector2(0.5f, 0f);
-                    detail.anchoredPosition = new Vector2(0f, spriteTop + 58f + bubbleH);
+                    detail.anchoredPosition = new Vector2(0f, bubbleY + 4f + bubbleH);
                 }
+                // 吹き出しを下げた時は状態の札もその下 (頭上の順を保つ)
+                chipTop = Mathf.Min(spriteTop + 2f, bubbleY - 32f);
             }
 
             // 足元の影・貼り絵の縁・ドット絵
@@ -286,7 +320,9 @@ namespace DeckRogue.Game
 
             // 名前の札・HP
             var nameTag = UiKit.NewRect("nametag", pan);
-            UiKit.Anchor(nameTag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-72f, 90f), new Vector2(72f, 124f));
+            // スマホは名前札と HP バーを手札のすぐ上に詰める (足元の高さが取れない。2026-09-14)
+            float tagY = UiKit.Phone ? 30f : 90f, barY0 = UiKit.Phone ? 8f : 66f, barY1 = UiKit.Phone ? 26f : 84f;
+            UiKit.Anchor(nameTag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-72f, tagY), new Vector2(72f, tagY + 34f));
             nameTag.localRotation = Quaternion.Euler(0f, 0f, index % 2 == 0 ? 1f : -1f);
             var ntImg = PaperFx.Sheet(nameTag, PaperFx.Tag, "paper", alive ? Color.white : new Color(0.8f, 0.8f, 0.8f, 1f));
             UiKit.Stretch(ntImg.rectTransform, 0f, 0f, 0f, 0f);
@@ -294,7 +330,7 @@ namespace DeckRogue.Game
             var nameT = UiKit.Deco(nameTag, nm + (alive ? "" : (e.Fled == true ? "（逃走）" : "（撃破）")), 19, PaperFx.Ink, TextAnchor.MiddleCenter);
             UiKit.Stretch(nameT.rectTransform, 6f, 6f, 0f, 0f);
             nameT.textWrappingMode = TextWrappingModes.NoWrap;
-            HpBar(pan, new Vector2(0.1f, 0f), new Vector2(0.9f, 0f), 66f, 84f, shownHp, e.MaxHp, e.Block);
+            HpBar(pan, new Vector2(0.1f, 0f), new Vector2(0.9f, 0f), barY0, barY1, shownHp, e.MaxHp, e.Block);
             if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
 
             // 状態の札
@@ -309,13 +345,13 @@ namespace DeckRogue.Game
             string traits = CardText.EnemyTraits(def, st, index);
             var chipRow = UiKit.NewRect("chips", pan);
             // 状態の札は頭の上 (2026-09-09「状態変化はキャラの頭の上に」)
-            UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-40f, spriteTop + 2f), new Vector2(40f, spriteTop + 30f));
+            UiKit.Anchor(chipRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-40f, chipTop), new Vector2(40f, chipTop + 28f));
             var cg = UiKit.Horz(chipRow, 6, 0);
             cg.childAlignment = TextAnchor.MiddleCenter;
             cg.childForceExpandHeight = false;
             cg.childForceExpandWidth = false;
             for (int i = 0; i < chips.Count; i++) SmallChip(chipRow, chips[i].Key, chips[i].Value, PaperFx.Ink);
-            if (traits.Length > 0)
+            if (traits.Length > 0 && !UiKit.Phone)   // スマホは特性の一文を置く高さが無い (敵をタップした説明パネルに出る)
             {
                 var tr = PaperFx.NightNote(pan, traits, 13, 320f);
                 tr.anchorMin = tr.anchorMax = new Vector2(0.5f, 0f); tr.pivot = new Vector2(0.5f, 1f);
@@ -543,8 +579,9 @@ namespace DeckRogue.Game
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
             float pFeet = Stage.FeetOffset("player", 130f);
-            float pTop = pFeet + leaderArt.rect.height * PaperFx.PixelScale(leaderArt, 256f);
-            PaperFx.FitPixel(spr, leaderArt, 0f, pFeet);
+            float pArt = 256f * ArtScale;   // スマホは半分 (2026-09-14)
+            float pTop = pFeet + leaderArt.rect.height * PaperFx.PixelScaleF(leaderArt, pArt);
+            PaperFx.FitPixel(spr, leaderArt, 0f, pFeet, pArt);
             spr.anchorMin = spr.anchorMax = new Vector2(0f, 0f);
             spr.offsetMin += new Vector2(130f, 0f); spr.offsetMax += new Vector2(130f, 0f);
             var img = spr.gameObject.AddComponent<Image>();
@@ -557,14 +594,15 @@ namespace DeckRogue.Game
             // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。
             // 敵の名前札は「どれを狙うか」の識別に要るので据え置き
             var hpRt = UiKit.NewRect("hpwrap", area);
-            UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(50f, 64f), new Vector2(250f, 84f));
+            float hpY = UiKit.Phone ? 8f : 64f;   // スマホは手札のすぐ上 (2026-09-14)
+            UiKit.Anchor(hpRt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(50f, hpY), new Vector2(250f, hpY + 20f));
             HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, shownHp, p.MaxHp, p.Block);
             if (shownHp != p.Hp) TweenHpBar(area, p.Hp);
             if (p.IceBlock > 0)
             {
                 var ice = UiKit.Txt(area, "氷壁 " + p.IceBlock, 15, UiKit.Hex("#bfe6ff"), TextAnchor.MiddleLeft, true);
                 ice.outlineWidth = 0.32f; ice.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
-                UiKit.Anchor(ice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(256f, 62f), new Vector2(380f, 88f));
+                UiKit.Anchor(ice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(256f, hpY - 2f), new Vector2(380f, hpY + 24f));
             }
 
             // 資源・状態の札
@@ -590,11 +628,19 @@ namespace DeckRogue.Game
             if ((p.Slow ?? 0) > 0) res.Add(new KeyValuePair<string, string>("exposed", "重り " + p.Slow.Value + "T"));
             for (int i = 0; i < res.Count; i++) SmallChip(col, res[i].Key, res[i].Value, PaperFx.Ink);
 
-            // 伏せ場 (リーダーの右): 点線のポケットに伏せ札の裏
+            // 伏せ場 (リーダーの右): 点線のポケットに伏せ札の裏。
+            // スマホ (2026-09-14) は画面の左端の列に置く (キャンバスが狭く、リーダーの右は敵の名前札と重なる)。枠は 0.85倍
             var setArea = UiKit.NewRect("setzone", area);
-            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(390f, 110f), new Vector2(0f, 300f));
+            float slotW = 108f, slotH = 156f, slotStep = UiKit.Phone ? 116f : 124f;
+            if (UiKit.Phone)
+            {
+                float areaLeft = area.offsetMin.x;   // 入れ物の左端 (キャンバス座標) → キャンバス左 24 に置く
+                UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f - areaLeft, 20f), new Vector2(0f, 20f + slotH + 40f));
+            }
+            else UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(390f, 110f), new Vector2(0f, 300f));
             var setTag = Tag(setArea, 26f, -2f);
             UiKit.Anchor(setTag, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f));
+            if (UiKit.Phone) setTag.pivot = new Vector2(0f, 1f);   // 左端に置くので右へ伸ばす
             var stFit = setTag.GetComponent<ContentSizeFitter>();
             UiKit.Icon(setTag, "set", 14f, PaperFx.InkSoft);
             var setLabel = UiKit.Txt(setTag, "からくり " + p.SetCards.Count + " / " + p.SetSlots, 13, PaperFx.Ink, TextAnchor.MiddleLeft, true);
@@ -602,7 +648,7 @@ namespace DeckRogue.Game
             for (int i = 0; i < p.SetSlots; i++)
             {
                 var slot = UiKit.NewRect("slot" + i, setArea);
-                UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * 124f, 0f), new Vector2(i * 124f + 108f, 156f));
+                UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * slotStep, 0f), new Vector2(i * slotStep + slotW, slotH));
                 g.RegisterAnchor("setslot" + i, slot);
                 var pocket = PaperFx.Sheet(slot, PaperFx.Tag, "pocket", new Color(1f, 1f, 1f, 0.35f));
                 UiKit.Stretch(pocket.rectTransform, -6f, -6f, -6f, -6f);
@@ -658,9 +704,15 @@ namespace DeckRogue.Game
                 }
             }
 
-            // 置物 (伏せ場の右): 紙の付箋
+            // 置物 (伏せ場の右): 紙の付箋。スマホは上部バーの下に名前だけの札を並べる (タップで説明。2026-09-14)
             var permRow = UiKit.NewRect("perms", setArea);
-            UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(p.SetSlots * 124f + 12f, 40f), new Vector2(0f, 156f));
+            if (UiKit.Phone)
+            {
+                float canvasH = CanvasSize(area).y;
+                float rowBottom = canvasH - TopH - 44f - BattleView.StatusLineY - 20f;   // setArea の下端 (StatusLineY+20) 基準
+                UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, rowBottom), new Vector2(0f, rowBottom + 36f));
+            }
+            else UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(p.SetSlots * 124f + 12f, 40f), new Vector2(0f, 156f));
             var pg = UiKit.Horz(permRow, 12, 0);
             pg.childAlignment = TextAnchor.UpperLeft;
             pg.childForceExpandWidth = false;
@@ -671,6 +723,17 @@ namespace DeckRogue.Game
                 var q = p.Permanents[i];
                 if (q.Innate == true) continue;
                 shown++;
+                if (UiKit.Phone)
+                {
+                    var tag = Tag(permRow, 34f, shown % 2 == 0 ? 0.8f : -0.8f);
+                    tag.GetComponent<Image>().raycastTarget = true;
+                    string ptip = "<b>" + q.Def.Name + "</b>\n" + CardText.Body(q.Def);
+                    Tooltip.Attach(tag.gameObject, delegate { return ptip; });
+                    UiKit.Icon(tag, "crest_permanent", 18f, PaperFx.Ink);
+                    var pt = UiKit.Txt(tag, q.Def.Name, 15, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+                    UiKit.Le(pt, 30f, 28f, -1f, 28f);
+                    continue;
+                }
                 var note = UiKit.NewRect("perm", permRow);
                 UiKit.Le(note, 150f, 112f, 150f, 112f);
                 note.localRotation = Quaternion.Euler(0f, 0f, shown % 2 == 0 ? 1.2f : -1.5f);
@@ -1019,6 +1082,9 @@ namespace DeckRogue.Game
 
         public static RectTransform Modal(RectTransform root, float w, float h, string name)
         {
+            // キャンバスに収める (スマホ 1.6倍は 1200×675 しかない。2026-09-14)
+            var cs = CanvasSize(root);
+            w = Mathf.Min(w, cs.x - 24f); h = Mathf.Min(h, cs.y - 16f);
             var backdrop = UiKit.Pan(root, new Color(20f / 255f, 18f / 255f, 40f / 255f, 0.68f), name + "-backdrop");
             UiKit.Stretch(backdrop.rectTransform, 0f, 0f, 0f, 0f);
             var win = UiKit.Frame(backdrop.transform, Theme.Panel, Color.white, name, 3f);
@@ -1119,7 +1185,7 @@ namespace DeckRogue.Game
         {
             var pan = PaperFx.Sheet(root, PaperFx.Tag, "targetBanner", UiKit.Hex("#f6dd98"));
             UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-420f, -TopH - 66f), new Vector2(420f, -TopH - 14f));
-            var t = UiKit.Txt(pan.transform, "「" + g.Pending.Card.Def.Name + "」の対象を選ぶ — 敵をクリック（またはカードを敵へドラッグ）", 18, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            var t = UiKit.Txt(pan.transform, "「" + g.Pending.Card.Def.Name + (UiKit.Phone ? "」の対象を選ぶ — 敵をタップ" : "」の対象を選ぶ — 敵をクリック（またはカードを敵へドラッグ）"), 18, PaperFx.Ink, TextAnchor.MiddleLeft, true);
             UiKit.Anchor(t.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 0f), new Vector2(-150f, 0f));
             var b = UiKit.Btn(pan.transform, "取り消し", delegate { g.CancelPending(); }, 16);
             var le = b.GetComponent<LayoutElement>();

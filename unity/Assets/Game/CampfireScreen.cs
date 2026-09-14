@@ -35,7 +35,8 @@ namespace DeckRogue.Game
             {
                 RunUi.Heading(root, "取り除く", "安らぎの煙管: デッキの1枚を永久に取り除く (休む/鍛えるとは排他)");
                 var area = UiKit.NewRect("remove", root);
-                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
+                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(-24f, -(RunUi.TopH + 100f)));
+                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
                 UiKit.Vert(area, 0, 0);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return "取り除く"; },
@@ -51,7 +52,9 @@ namespace DeckRogue.Game
                 RunUi.Heading(root, "鍛える", "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
                 var preview = ForgePreviewArea(root);
                 var area = UiKit.NewRect("forge", root);
-                UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + ForgePreviewH)));
+                // スマホは並びを右の列に置き、一覧は左いっぱい (2026-09-14)
+                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(-460f, -(RunUi.TopH + 100f)));
+                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + ForgePreviewH)));
                 UiKit.Vert(area, 0, 0);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c) ? "鍛える" : null; },
@@ -60,13 +63,13 @@ namespace DeckRogue.Game
                     400f);
                 AttachUpgradeTips(area, run.Deck);
                 AttachForgePreview(g, area, run.Deck, preview);
-                RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f);
+                RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f, UiKit.Phone ? BattleScreen.CanvasSize(root).x / 2f - 232f : 0f, UiKit.Phone ? 24f : 40f);
                 return;
             }
 
             int extra = (opt.Dig && fresh ? 1 : 0) + (opt.TrainLeft > 0 && fresh ? 1 : 0) + (opt.Remove && fresh ? 1 : 0);
             RunUi.Heading(root, "焚き火", extra > 0 ? "どれか1つ。鍛えた後は回復なしで立ち去る" : "どちらか1つ。鍛えた後は回復なしで立ち去る");
-            float optY = RunUi.SceneWindow(root, "campfire") ? -40f : 0f;   // 情景の窓 (左上) と札が触れないよう少し下げる
+            float optY = RunUi.SceneWindow(root, "campfire") ? -40f : UiKit.Phone ? -30f : 0f;   // 情景の窓 (左上) と札が触れないよう少し下げる。スマホは見出しと重ならないよう下げる
             // 選択肢が3つ以上なら幅を詰めて横に並べる (レリックの第3選択肢 2026-09-12)
             int count = 2 + extra;
             float w = count <= 2 ? 440f : count == 3 ? 400f : 320f;
@@ -123,7 +126,7 @@ namespace DeckRogue.Game
                 btn.targetGraphic = frame;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.1f, 1.1f, 1.1f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
                 btn.onClick.AddListener(delegate { Audio.Ui("click"); onClick(); });
-                var hintB = UiKit.Txt(cell, "クリックで選ぶ", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter);
+                var hintB = UiKit.Txt(cell, (UiKit.Phone ? "タップで選ぶ" : "クリックで選ぶ"), 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter);
                 hintB.raycastTarget = false;
                 UiKit.Anchor(hintB.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 18f), new Vector2(0f, 44f));
             }
@@ -137,7 +140,9 @@ namespace DeckRogue.Game
         public static RectTransform ForgePreviewArea(RectTransform root)
         {
             var area = UiKit.NewRect("forgePreview", root);
-            UiKit.Anchor(area, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-420f, -(RunUi.TopH + 100f + ForgePreviewH)), new Vector2(420f, -(RunUi.TopH + 100f)));
+            // スマホは右の列に置く (見出しの下に横 840 を取ると一覧の高さが残らない。2026-09-14)
+            if (UiKit.Phone) UiKit.Anchor(area, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-440f, -(RunUi.TopH + 100f + ForgePreviewH)), new Vector2(-24f, -(RunUi.TopH + 100f)));
+            else UiKit.Anchor(area, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-420f, -(RunUi.TopH + 100f + ForgePreviewH)), new Vector2(420f, -(RunUi.TopH + 100f)));
             var hint = UiKit.Txt(area, "札に触れると、元の札と鍛えた後の札がここに並ぶ", 15, UiKit.ColDim, TextAnchor.MiddleCenter);
             hint.outlineWidth = 0.3f; hint.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
             UiKit.Stretch(hint.rectTransform, 0f, 0f, 0f, 0f);
@@ -149,12 +154,13 @@ namespace DeckRogue.Game
         {
             if (area == null || c == null) return;
             for (int i = area.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(area.GetChild(i).gameObject);
-            const float sc = 0.85f;
+            float sc = UiKit.Phone ? 0.62f : 0.85f;   // スマホは右の列 (幅 416) に2枚を並べる
+            float gapHalf = UiKit.Phone ? 30f : 56f;
             float w = CardView.W * sc, h = CardView.H * sc;
             var left = UiKit.NewRect("orig", area);
             left.anchorMin = left.anchorMax = new Vector2(0.5f, 0.5f);
             left.sizeDelta = new Vector2(w, h);
-            left.anchoredPosition = new Vector2(-w / 2f - 56f, 0f);
+            left.anchoredPosition = new Vector2(-w / 2f - gapHalf, 0f);
             var cvA = CardView.Build(left, c, null, true, false, "orig-card");
             cvA.localScale = Vector3.one * sc;
             var arrow = UiKit.Deco(area, "→", 44, UiKit.ColText, TextAnchor.MiddleCenter);
@@ -167,7 +173,7 @@ namespace DeckRogue.Game
                 var right = UiKit.NewRect("upgraded", area);
                 right.anchorMin = right.anchorMax = new Vector2(0.5f, 0.5f);
                 right.sizeDelta = new Vector2(w, h);
-                right.anchoredPosition = new Vector2(w / 2f + 56f, 0f);
+                right.anchoredPosition = new Vector2(w / 2f + gapHalf, 0f);
                 var cvB = CardView.Build(right, up, null, true, false, "upgraded-card");
                 cvB.localScale = Vector3.one * sc;
                 Tween.Punch(right, 0.06f, 0.4f);
@@ -178,7 +184,7 @@ namespace DeckRogue.Game
                 try { upg = Upgrade.IsUpgraded(c); } catch (Exception) { }
                 var note = UiKit.Txt(area, upg ? "鍛え済み" : "この札は鍛えられない", 17, UiKit.ColDim, TextAnchor.MiddleCenter);
                 note.outlineWidth = 0.3f; note.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
-                UiKit.Anchor(note.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(56f, -30f), new Vector2(56f + w, 30f));
+                UiKit.Anchor(note.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(gapHalf, -30f), new Vector2(gapHalf + w, 30f));
             }
         }
 

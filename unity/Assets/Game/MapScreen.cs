@@ -14,8 +14,8 @@ namespace DeckRogue.Game
         const float MapW = 1100f;      // 地図の描画幅
         const float RowH = 112f;       // 1行の高さ
         const float PadY = 90f;        // 上下の余白
-        const float NodeSize = 60f;
-        const float BossSize = 92f;
+        static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // スマホは指で押せる大きさ (2026-09-14)
+        static float BossSize { get { return UiKit.Phone ? 104f : 92f; } }
         const int Cols = 7;
 
         /// <summary>他の画面の上に重ねる読み取り専用の地図 (2026-09-12 ユーザー「マップは常に見れるようにして」)。進路は選べない・閉じるだけ</summary>
@@ -194,7 +194,7 @@ namespace DeckRogue.Game
             RunUi.Message(g, root);
 
             // 左下: 案内 / ランを放棄
-            var hint = UiKit.Txt(root, choices.Count > 0 ? "光っている道へ進めます。ノードにカーソルを重ねると中身の説明" : "進めるノードがありません", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
+            var hint = UiKit.Txt(root, choices.Count > 0 ? (UiKit.Phone ? "光っている道へ進めます" : "光っている道へ進めます。ノードにカーソルを重ねると中身の説明") : "進めるノードがありません", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
             UiKit.Anchor(hint.rectTransform, new Vector2(0f, 0f), new Vector2(0.35f, 0f), new Vector2(24f, 70f), new Vector2(0f, 100f));
             var legend = UiKit.NewRect("legend", root);
             UiKit.Anchor(legend, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 110f), new Vector2(330f, 420f));
@@ -357,7 +357,7 @@ namespace DeckRogue.Game
                 }, 14, true, bg);
                 BattleScreen.SetSize(b, idx == 2 || idx == 3 ? 82f : 70f, 36f);
             }
-            var hint = UiKit.Txt(root, g.DoodleMode ? (g.DoodlePen == 2 ? "消しゴム: 線に触れると消える（もう一度押すと解除）" : "ペン: ドラッグで地図に描ける（もう一度押すと解除）") : "右ドラッグで地図に描ける（ペンを押すと指でも）", 13, UiKit.ColDim, TextAnchor.MiddleRight);
+            var hint = UiKit.Txt(root, g.DoodleMode ? (g.DoodlePen == 2 ? "消しゴム: 線に触れると消える（もう一度押すと解除）" : "ペン: ドラッグで地図に描ける（もう一度押すと解除）") : (UiKit.Phone ? "ペンを押すと指で地図に描ける" : "右ドラッグで地図に描ける（ペンを押すと指でも）"), 13, UiKit.ColDim, TextAnchor.MiddleRight);
             UiKit.Anchor(hint.rectTransform, new Vector2(0.55f, 0f), new Vector2(1f, 0f), new Vector2(0f, 104f), new Vector2(-24f, 126f));
         }
 

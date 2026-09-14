@@ -20,7 +20,7 @@ namespace DeckRogue.Game
 
             var opts = run.RewardOptions;
             int n = opts != null ? opts.Count : 0;
-            float scale = 1.25f;
+            float scale = UiKit.Phone ? 1.05f : 1.25f;   // スマホは高さ 675 に見出し・札・見送るを収める (2026-09-14)
             float cardW = CardView.W * scale, cardH = CardView.H * scale;
             float gap = 60f;
             float totalW = n * cardW + Math.Max(0, n - 1) * gap;
@@ -39,7 +39,7 @@ namespace DeckRogue.Game
                 var cell = UiKit.NewRect("reward" + i, root);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
                 cell.sizeDelta = new Vector2(cardW, cardH + 70f);
-                cell.anchoredPosition = new Vector2(x0 + i * (cardW + gap), 10f);
+                cell.anchoredPosition = new Vector2(x0 + i * (cardW + gap), UiKit.Phone ? -26f : 10f);
                 var ci = new CardInstance { Uid = "reward" + i, Def = def };
                 var cv = CardView.Build(cell, ci, null, true, false, "reward-card");
                 cv.localScale = Vector3.one * scale;
@@ -77,7 +77,7 @@ namespace DeckRogue.Game
                 try { rd = Content.GetRelicDef(opts[i]); } catch (Exception) { }
                 var cell = RelicPanel(root, rd, opts[i], w, h);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
-                cell.anchoredPosition = new Vector2(x0 + i * (w + gap), 20f);
+                cell.anchoredPosition = new Vector2(x0 + i * (w + gap), UiKit.Phone ? -30f : 20f);   // スマホは見出しと重ならないよう下げる
                 var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_PickRelic { Index = idx }); }, 18, true, UiKit.Hex("#f0d58a"));
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);

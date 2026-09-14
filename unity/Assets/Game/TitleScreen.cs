@@ -47,7 +47,9 @@ namespace DeckRogue.Game
             grid.padding = new RectOffset(18, 18, 18, 18);
             grid.childAlignment = TextAnchor.UpperLeft;
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.constraintCount = 5;
+            // 列数は幅から (スマホ 1.6倍のキャンバスでは 4列。2026-09-14。PC は 5列)
+            float listW = BattleScreen.CanvasSize(root).x - 480f - 48f;
+            grid.constraintCount = Mathf.Max(2, Mathf.FloorToInt((listW - 36f + 18f) / (PortraitW + 18f)));
 
             var leaders = Content.AllLeaders;
             LeaderDef selected = null;
@@ -137,15 +139,18 @@ namespace DeckRogue.Game
 
         static void Detail(GameRoot g, RectTransform side, LeaderDef ld)
         {
-            var name = UiKit.Deco(side, ld.Name, 30, UiKit.ColInk, TextAnchor.MiddleLeft);
-            UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -70f), new Vector2(-24f, -20f));
-            var colors = UiKit.Txt(side, string.Join(" / ", RunUi.ColorsJa(ld.Colors)) + "   最大HP " + ld.MaxHp + "   ドロー " + ld.DrawPerTurn + "   エナジー " + ld.EnergyMax + "   報酬候補 " + ld.RewardChoices + "枚", 14, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
+            // 縦のレイアウトで流す (2026-09-14: 絶対座標だとスマホの低いキャンバスで初期デッキとシードが重なった)
+            var col = UiKit.NewRect("col", side);
+            UiKit.Stretch(col, 24f, 24f, 20f, 24f);
+            var vg = UiKit.Vert(col, 8, 0);
+            vg.childForceExpandHeight = false;
+            var name = UiKit.Deco(col, ld.Name, 30, UiKit.ColInk, TextAnchor.MiddleLeft);
+            UiKit.Le(name, -1f, 44f, -1f, 44f);
+            var colors = UiKit.Txt(col, string.Join(" / ", RunUi.ColorsJa(ld.Colors)) + "   最大HP " + ld.MaxHp + "   ドロー " + ld.DrawPerTurn + "   エナジー " + ld.EnergyMax + "   報酬候補 " + ld.RewardChoices + "枚", 14, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             colors.textWrappingMode = TextWrappingModes.Normal;
-            UiKit.Anchor(colors.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -120f), new Vector2(-24f, -72f));
-
-            var desc = UiKit.Txt(side, ld.Description, 16, UiKit.ColInk, TextAnchor.UpperLeft);
+            var desc = UiKit.Txt(col, ld.Description, 16, UiKit.ColInk, TextAnchor.UpperLeft);
             desc.textWrappingMode = TextWrappingModes.Normal;
-            UiKit.Anchor(desc.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -330f), new Vector2(-24f, -126f));
+            UiKit.Le(desc, -1f, 60f, -1f, -1f, -1f, 1f);   // 余った高さは説明が受ける
 
             // 初期デッキ
             DeckDef deck = null;
@@ -162,14 +167,13 @@ namespace DeckRogue.Game
                     parts.Add(nm + (e.Count > 1 ? "×" + e.Count : ""));
                     total += e.Count;
                 }
-                var dk = UiKit.Txt(side, "初期デッキ " + total + "枚: " + string.Join("、", parts.ToArray()), 13, UiKit.ColInkSoft, TextAnchor.UpperLeft);
+                var dk = UiKit.Txt(col, "初期デッキ " + total + "枚: " + string.Join("、", parts.ToArray()), 13, UiKit.ColInkSoft, TextAnchor.UpperLeft);
                 dk.textWrappingMode = TextWrappingModes.Normal;
-                UiKit.Anchor(dk.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -420f), new Vector2(-24f, -336f));
             }
 
             // シードと難易度 (2行)
-            var seedRow = UiKit.NewRect("seedrow", side);
-            UiKit.Anchor(seedRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 200f), new Vector2(-24f, 240f));
+            var seedRow = UiKit.NewRect("seedrow", col);
+            UiKit.Le(seedRow, -1f, 40f, -1f, 40f);
             var hg = UiKit.Horz(seedRow, 10, 0);
             hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandWidth = false;
@@ -177,28 +181,26 @@ namespace DeckRogue.Game
             UiKit.Le(seedLbl, 64f, 36f, 64f, 36f);
             var field = RunScreens.MakeSeedField(g, seedRow);
             UiKit.Le(field, 180f, 36f, 180f, 36f);
-            var diffRow = UiKit.NewRect("diffrow", side);
-            UiKit.Anchor(diffRow, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 152f), new Vector2(-24f, 192f));
+            var diffRow = UiKit.NewRect("diffrow", col);
+            UiKit.Le(diffRow, -1f, 40f, -1f, 40f);
             var hg2 = UiKit.Horz(diffRow, 10, 0);
             hg2.childAlignment = TextAnchor.MiddleLeft;
             hg2.childForceExpandWidth = false;
             var diffLbl = UiKit.Txt(diffRow, "難易度", 15, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(diffLbl, 64f, 36f, 64f, 36f);
             var minus = UiKit.Btn(diffRow, "−", delegate { g.Difficulty = Math.Max(1, g.Difficulty - 1); g.Rebuild(); }, 18, g.Difficulty > 1);
-            BattleScreen.SetSize(minus, 40f, 36f);
+            BattleScreen.SetSize(minus, 44f, 40f);
             var dv = UiKit.Txt(diffRow, g.Difficulty.ToString(), 20, g.Difficulty > DeckRogue.Engine.Run.DEFAULT_DIFFICULTY ? UiKit.ColBadInk : UiKit.ColInk, TextAnchor.MiddleCenter, true);
             UiKit.Le(dv, 44f, 36f, 44f, 36f);
             var plus = UiKit.Btn(diffRow, "+", delegate { g.Difficulty = Math.Min(10, g.Difficulty + 1); g.Rebuild(); }, 18, g.Difficulty < 10);
-            BattleScreen.SetSize(plus, 40f, 36f);
+            BattleScreen.SetSize(plus, 44f, 40f);
 
-            var note = UiKit.Txt(side, "難易度 3 が標準。上げると敵の打点とHPが増える (報酬は変わらない)", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
+            var note = UiKit.Txt(col, "難易度 3 が標準。上げると敵の打点とHPが増える (報酬は変わらない)", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             note.textWrappingMode = TextWrappingModes.Normal;
-            UiKit.Anchor(note.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 108f), new Vector2(-24f, 146f));
 
-            var start = UiKit.Btn(side, "ランを開始", delegate { Audio.Ui("start_run"); g.StartRun(); }, 24, true, UiKit.Hex("#f0d58a"));
+            var start = UiKit.Btn(col, "ランを開始", delegate { Audio.Ui("start_run"); g.StartRun(); }, 24, true, UiKit.Hex("#f0d58a"));
             var le = start.GetComponent<LayoutElement>();
-            if (le != null) UnityEngine.Object.Destroy(le);
-            UiKit.Anchor(start.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 30f), new Vector2(-24f, 96f));
+            if (le != null) { le.minHeight = 64f; le.preferredHeight = 64f; }
         }
     }
 }

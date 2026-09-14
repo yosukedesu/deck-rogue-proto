@@ -21,18 +21,18 @@ namespace DeckRogue.Game
 
             var title = UiKit.Txt(root, won ? "走破！" : "敗北", 72, won ? Theme.Gold : UiKit.ColBad, TextAnchor.MiddleCenter, true);
             title.outlineWidth = 0.25f; title.outlineColor = Color.black;
-            UiKit.Anchor(title.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -150f), new Vector2(0f, -40f));
+            UiKit.Anchor(title.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, UiKit.Phone ? -100f : -150f), new Vector2(0f, UiKit.Phone ? -10f : -40f));
             Tween.Punch(title.rectTransform, 0.15f, 0.7f);
             string leader = run.LeaderId;
             try { leader = Content.GetLeaderDef(run.LeaderId).Name; } catch (Exception) { }
             var sub = UiKit.Txt(root, leader + "  /  シード " + run.Seed + "  /  難易度 " + run.Difficulty
                 + "\n幕" + run.Act + " 行" + (run.Row + 1) + "  ·  勝利 " + run.BattlesWon + " 戦  ·  HP " + run.Hp + " / " + run.MaxHp
                 + "  ·  " + run.Gold + "G  ·  デッキ " + run.Deck.Count + "枚  ·  レリック " + run.Relics.Count + "個", 18, UiKit.ColText, TextAnchor.MiddleCenter);
-            UiKit.Anchor(sub.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -220f), new Vector2(0f, -150f));
+            UiKit.Anchor(sub.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, UiKit.Phone ? -170f : -220f), new Vector2(0f, UiKit.Phone ? -100f : -150f));
 
             // レリック
             var relics = UiKit.NewRect("relics", root);
-            UiKit.Anchor(relics, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-600f, -280f), new Vector2(600f, -228f));
+            UiKit.Anchor(relics, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-600f, UiKit.Phone ? -222f : -280f), new Vector2(600f, UiKit.Phone ? -176f : -228f));
             var hg = UiKit.Horz(relics, 8, 0);
             hg.childAlignment = TextAnchor.MiddleCenter;
             hg.childForceExpandWidth = false;
@@ -48,7 +48,8 @@ namespace DeckRogue.Game
             }
 
             var area = UiKit.NewRect("deck", root);
-            UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -290f));
+            if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 100f), new Vector2(-24f, -230f));   // 幅いっぱい・見出しを詰める (2026-09-14)
+            else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -290f));
             UiKit.Vert(area, 0, 0);
             RunUi.CardGrid(g, area, run.Deck, null, null, null, 400f);
 
