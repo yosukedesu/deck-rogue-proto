@@ -55,7 +55,8 @@ function csType(node: ts.TypeNode | undefined, propName: string, owner: string):
   switch (node.kind) {
     case ts.SyntaxKind.StringKeyword: return 'string'
     // RngState の seed は JS の >>>0 (uint32) なので int に収まらない = long (counter も揃える)
-    case ts.SyntaxKind.NumberKeyword: return owner === 'RngState' ? 'long' : isDouble(propName) ? 'double' : 'int'
+    // RunJournal.times は epoch ms (2026-09-14 Unity のレポート書き出しがジャーナルを持つ) = int に収まらない
+    case ts.SyntaxKind.NumberKeyword: return owner === 'RngState' || (owner === 'RunJournal' && propName === 'times') ? 'long' : isDouble(propName) ? 'double' : 'int'
     case ts.SyntaxKind.BooleanKeyword: return 'bool'
     case ts.SyntaxKind.UnknownKeyword:
     case ts.SyntaxKind.AnyKeyword: return 'object'
@@ -147,7 +148,12 @@ function emitRecord(name: string, members: readonly ts.TypeElement[], doc: strin
         m.type.types.some((x) => x.kind === ts.SyntaxKind.NullKeyword || x.kind === ts.SyntaxKind.UndefinedKeyword || (ts.isLiteralTypeNode(x) && x.literal.kind === ts.SyntaxKind.NullKeyword)))
     const jsdoc = ts.getJSDocCommentsAndTags(m).map((d) => (ts.isJSDoc(d) ? (typeof d.comment === 'string' ? d.comment : '') : '')).filter(Boolean).join(' ')
     if (jsdoc) lines.push(`        /// <summary>${jsdoc.replace(/\n/g, ' ').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</summary>`)
-    lines.push(`        [JsonProperty("${prop}")]`)
+    // 書き出し (2026-09-14 Unity のセーブ/レポート): TS の optional (`?:` / `| undefined`) は null を省略して JSON.stringify と同じ形にする。
+    // `| null` の欄 (combat・shop・rewardOptions・encounterId 等) は TS も null を持つので null を書く = ブラウザ/CLI が `=== null` で読める
+    const omitNull =
+      optional ||
+      (m.type !== undefined && ts.isUnionTypeNode(m.type) && m.type.types.some((x) => x.kind === ts.SyntaxKind.UndefinedKeyword))
+    lines.push(omitNull ? `        [JsonProperty("${prop}", NullValueHandling = NullValueHandling.Ignore)]` : `        [JsonProperty("${prop}")]`)
     lines.push(`        public ${t}${nullable ? '?' : ''} ${pascal(prop)} { get; init; }${!nullable && !valueType ? ' = default!;' : ''}`)
   }
   lines.push('    }')

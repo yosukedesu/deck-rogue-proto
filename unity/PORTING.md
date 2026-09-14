@@ -22,7 +22,9 @@
 | `map.ts` | `MapGen.cs` | `MapGen` |
 | `run.ts` | `Run.cs` | `Run` |
 | `golden.ts` | `Golden.cs` | `Golden` |
-| `summary.ts` `traits.ts` `analysis.ts` | 移植しない（UI/計測用） | — |
+| `analysis.ts` | `Analysis.cs`（計測。2026-09-14 Unity のレポート書き出し用。JSON の形は TS と同じ契約 `deck-rogue-metrics/1`） | `Analysis` |
+| `ui/report.ts`（DOM に触れない部分） | `Report.cs`（md/セーブの組み立て・選択履歴・データ指紋。ログ行の文言は `ReportText` で表示層から受ける） | `Report` |
+| `summary.ts` `traits.ts` | 移植しない（UI 用。表示に要る式だけ `Effects.cs` 等に個別移植） | — |
 
 - namespace は `DeckRogue.Engine`。生成型は `using DeckRogue.Engine.Generated;` で使う。
 - **関数名は TS の export 名を PascalCase にしたもの**（`playCard` → `Combat.PlayCard`、`resolveEffectTargeted` → `Effects.ResolveEffectTargeted`、`nextChoices` → `Run.NextChoices`）。
@@ -76,3 +78,12 @@
 
 モジュールごとに別担当で翻訳し、最後に結合してビルド→ゴールデン照合→分岐した手から直す。
 担当は互いのファイルを編集しない。他モジュールの関数は上の命名規則で呼ぶ（結合時に名前ずれを直す）。
+
+## 書き出し（セーブ/レポートの JSON）
+
+- 生成型の optional（TS の `?:` / `| undefined`）は `NullValueHandling.Ignore`、`| null` の欄は null を書く（`gen-csharp-types.ts`）。
+  これで `JsonConvert.SerializeObject(run, JsonUnions.Settings)` が `JSON.stringify` と同じ形になり、ブラウザ/CLI がそのまま読める。
+- 往復検証: `dotnet run -- dump-save <golden.json> <n> <outDir>` で C# がセーブ/レポートを書き、
+  scratchpad の round-trip スクリプト（`replayStates`・`runHash`・`battleRowsFromJournal`）が TS 側で読み戻して
+  「残りの手を続けてもゴールデンに一致」「計測が TS の battleMetrics と一致」を確かめる（2026-09-14 実施: 一致）。
+- `RunJournal.times` は epoch ms なので `long`（生成器の例外表）。

@@ -15,6 +15,10 @@ if (args.Length > 0 && args[0] == "verify")
 {
     return VerifyGoldenRuns(args.Skip(1).ToArray());
 }
+if (args.Length > 0 && args[0] == "dump-save")
+{
+    return DumpSave(args.Skip(1).ToArray());
+}
 
 var path = args.Length > 0 ? args[0] : "../../goldens/rng-golden.json";
 if (!File.Exists(path))
@@ -239,4 +243,65 @@ int VerifyGoldenRuns(string[] argv)
     }
     Console.Error.WriteLine($"照合失敗: {failedFiles}/{files.Count} ファイル");
     return 1;
+}
+
+// ================= レポート/セーブの往復検証 (2026-09-14 Unity のフィードバック記録) =================
+
+// ゴールデンの origin+commands を n 手だけ再生しながら、Unity 版と同じ手順で BattleArchive・選択履歴・ジャーナルを積み、
+// Report.BuildRunSaveFile / BuildReport の出力をファイルへ書く。TS 側 (scratchpad の round-trip スクリプト) がそれを読んで
+// 「残りの手を続けるとゴールデンのハッシュに一致する」「計測 JSON が TS の battleMetrics と一致する」を確かめる。
+//   dotnet run -- dump-save <golden.json> <n> <outDir> [--data <src/data>]
+int DumpSave(string[] argv)
+{
+    var dataDir = "../../src/data";
+    var rest = new List<string>();
+    for (int i = 0; i < argv.Length; i++)
+    {
+        if (argv[i] == "--data" && i + 1 < argv.Length) { dataDir = argv[++i]; continue; }
+        rest.Add(argv[i]);
+    }
+    if (rest.Count < 3) { Console.Error.WriteLine("usage: dotnet run -- dump-save <golden.json> <n> <outDir> [--data <src/data>]"); return 2; }
+    Content.Load(dataDir);
+    var golden = JObject.Parse(File.ReadAllText(rest[0]));
+    var origin = JsonUnions.FromToken<ReplayOrigin>(golden["origin"]!);
+    var commands = (JArray)golden["commands"]!;
+    int n = Math.Min(int.Parse(rest[1]), commands.Count);
+    Directory.CreateDirectory(rest[2]);
+
+    var run = Run.ReplayInitialRun(origin);
+    var history = new List<BattleArchive>();
+    var choices = new List<RunChoice>();
+    var cmds = new List<RunCommand>();
+    var times = new List<long>();
+    long t0 = 1_800_000_000_000L;   // 決定的な擬似時刻 (epoch ms)。TS 側の「判断時間」が読めることだけ確かめる (commands と同じ長さ)
+    var text = new ReportText();
+    for (int i = 0; i < n; i++)
+    {
+        var cmd = JsonUnions.FromToken<RunCommand>(commands[i]);
+        var prev = run;
+        run = Run.ApplyRunCommand(run, cmd);
+        cmds.Add(cmd);
+        times.Add(t0 + (i + 1) * 1500L);
+        var line = Report.DescribeRunChoice(prev, cmd, run);
+        if (line != null) choices.Add(line);
+        var c = run.Combat;
+        bool ended = c != null && (c.Phase == CombatPhases.Won || c.Phase == CombatPhases.Lost);
+        if (ended && prev.Combat != null && prev.Combat.Phase != c!.Phase)
+        {
+            string enemyId = "unknown";
+            for (int k = 0; k < c.EventLog.Count; k++) { var st = c.EventLog[k] as GameEvent_CombatStarted; if (st != null) { enemyId = st.EnemyId; break; } }
+            var node = Run.CurrentNode(prev);
+            var a = Report.ArchiveBattle(c, prev.BattlesWon + 1, enemyId, prev.CurrentElite, prev.Hp, prev.Deck.Count, prev.Act, node != null && node.Type == MapNodeTypes.Boss, text);
+            if (history.Count == 0) a.Rating = new BattleRating { Strength = 3, Fun = 4, Note = "往復検証のダミー評価" };
+            history.Add(a);
+        }
+    }
+    var journal = new RunJournal { Origin = origin, Commands = cmds, Times = times };
+    var notes = new List<PlayNote> { new PlayNote { At = "2026-09-14T12:00:00.000Z", Context = "幕1 行1 map 0勝 HP80", Text = "往復検証のメモ" } };
+    var save = Report.BuildRunSaveFile(run, history, notes, journal, choices);
+    File.WriteAllText(Path.Combine(rest[2], "unity-save.json"), save, new System.Text.UTF8Encoding(false));
+    var md = Report.BuildReport(run, null, history, "", notes, choices, journal, text, new DateTime(2026, 9, 14, 12, 0, 0, DateTimeKind.Utc));
+    File.WriteAllText(Path.Combine(rest[2], "unity-report.md"), md, new System.Text.UTF8Encoding(false));
+    Console.WriteLine($"dump-save: {n}手 / 戦闘{history.Count} / 選択{choices.Count} / hash {Golden.RunHash(run)} / fingerprint {Report.DataFingerprint()} → {rest[2]}");
+    return 0;
 }

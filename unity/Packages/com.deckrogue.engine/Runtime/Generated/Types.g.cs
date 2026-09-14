@@ -241,10 +241,10 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("cardsPlayedThisTurn")]
         public int CardsPlayedThisTurn { get; init; }
         /// <summary>このターンの実プレイ枚数 (2026-09-02 レビュー是正): playCard/直接プレイ/亡骸プレイで+1。 詠唱数 (cardsPlayedThisTurn) と違い addCasts (焚べ) の嵩が乗らない = 拘束・重りの参照値。 焚べの嵩が鏡 (mirrorHits) に映るのは裁定済み・拘束/重りには映らない</summary>
-        [JsonProperty("playsThisTurn")]
+        [JsonProperty("playsThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? PlaysThisTurn { get; init; }
         /// <summary>このターンに伏せた枚数 (2026-09-02)。手数の鏡 (mirrorHits) は cardsPlayedThisTurn + setsThisTurn を読む = 伏せは抜け道にならない</summary>
-        [JsonProperty("setsThisTurn")]
+        [JsonProperty("setsThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetsThisTurn { get; init; }
         /// <summary>この戦闘でプレイしたカードの累計 (ターンを跨いでリセットされない)。時喰らい型タイマーの参照値</summary>
         [JsonProperty("cardsPlayedTotal")]
@@ -256,7 +256,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("healsThisCombat")]
         public int HealsThisCombat { get; init; }
         /// <summary>このターンにカードのプレイで回復した回数 (過剰回復も数える・置物やパッシブの自動回復は数えない。自ターン開始でリセット。白の回復参照 healedThisTurn 2026-09-06)</summary>
-        [JsonProperty("healsThisTurn")]
+        [JsonProperty("healsThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? HealsThisTurn { get; init; }
         /// <summary>マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し</summary>
         [JsonProperty("nextCardDiscount")]
@@ -271,18 +271,18 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("vulnerable")]
         public int Vulnerable { get; init; }
         /// <summary>脆弱のjustAppliedガード (2026-09-02): この敵フェーズに付与された脆弱は同フェーズ末の減衰を免除</summary>
-        [JsonProperty("vulnerableFresh")]
+        [JsonProperty("vulnerableFresh", NullValueHandling = NullValueHandling.Ignore)]
         public bool? VulnerableFresh { get; init; }
         /// <summary>この戦闘で注入された火傷の累計 (上限5/戦闘の判定。火傷札は消えるので山を数えられない)</summary>
-        [JsonProperty("scaldsThisCombat")]
+        [JsonProperty("scaldsThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? ScaldsThisCombat { get; init; }
         /// <summary>霞み (2026-09-02 StS2 MindRot式): 残りNターン、ターン開始のドロー-2 (最低3枚)。 自ターン終了時に-1。完全ゼロ化 (NoDraw) は全捨てルールと衝突するため導入しない</summary>
-        [JsonProperty("mist")]
+        [JsonProperty("mist", NullValueHandling = NullValueHandling.Ignore)]
         public int? Mist { get; init; }
         /// <summary>重り (2026-09-02 StS2 SlowPower式): 残りNフェーズ、敵の攻撃ダメージ+10%×このターンの プレイ枚数 (切り捨て)。手数の罰の被弾版 (鏡=ヒット数が増える、重り=1発が重くなる)。 敵フェーズ終了時に-1 (justAppliedガードは脆弱と共用の slowFresh)</summary>
-        [JsonProperty("slow")]
+        [JsonProperty("slow", NullValueHandling = NullValueHandling.Ignore)]
         public int? Slow { get; init; }
-        [JsonProperty("slowFresh")]
+        [JsonProperty("slowFresh", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SlowFresh { get; init; }
         /// <summary>虚弱 (2026-09-01 本家Frail相当): 残りNターンの間、カードのプレイで得るブロック25%減 (切り捨て・最低1)。氷壁・リアクション・置物トリガー・パッシブ由来は対象外。自ターン終了時に1減る</summary>
         [JsonProperty("frail")]
@@ -300,25 +300,25 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("damageTakenLastEnemyPhase")]
         public int DamageTakenLastEnemyPhase { get; init; }
         /// <summary>この敵フェーズ中に付与された弱体の量 (2026-09-04 Opusラン N: 同じ攻撃で付いた弱体が被攻撃後の返しを食っていた)。敵フェーズ中の返しはこの分を差し引き、次の自ターンから全量が効く</summary>
-        [JsonProperty("weakFreshThisPhase")]
+        [JsonProperty("weakFreshThisPhase", NullValueHandling = NullValueHandling.Ignore)]
         public int? WeakFreshThisPhase { get; init; }
         /// <summary>このターンにプレイした攻撃カードの枚数 (自身の解決後に加算=攻撃数参照はそのカード自身を数えない。2026-09-03)</summary>
-        [JsonProperty("attacksPlayedThisTurn")]
+        [JsonProperty("attacksPlayedThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? AttacksPlayedThisTurn { get; init; }
         /// <summary>この敵フェーズに受けた攻撃行動の回数 (完全に凌いだ判定用)</summary>
-        [JsonProperty("attacksReceivedThisPhase")]
+        [JsonProperty("attacksReceivedThisPhase", NullValueHandling = NullValueHandling.Ignore)]
         public int? AttacksReceivedThisPhase { get; init; }
         /// <summary>直前の敵フェーズで攻撃を1回以上受け、HP損失が0だった (棘の返礼の参照値。敵フェーズ終了時に確定)</summary>
-        [JsonProperty("perfectBlockLastPhase")]
+        [JsonProperty("perfectBlockLastPhase", NullValueHandling = NullValueHandling.Ignore)]
         public bool? PerfectBlockLastPhase { get; init; }
         /// <summary>反復トークン (青: 呪文コピー)。次に唱える呪文の効果を2回解決する。自ターン終了時にリセット (勢いと同じ持続則 = 敵フェーズに得た分は次の自ターンまで持つ)</summary>
         [JsonProperty("spellEchoes")]
         public int SpellEchoes { get; init; }
         /// <summary>アーティファクト (時計仕掛けの土産 2026-09-12): 状態異常の付与をN回弾く (弱体・脆弱・虚弱・拘束・霞み・重り。負傷・火傷・がらくたは札なので弾かない)</summary>
-        [JsonProperty("artifact")]
+        [JsonProperty("artifact", NullValueHandling = NullValueHandling.Ignore)]
         public int? Artifact { get; init; }
         /// <summary>このターン (自ターン開始〜次の自ターン開始) に敵の攻撃で失ったHPの累計 (脈打つ欠片=1ターンの損失上限の参照)</summary>
-        [JsonProperty("hpLostThisTurn")]
+        [JsonProperty("hpLostThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? HpLostThisTurn { get; init; }
     }
 
@@ -351,70 +351,70 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("node")]
         public string Node { get; init; } = default!;
         /// <summary>直近に宣言した技の id (新しい順・最大3件。noRepeat / maxRepeat の判定用)</summary>
-        [JsonProperty("lastMoves")]
+        [JsonProperty("lastMoves", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? LastMoves { get; init; }
         /// <summary>once の腕で着地した技の id (1戦闘1回の判定用)</summary>
-        [JsonProperty("usedOnce")]
+        [JsonProperty("usedOnce", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? UsedOnce { get; init; }
         /// <summary>発火済みの割り込み (def.interrupts の添字)</summary>
-        [JsonProperty("firedInterrupts")]
+        [JsonProperty("firedInterrupts", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<int>? FiredInterrupts { get; init; }
         /// <summary>宣言済みの意図の技 id (即時差し替えで取り消す時に宣言回数を戻す)</summary>
-        [JsonProperty("intentMoveId")]
+        [JsonProperty("intentMoveId", NullValueHandling = NullValueHandling.Ignore)]
         public string? IntentMoveId { get; init; }
         /// <summary>宣言済みの意図の節 id (割り込みの from 照合に使う: カーソルは次の節へ進んでいるが、敵はまだその節の技を構えている)</summary>
-        [JsonProperty("intentNode")]
+        [JsonProperty("intentNode", NullValueHandling = NullValueHandling.Ignore)]
         public string? IntentNode { get; init; }
         /// <summary>この敵の死亡に対する弔い強化 (mournStrength) が処理済みか (死亡した敵側に立てる)</summary>
-        [JsonProperty("mournProcessed")]
+        [JsonProperty("mournProcessed", NullValueHandling = NullValueHandling.Ignore)]
         public bool? MournProcessed { get; init; }
         /// <summary>ターン装甲の累計 (このターンに受けたHP損失。自ターン開始でリセット)</summary>
-        [JsonProperty("damageThisTurn")]
+        [JsonProperty("damageThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? DamageThisTurn { get; init; }
         /// <summary>アーティファクトの残チャージ (戦闘開始時に def.artifact から)</summary>
-        [JsonProperty("artifact")]
+        [JsonProperty("artifact", NullValueHandling = NullValueHandling.Ignore)]
         public int? Artifact { get; init; }
         /// <summary>技ごとの宣言回数 (moveId → 回数)。技の恒久成長 (growPerUse) と条件 usesAtLeast が共有する</summary>
-        [JsonProperty("moveUses")]
+        [JsonProperty("moveUses", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, int>? MoveUses { get; init; }
         /// <summary>威圧 (2026-09-03 本家 Weak 化=案B): 次のN回の攻撃行動の与ダメ-25% (切り捨て・最低1)。攻撃行動を実行するたび1減る。旧セーブは undefined=0</summary>
-        [JsonProperty("weak")]
+        [JsonProperty("weak", NullValueHandling = NullValueHandling.Ignore)]
         public int? Weak { get; init; }
         /// <summary>潜伏中 (殻が残っている間 true。割れたら false)</summary>
-        [JsonProperty("burrowActive")]
+        [JsonProperty("burrowActive", NullValueHandling = NullValueHandling.Ignore)]
         public bool? BurrowActive { get; init; }
         /// <summary>殻が敵フェーズ中に割れた: 次の宣言を噛みつきに差し替える</summary>
-        [JsonProperty("biteNext")]
+        [JsonProperty("biteNext", NullValueHandling = NullValueHandling.Ignore)]
         public bool? BiteNext { get; init; }
         /// <summary>バランス崩し: 直前の攻撃を完全に防がれた = 次の宣言は隙</summary>
-        [JsonProperty("staggeredNext")]
+        [JsonProperty("staggeredNext", NullValueHandling = NullValueHandling.Ignore)]
         public bool? StaggeredNext { get; init; }
         /// <summary>編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」)</summary>
-        [JsonProperty("noReactTable")]
+        [JsonProperty("noReactTable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoReactTable { get; init; }
         /// <summary>装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可)</summary>
-        [JsonProperty("armor")]
+        [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
         /// <summary>打点倍率 (2026-09-01 ユーザー裁定「幕2/3の打点+15%」)。攻撃の基礎値に乗算して四捨五入 (強化は倍率の後に加算)。幕2/3の通常戦闘のみ = ボス・エリートは各自の校正のため1</summary>
-        [JsonProperty("atkScale")]
+        [JsonProperty("atkScale", NullValueHandling = NullValueHandling.Ignore)]
         public double? AtkScale { get; init; }
         /// <summary>この戦闘で受けた累計ダメージ (enrageEveryDamage の判定用。2026-08-30)</summary>
-        [JsonProperty("damageTakenTotal")]
+        [JsonProperty("damageTakenTotal", NullValueHandling = NullValueHandling.Ignore)]
         public int? DamageTakenTotal { get; init; }
         /// <summary>前回の再生判定以降に受けた累計HP損失 (regenBreak の判定用。再生判定のたびにリセット)</summary>
-        [JsonProperty("hpLostSinceRegen")]
+        [JsonProperty("hpLostSinceRegen", NullValueHandling = NullValueHandling.Ignore)]
         public int? HpLostSinceRegen { get; init; }
         /// <summary>とげ: プレイヤーの攻撃ヒットごとにNダメ反射 (defからコピー。確定済みルール表「とげ（敵の報復）」)</summary>
-        [JsonProperty("thorns")]
+        [JsonProperty("thorns", NullValueHandling = NullValueHandling.Ignore)]
         public int? Thorns { get; init; }
         /// <summary>盗みで抱えているゴールド。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」)</summary>
-        [JsonProperty("stolenGold")]
+        [JsonProperty("stolenGold", NullValueHandling = NullValueHandling.Ignore)]
         public int? StolenGold { get; init; }
         /// <summary>逃走済み (hp:0とセットで立つ = 既存の死亡判定がそのまま勝利判定に使える)</summary>
-        [JsonProperty("fled")]
+        [JsonProperty("fled", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Fled { get; init; }
         /// <summary>分裂済み (2026-09-02)。倒れた分裂親が二度と分裂しないためのフラグ</summary>
-        [JsonProperty("split")]
+        [JsonProperty("split", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Split { get; init; }
     }
 
@@ -427,31 +427,31 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("actual")]
         public int Actual { get; init; }
         /// <summary>攻撃の素の値 (ロール×打点倍率。筋力抜き)。攻撃以外は無い</summary>
-        [JsonProperty("base")]
+        [JsonProperty("base", NullValueHandling = NullValueHandling.Ignore)]
         public int? Base { get; init; }
         /// <summary>連撃: ヒット数 (省略時1)。幅表示は「per-hit×N」</summary>
-        [JsonProperty("hits")]
+        [JsonProperty("hits", NullValueHandling = NullValueHandling.Ignore)]
         public int? Hits { get; init; }
         /// <summary>手数の鏡: 実行時にヒット数=このターンのプレイ枚数 (最低1) になる。表示は「×手数」</summary>
-        [JsonProperty("mirrorHits")]
+        [JsonProperty("mirrorHits", NullValueHandling = NullValueHandling.Ignore)]
         public bool? MirrorHits { get; init; }
         /// <summary>状態異常の付与予告 (意図表示に出す = フェアネス。確定済みルール表「状態異常」)</summary>
-        [JsonProperty("inflict")]
+        [JsonProperty("inflict", NullValueHandling = NullValueHandling.Ignore)]
         public StatusInflict? Inflict { get; init; }
         /// <summary>攻防一体: 攻撃と同時に得る固定ブロック (意図表示「⚔️N+🛡️M」。確定済みルール表「攻防一体・隙」)</summary>
-        [JsonProperty("alsoDefend")]
+        [JsonProperty("alsoDefend", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlsoDefend { get; init; }
         /// <summary>攻撃と同時に強化+N (2026-09-01 敵圧監査。バフ専用ターン=無償ターンを作らずに雪だるまを初手から見せる)</summary>
-        [JsonProperty("alsoBuff")]
+        [JsonProperty("alsoBuff", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlsoBuff { get; init; }
         /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
-        [JsonProperty("alsoDestroySet")]
+        [JsonProperty("alsoDestroySet", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AlsoDestroySet { get; init; }
         /// <summary>条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。 'set' = 伏せ札がある / 'tokens' = 従者・トークンが場にいる</summary>
-        [JsonProperty("conditionalOn")]
+        [JsonProperty("conditionalOn", NullValueHandling = NullValueHandling.Ignore)]
         public string? ConditionalOn { get; init; }
         /// <summary>conditionalOn を満たす時に実行される分岐</summary>
-        [JsonProperty("alt")]
+        [JsonProperty("alt", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyIntentBranch? Alt { get; init; }
     }
 
@@ -462,17 +462,17 @@ namespace DeckRogue.Engine.Generated
         public string Kind { get; init; } = default!;
         [JsonProperty("actual")]
         public int Actual { get; init; }
-        [JsonProperty("base")]
+        [JsonProperty("base", NullValueHandling = NullValueHandling.Ignore)]
         public int? Base { get; init; }
-        [JsonProperty("hits")]
+        [JsonProperty("hits", NullValueHandling = NullValueHandling.Ignore)]
         public int? Hits { get; init; }
-        [JsonProperty("inflict")]
+        [JsonProperty("inflict", NullValueHandling = NullValueHandling.Ignore)]
         public StatusInflict? Inflict { get; init; }
-        [JsonProperty("alsoDefend")]
+        [JsonProperty("alsoDefend", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlsoDefend { get; init; }
-        [JsonProperty("alsoBuff")]
+        [JsonProperty("alsoBuff", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlsoBuff { get; init; }
-        [JsonProperty("alsoDestroySet")]
+        [JsonProperty("alsoDestroySet", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AlsoDestroySet { get; init; }
     }
 
@@ -480,69 +480,69 @@ namespace DeckRogue.Engine.Generated
     public sealed record EffectCondition
     {
         /// <summary>自分のHPが maxHp×この比率 以下なら発動可 (例: 0.5 = 半分以下)</summary>
-        [JsonProperty("hpAtOrBelowRatio")]
+        [JsonProperty("hpAtOrBelowRatio", NullValueHandling = NullValueHandling.Ignore)]
         public double? HpAtOrBelowRatio { get; init; }
         /// <summary>直前に受けたダメージ (HP減) がこの値以上なら発動可</summary>
-        [JsonProperty("minDamageTaken")]
+        [JsonProperty("minDamageTaken", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinDamageTaken { get; init; }
         /// <summary>敵の行動の実値がこの値以下なら発動可 (pre窓専用。マナ漏出など条件付き打ち消し)</summary>
-        [JsonProperty("maxActionValue")]
+        [JsonProperty("maxActionValue", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxActionValue { get; init; }
         /// <summary>敵の行動の実値がこの値**以上**なら発動可 (pre窓専用。2026-08-26)。 maxActionValue の裏返しで「大技しか止められない打ち消し」を作れる。 敵が育つほど条件が成立するので「脅威は指数的・防御は線形」への直接の答えになる</summary>
-        [JsonProperty("minActionValue")]
+        [JsonProperty("minActionValue", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinActionValue { get; init; }
         /// <summary>成長がこの値以上なら解決/発動可 (緑 2026-09-02 床パッケージ: 成長しきい値。忘却の刻の緑版。 onPlay・置物トリガー・リアクション窓のすべてで「解決の時点」に判定する)</summary>
-        [JsonProperty("minGrowth")]
+        [JsonProperty("minGrowth", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinGrowth { get; init; }
-        [JsonProperty("minMomentum")]
+        [JsonProperty("minMomentum", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinMomentum { get; init; }
         /// <summary>ターン開始時のエナジー上限がN以上なら (緑 上限参照のしきい値化 2026-09-07 ピック監査: 若幹の一撃・大地の唸り。 「上限×2」は人間に読まれないので「上限5以上ならさらに」の形に。ランプ即時利用の廃止と同じくターン開始スナップショットを読む)</summary>
-        [JsonProperty("minEnergyMax")]
+        [JsonProperty("minEnergyMax", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinEnergyMax { get; init; }
         /// <summary>猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上** なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝ 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、 時間依存でなく**しきい値依存**に置き換える機構</summary>
-        [JsonProperty("blaze")]
+        [JsonProperty("blaze", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Blaze { get; init; }
         /// <summary>対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness)</summary>
-        [JsonProperty("enemyIntent")]
+        [JsonProperty("enemyIntent", NullValueHandling = NullValueHandling.Ignore)]
         public string? EnemyIntent { get; init; }
         /// <summary>対象の敵の意図がこの種別**以外**なら (2026-09-04 見切り撃ちの反転: 敵はだいたい攻撃するので「攻撃以外=隙を突く」が稀な条件になる)</summary>
-        [JsonProperty("enemyIntentNot")]
+        [JsonProperty("enemyIntentNot", NullValueHandling = NullValueHandling.Ignore)]
         public string? EnemyIntentNot { get; init; }
         /// <summary>対象の敵が急所を持っていれば (カードのプレイ開始時点で判定=同じカードの前のヒットが急所を消費しても成立。双牙の蔦=本家 Dismantle)</summary>
-        [JsonProperty("enemyExposed")]
+        [JsonProperty("enemyExposed", NullValueHandling = NullValueHandling.Ignore)]
         public bool? EnemyExposed { get; init; }
         /// <summary>直前の敵フェーズで攻撃を受け、HP損失が0だったら (棘の返礼=本家 Flame Barrier/Rage 系の「守り成功」参照)</summary>
-        [JsonProperty("perfectBlockLastPhase")]
+        [JsonProperty("perfectBlockLastPhase", NullValueHandling = NullValueHandling.Ignore)]
         public bool? PerfectBlockLastPhase { get; init; }
         /// <summary>対象の敵がこの解決の時点で倒れていれば (同じカードの前の効果でとどめ。獲物=本家 Feed)</summary>
-        [JsonProperty("targetDead")]
+        [JsonProperty("targetDead", NullValueHandling = NullValueHandling.Ignore)]
         public bool? TargetDead { get; init; }
         /// <summary>リアクション窓専用: 敵の行動の種別がこの中にある時だけ発動できる (緑 共鳴する茨 2026-09-07 ピック監査: 「強化・応援だけを打ち消す1E」= 根の紡ぎ2Eの限定ラダー。条件付きリアクションの罠を避けるため、通常戦の4割で満たす種別に限る)</summary>
-        [JsonProperty("actionKinds")]
+        [JsonProperty("actionKinds", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? ActionKinds { get; init; }
         /// <summary>直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り)</summary>
-        [JsonProperty("lastActionNoHpLoss")]
+        [JsonProperty("lastActionNoHpLoss", NullValueHandling = NullValueHandling.Ignore)]
         public bool? LastActionNoHpLoss { get; init; }
         /// <summary>罠モデル (2026-09-13 守りの蔓・蔦の陣): この効果はリアクションの発動時には解決せず、その敵フェーズの終端で 「完全に凌いだ」(攻撃を1回以上受けてHP損失0) なら解決する。GameState.pendingPhaseEffects に積まれる</summary>
-        [JsonProperty("perfectBlockThisPhase")]
+        [JsonProperty("perfectBlockThisPhase", NullValueHandling = NullValueHandling.Ignore)]
         public bool? PerfectBlockThisPhase { get; init; }
         /// <summary>対象の敵がこの解決の時点で生きていれば (先制の蔦槍=倒せなければ急所。targetDead の逆)</summary>
-        [JsonProperty("targetAlive")]
+        [JsonProperty("targetAlive", NullValueHandling = NullValueHandling.Ignore)]
         public bool? TargetAlive { get; init; }
         /// <summary>このターンに**カードのプレイで**回復していたら (白 2026-09-06 解凍: 修繕の祈り=回復→守りの順番。healsThisTurn&gt;0。過剰回復も数えるが、置物・パッシブの自動回復は数えない=Opusラン W)</summary>
-        [JsonProperty("healedThisTurn")]
+        [JsonProperty("healedThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HealedThisTurn { get; init; }
         /// <summary>戦闘のターン番号がちょうどNなら (角の留め具=T2・舵輪=T3・石の暦=T7。本家の「T2/T3 発火」型 2026-09-12)</summary>
-        [JsonProperty("turn")]
+        [JsonProperty("turn", NullValueHandling = NullValueHandling.Ignore)]
         public int? Turn { get; init; }
         /// <summary>自分のブロックが0なら (山銅の板=本家 Orichalcum。onTurnEnd で読む)</summary>
-        [JsonProperty("blockZero")]
+        [JsonProperty("blockZero", NullValueHandling = NullValueHandling.Ignore)]
         public bool? BlockZero { get; init; }
         /// <summary>このターンに攻撃札を1枚もプレイしていなければ (兵法書=本家 Art of War)</summary>
-        [JsonProperty("noAttackThisTurn")]
+        [JsonProperty("noAttackThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoAttackThisTurn { get; init; }
         /// <summary>このターンの実プレイ枚数がN枚以下なら (懐中時計=本家 Pocketwatch)</summary>
-        [JsonProperty("maxPlaysThisTurn")]
+        [JsonProperty("maxPlaysThisTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxPlaysThisTurn { get; init; }
     }
 
@@ -597,19 +597,19 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("pendingWindow")]
         public PendingWindow? PendingWindow { get; init; }
         /// <summary>リーダーパッシブ・レリック (innate置物) の効果を解決中フラグ (2026-08-31 鬼軍曹の怒りをカード由来の守りに限定するため。遷移中のみ立つ)</summary>
-        [JsonProperty("innateResolving")]
+        [JsonProperty("innateResolving", NullValueHandling = NullValueHandling.Ignore)]
         public bool? InnateResolving { get; init; }
         /// <summary>カードの onPlay 効果を解決中フラグ (2026-09-01 虚弱を「カードのプレイで得るブロック」に限定するため。遷移中のみ立つ)</summary>
-        [JsonProperty("resolvingCardPlay")]
+        [JsonProperty("resolvingCardPlay", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ResolvingCardPlay { get; init; }
         /// <summary>成長/勢いの獲得誘発 (onGrowthGained/onMomentumGained) を解決中フラグ (2026-09-02)。誘発の中の加算は再誘発しない = 1段で止める</summary>
-        [JsonProperty("resolvingGainTrigger")]
+        [JsonProperty("resolvingGainTrigger", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ResolvingGainTrigger { get; init; }
         /// <summary>次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス)</summary>
         [JsonProperty("negateNextAction")]
         public bool NegateNextAction { get; init; }
         /// <summary>敵フェーズ中 (2026-09-14)。phase は敵フェーズの同期処理中も 'player-turn' のままなので、「自ターン中か敵フェーズ中か」は この旗で読む。EndTurn で立ち、次の自ターン開始で降りる (確認ウィンドウで中断・再開しても持ち越す)。 割り込みの即時差し替え・出現した敵の宣言・潜伏の殻割れの差し替えは、この旗が降りている時 (自ターン中) だけ</summary>
-        [JsonProperty("enemyPhase")]
+        [JsonProperty("enemyPhase", NullValueHandling = NullValueHandling.Ignore)]
         public bool? EnemyPhase { get; init; }
         /// <summary>敵の1行動につきリアクション1回まで、の消費フラグ。各行動の実行開始時にリセット (確定済みルール表「リアクション回数」)</summary>
         [JsonProperty("reactionUsedThisAction")]
@@ -618,76 +618,76 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("lastAction")]
         public GameStateLastAction? LastAction { get; init; }
         /// <summary>鬼軍曹の怒り (angerOnBlock) がこのカードのプレイで既に1回発火したか (2026-09-06 裁定: 1枚のプレイで1回だけ。修繕の祈り=ブロック6+条件ブロック6 が2回怒らせていた)</summary>
-        [JsonProperty("angerFiredThisPlay")]
+        [JsonProperty("angerFiredThisPlay", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AngerFiredThisPlay { get; init; }
         /// <summary>直前に場に出た置物の uid (駆けつけ=ひなた 2026-09-06: onPermanentEntered の解決中に「誰が出たか」を読む)</summary>
-        [JsonProperty("lastEnteredPermanentUid")]
+        [JsonProperty("lastEnteredPermanentUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? LastEnteredPermanentUid { get; init; }
         /// <summary>発生済みイベントログ (リプレイ・シミュレーション統計の材料)</summary>
         [JsonProperty("eventLog")]
         public IReadOnlyList<GameEvent> EventLog { get; init; } = default!;
         /// <summary>C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional</summary>
-        [JsonProperty("setDamageReduction")]
+        [JsonProperty("setDamageReduction", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetDamageReduction { get; init; }
         /// <summary>実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts)</summary>
-        [JsonProperty("setAnyCards")]
+        [JsonProperty("setAnyCards", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SetAnyCards { get; init; }
         /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (期限切れの) 罠は捨て札でなく手札に戻る</summary>
-        [JsonProperty("expireToHand")]
+        [JsonProperty("expireToHand", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ExpireToHand { get; init; }
         /// <summary>罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする</summary>
-        [JsonProperty("pendingPhaseEffects")]
+        [JsonProperty("pendingPhaseEffects", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<GameStatePendingPhaseEffects>? PendingPhaseEffects { get; init; }
         /// <summary>カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット)</summary>
-        [JsonProperty("resolvingExposedAtStart")]
+        [JsonProperty("resolvingExposedAtStart", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<int>? ResolvingExposedAtStart { get; init; }
         /// <summary>C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N</summary>
-        [JsonProperty("energyMaxRefBonus")]
+        [JsonProperty("energyMaxRefBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? EnergyMaxRefBonus { get; init; }
         /// <summary>C型レリック (収穫の鎌 2026-09-03): 成長放出のあと成長がN残る</summary>
-        [JsonProperty("harvestKeep")]
+        [JsonProperty("harvestKeep", NullValueHandling = NullValueHandling.Ignore)]
         public int? HarvestKeep { get; init; }
         /// <summary>次の自ターン開始時に追加でドロー/一時マナ/ブロック (百年の謎かけ・兵法書・自ら固まる粘土。適用したら消える)</summary>
-        [JsonProperty("nextTurnDraw")]
+        [JsonProperty("nextTurnDraw", NullValueHandling = NullValueHandling.Ignore)]
         public int? NextTurnDraw { get; init; }
-        [JsonProperty("nextTurnEnergy")]
+        [JsonProperty("nextTurnEnergy", NullValueHandling = NullValueHandling.Ignore)]
         public int? NextTurnEnergy { get; init; }
-        [JsonProperty("nextTurnBlock")]
+        [JsonProperty("nextTurnBlock", NullValueHandling = NullValueHandling.Ignore)]
         public int? NextTurnBlock { get; init; }
         /// <summary>C型: 手札を捨てない (ルーンの角錐。火傷の1回きり・衝動の失効は従来どおり)</summary>
-        [JsonProperty("retainHand")]
+        [JsonProperty("retainHand", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RetainHand { get; init; }
         /// <summary>C型: 余ったエナジーを次の自ターンへ持ち越す (溶けない氷菓)</summary>
-        [JsonProperty("energyCarry")]
+        [JsonProperty("energyCarry", NullValueHandling = NullValueHandling.Ignore)]
         public bool? EnergyCarry { get; init; }
         /// <summary>C型: 自ターン開始時にブロックをN持ち越す (頑丈な留め具)</summary>
-        [JsonProperty("blockKeep")]
+        [JsonProperty("blockKeep", NullValueHandling = NullValueHandling.Ignore)]
         public int? BlockKeep { get; init; }
         /// <summary>C型: X札の X に+N (増幅の薬。支払いは増えない)</summary>
-        [JsonProperty("xBonus")]
+        [JsonProperty("xBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? XBonus { get; init; }
         /// <summary>C型: 敵の攻撃の各ヒットのHP損失-N (重金の棒。最低0)</summary>
-        [JsonProperty("hpLossReduce")]
+        [JsonProperty("hpLossReduce", NullValueHandling = NullValueHandling.Ignore)]
         public int? HpLossReduce { get; init; }
         /// <summary>C型: 敵の攻撃の1ヒットの未ブロック分がN以下なら1になる (古い門柱=本家 Torii)</summary>
-        [JsonProperty("smallHitToOne")]
+        [JsonProperty("smallHitToOne", NullValueHandling = NullValueHandling.Ignore)]
         public int? SmallHitToOne { get; init; }
         /// <summary>C型: 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片=StS2 Beating Remnant。免疫は作らない裁定の器)</summary>
-        [JsonProperty("maxHpLossPerTurn")]
+        [JsonProperty("maxHpLossPerTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHpLossPerTurn { get; init; }
         /// <summary>C型: 致死ダメージを1度だけ耐えて最大HPの半分で立つ (蜥蜴の尾。ランで1度 = run 層が deathSaveUsed を読んで以後注入しない)</summary>
-        [JsonProperty("deathSave")]
+        [JsonProperty("deathSave", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DeathSave { get; init; }
-        [JsonProperty("deathSaveUsed")]
+        [JsonProperty("deathSaveUsed", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DeathSaveUsed { get; init; }
         /// <summary>C型: 1ターンにプレイできる枚数の上限 (天鵞絨の首輪=6。拘束の3と併存=小さい方)</summary>
-        [JsonProperty("playCap")]
+        [JsonProperty("playCap", NullValueHandling = NullValueHandling.Ignore)]
         public int? PlayCap { get; init; }
         /// <summary>C型: 敵の意図を表示しない (ルーンの円蓋。エンジンの宣言・分岐・確認ウィンドウは不変 = 表示層だけが隠す)</summary>
-        [JsonProperty("hideIntents")]
+        [JsonProperty("hideIntents", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HideIntents { get; init; }
         /// <summary>C型: 烙印をプレイできる (青い蝋燭: 0E・HP-1・消滅)</summary>
-        [JsonProperty("brandsPlayable")]
+        [JsonProperty("brandsPlayable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? BrandsPlayable { get; init; }
     }
 
@@ -709,13 +709,13 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("enemyId")]
         public string EnemyId { get; init; } = default!;
         /// <summary>使用デッキ (data/decks.json の id)。省略時は 'starter'</summary>
-        [JsonProperty("deckId")]
+        [JsonProperty("deckId", NullValueHandling = NullValueHandling.Ignore)]
         public string? DeckId { get; init; }
         /// <summary>検証用: カードIDの並びからデッキを組む (deckId より優先。工房産 fused_ / fusion_ の id も可。2026-09-05 工房検証ハーネス)</summary>
-        [JsonProperty("cardIds")]
+        [JsonProperty("cardIds", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? CardIds { get; init; }
         /// <summary>リーダー (data/leaders.json の id)。省略時はリーダーなしの素のルール</summary>
-        [JsonProperty("leaderId")]
+        [JsonProperty("leaderId", NullValueHandling = NullValueHandling.Ignore)]
         public string? LeaderId { get; init; }
     }
 
@@ -727,31 +727,31 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
         /// <summary>選択式カード (modes) 用: 選んだモードの添字。modes を持つカードでは必須</summary>
-        [JsonProperty("modeIndex")]
+        [JsonProperty("modeIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? ModeIndex { get; init; }
         /// <summary>手札捨てコスト (discardCost) 用: 追加コストとして捨てる手札の uid。discardCost 枚数ぶん必須</summary>
-        [JsonProperty("discardUids")]
+        [JsonProperty("discardUids", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? DiscardUids { get; init; }
         /// <summary>単体対象カード用: 対象の敵 index。生存敵が2体以上いる場合は必須 (StS式ターゲティング)</summary>
-        [JsonProperty("targetIndex")]
+        [JsonProperty("targetIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? TargetIndex { get; init; }
         /// <summary>消滅コスト (exhaustCost) 用: 追加コストとして消滅させる手札の uid。exhaustCost 枚数ぶん必須</summary>
-        [JsonProperty("exhaustUids")]
+        [JsonProperty("exhaustUids", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? ExhaustUids { get; init; }
         /// <summary>retrieveFromExhaust / playFromExhaust 用: 消滅置き場から選ぶカードの uid</summary>
-        [JsonProperty("retrieveUid")]
+        [JsonProperty("retrieveUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? RetrieveUid { get; init; }
         /// <summary>exhaustFromDeckChoose (引導) 用: 山札か捨て札から選んで消滅させるカードの uid。retrieveFromDiscard (捨て札から) / searchDeck (山札から) も同じ欄で選ぶ</summary>
-        [JsonProperty("deckUids")]
+        [JsonProperty("deckUids", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? DeckUids { get; init; }
         /// <summary>upgradeInHand (研ぎ澄まし) 用: この戦闘中鍛える手札の uid (自身は選べない。鍛えられる札が無ければ省略可)</summary>
-        [JsonProperty("handUids")]
+        [JsonProperty("handUids", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? HandUids { get; init; }
         /// <summary>Xコスト札用 (2026-09-03): 支払うX (1〜現在のエナジー)。省略時は全部払う</summary>
-        [JsonProperty("xAmount")]
+        [JsonProperty("xAmount", NullValueHandling = NullValueHandling.Ignore)]
         public int? XAmount { get; init; }
         /// <summary>sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid</summary>
-        [JsonProperty("permanentUid")]
+        [JsonProperty("permanentUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? PermanentUid { get; init; }
     }
 
@@ -780,7 +780,7 @@ namespace DeckRogue.Engine.Generated
         public Command_PlayNecro() { Type = TypeTag; }
         [JsonProperty("cardUid")]
         public string CardUid { get; init; } = default!;
-        [JsonProperty("targetIndex")]
+        [JsonProperty("targetIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? TargetIndex { get; init; }
     }
 
@@ -801,7 +801,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("fire")]
         public bool Fire { get; init; }
         /// <summary>伏せ2枚 (かすみ) 用: 発動する伏せ札の uid。窓に合致する伏せが複数ある時に指定。省略時は先頭の合致札</summary>
-        [JsonProperty("cardUid")]
+        [JsonProperty("cardUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? CardUid { get; init; }
     }
 
@@ -835,7 +835,7 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_TurnStarted() { Type = TypeTag; }
         [JsonProperty("turn")]
         public int Turn { get; init; }
-        [JsonProperty("hand")]
+        [JsonProperty("hand", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? Hand { get; init; }
     }
 
@@ -846,7 +846,7 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_TurnEnded() { Type = TypeTag; }
         [JsonProperty("turn")]
         public int Turn { get; init; }
-        [JsonProperty("unplayed")]
+        [JsonProperty("unplayed", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? Unplayed { get; init; }
     }
 
@@ -857,7 +857,7 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_CardsDrawn() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
-        [JsonProperty("cards")]
+        [JsonProperty("cards", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? Cards { get; init; }
     }
 
@@ -972,19 +972,19 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("hpLoss")]
         public int HpLoss { get; init; }
         /// <summary>関与した敵 (source=playerなら対象、enemyなら攻撃者)。UIの結果演出用 (2026-09-01)</summary>
-        [JsonProperty("enemyIndex")]
+        [JsonProperty("enemyIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? EnemyIndex { get; init; }
         /// <summary>装甲で切り捨てられた量 (2026-08-31 収穫ラン指摘「切られた量が見えないと積むのをやめる判断を学習できない」)</summary>
-        [JsonProperty("armorCut")]
+        [JsonProperty("armorCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? ArmorCut { get; init; }
         /// <summary>ターン装甲で切り捨てられた量 (2026-09-02)</summary>
-        [JsonProperty("turnArmorCut")]
+        [JsonProperty("turnArmorCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? TurnArmorCut { get; init; }
         /// <summary>潜伏の殻で捨てられた超過ぶん</summary>
-        [JsonProperty("burrowCut")]
+        [JsonProperty("burrowCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? BurrowCut { get; init; }
         /// <summary>因縁 (無形ターン) で1に固定されて消えたぶん</summary>
-        [JsonProperty("nemesisCut")]
+        [JsonProperty("nemesisCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? NemesisCut { get; init; }
     }
 
@@ -1196,9 +1196,9 @@ namespace DeckRogue.Engine.Generated
         public string Trigger { get; init; } = default!;
         [JsonProperty("replaced")]
         public bool Replaced { get; init; }
-        [JsonProperty("before")]
+        [JsonProperty("before", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyIntent? Before { get; init; }
-        [JsonProperty("after")]
+        [JsonProperty("after", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyIntent? After { get; init; }
     }
 
@@ -1260,7 +1260,7 @@ namespace DeckRogue.Engine.Generated
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
-        [JsonProperty("reason")]
+        [JsonProperty("reason", NullValueHandling = NullValueHandling.Ignore)]
         public string? Reason { get; init; }
     }
 
@@ -1561,7 +1561,7 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_CardsMilled() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
-        [JsonProperty("cardIds")]
+        [JsonProperty("cardIds", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? CardIds { get; init; }
     }
 
@@ -1706,52 +1706,52 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("trigger")]
         public string Trigger { get; init; } = default!;
         /// <summary>誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針)</summary>
-        [JsonProperty("condition")]
+        [JsonProperty("condition", NullValueHandling = NullValueHandling.Ignore)]
         public EffectCondition? Condition { get; init; }
         /// <summary>N回目の誘発ごとに1回だけ解決する (本家のカウンター型 2026-09-12: 投げ刃の束=攻撃3枚ごと・墨壺=10枚ごと・陽気な花=3ターンごと)。 カウンタは置物インスタンスが持つ (CardInstance.triggerCounts / turnTriggerCounts)。条件 (condition) を満たした誘発だけ数える</summary>
-        [JsonProperty("every")]
+        [JsonProperty("every", NullValueHandling = NullValueHandling.Ignore)]
         public int? Every { get; init; }
         /// <summary>every のカウンタの寿命。'turn'=自ターン開始でリセット (1ターンに攻撃3枚)・'combat'=戦闘内累計 (既定)</summary>
-        [JsonProperty("everyScope")]
+        [JsonProperty("everyScope", NullValueHandling = NullValueHandling.Ignore)]
         public string? EveryScope { get; init; }
         /// <summary>戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ)</summary>
-        [JsonProperty("once")]
+        [JsonProperty("once", NullValueHandling = NullValueHandling.Ignore)]
         public string? Once { get; init; }
         /// <summary>ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03)</summary>
-        [JsonProperty("growthMultiplier")]
+        [JsonProperty("growthMultiplier", NullValueHandling = NullValueHandling.Ignore)]
         public double? GrowthMultiplier { get; init; }
         /// <summary>勢いが×Nで乗る (猛進の角=大牙の勢い版。緑 勢いの網 2026-09-04)。dealDamage 専用</summary>
-        [JsonProperty("momentumMultiplier")]
+        [JsonProperty("momentumMultiplier", NullValueHandling = NullValueHandling.Ignore)]
         public double? MomentumMultiplier { get; init; }
         /// <summary>dischargeMomentumVolley のヒット数 (既定3)</summary>
-        [JsonProperty("volleyHits")]
+        [JsonProperty("volleyHits", NullValueHandling = NullValueHandling.Ignore)]
         public int? VolleyHits { get; init; }
         [JsonProperty("effect")]
         public string Effect { get; init; } = default!;
-        [JsonProperty("amount")]
+        [JsonProperty("amount", NullValueHandling = NullValueHandling.Ignore)]
         public int? Amount { get; init; }
         /// <summary>dealDamageRandom 用: ロールの上限 (下限は amount)</summary>
-        [JsonProperty("amountMax")]
+        [JsonProperty("amountMax", NullValueHandling = NullValueHandling.Ignore)]
         public int? AmountMax { get; init; }
         /// <summary>貫通 (トランプル): このダメージは敵ブロックを無視する。dealDamage 系のみ有効</summary>
-        [JsonProperty("pierce")]
+        [JsonProperty("pierce", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Pierce { get; init; }
         /// <summary>Xコスト札専用: この効果を支払ったX回ぶん繰り返す (大角の暴走=6ダメ×X貫通)</summary>
-        [JsonProperty("xHits")]
+        [JsonProperty("xHits", NullValueHandling = NullValueHandling.Ignore)]
         public bool? XHits { get; init; }
         /// <summary>dealDamagePerBlock 用: 解決後にブロックを全て失う (壁を売り払う)。VPの二重計上を消す歯止め</summary>
-        [JsonProperty("spendBlock")]
+        [JsonProperty("spendBlock", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SpendBlock { get; init; }
         /// <summary>全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体</summary>
-        [JsonProperty("target")]
+        [JsonProperty("target", NullValueHandling = NullValueHandling.Ignore)]
         public string? Target { get; init; }
         /// <summary>summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire)</summary>
-        [JsonProperty("summonId")]
+        [JsonProperty("summonId", NullValueHandling = NullValueHandling.Ignore)]
         public string? SummonId { get; init; }
         /// <summary>忘却の刻 (黒のしきい値。確定済みルール表「忘却の刻」): 消滅置き場がこの枚数以上なら amount の代わりに amountMax を使う。dealDamageRandom / dealDamageExecute とは併用しない</summary>
-        [JsonProperty("exhaustThreshold")]
+        [JsonProperty("exhaustThreshold", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExhaustThreshold { get; init; }
-        [JsonProperty("scriptId")]
+        [JsonProperty("scriptId", NullValueHandling = NullValueHandling.Ignore)]
         public string? ScriptId { get; init; }
     }
 
@@ -1767,11 +1767,11 @@ namespace DeckRogue.Engine.Generated
     /// <summary>?マス (イベント) の結果効果 (ギャンブルの当たり/外れ用)</summary>
     public sealed record EventOutcome
     {
-        [JsonProperty("gold")]
+        [JsonProperty("gold", NullValueHandling = NullValueHandling.Ignore)]
         public int? Gold { get; init; }
-        [JsonProperty("hp")]
+        [JsonProperty("hp", NullValueHandling = NullValueHandling.Ignore)]
         public int? Hp { get; init; }
-        [JsonProperty("wounds")]
+        [JsonProperty("wounds", NullValueHandling = NullValueHandling.Ignore)]
         public int? Wounds { get; init; }
     }
 
@@ -1792,55 +1792,55 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("label")]
         public string Label { get; init; } = default!;
         /// <summary>ゴールド増減 (負値は支払い)</summary>
-        [JsonProperty("gold")]
+        [JsonProperty("gold", NullValueHandling = NullValueHandling.Ignore)]
         public int? Gold { get; init; }
         /// <summary>HP増減 (最大HPまで。負値は自傷。0未満にはならず、0になったらラン敗北)</summary>
-        [JsonProperty("hp")]
+        [JsonProperty("hp", NullValueHandling = NullValueHandling.Ignore)]
         public int? Hp { get; init; }
         /// <summary>最大HP増加 (現在HPも同量増える)</summary>
-        [JsonProperty("maxHp")]
+        [JsonProperty("maxHp", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHp { get; init; }
         /// <summary>負傷カードをデッキに混入する枚数</summary>
-        [JsonProperty("wounds")]
+        [JsonProperty("wounds", NullValueHandling = NullValueHandling.Ignore)]
         public int? Wounds { get; init; }
         /// <summary>呪いの烙印 (2026-09-02 呪いイベント): 自ターン終了時に手札にあるとHP-1の恒久札をデッキに混入</summary>
-        [JsonProperty("brands")]
+        [JsonProperty("brands", NullValueHandling = NullValueHandling.Ignore)]
         public int? Brands { get; init; }
         /// <summary>仮初の烙印 (2026-09-02 時限呪い): 滞留HP-1は烙印と同じだが5戦で自然消滅する札をN枚混入</summary>
-        [JsonProperty("timedCurses")]
+        [JsonProperty("timedCurses", NullValueHandling = NullValueHandling.Ignore)]
         public int? TimedCurses { get; init; }
         /// <summary>色プールからランダムなカードをN枚獲得</summary>
-        [JsonProperty("addRandomCards")]
+        [JsonProperty("addRandomCards", NullValueHandling = NullValueHandling.Ignore)]
         public int? AddRandomCards { get; init; }
         /// <summary>レリック候補列の次の1個を獲得 (上限なら何も起きない)</summary>
-        [JsonProperty("relic")]
+        [JsonProperty("relic", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Relic { get; init; }
         /// <summary>デッキから1枚を除去 (EventChoice.cardIndex で対象指定)</summary>
-        [JsonProperty("removeCard")]
+        [JsonProperty("removeCard", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RemoveCard { get; init; }
         /// <summary>デッキの1枚を鍛える (EventChoice.cardIndex で対象指定)</summary>
-        [JsonProperty("upgradeCard")]
+        [JsonProperty("upgradeCard", NullValueHandling = NullValueHandling.Ignore)]
         public bool? UpgradeCard { get; init; }
         /// <summary>この選択肢に必要な所持ゴールド (不足なら選べない)</summary>
-        [JsonProperty("requireGold")]
+        [JsonProperty("requireGold", NullValueHandling = NullValueHandling.Ignore)]
         public int? RequireGold { get; init; }
         /// <summary>ギャンブル: chance の確率で win、外れたら lose (ロールはラン RNG = 決定的)</summary>
-        [JsonProperty("gamble")]
+        [JsonProperty("gamble", NullValueHandling = NullValueHandling.Ignore)]
         public EventChoiceDefGamble? Gamble { get; init; }
         /// <summary>現在HPを「最大HPの比率」で増減 (正=回復・負=ダメージ。切り捨て)。 本家イベントの過半が最大HP比。固定値だとリーダー間 (80/75/65/60) で意味が壊れる</summary>
-        [JsonProperty("hpRatio")]
+        [JsonProperty("hpRatio", NullValueHandling = NullValueHandling.Ignore)]
         public double? HpRatio { get; init; }
         /// <summary>cardIndex の1枚を除去し、同じレアリティの別のカードに置き換える (本家 Transmogrifier)</summary>
-        [JsonProperty("transformCard")]
+        [JsonProperty("transformCard", NullValueHandling = NullValueHandling.Ignore)]
         public bool? TransformCard { get; init; }
         /// <summary>cardIndex の1枚を複製する (本家 Duplicator)</summary>
-        [JsonProperty("duplicateCard")]
+        [JsonProperty("duplicateCard", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DuplicateCard { get; init; }
         /// <summary>強化可能な札からランダムにN枚を鍛える (対象選択は不要。本家 Shining Light)</summary>
-        [JsonProperty("upgradeRandomCards")]
+        [JsonProperty("upgradeRandomCards", NullValueHandling = NullValueHandling.Ignore)]
         public int? UpgradeRandomCards { get; init; }
         /// <summary>デッキの負傷カードを全て取り除く (本家 The Divine Fountain)。0枚なら何も起きない</summary>
-        [JsonProperty("removeAllWounds")]
+        [JsonProperty("removeAllWounds", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RemoveAllWounds { get; init; }
     }
 
@@ -1850,14 +1850,14 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("id")]
         public string Id { get; init; } = default!;
         /// <summary>層 (本家の3層構造。2026-08-29)。省略=幕専用 (引いたら二度と出ない) / shrine=祠 (幕をまたぐと復活する) / oneTime=1ランで1回</summary>
-        [JsonProperty("kind")]
+        [JsonProperty("kind", NullValueHandling = NullValueHandling.Ignore)]
         public string? Kind { get; init; }
         /// <summary>出現する幕。省略=全幕 (祠・ワンタイムの既定)</summary>
-        [JsonProperty("act")]
+        [JsonProperty("act", NullValueHandling = NullValueHandling.Ignore)]
         public int? Act { get; init; }
         [JsonProperty("name")]
         public string Name { get; init; } = default!;
-        [JsonProperty("sprite")]
+        [JsonProperty("sprite", NullValueHandling = NullValueHandling.Ignore)]
         public string? Sprite { get; init; }
         [JsonProperty("flavor")]
         public string Flavor { get; init; } = default!;
@@ -1869,16 +1869,16 @@ namespace DeckRogue.Engine.Generated
     public sealed record CardDef
     {
         /// <summary>レアリティ (確定済みルール表「レアリティ」2026-08-29)。報酬抽選はスロットごとに コモン60%/アンコモン37%/レア3%の本家比率。未指定はコモン扱い (凍結色は解凍時に割当)</summary>
-        [JsonProperty("rarity")]
+        [JsonProperty("rarity", NullValueHandling = NullValueHandling.Ignore)]
         public string? Rarity { get; init; }
         /// <summary>Xコスト (確定済みルール表「Xコスト」2026-08-29): プレイ時に現在のエナジーを全て支払い、 支払った量Xを xHits 効果が参照する。プレイ条件はエナジー1以上。割引の対象外。 **払う量 X は 1〜現在のエナジーから選ぶ (PlayCard.xAmount。省略=全部)。上限は無い (2026-09-03 一時置いた上限4は同日撤廃=本家形: 効率を本家の比率〔1Eコモンの約80%〕に合わせ、X の大きさで制限しない)** cost フィールドは名目値 (カーブ集計用に1を置く)</summary>
-        [JsonProperty("xCost")]
+        [JsonProperty("xCost", NullValueHandling = NullValueHandling.Ignore)]
         public bool? XCost { get; init; }
         /// <summary>猛り火 (延焼合計8以上) の間、このカードのコストがこの値だけ下がる (2026-08-30)</summary>
-        [JsonProperty("blazeDiscount")]
+        [JsonProperty("blazeDiscount", NullValueHandling = NullValueHandling.Ignore)]
         public int? BlazeDiscount { get; init; }
         /// <summary>アーキタイプの軸 (報酬抽選の重み付け用。確定済みルール表「軸の重み付け」)。 効果名から自動導出できない札 (多段ヒットの成長ペイオフ・貫通のトランプル札など) だけ明示する。</summary>
-        [JsonProperty("axis")]
+        [JsonProperty("axis", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? Axis { get; init; }
         [JsonProperty("id")]
         public string Id { get; init; } = default!;
@@ -1895,52 +1895,52 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("effects")]
         public IReadOnlyList<DeclarativeEffect> Effects { get; init; } = default!;
         /// <summary>選択式: プレイ時に modes から1つを選んで解決する</summary>
-        [JsonProperty("modes")]
+        [JsonProperty("modes", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<CardMode>? Modes { get; init; }
         /// <summary>消滅: 使用後この戦闘から除外される</summary>
-        [JsonProperty("exhaust")]
+        [JsonProperty("exhaust", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Exhaust { get; init; }
         /// <summary>保持 (2026-09-02): 敵ターン終了後の全捨てで手札に残る (StS Retain)。4E以上の大型がランプ前に死ぬのを止め「いつ撃つか」の札にする</summary>
-        [JsonProperty("retain")]
+        [JsonProperty("retain", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Retain { get; init; }
         /// <summary>期限なしの罠 (2026-09-13 大樹の守り手): 伏せ場で期限が来ない (2窓の寿命を無視)。準備ターンは普通に鳴らない</summary>
-        [JsonProperty("trapPersist")]
+        [JsonProperty("trapPersist", NullValueHandling = NullValueHandling.Ignore)]
         public bool? TrapPersist { get; init; }
         /// <summary>手札の他の札がすべて物理なら0E (年輪=本家 Clash。手札参照 2026-09-03)</summary>
-        [JsonProperty("freeIfHandAllPhysical")]
+        [JsonProperty("freeIfHandAllPhysical", NullValueHandling = NullValueHandling.Ignore)]
         public bool? FreeIfHandAllPhysical { get; init; }
         /// <summary>手札の他の札がすべてこのタイプなら0E (freeIfHandAllPhysical の一般化。白の大城壁='spell' 2026-09-06。判定は自身を除く手札)</summary>
-        [JsonProperty("freeIfHandAll")]
+        [JsonProperty("freeIfHandAll", NullValueHandling = NullValueHandling.Ignore)]
         public string? FreeIfHandAll { get; init; }
         /// <summary>プレイ条件: 場に従者 (retainer・innate除く) が1体以上 (殉教の誓い 2026-09-06。xCost のエナジー1以上と同じ playability)</summary>
-        [JsonProperty("requiresRetainer")]
+        [JsonProperty("requiresRetainer", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RequiresRetainer { get; init; }
         /// <summary>勢いがN以上ならこのカードは0E (追い風。緑 勢いの網 2026-09-04。重圧の上乗せは残る)</summary>
-        [JsonProperty("freeIfMomentumAtLeast")]
+        [JsonProperty("freeIfMomentumAtLeast", NullValueHandling = NullValueHandling.Ignore)]
         public int? FreeIfMomentumAtLeast { get; init; }
         /// <summary>急所を持つ敵が生存していれば消滅しない (樹液=本家 Dropkick 型。exhaust と併用)</summary>
-        [JsonProperty("exhaustUnlessExposedEnemy")]
+        [JsonProperty("exhaustUnlessExposedEnemy", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ExhaustUnlessExposedEnemy { get; init; }
         /// <summary>亡骸プレイ (黒 2026-08-31): 消滅置き場からNエナジーで一度だけプレイできる。プレイ後はゲームから完全に取り除かれる (刻の燃料も減る)。割引 (discountNext) の対象外</summary>
-        [JsonProperty("necroCost")]
+        [JsonProperty("necroCost", NullValueHandling = NullValueHandling.Ignore)]
         public int? NecroCost { get; init; }
         /// <summary>追加コスト: 手札を N 枚捨てる</summary>
-        [JsonProperty("discardCost")]
+        [JsonProperty("discardCost", NullValueHandling = NullValueHandling.Ignore)]
         public int? DiscardCost { get; init; }
         /// <summary>追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる)</summary>
-        [JsonProperty("exhaustCost")]
+        [JsonProperty("exhaustCost", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExhaustCost { get; init; }
         /// <summary>従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」)</summary>
-        [JsonProperty("retainer")]
+        [JsonProperty("retainer", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Retainer { get; init; }
         /// <summary>骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札</summary>
-        [JsonProperty("shivToken")]
+        [JsonProperty("shivToken", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ShivToken { get; init; }
         /// <summary>合成の触媒 (2026-09-12 ユーザー案「素材にするとリターンが大きい札」): 工房の素材にすると結果にこの恩恵が乗る。 cheaper=結果のコストがさらに−1 (合計−1の上から。0Eまで。0E規約の消滅は歯止めが自動で付ける) / echo=結果のプレイ時効果を2回解決 (X・置物も対象。リアクションには付かない) / retain=結果が保持を持つ。 触媒自身は基本札並みの弱い札 = 「工房を踏めるか」の賭けとして拾う (供給は1ピックの選択肢に1枚まで)</summary>
-        [JsonProperty("fusionCatalyst")]
+        [JsonProperty("fusionCatalyst", NullValueHandling = NullValueHandling.Ignore)]
         public string? FusionCatalyst { get; init; }
         /// <summary>反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回)</summary>
-        [JsonProperty("echo")]
+        [JsonProperty("echo", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Echo { get; init; }
     }
 
@@ -1948,35 +1948,35 @@ namespace DeckRogue.Engine.Generated
     public sealed record CardInstance
     {
         /// <summary>火傷の鮮度 (2026-09-02): 敵フェーズに注入された直後=true。全捨てを1回だけ生き残り (次の自ターンの手札を圧迫する = 「今このターンの手数を奪う」の設計意図)、 自ターンを過ごした火傷は次の全捨てで消える = 1回きり</summary>
-        [JsonProperty("scaldFresh")]
+        [JsonProperty("scaldFresh", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ScaldFresh { get; init; }
         /// <summary>時限呪い (2026-09-02 StS2 Guilty式): 残りN戦で自然消滅する。勝利ごとに-1・0でデッキから除去</summary>
-        [JsonProperty("expiresAfterBattles")]
+        [JsonProperty("expiresAfterBattles", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExpiresAfterBattles { get; init; }
         [JsonProperty("uid")]
         public string Uid { get; init; } = default!;
         [JsonProperty("def")]
         public CardDef Def { get; init; } = default!;
         /// <summary>召喚トークン: 敵の「トークン破壊」の対象になる (手張り置物・リーダー・レリックは対象外)</summary>
-        [JsonProperty("token")]
+        [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Token { get; init; }
         /// <summary>屍集めで消滅置き場から戻した札 (2026-08-31 rework)。この戦闘中プレイ・伏せコストが0になる。 Xコスト札は対象外 (Xは支払った量が効果量なので0E化すると意味が壊れる)。 戦闘終了で消える (ラン層のデッキには残らない = インスタンスは戦闘ごとに作り直されるため)</summary>
-        [JsonProperty("freeThisCombat")]
+        [JsonProperty("freeThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public bool? FreeThisCombat { get; init; }
         /// <summary>育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。 プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)</summary>
-        [JsonProperty("growBonus")]
+        [JsonProperty("growBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? GrowBonus { get; init; }
         /// <summary>罠モデル (2026-09-13): 伏せた時の state.turn。伏せたターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる (2窓)、 2窓目の終端で期限切れ (捨て札。消滅持ちは消滅。trapPersist の札は期限が来ない)。判定は effects.ts の trapAge / isTrapLive。 旧セーブに無い場合は「今伏せた」として読む (NaN で永久死に枠にならないため)</summary>
-        [JsonProperty("setTurn")]
+        [JsonProperty("setTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetTurn { get; init; }
         /// <summary>生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない (2026-08-26。確定済みルール表「置物数参照」)。パッシブが召喚したトークンは生得ではない。</summary>
-        [JsonProperty("innate")]
+        [JsonProperty("innate", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Innate { get; init; }
         /// <summary>every/once の誘発カウンタ (戦闘内累計。キーは効果の添字。置物インスタンスだけが持つ 2026-09-12)</summary>
-        [JsonProperty("triggerCounts")]
+        [JsonProperty("triggerCounts", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, int>? TriggerCounts { get; init; }
         /// <summary>every/once の誘発カウンタ (ターン内。自ターン開始でリセット)</summary>
-        [JsonProperty("turnTriggerCounts")]
+        [JsonProperty("turnTriggerCounts", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, int>? TurnTriggerCounts { get; init; }
     }
 
@@ -1996,9 +1996,9 @@ namespace DeckRogue.Engine.Generated
         public string EnemyId { get; init; } = default!;
         [JsonProperty("count")]
         public int Count { get; init; }
-        [JsonProperty("stunned")]
+        [JsonProperty("stunned", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Stunned { get; init; }
-        [JsonProperty("strength")]
+        [JsonProperty("strength", NullValueHandling = NullValueHandling.Ignore)]
         public int? Strength { get; init; }
     }
 
@@ -2006,38 +2006,38 @@ namespace DeckRogue.Engine.Generated
     public sealed record EnemyMove
     {
         /// <summary>技の恒久成長 (2026-09-02 StS2 TestSubject式「戻らない恐怖」): この技を宣言するたび、以降の min/max に +growPerUse・ヒット数に +growHitsPerUse (この戦闘中ずっと)。長引くほど危険 = 速攻の理由を敵側の時間で作る (弱体・脆弱が短期戦で鳴らない問題の逆側からの受け)</summary>
-        [JsonProperty("growPerUse")]
+        [JsonProperty("growPerUse", NullValueHandling = NullValueHandling.Ignore)]
         public int? GrowPerUse { get; init; }
-        [JsonProperty("growHitsPerUse")]
+        [JsonProperty("growHitsPerUse", NullValueHandling = NullValueHandling.Ignore)]
         public int? GrowHitsPerUse { get; init; }
         [JsonProperty("id")]
         public string Id { get; init; } = default!;
         [JsonProperty("kind")]
         public string Kind { get; init; } = default!;
-        [JsonProperty("min")]
+        [JsonProperty("min", NullValueHandling = NullValueHandling.Ignore)]
         public int? Min { get; init; }
-        [JsonProperty("max")]
+        [JsonProperty("max", NullValueHandling = NullValueHandling.Ignore)]
         public int? Max { get; init; }
         /// <summary>連撃: 攻撃をN回のヒットに分割 (確定済みルール表「連撃」)</summary>
-        [JsonProperty("hits")]
+        [JsonProperty("hits", NullValueHandling = NullValueHandling.Ignore)]
         public int? Hits { get; init; }
         /// <summary>手数の鏡 (物真似 2026-08-31): 実行時のヒット数=プレイヤーがこのターンにプレイした枚数 (最低1)。hits は無視される</summary>
-        [JsonProperty("mirrorHits")]
+        [JsonProperty("mirrorHits", NullValueHandling = NullValueHandling.Ignore)]
         public bool? MirrorHits { get; init; }
         /// <summary>この行動が付与する状態異常 (attackの追撃・hexの本体)</summary>
-        [JsonProperty("inflict")]
+        [JsonProperty("inflict", NullValueHandling = NullValueHandling.Ignore)]
         public StatusInflict? Inflict { get; init; }
         /// <summary>攻防一体: 攻撃と同時に得る固定ブロック (確定済みルール表「攻防一体・隙」)</summary>
-        [JsonProperty("alsoDefend")]
+        [JsonProperty("alsoDefend", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlsoDefend { get; init; }
         /// <summary>攻撃と同時に強化+N (2026-09-01。バフ専用ターンを作らずに短期戦でも雪だるまを見せる)</summary>
-        [JsonProperty("alsoBuff")]
+        [JsonProperty("alsoBuff", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlsoBuff { get; init; }
         /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
-        [JsonProperty("alsoDestroySet")]
+        [JsonProperty("alsoDestroySet", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AlsoDestroySet { get; init; }
         /// <summary>召喚 (kind:'summon' 2026-09-14): 場に出す敵。分裂と同じ器 (召喚体は素の値×召喚者のHP倍率・atkScale 継承・ k 体目の開始節は startBySlot・stunned なら出現ターンは隙・strength は初期筋力)。生存が上限 (4体) に達していれば出ない</summary>
-        [JsonProperty("summon")]
+        [JsonProperty("summon", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyMoveSummon? Summon { get; init; }
     }
 
@@ -2049,13 +2049,13 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("weight")]
         public int Weight { get; init; }
         /// <summary>直前と同じ技に着地する腕は引かない (本家 CannotRepeat)</summary>
-        [JsonProperty("noRepeat")]
+        [JsonProperty("noRepeat", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoRepeat { get; init; }
         /// <summary>1戦闘に1回だけ (本家 UseOnlyOnce)。着地する技の id で記録する</summary>
-        [JsonProperty("once")]
+        [JsonProperty("once", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Once { get; init; }
         /// <summary>同じ技の連続は N 回まで (StS1 の lastTwoMoves=2 相当。noRepeat は maxRepeat:1 と同じ)</summary>
-        [JsonProperty("maxRepeat")]
+        [JsonProperty("maxRepeat", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxRepeat { get; init; }
     }
 
@@ -2072,42 +2072,42 @@ namespace DeckRogue.Engine.Generated
     public sealed record EnemyCondition
     {
         /// <summary>HPが最大の半分以下</summary>
-        [JsonProperty("hpBelowHalf")]
+        [JsonProperty("hpBelowHalf", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HpBelowHalf { get; init; }
         /// <summary>他の仲間が全滅している</summary>
-        [JsonProperty("alone")]
+        [JsonProperty("alone", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Alone { get; init; }
         /// <summary>他の仲間が1体以上生きている</summary>
-        [JsonProperty("allyAlive")]
+        [JsonProperty("allyAlive", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AllyAlive { get; init; }
         /// <summary>この技をこの戦闘で count 回以上宣言済み (回数カウンタのフェーズ変化 = KnowledgeDemon 式)</summary>
-        [JsonProperty("usesAtLeast")]
+        [JsonProperty("usesAtLeast", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyConditionUsesAtLeast? UsesAtLeast { get; init; }
         /// <summary>この戦闘で受けた累計HP損失が N 以上</summary>
-        [JsonProperty("damageTakenAtLeast")]
+        [JsonProperty("damageTakenAtLeast", NullValueHandling = NullValueHandling.Ignore)]
         public int? DamageTakenAtLeast { get; init; }
         /// <summary>ターン数の偶奇 (HauntedShip 式)</summary>
-        [JsonProperty("turnParity")]
+        [JsonProperty("turnParity", NullValueHandling = NullValueHandling.Ignore)]
         public string? TurnParity { get; init; }
         /// <summary>生存する敵 (自分を含む) が N 体未満 (召喚の判断 = Fabricator 式)</summary>
-        [JsonProperty("alliesFewerThan")]
+        [JsonProperty("alliesFewerThan", NullValueHandling = NullValueHandling.Ignore)]
         public int? AlliesFewerThan { get; init; }
     }
 
     /// <summary>行動グラフの節。3種のうち1つだけ持つ:  技   { move, next? }   — この技を宣言し、次の宣言は next の節から辿る (next 省略=同じ技を繰り返す)  乱択 { random }        — 宣言時にその場で重みで腕を1本引き (RNG 1回)、その先を辿る。技は行わない  条件 { if, then, else } — 宣言時に条件を評価して then / else を辿る。技は行わない</summary>
     public sealed record EnemyNode
     {
-        [JsonProperty("move")]
+        [JsonProperty("move", NullValueHandling = NullValueHandling.Ignore)]
         public string? Move { get; init; }
-        [JsonProperty("next")]
+        [JsonProperty("next", NullValueHandling = NullValueHandling.Ignore)]
         public string? Next { get; init; }
-        [JsonProperty("random")]
+        [JsonProperty("random", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<EnemyRandomArm>? Random { get; init; }
-        [JsonProperty("if")]
+        [JsonProperty("if", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyCondition? If { get; init; }
-        [JsonProperty("then")]
+        [JsonProperty("then", NullValueHandling = NullValueHandling.Ignore)]
         public string? Then { get; init; }
-        [JsonProperty("else")]
+        [JsonProperty("else", NullValueHandling = NullValueHandling.Ignore)]
         public string? Else { get; init; }
     }
 
@@ -2117,9 +2117,9 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("on")]
         public string On { get; init; } = default!;
         /// <summary>damageTaken の累計しきい値</summary>
-        [JsonProperty("amount")]
+        [JsonProperty("amount", NullValueHandling = NullValueHandling.Ignore)]
         public int? Amount { get; init; }
-        [JsonProperty("from")]
+        [JsonProperty("from", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? From { get; init; }
         [JsonProperty("goto")]
         public string Goto { get; init; } = default!;
@@ -2133,10 +2133,10 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("count")]
         public int Count { get; init; }
         /// <summary>分裂体の初回意図を「隙」にする (2026-09-02 罰型分裂の緩和版: 出現ターンは動かない = 全体攻撃の売り時)</summary>
-        [JsonProperty("stunned")]
+        [JsonProperty("stunned", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Stunned { get; init; }
         /// <summary>分裂体の初期筋力 (2026-09-02 残機チェーン用: 倒すたび体は縮むが刃は鋭くなる)</summary>
-        [JsonProperty("strength")]
+        [JsonProperty("strength", NullValueHandling = NullValueHandling.Ignore)]
         public int? Strength { get; init; }
     }
 
@@ -2159,11 +2159,11 @@ namespace DeckRogue.Engine.Generated
     /// <summary>EnemyDef.aura のインライン型</summary>
     public sealed record EnemyDefAura
     {
-        [JsonProperty("cardType")]
+        [JsonProperty("cardType", NullValueHandling = NullValueHandling.Ignore)]
         public string? CardType { get; init; }
         [JsonProperty("costUp")]
         public int CostUp { get; init; }
-        [JsonProperty("attacksOnly")]
+        [JsonProperty("attacksOnly", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AttacksOnly { get; init; }
     }
 
@@ -2177,13 +2177,13 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("archetype")]
         public string Archetype { get; init; } = default!;
         /// <summary>1行フレーバー (顔付け)。行動の読み方のヒントを兼ねる。UI表示専用</summary>
-        [JsonProperty("flavor")]
+        [JsonProperty("flavor", NullValueHandling = NullValueHandling.Ignore)]
         public string? Flavor { get; init; }
         /// <summary>公称HP (図鑑・査定・分裂体の倍率の基準)。戦闘での実HPは hpRange から引く</summary>
         [JsonProperty("maxHp")]
         public int MaxHp { get; init; }
         /// <summary>HPの幅 [min, max] (2026-09-14 本家形。ユーザー「敵ってHPが固定でブレがなくない？」)。 戦闘開始時に一様にロールし、幕スケール・群れ補正を掛けて丸める。無ければ maxHp 固定</summary>
-        [JsonProperty("hpRange")]
+        [JsonProperty("hpRange", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<int>? HpRange { get; init; }
         /// <summary>技の定義 (id で参照する辞書)。順序は持たない = 行動グラフが決める</summary>
         [JsonProperty("moves")]
@@ -2195,79 +2195,79 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("start")]
         public string Start { get; init; } = default!;
         /// <summary>スロット (編成内の何体目か・分裂体の何体目か) ごとの開始節 (本家 Exoskeleton 式の役割分化・ 分裂体の位相ずらし)。添字が範囲外なら start</summary>
-        [JsonProperty("startBySlot")]
+        [JsonProperty("startBySlot", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? StartBySlot { get; init; }
         /// <summary>割り込み (HP半分の豹変・被弾覚醒・単独時の転職)。上から順に判定し、それぞれ1戦闘1回</summary>
-        [JsonProperty("interrupts")]
+        [JsonProperty("interrupts", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<EnemyInterrupt>? Interrupts { get; init; }
         /// <summary>プレイヤーに伏せカードがある時の分岐 (腕の to は技の id)。2026-09-13 罠モデル以降は破壊分岐 (罠壊し・道化) だけが使う</summary>
-        [JsonProperty("movesVsSet")]
+        [JsonProperty("movesVsSet", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<EnemyRandomArm>? MovesVsSet { get; init; }
         /// <summary>プレイヤーに召喚トークンがいる時の分岐 (優先度: 伏せ反応 &gt; トークン反応 &gt; 通常)</summary>
-        [JsonProperty("movesVsTokens")]
+        [JsonProperty("movesVsTokens", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<EnemyRandomArm>? MovesVsTokens { get; init; }
         /// <summary>延焼耐性: 毎フェーズ延焼が追加でN減る (敵の弱点・耐性システム第1号。確定済みルール表「敵の耐性」)</summary>
-        [JsonProperty("burnResist")]
+        [JsonProperty("burnResist", NullValueHandling = NullValueHandling.Ignore)]
         public int? BurnResist { get; init; }
         /// <summary>とげ: プレイヤーの攻撃ヒットごとにNダメ反射。敵カードに常時表示 (確定済みルール表「とげ（敵の報復）」)</summary>
-        [JsonProperty("thorns")]
+        [JsonProperty("thorns", NullValueHandling = NullValueHandling.Ignore)]
         public int? Thorns { get; init; }
         /// <summary>鬼軍曹 (エリート 2026-08-31): プレイヤーが通常ブロックを得るたび強化+N (氷壁は対象外)。敵カードに常時表示</summary>
-        [JsonProperty("angerOnBlock")]
+        [JsonProperty("angerOnBlock", NullValueHandling = NullValueHandling.Ignore)]
         public int? AngerOnBlock { get; init; }
         /// <summary>再生: 敵フェーズ終了時にHP回復。HP50%以下では停止 (確定済みルール表「再生」)</summary>
-        [JsonProperty("regen")]
+        [JsonProperty("regen", NullValueHandling = NullValueHandling.Ignore)]
         public int? Regen { get; init; }
         /// <summary>再生の中断条件 (確定済みルール表「再生」2026-08-28): そのターン (前回の再生判定以降) に 合計N以上のダメージを受けていると、次の敵フェーズの再生が発動しない。敵カードに常時表示</summary>
-        [JsonProperty("regenBreak")]
+        [JsonProperty("regenBreak", NullValueHandling = NullValueHandling.Ignore)]
         public int? RegenBreak { get; init; }
         /// <summary>激昂: 敵フェーズ終了時に強化+N (確定済みルール表「激昂」)</summary>
-        [JsonProperty("enrage")]
+        [JsonProperty("enrage", NullValueHandling = NullValueHandling.Ignore)]
         public int? Enrage { get; init; }
         /// <summary>時喰らい型タイマー (2026-08-26): プレイヤーの累計詠唱数がこの枚数に達するたび強化+enrage。 時間ではなくプレイヤーのテンポに紐づくので、低速デッキほど誘発が遅い = 自己調整する。 enrage と併用する場合、こちらが指定されていれば毎フェーズの自動強化は行わない。</summary>
-        [JsonProperty("enrageEveryCards")]
+        [JsonProperty("enrageEveryCards", NullValueHandling = NullValueHandling.Ignore)]
         public int? EnrageEveryCards { get; init; }
         /// <summary>激昂の与ダメ併用トリガー (2026-08-30)。この敵が受けた累計ダメージが N の倍数に達するたび 強化+enrage。枚数トリガーは「1枚で100点出すデッキ」を素通しする盲点があった (実測: 門番戦12枚プレイで1回しか鳴らず) — 高火力・少枚数のデッキにもタイマーを効かせる</summary>
-        [JsonProperty("enrageEveryDamage")]
+        [JsonProperty("enrageEveryDamage", NullValueHandling = NullValueHandling.Ignore)]
         public int? EnrageEveryDamage { get; init; }
         /// <summary>開幕ブロック (2026-08-30 静的性質の配布)。戦闘開始時からこの量のブロックを持つ (甲羅・門・抱えた樽・積んだ殻)。敵の特性が「敵のターンが来て初めて情報になる」のに対し、 これはT1から問いを出せる — 貫通 (緑)・延焼 (赤)・粉砕が最初のターンから解答になる</summary>
-        [JsonProperty("startingBlock")]
+        [JsonProperty("startingBlock", NullValueHandling = NullValueHandling.Ignore)]
         public int? StartingBlock { get; init; }
         /// <summary>分裂 (2026-09-02 敵ギミック第1波)。この敵が倒れた時、指定の敵N体が場に現れる (本家Slime)。 分裂体は素の値 (深度スケール非適用)・親の atkScale (難易度) を継承・生成時に意図を宣言して その敵フェーズから行動する (本家準拠)。分裂体の開始節は startBySlot[k] (無ければ start)</summary>
-        [JsonProperty("splitInto")]
+        [JsonProperty("splitInto", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyDefSplitInto? SplitInto { get; init; }
         /// <summary>庇う (2026-09-02 陣形もの)。この敵が生存中、プレイヤーの単体対象カードは他の敵を選べず この敵に向かう (対象の強制=キル順の問い)。全体攻撃・延焼ティック・打ち消しは素通し=解答。 敵カードに常時表示 (フェアネス)</summary>
-        [JsonProperty("guardian")]
+        [JsonProperty("guardian", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Guardian { get; init; }
         /// <summary>連携 (2026-09-02 陣形もの)。他の仲間が1体でも生存している間、攻撃の実値と幅表示に+N (宣言時に判定=宣言時固定の既存則。仲間が倒れれば次の宣言から素に戻る=キル順の逆問い)</summary>
-        [JsonProperty("bondStrength")]
+        [JsonProperty("bondStrength", NullValueHandling = NullValueHandling.Ignore)]
         public int? BondStrength { get; init; }
         /// <summary>孵化 (2026-09-02 StS2 ToughEgg式): kind:'hatch' の行動を解決すると、この敵が指定の敵へ 変身する (HP全快・筋力0・ローテ先頭から。難易度 atkScale は継承)。打ち消せば1ターン遅らせられる</summary>
-        [JsonProperty("hatchInto")]
+        [JsonProperty("hatchInto", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyDefHatchInto? HatchInto { get; init; }
         /// <summary>弔い強化 (2026-09-02 連携の逆問い): 仲間が倒れるたび (逃走は除く) 筋力+N。 「同時に削って同時に落とせ」= 全体攻撃が構造的な最適解になる編成の器</summary>
-        [JsonProperty("mournStrength")]
+        [JsonProperty("mournStrength", NullValueHandling = NullValueHandling.Ignore)]
         public int? MournStrength { get; init; }
         /// <summary>ターン装甲 (2026-09-02 StS2 HardenedShell式。「量の問い」の第3の器): 1ターン (自ターン開始〜次の 自ターン開始) に受けるHP損失の累計はN以下。装甲 (1ヒット上限=単発への問い) の対 = 多段・バーストへの上限。 延焼ティックは無視 (装甲と同じ裁定 = バーンが解答)。敵カードに常時表示</summary>
-        [JsonProperty("turnArmor")]
+        [JsonProperty("turnArmor", NullValueHandling = NullValueHandling.Ignore)]
         public int? TurnArmor { get; init; }
         /// <summary>アーティファクト (2026-09-02 本家Artifact): デバフ付与 (急所・威圧・混乱) をN回無効化して1消費。 延焼は弾かない (DoTはデバフでなくダメージ = 赤の解答を殺さない、のユーザー裁定)。敵カードに常時表示</summary>
-        [JsonProperty("artifact")]
+        [JsonProperty("artifact", NullValueHandling = NullValueHandling.Ignore)]
         public int? Artifact { get; init; }
         /// <summary>潜伏 (2026-09-03 本家StS2 Burrowed): 戦闘開始時に block だけの殻を持ち、殻が尽きるまでHPにダメージが通らない (超過ぶんは捨てる。貫通は通る・粉砕は殻を割る)。殻が割れた瞬間、次の行動が bite (moves の id) に差し替わる。 通常戦の最短ターンを構造で決める器 (2T決着への処方。HPを盛らない)</summary>
-        [JsonProperty("burrow")]
+        [JsonProperty("burrow", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyDefBurrow? Burrow { get; init; }
         /// <summary>因縁 (2026-09-03 本家 Nemesis): 奇数ターン (1,3,5…) は無形=1ヒットのHP損失が1に固定。偶数ターンに実体化。 延焼は通る (装甲と同じ裁定)。「殴るターン/備えるターン」のリズムを作り、T1爆発を構造的に半減する</summary>
-        [JsonProperty("nemesis")]
+        [JsonProperty("nemesis", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Nemesis { get; init; }
         /// <summary>バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と次の宣言が隙になる</summary>
-        [JsonProperty("imbalanced")]
+        [JsonProperty("imbalanced", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Imbalanced { get; init; }
         /// <summary>常在オーラ (2026-09-02 StS2 Afflictions式「この敵が生きている間ルールが歪む」): この敵の生存中、プレイヤーのカードのコスト+costUp (cardType指定でそのタイプのみ)。 敵を倒せば即解除 = キル順の圧。打ち消し不可 (行動でなく存在)。敵カードに常時表示</summary>
-        [JsonProperty("aura")]
+        [JsonProperty("aura", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyDefAura? Aura { get; init; }
         /// <summary>装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・ 成長×X) に対し、カードをナーフせず敵側で受ける構造的な処方。多段デッキには「ヒット数で 押し切れ」、一撃デッキには「上限まで」と別の問いを出す。とげ・延焼耐性と同じく常時表示 (フェアネス)。 延焼 (DoT) はヒットではないので装甲を無視する = バーンが装甲の解答になる</summary>
-        [JsonProperty("armor")]
+        [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
     }
 
@@ -2277,16 +2277,16 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("enemyId")]
         public string EnemyId { get; init; } = default!;
         /// <summary>個体HP倍率 (省略時1)。ランの深度スケーリングとは乗算で重なる</summary>
-        [JsonProperty("hpScale")]
+        [JsonProperty("hpScale", NullValueHandling = NullValueHandling.Ignore)]
         public double? HpScale { get; init; }
         /// <summary>個体の初期強化補正 (省略時0)。ランの深度補正とは加算で重なる</summary>
-        [JsonProperty("strength")]
+        [JsonProperty("strength", NullValueHandling = NullValueHandling.Ignore)]
         public int? Strength { get; init; }
         /// <summary>この個体の開始節 (行動グラフの start を上書き)。同型2体の大技同期を防ぐ位相ずらしと、 本家 Exoskeleton 式の役割分化 (1体目は多段・2体目は単発…) の両方をこれで書く</summary>
-        [JsonProperty("start")]
+        [JsonProperty("start", NullValueHandling = NullValueHandling.Ignore)]
         public string? Start { get; init; }
         /// <summary>伏せ/従者への反応テーブル (movesVsSet / movesVsTokens) をこの個体では使わない。 群れで全員が同時に反応すると、伏せ1枚のリスクが頭数に比例して跳ね上がるため、 先頭の1体だけが反応するようにする (2026-08-26。確定済みルール表「編成の反応テーブル」)</summary>
-        [JsonProperty("noReactTable")]
+        [JsonProperty("noReactTable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoReactTable { get; init; }
     }
 
@@ -2304,124 +2304,124 @@ namespace DeckRogue.Engine.Generated
     /// <summary>RelicDef.bonus のインライン型</summary>
     public sealed record RelicDefBonus
     {
-        [JsonProperty("maxHp")]
+        [JsonProperty("maxHp", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHp { get; init; }
-        [JsonProperty("victoryHeal")]
+        [JsonProperty("victoryHeal", NullValueHandling = NullValueHandling.Ignore)]
         public int? VictoryHeal { get; init; }
-        [JsonProperty("rewardChoices")]
+        [JsonProperty("rewardChoices", NullValueHandling = NullValueHandling.Ignore)]
         public int? RewardChoices { get; init; }
-        [JsonProperty("campfireRatio")]
+        [JsonProperty("campfireRatio", NullValueHandling = NullValueHandling.Ignore)]
         public double? CampfireRatio { get; init; }
         /// <summary>戦闘勝利のゴールド獲得に加算 (商人の秤)</summary>
-        [JsonProperty("goldPerVictory")]
+        [JsonProperty("goldPerVictory", NullValueHandling = NullValueHandling.Ignore)]
         public int? GoldPerVictory { get; init; }
         /// <summary>焚き火の「鍛える」の追加回数 (鍛冶の砥石=+1で計2枚)</summary>
-        [JsonProperty("campfireForge")]
+        [JsonProperty("campfireForge", NullValueHandling = NullValueHandling.Ignore)]
         public int? CampfireForge { get; init; }
         /// <summary>取った時に金+N (小さな家 2026-09-06 ボスレリックの代償なし枠)</summary>
-        [JsonProperty("goldOnPickup")]
+        [JsonProperty("goldOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public int? GoldOnPickup { get; init; }
         /// <summary>取った時にデッキの鍛えられる札からランダムにN枚鍛える (小さな家。ラン RNG を消費)</summary>
-        [JsonProperty("upgradeRandomOnPickup")]
+        [JsonProperty("upgradeRandomOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public int? UpgradeRandomOnPickup { get; init; }
         /// <summary>強個体撃破のレリック3択から追加でN個取れる (黒星の欠片 2026-09-06)</summary>
-        [JsonProperty("eliteRelicPicks")]
+        [JsonProperty("eliteRelicPicks", NullValueHandling = NullValueHandling.Ignore)]
         public int? EliteRelicPicks { get; init; }
         /// <summary>焚き火で休めない (休むは回復なしの立ち去りになる。古根の杯=本家 Coffee Dripper)</summary>
-        [JsonProperty("noRest")]
+        [JsonProperty("noRest", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoRest { get; init; }
         /// <summary>レリックを取るたび (供給源を問わず: 宝箱・?・エリート・ボス・ショップ・イベント) 烙印をN枚受け取る (呪いの鍵。2026-09-04 ユーザー裁定: 旧「宝箱のみ」は降りられる代償=実質ノーコストだった)</summary>
-        [JsonProperty("brandOnRelic")]
+        [JsonProperty("brandOnRelic", NullValueHandling = NullValueHandling.Ignore)]
         public int? BrandOnRelic { get; init; }
         /// <summary>勝利時に無条件でHP+N (薬草袋。狩人の恵みの条件つき回復とは別口)</summary>
-        [JsonProperty("victoryHealFlat")]
+        [JsonProperty("victoryHealFlat", NullValueHandling = NullValueHandling.Ignore)]
         public int? VictoryHealFlat { get; init; }
         /// <summary>ショップの鍛える −N G (砥石の欠片)</summary>
-        [JsonProperty("shopUpgradeDiscount")]
+        [JsonProperty("shopUpgradeDiscount", NullValueHandling = NullValueHandling.Ignore)]
         public int? ShopUpgradeDiscount { get; init; }
         /// <summary>焚き火で休むたび最大HP+N (薬研)</summary>
-        [JsonProperty("restMaxHp")]
+        [JsonProperty("restMaxHp", NullValueHandling = NullValueHandling.Ignore)]
         public int? RestMaxHp { get; init; }
         /// <summary>エリート勝利のゴールド+N (戦利品袋)</summary>
-        [JsonProperty("eliteGoldBonus")]
+        [JsonProperty("eliteGoldBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? EliteGoldBonus { get; init; }
         /// <summary>工房の合成 −N G (大工の道具)</summary>
-        [JsonProperty("fusionDiscount")]
+        [JsonProperty("fusionDiscount", NullValueHandling = NullValueHandling.Ignore)]
         public int? FusionDiscount { get; init; }
         /// <summary>ショップの全価格に掛ける倍率 (会員証=0.5。複数は積)</summary>
-        [JsonProperty("shopPriceRatio")]
+        [JsonProperty("shopPriceRatio", NullValueHandling = NullValueHandling.Ignore)]
         public double? ShopPriceRatio { get; init; }
         /// <summary>戦闘勝利のゴールドに掛ける倍率 (金の靴=1.5。盗みの精算より前)</summary>
-        [JsonProperty("goldMultiplier")]
+        [JsonProperty("goldMultiplier", NullValueHandling = NullValueHandling.Ignore)]
         public double? GoldMultiplier { get; init; }
         /// <summary>ショップ除去の逓増幅に加算 (除去の鑿=-25 で +50→+25)</summary>
-        [JsonProperty("removalStepDelta")]
+        [JsonProperty("removalStepDelta", NullValueHandling = NullValueHandling.Ignore)]
         public int? RemovalStepDelta { get; init; }
         /// <summary>マップを1行進むたび+N G。ショップで何か買うと止まる (大口の貯金箱=本家 Maw Bank。relicState.mawBroken)</summary>
-        [JsonProperty("goldPerRow")]
+        [JsonProperty("goldPerRow", NullValueHandling = NullValueHandling.Ignore)]
         public int? GoldPerRow { get; init; }
         /// <summary>?に入るたび+N G (蛇の頭骨=本家 Ssserpent Head)</summary>
-        [JsonProperty("goldPerUnknown")]
+        [JsonProperty("goldPerUnknown", NullValueHandling = NullValueHandling.Ignore)]
         public int? GoldPerUnknown { get; init; }
         /// <summary>?のN回目は必ず宝箱 (小さな宝箱=本家 Tiny Chest。relicState.unknownsSinceChest)</summary>
-        [JsonProperty("unknownChestEvery")]
+        [JsonProperty("unknownChestEvery", NullValueHandling = NullValueHandling.Ignore)]
         public int? UnknownChestEvery { get; init; }
         /// <summary>ショップに入るたびHP+N (行商の食券=本家 Meal Ticket)</summary>
-        [JsonProperty("shopHeal")]
+        [JsonProperty("shopHeal", NullValueHandling = NullValueHandling.Ignore)]
         public int? ShopHeal { get; init; }
         /// <summary>焚き火に「発掘」(レリック1個) が出る (発掘の鶴嘴=本家 Shovel)</summary>
-        [JsonProperty("campfireDig")]
+        [JsonProperty("campfireDig", NullValueHandling = NullValueHandling.Ignore)]
         public bool? CampfireDig { get; init; }
         /// <summary>焚き火に「取り除く」が出る (安らぎの煙管=本家 Peace Pipe。除去はショップ専売の裁定の唯一の例外=レリック限定)</summary>
-        [JsonProperty("campfireRemove")]
+        [JsonProperty("campfireRemove", NullValueHandling = NullValueHandling.Ignore)]
         public bool? CampfireRemove { get; init; }
         /// <summary>焚き火に「鍛錬」(戦闘開始時の成長+1。N回まで) が出る (重石=本家 Girya。relicState.train)</summary>
-        [JsonProperty("campfireTrain")]
+        [JsonProperty("campfireTrain", NullValueHandling = NullValueHandling.Ignore)]
         public int? CampfireTrain { get; init; }
         /// <summary>線の無い先へN回まで進める (翼の靴=本家 Wing Boots。relicState.wingBoots)</summary>
-        [JsonProperty("wingBoots")]
+        [JsonProperty("wingBoots", NullValueHandling = NullValueHandling.Ignore)]
         public int? WingBoots { get; init; }
         /// <summary>通常戦の勝利でカード報酬をもうN組 (祈りの車輪=本家 Prayer Wheel)</summary>
-        [JsonProperty("extraRewardRounds")]
+        [JsonProperty("extraRewardRounds", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExtraRewardRounds { get; init; }
         /// <summary>カード報酬を見送るたび最大HP+N (鳴り鉢=本家 Singing Bowl)</summary>
-        [JsonProperty("skipRewardMaxHp")]
+        [JsonProperty("skipRewardMaxHp", NullValueHandling = NullValueHandling.Ignore)]
         public int? SkipRewardMaxHp { get; init; }
         /// <summary>デッキに加わる札のうちこのタイプは鍛えた状態になる (卵=本家 Molten/Frozen/Toxic Egg)</summary>
-        [JsonProperty("upgradeOnAdd")]
+        [JsonProperty("upgradeOnAdd", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? UpgradeOnAdd { get; init; }
         /// <summary>取った時に全回復 (行商の菓子=本家 Lee's Waffle)</summary>
-        [JsonProperty("healFullOnPickup")]
+        [JsonProperty("healFullOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HealFullOnPickup { get; init; }
         /// <summary>取った時にレリックをN個受け取る (呼び鈴=本家 Calling Bell。宝箱と同じ層から)</summary>
-        [JsonProperty("relicsOnPickup")]
+        [JsonProperty("relicsOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public int? RelicsOnPickup { get; init; }
         /// <summary>取った時に烙印をN枚受け取る (呼び鈴の代償)</summary>
-        [JsonProperty("brandsOnPickup")]
+        [JsonProperty("brandsOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public int? BrandsOnPickup { get; init; }
         /// <summary>取った時にデッキからN枚を選んで取り除く (空の鳥籠=本家 Empty Cage。pendingRelicChoice)</summary>
-        [JsonProperty("removeOnPickup")]
+        [JsonProperty("removeOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public int? RemoveOnPickup { get; init; }
         /// <summary>取った時にデッキからN枚を選んで同レア度の別の札に変え、鍛える (星読みの盤=本家 Astrolabe)</summary>
-        [JsonProperty("transformOnPickup")]
+        [JsonProperty("transformOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public int? TransformOnPickup { get; init; }
         /// <summary>取った時に基本札 (打撃・防御=スターターの共通札) をすべて同レア度の別の札に変える (古代の匣=本家 Pandora's Box)</summary>
-        [JsonProperty("transformBasicsOnPickup")]
+        [JsonProperty("transformBasicsOnPickup", NullValueHandling = NullValueHandling.Ignore)]
         public bool? TransformBasicsOnPickup { get; init; }
         /// <summary>焚き火で鍛えられない (融合の鎚=本家 Fusion Hammer)</summary>
-        [JsonProperty("noForge")]
+        [JsonProperty("noForge", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoForge { get; init; }
         /// <summary>工房で1回の訪問にN回合成できる (職人の手袋。既定1)</summary>
-        [JsonProperty("workshopFuses")]
+        [JsonProperty("workshopFuses", NullValueHandling = NullValueHandling.Ignore)]
         public int? WorkshopFuses { get; init; }
         /// <summary>合成した札が鍛えた状態になる (鍛冶の火種)</summary>
-        [JsonProperty("fusionUpgraded")]
+        [JsonProperty("fusionUpgraded", NullValueHandling = NullValueHandling.Ignore)]
         public bool? FusionUpgraded { get; init; }
         /// <summary>烙印 (呪いの烙印・仮初の烙印) を受け取るたび最大HP+N (黒曜の護符=本家 Darkstone Periapt)</summary>
-        [JsonProperty("maxHpPerBrand")]
+        [JsonProperty("maxHpPerBrand", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHpPerBrand { get; init; }
         /// <summary>次のN回の烙印を無効にする (厄除けの札=本家 Omamori。relicState.brandWard)</summary>
-        [JsonProperty("brandWard")]
+        [JsonProperty("brandWard", NullValueHandling = NullValueHandling.Ignore)]
         public int? BrandWard { get; init; }
     }
 
@@ -2429,52 +2429,52 @@ namespace DeckRogue.Engine.Generated
     public sealed record RelicDefCombatRule
     {
         /// <summary>伏せ札がある間、敵の攻撃実値-N (最低1クランプ。静かな鈴)</summary>
-        [JsonProperty("setDamageReduction")]
+        [JsonProperty("setDamageReduction", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetDamageReduction { get; init; }
         /// <summary>期限切れの罠が捨て札でなく手札に戻る (回収の紐 2026-09-13 作り直し)</summary>
-        [JsonProperty("expireToHand")]
+        [JsonProperty("expireToHand", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ExpireToHand { get; init; }
         /// <summary>上限参照札が読む値 (energyMaxAtTurnStart) に+N (大樹の心 2026-09-03)</summary>
-        [JsonProperty("energyMaxRefBonus")]
+        [JsonProperty("energyMaxRefBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? EnergyMaxRefBonus { get; init; }
         /// <summary>成長放出のあと成長がN残る (収穫の鎌 2026-09-03)</summary>
-        [JsonProperty("harvestKeep")]
+        [JsonProperty("harvestKeep", NullValueHandling = NullValueHandling.Ignore)]
         public int? HarvestKeep { get; init; }
         /// <summary>手札を捨てない (ルーンの角錐)</summary>
-        [JsonProperty("retainHand")]
+        [JsonProperty("retainHand", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RetainHand { get; init; }
         /// <summary>余ったエナジーを次のターンへ持ち越す (溶けない氷菓)</summary>
-        [JsonProperty("energyCarry")]
+        [JsonProperty("energyCarry", NullValueHandling = NullValueHandling.Ignore)]
         public bool? EnergyCarry { get; init; }
         /// <summary>ターン開始時にブロックをN持ち越す (頑丈な留め具)</summary>
-        [JsonProperty("blockKeep")]
+        [JsonProperty("blockKeep", NullValueHandling = NullValueHandling.Ignore)]
         public int? BlockKeep { get; init; }
         /// <summary>X札の X に+N (増幅の薬)</summary>
-        [JsonProperty("xBonus")]
+        [JsonProperty("xBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? XBonus { get; init; }
         /// <summary>敵の攻撃の各ヒットのHP損失-N (重金の棒)</summary>
-        [JsonProperty("hpLossReduce")]
+        [JsonProperty("hpLossReduce", NullValueHandling = NullValueHandling.Ignore)]
         public int? HpLossReduce { get; init; }
         /// <summary>敵の攻撃の1ヒットの未ブロック分がN以下なら1 (古い門柱)</summary>
-        [JsonProperty("smallHitToOne")]
+        [JsonProperty("smallHitToOne", NullValueHandling = NullValueHandling.Ignore)]
         public int? SmallHitToOne { get; init; }
         /// <summary>1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片)</summary>
-        [JsonProperty("maxHpLossPerTurn")]
+        [JsonProperty("maxHpLossPerTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHpLossPerTurn { get; init; }
         /// <summary>致死を1度だけ耐える (蜥蜴の尾。ランで1度)</summary>
-        [JsonProperty("deathSave")]
+        [JsonProperty("deathSave", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DeathSave { get; init; }
         /// <summary>1ターンにプレイできる枚数の上限 (天鵞絨の首輪)</summary>
-        [JsonProperty("playCap")]
+        [JsonProperty("playCap", NullValueHandling = NullValueHandling.Ignore)]
         public int? PlayCap { get; init; }
         /// <summary>敵の意図を表示しない (ルーンの円蓋)</summary>
-        [JsonProperty("hideIntents")]
+        [JsonProperty("hideIntents", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HideIntents { get; init; }
         /// <summary>烙印をプレイできる (青い蝋燭)</summary>
-        [JsonProperty("brandsPlayable")]
+        [JsonProperty("brandsPlayable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? BrandsPlayable { get; init; }
         /// <summary>戦闘開始時にアーティファクトN (時計仕掛けの土産)</summary>
-        [JsonProperty("artifact")]
+        [JsonProperty("artifact", NullValueHandling = NullValueHandling.Ignore)]
         public int? Artifact { get; init; }
     }
 
@@ -2489,31 +2489,31 @@ namespace DeckRogue.Engine.Generated
         public string Sprite { get; init; } = default!;
         [JsonProperty("description")]
         public string Description { get; init; } = default!;
-        [JsonProperty("rarity")]
+        [JsonProperty("rarity", NullValueHandling = NullValueHandling.Ignore)]
         public string? Rarity { get; init; }
         /// <summary>A型効果をエリート・ボス戦にだけ注入する (鎖の首輪=本家 Slaver's Collar)</summary>
-        [JsonProperty("eliteBossOnly")]
+        [JsonProperty("eliteBossOnly", NullValueHandling = NullValueHandling.Ignore)]
         public bool? EliteBossOnly { get; init; }
         /// <summary>この幕までしか候補に出ない (経済レリック=幕1〜2。終盤の外れ枠にしない 2026-09-03 ユーザー裁定)</summary>
-        [JsonProperty("actMax")]
+        [JsonProperty("actMax", NullValueHandling = NullValueHandling.Ignore)]
         public int? ActMax { get; init; }
         /// <summary>この幕以降でしか候補に出ない (2026-09-09 黒星の欠片。早く取るほど増分が乗算する代償なしボスレリックの供給側の絞り)</summary>
-        [JsonProperty("actMin")]
+        [JsonProperty("actMin", NullValueHandling = NullValueHandling.Ignore)]
         public int? ActMin { get; init; }
         /// <summary>色ゲート (2026-09-12 本家のキャラ固有レリック): リーダーの色アイデンティティにこの色が1つでも含まれる時だけ候補列に入る。 省略=全リーダー。凍結色の固有レリックは解凍時に刷る (緑ランの検証を汚さない)</summary>
-        [JsonProperty("colors")]
+        [JsonProperty("colors", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? Colors { get; init; }
         /// <summary>時限レリック (旅の蝋燭 2026-09-12 StS2 の消耗型): 戦闘に勝つたび残り-1・0で所持から消える (run.relicState に残数)</summary>
-        [JsonProperty("expiresAfterBattles")]
+        [JsonProperty("expiresAfterBattles", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExpiresAfterBattles { get; init; }
         /// <summary>A型: 戦闘開始時に不可視の置物として注入される宣言的効果</summary>
-        [JsonProperty("effects")]
+        [JsonProperty("effects", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<DeclarativeEffect>? Effects { get; init; }
         /// <summary>B型: ラン定数の恒久変更</summary>
-        [JsonProperty("bonus")]
+        [JsonProperty("bonus", NullValueHandling = NullValueHandling.Ignore)]
         public RelicDefBonus? Bonus { get; init; }
         /// <summary>C型: 戦闘ルールの改変 (少数精鋭)。launchCombat が所持レリックから集計して CombatOptions 経由で GameState に渡す</summary>
-        [JsonProperty("combatRule")]
+        [JsonProperty("combatRule", NullValueHandling = NullValueHandling.Ignore)]
         public RelicDefCombatRule? CombatRule { get; init; }
     }
 
@@ -2541,7 +2541,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("runDeckId")]
         public string RunDeckId { get; init; } = default!;
         /// <summary>種の選択制 (確定済みルール表「ラン初期デッキ」2026-08-29): ラン開始時に選べる初期デッキの一覧。 複数持つリーダーだけ選択UIが出る。省略時は runDeckId のみ</summary>
-        [JsonProperty("runDeckChoices")]
+        [JsonProperty("runDeckChoices", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? RunDeckChoices { get; init; }
         [JsonProperty("sprite")]
         public string Sprite { get; init; } = default!;
@@ -2551,7 +2551,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("passive")]
         public IReadOnlyList<DeclarativeEffect> Passive { get; init; } = default!;
         /// <summary>伏せ枠 (リソース個性)。省略時1。かすみ (ディミア) =2 (確定済みルール表「伏せ枚数」)</summary>
-        [JsonProperty("setSlots")]
+        [JsonProperty("setSlots", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetSlots { get; init; }
     }
 
@@ -2588,7 +2588,7 @@ namespace DeckRogue.Engine.Generated
         public string Id { get; init; } = default!;
         [JsonProperty("price")]
         public int Price { get; init; }
-        [JsonProperty("sold")]
+        [JsonProperty("sold", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Sold { get; init; }
     }
 
@@ -2646,7 +2646,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("difficulty")]
         public int Difficulty { get; init; }
         /// <summary>実験 (2026-09-02): 全カード伏せ可 (engine/setany.ts)</summary>
-        [JsonProperty("setAnyCards")]
+        [JsonProperty("setAnyCards", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SetAnyCards { get; init; }
         /// <summary>ラン専用RNG (敵並び・報酬・戦闘シードの決定に使う)</summary>
         [JsonProperty("rng")]
@@ -2706,7 +2706,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("relicOptions")]
         public IReadOnlyList<string>? RelicOptions { get; init; }
         /// <summary>強個体のレリック3択から取れる残り個数 (黒星の欠片 2026-09-06)。省略=1</summary>
-        [JsonProperty("relicPicksLeft")]
+        [JsonProperty("relicPicksLeft", NullValueHandling = NullValueHandling.Ignore)]
         public int? RelicPicksLeft { get; init; }
         /// <summary>現在の戦闘がエリート戦か (勝利時のレリック報酬判定)</summary>
         [JsonProperty("currentElite")]
@@ -2728,7 +2728,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("campfireUpgradesUsed")]
         public int CampfireUpgradesUsed { get; init; }
         /// <summary>鍛冶の砥石 (campfireForge) の追加回数を使った幕。1幕に1回だけ (2026-09-05 ユーザー裁定「砥石の調整」)</summary>
-        [JsonProperty("forgeBonusUsedAct")]
+        [JsonProperty("forgeBonusUsedAct", NullValueHandling = NullValueHandling.Ignore)]
         public int? ForgeBonusUsedAct { get; init; }
         /// <summary>?マスの累積確率 (整数パーセントポイント。幕頭で基礎値へリセット)</summary>
         [JsonProperty("unknownPity")]
@@ -2746,16 +2746,16 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("seenShrineIds")]
         public IReadOnlyList<string> SeenShrineIds { get; init; } = default!;
         /// <summary>レリックのラン内状態。キー: wingBoots=翼の靴の残回数 / mawBroken=1で大口の貯金箱が止まる / unknownsSinceChest=小さな宝箱の?カウント / train=重石の鍛錬回数 / lizardUsed=1で蜥蜴の尾は使用済み / brandWard=厄除けの札の残回数 / exp_&lt;relicId&gt;=時限レリックの残戦数</summary>
-        [JsonProperty("relicState")]
+        [JsonProperty("relicState", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, int>? RelicState { get; init; }
         /// <summary>通常戦のカード報酬の残り組数 (祈りの車輪)。省略/0 = いまの組が最後</summary>
-        [JsonProperty("rewardRoundsLeft")]
+        [JsonProperty("rewardRoundsLeft", NullValueHandling = NullValueHandling.Ignore)]
         public int? RewardRoundsLeft { get; init; }
         /// <summary>取得時にデッキから札を選ぶレリックの保留 (空の鳥籠=除去・星読みの盤=変成+鍛え)。phase 'relic-choose' の間だけ非null</summary>
-        [JsonProperty("pendingRelicChoice")]
+        [JsonProperty("pendingRelicChoice", NullValueHandling = NullValueHandling.Ignore)]
         public RunStatePendingRelicChoice? PendingRelicChoice { get; init; }
         /// <summary>この工房の訪問で合成した回数 (職人の手袋=2回まで。工房進入でリセット)</summary>
-        [JsonProperty("workshopFusesUsed")]
+        [JsonProperty("workshopFusesUsed", NullValueHandling = NullValueHandling.Ignore)]
         public int? WorkshopFusesUsed { get; init; }
     }
 
@@ -2939,7 +2939,7 @@ namespace DeckRogue.Engine.Generated
         public RunCommand_EventChoice() { Type = TypeTag; }
         [JsonProperty("index")]
         public int Index { get; init; }
-        [JsonProperty("cardIndex")]
+        [JsonProperty("cardIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? CardIndex { get; init; }
     }
 
@@ -2950,13 +2950,13 @@ namespace DeckRogue.Engine.Generated
         public int Act { get; init; }
         [JsonProperty("deckId")]
         public string DeckId { get; init; } = default!;
-        [JsonProperty("relicIds")]
+        [JsonProperty("relicIds", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? RelicIds { get; init; }
-        [JsonProperty("hpRatio")]
+        [JsonProperty("hpRatio", NullValueHandling = NullValueHandling.Ignore)]
         public double? HpRatio { get; init; }
-        [JsonProperty("gold")]
+        [JsonProperty("gold", NullValueHandling = NullValueHandling.Ignore)]
         public int? Gold { get; init; }
-        [JsonProperty("difficulty")]
+        [JsonProperty("difficulty", NullValueHandling = NullValueHandling.Ignore)]
         public int? Difficulty { get; init; }
     }
 
@@ -2969,15 +2969,15 @@ namespace DeckRogue.Engine.Generated
         public int Seed { get; init; }
         [JsonProperty("leaderId")]
         public string LeaderId { get; init; } = default!;
-        [JsonProperty("deckId")]
+        [JsonProperty("deckId", NullValueHandling = NullValueHandling.Ignore)]
         public string? DeckId { get; init; }
-        [JsonProperty("difficulty")]
+        [JsonProperty("difficulty", NullValueHandling = NullValueHandling.Ignore)]
         public int? Difficulty { get; init; }
         /// <summary>実験: 全カード伏せ可 (2026-09-02)。伏せ可否とコストが変わるので再現に必要</summary>
-        [JsonProperty("setAnyCards")]
+        [JsonProperty("setAnyCards", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SetAnyCards { get; init; }
         /// <summary>kind='checkpoint' の開始オプション (createDebugCheckpointRun の引数)</summary>
-        [JsonProperty("checkpoint")]
+        [JsonProperty("checkpoint", NullValueHandling = NullValueHandling.Ignore)]
         public ReplayOriginCheckpoint? Checkpoint { get; init; }
     }
 
@@ -2989,8 +2989,8 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("commands")]
         public IReadOnlyList<RunCommand> Commands { get; init; } = default!;
         /// <summary>各コマンドの記録時刻 (epoch ms。commands と同じ長さ。UI/CLI が付ける・engine は読まない。2026-09-05 判断時間の計測)</summary>
-        [JsonProperty("times")]
-        public IReadOnlyList<int>? Times { get; init; }
+        [JsonProperty("times", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<long>? Times { get; init; }
     }
 
     // ==== src/engine/map.ts ====
@@ -3006,7 +3006,7 @@ namespace DeckRogue.Engine.Generated
         [JsonProperty("next")]
         public IReadOnlyList<int> Next { get; init; } = default!;
         /// <summary>格子列 (0〜GRID_COLS-1)。表示専用 — UIが本家の蛇行を再現するための座標で、 コマンド (ChooseNode.col) は従来どおり行内の詰めた添字を使う</summary>
-        [JsonProperty("col")]
+        [JsonProperty("col", NullValueHandling = NullValueHandling.Ignore)]
         public int? Col { get; init; }
     }
 }

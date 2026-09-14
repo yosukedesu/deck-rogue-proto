@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DeckRogueShare: レポート (persistentDataPath/reports) を他アプリへ渡すための FileProvider (2026-09-14)。
+     Unity 6 の Android Library Project (.androidlib = Gradle モジュール。src/main/ の下にマニフェストと res) として unityLibrary にマージされる。
+     authorities は アプリID + ".fileprovider" (Feedback.ShareAndroid が同じ文字列を組む)。
+     androidx.core は Unity 6 の unityLibrary が既に依存している (FileProvider は APK に入っている)。 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+      <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/deckrogue_file_paths" />
+    </provider>
+  </application>
+</manifest>

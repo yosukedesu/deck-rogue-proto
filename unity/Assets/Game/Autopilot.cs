@@ -337,9 +337,39 @@ namespace DeckRogue.Game
             if (Get("viewmap") == "1") g.ViewMap = true;
             if (Get("viewdeck") == "1") g.ViewDeck = true;
             if (Get("log") == "1") g.ShowLog = true;
+            // フィードバックの画面 (2026-09-14): rating=won|lost で評価ダイアログ (最後の戦闘を仮に積む)、memo=1 でメモの窓
+            if (Get("rating") != null && g.Rs != null)
+            {
+                Feedback.History.Add(new BattleArchive { BattleNo = g.Rs.BattlesWon + 1, Act = g.Rs.Act, EnemyId = Get("enemy") ?? "enemy_probe", Result = Get("rating") == "lost" ? "lost" : "won", Turns = 3, HpBefore = g.Rs.MaxHp, HpAfter = g.Rs.Hp, DeckSize = g.Rs.Deck.Count });
+                if (Get("rating") == "rated") Feedback.LastBattle.Rating = new BattleRating { Strength = 3, Fun = 4 };   // 閉じた後の左下「評価 済」
+                else { Feedback.OpenRating(); Feedback.DraftStrength = 3; }
+            }
+            if (Get("memo") == "1") { Feedback.MemoOpen = true; Feedback.MemoDraft = Get("memotext") ?? ""; }
             g.Rebuild();
             yield return WaitPresentation();
             yield return Shot(Get("name") ?? ("state-" + phase), 10);
+            // closemap=1: 重ねた地図を「閉じる」と同じ手順で閉じてもう1枚 (2026-09-14 戦闘中に閉じない不具合の確認)
+            if (Get("closemap") == "1")
+            {
+                g.ViewMap = false; g.Rebuild();
+                yield return WaitPresentation();
+                yield return Shot((Get("name") ?? ("state-" + phase)) + "-closed", 10);
+            }
+            // export=1: レポート/セーブの書き出しを通す (共有シートは開かない)。書いた道と大きさをログへ
+            if (Get("export") == "1" && g.Rs != null)
+            {
+                Feedback.Silent = true;
+                try
+                {
+                    var md = Feedback.Export(g.Rs);
+                    var json = md.Replace("play-", "save-").Replace(".md", ".json");
+                    Debug.Log("[Autopilot] export md=" + md + " (" + new System.IO.FileInfo(md).Length + " bytes) json=" + (System.IO.File.Exists(json) ? new System.IO.FileInfo(json).Length + " bytes" : "none"));
+                }
+                catch (Exception ex) { Debug.LogError("[Autopilot] export failed: " + ex); }
+                g.Notice = "レポートを書き出した: " + Feedback.LastExportPath;
+                g.Rebuild();
+                yield return Shot((Get("name") ?? ("state-" + phase)) + "-exported", 10);
+            }
             // resize=WxH: ウィンドウの大きさを変えて数フレーム待ち、もう1枚 (キャラの足元が地面に着いたままかの確認。2026-09-12)
             if (Get("resize") != null)
             {

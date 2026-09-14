@@ -221,9 +221,12 @@ namespace DeckRogue.Game
             Error = null;
             Notice = null;
             bool wasCombat = Rs != null && Rs.Phase == RunPhases.Combat;
+            var prevRs = Rs;
             try
             {
                 Rs = DeckRogue.Engine.Run.ApplyRunCommand(Rs, cmd);
+                // フィードバックの記録 (2026-09-14): ジャーナル・選択履歴・戦闘の決着の保管。成功した手だけ
+                try { Feedback.Record(prevRs, cmd, Rs); } catch (Exception fe) { Debug.LogWarning("[Feedback] record: " + fe.Message); }
             }
             catch (Exception ex)
             {
@@ -235,6 +238,7 @@ namespace DeckRogue.Game
             ViewDeck = false;
             ViewMap = false;
             SubMode = null;
+            Feedback.MemoOpen = false;
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             int prevAct = _lastAct;
             if (Rs != null) _lastAct = Rs.Act;
@@ -308,6 +312,8 @@ namespace DeckRogue.Game
                 Rs = DeckRogue.Engine.Run.CreateRun(Seed, ReactionModes.SetConfirm, LeaderId, null, Difficulty, null);
                 _lastAct = Rs.Act;
                 Audio.Ui("act_start");
+                // フィードバックの記録を白紙に (ジャーナルの origin = リプレイの起点)
+                Feedback.BeginRun(new ReplayOrigin { Kind = "run", Seed = Seed, LeaderId = LeaderId, Difficulty = Difficulty });
             }
             catch (Exception ex)
             {
@@ -458,6 +464,18 @@ namespace DeckRogue.Game
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
         }
 
+        // ---- 落ちても失わない (2026-09-14): バックグラウンドへ回る/終了する時に自動保存 ----
+
+        void OnApplicationPause(bool pause)
+        {
+            if (pause && Rs != null) Feedback.Autosave(Rs);
+        }
+
+        void OnApplicationQuit()
+        {
+            if (Rs != null) Feedback.Autosave(Rs);
+        }
+
         // ---- 描画 ----
 
         public void Rebuild()
@@ -507,12 +525,16 @@ namespace DeckRogue.Game
             if (Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null)
             {
                 BattleScreen.Build(this, ScreenRoot);
-                if (ViewMap) MapScreen.Overlay(this, ScreenRoot);
+                // 重ねる物は BattleView の UI 層へ (2026-09-14 ユーザー「戦闘中にマップ開いたら閉じるボタン押してもマップが閉じない」:
+                // 戦闘中の Rebuild は ScreenRoot を掃除しない = ScreenRoot 直下に置いた地図が残っていた。UI 層は毎回 ClearUi で消える)
+                var over = Battle != null && Battle.UiLayer != null ? Battle.UiLayer : ScreenRoot;
+                if (ViewMap) MapScreen.Overlay(this, over);
+                if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, over);
                 return;
             }
             // タイトルとマップも新画面 (M3)
             if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); return; }
-            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); return; }
             if (Content.IsLoaded)
             {
                 bool built = true;
@@ -531,8 +553,11 @@ namespace DeckRogue.Game
                 }
                 if (built)
                 {
+                    FeedbackUi.RateButton(this, ScreenRoot);                 // 決着直後のフェーズだけ「評価」を直せる
                     if (ViewMap) MapScreen.Overlay(this, ScreenRoot);      // 読み取り専用の地図を重ねる
                     else if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
+                    if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);   // 戦闘直後の評価 (1回だけ聞く)
+                    if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot);
                     return;
                 }
             }

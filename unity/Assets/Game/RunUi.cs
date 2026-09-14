@@ -65,6 +65,7 @@ namespace DeckRogue.Game
             }
             var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
             BattleScreen.SetSize(deckBtn, 110f, 36f);
+            FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
 
             for (int i = 0; i < run.Relics.Count && i < 10; i++)
             {

@@ -27,7 +27,8 @@ namespace DeckRogue.UI
 
         static void OnLog(string condition, string stackTrace, LogType type)
         {
-            if (type != LogType.Exception && type != LogType.Error && type != LogType.Assert) return;
+            // 例外と Assert だけ (LogType.Error はエンジン内部のシェーダ警告なども混ざり、遊べる画面を塞いでしまう。2026-09-14)
+            if (type != LogType.Exception && type != LogType.Assert) return;
             string s = condition;
             if (!string.IsNullOrEmpty(stackTrace))
             {

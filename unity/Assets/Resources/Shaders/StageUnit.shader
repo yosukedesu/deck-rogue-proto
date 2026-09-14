@@ -5,8 +5,10 @@ Shader "DeckRogue/StageUnit"
 {
     Properties
     {
-        _BaseMap ("Texture", 2D) = "white" {}
-        _BaseColor ("Color", Color) = (1,1,1,1)
+        // [MainTexture]/[MainColor]: Material.mainTexture / .color を _BaseMap / _BaseColor に写す
+        // (無いと mainTexture への代入のたびに「doesn't have a texture property '_MainTex'」のエラーが出る。2026-09-14)
+        [MainTexture] _BaseMap ("Texture", 2D) = "white" {}
+        [MainColor] _BaseColor ("Color", Color) = (1,1,1,1)
         _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.4
         _Flash ("Flash", Range(0,1)) = 0
         _Fog ("Fog", Range(0,1)) = 1

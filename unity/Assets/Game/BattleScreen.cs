@@ -109,6 +109,7 @@ namespace DeckRogue.Game
             SetSize(mapBtn, 84f, 34f);
             var logBtn = UiKit.Btn(bar, g.ShowLog ? "ログを閉じる" : "ログ", delegate { g.ShowLog = !g.ShowLog; g.Rebuild(); }, 13);
             SetSize(logBtn, g.ShowLog ? 130f : 84f, 34f);
+            FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
 
             // エラー・通知は上部バーの下に (紙の札)
             string msg = g.Error != null ? "! " + g.Error : (g.Notice != null ? g.Notice : null);

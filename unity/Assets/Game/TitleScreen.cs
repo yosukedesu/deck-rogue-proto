@@ -73,6 +73,20 @@ namespace DeckRogue.Game
 
             var ver = UiKit.Txt(root, "set-confirm / seed " + g.Seed + " / 難易度 " + g.Difficulty, 13, UiKit.ColDim, TextAnchor.MiddleLeft);
             UiKit.Anchor(ver.rectTransform, new Vector2(0f, 0f), new Vector2(0.6f, 0f), new Vector2(64f, 20f), new Vector2(0f, 48f));
+            // 前回のランのデータ回収 (2026-09-14): 落ちた/閉じたランも autosave から書き出せる
+            if (Feedback.HasAutosave)
+            {
+                var b = UiKit.Btn(root, "前回のランのレポートを書き出す", delegate
+                {
+                    try { var md = Feedback.ExportAutosave(); g.Error = null; g.Notice = md != null ? "書き出した: " + md : "前回のランの記録がない"; }
+                    catch (Exception e) { g.Error = "書き出しに失敗: " + e.Message; }
+                    g.Rebuild();
+                }, 14);
+                var le = b.GetComponent<LayoutElement>();
+                if (le != null) UnityEngine.Object.Destroy(le);
+                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(360f, 14f), new Vector2(700f, 54f));
+                Tooltip.Attach(b.gameObject, delegate { return "置き場: " + Feedback.ReportsDir; });
+            }
         }
 
         static RectTransform Portrait(Transform parent, LeaderDef ld, bool selected, Action onClick)
