@@ -296,6 +296,8 @@ namespace DeckRogue.Game
             var strip = UiKit.NewRect("strip", pan);
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, 0f), new Vector2(w / 2f, h));
             LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, targeting && alive && !aimed, acting);
+            // 前の表示 (shownHp) から今の HP へ滑らせる (案C への書き換えで落ちていた＝バーが1手遅れて減っていた。2026-09-16 ユーザー報告)
+            if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
         }
 
         /// <summary>帳面の一行の中身: 番号＋名前 (左) とブロック・状態の札 (右)／HP バー／意図 (絵・実値・ライダー)／(PC) 特性・分岐の一文</summary>
