@@ -58,6 +58,9 @@ namespace DeckRogue.Game
         static Vector3 _lampPos;
         struct AnimState { public string Anim; public int Frame; public float FrameT; public float At; }
         static readonly Dictionary<string, AnimState> _animStates = new Dictionary<string, AnimState>();
+        // キャラの板の明暗 (2026-09-16 ユーザー「このはも反射と影がすごくない？」): 月光の勾配は板の中で右上 1+0.7×A・左下 1−0.7×A、リムは右上の縁を空色へ寄せる割合。
+        // 旧 0.5／0.5 は太い墨線のこのは v2 で「左半分が影・右の縁が光る」と読めた → 0.25／0.2 に緩めた (敵も同じ板なので同時に緩む)
+        const float UnitSunAmount = 0.25f, UnitRim = 0.2f;
         static Material _waterMat;
         static readonly Dictionary<string, StageUnit> _bound = new Dictionary<string, StageUnit>();
         static readonly Dictionary<string, float> _depths = new Dictionary<string, float>();
@@ -490,7 +493,7 @@ namespace DeckRogue.Game
             float tw = sprite.texture.width, th = sprite.texture.height;
             mat.SetTextureScale("_BaseMap", new Vector2(tr.width / tw, tr.height / th));
             mat.SetTextureOffset("_BaseMap", new Vector2(tr.x / tw, tr.y / th));
-            mat.SetFloat("_Rim", 0.5f);
+            mat.SetFloat("_Rim", UnitRim);
             mr.sharedMaterial = mat;
             mr.shadowCastingMode = ShadowCastingMode.Off;   // 影は接地影 (楕円) で
             mr.receiveShadows = false;
@@ -670,7 +673,7 @@ namespace DeckRogue.Game
                 transform.localScale = new Vector3(Mathf.Max(0.01f, w * k * FrameScaleX), Mathf.Max(0.01f, h * k * FrameScaleY), 1f);   // 広い枠のコマは同じドット密度で板を広げる (足元中央は固定)
                 var tint = Img != null ? Img.color : Color.white;
                 Mat.SetColor("_BaseColor", tint);
-                ApplyLight(Mat, 0.5f);   // 月明かりの明暗勾配を強め
+                ApplyLight(Mat, UnitSunAmount, Key == "player");
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
                 if (Shadow != null)
@@ -746,10 +749,11 @@ namespace DeckRogue.Game
             return m;
         }
 
-        static void ApplyLight(Material m, float sunAmount)
+        static void ApplyLight(Material m, float sunAmount, bool hero = false)
         {
             bool painted = _pal.LampOnUnits > 0f;
-            m.SetColor("_Ambient", painted ? _pal.UnitAmbient : Color.white);
+            // hero = リーダーの板: 夜の環境光 (0.8〜0.96) を掛けず源の色で立つ = 主役の照明 (2026-09-16 ユーザー裁定)
+            m.SetColor("_Ambient", painted && !hero ? _pal.UnitAmbient : (hero ? new Color(1.15f, 1.15f, 1.15f) : Color.white));   // hero は ACES と色補正が中間調を沈めるぶん 1.15 で戻す
             m.SetVector("_LampPos", _lampPos);
             m.SetColor("_LampColor", painted ? _pal.Lantern : Color.black);
             m.SetFloat("_LampStrength", painted ? _pal.LampOnUnits : 0f);
