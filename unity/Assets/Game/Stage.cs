@@ -646,7 +646,7 @@ namespace DeckRogue.Game
                 float dur = 1f / fps;
                 float[] durs;
                 if (FrameDur.TryGetValue(Anim, out durs) && Frame < durs.Length) dur = durs[Frame];
-                FrameT += Time.deltaTime;
+                FrameT += Mathf.Min(Time.deltaTime, 0.04f);   // 長いフレーム (Rebuild の直後・端末のもたつき) が1回でコマを何枚も飛ばさないよう上限 (2026-09-16: 攻撃4コマが1フレームで消えていた)
                 if (FrameT < dur) return;
                 FrameT -= dur;
                 Frame++;

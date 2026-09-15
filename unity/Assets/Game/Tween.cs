@@ -42,7 +42,8 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>dur 秒かけて 0→1 を onUpdate に渡す (実時間。ゲーム内の一時停止に影響されない)</summary>
+        /// <summary>dur 秒かけて 0→1 を onUpdate に渡す。時計は Time.deltaTime の積算 (timeScale は使っていないので実時間と同じ。
+        /// Autopilot の Time.captureFramerate によるコマ送り撮影でも 1フレーム=1/60秒で決定的に進む。2026-09-16)</summary>
         public static Coroutine Run(float dur, Action<float> onUpdate, Ease ease = Ease.OutQuad, Action onDone = null)
         {
             return I.StartCoroutine(RunCo(dur, onUpdate, ease, onDone));
@@ -50,14 +51,15 @@ namespace DeckRogue.Game
 
         static IEnumerator RunCo(float dur, Action<float> onUpdate, Ease ease, Action onDone)
         {
-            float t0 = Time.unscaledTime;
+            float t = 0f;
             if (dur <= 0f) { onUpdate(1f); onDone?.Invoke(); yield break; }
             while (true)
             {
-                float k = (Time.unscaledTime - t0) / dur;
+                float k = t / dur;
                 if (k >= 1f) break;
                 onUpdate(Apply(ease, k));
                 yield return null;
+                t += Time.deltaTime;
             }
             onUpdate(1f);
             onDone?.Invoke();
@@ -121,7 +123,9 @@ namespace DeckRogue.Game
 
         static IEnumerator AfterCo(float delay, Action action)
         {
-            if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
+            // deltaTime の積算で待つ (WaitForSecondsRealtime は壁時計なので Time.captureFramerate のコマ送り撮影で決定的にならない)
+            float t = 0f;
+            while (t < delay) { yield return null; t += Time.deltaTime; }
             action?.Invoke();
         }
 
@@ -178,6 +182,90 @@ namespace DeckRogue.Game
             img.raycastTarget = false;
             rt.localScale = new Vector3(0.3f, 1f, 1f);
             Run(0.18f, k => { if (rt == null) return; rt.localScale = new Vector3(0.3f + 0.9f * Apply(Ease.OutQuad, k), 1f - 0.4f * k, 1f); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>斬撃 (2026-09-16 ユーザー「斬撃エフェクトをもっと豪華に。方向性は当初の直線のままで」): 直線の筋は据え置き、そこへ
+        /// ①太い筋 (白い芯＋青緑の縁) が振りの向きに伸びて消える ②細い残像が2本、少し遅れて平行に走る ③着弾の光が膨らむ ④火花が散る、を足した。
+        /// big (与ダメ 15 以上) は筋が 1.35 倍で、交差する2本目 (X) が 0.06 秒遅れて走る。絵は Art/fx/slash_streak・slash_burst・spark (無ければ生成)</summary>
+        public static void SlashFx(RectTransform layer, Vector2 pos, float angle, Color color, bool big = false)
+        {
+            if (layer == null) return;
+            float len = (big ? 1.35f : 1f) * 340f;
+            var white = new Color(1f, 1f, 1f, 1f);
+            // 着弾の光 (奥): 白い光の玉が一瞬膨らんで消える → その上に8芒星
+            Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.85f), big ? 300f : 220f, 0.3f, 1.3f, 0.2f, 0f, 0f);
+            Streak(layer, pos, angle, color, len, 1f, 0.32f, 0f);
+            Streak(layer, pos, angle, white, len * 0.92f, 0.9f, 0.16f, 0f, 0.45f);                       // 芯: 白く細い筋が先に走って消える
+            Streak(layer, pos + Perp(angle) * 26f, angle + 5f, color, len * 0.8f, 0.55f, 0.3f, 0.04f);   // 残像 (細く薄く・少し遅れて)
+            Streak(layer, pos - Perp(angle) * 24f, angle - 4f, color, len * 0.7f, 0.4f, 0.28f, 0.07f);
+            if (big) Streak(layer, pos, angle + 90f, color, len * 0.9f, 0.9f, 0.32f, 0.07f);            // 交差 (X)
+            Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 180f : 130f, 0.3f, 1.5f, 0.26f, 60f, 0.02f);
+            // 衝撃の輪: 細い輪が広がりながら消える (大技は2本)
+            Pop(layer, pos, ThemeFx.Ring(), new Color(color.r, color.g, color.b, 0.9f), big ? 360f : 260f, 0.15f, 1f, 0.34f, 0f, 0.03f);
+            if (big) Pop(layer, pos, ThemeFx.Ring(), white, 300f, 0.1f, 1f, 0.3f, 0f, 0.12f);
+            // 火花: 振りの向きへ散る (放物線・回転・消える)
+            int n = big ? 16 : 10;
+            var dirV = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+            for (int i = 0; i < n; i++)
+            {
+                var sp = UiKit.NewRect("spark", layer);
+                sp.anchorMin = sp.anchorMax = new Vector2(0.5f, 0.5f);
+                float sz = UnityEngine.Random.Range(22f, 44f);
+                sp.sizeDelta = new Vector2(sz, sz); sp.anchoredPosition = pos;
+                var sImg = sp.gameObject.AddComponent<Image>();
+                sImg.sprite = ThemeFx.Spark(); sImg.raycastTarget = false;
+                sImg.color = (i % 3 == 0) ? white : color;
+                float spread = UnityEngine.Random.Range(-1.2f, 1.2f);
+                var vel = (dirV * UnityEngine.Random.Range(-1f, 1f) + Perp(angle) * spread).normalized * UnityEngine.Random.Range(220f, 460f) * (big ? 1.3f : 1f);
+                var start = pos; float dur = UnityEngine.Random.Range(0.3f, 0.55f); float spin = UnityEngine.Random.Range(-900f, 900f);
+                var c0 = sImg.color;
+                Run(dur, k => { if (sp == null) return; float t = k * dur; sp.anchoredPosition = start + vel * t + new Vector2(0f, -520f) * t * t; sp.localRotation = Quaternion.Euler(0f, 0f, t * spin); float sc = 1f - 0.5f * k; sp.localScale = new Vector3(sc, sc, 1f); sImg.color = new Color(c0.r, c0.g, c0.b, c0.a * (1f - k * k)); }, Ease.Linear, () => { if (sp != null) UnityEngine.Object.Destroy(sp.gameObject); });
+            }
+        }
+
+        /// <summary>膨らんで消える1枚絵 (着弾の光・衝撃の輪): size を基準に scale が from→to (OutQuad)、spin 度回りながら、k² で消える</summary>
+        static void Pop(RectTransform layer, Vector2 pos, Sprite sprite, Color color, float size, float from, float to, float dur, float spin, float delay)
+        {
+            After(delay, () =>
+            {
+                if (layer == null) return;
+                var rt = UiKit.NewRect("pop", layer);
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.sizeDelta = new Vector2(size, size); rt.anchoredPosition = pos;
+                var img = rt.gameObject.AddComponent<Image>();
+                img.sprite = sprite; img.color = color; img.raycastTarget = false;
+                rt.localScale = new Vector3(from, from, 1f);
+                Run(dur, k => { if (rt == null) return; float sc = from + (to - from) * Apply(Ease.OutQuad, k); rt.localScale = new Vector3(sc, sc, 1f); if (spin != 0f) rt.localRotation = Quaternion.Euler(0f, 0f, k * spin); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+            });
+        }
+
+        static Vector2 Perp(float angle) { float a = (angle + 90f) * Mathf.Deg2Rad; return new Vector2(Mathf.Cos(a), Mathf.Sin(a)); }
+
+        /// <summary>直線の筋1本: 振りの向きに伸びながら (scaleX 0.2→1.2) 細くなり、後半で消える。delay 秒遅らせられる (残像・交差用)</summary>
+        static void Streak(RectTransform layer, Vector2 pos, float angle, Color color, float len, float alpha, float dur, float delay, float thick = 1f)
+        {
+            After(delay, () =>
+            {
+                if (layer == null) return;
+                var rt = UiKit.NewRect("slash", layer);
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.sizeDelta = new Vector2(len, len * 0.25f * thick); rt.anchoredPosition = pos;
+                rt.localRotation = Quaternion.Euler(0f, 0f, angle);
+                var img = rt.gameObject.AddComponent<Image>();
+                img.sprite = ThemeFx.SlashStreak(); img.raycastTarget = false;
+                img.color = new Color(color.r, color.g, color.b, color.a * alpha);
+                rt.localScale = new Vector3(0.2f, 1f, 1f);
+                var fwd = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+                Run(dur, k =>
+                {
+                    if (rt == null) return;
+                    float grow = Apply(Ease.OutQuad, Mathf.Clamp01(k / 0.5f));
+                    rt.localScale = new Vector3(0.2f + 1.0f * grow, 1f - 0.5f * k, 1f);
+                    rt.anchoredPosition = pos + fwd * (26f * k);
+                    float fade = k < 0.45f ? 1f : 1f - (k - 0.45f) / 0.55f;
+                    img.color = new Color(color.r, color.g, color.b, color.a * alpha * fade);
+                }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+            });
         }
 
         /// <summary>画面全体の色の点滅 (被弾の赤など)</summary>

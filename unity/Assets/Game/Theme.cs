@@ -707,6 +707,150 @@ namespace DeckRogue.Game
             return s;
         }
 
+        /// <summary>斬撃の太い筋 (96×24。白い芯・青緑の縁・薄い光。両端が尖る)。差し替えは Art/fx/slash_streak.png (2026-09-16 斬撃の豪華化)</summary>
+        public static Sprite SlashStreak()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("slash_streak", out s)) return s;
+            s = Theme.Art("fx", "slash_streak");
+            if (s == null)
+            {
+                const int w = 96, h = 24;
+                var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[w * h];
+                var core = Color.white; var edge = UiKit.Hex("#9fe0d6"); var glow = new Color(0.48f, 0.72f, 0.69f, 0.4f);
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float t = (x + 0.5f) / w;                          // 0..1 (両端で細い。中央よりやや先端寄りが太い)
+                        float thick = 1f + 8.5f * Mathf.Pow(Mathf.Sin(t * Mathf.PI), 0.7f);
+                        float dy = Mathf.Abs(y + 0.5f - h / 2f);
+                        Color c;
+                        if (dy < thick * 0.35f) c = core;
+                        else if (dy < thick * 0.75f) c = edge;
+                        else if (dy < thick * 1.05f) c = glow;
+                        else continue;
+                        px[y * w + x] = c;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["slash_streak"] = s;
+            return s;
+        }
+
+        /// <summary>光の玉 (64×64。中心が白く縁へ薄れる円)。差し替えは Art/fx/glow.png</summary>
+        public static Sprite Glow()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("glow", out s)) return s;
+            s = Theme.Art("fx", "glow");
+            if (s == null)
+            {
+                const int n = 64;
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f)) / (n / 2f);
+                        if (d >= 1f) continue;
+                        float a = d < 0.35f ? 1f : (d < 0.6f ? 0.6f : (d < 0.85f ? 0.3f : 0.12f));   // 4段の階調 (ドット絵の光)
+                        px[y * n + x] = new Color(1f, 1f, 1f, a);
+                    }
+                tex.SetPixels(px); tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["glow"] = s;
+            return s;
+        }
+
+        /// <summary>衝撃の輪 (64×64 の細い円環)。差し替えは Art/fx/ring.png</summary>
+        public static Sprite Ring()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("ring", out s)) return s;
+            s = Theme.Art("fx", "ring");
+            if (s == null)
+            {
+                const int n = 64;
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f));
+                        if (d > 31f || d < 26f) continue;
+                        px[y * n + x] = (d > 27.5f && d < 29.5f) ? Color.white : new Color(1f, 1f, 1f, 0.45f);
+                    }
+                tex.SetPixels(px); tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["ring"] = s;
+            return s;
+        }
+
+        /// <summary>着弾の光 (32×32 の8芒星)。差し替えは Art/fx/slash_burst.png</summary>
+        public static Sprite SlashBurst()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("slash_burst", out s)) return s;
+            s = Theme.Art("fx", "slash_burst");
+            if (s == null)
+            {
+                const int n = 32;
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        float dx = x + 0.5f - n / 2f, dy = y + 0.5f - n / 2f;
+                        float d = Mathf.Sqrt(dx * dx + dy * dy);
+                        float ang = Mathf.Atan2(dy, dx);
+                        float spike = Mathf.Abs(Mathf.Cos(ang * 4f));   // 8 本の芒
+                        float reach = 4f + 12f * Mathf.Pow(spike, 6f);
+                        if (d > reach) continue;
+                        px[y * n + x] = d < 3f ? Color.white : d < reach * 0.6f ? new Color(1f, 1f, 0.9f, 1f) : UiKit.Hex("#7ab8b0");
+                    }
+                tex.SetPixels(px); tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["slash_burst"] = s;
+            return s;
+        }
+
+        /// <summary>火花 (8×8 の菱形)。差し替えは Art/fx/spark.png</summary>
+        public static Sprite Spark()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("spark", out s)) return s;
+            s = Theme.Art("fx", "spark");
+            if (s == null)
+            {
+                const int n = 8;
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[n * n];
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        float m = Mathf.Abs(x + 0.5f - 4f) + Mathf.Abs(y + 0.5f - 4f);
+                        if (m > 4f) continue;
+                        px[y * n + x] = m < 2f ? Color.white : new Color(1f, 0.95f, 0.75f, 1f);
+                    }
+                tex.SetPixels(px); tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["spark"] = s;
+            return s;
+        }
+
         /// <summary>カードの紋章 (絵の代わり): id のハッシュから 24×16 の左右対称の模様。差し替えは Art/cards/<id>.png</summary>
         /// <summary>レリックのプレースホルダー: id から生成する左右対称の紋章 (金の3階調+暗い縁・背景透過)</summary>
         public static Sprite RelicGlyph(string relicId)

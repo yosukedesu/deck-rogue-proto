@@ -62,7 +62,7 @@ namespace DeckRogue.Game
             _n++;
             var path = Path.Combine(_dir, $"{_n:00}-{name}.png");
             ScreenCapture.CaptureScreenshot(path, 1);
-            Debug.Log("[Autopilot] shot " + path + " player=" + Stage.DebugAnim("player"));
+            Debug.Log("[Autopilot] shot " + path + " ut=" + Time.unscaledTime.ToString("F2") + " player=" + Stage.DebugAnim("player"));
             for (int i = 0; i < 3; i++) yield return null;
         }
 
@@ -391,11 +391,33 @@ namespace DeckRogue.Game
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
             }
+            // fx=slash[:angle]: 斬撃の弧を敵0の中心に出して撮る (向きと大きさの確認。2026-09-16)
+            if ((Get("fx") ?? "").StartsWith("slash") && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
+            {
+                float ang = 0f; var parts = Get("fx").Split(':'); if (parts.Length > 1) float.TryParse(parts[1], out ang);
+                var fx = g.FxLayer;
+                var spr = g.Battle.EnemySprite(0);
+                // 決定的な時間刻み: CaptureScreenshot で実時間が跳ぶので、captureFramerate で1フレーム=1/60秒に固定して3フレームごとに撮る
+                Time.captureFramerate = 60;
+                yield return null;
+                if (spr != null && fx != null) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, new Color(1f, 0.98f, 0.9f, 0.95f), Get("big") == "1");
+                for (int i = 0; i < 8; i++) { yield return null; yield return null; yield return Shot("fx-" + i, 1); }
+                Time.captureFramerate = 0;
+            }
             // play=<手札index>: その札をプレイして (対象は最初の生存敵)、攻撃コマの途中を 4 枚撮る (2026-09-16 このは v2 のアニメ確認)
             int playIdx;
-            if (int.TryParse(Get("play") ?? "", out playIdx) && g.Rs != null && g.Rs.Combat != null && playIdx >= 0 && playIdx < g.Rs.Combat.Player.Hand.Count)
+            if (Get("play") == "attack" && g.Rs != null && g.Rs.Combat != null)   // play=attack: 手札で最初のダメージ札 (index を数えなくてよい)
+            {
+                playIdx = -1;
+                for (int i = 0; i < g.Rs.Combat.Player.Hand.Count; i++) { var c = g.Rs.Combat.Player.Hand[i]; if (c.Def.Type != "reaction" && (c.Def.Modes == null || c.Def.Modes.Count == 0) && c.Def.Effects.Any(e => e.Effect == "dealDamage")) { playIdx = i; break; } }
+            }
+            else if (!int.TryParse(Get("play") ?? "", out playIdx)) playIdx = -1;
+            if (playIdx >= 0 && g.Rs != null && g.Rs.Combat != null && playIdx < g.Rs.Combat.Player.Hand.Count)
             {
                 var pc = g.Rs.Combat.Player.Hand[playIdx];
+                Debug.Log("[Autopilot] play " + playIdx + " " + pc.Def.Name);
+                Time.captureFramerate = 60;   // 決定的な時間刻み (1フレーム=1/60秒)。プレイの前から固定して演出の頭を撮り逃さない
+                Presenter.MarkSeen(g.Rs.Combat);   // 跳んだ直後は戦闘開始・ターン開始の演出が未消化で、プレイの演出がその後ろに並んでしまう
                 g.BeginPlay(pc, null);
                 yield return null;
                 if (g.Pending != null && g.Pending.NextNeed() == "target")
@@ -404,7 +426,10 @@ namespace DeckRogue.Game
                     for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) if (g.Rs.Combat.Enemies[i].Hp > 0) { tgt = i; break; }
                     if (tgt >= 0) g.OnEnemyClicked(tgt);
                 }
-                for (int i = 0; i < 4; i++) { yield return new WaitForSeconds(0.06f); yield return Shot("play-" + i, 1); }
+                int shotsN = 4; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 4;   // playshots=N で枚数 (札が飛んで着弾するまで 0.3〜0.6 秒)
+                int every = 4; int.TryParse(Get("playevery") ?? "", out every); if (every <= 0) every = 4;      // playevery=N フレームごとに撮る (1フレーム=1/60秒に固定)
+                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
+                Time.captureFramerate = 0;
                 yield return WaitPresentation();
             }
             // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)

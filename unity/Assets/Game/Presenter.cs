@@ -209,7 +209,7 @@ namespace DeckRogue.Game
                         var spr = g.Battle != null ? g.Battle.EnemySprite(d.EnemyIndex ?? 0) : null;
                         if (spr != null)
                         {
-                            Tween.Slash(fx, Tween.CenterIn(spr, fx), UnityEngine.Random.Range(-50f, -20f), new Color(1f, 0.95f, 0.8f, 0.95f));
+                            Tween.SlashFx(fx, Tween.CenterIn(spr, fx), UnityEngine.Random.Range(-50f, -20f), new Color(1f, 0.98f, 0.9f, 0.95f), d.Amount >= 15);   // 直線の筋＋残像＋着弾の光＋火花 (2026-09-16)
                             Stage.Flash("enemy" + (d.EnemyIndex ?? 0));
                         }
                         Audio.Key("DamageDealt.player.swing");
@@ -227,7 +227,7 @@ namespace DeckRogue.Game
                         var rt = g.Anchor("player");
                         if (rt == null) return;
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                        if (pSpr != null) Tween.Slash(fx, Tween.CenterIn(pSpr, fx), UnityEngine.Random.Range(20f, 50f), new Color(1f, 0.6f, 0.5f, 0.95f));
+                        if (pSpr != null) Tween.SlashFx(fx, Tween.CenterIn(pSpr, fx), UnityEngine.Random.Range(20f, 50f), new Color(1f, 0.62f, 0.5f, 0.95f), d.HpLoss >= 12);
                         Audio.Key("DamageDealt.enemy.swing");
                         // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
                         if (d.HpLoss <= 0 && d.Amount > 0) { Audio.Key("DamageDealt.blocked"); Stage.PlayAnim("player", "block"); }
