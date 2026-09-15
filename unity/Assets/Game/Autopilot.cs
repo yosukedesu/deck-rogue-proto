@@ -391,6 +391,22 @@ namespace DeckRogue.Game
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
             }
+            // play=<手札index>: その札をプレイして (対象は最初の生存敵)、攻撃コマの途中を 4 枚撮る (2026-09-16 このは v2 のアニメ確認)
+            int playIdx;
+            if (int.TryParse(Get("play") ?? "", out playIdx) && g.Rs != null && g.Rs.Combat != null && playIdx >= 0 && playIdx < g.Rs.Combat.Player.Hand.Count)
+            {
+                var pc = g.Rs.Combat.Player.Hand[playIdx];
+                g.BeginPlay(pc, null);
+                yield return null;
+                if (g.Pending != null && g.Pending.NextNeed() == "target")
+                {
+                    int tgt = -1;
+                    for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) if (g.Rs.Combat.Enemies[i].Hp > 0) { tgt = i; break; }
+                    if (tgt >= 0) g.OnEnemyClicked(tgt);
+                }
+                for (int i = 0; i < 4; i++) { yield return new WaitForSeconds(0.06f); yield return Shot("play-" + i, 1); }
+                yield return WaitPresentation();
+            }
             // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)
             if (Get("hideui") == "1" && g.ScreenRoot != null && g.Battle != null)
             {

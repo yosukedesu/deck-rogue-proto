@@ -1,0 +1,52 @@
+{
+ "engine": "pixellab web animate (idle=template breathing-idle, attack/block=v3 custom)",
+ "note": "2026-09-16 このは v2 のアニメ。hurt は無し (ユーザー「ダメージは揺れるだけでいい」= Presenter の のけぞり・点滅・揺れ)。攻撃は17コマから 頭上/溜め(光る)/着弾/食い込み の4コマ、防御は9コマから 2,4,6,8",
+ "anims": {
+  "idle": {
+   "source": "Idle/animations/idle_breathing/south-east-3301548f",
+   "picked_frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "canvas": [
+    92,
+    78
+   ],
+   "note": "92×92 の書き出しから足元 (y=78) より下を切った 92×78。足元中央は一枚絵 88×64 と同じ (体の中心は枠の中心+0.5)"
+  },
+  "attack": {
+   "source": "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east",
+   "picked_frames": [
+    3,
+    7,
+    9,
+    12
+   ],
+   "canvas": [
+    92,
+    78
+   ],
+   "note": "92×92 の書き出しから足元 (y=78) より下を切った 92×78。足元中央は一枚絵 88×64 と同じ (体の中心は枠の中心+0.5)"
+  },
+  "block": {
+   "source": "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east",
+   "picked_frames": [
+    1,
+    3,
+    5,
+    7
+   ],
+   "canvas": [
+    92,
+    78
+   ],
+   "note": "92×92 の書き出しから足元 (y=78) より下を切った 92×78。足元中央は一枚絵 88×64 と同じ (体の中心は枠の中心+0.5)"
+  }
+ }
+}

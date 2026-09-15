@@ -1,0 +1,148 @@
+{
+  "group_id": "9f3407bc-f779-488d-849f-7b41b8323066",
+  "states": [
+    {
+      "character": {
+        "id": "7fbfc36a-13ff-4e1a-91c7-7f69c1d8021b",
+        "name": "Idle",
+        "prompt": "Chibi 3 heads tall pixel art sprite in Nippon Ichi Disgaea style, bold black outline, flat colors with two-step cel shading. A young lumberjack girl apprentice with a friendly cheerful look. Spiky short chestnut brown hair with pointed bangs, the nape hair flipping outward, and one big ahoge standing straight up. Large round green eyes with two white highlights, small closed smile, faint pink blush marks. Black leather choker with brass studs.\nDesign language: black iron, polished brass, brown leather, deep green cloth.\nOutfit: a deep forest green strapless tube top with black trim and a polished brass clasp at the center of the chest, bare shoulders, arms and midriff. A wide brass bangle on her left upper arm. Brown leather gloves: a short glove on her right hand, a long strapped bracer glove on her left forearm. Black shorts with a wide brown leather belt and a large square brass buckle, a round brass gauge and a wrench on her right hip, a small brown leather pouch with a brass gear on her left hip. One long black thigh sock on her left leg only with a brass gear garter strap, the right leg bare. Brown leather lace-up boots with brass gear buckles.\nWeapon: a huge oversized two-handed black iron axe much taller than her, resting on her right shoulder and held in her right hand. A single wide black iron blade on one side with a riveted brass edge band and a short spike on the back, a very large polished brass gear at the eye of the axe with a glowing green gem set in its center, a straight black iron haft wrapped with green cord and brass bands, and a heavy brass counterweight cap at the bottom end.",
+        "size": {
+          "width": 88,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-09-15T14:52:41.700368+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "A_heavy_two-handed_overhead_chop_with_her_huge_axe": {
+            "south-east": [
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_000.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_001.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_002.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_003.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_004.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_005.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_006.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_007.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_008.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_009.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_010.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_011.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_012.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_013.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_014.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_015.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe/south-east/frame_016.png"
+            ]
+          },
+          "She_braces_for_impact_pulls_the_huge_axe_in_front": {
+            "south-east": [
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_000.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_001.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_002.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_003.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_004.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_005.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_006.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_007.png",
+              "Idle/animations/She_braces_for_impact_pulls_the_huge_axe_in_front/south-east/frame_008.png"
+            ]
+          },
+          "A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4": {
+            "south-east": [
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_000.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_001.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_002.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_003.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_004.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_005.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_006.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_007.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-6a954fd4/south-east/frame_008.png"
+            ]
+          },
+          "idle_breathing": {
+            "south-east-3301548f": [
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_000.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_001.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_002.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_003.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_004.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_005.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_006.png",
+              "Idle/animations/idle_breathing/south-east-3301548f/frame_007.png"
+            ],
+            "south-east-7046bb3c": [
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_000.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_001.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_002.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_003.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_004.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_005.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_006.png",
+              "Idle/animations/idle_breathing/south-east-7046bb3c/frame_007.png"
+            ],
+            "south-east-f0226240": [
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_000.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_001.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_002.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_003.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_004.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_005.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_006.png",
+              "Idle/animations/idle_breathing/south-east-f0226240/frame_007.png"
+            ]
+          },
+          "A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7": {
+            "south-east": [
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_000.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_001.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_002.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_003.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_004.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_005.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_006.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_007.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_008.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_009.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_010.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_011.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south-east/frame_012.png"
+            ],
+            "south": [
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_000.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_001.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_002.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_003.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_004.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_005.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_006.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_007.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_008.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_009.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_010.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_011.png",
+              "Idle/animations/A_heavy_two-handed_overhead_chop_with_her_huge_axe-88e97cb7/south/frame_012.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-09-15T16:18:47.693295"
+}

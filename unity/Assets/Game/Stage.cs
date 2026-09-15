@@ -517,9 +517,11 @@ namespace DeckRogue.Game
                 }
                 if (list.Count > 0) u.Anims[anim] = list;
             }
-            u.FrameDur["attack"] = new[] { 0.08f, 0.03f, 0.04f, 0.16f };   // 溜め 0.08 → 頭上 0.03 → 振り抜き 0.04 → 食い込み 0.16 = 0.31s (2026-09-09「もうちょっとゆっくりでいい」)   // 溜め 0.05 → 頭上 0.02 → 振り抜き 0.03 (一瞬) → 食い込み 0.12 (重さ) = 0.22s (2026-09-09「もっと早く。ゆっくりは斧が重く見えるように」)
+            u.Breathe = !u.Anims.ContainsKey("idle");   // 待機のコマ (PixelLab の呼吸) があるならコードの上下はしない (2026-09-16)
+            // このは v2 (2026-09-16): PixelLab の17コマから 頭上→溜め(刃が光る)→着弾→食い込み の4コマ。着弾は 0.13 秒後 (Presenter の踏み込み 0.11 に合わせる)
+            u.FrameDur["attack"] = new[] { 0.05f, 0.08f, 0.04f, 0.18f };
             u.FrameDur["hurt"] = new[] { 0.06f, 0.16f, 0.10f };
-            u.FrameDur["block"] = new[] { 0.06f, 0.20f, 0.08f };
+            u.FrameDur["block"] = new[] { 0.06f, 0.08f, 0.10f, 0.20f };   // 9コマの 2,4,6,8 = 斧を前に回して構える
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
             AnimState st0;
