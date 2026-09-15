@@ -1,0 +1,36 @@
+{
+  "group_id": "9f3407bc-f779-488d-849f-7b41b8323066",
+  "states": [
+    {
+      "character": {
+        "id": "7fbfc36a-13ff-4e1a-91c7-7f69c1d8021b",
+        "name": "Idle",
+        "prompt": "Chibi 3 heads tall pixel art sprite in Nippon Ichi Disgaea style, bold black outline, flat colors with two-step cel shading. A young lumberjack girl apprentice with a friendly cheerful look. Spiky short chestnut brown hair with pointed bangs, the nape hair flipping outward, and one big ahoge standing straight up. Large round green eyes with two white highlights, small closed smile, faint pink blush marks. Black leather choker with brass studs.\nDesign language: black iron, polished brass, brown leather, deep green cloth.\nOutfit: a deep forest green strapless tube top with black trim and a polished brass clasp at the center of the chest, bare shoulders, arms and midriff. A wide brass bangle on her left upper arm. Brown leather gloves: a short glove on her right hand, a long strapped bracer glove on her left forearm. Black shorts with a wide brown leather belt and a large square brass buckle, a round brass gauge and a wrench on her right hip, a small brown leather pouch with a brass gear on her left hip. One long black thigh sock on her left leg only with a brass gear garter strap, the right leg bare. Brown leather lace-up boots with brass gear buckles.\nWeapon: a huge oversized two-handed black iron axe much taller than her, resting on her right shoulder and held in her right hand. A single wide black iron blade on one side with a riveted brass edge band and a short spike on the back, a very large polished brass gear at the eye of the axe with a glowing green gem set in its center, a straight black iron haft wrapped with green cord and brass bands, and a heavy brass counterweight cap at the bottom end.",
+        "size": {
+          "width": 88,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-09-15T14:52:41.700368+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-09-15T15:00:04.995896"
+}

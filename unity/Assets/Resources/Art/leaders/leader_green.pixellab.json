@@ -1,22 +1,15 @@
 {
- "id": "konoha_final",
- "engine": "pixflux + composite",
- "note": "2026-09-11 本採用。絵柄5「オクトラ正統」(HD-2D 3頭身アニメ顔) seed 11。キャラ＝x_a_edge_txt (刃先だけ結晶)、武器＝x_d_shards_txt (結晶の欠片が刃に) を武器の範囲だけ画素で移植 (scratchpad/chibi-x/final_check.png)。ユーザー「キャラデザは1! 武器は上段4」",
- "character_request": {
-  "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed magitech axe taller than her resting on her right shoulder: a wide dark steel blade whose cutting edge is a thin strip of glowing translucent teal mana crystal, a brass cogwheel hub at the eye of the axe holding a small teal crystal core, a long wooden handle with brass bands, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
-  "negative": "western cartoon, disney style, pixar style, cartoon network style, american comic, realistic, photorealistic, semi-realistic, realistic proportions, adult, tall proportions, 6 heads tall, long face, big nose, small narrow eyes, dead eyes, muddy colors, dull shading, blurry, watercolor bleeding, painterly, glow, bloom, gradient background, text, watermark, extra limbs, side profile, back view, blush, rosy cheeks, red hair, orange hair, red eyes, sword, bow, staff, wand, spear, chinese hanfu, wuxia, xianxia, cheap mobile game, stiff pose",
-  "view": "low top-down",
-  "direction": "south-east",
-  "outline": "selective outline",
-  "shading": "medium shading",
-  "detail": "highly detailed",
-  "guidance": 8,
-  "seed": 11
+ "engine": "pixellab web Create from Reference (v3 rotation)",
+ "note": "2026-09-15 このは作り直し (設定→記号化→Gemini の設定画→顎から下を縦0.6に詰めた2.5頭身の参考画→PixelLab)。88×64・8方向。採用は south-east (右向き=敵の方。肌の重心で検算)。アイコンは south の顔の切り出し",
+ "pixellab_character_id": "7fbfc36a-13ff-4e1a-91c7-7f69c1d8021b",
+ "group_id": "9f3407bc-f779-488d-849f-7b41b8323066",
+ "size": {
+  "width": 88,
+  "height": 64
  },
- "weapon_request": {
-  "description": "Japanese JRPG pixel art character sprite in the HD-2D style of Octopath Traveler and Live A Live, kawaii anime chara-design, 3 heads tall super-deformed proportions with a large round head and a slim small body, cute young artisan girl who delves into mines, soft round anime face, big sparkling green anime eyes with two white highlights each, tiny dot nose, small closed smiling mouth, plain cheeks with no blush marks, dark brown hair drawn in clean separated locks with straight bangs and two braided pigtails hanging over her shoulders, deep green hooded cloak with the hood down, orange knit scarf, cream shirt under a brown leather chest piece, short brown leather boots, a huge two-handed magitech axe taller than her resting on her right shoulder: a wide dark steel blade with three small glowing teal mana crystal shards embedded in it, a brass cogwheel hub at the eye of the axe holding a teal crystal core, a long wooden handle with brass bands, relaxed idle stance with weight on one leg and the other hand on her hip, clean cel shading in three flat tone steps, crisp pixel clusters, hair locks and cloak folds carefully drawn, thin dark selective outline, subdued Octopath palette of deep green, leather brown, cream and one orange accent, 24 color palette, transparent background, three-quarter front view seen slightly from above, facing right",
-  "seed": 11
- },
- "composite_zone": "head box x38-63,y5-34 + handle band (44,22)->(6,46) w2.6 + hand box x2-12,y40-49",
- "postprocess": "flip_left_right (2026-09-11 ユーザー「キャラが逆向いてない？敵の方向いてほしい」。pixflux は south-east でも左向きに出る=向きの検算を飛ばしていた。斧は左肩)"
+ "view": "low top-down",
+ "directions": 8,
+ "template_id": "mannequin",
+ "prompt": "Chibi 3 heads tall pixel art sprite in Nippon Ichi Disgaea style, bold black outline, flat colors with two-step cel shading. A young lumberjack girl apprentice with a friendly cheerful look. Spiky short chestnut brown hair with pointed bangs, the nape hair flipping outward, and one big ahoge standing straight up. Large round green eyes with two white highlights, small closed smile, faint pink blush marks. Black leather choker with brass studs.\nDesign language: black iron, polished brass, brown leather, deep green cloth.\nOutfit: a deep forest green strapless tube top with black trim and a polished brass clasp at the center of the chest, bare shoulders, arms and midriff. A wide brass bangle on her left upper arm. Brown leather gloves: a short glove on her right hand, a long strapped bracer glove on her left forearm. Black shorts with a wide brown leather belt and a large square brass buckle, a round brass gauge and a wrench on her right hip, a small brown leather pouch with a brass gear on her left hip. One long black thigh sock on her left leg only with a brass gear garter strap, the right leg bare. Brown leather lace-up boots with brass gear buckles.\nWeapon: a huge oversized two-handed black iron axe much taller than her, resting on her right shoulder and held in her right hand. A single wide black iron blade on one side with a riveted brass edge band and a short spike on the back, a very large polished brass gear at the eye of the axe with a glowing green gem set in its center, a straight black iron haft wrapped with green cord and brass bands, and a heavy brass counterweight cap at the bottom end.",
+ "created_at": "2026-09-15T14:52:41.700368+00:00"
 }

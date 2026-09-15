@@ -697,7 +697,7 @@ namespace DeckRogue.Game
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
             float pFeet = Stage.FeetOffset("player", 130f);
-            float pArt = 256f * ArtScale;   // スマホは半分 (2026-09-14)
+            float pArt = leaderArt.rect.width * 4f * ArtScale;   // 1ドット=4px を絵の幅に寄らず保つ (2026-09-16 このは v2 は 88×64=斧ぶん横に広い)。スマホは 0.6
             float pTop = pFeet + leaderArt.rect.height * PaperFx.PixelScaleF(leaderArt, pArt);
             PaperFx.FitPixel(spr, leaderArt, 0f, pFeet, pArt);
             spr.anchorMin = spr.anchorMax = new Vector2(0f, 0f);
