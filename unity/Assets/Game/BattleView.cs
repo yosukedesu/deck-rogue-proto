@@ -23,6 +23,7 @@ namespace DeckRogue.Game
         RectTransform _playerArea;
         readonly List<RectTransform> _enemyPanels = new List<RectTransform>();
         readonly List<Image> _enemyHits = new List<Image>();
+        float[] _enemyGaps = new float[0];   // 隣の敵との間隔 (帳面の一行の幅を絞る。確認の窓も同じ幅を読む)
         int[] _shownEnemyHp = new int[0];
         int _shownPlayerHp = -1;
         int _bgAct = -1;
@@ -153,6 +154,8 @@ namespace DeckRogue.Game
                 float gap = float.MaxValue;
                 if (i > 0) gap = Mathf.Min(gap, Mathf.Abs(centers[i] - centers[i - 1]));
                 if (i + 1 < centers.Length) gap = Mathf.Min(gap, Mathf.Abs(centers[i + 1] - centers[i]));
+                if (_enemyGaps.Length != st.Enemies.Count) _enemyGaps = new float[st.Enemies.Count];
+                _enemyGaps[i] = gap;
                 BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
                 if (wasAlive && !alive)
@@ -198,6 +201,18 @@ namespace DeckRogue.Game
 
         /// <summary>手札 UI に残っている札の数 (自動操作の検証用)</summary>
         public int HandCount { get { return _hand.Count; } }
+
+        /// <summary>敵の入れ物 (帳面の一行の x を確認の窓が読む)。無ければ null</summary>
+        public RectTransform EnemyPanel(int index)
+        {
+            return index >= 0 && index < _enemyPanels.Count ? _enemyPanels[index] : null;
+        }
+
+        /// <summary>隣の敵との間隔 (帳面の一行の幅)。無ければ無限大</summary>
+        public float EnemyGap(int index)
+        {
+            return index >= 0 && index < _enemyGaps.Length ? _enemyGaps[index] : float.MaxValue;
+        }
 
         public RectTransform EnemySprite(int index)
         {

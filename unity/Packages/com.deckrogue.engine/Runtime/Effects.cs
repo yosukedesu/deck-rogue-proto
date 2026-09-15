@@ -940,6 +940,14 @@ namespace DeckRogue.Engine
             return ModifiedHit(s, enemyIndex, it.Actual) * IntentHits(s, it.MirrorHits, it.Hits);
         }
 
+        /// <summary>全敵の合計 (被ダメ予測の分子。TS summary.ts incomingTotal)</summary>
+        public static int IncomingTotal(GameState s)
+        {
+            int sum = 0;
+            for (int i = 0; i < s.Enemies.Count; i++) sum += IncomingFrom(s, i);
+            return sum;
+        }
+
         /// <summary>因縁 (Nemesis) の無形ターンか: 奇数ターン (1,3,5…) は無形、偶数ターンに実体化</summary>
         public static bool IsIntangibleTurn(GameState state) => state.Turn % 2 == 1;
 

@@ -36,7 +36,7 @@ namespace DeckRogue.Game
             }
         }
         // 画面の下から何割に world 原点を置くか。スマホ (2026-09-14) は手札が画面の 43% を占めるので座席を上げる (絵は半分なので上端は余る)
-        static float GroundLineRatio { get { return UiKit.Phone ? 0.54f : 0.45f; } }   // スマホ 0.56→0.54 (2026-09-15 吹き出しが頭の上に収まる高さを稼ぐ)
+        static float GroundLineRatio { get { return UiKit.Phone ? 0.56f : 0.45f; } }   // スマホ 0.54→0.56 (2026-09-15 案C: 頭上の吹き出しが無くなり、足元の帳面の札 76 に足が掛からない高さへ)
         const float Tile = 1.28f;                        // 32ドットのタイル1枚 = 1.28 units (基準深度で 4px/ドット)
         static readonly Color ShadowColor = new Color(0.02f, 0.02f, 0.08f, 0.92f);   // 接地影: 地面より暗く青寄り。幅0.8・高さ0.35・足元中心・地面とスプライトの間
 
