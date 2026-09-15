@@ -391,16 +391,17 @@ namespace DeckRogue.Game
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
             }
-            // fx=slash[:angle]: 斬撃の弧を敵0の中心に出して撮る (向きと大きさの確認。2026-09-16)
-            if ((Get("fx") ?? "").StartsWith("slash") && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
+            // fx=slash[:angle]: 斬撃を敵0の中心に出して撮る (向きと大きさの確認。2026-09-16)。fx=hit[:angle] は敵→自分の斬撃 (朱) を自分の絵の上に
+            if (((Get("fx") ?? "").StartsWith("slash") || (Get("fx") ?? "").StartsWith("hit")) && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
             {
-                float ang = 0f; var parts = Get("fx").Split(':'); if (parts.Length > 1) float.TryParse(parts[1], out ang);
+                bool hit = Get("fx").StartsWith("hit");
+                float ang = hit ? 35f : -35f; var parts = Get("fx").Split(':'); if (parts.Length > 1) float.TryParse(parts[1], out ang);
                 var fx = g.FxLayer;
-                var spr = g.Battle.EnemySprite(0);
+                var spr = hit ? g.Battle.PlayerSprite() : g.Battle.EnemySprite(0);
                 // 決定的な時間刻み: CaptureScreenshot で実時間が跳ぶので、captureFramerate で1フレーム=1/60秒に固定して3フレームごとに撮る
                 Time.captureFramerate = 60;
                 yield return null;
-                if (spr != null && fx != null) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, new Color(1f, 0.98f, 0.9f, 0.95f), Get("big") == "1");
+                if (spr != null && fx != null) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, hit ? new Color(1f, 0.62f, 0.5f, 0.95f) : new Color(1f, 0.98f, 0.9f, 0.95f), Get("big") == "1");
                 for (int i = 0; i < 8; i++) { yield return null; yield return null; yield return Shot("fx-" + i, 1); }
                 Time.captureFramerate = 0;
             }

@@ -184,40 +184,33 @@ namespace DeckRogue.Game
             Run(0.18f, k => { if (rt == null) return; rt.localScale = new Vector3(0.3f + 0.9f * Apply(Ease.OutQuad, k), 1f - 0.4f * k, 1f); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
-        /// <summary>斬撃 (2026-09-16 ユーザー「斬撃エフェクトをもっと豪華に。方向性は当初の直線のままで」): 直線の筋は据え置き、そこへ
-        /// ①太い筋 (白い芯＋青緑の縁) が振りの向きに伸びて消える ②細い残像が2本、少し遅れて平行に走る ③着弾の光が膨らむ ④火花が散る、を足した。
-        /// big (与ダメ 15 以上) は筋が 1.35 倍で、交差する2本目 (X) が 0.06 秒遅れて走る。絵は Art/fx/slash_streak・slash_burst・spark (無ければ生成)</summary>
+        /// <summary>斬撃 (2026-09-16 ユーザー「斬撃エフェクトをもっと豪華に。方向性は当初の直線のままで」→同日「2本に見える・ごてごてしすぎ。もっとスッキリ」):
+        /// 直線の筋1本 (白い芯＋青緑の縁が振りの向きへ伸びて細くなり消える) ＋ 着弾の光 (一瞬の光の玉と8芒星) ＋ 火花6。残像・衝撃の輪はやめた。
+        /// big (与ダメ 15 以上) は筋が 1.35 倍で、交差する2本目 (X) が 0.05 秒遅れて走り、火花10。絵は Art/fx/slash_streak・slash_burst・spark・glow (無ければ生成)</summary>
         public static void SlashFx(RectTransform layer, Vector2 pos, float angle, Color color, bool big = false)
         {
             if (layer == null) return;
             float len = (big ? 1.35f : 1f) * 340f;
             var white = new Color(1f, 1f, 1f, 1f);
-            // 着弾の光 (奥): 白い光の玉が一瞬膨らんで消える → その上に8芒星
-            Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.85f), big ? 300f : 220f, 0.3f, 1.3f, 0.2f, 0f, 0f);
-            Streak(layer, pos, angle, color, len, 1f, 0.32f, 0f);
-            Streak(layer, pos, angle, white, len * 0.92f, 0.9f, 0.16f, 0f, 0.45f);                       // 芯: 白く細い筋が先に走って消える
-            Streak(layer, pos + Perp(angle) * 26f, angle + 5f, color, len * 0.8f, 0.55f, 0.3f, 0.04f);   // 残像 (細く薄く・少し遅れて)
-            Streak(layer, pos - Perp(angle) * 24f, angle - 4f, color, len * 0.7f, 0.4f, 0.28f, 0.07f);
-            if (big) Streak(layer, pos, angle + 90f, color, len * 0.9f, 0.9f, 0.32f, 0.07f);            // 交差 (X)
-            Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 180f : 130f, 0.3f, 1.5f, 0.26f, 60f, 0.02f);
-            // 衝撃の輪: 細い輪が広がりながら消える (大技は2本)
-            Pop(layer, pos, ThemeFx.Ring(), new Color(color.r, color.g, color.b, 0.9f), big ? 360f : 260f, 0.15f, 1f, 0.34f, 0f, 0.03f);
-            if (big) Pop(layer, pos, ThemeFx.Ring(), white, 300f, 0.1f, 1f, 0.3f, 0f, 0.12f);
+            Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.7f), big ? 240f : 170f, 0.4f, 1.1f, 0.16f, 0f, 0f);   // 着弾の光 (奥): 一瞬だけ
+            Streak(layer, pos, angle, color, len, 1f, 0.3f, 0f);
+            if (big) Streak(layer, pos, angle + 90f, color, len * 0.9f, 0.9f, 0.3f, 0.05f);   // 交差 (X)
+            Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 150f : 110f, 0.3f, 1.3f, 0.22f, 45f, 0.02f);
             // 火花: 振りの向きへ散る (放物線・回転・消える)
-            int n = big ? 16 : 10;
+            int n = big ? 10 : 6;
             var dirV = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
             for (int i = 0; i < n; i++)
             {
                 var sp = UiKit.NewRect("spark", layer);
                 sp.anchorMin = sp.anchorMax = new Vector2(0.5f, 0.5f);
-                float sz = UnityEngine.Random.Range(22f, 44f);
+                float sz = UnityEngine.Random.Range(18f, 32f);
                 sp.sizeDelta = new Vector2(sz, sz); sp.anchoredPosition = pos;
                 var sImg = sp.gameObject.AddComponent<Image>();
                 sImg.sprite = ThemeFx.Spark(); sImg.raycastTarget = false;
                 sImg.color = (i % 3 == 0) ? white : color;
                 float spread = UnityEngine.Random.Range(-1.2f, 1.2f);
-                var vel = (dirV * UnityEngine.Random.Range(-1f, 1f) + Perp(angle) * spread).normalized * UnityEngine.Random.Range(220f, 460f) * (big ? 1.3f : 1f);
-                var start = pos; float dur = UnityEngine.Random.Range(0.3f, 0.55f); float spin = UnityEngine.Random.Range(-900f, 900f);
+                var vel = (dirV * UnityEngine.Random.Range(-1f, 1f) + Perp(angle) * spread).normalized * UnityEngine.Random.Range(200f, 400f) * (big ? 1.3f : 1f);
+                var start = pos; float dur = UnityEngine.Random.Range(0.25f, 0.42f); float spin = UnityEngine.Random.Range(-900f, 900f);
                 var c0 = sImg.color;
                 Run(dur, k => { if (sp == null) return; float t = k * dur; sp.anchoredPosition = start + vel * t + new Vector2(0f, -520f) * t * t; sp.localRotation = Quaternion.Euler(0f, 0f, t * spin); float sc = 1f - 0.5f * k; sp.localScale = new Vector3(sc, sc, 1f); sImg.color = new Color(c0.r, c0.g, c0.b, c0.a * (1f - k * k)); }, Ease.Linear, () => { if (sp != null) UnityEngine.Object.Destroy(sp.gameObject); });
             }
