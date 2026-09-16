@@ -42,7 +42,7 @@ export const TURN_ARMOR_PATH_MIN: readonly number[] = [0, 0, 1]
 
 export const ELITE_POOLS: readonly (readonly string[])[] = [
   // 各幕4種 (2026-08-31 再検証ラン「プール3種×4枠で同一個体が同一パスに2回=消化試合」への処方)
-  ['enemy_elite_sergeant', 'enc_elite_sentries', 'enemy_elite_gold_raven', 'enemy_elite_devourer'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の双子 (がらくた) / 金羽の大鴉 (金レース) / 大喰らいの蟲 (山札喰い=デッキが第二のHP)
+  ['enemy_elite_sergeant', 'enc_elite_sentries', 'enemy_elite_gold_raven', 'enemy_elite_devourer'], // 1幕: 鬼軍曹 (ブロックで怒る) / 歩哨の三つ子 (がらくた) / 金羽の大鴉 (金レース) / 大喰らいの蟲 (山札喰い=デッキが第二のHP)
   ['enemy_elite_iron_egg', 'enemy_elite_slaver', 'enemy_elite_mirror_djinn', 'enemy_elite_owl'], // 2幕: 眠れる鉄卵 (起こすか削るか) / 奴隷商 (デバフ漬け) / 写し身の魔人 (手数の鏡) / 読み手の梟 (伏せ読み=set-confirm検定)
   ['enemy_elite_stab_book', 'enemy_elite_giant_face', 'enemy_elite_doom_chanter', 'enemy_elite_deathless', 'enemy_elite_husk_3'], // 3幕 (2026-09-02 +骸兵=残機チェーン: オーバーキルが無駄になる=大技一撃デッキへの問い): 刺突の書 (増える多段) / 巨面 (二拍子) / 終焉の唱い手 (枚数タイマー) / 不滅の騎士 (再生バースト検定)
 ]
@@ -558,7 +558,7 @@ export function generateMap(
           const basePool = tierFor(act, r)
           // こそ泥はエリートにしない (2026-08-31 ユーザー裁定)。エリート補正 (HP×1.35+強化) が乗ると
           // 「満タン34HP+ブロックを1ターンで抜け」が構造的に不可能 = 盗みが税に化ける実測への処方
-          // エリートは幕内で未使用の個体を優先する (2026-08-31 緑ランで歩哨の双子が4枠中3回)
+          // エリートは幕内で未使用の個体を優先する (2026-08-31 緑ランで歩哨の三つ子が4枠中3回)
           const pool =
             type === 'elite'
               ? (() => {

@@ -316,7 +316,7 @@
   },
   {
     "id": "enc_elite_sentries",
-    "name": "歩哨の双子",
+    "name": "歩哨の三つ子",
     "members": [
       {
         "enemyId": "enemy_elite_sentry"

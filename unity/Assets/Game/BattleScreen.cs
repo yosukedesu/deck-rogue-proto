@@ -345,7 +345,8 @@ namespace DeckRogue.Game
             var rg = UiKit.Horz(right, 4, 0);
             rg.childAlignment = TextAnchor.MiddleRight; rg.childForceExpandWidth = false; rg.childForceExpandHeight = false;
             var statusPills = new List<Action<Transform>>();   // 名前の行 (広い札) か意図の行 (狭い札) のどちらかへ
-            if (alive && e.Block > 0) { int blk = e.Block; statusPills.Add(t => MiniPill(t, "shield", blk.ToString(), PaperFx.Ink, UiKit.Hex("#d6e6fa"), ChipTip("ブロック " + blk), 13, narrow)); }
+            float statusPillsW = 0f;   // 狭い札で意図の行に移る時の幅の見積り (割り込みの予告の札の空きを計算する。2026-09-16)
+            if (alive && e.Block > 0) { int blk = e.Block; statusPills.Add(t => MiniPill(t, "shield", blk.ToString(), PaperFx.Ink, UiKit.Hex("#d6e6fa"), ChipTip("ブロック " + blk), 13, narrow)); statusPillsW += MiniPillW(blk.ToString()); }
             if (alive)
             {
                 var chips = new List<KeyValuePair<string, string>>();
@@ -361,6 +362,7 @@ namespace DeckRogue.Game
                     var ch = chips[i];
                     bool debuff = ch.Value.StartsWith("急所") || ch.Value.StartsWith("混乱") || ch.Value.StartsWith("威圧");
                     statusPills.Add(t => MiniPill(t, ch.Key, ch.Value, debuff ? PaperFx.PlumInk : PaperFx.Ink, debuff ? new Color(0.93f, 0.86f, 0.97f, 1f) : PaperFx.Paper2, ChipTip(ch.Value), 13, narrow));
+                    statusPillsW += MiniPillW(ch.Value);
                 }
                 // 1体だけ (ボス) のスマホ: 特性 (装甲・とげ・再生…) の短い札も名前の行に (PC は4段目の一文)
                 if (ph && st.Enemies.Count == 1 && def != null)
@@ -380,7 +382,7 @@ namespace DeckRogue.Game
             if (!narrow) for (int i = 0; i < statusPills.Count; i++) statusPills[i](right);
             // HP バー (2段目)
             float barTop = top + nameH + 2f, barH = ph ? 16f : 20f;
-            HpBar(strip, new Vector2(0f, 0f), new Vector2(1f, 0f), h - barTop - barH, h - barTop, shownHp, e.MaxHp, 0, w / 2f - pad, ph ? 13 : 14);
+            HpBar(strip, new Vector2(0f, 0f), new Vector2(1f, 0f), h - barTop - barH, h - barTop, shownHp, e.MaxHp, 0, w / 2f - pad, ph ? 13 : 14, alive ? InterruptMarkRatio(def, e) : -1f);
             if (!alive) return;
             // 意図 (3段目): 絵・実値・ライダー (状態異常・筋力・盾・壊し)。ルーンの円蓋は「？」。分岐は今の盤面で有効な側 (窓が嘘をつかない)
             var it = e.Intent != null ? (Effects.EffectiveIntent(st, index) ?? e.Intent) : null;
@@ -390,8 +392,10 @@ namespace DeckRogue.Game
             rowMask.gameObject.AddComponent<RectMask2D>();   // 狭い札 (4体) ではライダーが溢れる = 縮めずに切る (全文はツールチップ)
             var row = UiKit.NewRect("intent", rowMask);
             UiKit.Anchor(row, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(600f, 0f));
-            var ig = UiKit.Horz(row, ph ? 6 : 10, 0);
+            float rowGap = ph ? 6f : 10f;
+            var ig = UiKit.Horz(row, (int)rowGap, 0);
             ig.childAlignment = TextAnchor.MiddleLeft; ig.childForceExpandHeight = false; ig.childForceExpandWidth = false;
+            float rowUsed = 0f;   // 並べた物の幅の見積り (割り込みの予告の札の空きを計算する。2026-09-16)
             if (it != null)
             {
                 bool hidden = st.HideIntents == true;
@@ -400,6 +404,7 @@ namespace DeckRogue.Game
                 var ic = UiKit.Icon(row, IntentIcon(it.Kind), isz, intentArt != null ? Color.white : IntentColor(it.Kind));
                 if (intentArt != null) ic.sprite = intentArt;
                 ic.rectTransform.sizeDelta = new Vector2(isz, isz); UiKit.Le(ic, isz, isz, isz, isz);
+                rowUsed += isz + rowGap;
                 string shortText = hidden ? "？" : IntentShort(st, index, it);
                 if (it.Kind == "defend" && !hidden) shortText = it.Actual.ToString();   // 盾の絵が「防御」を言うので数字だけ
                 if (narrow && !hidden && it.Kind != "attack" && it.Kind != "defend") shortText = "";   // 狭い札: 絵だけ (言葉はツールチップ)
@@ -408,18 +413,23 @@ namespace DeckRogue.Game
                     var itT = UiKit.Deco(row, shortText, ph ? 22 : 30, PaperFx.Ink, TextAnchor.MiddleLeft);
                     UiKit.Le(itT, 14f, rowH, -1f, rowH);
                     itT.textWrappingMode = TextWrappingModes.NoWrap;
+                    rowUsed += Mathf.Max(14f, EstTextW(shortText, ph ? 22f : 30f)) + rowGap;
                 }
                 if (!hidden)
                 {
                     int riders = (it.Inflict != null ? 1 : 0) + (it.AlsoBuff.HasValue ? 1 : 0) + (it.AlsoDefend.HasValue ? 1 : 0) + (it.AlsoDestroySet == true ? 1 : 0);
                     bool terse = ph || riders >= 2;
-                    if (it.Inflict != null) MiniPill(row, "exposed", (terse ? "" : "あなたに") + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount, UiKit.Hex("#5a3d78"), UiKit.Hex("#eddbf7"), null, ph ? 13 : 15, narrow);
-                    if (it.AlsoBuff.HasValue) MiniPill(row, "sword", (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value, UiKit.Hex("#7a5a1a"), UiKit.Hex("#faebc7"), null, ph ? 13 : 15, narrow);
-                    if (it.AlsoDefend.HasValue) MiniPill(row, "shield", (terse ? "ブロック" : "同時にブロック") + it.AlsoDefend.Value, UiKit.Hex("#2f5a7a"), UiKit.Hex("#d6e6fa"), null, ph ? 13 : 15, narrow);
-                    if (it.AlsoDestroySet == true) MiniPill(row, "exhaust", terse ? "先に壊す" : "先にからくりを壊す", UiKit.Hex("#7a2a2a"), UiKit.Hex("#fadbd6"), null, ph ? 13 : 15, narrow);
+                    int rsz = ph ? 13 : 15;
+                    if (it.Inflict != null) { string tx = (terse ? "" : "あなたに") + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount; MiniPill(row, "exposed", tx, UiKit.Hex("#5a3d78"), UiKit.Hex("#eddbf7"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
+                    if (it.AlsoBuff.HasValue) { string tx = (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value; MiniPill(row, "sword", tx, UiKit.Hex("#7a5a1a"), UiKit.Hex("#faebc7"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
+                    if (it.AlsoDefend.HasValue) { string tx = (terse ? "ブロック" : "同時にブロック") + it.AlsoDefend.Value; MiniPill(row, "shield", tx, UiKit.Hex("#2f5a7a"), UiKit.Hex("#d6e6fa"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
+                    if (it.AlsoDestroySet == true) { string tx = terse ? "先に壊す" : "先にからくりを壊す"; MiniPill(row, "exhaust", tx, UiKit.Hex("#7a2a2a"), UiKit.Hex("#fadbd6"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                 }
             }
-            if (narrow) for (int i = 0; i < statusPills.Count; i++) statusPills[i](row);
+            if (narrow) { for (int i = 0; i < statusPills.Count; i++) statusPills[i](row); rowUsed += statusPillsW + statusPills.Count * rowGap; }
+            // スマホ: 割り込みの予告 (「HP89以下で攻撃12〜14×2」「仲間が倒れると…」) を意図の行の余りに置く (PC は4段目の一文が担う)。
+            // 2026-09-16 友人のラン: 自分の一撃でオーガが半分を割り、意図が 攻撃14→12×2 に差し替わって敗北。スマホでは予告がタップの説明パネルにしか無かった
+            if (ph && alive && def != null && st.HideIntents != true) InterruptPills(row, st, index, def, e, w - 2f * pad - rowUsed);
             // PC の4段目: 分岐の注記・特性の一文 (2行まで・… で省略。全文はツールチップ)
             if (!ph)
             {
@@ -455,6 +465,72 @@ namespace DeckRogue.Game
             var fit = pill.gameObject.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             if (tip != null) Tooltip.Attach(pill.gameObject, delegate { return tip; });
+        }
+
+        /// <summary>帳面の小さな札の幅の見積り (MiniPill: 余白 2+4 + 絵 14 + 間 2 + 文字 + 余白 4)</summary>
+        static float MiniPillW(string text, int size = 13) { return 4f + 14f + 2f + EstTextW(text, size) + 6f; }
+
+        /// <summary>
+        /// スマホの意図の行に置く割り込みの予告の札 (2026-09-16)。CardText.EnemyTraits の割り込みの文と同じ材料で、
+        /// 余り幅に収まる形を選ぶ: 「HP89以下で攻撃12〜14×2」→ 収まらなければ「HP半分で行動が変わる」→ それも無理なら置かない (タップの説明パネルに全文)
+        /// </summary>
+        static void InterruptPills(Transform row, GameState st, int index, EnemyDef def, EnemyState e, float avail)
+        {
+            if (def.Interrupts == null) return;
+            int strength = e.Strength;
+            for (int k = 0; k < def.Interrupts.Count; k++)
+            {
+                var it = def.Interrupts[k];
+                if (IndexIn(e.FiredInterrupts, k)) continue;   // 発火済み
+                var first = EnemyGraph.FirstMoveOf(def, it.Goto);
+                string move = first != null ? CardText.MoveShort(first, strength) : "行動が変わる";
+                string when, whenShort;
+                if (it.On == EnemyInterruptTriggers.HpBelowHalf) { when = "HP" + (e.MaxHp / 2) + "以下で"; whenShort = "HP半分で"; }
+                else if (it.On == EnemyInterruptTriggers.DamageTaken) { when = "あと" + Math.Max(0, (it.Amount ?? 0) - (e.DamageTakenTotal ?? 0)) + "ダメージで"; whenShort = when; }
+                else if (it.On == EnemyInterruptTriggers.Alone) { if (!HasOtherAliveEnemy(st, index)) continue; when = "仲間が全滅すると"; whenShort = "仲間が全滅で"; }
+                else if (it.On == EnemyInterruptTriggers.AllyDied) { if (!HasOtherAliveEnemy(st, index)) continue; when = "仲間が倒れると"; whenShort = "仲間が倒れると"; }
+                else continue;
+                string full = when + move;
+                string tip = "<b>" + when + "行動が変わる</b>\n" + (first != null ? "最初の行動: " + move + "\n" : "") + "自分の番の途中で条件を満たすと、宣言していた意図がその場で差し替わる（意図の数字もその場で変わる）";
+                string text = null;
+                if (MiniPillW(full) <= avail) text = full;
+                else if (MiniPillW(whenShort + "行動が変わる") <= avail) text = whenShort + "行動が変わる";
+                if (text == null) continue;
+                MiniPill(row, first != null ? IntentIcon(first.Kind) : "exposed", text, UiKit.Hex("#7a4e12"), UiKit.Hex("#faebc7"), tip, 13, true);
+                avail -= MiniPillW(text) + 6f;
+            }
+        }
+
+        /// <summary>HP バーに引く「行動が変わる線」の位置 (0〜1)。HP半分の割り込み＝0.5、被弾覚醒＝いまのHPから残りの累計を引いた所。無ければ -1</summary>
+        static float InterruptMarkRatio(EnemyDef def, EnemyState e)
+        {
+            if (def == null || def.Interrupts == null || e.MaxHp <= 0) return -1f;
+            for (int k = 0; k < def.Interrupts.Count; k++)
+            {
+                var it = def.Interrupts[k];
+                if (IndexIn(e.FiredInterrupts, k)) continue;
+                if (it.On == EnemyInterruptTriggers.HpBelowHalf) return 0.5f;
+                if (it.On == EnemyInterruptTriggers.DamageTaken)
+                {
+                    int remain = Math.Max(0, (it.Amount ?? 0) - (e.DamageTakenTotal ?? 0));
+                    float at = (float)(e.Hp - remain) / e.MaxHp;
+                    if (at > 0f && at < 1f) return at;
+                }
+            }
+            return -1f;
+        }
+
+        static bool IndexIn(IReadOnlyList<int> list, int k)
+        {
+            if (list == null) return false;
+            for (int i = 0; i < list.Count; i++) if (list[i] == k) return true;
+            return false;
+        }
+
+        static bool HasOtherAliveEnemy(GameState st, int index)
+        {
+            for (int j = 0; j < st.Enemies.Count; j++) if (j != index && st.Enemies[j].Hp > 0) return true;
+            return false;
         }
 
         /// <summary>文字幅の見積り (レイアウト前に吹き出しの幅を決めるため)。全角 1em・数字と記号 0.6em</summary>
@@ -576,7 +652,7 @@ namespace DeckRogue.Game
             }, Ease.OutCubic);
         }
 
-        static void HpBar(RectTransform parent, Vector2 aMin, Vector2 aMax, float yMin, float yMax, int hp, int max, int block, float xHalf = 0f, int textSize = 15)
+        static void HpBar(RectTransform parent, Vector2 aMin, Vector2 aMax, float yMin, float yMax, int hp, int max, int block, float xHalf = 0f, int textSize = 15, float markRatio = -1f)
         {
             var bar = UiKit.NewRect("hpbar", parent);
             // xHalf > 0 なら中央から ±xHalf の固定幅 (スマホの敵は隣との間隔に収める。2026-09-15)
@@ -600,6 +676,16 @@ namespace DeckRogue.Game
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             var info = bar.gameObject.AddComponent<HpBarInfo>();
             info.Max = max; info.Value = hp; info.Fill = fill; info.Label = t;
+            if (markRatio > 0f && markRatio < 1f)
+            {   // 行動が変わる線 (HP半分・被弾覚醒): 蜂蜜の目盛りを帯の上下にはみ出させる (2026-09-16)。狭い札でも「次の一撃で割るか」が読める
+                var mark = UiKit.NewRect("mark", bar);
+                UiKit.Anchor(mark, new Vector2(markRatio, 0f), new Vector2(markRatio, 1f), new Vector2(-3f, -3f), new Vector2(3f, 3f));
+                var mi = mark.gameObject.AddComponent<Image>(); mi.color = PaperFx.Ink; mi.raycastTarget = false;
+                var core = UiKit.NewRect("core", mark);
+                UiKit.Stretch(core, 1.5f, 1.5f, 1f, 1f);
+                var ci = core.gameObject.AddComponent<Image>(); ci.color = PaperFx.Honey; ci.raycastTarget = false;
+                mark.SetSiblingIndex(t.transform.GetSiblingIndex());   // 数字 (紙の縁取り) は目盛りの上に
+            }
             if (block > 0)
             {
                 var b = UiKit.NewRect("block", bar);

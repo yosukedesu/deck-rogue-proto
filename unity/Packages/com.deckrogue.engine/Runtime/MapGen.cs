@@ -39,7 +39,7 @@ namespace DeckRogue.Engine
         /// <summary>エリート専用プール (2026-08-31)。各幕4種 (幕3は5種)</summary>
         public static readonly IReadOnlyList<IReadOnlyList<string>> ELITE_POOLS = new IReadOnlyList<string>[]
         {
-            // 1幕: 鬼軍曹 / 歩哨の双子 / 金羽の大鴉 / 大喰らいの蟲
+            // 1幕: 鬼軍曹 / 歩哨の三つ子 / 金羽の大鴉 / 大喰らいの蟲
             new[] { "enemy_elite_sergeant", "enc_elite_sentries", "enemy_elite_gold_raven", "enemy_elite_devourer" },
             // 2幕: 眠れる鉄卵 / 奴隷商 / 写し身の魔人 / 読み手の梟
             new[] { "enemy_elite_iron_egg", "enemy_elite_slaver", "enemy_elite_mirror_djinn", "enemy_elite_owl" },
