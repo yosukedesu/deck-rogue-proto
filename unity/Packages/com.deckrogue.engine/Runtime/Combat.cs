@@ -1843,6 +1843,7 @@ namespace DeckRogue.Engine
                     int iceBlock = state.Player.IceBlock;
                     int dealtTotal = 0;
                     int hpLoss = 0;
+                    int blockedTotal = 0;   // ブロック＋氷壁が吸った合計 (演出用 2026-09-17)
                     for (int h = 0; h < hits; h++)
                     {
                         int v = intent.Actual;
@@ -1866,6 +1867,7 @@ namespace DeckRogue.Engine
                         int remaining = v - blocked;
                         int iceBlocked = Math.Min(iceBlock, remaining);
                         iceBlock -= iceBlocked;
+                        blockedTotal += blocked + iceBlocked;
                         int hit = remaining - iceBlocked;
                         // レリック本家形 (2026-09-12): 免疫でなく上限と割合で受ける (StS2 準拠)。
                         // 古い門柱: 未ブロック分がN以下なら1 / 重金の棒: 各ヒット-N / 脈打つ欠片: 1ターンの累計はN以下
@@ -1890,7 +1892,7 @@ namespace DeckRogue.Engine
                             HpLostThisTurn = (state.Player.HpLostThisTurn ?? 0) + hpLoss,
                         },
                     };
-                    sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex });
+                    sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex, Blocked = blockedTotal > 0 ? blockedTotal : (int?)null });
                     // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
                     if (hpLoss > 0) sa = Effects.RunPermanentTriggers(sa, "onDamageTaken", enemyIndex);
                     // バランス崩し: 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる

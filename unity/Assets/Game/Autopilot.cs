@@ -331,6 +331,34 @@ namespace DeckRogue.Game
                         pl = pl with { SetCards = list, SetSlots = Math.Max(pl.SetSlots, list.Count) };
                     }
                     if (!ReferenceEquals(pl, st0.Player)) g.Rs = g.Rs with { Combat = st0 with { Player = pl } };
+                    // 敵0の状態を直接いじる (演出の確認用 2026-09-17 ④⑥): ehp=<HP>・eexposed=<急所>・eblock=<ブロック>・hand=<cardId,...> (手札を差し替え)
+                    var st1 = g.Rs.Combat;
+                    if (st1.Enemies.Count > 0 && (Get("ehp") != null || Get("eexposed") != null || Get("eblock") != null))
+                    {
+                        var e0 = st1.Enemies[0];
+                        int v;
+                        string ehp = Get("ehp") ?? "";
+                        if (ehp.StartsWith("h")) { int off = 0; int.TryParse(ehp.Substring(1), out off); v = e0.MaxHp / 2 + off; e0 = e0 with { Hp = Math.Max(1, Math.Min(e0.MaxHp, v)) }; }   // ehp=h+3: 半分の線の3上 (豹変の確認)
+                        else if (int.TryParse(ehp, out v)) e0 = e0 with { Hp = Math.Max(1, Math.Min(e0.MaxHp, v)) };
+                        if (int.TryParse(Get("eexposed") ?? "", out v)) e0 = e0 with { Exposed = Math.Max(0, v) };
+                        if (int.TryParse(Get("eblock") ?? "", out v)) e0 = e0 with { Block = Math.Max(0, v) };
+                        var enemies = new List<EnemyState>(st1.Enemies); enemies[0] = e0;
+                        g.Rs = g.Rs with { Combat = st1 with { Enemies = enemies } };
+                    }
+                    if (Get("pblock") != null)
+                    {   // 自分のブロック (敵の攻撃を盾で受ける演出の確認)
+                        int v; var st3 = g.Rs.Combat;
+                        if (int.TryParse(Get("pblock"), out v)) g.Rs = g.Rs with { Combat = st3 with { Player = st3.Player with { Block = Math.Max(0, v) } } };
+                    }
+                    if (Get("hand") != null)
+                    {
+                        var st2 = g.Rs.Combat;
+                        var list = new List<CardInstance>();
+                        int n = 0;
+                        foreach (var id in Get("hand").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0))
+                            list.Add(new CardInstance { Uid = id + "#dbgh" + (n++), Def = Content.GetCardDef(id) });
+                        g.Rs = g.Rs with { Combat = st2 with { Player = st2.Player with { Hand = list, Energy = Math.Max(st2.Player.Energy, 5) } } };
+                    }
                 }
                 catch (Exception ex) { Debug.LogError("[Autopilot] state: perms/sets " + ex.Message); }
                 try

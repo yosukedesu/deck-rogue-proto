@@ -105,6 +105,10 @@
       "sfx": "buff",
       "volume": 0.7
     },
+    "EnemyInterrupted": {
+      "sfx": "hit_big",
+      "volume": 0.55
+    },
     "GoldStolen": {
       "sfx": "gold",
       "volume": 0.8

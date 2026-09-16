@@ -105,6 +105,7 @@ namespace DeckRogue.Game
                 else if (ev is GameEvent_ReactionTriggered) gap = 0.55f;   // 札が飛んで着弾するまで待ってから返しのダメージ (2026-09-17)
                 else if (IsTrapEvent(ev)) gap = 0.3f;
                 else if (ev is GameEvent_EnemyActionExecuting) gap = 0.32f;   // 予備動作 (縮む) → 当たり (2026-09-17)
+                else if (ev is GameEvent_EnemyInterrupted) gap = 0.55f;   // 豹変の判を読ませてから次 (2026-09-17 ④)
                 else if (IsEnemyActEvent(ev)) gap = 0.25f;
                 else if (TableSound(ev) != null) gap = 0.12f;   // 表 (audio.json) で音だけ鳴るイベント (撃破・分裂…)
                 else continue;
@@ -138,6 +139,14 @@ namespace DeckRogue.Game
             // カードが敵へ飛ぶ 0.2 秒に着弾を合わせる
             float delay = 0f;
             for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = 0.13f; break; }   // 着弾は振り抜き (0.11〜0.15s) に合わせる
+            // 差し替えられた意図の札は、組み直しで既に新しい札になっている。豹変の瞬間 (ShowEnemyAct) に跳ねて出すまで隠す (2026-09-17 ④)
+            for (int i = _seen; i < log.Count; i++)
+                if (log[i] is GameEvent_EnemyInterrupted ei && ei.Replaced)
+                {
+                    var pan = g.Anchor("enemy" + ei.EnemyIndex);
+                    var tag = pan != null ? pan.Find("intent-tag") as RectTransform : null;
+                    if (tag != null) tag.localScale = Vector3.zero;
+                }
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
@@ -147,7 +156,7 @@ namespace DeckRogue.Game
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
-                delay += ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : 0.12f;
+                delay += ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
             }
             _seen = log.Count;
             _seenCombat = combat;
@@ -318,6 +327,61 @@ namespace DeckRogue.Game
                     Stage.Shake(5f, 0.2f);
                     break;
                 }
+                case GameEvent_EnemyInterrupted ei:
+                {
+                    // ④ 豹変の瞬間 (2026-09-17): HP半分・目覚め・仲間の死亡で行動が変わった。絵がひと膨らみして薔薇の輪と揺れ、
+                    // HP バーの「行動が変わる線」の目盛りが弾け、胸元に理由の判。差し替え (自ターン中) なら古い意図の札が落ちて新しい札が跳ね、
+                    // 「行動が変わった」の一言。敵フェーズ中 (差し替えなし) は「次のターンから行動が変わる」
+                    var pan = g.Anchor("enemy" + ei.EnemyIndex);
+                    var spr = g.Battle != null ? g.Battle.EnemySprite(ei.EnemyIndex) : null;
+                    if (pan == null) return;
+                    Audio.Key("EnemyInterrupted");
+                    Vector2 center = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
+                    if (spr != null) { Tween.Puff(spr, 0.45f, 1.22f); Tween.Shake(spr, 7f, 0.45f); }
+                    Stage.Flash("enemy" + ei.EnemyIndex);
+                    Stage.Shake(8f, 0.3f);
+                    Tween.RingBurst(fx, center, PaperFx.Rose, 280f, 0.5f);
+                    Tween.RingBurst(fx, center, PaperFx.BrassLight, 170f, 0.35f);
+                    Tween.ScreenFlash(fx, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.16f), 0.3f);
+                    // 目盛り (行動が変わる線) が弾ける。組み直し済みの帳面から目盛りは消えているので、半分の線は HP バーの中央から出す
+                    var mark = pan.Find("strip/hpbar/mark") as RectTransform;
+                    var bar = pan.Find("strip/hpbar") as RectTransform;
+                    Vector2? mp = null;
+                    if (mark != null) mp = Tween.CenterIn(mark, fx);
+                    else if (bar != null && ei.Trigger == EnemyInterruptTriggers.HpBelowHalf) mp = Tween.CenterIn(bar, fx);
+                    if (mp.HasValue)
+                    {
+                        Tween.RingBurst(fx, mp.Value, PaperFx.Brass, 110f, 0.4f);
+                        Tween.IconBurst(fx, mp.Value, "star", new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.95f), 52f);
+                        if (bar != null) Tween.Punch(bar, 0.12f);
+                    }
+                    string why = ei.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました!" : ei.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を切った!" : ei.Trigger == EnemyInterruptTriggers.Alone ? "仲間が全滅した!" : "仲間が倒れた!";
+                    Tween.Stamp(fx, center + new Vector2(0f, 24f), why, PaperFx.Paper2, PaperFx.BadInk, PaperFx.Rose, 22, 0.75f, -6f);
+                    var tag = pan.Find("intent-tag") as RectTransform;
+                    if (ei.Replaced)
+                    {
+                        // 古い意図の札が落ちる → 新しい札が跳ねる (組み直し済みの札は既に新しい意図)
+                        Vector2 tagPos = tag != null ? Tween.CenterIn(tag, fx) : center + new Vector2(0f, 150f);
+                        if (ei.Before != null) IntentGhostDrop(fx, tagPos, ei.Before);
+                        if (tag != null)
+                        {
+                            var paper = tag.Find("paper");
+                            var pImg = paper != null ? paper.GetComponent<Image>() : null;
+                            tag.localScale = Vector3.zero;
+                            var tagC = tag;
+                            Tween.After(0.18f, () =>
+                            {
+                                if (tagC == null) return;
+                                Tween.Scale(tagC, Vector3.one, 0.3f, Ease.OutBack);
+                                if (pImg != null) Tween.Flash(pImg, PaperFx.RoseLight, 0.5f);
+                                Tween.RingBurst(fx, tagPos, PaperFx.Rose, 150f, 0.35f);
+                            });
+                        }
+                        Tween.After(0.25f, () => Tween.Float(fx, tagPos + new Vector2(0f, -56f), "行動が変わった", PaperFx.BrassLight, 26, 26f, 1.0f));
+                    }
+                    else Tween.Float(fx, center + new Vector2(0f, 80f), "次のターンから行動が変わる", PaperFx.Paper2, 20, 28f, 1.1f);
+                    break;
+                }
                 case GameEvent_EnemyStaggered es:
                 {
                     Audio.Key("EnemyStaggered");
@@ -329,6 +393,48 @@ namespace DeckRogue.Game
                     break;
                 }
             }
+        }
+
+        /// <summary>差し替えで取り消された意図の札の幽霊 (絵＋一行) が、くるりと回りながら落ちて消える (2026-09-17 ④)</summary>
+        static void IntentGhostDrop(RectTransform fx, Vector2 pos, EnemyIntent before)
+        {
+            if (fx == null || before == null) return;
+            string line = CardText.IntentLine(before);
+            int size = UiKit.Phone ? 20 : 24;
+            float w = 40f + 36f + line.Length * size * 0.95f, h = size + 22f;
+            var rt = UiKit.NewRect("intent-ghost", fx);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(w, h); rt.anchoredPosition = pos;
+            var paper = PaperFx.Sheet(rt, PaperFx.Tag, "paper", PaperFx.Paper2);
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f); paper.raycastTarget = false;
+            var row = UiKit.NewRect("row", rt);
+            UiKit.Stretch(row, 6f, 6f, 2f, 2f);
+            var hg = UiKit.Horz(row, 6, 0);
+            hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            var art = Theme.Art("icons", "intent_" + before.Kind);
+            var ic = UiKit.Icon(row, before.Kind == "defend" ? "shield" : "sword", 32f, Color.white);
+            if (art != null) ic.sprite = art;
+            ic.rectTransform.sizeDelta = new Vector2(32f, 32f); UiKit.Le(ic, 32f, 32f, 32f, 32f);
+            var t = UiKit.Deco(row, line, size, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(t, 14f, h - 4f, -1f, h - 4f);
+            t.textWrappingMode = TextWrappingModes.NoWrap;
+            // 取り消し線
+            var strike = UiKit.NewRect("strike", rt);
+            UiKit.Anchor(strike, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(10f, -2f), new Vector2(-10f, 2f));
+            var sImg = strike.gameObject.AddComponent<Image>(); sImg.color = PaperFx.BadInk; sImg.raycastTarget = false;
+            strike.localScale = new Vector3(0f, 1f, 1f); strike.pivot = new Vector2(0f, 0.5f);
+            var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.blocksRaycasts = false;
+            Tween.Run(0.14f, k => { if (strike != null) strike.localScale = new Vector3(k, 1f, 1f); }, Ease.OutQuad, () =>
+            {
+                var rtC = rt; var cgC = cg;
+                Tween.Run(0.6f, k =>
+                {
+                    if (rtC == null) return;
+                    rtC.anchoredPosition = pos + new Vector2(70f * k, -30f * k - 240f * k * k);
+                    rtC.localRotation = Quaternion.Euler(0f, 0f, -24f * k);
+                    cgC.alpha = k < 0.4f ? 1f : 1f - (k - 0.4f) / 0.6f;
+                }, Ease.Linear, () => { if (rtC != null) UnityEngine.Object.Destroy(rtC.gameObject); });
+            });
         }
 
         static void ShowTrap(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx)
@@ -486,7 +592,7 @@ namespace DeckRogue.Game
         /// <summary>敵の行動の出来事 (2026-09-17 敵の行動の演出): 実行の予備動作・回復・盗み・山札喰い・突き刺し/延焼/再生の数字。絵と音を Show で</summary>
         static bool IsEnemyActEvent(GameEvent ev)
         {
-            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered;
+            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered || ev is GameEvent_EnemyInterrupted;
         }
 
         /// <summary>実行中の技の名前 (EnemyState.IntentMoveId)。コマンド前の盤面から読む (今の盤面は次の宣言に変わっている)</summary>
@@ -605,22 +711,60 @@ namespace DeckRogue.Game
                     // source=player → 敵 (EnemyIndex=対象) が受けた／source=enemy → 自分が受けた (EnemyIndex=攻撃者)
                     if (d.Source == "player")
                     {
-                        var rt = g.Anchor("enemy" + (d.EnemyIndex ?? 0));
+                        int ei = d.EnemyIndex ?? 0;
+                        var rt = g.Anchor("enemy" + ei);
                         if (rt == null) return;
                         var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-30f, 30f), 20f);
-                        // 斬撃の筋と白い点滅、大きいほど画面も揺れる
-                        var spr = g.Battle != null ? g.Battle.EnemySprite(d.EnemyIndex ?? 0) : null;
+                        // ⑥ ダメージの質 (2026-09-17): 急所・貫通・盾が吸った・装甲/ターン装甲/殻/無形の頭打ち を数字の脇で見分ける (イベントの値＝実処理と同じ)
+                        bool crit = d.Exposed == true, pierced = d.Pierced == true;
+                        int blocked = d.Blocked ?? 0, armorCut = d.ArmorCut ?? 0, turnCut = d.TurnArmorCut ?? 0, burrowCut = d.BurrowCut ?? 0, nemesisCut = d.NemesisCut ?? 0;
+                        bool shell = ctx != null && ctx.Prev != null && ei < ctx.Prev.Enemies.Count && ctx.Prev.Enemies[ei].BurrowActive == true;
+                        bool capped = armorCut > 0 || turnCut > 0 || nemesisCut > 0;
+                        bool big = d.Amount >= 15 || crit;
+                        // 斬撃の筋と白い点滅、大きいほど画面も揺れる。急所は真鍮の筋＋星、盾に全部吸われた時は鋼青の輪 (金属の当たり)、頭打ちは鈍い輪
+                        var spr = g.Battle != null ? g.Battle.EnemySprite(ei) : null;
+                        Vector2 hit = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(rt, fx);
+                        Color streak = crit ? new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 1f) : capped ? new Color(0.78f, 0.8f, 0.86f, 0.9f) : new Color(1f, 0.98f, 0.9f, 0.95f);   // 頭打ちは鈍い筋 (刃が通らない)
                         if (spr != null)
                         {
-                            Tween.SlashFx(fx, Tween.CenterIn(spr, fx), UnityEngine.Random.Range(-50f, -20f), new Color(1f, 0.98f, 0.9f, 0.95f), d.Amount >= 15);   // 直線の筋＋残像＋着弾の光＋火花 (2026-09-16)
-                            Stage.Flash("enemy" + (d.EnemyIndex ?? 0));
+                            Tween.SlashFx(fx, hit, UnityEngine.Random.Range(-50f, -20f), streak, big);   // 直線の筋＋残像＋着弾の光＋火花 (2026-09-16)
+                            Stage.Flash("enemy" + ei);
                         }
+                        if (crit) { Tween.IconBurst(fx, hit, "star", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.95f), 120f); Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f); }
+                        if (blocked > 0 && !shell) Tween.IconBurst(fx, hit + new Vector2(-10f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, d.HpLoss > 0 ? 0.7f : 0.95f), d.HpLoss > 0 ? 90f : 130f);
+                        if (blocked > 0 && d.HpLoss <= 0) Tween.RingBurst(fx, hit, PaperFx.SkyLight, 170f, 0.3f);
+                        if (capped || burrowCut > 0) Tween.RingBurst(fx, hit, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.8f), 150f, 0.3f);
                         Audio.Key("DamageDealt.player.swing");
-                        Audio.Key(d.Amount >= 15 ? "DamageDealt.player.big" : "DamageDealt.player");
-                        if (d.Amount >= 15) Stage.Shake(Mathf.Min(14f, d.Amount * 0.4f), 0.25f);
-                        Tween.Float(fx, pos, d.Amount.ToString(), d.Amount > 0 ? PaperFx.BrassLight : UiKit.ColDim, d.Amount >= 20 ? 46 : 36);
-                        if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f));
-                        if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(d.EnemyIndex ?? 0, -d.HpLoss);
+                        if (blocked > 0 && d.HpLoss <= 0) Audio.Key("DamageDealt.blocked");
+                        else Audio.Key(big ? "DamageDealt.player.big" : "DamageDealt.player");
+                        if (big) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f), 0.25f);
+                        // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
+                        Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
+                        Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
+                        // 盾の数字 (帳面の左端の盾) が減ったのを見せる。盾の札が無ければ (吸い切って消えた・殻) 数字の脇の一言で
+                        var bshield = blocked > 0 && !shell ? rt.Find("strip/block") as RectTransform : null;
+                        if (bshield != null) { Tween.Punch(bshield, 0.25f); Tween.Float(fx, Tween.CenterIn(bshield, fx) + new Vector2(0f, 10f), "−" + blocked, PaperFx.SkyLight, 22, 30f, 0.8f); }
+                        if (pierced)
+                        {   // 貫通: 盾の札が揺れて、その上を貫通の印が抜ける (盾は減らない)
+                            var disc = rt.Find("strip/block") as RectTransform;
+                            if (disc != null) { Tween.Shake(disc, 5f, 0.3f); Tween.IconBurst(fx, Tween.CenterIn(disc, fx) + new Vector2(0f, 14f), "pierce", new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.95f), 46f); }
+                        }
+                        // 脇の一言 (質): 数字の下に小さく、複数なら段を重ねる
+                        var notes = new List<KeyValuePair<string, Color>>();
+                        if (crit) notes.Add(new KeyValuePair<string, Color>("急所!", PaperFx.BrassLight));
+                        if (pierced) notes.Add(new KeyValuePair<string, Color>("貫通", PaperFx.Paper));
+                        if (blocked > 0 && bshield == null) notes.Add(new KeyValuePair<string, Color>((shell ? "殻で −" : "ブロックで −") + blocked, PaperFx.SkyLight));
+                        if (armorCut > 0) notes.Add(new KeyValuePair<string, Color>("装甲で −" + armorCut, PaperFx.Paper2));
+                        if (turnCut > 0) notes.Add(new KeyValuePair<string, Color>("ターン装甲で −" + turnCut, PaperFx.Paper2));
+                        if (burrowCut > 0) notes.Add(new KeyValuePair<string, Color>("殻がこぼした −" + burrowCut, PaperFx.Paper2));
+                        if (nemesisCut > 0) notes.Add(new KeyValuePair<string, Color>("無形で −" + nemesisCut, PaperFx.Paper2));
+                        for (int n = 0; n < notes.Count; n++)
+                        {
+                            var note = notes[n]; float dy = -34f - 26f * n; float dl = 0.06f * (n + 1);
+                            Tween.After(dl, () => Tween.Float(fx, pos + new Vector2(0f, dy), note.Key, note.Value, note.Key.EndsWith("!") ? 26 : 20, 34f, 1.0f));
+                        }
+                        if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f) * (crit ? 1.4f : 1f));
+                        if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(ei, -d.HpLoss);
                     }
                     else
                     {
@@ -665,7 +809,16 @@ namespace DeckRogue.Game
                                 Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f)));
                             }
                             var pos = Tween.CenterIn(rtC, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
-                            Tween.Float(fx, pos, "-" + dd.Amount, dd.Amount > 0 ? UiKit.ColBad : UiKit.ColDim, dd.Amount >= 15 ? 46 : 36);
+                            // 数字は失った HP (2026-09-17 ⑥)。完全に防いだら「防いだ」、盾が吸った量は脇に鋼青で (旧: ブロック前の量を朱で＝表示の嘘)
+                            int blockedP = dd.Blocked ?? 0;
+                            if (dd.HpLoss > 0) Tween.Float(fx, pos, "-" + dd.HpLoss, UiKit.ColBad, dd.HpLoss >= 15 ? 46 : 36);
+                            else if (dd.Amount > 0) Tween.Float(fx, pos, "防いだ", PaperFx.SkyLight, 30);
+                            else Tween.Float(fx, pos, "0", UiKit.ColDim, 30);
+                            if (blockedP > 0)
+                            {
+                                Tween.IconBurst(fx, hitPos + new Vector2(-16f, 0f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, dd.HpLoss > 0 ? 0.7f : 0.95f), dd.HpLoss > 0 ? 100f : 140f);
+                                Tween.After(0.08f, () => Tween.Float(fx, pos + new Vector2(0f, -36f), "ブロックで −" + blockedP, PaperFx.SkyLight, 22, 34f, 1.0f));
+                            }
                             if (dd.Amount > 0) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f));
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
                         });

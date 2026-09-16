@@ -528,6 +528,12 @@ export type GameEvent =
       readonly burrowCut?: number
       /** 因縁 (無形ターン) で1に固定されて消えたぶん */
       readonly nemesisCut?: number
+      /** 急所が乗った (×1.5)。演出「ダメージの質の見分け」用 (2026-09-17) */
+      readonly exposed?: boolean
+      /** 貫通で敵のブロック (1以上あった) を無視した (source=player) */
+      readonly pierced?: boolean
+      /** ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略 */
+      readonly blocked?: number
     }
   | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number }
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)

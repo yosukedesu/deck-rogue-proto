@@ -2,7 +2,7 @@
 // カード効果は data/*.json の宣言的記述をここで状態遷移に変換する。
 // 表現できない効果だけ scriptId で名前付きスクリプトに逃がす (現状は未登録)。
 
-import { getCardDef, getEnemyDef, JUNK_DEF, SCALD_DEF, WOUND_DEF } from './content.ts'
+import { getCardDef, getEnemyDef, JUNK_DEF, WOUND_DEF } from './content.ts'
 import { applyInterruptsTo } from './enemyGraph.ts'
 import { emit } from './events.ts'
 import { setEffectsOf, setFireCost } from './setany.ts'
@@ -999,6 +999,10 @@ export function dealDamageToEnemy(
       ...(turnArmorCut > 0 ? { turnArmorCut } : {}),
       ...(burrowCut > 0 ? { burrowCut } : {}),
       ...(nemesisCut > 0 ? { nemesisCut } : {}),
+      // ダメージの質 (2026-09-17 演出用): 急所が乗った・貫通でブロックを無視した・ブロック (殻) が吸った量
+      ...(exposed ? { exposed: true } : {}),
+      ...(pierce && !shellUp && enemy.block > 0 ? { pierced: true } : {}),
+      ...(blocked > 0 ? { blocked } : {}),
     },
   )
   s = applyDamageInterrupts(s, enemyIndex)

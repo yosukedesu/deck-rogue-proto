@@ -1190,6 +1190,10 @@ namespace DeckRogue.Engine
                     TurnArmorCut = turnArmorCut > 0 ? turnArmorCut : (int?)null,
                     BurrowCut = burrowCut > 0 ? burrowCut : (int?)null,
                     NemesisCut = nemesisCut > 0 ? nemesisCut : (int?)null,
+                    // ダメージの質 (2026-09-17 演出用): 急所が乗った・貫通でブロックを無視した・ブロック (殻) が吸った量
+                    Exposed = exposed ? true : (bool?)null,
+                    Pierced = pierce && !shellUp && enemy.Block > 0 ? true : (bool?)null,
+                    Blocked = blocked > 0 ? blocked : (int?)null,
                 });
             s = ApplyDamageInterrupts(s, enemyIndex);
             s = BreakBurrowIfCracked(s, enemyIndex);

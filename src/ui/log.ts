@@ -91,8 +91,8 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ActionNegated': return { text: '敵の行動は打ち消された！', cls: 'log-good' }
     case 'DamageDealt':
       return e.source === 'player'
-        ? { text: `敵に${e.amount}ダメージ（HP-${e.hpLoss}）${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
-        : { text: `敵の攻撃${e.amount} → HP-${e.hpLoss}`, cls: 'log-bad' }
+        ? { text: `敵に${e.amount}ダメージ（HP-${e.hpLoss}）${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
+        : { text: `敵の攻撃${e.amount} → HP-${e.hpLoss}${e.blocked ? `（ブロックで${e.blocked}）` : ''}`, cls: 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': {
       // 激昂の発火は理由を明示する (2026-09-01 検証ラン「跨いだ瞬間を後から確認できない」への処方)

@@ -986,6 +986,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>因縁 (無形ターン) で1に固定されて消えたぶん</summary>
         [JsonProperty("nemesisCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? NemesisCut { get; init; }
+        /// <summary>急所が乗った (×1.5)。演出「ダメージの質の見分け」用 (2026-09-17)</summary>
+        [JsonProperty("exposed", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Exposed { get; init; }
+        /// <summary>貫通で敵のブロック (1以上あった) を無視した (source=player)</summary>
+        [JsonProperty("pierced", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Pierced { get; init; }
+        /// <summary>ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略</summary>
+        [JsonProperty("blocked", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Blocked { get; init; }
     }
 
     /// <summary>GameEvent: type="BlockGained"</summary>

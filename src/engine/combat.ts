@@ -1727,6 +1727,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       let iceBlock = state.player.iceBlock
       let dealtTotal = 0
       let hpLoss = 0
+      let blockedTotal = 0 // ブロック＋氷壁が吸った合計 (演出用 2026-09-17)
       for (let h = 0; h < hits; h++) {
         // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
         let v = intent.actual
@@ -1749,6 +1750,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         const remaining = v - blocked
         const iceBlocked = Math.min(iceBlock, remaining)
         iceBlock -= iceBlocked
+        blockedTotal += blocked + iceBlocked
         let hit = remaining - iceBlocked
         // レリック本家形 (2026-09-12): 免疫でなく上限と割合で受ける (StS2 準拠)。
         // 古い門柱: 未ブロック分がN以下なら1 / 重金の棒: 各ヒット-N / 脈打つ欠片: 1ターンの累計はN以下
@@ -1772,7 +1774,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           hpLostThisTurn: (state.player.hpLostThisTurn ?? 0) + hpLoss,
         },
       }
-      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex })
+      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}) })
       // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
       if (hpLoss > 0) s = runPermanentTriggers(s, 'onDamageTaken', enemyIndex)
       // バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる

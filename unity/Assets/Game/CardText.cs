@@ -638,11 +638,14 @@ namespace DeckRogue.Game
             {
                 return j.Source == "player"
                     ? "敵に" + j.Amount + "ダメージ (HP-" + j.HpLoss + ")"
+                        + (j.Exposed == true ? " [急所]" : "")
+                        + (j.Pierced == true ? " [貫通]" : "")
+                        + (j.Blocked.HasValue && j.Blocked.Value > 0 ? " [ブロックで" + j.Blocked.Value + "]" : "")
                         + (j.ArmorCut.HasValue && j.ArmorCut.Value > 0 ? " [装甲で" + j.ArmorCut.Value + "切り捨て]" : "")
                         + (j.TurnArmorCut.HasValue && j.TurnArmorCut.Value > 0 ? " [ターン装甲で" + j.TurnArmorCut.Value + "]" : "")
                         + (j.BurrowCut.HasValue && j.BurrowCut.Value > 0 ? " [潜伏の殻で" + j.BurrowCut.Value + "]" : "")
                         + (j.NemesisCut.HasValue && j.NemesisCut.Value > 0 ? " [無形で1固定]" : "")
-                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss;
+                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss + (j.Blocked.HasValue && j.Blocked.Value > 0 ? " (ブロックで" + j.Blocked.Value + ")" : "");
             }
             var k = ev as GameEvent_BlockGained; if (k != null) return (k.Target == "player" ? "自分" : "敵") + "がブロック+" + k.Amount;
             var l = ev as GameEvent_IceBlockGained; if (l != null) return "氷壁+" + l.Amount;
