@@ -143,9 +143,9 @@ namespace DeckRogue.Game
             t3.overflowMode = TextOverflowModes.Ellipsis;
             UiKit.Le(t3, -1f, 22f, -1f, 22f);
 
-            var resume = UiKit.Btn(inner, "▶ 続きから", delegate { Audio.Ui("start_run"); g.ResumeSave(); }, 22, true, UiKit.Hex("#f0d58a"));
+            var resume = UiKit.Btn(inner, "▶ 続きから", delegate { Audio.Ui("start_run"); g.ResumeSave(); }, 22, true, PaperFx.BrassLight);
             BattleScreen.SetSize(resume, UiKit.Phone ? 220f : 240f, 60f);
-            var abandon = UiKit.Btn(inner, "放棄", delegate { g.AskAbandonSave(); }, 15, true, UiKit.Hex("#e8b8b0"));
+            var abandon = UiKit.Btn(inner, "放棄", delegate { g.AskAbandonSave(); }, 15, true, PaperFx.DangerBtn);
             BattleScreen.SetSize(abandon, 92f, 44f);
             Tooltip.Attach(abandon.gameObject, delegate { return "このセーブを消す（確認あり）"; });
         }
@@ -259,7 +259,7 @@ namespace DeckRogue.Game
 
             // 進行中のセーブがあれば「新しいランを開始」= 捨てて始める確認を挟む (2026-09-15 本家形: 進行中のランは1本)
             bool hasSave = SaveGame.Exists;
-            var start = UiKit.Btn(col, hasSave ? "新しいランを開始" : "ランを開始", delegate { Audio.Ui("start_run"); g.AskStartRun(); }, 24, true, hasSave ? (Color?)null : UiKit.Hex("#f0d58a"));
+            var start = UiKit.Btn(col, hasSave ? "新しいランを開始" : "ランを開始", delegate { Audio.Ui("start_run"); g.AskStartRun(); }, 24, true, hasSave ? (Color?)null : PaperFx.BrassLight);
             var le = start.GetComponent<LayoutElement>();
             if (le != null) { le.minHeight = 64f; le.preferredHeight = 64f; }
         }

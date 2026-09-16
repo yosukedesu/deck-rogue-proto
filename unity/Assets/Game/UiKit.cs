@@ -10,31 +10,28 @@ namespace DeckRogue.Game
 {
     public static class UiKit
     {
-        // ---- ダークテーマ (Theme.cs のパレットと揃える) ----
-        // 「絵本」の肌 (2026-09-07): 舞台 (夜) の上の文字は紙色、紙の上の文字は墨
-        public static readonly Color ColBg = Hex("#1a1c33");
-        public static readonly Color ColPanel = Hex("#f4ecd6");
-        public static readonly Color ColPanel2 = Hex("#eadfc4");
-        public static readonly Color ColText = Hex("#f4ecd6");
-        // 二次の文字色は実色で持つ (2026-09-09 コントラスト是正: 透明度で薄めると背景次第で 3.7:1 まで落ちて読めなかった)。
-        // 夜の上の淡い紙色 = 9:1、紙の上の中墨 = 7:1、紙の上の墨 = 11:1
-        public static readonly Color ColDim = Hex("#c4beb2");
-        public static readonly Color ColInk = Hex("#3b2f2f");
-        public static readonly Color ColInkSoft = Hex("#574b48");
-        /// <summary>紙の上に置く金の文字 (Theme.Gold #e0b25a は紙の上で 1.7:1 = 読めない。塗りとアイコンは Gold のまま)</summary>
-        public static readonly Color ColGoldInk = Hex("#7a4e12");
-        /// <summary>紙の上に置く朱の文字 (ColBad は塗り用。紙の上では 3.6:1)</summary>
-        public static readonly Color ColBadInk = Hex("#9c3a2a");
-        /// <summary>文字の最小サイズ (1920×1080 基準)。これ未満は Txt が切り上げる (9〜11px の注記が読めなかった)</summary>
+        // ---- 色は PaperFx が唯一の出典 (カラーテーマ「黒鉄と真鍮」2026-09-16)。ここは旧名の別名 ----
+        public static readonly Color ColBg = PaperFx.Night;
+        public static readonly Color ColPanel = PaperFx.Paper;
+        public static readonly Color ColPanel2 = PaperFx.Paper2;
+        public static readonly Color ColText = PaperFx.Paper;
+        /// <summary>夜の上の淡い紙色の文字 (9:1)。二次の文字色は実色で持つ (2026-09-09: 透明度で薄めると 3.7:1 まで落ちた)</summary>
+        public static readonly Color ColDim = PaperFx.PaperDim;
+        public static readonly Color ColInk = PaperFx.Ink;
+        public static readonly Color ColInkSoft = PaperFx.InkSoft;
+        /// <summary>紙の上に置く真鍮の文字 (真鍮そのものは紙の上で読めない。塗りは Brass)</summary>
+        public static readonly Color ColGoldInk = PaperFx.BrassInk;
+        /// <summary>紙の上に置く危険の文字 (ColBad は塗り用)</summary>
+        public static readonly Color ColBadInk = PaperFx.BadInk;
         /// <summary>スマホ向けの画面 (2026-09-14 ユーザー「スマホ最適化するべき」): UI 1.6倍・戦闘の絵は半分・説明文はタップで上部の固定パネル。PC では -uiscale で再現する</summary>
         public static bool Phone;
-        /// <summary>文字の最小サイズ (1920×1080 基準の単位)。スマホは 15 (1.6倍で 24px ≒ 読める下限)</summary>
+        /// <summary>文字の最小サイズ (1920×1080 基準の単位)。スマホは 15 (1.6倍で 24px ≒ 読める下限)。これ未満は Txt が切り上げる</summary>
         public static int MinFontSize { get { return Phone ? 15 : 13; } }
-        public static readonly Color ColAccent = Hex("#8fae7b");
-        public static readonly Color ColHp = Hex("#d97b7b");
-        public static readonly Color ColBlock = Hex("#7fa7c9");
-        public static readonly Color ColEnergy = Hex("#e0b25a");
-        public static readonly Color ColBad = Hex("#c8583f");
+        public static readonly Color ColAccent = PaperFx.Moss;
+        public static readonly Color ColHp = PaperFx.Rose;
+        public static readonly Color ColBlock = PaperFx.Sky;
+        public static readonly Color ColEnergy = PaperFx.Mana;
+        public static readonly Color ColBad = PaperFx.Rose;
         public static readonly Color ColClear = new Color(0f, 0f, 0f, 0f);
 
         static TMP_FontAsset _fontRegular;

@@ -210,7 +210,7 @@ namespace DeckRogue.Game
             if (qle != null) UnityEngine.Object.Destroy(qle);
             UiKit.Anchor(quit.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 20f), new Vector2(190f, 56f));
             Tooltip.Attach(quit.gameObject, delegate { return "タイトルへ戻る。ランは自動で保存されていて、「続きから」で再開できる"; });
-            var abandon = UiKit.Btn(root, "ランを放棄", delegate { g.AskAbandonRun(); }, 14, true, UiKit.Hex("#8a5a5a"));
+            var abandon = UiKit.Btn(root, "ランを放棄", delegate { g.AskAbandonRun(); }, 14, true, PaperFx.DangerBtn);
             var ale = abandon.GetComponent<LayoutElement>();
             if (ale != null) UnityEngine.Object.Destroy(ale);
             UiKit.Anchor(abandon.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(200f, 20f), new Vector2(330f, 56f));

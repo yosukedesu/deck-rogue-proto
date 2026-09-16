@@ -53,7 +53,7 @@ namespace DeckRogue.Game
             UiKit.Vert(area, 0, 0);
             RunUi.CardGrid(g, area, run.Deck, null, null, null, 400f, confirmRoot: root);
 
-            RunUi.BottomButton(root, "タイトルへ", delegate { g.BackToSetup(); }, 20, 300f, 56f, 0f, 36f, UiKit.Hex("#f0d58a"));
+            RunUi.BottomButton(root, "タイトルへ", delegate { g.BackToSetup(); }, 20, 300f, 56f, 0f, 36f, PaperFx.BrassLight);
             // レポートの書き出し (2026-09-14): ランの決着はデータ回収の主戦場
             RunUi.BottomButton(root, "レポートを書き出す", delegate { FeedbackUi.ExportNow(g); }, 18, 300f, 56f, 340f, 36f);
             RunUi.Message(g, root);

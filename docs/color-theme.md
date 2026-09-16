@@ -49,15 +49,17 @@ ask_user 5件で裁定。キャンバス: https://claude.ai/code/artifact/90170d
 | | 藤の紙 | plumLight | **#e9def3** | 状態異常のピルの地 |
 | | 藤の墨 | plumInk | #5a3d78 | 状態異常の文字（6.8:1） |
 | | 危険のボタン | dangerBtn | #e8b8b0 | 「ランを放棄」だけ |
-| タイプの帯（文字は紙） | 物理 | typePhysical | **#7d6146** | 4.9:1（旧 #8a6a3c 4.2） |
-| | 呪文 | typeSpell | #6c4f9c | 5.5:1（据え置き） |
-| | 仕込み札 | typeReaction | **#2a7d74** | 4.2:1（旧 #3f8c86 3.4） |
-| | 置物 | typePermanent | **#9c7a24** | 3.4:1（旧 #b08a2e 2.7）。真鍮より暗く＝価値と混ざらない |
+| タイプの帯（淡い色＋墨の文字。CardView のリボン） | 物理 砂 | Sand | #c9a982 | 据え置き（墨 6.1:1） |
+| | 呪文 藤 | PlumBand | #a98cc4 | 据え置き（墨 4.6:1） |
+| | 仕込み札 青緑 | Teal | #7ab8b0 | 据え置き＝マナの淡い版（墨 6.0:1） |
+| | 置物 鈍い黄 | Olive | **#a8a66b** | 蜂蜜 #e0b25a → オリーブ。真鍮の縁と混ざらない（墨 5.3:1） |
+| からくりの帯 | 今ターン鳴る／あとN回／準備中 | ManaInk／ManaBand／InkSoft | #155650／#2a7d74／#4e4c55 | トークンの帯（文字は紙）。縁は Mana／ManaLight／InkSoft |
+| 絵の色の置き場 | 延焼・炎 | Ember | #e8742f | 延焼の印・浮き文字（赤の資源。表に載せた） |
 | 5色の縁 | 緑／青／赤／白／黒 | colorEdge | #5fb85a／#4f8fd6／#d65a4f／#e8e2c8／#6b4f8a | 据え置き（世界の側） |
 | レア度の外線 | C／U／R | rarityEdge | #2f2e35／#5f86a8／#c99a3a | R は真鍮 |
 | 絵の光 | 露頭・斬撃の縁 | — | #3aa79b | 絵の側（UI と同じ値で揃う） |
 
-太字＝現状からの変更（13）。据え置き＝紙3・夜3・5色の縁・呪文の帯・良い/危険の墨・U の外線・藤の墨。
+太字＝現状からの変更（11）。据え置き＝紙3・夜3・5色の縁・タイプの帯3（砂・藤・青緑）・良い/危険の墨・藤の墨。
 
 ## 使い分けの規律
 
@@ -69,12 +71,13 @@ ask_user 5件で裁定。キャンバス: https://claude.ai/code/artifact/90170d
 6. **夜は3つ**（舞台・札の窓・地）で固定。紙＝暖・夜＝寒の対比がこの UI の芯
 7. **新しい色は足さない**。足したくなったら上の表の役割に当てる（当たらないなら役割を1つ増やして表に書く）
 
-## 実装の地図（未着手）
+## 実装（2026-09-16 同日）
 
-1. `PaperFx` を唯一の出典にする（上の表の名で定数を持つ。`UiKit.Col*`／`Theme.*` は PaperFx の別名にして段階的に消す）
-2. 163 の生の値を PaperFx へ畳む: BattleScreen 25・RunUi 10・MapScreen 9・Presenter 8・RunScreens 7・FeedbackUi 5・CombatScreen 4・WorkshopScreen 3 …
-   （Theme.cs 43 と Stage.cs 27 は絵＝アイコンの色・舞台の材質なので対象外。ただし斬撃の縁と露頭は mana と同じ値に揃える）
-3. **コスト玉を青緑で描き直す**（PixelLab 1点 `Art/ui/cost_orb.png`。割引は苔・X は「X」のまま）＋戦闘画面のエナジーの輪を mana に。`docs/pixellab-assets.md` に追記。
-   PixelLab の残高は 0 USD なので発注前にチャージが要る
-4. Web（プロト）の CSS 変数も同じ表に（`src/ui/*.css` の紙・墨・蜂蜜）。優先は Unity
-5. shots で 戦闘（ソロ・4体）・地図・報酬・工房・焚き火・タイトル を撮って、規約（文字は墨版だけ・帯の対比が旧値を下回らない）を目で確認
+1. **`PaperFx` が唯一の出典**（上の表の名で定数。`UiKit.Col*`／`Theme.Bg/PanelFill/…/Gold` は PaperFx の別名＝段階的に消す）。`PaperFx.TypeColor`（帯）・`RarityEdge`・`RoleColor` も同じ表を読む
+2. 生の値の掃除: 生きている画面（BattleScreen・RunUi・MapScreen・Presenter・FeedbackUi・WorkshopScreen・CardView・Shop/Event/Reward/End/Title・CardPopup）の `Hex("#…")` を役割の名へ。
+   残るのは絵の色（Theme.cs のアイコンの字形・生成スプライト、Stage.cs の舞台の材質、MapScreen のノードの淡い色と落書きのペン）と、使われていない旧画面（RunScreens.cs・CombatScreen.cs）
+3. **エナジーの輪 → Mana**（`BattleScreen` の energyOrb）。**コスト玉**は真鍮の PixelLab 絵を色相だけ青緑へ回した派生で差し替え（陰影は元のまま。原本 `docs/pixellab/ui/cost_orb_brass.png`）＝PixelLab で描き直したら置き換える（残高が要る）。フォールバックの生成玉も Mana
+4. **からくりのトークン**: 縁＝準備中 中墨／今ターン Mana／あとN回 ManaLight、帯＝InkSoft／ManaInk／ManaBand（旧: 灰／蜂蜜／カーキ・緑／茶）
+5. 浮き文字: 与ダメ＝真鍮の紙・敵の番＝薔薇・状態異常＝藤・急所と勢いと筋力↑＝真鍮・威圧と筋力↓＝鋼青・延焼＝Ember・罠の準備完了＝青緑の紙
+6. Web（プロト）は検証用の暗い緑のテーマのまま＝対象外（絵本の肌は Unity だけ）
+7. 確認: shots（戦闘ソロ・地図・報酬・工房・焚き火・ショップ）で墨版の文字と帯の対比を目視

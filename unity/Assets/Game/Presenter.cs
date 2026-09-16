@@ -215,7 +215,7 @@ namespace DeckRogue.Game
                         Audio.Key("DamageDealt.player.swing");
                         Audio.Key(d.Amount >= 15 ? "DamageDealt.player.big" : "DamageDealt.player");
                         if (d.Amount >= 15) Stage.Shake(Mathf.Min(14f, d.Amount * 0.4f), 0.25f);
-                        Tween.Float(fx, pos, d.Amount.ToString(), d.Amount > 0 ? UiKit.Hex("#ffd36b") : UiKit.ColDim, d.Amount >= 20 ? 46 : 36);
+                        Tween.Float(fx, pos, d.Amount.ToString(), d.Amount > 0 ? PaperFx.BrassLight : UiKit.ColDim, d.Amount >= 20 ? 46 : 36);
                         if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f));
                         if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(d.EnemyIndex ?? 0, -d.HpLoss);
                     }
@@ -269,13 +269,13 @@ namespace DeckRogue.Game
                                 if (Effects.TrapAge(st, st.Player.SetCards[si]) == 1)
                                 {
                                     var slot = g.Anchor("setslot" + si);
-                                    if (slot != null) Tween.Float(fx, Tween.CenterIn(slot, fx) + new Vector2(0f, 90f), "罠が鳴る準備完了", UiKit.Hex("#f0d58a"), 24, 40f, 1.2f);
+                                    if (slot != null) Tween.Float(fx, Tween.CenterIn(slot, fx) + new Vector2(0f, 90f), "罠が鳴る準備完了", PaperFx.ManaLight, 24, 40f, 1.2f);
                                 }
                     }
                     break;
                 case GameEvent_TurnEnded _:
                     Audio.Key("TurnEnded");
-                    Banner(fx, "敵の番", UiKit.Hex("#ff6b57"));
+                    Banner(fx, "敵の番", PaperFx.Rose);
                     break;
                 case GameEvent_CardPlayed cp:
                 {
@@ -310,35 +310,35 @@ namespace DeckRogue.Game
                     Audio.Key(ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded ? "GrowthAdded" : "StatusInflicted");
                     var ps2 = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps2 != null) Tween.IconBurst(fx, Tween.CenterIn(ps2, fx) + new Vector2(0f, 30f), "exposed", new Color(0.72f, 0.5f, 0.85f, 0.9f), 110f);
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, UiKit.Hex("#b47ad6"), 32, 46f, 1.2f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, PaperFx.Plum, 32, 46f, 1.2f);
                     break;
                 }
                 case GameEvent_ExposedApplied ea:
                 {
                     var rt = g.Anchor("enemy" + ea.EnemyIndex);
                     if (rt == null) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "急所 +" + ea.Amount, UiKit.Hex("#e0a04a"), 28, 40f, 1.0f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "急所 +" + ea.Amount, PaperFx.Brass, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_EnemyWeakened ew:
                 {
                     var rt = g.Anchor("enemy" + ew.EnemyIndex);
                     if (rt == null) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "威圧 +" + ew.Amount, UiKit.Hex("#7fa7c9"), 28, 40f, 1.0f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "威圧 +" + ew.Amount, PaperFx.Sky, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_BurnApplied ba:
                 {
                     var rt = g.Anchor("enemy" + ba.EnemyIndex);
                     if (rt == null) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "延焼 +" + ba.Amount, UiKit.Hex("#e8742f"), 28, 40f, 1.0f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "延焼 +" + ba.Amount, PaperFx.Ember, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_StrengthGained sg:
                 {
                     var rt = g.Anchor("enemy" + sg.EnemyIndex);
                     if (rt == null || sg.Amount == 0) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "筋力 " + (sg.Amount > 0 ? "+" : "") + sg.Amount, sg.Amount > 0 ? UiKit.Hex("#e0b25a") : UiKit.Hex("#7fa7c9"), 28, 40f, 1.0f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "筋力 " + (sg.Amount > 0 ? "+" : "") + sg.Amount, sg.Amount > 0 ? PaperFx.Brass : PaperFx.Sky, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_GrowthAdded ga:

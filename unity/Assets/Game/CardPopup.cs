@@ -93,7 +93,7 @@ namespace DeckRogue.Game
             try { canUp = Upgrade.CanUpgradeCard(c); } catch (Exception) { }
             if (canUp)
             {
-                _toggle = UiKit.Btn(row, "鍛えた後を見る", delegate { _showUpgraded = !_showUpgraded; BuildCard(); UpdateToggle(); }, 17, true, UiKit.Hex("#f0d58a"));
+                _toggle = UiKit.Btn(row, "鍛えた後を見る", delegate { _showUpgraded = !_showUpgraded; BuildCard(); UpdateToggle(); }, 17, true, PaperFx.BrassLight);
                 _toggleLabel = _toggle.GetComponentInChildren<TMP_Text>();
                 UiKit.Le(_toggle, 190f, 46f, 190f, 46f);
             }
@@ -132,7 +132,7 @@ namespace DeckRogue.Game
             if (_toggle != null)
             {
                 var img = _toggle.GetComponent<Image>();
-                if (img != null) img.color = _showUpgraded ? UiKit.Hex("#cfeacc") : UiKit.Hex("#f0d58a");
+                if (img != null) img.color = _showUpgraded ? PaperFx.MossLight : PaperFx.BrassLight;
             }
         }
 

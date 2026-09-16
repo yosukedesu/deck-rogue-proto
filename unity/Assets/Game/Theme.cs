@@ -12,13 +12,14 @@ namespace DeckRogue.Game
     public static class Theme
     {
         // ---- パレット (ドット絵向けに彩度を抑えた森の夜) ----
-        public static readonly Color Bg = UiKit.Hex("#1a1c33");
-        public static readonly Color PanelFill = UiKit.Hex("#f4ecd6");
-        public static readonly Color PanelEdge = UiKit.Hex("#3b2f2f");
-        public static readonly Color PanelLight = UiKit.Hex("#fbf6e8");
-        public static readonly Color ButtonFill = UiKit.Hex("#f4ecd6");
-        public static readonly Color ButtonLight = UiKit.Hex("#fbf6e8");
-        public static readonly Color Gold = UiKit.Hex("#e0b25a");
+        // 色は PaperFx が唯一の出典 (2026-09-16 カラーテーマ「黒鉄と真鍮」)。ここは旧名の別名
+        public static readonly Color Bg = PaperFx.Night;
+        public static readonly Color PanelFill = PaperFx.Paper;
+        public static readonly Color PanelEdge = PaperFx.Ink;
+        public static readonly Color PanelLight = PaperFx.Paper3;
+        public static readonly Color ButtonFill = PaperFx.Paper;
+        public static readonly Color ButtonLight = PaperFx.Paper3;
+        public static readonly Color Gold = PaperFx.Brass;
 
         /// <summary>カードタイプの枠色 (物理=茶／呪文=紫／リアクション=青緑／置物=金)</summary>
         public static Color CardTypeColor(string type)
@@ -26,9 +27,9 @@ namespace DeckRogue.Game
             switch (type)
             {
                 case "spell": return UiKit.Hex("#6c4f9c");
-                case "reaction": return UiKit.Hex("#3f8c86");
-                case "permanent": return UiKit.Hex("#b08a2e");
-                default: return UiKit.Hex("#8a6a3c");
+                case "reaction": return PaperFx.ManaBand;
+                case "permanent": return UiKit.Hex("#9c7a24");
+                default: return UiKit.Hex("#7d6146");
             }
         }
 

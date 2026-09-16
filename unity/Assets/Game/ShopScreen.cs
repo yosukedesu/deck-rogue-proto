@@ -117,7 +117,7 @@ namespace DeckRogue.Game
                 var rp = RewardScreen.RelicPanel(side.transform, rd, shop.RelicId, 340f, rh);
                 UiKit.Le(rp, 340f, rh, 340f, rh);
                 bool canRelic = run.Gold >= shop.RelicPrice;
-                var rb = UiKit.Btn(rp, shop.RelicPrice + "G で買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyRelic()); }, 16, canRelic, UiKit.Hex("#f0d58a"));
+                var rb = UiKit.Btn(rp, shop.RelicPrice + "G で買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyRelic()); }, 16, canRelic, PaperFx.BrassLight);
                 var rle = rb.GetComponent<LayoutElement>();
                 if (rle != null) UnityEngine.Object.Destroy(rle);
                 UiKit.Anchor(rb.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-110f, 12f), new Vector2(110f, 54f));

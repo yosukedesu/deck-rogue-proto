@@ -10,47 +10,108 @@ namespace DeckRogue.Game
 {
     public static class PaperFx
     {
-        public static readonly Color Paper = UiKit.Hex("#f4ecd6");
-        public static readonly Color Paper2 = UiKit.Hex("#eadfc4");
-        public static readonly Color Ink = UiKit.Hex("#3b2f2f");
-        public static readonly Color InkSoft = UiKit.Hex("#574b48");   // 中墨 (紙の上で 7:1)。透明度で薄めない
-        /// <summary>状態異常の文字 (藤色の紙の上で 6.7:1。Plum そのものは 1.9:1 で読めない)</summary>
-        public static readonly Color PlumInk = UiKit.Hex("#5a3d78");
-        /// <summary>紙の上の金の文字 (予測行・注意書き)</summary>
-        public static readonly Color GoldInk = UiKit.Hex("#7a4e12");
-        public static readonly Color Honey = UiKit.Hex("#e0b25a");
-        public static readonly Color Rose = UiKit.Hex("#d97b7b");
-        public static readonly Color Sky = UiKit.Hex("#7fa7c9");
-        public static readonly Color Moss = UiKit.Hex("#8fae7b");
-        public static readonly Color Plum = UiKit.Hex("#a98cc4");
-        public static readonly Color Teal = UiKit.Hex("#7ab8b0");
-        public static readonly Color Sand = UiKit.Hex("#c9a982");
-        public static readonly Color Night = UiKit.Hex("#1a1c33");
+        // ---- カラーテーマ「黒鉄と真鍮」(2026-09-16 ユーザー裁定。一次資料 docs/color-theme.md)。UI の色はここが唯一の出典 ----
+        // 肌 (クリーム色の紙・鉛筆の二重線・水彩) は不変。決めたのは「役割 → 色」: 真鍮＝価値 (選択・決定・G・レア・行動が変わる線)／
+        // 脈の青緑＝マナ (エナジー・コスト玉・からくり・光る物)／墨だけ鉛筆の黒鉄／意味の色は4つ (薔薇 HP・鋼青 ブロック・苔 成長・藤 状態異常)。
+        // 文字は墨か各色の「墨」版だけ (紙の上で 7:1 前後)。淡い色は塗りにだけ使う。新しい色は足さない (足すなら役割を決めて表に書く)。
+        static Color H(string hex) { Color c; return ColorUtility.TryParseHtmlString(hex, out c) ? c : Color.magenta; }
+        // 紙と墨
+        public static readonly Color Paper = H("#f4ecd6");
+        public static readonly Color Paper2 = H("#eadfc4");
+        public static readonly Color Paper3 = H("#fbf6e8");
+        /// <summary>夜の上に置く淡い紙色の文字 (9:1)</summary>
+        public static readonly Color PaperDim = H("#c4beb2");
+        /// <summary>墨＝鉛筆の黒鉄 (紙の上で 11.4:1)。旧 #3b2f2f (焦げ茶)</summary>
+        public static readonly Color Ink = H("#2f2e35");
+        /// <summary>中墨 (紙の上で 7.2:1)。透明度で薄めない</summary>
+        public static readonly Color InkSoft = H("#4e4c55");
+        // 夜 (紙＝暖・夜＝寒 の対比がこの UI の芯)
+        public static readonly Color Night = H("#1a1c33");
+        /// <summary>札の挿絵の窓・からくりの窓</summary>
+        public static readonly Color Window = H("#20233a");
+        /// <summary>画面の外・最奥</summary>
+        public static readonly Color Ground = H("#0f1120");
+        // 真鍮＝価値 (選択中の札と狙っている敵の縁・決定のボタン・G・R の外線・HP バーの「行動が変わる線」)
+        public static readonly Color Brass = H("#c99a3a");
+        /// <summary>決定のボタン・予告の札の地</summary>
+        public static readonly Color BrassLight = H("#ead08a");
+        /// <summary>真鍮の墨 (紙の上で 7.5:1): 予告の文字・G の数字・注意書き</summary>
+        public static readonly Color BrassInk = H("#634410");
+        // 脈の青緑＝マナ (エナジーの輪と数字・コスト玉・からくりの帯とトークン・斬撃の縁・露頭)
+        public static readonly Color Mana = H("#3aa79b");
+        /// <summary>エナジーのピル・「仕込む」の地</summary>
+        public static readonly Color ManaLight = H("#b5ddd6");
+        /// <summary>青緑の墨 (紙の上で 7.2:1): エナジーの数字・からくりの文字</summary>
+        public static readonly Color ManaInk = H("#155650");
+        /// <summary>からくりの帯 (紙の文字を乗せる濃い青緑 4.2:1)</summary>
+        public static readonly Color ManaBand = H("#2a7d74");
+        // 意味の色 (塗り。文字は「墨」版)
+        /// <summary>薔薇＝HP バー・与ダメの札・敗北</summary>
+        public static readonly Color Rose = H("#c9635a");
+        public static readonly Color RoseLight = H("#fadbd6");
+        /// <summary>鋼青＝ブロック</summary>
+        public static readonly Color Sky = H("#6f95b8");
+        public static readonly Color SkyLight = H("#d6e6fa");
+        public static readonly Color SkyInk = H("#2f5a7a");
+        /// <summary>苔＝成長・良い (割引の玉)</summary>
+        public static readonly Color Moss = H("#7fa86c");
+        public static readonly Color MossLight = H("#cfeacc");
+        /// <summary>良いの墨: 鍛えた数字・割引のコスト・上がった数字</summary>
+        public static readonly Color GoodInk = H("#276a34");
+        /// <summary>危険の墨: 被ダメの数字・エラー・敗因</summary>
+        public static readonly Color BadInk = H("#9c3a2a");
+        /// <summary>下がった数字 (紙の上で 5.5:1)</summary>
+        public static readonly Color BadDown = H("#a33a30");
+        /// <summary>藤＝状態異常の印</summary>
+        public static readonly Color Plum = H("#9d86bf");
+        public static readonly Color PlumLight = H("#e9def3");
+        /// <summary>状態異常の文字 (藤の紙の上で 6.8:1)</summary>
+        public static readonly Color PlumInk = H("#5a3d78");
+        /// <summary>延焼・炎 (赤の資源。絵の色に近い橙)</summary>
+        public static readonly Color Ember = H("#e8742f");
+        /// <summary>危険のボタン (「ランを放棄」・素材を外す×)</summary>
+        public static readonly Color DangerBtn = H("#e8b8b0");
+        // タイプの帯 (淡い色＋墨の文字。CardView のリボン)
+        public static readonly Color Sand = H("#c9a982");
+        public static readonly Color PlumBand = H("#a98cc4");
+        public static readonly Color Teal = H("#7ab8b0");
+        /// <summary>置物の帯: 真鍮から離した鈍い黄 (選択の縁と混ざらない)。旧 蜂蜜</summary>
+        public static readonly Color Olive = H("#a8a66b");
+        // 旧名の別名 (段階的に消す)
+        public static readonly Color Honey = Brass;
+        public static readonly Color GoldInk = BrassInk;
 
         static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
 
-        /// <summary>タイプの色 (しおり)。物理=砂・呪文=藤・リアクション=青緑・置物=蜂蜜</summary>
+        /// <summary>タイプの帯の色 (淡い色＋墨の文字)。物理=砂・呪文=藤・仕込み札=青緑・置物=鈍い黄 (2026-09-16 蜂蜜→オリーブ)</summary>
         public static Color TypeColor(string type)
         {
             switch (type)
             {
-                case "spell": return Plum;
+                case "spell": return PlumBand;
                 case "reaction": return Teal;
-                case "permanent": return Honey;
+                case "permanent": return Olive;
                 default: return Sand;
             }
         }
 
-        /// <summary>役割の色 (しるし・にじみ)。dmg=薔薇・block=空・counter=青緑・growth=苔・momentum=蜂蜜</summary>
+        /// <summary>レア度の外線 (C 墨の半分・U 鋼青・R 真鍮)</summary>
+        public static Color RarityEdge(string rarity)
+        {
+            string r = rarity ?? "common";
+            return r == "rare" ? Brass : r == "uncommon" ? Sky : new Color(Ink.r, Ink.g, Ink.b, 0.5f);
+        }
+
+        /// <summary>役割の色 (しるし・にじみ)。dmg=薔薇・block=鋼青・counter=青緑・growth=苔・momentum=真鍮・expose=真鍮</summary>
         public static Color RoleColor(string role)
         {
             switch (role)
             {
                 case "block": return Sky;
-                case "counter": return Teal;
+                case "counter": return Mana;
                 case "growth": return Moss;
-                case "momentum": return Honey;
-                case "expose": return UiKit.Hex("#e0a04a");
+                case "momentum": return Brass;
+                case "expose": return Brass;
                 default: return Rose;
             }
         }
@@ -69,7 +130,7 @@ namespace DeckRogue.Game
         public static Sprite CardOf(string rarity)
         {
             string r = rarity ?? "common";
-            Color line = r == "rare" ? Honey : r == "uncommon" ? Sky : new Color(Ink.r, Ink.g, Ink.b, 0.5f);
+            Color line = RarityEdge(r);
             float lw = r == "common" ? 1f : 2f;
             return Nine("paper_card_" + r, 52, 14, 16, d => d < lw ? line : (d < 4f ? Paper : (d < 6f ? Ink : Paper)), false);
         }

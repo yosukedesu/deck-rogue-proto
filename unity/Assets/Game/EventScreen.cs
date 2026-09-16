@@ -124,7 +124,7 @@ namespace DeckRogue.Game
                     {
                         if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
                         else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
-                    }, 18, available, leave ? null : (Color?)UiKit.Hex("#dfe8dc"));
+                    }, 18, available, leave ? null : (Color?)PaperFx.Paper3);
                 float bh = hint.Length > 0 ? (ph ? 62f : 70f) : (ph ? 50f : 52f);
                 UiKit.Le(b, -1f, bh, -1f, bh);
                 var tx = b.GetComponentInChildren<TMP_Text>();

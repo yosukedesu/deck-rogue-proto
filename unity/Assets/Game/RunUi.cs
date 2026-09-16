@@ -98,7 +98,7 @@ namespace DeckRogue.Game
         /// <summary>スマホの「≡」(2026-09-14): 上部バーの右端。押すと Menu が画面の右上に開く</summary>
         public static void MenuButton(GameRoot g, Transform bar)
         {
-            var b = UiKit.Btn(bar, g.MenuOpen ? "×" : "≡", delegate { g.MenuOpen = !g.MenuOpen; g.Rebuild(); }, 22, true, g.MenuOpen ? UiKit.Hex("#f0d58a") : (Color?)null);
+            var b = UiKit.Btn(bar, g.MenuOpen ? "×" : "≡", delegate { g.MenuOpen = !g.MenuOpen; g.Rebuild(); }, 22, true, g.MenuOpen ? PaperFx.BrassLight : (Color?)null);
             BattleScreen.SetSize(b, 56f, 44f);
         }
 
@@ -142,7 +142,7 @@ namespace DeckRogue.Game
                 }
                 var act = items[i].Value;
                 bool danger = !ended && i == items.Count - 1;
-                var b = UiKit.Btn(inner, items[i].Key, delegate { act(); }, 18, true, danger ? UiKit.Hex("#e8b8b0") : (Color?)null);
+                var b = UiKit.Btn(inner, items[i].Key, delegate { act(); }, 18, true, danger ? PaperFx.DangerBtn : (Color?)null);
                 UiKit.Le(b, -1f, itemH, -1f, itemH);
             }
         }
@@ -173,7 +173,7 @@ namespace DeckRogue.Game
                 var onOk = c.OnOk;
                 g.Confirm = null;
                 if (onOk != null) onOk(); else g.Rebuild();
-            }, 18, true, c.Danger ? UiKit.Hex("#e8b8b0") : UiKit.Hex("#f0d58a"));
+            }, 18, true, c.Danger ? PaperFx.DangerBtn : PaperFx.BrassLight);
             BattleScreen.SetSize(ok, 240f, 50f);
         }
 
@@ -269,7 +269,7 @@ namespace DeckRogue.Game
             var rt = UiKit.NewRect("upgrade-toggle", parent);
             UiKit.Anchor(rt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y), new Vector2(x + w, y + h));
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = Theme.Button; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 1f; img.color = on ? UiKit.Hex("#fbf6e8") : Color.white;
+            img.sprite = Theme.Button; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 1f; img.color = on ? PaperFx.Paper3 : Color.white;
             var btn = rt.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
             btn.transition = Selectable.Transition.None;
@@ -277,10 +277,10 @@ namespace DeckRogue.Game
             var box = UiKit.NewRect("box", rt);
             UiKit.Anchor(box, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(12f, -12f), new Vector2(36f, 12f));
             var bImg = box.gameObject.AddComponent<Image>();
-            bImg.sprite = PaperFx.Tag; bImg.type = Image.Type.Sliced; bImg.pixelsPerUnitMultiplier = 1f; bImg.color = on ? PaperFx.Ink : UiKit.Hex("#fbf6e8"); bImg.raycastTarget = false;
+            bImg.sprite = PaperFx.Tag; bImg.type = Image.Type.Sliced; bImg.pixelsPerUnitMultiplier = 1f; bImg.color = on ? PaperFx.Ink : PaperFx.Paper3; bImg.raycastTarget = false;
             if (on)
             {
-                var tick = UiKit.Txt(box, "✓", 18, UiKit.Hex("#f4ecd6"), TextAnchor.MiddleCenter, true);
+                var tick = UiKit.Txt(box, "✓", 18, PaperFx.Paper, TextAnchor.MiddleCenter, true);
                 tick.raycastTarget = false;
                 UiKit.Stretch(tick.rectTransform, 0f, 0f, 0f, 0f);
             }
@@ -362,7 +362,7 @@ namespace DeckRogue.Game
                     var b = UiKit.NewRect("badge", cell);
                     UiKit.Anchor(b, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(hw - 22f, hh + lift - 22f), new Vector2(hw + 14f, hh + lift + 14f));
                     var bi = b.gameObject.AddComponent<Image>();
-                    bi.sprite = PaperFx.Disc(); bi.color = UiKit.Hex("#f6dd98"); bi.raycastTarget = false;
+                    bi.sprite = PaperFx.Disc(); bi.color = PaperFx.BrassLight; bi.raycastTarget = false;
                     var bt = UiKit.Deco(b, bd, 19, PaperFx.Ink, TextAnchor.MiddleCenter);
                     bt.raycastTarget = false;
                     UiKit.Stretch(bt.rectTransform, 0f, 0f, 0f, 0f);
@@ -388,7 +388,7 @@ namespace DeckRogue.Game
                     if (label != null)
                     {
                         bool en = btnEnabled == null || btnEnabled(i, c);
-                        var b = UiKit.Btn(cell, label, delegate { if (onPick != null) onPick(idx); }, 15, en, mark ? UiKit.Hex("#cfeacc") : Color.white);
+                        var b = UiKit.Btn(cell, label, delegate { if (onPick != null) onPick(idx); }, 15, en, mark ? PaperFx.MossLight : Color.white);
                         var le = b.GetComponent<LayoutElement>();
                         if (le != null) UnityEngine.Object.Destroy(le);
                         UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 0f), new Vector2(70f, 42f));
@@ -406,7 +406,7 @@ namespace DeckRogue.Game
                     string verb = label == "これ" ? "選ぶ" : label == "除去" ? "取り除く" : label;
                     string text = en ? c.Def.Name + " を" + verb : c.Def.Name + ": " + verb;
                     int pi = picked;
-                    BottomButton(confirmRoot, text, delegate { if (onPick != null) onPick(pi); }, 18, 440f, 52f, 0f, 14f, UiKit.Hex("#f0d58a"), en);
+                    BottomButton(confirmRoot, text, delegate { if (onPick != null) onPick(pi); }, 18, 440f, 52f, 0f, 14f, PaperFx.BrassLight, en);
                 }
             }
         }
@@ -438,7 +438,7 @@ namespace DeckRogue.Game
             var center = UiKit.Phone ? root.Find("topbar/center") as RectTransform : null;
             if (center != null)
             {
-                var tagP = BattleScreen.Tag(center, 36f, 0f, UiKit.Hex("#fbf6e8"));
+                var tagP = BattleScreen.Tag(center, 36f, 0f, PaperFx.Paper3);
                 var tImg = tagP.GetComponent<Image>(); if (tImg != null) tImg.raycastTarget = true;   // 説明文 (全文) のため
                 var tle = tagP.GetComponent<LayoutElement>(); if (tle != null) { tle.preferredWidth = 560f; tle.flexibleWidth = 0f; }
                 var tt = UiKit.Deco(tagP, title, 17, PaperFx.Ink, TextAnchor.MiddleLeft);

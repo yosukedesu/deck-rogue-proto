@@ -47,7 +47,7 @@ namespace DeckRogue.Game
             if (!Feedback.CanRate(g.Rs) || Feedback.RatingOpen) return;
             var last = Feedback.LastBattle;
             bool rated = last != null && last.Rating != null && last.Rating.Strength.HasValue && last.Rating.Fun.HasValue;
-            var b = UiKit.Btn(root, rated ? "評価 済" : "評価（未入力）", delegate { Feedback.OpenRating(); g.Rebuild(); }, 14, true, rated ? (Color?)null : UiKit.Hex("#f0d58a"));
+            var b = UiKit.Btn(root, rated ? "評価 済" : "評価（未入力）", delegate { Feedback.OpenRating(); g.Rebuild(); }, 14, true, rated ? (Color?)null : PaperFx.BrassLight);
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 40f), new Vector2(190f, 80f));
@@ -106,7 +106,7 @@ namespace DeckRogue.Game
                 Feedback.MemoOpen = false;
                 g.Notice = "メモを記録した（" + Feedback.Notes.Count + "件）";
                 g.Rebuild();
-            }, 18, true, UiKit.Hex("#cfeacc"));
+            }, 18, true, PaperFx.BrassLight);
             BattleScreen.SetSize(save, 200f, 50f);
             // 直近のメモ (3件) = 何を書いたかの確認
             int n = Feedback.Notes.Count;
@@ -150,7 +150,7 @@ namespace DeckRogue.Game
                 {
                     string key = f;
                     bool on = Feedback.DraftLossFeel == f;
-                    var b = UiKit.Btn(row, f == "build" ? "構築の失敗" : "理不尽", delegate { Feedback.DraftLossFeel = key; g.Rebuild(); }, 16, true, on ? UiKit.Hex("#f2b8b0") : (Color?)null);
+                    var b = UiKit.Btn(row, f == "build" ? "構築の失敗" : "理不尽", delegate { Feedback.DraftLossFeel = key; g.Rebuild(); }, 16, true, on ? PaperFx.DangerBtn : (Color?)null);
                     BattleScreen.SetSize(b, 150f, 44f);
                 }
                 var hint = UiKit.Txt(row, "理不尽が2本一致したら数値でなく構造を作り直す", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
@@ -166,7 +166,7 @@ namespace DeckRogue.Game
             hg2.childForceExpandHeight = false;
             var skip = UiKit.Btn(rows, "スキップ", delegate { Feedback.RatingOpen = false; g.Rebuild(); }, 18);
             BattleScreen.SetSize(skip, 180f, 50f);
-            var ok = UiKit.Btn(rows, "決定", delegate { Feedback.CommitRating(g.Rs); g.Notice = "評価を記録した"; g.Rebuild(); }, 18, canCommit, UiKit.Hex("#cfeacc"));
+            var ok = UiKit.Btn(rows, "決定", delegate { Feedback.CommitRating(g.Rs); g.Notice = "評価を記録した"; g.Rebuild(); }, 18, canCommit, PaperFx.BrassLight);
             BattleScreen.SetSize(ok, 200f, 50f);
         }
 
@@ -183,7 +183,7 @@ namespace DeckRogue.Game
             {
                 int v = n;
                 bool on = value == n;
-                var b = UiKit.Btn(row, n.ToString(), delegate { onPick(v); g.Rebuild(); }, 18, true, on ? UiKit.Hex("#bcd2f0") : (Color?)null);
+                var b = UiKit.Btn(row, n.ToString(), delegate { onPick(v); g.Rebuild(); }, 18, true, on ? PaperFx.SkyLight : (Color?)null);
                 BattleScreen.SetSize(b, 60f, 44f);
             }
             var note = UiKit.Txt(row, title == "敵の強さ" ? "1=弱い … 5=強い" : "1=退屈 … 5=最高", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);

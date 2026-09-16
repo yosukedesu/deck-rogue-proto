@@ -129,8 +129,8 @@ P_FINAL.update(
     accent='#c99a3a', accent_light='#ead08a', accent_ink='#634410', accent2='#3aa79b', accent2_ink='#155650',
     energy='#3aa79b', energy_ink='#155650', gold='#c99a3a', gold_ink='#634410',
     hp='#c9635a', block='#6f95b8', good='#7fa86c', good_ink='#276a34', bad_ink='#9c3a2a', status='#9d86bf', status_bg='#e9def3', status_ink='#5a3d78',
-    types=dict(physical='#7d6146', spell='#6c4f9c', reaction='#2a7d74', permanent='#9c7a24'),
-    rarity=dict(common='#2f2e35', uncommon='#5f86a8', rare='#c99a3a'), orb_filter='hue-rotate(125deg) saturate(0.9)',
+    types=dict(physical='#c9a982', spell='#a98cc4', reaction='#7ab8b0', permanent='#a8a66b'), band_ink=True,   # 実装どおり淡い帯＋墨の文字 (CardView のリボン)
+    rarity=dict(common='#2f2e35', uncommon='#6f95b8', rare='#c99a3a'), orb_filter='hue-rotate(125deg) saturate(0.9)',
 )
 GROUND = '#0f1120'
 
@@ -166,7 +166,7 @@ def card(P, x, y, cid, name, cost, ctype, tja, body, rar, scale=0.74, sel=False,
     s += '<div class="abs" style="left: 12px; top: 44px; right: 12px; height: 100px; background: %s; box-shadow: 0 0 0 1.5px %s">%s</div>' % (P['window'], P['ink'], img(ART[cid], 8, 2, 160, 96))
     s += '<div class="abs" style="left: -6px; top: -6px; width: 52px; height: 52px">%s<div class="abs deco" style="inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; padding-bottom: 2px; color: %s">%s</div></div>' % (img(ORB, 0, 0, 52, 52, ('filter: %s;' % P['orb_filter']) if P['orb_filter'] else ''), P['ink'], cost)
     s += '<div class="abs deco" style="left: 44px; top: 8px; right: 12px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: %dpx; white-space: nowrap; color: %s">%s</div>' % (20 if len(name) <= 4 else 17, P['ink'], name)
-    s += '<div class="abs" style="left: 25px; top: 136px; width: 150px; height: 26px; background: %s; border-radius: 4px; box-shadow: 0 0 0 1.5px %s; display: flex; align-items: center; justify-content: center; gap: 5px; color: %s; font-size: 14px; letter-spacing: 0.15em">%s%s</div>' % (P['types'][ctype], P['ink'], P['paper'], img(GEM[rar], 0, 0, 24, 24, 'position: static'), tja)
+    s += '<div class="abs" style="left: 25px; top: 136px; width: 150px; height: 26px; background: %s; border-radius: 4px; box-shadow: 0 0 0 1.5px %s; display: flex; align-items: center; justify-content: center; gap: 5px; color: %s; font-size: 14px; letter-spacing: 0.15em">%s%s</div>' % (P['types'][ctype], P['ink'], P['ink'] if P.get('band_ink') else P['paper'], img(GEM[rar], 0, 0, 24, 24, 'position: static'), tja)
     s += '<div class="abs" style="left: 14px; top: 172px; right: 14px; bottom: 14px; text-align: center; font-size: 16px; line-height: 24px; color: %s">%s</div>' % (P['ink'], body)
     return s + '</div>'
 
@@ -303,19 +303,18 @@ TOKENS = [
         ('藤の墨', 'plumInk', P_FINAL['status_ink'], '状態異常の文字（6.8:1）'),
         ('危険のボタン', 'dangerBtn', '#e8b8b0', '「ランを放棄」だけ'),
     ]),
-    ('タイプの帯 (文字は紙)', [
-        ('物理', 'typePhysical', P_FINAL['types']['physical'], '4.9:1（旧 4.2）'),
-        ('呪文', 'typeSpell', P_FINAL['types']['spell'], '5.5:1（据え置き）'),
-        ('仕込み札', 'typeReaction', P_FINAL['types']['reaction'], '4.2:1（旧 3.4）'),
-        ('置物', 'typePermanent', P_FINAL['types']['permanent'], '3.4:1（旧 2.7）。真鍮より暗く'),
+    ('タイプの帯 (淡い色＋墨の文字)', [
+        ('物理 砂', 'Sand', P_FINAL['types']['physical'], '据え置き（墨 6.1:1）'),
+        ('呪文 藤', 'PlumBand', P_FINAL['types']['spell'], '据え置き（墨 4.6:1）'),
+        ('仕込み札 青緑', 'Teal', P_FINAL['types']['reaction'], '据え置き＝マナの淡い版（墨 6.0:1）'),
+        ('置物 鈍い黄', 'Olive', P_FINAL['types']['permanent'], '蜂蜜→オリーブ。真鍮の縁と混ざらない（墨 5.3:1）'),
     ]),
 ]
 CHANGES = [
     ('墨', '#3b2f2f', P_FINAL['ink'], '焦げ茶 → 鉛筆の黒鉄'), ('中墨', '#574b48', P_FINAL['ink_soft'], '7:1 を保って黒鉄側へ'),
     ('主役 (蜂蜜→真鍮)', '#e0b25a', P_FINAL['accent'], '選択・狙い・G・R・目盛り'), ('決定のボタン', '#f6dd98', P_FINAL['accent_light'], '真鍮の紙'), ('金の文字', '#7a4e12', P_FINAL['accent_ink'], '真鍮の墨 7.5:1'),
     ('エナジー', '#e0b25a', P_FINAL['energy'], '青緑へ（玉と輪は描き直し）'), ('HP', '#d97b7b', P_FINAL['hp'], '一段濃く'), ('ブロック', '#7fa7c9', P_FINAL['block'], '一段濃く・青へ'),
-    ('成長', '#8fae7b', P_FINAL['good'], '一段濃く・緑へ'), ('状態異常', '#a98cc4', P_FINAL['status'], '一段濃く'), ('物理の帯', '#8a6a3c', P_FINAL['types']['physical'], '黒鉄寄りの茶'),
-    ('仕込み札の帯', '#3f8c86', P_FINAL['types']['reaction'], '青緑の濃い版'), ('置物の帯', '#b08a2e', P_FINAL['types']['permanent'], '真鍮より暗く'),
+    ('成長', '#8fae7b', P_FINAL['good'], '一段濃く・緑へ'), ('状態異常', '#a98cc4', P_FINAL['status'], '一段濃く'), ('置物の帯', '#e0b25a', P_FINAL['types']['permanent'], '蜂蜜 → 鈍い黄（真鍮と分ける）'),
 ]
 
 def board_main():
@@ -346,7 +345,7 @@ def board_main():
     # 規律
     ry = y0 + 500
     rules = [
-        '① 真鍮は「価値」に限る: 選択中の札と狙っている敵の縁・決定のボタン（真鍮の紙）・G・R の外線・HP バーの「行動が変わる線」。置物の帯は真鍮より暗い色で分ける',
+        '① 真鍮は「価値」に限る: 選択中の札と狙っている敵の縁・決定のボタン（真鍮の紙）・G・R の外線・HP バーの「行動が変わる線」・勢いと急所の印。置物の帯は鈍い黄（オリーブ）で真鍮から離す',
         '② 青緑は「マナ」に限る: エナジーの輪と数字・コスト玉・からくり（仕込み札）の帯とトークン・斬撃の縁・舞台の露頭。割引の玉は苔のまま',
         '③ 文字は墨か各色の「墨」版だけ（中墨 7:1・真鍮の墨 7.5:1・青緑の墨 7.2:1）。淡い色は塗りにだけ使う（2026-09-09 の規約を継承）',
         '④ 意味の色は4つだけ: 薔薇＝HP／鋼青＝ブロック／苔＝成長・良い／藤＝状態異常。危険は「危険の墨」の文字で言い、朱の塗りは作らない',
@@ -359,7 +358,7 @@ def board_main():
         s += '<div class="abs" style="left: 30px; top: %dpx; width: 1060px; font-size: 13px; line-height: 18px; color: %s">%s</div>' % (ry + 28 + i * 22, ink, r)
     # 現状からの変更
     cy = ry + 28 + len(rules) * 22 + 16
-    s += '<div class="abs deco" style="left: 30px; top: %dpx; font-size: 18px; color: %s">現状からの変更 (13)　<span style="font-weight: 400; font-size: 13px; color: %s">据え置き: 紙3・夜3・5色の縁・呪文の帯・良い/危険の墨・U の外線・状態の墨</span></div>' % (cy, ink, P['ink_soft'])
+    s += '<div class="abs deco" style="left: 30px; top: %dpx; font-size: 18px; color: %s">現状からの変更 (11)　<span style="font-weight: 400; font-size: 13px; color: %s">据え置き: 紙3・夜3・5色の縁・呪文の帯・良い/危険の墨・U の外線・状態の墨</span></div>' % (cy, ink, P['ink_soft'])
     for i, (label, a, b, why) in enumerate(CHANGES):
         col, row = divmod(i, 7)
         x = 30 + col * 570; yy = cy + 30 + row * 26

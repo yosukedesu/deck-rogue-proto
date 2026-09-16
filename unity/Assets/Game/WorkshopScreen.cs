@@ -135,7 +135,7 @@ namespace DeckRogue.Game
                 string guide = blocked != null ? "合成できない: " + blocked
                     : partnerNames.Count > 0 ? "この札で作れる一品:\n" + string.Join("\n", partnerNames.ToArray())
                     : (pairs.Count > 0 && a == null ? "デッキから2枚選ぶ（★の札はレシピの素材）" : "デッキから2枚選ぶ");
-                var msg = UiKit.Txt(srt, guide, 16, blocked != null ? UiKit.ColBadInk : partnerNames.Count > 0 ? UiKit.Hex("#7a4e12") : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                var msg = UiKit.Txt(srt, guide, 16, blocked != null ? UiKit.ColBadInk : partnerNames.Count > 0 ? PaperFx.BrassInk : UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 msg.textWrappingMode = TextWrappingModes.Normal;
                 UiKit.Anchor(msg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, resultY - 100f), new Vector2(-20f, resultY));
             }
@@ -170,7 +170,7 @@ namespace DeckRogue.Game
             var cv = CardView.Build(cell, c, null, true, true, "slot-card");
             CardPopup.Attach(g, cv, c, null, true);
             cv.localScale = Vector3.one * scale;
-            var x = UiKit.Btn(cell, "×", delegate { Audio.Ui("click"); onClear(); }, 14, true, UiKit.Hex("#8a5a5a"));
+            var x = UiKit.Btn(cell, "×", delegate { Audio.Ui("click"); onClear(); }, 14, true, PaperFx.DangerBtn);
             var le = x.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(x.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(2f, 2f));

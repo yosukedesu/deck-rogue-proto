@@ -46,7 +46,7 @@ namespace DeckRogue.Game
                 cv.anchoredPosition = new Vector2(0f, 35f);
                 HoverRaise(cv, delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); });
                 CardPopup.Attach(g, cv, ci, null, true);
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, UiKit.Hex("#cfeacc"));
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-90f, 0f), new Vector2(90f, 48f));
@@ -78,7 +78,7 @@ namespace DeckRogue.Game
                 var cell = RelicPanel(root, rd, opts[i], w, h);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
                 cell.anchoredPosition = new Vector2(x0 + i * (w + gap), UiKit.Phone ? -30f : 20f);   // スマホは見出しと重ならないよう下げる
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_PickRelic { Index = idx }); }, 18, true, UiKit.Hex("#f0d58a"));
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_PickRelic { Index = idx }); }, 18, true, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 16f), new Vector2(100f, 62f));

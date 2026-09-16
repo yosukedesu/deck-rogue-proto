@@ -57,7 +57,7 @@ namespace DeckRogue.Game
             var winEdge = win.gameObject.AddComponent<Image>();
             winEdge.color = PaperFx.Ink;
             winEdge.raycastTarget = false;
-            var winIn = UiKit.Pan(win, UiKit.Hex("#20233a"), "night");
+            var winIn = UiKit.Pan(win, PaperFx.Window, "night");
             UiKit.Stretch(winIn.rectTransform, 1.5f, 1.5f, 1.5f, 1.5f);
             winIn.raycastTarget = false;
             var art = Theme.Art("cards", def.Id) ?? ThemeFx.FusedArt(def.Id);   // 工房産は素材2枚の絵を溶かし合わせる (2026-09-11)
@@ -97,10 +97,10 @@ namespace DeckRogue.Game
             UiKit.Anchor(orb, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(-6f, -46f), new Vector2(46f, 6f));
             var orbImg = orb.gameObject.AddComponent<Image>();
             var orbArt = Theme.Art("ui", "cost_orb");   // PixelLab の玉 (26 ドット×2=52。2026-09-11)。無ければ水彩の玉
-            orbImg.sprite = orbArt != null ? orbArt : PaperFx.Orb(PaperFx.Honey);
+            orbImg.sprite = orbArt != null ? orbArt : PaperFx.Orb(PaperFx.Mana);
             orbImg.preserveAspect = true; orbImg.raycastTarget = false;
             if (!playable) orbImg.color = new Color(0.82f, 0.82f, 0.82f, 1f);
-            var costT = UiKit.Deco(orb, costLabel, 22, discounted ? UiKit.Hex("#276a34") : raised ? UiKit.Hex("#a33a30") : ink, TextAnchor.MiddleCenter);
+            var costT = UiKit.Deco(orb, costLabel, 22, discounted ? PaperFx.GoodInk : raised ? PaperFx.BadDown : ink, TextAnchor.MiddleCenter);
             UiKit.Anchor(costT.rectTransform, Vector2.zero, Vector2.one, new Vector2(0f, 1f), new Vector2(0f, -1f));
             costT.characterSpacing = 0f;
 
