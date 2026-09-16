@@ -2,7 +2,8 @@
 // report.ts (書き出し = DOM接触あり) と App.tsx とテストから共用する。
 import { encounterName, getCardDef } from '../engine/content.ts'
 import { resolveFusedDef } from '../engine/fusion.ts'
-import type { EnemyIntent, EnemyIntentBranch, GameEvent } from '../engine/types.ts'
+import { displayedInflict } from '../engine/effects.ts'
+import type { EnemyIntent, EnemyIntentBranch, GameEvent, GameState } from '../engine/types.ts'
 // プレイテストの状況をAIへ渡すためのテキスト書き出し (2026-08-26)。
 // ui/ 層に置く純関数。engine には触らない。ダウンロードは App 側の1関数だけがDOMを使う。
 
@@ -13,25 +14,30 @@ const KIND_LABEL: Record<string, string> = {
 
 export const STATUS_LABEL: Record<string, string> = { weak: '弱体', vulnerable: '脆弱', frail: '虚弱', wound: '負傷', junk: 'がらくた', scald: '火傷', restrain: '拘束', mist: '霞み', slow: '重り' }
 
-export function inflictSuffix(intent: EnemyIntent | EnemyIntentBranch): string {
-  if (!intent.inflict) return ''
+/**
+ * 意図の rider「＋がらくた2(山札へ)」。state を渡すと死に札の上限 (がらくた4・負傷5・火傷5) で実際に増える枚数に畳み、
+ * 0 枚なら出さない (2026-09-16 人間#12: 上限到達後も歩哨の意図が6回「+がらくた2」を予告し続けた。engine/effects.ts displayedInflict)
+ */
+export function inflictSuffix(intent: EnemyIntent | EnemyIntentBranch, state?: GameState): string {
+  const inflict = state ? displayedInflict(state, intent.inflict) : intent.inflict
+  if (!inflict) return ''
   // カード汚染は行き先まで予告する (2026-09-02 StS2のCardDebuff意図準拠 = 対処の計画が立つ)
   const dest =
-    intent.inflict.status === 'wound'
+    inflict.status === 'wound'
       ? '(捨て札へ)'
-      : intent.inflict.status === 'junk'
+      : inflict.status === 'junk'
         ? '(山札へ)'
-        : intent.inflict.status === 'scald'
+        : inflict.status === 'scald'
           ? '(手札へ)'
           : ''
-  return ` ＋${STATUS_LABEL[intent.inflict.status]}${intent.inflict.amount}${dest}`
+  return ` ＋${STATUS_LABEL[inflict.status]}${inflict.amount}${dest}`
 }
 
 /**
  * 意図の1行 (実値公開 2026-09-14 本家形)。攻撃の数字は shownValue (威圧・脆弱・重り込みのライブ値。
  * engine/summary.ts displayedIntentValue) を渡す。省略時は宣言した実値 (ログ行など状態が無い場所)
  */
-export function intentText(intent: EnemyIntent | EnemyIntentBranch | null, shownValue?: number): string {
+export function intentText(intent: EnemyIntent | EnemyIntentBranch | null, shownValue?: number, state?: GameState): string {
   if (!intent) return '---'
   const mirror = (intent as EnemyIntent).mirrorHits === true
   switch (intent.kind) {
@@ -40,14 +46,14 @@ export function intentText(intent: EnemyIntent | EnemyIntentBranch | null, shown
       const guard = intent.alsoDefend !== undefined ? `+🛡️${intent.alsoDefend}` : ''
       const buff = intent.alsoBuff !== undefined ? `+💪${intent.alsoBuff}` : ''
       const breaks = intent.alsoDestroySet === true ? '💥伏せ破壊+' : '' // 壊しつつ殴る (2026-09-14)
-      return `${breaks}⚔️ 攻撃 ${shownValue ?? intent.actual}${hits}${guard}${buff}${inflictSuffix(intent)}`
+      return `${breaks}⚔️ 攻撃 ${shownValue ?? intent.actual}${hits}${guard}${buff}${inflictSuffix(intent, state)}`
     }
     case 'defend': return `🛡️ 防御 ${intent.actual}${intent.alsoBuff !== undefined ? `＋💪筋力+${intent.alsoBuff}` : ''}`
     case 'destroy-set': return '💥 伏せ破壊'
     case 'destroy-token': return '🪓 従者狩り'
     case 'buff': return `💪 筋力 +${intent.actual}`
     case 'rally': return `📣 応援 +${intent.actual}（味方全体の筋力）`
-    case 'hex': return `🧿 呪い${inflictSuffix(intent)}`
+    case 'hex': return `🧿 呪い${inflictSuffix(intent, state)}`
     case 'heal': return `💚 回復 ${intent.actual}（最も傷んだ味方）`
     case 'steal-gold': return `💰 盗み ${intent.actual}G`
     case 'flee': return '🏃 逃走（倒すか打ち消せば阻止）'

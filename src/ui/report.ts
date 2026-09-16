@@ -207,7 +207,7 @@ function renderBoard(s: GameState): string[] {
     const dbg = [e.strength ? `強化${e.strength > 0 ? '+' : ''}${e.strength}` : '', e.block ? `ブロック${e.block}` : '',
       e.burn ? `延焼${e.burn}` : '', e.confusion ? `混乱${e.confusion}` : '', e.exposed ? `急所${e.exposed}` : '']
       .filter(Boolean).join(' ')
-    out.push(`敵${i + 1} ${safeEnemyName(e.enemyId)}: HP ${e.hp}/${e.maxHp} ${dbg} → ${intentText(effectiveIntent(s, i))}`)
+    out.push(`敵${i + 1} ${safeEnemyName(e.enemyId)}: HP ${e.hp}/${e.maxHp} ${dbg} → ${intentText(effectiveIntent(s, i), undefined, s)}`)
   })
   if (s.pendingWindow) {
     const w = s.pendingWindow

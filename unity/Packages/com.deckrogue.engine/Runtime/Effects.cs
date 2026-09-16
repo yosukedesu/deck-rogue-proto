@@ -905,6 +905,54 @@ namespace DeckRogue.Engine
             return v;
         }
 
+        /// <summary>がらくた (死に札) の1戦闘上限。ハメ防止 (TS effects.ts JUNK_CAP)</summary>
+        public const int JUNK_CAP = 4;
+        /// <summary>負傷 (死に札) の1戦闘上限 (TS WOUND_CAP)</summary>
+        public const int WOUND_CAP = 5;
+        /// <summary>火傷の1戦闘あたり上限。累計で数える (TS SCALD_CAP)</summary>
+        public const int SCALD_CAP = 5;
+
+        /// <summary>
+        /// 死に札の状態異常 (負傷・がらくた・火傷) をあと何枚受け入れるか (上限 − 既存)。上限の無い状態異常は null。
+        /// 付与の実処理 (Combat.ApplyStatusToPlayer) と意図の rider の表示が同じ式を読む (TS effects.ts cardStatusRoom。
+        /// 2026-09-16 人間#12: 上限4に達した後も歩哨の意図が「+がらくた2」を予告し続けた)。
+        /// 数える範囲は実処理どおり: がらくた=手札+山札+捨て札、負傷=全ゾーン (伏せ場・消滅置き場も)、火傷=累計カウンタ
+        /// </summary>
+        public static int? CardStatusRoom(GameState state, string status)
+        {
+            var p = state.Player;
+            if (status == PlayerStatuss.Scald) return SCALD_CAP - (p.ScaldsThisCombat ?? 0);
+            if (status == PlayerStatuss.Junk)
+            {
+                int existing =
+                    p.Hand.Count(c => c.Def.Id == Content.JUNK_DEF.Id) +
+                    p.DrawPile.Count(c => c.Def.Id == Content.JUNK_DEF.Id) +
+                    p.DiscardPile.Count(c => c.Def.Id == Content.JUNK_DEF.Id);
+                return JUNK_CAP - existing;
+            }
+            if (status == PlayerStatuss.Wound)
+            {
+                int existing =
+                    p.Hand.Count(c => c.Def.Id == Content.WOUND_DEF.Id) +
+                    p.DrawPile.Count(c => c.Def.Id == Content.WOUND_DEF.Id) +
+                    p.DiscardPile.Count(c => c.Def.Id == Content.WOUND_DEF.Id) +
+                    p.ExhaustPile.Count(c => c.Def.Id == Content.WOUND_DEF.Id) +
+                    p.SetCards.Count(c => c.Def.Id == Content.WOUND_DEF.Id);
+                return WOUND_CAP - existing;
+            }
+            return null;
+        }
+
+        /// <summary>意図の rider の表示用: 上限で実際に増える枚数に畳む。0 枚なら null (= rider を出さない)。上限の無い状態異常はそのまま (TS displayedInflict)</summary>
+        public static StatusInflict? DisplayedInflict(GameState state, StatusInflict? inflict)
+        {
+            if (inflict == null) return null;
+            var room = CardStatusRoom(state, inflict.Status);
+            if (room == null) return inflict;
+            if (room.Value <= 0) return null;
+            return room.Value < inflict.Amount ? inflict with { Amount = room.Value } : inflict;
+        }
+
         /// <summary>意図 (または分岐) の表示値: 攻撃は補正込みの1ヒット・それ以外は実値</summary>
         public static int DisplayedIntentValue(GameState s, int enemyIndex, string kind, int actual)
         {

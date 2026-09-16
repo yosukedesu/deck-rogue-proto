@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyDamageInterrupts, cardNeedsTarget, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
+import { applyDamageInterrupts, cardNeedsTarget, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { applyDeathInterrupts, bindRedeclare, effectiveStrength, gainEnemyStrength, refreshIntentValues } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
@@ -30,7 +30,6 @@ const DRAW_PER_TURN = 5
 // 本家StSに上限という概念は無く、①誘発をプレイヤーが握る ②積む敵は短命 ③筋力を剥がす手段が全キャラにある
 // の3点で抑えている。本作もそれに揃えた (門番のHPを下げ、威圧を全色に配った)。
 /** がらくた (罠壊し) の1戦闘あたり上限 */
-const JUNK_CAP = 4
 
 /** 戦闘前の空状態 (UI/sim が方式を保持するための器)。戦闘は StartCombat で開始する */
 export function createInitialState(seed: number, reactionMode: ReactionMode): GameState {
@@ -1525,10 +1524,7 @@ function fireSelfSetTriggers(
   return checkCombatEnd(s)
 }
 
-/** 負傷 (死に札) の1戦闘上限。ハメ防止 (確定済みルール表「状態異常」) */
-const WOUND_CAP = 5
-/** 火傷の1戦闘あたり上限 (負傷と同思想のハメ防止) */
-const SCALD_CAP = 5
+// 負傷・がらくた・火傷の1戦闘上限と残り枚数は effects.ts (WOUND_CAP/JUNK_CAP/SCALD_CAP・cardStatusRoom) = 意図の表示と同じ式
 
 /** 状態異常をプレイヤーに付与する。weak/vulnerable はカウンター加算、wound は死に札を捨て札に混入 */
 /** 拘束中に1ターンでプレイできるカードの上限 (本家StS2 Sloth=「4枚目以降プレイ不可」準拠) */
@@ -1592,7 +1588,7 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
     // 火傷 (2026-09-02): 手札に直接押し込む = 即時の圧。上限5枚/戦闘は累計で数える
     // (火傷札は1自ターンで消えるため、山のカウントでは上限が意味を失う)
     const existing = state.player.scaldsThisCombat ?? 0
-    const add = Math.min(amount, SCALD_CAP - existing)
+    const add = Math.min(amount, cardStatusRoom(state, 'scald') ?? 0)
     if (add <= 0) return state
     const scalds = Array.from({ length: add }, (_, i) => ({
       uid: `${SCALD_DEF.id}#${existing + i}_t${state.turn}`,
@@ -1616,7 +1612,7 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
       ...state.player.drawPile,
       ...state.player.discardPile,
     ].filter((c) => c.def.id === JUNK_DEF.id).length
-    const addJunk = Math.min(amount, JUNK_CAP - existingJunk)
+    const addJunk = Math.min(amount, cardStatusRoom(state, 'junk') ?? 0)
     if (addJunk <= 0) return state
     let drawPile = [...state.player.drawPile]
     let rng = state.rng
@@ -1640,7 +1636,7 @@ function applyStatusToPlayer(state: GameState, inflict: StatusInflict): GameStat
     ...state.player.exhaustPile,
     ...state.player.setCards,
   ].filter((c) => c.def.id === WOUND_DEF.id).length
-  const add = Math.min(amount, WOUND_CAP - existing)
+  const add = Math.min(amount, cardStatusRoom(state, 'wound') ?? 0)
   if (add <= 0) return state
   const wounds = Array.from({ length: add }, (_, i) => ({
     uid: `${WOUND_DEF.id}#${existing + i}_t${state.turn}`,

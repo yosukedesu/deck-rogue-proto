@@ -36,7 +36,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, displayedInflict, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -165,7 +165,8 @@ function describeEventOutcome(prev: RunState, next: RunState): string | null {
 function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
   const mirror = (it as EnemyIntent).mirrorHits === true
   const hits = mirror ? '×手数(このターンにプレイした枚数ぶん・最低1)' : (it.hits ?? 1) > 1 ? `×${it.hits}回(値は1発あたり)` : ''
-  const inflict = it.inflict ? `+${STATUS_JA[it.inflict.status] ?? it.inflict.status}${it.inflict.amount}` : ''
+  const inf = displayedInflict(s, it.inflict)   // 死に札の上限で畳む (表示と実処理が同じ式。2026-09-16)
+  const inflict = inf ? `+${STATUS_JA[inf.status] ?? inf.status}${inf.amount}` : ''
   const guard = it.alsoDefend !== undefined ? `+防御${it.alsoDefend}` : ''
   const buff = it.alsoBuff !== undefined ? `+筋力${it.alsoBuff}` : ''
   const breaks = it.alsoDestroySet === true ? '伏せ破壊+' : ''

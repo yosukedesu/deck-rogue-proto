@@ -2,7 +2,7 @@
 // カード効果は data/*.json の宣言的記述をここで状態遷移に変換する。
 // 表現できない効果だけ scriptId で名前付きスクリプトに逃がす (現状は未登録)。
 
-import { getCardDef, getEnemyDef } from './content.ts'
+import { getCardDef, getEnemyDef, JUNK_DEF, SCALD_DEF, WOUND_DEF } from './content.ts'
 import { applyInterruptsTo } from './enemyGraph.ts'
 import { emit } from './events.ts'
 import { setEffectsOf, setFireCost } from './setany.ts'
@@ -14,6 +14,8 @@ import type {
   EnemyIntent,
   GameState, CardDef,
   EnemyInterruptTrigger,
+  PlayerStatus,
+  StatusInflict,
 } from './types.ts'
 
 /**
@@ -1937,4 +1939,43 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   // 全カード伏せ可 (実験): 通常カードの伏せ発動は「リアクションの発動」ではない = 換金 (狩人の眼光) は専用札の特権
   const out = card.def.type === 'reaction' ? runPermanentTriggers(s, 'onReactionFired', enemyIndex) : s
   return { ...out, resolvingCardPlay: prevCardPlay }
+}
+
+/** がらくた (死に札) の1戦闘上限。ハメ防止 (確定済みルール表「がらくた」) */
+export const JUNK_CAP = 4
+/** 負傷 (死に札) の1戦闘上限。ハメ防止 (確定済みルール表「状態異常」) */
+export const WOUND_CAP = 5
+/** 火傷の1戦闘あたり上限 (負傷と同思想のハメ防止。累計で数える) */
+export const SCALD_CAP = 5
+
+/**
+ * 死に札の状態異常 (負傷・がらくた・火傷) をあと何枚受け入れるか (上限 − 既存)。上限の無い状態異常は null。
+ * 付与の実処理 (combat.ts applyStatusToPlayer) と意図の rider の表示が同じ式を読む
+ * (2026-09-16 人間#12: 上限4に達した後も歩哨の意図が「+がらくた2(山札へ)」を6回予告し続けた＝表示の嘘)。
+ * 数える範囲は付与の実処理どおり: がらくた=手札+山札+捨て札、負傷=全ゾーン (伏せ場・消滅置き場も)、火傷=累計カウンタ
+ */
+export function cardStatusRoom(state: GameState, status: PlayerStatus): number | null {
+  const p = state.player
+  if (status === 'scald') return SCALD_CAP - (p.scaldsThisCombat ?? 0)
+  if (status === 'junk') {
+    const existing = [...p.hand, ...p.drawPile, ...p.discardPile].filter((c) => c.def.id === JUNK_DEF.id).length
+    return JUNK_CAP - existing
+  }
+  if (status === 'wound') {
+    const existing = [...p.hand, ...p.drawPile, ...p.discardPile, ...p.exhaustPile, ...p.setCards].filter((c) => c.def.id === WOUND_DEF.id).length
+    return WOUND_CAP - existing
+  }
+  return null
+}
+
+/**
+ * 意図の rider (「+がらくた2(山札へ)」) の表示用: 上限で実際に増える枚数に畳む。0 枚なら undefined (= rider を出さない)。
+ * 上限の無い状態異常 (弱体・脆弱・虚弱・拘束・霞み・重り) はそのまま
+ */
+export function displayedInflict(state: GameState, inflict: StatusInflict | undefined): StatusInflict | undefined {
+  if (!inflict) return undefined
+  const room = cardStatusRoom(state, inflict.status)
+  if (room === null) return inflict
+  if (room <= 0) return undefined
+  return room < inflict.amount ? { ...inflict, amount: room } : inflict
 }

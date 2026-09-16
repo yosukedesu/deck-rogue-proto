@@ -62,12 +62,7 @@ namespace DeckRogue.Engine
         public const int PLAYER_MAX_HP = 75; // StSスケール (2026-08-25 人間基準化)
         private const int BASE_ENERGY = 3;
         private const int DRAW_PER_TURN = 5;
-        /// <summary>がらくた (罠壊し) の1戦闘あたり上限</summary>
-        private const int JUNK_CAP = 4;
-        /// <summary>負傷 (死に札) の1戦闘上限。ハメ防止</summary>
-        private const int WOUND_CAP = 5;
-        /// <summary>火傷の1戦闘あたり上限 (負傷と同思想のハメ防止)</summary>
-        private const int SCALD_CAP = 5;
+        // 負傷・がらくた・火傷の1戦闘上限と残り枚数は Effects (JUNK_CAP/WOUND_CAP/SCALD_CAP・CardStatusRoom) = 意図の表示と同じ式 (2026-09-16)
         /// <summary>拘束中に1ターンでプレイできるカードの上限 (本家StS2 Sloth 準拠)</summary>
         public const int RESTRAIN_PLAY_CAP = 3;
 
@@ -1714,7 +1709,7 @@ namespace DeckRogue.Engine
             {
                 // 火傷: 手札に直接押し込む = 即時の圧。上限5枚/戦闘は累計で数える
                 int existingScald = state.Player.ScaldsThisCombat ?? 0;
-                int addScald = Math.Min(amount, SCALD_CAP - existingScald);
+                int addScald = Math.Min(amount, Effects.CardStatusRoom(state, PlayerStatuss.Scald) ?? 0);
                 if (addScald <= 0) return state;
                 var scalds = new List<CardInstance>(addScald);
                 for (int i = 0; i < addScald; i++)
@@ -1743,7 +1738,7 @@ namespace DeckRogue.Engine
                     state.Player.Hand.Count(c => c.Def.Id == Content.JUNK_DEF.Id) +
                     state.Player.DrawPile.Count(c => c.Def.Id == Content.JUNK_DEF.Id) +
                     state.Player.DiscardPile.Count(c => c.Def.Id == Content.JUNK_DEF.Id);
-                int addJunk = Math.Min(amount, JUNK_CAP - existingJunk);
+                int addJunk = Math.Min(amount, Effects.CardStatusRoom(state, PlayerStatuss.Junk) ?? 0);
                 if (addJunk <= 0) return state;
                 var drawPile = new List<CardInstance>(state.Player.DrawPile);
                 var rng = state.Rng;
@@ -1763,7 +1758,7 @@ namespace DeckRogue.Engine
                 state.Player.DiscardPile.Count(c => c.Def.Id == Content.WOUND_DEF.Id) +
                 state.Player.ExhaustPile.Count(c => c.Def.Id == Content.WOUND_DEF.Id) +
                 state.Player.SetCards.Count(c => c.Def.Id == Content.WOUND_DEF.Id);
-            int add = Math.Min(amount, WOUND_CAP - existing);
+            int add = Math.Min(amount, Effects.CardStatusRoom(state, PlayerStatuss.Wound) ?? 0);
             if (add <= 0) return state;
             var wounds = new List<CardInstance>(add);
             for (int i = 0; i < add; i++)

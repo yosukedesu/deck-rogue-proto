@@ -502,7 +502,9 @@ namespace DeckRogue.Game
         public static string LiveIntentLine(GameState st, int enemyIndex, EnemyIntent it)
         {
             if (it == null) return "---";
-            string text = IntentLine(it, Effects.DisplayedIntentValue(st, enemyIndex, it.Kind, it.Actual));
+            // 死に札の rider は上限で畳む (上限に達していれば出さない。2026-09-16 人間#12)
+            var shown = it.Inflict != null ? it with { Inflict = Effects.DisplayedInflict(st, it.Inflict) } : it;
+            string text = IntentLine(shown, Effects.DisplayedIntentValue(st, enemyIndex, it.Kind, it.Actual));
             var notes = Effects.IntentModifierNotes(st, enemyIndex, it.Kind);
             return notes.Count > 0 ? text + " (もとは" + it.Actual + "・" + string.Join("・", notes) + ")" : text;
         }

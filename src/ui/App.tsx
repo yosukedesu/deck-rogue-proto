@@ -650,7 +650,7 @@ function EffectLines({ def, ctx }: { def: CardDef; ctx?: EffectCtx }) {
 
 /** 意図1つの表示 (実値公開 2026-09-14): 攻撃は威圧・脆弱・重り込みのライブ値。補正があれば「（威圧-25%: 実値12）」を添える */
 function liveIntentText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch): string {
-  const text = intentText(it, displayedIntentValue(s, i, it))
+  const text = intentText(it, displayedIntentValue(s, i, it), s)
   const notes = intentModifierNotes(s, i, it)
   return notes.length > 0 ? `${text}（もとは${it.actual}・${notes.join('・')}）` : text
 }
@@ -2019,7 +2019,7 @@ function BattleScreen({
                     const gain = comparable && after < before
                     return (
                       <div key={ri} className="choice-desc" style={{ margin: '6px 0', color: gain ? 'var(--good, #7ec97e)' : 'var(--warn, #e0a458)' }}>
-                        {gain ? '💡' : '⚠'} 発動すると伏せ場が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せ札なし】分岐（{intentText(s.enemies[ri].intent)}）に変わる{gain ? '（弱くなる=利得）' : comparable && after > before ? '（強くなる）' : ''}
+                        {gain ? '💡' : '⚠'} 発動すると伏せ場が空く: {getEnemyDef(s.enemies[ri].enemyId).name}の行動が【伏せ札なし】分岐（{intentText(s.enemies[ri].intent, undefined, s)}）に変わる{gain ? '（弱くなる=利得）' : comparable && after > before ? '（強くなる）' : ''}
                       </div>
                     )
                   })}

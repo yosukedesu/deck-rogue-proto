@@ -417,10 +417,11 @@ namespace DeckRogue.Game
                 }
                 if (!hidden)
                 {
-                    int riders = (it.Inflict != null ? 1 : 0) + (it.AlsoBuff.HasValue ? 1 : 0) + (it.AlsoDefend.HasValue ? 1 : 0) + (it.AlsoDestroySet == true ? 1 : 0);
+                    var inflict = Effects.DisplayedInflict(st, it.Inflict);   // 死に札の上限で畳む (上限に達していれば出さない。2026-09-16 人間#12)
+                    int riders = (inflict != null ? 1 : 0) + (it.AlsoBuff.HasValue ? 1 : 0) + (it.AlsoDefend.HasValue ? 1 : 0) + (it.AlsoDestroySet == true ? 1 : 0);
                     bool terse = ph || riders >= 2;
                     int rsz = ph ? 13 : 15;
-                    if (it.Inflict != null) { string tx = (terse ? "" : "あなたに") + CardText.StatusName(it.Inflict.Status) + it.Inflict.Amount; MiniPill(row, "exposed", tx, UiKit.Hex("#5a3d78"), UiKit.Hex("#eddbf7"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
+                    if (inflict != null) { string tx = (terse ? "" : "あなたに") + CardText.StatusName(inflict.Status) + inflict.Amount; MiniPill(row, "exposed", tx, UiKit.Hex("#5a3d78"), UiKit.Hex("#eddbf7"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                     if (it.AlsoBuff.HasValue) { string tx = (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value; MiniPill(row, "sword", tx, UiKit.Hex("#7a5a1a"), UiKit.Hex("#faebc7"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                     if (it.AlsoDefend.HasValue) { string tx = (terse ? "ブロック" : "同時にブロック") + it.AlsoDefend.Value; MiniPill(row, "shield", tx, UiKit.Hex("#2f5a7a"), UiKit.Hex("#d6e6fa"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                     if (it.AlsoDestroySet == true) { string tx = terse ? "先に壊す" : "先にからくりを壊す"; MiniPill(row, "exhaust", tx, UiKit.Hex("#7a2a2a"), UiKit.Hex("#fadbd6"), null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
