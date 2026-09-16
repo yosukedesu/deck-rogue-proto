@@ -225,6 +225,7 @@ namespace DeckRogue.Game
         /// -state "key=value;key=value" で指定。キー:
         ///   phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost  act=1..3  deck=<deckId>  relics=<id,id>  hp=<%>  gold=<n>  difficulty=<n>  leader=<id>
         ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
+        ///   fire=1 (確認の窓で最初の候補を発動してコマ送り。fireshots=枚数・fireevery=Nフレームごと。2026-09-17)
         ///   viewmap=1  viewdeck=1  log=1  name=<shot名>
         /// act/deck/relics/hp/gold/difficulty のどれかがあればチェックポイント開始 (CreateDebugCheckpointRun)、無ければ通常開始
         /// </summary>
@@ -434,6 +435,26 @@ namespace DeckRogue.Game
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
                 Time.captureFramerate = 0;
                 yield return WaitPresentation();
+            }
+            // fire=1: 確認の窓が開いていれば最初の候補を発動して、からくりの演出 (札の飛び出し・判・着弾) をコマ送りで撮る (2026-09-17)。fireshots=枚数・fireevery=Nフレームごと
+            if (Get("fire") == "1" && g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction)
+            {
+                var stF = g.Rs.Combat;
+                var winF = Effects.WindowFromPending(stF);
+                var cands = winF != null ? Effects.UsableSetCards(stF, winF) : null;
+                if (cands != null && cands.Count > 0)
+                {
+                    Debug.Log("[Autopilot] fire " + cands[0].Def.Name);
+                    Time.captureFramerate = 60;
+                    Presenter.MarkSeen(g.Rs.Combat);
+                    g.DoCombat(new Command_ConfirmReaction { Fire = true, CardUid = cands[0].Uid });
+                    int shotsN = 6; int.TryParse(Get("fireshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 6;
+                    int every = 6; int.TryParse(Get("fireevery") ?? "", out every); if (every <= 0) every = 6;
+                    for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("fire-" + i, 1); }
+                    Time.captureFramerate = 0;
+                    yield return WaitPresentation();
+                }
+                else Debug.LogWarning("[Autopilot] fire: 発動できる仕込み札が無い");
             }
             // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)
             if (Get("hideui") == "1" && g.ScreenRoot != null && g.Battle != null)

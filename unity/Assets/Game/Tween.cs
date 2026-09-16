@@ -290,6 +290,81 @@ namespace DeckRogue.Game
             Run(0.4f, k => { if (rt == null) return; rt.localScale = Vector3.one * (0.5f + 0.9f * Apply(Ease.OutBack, k)); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
+        /// <summary>判 (2026-09-17 リアクション発動の演出): 紙の札に一言。1.5倍から押し当てるように縮んで止まり、hold の後に消える</summary>
+        public static void Stamp(RectTransform layer, Vector2 pos, string text, Color paper, Color ink, Color? edge = null, int size = 22, float hold = 0.55f, float rot = -8f)
+        {
+            if (layer == null) return;
+            var rt = UiKit.NewRect("stamp", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            float w = 30f + text.Length * size * 1.05f, h = size + 18f;
+            rt.sizeDelta = new Vector2(w, h);
+            rt.anchoredPosition = pos;
+            rt.localRotation = Quaternion.Euler(0f, 0f, rot);
+            if (edge.HasValue)
+            {
+                var e = PaperFx.Sheet(rt, PaperFx.Tag, "edge", edge.Value);
+                UiKit.Stretch(e.rectTransform, -3f, -3f, -3f, -3f);
+                e.raycastTarget = false;
+            }
+            var bg = PaperFx.Sheet(rt, PaperFx.Tag, "paper", paper);
+            UiKit.Stretch(bg.rectTransform, 0f, 0f, 0f, 0f);
+            bg.raycastTarget = false;
+            var t = UiKit.Deco(rt, text, size, ink, TextAnchor.MiddleCenter);
+            UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
+            t.characterSpacing = 6f;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+            rt.localScale = Vector3.one * 1.5f;
+            Run(0.16f, k => { if (rt != null) rt.localScale = Vector3.one * (1.5f - 0.5f * Apply(Ease.OutCubic, k)); }, Ease.Linear, () =>
+            {
+                After(hold, () => Run(0.25f, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
+            });
+        }
+
+        /// <summary>輪が広がって消える (着弾・発動の余韻)</summary>
+        public static void RingBurst(RectTransform layer, Vector2 pos, Color color, float size = 120f, float dur = 0.35f)
+        {
+            if (layer == null) return;
+            var rt = UiKit.NewRect("ring", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = pos;
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = ThemeFx.Ring(); img.preserveAspect = true; img.color = color; img.raycastTarget = false;
+            rt.localScale = Vector3.one * 0.3f;
+            Run(dur, k => { if (rt == null) return; rt.localScale = Vector3.one * (0.3f + 1.0f * k); img.color = new Color(color.r, color.g, color.b, color.a * (1f - k * k)); }, Ease.OutQuad, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>×印 (打ち消し): 2本の棒が交差して現れ、少し残って消える</summary>
+        public static void CrossMark(RectTransform layer, Vector2 pos, Color color, float size = 64f)
+        {
+            if (layer == null) return;
+            var rt = UiKit.NewRect("cross", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = pos;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+            for (int i = 0; i < 2; i++)
+            {
+                var bar = UiKit.NewRect("bar", rt);
+                bar.anchorMin = bar.anchorMax = new Vector2(0.5f, 0.5f);
+                bar.sizeDelta = new Vector2(size, size * 0.16f);
+                bar.localRotation = Quaternion.Euler(0f, 0f, i == 0 ? 45f : -45f);
+                var img = bar.gameObject.AddComponent<Image>();
+                img.color = color; img.raycastTarget = false;
+                var shadow = UiKit.NewRect("shadow", bar);
+                UiKit.Stretch(shadow, -2f, -2f, -2f, -2f);
+                var sh = shadow.gameObject.AddComponent<Image>(); sh.color = new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.9f); sh.raycastTarget = false;
+                shadow.SetAsFirstSibling();
+            }
+            rt.localScale = Vector3.one * 1.8f;
+            Run(0.14f, k => { if (rt != null) rt.localScale = Vector3.one * (1.8f - 0.8f * Apply(Ease.OutCubic, k)); }, Ease.Linear, () =>
+            {
+                After(0.5f, () => Run(0.25f, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
+            });
+        }
+
         /// <summary>踏み込み: 前へ出て戻る (敵の攻撃・自分の攻撃)</summary>
         public static void Lunge(RectTransform rt, Vector2 dir, float dur = 0.28f)
         {

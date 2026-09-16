@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using DeckRogue.Engine;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using DeckRogue.Engine.Generated;
 
 namespace DeckRogue.Game
@@ -82,6 +83,7 @@ namespace DeckRogue.Game
         {
             var log = combat.EventLog;
             var fx = g.FxLayer;
+            var visibleBoard = _seenCombat as GameState;   // 順送りは古い盤面 (仕込み札のトークンがまだ見えている) の上で見せる
             Canvas.ForceUpdateCanvases();
             var block = UiKit.NewRect("inputblock", fx);
             UiKit.Stretch(block, 0f, 0f, 0f, 0f);
@@ -100,10 +102,13 @@ namespace DeckRogue.Game
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
                 else if (IsStatusEvent(ev)) gap = 0.3f;
-                else if (TableSound(ev) != null) gap = 0.12f;   // 表 (audio.json) で音だけ鳴るイベント (罠の発動・期限切れ・打ち消し・撃破…)
+                else if (ev is GameEvent_ReactionTriggered) gap = 0.55f;   // 札が飛んで着弾するまで待ってから返しのダメージ (2026-09-17)
+                else if (IsTrapEvent(ev)) gap = 0.3f;
+                else if (TableSound(ev) != null) gap = 0.12f;   // 表 (audio.json) で音だけ鳴るイベント (撃破・分裂…)
                 else continue;
                 var captured = ev;
-                Tween.After(delay, () => { try { Show(g, fx, captured, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
+                var ctx = ReactionContextFor(g, log, i, visibleBoard);
+                Tween.After(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
             }
             _seen = log.Count;
@@ -134,14 +139,139 @@ namespace DeckRogue.Game
             {
                 var ev = log[i];
                 if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
-                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || TableSound(ev) != null)) continue;
+                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
+                var ctx = ReactionContextFor(g, log, i, combat);
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
-                Tween.After(delay, () => { try { Show(g, fx, captured, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
-                delay += 0.12f;
+                Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
+                delay += ev is GameEvent_ReactionTriggered ? 0.45f : 0.12f;
             }
             _seen = log.Count;
             _seenCombat = combat;
+        }
+
+        // ---- からくり (仕込み札) の演出 (2026-09-17 ユーザー「戦闘の演出で足りていないもの」→ ⑤ リアクション発動から) ----
+        // 発動: 札の幽霊が仕込み枠から跳ねて飛び出し、返し/打ち消しなら行動している敵の意図の札へ、守りなら自分へ。着弾で青緑の輪と星。枠の上に「発動」の判。
+        // 打ち消し: 敵の意図の札に真鍮の×が押され、札が揺れる。温存: 「温存」の判 (灰)。期限切れ: 札が捨て札へ落ちる。壊し: 札が砕ける。空振り: 小さく「空振り」。
+
+        static void ShowTrap(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx)
+        {
+            var playerRt = g.Anchor("player");
+            Vector2 slotPos = ctx.Slot != null ? Tween.CenterIn(ctx.Slot, fx) : (playerRt != null ? Tween.CenterIn(playerRt, fx) : Vector2.zero);
+            // 判と一言の置き場: 枠が画面の上半分 (スマホの左上の帯) なら下に、下半分 (PC の自分の札) なら上に
+            Vector2 stampPos = slotPos + new Vector2(0f, slotPos.y > 0f ? -74f : 74f);
+            RectTransform enemyPan = ctx.EnemyIndex >= 0 ? g.Anchor("enemy" + ctx.EnemyIndex) : null;
+            RectTransform intentTag = enemyPan != null ? enemyPan.Find("intent-tag") as RectTransform : null;
+            switch (ev)
+            {
+                case GameEvent_ReactionTriggered rt:
+                {
+                    Audio.Key("ReactionTriggered");
+                    CardDef def = null;
+                    try { def = Content.GetCardDef(rt.CardId); } catch (Exception) { }
+                    bool negate = false, guard = false, strike = false;
+                    if (def != null)
+                        foreach (var e in def.Effects)
+                        {
+                            if (e.Effect == "negate") negate = true;
+                            else if (e.Effect == "gainBlock" || e.Effect == "gainIceBlock" || e.Effect == "gainHp") guard = true;
+                            else if (e.Effect != null && (e.Effect == "counter" || e.Effect.StartsWith("dealDamage") || e.Effect == "applyBurn" || e.Effect == "exposeEnemy" || e.Effect == "weakenEnemy" || e.Effect == "staggerEnemy")) strike = true;
+                        }
+                    // 行き先: 返し・打ち消しは敵 (意図の札があればそこ)、守りは自分。どちらも無い札は自分
+                    RectTransform dest = (negate || strike) ? (intentTag ?? enemyPan) : null;
+                    if (dest == null) { var ps = g.Battle != null ? g.Battle.PlayerSprite() : null; dest = ps ?? playerRt; }
+                    Vector2 to = dest != null ? Tween.CenterIn(dest, fx) + (dest == intentTag ? Vector2.zero : new Vector2(0f, 40f)) : slotPos + new Vector2(0f, 120f);
+                    Tween.Stamp(fx, stampPos, "発動", PaperFx.BrassLight, PaperFx.Ink, PaperFx.Brass);
+                    Tween.RingBurst(fx, slotPos, PaperFx.Mana, 140f, 0.4f);
+                    var ghost = GhostToken(fx, slotPos, rt.CardId, def);
+                    // 跳ねてから飛ぶ。着弾で青緑の星と輪、打ち消しなら×
+                    Tween.Run(0.14f, k => { if (ghost != null) ghost.localScale = Vector3.one * (1f + 0.35f * Mathf.Sin(k * Mathf.PI)); }, Ease.Linear, () =>
+                    {
+                        if (ghost == null) return;
+                        Tween.Move(ghost, to, 0.3f, Ease.InOutQuad, () =>
+                        {
+                            if (ghost == null) return;
+                            Tween.RingBurst(fx, to, PaperFx.Mana, 150f, 0.35f);
+                            Tween.IconBurst(fx, to, "set", new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f), 96f);
+                            // 打ち消しの×は ActionNegated の側で押す (二重にしない)
+                            var cg = ghost.GetComponent<CanvasGroup>() ?? ghost.gameObject.AddComponent<CanvasGroup>();
+                            var gh = ghost;
+                            Tween.Run(0.18f, k => { if (gh != null) { cg.alpha = 1f - k; gh.localScale = Vector3.one * (1f + 0.4f * k); } }, Ease.Linear, () => { if (gh != null) UnityEngine.Object.Destroy(gh.gameObject); });
+                        });
+                    });
+                    break;
+                }
+                case GameEvent_ActionNegated _:
+                {
+                    Audio.Key("ActionNegated");
+                    var at = intentTag ?? enemyPan;
+                    if (at == null) return;
+                    var pos = Tween.CenterIn(at, fx);
+                    Tween.CrossMark(fx, pos, PaperFx.Brass, 64f);
+                    Tween.Shake(at, 8f, 0.35f);
+                    // 一言は札の下に (意図の札は画面の上の方にあるので上に出すと切れる)
+                    Tween.Float(fx, pos + new Vector2(0f, -64f), "打ち消し", PaperFx.ManaLight, 26, 30f, 0.9f);
+                    break;
+                }
+                case GameEvent_ReactionHeld _:
+                    Audio.Key("ReactionHeld");
+                    Tween.Stamp(fx, stampPos, "温存", PaperFx.Paper2, PaperFx.InkSoft, null, 20, 0.4f, -5f);
+                    break;
+                case GameEvent_SetCardExpired ex:
+                {
+                    Audio.Key("SetCardExpired");
+                    CardDef def = null;
+                    try { def = Content.GetCardDef(ex.CardId); } catch (Exception) { }
+                    var ghost = GhostToken(fx, slotPos, ex.CardId, def);
+                    var pile = g.Anchor(ex.To == "hand" ? "player" : "pile-discard");
+                    Vector2 to = pile != null ? Tween.CenterIn(pile, fx) : slotPos + new Vector2(60f, -160f);
+                    var cg = ghost.gameObject.AddComponent<CanvasGroup>();
+                    var gh = ghost;
+                    Tween.Float(fx, stampPos, ex.To == "hand" ? "手札へ戻る" : "期限切れ", PaperFx.PaperDim, 22, 30f, 0.9f);
+                    Tween.Run(0.55f, k => { if (gh == null) return; gh.anchoredPosition = Vector2.Lerp(slotPos, to, Tween.Apply(Ease.InQuad, k)) + new Vector2(0f, 40f * Mathf.Sin(k * Mathf.PI)); gh.localRotation = Quaternion.Euler(0f, 0f, 28f * k); cg.alpha = 1f - k * k; }, Ease.Linear, () => { if (gh != null) UnityEngine.Object.Destroy(gh.gameObject); });
+                    break;
+                }
+                case GameEvent_SetCardDestroyed sd:
+                {
+                    Audio.Key("SetCardDestroyed");
+                    CardDef def = null;
+                    try { def = Content.GetCardDef(sd.CardId); } catch (Exception) { }
+                    var ghost = GhostToken(fx, slotPos, sd.CardId, def);
+                    var cg = ghost.gameObject.AddComponent<CanvasGroup>();
+                    var gh = ghost;
+                    Stage.Shake(6f, 0.2f);
+                    Tween.RingBurst(fx, slotPos, PaperFx.Rose, 160f, 0.4f);
+                    Tween.Float(fx, stampPos, "壊された", PaperFx.Rose, 24, 36f, 0.9f);
+                    Tween.Run(0.3f, k => { if (gh == null) return; gh.localScale = Vector3.one * (1f + 0.6f * k); gh.localRotation = Quaternion.Euler(0f, 0f, -18f * k); cg.alpha = 1f - k; }, Ease.OutQuad, () => { if (gh != null) UnityEngine.Object.Destroy(gh.gameObject); });
+                    break;
+                }
+                case GameEvent_ReactionWhiffed _:
+                    Tween.Float(fx, stampPos, "空振り", PaperFx.PaperDim, 20, 26f, 0.7f);
+                    break;
+            }
+        }
+
+        /// <summary>仕込み札の幽霊 (68×74 のトークンの写し): 紙の縁に挿絵。飛ばす・落とす・砕くの素材</summary>
+        static RectTransform GhostToken(RectTransform fx, Vector2 pos, string cardId, CardDef def)
+        {
+            var rt = UiKit.NewRect("ghost-token", fx);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(BattleScreen.PhoneTokenW, BattleScreen.PhoneTokenH);
+            rt.anchoredPosition = pos;
+            var edge = PaperFx.Sheet(rt, PaperFx.Tag, "edge", PaperFx.Mana);
+            UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f); edge.raycastTarget = false;
+            var paper = PaperFx.Sheet(rt, PaperFx.Tag, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f); paper.raycastTarget = false;
+            var pic = UiKit.NewRect("pic", rt);
+            UiKit.Anchor(pic, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(3f, -44f), new Vector2(-3f, -3f));
+            var pimg = pic.gameObject.AddComponent<Image>();
+            pimg.sprite = ThemeFx.CardArt(cardId, def != null ? Theme.CardTypeColor(def.Type) : PaperFx.Sand); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            var band = UiKit.Pan(rt, PaperFx.ManaInk, "band");
+            UiKit.Anchor(band.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1f, 27f)); band.raycastTarget = false;
+            var name = UiKit.Deco(rt, def != null ? def.Name : "", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
+            UiKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 1f), new Vector2(0f, 27f));
+            name.textWrappingMode = TextWrappingModes.NoWrap; name.overflowMode = TextOverflowModes.Ellipsis;
+            return rt;
         }
 
         /// <summary>画面中央の帯 (ターン開始・敵の番)。0.9 秒で消える</summary>
@@ -168,12 +298,56 @@ namespace DeckRogue.Game
         static string TableSound(GameEvent ev)
         {
             if (ev == null) return null;
-            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev)) return null;
+            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev)) return null;
             // 絵の側 (BattleView) が札の飛び・撃破の消えに合わせて鳴らすイベントは、ここでは二重に鳴らさない
             if (ev is GameEvent_CardSet || ev is GameEvent_CardsDrawn || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled) return null;
             var n = ev.GetType().Name;
             if (n.StartsWith("GameEvent_")) n = n.Substring("GameEvent_".Length);
             return Audio.HasKey(n) ? n : null;
+        }
+
+        /// <summary>からくり (仕込み札) の出来事: 発動・温存・期限切れ・壊し・空振り・打ち消し。絵と音を Show で (2026-09-17 リアクション発動の演出)</summary>
+        static bool IsTrapEvent(GameEvent ev)
+        {
+            return ev is GameEvent_ReactionTriggered || ev is GameEvent_ReactionHeld || ev is GameEvent_SetCardExpired || ev is GameEvent_SetCardDestroyed || ev is GameEvent_ReactionWhiffed || ev is GameEvent_ActionNegated;
+        }
+
+        /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; }
+        static ReactionCtx ReactionContextFor(GameRoot g, IReadOnlyList<GameEvent> log, int i, GameState visible)
+        {
+            var ev = log[i];
+            string cardId = (ev as GameEvent_ReactionTriggered)?.CardId ?? (ev as GameEvent_SetCardExpired)?.CardId ?? (ev as GameEvent_SetCardDestroyed)?.CardId ?? (ev as GameEvent_ReactionWhiffed)?.CardId;
+            if (cardId == null && !(ev is GameEvent_ReactionHeld) && !(ev is GameEvent_ActionNegated)) return null;
+            var ctx = new ReactionCtx();
+            // 枠: 見えている盤面 (順送りなら古い盤面) の仕込み札から。無ければ今の盤面の最初の空き枠 (札が抜けた跡)
+            var cur = g.Rs != null ? g.Rs.Combat : null;
+            if (cardId != null)
+            {
+                foreach (var st in new[] { visible, cur })
+                {
+                    if (st == null || ctx.Slot != null) continue;
+                    for (int k = 0; k < st.Player.SetCards.Count; k++) if (st.Player.SetCards[k].Def.Id == cardId) { ctx.Slot = g.Anchor("setslot" + k); if (ctx.Slot != null) break; }
+                }
+                if (ctx.Slot == null && cur != null) ctx.Slot = g.Anchor("setslot" + Math.Min(cur.Player.SetCards.Count, Math.Max(0, cur.Player.SetSlots - 1)));
+            }
+            // 行動している敵: 前の窓は直後の EnemyActionExecuting、後の窓は直前の EnemyActionExecuting
+            if (ev is GameEvent_ActionNegated an) ctx.EnemyIndex = an.EnemyIndex;
+            else if (ev is GameEvent_ReactionHeld rh) ctx.EnemyIndex = rh.EnemyIndex;
+            else
+            {
+                // 窓の向き: 前の窓 (onAttackIncoming・onEnemyAction) は行動の実行が後に、後の窓 (onAttacked・onEnemyBuffed・onEnemyDefended) は前に来る
+                bool post = false;
+                if (cardId != null)
+                {
+                    try { var d = Content.GetCardDef(cardId); foreach (var e in d.Effects) if (e.Trigger == "onAttacked" || e.Trigger == "onEnemyBuffed" || e.Trigger == "onEnemyDefended") post = true; } catch (Exception) { }
+                }
+                if (post) { for (int k = i - 1; k >= 0 && k >= i - 12 && ctx.EnemyIndex < 0; k--) { if (log[k] is GameEvent_EnemyActionExecuting ex) ctx.EnemyIndex = ex.EnemyIndex; else if (log[k] is GameEvent_TurnEnded) break; } }
+                else { for (int k = i + 1; k < log.Count && k <= i + 12 && ctx.EnemyIndex < 0; k++) { if (log[k] is GameEvent_EnemyActionExecuting ex) ctx.EnemyIndex = ex.EnemyIndex; else if (log[k] is GameEvent_ActionNegated an2) ctx.EnemyIndex = an2.EnemyIndex; else if (log[k] is GameEvent_ReactionTriggered || log[k] is GameEvent_TurnStarted) break; } }   // 打ち消された行動は実行されない (ActionNegated が先に来る)
+                if (ctx.EnemyIndex < 0) for (int k = i - 1; k >= 0 && k >= i - 12 && ctx.EnemyIndex < 0; k--) { if (log[k] is GameEvent_EnemyActionExecuting ex) ctx.EnemyIndex = ex.EnemyIndex; else if (log[k] is GameEvent_TurnEnded) break; }
+                if (ctx.EnemyIndex < 0) for (int k = i + 1; k < log.Count && k <= i + 8; k++) if (log[k] is GameEvent_DamageDealt dd && dd.Source == "player") { ctx.EnemyIndex = dd.EnemyIndex ?? -1; break; }
+            }
+            return ctx;
         }
 
         static bool IsStatusEvent(GameEvent ev)
@@ -191,10 +365,11 @@ namespace DeckRogue.Game
             }
         }
 
-        static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp)
+        static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp, ReactionCtx ctx = null)
         {
             var key = TableSound(ev);
             if (key != null) { Audio.Key(key); return; }
+            if (IsTrapEvent(ev)) { ShowTrap(g, fx, ev, ctx ?? new ReactionCtx()); return; }
             switch (ev)
             {
                 case GameEvent_DamageDealt d:

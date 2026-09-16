@@ -1014,7 +1014,7 @@ namespace DeckRogue.Game
         // 画面の左の一角に上から からくり (仕込み札のトークン 68×74)／置物 (付箋 168×40)／自分の札 (HP＋ブロック・被ダメ予測・資源) を積む。
         // 自分の札の下端は敵の札と同じ線 (StatusLineY = 手札のすぐ上)。資源の札が3つ以上なら札が2行ぶん高くなり、置物は1行に詰める。
         // 座標はキャンバスの左上から測った値 (S25 相当 1462×675) を area (左下が feet.x-130, StatusLineY) の座標へ写す。
-        const float PhoneTokenW = 68f, PhoneTokenH = 74f, PhoneChipW = 168f, PhoneChipH = 40f;
+        public const float PhoneTokenW = 68f, PhoneTokenH = 74f, PhoneChipW = 168f, PhoneChipH = 40f;
 
         static void PhoneSelfColumn(GameRoot g, RectTransform area, GameState st, int shownHp)
         {
