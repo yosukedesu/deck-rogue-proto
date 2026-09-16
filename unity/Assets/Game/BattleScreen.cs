@@ -168,7 +168,7 @@ namespace DeckRogue.Game
         {
             var rt = UiKit.NewRect("tag", parent);
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = PaperFx.Tag; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 1f;
+            img.sprite = tint.HasValue ? PaperFx.Tag : PaperFx.Tag2; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 1f;   // 情報の札は紙 (濃)。2026-09-16
             img.color = tint ?? Color.white;
             img.raycastTarget = false;
             var hg = UiKit.Horz(rt, 6, 0);
@@ -319,7 +319,7 @@ namespace DeckRogue.Game
                     Tween.Run(1.2f, k => { if (gimg != null) { var c = gimg.color; c.a = 0.75f + 0.25f * Mathf.Sin((k + t0) * Mathf.PI * 2f); gimg.color = c; } }, Ease.Linear, null);
                 }
             }
-            var paper = PaperFx.Sheet(strip, PaperFx.Tag, "paper", alive ? Color.white : new Color(0.8f, 0.8f, 0.8f, 1f));
+            var paper = PaperFx.Sheet(strip, PaperFx.Tag2, "paper", alive ? Color.white : new Color(0.8f, 0.8f, 0.8f, 1f));   // 帳面は紙 (濃)
             UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
             paper.raycastTarget = true;
             // 札もタップの的 (絵と同じ = 狙う)。説明は絵と同じツールチップ
@@ -422,7 +422,7 @@ namespace DeckRogue.Game
                     bool terse = ph || riders >= 2;
                     int rsz = ph ? 13 : 15;
                     if (inflict != null) { string tx = (terse ? "" : "あなたに") + CardText.StatusName(inflict.Status) + inflict.Amount; MiniPill(row, "exposed", tx, PaperFx.PlumInk, PaperFx.PlumLight, null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
-                    if (it.AlsoBuff.HasValue) { string tx = (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value; MiniPill(row, "sword", tx, PaperFx.BrassInk, PaperFx.BrassLight, null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
+                    if (it.AlsoBuff.HasValue) { string tx = (terse ? "筋力+" : "同時に筋力+") + it.AlsoBuff.Value; MiniPill(row, "sword", tx, PaperFx.BrassInk, PaperFx.Paper2, null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                     if (it.AlsoDefend.HasValue) { string tx = (terse ? "ブロック" : "同時にブロック") + it.AlsoDefend.Value; MiniPill(row, "shield", tx, PaperFx.SkyInk, PaperFx.SkyLight, null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                     if (it.AlsoDestroySet == true) { string tx = terse ? "先に壊す" : "先にからくりを壊す"; MiniPill(row, "exhaust", tx, PaperFx.BadInk, PaperFx.RoseLight, null, rsz, narrow); rowUsed += MiniPillW(tx, rsz) + rowGap; }
                 }
@@ -497,7 +497,7 @@ namespace DeckRogue.Game
                 if (MiniPillW(full) <= avail) text = full;
                 else if (MiniPillW(whenShort + "行動が変わる") <= avail) text = whenShort + "行動が変わる";
                 if (text == null) continue;
-                MiniPill(row, first != null ? IntentIcon(first.Kind) : "exposed", text, PaperFx.BrassInk, PaperFx.BrassLight, tip, 13, true);
+                MiniPill(row, first != null ? IntentIcon(first.Kind) : "exposed", text, PaperFx.BrassInk, PaperFx.Paper2, tip, 13, true);   // 予告は紙 (濃)＋真鍮の墨 (塗りの真鍮は決定と選択だけ。2026-09-16)
                 avail -= MiniPillW(text) + 6f;
             }
         }
@@ -835,7 +835,7 @@ namespace DeckRogue.Game
             float w = secA + secB + secC, h = StripH;
             var strip = UiKit.NewRect("hpwrap", area);
             UiKit.Anchor(strip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(40f - ax, 0f), new Vector2(40f - ax + w, h));
-            var paper = PaperFx.Sheet(strip, PaperFx.Tag, "paper");
+            var paper = PaperFx.Sheet(strip, PaperFx.Tag2, "paper");
             UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
             paper.raycastTarget = false;
             // A: HP・被ダメ・資源
@@ -916,7 +916,7 @@ namespace DeckRogue.Game
                 var more = UiKit.NewRect("more", permRow);
                 int cx = show % cols, cy = show / cols;
                 UiKit.Anchor(more, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(cx * (chipW + 8f), -top - cy * (PhoneChipH + 6f) - PhoneChipH), new Vector2(cx * (chipW + 8f) + 72f, -top - cy * (PhoneChipH + 6f)));
-                var mImg = PaperFx.Sheet(more, PaperFx.Tag, "paper");
+                var mImg = PaperFx.Sheet(more, PaperFx.Tag2, "paper");
                 UiKit.Stretch(mImg.rectTransform, 0f, 0f, 0f, 0f);
                 mImg.raycastTarget = true;
                 var mt = UiKit.Txt(more, "+" + (perms.Count - show) + " …", 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
@@ -1006,7 +1006,7 @@ namespace DeckRogue.Game
             float stripTop = cs.y - ay - stripH;
             var strip = UiKit.NewRect("hpwrap", area);
             place(strip, left, stripTop, stripW, stripH);
-            var paper = PaperFx.Sheet(strip, PaperFx.Tag, "paper");
+            var paper = PaperFx.Sheet(strip, PaperFx.Tag2, "paper");
             UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
             paper.raycastTarget = false;
             var hpRt = UiKit.NewRect("hp", strip);
@@ -1047,7 +1047,7 @@ namespace DeckRogue.Game
                 var gimg = edge; float t0 = UnityEngine.Random.value;
                 Tween.Run(1.2f, k => { if (gimg != null) { var c = gimg.color; c.a = 0.75f + 0.25f * Mathf.Sin((k + t0) * Mathf.PI * 2f); gimg.color = c; } }, Ease.Linear, null);
             }
-            var paper = PaperFx.Sheet(slot, PaperFx.Tag, "paper");
+            var paper = PaperFx.Sheet(slot, PaperFx.Tag2, "paper");
             UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
             paper.raycastTarget = true;
             var frame = UiKit.Pan(slot, PaperFx.Ink, "frame");
@@ -1089,7 +1089,7 @@ namespace DeckRogue.Game
         /// <summary>置物の付箋 (168×40): 挿絵 48×29 + 名前 (長い名前は…)。タップで本文</summary>
         static void PhonePermChip(RectTransform chip, CardInstance q)
         {
-            var img = PaperFx.Sheet(chip, PaperFx.Tag, "paper");
+            var img = PaperFx.Sheet(chip, PaperFx.Tag2, "paper");
             UiKit.Stretch(img.rectTransform, 0f, 0f, 0f, 0f);
             img.raycastTarget = true;
             var frame = UiKit.Pan(chip, PaperFx.Ink, "frame");
@@ -1283,7 +1283,7 @@ namespace DeckRogue.Game
             if (anchorName != null) g.RegisterAnchor(anchorName, rt);
             UiKit.Anchor(rt, anchor, anchor, offset, offset + new Vector2(count2 >= 0 ? 190f : 130f, 40f));
             rt.localRotation = Quaternion.Euler(0f, 0f, anchor.x > 0.5f ? 1f : -1f);
-            var frame = PaperFx.Sheet(rt, PaperFx.Tag, "paper");
+            var frame = PaperFx.Sheet(rt, PaperFx.Tag2, "paper");
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
             frame.raycastTarget = onClick != null;
             if (onClick != null)

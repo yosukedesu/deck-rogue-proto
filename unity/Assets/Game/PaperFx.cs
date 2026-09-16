@@ -123,6 +123,8 @@ namespace DeckRogue.Game
         public static Sprite Panel { get { return Nine("paper_panel", 48, 12, 14, PanelBands, false); } }
         /// <summary>紙の札 (小さな帯): 墨2・紙。角丸 8</summary>
         public static Sprite Tag { get { return Nine("paper_tag", 32, 8, 10, TagBands, false); } }
+        /// <summary>紙 (濃) の札: 情報の段 (帳面・上部バーの札・からくりのトークン・付箋・山札の札)。手札と確認の窓 (紙) を一段前に出す (2026-09-16 戦闘画面の色の序列)</summary>
+        public static Sprite Tag2 { get { return Nine("paper_tag2", 32, 8, 10, Tag2Bands, false); } }
         /// <summary>紙のボタン: 墨2・紙、下に厚み (墨 50%) 4px。角丸 10</summary>
         public static Sprite Button { get { return Nine("paper_button", 40, 10, 12, TagBands, true); } }
         /// <summary>カードの面: パネルと同じ二重線。角丸 14</summary>
@@ -147,6 +149,11 @@ namespace DeckRogue.Game
         {
             if (d < 2f) return Ink;
             return Paper;
+        }
+        static Color Tag2Bands(float d)
+        {
+            if (d < 2f) return Ink;
+            return Paper2;
         }
 
         static Sprite Nine(string name, int size, int radius, int border, Func<float, Color> bands, bool thickBottom)
