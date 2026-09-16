@@ -102,7 +102,7 @@ namespace DeckRogue.Game
             BattleScreen.SetSize(b, 56f, 44f);
         }
 
-        /// <summary>スマホのメニュー (≡ の中身): マップ・ログ (戦闘)・メモ・レポート。外側を触ると閉じる</summary>
+        /// <summary>スマホのメニュー (≡ の中身): マップ・デッキ一覧・ログ (戦闘)・メモ・レポート。外側を触ると閉じる</summary>
         public static void Menu(GameRoot g, RectTransform root)
         {
             var catcher = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.25f), "menu-catcher");
@@ -113,6 +113,8 @@ namespace DeckRogue.Game
             bool combat = g.Rs != null && g.Rs.Phase == RunPhases.Combat;
             var items = new List<KeyValuePair<string, Action>>();
             if (g.Rs != null && g.Rs.Phase != RunPhases.Map) items.Add(new KeyValuePair<string, Action>("マップを見る", delegate { g.MenuOpen = false; g.ViewMap = true; g.ViewDeck = false; g.Rebuild(); }));
+            // デッキ一覧 (2026-09-16 ユーザー「メニューにデッキ一覧ボタンを追加」): 戦闘中は上部バーにデッキのボタンが無いので、ここが唯一の入口
+            if (g.Rs != null) items.Add(new KeyValuePair<string, Action>(g.ViewDeck ? "デッキ一覧を閉じる" : "デッキ一覧（" + g.Rs.Deck.Count + "枚）", delegate { g.MenuOpen = false; g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }));
             if (combat) items.Add(new KeyValuePair<string, Action>(g.ShowLog ? "ログを閉じる" : "戦闘ログ", delegate { g.MenuOpen = false; g.ShowLog = !g.ShowLog; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>(Feedback.Notes.Count > 0 ? "メモを書く（" + Feedback.Notes.Count + "件）" : "メモを書く", delegate { g.MenuOpen = false; Feedback.MemoOpen = true; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>("レポートを書き出す", delegate { g.MenuOpen = false; FeedbackUi.ExportNow(g); }));

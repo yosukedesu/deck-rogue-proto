@@ -692,6 +692,7 @@ namespace DeckRogue.Game
                 // 戦闘中の Rebuild は ScreenRoot を掃除しない = ScreenRoot 直下に置いた地図が残っていた。UI 層は毎回 ClearUi で消える)
                 var over = Battle != null && Battle.UiLayer != null ? Battle.UiLayer : ScreenRoot;
                 if (ViewMap) MapScreen.Overlay(this, over);
+                else if (ViewDeck) RunUi.DeckViewer(this, over);   // ≡ の「デッキ一覧」(2026-09-16)。他の画面と同じく地図が優先
                 if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, over);
                 if (MenuOpen) RunUi.Menu(this, over);
                 if (Confirm != null) RunUi.ConfirmDialog(this, over);
