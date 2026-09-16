@@ -276,10 +276,11 @@ namespace DeckRogue.Game
                 switch (phase)
                 {
                     case "combat":
-                        if (Get("boss") == "1")
-                        {   // 幕ボスの節に立ってから始める (絵の大きさ・倍率がボスの値になる。2026-09-15)
+                        if (Get("boss") == "1" || Get("elite") == "1")
+                        {   // 幕ボス (elite=1 なら強個体) の節に立ってから始める (絵の大きさ・倍率・名前の帯がその値になる。2026-09-15)
+                            string want = Get("boss") == "1" ? MapNodeTypes.Boss : MapNodeTypes.Elite;
                             for (int row = 0; row < rs.Map.Count; row++) for (int col = 0; col < rs.Map[row].Count; col++)
-                                    if (rs.Map[row][col].Type == MapNodeTypes.Boss) { rs = rs with { Row = row, Col = col }; row = rs.Map.Count; break; }
+                                    if (rs.Map[row][col].Type == want) { rs = rs with { Row = row, Col = col }; row = rs.Map.Count; break; }
                         }
                         if (Get("enemy") != null) g.Rs = DeckRogue.Engine.Run.DebugLaunchCombat(rs, Get("enemy"));
                         else
@@ -345,6 +346,11 @@ namespace DeckRogue.Game
                         var enemies = new List<EnemyState>(st1.Enemies); enemies[0] = e0;
                         g.Rs = g.Rs with { Combat = st1 with { Enemies = enemies } };
                     }
+                    if (Get("penergy") != null)
+                    {   // 自分のエナジー (出せない札の沈み・X の全払いの確認)
+                        int v; var st4 = g.Rs.Combat;
+                        if (int.TryParse(Get("penergy"), out v)) g.Rs = g.Rs with { Combat = st4 with { Player = st4.Player with { Energy = Math.Max(0, v) } } };
+                    }
                     if (Get("pblock") != null)
                     {   // 自分のブロック (敵の攻撃を盾で受ける演出の確認)
                         int v; var st3 = g.Rs.Combat;
@@ -357,7 +363,7 @@ namespace DeckRogue.Game
                         int n = 0;
                         foreach (var id in Get("hand").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0))
                             list.Add(new CardInstance { Uid = id + "#dbgh" + (n++), Def = Content.GetCardDef(id) });
-                        g.Rs = g.Rs with { Combat = st2 with { Player = st2.Player with { Hand = list, Energy = Math.Max(st2.Player.Energy, 5) } } };
+                        g.Rs = g.Rs with { Combat = st2 with { Player = st2.Player with { Hand = list, Energy = Get("penergy") != null ? st2.Player.Energy : Math.Max(st2.Player.Energy, 5) } } };
                     }
                 }
                 catch (Exception ex) { Debug.LogError("[Autopilot] state: perms/sets " + ex.Message); }
@@ -414,6 +420,18 @@ namespace DeckRogue.Game
             }
             if (Get("memo") == "1") { Feedback.MemoOpen = true; Feedback.MemoDraft = Get("memotext") ?? ""; }
             g.Rebuild();
+            // entershots=N: 戦闘の始まり (敵の登場・強個体/幕ボスの名前の帯) をコマ送りで撮る (2026-09-17 ⑨)。状態へ跳んだ直後は Play が呼ばれないので明示的に鳴らす
+            if (Get("entershots") != null && g.Rs != null && g.Rs.Combat != null)
+            {
+                int shotsN = 10; int.TryParse(Get("entershots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 10;
+                int every = 8; int.TryParse(Get("enterevery") ?? "", out every); if (every <= 0) every = 8;
+                Time.captureFramerate = 60;
+                yield return null;
+                Presenter.Reset();
+                Presenter.Play(g, g.Rs.Combat);
+                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("enter-" + i, 1); }
+                Time.captureFramerate = 0;
+            }
             yield return WaitPresentation();
             // 配置の確認 (スマホ倍率の調整用): 絵の枠の大きさと足元の高さ
             if (g.Battle != null && g.Rs != null && g.Rs.Combat != null)

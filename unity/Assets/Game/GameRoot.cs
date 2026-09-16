@@ -288,13 +288,10 @@ namespace DeckRogue.Game
                 var endedRs = Rs;
                 Presenter.PlaySequenced(this, finalSnapshot, delegate
                 {
-                    Audio.Key(endedRs.Phase == RunPhases.Lost ? "PlayerDied" : "EnemyDied");
-                    var release = Presenter.BlockInput(this);
-                    Tween.After(0.7f, delegate
+                    // 決着の余韻 (2026-09-17 ⑧): 勝利の帯と戦いの記録／敗北の暗転 (音もそこで鳴る)。終わってから報酬/敗北の画面へ組み直す
+                    Presenter.ShowOutcome(this, endedRs, finalSnapshot, delegate
                     {
-                        release();
                         if (!ReferenceEquals(Rs, endedRs)) return;   // その間に別のコマンドが進んでいたら何もしない
-                        Audio.Ui(endedRs.Phase == RunPhases.Lost ? "lose" : "win");
                         Pending = null; ViewPile = null; ViewDeck = false; ViewMap = false; SubMode = null;
                         Rebuild();
                         Presenter.Reset();

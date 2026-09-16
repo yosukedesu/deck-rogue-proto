@@ -1173,6 +1173,33 @@ namespace DeckRogue.Game
 
         // ---- 手札 (扇) ----
 
+        /// <summary>出せない札を押した (2026-09-17 ⑦): 札が首を振り、理由 (エナジー不足・仕込む札・従者がいない・拘束) を浮かせる。エナジー不足なら輪も朱に光る</summary>
+        static void CannotPlay(GameRoot g, BattleView.HandCard hc, CardInstance c)
+        {
+            var st = g.Rs != null ? g.Rs.Combat : null;
+            var fx = g.FxLayer;
+            if (st == null || st.Phase != CombatPhases.PlayerTurn || g.Pending != null || hc.Rt == null) return;
+            int cost = c.Def.Cost; try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
+            string why = null; bool energy = false;
+            if (!Effects.IsPlayableFromHand(c)) why = "仕込む札 (プレイできない)";
+            else if (cost > st.Player.Energy) { why = "エナジー不足"; energy = true; }
+            else if (!Effects.RetainerRequirementMet(st, c)) why = "場に従者がいない";
+            else why = "いまは出せない";
+            Tween.Shake(hc.Rt, 7f, 0.25f);
+            Audio.Ui("click", 0.5f);
+            if (fx != null) Tween.Float(fx, Tween.CenterIn(hc.Rt, fx) + new Vector2(0f, 150f), why, UiKit.ColBad, 24, 30f, 1.0f);
+            if (energy)
+            {
+                var orb = g.Anchor("energy");
+                if (orb != null)
+                {
+                    Tween.Shake(orb, 6f, 0.25f);
+                    var oi = orb.GetComponentInChildren<Image>();
+                    if (oi != null) Tween.Flash(oi, PaperFx.Rose, 0.4f);
+                }
+            }
+        }
+
         /// <summary>カードの吹き出し: 本文は見えているので用語解説だけ (無ければ出さない)</summary>
         public static string KeywordsOnly(string text)
         {
@@ -1279,6 +1306,7 @@ namespace DeckRogue.Game
                 if (c.Def.Modes != null && c.Def.Modes.Count > 0) { g.ModeChoiceUid = c.Uid; g.Rebuild(); return; }
                 if (hc.Playable) PlayCard(g, c, null);
                 else if (hc.Settable) { g.ModeChoiceUid = c.Uid; g.Rebuild(); }
+                else CannotPlay(g, hc, c);
             });
             et.triggers.Add(click);
 

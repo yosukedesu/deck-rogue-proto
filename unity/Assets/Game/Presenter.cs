@@ -93,11 +93,12 @@ namespace DeckRogue.Game
             var blockCg = fx.GetComponent<CanvasGroup>();
             if (blockCg != null) blockCg.blocksRaycasts = true;
             float delay = 0f;
+            int finishing = FinishingBlowIndex(log, Math.Min(_seen, log.Count), combat);
             for (int i = Math.Min(_seen, log.Count); i < log.Count; i++)
             {
                 var ev = log[i];
                 float gap;
-                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); try { Show(g, fx, cp, true); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
+                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = visibleBoard }; try { Show(g, fx, cp, true, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
                 if (ev is GameEvent_DamageDealt) gap = 0.4f;
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
@@ -111,6 +112,7 @@ namespace DeckRogue.Game
                 else continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, visibleBoard);
+                if (i == finishing) { ctx.FinishingBlow = true; gap += 0.35f; }   // とどめはヒットストップぶん長く見せる
                 Tween.After(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
             }
@@ -139,6 +141,12 @@ namespace DeckRogue.Game
             // カードが敵へ飛ぶ 0.2 秒に着弾を合わせる
             float delay = 0f;
             for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = 0.13f; break; }   // 着弾は振り抜き (0.11〜0.15s) に合わせる
+            // 戦闘の始まり (2026-09-17 ⑨): 敵が順に現れ、強個体・幕ボスは名前の帯。その間は後の出来事 (ターン開始の帯など) を待たせる
+            if (_seen == 0 && log.Count > 0 && log[0] is GameEvent_CombatStarted)
+            {
+                try { delay += ShowEntrance(g, fx, combat); } catch (Exception e) { Debug.LogWarning("[Presenter] entrance " + e.Message); }
+            }
+            int finishing = FinishingBlowIndex(log, _seen, combat);
             // 差し替えられた意図の札は、組み直しで既に新しい札になっている。豹変の瞬間 (ShowEnemyAct) に跳ねて出すまで隠す (2026-09-17 ④)
             for (int i = _seen; i < log.Count; i++)
                 if (log[i] is GameEvent_EnemyInterrupted ei && ei.Replaced)
@@ -150,10 +158,11 @@ namespace DeckRogue.Game
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
-                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
+                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = prevBoard }; try { Show(g, fx, cp, false, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
+                if (i == finishing) ctx.FinishingBlow = true;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
@@ -393,6 +402,251 @@ namespace DeckRogue.Game
                     break;
                 }
             }
+        }
+
+        /// <summary>エナジーを払った演出 (2026-09-17 ⑦): 輪が跳ねる。X の札は払った量 (コマンド前後のエナジーの差) ぶんの真鍮の玉が輪から行き先へ飛び、「X = N」の判</summary>
+        static void ShowEnergyPaid(GameRoot g, RectTransform fx, CardDef def, ReactionCtx ctx)
+        {
+            var orb = g.Anchor("energy");
+            var cur = g.Rs != null ? g.Rs.Combat : null;
+            var prev = ctx != null ? ctx.Prev : null;
+            if (orb == null || def == null || cur == null) return;
+            int paid = prev != null ? Math.Max(0, prev.Player.Energy - cur.Player.Energy) : def.Cost;
+            if (def.XCost != true) { if (paid > 0 || def.Cost > 0) Tween.Punch(orb, 0.14f, 0.25f); return; }
+            int effX = paid + (cur.XBonus ?? 0) + (def.XBonus ?? 0);
+            Tween.Punch(orb, 0.22f, 0.3f);
+            var from = Tween.CenterIn(orb, fx);
+            // 行き先: 直後に殴った敵、無ければ自分
+            RectTransform dest = null;
+            var log = cur.EventLog;
+            for (int k = log.Count - 1, seen = 0; k >= 0 && seen < 12; k--, seen++) if (log[k] is GameEvent_DamageDealt dd && dd.Source == "player") { dest = g.Anchor("enemy" + (dd.EnemyIndex ?? 0)); break; }
+            if (dest == null) dest = g.Anchor("player");
+            Vector2 to = dest != null ? Tween.CenterIn(dest, fx) + new Vector2(0f, 60f) : from + new Vector2(300f, 200f);
+            for (int i = 0; i < Math.Min(paid, 8); i++)
+            {
+                int ii = i; float dl = 0.04f * i;
+                Tween.After(dl, () => Tween.Projectile(fx, from, to, PaperFx.Brass, 30f, 0.26f, 40f + 20f * (ii % 3), () => Tween.RingBurst(fx, to, PaperFx.BrassLight, 90f, 0.25f)));
+            }
+            Tween.Stamp(fx, from + new Vector2(0f, 96f), "X = " + effX, PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 22, 0.7f, -6f);
+        }
+
+        /// <summary>
+        /// 戦闘の始まり (2026-09-17 ⑨): 敵が順に現れる (少し小さく薄い所から等身大へ・足元に土煙の輪)。強個体は名前の帯、幕ボスは帯＋舞台がゆっくり寄る。
+        /// 戻り値＝後の出来事を待たせる秒数
+        /// </summary>
+        static float ShowEntrance(GameRoot g, RectTransform fx, GameState combat)
+        {
+            if (g.Battle == null || combat == null) return 0f;
+            string nodeType = null;
+            try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
+            bool boss = nodeType == MapNodeTypes.Boss, elite = nodeType == MapNodeTypes.Elite;
+            float step = 0.09f;
+            for (int i = 0; i < combat.Enemies.Count; i++)
+            {
+                if (combat.Enemies[i].Hp <= 0) continue;
+                var spr = g.Battle.EnemySprite(i);
+                if (spr == null) continue;
+                var img = spr.GetComponent<Image>();
+                var origin = spr.anchoredPosition; float h = spr.rect.height; float pivotY = spr.pivot.y;
+                spr.localScale = new Vector3(0.7f, 0.7f, 1f);
+                spr.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - 0.7f) + 40f);
+                if (img != null) img.color = new Color(1f, 1f, 1f, 0f);
+                var srt = spr; var simg = img; float dl = 0.12f + step * i;
+                Tween.After(dl, () =>
+                {
+                    if (srt == null) return;
+                    Tween.Run(0.42f, k =>
+                    {
+                        if (srt == null) return;
+                        float sc = 0.7f + 0.3f * Tween.Apply(Ease.OutBack, k);
+                        srt.localScale = new Vector3(sc, sc, 1f);
+                        srt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - sc) + 40f * (1f - Tween.Apply(Ease.OutQuad, k)));
+                        if (simg != null) simg.color = new Color(1f, 1f, 1f, Mathf.Clamp01(k * 2.5f));
+                    }, Ease.Linear, () => { if (srt != null) { srt.localScale = Vector3.one; srt.anchoredPosition = origin; } if (simg != null) simg.color = Color.white; });
+                    Tween.After(0.2f, () => { if (srt != null) Tween.RingBurst(fx, Tween.CenterIn(srt, fx) + new Vector2(0f, -h * 0.42f), new Color(PaperFx.Paper2.r, PaperFx.Paper2.g, PaperFx.Paper2.b, 0.55f), 170f, 0.4f); });
+                });
+            }
+            float wait = 0.35f + step * combat.Enemies.Count;
+            if (!(boss || elite)) return wait;
+            // 名前の帯 (画面の真ん中を横切る夜の帯に真鍮の線と名前)。ボスは舞台がゆっくり寄る。帯の間は入力を塞ぐ
+            string enc = null;
+            try
+            {   // 節の編成名。ただし編成のメンバーと戦っている敵が食い違う時 (デバッグの敵指定) は敵の名前
+                var node = DeckRogue.Engine.Run.CurrentNode(g.Rs);
+                if (node != null && node.EncounterId != null)
+                {
+                    bool match = false;
+                    foreach (var m in Content.ResolveEncounter(node.EncounterId)) if (combat.Enemies.Count > 0 && m.EnemyId == combat.Enemies[0].EnemyId) match = true;
+                    if (match) enc = Content.EncounterName(node.EncounterId);
+                }
+            }
+            catch (Exception) { }
+            if (string.IsNullOrEmpty(enc)) { try { enc = Content.GetEnemyDef(combat.Enemies[0].EnemyId).Name; } catch (Exception) { enc = ""; } }
+            float hold = boss ? 1.5f : 1.1f;
+            Tween.After(0.35f, () => NameBand(fx, boss ? "幕ボス" : "強個体", enc, boss, hold));
+            if (boss) { Stage.Dolly(0.9f, 1.3f, 0.7f, 0.9f); Audio.Ui("act_start"); }
+            var block = UiKit.NewRect("inputblock", fx);
+            UiKit.Stretch(block, 0f, 0f, 0f, 0f);
+            var bimg = block.gameObject.AddComponent<Image>(); bimg.color = new Color(0f, 0f, 0f, 0f); bimg.raycastTarget = true;
+            var cg = fx.GetComponent<CanvasGroup>(); if (cg != null) cg.blocksRaycasts = true;
+            Tween.After(0.35f + hold + 0.5f, () => { if (block != null) UnityEngine.Object.Destroy(block.gameObject); if (cg != null) cg.blocksRaycasts = false; });
+            return 0.35f + hold + 0.4f;
+        }
+
+        /// <summary>名前の帯: 夜の帯 (画面の幅いっぱい・高さ 120〜150) に真鍮の細い線、上に小さな肩書、真ん中に名前。左から滑り込んで hold の後に消える</summary>
+        static void NameBand(RectTransform fx, string kicker, string name, bool boss, float hold)
+        {
+            if (fx == null) return;
+            float h = boss ? 150f : 118f;
+            var rt = UiKit.NewRect("nameband", fx);
+            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, -h / 2f + 40f), new Vector2(0f, h / 2f + 40f));
+            var bg = rt.gameObject.AddComponent<Image>(); bg.color = new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.84f); bg.raycastTarget = false;
+            foreach (float y in new[] { 0f, 1f })
+            {
+                var line = UiKit.NewRect("line", rt);
+                UiKit.Anchor(line, new Vector2(0f, y), new Vector2(1f, y), new Vector2(0f, y == 0f ? 4f : -6f), new Vector2(0f, y == 0f ? 6f : -4f));
+                var li = line.gameObject.AddComponent<Image>(); li.color = PaperFx.Brass; li.raycastTarget = false;
+            }
+            var inner = UiKit.NewRect("inner", rt);
+            UiKit.Stretch(inner, 0f, 0f, 0f, 0f);
+            var kt = UiKit.Deco(inner, kicker, boss ? 20 : 17, PaperFx.BrassLight, TextAnchor.MiddleCenter);
+            UiKit.Anchor(kt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -40f), new Vector2(0f, -10f));
+            kt.characterSpacing = 12f;
+            var nt = UiKit.Deco(inner, name, boss ? 48 : 38, PaperFx.Paper, TextAnchor.MiddleCenter);
+            UiKit.Anchor(nt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 8f), new Vector2(0f, h - 40f));
+            nt.characterSpacing = 4f;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.blocksRaycasts = false; cg.alpha = 0f;
+            inner.anchoredPosition = new Vector2(-60f, 0f);
+            var innerC = inner;
+            Tween.Run(0.28f, k => { if (cg != null) cg.alpha = k; if (innerC != null) innerC.anchoredPosition = new Vector2(-60f * (1f - Tween.Apply(Ease.OutCubic, k)), 0f); }, Ease.Linear, () =>
+            {
+                Tween.After(hold, () => Tween.Run(0.35f, k => { if (cg != null) cg.alpha = 1f - k; if (innerC != null) innerC.anchoredPosition = new Vector2(40f * k, 0f); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
+            });
+        }
+
+        /// <summary>
+        /// 決着の余韻 (2026-09-17 ⑧): 勝利＝「勝利」の帯の下に戦いの記録 (ターン数・与ダメ・被ダメ・読み勝ち・完全に凌いだ・打ち消し) が1行ずつ積み上がる。
+        /// 幕ボスは「幕ボス撃破」で長めに、舞台がゆっくり寄る。敗北＝画面が暗転して「倒れた…」。どれも画面を触ると飛ばせる。終わったら onDone (=報酬/敗北の画面へ)
+        /// </summary>
+        public static void ShowOutcome(GameRoot g, RunState endedRs, GameState final, Action onDone)
+        {
+            var fx = g.FxLayer;
+            bool lost = endedRs.Phase == RunPhases.Lost;
+            Audio.Key(lost ? "PlayerDied" : "EnemyDied");
+            if (fx == null) { Tween.After(0.7f, () => onDone?.Invoke()); return; }
+            string nodeType = null;
+            try { var node = DeckRogue.Engine.Run.CurrentNode(endedRs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
+            bool boss = nodeType == MapNodeTypes.Boss, elite = nodeType == MapNodeTypes.Elite;
+            bool done = false;
+            var block = UiKit.NewRect("inputblock2", fx);
+            UiKit.Stretch(block, 0f, 0f, 0f, 0f);
+            var bimg = block.gameObject.AddComponent<Image>(); bimg.color = new Color(0f, 0f, 0f, 0f); bimg.raycastTarget = true;
+            var cg = fx.GetComponent<CanvasGroup>(); if (cg != null) cg.blocksRaycasts = true;
+            var layer = UiKit.NewRect("outcome", fx);
+            UiKit.Stretch(layer, 0f, 0f, 0f, 0f);
+            var lcg = layer.gameObject.AddComponent<CanvasGroup>(); lcg.blocksRaycasts = false;
+            Action finish = () =>
+            {
+                if (done) return; done = true;
+                if (block != null) UnityEngine.Object.Destroy(block.gameObject);
+                if (cg != null) cg.blocksRaycasts = false;
+                if (layer != null) UnityEngine.Object.Destroy(layer.gameObject);
+                Time.timeScale = 1f;
+                onDone?.Invoke();
+            };
+            // 画面を触ったら飛ばす (帯が出てから)
+            var skip = block.gameObject.AddComponent<Button>(); skip.transition = Selectable.Transition.None; skip.targetGraphic = bimg;
+            bool skippable = false;
+            skip.onClick.AddListener(delegate { if (skippable) finish(); });
+            Tween.After(0.5f, () => skippable = true);
+            if (lost)
+            {
+                // 暗転: 地の色が 1.2 秒で覆い、薔薇の「倒れた…」
+                var dark = UiKit.NewRect("dark", layer);
+                UiKit.Stretch(dark, 0f, 0f, 0f, 0f);
+                var dimg = dark.gameObject.AddComponent<Image>(); dimg.color = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0f); dimg.raycastTarget = false;
+                Tween.Run(1.2f, k => { if (dimg != null) dimg.color = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.88f * k); }, Ease.OutQuad);
+                Tween.After(0.5f, () => { OutcomeBand(layer, "倒れた…", PaperFx.Rose, 44); Audio.Ui("lose"); });
+                Tween.After(2.2f, finish);
+                return;
+            }
+            // 勝利: 帯 → 記録の行が 0.13 秒ごとに積み上がる → 余韻 → 報酬へ
+            string title = boss ? "幕ボス撃破" : elite ? "強個体撃破" : "勝利";
+            Tween.After(0.15f, () => { OutcomeBand(layer, title, PaperFx.BrassLight, boss ? 52 : 44); Audio.Ui("win"); });
+            if (boss) Stage.Dolly(0.8f, 1.6f, 1.2f, 0.8f);
+            var lines = SummaryLines(final != null ? final.EventLog : null);
+            float y0 = -56f; float t = 0.42f;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string line = lines[i]; float y = y0 - 34f * i;
+                Tween.After(t, () => OutcomeLine(layer, line, y));
+                t += 0.12f;
+            }
+            Tween.After(t + (boss ? 1.6f : elite ? 0.9f : 0.65f), finish);
+        }
+
+        /// <summary>決着の帯: 画面の真ん中の紙の帯に大きな文字 (1.3 倍から押し当てるように縮む)</summary>
+        static void OutcomeBand(RectTransform layer, string text, Color ink, int size)
+        {
+            var rt = UiKit.NewRect("outcome-band", layer);
+            UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-420f, 20f), new Vector2(420f, 20f + size + 44f));
+            rt.localRotation = Quaternion.Euler(0f, 0f, -1.5f);
+            var bg = rt.gameObject.AddComponent<Image>(); bg.sprite = PaperFx.Panel; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f; bg.raycastTarget = false;
+            var edge = UiKit.NewRect("edge", rt);
+            UiKit.Anchor(edge, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(28f, 8f), new Vector2(-28f, 11f));
+            var ei = edge.gameObject.AddComponent<Image>(); ei.color = PaperFx.Brass; ei.raycastTarget = false;
+            var tx = UiKit.Deco(rt, text, size, ink == PaperFx.Rose ? PaperFx.BadInk : PaperFx.BrassInk, TextAnchor.MiddleCenter);
+            UiKit.Stretch(tx.rectTransform, 0f, 0f, 0f, 0f);
+            tx.characterSpacing = 10f;
+            rt.localScale = Vector3.one * 1.3f;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.alpha = 0f; cg.blocksRaycasts = false;
+            Tween.Run(0.22f, k => { if (rt == null) return; rt.localScale = Vector3.one * (1.3f - 0.3f * Tween.Apply(Ease.OutCubic, k)); cg.alpha = Mathf.Clamp01(k * 2f); }, Ease.Linear);
+        }
+
+        /// <summary>記録の1行: 小さな紙の札が右から滑り込む</summary>
+        static void OutcomeLine(RectTransform layer, string text, float y)
+        {
+            var rt = UiKit.NewRect("outcome-line", layer);
+            float w = 60f + text.Length * 20f;
+            UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-w / 2f, y - 14f), new Vector2(w / 2f, y + 14f));
+            var bg = PaperFx.Sheet(rt, PaperFx.Tag, "paper", PaperFx.Paper2);
+            UiKit.Stretch(bg.rectTransform, 0f, 0f, 0f, 0f); bg.raycastTarget = false;
+            var tx = UiKit.Deco(rt, text, 18, PaperFx.Ink, TextAnchor.MiddleCenter);
+            UiKit.Stretch(tx.rectTransform, 0f, 0f, 0f, 0f);
+            var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.alpha = 0f; cg.blocksRaycasts = false;
+            var p0 = rt.anchoredPosition;
+            Tween.Run(0.2f, k => { if (rt == null) return; rt.anchoredPosition = p0 + new Vector2(50f * (1f - Tween.Apply(Ease.OutCubic, k)), 0f); cg.alpha = k; }, Ease.Linear);
+            Audio.Key("CardsDrawn");
+        }
+
+        /// <summary>戦いの記録 (engine/summary.ts battleSummary の写し。表示層だけの集計)。延焼のティックも与ダメ、とげの反射も被ダメに数える</summary>
+        static List<string> SummaryLines(IReadOnlyList<GameEvent> log)
+        {
+            var lines = new List<string>();
+            if (log == null) return lines;
+            int turns = 0, total = 0, best = 0, cur = 0, hpLost = 0, fired = 0, perfect = 0, negates = 0;
+            foreach (var e in log)
+            {
+                if (e is GameEvent_TurnStarted ts) { turns = Math.Max(turns, ts.Turn); best = Math.Max(best, cur); cur = 0; }
+                else if (e is GameEvent_DamageDealt dd)
+                {
+                    if (dd.Source == "player") { total += dd.Amount; cur += dd.Amount; }
+                    else { hpLost += dd.HpLoss; if (dd.Amount > 0 && dd.HpLoss == 0) perfect++; }
+                }
+                else if (e is GameEvent_ThornsReflected tr) hpLost += tr.HpLoss;
+                else if (e is GameEvent_BurnTick bt) { total += bt.Amount; cur += bt.Amount; }
+                else if (e is GameEvent_ReactionTriggered) fired++;
+                else if (e is GameEvent_ActionNegated) negates++;
+            }
+            best = Math.Max(best, cur);
+            lines.Add(turns + "ターン ・ 与ダメ " + total + (best > 0 ? "（最大ターン " + best + "）" : ""));
+            lines.Add("被ダメ " + hpLost);
+            var extra = new List<string>();
+            if (fired > 0) extra.Add("読み勝ち " + fired + "回");
+            if (perfect > 0) extra.Add("完全に凌いだ " + perfect + "回");
+            if (negates > 0) extra.Add("打ち消し " + negates + "回");
+            if (extra.Count > 0) lines.Add(string.Join(" ・ ", extra.ToArray()));
+            return lines;
         }
 
         /// <summary>差し替えで取り消された意図の札の幽霊 (絵＋一行) が、くるりと回りながら落ちて消える (2026-09-17 ④)</summary>
@@ -641,7 +895,16 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; }
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; }
+
+        /// <summary>とどめの一撃 (2026-09-17 ⑫): 新しい出来事の中で、最後に敵を倒したプレイヤーの打撃。戦闘が決着 (全滅・逃走) した時だけ。無ければ -1</summary>
+        static int FinishingBlowIndex(IReadOnlyList<GameEvent> log, int from, GameState combat)
+        {
+            if (combat == null) return -1;
+            for (int i = 0; i < combat.Enemies.Count; i++) if (combat.Enemies[i].Hp > 0) return -1;
+            for (int i = log.Count - 1; i >= from; i--) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player" && dd.HpLoss > 0) return i;
+            return -1;
+        }
         static ReactionCtx ReactionContextFor(GameRoot g, IReadOnlyList<GameEvent> log, int i, GameState visible)
         {
             var ev = log[i];
@@ -738,6 +1001,10 @@ namespace DeckRogue.Game
                         if (blocked > 0 && d.HpLoss <= 0) Audio.Key("DamageDealt.blocked");
                         else Audio.Key(big ? "DamageDealt.player.big" : "DamageDealt.player");
                         if (big) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f), 0.25f);
+                        // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
+                        bool finishing = ctx != null && ctx.FinishingBlow;
+                        if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
+                        else if (big) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                         Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
@@ -881,6 +1148,8 @@ namespace DeckRogue.Game
                     if (_playHint == 1) { atk = true; blk = false; }
                     else if (_playHint == 2) { atk = false; blk = true; }
                     _playHint = 0;
+                    // ⑦ 手札 (2026-09-17): エナジーの輪が払った瞬間に跳ね、X の札は払った玉が輪から札の行き先へ飛んで「X = N」の判
+                    try { ShowEnergyPaid(g, fx, def, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] energy " + e.Message); }
                     if (atk)
                     {
                         Stage.PlayAnim("player", "attack");

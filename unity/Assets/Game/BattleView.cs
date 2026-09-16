@@ -214,6 +214,7 @@ namespace DeckRogue.Game
             for (int i = _boxLogSeen; i < st.EventLog.Count; i++) if (st.EventLog[i] is GameEvent_ReactionTriggered) fired = true;
             _boxLogSeen = st.EventLog.Count;
             Stage.SetKarakuriBox(st.Player.SetCards.Count, fired);
+            SyncDanger(st);
         }
 
         /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上。スマホは等倍の札の上端 (14+290) に合わせる</summary>
@@ -366,6 +367,7 @@ namespace DeckRogue.Game
                         rt.anchoredPosition = drawPos;
                         rt.localScale = Vector3.one * 0.35f;
                         rt.localRotation = Quaternion.Euler(0f, 0f, -20f);
+                        CardBack(rt);   // めくり (2026-09-17 ⑦): 山札から飛ぶ間は裏、途中で表に返る
                     }
                     newCount++;
                 }
@@ -374,6 +376,7 @@ namespace DeckRogue.Game
                 hc.Rt.name = "hand" + i;
                 float dx = (i - center) * spacing;
                 float dy = -Mathf.Abs(i - center) * 10f;
+                if (myTurn && g.Pending == null && !playable && !settable) dy -= 16f;   // ⑦ (2026-09-17): 出せない札 (エナジー不足など) は扇の中で少し沈む
                 hc.BasePos = new Vector2(dx, -areaH / 2f + CardView.H * BattleScreen.CardScale / 2f + dy);
                 hc.BaseRot = -(i - center) * 3f;
             }
@@ -397,15 +400,102 @@ namespace DeckRogue.Game
                 Tween.After(delay, () =>
                 {
                     if (rtc == null) return;
-                    if (isNew) Audio.Key("CardsDrawn");
-                    Tween.Move(rtc, target, isNew ? 0.28f : 0.2f, Ease.OutCubic);
-                    Tween.Scale(rtc, Vector3.one * BattleScreen.CardScale, isNew ? 0.28f : 0.2f, Ease.OutQuad);
-                    var r0 = rtc.localRotation;
-                    Tween.Run(isNew ? 0.28f : 0.2f, t => { if (rtc != null) rtc.localRotation = Quaternion.Slerp(r0, rot, t); }, Ease.OutQuad);
+                    if (isNew)
+                    {
+                        // めくり (2026-09-17 ⑦): 裏のまま飛び出し、道中で横幅が 0 まで細くなって表に返り、扇の位置で等身大に
+                        Audio.Key("CardsDrawn");
+                        var p0 = rtc.anchoredPosition; var r0 = rtc.localRotation; float s0 = rtc.localScale.y;
+                        var back = rtc.Find("back");
+                        Tween.Run(0.34f, t =>
+                        {
+                            if (rtc == null) return;
+                            float e = Tween.Apply(Ease.OutCubic, t);
+                            rtc.anchoredPosition = Vector2.LerpUnclamped(p0, target, e);
+                            float sc = Mathf.Lerp(s0, BattleScreen.CardScale, Tween.Apply(Ease.OutQuad, t));
+                            float flip = Mathf.Abs(Mathf.Cos(t * Mathf.PI));
+                            rtc.localScale = new Vector3(sc * Mathf.Max(0.03f, flip), sc, 1f);
+                            rtc.localRotation = Quaternion.Slerp(r0, rot, Tween.Apply(Ease.OutQuad, t));
+                            if (back != null && t >= 0.5f) { UnityEngine.Object.Destroy(back.gameObject); back = null; }
+                        }, Ease.Linear, () => { if (rtc != null) { rtc.localScale = Vector3.one * BattleScreen.CardScale; rtc.anchoredPosition = target; rtc.localRotation = rot; } var b2 = rtc != null ? rtc.Find("back") : null; if (b2 != null) UnityEngine.Object.Destroy(b2.gameObject); });
+                        return;
+                    }
+                    Tween.Move(rtc, target, 0.2f, Ease.OutCubic);
+                    Tween.Scale(rtc, Vector3.one * BattleScreen.CardScale, 0.2f, Ease.OutQuad);
+                    var rr0 = rtc.localRotation;
+                    Tween.Run(0.2f, t => { if (rtc != null) rtc.localRotation = Quaternion.Slerp(rr0, rot, t); }, Ease.OutQuad);
                 });
             }
             LastPlayedUid = null;
             LastPlayedTarget = -1;
+        }
+
+        /// <summary>札の裏 (めくりの前半だけ見える): 夜色の紙にからくりの印。表の上に重ねる</summary>
+        static void CardBack(RectTransform card)
+        {
+            var back = UiKit.NewRect("back", card);
+            UiKit.Stretch(back, 0f, 0f, 0f, 0f);
+            var sheet = PaperFx.Sheet(back, PaperFx.Card, "paper", PaperFx.Window);
+            UiKit.Stretch(sheet.rectTransform, 0f, 0f, 0f, 0f); sheet.raycastTarget = false;
+            // 真鍮の細い枠 (上下左右の4本)
+            foreach (var side in new[] { 0, 1, 2, 3 })
+            {
+                var ln = UiKit.NewRect("frame", back);
+                if (side < 2) UiKit.Anchor(ln, new Vector2(0f, side), new Vector2(1f, side), new Vector2(10f, side == 0 ? 10f : -12f), new Vector2(-10f, side == 0 ? 12f : -10f));
+                else UiKit.Anchor(ln, new Vector2(side - 2, 0f), new Vector2(side - 2, 1f), new Vector2(side == 2 ? 10f : -12f, 10f), new Vector2(side == 2 ? 12f : -10f, -10f));
+                var li = ln.gameObject.AddComponent<Image>(); li.color = new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.8f); li.raycastTarget = false;
+            }
+            var em = UiKit.Icon(back, "star", 84f, new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.55f));
+            em.rectTransform.anchorMin = em.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            em.rectTransform.sizeDelta = new Vector2(84f, 84f); em.rectTransform.anchoredPosition = Vector2.zero;
+            back.SetAsLastSibling();
+        }
+
+        // ---- HP 危険域 (2026-09-17 ⑪) ----
+        RectTransform _danger; Image _dangerImg; float _dangerLevel;   // 0=無し 1=3割以下 2=致死級
+
+        /// <summary>HP が 3 割以下なら舞台の縁が薔薇色に脈打つ (致死級の被ダメ予測なら速く強く)。紙の UI には掛けない</summary>
+        void SyncDanger(GameState st)
+        {
+            var p = st.Player;
+            float ratio = p.MaxHp > 0 ? (float)p.Hp / p.MaxHp : 1f;
+            int incoming = 0; try { incoming = Effects.IncomingTotal(st); } catch (Exception) { }
+            bool lethal = incoming > 0 && p.Hp - Math.Max(0, incoming - p.Block) <= 0 && st.HideIntents != true;
+            float level = lethal ? 2f : ratio <= 0.3f ? 1f : 0f;
+            if (level <= 0f)
+            {
+                if (_danger != null) { var d = _danger; var di = _dangerImg; _danger = null; _dangerImg = null; Tween.Run(0.4f, k => { if (di != null) di.color = new Color(di.color.r, di.color.g, di.color.b, di.color.a * (1f - k)); }, Ease.Linear, () => { if (d != null) UnityEngine.Object.Destroy(d.gameObject); }); }
+                _dangerLevel = 0f;
+                return;
+            }
+            if (_danger == null)
+            {
+                _danger = UiKit.NewRect("danger", FieldLayer);
+                UiKit.Stretch(_danger, -40f, -40f, -40f, -40f);
+                _dangerImg = _danger.gameObject.AddComponent<Image>();
+                _dangerImg.sprite = ThemeFx.Vignette(PaperFx.Rose, "vignette-rose"); _dangerImg.type = Image.Type.Simple; _dangerImg.preserveAspect = false; _dangerImg.raycastTarget = false;
+                _dangerImg.color = new Color(1f, 1f, 1f, 0f);
+                var pulse = _danger.gameObject.AddComponent<DangerPulse>();
+                pulse.Img = _dangerImg;
+            }
+            _danger.SetAsLastSibling();
+            var pl = _danger.GetComponent<DangerPulse>();
+            if (pl != null) { pl.Level = level; }
+            _dangerLevel = level;
+        }
+
+        /// <summary>縁の脈動: 3割以下は 0.9Hz でゆっくり、致死級は 1.7Hz で強く</summary>
+        class DangerPulse : MonoBehaviour
+        {
+            public Image Img; public float Level = 1f; float _t;
+            void Update()
+            {
+                if (Img == null) return;
+                _t += Time.unscaledDeltaTime;
+                float hz = Level >= 2f ? 1.7f : 0.9f;
+                float baseA = Level >= 2f ? 0.55f : 0.32f, amp = Level >= 2f ? 0.3f : 0.16f;
+                float a = baseA + amp * Mathf.Sin(_t * hz * Mathf.PI * 2f);
+                var c = Img.color; Img.color = new Color(c.r, c.g, c.b, Mathf.Clamp01(a));
+            }
         }
 
         void Attach(GameRoot g, HandCard hc, CardInstance c)

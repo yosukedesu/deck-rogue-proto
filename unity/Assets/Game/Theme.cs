@@ -563,10 +563,13 @@ namespace DeckRogue.Game
         }
 
         /// <summary>ビネット (周辺が暗くなる)。alpha だけの黒</summary>
-        public static Sprite Vignette()
+        public static Sprite Vignette() { return Vignette(Color.black, "vignette"); }
+
+        /// <summary>色つきの縁 (HP 危険域の薔薇など)。RGB は色そのもの、アルファだけ縁へ向かって濃くなる (黒の縁を Image で染めても黒のまま = 別の絵が要る)</summary>
+        public static Sprite Vignette(Color rgb, string key)
         {
             Sprite s;
-            if (_cache.TryGetValue("vignette", out s)) return s;
+            if (_cache.TryGetValue(key, out s)) return s;
             const int n = 96;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Bilinear;
@@ -579,12 +582,12 @@ namespace DeckRogue.Game
                     float dy = (y + 0.5f) / n * 2f - 1f;
                     float d = Mathf.Sqrt(dx * dx * 0.9f + dy * dy * 1.2f);
                     float a = Mathf.Clamp01((d - 0.55f) / 0.7f);
-                    px[y * n + x] = new Color(0f, 0f, 0f, a * a * 0.85f);
+                    px[y * n + x] = new Color(rgb.r, rgb.g, rgb.b, a * a * 0.85f);
                 }
             tex.SetPixels(px);
             tex.Apply(false, false);
             s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
-            _cache["vignette"] = s;
+            _cache[key] = s;
             return s;
         }
 

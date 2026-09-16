@@ -601,6 +601,24 @@ namespace DeckRogue.Game
             _driver.ShakeDur = Mathf.Max(0.05f, dur);
         }
 
+        /// <summary>
+        /// ズームパンチ (2026-09-17 ⑫): カメラが units だけ前へ出て戻る (舞台と絵だけ寄る。紙の UI は動かない)。
+        /// 基準の距離 ≈16.6 units なので 0.5 で約 3%。大技の着弾・とどめに
+        /// </summary>
+        public static void ZoomPunch(float units, float dur = 0.32f)
+        {
+            if (_driver == null) return;
+            _driver.PushAmp = Mathf.Max(_driver.PushAmp, units);
+            _driver.PushT = Mathf.Max(0.05f, dur); _driver.PushDur = _driver.PushT;
+        }
+
+        /// <summary>ゆっくり寄って戻る (2026-09-17 ⑨⑧): ボスの登場・幕ボス撃破の余韻。inDur で units まで寄り、hold の後 outDur で戻る</summary>
+        public static void Dolly(float units, float inDur, float hold, float outDur)
+        {
+            if (_driver == null) return;
+            _driver.DollyAmp = units; _driver.DollyIn = inDur; _driver.DollyHold = hold; _driver.DollyOut = outDur; _driver.DollyT = 0f; _driver.DollyOn = true;
+        }
+
         class StageUnit : MonoBehaviour
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float Depth; public Transform Shadow;
@@ -669,7 +687,7 @@ namespace DeckRogue.Game
                 var pos = ScreenToPlane(sx, sy, Depth);
                 var ground = pos;
                 pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
-                if (Anim == "idle" && Breathe) pos += _up * (Mathf.Sin(Time.time * 2.4f + BreathePhase) * 2f * k);   // 呼吸: ±2px の上下 (拡大・回転はしない)
+                if (Anim == "idle" && Breathe) pos += _up * (Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + BreathePhase) * (Key == "player" ? 2f : 3f) * k);   // 呼吸: ±2〜3px の上下 (拡大・回転はしない)。周期も個体ごとに少しずらす (⑩ 2026-09-17)
                 transform.position = pos;
                 transform.rotation = CameraRotation;
                 transform.localScale = new Vector3(Mathf.Max(0.01f, w * k * FrameScaleX), Mathf.Max(0.01f, h * k * FrameScaleY), 1f);   // 広い枠のコマは同じドット密度で板を広げる (足元中央は固定)
@@ -697,6 +715,8 @@ namespace DeckRogue.Game
         class StageDriver : MonoBehaviour
         {
             public float ShakeAmp, ShakeT, ShakeDur = 0.3f;
+            public float PushAmp, PushT, PushDur = 0.3f;                       // ズームパンチ (前へ出て戻る)
+            public float DollyAmp, DollyIn, DollyHold, DollyOut, DollyT; public bool DollyOn;   // ゆっくり寄って戻る
             int _lastW, _lastH, _settle;
             void LateUpdate()
             {
@@ -726,7 +746,28 @@ namespace DeckRogue.Game
                     off = _right * (UnityEngine.Random.Range(-a, a)) + _up * (UnityEngine.Random.Range(-a, a));
                     if (ShakeT <= 0f) ShakeAmp = 0f;
                 }
-                _cam.transform.position = _camBase + off;
+                // 寄り (ズームパンチ・ドリー): 前へ出る = _fwd 方向。板は _camBase 基準の座席に立つので、寄るとそのぶん大きく見える
+                float push = 0f;
+                if (PushT > 0f)
+                {
+                    PushT -= Time.deltaTime;
+                    float u = 1f - Mathf.Clamp01(PushT / PushDur);   // 0→1
+                    float env = u < 0.25f ? u / 0.25f : 1f - (u - 0.25f) / 0.75f;   // 速く寄って、ゆっくり戻る
+                    push += PushAmp * env;
+                    if (PushT <= 0f) PushAmp = 0f;
+                }
+                if (DollyOn)
+                {
+                    DollyT += Time.deltaTime;
+                    float total = DollyIn + DollyHold + DollyOut;
+                    float e;
+                    if (DollyT < DollyIn) { float u = DollyT / Mathf.Max(0.01f, DollyIn); e = 1f - (1f - u) * (1f - u); }
+                    else if (DollyT < DollyIn + DollyHold) e = 1f;
+                    else { float u = (DollyT - DollyIn - DollyHold) / Mathf.Max(0.01f, DollyOut); e = 1f - u * u * (3f - 2f * u); }
+                    if (DollyT >= total) { DollyOn = false; e = 0f; }
+                    push += DollyAmp * Mathf.Clamp01(e);
+                }
+                _cam.transform.position = _camBase + off + _fwd * push;
                 float t = Time.time;
                 for (int i = 0; i < _world.childCount; i++)
                 {

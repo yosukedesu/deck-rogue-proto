@@ -129,6 +129,25 @@ namespace DeckRogue.Game
             action?.Invoke();
         }
 
+        /// <summary>
+        /// ヒットストップ (2026-09-17 ⑫ とどめ): timeScale を scale に落として unscaled で sec 秒待ち、戻す。
+        /// 演出の時計 (deltaTime) も一緒に止まるので、着弾の光と数字がその場で凍る。重ねて呼んだ時は長い方が勝つ
+        /// </summary>
+        public static void HitStop(float scale, float sec)
+        {
+            I.StartCoroutine(HitStopCo(scale, sec));
+        }
+
+        static int _hitStops;
+        static IEnumerator HitStopCo(float scale, float sec)
+        {
+            _hitStops++;
+            Time.timeScale = Mathf.Min(Time.timeScale, scale);
+            float t = 0f;
+            while (t < sec) { yield return null; t += Mathf.Min(Time.unscaledDeltaTime, 0.05f); }   // 長いフレーム (Rebuild 直後・撮影) 1回で終わらないよう上限
+            if (--_hitStops <= 0) { _hitStops = 0; Time.timeScale = 1f; }
+        }
+
         /// <summary>一瞬白く光る (Image の色を白→元へ)</summary>
         public static Coroutine Flash(Graphic g, Color flash, float dur = 0.25f)
         {
