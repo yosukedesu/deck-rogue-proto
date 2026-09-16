@@ -11,6 +11,7 @@ Shader "DeckRogue/StageUnit"
         [MainColor] _BaseColor ("Color", Color) = (1,1,1,1)
         _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.4
         _Flash ("Flash", Range(0,1)) = 0
+        _Dissolve ("Dissolve", Range(0,1)) = 0
         _Fog ("Fog", Range(0,1)) = 1
         _Cull ("Cull", Float) = 0
         _Ambient ("Ambient", Color) = (1,1,1,1)
@@ -42,6 +43,7 @@ Shader "DeckRogue/StageUnit"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/UnlitInput.hlsl"
             half _Flash;
+            half _Dissolve;
             half _Fog;
             half4 _Ambient;
             float4 _LampPos;
@@ -69,6 +71,13 @@ Shader "DeckRogue/StageUnit"
             {
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * _BaseColor;
                 clip(c.a - _Cutoff);
+                // 撃破の崩れ (2026-09-17): ドット単位の乱数で消えていく。頭 (上) から先に、足元は最後 (ドットが崩れ落ちる読み)
+                if (_Dissolve > 0.0)
+                {
+                    float2 px = floor(i.uv * _BaseMap_TexelSize.zw);
+                    float n = frac(sin(dot(px, float2(12.9898, 78.233))) * 43758.5453);
+                    clip(n * 0.6 + (1.0 - i.uv0.y) * 0.4 - _Dissolve * 1.02);
+                }
                 // 灯りの目: 暖色で明るいドット (r が高く r>g>b) は環境光で暗くせず、少し持ち上げてブルームに乗せる
                 bool ember = (c.r > 0.78) && (c.r > c.g * 1.35) && (c.g > c.b * 1.2);
                 // 夜の環境光 + ランタン (距離で減衰。板の中でランタンに近い側が暖かくなる)

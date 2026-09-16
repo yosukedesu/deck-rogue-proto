@@ -592,6 +592,13 @@ namespace DeckRogue.Game
             if (_bound.TryGetValue(key, out u) && u != null) u.FlashT = dur;
         }
 
+        /// <summary>撃破の崩れ (2026-09-17 ユーザー「倒した敵は消えるようにしたほうが良くない？」): 0→1 でドットが頭から消えていき、接地影も薄くなる</summary>
+        public static void Dissolve(string key, float k)
+        {
+            StageUnit u;
+            if (_bound.TryGetValue(key, out u) && u != null) u.DissolveK = Mathf.Clamp01(k);
+        }
+
         /// <summary>画面揺れは舞台 (カメラ) が揺れる。紙の UI は揺れない</summary>
         public static void Shake(float px, float dur)
         {
@@ -621,7 +628,7 @@ namespace DeckRogue.Game
 
         class StageUnit : MonoBehaviour
         {
-            public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float Depth; public Transform Shadow;
+            public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float DissolveK; public float Depth; public Transform Shadow;
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
@@ -696,10 +703,11 @@ namespace DeckRogue.Game
                 ApplyLight(Mat, UnitSunAmount, Key == "player");
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
+                Mat.SetFloat("_Dissolve", DissolveK);
                 if (Shadow != null)
                 {
                     float ww = w * k;
-                    PlaceBlob(Shadow, new Vector3(ground.x, 0f, ground.z), ww, tint.a);
+                    PlaceBlob(Shadow, new Vector3(ground.x, 0f, ground.z), ww, tint.a * (1f - DissolveK));
                 }
                 if (Halo != null)
                 {

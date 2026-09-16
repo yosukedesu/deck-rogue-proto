@@ -231,10 +231,13 @@ namespace DeckRogue.Game
         static readonly string Circled = "①②③④⑤⑥⑦⑧";
 
         /// <summary>敵の入れ物の中身 (絵・狙いの印・帳面の一行)。入れ物 pan は BattleView が持ち越す</summary>
-        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, float neighborGap = float.MaxValue)
+        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, float neighborGap = float.MaxValue, bool dying = false)
         {
             var e = st.Enemies[index];
             bool alive = e.Hp > 0;
+            // 倒した (逃げた) 敵は消える (2026-09-17 ユーザー「倒した敵は消えるようにしたほうが良くない？」): 倒れた瞬間 (dying) だけ絵と帳面を描いて
+            // BattleView が崩して消す。以後の組み直しでは何も描かない (的の枡だけ残す = 座席は詰めない)
+            if (!alive && !dying) { g.RegisterAnchor("enemy" + index, pan); return; }
             bool aimed = g.PreferredTarget == index || (g.Pending != null && g.Pending.TargetIndex.HasValue && g.Pending.TargetIndex.Value == index);
             bool targeting = g.Pending != null && g.Pending.NextNeed() == "target";
             bool acting = st.Phase == CombatPhases.AwaitingReaction && st.PendingWindow != null && st.PendingWindow.EnemyIndex == index;
@@ -271,7 +274,7 @@ namespace DeckRogue.Game
             img.sprite = artSprite;
             img.preserveAspect = true;
             img.raycastTarget = false;
-            img.color = alive ? Color.white : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+            img.color = Color.white;   // 倒れた瞬間も素の色 (白く光ってから崩れる)
             Stage.BindUnit("enemy" + index, spr, img, artSprite);
             if ((aimed || acting) && alive && !ph && feetY > StripH + 16f)
             {   // 足元の輪 (PC。スマホは札の上端が足元なので出さない)。頭上の▼は 2026-09-16 に廃止 = 狙いは意図の札と帳面の縁 (真鍮)
@@ -289,17 +292,18 @@ namespace DeckRogue.Game
             float h = EnemyStripH(forecast != null);
             var strip = UiKit.NewRect("strip", pan);
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, 0f), new Vector2(w / 2f, h));
-            LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, targeting && alive && !aimed, acting, forecast);
+            LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, targeting && alive && !aimed, acting, forecast, dying);
             if (alive) IntentTag(g, pan, st, index, def, headTop, aimed, targeting && alive && !aimed, acting, neighborGap);
             // 前の表示 (shownHp) から今の HP へ滑らせる (案C への書き換えで落ちていた＝バーが1手遅れて減っていた。2026-09-16 ユーザー報告)
             if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
         }
 
         /// <summary>帳面の一行の中身: 番号＋名前 (左) とブロック・状態の札 (右)／HP バー／意図 (絵・実値・ライダー)／(PC) 特性・分岐の一文</summary>
-        static void LedgerStrip(GameRoot g, RectTransform strip, GameState st, int index, EnemyDef def, string nm, int shownHp, float w, float h, bool aimed, bool candidate, bool acting, string forecast)
+        static void LedgerStrip(GameRoot g, RectTransform strip, GameState st, int index, EnemyDef def, string nm, int shownHp, float w, float h, bool aimed, bool candidate, bool acting, string forecast, bool dying = false)
         {
             var e = st.Enemies[index];
             bool alive = e.Hp > 0;
+            if (dying) alive = true;   // 倒れた瞬間の帳面は生前の姿のまま薄れて消える (「（撃破）」は着弾の前に出てしまうので出さない)
             bool ph = UiKit.Phone;
             // 縁: 狙っている=蜂蜜／候補=薄い蜂蜜／行動中 (確認の窓) = 明るい蜂蜜が脈打つ
             if ((aimed || candidate || acting) && alive)
@@ -713,7 +717,7 @@ namespace DeckRogue.Game
             {
                 if (fill == null) return;
                 fill.anchorMax = new Vector2(Mathf.Lerp(r0, r1, k), 1f);
-                if (label != null) label.text = Mathf.RoundToInt(Mathf.Lerp(from, target, k)) + " / " + max;
+                if (label != null) label.text = Mathf.Max(0, Mathf.RoundToInt(Mathf.Lerp(from, target, k))) + " / " + max;
             }, Ease.OutCubic);
         }
 
@@ -736,7 +740,7 @@ namespace DeckRogue.Game
             fimg.sprite = ThemeFx.Gradient("hpfill", Color.Lerp(PaperFx.Rose, Color.white, 0.15f), Color.Lerp(PaperFx.Rose, Color.black, 0.08f));
             fimg.raycastTarget = false;
             UiKit.Anchor(fill, new Vector2(0f, 0f), new Vector2(r, 1f), new Vector2(3f, 3f), new Vector2(0f, -3f));
-            var t = UiKit.Txt(bar, hp + " / " + max, textSize, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(bar, Mathf.Max(0, hp) + " / " + max, textSize, PaperFx.Ink, TextAnchor.MiddleCenter, true);
             t.outlineWidth = 0.16f; t.outlineColor = new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.9f);   // 薔薇色の塗りの上でも墨が立つ
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
             var info = bar.gameObject.AddComponent<HpBarInfo>();

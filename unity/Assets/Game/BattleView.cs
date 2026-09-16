@@ -157,30 +157,13 @@ namespace DeckRogue.Game
                 if (i + 1 < centers.Length) gap = Mathf.Min(gap, Mathf.Abs(centers[i + 1] - centers[i]));
                 if (_enemyGaps.Length != st.Enemies.Count) _enemyGaps = new float[st.Enemies.Count];
                 _enemyGaps[i] = gap;
-                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap);
+                // 倒れた瞬間 (2026-09-17): 絵と帳面を生前の姿で描いておき、EnemyDied/EnemyFled の出来事 (Presenter → KillEnemy) が着弾の後に崩す。
+                // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
+                if (alive) _died.Remove(i);
+                bool dyingNow = wasAlive && !alive && !_died.Contains(i);
+                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
-                if (wasAlive && !alive)
-                {
-                    var sprRt = pan.Find("sprite") as RectTransform;
-                    var sprImg = sprRt != null ? sprRt.GetComponent<Image>() : null;
-                    if (st.Enemies[i].Fled == true)
-                    {   // 逃走 (2026-09-17): 奥へ走り去る = 右へ滑って薄くなる
-                        if (sprImg != null)
-                        {
-                            var from = sprImg.color; sprImg.color = Color.white;
-                            Tween.Move(sprRt, sprRt.anchoredPosition + new Vector2(420f, 40f), 0.55f, Ease.InQuad);
-                            Tween.Run(0.55f, k => { if (sprImg != null) sprImg.color = new Color(1f, 1f, 1f, 1f - k); }, Ease.InQuad);
-                        }
-                    }
-                    else if (sprImg != null)
-                    {   // 撃破: スプライトが白く光ってから沈む
-                        var dim = sprImg.color;
-                        sprImg.color = Color.white;
-                        Tween.Run(0.5f, k => { if (sprImg != null) sprImg.color = Color.Lerp(Color.white, dim, k); }, Ease.InQuad);
-                        Tween.Move(sprRt, sprRt.anchoredPosition + new Vector2(0f, -30f), 0.5f, Ease.InQuad);
-                    }
-                    Audio.Key(st.Enemies[i].Fled == true ? "EnemyFled" : "EnemyDied");
-                }
+                if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => KillEnemy(g, ci, fled)); }
                 else if (prevCount > 0 && i >= prevCount && alive)
                 {   // 登場 (召喚・分裂・孵化の子。2026-09-17): 小さく現れて弾んで等身大に、足元に青緑の輪
                     var sprRt = pan.Find("sprite") as RectTransform;
@@ -427,6 +410,95 @@ namespace DeckRogue.Game
             }
             LastPlayedUid = null;
             LastPlayedTarget = -1;
+        }
+
+        readonly HashSet<int> _died = new HashSet<int>();   // この戦闘で崩した (消した) 敵の番号
+
+        /// <summary>
+        /// 撃破・逃走 (2026-09-17 ユーザー「倒した敵は消えるようにしたほうが良くない？」): Presenter が EnemyDied/EnemyFled の出来事で呼ぶ (着弾の後)。
+        /// 撃破＝白く光り、ドットが頭から崩れて消える (StageUnit の _Dissolve)。崩れる間、体から光の粒が立ちのぼる。逃走＝右へ走りながら崩れる。
+        /// 帳面は薄れて消え、最後に絵と帳面を捨てる (以後の組み直しでは描かない)。同じ敵に二度は効かない
+        /// </summary>
+        public void KillEnemy(GameRoot g, int index, bool fled)
+        {
+            if (_died.Contains(index)) return;
+            _died.Add(index);
+            var pan = index >= 0 && index < _enemyPanels.Count ? _enemyPanels[index] : null;
+            if (pan == null) return;
+            var sprRt = pan.Find("sprite") as RectTransform;
+            var stripRt = pan.Find("strip") as RectTransform;
+            var tagRt = pan.Find("intent-tag") as RectTransform;
+            if (tagRt != null) UnityEngine.Object.Destroy(tagRt.gameObject);
+            if (index < _enemyHits.Count && _enemyHits[index] != null) { _enemyHits[index].raycastTarget = false; var b = _enemyHits[index].GetComponent<Button>(); if (b != null) b.interactable = false; }
+            Audio.Key(fled ? "EnemyFled" : "EnemyDied");
+            string key = "enemy" + index;
+            var fx = g.FxLayer;
+            var srt = sprRt;
+            if (fled)
+            {   // 逃走: 奥へ走り去る = 右へ滑って崩れて消える
+                if (srt != null)
+                {
+                    Tween.Move(srt, srt.anchoredPosition + new Vector2(420f, 40f), 0.55f, Ease.InQuad);
+                    Tween.Run(0.55f, k => Stage.Dissolve(key, k), Ease.InQuad, () => { if (srt != null) UnityEngine.Object.Destroy(srt.gameObject); });
+                }
+                FadeOutStrip(stripRt, 0.1f, 0.4f);
+                return;
+            }
+            float h = srt != null ? srt.rect.height : 200f;
+            float dur = h > 300f ? 0.95f : 0.62f;   // ボス (384) は長めに
+            if (srt != null)
+            {
+                Stage.Flash(key, 0.22f);
+                Tween.After(0.12f, () =>
+                {
+                    if (srt == null) return;
+                    var origin = srt.anchoredPosition;
+                    Tween.Run(dur, k =>
+                    {
+                        if (srt == null) return;
+                        Stage.Dissolve(key, k);
+                        srt.anchoredPosition = origin + new Vector2(0f, -10f * k);
+                    }, Ease.Linear, () => { if (srt != null) UnityEngine.Object.Destroy(srt.gameObject); });
+                    // 光の粒 (紙色と真鍮) が体から立ちのぼる
+                    if (fx != null)
+                    {
+                        var c = Tween.CenterIn(srt, fx); float w = srt.rect.width * 0.35f, hh = srt.rect.height * 0.45f;
+                        int n = h > 300f ? 22 : 12;
+                        for (int m = 0; m < n; m++)
+                        {
+                            float dl = dur * 0.8f * (m / (float)n);
+                            var p0 = c + new Vector2(UnityEngine.Random.Range(-w, w), UnityEngine.Random.Range(-hh, hh));
+                            bool brass = m % 3 == 0;
+                            Tween.After(dl, () => Mote(fx, p0, brass ? PaperFx.BrassLight : PaperFx.Paper));
+                        }
+                    }
+                });
+            }
+            FadeOutStrip(stripRt, 0.15f, 0.45f);
+        }
+
+        /// <summary>光の粒: ゆらゆら上がって薄れる</summary>
+        static void Mote(RectTransform fx, Vector2 p0, Color color)
+        {
+            if (fx == null) return;
+            var rt = UiKit.NewRect("mote", fx);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            float sz = UnityEngine.Random.Range(10f, 22f);
+            rt.sizeDelta = new Vector2(sz, sz); rt.anchoredPosition = p0;
+            var img = rt.gameObject.AddComponent<Image>(); img.sprite = ThemeFx.Glow(); img.color = color; img.raycastTarget = false;
+            float rise = UnityEngine.Random.Range(50f, 110f), sway = UnityEngine.Random.Range(-18f, 18f), dur = UnityEngine.Random.Range(0.5f, 0.8f), ph = UnityEngine.Random.value * 6.28f;
+            Tween.Run(dur, k => { if (rt == null) return; rt.anchoredPosition = p0 + new Vector2(sway * Mathf.Sin(k * 3f + ph), rise * k); img.color = new Color(color.r, color.g, color.b, 1f - k * k); rt.localScale = Vector3.one * (1f - 0.4f * k); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>帳面を薄れさせて捨てる</summary>
+        static void FadeOutStrip(RectTransform strip, float delay, float dur)
+        {
+            if (strip == null) return;
+            var cg = strip.GetComponent<CanvasGroup>();
+            if (cg == null) cg = strip.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+            var srt = strip;
+            Tween.After(delay, () => { if (srt == null) return; Tween.Run(dur, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear, () => { if (srt != null) UnityEngine.Object.Destroy(srt.gameObject); }); });
         }
 
         /// <summary>札の裏 (めくりの前半だけ見える): 夜色の紙にからくりの印。表の上に重ねる</summary>

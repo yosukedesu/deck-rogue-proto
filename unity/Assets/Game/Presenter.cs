@@ -391,6 +391,13 @@ namespace DeckRogue.Game
                     else Tween.Float(fx, center + new Vector2(0f, 80f), "次のターンから行動が変わる", PaperFx.Paper2, 20, 28f, 1.1f);
                     break;
                 }
+                case GameEvent_EnemyDied ed:
+                    // 倒れた (2026-09-17 ユーザー「倒した敵は消えるようにしたほうが良くない？」): 着弾の後に崩して消す。組み直しの前でも後でも1回だけ (BattleView が覚える)
+                    if (g.Battle != null) g.Battle.KillEnemy(g, ed.EnemyIndex, false);
+                    break;
+                case GameEvent_EnemyFled ef:
+                    if (g.Battle != null) g.Battle.KillEnemy(g, ef.EnemyIndex, true);
+                    break;
                 case GameEvent_EnemyStaggered es:
                 {
                     Audio.Key("EnemyStaggered");
@@ -532,7 +539,7 @@ namespace DeckRogue.Game
         {
             var fx = g.FxLayer;
             bool lost = endedRs.Phase == RunPhases.Lost;
-            Audio.Key(lost ? "PlayerDied" : "EnemyDied");
+            if (lost) Audio.Key("PlayerDied");   // 撃破の音は KillEnemy (EnemyDied) が鳴らす
             if (fx == null) { Tween.After(0.7f, () => onDone?.Invoke()); return; }
             string nodeType = null;
             try { var node = DeckRogue.Engine.Run.CurrentNode(endedRs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
@@ -846,7 +853,7 @@ namespace DeckRogue.Game
         /// <summary>敵の行動の出来事 (2026-09-17 敵の行動の演出): 実行の予備動作・回復・盗み・山札喰い・突き刺し/延焼/再生の数字。絵と音を Show で</summary>
         static bool IsEnemyActEvent(GameEvent ev)
         {
-            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered || ev is GameEvent_EnemyInterrupted;
+            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered || ev is GameEvent_EnemyInterrupted || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled;
         }
 
         /// <summary>実行中の技の名前 (EnemyState.IntentMoveId)。コマンド前の盤面から読む (今の盤面は次の宣言に変わっている)</summary>
