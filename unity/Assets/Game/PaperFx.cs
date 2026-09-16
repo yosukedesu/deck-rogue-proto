@@ -11,8 +11,9 @@ namespace DeckRogue.Game
     public static class PaperFx
     {
         // ---- カラーテーマ「黒鉄と真鍮」(2026-09-16 ユーザー裁定。一次資料 docs/color-theme.md)。UI の色はここが唯一の出典 ----
-        // 肌 (クリーム色の紙・鉛筆の二重線・水彩) は不変。決めたのは「役割 → 色」: 真鍮＝価値 (選択・決定・G・レア・行動が変わる線)／
-        // 脈の青緑＝マナ (エナジー・コスト玉・からくり・光る物)／墨だけ鉛筆の黒鉄／意味の色は4つ (薔薇 HP・鋼青 ブロック・苔 成長・藤 状態異常)。
+        // 肌 (クリーム色の紙・鉛筆の二重線・水彩) は不変。決めたのは「役割 → 色」: 真鍮＝価値と資源 (選択・決定・G・エナジー・レア・行動が変わる線)／
+        // 脈の青緑＝からくりと光 (仕込み札のトークン・斬撃の縁・露頭)／墨だけ鉛筆の黒鉄／意味の色は4つ (薔薇 HP・鋼青 ブロック・苔 成長・藤 状態異常)。
+        // エナジーは同日ユーザー「カードのエナジー表記は緑より黄色系がいい」で真鍮 (コスト玉・輪・数字)。
         // 文字は墨か各色の「墨」版だけ (紙の上で 7:1 前後)。淡い色は塗りにだけ使う。新しい色は足さない (足すなら役割を決めて表に書く)。
         static Color H(string hex) { Color c; return ColorUtility.TryParseHtmlString(hex, out c) ? c : Color.magenta; }
         // 紙と墨
@@ -31,17 +32,17 @@ namespace DeckRogue.Game
         public static readonly Color Window = H("#20233a");
         /// <summary>画面の外・最奥</summary>
         public static readonly Color Ground = H("#0f1120");
-        // 真鍮＝価値 (選択中の札と狙っている敵の縁・決定のボタン・G・R の外線・HP バーの「行動が変わる線」)
+        // 真鍮＝価値と資源 (選択中の札と狙っている敵の縁・決定のボタン・G・エナジー・R の外線・HP バーの「行動が変わる線」)
         public static readonly Color Brass = H("#c99a3a");
         /// <summary>決定のボタン・予告の札の地</summary>
         public static readonly Color BrassLight = H("#ead08a");
         /// <summary>真鍮の墨 (紙の上で 7.5:1): 予告の文字・G の数字・注意書き</summary>
         public static readonly Color BrassInk = H("#634410");
-        // 脈の青緑＝マナ (エナジーの輪と数字・コスト玉・からくりの帯とトークン・斬撃の縁・露頭)
+        // 脈の青緑＝からくりと光 (仕込み札のトークンの縁と帯・「仕込む」・斬撃の縁・露頭)
         public static readonly Color Mana = H("#3aa79b");
-        /// <summary>エナジーのピル・「仕込む」の地</summary>
+        /// <summary>「仕込む」の地・生きた罠の縁</summary>
         public static readonly Color ManaLight = H("#b5ddd6");
-        /// <summary>青緑の墨 (紙の上で 7.2:1): エナジーの数字・からくりの文字</summary>
+        /// <summary>青緑の墨 (紙の上で 7.2:1): からくりの文字・今ターン鳴る帯</summary>
         public static readonly Color ManaInk = H("#155650");
         /// <summary>からくりの帯 (紙の文字を乗せる濃い青緑 4.2:1)</summary>
         public static readonly Color ManaBand = H("#2a7d74");

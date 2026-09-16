@@ -30,7 +30,7 @@ namespace DeckRogue.Game
         public static readonly Color ColAccent = PaperFx.Moss;
         public static readonly Color ColHp = PaperFx.Rose;
         public static readonly Color ColBlock = PaperFx.Sky;
-        public static readonly Color ColEnergy = PaperFx.Mana;
+        public static readonly Color ColEnergy = PaperFx.Brass;
         public static readonly Color ColBad = PaperFx.Rose;
         public static readonly Color ColClear = new Color(0f, 0f, 0f, 0f);
 

@@ -123,14 +123,14 @@ P_D = dict(
 P_FINAL = dict(P_B)
 P_FINAL.update(
     key='決定', name='黒鉄と真鍮', sub='2026-09-16 決定',
-    principle='真鍮＝価値（選択の縁・狙いの縁・決定のボタン・G・レアの外線・行動が変わる線）、脈の青緑＝マナ（エナジーの輪と数字・コスト玉・からくりの帯・光る物）。墨だけ鉛筆の黒鉄色、紙と夜は今のまま。文字は墨か各色の「墨」版だけ',
+    principle='真鍮＝価値と資源（選択の縁・狙いの縁・決定のボタン・G・エナジー・レアの外線・行動が変わる線）、脈の青緑＝からくりと光（仕込み札のトークン・斬撃の縁・露頭）。墨だけ鉛筆の黒鉄色、紙と夜は今のまま。文字は墨か各色の「墨」版だけ',
     tradeoff='',
     paper='#f4ecd6', paper2='#eadfc4', paper3='#fbf6e8', ink='#2f2e35', ink_soft='#4e4c55', night='#1a1c33', window='#20233a',
     accent='#c99a3a', accent_light='#ead08a', accent_ink='#634410', accent2='#3aa79b', accent2_ink='#155650',
-    energy='#3aa79b', energy_ink='#155650', gold='#c99a3a', gold_ink='#634410',
+    energy='#c99a3a', energy_ink='#634410', gold='#c99a3a', gold_ink='#634410',   # エナジーは真鍮 (同日ユーザー「エナジー表記は黄色系がいい」)
     hp='#c9635a', block='#6f95b8', good='#7fa86c', good_ink='#276a34', bad_ink='#9c3a2a', status='#9d86bf', status_bg='#e9def3', status_ink='#5a3d78',
     types=dict(physical='#c9a982', spell='#a98cc4', reaction='#7ab8b0', permanent='#a8a66b'), band_ink=True,   # 実装どおり淡い帯＋墨の文字 (CardView のリボン)
-    rarity=dict(common='#2f2e35', uncommon='#6f95b8', rare='#c99a3a'), orb_filter='hue-rotate(125deg) saturate(0.9)',
+    rarity=dict(common='#2f2e35', uncommon='#6f95b8', rare='#c99a3a'), orb_filter='',
 )
 GROUND = '#0f1120'
 
@@ -282,15 +282,15 @@ TOKENS = [
         ('札の窓', 'window', P_FINAL['window'], '札の挿絵の窓・からくりの窓'),
         ('地', 'ground', GROUND, '画面の外・最奥'),
     ]),
-    ('真鍮＝価値', [
-        ('真鍮', 'brass', P_FINAL['accent'], '選択と狙いの縁・G・R の外線・行動が変わる線'),
+    ('真鍮＝価値と資源', [
+        ('真鍮', 'brass', P_FINAL['accent'], '選択と狙いの縁・G・エナジー・R の外線・行動が変わる線'),
         ('真鍮の紙', 'brassLight', P_FINAL['accent_light'], '決定のボタン・予告の札の地'),
         ('真鍮の墨', 'brassInk', P_FINAL['accent_ink'], '予告の文字・G の数字・注意書き（7.5:1）'),
     ]),
-    ('青緑＝マナ', [
-        ('脈の青緑', 'mana', P_FINAL['accent2'], 'エナジーの輪・コスト玉・からくりの帯・斬撃・露頭'),
-        ('青緑の紙', 'manaLight', '#b5ddd6', 'エナジーのピルの地'),
-        ('青緑の墨', 'manaInk', P_FINAL['accent2_ink'], 'エナジーの数字・からくりの文字（7.2:1）'),
+    ('青緑＝からくりと光', [
+        ('脈の青緑', 'mana', P_FINAL['accent2'], 'からくりのトークンの縁・斬撃の縁・露頭'),
+        ('青緑の紙', 'manaLight', '#b5ddd6', '「仕込む」の地・生きた罠の縁'),
+        ('青緑の墨', 'manaInk', P_FINAL['accent2_ink'], 'からくりの文字・今ターン鳴る帯（7.2:1）'),
     ]),
     ('意味の色', [
         ('薔薇', 'rose', P_FINAL['hp'], 'HP バー・与ダメの札・敗北'),
@@ -313,7 +313,7 @@ TOKENS = [
 CHANGES = [
     ('墨', '#3b2f2f', P_FINAL['ink'], '焦げ茶 → 鉛筆の黒鉄'), ('中墨', '#574b48', P_FINAL['ink_soft'], '7:1 を保って黒鉄側へ'),
     ('主役 (蜂蜜→真鍮)', '#e0b25a', P_FINAL['accent'], '選択・狙い・G・R・目盛り'), ('決定のボタン', '#f6dd98', P_FINAL['accent_light'], '真鍮の紙'), ('金の文字', '#7a4e12', P_FINAL['accent_ink'], '真鍮の墨 7.5:1'),
-    ('エナジー', '#e0b25a', P_FINAL['energy'], '青緑へ（玉と輪は描き直し）'), ('HP', '#d97b7b', P_FINAL['hp'], '一段濃く'), ('ブロック', '#7fa7c9', P_FINAL['block'], '一段濃く・青へ'),
+    ('エナジー', '#e0b25a', P_FINAL['energy'], '真鍮へ（黄色系のまま。玉の絵は据え置き）'), ('HP', '#d97b7b', P_FINAL['hp'], '一段濃く'), ('ブロック', '#7fa7c9', P_FINAL['block'], '一段濃く・青へ'),
     ('成長', '#8fae7b', P_FINAL['good'], '一段濃く・緑へ'), ('状態異常', '#a98cc4', P_FINAL['status'], '一段濃く'), ('置物の帯', '#e0b25a', P_FINAL['types']['permanent'], '蜂蜜 → 鈍い黄（真鍮と分ける）'),
 ]
 
@@ -345,8 +345,8 @@ def board_main():
     # 規律
     ry = y0 + 500
     rules = [
-        '① 真鍮は「価値」に限る: 選択中の札と狙っている敵の縁・決定のボタン（真鍮の紙）・G・R の外線・HP バーの「行動が変わる線」・勢いと急所の印。置物の帯は鈍い黄（オリーブ）で真鍮から離す',
-        '② 青緑は「マナ」に限る: エナジーの輪と数字・コスト玉・からくり（仕込み札）の帯とトークン・斬撃の縁・舞台の露頭。割引の玉は苔のまま',
+        '① 真鍮は「価値と資源」に限る: 選択中の札と狙っている敵の縁・決定のボタン（真鍮の紙）・G・エナジー（コスト玉・輪）・R の外線・HP バーの「行動が変わる線」・勢いと急所の印。置物の帯は鈍い黄（オリーブ）で真鍮から離す',
+        '② 青緑は「からくりと光」に限る: 仕込み札のトークン（縁と帯）・「仕込む」・斬撃の縁・舞台の露頭。エナジーには使わない（ユーザー「エナジー表記は黄色系がいい」）。割引の玉は苔のまま',
         '③ 文字は墨か各色の「墨」版だけ（中墨 7:1・真鍮の墨 7.5:1・青緑の墨 7.2:1）。淡い色は塗りにだけ使う（2026-09-09 の規約を継承）',
         '④ 意味の色は4つだけ: 薔薇＝HP／鋼青＝ブロック／苔＝成長・良い／藤＝状態異常。危険は「危険の墨」の文字で言い、朱の塗りは作らない',
         '⑤ リーダーの色（5色）は UI に出さない。札の縁・リーダー札・敵の絵柄など「世界の側」だけ',
@@ -434,7 +434,7 @@ if __name__ == '__main__':
             dict(file='Compare.dc.html', x=0, y=2660, w=W, h=640, title='比較と推奨', page='options'),
         ],
         annotations=[
-            dict(id='decided-note', x=1220, y=0, w=520, page='decided', text='2026-09-16 裁定 (ask_user 5件): 案B／意味の色は一段濃く／リーダーの色は UI に出さない／墨だけ黒鉄・紙と夜は今のまま／コスト玉とエナジーの輪は青緑に描き直す。\n一次資料は docs/color-theme.md。実装は PaperFx を唯一の出典にして 163 の生の値を畳む。'),
+            dict(id='decided-note', x=1220, y=0, w=520, page='decided', text='2026-09-16 裁定 (ask_user 5件): 案B／意味の色は一段濃く／リーダーの色は UI に出さない／墨だけ黒鉄・紙と夜は今のまま／(コスト玉と輪の青緑は実装を見て同日撤回＝エナジーは黄色系の真鍮のまま)。\n一次資料は docs/color-theme.md。実装済み: PaperFx が唯一の出典。'),
             dict(id='brief', x=1220, y=0, w=520, page='options', text='全体のカラーテーマ (2026-09-16)\n決めるのは「役割→色」の割り当て。肌 (紙・二重線・水彩・手書き文字) は 2026-09-07 の裁定のまま。\n4案は同じ場面を同じ配置で描いて色だけ差し替え。'),
         ],
         launch=dict(view='canvas', page='decided'),

@@ -97,7 +97,7 @@ namespace DeckRogue.Game
             UiKit.Anchor(orb, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(-6f, -46f), new Vector2(46f, 6f));
             var orbImg = orb.gameObject.AddComponent<Image>();
             var orbArt = Theme.Art("ui", "cost_orb");   // PixelLab の玉 (26 ドット×2=52。2026-09-11)。無ければ水彩の玉
-            orbImg.sprite = orbArt != null ? orbArt : PaperFx.Orb(PaperFx.Mana);
+            orbImg.sprite = orbArt != null ? orbArt : PaperFx.Orb(PaperFx.Brass);
             orbImg.preserveAspect = true; orbImg.raycastTarget = false;
             if (!playable) orbImg.color = new Color(0.82f, 0.82f, 0.82f, 1f);
             var costT = UiKit.Deco(orb, costLabel, 22, discounted ? PaperFx.GoodInk : raised ? PaperFx.BadDown : ink, TextAnchor.MiddleCenter);

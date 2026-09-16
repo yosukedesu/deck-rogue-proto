@@ -1377,7 +1377,7 @@ namespace DeckRogue.Game
             hint.anchorMin = hint.anchorMax = new Vector2(1f, 0f); hint.pivot = new Vector2(1f, 0f);
             hint.anchoredPosition = new Vector2(-40f, 216f);
 
-            // エナジーの輪 (紙の円盤に脈の青緑の弧。2026-09-16 蜂蜜→青緑)
+            // エナジーの輪 (紙の円盤に真鍮の弧)
             var sun = UiKit.NewRect("energyOrb", root);
             UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(96f, 116f), new Vector2(224f, 244f));
             sun.localRotation = Quaternion.Euler(0f, 0f, -3f);
@@ -1389,7 +1389,7 @@ namespace DeckRogue.Game
             var arc = UiKit.NewRect("arc", sun);
             UiKit.Stretch(arc, 0f, 0f, 0f, 0f);
             var aImg = arc.gameObject.AddComponent<Image>();
-            aImg.sprite = PaperFx.Ring(7); aImg.color = PaperFx.Mana;   // エナジーの輪＝脈の青緑 (2026-09-16) aImg.raycastTarget = false;
+            aImg.sprite = PaperFx.Ring(7); aImg.color = PaperFx.Brass;   // エナジーの輪＝真鍮 (2026-09-16 ユーザー「エナジー表記は黄色系がいい」) aImg.raycastTarget = false;
             aImg.type = Image.Type.Filled; aImg.fillMethod = Image.FillMethod.Radial360; aImg.fillOrigin = 2; aImg.fillClockwise = true;
             aImg.fillAmount = st.Player.EnergyMax > 0 ? Mathf.Clamp01((float)st.Player.Energy / st.Player.EnergyMax) : 0f;
             var et = UiKit.Deco(sun, st.Player.Energy.ToString(), 40, PaperFx.Ink, TextAnchor.MiddleCenter);
