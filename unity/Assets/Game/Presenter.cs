@@ -377,7 +377,7 @@ namespace DeckRogue.Game
                                 Tween.RingBurst(fx, tagPos, PaperFx.Rose, 150f, 0.35f);
                             });
                         }
-                        Tween.After(0.25f, () => Tween.Float(fx, tagPos + new Vector2(0f, -56f), "行動が変わった", PaperFx.BrassLight, 26, 26f, 1.0f));
+                        Tween.After(0.42f, () => Tween.Float(fx, tagPos + new Vector2(0f, -56f), "行動が変わった", PaperFx.BrassLight, 26, 26f, 1.0f));   // 古い札が落ちきってから
                     }
                     else Tween.Float(fx, center + new Vector2(0f, 80f), "次のターンから行動が変わる", PaperFx.Paper2, 20, 28f, 1.1f);
                     break;
