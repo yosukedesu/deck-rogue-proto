@@ -365,6 +365,168 @@ namespace DeckRogue.Game
             });
         }
 
+        /// <summary>
+        /// 予備動作 (2026-09-17 敵の行動の演出): 足元を軸にぐっと縮んで (横に太る) から伸び上がる。舞台の板は UI の矩形の角から大きさを読むので、
+        /// 足元 (下端) を動かさないよう anchoredPosition で埋め合わせる。dur の前半で縮み、後半で 1.04 まで伸びて戻る
+        /// </summary>
+        public static void Squash(RectTransform rt, float dur = 0.24f, float sx = 1.12f, float sy = 0.86f)
+        {
+            if (rt == null) return;
+            var origin = rt.anchoredPosition; float h = rt.rect.height; float pivotY = rt.pivot.y;
+            Run(dur, k =>
+            {
+                if (rt == null) return;
+                float a = k < 0.45f ? Apply(Ease.OutQuad, k / 0.45f) : 1f - Apply(Ease.OutBack, (k - 0.45f) / 0.55f);
+                float x = 1f + (sx - 1f) * a, y = 1f + (sy - 1f) * a;
+                rt.localScale = new Vector3(x, y, 1f);
+                rt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - y));   // 下端を留める
+            }, Ease.Linear, () => { if (rt != null) { rt.localScale = Vector3.one; rt.anchoredPosition = origin; } });
+        }
+
+        /// <summary>膨らむ (筋力上げ・応援): 中心から 1.15 倍まで膨らんで戻る。足元は留める</summary>
+        public static void Puff(RectTransform rt, float dur = 0.36f, float amount = 1.15f)
+        {
+            if (rt == null) return;
+            var origin = rt.anchoredPosition; float h = rt.rect.height; float pivotY = rt.pivot.y;
+            Run(dur, k =>
+            {
+                if (rt == null) return;
+                float a = Mathf.Sin(k * Mathf.PI);
+                float sc = 1f + (amount - 1f) * a;
+                rt.localScale = new Vector3(sc, sc, 1f);
+                rt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - sc));
+            }, Ease.Linear, () => { if (rt != null) { rt.localScale = Vector3.one; rt.anchoredPosition = origin; } });
+        }
+
+        /// <summary>飛び道具: 光の玉が from から to へ山なりに飛ぶ (尾を引く)。着いたら onArrive</summary>
+        public static void Projectile(RectTransform layer, Vector2 from, Vector2 to, Color color, float size = 44f, float dur = 0.24f, float arc = 60f, Action onArrive = null)
+        {
+            if (layer == null) { onArrive?.Invoke(); return; }
+            var rt = UiKit.NewRect("projectile", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(size, size); rt.anchoredPosition = from;
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = ThemeFx.Glow(); img.color = color; img.raycastTarget = false;
+            var core = UiKit.NewRect("core", rt);
+            UiKit.Stretch(core, size * 0.3f, size * 0.3f, size * 0.3f, size * 0.3f);
+            var cImg = core.gameObject.AddComponent<Image>(); cImg.sprite = ThemeFx.Glow(); cImg.color = new Color(1f, 1f, 0.95f, 0.95f); cImg.raycastTarget = false;
+            Vector2 last = from; int trailEvery = 0;
+            Run(dur, k =>
+            {
+                if (rt == null) return;
+                var p = Vector2.Lerp(from, to, k) + new Vector2(0f, arc * Mathf.Sin(k * Mathf.PI));
+                rt.anchoredPosition = p;
+                if (++trailEvery % 2 == 0)
+                {   // 尾: 小さな光を置いて消す
+                    var tr = UiKit.NewRect("trail", layer);
+                    tr.anchorMin = tr.anchorMax = new Vector2(0.5f, 0.5f);
+                    tr.sizeDelta = new Vector2(size * 0.6f, size * 0.6f); tr.anchoredPosition = last;
+                    var tImg = tr.gameObject.AddComponent<Image>(); tImg.sprite = ThemeFx.Glow(); tImg.color = new Color(color.r, color.g, color.b, color.a * 0.6f); tImg.raycastTarget = false;
+                    Run(0.18f, kk => { if (tr != null) { tImg.color = new Color(color.r, color.g, color.b, color.a * 0.6f * (1f - kk)); tr.localScale = Vector3.one * (1f - 0.6f * kk); } }, Ease.Linear, () => { if (tr != null) UnityEngine.Object.Destroy(tr.gameObject); });
+                }
+                last = p;
+            }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); onArrive?.Invoke(); });
+        }
+
+        /// <summary>光線: from から to へ一直線の筋 (白い芯＋色の縁) が一瞬走って消える</summary>
+        public static void BeamFx(RectTransform layer, Vector2 from, Vector2 to, Color color, float dur = 0.28f, float thick = 1f)
+        {
+            if (layer == null) return;
+            var d = to - from; float len = d.magnitude; float ang = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
+            var rt = UiKit.NewRect("beam", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0f, 0.5f);
+            rt.sizeDelta = new Vector2(len, 28f * thick); rt.anchoredPosition = from;
+            rt.localRotation = Quaternion.Euler(0f, 0f, ang);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = ThemeFx.SlashStreak(); img.color = color; img.raycastTarget = false;
+            rt.localScale = new Vector3(0f, 1f, 1f);
+            Run(dur, k =>
+            {
+                if (rt == null) return;
+                float grow = Apply(Ease.OutCubic, Mathf.Clamp01(k / 0.35f));
+                rt.localScale = new Vector3(grow, 1f - 0.7f * Mathf.Clamp01((k - 0.35f) / 0.65f), 1f);
+                float fade = k < 0.5f ? 1f : 1f - (k - 0.5f) / 0.5f;
+                img.color = new Color(color.r, color.g, color.b, color.a * fade);
+            }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+            Pop(layer, to, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.85f), 160f, 0.3f, 1.2f, 0.22f, 0f, dur * 0.3f);
+        }
+
+        /// <summary>
+        /// 種類別の当たり (2026-09-17): 敵の技の名前から選ぶ。fang=牙 (2本の短い筋が噛み合う)・claw=爪 (3本の平行な筋)・thrust=突き (水平の細い筋)・
+        /// blunt=打撃 (太い縦の筋＋大きな光＋地面の輪)・beam=光線 (着弾の光と縦の筋)・throw=飛び道具の着弾 (色の輪と飛沫)・slash=斬撃 (SlashFx)
+        /// </summary>
+        public static void HitFx(RectTransform layer, Vector2 pos, string style, Color color, bool big)
+        {
+            if (layer == null) return;
+            var white = new Color(1f, 1f, 1f, 1f);
+            switch (style)
+            {
+                case "fang":
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.6f), 150f, 0.4f, 1.0f, 0.14f, 0f, 0f);
+                    Streak(layer, pos + new Vector2(0f, 26f), -62f, color, 210f * (big ? 1.3f : 1f), 1f, 0.26f, 0f, 1.3f);
+                    Streak(layer, pos + new Vector2(0f, -26f), 62f, color, 210f * (big ? 1.3f : 1f), 1f, 0.26f, 0.03f, 1.3f);
+                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 130f : 96f, 0.3f, 1.2f, 0.2f, 20f, 0.05f);
+                    Sparks(layer, pos, color, big ? 8 : 5, 0f);
+                    break;
+                case "claw":
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.55f), 150f, 0.4f, 1.0f, 0.14f, 0f, 0f);
+                    for (int i = -1; i <= 1; i++) Streak(layer, pos + Perp(-38f) * (i * 26f), -38f, color, 300f * (big ? 1.25f : 1f), 0.95f, 0.28f, 0.02f * (i + 1), 0.7f);
+                    Sparks(layer, pos, color, big ? 9 : 6, -38f);
+                    break;
+                case "thrust":
+                    // 突き: 右 (敵の側) から水平に走る細い筋が刺さり、小さな光。火花は正面へ
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.6f), 140f, 0.4f, 1.0f, 0.14f, 0f, 0f);
+                    Streak(layer, pos + new Vector2(90f, 4f), 180f, color, 300f * (big ? 1.3f : 1f), 1f, 0.24f, 0f, 0.75f);
+                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 120f : 90f, 0.3f, 1.2f, 0.2f, 15f, 0.03f);
+                    Sparks(layer, pos, color, big ? 8 : 5, 180f);
+                    break;
+                case "blunt":
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.8f), big ? 260f : 200f, 0.3f, 1.2f, 0.18f, 0f, 0f);
+                    Streak(layer, pos + new Vector2(0f, 60f), -90f, color, 220f * (big ? 1.3f : 1f), 1f, 0.24f, 0f, 1.8f);
+                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 170f : 130f, 0.3f, 1.4f, 0.24f, 0f, 0.02f);
+                    RingBurst(layer, pos + new Vector2(0f, -40f), new Color(color.r, color.g, color.b, 0.7f), big ? 220f : 170f, 0.32f);
+                    Sparks(layer, pos, color, big ? 10 : 6, -90f);
+                    break;
+                case "beam":
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.9f), big ? 240f : 190f, 0.2f, 1.3f, 0.22f, 0f, 0f);
+                    Streak(layer, pos, 90f, color, 160f, 0.9f, 0.22f, 0f, 1.2f);
+                    Streak(layer, pos, -90f, color, 160f, 0.9f, 0.22f, 0f, 1.2f);
+                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 150f : 110f, 0.3f, 1.3f, 0.22f, 30f, 0.02f);
+                    break;
+                case "throw":
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.7f), 140f, 0.4f, 1.1f, 0.2f, 0f, 0f);
+                    RingBurst(layer, pos, color, big ? 180f : 140f, 0.3f);
+                    Sparks(layer, pos, color, big ? 9 : 6, 90f);
+                    break;
+                default:
+                    SlashFx(layer, pos, UnityEngine.Random.Range(20f, 50f), color, big);
+                    break;
+            }
+        }
+
+        /// <summary>火花 n 個を angle の向きに散らす (SlashFx と同じ放物線)</summary>
+        static void Sparks(RectTransform layer, Vector2 pos, Color color, int n, float angle)
+        {
+            var white = new Color(1f, 1f, 1f, 1f);
+            var dirV = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+            for (int i = 0; i < n; i++)
+            {
+                var sp = UiKit.NewRect("spark", layer);
+                sp.anchorMin = sp.anchorMax = new Vector2(0.5f, 0.5f);
+                float sz = UnityEngine.Random.Range(16f, 30f);
+                sp.sizeDelta = new Vector2(sz, sz); sp.anchoredPosition = pos;
+                var sImg = sp.gameObject.AddComponent<Image>();
+                sImg.sprite = ThemeFx.Spark(); sImg.raycastTarget = false;
+                sImg.color = (i % 3 == 0) ? white : color;
+                float spread = UnityEngine.Random.Range(-1.2f, 1.2f);
+                var vel = (dirV * UnityEngine.Random.Range(-1f, 1f) + Perp(angle) * spread).normalized * UnityEngine.Random.Range(180f, 380f);
+                var start = pos; float dur = UnityEngine.Random.Range(0.25f, 0.4f); float spin = UnityEngine.Random.Range(-900f, 900f);
+                var c0 = sImg.color;
+                Run(dur, k => { if (sp == null) return; float t = k * dur; sp.anchoredPosition = start + vel * t + new Vector2(0f, -520f) * t * t; sp.localRotation = Quaternion.Euler(0f, 0f, t * spin); sImg.color = new Color(c0.r, c0.g, c0.b, 1f - k * k); }, Ease.Linear, () => { if (sp != null) UnityEngine.Object.Destroy(sp.gameObject); });
+            }
+        }
+
         /// <summary>踏み込み: 前へ出て戻る (敵の攻撃・自分の攻撃)</summary>
         public static void Lunge(RectTransform rt, Vector2 dir, float dur = 0.28f)
         {

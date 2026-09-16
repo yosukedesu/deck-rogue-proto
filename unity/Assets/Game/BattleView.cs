@@ -104,6 +104,7 @@ namespace DeckRogue.Game
                 _bgAct = run.Act;
             }
             // 敵の入れ物: 数が変わったら作り直す (分裂・孵化)
+            int prevCount = _enemiesArea != null ? _enemyPanels.Count : 0;   // 増えた分は登場の演出 (2026-09-17)
             if (_enemiesArea == null || _enemyPanels.Count != st.Enemies.Count)
             {
                 if (_enemiesArea != null) { _enemiesArea.SetParent(null, false); UnityEngine.Object.Destroy(_enemiesArea.gameObject); }
@@ -160,17 +161,36 @@ namespace DeckRogue.Game
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
                 if (wasAlive && !alive)
                 {
-                    // 撃破: スプライトが白く光ってから沈む
                     var sprRt = pan.Find("sprite") as RectTransform;
                     var sprImg = sprRt != null ? sprRt.GetComponent<Image>() : null;
-                    if (sprImg != null)
-                    {
+                    if (st.Enemies[i].Fled == true)
+                    {   // 逃走 (2026-09-17): 奥へ走り去る = 右へ滑って薄くなる
+                        if (sprImg != null)
+                        {
+                            var from = sprImg.color; sprImg.color = Color.white;
+                            Tween.Move(sprRt, sprRt.anchoredPosition + new Vector2(420f, 40f), 0.55f, Ease.InQuad);
+                            Tween.Run(0.55f, k => { if (sprImg != null) sprImg.color = new Color(1f, 1f, 1f, 1f - k); }, Ease.InQuad);
+                        }
+                    }
+                    else if (sprImg != null)
+                    {   // 撃破: スプライトが白く光ってから沈む
                         var dim = sprImg.color;
                         sprImg.color = Color.white;
                         Tween.Run(0.5f, k => { if (sprImg != null) sprImg.color = Color.Lerp(Color.white, dim, k); }, Ease.InQuad);
                         Tween.Move(sprRt, sprRt.anchoredPosition + new Vector2(0f, -30f), 0.5f, Ease.InQuad);
                     }
                     Audio.Key(st.Enemies[i].Fled == true ? "EnemyFled" : "EnemyDied");
+                }
+                else if (prevCount > 0 && i >= prevCount && alive)
+                {   // 登場 (召喚・分裂・孵化の子。2026-09-17): 小さく現れて弾んで等身大に、足元に青緑の輪
+                    var sprRt = pan.Find("sprite") as RectTransform;
+                    if (sprRt != null)
+                    {
+                        var origin = sprRt.anchoredPosition; float h = sprRt.rect.height; float pivotY = sprRt.pivot.y;
+                        var srt = sprRt;
+                        Tween.Run(0.45f, k => { if (srt == null) return; float sc = 0.2f + 0.8f * Tween.Apply(Ease.OutBack, k); srt.localScale = new Vector3(sc, sc, 1f); srt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - sc)); }, Ease.Linear, () => { if (srt != null) { srt.localScale = Vector3.one; srt.anchoredPosition = origin; } });
+                        if (g.FxLayer != null) Tween.RingBurst(g.FxLayer, Tween.CenterIn(sprRt, g.FxLayer) + new Vector2(0f, -h * 0.4f), PaperFx.Mana, 200f, 0.5f);
+                    }
                 }
             }
             // リーダー

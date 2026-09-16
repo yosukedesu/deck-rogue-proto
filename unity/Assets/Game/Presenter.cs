@@ -104,6 +104,8 @@ namespace DeckRogue.Game
                 else if (IsStatusEvent(ev)) gap = 0.3f;
                 else if (ev is GameEvent_ReactionTriggered) gap = 0.55f;   // 札が飛んで着弾するまで待ってから返しのダメージ (2026-09-17)
                 else if (IsTrapEvent(ev)) gap = 0.3f;
+                else if (ev is GameEvent_EnemyActionExecuting) gap = 0.32f;   // 予備動作 (縮む) → 当たり (2026-09-17)
+                else if (IsEnemyActEvent(ev)) gap = 0.25f;
                 else if (TableSound(ev) != null) gap = 0.12f;   // 表 (audio.json) で音だけ鳴るイベント (撃破・分裂…)
                 else continue;
                 var captured = ev;
@@ -130,6 +132,7 @@ namespace DeckRogue.Game
             // 同じ戦闘か: CombatStarted の位置が変わらなければ同じ (イベントログは追記のみ)
             if (_seen > 0 && _seen <= log.Count && !(log[0] is GameEvent_CombatStarted)) _seen = 0;
             var fx = g.FxLayer;
+            var prevBoard = _seenCombat as GameState;   // コマンド前の盤面 (敵の実行中の技の名前・仕込み札の枠を引く)
             // Rebuild 直後は LayoutGroup が未計算 (全て原点) なので、的の座標を読む前にレイアウトを確定させる
             Canvas.ForceUpdateCanvases();
             // カードが敵へ飛ぶ 0.2 秒に着弾を合わせる
@@ -139,12 +142,12 @@ namespace DeckRogue.Game
             {
                 var ev = log[i];
                 if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); try { Show(g, fx, cp, false); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
-                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || TableSound(ev) != null)) continue;
+                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
-                var ctx = ReactionContextFor(g, log, i, combat);
+                var ctx = ReactionContextFor(g, log, i, prevBoard);
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
-                delay += ev is GameEvent_ReactionTriggered ? 0.45f : 0.12f;
+                delay += ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : 0.12f;
             }
             _seen = log.Count;
             _seenCombat = combat;
@@ -153,6 +156,180 @@ namespace DeckRogue.Game
         // ---- からくり (仕込み札) の演出 (2026-09-17 ユーザー「戦闘の演出で足りていないもの」→ ⑤ リアクション発動から) ----
         // 発動: 札の幽霊が仕込み枠から跳ねて飛び出し、返し/打ち消しなら行動している敵の意図の札へ、守りなら自分へ。着弾で青緑の輪と星。枠の上に「発動」の判。
         // 打ち消し: 敵の意図の札に真鍮の×が押され、札が揺れる。温存: 「温存」の判 (灰)。期限切れ: 札が捨て札へ落ちる。壊し: 札が砕ける。空振り: 小さく「空振り」。
+
+        /// <summary>
+        /// 敵の行動の演出 (2026-09-17 ユーザー「戦闘の演出で足りていないもの」→ ①②): 実行の瞬間 (EnemyActionExecuting) に技の種類ごとの予備動作。
+        /// 攻撃＝縮んで伸びる (当たりは DamageDealt で種類別)。防御＝盾を構える (絵は少し沈む)。筋力上げ＝膨らんで真鍮の輪。応援＝膨らんで味方へ輪が飛ぶ。
+        /// 呪い＝藤の玉が自分へ飛ぶ。回復＝苔の玉が味方へ。盗み＝金の玉が G の札へ。山札喰い＝闇の玉が山札へ。逃走＝走り去る (BattleView)。隙＝「隙」とうつむく。
+        /// 意図の札は実行の瞬間に一度跳ねる (どの札が動いたか)
+        /// </summary>
+        static void ShowEnemyAct(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx)
+        {
+            switch (ev)
+            {
+                case GameEvent_EnemyActionExecuting ex:
+                {
+                    var pan = g.Anchor("enemy" + ex.EnemyIndex);
+                    var spr = g.Battle != null ? g.Battle.EnemySprite(ex.EnemyIndex) : null;
+                    if (pan == null) return;
+                    var tag = pan.Find("intent-tag") as RectTransform;
+                    if (tag != null) Tween.Punch(tag, 0.16f);
+                    Vector2 center = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
+                    string moveId = MoveIdFor(ctx, ex.EnemyIndex);
+                    var playerRt = g.Anchor("player");
+                    var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    Vector2 playerPos = pSpr != null ? Tween.CenterIn(pSpr, fx) : (playerRt != null ? Tween.CenterIn(playerRt, fx) : center + new Vector2(-600f, 0f));
+                    switch (ex.Kind)
+                    {
+                        case "attack":
+                        case "destroy-set":
+                        case "destroy-token":
+                            if (spr != null) Tween.Squash(spr, 0.26f);
+                            break;
+                        case "defend":
+                            if (spr != null) Tween.Squash(spr, 0.3f, 1.06f, 0.94f);
+                            break;
+                        case "buff":
+                            if (spr != null) Tween.Puff(spr, 0.4f, 1.15f);
+                            Tween.RingBurst(fx, center, PaperFx.Brass, 180f, 0.4f);
+                            Audio.Key("EnemyIntentDeclared");
+                            break;
+                        case "rally":
+                        {
+                            if (spr != null) Tween.Puff(spr, 0.4f, 1.12f);
+                            Tween.RingBurst(fx, center, PaperFx.Brass, 220f, 0.45f);
+                            var st = ctx.Prev ?? (g.Rs != null ? g.Rs.Combat : null);
+                            if (st != null)
+                                for (int j = 0; j < st.Enemies.Count; j++)
+                                {
+                                    if (j == ex.EnemyIndex || st.Enemies[j].Hp <= 0) continue;
+                                    var ally = g.Battle != null ? g.Battle.EnemySprite(j) : null; var apan = g.Anchor("enemy" + j);
+                                    if (ally == null && apan == null) continue;
+                                    var to = ally != null ? Tween.CenterIn(ally, fx) : Tween.CenterIn(apan, fx);
+                                    Tween.Projectile(fx, center, to, PaperFx.Brass, 34f, 0.28f, 80f, () => Tween.RingBurst(fx, to, PaperFx.Brass, 120f, 0.3f));
+                                }
+                            break;
+                        }
+                        case "hex":
+                            if (spr != null) Tween.Puff(spr, 0.3f, 1.08f);
+                            Tween.Projectile(fx, center, playerPos + new Vector2(0f, 30f), PaperFx.Plum, 48f, 0.28f, 90f, () => Tween.RingBurst(fx, playerPos + new Vector2(0f, 30f), PaperFx.Plum, 150f, 0.35f));
+                            break;
+                        case "heal":
+                            if (spr != null) Tween.Puff(spr, 0.3f, 1.06f);
+                            break;
+                        case "steal-gold":
+                        {
+                            if (spr != null) Tween.Squash(spr, 0.26f);
+                            var gold = g.Anchor("gold");
+                            if (gold != null) Tween.Projectile(fx, Tween.CenterIn(gold, fx), center, PaperFx.Brass, 36f, 0.32f, 60f, () => Tween.RingBurst(fx, center, PaperFx.Brass, 120f, 0.3f));
+                            break;
+                        }
+                        case "mill":
+                        {
+                            var pile = g.Anchor("pile-draw");
+                            if (spr != null) Tween.Squash(spr, 0.26f, 1.1f, 0.9f);
+                            if (pile != null) { var to = Tween.CenterIn(pile, fx); Tween.Projectile(fx, center, to, PaperFx.PlumInk, 48f, 0.3f, 100f, () => { Tween.RingBurst(fx, to, PaperFx.Plum, 140f, 0.3f); Tween.Shake(pile, 8f, 0.3f); }); }
+                            break;
+                        }
+                        case "rest":
+                            Tween.Float(fx, center + new Vector2(0f, 40f), "隙", PaperFx.PaperDim, 28, 30f, 0.9f);
+                            if (spr != null) Tween.Squash(spr, 0.5f, 1.04f, 0.96f);
+                            break;
+                        case "summon":
+                        case "hatch":
+                            if (spr != null) Tween.Puff(spr, 0.4f, 1.12f);
+                            Tween.RingBurst(fx, center, PaperFx.Mana, 200f, 0.45f);
+                            break;
+                        case "flee":
+                            if (spr != null) Tween.Squash(spr, 0.26f);
+                            break;
+                    }
+                    break;
+                }
+                case GameEvent_EnemyHealed eh:
+                {
+                    Audio.Key("EnemyHealed");
+                    var tspr = g.Battle != null ? g.Battle.EnemySprite(eh.TargetIndex) : null; var tpan = g.Anchor("enemy" + eh.TargetIndex);
+                    if (tspr == null && tpan == null) return;
+                    var to = tspr != null ? Tween.CenterIn(tspr, fx) : Tween.CenterIn(tpan, fx);
+                    var hspr = g.Battle != null ? g.Battle.EnemySprite(eh.EnemyIndex) : null;
+                    Action land = () => { Tween.IconBurst(fx, to + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f); Tween.Float(fx, to + new Vector2(0f, 50f), "+" + eh.Amount, PaperFx.MossLight, 30, 40f, 0.8f); };
+                    if (hspr != null && eh.EnemyIndex != eh.TargetIndex) Tween.Projectile(fx, Tween.CenterIn(hspr, fx), to, PaperFx.Moss, 44f, 0.3f, 90f, land); else land();
+                    break;
+                }
+                case GameEvent_GoldStolen gs:
+                {
+                    Audio.Key("GoldStolen");
+                    var gold = g.Anchor("gold");
+                    var pos = gold != null ? Tween.CenterIn(gold, fx) : new Vector2(0f, 400f);
+                    Tween.Float(fx, pos + new Vector2(0f, -40f), "−" + gs.Amount + "G", PaperFx.BrassLight, 28, 30f, 1.0f);
+                    if (gold != null) Tween.Shake(gold, 6f, 0.3f);
+                    break;
+                }
+                case GameEvent_CardsMilled cm:
+                {
+                    Audio.Key("CardsMilled");
+                    var pile = g.Anchor("pile-draw");
+                    if (pile == null) return;
+                    Tween.Float(fx, Tween.CenterIn(pile, fx) + new Vector2(0f, 40f), "山札 −" + cm.Count, PaperFx.Plum, 26, 36f, 1.0f);
+                    break;
+                }
+                case GameEvent_ThornsReflected tr:
+                {
+                    Audio.Key("ThornsReflected");
+                    var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null; var prt = g.Anchor("player");
+                    if (pSpr == null && prt == null) return;
+                    var pos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(prt, fx);
+                    Tween.HitFx(fx, pos, "claw", new Color(1f, 0.62f, 0.5f, 0.9f), false);
+                    Tween.Float(fx, pos + new Vector2(40f, 40f), "とげ −" + tr.HpLoss, UiKit.ColBad, 28, 36f, 0.9f);
+                    if (tr.HpLoss > 0) { Stage.Flash("player"); if (g.Battle != null) g.Battle.NudgePlayerHp(-tr.HpLoss); }
+                    break;
+                }
+                case GameEvent_BurnTick bt:
+                {
+                    Audio.Key("BurnTick");
+                    var spr = g.Battle != null ? g.Battle.EnemySprite(bt.EnemyIndex) : null; var pan = g.Anchor("enemy" + bt.EnemyIndex);
+                    if (spr == null && pan == null) return;
+                    var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
+                    Tween.IconBurst(fx, pos, "burn", new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.9f), 120f);
+                    Tween.Float(fx, pos + new Vector2(0f, 40f), bt.Amount.ToString(), PaperFx.Ember, 34, 44f, 0.9f);
+                    if (g.Battle != null) g.Battle.NudgeEnemyHp(bt.EnemyIndex, -bt.Amount);
+                    break;
+                }
+                case GameEvent_RegenTicked rg:
+                {
+                    Audio.Key("RegenTicked");
+                    var spr = g.Battle != null ? g.Battle.EnemySprite(rg.EnemyIndex) : null; var pan = g.Anchor("enemy" + rg.EnemyIndex);
+                    if (spr == null && pan == null) return;
+                    var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
+                    Tween.IconBurst(fx, pos + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 90f);
+                    Tween.Float(fx, pos + new Vector2(0f, 50f), "+" + rg.Amount, PaperFx.MossLight, 28, 36f, 0.8f);
+                    break;
+                }
+                case GameEvent_BlockShattered bs:
+                {
+                    Audio.Key("BlockShattered");
+                    var spr = g.Battle != null ? g.Battle.EnemySprite(bs.EnemyIndex) : null; var pan = g.Anchor("enemy" + bs.EnemyIndex);
+                    if (spr == null && pan == null) return;
+                    var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
+                    Tween.IconBurst(fx, pos, "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.9f), 140f);
+                    Tween.RingBurst(fx, pos, PaperFx.SkyLight, 180f, 0.35f);
+                    Tween.Float(fx, pos + new Vector2(0f, 50f), "盾を砕いた " + bs.Amount, PaperFx.SkyLight, 26, 36f, 0.9f);
+                    Stage.Shake(5f, 0.2f);
+                    break;
+                }
+                case GameEvent_EnemyStaggered es:
+                {
+                    Audio.Key("EnemyStaggered");
+                    var spr = g.Battle != null ? g.Battle.EnemySprite(es.EnemyIndex) : null; var pan = g.Anchor("enemy" + es.EnemyIndex);
+                    if (spr == null && pan == null) return;
+                    var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
+                    if (spr != null) Tween.Shake(spr, 10f, 0.4f);
+                    Tween.Float(fx, pos + new Vector2(0f, 50f), "体勢を崩した", PaperFx.BrassLight, 26, 36f, 1.0f);
+                    break;
+                }
+            }
+        }
 
         static void ShowTrap(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx)
         {
@@ -298,12 +475,57 @@ namespace DeckRogue.Game
         static string TableSound(GameEvent ev)
         {
             if (ev == null) return null;
-            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev)) return null;
+            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev)) return null;
             // 絵の側 (BattleView) が札の飛び・撃破の消えに合わせて鳴らすイベントは、ここでは二重に鳴らさない
             if (ev is GameEvent_CardSet || ev is GameEvent_CardsDrawn || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled) return null;
             var n = ev.GetType().Name;
             if (n.StartsWith("GameEvent_")) n = n.Substring("GameEvent_".Length);
             return Audio.HasKey(n) ? n : null;
+        }
+
+        /// <summary>敵の行動の出来事 (2026-09-17 敵の行動の演出): 実行の予備動作・回復・盗み・山札喰い・突き刺し/延焼/再生の数字。絵と音を Show で</summary>
+        static bool IsEnemyActEvent(GameEvent ev)
+        {
+            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered;
+        }
+
+        /// <summary>実行中の技の名前 (EnemyState.IntentMoveId)。コマンド前の盤面から読む (今の盤面は次の宣言に変わっている)</summary>
+        static string MoveIdFor(ReactionCtx ctx, int enemyIndex)
+        {
+            var st = ctx != null ? ctx.Prev : null;
+            if (st == null || enemyIndex < 0 || enemyIndex >= st.Enemies.Count) return null;
+            return st.Enemies[enemyIndex].IntentMoveId;
+        }
+
+        /// <summary>技の名前 → 当たりの形 (Tween.HitFx)。牙・爪・突き・打撃・光線・飛び道具・斬撃</summary>
+        static string HitStyle(string moveId)
+        {
+            if (string.IsNullOrEmpty(moveId)) return "slash";
+            string m = moveId.ToLowerInvariant();
+            string[] fang = { "bite", "chomp", "gnaw", "lick", "tongue", "mug", "devour", "maw" };
+            string[] claw = { "claw", "rend", "slash", "talon", "wing", "blade", "cleave", "guillotine", "whip", "lash", "tail", "dance", "scythe", "sickle" };
+            string[] beam = { "bolt", "beam", "surge", "spark", "shot", "bell", "mirror", "mimic", "chant", "light", "ray", "gaze", "curse_ray" };
+            string[] thrw = { "spit", "mud", "slop", "toss", "boom", "peck", "acid", "spore", "ember", "junk", "rock", "throw" };
+            string[] thrust = { "stab", "poke", "jab", "lunge", "thrust", "pierce", "spear", "horn", "needle", "sting" };
+            string[] blunt = { "slam", "smash", "crush", "club", "hammer", "thump", "pummel", "bump", "tackle", "bash", "swing", "flurry", "leap", "dive", "hug", "smother", "rush", "weight", "chain", "one_two", "stance", "charge", "ram", "stomp", "press" };
+            foreach (var k in fang) if (m.Contains(k)) return "fang";
+            foreach (var k in thrust) if (m.Contains(k)) return "thrust";
+            foreach (var k in claw) if (m.Contains(k)) return "claw";
+            foreach (var k in beam) if (m.Contains(k)) return "beam";
+            foreach (var k in thrw) if (m.Contains(k)) return "throw";
+            foreach (var k in blunt) if (m.Contains(k)) return "blunt";
+            return "slash";
+        }
+
+        /// <summary>飛び道具・光線の色 (技の名前から。酸/胞子=苔・泥/がらくた=砂・火=延焼の橙・呪い/闇=藤・それ以外=脈の青緑)</summary>
+        static Color MissileColor(string moveId)
+        {
+            string m = (moveId ?? "").ToLowerInvariant();
+            if (m.Contains("acid") || m.Contains("spore")) return PaperFx.Moss;
+            if (m.Contains("mud") || m.Contains("slop") || m.Contains("junk") || m.Contains("rock")) return PaperFx.Sand;
+            if (m.Contains("ember") || m.Contains("boom") || m.Contains("fire") || m.Contains("spark")) return PaperFx.Ember;
+            if (m.Contains("curse") || m.Contains("dark") || m.Contains("hex") || m.Contains("shadow")) return PaperFx.Plum;
+            return PaperFx.Mana;
         }
 
         /// <summary>からくり (仕込み札) の出来事: 発動・温存・期限切れ・壊し・空振り・打ち消し。絵と音を Show で (2026-09-17 リアクション発動の演出)</summary>
@@ -313,13 +535,18 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; }
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; }
         static ReactionCtx ReactionContextFor(GameRoot g, IReadOnlyList<GameEvent> log, int i, GameState visible)
         {
             var ev = log[i];
             string cardId = (ev as GameEvent_ReactionTriggered)?.CardId ?? (ev as GameEvent_SetCardExpired)?.CardId ?? (ev as GameEvent_SetCardDestroyed)?.CardId ?? (ev as GameEvent_ReactionWhiffed)?.CardId;
-            if (cardId == null && !(ev is GameEvent_ReactionHeld) && !(ev is GameEvent_ActionNegated)) return null;
-            var ctx = new ReactionCtx();
+            var ctx = new ReactionCtx { Prev = visible };
+            if (ev is GameEvent_BlockGained bg0 && bg0.Target != "player")
+            {   // 敵の防御: イベントに敵の番号が無いので、直前に実行した敵
+                for (int k = i - 1; k >= 0 && k >= i - 12 && ctx.EnemyIndex < 0; k--) { if (log[k] is GameEvent_EnemyActionExecuting ex) ctx.EnemyIndex = ex.EnemyIndex; else if (log[k] is GameEvent_TurnEnded) break; }
+                return ctx;
+            }
+            if (cardId == null && !(ev is GameEvent_ReactionHeld) && !(ev is GameEvent_ActionNegated)) return ctx;   // 敵の行動の演出は Prev (実行中の技の名前) だけ使う
             // 枠: 見えている盤面 (順送りなら古い盤面) の仕込み札から。無ければ今の盤面の最初の空き枠 (札が抜けた跡)
             var cur = g.Rs != null ? g.Rs.Combat : null;
             if (cardId != null)
@@ -370,6 +597,7 @@ namespace DeckRogue.Game
             var key = TableSound(ev);
             if (key != null) { Audio.Key(key); return; }
             if (IsTrapEvent(ev)) { ShowTrap(g, fx, ev, ctx ?? new ReactionCtx()); return; }
+            if (IsEnemyActEvent(ev)) { ShowEnemyAct(g, fx, ev, ctx ?? new ReactionCtx()); return; }
             switch (ev)
             {
                 case GameEvent_DamageDealt d:
@@ -396,35 +624,68 @@ namespace DeckRogue.Game
                     }
                     else
                     {
-                        // 攻撃した敵は踏み込み、自分は斬られて画面が揺れる
+                        // 敵の攻撃 (2026-09-17 種類別の当たり): 技の名前から 牙/爪/打撃/光線/飛び道具/斬撃 を選ぶ。
+                        // 近接は踏み込みと同時に当たる。光線と飛び道具は敵から自分へ飛んで 0.22 秒後に当たる (被弾の反応もその時)
                         var atkSpr = g.Battle != null ? g.Battle.EnemySprite(d.EnemyIndex ?? -1) : null;
-                        if (atkSpr != null) Tween.Lunge(atkSpr, new Vector2(-90f, 12f));
                         var rt = g.Anchor("player");
                         if (rt == null) return;
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                        if (pSpr != null) Tween.SlashFx(fx, Tween.CenterIn(pSpr, fx), UnityEngine.Random.Range(20f, 50f), new Color(1f, 0.62f, 0.5f, 0.95f), d.HpLoss >= 12);
-                        Audio.Key("DamageDealt.enemy.swing");
-                        // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
-                        if (d.HpLoss <= 0 && d.Amount > 0) { Audio.Key("DamageDealt.blocked"); Stage.PlayAnim("player", "block"); }
-                        else Audio.Key(d.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", d.HpLoss > 0 ? 1f : 0.5f);
-                        if (d.HpLoss > 0)
+                        string moveId = MoveIdFor(ctx, d.EnemyIndex ?? -1);
+                        string style = HitStyle(moveId);
+                        bool ranged = style == "beam" || style == "throw";
+                        Vector2 hitPos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(rt, fx);
+                        Color hitColor = ranged ? MissileColor(moveId) : new Color(1f, 0.62f, 0.5f, 0.95f);
+                        float hitDelay = 0f;
+                        if (atkSpr != null)
                         {
-                            Stage.PlayAnim("player", "hurt");
-                            if (pSpr != null) Tween.Lunge(pSpr, new Vector2(-36f, 0f));   // のけぞり (後ろへ小さく)
-                            Stage.Shake(Mathf.Min(18f, 4f + d.HpLoss * 0.7f), 0.3f);
-                            Stage.Flash("player");
-                            Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, Mathf.Min(0.35f, 0.1f + d.HpLoss * 0.015f)));
+                            if (!ranged) Tween.Lunge(atkSpr, new Vector2(-90f, 12f));
+                            else
+                            {
+                                Tween.Lunge(atkSpr, new Vector2(18f, 0f), 0.2f);   // 反動 (少し後ろへ)
+                                var from = Tween.CenterIn(atkSpr, fx) + new Vector2(-30f, 10f);
+                                hitDelay = 0.22f;
+                                if (style == "beam") Tween.BeamFx(fx, from, hitPos, hitColor, 0.3f, d.Amount >= 12 ? 1.4f : 1f);
+                                else Tween.Projectile(fx, from, hitPos, hitColor, d.Amount >= 12 ? 56f : 44f, hitDelay, 70f, null);
+                            }
                         }
-                        var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
-                        Tween.Float(fx, pos, "-" + d.Amount, d.Amount > 0 ? UiKit.ColBad : UiKit.ColDim, d.Amount >= 15 ? 46 : 36);
-                        if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.1f, 0.03f + d.Amount * 0.004f));
-                        if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgePlayerHp(-d.HpLoss);
+                        Audio.Key("DamageDealt.enemy.swing");
+                        var dd = d; var rtC = rt; var pSprC = pSpr; bool nudge = nudgeHp;
+                        Tween.After(hitDelay, () =>
+                        {
+                            Tween.HitFx(fx, hitPos, style, hitColor, dd.HpLoss >= 12);
+                            // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
+                            if (dd.HpLoss <= 0 && dd.Amount > 0) { Audio.Key("DamageDealt.blocked"); Stage.PlayAnim("player", "block"); }
+                            else Audio.Key(dd.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", dd.HpLoss > 0 ? 1f : 0.5f);
+                            if (dd.HpLoss > 0)
+                            {
+                                Stage.PlayAnim("player", "hurt");
+                                if (pSprC != null) Tween.Lunge(pSprC, new Vector2(-36f, 0f));   // のけぞり (後ろへ小さく)
+                                Stage.Shake(Mathf.Min(18f, 4f + dd.HpLoss * 0.7f) * (style == "blunt" ? 1.3f : 1f), 0.3f);
+                                Stage.Flash("player");
+                                Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f)));
+                            }
+                            var pos = Tween.CenterIn(rtC, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
+                            Tween.Float(fx, pos, "-" + dd.Amount, dd.Amount > 0 ? UiKit.ColBad : UiKit.ColDim, dd.Amount >= 15 ? 46 : 36);
+                            if (dd.Amount > 0) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f));
+                            if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
+                        });
                     }
                     break;
                 }
                 case GameEvent_BlockGained b:
                 {
-                    if (b.Target != "player") return;
+                    if (b.Target != "player")
+                    {   // 敵の防御 (2026-09-17): 盾の絵が浮かんで「+N」。帳面の盾は組み直しで出る (敵の番号は直前に実行した敵 = ctx)
+                        int ei = ctx != null ? ctx.EnemyIndex : -1;
+                        var ert = ei >= 0 ? g.Anchor("enemy" + ei) : null;
+                        var espr = g.Battle != null && ei >= 0 ? g.Battle.EnemySprite(ei) : null;
+                        if (ert == null) return;
+                        Audio.Key("BlockGained");
+                        var at = espr != null ? Tween.CenterIn(espr, fx) : Tween.CenterIn(ert, fx);
+                        Tween.IconBurst(fx, at + new Vector2(0f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.9f), 110f);
+                        Tween.Float(fx, at + new Vector2(60f, 30f), "+" + b.Amount, PaperFx.SkyLight, 28, 36f, 0.7f);
+                        return;
+                    }
                     var rt = g.Anchor("player");
                     if (rt == null) return;
                     Audio.Key("BlockGained");

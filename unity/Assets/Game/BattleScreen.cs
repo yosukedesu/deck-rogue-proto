@@ -121,6 +121,7 @@ namespace DeckRogue.Game
             }
 
             var gold = Tag(bar, 34f, 0f);
+            g.RegisterAnchor("gold", gold);   // 盗みの演出の的 (2026-09-17)
             UiKit.Icon(gold, "gold", 16f);
             var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(gt, -1f, 28f, -1f, 28f);

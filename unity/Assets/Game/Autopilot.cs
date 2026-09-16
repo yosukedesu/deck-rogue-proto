@@ -226,6 +226,7 @@ namespace DeckRogue.Game
         ///   phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost  act=1..3  deck=<deckId>  relics=<id,id>  hp=<%>  gold=<n>  difficulty=<n>  leader=<id>
         ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
         ///   fire=1 (確認の窓で最初の候補を発動してコマ送り。fireshots=枚数・fireevery=Nフレームごと。2026-09-17)
+        ///   endplay=1 (手番を終えて敵フェーズを演出付きでコマ送り。endshots=枚数・endevery=Nフレームごと。2026-09-17)
         ///   viewmap=1  viewdeck=1  log=1  name=<shot名>
         /// act/deck/relics/hp/gold/difficulty のどれかがあればチェックポイント開始 (CreateDebugCheckpointRun)、無ければ通常開始
         /// </summary>
@@ -433,6 +434,18 @@ namespace DeckRogue.Game
                 int shotsN = 4; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 4;   // playshots=N で枚数 (札が飛んで着弾するまで 0.3〜0.6 秒)
                 int every = 4; int.TryParse(Get("playevery") ?? "", out every); if (every <= 0) every = 4;      // playevery=N フレームごとに撮る (1フレーム=1/60秒に固定)
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
+                Time.captureFramerate = 0;
+                yield return WaitPresentation();
+            }
+            // endplay=1: 手番を終えて敵フェーズを演出付き (Do 経由 = 順送り) で走らせ、コマ送りで撮る (2026-09-17 敵の行動の演出)。endshots=枚数・endevery=Nフレームごと
+            if (Get("endplay") == "1" && g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.PlayerTurn)
+            {
+                Time.captureFramerate = 60;
+                Presenter.MarkSeen(g.Rs.Combat);
+                g.DoCombat(new Command_EndTurn());
+                int shotsN = 12; int.TryParse(Get("endshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 12;
+                int every = 10; int.TryParse(Get("endevery") ?? "", out every); if (every <= 0) every = 10;
+                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("end-" + i, 1); }
                 Time.captureFramerate = 0;
                 yield return WaitPresentation();
             }
