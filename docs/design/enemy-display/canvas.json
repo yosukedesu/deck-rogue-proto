@@ -1,0 +1,80 @@
+{
+ "artboards": [
+  {
+   "file": "Current.dc.html",
+   "x": 0,
+   "y": 0,
+   "w": 1100,
+   "h": 760,
+   "title": "現状 帳面の一行"
+  },
+  {
+   "file": "Main.dc.html",
+   "x": 1560,
+   "y": 0,
+   "w": 1462,
+   "h": 675,
+   "title": "案A 頭上に意図・足元に名前とHP (採択)"
+  },
+  {
+   "file": "ABoss.dc.html",
+   "x": 1560,
+   "y": 800,
+   "w": 1462,
+   "h": 675,
+   "title": "案A ボス"
+  },
+  {
+   "file": "AQuad.dc.html",
+   "x": 1560,
+   "y": 1600,
+   "w": 1462,
+   "h": 675,
+   "title": "案A 4体"
+  },
+  {
+   "file": "APC.dc.html",
+   "x": 3120,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "案A PC"
+  },
+  {
+   "file": "B.dc.html",
+   "x": 0,
+   "y": 900,
+   "w": 1462,
+   "h": 675,
+   "title": "案B 頭上に看板"
+  },
+  {
+   "file": "C.dc.html",
+   "x": 0,
+   "y": 1700,
+   "w": 1462,
+   "h": 675,
+   "title": "案C 紙なしで浮かせる"
+  },
+  {
+   "file": "Compare.dc.html",
+   "x": 3120,
+   "y": 1200,
+   "w": 1120,
+   "h": 900,
+   "title": "比較と原則"
+  }
+ ],
+ "annotations": [
+  {
+   "id": "brief",
+   "x": 0,
+   "y": -140,
+   "w": 1000,
+   "text": "敵の表示 (2026-09-16 ユーザー「敵の行動は敵の上に表示したほうがわかりやすい。敵の表示についてよく考えて」)\n意図を頭上へ戻す3つの形。下地は UI を消した実機のスクショ、絵の位置は実装値。色はカラーテーマ「黒鉄と真鍮」。\n裁定 (ask_user 3件): 案A／盾は HP バーの左端／予告は HP バーの下 → 同日 Unity に実装 (BattleScreen.IntentTag・EnemyStripH・BlockShield・ForecastLine)。"
+  }
+ ],
+ "launch": {
+  "view": "canvas"
+ }
+}
