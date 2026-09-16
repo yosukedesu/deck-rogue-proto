@@ -1,0 +1,99 @@
+{
+ "pages": [
+  {
+   "id": "decided",
+   "name": "決定"
+  },
+  {
+   "id": "options",
+   "name": "検討 (4案と比較)"
+  }
+ ],
+ "artboards": [
+  {
+   "file": "Main.dc.html",
+   "x": 0,
+   "y": 0,
+   "w": 1120,
+   "h": 1380,
+   "title": "カラーテーマ 決定版",
+   "page": "decided"
+  },
+  {
+   "file": "Current.dc.html",
+   "x": 0,
+   "y": 0,
+   "w": 1120,
+   "h": 720,
+   "title": "現状の棚卸し",
+   "page": "options"
+  },
+  {
+   "file": "DirA.dc.html",
+   "x": 0,
+   "y": 860,
+   "w": 1120,
+   "h": 760,
+   "title": "案A 墨と蜂蜜",
+   "page": "options"
+  },
+  {
+   "file": "DirB.dc.html",
+   "x": 1220,
+   "y": 860,
+   "w": 1120,
+   "h": 760,
+   "title": "案B 黒鉄と真鍮 (採択)",
+   "page": "options"
+  },
+  {
+   "file": "DirC.dc.html",
+   "x": 0,
+   "y": 1760,
+   "w": 1120,
+   "h": 760,
+   "title": "案C 脈の光",
+   "page": "options"
+  },
+  {
+   "file": "DirD.dc.html",
+   "x": 1220,
+   "y": 1760,
+   "w": 1120,
+   "h": 760,
+   "title": "案D 朱と藍",
+   "page": "options"
+  },
+  {
+   "file": "Compare.dc.html",
+   "x": 0,
+   "y": 2660,
+   "w": 1120,
+   "h": 640,
+   "title": "比較と推奨",
+   "page": "options"
+  }
+ ],
+ "annotations": [
+  {
+   "id": "decided-note",
+   "x": 1220,
+   "y": 0,
+   "w": 520,
+   "page": "decided",
+   "text": "2026-09-16 裁定 (ask_user 5件): 案B／意味の色は一段濃く／リーダーの色は UI に出さない／墨だけ黒鉄・紙と夜は今のまま／コスト玉とエナジーの輪は青緑に描き直す。\n一次資料は docs/color-theme.md。実装は PaperFx を唯一の出典にして 163 の生の値を畳む。"
+  },
+  {
+   "id": "brief",
+   "x": 1220,
+   "y": 0,
+   "w": 520,
+   "page": "options",
+   "text": "全体のカラーテーマ (2026-09-16)\n決めるのは「役割→色」の割り当て。肌 (紙・二重線・水彩・手書き文字) は 2026-09-07 の裁定のまま。\n4案は同じ場面を同じ配置で描いて色だけ差し替え。"
+  }
+ ],
+ "launch": {
+  "view": "canvas",
+  "page": "decided"
+ }
+}
