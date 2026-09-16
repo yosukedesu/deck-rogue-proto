@@ -102,9 +102,7 @@ namespace DeckRogue.Game
             RunUi.Heading(root, rd != null ? rd.Name : "レリック",
                 p.Count + "枚まで選んで「決定」。" + (remove ? "デッキは5枚を下回れない" : "同レア度の別の札にランダムで変わり、鍛えた状態で入る") + "（選ばなくてもよい）");
             var area = UiKit.NewRect("choose", root);
-            if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(-24f, -(RunUi.TopH + 100f)));   // 幅いっぱい (2026-09-15)
-            else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
-            UiKit.Vert(area, 0, 0);
+            RunUi.PickArea(root, area);
             RunUi.CardGrid(g, area, run.Deck,
                 delegate (int i, CardInstance c) { return g.RelicChoosePicks.Contains(i) ? "✓ " + verb : "選ぶ"; },
                 delegate (int i, CardInstance c) { return g.RelicChoosePicks.Contains(i) || g.RelicChoosePicks.Count < p.Count; },
@@ -115,9 +113,9 @@ namespace DeckRogue.Game
                     Audio.Ui("click");
                     g.Rebuild();
                 },
-                400f);
+                400f, confirmRoot: root, tapPicks: true, badge: delegate (int i) { return g.RelicChoosePicks.Contains(i) ? "✓" : null; });
             RunUi.BottomButton(root, "決定 (" + g.RelicChoosePicks.Count + "/" + p.Count + "枚を" + verb + ")",
-                delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>(g.RelicChoosePicks) }); }, 18, 420f, 52f, 0f, UiKit.Phone ? 24f : 40f);
+                delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>(g.RelicChoosePicks) }); }, 18, 420f, 52f, 0f, UiKit.Phone ? 14f : 40f);
         }
 
         /// <summary>レリック1個のパネル (絵文字・名前・レア度・説明)</summary>

@@ -43,8 +43,11 @@ namespace DeckRogue.Game
             var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(te, -1f, 30f, -1f, 30f);
 
-            var spacer = UiKit.NewRect("spacer", bar);
+            // 真ん中の空き (スマホの見出しはここに畳む。2026-09-16 案A: 見出し2行の高さを一覧に返す)
+            var spacer = UiKit.NewRect("center", bar);
             UiKit.Le(spacer, 10f, 10f, -1f, -1f, 1f, -1f);
+            var chg = UiKit.Horz(spacer, 0, 0);
+            chg.childAlignment = TextAnchor.MiddleCenter; chg.childForceExpandWidth = false; chg.childForceExpandHeight = false;
 
             var hp = BattleScreen.Tag(bar, 36f, 0.6f);
             UiKit.Icon(hp, "heart", 16f);
@@ -226,18 +229,72 @@ namespace DeckRogue.Game
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        /// <summary>デッキ一覧 (カードのグリッド)。onPick があればカードの下にボタン</summary>
+        /// <summary>デッキ一覧 (カードのグリッド)。onPick があればカードの下にボタン。右上に「鍛えた後を見る」</summary>
         public static void DeckViewer(GameRoot g, RectTransform root)
         {
             var inner = BattleScreen.Modal(root, 1500f, 820f, "deckViewer");
             UiKit.Head(inner, "デッキ " + g.Rs.Deck.Count + "枚", 24);
             CardGrid(g, inner, g.Rs.Deck, null, null, null, 360f);
             BattleScreen.CenteredButton(inner, "閉じる", delegate { g.ViewDeck = false; g.Rebuild(); }, 18, 260f, 50f);
+            UpgradeToggle(g, inner, 0f, 0f);
+            var tg = inner.Find("upgrade-toggle") as RectTransform;
+            if (tg != null)
+            {   // 縦レイアウトの外に出して右上に
+                var le = tg.gameObject.AddComponent<LayoutElement>(); le.ignoreLayout = true;
+                UiKit.Anchor(tg, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-232f - 64f, -18f - 44f), new Vector2(-64f, -18f));   // しおり (右端 48) と重ねない
+            }
         }
 
-        /// <summary>カードのグリッド (スクロール)。btnLabel が null を返す札はボタンなし。marked は強調</summary>
+        /// <summary>デッキから選ぶ画面の一覧の置き場 (2026-09-16 案A): スマホは上部バーの下から下の帯 (チェック・確定・戻る) の上まで幅いっぱい。PC は従来 (幅 1520・見出しの下)</summary>
+        public static void PickArea(RectTransform root, RectTransform area, float topExtra = 0f)
+        {
+            if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 74f), new Vector2(-20f, -(TopH + 10f)));
+            else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(TopH + 110f + topExtra)));
+            UiKit.Vert(area, 0, 0);
+        }
+
+        /// <summary>デッキから選ぶ画面の「戻る」: スマホは右下 (真ん中は確定ボタン・左下はチェック)、PC は真ん中の下</summary>
+        public static Button BackButton(RectTransform root, string label, Action onClick)
+        {
+            return BottomButton(root, label, onClick, 18, 220f, UiKit.Phone ? 48f : 50f, UiKit.Phone ? BattleScreen.CanvasSize(root).x / 2f - 132f : 0f, UiKit.Phone ? 14f : 40f);
+        }
+
+        /// <summary>「鍛えた後を見る」のチェック (2026-09-16 ユーザー「デッキ一覧すべてで鍛えた後を見るボタン」。本家 Smith の Show Upgrade): 入れると一覧の全部の札が鍛えた後の姿に。
+        /// 紙のボタンに墨の四角と文字。x/y は parent の左下からの位置 (幅 232・高さ 44)</summary>
+        public static void UpgradeToggle(GameRoot g, RectTransform parent, float x, float y, float w = 232f, float h = 44f)
+        {
+            bool on = g.ShowUpgraded;
+            var rt = UiKit.NewRect("upgrade-toggle", parent);
+            UiKit.Anchor(rt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y), new Vector2(x + w, y + h));
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = Theme.Button; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 1f; img.color = on ? UiKit.Hex("#fbf6e8") : Color.white;
+            var btn = rt.gameObject.AddComponent<Button>();
+            btn.targetGraphic = img;
+            btn.transition = Selectable.Transition.None;
+            btn.onClick.AddListener(delegate { Audio.Ui("click"); g.ShowUpgraded = !g.ShowUpgraded; g.Rebuild(); });
+            var box = UiKit.NewRect("box", rt);
+            UiKit.Anchor(box, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(12f, -12f), new Vector2(36f, 12f));
+            var bImg = box.gameObject.AddComponent<Image>();
+            bImg.sprite = PaperFx.Tag; bImg.type = Image.Type.Sliced; bImg.pixelsPerUnitMultiplier = 1f; bImg.color = on ? PaperFx.Ink : UiKit.Hex("#fbf6e8"); bImg.raycastTarget = false;
+            if (on)
+            {
+                var tick = UiKit.Txt(box, "✓", 18, UiKit.Hex("#f4ecd6"), TextAnchor.MiddleCenter, true);
+                tick.raycastTarget = false;
+                UiKit.Stretch(tick.rectTransform, 0f, 0f, 0f, 0f);
+            }
+            var t = UiKit.Txt(rt, "鍛えた後を見る", 15, UiKit.ColInk, TextAnchor.MiddleLeft, true);
+            t.raycastTarget = false;
+            UiKit.Anchor(t.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(44f, 0f), new Vector2(-8f, 0f));
+            Tooltip.Attach(rt.gameObject, delegate { return "入れると、一覧の全部の札が鍛えた後の姿になる (鍛えられない札はそのまま)。もう一度押すと元の姿"; });
+        }
+
+        /// <summary>カードのグリッド (スクロール)。btnLabel が null を返す札はボタンなし。marked は強調。
+        /// スマホ (2026-09-16 案A「一面の棚としおり」): 札の下のボタンを出さず「札を押す＝選ぶ」。pickKey があれば押した札に蜂蜜の縁が付き、confirmRoot の下の帯に「〜を鍛える」の確定ボタン
+        /// (tapPicks なら押した時点で onPick = 工房の素材・星読みの盤の複数選択)。badge は札の角の印 (A/B)。cellScale は札の倍率 (既定: スマホ 0.9・PC 0.8)。
+        /// 「鍛えた後を見る」(g.ShowUpgraded) が入っていれば鍛えられる札を鍛えた後の姿で描く。チェックは confirmRoot の左下に置く</summary>
         public static void CardGrid(GameRoot g, Transform parent, IReadOnlyList<CardInstance> cards,
-            Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null, List<int> starred = null)
+            Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null, List<int> starred = null,
+            string pickKey = null, RectTransform confirmRoot = null, bool tapPicks = false, Func<int, string> badge = null, float cellScale = 0f)
         {
             var content = UiKit.Scroll(parent, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
             // 一覧の高さは入れ物の残りいっぱい (flexibleHeight)。スマホは minH を付けない
@@ -248,47 +305,82 @@ namespace DeckRogue.Game
             var vg = content.GetComponent<VerticalLayoutGroup>();
             if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
             var grid = content.gameObject.AddComponent<GridLayoutGroup>();
-            bool withBtn = btnLabel != null;
-            grid.cellSize = new Vector2(CardView.W * 0.8f, CardView.H * 0.8f + (withBtn ? 48f : 0f));
+            bool phoneTap = UiKit.Phone && btnLabel != null;
+            bool withBtn = btnLabel != null && !phoneTap;
+            float sc = cellScale > 0f ? cellScale : (UiKit.Phone ? 0.86f : 0.8f);   // スマホ 0.86 = 幅いっぱいで 7列、高さ 535 に 2行がちょうど収まる
+            float cw = CardView.W * sc, chh = CardView.H * sc;
+            grid.cellSize = new Vector2(cw, chh + (withBtn ? 48f : 0f));
             grid.spacing = new Vector2(14f, 14f);
-            grid.padding = new RectOffset(12, 12, 12, 28);   // 下は多めに (最後の行のボタンが縁に触れない)
+            grid.padding = UiKit.Phone && !withBtn ? new RectOffset(10, 10, 8, 14) : new RectOffset(12, 12, 12, 28);   // 下は多めに (最後の行のボタンが縁に触れない)
             grid.childAlignment = TextAnchor.UpperLeft;
             if (cards.Count == 0)
             {
                 var none = UiKit.Txt(parent, "（空）", 18, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
                 UiKit.Le(none, -1f, 40f, -1f, 40f);
             }
+            int picked = phoneTap && !tapPicks ? g.GridPick(pickKey) : -1;
+            if (picked >= cards.Count) picked = -1;
             for (int i = 0; i < cards.Count; i++)
             {
                 var c = cards[i];
                 int idx = i;
                 bool mark = marked != null && marked.Contains(i);
                 var cell = UiKit.NewRect("cell", content);
+                // 「鍛えた後を見る」: 鍛えられる札は鍛えた後の姿で描く (長押しの拡大は元の札＝拡大の中に元/後の切り替えがある)
+                CardInstance shown = c;
+                if (g.ShowUpgraded) { try { if (Upgrade.CanUpgradeCard(c)) shown = Upgrade.UpgradeCard(c); } catch (Exception) { } }
                 // 札は raycast を受ける (長押し/右クリックで拡大表示。本家の SingleCardViewPopup)。押す・離すは cell 側の LongPressOpen が受ける
-                var cv = CardView.Build(cell, c, g.Rs.Combat, true, true, "deck-card");
-                cv.localScale = Vector3.one * 0.8f;
+                var cv = CardView.Build(cell, shown, g.Rs.Combat, true, true, "deck-card");
+                cv.localScale = Vector3.one * sc;
                 float lift = withBtn ? 24f : 0f;
                 if (lift > 0f) cv.anchoredPosition = new Vector2(0f, lift);
                 CardPopup.Attach(g, cell, c, delegate { return g.Rs != null && g.Rs.Phase == RunPhases.Combat ? g.Rs.Combat : null; }, true);
+                float hw = CardView.W * sc / 2f, hh = CardView.H * sc / 2f;
                 if (!mark && starred != null && starred.Contains(i))
                 {   // ⭐ レシピの相手札 (2026-09-12): 蜂蜜色の細い枠と星
                     var sring = UiKit.Frame(cell, Theme.Panel, new Color(0.88f, 0.7f, 0.35f, 0.85f), "star-ring", 3f);
-                    UiKit.Anchor(sring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-CardView.W * 0.4f - 6f, -CardView.H * 0.4f - 6f + lift), new Vector2(CardView.W * 0.4f + 6f, CardView.H * 0.4f + 6f + lift));
+                    UiKit.Anchor(sring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-hw - 6f, -hh - 6f + lift), new Vector2(hw + 6f, hh + 6f + lift));
                     sring.raycastTarget = false;
                     sring.transform.SetAsFirstSibling();
                     var st = UiKit.Icon(cell, "star", 32f);
                     st.raycastTarget = false;
                     st.rectTransform.anchorMin = st.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                    st.rectTransform.anchoredPosition = new Vector2(-CardView.W * 0.4f + 4f, CardView.H * 0.4f + lift - 4f);
+                    st.rectTransform.anchoredPosition = new Vector2(-hw + 4f, hh + lift - 4f);
                 }
-                if (mark)
+                if (mark || picked == i)
                 {
-                    var ring = UiKit.Frame(cell, Theme.Panel, new Color(1f, 0.85f, 0.3f, 0.6f), "mark", 3f);
-                    UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-CardView.W * 0.4f - 8f, -CardView.H * 0.4f - 8f + lift), new Vector2(CardView.W * 0.4f + 8f, CardView.H * 0.4f + 8f + lift));
+                    var ring = UiKit.Frame(cell, Theme.Panel, picked == i ? new Color(0.88f, 0.7f, 0.35f, 0.95f) : new Color(1f, 0.85f, 0.3f, 0.6f), "mark", 3f);
+                    UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-hw - 8f, -hh - 8f + lift), new Vector2(hw + 8f, hh + 8f + lift));
                     ring.raycastTarget = false;
                     ring.transform.SetAsFirstSibling();
                 }
-                if (withBtn)
+                string bd = badge != null ? badge(i) : null;
+                if (!string.IsNullOrEmpty(bd))
+                {   // 札の角の印 (工房の A/B・星読みの盤の ✓)
+                    var b = UiKit.NewRect("badge", cell);
+                    UiKit.Anchor(b, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(hw - 22f, hh + lift - 22f), new Vector2(hw + 14f, hh + lift + 14f));
+                    var bi = b.gameObject.AddComponent<Image>();
+                    bi.sprite = PaperFx.Disc(); bi.color = UiKit.Hex("#f6dd98"); bi.raycastTarget = false;
+                    var bt = UiKit.Deco(b, bd, 19, PaperFx.Ink, TextAnchor.MiddleCenter);
+                    bt.raycastTarget = false;
+                    UiKit.Stretch(bt.rectTransform, 0f, 0f, 0f, 0f);
+                }
+                if (phoneTap)
+                {   // 押す＝選ぶ (長押しの拡大が開いた直後の離しは押したことにしない)
+                    string label = btnLabel(i, c);
+                    bool en = label != null && (btnEnabled == null || btnEnabled(i, c));
+                    var et = cell.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+                    var click = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerClick };
+                    click.callback.AddListener(delegate
+                    {
+                        if (CardPopup.ClickSuppressed) return;
+                        if (tapPicks) { if (en && onPick != null) onPick(idx); return; }
+                        if (label == null) return;
+                        Audio.Ui("click"); g.SetGridPick(pickKey, idx); g.Rebuild();
+                    });
+                    et.triggers.Add(click);
+                }
+                else if (withBtn)
                 {
                     string label = btnLabel(i, c);
                     if (label != null)
@@ -299,6 +391,20 @@ namespace DeckRogue.Game
                         if (le != null) UnityEngine.Object.Destroy(le);
                         UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 0f), new Vector2(70f, 42f));
                     }
+                }
+            }
+            if (confirmRoot != null)
+            {
+                UpgradeToggle(g, confirmRoot, UiKit.Phone ? 24f : 40f, UiKit.Phone ? 14f : 40f);
+                if (picked >= 0 && !tapPicks)
+                {   // 下の帯の確定ボタン「深根 を鍛える」
+                    var c = cards[picked];
+                    string label = btnLabel(picked, c) ?? "選ぶ";
+                    bool en = btnEnabled == null || btnEnabled(picked, c);
+                    string verb = label == "これ" ? "選ぶ" : label == "除去" ? "取り除く" : label;
+                    string text = en ? c.Def.Name + " を" + verb : c.Def.Name + ": " + verb;
+                    int pi = picked;
+                    BottomButton(confirmRoot, text, delegate { if (onPick != null) onPick(pi); }, 18, 440f, 52f, 0f, 14f, UiKit.Hex("#f0d58a"), en);
                 }
             }
         }
@@ -326,6 +432,25 @@ namespace DeckRogue.Game
         /// <summary>画面の見出し (大きな題と小さな説明)</summary>
         public static void Heading(RectTransform root, string title, string sub, float y = TopH + 24f, float rightInset = 0f)
         {
+            // スマホ: 見出しは上部バーの真ん中の札に畳む (題 17・説明 13 の1行。2026-09-16 案A)。上部バーが無い画面は従来の大見出し
+            var center = UiKit.Phone ? root.Find("topbar/center") as RectTransform : null;
+            if (center != null)
+            {
+                var tagP = BattleScreen.Tag(center, 36f, 0f, UiKit.Hex("#fbf6e8"));
+                var tImg = tagP.GetComponent<Image>(); if (tImg != null) tImg.raycastTarget = true;   // 説明文 (全文) のため
+                var tle = tagP.GetComponent<LayoutElement>(); if (tle != null) { tle.preferredWidth = 560f; tle.flexibleWidth = 0f; }
+                var tt = UiKit.Deco(tagP, title, 17, PaperFx.Ink, TextAnchor.MiddleLeft);
+                tt.textWrappingMode = TextWrappingModes.NoWrap; tt.overflowMode = TextOverflowModes.Ellipsis;
+                UiKit.Le(tt, -1f, 30f, -1f, 30f, 0f, -1f);
+                if (!string.IsNullOrEmpty(sub))
+                {
+                    var ts = UiKit.Txt(tagP, sub, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+                    ts.textWrappingMode = TextWrappingModes.NoWrap; ts.overflowMode = TextOverflowModes.Ellipsis;
+                    UiKit.Le(ts, -1f, 30f, -1f, 30f, 1f, -1f);
+                }
+                Tooltip.Attach(tagP.gameObject, delegate { return "<b>" + title + "</b>" + (string.IsNullOrEmpty(sub) ? "" : "\n" + sub); });
+                return;
+            }
             var t = UiKit.Deco(root, title, 36, UiKit.ColText, TextAnchor.MiddleCenter);
             t.outlineWidth = 0.2f; t.outlineColor = new Color(0f, 0f, 0f, 0.7f);
             UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -y - 50f), new Vector2(-rightInset, -y));

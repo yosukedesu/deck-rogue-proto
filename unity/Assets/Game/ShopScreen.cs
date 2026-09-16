@@ -31,12 +31,10 @@ namespace DeckRogue.Game
             {
                 bool removing = g.ShopMode == "remove";
                 RunUi.Heading(root, removing ? "カード除去 (" + rmPrice + "G)" : "鍛える (" + upPrice + "G)",
-                    removing ? "デッキから1枚を永久に取り除く" : "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
-                RectTransform preview = removing ? null : CampfireScreen.ForgePreviewArea(root);
+                    removing ? "デッキから1枚を永久に取り除く" : UiKit.Phone ? "1枚選ぶ。「鍛えた後を見る」で全部の札が鍛えた後の姿に" : "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
+                RectTransform preview = removing || UiKit.Phone ? null : CampfireScreen.ForgePreviewArea(root);   // スマホは並びを出さず「鍛えた後を見る」のチェック (2026-09-16 案A)
                 var area = UiKit.NewRect("svc", root);
-                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(removing ? -24f : -460f, -(RunUi.TopH + 100f)));   // 並びは右の列 (2026-09-14)
-                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + (removing ? 0f : CampfireScreen.ForgePreviewH))));
-                UiKit.Vert(area, 0, 0);
+                RunUi.PickArea(root, area, preview != null ? CampfireScreen.ForgePreviewH : 0f);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return removing ? "除去" : (Upgrade.CanUpgradeCard(c) ? "鍛える" : null); },
                     delegate (int i, CardInstance c) { return removing ? run.Deck.Count > 5 : Upgrade.CanUpgradeCard(c); },
@@ -48,9 +46,9 @@ namespace DeckRogue.Game
                         if (rm) g.Do(new RunCommand_ShopRemove { Index = i });
                         else g.Do(new RunCommand_ShopUpgrade { Index = i });
                     },
-                    removing ? 500f : 400f);
-                if (!removing) { CampfireScreen.AttachUpgradeTips(area, run.Deck); CampfireScreen.AttachForgePreview(g, area, run.Deck, preview); }
-                RunUi.BottomButton(root, "戻る", delegate { g.ShopMode = null; g.Rebuild(); }, 18, 220f, 50f, UiKit.Phone && !removing ? BattleScreen.CanvasSize(root).x / 2f - 232f : 0f, UiKit.Phone ? 24f : 40f);
+                    removing ? 500f : 400f, pickKey: removing ? "shop-remove" : "shop-upgrade", confirmRoot: root);
+                if (!removing) { CampfireScreen.AttachUpgradeTips(area, run.Deck); if (preview != null) CampfireScreen.AttachForgePreview(g, area, run.Deck, preview); }
+                RunUi.BackButton(root, "戻る", delegate { g.ShopMode = null; g.Rebuild(); });
                 return;
             }
 

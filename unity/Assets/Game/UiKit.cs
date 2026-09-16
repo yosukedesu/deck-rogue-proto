@@ -259,8 +259,41 @@ namespace DeckRogue.Game
             return le;
         }
 
-        /// <summary>スクロール可能な一覧。戻り値は中身を足していく content の RectTransform</summary>
-        public static RectTransform Scroll(Transform parent, bool vertical, Color? bg = null, int spacing = 4, int pad = 6)
+        /// <summary>縦スクロールの「しおり」(2026-09-16 ユーザー「スマホ版はスクロールなど操作しにくい。スクロールバーの導入」): 右端に紙の帯 (幅 22) と墨の栞。
+        /// 掴んで引ける・帯を押すとその位置へ。指の的は幅 44 (帯の両脇は透明)。戻り値は帯ぶん viewport を狭める幅</summary>
+        public const float BookmarkW = 22f, BookmarkHit = 44f;
+        static float AddBookmark(RectTransform root, ScrollRect sr)
+        {
+            var sb = NewRect("bookmark", root);
+            sb.anchorMin = new Vector2(1f, 0f); sb.anchorMax = new Vector2(1f, 1f);
+            sb.offsetMin = new Vector2(-BookmarkHit - 2f, 4f); sb.offsetMax = new Vector2(-2f, -4f);
+            var hit = sb.gameObject.AddComponent<Image>();   // 透明の的 (帯の両脇も掴める)
+            hit.color = new Color(0f, 0f, 0f, 0f);
+            var bar = sb.gameObject.AddComponent<Scrollbar>();
+            bar.direction = Scrollbar.Direction.BottomToTop;
+            var track = NewRect("track", sb);
+            track.anchorMin = new Vector2(0.5f, 0f); track.anchorMax = new Vector2(0.5f, 1f);
+            track.offsetMin = new Vector2(-BookmarkW / 2f, 0f); track.offsetMax = new Vector2(BookmarkW / 2f, 0f);
+            var tImg = track.gameObject.AddComponent<Image>();
+            tImg.sprite = PaperFx.Tag; tImg.type = Image.Type.Sliced; tImg.pixelsPerUnitMultiplier = 1f; tImg.color = PaperFx.Paper2; tImg.raycastTarget = false;
+            var sliding = NewRect("sliding", sb);
+            sliding.anchorMin = new Vector2(0.5f, 0f); sliding.anchorMax = new Vector2(0.5f, 1f);
+            sliding.offsetMin = new Vector2(-BookmarkW / 2f, 3f); sliding.offsetMax = new Vector2(BookmarkW / 2f, -3f);
+            var handle = NewRect("handle", sliding);
+            handle.anchorMin = Vector2.zero; handle.anchorMax = Vector2.one;
+            handle.offsetMin = new Vector2(3f, 0f); handle.offsetMax = new Vector2(-3f, 0f);
+            var hImg = handle.gameObject.AddComponent<Image>();
+            hImg.sprite = PaperFx.Tag; hImg.type = Image.Type.Sliced; hImg.pixelsPerUnitMultiplier = 1f; hImg.color = PaperFx.Ink; hImg.raycastTarget = false;
+            bar.handleRect = handle;
+            bar.targetGraphic = hit;
+            bar.transition = Selectable.Transition.None;
+            sr.verticalScrollbar = bar;
+            sr.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+            return BookmarkW + 10f;
+        }
+
+        /// <summary>スクロール可能な一覧。戻り値は中身を足していく content の RectTransform。縦はしおり (スクロールバー) 付き・フリックの慣性あり</summary>
+        public static RectTransform Scroll(Transform parent, bool vertical, Color? bg = null, int spacing = 4, int pad = 6, bool bookmark = true)
         {
             var root = NewRect("scroll", parent);
             var img = root.gameObject.AddComponent<Image>();
@@ -270,13 +303,15 @@ namespace DeckRogue.Game
             sr.vertical = vertical;
             sr.movementType = ScrollRect.MovementType.Clamped;
             sr.scrollSensitivity = 28f;
-            sr.inertia = false;
+            sr.inertia = true;                 // フリックで滑る (2026-09-16。旧 false は「指を離した所で止まる」= 26枚で4〜5回引く)
+            sr.decelerationRate = 0.135f;
+            float barW = vertical && bookmark ? AddBookmark(root, sr) : 0f;
 
             var viewport = NewRect("viewport", root);
             viewport.anchorMin = Vector2.zero;
             viewport.anchorMax = Vector2.one;
             viewport.offsetMin = Vector2.zero;
-            viewport.offsetMax = Vector2.zero;
+            viewport.offsetMax = new Vector2(-barW, 0f);
             viewport.gameObject.AddComponent<RectMask2D>();
 
             var content = NewRect("content", viewport);

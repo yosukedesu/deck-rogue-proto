@@ -30,9 +30,7 @@ namespace DeckRogue.Game
                 RunUi.Heading(root, "「" + ch.Label + "」", "対象のカードを1枚選ぶ");
                 var area = UiKit.NewRect("pick", root);
                 // スマホは幅いっぱい (2026-09-15 ユーザー「カード一覧の左が切れてマナコストが見えない」: PC 用の幅 1520 がキャンバス 1462 からはみ出していた)
-                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(-24f, -(RunUi.TopH + 100f)));
-                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
-                UiKit.Vert(area, 0, 0);
+                RunUi.PickArea(root, area);
                 int ci = g.EventChoiceIndex;
                 // 鍛えられない札・5枚以下のデッキの除去は選べない (engine が拒む手を押せないようにする 2026-09-14)
                 bool isUpgrade = ch.UpgradeCard == true;
@@ -40,8 +38,8 @@ namespace DeckRogue.Game
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return isUpgrade && !DeckRogue.Engine.Upgrade.CanUpgradeCard(c) ? "鍛えられない" : "これ"; },
                     delegate (int i, CardInstance c) { return canRemove && (!isUpgrade || DeckRogue.Engine.Upgrade.CanUpgradeCard(c)); },
-                    delegate (int i) { g.EventChoiceIndex = -1; g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }); }, 500f);
-                RunUi.BottomButton(root, "選び直す", delegate { g.EventChoiceIndex = -1; g.Rebuild(); }, 18, 220f, 50f, 0f, UiKit.Phone ? 24f : 40f);
+                    delegate (int i) { g.EventChoiceIndex = -1; g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }); }, 500f, pickKey: "event", confirmRoot: root);
+                RunUi.BackButton(root, "選び直す", delegate { g.EventChoiceIndex = -1; g.Rebuild(); });
                 return;
             }
 

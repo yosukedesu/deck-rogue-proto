@@ -85,6 +85,12 @@ namespace DeckRogue.Game
         /// <summary>relic-choose (2026-09-12): 空の鳥籠/星読みの盤で選んだデッキの添字 (画面を離れたら捨てる)</summary>
         public List<int> RelicChoosePicks = new List<int>();
         public int EventChoiceIndex = -1;   // カード指定待ちの選択肢
+        /// <summary>デッキの一覧 (RunUi.CardGrid) の「鍛えた後を見る」(2026-09-16 ユーザー「デッキ一覧すべてで鍛えた後を見るボタン」。本家 Smith の Show Upgrade)。ランの間は保つ</summary>
+        public bool ShowUpgraded;
+        /// <summary>スマホの一覧で押した札 (選ぶ→下の帯で確定。2026-09-16 案A)。鍵は画面ごと ("forge"/"remove"/"event") で、別の画面の一覧には効かない。手が通ると捨てる</summary>
+        public string GridPickKey; public int GridPickIndex = -1;
+        public int GridPick(string key) { return key != null && key == GridPickKey ? GridPickIndex : -1; }
+        public void SetGridPick(string key, int index) { if (GridPickKey == key && GridPickIndex == index) { GridPickIndex = -1; return; } GridPickKey = key; GridPickIndex = index; }
 
         RectTransform _root;
         /// <summary>演出レイヤー (浮き文字など)。基準 1920×1080 の座標系・最前面・レイキャストを塞がない</summary>
@@ -257,6 +263,7 @@ namespace DeckRogue.Game
             ViewDeck = false;
             ViewMap = false;
             SubMode = null;
+            GridPickKey = null; GridPickIndex = -1;
             Feedback.MemoOpen = false;
             MenuOpen = false;
             Confirm = null;

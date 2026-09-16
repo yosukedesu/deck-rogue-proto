@@ -51,7 +51,7 @@ namespace DeckRogue.Game
             if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 100f), new Vector2(-24f, -230f));   // 幅いっぱい・見出しを詰める (2026-09-14)
             else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -290f));
             UiKit.Vert(area, 0, 0);
-            RunUi.CardGrid(g, area, run.Deck, null, null, null, 400f);
+            RunUi.CardGrid(g, area, run.Deck, null, null, null, 400f, confirmRoot: root);
 
             RunUi.BottomButton(root, "タイトルへ", delegate { g.BackToSetup(); }, 20, 300f, 56f, 0f, 36f, UiKit.Hex("#f0d58a"));
             // レポートの書き出し (2026-09-14): ランの決着はデータ回収の主戦場

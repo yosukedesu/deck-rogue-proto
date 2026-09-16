@@ -35,35 +35,31 @@ namespace DeckRogue.Game
             {
                 RunUi.Heading(root, "取り除く", "安らぎの煙管: デッキの1枚を永久に取り除く (休む/鍛えるとは排他)");
                 var area = UiKit.NewRect("remove", root);
-                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(-24f, -(RunUi.TopH + 100f)));
-                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f)));
-                UiKit.Vert(area, 0, 0);
+                RunUi.PickArea(root, area);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return "取り除く"; },
                     delegate (int i, CardInstance c) { return run.Deck.Count > 5; },
                     delegate (int i) { Audio.Ui("remove"); g.Do(new RunCommand_CampfireRemove { Index = i }); },
-                    400f);
-                RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f);
+                    400f, pickKey: "remove", confirmRoot: root);
+                RunUi.BackButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); });
                 return;
             }
 
             if (g.SubMode == "forge")
             {
-                RunUi.Heading(root, "鍛える", "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
-                var preview = ForgePreviewArea(root);
+                RunUi.Heading(root, "鍛える", UiKit.Phone ? "1枚選ぶ。「鍛えた後を見る」で全部の札が鍛えた後の姿に" : "1枚選ぶ。札に触れると元と鍛えた後が並ぶ（長押しで拡大）");
+                // PC は見出しの下に「元 → 鍛えた後」の並び (ホバー)。スマホは並びを出さず一面の棚＋「鍛えた後を見る」のチェック (2026-09-16 案A・ユーザー「本家と同じトグル」)
+                var preview = UiKit.Phone ? null : ForgePreviewArea(root);
                 var area = UiKit.NewRect("forge", root);
-                // スマホは並びを右の列に置き、一覧は左いっぱい (2026-09-14)
-                if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 90f), new Vector2(-460f, -(RunUi.TopH + 100f)));
-                else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(RunUi.TopH + 110f + ForgePreviewH)));
-                UiKit.Vert(area, 0, 0);
+                RunUi.PickArea(root, area, UiKit.Phone ? 0f : ForgePreviewH);
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c) ? "鍛える" : null; },
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c); },
                     delegate (int i) { Audio.Ui("upgrade"); g.Do(new RunCommand_CampfireUpgrade { Index = i }); },
-                    400f);
+                    400f, pickKey: "forge", confirmRoot: root);
                 AttachUpgradeTips(area, run.Deck);
-                AttachForgePreview(g, area, run.Deck, preview);
-                RunUi.BottomButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); }, 18, 220f, 50f, UiKit.Phone ? BattleScreen.CanvasSize(root).x / 2f - 232f : 0f, UiKit.Phone ? 24f : 40f);
+                if (preview != null) AttachForgePreview(g, area, run.Deck, preview);
+                RunUi.BackButton(root, "戻る", delegate { g.SubMode = null; g.Rebuild(); });
                 return;
             }
 

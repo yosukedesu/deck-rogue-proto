@@ -49,7 +49,8 @@ namespace DeckRogue.Game
             float deckTop = RunUi.SceneWindow(root, "workshop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があればデッキをその下へ
             bool ph = UiKit.Phone;   // スマホ (2026-09-14): 右パネルを上下いっぱいに、素材の枠と結果を小さく
             var area = UiKit.NewRect("deck", root);
-            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, ph ? 16f : 40f), new Vector2(-520f, -deckTop));
+            // 左の棚 (2026-09-16 案A): スマホは見出しを上部バーに畳んで 2行＋しおり、札を押す＝素材 (A→B)。下の帯に「鍛えた後を見る」。右の板は今どおり
+            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(ph ? 20f : 40f, ph ? 70f : 96f), new Vector2(-520f, ph ? -(RunUi.TopH + 10f) : -deckTop));
             UiKit.Vert(area, 0, 0);
             RunUi.CardGrid(g, area, run.Deck,
                 delegate (int i, CardInstance c) { return marked.Contains(i) ? "外す" : "選ぶ"; },
@@ -64,7 +65,8 @@ namespace DeckRogue.Game
                     Audio.Ui("click");   // 素材を選ぶのは選択音 (2026-09-14 ユーザー「カードセット時はかんかんかんでなく選択音」)
                     g.Rebuild();
                 },
-                500f, marked, starred);
+                500f, marked, starred, confirmRoot: root, tapPicks: true, cellScale: 0.8f,
+                badge: delegate (int i) { return g.WorkshopA == i ? "A" : g.WorkshopB == i ? "B" : null; });
 
             // 右の追従パネル
             var side = UiKit.Frame(root, Theme.Panel, Color.white, "fuse", 3f);

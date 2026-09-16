@@ -371,6 +371,8 @@ namespace DeckRogue.Game
             }
             if (Get("viewmap") == "1") g.ViewMap = true;
             if (Get("viewdeck") == "1") g.ViewDeck = true;
+            if (Get("upgraded") == "1") g.ShowUpgraded = true;   // 一覧の「鍛えた後を見る」(2026-09-16)
+            if (Get("gridpick") != null) { var gp = Get("gridpick").Split(':'); int gi; if (gp.Length == 2 && int.TryParse(gp[1], out gi)) g.SetGridPick(gp[0], gi); }   // gridpick=forge:2 = 押した札
             if (Get("log") == "1") g.ShowLog = true;
             if (Get("menu") == "1") g.MenuOpen = true;   // スマホの ≡ (2026-09-14)
             // フィードバックの画面 (2026-09-14): rating=won|lost で評価ダイアログ (最後の戦闘を仮に積む)、memo=1 でメモの窓
