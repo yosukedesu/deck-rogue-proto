@@ -40,7 +40,7 @@ JSON は `Assets/StreamingAssets/data/`（`npm run unity:sync` で `src/data` �
 ## WSL からのバッチ実行（2026-09-07・`scripts/unity-win.sh`）
 
 Windows 側の Unity Editor（Hub が入れた `C:\Program Files\Unity\Hub\Editor\<version>\Editor\Unity.exe`）を WSL から直接叩く。
-正本はこのリポジトリの `unity/`。`\\wsl$` の UNC パスを Unity が扱えないので、`C:\Users\yosuke\deck-rogue-unity-batch` へ rsync した
+正本はこのリポジトリの `unity/`。`\\wsl$` の UNC パスを Unity が扱えないので、`D:\deck-rogue\unity-batch` へ rsync した
 使い捨ての作業コピー（`Library/` はそこに溜まる）で動かす。**Hub で開く GUI 用のコピーは別フォルダ `C:\Users\yosuke\deck-rogue-unity`**
 （同じプロジェクトを2つの Unity は開けないため。`WIN_DIR=/mnt/c/Users/yosuke/deck-rogue-unity scripts/unity-win.sh sync` で更新する）。
 

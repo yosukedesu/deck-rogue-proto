@@ -374,8 +374,9 @@ npm run build        # 本番ビルド (型チェック込み)
 npm run goldens      # ゴールデンマスター生成 (goldens/runs/。Unity移植の等価性契約。goldens:verify で照合)
 npm run gen:csharp   # types.ts → unity/.../Generated/Types.g.cs (C# record を生成。手で編集しない)
 scripts/unity-win.sh android && scripts/unity-win.sh install   # Android: APK をビルドして USB のスマホへ (2026-09-09 実機動作確認済み。Hub の Android Build Support が要る)
+                     #   作業コピーは D:\deck-rogue\unity-batch (2026-09-16 C: の空き不足で移した。IL2CPP と Gradle のキャッシュ 12GB が C: を食わない。Gradle は GRADLE_USER_HOME=D:\deck-rogue\gradle)。APK は D:\deck-rogue\unity-batch\Build\DeckRogue.apk
 scripts/unity-win.sh live / stop   # 常駐のヘッドレス Editor (Pipeline サーバ) を起動/終了 (2026-09-15)。起動後は
-                     #   unity command recompile|recompile_status|run_tests|eval|console --project-path 'C:\Users\yosuke\deck-rogue-unity-batch' が 0.2〜2 秒で回る
+                     #   unity command recompile|recompile_status|run_tests|eval|console --project-path 'D:\deck-rogue\unity-batch' が 0.2〜2 秒で回る
                      #   (compile/build/shots とはプロジェクトのロックを取り合うので同時には使えない。先に stop)
 unity status / unity command … --project-path 'C:\Users\yosuke\deck-rogue-unity'   # GUI で開いている Editor を直接操作 (下の「Unity 公式プラグイン」節)
 STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意の状態へ跳んで1枚撮る (2026-09-12。phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost
@@ -415,7 +416,7 @@ STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意�
   `unity command recompile --project-path 'C:\Users\yosuke\deck-rogue-unity'` → `recompile_status` を completed/up_to_date まで poll（直後の `idle` は取り込み前＝もう一度 recompile）→ `console`。
   `screenshot`/`capture_game_view` は GUI の Editor でだけ撮れる。**`.unity`/`.prefab` を手で書き換えない**（Editor が開いている間はコマンドで。うちは UI をコードで組むので出番は少ない）。
 - **常駐のヘッドレス Editor（Claude の反復用）**: `scripts/unity-win.sh live`（sync → `-batchmode -nographics` で `-quit` 無しに起動 → editor_status が ready になるまで待つ〔約45秒〕→ `set_autotick` 有効化）。
-  以後 `--project-path 'C:\Users\yosuke\deck-rogue-unity-batch'` でコンパイル確認が 17 秒のバッチ起動から 2 秒に。終わったら `scripts/unity-win.sh stop`（eval で `EditorApplication.Exit(0)`・20 秒で終わらなければ kill）。
+  以後 `--project-path 'D:\deck-rogue\unity-batch'` でコンパイル確認が 17 秒のバッチ起動から 2 秒に。終わったら `scripts/unity-win.sh stop`（eval で `EditorApplication.Exit(0)`・20 秒で終わらなければ kill）。
   `compile`/`build`/`verify`/`shots` はプロジェクトのロックを取り合うので **live 中は動かせない**（先に stop）。`unity status` には batchmode の Editor は載らない（記述子と `unity command` で確認）。
 - 2つ同時に開くとポートが 7800/7801 に分かれる。`--project-path` で選ぶ。Safe Mode（コンパイルエラーで起動）だとサーバが立たない＝`unity pipeline list` で確認して直す。
 - `unity-cli` スキルの「サンドボックスが Editor を隠す」注意は、このリポジトリでは該当しない（Bash から interop で届いた実測）。

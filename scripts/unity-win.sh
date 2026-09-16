@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # scripts/unity-win.sh — WSL から Windows 側の Unity Editor をバッチ実行する (2026-09-07)。
-# 正本は WSL の unity/ (リポジトリ)。Windows 側 (C:\Users\yosuke\deck-rogue-unity-batch) は rsync で作る使い捨ての作業コピー
+# 正本は WSL の unity/ (リポジトリ)。Windows 側 (D:\deck-rogue\unity-batch) は rsync で作る使い捨ての作業コピー
+# (2026-09-16 C: の空き不足で D: へ移した。Library の IL2CPP キャッシュ 6GB と Gradle のキャッシュ (GRADLE_USER_HOME=D:\deck-rogue\gradle) が C: を食わない。D: は HDD)
 # (\\wsl$ の UNC パスを Unity が扱えないため)。Library/ は作業コピー側に残るので2回目以降は速い。
 #   scripts/unity-win.sh compile   # 同期 → バッチ起動 → コンパイル結果 (error CS...) を要約
 #   scripts/unity-win.sh verify    # 同期 → Assets/Editor/BatchTools.VerifyGoldens (エンジンの実機ゴールデン照合)
@@ -11,14 +12,17 @@
 #   scripts/unity-win.sh shots [tour] [seed]  # プレイヤーを自動操縦で起動して各画面の PNG を unity/Shots/ に回収
 #   scripts/unity-win.sh sync      # 同期だけ
 #   scripts/unity-win.sh live      # 同期 → 常駐のヘッドレス Editor (-quit 無し) を起動して Pipeline サーバを立てる (2026-09-15)。
-#                                  #   以後 `unity command <名前> --project-path 'C:\Users\yosuke\deck-rogue-unity-batch'` で 0.5 秒で再コンパイル・テスト・eval
+#                                  #   以後 `unity command <名前> --project-path 'D:\deck-rogue\unity-batch'` で 0.5 秒で再コンパイル・テスト・eval
 #   scripts/unity-win.sh stop      # live の Editor を終わらせる
 # ログ: C:\Users\yosuke\deck-rogue-unity\unity-batch.log (WSL からは $WIN_DIR/unity-batch.log)
 set -u
 MODE="${1:-compile}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 # バッチ用と GUI 用で作業コピーを分ける (同じプロジェクトを2つの Unity は開けない。GUI 用は WIN_DIR=/mnt/c/Users/yosuke/deck-rogue-unity で sync)
-WIN_DIR="${WIN_DIR:-/mnt/c/Users/yosuke/deck-rogue-unity-batch}"
+WIN_DIR="${WIN_DIR:-/mnt/d/deck-rogue/unity-batch}"
+# Android ビルドの Gradle キャッシュも D: へ (Unity が起動する gradle は環境変数 GRADLE_USER_HOME を読む。WSLENV の /p で Windows のパスに写して渡す)
+export GRADLE_USER_HOME="${GRADLE_USER_HOME:-/mnt/d/deck-rogue/gradle}"
+export WSLENV="${WSLENV:+$WSLENV:}GRADLE_USER_HOME/p"
 UNITY="${UNITY_EXE:-$(ls -d "/mnt/c/Program Files/Unity/Hub/Editor/"*/Editor/Unity.exe 2>/dev/null | sort | tail -1)}"
 if [ -z "$UNITY" ]; then echo "Unity.exe が見つからない (Hub の Editor フォルダ)"; exit 2; fi
 
