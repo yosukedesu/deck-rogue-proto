@@ -131,7 +131,7 @@ namespace DeckRogue.Game
             ServiceBtn(side.transform, "カード除去  " + rmPrice + "G", run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); });
             ServiceBtn(side.transform, "鍛える  " + upPrice + "G", run.Gold >= upPrice, delegate { g.ShopMode = "upgrade"; g.Rebuild(); });
             int shelfN = shop.Gears != null ? shop.Gears.Count : 0;
-            ServiceBtn(side.transform, "ギアの棚  " + shelfN + "枠", true, delegate { g.ShopMode = "gears"; g.Rebuild(); });
+            ServiceBtn(side.transform, "ギアの棚  " + shelfN + "枠 ／ 魔素 " + (shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE) + "G", true, delegate { g.ShopMode = "gears"; g.Rebuild(); });
             if (!ph)
             {
                 var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
@@ -142,18 +142,20 @@ namespace DeckRogue.Game
         }
 
         /// <summary>
-        /// ギアの棚 (2026-09-17 ユーザー裁定2): 除去/鍛えると同じ下位モードの専用画面。3枠の棚＋持ち物の整理 (捨てる／満杯なら入れ替え)。PC/スマホ共通。魔素の札は 2026-09-18 撤去
+        /// ギアの棚 (2026-09-17 ユーザー裁定2): 除去/鍛えると同じ下位モードの専用画面。3枠の棚＋魔素の購入＋持ち物の整理 (捨てる／満杯なら入れ替え)。PC/スマホ共通
         /// </summary>
         static void BuildGears(GameRoot g, RectTransform root, RunState run, ShopState shop)
         {
             bool ph = UiKit.Phone;
             var cs = BattleScreen.CanvasSize(root);
             var gears = DeckRogue.Engine.Run.GearsOf(run);
-            RunUi.Heading(root, "ギアの棚", "自ターンに1個組む消耗品。持ち物 " + gears.Count + "/" + Gears.GEAR_CARRY_MAX + "・所持金 " + run.Gold + "G");
+            int mana = DeckRogue.Engine.Run.ManaOf(run);
+            RunUi.Heading(root, "ギアの棚", "自ターンに1個・魔素を払って組む。持ち物 " + gears.Count + "/" + Gears.GEAR_CARRY_MAX + "・魔素 " + Gears.ManaLabel(mana) + "・所持金 " + run.Gold + "G");
             var shelf = shop.Gears ?? new List<ShopStateGears>();
+            int manaPrice = shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE;
             float scale = ph ? 0.8f : 1f;
             float cw = 200f * scale, chh = 272f * scale, gap = 40f, btnH = 70f;
-            int n = Math.Max(1, shelf.Count);   // 3枠
+            int n = shelf.Count + 1;   // 3枠 + 魔素の札
             float totalW = n * cw + (n - 1) * gap;
             float top = ph ? RunUi.TopH + 20f : RunUi.TopH + 120f;   // 棚の上端 (キャンバス上から)
             var shelfRt = UiKit.NewRect("gear-shelf", root);
@@ -185,6 +187,24 @@ namespace DeckRogue.Game
                     if (DeckRogue.Engine.Run.GearFull(g.Rs)) { g.GearSwap = "shop:" + idx; g.Rebuild(); }
                     else g.Do(new RunCommand_ShopBuyGear { Index = idx });
                 }, 15, canBuy, PaperFx.BrassLight);
+                var le = b.GetComponent<LayoutElement>();
+                if (le != null) UnityEngine.Object.Destroy(le);
+                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f + 10f, 40f), new Vector2(cw / 2f - 10f, btnH + 14f));
+            }
+            {   // 魔素の札: ギアを組む動力 (1個ぶん。上限50)
+                int i = shelf.Count;
+                var cell = UiKit.NewRect("gshop-mana", shelfRt);
+                UiKit.Anchor(cell, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(i * (cw + gap), 0f), new Vector2(i * (cw + gap) + cw, 0f));
+                // 魔素の札はギアの札と同じ器 (GearUi.Card) に仮の定義を流し込む = 大きさと位置が棚と揃う
+                var manaDef = new GearDef { Id = "mana", Name = "魔素", Rarity = "common", Family = "interfere", Text = "ギアを組む動力。組むたび " + Gears.GEAR_MANA_COST + " 使う", Effects = new List<DeclarativeEffect>() };
+                var card = GearUi.Card(cell, manaDef, "mana", 200f, 272f, null, scale, "1個ぶん（" + Gears.GEAR_MANA_COST + "）", "上限 " + Gears.MANA_MAX + "\nいま " + Gears.ManaLabel(mana), PaperFx.Mana);
+                card.anchorMin = card.anchorMax = new Vector2(0.5f, 1f); card.pivot = new Vector2(0.5f, 1f); card.anchoredPosition = Vector2.zero;
+                bool full = mana >= Gears.MANA_MAX;
+                bool canBuy = !full && run.Gold >= manaPrice;
+                var tag = UiKit.NewRect("pricewrap", cell);
+                UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f, 0f), new Vector2(cw / 2f, btnH));
+                PriceTag(tag, manaPrice, full ? "上限" : null, canBuy);
+                var b = UiKit.Btn(cell, full ? "魔素は上限" : "買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyMana()); }, 15, canBuy, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f + 10f, 40f), new Vector2(cw / 2f - 10f, btnH + 14f));

@@ -66,8 +66,8 @@ import {
 import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { GEAR_CARRY_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason } from '../engine/gears.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -2863,12 +2863,13 @@ function GearBar({
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const [pick, setPick] = useState<{ target?: number; cardUid?: string; asGearId?: string }>({})
   const gears = gearsOf(run)
+  const mana = manaOf(run)
   const open = openIndex !== null ? gears[openIndex] : undefined
   const openDef = open ? getGearDef(open.gearId) : null
   // 無銘の部品は化ける先を選んでから、その中身の要求 (対象・札) を読む
   const asDef = openDef?.special === 'nameless' && pick.asGearId ? getGearDef(pick.asGearId) : null
   const effDef = asDef ?? openDef
-  const why = open ? gearBlockedReason(inCombat ? run.combat : null, open) : null
+  const why = open ? gearBlockedReason(inCombat ? run.combat : null, mana, open) : null
   const alive = (run.combat?.enemies ?? []).map((e, i) => ({ e, i })).filter((x) => x.e.hp > 0)
   const needTarget = effDef?.needsTarget === true && alive.length > 1
   const cardChoices = effDef?.needsCard !== undefined && run.combat ? gearCardChoices(run.combat, effDef) : []
@@ -2890,7 +2891,7 @@ function GearBar({
       {gears.length === 0 && <span className="hint">（まだ持っていない）</span>}
       {gears.map((g, i) => {
         const def = getGearDef(g.gearId)
-        const blocked = gearBlockedReason(inCombat ? run.combat : null, g)
+        const blocked = gearBlockedReason(inCombat ? run.combat : null, mana, g)
         return (
           <button
             key={g.uid}
@@ -2978,7 +2979,8 @@ function GearBar({
           )}
           <div className="gear-window-foot">
             <span className="hint">
-              {inCombat && run.combat?.gearUsedThisTurn !== true ? '⚙ このターンはあと1個組める' : '⚙ 自ターンに1個'}
+              ⚙ 魔素 {mana} → {Math.max(0, mana - GEAR_MANA_COST)}
+              {inCombat && run.combat?.gearUsedThisTurn !== true && ' ・このターンはあと1個'}
             </span>{' '}
             <button
               className="btn btn-primary"
@@ -2995,7 +2997,7 @@ function GearBar({
                 close()
               }}
             >
-              組む
+              魔素 1 で組む
             </button>{' '}
             <button className="btn" onClick={close}>
               やめる
@@ -4802,7 +4804,7 @@ function RunScreen({
         )}
         <div className="panel">
           <div className="setup-section-title">
-            ⚙ ギア（自ターンに1個組む。持ち物 {gearsOf(run).length}/{GEAR_CARRY_MAX}）
+            ⚙ ギア（自ターンに1個・魔素を払って組む。持ち物 {gearsOf(run).length}/{GEAR_CARRY_MAX}・魔素 {manaLabel(manaOf(run))}）
           </div>
           <div className="gear-shelf">
             {(run.shop.gears ?? []).map((item, i) => {
@@ -4827,6 +4829,19 @@ function RunScreen({
                 </div>
               )
             })}
+            {run.shop.manaPrice !== undefined && (
+              <div className="gear-shelf-item">
+                <b>⚙ 魔素</b>
+                <div className="choice-desc">ギアを組む動力（1個ぶん。上限 {MANA_MAX}）</div>
+                <button
+                  className="btn btn-primary"
+                  disabled={run.gold < run.shop.manaPrice || manaOf(run) >= MANA_MAX}
+                  onClick={() => dispatch({ type: 'ShopBuyMana' })}
+                >
+                  {run.shop.manaPrice}G で買う
+                </button>
+              </div>
+            )}
           </div>
           {gearsOf(run).length > 0 && (
             <div style={{ marginTop: 8 }}>
@@ -5171,7 +5186,7 @@ function RunScreen({
                   </b>
                   {(g.charges ?? 1) > 1 && <span className="hint">（{g.charges}回）</span>}
                   <div>{g.text}</div>
-                  <div className="hint">自ターンに組む（1ターン1個）</div>
+                  <div className="hint">自ターンに魔素1で組む（1ターン1個）</div>
                   <div style={{ marginTop: 6 }}>
                     {full ? (
                       <>
@@ -5201,6 +5216,7 @@ function RunScreen({
           </div>
         )}
         <div className="panel" style={{ marginTop: 8 }}>
+          <span className="chip">⚙ 魔素 {manaLabel(manaOf(run))}</span>
           <GearBar run={run} inCombat={false} />
         </div>
         <button className="btn" data-hotkey="skip" onClick={() => dispatch({ type: 'SkipReward' })}>

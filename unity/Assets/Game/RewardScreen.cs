@@ -22,8 +22,9 @@ namespace DeckRogue.Game
             string gearId = run.GearOption;
             GearDef gdef = gearId != null ? GearUi.DefOf(gearId) : null;
             bool hasGear = gearId != null;
-            if (opts == null && hasGear) RunUi.Heading(root, "ギア報酬", "札とは別枠。取っても見送ってもよい（自ターンに1個組む）");
-            else RunUi.Heading(root, "カード報酬", "1枚選んでデッキに加える。見送ってもよい (デッキを薄く保つのも戦略)" + (hasGear ? "。右のギアは別枠で両方取れる" : ""));
+            string manaNote = "魔素 " + Gears.ManaLabel(DeckRogue.Engine.Run.ManaOf(run));
+            if (opts == null && hasGear) RunUi.Heading(root, "ギア報酬", "札とは別枠。取っても見送ってもよい。" + manaNote);
+            else RunUi.Heading(root, "カード報酬", "1枚選んでデッキに加える。見送ってもよい (デッキを薄く保つのも戦略)" + (hasGear ? "。右のギアは別枠で両方取れる。" + manaNote : ""));
 
             float scale = UiKit.Phone ? 1.05f : 1.25f;   // スマホは高さ 675 に見出し・札・見送るを収める (2026-09-14)
             float cardW = CardView.W * scale, cardH = CardView.H * scale;

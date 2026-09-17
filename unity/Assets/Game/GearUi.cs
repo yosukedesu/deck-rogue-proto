@@ -1,6 +1,6 @@
 // GearUi.cs — ギア (消耗品 2026-09-17) の画面部品。置き場は提案書 §6-2 の裁定＝案A「匣の帯」(からくりの隣にトークン)。
-// 文言はブラウザ版 (App.tsx GearBar) と CLI (play.ts renderGearBar) に揃える。語彙は Unity のからくり語彙のまま (「組む」)。
-// 部品: トークン (62×62 / 64×66)・使う時の紙の窓・札を選ぶ窓・対象の帯・報酬/店の札・満杯の入れ替え。魔素 (通貨) は 2026-09-18 に撤去。
+// 文言はブラウザ版 (App.tsx GearBar) と CLI (play.ts renderGearBar) に揃える。語彙は Unity のからくり語彙のまま (「組む」「魔素」)。
+// 部品: トークン (62×62 / 64×66)・上部バーの魔素の札・使う時の紙の窓・札を選ぶ窓・対象の帯・報酬/店の札・満杯の入れ替え。
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +77,7 @@ namespace DeckRogue.Game
             var slot = UiKit.NewRect("gear-" + gear.Uid, parent);
             slot.sizeDelta = new Vector2(w, h);
             g.RegisterAnchor("gear:" + gear.Uid, slot);
-            string blocked = def != null ? Gears.GearBlockedReason(st, gear) : "未定義のギア";
+            string blocked = def != null ? Gears.GearBlockedReason(st, DeckRogue.Engine.Run.ManaOf(run), gear) : "未定義のギア";
             bool open = g.GearPending != null && g.GearPending.Index == index;
             Color edgeCol = open ? PaperFx.Brass : PaperFx.RarityEdge(def != null ? def.Rarity : "common");
             var edge = PaperFx.Sheet(slot, PaperFx.Tag, "edge", edgeCol);
@@ -164,6 +164,30 @@ namespace DeckRogue.Game
             return more;
         }
 
+        // ---- 上部バーの魔素の札 ----
+
+        /// <summary>G の札の隣に魔素の札: 歯車の絵＋「25/50（あと2個）」(狭ければ「25/50」)。演出の的 "mana"</summary>
+        public static RectTransform ManaTag(GameRoot g, Transform bar, RunState run, bool compact)
+        {
+            int mana = DeckRogue.Engine.Run.ManaOf(run);
+            var tag = BattleScreen.Tag(bar, 34f, 0.3f);
+            g.RegisterAnchor("mana", tag);
+            var tImg = tag.GetComponent<Image>(); if (tImg != null) tImg.raycastTarget = true;
+            var ic = new GameObject("gear-ic", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            ic.transform.SetParent(tag, false);
+            ic.sprite = ThemeFx.GearGlyph("mana", "interfere"); ic.preserveAspect = true; ic.raycastTarget = false;
+            UiKit.Le(ic.rectTransform, 18f, 18f, 18f, 18f);
+            var mt = UiKit.Deco(tag, mana.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(mt, -1f, 28f, -1f, 28f);
+            int left = mana / Gears.GEAR_MANA_COST;
+            var ml = UiKit.Txt(tag, "/" + Gears.MANA_MAX + (compact ? "" : "（あと" + left + "個）"), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(ml, -1f, 28f, -1f, 28f);
+            int n = DeckRogue.Engine.Run.GearsOf(run).Count;
+            string tip = "<b>魔素 " + Gears.ManaLabel(mana) + "</b>\nギアを組む動力。1個＝" + Gears.GEAR_MANA_COST + "。通常戦の勝利で+" + DeckRogue.Engine.Run.MANA_PER_WIN + "・強個体/幕ボスで+" + DeckRogue.Engine.Run.MANA_PER_ELITE_BOSS + "。上限" + Gears.MANA_MAX + "\nギアの持ち物 " + n + " / " + Gears.GEAR_CARRY_MAX;
+            Tooltip.Attach(tag.gameObject, delegate { return tip; });
+            return tag;
+        }
+
         // ---- 使う時の窓 (戦闘) ----
 
         /// <summary>GameRoot.GearPending の段に合わせて組む: 窓／札を選ぶ窓／対象の帯</summary>
@@ -185,7 +209,8 @@ namespace DeckRogue.Game
             var p = g.GearPending;
             bool ph = UiKit.Phone;
             var cs = BattleScreen.CanvasSize(root);
-            string blocked = Gears.GearBlockedReason(st, gear);
+            int mana = DeckRogue.Engine.Run.ManaOf(run);
+            string blocked = Gears.GearBlockedReason(st, mana, gear);
             var eff = EffectiveDef(def, p);
             var alive = Alive(st);
             bool isBossNode = false;
@@ -301,9 +326,9 @@ namespace DeckRogue.Game
                 tt.textWrappingMode = TextWrappingModes.NoWrap; tt.overflowMode = TextOverflowModes.Ellipsis;
                 UiKit.Le(tt, -1f, 26f, -1f, 26f);
             }
-            // 脚: 1ターン1個の残りと「組む／やめる」(魔素の収支は 2026-09-18 撤去)
+            // 脚: 魔素の収支と「組む／やめる」
             var sp = UiKit.NewRect("sp", inner); UiKit.Le(sp, -1f, 2f, -1f, 2f, -1f, 1f);
-            string note = st != null && st.GearUsedThisTurn != true && st.Phase == CombatPhases.PlayerTurn ? "このターンはあと1個組める（1ターン1個）" : "自ターンに1個";
+            string note = "魔素 " + mana + " → " + Math.Max(0, mana - Gears.GEAR_MANA_COST) + (st != null && st.GearUsedThisTurn != true && st.Phase == CombatPhases.PlayerTurn ? " ・このターンはあと1個" : "");
             if (blocked != null) note = "<color=#9c3a2a>" + blocked + "</color>　" + note;
             var ft = UiKit.Txt(inner, note, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             ft.textWrappingMode = TextWrappingModes.NoWrap; ft.overflowMode = TextOverflowModes.Ellipsis;
@@ -315,7 +340,7 @@ namespace DeckRogue.Game
             var cancel = UiKit.Btn(btns, "やめる", delegate { g.GearPending = null; g.Rebuild(); }, 16);
             BattleScreen.SetSize(cancel, 120f, 46f);
             bool canGo = blocked == null && ready;
-            var go = UiKit.Btn(btns, "組む", delegate
+            var go = UiKit.Btn(btns, "魔素1で組む", delegate
             {
                 if (def.Special == "flee")
                 {   // 煙玉 (裁定3): 確認を挟む。放棄と同じ朱のボタン
@@ -422,7 +447,7 @@ namespace DeckRogue.Game
 
         // ---- 報酬・店の札 (200×272) ----
 
-        /// <summary>ギア1個の札: レア度の外線・歯車の絵・名前・レア度と回数・本文・注記「自ターンに組む（1ターン1個）」</summary>
+        /// <summary>ギア1個の札: レア度の外線・歯車の絵・名前・レア度と回数・本文・注記「自ターンに魔素1で組む（1ターン1個）」</summary>
         public static RectTransform Card(Transform parent, GearDef def, string id, float w, float h, int? charges = null, float scale = 1f, string sub = null, string foot = null, Color? edgeColor = null)
         {
             var cell = UiKit.NewRect("gearcard-" + id, parent);
@@ -446,7 +471,7 @@ namespace DeckRogue.Game
             var desc = UiKit.Txt(cell, def != null ? def.Text : "", 14, PaperFx.Ink, TextAnchor.UpperCenter);
             desc.textWrappingMode = TextWrappingModes.Normal;
             UiKit.Anchor(desc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 78f), new Vector2(-14f, -142f));
-            var footT = UiKit.Txt(cell, foot ?? "自ターンに組む\n（1ターン1個）", 12, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            var footT = UiKit.Txt(cell, foot ?? "自ターンに魔素1で組む\n（1ターン1個）", 12, PaperFx.InkSoft, TextAnchor.MiddleCenter);
             UiKit.Anchor(footT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 40f), new Vector2(-6f, 76f));
             footT.textWrappingMode = TextWrappingModes.Normal;
             if (def != null) { string tip = "<b>" + def.Name + "</b>  " + RarityJa(def.Rarity) + "\n" + def.Text; Tooltip.Attach(paper.gameObject, delegate { return tip; }); }

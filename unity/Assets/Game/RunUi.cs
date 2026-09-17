@@ -61,6 +61,7 @@ namespace DeckRogue.Game
             UiKit.Le(gt, -1f, 30f, -1f, 30f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 30f, -1f, 30f);
+            GearUi.ManaTag(g, bar, run, UiKit.Phone);   // 魔素 (ギアの動力。2026-09-17)
             if (UiKit.Phone)
             {   // スマホ: デッキ以外は「≡」に畳む (2026-09-14)
                 var deckBtnP = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);

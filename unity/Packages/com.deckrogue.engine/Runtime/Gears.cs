@@ -1,8 +1,8 @@
 // Gears.cs — ギア (消耗品) の戦闘内解決 (src/engine/gears.ts の移植)。
-// 骨格: 拾って持ち歩き (10個)、自ターンに1個だけ組む (魔素は 2026-09-18 に撤去)。カードではないので
+// 骨格: 拾って持ち歩き (10個)、自ターンに1個だけ「魔素」1で組む。カードではないので
 // 虚弱 (カードのプレイで得るブロック-25%) も勢い (カードのプレイで与えるダメージ) も乗らない。
 // 成長は「与ダメ全てに乗る」既存則どおり乗る (置物トリガーと同じ扱い)。
-// 1行ずつ TS に忠実に (unity/PORTING.md)。持ち物の減算は Run 層の担当。
+// 1行ずつ TS に忠実に (unity/PORTING.md)。魔素・持ち物の減算は Run 層の担当。
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,10 @@ namespace DeckRogue.Engine
     {
         /// <summary>持ち歩ける個数 (裁定 2026-09-17)。死蔵は腕なので絞らない</summary>
         public const int GEAR_CARRY_MAX = 10;
+        /// <summary>魔素の上限 (単位10の裁定 2026-09-17: 1個を組む値段が10 なので上限50＝ギア5個ぶん)</summary>
+        public const int MANA_MAX = 50;
+        /// <summary>1個を組む値段 (一律)。魔素の単位＝この値が「1個ぶん」</summary>
+        public const int GEAR_MANA_COST = 10;
         /// <summary>レア度の抽選比 (本家形 C65／U25／R10。裁定 2026-09-17)</summary>
         public const int GEAR_RARITY_WEIGHT_COMMON = 65, GEAR_RARITY_WEIGHT_UNCOMMON = 25, GEAR_RARITY_WEIGHT_RARE = 10;
 
@@ -35,8 +39,9 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>この盤面でギアを組めるか。理由つき (null = 組める)</summary>
-        public static string? GearBlockedReason(GameState? state, GearInstance gear)
+        public static string? GearBlockedReason(GameState? state, int mana, GearInstance gear)
         {
+            if (mana < GEAR_MANA_COST) return "魔素がない";
             if (gear.Charges <= 0) return "使い切っている";
             if (state == null) return "戦闘中でない";
             if (state.Phase != CombatPhases.PlayerTurn) return "自分の番ではない";
@@ -105,6 +110,12 @@ namespace DeckRogue.Engine
             if (parts.Count == 0) return null;
             string growth = state.Player.Growth > 0 ? $"成長+{state.Player.Growth}・" : "";
             return $"実際に与える値: {string.Join("、", parts)}（{growth}急所・装甲・敵ブロック込み。勢いは乗らない）";
+        }
+
+        /// <summary>魔素の表記「25/50（あと2個）」(単位が10になったので個数を添える。2026-09-17)</summary>
+        public static string ManaLabel(int mana)
+        {
+            return $"{mana}/{MANA_MAX}（あと{(int)Math.Floor(mana / (double)GEAR_MANA_COST)}個）";
         }
 
         static readonly HashSet<string> StatusCardIds = new HashSet<string> { "status_wound", "status_scald", "status_junk", "status_brand", "status_guilt" };

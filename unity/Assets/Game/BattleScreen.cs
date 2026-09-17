@@ -128,6 +128,7 @@ namespace DeckRogue.Game
             UiKit.Le(gt, -1f, 28f, -1f, 28f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 28f, -1f, 28f);
+            GearUi.ManaTag(g, bar, run, UiKit.Phone);   // 魔素 (ギアの動力。2026-09-17)。演出の的 "mana"
 
             for (int i = 0; i < run.Relics.Count && i < 8; i++)
             {
@@ -1070,7 +1071,7 @@ namespace DeckRogue.Game
                 var pImg = PaperFx.Sheet(pocket, PaperFx.Tag, "pocket", new Color(0.55f, 0.5f, 0.45f, 0.35f));
                 UiKit.Stretch(pImg.rectTransform, 0f, 0f, 0f, 0f);
                 pImg.raycastTarget = true;
-                Tooltip.Attach(pocket.gameObject, delegate { return "<b>ギア</b>\n戦闘の報酬や店で拾う消耗品。自ターンに1個だけ組む"; });
+                Tooltip.Attach(pocket.gameObject, delegate { return "<b>ギア</b>\n戦闘の報酬や店で拾う消耗品。自ターンに魔素1で組む (1ターン1個)"; });
             }
             // D: 置物 = 付箋 (挿絵 + 名前) を2行。3つ目からは「+N …」
             float cx0 = secA + secB + secG;

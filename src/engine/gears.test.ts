@@ -1,10 +1,12 @@
 // ギア (消耗品 2026-09-17。CLAUDE.md「部品（消耗品）」/ docs/parts-proposal-2026-09-17.md) の機械固定。
-// 骨格: 拾って持ち歩き (10個)・自ターンに1個だけ組む (魔素は 2026-09-18 撤去)・幕で数値は伸びない。
+// 骨格: 拾って持ち歩き (10個)・自ターンに1個だけ「魔素」1で組む・幕で数値は伸びない。
 // 台帳33種／レア度 C13・U14・R6／数値は本家の瓶並み、は裁定なのでここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allGears, getGearDef } from './content.ts'
 import {
   GEAR_CARRY_MAX,
+  GEAR_MANA_COST,
+  MANA_MAX,
   gearBlockedReason,
   gearCardChoices,
   gearLiveDamage,
@@ -15,11 +17,15 @@ import {
 import { incomingTotal, intentModifierNotes } from './summary.ts'
 import {
   GEAR_DROP_BASE,
+  MANA_PER_ELITE_BOSS,
+  MANA_PER_WIN,
   SHOP_GEAR_PRICE,
   SHOP_GEAR_SLOTS,
+  SHOP_MANA_PRICE,
   applyRunCommand,
   createRun,
   gearsOf,
+  manaOf,
   openShop,
 } from './run.ts'
 import type { RunState } from './run.ts'
@@ -29,9 +35,9 @@ import type { GameState, GearInstance } from './types.ts'
 
 const gear = (id: string): GearInstance => makeGear(id, `t_${id}`)
 /** 戦闘状態に持ち物を持たせたランを作る (戦闘の中身だけを見たい時の足場) */
-function runWith(combat: GameState, gears: readonly string[]): RunState {
+function runWith(combat: GameState, gears: readonly string[], mana = GEAR_MANA_COST * 5): RunState {
   const run = createRun(777, 'set-confirm', 'leader_green')
-  return { ...run, phase: 'combat', combat, gears: gears.map((id) => gear(id)), seenGearIds: [...gears] }
+  return { ...run, phase: 'combat', combat, gears: gears.map((id) => gear(id)), mana, seenGearIds: [...gears] }
 }
 const use = (run: RunState, index: number, extra: Record<string, unknown> = {}): RunState =>
   applyRunCommand(run, { type: 'UseGear', index, ...extra } as never)
@@ -64,26 +70,27 @@ describe('台帳 (裁定 2026-09-17: 33種・C13/U14/R6・数値は本家の瓶�
   })
 })
 
-describe('使う条件: 自ターンに1個・敵ターンには使えない (魔素は 2026-09-18 撤去 = 通貨は要らない)', () => {
-  it('自分の番なら組める (魔素の判定は無い)', () => {
+describe('使う条件: 自ターンに1個・魔素1・敵ターンには使えない', () => {
+  it('魔素が無ければ組めない', () => {
     const s = freshCombat('set-confirm', 'enemy_probe')
-    expect(gearBlockedReason(s, gear('gear_spring'))).toBeNull()
-    expect(gearBlockedReason(s, { ...gear('gear_spring'), charges: 0 })).toBe('使い切っている')
+    expect(gearBlockedReason(s, 0, gear('gear_spring'))).toBe('魔素がない')
+    expect(gearBlockedReason(s, GEAR_MANA_COST, gear('gear_spring'))).toBeNull()
   })
 
   it('このターンに既に組んでいたら2個目は組めない', () => {
     const s = freshCombat('set-confirm', 'enemy_probe')
-    expect(gearBlockedReason({ ...s, gearUsedThisTurn: true }, gear('gear_spring'))).toBe('このターンはもう組んだ')
+    expect(gearBlockedReason({ ...s, gearUsedThisTurn: true }, MANA_MAX, gear('gear_spring'))).toBe('このターンはもう組んだ')
   })
 
   it('敵の番には使えない (2026-09-17 裁定。後出しは罠の専売)', () => {
     const s = freshCombat('set-confirm', 'enemy_probe')
-    expect(gearBlockedReason({ ...s, enemyPhase: true }, gear('gear_spring'))).toBe('敵の番には使えない')
+    expect(gearBlockedReason({ ...s, enemyPhase: true }, MANA_MAX, gear('gear_spring'))).toBe('敵の番には使えない')
   })
 
-  it('組むと1ターン1個の旗が立つ', () => {
-    const run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'])
+  it('組むと魔素が1減り、1ターン1個の旗が立つ', () => {
+    const run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'], GEAR_MANA_COST * 3)
     const after = use(run, 0)
+    expect(manaOf(after)).toBe(GEAR_MANA_COST * 2) // 3個ぶん→2個ぶん
     expect(after.combat!.gearUsedThisTurn).toBe(true)
     expect(() => use(after, 0)).toThrow(/このターンはもう組んだ/)
   })
@@ -198,21 +205,35 @@ describe('効果 (代表)', () => {
   })
 })
 
-describe('供給 (§4): ドロップ・持ち歩き (魔素は 2026-09-18 撤去)', () => {
-  it('開始時は持ち物0・pity は基礎値。ランの状態に魔素の欄は無い', () => {
+describe('供給 (§4): 魔素・ドロップ・持ち歩き', () => {
+  it('開始時は魔素0・持ち物0・pity は基礎値', () => {
     const run = createRun(1234, 'set-confirm', 'leader_green')
+    expect(manaOf(run)).toBe(0)
     expect(gearsOf(run).length).toBe(0)
     expect(run.gearPity).toBe(GEAR_DROP_BASE)
-    expect('mana' in run).toBe(false)
   })
 
-  it('勝利しても魔素は増えない (欄が無い) = ギアの制約は1ターン1個・一回きり・持ち物だけ', () => {
+  it('通常戦の勝利で半個ぶん・エリート/幕ボスで1個ぶん (2026-09-17 裁定: 排出を半分)', () => {
+    expect(MANA_PER_WIN * 2).toBe(GEAR_MANA_COST) // 2戦で1個
+    expect(MANA_PER_ELITE_BOSS).toBe(GEAR_MANA_COST) // エリート・幕ボスは1戦で1個
     const run = createRunInBattle(2468, 'set-confirm', 'leader_green')
+    expect(manaOf(run)).toBe(0)
+    // 勝たせる: 敵のHPを0にした盤面を流し込んで決着させる
     const combat = run.combat!
     const won: GameState = { ...combat, enemies: combat.enemies.map((e) => ({ ...e, hp: 0 })) }
     const normal = applyRunCommand({ ...run, combat: won, currentElite: false }, { type: 'Combat', command: { type: 'EndTurn' } })
-    expect('mana' in normal).toBe(false)
-    expect(normal.phase).toBe('reward')
+    expect(manaOf(normal)).toBe(MANA_PER_WIN)
+    const elite = applyRunCommand({ ...run, combat: won, currentElite: true }, { type: 'Combat', command: { type: 'EndTurn' } })
+    expect(manaOf(elite)).toBe(MANA_PER_ELITE_BOSS)
+  })
+
+  it('魔素は上限10で止まる', () => {
+    const run = { ...createRun(99, 'set-confirm', 'leader_green'), mana: MANA_MAX }
+    expect(manaOf(run)).toBe(MANA_MAX)
+    // 2026-09-17 裁定: 単位を10倍にして排出を半分 (上限50＝5個ぶん・勝利+5＝2戦で1個)
+    expect(MANA_MAX).toBe(50)
+    expect(GEAR_MANA_COST).toBe(10)
+    expect(MANA_PER_WIN * 2).toBe(GEAR_MANA_COST) // 2戦で1個ぶん
   })
 
   it('持ち歩きは10個まで。満杯で取るには入れ替えるギアを選ぶ', () => {
@@ -243,7 +264,7 @@ describe('供給 (§4): ドロップ・持ち歩き (魔素は 2026-09-18 撤去
 describe('煙玉 (2026-09-17 ユーザー裁定: 幕ボス以外・エリート可・報酬なし)', () => {
   it('通常戦からは逃げられる (HPはそのまま・報酬は無し・マップへ戻る)', () => {
     const run0 = createRunInBattle(555, 'set-confirm', 'leader_green')
-    const run = { ...run0, gears: [gear('gear_smoke')], seenGearIds: ['gear_smoke'] }
+    const run = { ...run0, gears: [gear('gear_smoke')], mana: GEAR_MANA_COST * 3, seenGearIds: ['gear_smoke'] }
     const hp = run.combat!.player.hp
     const after = use(run, 0)
     expect(after.phase).toBe('map')
@@ -251,11 +272,12 @@ describe('煙玉 (2026-09-17 ユーザー裁定: 幕ボス以外・エリート�
     expect(after.hp).toBe(hp)
     expect(after.battlesWon).toBe(run.battlesWon)
     expect(gearsOf(after).length).toBe(0)
+    expect(manaOf(after)).toBe(GEAR_MANA_COST * 2)
   })
 })
 
-describe('ショップ (3枠)', () => {
-  it('店を開くとギアの棚 (最大3枠) が並ぶ (魔素の札は 2026-09-18 撤去)', () => {
+describe('ショップ (3枠 + 魔素)', () => {
+  it('店を開くとギアの棚 (最大3枠) と魔素の値段が並ぶ', () => {
     const base = createRun(8642, 'set-confirm', 'leader_green')
     const shop = openShop(base)
     expect(shop.phase).toBe('shop')
@@ -263,17 +285,20 @@ describe('ショップ (3枠)', () => {
     expect(shelf.length).toBeGreaterThan(0)
     expect(shelf.length).toBeLessThanOrEqual(SHOP_GEAR_SLOTS)
     for (const item of shelf) expect(item.price).toBe(SHOP_GEAR_PRICE[getGearDef(item.id).rarity])
-    expect('manaPrice' in shop.shop!).toBe(false)
+    expect(shop.shop!.manaPrice).toBe(SHOP_MANA_PRICE)
   })
 
-  it('ギアを買うと所持金が減って持ち物に入る。売切は買えない', () => {
+  it('魔素を買うと所持金が減って魔素が1増える', () => {
     const base = createRun(8643, 'set-confirm', 'leader_green')
-    const after: RunState = {
+    const run: RunState = {
       ...base,
       phase: 'shop',
-      gold: 470,
-      shop: { cards: [], relicId: null, relicPrice: 0, gears: [{ id: 'gear_powder', price: 40 }] },
+      gold: 500,
+      shop: { cards: [], relicId: null, relicPrice: 0, gears: [{ id: 'gear_powder', price: 40 }], manaPrice: 30 },
     }
+    const after = applyRunCommand(run, { type: 'ShopBuyMana' })
+    expect(after.gold).toBe(470)
+    expect(manaOf(after)).toBe(GEAR_MANA_COST) // 買えるのは1個ぶん
     const bought = applyRunCommand(after, { type: 'ShopBuyGear', index: 0 })
     expect(bought.gold).toBe(430)
     expect(gearsOf(bought).map((g) => g.gearId)).toEqual(['gear_powder'])
@@ -422,8 +447,8 @@ describe('空振りの予告', () => {
     expect(gearNoEffectReason(hurt, getGearDef('gear_repair_oil'))).toBeNull()
   })
 
-  it('弾きはしない＝表示だけの裁定', () => {
+  it('弾きはしない（組めば魔素は減る）＝表示だけの裁定', () => {
     const s = solo('enemy_probe')
-    expect(gearBlockedReason(s, gear('gear_rusty_wedge'))).toBeNull()
+    expect(gearBlockedReason(s, MANA_MAX, gear('gear_rusty_wedge'))).toBeNull()
   })
 })
