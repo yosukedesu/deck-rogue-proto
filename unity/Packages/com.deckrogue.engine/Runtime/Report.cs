@@ -115,6 +115,12 @@ namespace DeckRogue.Engine
             try { return Content.GetRelicDef(id).Name; } catch (Exception) { return id; }
         }
 
+        /// <summary>ギアの名前 (未定義IDでも落ちない。データ変更後の古いセーブを読む時のため。ui/report.ts gearName)</summary>
+        public static string GearName(string id)
+        {
+            try { return Content.GetGearDef(id).Name; } catch (Exception) { return id; }
+        }
+
         /// <summary>カードIDから名前 (合成札は合成の解決器で復元する)。ui/log.ts cardName と同じ</summary>
         public static string CardName(string cardId)
         {
@@ -626,6 +632,41 @@ namespace DeckRogue.Engine
                     var t = JoinNames(opts);
                     return Mk("報酬ピック: スキップ（候補: " + (t != "" ? t : "なし") + "）");
                 }
+                // ---- ギア (2026-09-17)。ピック監査で「取ったか・組んだか・腐ったか」を追えるようにする ----
+                case RunCommand_TakeGear tg:
+                {
+                    var id = prev.GearOption;
+                    if (id == null) return null;
+                    var prevGears = prev.Gears ?? new List<GearInstance>();
+                    GearInstance dropped = tg.DiscardIndex.HasValue && tg.DiscardIndex.Value >= 0 && tg.DiscardIndex.Value < prevGears.Count ? prevGears[tg.DiscardIndex.Value] : null;
+                    return Mk("ギア取得: " + GearName(id) + (dropped != null ? "（" + GearName(dropped.GearId) + " と入れ替え）" : ""));
+                }
+                case RunCommand_SkipGear _:
+                    return prev.GearOption == null ? null : Mk("ギア見送り: " + GearName(prev.GearOption));
+                case RunCommand_UseGear ug:
+                {
+                    var prevGears = prev.Gears ?? new List<GearInstance>();
+                    if (ug.Index < 0 || ug.Index >= prevGears.Count) return null;
+                    var gI = prevGears[ug.Index];
+                    string asText = ug.AsGearId != null ? "（" + GearName(ug.AsGearId) + " として）" : "";
+                    GearInstance left = null;
+                    foreach (var x in next.Gears ?? new List<GearInstance>()) if (x.Uid == gI.Uid) { left = x; break; }
+                    return Mk("ギア使用: " + GearName(gI.GearId) + asText + "（魔素 " + (prev.Mana ?? 0) + "→" + (next.Mana ?? 0) + (left != null ? "・残" + left.Charges + "回" : "・使い切り") + "）");
+                }
+                case RunCommand_DiscardGear dg:
+                {
+                    var prevGears = prev.Gears ?? new List<GearInstance>();
+                    return dg.Index < 0 || dg.Index >= prevGears.Count ? null : Mk("ギアを捨てた: " + GearName(prevGears[dg.Index].GearId));
+                }
+                case RunCommand_ShopBuyGear sg:
+                {
+                    var shelf = prev.Shop?.Gears ?? new List<ShopStateGears>();
+                    if (sg.Index < 0 || sg.Index >= shelf.Count) return null;
+                    var slot = shelf[sg.Index];
+                    return Mk("ショップ: ギア " + GearName(slot.Id) + " を " + slot.Price + "G で購入");
+                }
+                case RunCommand_ShopBuyMana _:
+                    return Mk("ショップ: 魔素を購入（" + (prev.Mana ?? 0) + "→" + (next.Mana ?? 0) + "・" + (prev.Shop?.ManaPrice ?? 0) + "G）");
                 case RunCommand_PickRelic pr:
                 {
                     var opts = prev.RelicOptions ?? new List<string>();

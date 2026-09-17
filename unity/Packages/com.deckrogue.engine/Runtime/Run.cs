@@ -127,6 +127,19 @@ namespace DeckRogue.Engine
         private const int SHRINE_CHANCE_PERCENT = 25;
         private const int SHOP_CARD_COUNT = 5;
         private const int SHOP_RELIC_PRICE = 150;
+
+        // ---- ギア (消耗品 2026-09-17。docs/parts-proposal-2026-09-17.md §4 供給。TS run.ts と同値) ----
+        /// <summary>通常戦のドロップ率 (整数パーセントポイント)。外れるたび +GEAR_DROP_PITY・当たると基礎値へ戻る</summary>
+        public const int GEAR_DROP_BASE = 60;
+        public const int GEAR_DROP_PITY = 10;
+        /// <summary>魔素: 通常戦の勝利で半個ぶん (2戦で1個)、エリート・幕ボスで1個ぶん (2026-09-17 裁定: 排出を半分)</summary>
+        public const int MANA_PER_WIN = 5;
+        public const int MANA_PER_ELITE_BOSS = 10;
+        /// <summary>ショップ: ギアの棚は3枠。値段はレア度で</summary>
+        public const int SHOP_GEAR_SLOTS = 3;
+        public static readonly IReadOnlyDictionary<string, int> SHOP_GEAR_PRICE = new Dictionary<string, int> { { "common", 40 }, { "uncommon", 60 }, { "rare", 90 } };
+        /// <summary>ショップ: 魔素1つの値段</summary>
+        public const int SHOP_MANA_PRICE = 30;
         /// <summary>除去サービス: 回数無制限・使うたびラン通算で+25G</summary>
         private const int SHOP_REMOVAL_BASE = 50;
         private const int SHOP_REMOVAL_STEP = 25;
@@ -222,6 +235,53 @@ namespace DeckRogue.Engine
         {
             if (RelicBonusSum(run, "goldPerRow") <= 0 || RelicStateOf(run, "mawBroken") == 1) return run;
             return WithRelicState(run, "mawBroken", 1);
+        }
+
+        // ---- ギアの持ち物・魔素 (旧セーブに無いので ?? ガード) ----
+        public static IReadOnlyList<GearInstance> GearsOf(RunState run) => run.Gears ?? new List<GearInstance>();
+        public static int ManaOf(RunState run) => run.Mana ?? 0;
+        public static bool GearFull(RunState run) => GearsOf(run).Count >= Gears.GEAR_CARRY_MAX;
+
+        /// <summary>レア度の抽選 (本家形 C65／U25／R10)。エリート・幕ボスは U 以上を保証 (それでも最初の roll は消費する)</summary>
+        static (string Id, RngState Rng) RollGearId(RngState rng0, bool atLeastUncommon)
+        {
+            var (roll, rng1) = Rng.NextInt(rng0, 0, 99);
+            string wanted = roll < 10 ? "rare" : (roll < 35 || atLeastUncommon) ? "uncommon" : "common";
+            var pool = Content.AllGears.Where(g => g.Rarity == wanted).ToList();
+            if (pool.Count == 0) pool = new List<GearDef>(Content.AllGears);
+            var (i, rng2) = Rng.NextInt(rng1, 0, pool.Count - 1);
+            return (pool[i].Id, rng2);
+        }
+
+        /// <summary>持ち物に1個足す (満杯なら足さない)。拾った記録 (seenGearIds) は必ず残る</summary>
+        static RunState AddGear(RunState run, string gearId, string uidHint)
+        {
+            var seen = run.SeenGearIds ?? new List<string>();
+            var withSeen = run with { SeenGearIds = seen.Contains(gearId) ? seen : Append(seen, gearId) };
+            if (GearFull(withSeen)) return withSeen;
+            return withSeen with { Gears = Append(GearsOf(withSeen), Gears.MakeGear(gearId, "gear_" + uidHint)) };
+        }
+
+        /// <summary>ギアを1回ぶん使う: 魔素-1個ぶん・残り回数-1 (0 になったら持ち物から消える)</summary>
+        static RunState SpendGear(RunState run, int index)
+        {
+            var gears = GearsOf(run);
+            if (index < 0 || index >= gears.Count) throw new InvalidOperationException($"不正なギア指定: {index}");
+            var gear = gears[index];
+            int left = gear.Charges - 1;
+            return run with
+            {
+                Mana = ManaOf(run) - Gears.GEAR_MANA_COST,
+                Gears = left > 0 ? gears.Select((g, i) => i == index ? g with { Charges = left } : g).ToList() : gears.Where((_, i) => i != index).ToList(),
+            };
+        }
+
+        /// <summary>持ち物から1つ捨てる (満杯の入れ替え・枠の整理)</summary>
+        static RunState DiscardGearAt(RunState run, int index)
+        {
+            var gears = GearsOf(run);
+            if (index < 0 || index >= gears.Count) throw new InvalidOperationException($"不正なギア指定: {index}");
+            return run with { Gears = gears.Where((_, i) => i != index).ToList() };
         }
 
         public sealed record CampfireOptionsInfo(bool Dig, bool Remove, int TrainLeft, bool Forge);
@@ -846,11 +906,24 @@ namespace DeckRogue.Engine
             var (shopRelics, rngS) = DrawRelicOptions(run with { Rng = rng }, RelicSources.Shop, 1);
             rng = rngS;
             string? relicId = shopRelics.Count > 0 ? shopRelics[0] : null;
+            // ギアの棚 (2026-09-17): 3枠。レア度で値付け (会員証の値引きも乗る)。重複 id は棚に足さないが RNG は消費済み
+            var gearShelf = new List<ShopStateGears>();
+            var gearSeen = new HashSet<string>();
+            for (int i = 0; i < SHOP_GEAR_SLOTS; i++)
+            {
+                var (gid, rg) = RollGearId(rng, false);
+                rng = rg;
+                if (gearSeen.Contains(gid)) continue;
+                gearSeen.Add(gid);
+                gearShelf.Add(new ShopStateGears { Id = gid, Price = JsFloor(SHOP_GEAR_PRICE[Content.GetGearDef(gid).Rarity] * ShopPriceRatio(run)) });
+            }
             var shop = new ShopState
             {
                 Cards = cards,
                 RelicId = relicId,
                 RelicPrice = JsFloor(SHOP_RELIC_PRICE * ShopPriceRatio(run)), // 会員証
+                Gears = gearShelf,
+                ManaPrice = JsFloor(SHOP_MANA_PRICE * ShopPriceRatio(run)),
             };
             // 行商の食券 (2026-09-12 本家 Meal Ticket): ショップに入るたびHP+N
             int heal = RelicBonusSum(run, "shopHeal");
@@ -1169,6 +1242,11 @@ namespace DeckRogue.Engine
                 EventId = null,
                 SeenEventIds = new List<string>(),
                 SeenShrineIds = new List<string>(),
+                Gears = new List<GearInstance>(),
+                Mana = 0,
+                GearPity = GEAR_DROP_BASE,
+                SeenGearIds = new List<string>(),
+                GearOption = null,
             };
         }
 
@@ -1212,7 +1290,11 @@ namespace DeckRogue.Engine
         /// チェックポイント開始 (幕2/幕3から代表デッキで開始)。
         /// 通常の CreateRun を土台に、幕・マップ・デッキ・レリック・HP・金だけ差し替える純関数
         /// </summary>
-        public static RunState CreateDebugCheckpointRun(int seed, string mode, string leaderId, ReplayOriginCheckpoint opts)
+        /// <summary>
+        /// チェックポイント開始。gearIds/mana は Autopilot の撮影用 (origin に欄が無いので再生は null で呼ぶ = 幕なりに抽選)。
+        /// gearIds に空の列を渡せば「持たない」
+        /// </summary>
+        public static RunState CreateDebugCheckpointRun(int seed, string mode, string leaderId, ReplayOriginCheckpoint opts, IReadOnlyList<string>? gearIds = null, int? mana = null)
         {
             var baseRun = CreateRun(seed, mode, leaderId, null, opts.Difficulty ?? DEFAULT_DIFFICULTY);
             int act = Math.Min(MapGen.ACT_COUNT, Math.Max(1, opts.Act));
@@ -1235,6 +1317,25 @@ namespace DeckRogue.Engine
                 // チェックポイントは選択を挟まない (空の鳥籠・星読みの盤の保留は捨てる)
                 if (run.PendingRelicChoice != null) run = run with { PendingRelicChoice = null };
             }
+            // ギア (2026-09-17): 幕2/3のチェックポイントは「10戦勝ってきた」状態なので持ち物と魔素もその幕なりに積む (RNG は run.Rng を進める)
+            if (gearIds != null)
+            {
+                foreach (var gid in gearIds) run = AddGear(run, gid, "cp_" + gid);
+            }
+            else if (act >= 2)
+            {
+                int want = act >= 3 ? 4 : 3;
+                var r = run.Rng;
+                for (int i = 0; i < want; i++)
+                {
+                    var (gid, r2) = RollGearId(r, false);
+                    r = r2;
+                    run = AddGear(run with { Rng = r }, gid, "cp" + i + "_" + gid);
+                    r = run.Rng;
+                }
+            }
+            // チェックポイントの既定は幕なりの残高 (幕3=満タン・幕2=3個ぶん)
+            run = run with { Mana = Math.Min(Gears.MANA_MAX, mana ?? (act >= 3 ? Gears.MANA_MAX : act >= 2 ? Gears.GEAR_MANA_COST * 3 : 0)) };
             double ratio = Math.Min(1, Math.Max(0.05, opts.HpRatio ?? 1));
             return run with { Hp = Math.Max(1, JsRound(run.MaxHp * ratio)) };
         }
@@ -1353,7 +1454,34 @@ namespace DeckRogue.Engine
                 if (chosen.FusionCatalyst != null && picked.Any(id => Content.GetCardDef(id).FusionCatalyst != null)) continue;
                 picked.Add(chosen.Id);
             }
-            return run with { Rng = rng, RewardOptions = picked, Phase = RunPhases.Reward };
+            // ギアの抽選 (2026-09-17): 札3枚とは別枠で1つ。通常戦は 60%+pity・エリート/幕ボスは確定 (札の抽選の後)
+            bool isBossNode = CurrentNode(run)?.Type == MapNodeTypes.Boss;
+            bool guaranteed = run.CurrentElite || isBossNode;
+            string? gearOption = null;
+            int pity = run.GearPity ?? GEAR_DROP_BASE;
+            if (guaranteed)
+            {
+                var (gid, r) = RollGearId(rng, true);
+                rng = r;
+                gearOption = gid;
+            }
+            else
+            {
+                var (roll, r1) = Rng.NextInt(rng, 0, 99);
+                rng = r1;
+                if (roll < pity)
+                {
+                    var (gid, r2) = RollGearId(rng, false);
+                    rng = r2;
+                    gearOption = gid;
+                    pity = GEAR_DROP_BASE;
+                }
+                else
+                {
+                    pity = pity + GEAR_DROP_PITY;
+                }
+            }
+            return run with { Rng = rng, RewardOptions = picked, GearOption = gearOption, GearPity = pity, Phase = RunPhases.Reward };
         }
 
         /// <summary>戦闘勝利後の処理: HP持ち越し → (エリートならレリック報酬 →) カード報酬 or ラン勝利</summary>
@@ -1417,6 +1545,8 @@ namespace DeckRogue.Engine
                 Gold = Math.Max(0, run.Gold + gained),
                 // 祈りの車輪 (2026-09-12 本家 Prayer Wheel): 通常戦だけカード報酬をもう1組
                 RewardRoundsLeft = !run.CurrentElite && !isBoss ? RelicBonusSum(run, "extraRewardRounds") : 0,
+                // 魔素 (2026-09-17): 通常戦+半個ぶん・エリート/幕ボス+1個ぶん。上限 MANA_MAX
+                Mana = Math.Min(Gears.MANA_MAX, (run.Mana ?? 0) + (run.CurrentElite || isBoss ? MANA_PER_ELITE_BOSS : MANA_PER_WIN)),
             };
             // 蜥蜴の尾 (2026-09-12): この戦闘で砕けたらランで使用済み
             if (combat.DeathSaveUsed == true) next = WithRelicState(next, "lizardUsed", 1);
@@ -1441,6 +1571,17 @@ namespace DeckRogue.Engine
                 }
             }
             return RollRewards(next);
+        }
+
+        /// <summary>
+        /// 報酬ノードは「札の選択」と「ギアの取得」の両方が片付いてから閉じる (2026-09-17 是正)。
+        /// 札を先に選ぶと phase が reward でなくなり、残っていた gearOption を TakeGear できずに黙って消えていた
+        /// </summary>
+        static RunState FinishReward(RunState run)
+        {
+            if (run.GearOption != null) return run;      // ギアが残っている
+            if (run.RewardOptions != null) return run;   // 札の選択が残っている
+            return AdvanceActIfBossCleared(run);
         }
 
         /// <summary>幕ボスのカード報酬を受け取った後、次の幕へ進む (新しいマップを生成して行0の選択から)</summary>
@@ -1562,7 +1703,7 @@ namespace DeckRogue.Engine
                     var picked = AddCardsToRunDeck(run with { Picks = Append(run.Picks, cardId), RewardOptions = null }, new List<CardInstance> { card }); // 卵 (2026-09-12)
                     // 祈りの車輪 (2026-09-12): 通常戦の報酬をもう1組
                     if (round > 0) return RollRewards(picked with { RewardRoundsLeft = round - 1 });
-                    return AdvanceActIfBossCleared(picked);
+                    return FinishReward(picked);
                 }
 
                 case RunCommand_SkipReward:
@@ -1570,10 +1711,92 @@ namespace DeckRogue.Engine
                     if (run.Phase != RunPhases.Reward) throw new InvalidOperationException("報酬フェーズではない");
                     // 鳴り鉢 (2026-09-12 本家 Singing Bowl): 見送るたび最大HP+N
                     int bowl = RelicBonusSum(run, "skipRewardMaxHp");
+                    // 札が既に片付いていれば、残るのはギアだけ = この「見送る」はギアを見送る意味になる (2026-09-17)
+                    bool leaving = run.RewardOptions == null && run.GearOption != null;
                     var skipped = run with { RewardOptions = null, MaxHp = run.MaxHp + bowl, Hp = run.Hp + bowl };
+                    if (leaving) skipped = skipped with { GearOption = null };
                     int round = run.RewardRoundsLeft ?? 0;
                     if (round > 0) return RollRewards(skipped with { RewardRoundsLeft = round - 1 });
-                    return AdvanceActIfBossCleared(skipped);
+                    return FinishReward(skipped);
+                }
+
+                // ---- ギア (2026-09-17) ----
+                case RunCommand_UseGear c:
+                {
+                    var gears = GearsOf(run);
+                    if (c.Index < 0 || c.Index >= gears.Count) throw new InvalidOperationException($"不正なギア指定: {c.Index}");
+                    var gear = gears[c.Index];
+                    var def = Content.GetGearDef(gear.GearId);
+                    string? blocked = Gears.GearBlockedReason(run.Phase == RunPhases.Combat ? run.Combat : null, ManaOf(run), gear);
+                    if (blocked != null) throw new InvalidOperationException($"{def.Name} は組めない: {blocked}");
+                    var combat = run.Combat!;
+                    // 煙玉 (2026-09-17 ユーザー裁定): 幕ボス以外から逃げる。報酬なし・HPはそのまま・節は踏んだ扱い
+                    if (def.Special == "flee")
+                    {
+                        if (CurrentNode(run)?.Type == MapNodeTypes.Boss) throw new InvalidOperationException("幕ボスからは逃げられない");
+                        var spent = SpendGear(run, c.Index);
+                        return spent with { Combat = null, Hp = combat.Player.Hp, Phase = RunPhases.Map, RewardOptions = null, GearOption = null };
+                    }
+                    var next = Gears.ResolveGear(combat, def, new Gears.UseGearOptions
+                    {
+                        TargetIndex = c.TargetIndex,
+                        CardUid = c.CardUid,
+                        AsGearId = c.AsGearId,
+                        SeenGearIds = run.SeenGearIds ?? new List<string>(),
+                    });
+                    var after = SpendGear(run, c.Index) with { Combat = next with { GearUsedThisTurn = true } };
+                    // ギアで敵が全滅しうる (火薬・火薬樽)。決着はいつもの経路へ
+                    if (after.Combat!.Phase == CombatPhases.Won) return AfterVictory(after, after.Combat!);
+                    if (after.Combat!.Phase == CombatPhases.Lost) return after with { Hp = 0, Phase = RunPhases.Lost };
+                    return after;
+                }
+                case RunCommand_TakeGear c:
+                {
+                    var id = run.GearOption;
+                    if (run.Phase != RunPhases.Reward || id == null) throw new InvalidOperationException("取れるギアがない");
+                    RunState baseRun = run;
+                    if (GearFull(baseRun))
+                    {
+                        if (c.DiscardIndex == null) throw new InvalidOperationException("持ち物が満杯 = 入れ替えるギアを選ぶ");
+                        baseRun = DiscardGearAt(baseRun, c.DiscardIndex.Value);
+                    }
+                    return FinishReward(AddGear(baseRun, id, "a" + run.Act + "_r" + run.Row + "_" + id) with { GearOption = null });
+                }
+                case RunCommand_SkipGear:
+                {
+                    if (run.Phase != RunPhases.Reward) throw new InvalidOperationException("報酬フェーズではない");
+                    return FinishReward(run with { GearOption = null });
+                }
+                case RunCommand_DiscardGear c:
+                    return DiscardGearAt(run, c.Index);
+                case RunCommand_ShopBuyGear c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    var shelf = run.Shop.Gears ?? new List<ShopStateGears>();
+                    var slot = c.Index >= 0 && c.Index < shelf.Count ? shelf[c.Index] : null;
+                    if (slot == null || slot.Sold == true) throw new InvalidOperationException($"不正なギア指定: {c.Index}");
+                    if (run.Gold < slot.Price) throw new InvalidOperationException("ゴールドが足りない");
+                    RunState baseRun = run;
+                    if (GearFull(baseRun))
+                    {
+                        if (c.DiscardIndex == null) throw new InvalidOperationException("持ち物が満杯 = 入れ替えるギアを選ぶ");
+                        baseRun = DiscardGearAt(baseRun, c.DiscardIndex.Value);
+                    }
+                    var bought = AddGear(baseRun, slot.Id, "shop_a" + run.Act + "_r" + run.Row + "_" + slot.Id);
+                    return BreakMawBank(bought with
+                    {
+                        Gold = bought.Gold - slot.Price,
+                        Shop = run.Shop with { Gears = shelf.Select((g, i) => i == c.Index ? g with { Sold = true } : g).ToList() },
+                    });
+                }
+                case RunCommand_ShopBuyMana:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    int price = run.Shop.ManaPrice ?? SHOP_MANA_PRICE;
+                    if (run.Gold < price) throw new InvalidOperationException("ゴールドが足りない");
+                    if (ManaOf(run) >= Gears.MANA_MAX) throw new InvalidOperationException("魔素は上限");
+                    // 買えるのは「1個ぶん」(GEAR_MANA_COST)。上限を越えた分は切り捨てる
+                    return BreakMawBank(run with { Gold = run.Gold - price, Mana = Math.Min(Gears.MANA_MAX, ManaOf(run) + Gears.GEAR_MANA_COST) });
                 }
 
                 case RunCommand_ChooseNode c:

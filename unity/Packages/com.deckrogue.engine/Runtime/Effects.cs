@@ -918,6 +918,12 @@ namespace DeckRogue.Engine
         /// 2026-09-16 人間#12: 上限4に達した後も歩哨の意図が「+がらくた2」を予告し続けた)。
         /// 数える範囲は実処理どおり: がらくた=手札+山札+捨て札、負傷=全ゾーン (伏せ場・消滅置き場も)、火傷=累計カウンタ
         /// </summary>
+        /// <summary>死に札・呪いの札か (灰落としの対象 = 負傷・火傷・がらくた・烙印・仮初の烙印)</summary>
+        static bool IsStatusCardId(string id)
+        {
+            return id == "status_wound" || id == "status_scald" || id == "status_junk" || id == "status_brand" || id == "status_guilt";
+        }
+
         public static int? CardStatusRoom(GameState state, string status)
         {
             var p = state.Player;
@@ -965,6 +971,7 @@ namespace DeckRogue.Engine
             var notes = new List<string>();
             if (kind != EnemyActionKinds.Attack) return notes;
             var e = enemyIndex >= 0 && enemyIndex < s.Enemies.Count ? s.Enemies[enemyIndex] : null;
+            if (e?.ActionNegated == true) notes.Add("打ち消し済み＝この行動は起きない");
             if ((e?.Weak ?? 0) > 0) notes.Add("威圧で-25%");
             if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) notes.Add("鈴で-" + s.SetDamageReduction);
             if (s.Player.Vulnerable > 0) notes.Add("脆弱で+50%");
@@ -983,6 +990,8 @@ namespace DeckRogue.Engine
         {
             var e = s.Enemies[enemyIndex];
             if (e.Hp <= 0 || e.Confusion > 0) return 0;
+            // ギア「楔」で打ち消し済みの敵は殴ってこない (2026-09-17 M・L)
+            if (e.ActionNegated == true) return 0;
             var it = EffectiveIntent(s, enemyIndex);
             if (it == null || it.Kind != EnemyActionKinds.Attack) return 0;
             return ModifiedHit(s, enemyIndex, it.Actual) * IntentHits(s, it.MirrorHits, it.Hits);
@@ -1065,6 +1074,8 @@ namespace DeckRogue.Engine
         {
             var e = EnemyAt(state, enemyIndex);
             if (e == null || e.Hp <= 0) return state;
+            // ギア「鎮めの錘」(2026-09-17): この敵の割り込みはこの戦闘中起きない
+            if (e.InterruptBlocked == true) return state;
             bool inPlayerTurn = state.Phase == CombatPhases.PlayerTurn && state.EnemyPhase != true;
             var r = EnemyGraph.ApplyInterruptsTo(state, enemyIndex, e.Node, e.FiredInterrupts, only, inPlayerTurn ? e.IntentNode : null);
             if (r.FiredNow.Count == 0) return state;
@@ -1381,6 +1392,65 @@ namespace DeckRogue.Engine
                 case "drawCardsNextTurn":
                     // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。StartPlayerTurn が読んで消す
                     return state with { NextTurnDraw = (state.NextTurnDraw ?? 0) + (effect.Amount ?? 0) };
+                // ---- ギア専用の効果 (2026-09-17)。カードには付けない ----
+                case "gainHpRatio":
+                    // 修理油: 最大HPの amount % を回復 (切り捨て・最低1)。リーダーで最大HPが違うので割合で持つ
+                    return HealPlayer(state, Math.Max(1, (int)Math.Floor(state.Player.MaxHp * (effect.Amount ?? 0) / 100.0)), enemyIndex);
+                case "negateEnemyAction":
+                    // 楔: 対象の敵の次の行動を打ち消す (ExecuteEnemyAction が実行時に消費)
+                    return state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 ? e with { ActionNegated = true } : e) };
+                case "blockEnemySummon":
+                    // 錆びた楔: 対象の召喚・分裂・孵化を1回止める (発火時に消費)
+                    return state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 ? e with { SummonBlocked = true } : e) };
+                case "blockEnemyInterrupt":
+                    // 鎮めの錘: 対象の割り込み (HP半分の豹変・被弾覚醒・仲間の死亡) をこの戦闘中起こさない
+                    return state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 ? e with { InterruptBlocked = true } : e) };
+                case "cleanseStatuses":
+                {
+                    // 清めの水: 自分の状態異常を全て消す (札の負傷・火傷・がらくたは別。灰落としの担当)
+                    var p = state.Player;
+                    if (p.Weak == 0 && p.Vulnerable == 0 && p.Frail == 0 && p.Restrain == 0 && (p.Mist ?? 0) == 0 && (p.Slow ?? 0) == 0) return state;
+                    return state with { Player = p with { Weak = 0, Vulnerable = 0, Frail = 0, Restrain = 0, Mist = 0, Slow = 0 } };
+                }
+                case "purgeHandStatus":
+                {
+                    // 灰落とし: 手札の負傷・火傷・がらくた・烙印を消滅置き場へ (onCardExhausted・亡骸は発火する = 黒の燃料になる)
+                    var purged = new List<CardInstance>();
+                    var kept = new List<CardInstance>();
+                    foreach (var c in state.Player.Hand) { if (IsStatusCardId(c.Def.Id)) purged.Add(c); else kept.Add(c); }
+                    if (purged.Count == 0) return state;
+                    var ex = new List<CardInstance>(state.Player.ExhaustPile); ex.AddRange(purged);
+                    var s2 = state with { Player = state.Player with { Hand = kept, ExhaustPile = ex } };
+                    return FireExhaustTriggers(s2, purged.Count, enemyIndex);
+                }
+                case "gainArtifact":
+                    // 厄除けの符: 状態異常の付与を N 回弾く (時計仕掛けの土産と同じ器)
+                    return state with { Player = state.Player with { Artifact = (state.Player.Artifact ?? 0) + (effect.Amount ?? 0) } };
+                case "redrawHand":
+                {
+                    // 引き直し: 手札を全て捨て、同じ枚数を引く (衝動の札も捨てる = 失効の扱いは endTurn と同じでよい)
+                    int n = state.Player.Hand.Count;
+                    if (n == 0) return state;
+                    var disc = new List<CardInstance>(state.Player.DiscardPile); disc.AddRange(state.Player.Hand);
+                    var s2 = state with { Player = state.Player with { Hand = new List<CardInstance>(), DiscardPile = disc, ImpulseUids = new List<string>() } };
+                    return DrawCards(s2, n);
+                }
+                case "clearEnemyStrength":
+                    // 錆止め: 筋力を0に戻す (マイナスには下げない)。宣言済みの攻撃の実値も引き直す
+                    return RefreshIntentValues(state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 && e.Strength > 0 ? e with { Strength = 0 } : e) });
+                case "retainHandOnce":
+                    // 挟み紙: このターンだけ手札を捨てない (火傷の1回きり・衝動の失効は従来どおり)
+                    return state with { RetainHandThisTurn = true };
+                case "energyCarryOnce":
+                    // 貯め置き: このターンだけ余ったエナジーを次のターンへ持ち越す
+                    return state with { EnergyCarryThisTurn = true };
+                case "gainDeathSaveOne":
+                    // 蘇りの発条: この戦闘中、致死を一度だけ耐えて HP1 で立つ
+                    return state with { GearDeathSave = true };
+                case "copyCardInHand":
+                case "transformInHand":
+                    // 写し・化けの粉: 対象の手札は Gears が選んで解決する (ここへは来ない)
+                    return state;
                 case "gainEnergyNextTurn":
                     return state with { NextTurnEnergy = (state.NextTurnEnergy ?? 0) + (effect.Amount ?? 0) };
                 case "gainBlockNextTurn":

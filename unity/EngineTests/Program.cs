@@ -160,7 +160,7 @@ int VerifyGoldenRuns(string[] argv)
     Console.WriteLine(
         $"データ読込: カード{Content.AllCards.Count} 敵{Content.AllEnemies.Count} 編成{Content.AllEncounters.Count} " +
         $"デッキ{Content.AllDecks.Count} リーダー{Content.AllLeaders.Count} レリック{Content.AllRelics.Count} " +
-        $"イベント{Content.AllEvents.Count} 合成レシピ{Content.AllFusions.Count}");
+        $"イベント{Content.AllEvents.Count} 合成レシピ{Content.AllFusions.Count} ギア{Content.AllGears.Count}");
 
     int failedFiles = 0;
     foreach (var file in files)

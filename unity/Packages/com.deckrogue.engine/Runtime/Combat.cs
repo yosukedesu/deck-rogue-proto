@@ -550,12 +550,17 @@ namespace DeckRogue.Engine
             int? nextTurnDraw = state.NextTurnDraw;
             int? nextTurnEnergy = state.NextTurnEnergy;
             int? nextTurnBlock = state.NextTurnBlock;
+            // 貯め置き (energyCarryThisTurn) はギアの1回版。読んでから旗を落とす (ギアの1ターン1個・挟み紙の旗もここで降りる。2026-09-17)
+            bool carryOnce = state.EnergyCarryThisTurn == true;
             var s = state with
             {
                 Turn = turn,
                 Phase = CombatPhases.PlayerTurn,
                 NextTurnDraw = null,
                 EnemyPhase = null,
+                GearUsedThisTurn = null,
+                RetainHandThisTurn = null,
+                EnergyCarryThisTurn = null,
                 NextTurnEnergy = null,
                 NextTurnBlock = null,
                 // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
@@ -565,7 +570,7 @@ namespace DeckRogue.Engine
                     // 頑丈な留め具 (blockKeep): ブロックをN持ち越す
                     Block = state.BlockKeep != null ? Math.Min(state.Player.Block, state.BlockKeep.Value) : 0,
                     // 溶けない氷菓 (energyCarry): 余ったエナジーを持ち越す (T1 は素の値)
-                    Energy = state.Player.EnergyMax + (state.EnergyCarry == true && turn > 1 ? state.Player.Energy : 0) + (nextTurnEnergy ?? 0),
+                    Energy = state.Player.EnergyMax + ((state.EnergyCarry == true || carryOnce) && turn > 1 ? state.Player.Energy : 0) + (nextTurnEnergy ?? 0),
                     EnergyMaxAtTurnStart = state.Player.EnergyMax + (state.EnergyMaxRefBonus ?? 0),
                     CardsPlayedThisTurn = 0,
                     SetsThisTurn = 0,
@@ -582,7 +587,8 @@ namespace DeckRogue.Engine
             s = s with { Enemies = MapIdx(s.Enemies, (e, _) => (e.DamageThisTurn ?? 0) > 0 ? e with { DamageThisTurn = 0 } : e) };
             s = Events.Emit(s, new GameEvent_TurnStarted { Turn = turn, Hand = s.Player.Hand.Select(c => c.Def.Name).ToList() });
             // ドローを onTurnStart 誘発より先に行う。霞み: ドロー-2・最低3枚
-            s = Effects.DrawCards(s, ((s.Player.Mist ?? 0) > 0 ? Math.Max(3, s.Player.DrawPerTurn - 2) : s.Player.DrawPerTurn) + (nextTurnDraw ?? 0));
+            // 過負荷の歯車 (ギア) は nextTurnDraw に負の量を積む = 0 で下げ止める (2026-09-17)
+            s = Effects.DrawCards(s, Math.Max(0, ((s.Player.Mist ?? 0) > 0 ? Math.Max(3, s.Player.DrawPerTurn - 2) : s.Player.DrawPerTurn) + (nextTurnDraw ?? 0)));
             // 自ら固まる粘土 (gainBlockNextTurn): 前のターンに積んだブロックを得る (ブロック獲得の誘発は通す)
             if ((nextTurnBlock ?? 0) > 0) s = Effects.GainPlayerBlock(s, nextTurnBlock ?? 0, FirstAliveOrZero(s));
             s = Effects.RunPermanentTriggers(s, "onTurnStart", FirstAliveOrZero(s));
@@ -606,6 +612,12 @@ namespace DeckRogue.Engine
                 var def = Content.GetEnemyDef(e.EnemyId);
                 var splitInto = def.SplitInto;
                 if (splitInto == null) continue;
+                // ギア「錆びた楔」(2026-09-17): 分裂を1回止める (旗を消費して分裂済みの印だけ立てる)
+                if (e.SummonBlocked == true)
+                {
+                    s = WithEnemy(s, i, x => x with { Split = true, SummonBlocked = false });
+                    continue;
+                }
                 s = WithEnemy(s, i, x => x with { Split = true });
                 s = Events.Emit(s, new GameEvent_EnemySplit { EnemyIndex = i, Into = splitInto.EnemyId, Count = splitInto.Count });
                 // 分裂は上限を見ない (親が消えた席に出る)
@@ -723,11 +735,16 @@ namespace DeckRogue.Engine
             state = Effects.RefreshIntentValues(state);
             if (state.Player.Hp <= 0)
             {
+                if (state.GearDeathSave == true)
+                {
+                    // 蘇りの発条 (ギア 2026-09-17): この戦闘中、致死を一度だけ耐えて HP1 で立つ (全快でなく1 = 糸は続く)。蜥蜴の尾より先
+                    state = Events.Emit(state with { GearDeathSave = false, Player = state.Player with { Hp = 1 } }, new GameEvent_DeathSaved { Hp = 1, Source = "gear" });
+                }
                 // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
-                if (state.DeathSave == true && state.DeathSaveUsed != true)
+                else if (state.DeathSave == true && state.DeathSaveUsed != true)
                 {
                     int hp = Math.Max(1, (int)Math.Floor(state.Player.MaxHp / 2.0));
-                    state = Events.Emit(state with { DeathSaveUsed = true, Player = state.Player with { Hp = hp } }, new GameEvent_DeathSaved { Hp = hp });
+                    state = Events.Emit(state with { DeathSaveUsed = true, Player = state.Player with { Hp = hp } }, new GameEvent_DeathSaved { Hp = hp, Source = "relic" });
                 }
                 else
                 {
@@ -1775,6 +1792,11 @@ namespace DeckRogue.Engine
             var enemy = state.Enemies[enemyIndex];
             // 窓の敵が行動前に倒れた時、打ち消しの旗はその行動に使い切る (Opus AB #10)
             if (enemy.Hp <= 0 || enemy.Intent == null) return state.NegateNextAction ? state with { NegateNextAction = false } : state;
+            // ギア「楔」(2026-09-17): この敵にだけ立つ打ち消し。全体の NegateNextAction と同じ配管へ落とす
+            if (enemy.ActionNegated == true)
+            {
+                state = state with { NegateNextAction = true, Enemies = MapIdx(state.Enemies, (e, j) => j == enemyIndex ? e with { ActionNegated = false } : e) };
+            }
             if (state.NegateNextAction)
             {
                 // 打ち消しの成功に反応する置物 (青: 還流の水鏡)
@@ -1998,6 +2020,8 @@ namespace DeckRogue.Engine
                     var def = Content.GetEnemyDef(enemy.EnemyId);
                     var into = def.HatchInto;
                     if (into == null) return markResolved(state, 0);
+                    // ギア「錆びた楔」: 孵化を1回止める
+                    if (enemy.SummonBlocked == true) return markResolved(WithEnemy(state, enemyIndex, e => e with { SummonBlocked = false }), 0);
                     var newDef = Content.GetEnemyDef(into.EnemyId);
                     // HPスケール継承 (分裂体と同じ裁定)
                     double hatchRatio = def.MaxHp > 0 ? (double)enemy.MaxHp / def.MaxHp : 1.0;
@@ -2035,6 +2059,8 @@ namespace DeckRogue.Engine
                     if (move == null) for (int k = 0; k < def.Moves.Count; k++) if (def.Moves[k].Kind == EnemyActionKinds.Summon) { move = def.Moves[k]; break; }
                     var spawn = move?.Summon;
                     if (spawn == null) return markResolved(state, 0);
+                    // ギア「錆びた楔」(2026-09-17): 召喚を1回止める (旗を消費して no-op)
+                    if (enemy.SummonBlocked == true) return markResolved(WithEnemy(state, enemyIndex, e => e with { SummonBlocked = false }), 0);
                     int before = state.Enemies.Count;
                     var s = SpawnEnemies(state, enemyIndex, spawn.EnemyId, spawn.Count, spawn.Stunned, spawn.Strength, MAX_ENEMIES_ON_FIELD);
                     s = Events.Emit(s, new GameEvent_EnemySummoned { EnemyIndex = enemyIndex, Into = spawn.EnemyId, Count = s.Enemies.Count - before });
@@ -2233,7 +2259,7 @@ namespace DeckRogue.Engine
             // 自ターンを過ごした火傷は全捨てで消える = 1回きり。保持 (retain) は手札に残る
             var oldHand = s.Player.Hand;
             // ルーンの角錐 (retainHand 2026-09-12): 手札を捨てない。自ターンを過ごした火傷だけは消える (1回きりの則は不変)
-            bool retainAll = s.RetainHand == true;
+            bool retainAll = s.RetainHand == true || s.RetainHandThisTurn == true;   // 挟み紙 (ギア) はこのターンだけ
             bool Keeps(CardInstance c) =>
                 (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id)
                 || !handBeforeExpire.Contains(c.Uid); // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)

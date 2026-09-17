@@ -23,6 +23,8 @@ namespace DeckRogue.Engine
         public static IReadOnlyList<LeaderDef> AllLeaders { get; private set; } = new List<LeaderDef>();
         public static IReadOnlyList<RelicDef> AllRelics { get; private set; } = new List<RelicDef>();
         public static IReadOnlyList<EventDef> AllEvents { get; private set; } = new List<EventDef>();
+        /// <summary>ギア (消耗品 2026-09-17)。data/gears.json が一次資料 (TS content.ts allGears)</summary>
+        public static IReadOnlyList<GearDef> AllGears { get; private set; } = new List<GearDef>();
 
         /// <summary>手書きレシピの生の配列 (要素は { a, b, result: CardDef })。</summary>
         public static JArray AllFusionsRaw { get; private set; } = new JArray();
@@ -40,6 +42,7 @@ namespace DeckRogue.Engine
         private static readonly Dictionary<string, LeaderDef> LeaderIndex = new Dictionary<string, LeaderDef>();
         private static readonly Dictionary<string, RelicDef> RelicIndex = new Dictionary<string, RelicDef>();
         private static readonly Dictionary<string, EventDef> EventIndex = new Dictionary<string, EventDef>();
+        private static readonly Dictionary<string, GearDef> GearIndex = new Dictionary<string, GearDef>();
 
         private static bool _loaded;
 
@@ -85,6 +88,7 @@ namespace DeckRogue.Engine
             AllLeaders = ParseList<LeaderDef>(read("leaders.json"), "leaders.json");
             AllRelics = ParseList<RelicDef>(read("relics.json"), "relics.json");
             AllEvents = ParseList<EventDef>(read("events.json"), "events.json");
+            AllGears = ParseList<GearDef>(read("gears.json"), "gears.json");
             AllFusionsRaw = JArray.Parse(read("fusions.json"));
             AllFusions = DeserializeFusions<FusionRecipe>();
 
@@ -96,6 +100,7 @@ namespace DeckRogue.Engine
             Reindex(LeaderIndex, AllLeaders, l => l.Id);
             Reindex(RelicIndex, AllRelics, r => r.Id);
             Reindex(EventIndex, AllEvents, e => e.Id);
+            Reindex(GearIndex, AllGears, g => g.Id);
             _loaded = true;
         }
 
@@ -149,6 +154,12 @@ namespace DeckRogue.Engine
         public static EventDef GetEventDef(string id)
         {
             if (!EventIndex.TryGetValue(id, out var def)) throw new InvalidOperationException($"未定義イベント: {id}");
+            return def;
+        }
+
+        public static GearDef GetGearDef(string id)
+        {
+            if (!GearIndex.TryGetValue(id, out var def)) throw new InvalidOperationException($"未定義のギア: {id}");
             return def;
         }
 
