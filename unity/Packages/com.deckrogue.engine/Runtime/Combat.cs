@@ -47,6 +47,8 @@ namespace DeckRogue.Engine
         public int? HpLossReduce { get; init; }
         public int? SmallHitToOne { get; init; }
         public int? MaxHpLossPerTurn { get; init; }
+        /// <summary>脈打つ欠片の残り回数 (2026-09-18)。null=回数なし</summary>
+        public int? MaxHpLossCharges { get; init; }
         public bool? DeathSave { get; init; }
         public int? PlayCap { get; init; }
         public bool? HideIntents { get; init; }
@@ -282,6 +284,7 @@ namespace DeckRogue.Engine
                 HpLossReduce = (options.HpLossReduce ?? 0) != 0 ? options.HpLossReduce : null,
                 SmallHitToOne = (options.SmallHitToOne ?? 0) != 0 ? options.SmallHitToOne : null,
                 MaxHpLossPerTurn = (options.MaxHpLossPerTurn ?? 0) != 0 ? options.MaxHpLossPerTurn : null,
+                MaxHpLossCharges = options.MaxHpLossCharges,   // 脈打つ欠片の残り回数 (2026-09-18)。null=回数なし
                 DeathSave = options.DeathSave == true ? (bool?)true : null,
                 PlayCap = (options.PlayCap ?? 0) != 0 ? options.PlayCap : null,
                 HideIntents = options.HideIntents == true ? (bool?)true : null,
@@ -561,6 +564,7 @@ namespace DeckRogue.Engine
                 GearUsedThisTurn = null,
                 RetainHandThisTurn = null,
                 EnergyCarryThisTurn = null,
+                MaxHpLossFiredThisTurn = null,   // 脈打つ欠片: 同じターンの2発目以降は回数を使わない旗 (2026-09-18)
                 NextTurnEnergy = null,
                 NextTurnBlock = null,
                 // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
@@ -1866,6 +1870,7 @@ namespace DeckRogue.Engine
                     int dealtTotal = 0;
                     int hpLoss = 0;
                     int blockedTotal = 0;   // ブロック＋氷壁が吸った合計 (演出用 2026-09-17)
+                    bool capFired = false;  // 脈打つ欠片の上限がこの行動で働いた (2026-09-18)
                     for (int h = 0; h < hits; h++)
                     {
                         int v = intent.Actual;
@@ -1895,14 +1900,22 @@ namespace DeckRogue.Engine
                         // 古い門柱: 未ブロック分がN以下なら1 / 重金の棒: 各ヒット-N / 脈打つ欠片: 1ターンの累計はN以下
                         if (hit > 0 && state.SmallHitToOne != null && hit <= state.SmallHitToOne.Value) hit = 1;
                         if (hit > 0 && state.HpLossReduce != null) hit = Math.Max(0, hit - state.HpLossReduce.Value);
-                        if (hit > 0 && state.MaxHpLossPerTurn != null)
+                        // 脈打つ欠片の回数 (2026-09-18 人間ラン#14「強すぎ」): 上限が働いた自ターンを数え、残り0なら上限は働かない。
+                        // 同じターンの2発目以降は回数を使わない (MaxHpLossFiredThisTurn)
+                        bool capLive = state.MaxHpLossCharges == null || state.MaxHpLossCharges.Value > 0 || state.MaxHpLossFiredThisTurn == true;
+                        if (hit > 0 && state.MaxHpLossPerTurn != null && capLive)
                         {
-                            hit = Math.Min(hit, Math.Max(0, state.MaxHpLossPerTurn.Value - (state.Player.HpLostThisTurn ?? 0) - hpLoss));
+                            int capped = Math.Min(hit, Math.Max(0, state.MaxHpLossPerTurn.Value - (state.Player.HpLostThisTurn ?? 0) - hpLoss));
+                            if (capped < hit) capFired = true;
+                            hit = capped;
                         }
                         hpLoss += hit;
                     }
+                    bool capCharge = capFired && state.MaxHpLossFiredThisTurn != true && state.MaxHpLossCharges != null;
                     var sa = state with
                     {
+                        MaxHpLossCharges = capCharge ? state.MaxHpLossCharges!.Value - 1 : state.MaxHpLossCharges,
+                        MaxHpLossFiredThisTurn = capFired ? true : state.MaxHpLossFiredThisTurn,
                         Player = state.Player with
                         {
                             Block = block,
@@ -1915,6 +1928,7 @@ namespace DeckRogue.Engine
                         },
                     };
                     sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex, Blocked = blockedTotal > 0 ? blockedTotal : (int?)null });
+                    if (capCharge) sa = Events.Emit(sa, new GameEvent_HpLossCapped { Left = sa.MaxHpLossCharges ?? 0 });
                     // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
                     if (hpLoss > 0) sa = Effects.RunPermanentTriggers(sa, "onDamageTaken", enemyIndex);
                     // バランス崩し: 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる

@@ -277,8 +277,8 @@
     "name": "時の歯車",
     "rarity": "rare",
     "family": "big",
-    "text": "敵全員の次のターンの行動が隙になる（いま宣言されている行動は止まらない）",
-    "effects": [{ "trigger": "onPlay", "effect": "staggerEnemy", "target": "all" }]
+    "text": "敵全員のいま宣言している行動を打ち消す（楔の全体版）",
+    "effects": [{ "trigger": "onPlay", "effect": "negateEnemyAction", "target": "all" }]
   },
   {
     "id": "gear_nameless",

@@ -248,6 +248,25 @@ namespace DeckRogue.Engine
             return run with { RelicState = map };
         }
 
+        /// <summary>脈打つ欠片 (2026-09-18 人間ラン#14「強すぎ」): 上限が働いた自ターンの回数をランで数え (relicState.remnantUsed)、使い切ったら砕けて所持から消える。勝利と煙玉の離脱の両方で読む</summary>
+        private static RunState SettleHpLossCap(RunState next, GameState combat)
+        {
+            if (combat.MaxHpLossCharges == null) return next;
+            int total = 0;
+            foreach (var id in next.Relics) total += Content.GetRelicDef(id).CombatRule?.MaxHpLossCharges ?? 0;
+            if (total <= 0) return next;
+            next = WithRelicState(next, "remnantUsed", Math.Max(0, Math.Min(total, total - combat.MaxHpLossCharges.Value)));
+            if (combat.MaxHpLossCharges.Value > 0) return next;
+            return next with { Relics = next.Relics.Where(id => (Content.GetRelicDef(id).CombatRule?.MaxHpLossCharges ?? 0) == 0).ToList() };
+        }
+        /// <summary>回数つきレリックの残り回数 (表示用。回数を持たないレリックは null)</summary>
+        public static int? RelicChargesLeft(RunState run, string relicId)
+        {
+            var total = Content.GetRelicDef(relicId).CombatRule?.MaxHpLossCharges;
+            if (total == null) return null;
+            return Math.Max(0, total.Value - RelicStateOf(run, "remnantUsed"));
+        }
+
         /// <summary>大口の貯金箱 (2026-09-12): ショップで何か買う (札・レリック・除去・鍛える) と以後の行進のG加算が止まる</summary>
         private static RunState BreakMawBank(RunState run)
         {
@@ -665,6 +684,8 @@ namespace DeckRogue.Engine
             int blockKeep = RuleSum(r => r.BlockKeep), xBonus = RuleSum(r => r.XBonus), hpLossReduce = RuleSum(r => r.HpLossReduce);
             int smallHitToOne = RuleSum(r => r.SmallHitToOne), maxHpLossPerTurn = RuleSum(r => r.MaxHpLossPerTurn), playCap = RuleSum(r => r.PlayCap), artifact = RuleSum(r => r.Artifact);
             int train = RelicStateOf(run, "train");
+            // 脈打つ欠片 (2026-09-18): 残り回数があるうちだけ上限を注入する (回数を持たない上限レリックはそのまま)
+            int capTotal = RuleSum(r => r.MaxHpLossCharges), capLeft = capTotal - RelicStateOf(run, "remnantUsed");
 
             var combat = Combat.StartCombatWithOptions(combatSeed, run.Mode, encounterId, new CombatOptions
             {
@@ -694,7 +715,8 @@ namespace DeckRogue.Engine
                 XBonus = xBonus > 0 ? xBonus : (int?)null,
                 HpLossReduce = hpLossReduce > 0 ? hpLossReduce : (int?)null,
                 SmallHitToOne = smallHitToOne > 0 ? smallHitToOne : (int?)null,
-                MaxHpLossPerTurn = maxHpLossPerTurn > 0 ? maxHpLossPerTurn : (int?)null,
+                MaxHpLossPerTurn = maxHpLossPerTurn > 0 && (capTotal == 0 || capLeft > 0) ? maxHpLossPerTurn : (int?)null,
+                MaxHpLossCharges = capTotal > 0 && capLeft > 0 ? capLeft : (int?)null,
                 // 蜥蜴の尾はランで1度: 使い切ったら以後は注入しない
                 DeathSave = RuleAny(r => r.DeathSave) && RelicStateOf(run, "lizardUsed") == 0 ? (bool?)true : null,
                 PlayCap = playCap > 0 ? playCap : (int?)null,
@@ -1621,6 +1643,7 @@ namespace DeckRogue.Engine
             };
             // 蜥蜴の尾 (2026-09-12): この戦闘で砕けたらランで使用済み
             if (combat.DeathSaveUsed == true) next = WithRelicState(next, "lizardUsed", 1);
+            next = SettleHpLossCap(next, combat);
             // 時限レリック (旅の蝋燭 2026-09-12): 勝つたび残り-1・0で所持から消える
             foreach (var id in new List<string>(next.Relics))
             {
@@ -1805,7 +1828,7 @@ namespace DeckRogue.Engine
                     if (def.Special == "flee")
                     {
                         if (CurrentNode(run)?.Type == MapNodeTypes.Boss) throw new InvalidOperationException("幕ボスからは逃げられない");
-                        var spent = SpendGear(run, c.Index);
+                        var spent = SettleHpLossCap(SpendGear(run, c.Index), combat);
                         return spent with { Combat = null, Hp = combat.Player.Hp, Phase = RunPhases.Map, RewardOptions = null, GearOption = null };
                     }
                     var next = Gears.ResolveGear(combat, def, new Gears.UseGearOptions

@@ -899,10 +899,11 @@
     "id": "relic_beating_remnant",
     "name": "脈打つ欠片",
     "sprite": "💓",
-    "description": "1ターンに敵の攻撃で失うHPは20まで",
+    "description": "1ターンに敵の攻撃で失うHPは20まで。上限が働いた自ターンが3回で砕ける",
     "rarity": "rare",
     "combatRule": {
-      "maxHpLossPerTurn": 20
+      "maxHpLossPerTurn": 20,
+      "maxHpLossCharges": 3
     }
   },
   {

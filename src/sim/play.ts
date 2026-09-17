@@ -263,6 +263,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'DeckShuffled') L.push(' 🔀山札を切り直した')
       else if (e.type === 'EnemyDied') L.push(` ☠敵${e.enemyIndex}を倒した`) // CLI の敵番号は0始まり (Opusラン Y2: 盤面と1ズレ)
       else if (e.type === 'GearUsed') L.push(` ⚙ ${e.name} を組んだ`)
+      else if (e.type === 'HpLossCapped') L.push(e.left > 0 ? ` 💓脈打つ欠片がHPの損失を20で止めた (あと${e.left}回)` : ' 💓脈打つ欠片がHPの損失を20で止めた (これで最後。戦いの後に砕ける)')
       else if (e.type === 'DeathSaved') L.push(e.source === 'gear' ? ` ⚙蘇りの発条がはじけてHP${e.hp}で踏みとどまった (この戦闘で1度きり)` : ` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')

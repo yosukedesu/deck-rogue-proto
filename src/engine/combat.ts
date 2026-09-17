@@ -126,6 +126,8 @@ export interface CombatOptions {
   readonly hpLossReduce?: number
   readonly smallHitToOne?: number
   readonly maxHpLossPerTurn?: number
+  /** 脈打つ欠片の残り回数 (2026-09-18)。省略=回数なし */
+  readonly maxHpLossCharges?: number
   readonly deathSave?: boolean
   readonly playCap?: number
   readonly hideIntents?: boolean
@@ -231,6 +233,7 @@ export function startCombatWithOptions(
     ...(options.hpLossReduce ? { hpLossReduce: options.hpLossReduce } : {}),
     ...(options.smallHitToOne ? { smallHitToOne: options.smallHitToOne } : {}),
     ...(options.maxHpLossPerTurn ? { maxHpLossPerTurn: options.maxHpLossPerTurn } : {}),
+    ...(options.maxHpLossCharges !== undefined ? { maxHpLossCharges: options.maxHpLossCharges } : {}),
     ...(options.deathSave ? { deathSave: true } : {}),
     ...(options.playCap ? { playCap: options.playCap } : {}),
     ...(options.hideIntents ? { hideIntents: true } : {}),
@@ -477,7 +480,7 @@ function buildIntent(
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
 function startPlayerTurn(state: GameState, turn: number): GameState {
   // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す。enemyPhase の旗もここで降りる
-  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, ...rest } = state
+  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, maxHpLossFiredThisTurn: _cap, ...rest } = state
   let s: GameState = {
     ...rest,
     turn,
@@ -1747,6 +1750,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       let dealtTotal = 0
       let hpLoss = 0
       let blockedTotal = 0 // ブロック＋氷壁が吸った合計 (演出用 2026-09-17)
+      let capFired = false // 脈打つ欠片の上限がこの行動で働いた (2026-09-18)
       for (let h = 0; h < hits; h++) {
         // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
         let v = intent.actual
@@ -1775,13 +1779,21 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         // 古い門柱: 未ブロック分がN以下なら1 / 重金の棒: 各ヒット-N / 脈打つ欠片: 1ターンの累計はN以下
         if (hit > 0 && state.smallHitToOne !== undefined && hit <= state.smallHitToOne) hit = 1
         if (hit > 0 && state.hpLossReduce !== undefined) hit = Math.max(0, hit - state.hpLossReduce)
-        if (hit > 0 && state.maxHpLossPerTurn !== undefined) {
-          hit = Math.min(hit, Math.max(0, state.maxHpLossPerTurn - (state.player.hpLostThisTurn ?? 0) - hpLoss))
+        // 脈打つ欠片の回数 (2026-09-18 人間ラン#14「強すぎ」): 上限が働いた自ターンを数え、残り0なら上限は働かない。
+        // 同じターンの2発目以降は回数を使わない (maxHpLossFiredThisTurn)
+        const capLive = state.maxHpLossCharges === undefined || state.maxHpLossCharges > 0 || state.maxHpLossFiredThisTurn === true
+        if (hit > 0 && state.maxHpLossPerTurn !== undefined && capLive) {
+          const capped = Math.min(hit, Math.max(0, state.maxHpLossPerTurn - (state.player.hpLostThisTurn ?? 0) - hpLoss))
+          if (capped < hit) capFired = true
+          hit = capped
         }
         hpLoss += hit
       }
+      const capCharge = capFired && state.maxHpLossFiredThisTurn !== true && state.maxHpLossCharges !== undefined
       let s: GameState = {
         ...state,
+        ...(capCharge ? { maxHpLossCharges: state.maxHpLossCharges! - 1 } : {}),
+        ...(capFired ? { maxHpLossFiredThisTurn: true } : {}),
         player: {
           ...state.player,
           block,
@@ -1794,6 +1806,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         },
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}) })
+      if (capCharge) s = emit(s, { type: 'HpLossCapped', left: s.maxHpLossCharges ?? 0 })
       // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
       if (hpLoss > 0) s = runPermanentTriggers(s, 'onDamageTaken', enemyIndex)
       // バランス崩し (2026-09-04 本家 ImbalancedPower): 攻撃を完全に防がれる (HP損失0) と体勢を崩し、次の宣言が隙になる

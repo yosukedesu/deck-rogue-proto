@@ -8,7 +8,7 @@ import { applyCommand } from './state.ts'
 import { attackIntent, chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
 import {
   addCardsToRunDeck, applyRunCommand, campfireOptions, createRun, drawRelicOptions, gainRelic, isUpgraded, nextChoices, relicAllowedForColors,
-  relicStateOf, wingChoices, type RunState,
+  relicChargesLeft, relicStateOf, wingChoices, type RunState,
 } from './run.ts'
 import type { EnemyIntent, GameState } from './types.ts'
 
@@ -180,6 +180,27 @@ describe('C型の規則改変', () => {
     expect(lossWith({ smallHitToOne: 5 }, 5)).toBe(1)
     expect(lossWith({ smallHitToOne: 5 }, 6)).toBe(6)
     expect(lossWith({ maxHpLossPerTurn: 20 }, 30)).toBe(20)
+  })
+
+  it('脈打つ欠片の回数 (2026-09-18 人間ラン#14): 上限が働いた自ターンを数え、使い切ると上限が消える。同じターンの2発目・上限に触らないターンは回数を使わない', () => {
+    let s = tough(withHand(combatWith([], { maxHpLossPerTurn: 20, maxHpLossCharges: 2 }), []))
+    s = { ...s, player: { ...s.player, hp: 200, maxHp: 200 } }
+    let hp = s.player.hp
+    s = endTurn(s, { ...attackIntent(15), hits: 2 }) // 15+15=30 → 20。2発目も同じ回数
+    expect(hp - s.player.hp).toBe(20)
+    expect(s.maxHpLossCharges).toBe(1)
+    expect(s.eventLog.filter((e) => e.type === 'HpLossCapped')).toHaveLength(1)
+    hp = s.player.hp
+    s = endTurn(withHand(s, []), attackIntent(10)) // 上限に触らない = 回数を使わない
+    expect(hp - s.player.hp).toBe(10)
+    expect(s.maxHpLossCharges).toBe(1)
+    hp = s.player.hp
+    s = endTurn(withHand(s, []), attackIntent(30))
+    expect(hp - s.player.hp).toBe(20)
+    expect(s.maxHpLossCharges).toBe(0)
+    hp = s.player.hp
+    s = endTurn(withHand(s, []), attackIntent(30)) // 使い切った = 素通し
+    expect(hp - s.player.hp).toBe(30)
   })
 
   it('青い蝋燭: 烙印を 0E・HP-1・消滅 でプレイできる', () => {
@@ -401,5 +422,24 @@ describe('時限レリック・烙印の受け皿・色ゲート・event 層', (
     }
     const [ev] = drawRelicOptions(run, 'event', 1)
     expect(eventIds.has(ev[0])).toBe(true)
+  })
+})
+
+describe('脈打つ欠片は3回で砕ける (2026-09-18 人間ラン#14「強すぎ あえてとらない」)', () => {
+  it('残り回数ぶんだけ注入され、戦闘の後に使った回数が relicState に残り、0で所持から消える', () => {
+    let run = gainRelic(createRun(11, 'set-confirm'), 'relic_beating_remnant')
+    expect(relicChargesLeft(run, 'relic_beating_remnant')).toBe(3)
+    run = skipUntil(run, 'combat')
+    expect(run.combat!.maxHpLossPerTurn).toBe(20)
+    expect(run.combat!.maxHpLossCharges).toBe(3)
+    let r1 = forceWin({ ...run, combat: { ...run.combat!, maxHpLossCharges: 2 } }) // 1回使って勝った
+    expect(relicStateOf(r1, 'remnantUsed')).toBe(1)
+    expect(r1.relics).toContain('relic_beating_remnant')
+    expect(relicChargesLeft(r1, 'relic_beating_remnant')).toBe(2)
+    r1 = skipUntil(r1, 'combat')
+    expect(r1.combat!.maxHpLossCharges).toBe(2)
+    const r2 = forceWin({ ...run, combat: { ...run.combat!, maxHpLossCharges: 0 } }) // 使い切って勝った = 砕ける
+    expect(r2.relics).not.toContain('relic_beating_remnant')
+    expect(relicStateOf(r2, 'remnantUsed')).toBe(3)
   })
 })

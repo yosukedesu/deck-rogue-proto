@@ -359,7 +359,7 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 | `gear_paper_slip` | 挟み紙 | common | 保持・持ち越し | このターンは手札を捨てない |
 | `gear_stockpile` | 貯め置き | uncommon | 保持・持ち越し | 余ったエナジーを次のターンへ持ち越す |
 | `gear_revive_spring` | 蘇りの発条 | rare | 大物 | この戦闘中、致死ダメージを一度耐えてHP1で立つ |
-| `gear_time_cog` | 時の歯車 | rare | 大物 | 敵全員の次のターンの行動が隙になる（いま宣言されている行動は止まらない） |
+| `gear_time_cog` | 時の歯車 | rare | 大物 | 敵全員のいま宣言している行動を打ち消す（楔の全体版。2026-09-18 #14 のメモで「次のターン」→「このターン」へ） |
 | `gear_nameless` | 無銘の部品 | rare | 大物 | このランで拾ったことのあるギアのどれかになる |
 | `gear_smoke` | 煙玉 | rare | 大物 | この戦闘から逃げる（幕ボス以外。報酬は得られない） |
 | `mana` | 魔素（アイコン） | — | 干渉（青緑） | 上部バーと店の魔素の札に使う青緑の歯車。無ければ `GearGlyph("mana","interfere")` |

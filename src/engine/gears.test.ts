@@ -160,11 +160,12 @@ describe('効果 (代表)', () => {
     expect(hit.gearDeathSave).toBe(false)
   })
 
-  it('締め紐: 対象の次の行動が隙になる / 時の歯車は全員', () => {
+  it('締め紐: 対象の次の行動が隙になる / 時の歯車は全員のいま宣言中の行動を打ち消す (2026-09-18 #14 のメモ「このターンに効くように」)', () => {
     const one = use(runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_tie_cord']), 0, { targetIndex: 1 })
     expect(one.combat!.enemies.map((e) => e.staggeredNext === true)).toEqual([false, true])
     const all = use(runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_time_cog']), 0)
-    expect(all.combat!.enemies.every((e) => e.staggeredNext === true)).toBe(true)
+    expect(all.combat!.enemies.every((e) => e.actionNegated === true)).toBe(true)
+    expect(all.combat!.enemies.some((e) => e.staggeredNext === true)).toBe(false)
   })
 
   it('砥ぎ油: 選んだ手札がこの戦闘中だけ鍛えられる', () => {

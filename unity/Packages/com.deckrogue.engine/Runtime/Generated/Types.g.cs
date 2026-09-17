@@ -704,6 +704,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>C型: 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片=StS2 Beating Remnant。免疫は作らない裁定の器)</summary>
         [JsonProperty("maxHpLossPerTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHpLossPerTurn { get; init; }
+        /// <summary>脈打つ欠片の残り回数 (2026-09-18 人間ラン#14「強すぎ」→ 上限が働いた自ターンをN回で砕ける)。undefined=回数なし。0で上限は働かない</summary>
+        [JsonProperty("maxHpLossCharges", NullValueHandling = NullValueHandling.Ignore)]
+        public int? MaxHpLossCharges { get; init; }
+        /// <summary>このターンに上限が働いた (同じターンの2発目以降は回数を使わない)。自ターン開始で降りる</summary>
+        [JsonProperty("maxHpLossFiredThisTurn", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? MaxHpLossFiredThisTurn { get; init; }
         /// <summary>C型: 致死ダメージを1度だけ耐えて最大HPの半分で立つ (蜥蜴の尾。ランで1度 = run 層が deathSaveUsed を読んで以後注入しない)</summary>
         [JsonProperty("deathSave", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DeathSave { get; init; }
@@ -1745,6 +1751,15 @@ namespace DeckRogue.Engine.Generated
         public string Name { get; init; } = default!;
     }
 
+    /// <summary>GameEvent: type="HpLossCapped"</summary>
+    public sealed record GameEvent_HpLossCapped : GameEvent
+    {
+        public const string TypeTag = "HpLossCapped";
+        public GameEvent_HpLossCapped() { Type = TypeTag; }
+        [JsonProperty("left")]
+        public int Left { get; init; }
+    }
+
     /// <summary>GameEvent: type="PlayerArtifactBlocked"</summary>
     public sealed record GameEvent_PlayerArtifactBlocked : GameEvent
     {
@@ -2527,6 +2542,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片)</summary>
         [JsonProperty("maxHpLossPerTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? MaxHpLossPerTurn { get; init; }
+        /// <summary>上限が働いた自ターンがN回で砕ける (脈打つ欠片=3。2026-09-18。run.relicState.remnantUsed に使った回数)</summary>
+        [JsonProperty("maxHpLossCharges", NullValueHandling = NullValueHandling.Ignore)]
+        public int? MaxHpLossCharges { get; init; }
         /// <summary>致死を1度だけ耐える (蜥蜴の尾。ランで1度)</summary>
         [JsonProperty("deathSave", NullValueHandling = NullValueHandling.Ignore)]
         public bool? DeathSave { get; init; }
@@ -2689,6 +2707,38 @@ namespace DeckRogue.Engine.Generated
     }
 
     // ==== src/engine/run.ts ====
+    /// <summary>難易度のはしご＝「傾き型」(2026-09-18 ユーザー裁定「序盤は資産もないし、後半は資産を吐いてクリアを目指すような難易度カーブ」。 `docs/difficulty-curve-proposal-2026-09-18.md` 案A)。倍率は段×幕の表で、段が上がるほど**幕3の増分が大きい**: 段 n≥3 の増分 = (n−3) × [打点 +0.02／+0.06／+0.12・HP +0／+0.03／+0.06]。段3 が基準 (全部×1.0)。 幕1の HP は段で動かさない (幕1帯は本家対照で校正済み)。段10 の幕3 打点 ×1.84 が天井 (旧はしごは全幕一律で ×3.0 だった)。 資産 (レリック・ギア・完成したデッキ) の無い序盤の圧は HP 収支の事故になるだけで決断にならない (2026-09-01 段6 は幕2で折れた・人間#11/#12 は幕1〜2の収支で敗北)。 ボス・エリートも同じ倍率 (全敵一律の則は不変)。C# は Run.cs の同名の表 (文字どおり同じ数値を並べる)</summary>
+    public sealed record DifficultyScaleRow
+    {
+        [JsonProperty("hp")]
+        public IReadOnlyList<int> Hp { get; init; } = default!;
+        [JsonProperty("atk")]
+        public IReadOnlyList<int> Atk { get; init; } = default!;
+    }
+
+    /// <summary>難易度の経済税 (2026-09-18 案B。本家アセンション 1〜7段が全部「経済税」であるのに倣う)。段で1つずつ積む (累積): 段4 幕ボス撃破の回復 75%（本家 A5「Heal less after boss」式。段3以下は全回復）／段5 焚き火 25%→20%／段6 幕2・幕3のエリート 4→5／ 段7 幕ボス回復 50%／段8 ショップ物価 ×1.2／段9 報酬の提示 −1／段10 幕ボス回復 25%＋開始デッキに仮初の烙印1 (5戦で消える)。 狙い＝幕をまたぐ HP 収支を作り、後半に「回復の資産」(修理油・薬草袋・獲物・焚き火) を吐かせる。ギア・魔素の供給は段で変えない (同日裁定)</summary>
+    public sealed record DifficultyTax
+    {
+        /// <summary>幕ボス撃破の回復 (最大HPに対する割合。1.0=全回復)</summary>
+        [JsonProperty("bossHeal")]
+        public int BossHeal { get; init; }
+        /// <summary>焚き火の休む (最大HPに対する割合)</summary>
+        [JsonProperty("campfire")]
+        public int Campfire { get; init; }
+        /// <summary>幕2・幕3のエリートの員数の増分</summary>
+        [JsonProperty("eliteBonus")]
+        public int EliteBonus { get; init; }
+        /// <summary>ショップの物価倍率 (会員証と同じ shopPriceRatio に乗る)</summary>
+        [JsonProperty("shopPrice")]
+        public int ShopPrice { get; init; }
+        /// <summary>報酬の提示枚数の増減 (王冠の欠片と同じ器。最低1枚)</summary>
+        [JsonProperty("rewardChoices")]
+        public int RewardChoices { get; init; }
+        /// <summary>開始デッキに入れる仮初の烙印の枚数</summary>
+        [JsonProperty("startGuilt")]
+        public int StartGuilt { get; init; }
+    }
+
     /// <summary>ShopState.cards のインライン型</summary>
     public sealed record ShopStateCards
     {

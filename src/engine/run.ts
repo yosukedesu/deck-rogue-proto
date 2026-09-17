@@ -143,6 +143,22 @@ function withRelicState(run: RunState, key: string, value: number): RunState {
   return { ...run, relicState: { ...(run.relicState ?? {}), [key]: value } }
 }
 
+/** 脈打つ欠片 (2026-09-18 人間ラン#14「強すぎ」): 上限が働いた自ターンの回数をランで数え (relicState.remnantUsed)、使い切ったら砕けて所持から消える。勝利と煙玉の離脱の両方で読む */
+function settleHpLossCap(next: RunState, combat: GameState): RunState {
+  if (combat.maxHpLossCharges === undefined) return next
+  const total = next.relics.reduce((a, id) => a + (getRelicDef(id).combatRule?.maxHpLossCharges ?? 0), 0)
+  if (total <= 0) return next
+  next = withRelicState(next, 'remnantUsed', Math.max(0, Math.min(total, total - combat.maxHpLossCharges)))
+  if (combat.maxHpLossCharges > 0) return next
+  return { ...next, relics: next.relics.filter((id) => (getRelicDef(id).combatRule?.maxHpLossCharges ?? 0) === 0) }
+}
+/** 回数つきレリックの残り回数 (表示用。回数を持たないレリックは undefined) */
+export function relicChargesLeft(run: RunState, relicId: string): number | undefined {
+  const total = getRelicDef(relicId).combatRule?.maxHpLossCharges
+  if (total === undefined) return undefined
+  return Math.max(0, total - relicStateOf(run, 'remnantUsed'))
+}
+
 /** 大口の貯金箱 (2026-09-12): ショップで何か買う (札・レリック・除去・鍛える) と以後の行進のG加算が止まる */
 function breakMawBank(run: RunState): RunState {
   if (relicBonusSum(run, 'goldPerRow') <= 0 || relicStateOf(run, 'mawBroken') === 1) return run
@@ -541,8 +557,10 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
   // 難易度倍率 (確定済みルール表「難易度」): 全敵一律で既存スケールの上に乗算。段×幕の表 (2026-09-18 傾き型)
   const diff = difficultyScale(run.difficulty, run.act)
   const rules = run.relics.map((id) => getRelicDef(id).combatRule).filter((r): r is NonNullable<typeof r> => r !== undefined)
-  const ruleSum = (key: 'blockKeep' | 'xBonus' | 'hpLossReduce' | 'smallHitToOne' | 'maxHpLossPerTurn' | 'playCap' | 'artifact'): number =>
+  const ruleSum = (key: 'blockKeep' | 'xBonus' | 'hpLossReduce' | 'smallHitToOne' | 'maxHpLossPerTurn' | 'maxHpLossCharges' | 'playCap' | 'artifact'): number =>
     rules.reduce((a, r) => a + (r[key] ?? 0), 0)
+  // 脈打つ欠片 (2026-09-18): 残り回数があるうちだけ上限を注入する (回数を持たない上限レリックはそのまま)
+  const capLeft = ruleSum('maxHpLossCharges') - relicStateOf(run, 'remnantUsed')
   const combat = startCombatWithOptions(combatSeed, run.mode, encounterId, {
     deck: run.deck,
     leaderId: run.leaderId,
@@ -585,7 +603,8 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     ...(ruleSum('xBonus') > 0 ? { xBonus: ruleSum('xBonus') } : {}),
     ...(ruleSum('hpLossReduce') > 0 ? { hpLossReduce: ruleSum('hpLossReduce') } : {}),
     ...(ruleSum('smallHitToOne') > 0 ? { smallHitToOne: ruleSum('smallHitToOne') } : {}),
-    ...(ruleSum('maxHpLossPerTurn') > 0 ? { maxHpLossPerTurn: ruleSum('maxHpLossPerTurn') } : {}),
+    ...(ruleSum('maxHpLossPerTurn') > 0 && (ruleSum('maxHpLossCharges') === 0 || capLeft > 0) ? { maxHpLossPerTurn: ruleSum('maxHpLossPerTurn') } : {}),
+    ...(ruleSum('maxHpLossCharges') > 0 && capLeft > 0 ? { maxHpLossCharges: capLeft } : {}),
     // 蜥蜴の尾はランで1度: 使い切ったら以後は注入しない
     ...(rules.some((r) => r.deathSave === true) && relicStateOf(run, 'lizardUsed') === 0 ? { deathSave: true } : {}),
     ...(ruleSum('playCap') > 0 ? { playCap: ruleSum('playCap') } : {}),
@@ -1649,6 +1668,7 @@ function afterVictory(run: RunState, combat: GameState): RunState {
   }
   // 蜥蜴の尾 (2026-09-12): この戦闘で砕けたらランで使用済み
   if (combat.deathSaveUsed === true) next = withRelicState(next, 'lizardUsed', 1)
+  next = settleHpLossCap(next, combat)
   // 時限レリック (旅の蝋燭 2026-09-12): 勝つたび残り-1・0で所持から消える
   for (const id of next.relics) {
     if (getRelicDef(id).expiresAfterBattles === undefined) continue
@@ -1818,7 +1838,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       // 煙玉 (2026-09-17 ユーザー裁定): 幕ボス以外から逃げる。報酬なし・HPはそのまま・節は踏んだ扱い
       if (def.special === 'flee') {
         if (currentNode(run)?.type === 'boss') throw new Error('幕ボスからは逃げられない')
-        const spent = spendGear(run, command.index)
+        const spent = settleHpLossCap(spendGear(run, command.index), combat)
         return {
           ...spent,
           combat: null,

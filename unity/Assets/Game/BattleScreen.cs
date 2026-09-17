@@ -139,7 +139,8 @@ namespace DeckRogue.Game
                 var disc = cell.gameObject.AddComponent<Image>();
                 disc.sprite = PaperFx.Disc(); disc.preserveAspect = true;
                 RunUi.RelicArt(cell, run.Relics[i], 20f);
-                var tip = rd != null ? "<b>" + rd.Name + "</b>\n" + rd.Description : run.Relics[i];
+                int? left = null; if (rd != null) left = Run.RelicChargesLeft(run, run.Relics[i]);   // 脈打つ欠片の残り回数 (2026-09-18)
+                var tip = rd != null ? "<b>" + rd.Name + "</b>" + (left != null ? "  残り" + left + "回" : "") + "\n" + rd.Description : run.Relics[i];
                 Tooltip.Attach(cell.gameObject, delegate { return tip; });
             }
             if (UiKit.Phone) RunUi.MenuButton(g, bar);   // スマホは「≡」に畳む (マップ・ログ・メモ・レポート。2026-09-14)

@@ -425,6 +425,10 @@ export interface GameState {
   readonly smallHitToOne?: number
   /** C型: 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片=StS2 Beating Remnant。免疫は作らない裁定の器) */
   readonly maxHpLossPerTurn?: number
+  /** 脈打つ欠片の残り回数 (2026-09-18 人間ラン#14「強すぎ」→ 上限が働いた自ターンをN回で砕ける)。undefined=回数なし。0で上限は働かない */
+  readonly maxHpLossCharges?: number
+  /** このターンに上限が働いた (同じターンの2発目以降は回数を使わない)。自ターン開始で降りる */
+  readonly maxHpLossFiredThisTurn?: boolean
   /** C型: 致死ダメージを1度だけ耐えて最大HPの半分で立つ (蜥蜴の尾。ランで1度 = run 層が deathSaveUsed を読んで以後注入しない) */
   readonly deathSave?: boolean
   readonly deathSaveUsed?: boolean
@@ -633,6 +637,7 @@ export type GameEvent =
   | { readonly type: 'EnemyDied'; readonly enemyIndex: number } // 敵が倒れた (onEnemyDied の発火点。分裂・残機は倒れた後に別個体として出る)
   | { readonly type: 'DeathSaved'; readonly hp: number; readonly source?: 'gear' | 'relic' } // 致死を1度だけ耐えた (省略=レリック)
   | { readonly type: 'GearUsed'; readonly gearId: string; readonly name: string } // ギアを組んだ (2026-09-17 O: 組んだ事実がログに出ていなかった)
+  | { readonly type: 'HpLossCapped'; readonly left: number } // 脈打つ欠片の上限がこのターン初めて働いた (残り回数。0ならこの戦闘の後に砕ける。2026-09-18)
   | { readonly type: 'PlayerArtifactBlocked'; readonly status: string } // 時計仕掛けの土産: プレイヤー側のアーティファクトが状態異常を1回弾いた
   | { readonly type: 'CombatEnded'; readonly result: 'won' | 'lost' }
 
@@ -1498,6 +1503,8 @@ export interface RelicDef {
     readonly smallHitToOne?: number
     /** 1ターンに敵の攻撃で失うHPはN以下 (脈打つ欠片) */
     readonly maxHpLossPerTurn?: number
+    /** 上限が働いた自ターンがN回で砕ける (脈打つ欠片=3。2026-09-18。run.relicState.remnantUsed に使った回数) */
+    readonly maxHpLossCharges?: number
     /** 致死を1度だけ耐える (蜥蜴の尾。ランで1度) */
     readonly deathSave?: boolean
     /** 1ターンにプレイできる枚数の上限 (天鵞絨の首輪) */

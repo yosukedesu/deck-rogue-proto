@@ -184,6 +184,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'EnemyDied': return { text: `敵${e.enemyIndex + 1}を倒した`, cls: 'log-good' }
     case 'DeathSaved': return { text: e.source === 'gear' ? `蘇りの発条がはじけ、HP${e.hp}で踏みとどまった` : `蜥蜴の尾が砕け、HP${e.hp}で踏みとどまった`, cls: 'log-good' }
     case 'GearUsed': return { text: `⚙ ${e.name} を組んだ`, cls: 'log-good' }
+    case 'HpLossCapped': return { text: e.left > 0 ? `💓 脈打つ欠片がHPの損失を20で止めた（あと${e.left}回）` : '💓 脈打つ欠片がHPの損失を20で止めた（これで最後。戦いの後に砕ける）', cls: 'log-good' }
     case 'PlayerArtifactBlocked': return { text: `時計仕掛けの土産が状態異常 (${e.status}) を弾いた`, cls: 'log-good' }
     case 'CombatEnded':
       return e.result === 'won' ? { text: '=== 勝利 ===', cls: 'log-good' } : { text: '=== 敗北 ===', cls: 'log-bad' }

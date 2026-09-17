@@ -66,7 +66,7 @@ import {
 import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
@@ -4655,10 +4655,11 @@ function RunScreen({
       <div style={{ marginTop: 6 }}>
         {run.relics.map((id) => {
           const r = getRelicDef(id)
+          const left = relicChargesLeft(run, id) // 脈打つ欠片の残り回数 (2026-09-18)
           return (
             <span key={id} className="chip">
               <span className="kw">
-                {r.sprite} {r.name}
+                {r.sprite} {r.name}{left !== undefined ? `（残り${left}回）` : ''}
                 <span className="kw-tip">{webVocab(r.description)}</span>
               </span>
             </span>
