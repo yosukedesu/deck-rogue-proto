@@ -7,7 +7,7 @@
 
 import { startCombatWithOptions } from './combat.ts'
 import { ACT_COUNT, bossRowFor, ELITE_COUNT, generateMap, tierFor } from './map.ts'
-import { allEvents, allGears, getEventDef, getGearDef, WOUND_DEF , resolveEncounter } from './content.ts'
+import { allEvents, getEventDef, getGearDef, poolGears, WOUND_DEF , resolveEncounter } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
@@ -318,10 +318,20 @@ export function difficultyLevel(level: number | undefined): number {
   return Math.min(DIFFICULTY_TABLE.length, Math.max(1, n))
 }
 /** 難易度→その幕の倍率 (act 省略=幕1)。範囲外と旧セーブの欠落 (undefined) は既定3へ丸める */
-export function difficultyScale(level: number | undefined, act = 1): { readonly hp: number; readonly atk: number } {
-  const row = DIFFICULTY_TABLE[difficultyLevel(level) - 1]
+export function difficultyScale(level: number | undefined, act = 1, row?: number): { readonly hp: number; readonly atk: number } {
+  const t = DIFFICULTY_TABLE[difficultyLevel(level) - 1]
   const a = Math.min(3, Math.max(1, act)) - 1
-  return { hp: row.hp[a], atk: row.atk[a] }
+  // 幕1後半 (2026-09-18 人間ラン#14: ユーザー本人の3本で幕1の面白さ 2.8〜3.2 → 裁定「幕1後半に幕2の半分の傾き」):
+  // 行が幕1の後半 (depthHpScale と同じ境界 = ボス行の半分。ボス行も含む) なら幕1と幕2の中点。前半 (焚き火前) は据え置き
+  // = 「資産の無い序盤の事故」は増やさない。段3は全幕×1.0 なので中点も 1.0 (ゴールデン不変)
+  if (a === 0 && row !== undefined && row >= Math.floor(bossRowFor(1) / 2)) {
+    return { hp: midScale(t.hp[0], t.hp[1]), atk: midScale(t.atk[0], t.atk[1]) }
+  }
+  return { hp: t.hp[a], atk: t.atk[a] }
+}
+/** 2つの倍率の中点 (小数3桁に丸める。C# と同じ式 = floor(x*1000+0.5)/1000) */
+function midScale(x: number, y: number): number {
+  return Math.floor(((x + y) / 2) * 1000 + 0.5) / 1000
 }
 /** 難易度→経済税 (段3以下は無税) */
 export function difficultyTax(level: number | undefined): DifficultyTax {
@@ -337,7 +347,11 @@ export function difficultyDescription(level: number | undefined): string {
   if (n === DEFAULT_DIFFICULTY) return `${n}: 標準（基準線。幕1〜3とも×1.0・幕ボス撃破で全回復）`
   const row = DIFFICULTY_TABLE[n - 1]
   const t = DIFFICULTY_TAX[n - 1]
-  const parts = [`打点 幕1×${row.atk[0]}・幕2×${row.atk[1]}・幕3×${row.atk[2]}`, `HP 幕2×${row.hp[1]}・幕3×${row.hp[2]}`]
+  const late = difficultyScale(n, 1, bossRowFor(1) - 1) // 幕1後半 (行8以降) は幕1と幕2の中点
+  const parts = [
+    `打点 幕1×${row.atk[0]}（後半×${late.atk}）・幕2×${row.atk[1]}・幕3×${row.atk[2]}`,
+    `HP 幕1後半×${late.hp}・幕2×${row.hp[1]}・幕3×${row.hp[2]}`,
+  ]
   if (t.bossHeal < 1) parts.push(`幕ボス撃破の回復${Math.round(t.bossHeal * 100)}%`)
   if (t.campfire < 0.25) parts.push(`焚き火${Math.round(t.campfire * 100)}%`)
   if (t.eliteBonus > 0) parts.push(`幕2/3のエリート+${t.eliteBonus}`)
@@ -555,7 +569,7 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
   if (node === null || encounterId === null) throw new Error('戦闘ノードではない')
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
   // 難易度倍率 (確定済みルール表「難易度」): 全敵一律で既存スケールの上に乗算。段×幕の表 (2026-09-18 傾き型)
-  const diff = difficultyScale(run.difficulty, run.act)
+  const diff = difficultyScale(run.difficulty, run.act, run.row)
   const rules = run.relics.map((id) => getRelicDef(id).combatRule).filter((r): r is NonNullable<typeof r> => r !== undefined)
   const ruleSum = (key: 'blockKeep' | 'xBonus' | 'hpLossReduce' | 'smallHitToOne' | 'maxHpLossPerTurn' | 'maxHpLossCharges' | 'playCap' | 'artifact'): number =>
     rules.reduce((a, r) => a + (r[key] ?? 0), 0)
@@ -1561,8 +1575,8 @@ export function gearFull(run: RunState): boolean {
 function rollGearId(rng0: RngState, atLeastUncommon: boolean): readonly [string, RngState] {
   const [roll, rng1] = nextInt(rng0, 0, 99)
   const wanted: GearRarity = roll < 10 ? 'rare' : roll < 35 || atLeastUncommon ? 'uncommon' : 'common'
-  let pool = allGears.filter((g) => g.rarity === wanted)
-  if (pool.length === 0) pool = [...allGears]
+  let pool = poolGears.filter((g) => g.rarity === wanted) // 台帳から外した札 (retired) は載らない (2026-09-18)
+  if (pool.length === 0) pool = [...poolGears]
   const [i, rng2] = nextInt(rng1, 0, pool.length - 1)
   return [pool[i].id, rng2]
 }

@@ -25,6 +25,8 @@ namespace DeckRogue.Engine
         public static IReadOnlyList<EventDef> AllEvents { get; private set; } = new List<EventDef>();
         /// <summary>ギア (消耗品 2026-09-17)。data/gears.json が一次資料 (TS content.ts allGears)</summary>
         public static IReadOnlyList<GearDef> AllGears { get; private set; } = new List<GearDef>();
+        /// <summary>抽選・店・報酬に載るギア (Retired を除く。2026-09-18。TS content.ts poolGears)</summary>
+        public static IReadOnlyList<GearDef> PoolGears { get; private set; } = new List<GearDef>();
 
         /// <summary>手書きレシピの生の配列 (要素は { a, b, result: CardDef })。</summary>
         public static JArray AllFusionsRaw { get; private set; } = new JArray();
@@ -89,6 +91,7 @@ namespace DeckRogue.Engine
             AllRelics = ParseList<RelicDef>(read("relics.json"), "relics.json");
             AllEvents = ParseList<EventDef>(read("events.json"), "events.json");
             AllGears = ParseList<GearDef>(read("gears.json"), "gears.json");
+            { var pool = new List<GearDef>(); foreach (var g in AllGears) if (g.Retired != true) pool.Add(g); PoolGears = pool; }
             AllFusionsRaw = JArray.Parse(read("fusions.json"));
             AllFusions = DeserializeFusions<FusionRecipe>();
 

@@ -67,6 +67,8 @@ export const allLeaders = leadersJson as readonly LeaderDef[]
 export const allRelics = relicsJson as readonly RelicDef[]
 /** ギア (消耗品 2026-09-17)。data/gears.json が一次資料 */
 export const allGears = gearsJson as unknown as readonly GearDef[]
+/** 抽選・店・報酬に載るギア (retired を除く。2026-09-18) */
+export const poolGears: readonly GearDef[] = allGears.filter((g) => g.retired !== true)
 
 export function getGearDef(id: string): GearDef {
   const g = allGears.find((x) => x.id === id)

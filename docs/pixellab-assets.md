@@ -341,10 +341,10 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 | `gear_stilling_weight` | 鎮めの錘 | rare | 干渉（青緑） | 対象の割り込み（HP半分の豹変・目覚め）をこの戦闘中起こさない |
 | `gear_cleansing_water` | 清めの水 | uncommon | 清め | 自分の弱体・脆弱・虚弱・拘束・霞み・重りを全て消す |
 | `gear_ash_remover` | 灰落とし | common | 清め | 手札の負傷・火傷・がらくた・烙印を全て消滅させる |
-| `gear_ward_charm` | 厄除けの符 | uncommon | 清め | 次に受ける状態異常を1回弾く |
+| `gear_ward_charm` | 厄除けの符 | uncommon | 清め | 次に受ける状態異常を1回弾く（**抽選から外した 2026-09-18**＝2本続けて0回。絵は要らない） |
 | `gear_dig_out` | 掘り出し | common | 場の操作 | 捨て札から1枚を手札へ |
 | `gear_wanted_item` | 目当ての品 | uncommon | 場の操作 | 山札から1枚を選んで手札へ |
-| `gear_redraw` | 引き直し | uncommon | 場の操作 | 手札を全て捨て、同じ枚数を引く |
+| `gear_redraw` | 引き直し | uncommon | 場の操作 | 手札を全て捨て、同じ枚数を引く（**抽選から外した 2026-09-18**） |
 | `gear_next_prep` | 次の備え | common | 場の操作 | 次のターンのドロー+3 |
 | `gear_whetstone_oil` | 砥ぎ油 | common | 札の一時変化 | 手札1枚をこの戦闘中鍛える |
 | `gear_copy` | 写し | uncommon | 札の一時変化 | 手札1枚のコピーを手札に加える（この戦闘限り） |
@@ -356,7 +356,7 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 | `gear_overload_cog` | 過負荷の歯車 | uncommon | 両刃 | 一時マナ+3・次のターンのドロー−2 |
 | `gear_powder_keg` | 火薬樽 | uncommon | 両刃 | 敵全体に16ダメージ・自分もHP−4 |
 | `gear_blood_spring` | 血の発条 | uncommon | 両刃 | ブロック20・HP−4 |
-| `gear_paper_slip` | 挟み紙 | common | 保持・持ち越し | このターンは手札を捨てない |
+| `gear_paper_slip` | 挟み紙 | common | 保持・持ち越し | このターンは手札を捨てない（**抽選から外した 2026-09-18**） |
 | `gear_stockpile` | 貯め置き | uncommon | 保持・持ち越し | 余ったエナジーを次のターンへ持ち越す |
 | `gear_revive_spring` | 蘇りの発条 | rare | 大物 | この戦闘中、致死ダメージを一度耐えてHP1で立つ |
 | `gear_time_cog` | 時の歯車 | rare | 大物 | 敵全員のいま宣言している行動を打ち消す（楔の全体版。2026-09-18 #14 のメモで「次のターン」→「このターン」へ） |

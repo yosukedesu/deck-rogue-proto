@@ -2,7 +2,7 @@
 // 骨格: 拾って持ち歩き (10個)・自ターンに1個だけ「魔素」1で組む・幕で数値は伸びない。
 // 台帳33種／レア度 C13・U14・R6／数値は本家の瓶並み、は裁定なのでここで固定する。
 import { describe, expect, it } from 'vitest'
-import { allGears, getGearDef } from './content.ts'
+import { allGears, getGearDef, poolGears } from './content.ts'
 import {
   GEAR_CARRY_MAX,
   GEAR_MANA_COST,
@@ -23,6 +23,7 @@ import {
   SHOP_GEAR_SLOTS,
   SHOP_MANA_PRICE,
   applyRunCommand,
+  createDebugCheckpointRun,
   createRun,
   gearsOf,
   manaOf,
@@ -42,16 +43,28 @@ function runWith(combat: GameState, gears: readonly string[], mana = GEAR_MANA_C
 const use = (run: RunState, index: number, extra: Record<string, unknown> = {}): RunState =>
   applyRunCommand(run, { type: 'UseGear', index, ...extra } as never)
 
-describe('台帳 (裁定 2026-09-17: 33種・C13/U14/R6・数値は本家の瓶並み)', () => {
-  it('33種で、id と名前が一意', () => {
+describe('台帳 (裁定 2026-09-17: 33種・C13/U14/R6・数値は本家の瓶並み。2026-09-18: 2本続けて0回の3種を抽選から外して30種)', () => {
+  it('定義は33種で id と名前が一意。抽選に載るのは30種 (retired 3 = 厄除けの符・挟み紙・引き直し)', () => {
     expect(allGears.length).toBe(33)
     expect(new Set(allGears.map((g) => g.id)).size).toBe(33)
     expect(new Set(allGears.map((g) => g.name)).size).toBe(33)
+    expect(poolGears.length).toBe(30)
+    expect(allGears.filter((g) => g.retired === true).map((g) => g.id).sort()).toEqual(['gear_paper_slip', 'gear_redraw', 'gear_ward_charm'])
+    expect(getGearDef('gear_redraw').name).toBe('引き直し') // 旧セーブの持ち物としては読める
   })
 
-  it('レア度の内訳は C13 / U14 / R6', () => {
-    const by = (r: string) => allGears.filter((g) => g.rarity === r).length
-    expect([by('common'), by('uncommon'), by('rare')]).toEqual([13, 14, 6])
+  it('抽選に載るレア度の内訳は C12 / U12 / R6', () => {
+    const by = (r: string) => poolGears.filter((g) => g.rarity === r).length
+    expect([by('common'), by('uncommon'), by('rare')]).toEqual([12, 12, 6])
+  })
+
+  it('報酬・店・チェックポイントの抽選は retired を引かない', () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      const shop = openShop(createRun(seed, 'set-confirm', 'leader_green'))
+      for (const item of shop.shop!.gears ?? []) expect(getGearDef(item.id).retired).not.toBe(true)
+      const cp = createDebugCheckpointRun(seed, 'set-confirm', 'leader_green', { act: 2, deckId: 'deck_big_mana', relicIds: [], hpRatio: 1, gold: 100, difficulty: 3 })
+      for (const g of gearsOf(cp)) expect(getGearDef(g.gearId).retired).not.toBe(true)
+    }
   })
 
   it('回数つき (杖) は発条・歯車の2種だけ (裁定「杖は絞る」)', () => {

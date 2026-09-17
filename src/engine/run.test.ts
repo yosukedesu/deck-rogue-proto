@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
 import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_COUNT, ELITE_POOLS, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
-import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, DIFFICULTY_TAX, difficultyTax, eliteCountFor, shopPriceRatio, CAMPFIRE_HEAL_RATIO, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
+import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyDescription, difficultyScale, DIFFICULTY_TAX, difficultyTax, eliteCountFor, shopPriceRatio, CAMPFIRE_HEAL_RATIO, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent, hpWithin } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -503,6 +503,16 @@ describe('難易度10段階 = 傾き型のはしご＋経済税 (確定済みル
     expect(difficultyScale(5, 3)).toEqual({ hp: 1.12, atk: 1.24 })
   })
 
+  it('幕1後半 (2026-09-18 人間ラン#14): 行7以降 (ボス行の半分・ボス行も) は幕1と幕2の中点。前半は据え置き・幕2以降は行を見ない・段3は不変', () => {
+    expect(difficultyScale(5, 1, 6)).toEqual({ hp: 1.0, atk: 1.04 })
+    expect(difficultyScale(5, 1, 7)).toEqual({ hp: 1.03, atk: 1.08 })
+    expect(difficultyScale(5, 1, 15)).toEqual({ hp: 1.03, atk: 1.08 })
+    expect(difficultyScale(10, 1, 7)).toEqual({ hp: 1.105, atk: 1.28 })
+    expect(difficultyScale(3, 1, 12)).toEqual({ hp: 1.0, atk: 1.0 })
+    expect(difficultyScale(5, 2, 12)).toEqual({ hp: 1.06, atk: 1.12 })
+    expect(difficultyDescription(5)).toContain('後半×1.08')
+  })
+
   it('経済税の表 (本家アセンション形。段で1つずつ積む・段3以下は無税)', () => {
     expect(DIFFICULTY_TAX).toHaveLength(10)
     for (let i = 0; i < 3; i++) expect(difficultyTax(i + 1)).toEqual({ bossHeal: 1.0, campfire: CAMPFIRE_HEAL_RATIO, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 })
@@ -595,13 +605,16 @@ describe('難易度10段階 = 傾き型のはしご＋経済税 (確定済みル
   it('全敵一律 (ユーザー選択): ボス・エリートにも難易度倍率が掛かる', () => {
     const to = (d: number, target: 'boss' | 'elite') =>
       runTo(createRun(7, 'set-confirm', 'leader_green', undefined, d), target)
-    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(1.14) // 幕1ボスにも幕1の倍率が掛かる
+    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(1.28) // 幕1ボスにも難易度倍率が掛かる。ボス行は幕1後半 = 幕1(1.14)と幕2(1.42)の中点 (2026-09-18)
     // エリート: 素の値×難易度のみ (幕内深度スケールを掛けない既存裁定は維持)。幕1のHPは段で動かない
+    const r8 = to(8, 'elite')
     const e3 = to(3, 'elite').combat!.enemies[0]
-    const e8 = to(8, 'elite').combat!.enemies[0]
+    const e8 = r8.combat!.enemies[0]
     expect(e8.enemyId).toBe(e3.enemyId) // 倍率は RNG 列に影響しない=同じ敵 (段9の提示−1・段10の烙印は RNG に触るので段8で比較)
-    expect(e8.maxHp).toBe(e3.maxHp)
-    expect(e8.atkScale).toBe(1.1)
+    if (r8.row < 7) expect(e8.maxHp).toBe(e3.maxHp) // 幕1前半: 幕1のHPは段で動かない
+    else expect(e8.maxHp / e3.maxHp).toBeCloseTo(difficultyScale(8, 1, r8.row).hp, 1) // 幕1後半: 幕2との中点 (1.075) が乗る (2026-09-18)
+    expect(e8.atkScale).toBe(difficultyScale(8, 1, r8.row).atk) // 行7以降なら幕1後半の中点 (1.2)、前半なら 1.1
+    expect([1.1, 1.2]).toContain(e8.atkScale)
     expect(e3.atkScale).toBeUndefined()
   })
 })

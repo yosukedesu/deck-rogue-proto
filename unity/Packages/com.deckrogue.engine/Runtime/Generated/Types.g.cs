@@ -2690,6 +2690,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>効果の外にある特別な挙動。'flee'=戦闘から逃げる (run層) / 'nameless'=拾ったことのあるギアの効果を選ぶ</summary>
         [JsonProperty("special", NullValueHandling = NullValueHandling.Ignore)]
         public string? Special { get; init; }
+        /// <summary>台帳から外した (2026-09-18 人間ラン#13/#14 で2本続けて0回の 厄除けの符・挟み紙・引き直し)。抽選・店・報酬に載らないが、旧セーブの持ち物としては読める</summary>
+        [JsonProperty("retired", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Retired { get; init; }
         [JsonProperty("effects")]
         public IReadOnlyList<DeclarativeEffect> Effects { get; init; } = default!;
     }

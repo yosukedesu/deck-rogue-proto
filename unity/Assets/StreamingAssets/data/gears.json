@@ -106,6 +106,7 @@
   },
   {
     "id": "gear_ward_charm",
+    "retired": true,
     "name": "厄除けの符",
     "rarity": "uncommon",
     "family": "cleanse",
@@ -133,6 +134,7 @@
   },
   {
     "id": "gear_redraw",
+    "retired": true,
     "name": "引き直し",
     "rarity": "uncommon",
     "family": "field",
@@ -249,6 +251,7 @@
 
   {
     "id": "gear_paper_slip",
+    "retired": true,
     "name": "挟み紙",
     "rarity": "common",
     "family": "keep",

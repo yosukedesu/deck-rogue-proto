@@ -284,8 +284,8 @@ namespace DeckRogue.Engine
         {
             var (roll, rng1) = Rng.NextInt(rng0, 0, 99);
             string wanted = roll < 10 ? "rare" : (roll < 35 || atLeastUncommon) ? "uncommon" : "common";
-            var pool = Content.AllGears.Where(g => g.Rarity == wanted).ToList();
-            if (pool.Count == 0) pool = new List<GearDef>(Content.AllGears);
+            var pool = Content.PoolGears.Where(g => g.Rarity == wanted).ToList();   // 台帳から外した札 (Retired) は載らない (2026-09-18)
+            if (pool.Count == 0) pool = new List<GearDef>(Content.PoolGears);
             var (i, rng2) = Rng.NextInt(rng1, 0, pool.Count - 1);
             return (pool[i].Id, rng2);
         }
@@ -552,12 +552,17 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>難易度→その幕の倍率 (act 省略=幕1)</summary>
-        public static DifficultyScaleEntry DifficultyScale(int? level, int act = 1)
+        public static DifficultyScaleEntry DifficultyScale(int? level, int act = 1, int? row = null)
         {
-            var row = DIFFICULTY_TABLE[DifficultyLevel(level) - 1];
+            var t = DIFFICULTY_TABLE[DifficultyLevel(level) - 1];
             int a = Math.Min(3, Math.Max(1, act)) - 1;
-            return new DifficultyScaleEntry { Hp = row.Hp[a], Atk = row.Atk[a] };
+            // 幕1後半 (2026-09-18 人間ラン#14): 行がボス行の半分以降 (ボス行も) なら幕1と幕2の中点。前半は据え置き
+            if (a == 0 && row != null && row.Value >= (int)Math.Floor(MapGen.BossRowFor(1) / 2.0))
+                return new DifficultyScaleEntry { Hp = MidScale(t.Hp[0], t.Hp[1]), Atk = MidScale(t.Atk[0], t.Atk[1]) };
+            return new DifficultyScaleEntry { Hp = t.Hp[a], Atk = t.Atk[a] };
         }
+        /// <summary>2つの倍率の中点 (小数3桁。TS の midScale と同じ式)</summary>
+        static double MidScale(double x, double y) => Math.Floor((x + y) / 2.0 * 1000.0 + 0.5) / 1000.0;
 
         /// <summary>難易度→経済税 (段3以下は無税)</summary>
         public static DifficultyTax DifficultyTaxOf(int? level) => DIFFICULTY_TAX[DifficultyLevel(level) - 1];
@@ -572,7 +577,12 @@ namespace DeckRogue.Engine
             if (n == DEFAULT_DIFFICULTY) return n + ": 標準（基準線。幕1〜3とも×1.0・幕ボス撃破で全回復）";
             var row = DIFFICULTY_TABLE[n - 1];
             var t = DIFFICULTY_TAX[n - 1];
-            var parts = new List<string> { "打点 幕1×" + Num(row.Atk[0]) + "・幕2×" + Num(row.Atk[1]) + "・幕3×" + Num(row.Atk[2]), "HP 幕2×" + Num(row.Hp[1]) + "・幕3×" + Num(row.Hp[2]) };
+            var late = DifficultyScale(n, 1, MapGen.BossRowFor(1) - 1);   // 幕1後半 (行8以降) は幕1と幕2の中点
+            var parts = new List<string>
+            {
+                "打点 幕1×" + Num(row.Atk[0]) + "（後半×" + Num(late.Atk) + "）・幕2×" + Num(row.Atk[1]) + "・幕3×" + Num(row.Atk[2]),
+                "HP 幕1後半×" + Num(late.Hp) + "・幕2×" + Num(row.Hp[1]) + "・幕3×" + Num(row.Hp[2]),
+            };
             if (t.BossHeal < 1) parts.Add("幕ボス撃破の回復" + (int)Math.Round(t.BossHeal * 100) + "%");
             if (t.Campfire < 0.25) parts.Add("焚き火" + (int)Math.Round(t.Campfire * 100) + "%");
             if (t.EliteBonus > 0) parts.Add("幕2/3のエリート+" + t.EliteBonus);
@@ -655,7 +665,7 @@ namespace DeckRogue.Engine
             // 戦闘シード: TS の nextInt(rng, 0, 2**31-1) と同じ1消費 (Rng.NextInt は幅を long で計算するので溢れない)
             var (combatSeed, rng) = Rng.NextInt(run.Rng, 0, int.MaxValue);
             // 難易度倍率: 全敵一律で既存スケールの上に乗算
-            var diff = DifficultyScale(run.Difficulty, run.Act);   // 段×幕の表 (2026-09-18 傾き型)
+            var diff = DifficultyScale(run.Difficulty, run.Act, run.Row);   // 段×幕の表 (2026-09-18 傾き型)。幕1後半は幕1と幕2の中点
             double[] bossHpByAct = { 1.35, 2.3, 2.4 };
             int[] bossStrByAct = { 1, 1, 2 };
             double[] atkByAct = { 1, 1.15, 1.15 };
