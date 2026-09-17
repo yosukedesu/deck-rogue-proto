@@ -868,12 +868,15 @@ if (mode === 'new-run') {
   console.log(renderRun(run, 0))
 } else if (mode === 'new-checkpoint') {
   // チェックポイント開始 (2026-09-02): 幕2/3から代表デッキ+レリックで開始。UIの🚩と同じ createDebugCheckpointRun。
-  // 使い方: new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds(カンマ区切り)]
-  const [leaderId, seed, file, act, deckId, hpRatio, gold, difficulty, relicCsv] = args
+  // 使い方: new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds(カンマ区切り)] [gearIds(カンマ区切り。'-'で持たない)] [mana]
+  const [leaderId, seed, file, act, deckId, hpRatio, gold, difficulty, relicCsv, gearCsv, mana] = args
   const checkpoint = {
     act: Number(act),
     deckId,
-    ...(relicCsv ? { relicIds: relicCsv.split(',').filter(Boolean) } : {}),
+    ...(relicCsv && relicCsv !== '-' ? { relicIds: relicCsv.split(',').filter(Boolean) } : {}),
+    // ギア (2026-09-17): 省略=幕なりの抽選 / '-'=持たない / カンマ区切りで狙ったギアを持たせる (大物の検証)
+    ...(gearCsv ? { gearIds: gearCsv === '-' ? [] : gearCsv.split(',').filter(Boolean) } : {}),
+    ...(mana ? { mana: Number(mana) } : {}),
     ...(hpRatio ? { hpRatio: Number(hpRatio) } : {}),
     ...(gold ? { gold: Number(gold) } : {}),
     ...(difficulty ? { difficulty: Number(difficulty) } : {}),
@@ -969,5 +972,5 @@ if (mode === 'new-run') {
       : renderBattle(sf.battle!, tail(sf.battle)),
   )
 } else {
-  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
+  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds] [gearIds] [mana] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
 }
