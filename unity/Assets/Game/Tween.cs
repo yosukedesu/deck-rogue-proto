@@ -204,19 +204,18 @@ namespace DeckRogue.Game
         }
 
         /// <summary>斬撃 (2026-09-16 ユーザー「斬撃エフェクトをもっと豪華に。方向性は当初の直線のままで」→同日「2本に見える・ごてごてしすぎ。もっとスッキリ」):
-        /// 直線の筋1本 (白い芯＋青緑の縁が振りの向きへ伸びて細くなり消える) ＋ 着弾の光 (一瞬の光の玉と8芒星) ＋ 火花6。残像・衝撃の輪はやめた。
-        /// big (与ダメ 15 以上) は筋が 1.35 倍で、交差する2本目 (X) が 0.05 秒遅れて走り、火花10。絵は Art/fx/slash_streak・slash_burst・spark・glow (無ければ生成)</summary>
+        /// 直線の筋1本 (白い芯＋青緑の縁が振りの向きへ伸びて細くなり消える) ＋ 着弾の光 (衝撃線＝芯の閃光と細い針の放射。2026-09-17 ユーザー「星型がダサい」で8芒星を撤去) ＋ 火花5。残像・衝撃の輪はやめた。
+        /// big (与ダメ 15 以上) は筋が 1.35 倍で、交差する2本目 (X) が 0.05 秒遅れて走り、火花8。絵は Art/fx/slash_streak・spark・glow (無ければ生成)</summary>
         public static void SlashFx(RectTransform layer, Vector2 pos, float angle, Color color, bool big = false)
         {
             if (layer == null) return;
             float len = (big ? 1.35f : 1f) * 340f;
             var white = new Color(1f, 1f, 1f, 1f);
-            Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.7f), big ? 240f : 170f, 0.4f, 1.1f, 0.16f, 0f, 0f);   // 着弾の光 (奥): 一瞬だけ
             Streak(layer, pos, angle, color, len, 1f, 0.3f, 0f);
             if (big) Streak(layer, pos, angle + 90f, color, len * 0.9f, 0.9f, 0.3f, 0.05f);   // 交差 (X)
-            Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 150f : 110f, 0.3f, 1.3f, 0.22f, 45f, 0.02f);
+            Impact(layer, pos, angle, color, big, 0.02f);
             // 火花: 振りの向きへ散る (放物線・回転・消える)
-            int n = big ? 10 : 6;
+            int n = big ? 8 : 5;
             var dirV = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
             for (int i = 0; i < n; i++)
             {
@@ -230,6 +229,118 @@ namespace DeckRogue.Game
                 float spread = UnityEngine.Random.Range(-1.2f, 1.2f);
                 var vel = (dirV * UnityEngine.Random.Range(-1f, 1f) + Perp(angle) * spread).normalized * UnityEngine.Random.Range(200f, 400f) * (big ? 1.3f : 1f);
                 var start = pos; float dur = UnityEngine.Random.Range(0.25f, 0.42f); float spin = UnityEngine.Random.Range(-900f, 900f);
+                var c0 = sImg.color;
+                Run(dur, k => { if (sp == null) return; float t = k * dur; sp.anchoredPosition = start + vel * t + new Vector2(0f, -520f) * t * t; sp.localRotation = Quaternion.Euler(0f, 0f, t * spin); float sc = 1f - 0.5f * k; sp.localScale = new Vector3(sc, sc, 1f); sImg.color = new Color(c0.r, c0.g, c0.b, c0.a * (1f - k * k)); }, Ease.Linear, () => { if (sp != null) UnityEngine.Object.Destroy(sp.gameObject); });
+            }
+        }
+
+        /// <summary>着弾の光 (筋の根元) ＝ 衝撃線 (2026-09-17 ユーザー「攻撃時に星型のエフェクトがダサい」→ 4案から裁定): 芯の小さな閃光が一瞬で縮み、細い針が放射状に走って一瞬で引く (ヒットスパーク)。形は残さない</summary>
+        static void Impact(RectTransform layer, Vector2 pos, float angle, Color color, bool big, float delay)
+        {
+            Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.95f), big ? 120f : 90f, 1.2f, 0.4f, 0.1f, 0f, delay);
+            After(delay, () => Needles(layer, pos, color, big ? 10 : 8, big ? 120f : 84f, angle));
+        }
+
+        /// <summary>衝撃線: n 本の細い針が中心から放射状に伸びて (OutQuad)、後半で消える。振りの向きの針は少し長い</summary>
+        public static void Needles(RectTransform layer, Vector2 pos, Color color, int n, float reach, float angle)
+        {
+            if (layer == null) return;
+            float a0 = UnityEngine.Random.Range(0f, 360f / n);
+            for (int i = 0; i < n; i++)
+            {
+                float a = a0 + i * 360f / n + UnityEngine.Random.Range(-8f, 8f);
+                float along = Mathf.Abs(Mathf.Cos((a - angle) * Mathf.Deg2Rad));
+                float len = reach * (0.55f + 0.45f * along) * UnityEngine.Random.Range(0.8f, 1.1f);
+                var rt = UiKit.NewRect("needle", layer);
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.pivot = new Vector2(0f, 0.5f);   // 内側の端が中心
+                rt.sizeDelta = new Vector2(len, len * 0.25f * 0.28f); rt.anchoredPosition = pos + new Vector2(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad)) * 10f;
+                rt.localRotation = Quaternion.Euler(0f, 0f, a);
+                var img = rt.gameObject.AddComponent<Image>();
+                img.sprite = ThemeFx.SlashStreak(); img.raycastTarget = false;
+                var c = (i % 2 == 0) ? Color.white : color;
+                img.color = c;
+                rt.localScale = new Vector3(0.25f, 1f, 1f);
+                Run(0.17f, k =>
+                {
+                    if (rt == null) return;
+                    rt.localScale = new Vector3(0.25f + 0.85f * Apply(Ease.OutQuad, Mathf.Clamp01(k / 0.55f)), 1f - 0.5f * k, 1f);
+                    float fade = k < 0.5f ? 1f : 1f - (k - 0.5f) / 0.5f;
+                    img.color = new Color(c.r, c.g, c.b, c.a * fade);
+                }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+            }
+        }
+
+        /// <summary>
+        /// 完全に防いだ時の演出＝盾で受け止める (2026-09-17 ユーザー「完全に防いだ時に敵からダメージ食らってるように見える」→ 3案から裁定):
+        /// 空色の盾の面 (GuardDisc) を正面に構え、攻撃の筋は空色で面の手前で止まり (面が筋の先を隠す)、当たった点が白く閃いて、火花は攻撃して来た側へ散る。
+        /// 被弾の筋 (朱)・のけぞり・赤い点滅・揺れ・押し縮みは出さない。pos=受けた側の絵の中心、style=技の種類 (自分の攻撃を敵が受けた時は "slash")、
+        /// dir=攻撃が来る向き (+1 右から＝自分が受ける／-1 左から＝敵が受ける)
+        /// </summary>
+        public static void GuardFx(RectTransform layer, Vector2 pos, string style, float dir = 1f)
+        {
+            if (layer == null) return;
+            var white = new Color(1f, 1f, 1f, 1f);
+            var light = new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 1f);
+            Vector2 front = pos + new Vector2(62f * dir, 4f);   // 盾の面は体より前 (攻撃が来る側) に構える
+            Vector2 stop = front + new Vector2(28f * dir, 0f);   // 筋の先が止まる点
+            float m = dir >= 0f ? 1f : -1f;
+            // 攻撃の筋 (種類別・空色・短い)。先に描いて盾の面で先を隠す
+            if (style == "fang") { Streak(layer, stop + new Vector2(0f, 22f), -62f * m + (m < 0f ? 180f : 0f), light, 130f, 0.95f, 0.2f, 0f, 1.1f); Streak(layer, stop + new Vector2(0f, -22f), 62f * m + (m < 0f ? 180f : 0f), light, 130f, 0.95f, 0.2f, 0.03f, 1.1f); }
+            else if (style == "claw") { for (int i = -1; i <= 1; i++) Streak(layer, stop + Perp(-38f) * (i * 22f), m > 0f ? -38f : 218f, light, 170f, 0.9f, 0.22f, 0.02f * (i + 1), 0.6f); }
+            else if (style == "blunt") Streak(layer, stop + new Vector2(0f, 50f), -90f, light, 150f, 1f, 0.2f, 0f, 1.6f);
+            else if (style == "beam") { Streak(layer, stop, 90f, light, 120f, 0.9f, 0.2f, 0f, 1.1f); Streak(layer, stop, -90f, light, 120f, 0.9f, 0.2f, 0f, 1.1f); }
+            else if (style == "throw") Pop(layer, stop, ThemeFx.Glow(), new Color(light.r, light.g, light.b, 0.8f), 110f, 1.2f, 0.4f, 0.12f, 0f, 0f);
+            else if (style == "slash") Streak(layer, stop + new Vector2(40f * m, 26f), m > 0f ? 215f : -35f, light, 190f, 1f, 0.22f, 0f, 0.8f);   // 自分の斬撃 (左上→右下) が敵の盾で止まる
+            else Streak(layer, stop + new Vector2(50f * m, 0f), m > 0f ? 180f : 0f, light, 170f, 1f, 0.22f, 0f, 0.7f);   // 突き・斬撃: 攻撃が来る側から水平に来て止まる
+            GuardDisc(layer, front, 0.26f);
+            Pop(layer, stop, ThemeFx.Glow(), white, 70f, 1.2f, 0.3f, 0.1f, 0f, 0.02f);   // 当たった点の閃き
+            SparksDir(layer, stop, light, 7, m > 0f ? 40f : 140f);   // 火花は攻撃して来た側の上へ
+        }
+
+        /// <summary>盾の面: 空色の光の円 (透過) が正面にぱっと立ち、白い縁の輪と中央の盾の紋。少し保って消える</summary>
+        static void GuardDisc(RectTransform layer, Vector2 pos, float hold)
+        {
+            var sky = PaperFx.Sky; var light = PaperFx.SkyLight;
+            var rt = UiKit.NewRect("guard", layer);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(150f, 150f); rt.anchoredPosition = pos;
+            var face = rt.gameObject.AddComponent<Image>();
+            face.sprite = ThemeFx.Glow(); face.color = new Color(sky.r, sky.g, sky.b, 0.55f); face.raycastTarget = false;
+            var rim = UiKit.NewRect("rim", rt);
+            UiKit.Stretch(rim, -4f, -4f, -4f, -4f);
+            var rimImg = rim.gameObject.AddComponent<Image>();
+            rimImg.sprite = ThemeFx.Ring(); rimImg.color = new Color(light.r, light.g, light.b, 0.95f); rimImg.raycastTarget = false;
+            var glyph = UiKit.NewRect("glyph", rt);
+            glyph.anchorMin = glyph.anchorMax = new Vector2(0.5f, 0.5f); glyph.sizeDelta = new Vector2(48f, 48f);
+            var gImg = glyph.gameObject.AddComponent<Image>();
+            gImg.sprite = Theme.Icon("shield"); gImg.preserveAspect = true; gImg.color = new Color(1f, 1f, 1f, 0.9f); gImg.raycastTarget = false;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.blocksRaycasts = false;
+            rt.localScale = Vector3.one * 0.6f;
+            Run(0.09f, k => { if (rt != null) rt.localScale = Vector3.one * (0.6f + 0.4f * Apply(Ease.OutBack, k)); }, Ease.Linear, () =>
+            {
+                After(hold, () => Run(0.22f, k => { if (cg != null) cg.alpha = 1f - k; if (rt != null) rt.localScale = Vector3.one * (1f + 0.08f * k); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
+            });
+            // 面を斜めに横切る白い閃き (金属の面に光が走る)
+            Streak(layer, pos, 65f, Color.white, 120f, 0.85f, 0.2f, 0.05f, 0.4f);
+        }
+
+        /// <summary>火花 n 個を angle の向きを中心に散らす (SparksDir: 向きの広がりを狭くした版。盾で弾いた火花)</summary>
+        static void SparksDir(RectTransform layer, Vector2 pos, Color color, int n, float angle)
+        {
+            var white = new Color(1f, 1f, 1f, 1f);
+            for (int i = 0; i < n; i++)
+            {
+                var sp = UiKit.NewRect("spark", layer);
+                sp.anchorMin = sp.anchorMax = new Vector2(0.5f, 0.5f);
+                float sz = UnityEngine.Random.Range(14f, 26f);
+                sp.sizeDelta = new Vector2(sz, sz); sp.anchoredPosition = pos;
+                var sImg = sp.gameObject.AddComponent<Image>();
+                sImg.sprite = ThemeFx.Spark(); sImg.raycastTarget = false;
+                sImg.color = (i % 2 == 0) ? white : color;
+                float a = (angle + UnityEngine.Random.Range(-55f, 55f)) * Mathf.Deg2Rad;
+                var vel = new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * UnityEngine.Random.Range(220f, 420f);
+                var start = pos; float dur = UnityEngine.Random.Range(0.22f, 0.38f); float spin = UnityEngine.Random.Range(-900f, 900f);
                 var c0 = sImg.color;
                 Run(dur, k => { if (sp == null) return; float t = k * dur; sp.anchoredPosition = start + vel * t + new Vector2(0f, -520f) * t * t; sp.localRotation = Quaternion.Euler(0f, 0f, t * spin); float sc = 1f - 0.5f * k; sp.localScale = new Vector3(sc, sc, 1f); sImg.color = new Color(c0.r, c0.g, c0.b, c0.a * (1f - k * k)); }, Ease.Linear, () => { if (sp != null) UnityEngine.Object.Destroy(sp.gameObject); });
             }
@@ -485,7 +596,7 @@ namespace DeckRogue.Game
                     Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.6f), 150f, 0.4f, 1.0f, 0.14f, 0f, 0f);
                     Streak(layer, pos + new Vector2(0f, 26f), -62f, color, 210f * (big ? 1.3f : 1f), 1f, 0.26f, 0f, 1.3f);
                     Streak(layer, pos + new Vector2(0f, -26f), 62f, color, 210f * (big ? 1.3f : 1f), 1f, 0.26f, 0.03f, 1.3f);
-                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 130f : 96f, 0.3f, 1.2f, 0.2f, 20f, 0.05f);
+                    Impact(layer, pos, 0f, color, big, 0.05f);
                     Sparks(layer, pos, color, big ? 8 : 5, 0f);
                     break;
                 case "claw":
@@ -497,13 +608,13 @@ namespace DeckRogue.Game
                     // 突き: 右 (敵の側) から水平に走る細い筋が刺さり、小さな光。火花は正面へ
                     Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.6f), 140f, 0.4f, 1.0f, 0.14f, 0f, 0f);
                     Streak(layer, pos + new Vector2(90f, 4f), 180f, color, 300f * (big ? 1.3f : 1f), 1f, 0.24f, 0f, 0.75f);
-                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 120f : 90f, 0.3f, 1.2f, 0.2f, 15f, 0.03f);
+                    Impact(layer, pos, 180f, color, big, 0.03f);
                     Sparks(layer, pos, color, big ? 8 : 5, 180f);
                     break;
                 case "blunt":
                     Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.8f), big ? 260f : 200f, 0.3f, 1.2f, 0.18f, 0f, 0f);
                     Streak(layer, pos + new Vector2(0f, 60f), -90f, color, 220f * (big ? 1.3f : 1f), 1f, 0.24f, 0f, 1.8f);
-                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 170f : 130f, 0.3f, 1.4f, 0.24f, 0f, 0.02f);
+                    Impact(layer, pos, -90f, color, big, 0.02f);
                     RingBurst(layer, pos + new Vector2(0f, -40f), new Color(color.r, color.g, color.b, 0.7f), big ? 220f : 170f, 0.32f);
                     Sparks(layer, pos, color, big ? 10 : 6, -90f);
                     break;
@@ -511,7 +622,7 @@ namespace DeckRogue.Game
                     Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.9f), big ? 240f : 190f, 0.2f, 1.3f, 0.22f, 0f, 0f);
                     Streak(layer, pos, 90f, color, 160f, 0.9f, 0.22f, 0f, 1.2f);
                     Streak(layer, pos, -90f, color, 160f, 0.9f, 0.22f, 0f, 1.2f);
-                    Pop(layer, pos, ThemeFx.SlashBurst(), color, big ? 150f : 110f, 0.3f, 1.3f, 0.22f, 30f, 0.02f);
+                    Impact(layer, pos, 90f, color, big, 0.02f);
                     break;
                 case "throw":
                     Pop(layer, pos, ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.7f), 140f, 0.4f, 1.1f, 0.2f, 0f, 0f);
