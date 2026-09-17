@@ -799,36 +799,6 @@ namespace DeckRogue.Game
             return s;
         }
 
-        /// <summary>着弾の光 (32×32 の8芒星)。差し替えは Art/fx/slash_burst.png</summary>
-        public static Sprite SlashBurst()
-        {
-            Sprite s;
-            if (_cache.TryGetValue("slash_burst", out s)) return s;
-            s = Theme.Art("fx", "slash_burst");
-            if (s == null)
-            {
-                const int n = 32;
-                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
-                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
-                var px = new Color[n * n];
-                for (int y = 0; y < n; y++)
-                    for (int x = 0; x < n; x++)
-                    {
-                        float dx = x + 0.5f - n / 2f, dy = y + 0.5f - n / 2f;
-                        float d = Mathf.Sqrt(dx * dx + dy * dy);
-                        float ang = Mathf.Atan2(dy, dx);
-                        float spike = Mathf.Abs(Mathf.Cos(ang * 4f));   // 8 本の芒
-                        float reach = 4f + 12f * Mathf.Pow(spike, 6f);
-                        if (d > reach) continue;
-                        px[y * n + x] = d < 3f ? Color.white : d < reach * 0.6f ? new Color(1f, 1f, 0.9f, 1f) : UiKit.Hex("#7ab8b0");
-                    }
-                tex.SetPixels(px); tex.Apply(false, false);
-                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
-            }
-            _cache["slash_burst"] = s;
-            return s;
-        }
-
         /// <summary>火花 (8×8 の菱形)。差し替えは Art/fx/spark.png</summary>
         public static Sprite Spark()
         {

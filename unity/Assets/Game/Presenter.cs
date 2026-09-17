@@ -1000,23 +1000,26 @@ namespace DeckRogue.Game
                         var spr = g.Battle != null ? g.Battle.EnemySprite(ei) : null;
                         Vector2 hit = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(rt, fx);
                         Color streak = crit ? new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 1f) : capped ? new Color(0.78f, 0.8f, 0.86f, 0.9f) : new Color(1f, 0.98f, 0.9f, 0.95f);   // 頭打ちは鈍い筋 (刃が通らない)
-                        if (spr != null)
+                        // 敵のブロックが全部吸った (殻は別) = 敵が盾で受け止める (2026-09-17): 斬撃の筋は出さず、敵の正面に空色の盾の面。白い点滅も無し
+                        bool guardedE = blocked > 0 && d.HpLoss <= 0 && !shell;
+                        if (guardedE) Tween.GuardFx(fx, hit, "slash", -1f);
+                        else if (spr != null)
                         {
-                            Tween.SlashFx(fx, hit, UnityEngine.Random.Range(-50f, -20f), streak, big);   // 直線の筋＋残像＋着弾の光＋火花 (2026-09-16)
+                            Tween.SlashFx(fx, hit, UnityEngine.Random.Range(-50f, -20f), streak, big);   // 直線の筋＋着弾の衝撃線＋火花 (2026-09-16 / 2026-09-17)
                             Stage.Flash("enemy" + ei);
                         }
-                        if (crit) { Tween.IconBurst(fx, hit, "star", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.95f), 120f); Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f); }
-                        if (blocked > 0 && !shell) Tween.IconBurst(fx, hit + new Vector2(-10f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, d.HpLoss > 0 ? 0.7f : 0.95f), d.HpLoss > 0 ? 90f : 130f);
-                        if (blocked > 0 && d.HpLoss <= 0) Tween.RingBurst(fx, hit, PaperFx.SkyLight, 170f, 0.3f);
+                        // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
+                        if (crit && !guardedE) Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f);
+                        if (blocked > 0 && !shell && d.HpLoss > 0) Tween.IconBurst(fx, hit + new Vector2(-10f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.7f), 90f);
                         if (capped || burrowCut > 0) Tween.RingBurst(fx, hit, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.8f), 150f, 0.3f);
                         Audio.Key("DamageDealt.player.swing");
                         if (blocked > 0 && d.HpLoss <= 0) Audio.Key("DamageDealt.blocked");
                         else Audio.Key(big ? "DamageDealt.player.big" : "DamageDealt.player");
-                        if (big) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f), 0.25f);
+                        if (big && !guardedE) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f), 0.25f);
                         // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
                         bool finishing = ctx != null && ctx.FinishingBlow;
                         if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
-                        else if (big) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
+                        else if (big && !guardedE) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                         Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
@@ -1042,7 +1045,7 @@ namespace DeckRogue.Game
                             var note = notes[n]; float dy = -34f - 26f * n; float dl = 0.06f * (n + 1);
                             Tween.After(dl, () => Tween.Float(fx, pos + new Vector2(0f, dy), note.Key, note.Value, note.Key.EndsWith("!") ? 26 : 20, 34f, 1.0f));
                         }
-                        if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f) * (crit ? 1.4f : 1f));
+                        if (d.Amount > 0 && !guardedE) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f) * (crit ? 1.4f : 1f));
                         if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(ei, -d.HpLoss);
                         if (nudgeHp && g.Battle != null && blocked > 0) g.Battle.NudgeEnemyBlock(ei, -blocked);   // 帳面の盾の数字もその場で減る (殻も同じ器。2026-09-17)
                     }
@@ -1076,7 +1079,10 @@ namespace DeckRogue.Game
                         var dd = d; var rtC = rt; var pSprC = pSpr; bool nudge = nudgeHp;
                         Tween.After(hitDelay, () =>
                         {
-                            Tween.HitFx(fx, hitPos, style, hitColor, dd.HpLoss >= 12);
+                            // 完全に防いだ (2026-09-17 ユーザー「完全に防いだ時に敵からダメージ食らってるように見える」): 被弾の筋 (朱) の代わりに盾で受ける演出 (GuardFx)
+                            bool guarded = dd.HpLoss <= 0 && dd.Amount > 0;
+                            if (guarded) Tween.GuardFx(fx, hitPos, style);
+                            else Tween.HitFx(fx, hitPos, style, hitColor, dd.HpLoss >= 12);
                             // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
                             if (dd.HpLoss <= 0 && dd.Amount > 0) { Audio.Key("DamageDealt.blocked"); Stage.PlayAnim("player", "block"); }
                             else Audio.Key(dd.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", dd.HpLoss > 0 ? 1f : 0.5f);
@@ -1096,10 +1102,10 @@ namespace DeckRogue.Game
                             else Tween.Float(fx, pos, "0", UiKit.ColDim, 30);
                             if (blockedP > 0)
                             {
-                                Tween.IconBurst(fx, hitPos + new Vector2(-16f, 0f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, dd.HpLoss > 0 ? 0.7f : 0.95f), dd.HpLoss > 0 ? 100f : 140f);
+                                if (!guarded) Tween.IconBurst(fx, hitPos + new Vector2(-16f, 0f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, dd.HpLoss > 0 ? 0.7f : 0.95f), dd.HpLoss > 0 ? 100f : 140f);
                                 Tween.After(0.08f, () => Tween.Float(fx, pos + new Vector2(0f, -36f), "ブロックで −" + blockedP, PaperFx.SkyLight, 22, 34f, 1.0f));
                             }
-                            if (dd.Amount > 0) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f));
+                            if (dd.Amount > 0 && !guarded) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f));
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
                             if (nudge && g.Battle != null && blockedP > 0) g.Battle.AbsorbPlayerBlock(blockedP);   // 自分の札の盾の数字も吸われた分だけ減る (通常→氷壁の順。2026-09-17)
                         });
