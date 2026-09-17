@@ -93,7 +93,7 @@ namespace DeckRogue.Engine
         /// <summary>どのパスも工房は1幕に最大1回</summary>
         private const int WORKSHOP_PATH_MAX = 1;
         /// <summary>エリートだけは員数固定</summary>
-        private const int ELITE_COUNT = 4;
+        public const int ELITE_COUNT = 4;   // 難易度6以上は幕2/3で+1 (2026-09-18 経済税。Run.EliteCountFor)
         /// <summary>ショップは固定3/幕 (StS2 NumOfShops=3)</summary>
         private const int SHOP_COUNT = 3;
         /// <summary>エリートを置ける最小行 (既定)</summary>
@@ -187,7 +187,7 @@ namespace DeckRogue.Engine
         /// シードからマップを決定的に生成する (同じシード = 同じマップ)。
         /// </summary>
         public static (IReadOnlyList<IReadOnlyList<MapNode>> Map, RngState Rng) GenerateMap(
-            RngState rng0, int act = 1, bool allowWorkshop = true)
+            RngState rng0, int act = 1, bool allowWorkshop = true, int eliteCount = ELITE_COUNT)
         {
             var rng = rng0;
             for (int attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++)
@@ -435,7 +435,7 @@ namespace DeckRogue.Engine
                 {
                     foreach (var (r, c) in freeNodes) if (typeGrid[r][c] == MapNodeTypes.Elite) typeGrid[r][c] = MapNodeTypes.Battle;
                     bool failed = false;
-                    for (int k = 0; k < ELITE_COUNT; k++)
+                    for (int k = 0; k < eliteCount; k++)
                     {
                         // 直前で必ず避けられる: 全ての親に出口2以上
                         var cand = new List<(int R, int C)>();

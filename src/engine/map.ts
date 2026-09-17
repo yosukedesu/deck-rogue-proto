@@ -134,8 +134,8 @@ const WORKSHOP_MIN_ROW_ACT1 = 5
 const CAMPFIRE_PATH_MAX = 4
 /** どのパスも工房は1幕に最大1回 (2026-09-03 ユーザー裁定「工房は全ルート1幕1回のみ」) */
 const WORKSHOP_PATH_MAX = 1
-/** エリートだけは員数固定。重み8%だと幕3個=1パス1.31体でレリック供給が-28%になるため */
-const ELITE_COUNT = 4
+/** エリートだけは員数固定。重み8%だと幕3個=1パス1.31体でレリック供給が-28%になるため。難易度6以上は幕2/3で+1 (2026-09-18 経済税。run.ts eliteCountFor) */
+export const ELITE_COUNT = 4
 /** ショップは固定3/幕 (2026-09-02 StS2 NumOfShops=3 準拠。ユーザー裁定) */
 const SHOP_COUNT = 3
 /** エリートを置ける最小行。本家は floor1〜5 禁止だが、序盤のレリック供給を守るため行2から */
@@ -221,6 +221,7 @@ export function generateMap(
   rng0: RngState,
   act = 1,
   allowWorkshop = true,
+  eliteCount = ELITE_COUNT,
 ): readonly [RunMap, RngState] {
   let rng = rng0
   for (let attempt = 0; attempt <= MAX_PLACEMENT_TRIES; attempt++) {
@@ -433,7 +434,7 @@ export function generateMap(
     for (let tryE = 0; tryE < 20 && !eliteOk; tryE++) {
       for (const [r, c] of freeNodes) if (typeGrid[r][c] === 'elite') typeGrid[r][c] = 'battle'
       let failed = false
-      for (let k = 0; k < ELITE_COUNT; k++) {
+      for (let k = 0; k < eliteCount; k++) {
         // 直前で必ず避けられる: 全ての親に出口2以上 (2026-08-31 Opus検証「行0の選択の副産物で
         // エリート2体が通行料になった」への処方 = 挑む/避けるが常にその場の選択になる)
         const cand = freeNodes.filter(

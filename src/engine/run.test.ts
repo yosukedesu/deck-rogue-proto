@@ -1,9 +1,9 @@
 // ドラフト連戦モード (マップラン) のテスト。「確定済みルール」表のラン関連項目をここで固定する。
 import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_POOLS, generateMap, tierFor } from './map.ts'
+import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_COUNT, ELITE_POOLS, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
-import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
+import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyScale, DIFFICULTY_TAX, difficultyTax, eliteCountFor, shopPriceRatio, CAMPFIRE_HEAL_RATIO, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
 import type { RunState } from './run.ts'
 import { chooseToward, defendIntent, withHand, withIntent, hpWithin } from './test-helpers.ts'
 import type { GameState } from './types.ts'
@@ -473,27 +473,96 @@ describe('スターター札は報酬プールに出ない (2026-08-30 中立ス
   })
 })
 
-describe('難易度10段階 (確定済みルール表「難易度」2026-09-01)', () => {
-  it('表の固定: 10段・段3=×1.0/×1.0・段10=HP×1.35/打点×3.0・単調非減少・打点優先', () => {
+describe('難易度10段階 = 傾き型のはしご＋経済税 (確定済みルール表「難易度」2026-09-18)', () => {
+  it('表の固定: 10段・段3=全幕×1.0・段10=幕3 打点×1.84/HP×1.42・幕1のHPは段で動かない・後半ほど増分が大きい', () => {
     expect(DIFFICULTY_TABLE).toHaveLength(10)
     expect(DEFAULT_DIFFICULTY).toBe(3)
-    expect(DIFFICULTY_TABLE[2]).toEqual({ hp: 1.0, atk: 1.0 })
-    expect(DIFFICULTY_TABLE[9]).toEqual({ hp: 1.35, atk: 3.0 })
-    expect(DIFFICULTY_TABLE[0].hp).toBeLessThan(1) // 1〜2は現状より易しい側
-    for (let i = 1; i < 10; i++) {
-      expect(DIFFICULTY_TABLE[i].hp).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].hp)
-      expect(DIFFICULTY_TABLE[i].atk).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].atk)
-    }
-    // 打点優先 (ユーザー選択): 4以上の段では打点倍率がHP倍率以上
+    expect(DIFFICULTY_TABLE[2]).toEqual({ hp: [1.0, 1.0, 1.0], atk: [1.0, 1.0, 1.0] })
+    expect(DIFFICULTY_TABLE[9]).toEqual({ hp: [1.0, 1.21, 1.42], atk: [1.14, 1.42, 1.84] })
+    expect(DIFFICULTY_TABLE[0].atk[0]).toBeLessThan(1) // 1〜2は現状より易しい側
     for (let i = 3; i < 10; i++) {
-      expect(DIFFICULTY_TABLE[i].atk).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i].hp)
+      const row = DIFFICULTY_TABLE[i]
+      expect(row.hp[0]).toBe(1.0) // 序盤は資産が無い = 幕1のHPは段で動かさない
+      expect(row.atk[2]).toBeGreaterThan(row.atk[1]) // 傾き: 幕3 > 幕2 > 幕1
+      expect(row.atk[1]).toBeGreaterThan(row.atk[0])
+      expect(row.hp[2]).toBeGreaterThan(row.hp[1])
+      for (let a = 0; a < 3; a++) {
+        expect(row.hp[a]).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].hp[a]) // 段で単調非減少
+        expect(row.atk[a]).toBeGreaterThanOrEqual(DIFFICULTY_TABLE[i - 1].atk[a])
+        expect(row.atk[a]).toBeGreaterThanOrEqual(row.hp[a]) // 打点優先
+      }
     }
   })
 
-  it('difficultyScale: 旧セーブの欠落 (undefined) は既定3・範囲外は表の端へ丸める', () => {
+  it('difficultyScale: 旧セーブの欠落 (undefined) は既定3・範囲外は表の端へ丸める・幕で倍率が変わる', () => {
     expect(difficultyScale(undefined)).toEqual({ hp: 1.0, atk: 1.0 })
-    expect(difficultyScale(0)).toEqual(DIFFICULTY_TABLE[0])
-    expect(difficultyScale(99)).toEqual(DIFFICULTY_TABLE[9])
+    expect(difficultyScale(undefined, 3)).toEqual({ hp: 1.0, atk: 1.0 })
+    expect(difficultyScale(0)).toEqual({ hp: 0.9, atk: 0.9 })
+    expect(difficultyScale(99, 3)).toEqual({ hp: 1.42, atk: 1.84 })
+    expect(difficultyScale(5, 1)).toEqual({ hp: 1.0, atk: 1.04 })
+    expect(difficultyScale(5, 3)).toEqual({ hp: 1.12, atk: 1.24 })
+  })
+
+  it('経済税の表 (本家アセンション形。段で1つずつ積む・段3以下は無税)', () => {
+    expect(DIFFICULTY_TAX).toHaveLength(10)
+    for (let i = 0; i < 3; i++) expect(difficultyTax(i + 1)).toEqual({ bossHeal: 1.0, campfire: CAMPFIRE_HEAL_RATIO, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 })
+    expect(difficultyTax(4).bossHeal).toBe(0.75)
+    expect(difficultyTax(5).campfire).toBe(0.2)
+    expect(difficultyTax(6).eliteBonus).toBe(1)
+    expect(difficultyTax(7).bossHeal).toBe(0.5)
+    expect(difficultyTax(8).shopPrice).toBe(1.2)
+    expect(difficultyTax(9).rewardChoices).toBe(-1)
+    expect(difficultyTax(10)).toEqual({ bossHeal: 0.25, campfire: 0.2, eliteBonus: 1, shopPrice: 1.2, rewardChoices: -1, startGuilt: 1 })
+    // 段が上がって軽くなる税は無い
+    for (let i = 1; i < 10; i++) {
+      expect(DIFFICULTY_TAX[i].bossHeal).toBeLessThanOrEqual(DIFFICULTY_TAX[i - 1].bossHeal)
+      expect(DIFFICULTY_TAX[i].campfire).toBeLessThanOrEqual(DIFFICULTY_TAX[i - 1].campfire)
+      expect(DIFFICULTY_TAX[i].eliteBonus).toBeGreaterThanOrEqual(DIFFICULTY_TAX[i - 1].eliteBonus)
+    }
+    expect(eliteCountFor(6, 1)).toBe(ELITE_COUNT) // 幕1のエリートは増えない
+    expect(eliteCountFor(6, 2)).toBe(ELITE_COUNT + 1)
+    expect(eliteCountFor(3, 3)).toBe(ELITE_COUNT)
+  })
+
+  it('経済税がランに乗る: 焚き火20%(段5)・開始の仮初の烙印(段10)・物価(段8)・提示−1(段9)。段3は不変', () => {
+    const base = createRun(23, 'set-confirm')
+    expect(base.campfireRatio).toBe(CAMPFIRE_HEAL_RATIO)
+    expect(base.deck.some((c) => c.def.id === 'status_guilt')).toBe(false)
+    expect(shopPriceRatio(base)).toBe(1)
+    const d5 = createRun(23, 'set-confirm', 'leader_green', undefined, 5)
+    expect(d5.campfireRatio).toBe(0.2)
+    expect(d5.map).toEqual(base.map) // 幕1の地図は段で変わらない (エリート員数は幕2/3だけ)
+    const d8 = createRun(23, 'set-confirm', 'leader_green', undefined, 8)
+    expect(shopPriceRatio(d8)).toBe(1.2)
+    const d10 = createRun(23, 'set-confirm', 'leader_green', undefined, 10)
+    const guilts = d10.deck.filter((c) => c.def.id === 'status_guilt')
+    expect(guilts).toHaveLength(1)
+    expect(guilts[0].expiresAfterBattles).toBe(5)
+    expect(d10.deck.length).toBe(base.deck.length + 1)
+    // 段9: 報酬の提示が 3→2 (最低1枚)。最初の戦闘を勝って報酬を見る
+    const r9 = forceWin(runTo(createRun(23, 'set-confirm', 'leader_green', undefined, 9), 'campfire'))
+    if (r9.phase === 'reward') expect(r9.rewardOptions!.length).toBe(2)
+    else expect(difficultyTax(r9.difficulty).rewardChoices).toBe(-1)
+  })
+
+  it('幕ボス撃破の回復は段で刻む (段4=最大HPの75%・段3=全回復)。本家 A5 式', () => {
+    let run = runTo(createRun(23, 'set-confirm', 'leader_green', undefined, 4), 'boss')
+    expect(currentNode(run)!.type).toBe('boss')
+    run = { ...run, combat: { ...run.combat!, player: { ...run.combat!.player, hp: 12 } } }
+    run = forceWin(run)
+    expect(run.hp).toBe(Math.min(run.maxHp, 12 + Math.floor(run.maxHp * 0.75)))
+    expect(run.hp).toBeLessThan(run.maxHp)
+    // 幕2からは幕2の倍率で敵が立つ (段4: 幕2 打点×1.06)
+    expect(difficultyScale(run.difficulty, 2)).toEqual({ hp: 1.03, atk: 1.06 })
+  })
+
+  it('段6の幕2の地図はエリートが5個 (幕1は4個のまま)', () => {
+    const d6 = createRun(23, 'set-confirm', 'leader_green', undefined, 6)
+    expect(d6.map.flat().filter((n) => n.type === 'elite')).toHaveLength(ELITE_COUNT)
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const [m2] = generateMap(createRng(seed), 2, true, eliteCountFor(6, 2))
+      expect(m2.flat().filter((n) => n.type === 'elite'), `seed${seed}`).toHaveLength(ELITE_COUNT + 1)
+    }
   })
 
   it('createRun の既定は3 (現状維持) で、範囲外指定は丸めて保存する', () => {
@@ -505,24 +574,34 @@ describe('難易度10段階 (確定済みルール表「難易度」2026-09-01)'
     const first = (d: number) =>
       intoFirstBattle(createRun(42, 'set-confirm', 'leader_green', undefined, d)).combat!
     const base = first(3)
+    const d8 = first(8)
     const hard = first(10)
-    expect(hard.enemies[0].enemyId).toBe(base.enemies[0].enemyId) // 同シード=同じ敵
-    // HP×1.35 (丸めは combat 側で1回だけ)
-    expect(hard.enemies[0].maxHp / base.enemies[0].maxHp).toBeCloseTo(1.35, 1)
-    expect(hard.enemies[0].atkScale).toBe(3.0) // 幕1通常敵: 1 × 3.0
+    expect(d8.enemies[0].enemyId).toBe(base.enemies[0].enemyId) // 同シード=同じ敵
+    // 傾き型 (2026-09-18): 幕1のHPは段で動かさない (資産の無い序盤は事故になるだけ)。幕1の打点は段8で×1.10・段10で×1.14
+    // (同シード比較は税が RNG に触れない段で: 段9は報酬の提示−1で抽選回数が、段10は開始の烙印で切り直しがずれる)
+    expect(d8.enemies[0].maxHp).toBe(base.enemies[0].maxHp)
+    expect(d8.enemies[0].atkScale).toBe(1.1)
+    expect(hard.enemies[0].atkScale).toBe(1.14) // 幕1通常敵: 1 × 1.14
     expect(base.enemies[0].atkScale).toBeUndefined() // 段3=×1.0 は現状と完全一致 (無印)
+    // 幕3の増分 (段5: HP×1.12・打点 ×1.15 (幕3通常敵) × 1.24)。段6以上は幕3のエリートが+1で地図が変わるので同シード比較は段5で
+    const cp = (d: number) => intoFirstBattle(createDebugCheckpointRun(42, 'set-confirm', 'leader_green', { act: 3, deckId: 'run_basic', difficulty: d })).combat!
+    const b3 = cp(3), h3 = cp(5)
+    expect(h3.enemies[0].enemyId).toBe(b3.enemies[0].enemyId)
+    expect(h3.enemies[0].maxHp / b3.enemies[0].maxHp).toBeCloseTo(1.12, 1)
+    expect(h3.enemies[0].atkScale).toBeCloseTo(1.15 * 1.24)
+    expect(difficultyScale(10, 3)).toEqual({ hp: 1.42, atk: 1.84 }) // 段10の天井
   })
 
   it('全敵一律 (ユーザー選択): ボス・エリートにも難易度倍率が掛かる', () => {
     const to = (d: number, target: 'boss' | 'elite') =>
       runTo(createRun(7, 'set-confirm', 'leader_green', undefined, d), target)
-    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(3.0)
-    // エリート: 素の値×難易度のみ (幕内深度スケールを掛けない既存裁定は維持)
+    expect(to(10, 'boss').combat!.enemies[0].atkScale).toBe(1.14) // 幕1ボスにも幕1の倍率が掛かる
+    // エリート: 素の値×難易度のみ (幕内深度スケールを掛けない既存裁定は維持)。幕1のHPは段で動かない
     const e3 = to(3, 'elite').combat!.enemies[0]
-    const e10 = to(10, 'elite').combat!.enemies[0]
-    expect(e10.enemyId).toBe(e3.enemyId) // 難易度はRNG列に影響しない=同じ敵
-    expect(e10.maxHp / e3.maxHp).toBeCloseTo(1.35, 1)
-    expect(e10.atkScale).toBe(3.0)
+    const e8 = to(8, 'elite').combat!.enemies[0]
+    expect(e8.enemyId).toBe(e3.enemyId) // 倍率は RNG 列に影響しない=同じ敵 (段9の提示−1・段10の烙印は RNG に触るので段8で比較)
+    expect(e8.maxHp).toBe(e3.maxHp)
+    expect(e8.atkScale).toBe(1.1)
     expect(e3.atkScale).toBeUndefined()
   })
 })
@@ -548,7 +627,7 @@ describe('チェックポイント開始 (2026-09-01 デバッグ機能)', () =>
     // 最初の戦闘は幕2のプール・幕2の深度スケール+難易度倍率
     const r = intoFirstBattle(run)
     expect(tierFor(2, 0)).toContain(currentNode(r)!.encounterId)
-    expect(r.combat!.enemies[0].atkScale).toBeCloseTo(1.15 * 1.35) // 幕2打点+15% × 難易度5
+    expect(r.combat!.enemies[0].atkScale).toBeCloseTo(1.15 * 1.12) // 幕2打点+15% × 難易度5の幕2 (傾き型 2026-09-18)
   })
 })
 

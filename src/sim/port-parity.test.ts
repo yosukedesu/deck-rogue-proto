@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { ACT_BOSS_POOLS, ELITE_POOLS, ACT_MUST_APPEAR, encounterPoolsForParity } from '../engine/map.ts'
-import { REWARD_EXCLUDED } from '../engine/run.ts'
+import { DIFFICULTY_TABLE, DIFFICULTY_TAX, REWARD_EXCLUDED } from '../engine/run.ts'
 
 const cs = readFileSync(new URL('../../unity/Packages/com.deckrogue.engine/Runtime/MapGen.cs', import.meta.url), 'utf8')
 const csRun = readFileSync(new URL('../../unity/Packages/com.deckrogue.engine/Runtime/Run.cs', import.meta.url), 'utf8')
@@ -42,5 +42,24 @@ describe('C# 移植の表は TS と同じ (MapGen.cs)', () => {
     const body = csRun.slice(start, csRun.indexOf('};', start)).replace(/\/\/.*$/gm, '')
     const ids = [...body.matchAll(/"([a-z0-9_]+)"/g)].map((x) => x[1]).sort()
     expect(ids).toEqual([...REWARD_EXCLUDED].sort())
+  })
+})
+
+describe('C# 移植の表は TS と同じ (Run.cs 難易度。2026-09-18 傾き型＋経済税)', () => {
+  const nums = (text: string) => [...text.matchAll(/-?\d+(?:\.\d+)?/g)].map((m) => Number(m[0]))
+  it('DIFFICULTY_TABLE (段×幕の倍率)', () => {
+    const start = csRun.indexOf('DIFFICULTY_TABLE = new[]')
+    expect(start).toBeGreaterThan(0)
+    const body = csRun.slice(start, csRun.indexOf('};', start)).replace(/\/\/.*$/gm, '')
+    const rows = [...body.matchAll(/Hp = new\[\] \{([^}]*)\}, Atk = new\[\] \{([^}]*)\}/g)].map((m) => ({ hp: nums(m[1]), atk: nums(m[2]) }))
+    expect(rows).toEqual(DIFFICULTY_TABLE.map((r) => ({ hp: [...r.hp], atk: [...r.atk] })))
+  })
+  it('DIFFICULTY_TAX (経済税)', () => {
+    const start = csRun.indexOf('DIFFICULTY_TAX = new[]')
+    expect(start).toBeGreaterThan(0)
+    const body = csRun.slice(start, csRun.indexOf('};', start)).replace(/\/\/.*$/gm, '')
+    const rows = [...body.matchAll(/BossHeal = ([^,]+), Campfire = ([^,]+), EliteBonus = ([^,]+), ShopPrice = ([^,]+), RewardChoices = ([^,]+), StartGuilt = ([^ }]+)/g)]
+      .map((m) => ({ bossHeal: Number(m[1]), campfire: Number(m[2]), eliteBonus: Number(m[3]), shopPrice: Number(m[4]), rewardChoices: Number(m[5]), startGuilt: Number(m[6]) }))
+    expect(rows).toEqual(DIFFICULTY_TAX.map((t) => ({ ...t })))
   })
 })

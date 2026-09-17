@@ -254,7 +254,7 @@ namespace DeckRogue.Game
             var plus = UiKit.Btn(diffRow, "+", delegate { g.Difficulty = Math.Min(10, g.Difficulty + 1); g.Rebuild(); }, 18, g.Difficulty < 10);
             BattleScreen.SetSize(plus, 44f, 40f);
 
-            var note = UiKit.Txt(col, "難易度 3 が標準。上げると敵の打点とHPが増える (報酬は変わらない)", 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
+            var note = UiKit.Txt(col, DeckRogue.Engine.Run.DifficultyDescription(g.Difficulty) + (g.Difficulty == DeckRogue.Engine.Run.DEFAULT_DIFFICULTY ? "" : "。後半ほど重く、ギア・報酬の供給は変わらない"), 12, UiKit.ColInkSoft, TextAnchor.MiddleLeft);
             note.textWrappingMode = TextWrappingModes.Normal;
 
             // 進行中のセーブがあれば「新しいランを開始」= 捨てて始める確認を挟む (2026-09-15 本家形: 進行中のランは1本)

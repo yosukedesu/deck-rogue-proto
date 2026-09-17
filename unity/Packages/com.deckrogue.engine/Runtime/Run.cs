@@ -20,11 +20,29 @@ namespace DeckRogue.Engine
         public bool? SetAnyCards { get; init; }
     }
 
-    /// <summary>難易度倍率 (DIFFICULTY_TABLE の1行)</summary>
+    /// <summary>難易度倍率 (その幕の1組。TS difficultyScale の戻り値)</summary>
     public sealed record DifficultyScaleEntry
     {
         public double Hp { get; init; }
         public double Atk { get; init; }
+    }
+
+    /// <summary>難易度の表の1行 = 幕1/幕2/幕3 の倍率 (TS DifficultyScaleRow)</summary>
+    public sealed record DifficultyScaleRow
+    {
+        public IReadOnlyList<double> Hp { get; init; } = default!;
+        public IReadOnlyList<double> Atk { get; init; } = default!;
+    }
+
+    /// <summary>難易度の経済税 (TS DifficultyTax)</summary>
+    public sealed record DifficultyTax
+    {
+        public double BossHeal { get; init; }
+        public double Campfire { get; init; }
+        public int EliteBonus { get; init; }
+        public double ShopPrice { get; init; }
+        public int RewardChoices { get; init; }
+        public int StartGuilt { get; init; }
     }
 
     public static class Run
@@ -445,6 +463,7 @@ namespace DeckRogue.Engine
         {
             double a = 1;
             foreach (var id in run.Relics) a *= Content.GetRelicDef(id).Bonus?.ShopPriceRatio ?? 1;
+            a *= DifficultyTaxOf(run.Difficulty).ShopPrice;   // 段8の経済税 (物価×1.2) は会員証と同じ器に乗る (2026-09-18)
             return a;
         }
 
@@ -474,29 +493,77 @@ namespace DeckRogue.Engine
             return row >= MapGen.BossRowFor(act) ? 1 : 0;
         }
 
-        /// <summary>難易度10段階。段3＝現状維持 (×1.0/×1.0)。打点優先で伸ばす</summary>
-        public static readonly IReadOnlyList<DifficultyScaleEntry> DIFFICULTY_TABLE = new[]
+        /// <summary>難易度10段階＝傾き型 (2026-09-18。TS run.ts DIFFICULTY_TABLE と文字どおり同じ数値)。段3＝基準 (全幕×1.0)。幕1の HP は段で動かない</summary>
+        public static readonly IReadOnlyList<DifficultyScaleRow> DIFFICULTY_TABLE = new[]
         {
-            new DifficultyScaleEntry { Hp = 0.85, Atk = 0.85 }, // 1
-            new DifficultyScaleEntry { Hp = 0.95, Atk = 0.95 }, // 2
-            new DifficultyScaleEntry { Hp = 1.0, Atk = 1.0 },   // 3 = 既定
-            new DifficultyScaleEntry { Hp = 1.05, Atk = 1.15 }, // 4
-            new DifficultyScaleEntry { Hp = 1.1, Atk = 1.35 },  // 5
-            new DifficultyScaleEntry { Hp = 1.15, Atk = 1.6 },  // 6
-            new DifficultyScaleEntry { Hp = 1.2, Atk = 1.9 },   // 7
-            new DifficultyScaleEntry { Hp = 1.25, Atk = 2.2 },  // 8
-            new DifficultyScaleEntry { Hp = 1.3, Atk = 2.6 },   // 9
-            new DifficultyScaleEntry { Hp = 1.35, Atk = 3.0 },  // 10
+            new DifficultyScaleRow { Hp = new[] { 0.9, 0.9, 0.9 }, Atk = new[] { 0.9, 0.9, 0.9 } },       // 1
+            new DifficultyScaleRow { Hp = new[] { 0.95, 0.95, 0.95 }, Atk = new[] { 0.95, 0.95, 0.95 } }, // 2
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.0, 1.0 }, Atk = new[] { 1.0, 1.0, 1.0 } },       // 3 = 既定
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.03, 1.06 }, Atk = new[] { 1.02, 1.06, 1.12 } },  // 4
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.06, 1.12 }, Atk = new[] { 1.04, 1.12, 1.24 } },  // 5
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.09, 1.18 }, Atk = new[] { 1.06, 1.18, 1.36 } },  // 6
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.12, 1.24 }, Atk = new[] { 1.08, 1.24, 1.48 } },  // 7
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.15, 1.3 }, Atk = new[] { 1.1, 1.3, 1.6 } },      // 8
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.18, 1.36 }, Atk = new[] { 1.12, 1.36, 1.72 } },  // 9
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.21, 1.42 }, Atk = new[] { 1.14, 1.42, 1.84 } },  // 10
+        };
+
+        /// <summary>難易度の経済税 (2026-09-18 本家アセンション形。段で1つずつ積む。TS DIFFICULTY_TAX と同値)</summary>
+        public static readonly IReadOnlyList<DifficultyTax> DIFFICULTY_TAX = new[]
+        {
+            new DifficultyTax { BossHeal = 1.0, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 1
+            new DifficultyTax { BossHeal = 1.0, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 2
+            new DifficultyTax { BossHeal = 1.0, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 3
+            new DifficultyTax { BossHeal = 0.75, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 }, // 4
+            new DifficultyTax { BossHeal = 0.75, Campfire = 0.2, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 5
+            new DifficultyTax { BossHeal = 0.75, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 6
+            new DifficultyTax { BossHeal = 0.5, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },   // 7
+            new DifficultyTax { BossHeal = 0.5, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.2, RewardChoices = 0, StartGuilt = 0 },   // 8
+            new DifficultyTax { BossHeal = 0.5, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.2, RewardChoices = -1, StartGuilt = 0 },  // 9
+            new DifficultyTax { BossHeal = 0.25, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.2, RewardChoices = -1, StartGuilt = 1 }, // 10
         };
 
         public const int DEFAULT_DIFFICULTY = 3;
 
-        /// <summary>難易度→倍率。範囲外と旧セーブの欠落 (null) は既定3へ丸める</summary>
-        public static DifficultyScaleEntry DifficultyScale(int? level)
+        /// <summary>難易度の段 (1〜10)。範囲外と旧セーブの欠落 (null) は既定3へ丸める</summary>
+        public static int DifficultyLevel(int? level)
         {
             int n = level.HasValue ? level.Value : DEFAULT_DIFFICULTY;
-            return DIFFICULTY_TABLE[Math.Min(DIFFICULTY_TABLE.Count, Math.Max(1, n)) - 1];
+            return Math.Min(DIFFICULTY_TABLE.Count, Math.Max(1, n));
         }
+
+        /// <summary>難易度→その幕の倍率 (act 省略=幕1)</summary>
+        public static DifficultyScaleEntry DifficultyScale(int? level, int act = 1)
+        {
+            var row = DIFFICULTY_TABLE[DifficultyLevel(level) - 1];
+            int a = Math.Min(3, Math.Max(1, act)) - 1;
+            return new DifficultyScaleEntry { Hp = row.Hp[a], Atk = row.Atk[a] };
+        }
+
+        /// <summary>難易度→経済税 (段3以下は無税)</summary>
+        public static DifficultyTax DifficultyTaxOf(int? level) => DIFFICULTY_TAX[DifficultyLevel(level) - 1];
+
+        /// <summary>その幕のエリートの員数 (基準4。段6以上は幕2/3で+1)</summary>
+        public static int EliteCountFor(int? level, int act) => MapGen.ELITE_COUNT + (act >= 2 ? DifficultyTaxOf(level).EliteBonus : 0);
+
+        /// <summary>難易度の一行説明 (TS difficultyDescription と同じ文)</summary>
+        public static string DifficultyDescription(int? level)
+        {
+            int n = DifficultyLevel(level);
+            if (n == DEFAULT_DIFFICULTY) return n + ": 標準（基準線。幕1〜3とも×1.0・幕ボス撃破で全回復）";
+            var row = DIFFICULTY_TABLE[n - 1];
+            var t = DIFFICULTY_TAX[n - 1];
+            var parts = new List<string> { "打点 幕1×" + Num(row.Atk[0]) + "・幕2×" + Num(row.Atk[1]) + "・幕3×" + Num(row.Atk[2]), "HP 幕2×" + Num(row.Hp[1]) + "・幕3×" + Num(row.Hp[2]) };
+            if (t.BossHeal < 1) parts.Add("幕ボス撃破の回復" + (int)Math.Round(t.BossHeal * 100) + "%");
+            if (t.Campfire < 0.25) parts.Add("焚き火" + (int)Math.Round(t.Campfire * 100) + "%");
+            if (t.EliteBonus > 0) parts.Add("幕2/3のエリート+" + t.EliteBonus);
+            if (t.ShopPrice > 1) parts.Add("物価×" + Num(t.ShopPrice));
+            if (t.RewardChoices < 0) parts.Add("報酬の提示" + t.RewardChoices);
+            if (t.StartGuilt > 0) parts.Add("開始時に仮初の烙印" + t.StartGuilt);
+            return n + ": " + string.Join("／", parts) + (n < DEFAULT_DIFFICULTY ? "（易しめ）" : "");
+        }
+        /// <summary>JS の Number→string と同じ見た目 (1 / 1.12 / 0.9)</summary>
+        static string Num(double v) => v.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 
         /// <summary>深度スケーリング: 敵HP倍率 (幕×幕内前後半の2段スケール)</summary>
         public static double DepthHpScale(int row, int act = 1)
@@ -569,7 +636,7 @@ namespace DeckRogue.Engine
             // 戦闘シード: TS の nextInt(rng, 0, 2**31-1) と同じ1消費 (Rng.NextInt は幅を long で計算するので溢れない)
             var (combatSeed, rng) = Rng.NextInt(run.Rng, 0, int.MaxValue);
             // 難易度倍率: 全敵一律で既存スケールの上に乗算
-            var diff = DifficultyScale(run.Difficulty);
+            var diff = DifficultyScale(run.Difficulty, run.Act);   // 段×幕の表 (2026-09-18 傾き型)
             double[] bossHpByAct = { 1.35, 2.3, 2.4 };
             int[] bossStrByAct = { 1, 1, 2 };
             double[] atkByAct = { 1, 1.15, 1.15 };
@@ -1196,7 +1263,10 @@ namespace DeckRogue.Engine
             }
             var rng0 = Rng.Create(seed);
             // マップもレリック候補列もシードから確定 (リプレイ再現性)
-            var (map, rngAfterMap) = MapGen.GenerateMap(rng0, 1, true);
+            // 範囲外は表の端へ丸めて保存 (以降の読み取りも DifficultyLevel が守る)。エリートの員数は段で (幕1は動かない)
+            int level = DifficultyLevel(difficulty);
+            var tax = DifficultyTaxOf(level);
+            var (map, rngAfterMap) = MapGen.GenerateMap(rng0, 1, true, EliteCountFor(level, 1));
             bool canSet = Content.AllCards.Any(c => leader.Colors.Contains(c.Color) && c.Type == CardTypes.Reaction);
             // 色ゲート (2026-09-12): リーダーの色に合わない固有レリックは候補列にも入れない
             var relicIds = Content.AllRelics.Where(r => RelicAllowedForColors(r, leader.Colors)).Select(r => r.Id).Where(id => canSet || !SET_RELICS.Contains(id)).ToList();
@@ -1208,10 +1278,10 @@ namespace DeckRogue.Engine
                 LeaderId = leaderId,
                 SetAnyCards = opts?.SetAnyCards == true ? (bool?)true : null,
                 Colors = leader.Colors,
-                // 範囲外は表の端へ丸めて保存 (以降の読み取りも DifficultyScale が守る)
-                Difficulty = Math.Min(DIFFICULTY_TABLE.Count, Math.Max(1, difficulty)),
+                Difficulty = level,
                 Rng = rngAfterRelics,
-                Deck = Content.BuildDeck(chosenDeck),
+                // 段10 の経済税: 開始デッキに仮初の烙印 (5戦で消える)
+                Deck = Concat(Content.BuildDeck(chosenDeck), Enumerable.Range(0, tax.StartGuilt).Select(i => new CardInstance { Uid = "guilt_start_" + i, Def = Content.GUILT_DEF, ExpiresAfterBattles = 5 })),
                 Hp = leader.MaxHp,
                 MaxHp = leader.MaxHp,
                 Act = 1,
@@ -1233,7 +1303,7 @@ namespace DeckRogue.Engine
                 CurrentElite = false,
                 VictoryHealBonus = 0,
                 RewardChoicesBonus = 0,
-                CampfireRatio = CAMPFIRE_HEAL_RATIO,
+                CampfireRatio = tax.Campfire,   // 既定 25%。段5以上は 20% (経済税)
                 GoldPerVictoryBonus = 0,
                 CampfireForgeBonus = 0,
                 CampfireUpgradesUsed = 0,
@@ -1298,7 +1368,7 @@ namespace DeckRogue.Engine
         {
             var baseRun = CreateRun(seed, mode, leaderId, null, opts.Difficulty ?? DEFAULT_DIFFICULTY);
             int act = Math.Min(MapGen.ACT_COUNT, Math.Max(1, opts.Act));
-            var (map, rng) = MapGen.GenerateMap(baseRun.Rng, act, true);
+            var (map, rng) = MapGen.GenerateMap(baseRun.Rng, act, true, EliteCountFor(baseRun.Difficulty, act));
             RunState run = baseRun with
             {
                 Act = act,
@@ -1422,7 +1492,7 @@ namespace DeckRogue.Engine
             var remaining = new List<CardDef>(pool);
             var picked = new List<string>();
             var rng = run.Rng;
-            int want = Math.Max(1, leader.RewardChoices + run.RewardChoicesBonus); // 王冠の欠片 (提示-1) でも最低1枚
+            int want = Math.Max(1, leader.RewardChoices + run.RewardChoicesBonus + DifficultyTaxOf(run.Difficulty).RewardChoices); // 王冠の欠片 (提示-1)・段9の経済税でも最低1枚
             string RarityOf(CardDef c) => c.Rarity ?? "common";
             while (picked.Count < want && remaining.Count > 0)
             {
@@ -1498,8 +1568,9 @@ namespace DeckRogue.Engine
             int rescueHeal = combat.Player.Hp <= run.MaxHp * 0.3 ? run.VictoryHealBonus : 0;
             // 獲物 (gainMaxHp=Feed 2026-09-07): 戦闘中に増えた最大HPはランへ残す
             int maxHp = Math.Max(run.MaxHp, combat.Player.MaxHp);
+            // 幕ボス撃破の回復: 既定は全回復。段4以上は経済税で 75%→50%→25% (最大HP比。本家 A5 式。2026-09-18)
             int hp = isBoss
-                ? maxHp
+                ? Math.Min(maxHp, combat.Player.Hp + JsFloor(maxHp * DifficultyTaxOf(run.Difficulty).BossHeal))
                 : Math.Min(maxHp, combat.Player.Hp + VICTORY_HEAL + rescueHeal + RelicBonusSum(run, "victoryHealFlat")); // 薬草袋
             // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G)
             var rng = run.Rng;
@@ -1592,7 +1663,7 @@ namespace DeckRogue.Engine
                 return run with { Phase = RunPhases.Map };
             }
             int nextAct = run.Act + 1;
-            var (map, rng) = MapGen.GenerateMap(run.Rng, nextAct, true);
+            var (map, rng) = MapGen.GenerateMap(run.Rng, nextAct, true, EliteCountFor(run.Difficulty, nextAct));
             return run with
             {
                 Rng = rng,

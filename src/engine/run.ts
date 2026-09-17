@@ -6,7 +6,7 @@
 // ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
 
 import { startCombatWithOptions } from './combat.ts'
-import { ACT_COUNT, bossRowFor, generateMap, tierFor } from './map.ts'
+import { ACT_COUNT, bossRowFor, ELITE_COUNT, generateMap, tierFor } from './map.ts'
 import { allEvents, allGears, getEventDef, getGearDef, WOUND_DEF , resolveEncounter } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
@@ -71,7 +71,7 @@ export const REWARD_EXCLUDED = new Set([
 ])
 // 0.3→0.25 (2026-08-31 ユーザー裁定「25%で様子見」。再検証ラン2本とも「HPが半分を切らない」=
 // 焚き火散布でルート選択の代償を作ったのに回復が毎回リセットしていた、への最小の絞り)
-const CAMPFIRE_HEAL_RATIO = 0.25 // 0.3→0.25 (2026-09-09 ユーザー裁定「焚き火側で調整」。友人のフルランで被ダメ総量212に対し
+export const CAMPFIRE_HEAL_RATIO = 0.25 // 0.3→0.25 (2026-09-09 ユーザー裁定「焚き火側で調整」。友人のフルランで被ダメ総量212に対し
 // 幕ボス全回復2回だけで+122 (58%) = HPが緊張の資源として機能していなかった。全回復は残し休むを絞る。
 // 旧: 0.25→0.3 (2026-09-04。曲線再設計で被ダメが増えたぶんの収支合わせ: 人間ラン3本が幕2〜3のHP収支で0/3)
 // 2026-08-26 再設計: 回復は焚き火に到達すれば自動で入る。
@@ -204,7 +204,8 @@ export function addCardsToRunDeck(run: RunState, cards: readonly CardInstance[])
 }
 /** ショップの価格倍率 (会員証=0.5。複数所持は積) */
 export function shopPriceRatio(run: RunState): number {
-  return run.relics.reduce((a, id) => a * (getRelicDef(id).bonus?.shopPriceRatio ?? 1), 1)
+  // 難易度の経済税 (段8: 物価×1.2) は会員証と同じ倍率の器に乗る (2026-09-18)
+  return run.relics.reduce((a, id) => a * (getRelicDef(id).bonus?.shopPriceRatio ?? 1), 1) * difficultyTax(run.difficulty).shopPrice
 }
 /** 勝利ゴールドの倍率 (金の靴=1.5) */
 function goldMultiplier(run: RunState): number {
@@ -236,23 +237,98 @@ export function depthStrength(row: number, act = 1): number {
  * 全敵一律 (ボス・エリート含む)。既存の幕スケール・打点+15%の上に乗算する。
  */
 // 打点は段10で×3.0 (2026-09-01 ユーザー裁定「10で三倍の打点くらいに」。段3→10は約×1.17/段の幾何級数)
-export const DIFFICULTY_TABLE: readonly { readonly hp: number; readonly atk: number }[] = [
-  { hp: 0.85, atk: 0.85 }, // 1
-  { hp: 0.95, atk: 0.95 }, // 2
-  { hp: 1.0, atk: 1.0 }, // 3 = 既定 (現状維持)
-  { hp: 1.05, atk: 1.15 }, // 4
-  { hp: 1.1, atk: 1.35 }, // 5
-  { hp: 1.15, atk: 1.6 }, // 6
-  { hp: 1.2, atk: 1.9 }, // 7
-  { hp: 1.25, atk: 2.2 }, // 8
-  { hp: 1.3, atk: 2.6 }, // 9
-  { hp: 1.35, atk: 3.0 }, // 10
+/**
+ * 難易度のはしご＝「傾き型」(2026-09-18 ユーザー裁定「序盤は資産もないし、後半は資産を吐いてクリアを目指すような難易度カーブ」。
+ * `docs/difficulty-curve-proposal-2026-09-18.md` 案A)。倍率は段×幕の表で、段が上がるほど**幕3の増分が大きい**:
+ * 段 n≥3 の増分 = (n−3) × [打点 +0.02／+0.06／+0.12・HP +0／+0.03／+0.06]。段3 が基準 (全部×1.0)。
+ * 幕1の HP は段で動かさない (幕1帯は本家対照で校正済み)。段10 の幕3 打点 ×1.84 が天井 (旧はしごは全幕一律で ×3.0 だった)。
+ * 資産 (レリック・ギア・完成したデッキ) の無い序盤の圧は HP 収支の事故になるだけで決断にならない (2026-09-01 段6 は幕2で折れた・人間#11/#12 は幕1〜2の収支で敗北)。
+ * ボス・エリートも同じ倍率 (全敵一律の則は不変)。C# は Run.cs の同名の表 (文字どおり同じ数値を並べる)
+ */
+export interface DifficultyScaleRow {
+  readonly hp: readonly [number, number, number]
+  readonly atk: readonly [number, number, number]
+}
+export const DIFFICULTY_TABLE: readonly DifficultyScaleRow[] = [
+  { hp: [0.9, 0.9, 0.9], atk: [0.9, 0.9, 0.9] }, // 1
+  { hp: [0.95, 0.95, 0.95], atk: [0.95, 0.95, 0.95] }, // 2
+  { hp: [1.0, 1.0, 1.0], atk: [1.0, 1.0, 1.0] }, // 3 = 既定 (基準線)
+  { hp: [1.0, 1.03, 1.06], atk: [1.02, 1.06, 1.12] }, // 4
+  { hp: [1.0, 1.06, 1.12], atk: [1.04, 1.12, 1.24] }, // 5 = ユーザー本人の「圧のあるラン」の既定
+  { hp: [1.0, 1.09, 1.18], atk: [1.06, 1.18, 1.36] }, // 6
+  { hp: [1.0, 1.12, 1.24], atk: [1.08, 1.24, 1.48] }, // 7
+  { hp: [1.0, 1.15, 1.3], atk: [1.1, 1.3, 1.6] }, // 8
+  { hp: [1.0, 1.18, 1.36], atk: [1.12, 1.36, 1.72] }, // 9
+  { hp: [1.0, 1.21, 1.42], atk: [1.14, 1.42, 1.84] }, // 10
 ]
 export const DEFAULT_DIFFICULTY = 3
-/** 難易度→倍率。範囲外と旧セーブの欠落 (undefined) は既定3へ丸める */
-export function difficultyScale(level: number | undefined): { readonly hp: number; readonly atk: number } {
+
+/**
+ * 難易度の経済税 (2026-09-18 案B。本家アセンション 1〜7段が全部「経済税」であるのに倣う)。段で1つずつ積む (累積):
+ * 段4 幕ボス撃破の回復 75%（本家 A5「Heal less after boss」式。段3以下は全回復）／段5 焚き火 25%→20%／段6 幕2・幕3のエリート 4→5／
+ * 段7 幕ボス回復 50%／段8 ショップ物価 ×1.2／段9 報酬の提示 −1／段10 幕ボス回復 25%＋開始デッキに仮初の烙印1 (5戦で消える)。
+ * 狙い＝幕をまたぐ HP 収支を作り、後半に「回復の資産」(修理油・薬草袋・獲物・焚き火) を吐かせる。ギア・魔素の供給は段で変えない (同日裁定)
+ */
+export interface DifficultyTax {
+  /** 幕ボス撃破の回復 (最大HPに対する割合。1.0=全回復) */
+  readonly bossHeal: number
+  /** 焚き火の休む (最大HPに対する割合) */
+  readonly campfire: number
+  /** 幕2・幕3のエリートの員数の増分 */
+  readonly eliteBonus: number
+  /** ショップの物価倍率 (会員証と同じ shopPriceRatio に乗る) */
+  readonly shopPrice: number
+  /** 報酬の提示枚数の増減 (王冠の欠片と同じ器。最低1枚) */
+  readonly rewardChoices: number
+  /** 開始デッキに入れる仮初の烙印の枚数 */
+  readonly startGuilt: number
+}
+export const DIFFICULTY_TAX: readonly DifficultyTax[] = [
+  { bossHeal: 1.0, campfire: 0.25, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 1
+  { bossHeal: 1.0, campfire: 0.25, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 2
+  { bossHeal: 1.0, campfire: 0.25, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 3
+  { bossHeal: 0.75, campfire: 0.25, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 4
+  { bossHeal: 0.75, campfire: 0.2, eliteBonus: 0, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 5
+  { bossHeal: 0.75, campfire: 0.2, eliteBonus: 1, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 6
+  { bossHeal: 0.5, campfire: 0.2, eliteBonus: 1, shopPrice: 1.0, rewardChoices: 0, startGuilt: 0 }, // 7
+  { bossHeal: 0.5, campfire: 0.2, eliteBonus: 1, shopPrice: 1.2, rewardChoices: 0, startGuilt: 0 }, // 8
+  { bossHeal: 0.5, campfire: 0.2, eliteBonus: 1, shopPrice: 1.2, rewardChoices: -1, startGuilt: 0 }, // 9
+  { bossHeal: 0.25, campfire: 0.2, eliteBonus: 1, shopPrice: 1.2, rewardChoices: -1, startGuilt: 1 }, // 10
+]
+
+/** 難易度の段 (1〜10)。範囲外と旧セーブの欠落 (undefined) は既定3へ丸める */
+export function difficultyLevel(level: number | undefined): number {
   const n = Number.isFinite(level) ? Math.round(level as number) : DEFAULT_DIFFICULTY
-  return DIFFICULTY_TABLE[Math.min(DIFFICULTY_TABLE.length, Math.max(1, n)) - 1]
+  return Math.min(DIFFICULTY_TABLE.length, Math.max(1, n))
+}
+/** 難易度→その幕の倍率 (act 省略=幕1)。範囲外と旧セーブの欠落 (undefined) は既定3へ丸める */
+export function difficultyScale(level: number | undefined, act = 1): { readonly hp: number; readonly atk: number } {
+  const row = DIFFICULTY_TABLE[difficultyLevel(level) - 1]
+  const a = Math.min(3, Math.max(1, act)) - 1
+  return { hp: row.hp[a], atk: row.atk[a] }
+}
+/** 難易度→経済税 (段3以下は無税) */
+export function difficultyTax(level: number | undefined): DifficultyTax {
+  return DIFFICULTY_TAX[difficultyLevel(level) - 1]
+}
+/** その幕のエリートの員数 (基準4。段6以上は幕2/3で+1) */
+export function eliteCountFor(level: number | undefined, act: number): number {
+  return ELITE_COUNT + (act >= 2 ? difficultyTax(level).eliteBonus : 0)
+}
+/** 難易度の一行説明 (セットアップ画面・CLI・Unity が同じ文を出す) */
+export function difficultyDescription(level: number | undefined): string {
+  const n = difficultyLevel(level)
+  if (n === DEFAULT_DIFFICULTY) return `${n}: 標準（基準線。幕1〜3とも×1.0・幕ボス撃破で全回復）`
+  const row = DIFFICULTY_TABLE[n - 1]
+  const t = DIFFICULTY_TAX[n - 1]
+  const parts = [`打点 幕1×${row.atk[0]}・幕2×${row.atk[1]}・幕3×${row.atk[2]}`, `HP 幕2×${row.hp[1]}・幕3×${row.hp[2]}`]
+  if (t.bossHeal < 1) parts.push(`幕ボス撃破の回復${Math.round(t.bossHeal * 100)}%`)
+  if (t.campfire < 0.25) parts.push(`焚き火${Math.round(t.campfire * 100)}%`)
+  if (t.eliteBonus > 0) parts.push(`幕2/3のエリート+${t.eliteBonus}`)
+  if (t.shopPrice > 1) parts.push(`物価×${t.shopPrice}`)
+  if (t.rewardChoices < 0) parts.push(`報酬の提示${t.rewardChoices}`)
+  if (t.startGuilt > 0) parts.push(`開始時に仮初の烙印${t.startGuilt}`)
+  return `${n}: ${parts.join('／')}${n < DEFAULT_DIFFICULTY ? '（易しめ）' : ''}`
 }
 
 /** 深度スケーリング: 敵HP倍率。確定済みルール表「敵の数値基準」の帯に対応する */
@@ -462,8 +538,8 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
   const encounterId = encounterOverride ?? node?.encounterId ?? null
   if (node === null || encounterId === null) throw new Error('戦闘ノードではない')
   const [combatSeed, rng] = nextInt(run.rng, 0, 2 ** 31 - 1)
-  // 難易度倍率 (確定済みルール表「難易度」): 全敵一律で既存スケールの上に乗算
-  const diff = difficultyScale(run.difficulty)
+  // 難易度倍率 (確定済みルール表「難易度」): 全敵一律で既存スケールの上に乗算。段×幕の表 (2026-09-18 傾き型)
+  const diff = difficultyScale(run.difficulty, run.act)
   const rules = run.relics.map((id) => getRelicDef(id).combatRule).filter((r): r is NonNullable<typeof r> => r !== undefined)
   const ruleSum = (key: 'blockKeep' | 'xBonus' | 'hpLossReduce' | 'smallHitToOne' | 'maxHpLossPerTurn' | 'playCap' | 'artifact'): number =>
     rules.reduce((a, r) => a + (r[key] ?? 0), 0)
@@ -1105,9 +1181,12 @@ export function createRun(
     throw new Error(`このリーダーでは選べない初期デッキ: ${chosenDeck}`)
   }
   const rng0 = createRng(seed)
+  // 範囲外・非数は表の端/既定へ丸めて保存 (以降の読み取りも difficultyLevel が守る)
+  const level = difficultyLevel(difficulty)
+  const tax = difficultyTax(level)
   // マップもレリック候補列もシードから確定 (リプレイ再現性)
-  // 幕1の工房はちょうど1個 (2026-08-31 ユーザー指示。個数の制御は map.ts の quota 側)
-  const [map, rngAfterMap] = generateMap(rng0, 1, true)
+  // 幕1の工房はちょうど1個 (2026-08-31 ユーザー指示。個数の制御は map.ts の quota 側)。エリートの員数は段で (幕1は動かない)
+  const [map, rngAfterMap] = generateMap(rng0, 1, true, eliteCountFor(level, 1))
   // 伏せ参照レリックは、このランの報酬プールにリアクションが1枚も無い色 (赤単など) では
   // 永久の死に選択肢になるため候補列から除く (2026-08-30 Opusランで符師の懐が3択に3回連続出現)。
   // (蜃気楼の面は 2026-09-03 に撤去)
@@ -1126,12 +1205,13 @@ export function createRun(
     leaderId,
     ...(opts?.setAnyCards === true ? { setAnyCards: true } : {}),
     colors: leader.colors,
-    // 範囲外・非数は表の端/既定へ丸めて保存 (以降の読み取りも difficultyScale が守る)
-    difficulty: Number.isFinite(difficulty)
-      ? Math.min(DIFFICULTY_TABLE.length, Math.max(1, Math.round(difficulty)))
-      : DEFAULT_DIFFICULTY,
+    difficulty: level,
     rng: rngAfterRelics,
-    deck: buildDeck(chosenDeck),
+    // 段10 の経済税: 開始デッキに仮初の烙印 (5戦で消える) を入れる
+    deck: [
+      ...buildDeck(chosenDeck),
+      ...Array.from({ length: tax.startGuilt }, (_, i): CardInstance => ({ uid: `guilt_start_${i}`, def: GUILT_DEF, expiresAfterBattles: 5 })),
+    ],
     hp: leader.maxHp,
     maxHp: leader.maxHp,
     act: 1,
@@ -1153,7 +1233,7 @@ export function createRun(
     currentElite: false,
     victoryHealBonus: 0,
     rewardChoicesBonus: 0,
-    campfireRatio: CAMPFIRE_HEAL_RATIO,
+    campfireRatio: tax.campfire, // 既定 25% (CAMPFIRE_HEAL_RATIO)。段5以上は 20% (経済税)。レリック (深呼吸の香) は絶対値で上書きする
     goldPerVictoryBonus: 0,
     campfireForgeBonus: 0,
     campfireUpgradesUsed: 0,
@@ -1250,7 +1330,7 @@ export function createDebugCheckpointRun(
 ): RunState {
   const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY)
   const act = Math.min(ACT_COUNT, Math.max(1, Math.round(opts.act)))
-  const [map, rng] = generateMap(base.rng, act, true) // 2026-09-03 修正: 旧 act===1 は幕2/3のチェックポイントに工房が無かった
+  const [map, rng] = generateMap(base.rng, act, true, eliteCountFor(base.difficulty, act)) // 2026-09-03 修正: 旧 act===1 は幕2/3のチェックポイントに工房が無かった
   let run: RunState = {
     ...base,
     act,
@@ -1375,7 +1455,7 @@ function rollRewards(run: RunState): RunState {
   const remaining = [...pool]
   const picked: string[] = []
   let rng = run.rng
-  const want = Math.max(1, leader.rewardChoices + run.rewardChoicesBonus) // 王冠の欠片 (提示-1) でも最低1枚
+  const want = Math.max(1, leader.rewardChoices + run.rewardChoicesBonus + difficultyTax(run.difficulty).rewardChoices) // 王冠の欠片 (提示-1)・段9の経済税でも最低1枚
   const rarityOf = (c: CardDef) => c.rarity ?? 'common'
   while (picked.length < want && remaining.length > 0) {
     const [roll, r1] = nextInt(rng, 0, 99)
@@ -1512,7 +1592,10 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     combat.player.hp <= run.maxHp * 0.3 ? run.victoryHealBonus : 0
   // 獲物 (gainMaxHp=Feed 2026-09-07): 戦闘中に増えた最大HPはランへ残す (戦闘の maxHp は run.maxHp から始まるので差分が増分)
   const maxHp = Math.max(run.maxHp, combat.player.maxHp)
-  const hp = isBoss ? maxHp : Math.min(maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal + relicBonusSum(run, 'victoryHealFlat')) // 薬草袋 (2026-09-03)
+  // 幕ボス撃破の回復: 既定は全回復。段4以上は経済税で 75%→50%→25% (最大HP比。本家 A5 式。2026-09-18)
+  const hp = isBoss
+    ? Math.min(maxHp, combat.player.hp + Math.floor(maxHp * difficultyTax(run.difficulty).bossHeal))
+    : Math.min(maxHp, combat.player.hp + VICTORY_HEAL + rescueHeal + relicBonusSum(run, 'victoryHealFlat')) // 薬草袋 (2026-09-03)
   // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G。確定済みルール表「ゴールド」)
   let rng = run.rng
   const [base, r1] = nextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX)
@@ -1602,7 +1685,7 @@ function advanceActIfBossCleared(run: RunState): RunState {
     return { ...run, phase: 'map' }
   }
   const nextAct = run.act + 1
-  const [map, rng] = generateMap(run.rng, nextAct, true)
+  const [map, rng] = generateMap(run.rng, nextAct, true, eliteCountFor(run.difficulty, nextAct))
   return {
     ...run,
     rng,
