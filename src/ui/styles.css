@@ -972,3 +972,36 @@ button:disabled { cursor: not-allowed; }
   .area-log.log-open { width: calc(100vw - 12px); box-sizing: border-box; }
   .log-head .btn { flex-shrink: 0; }
 }
+
+/* ===== ギア (消耗品 2026-09-17。docs/design/gear-placement 案A「匣の帯」= からくりの隣) ===== */
+.gear-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; position: relative; }
+.gear-token {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 1px;
+  min-width: 62px; padding: 4px 6px; border-radius: 6px;
+  background: #1d2a1d; color: #e8e4d8; border: 2px solid #4a4a4a; cursor: pointer; font-size: 11px; position: relative;
+}
+.gear-token:disabled { cursor: default; opacity: 0.6; }
+.gear-token.gear-uncommon { border-color: #6f95b8; }
+.gear-token.gear-rare { border-color: #c99a3a; }
+.gear-token.gear-open { box-shadow: 0 0 0 2px #c99a3a; }
+.gear-cog { font-size: 16px; line-height: 1; }
+.gear-name { white-space: nowrap; }
+.gear-charges {
+  position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%;
+  background: #f4ecd6; color: #2f2e35; font-size: 10px; line-height: 16px; text-align: center; border: 1px solid #2f2e35;
+}
+.gear-window {
+  position: absolute; top: 100%; left: 0; z-index: 30; margin-top: 4px; max-width: 420px;
+  padding: 8px 10px; border-radius: 8px; background: #22301f; border: 1px solid #6a7a5a; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+.gear-window-title { margin-bottom: 4px; }
+.gear-window-foot { margin-top: 8px; }
+.gear-choices { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.gear-reward { margin: 12px 0; }
+.gear-reward-card { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #22301f; border: 2px solid #6f95b8; }
+.gear-shelf { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.gear-shelf-item { padding: 8px 10px; border-radius: 8px; background: #1d2a1d; border: 2px solid #4a4a4a; min-width: 160px; }
+.gear-shelf-item.gear-uncommon { border-color: #6f95b8; }
+.gear-shelf-item.gear-rare { border-color: #c99a3a; }
+.gear-shelf-item.gear-sold { opacity: 0.45; }
+.btn-small { padding: 2px 8px; font-size: 12px; }
