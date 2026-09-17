@@ -1242,6 +1242,10 @@ export function createDebugCheckpointRun(
     readonly hpRatio?: number // 0.05〜1 (既定1)
     readonly gold?: number
     readonly difficulty?: number
+    /** ギアの持ち物 (省略=幕なりの数を抽選。[] を渡せば持たない) */
+    readonly gearIds?: readonly string[]
+    /** 魔素 (省略=幕なりの残高) */
+    readonly mana?: number
   },
 ): RunState {
   const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY)
@@ -1264,6 +1268,22 @@ export function createDebugCheckpointRun(
     // チェックポイントは選択を挟まない (空の鳥籠・星読みの盤の保留は捨てる)
     if (run.pendingRelicChoice !== undefined) { const { pendingRelicChoice: _p, ...rest } = run; run = rest }
   }
+  // ギア (2026-09-17): 幕2/3のチェックポイントは「10戦勝ってきた」状態なので、持ち物と魔素も
+  // その幕なりに積んでおく (0個・0魔素で始めると死線の検証が本題にならない)。
+  // 明示指定があればそれを優先する (gearIds: [] で「持たない」も表現できる)
+  if (opts.gearIds !== undefined) {
+    for (const id of opts.gearIds) run = addGear(run, id, `cp_${id}`)
+  } else if (act >= 2) {
+    const want = act >= 3 ? 4 : 3
+    let r = run.rng
+    for (let i = 0; i < want; i++) {
+      const [id, r2] = rollGearId(r, false)
+      r = r2
+      run = addGear({ ...run, rng: r }, id, `cp${i}_${id}`)
+      r = run.rng
+    }
+  }
+  run = { ...run, mana: Math.min(MANA_MAX, opts.mana ?? (act >= 3 ? MANA_MAX : act >= 2 ? 6 : 0)) }
   const ratio = Math.min(1, Math.max(0.05, opts.hpRatio ?? 1))
   return { ...run, hp: Math.max(1, Math.round(run.maxHp * ratio)) }
 }
