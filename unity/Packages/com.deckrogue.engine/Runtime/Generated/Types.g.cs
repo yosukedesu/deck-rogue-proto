@@ -120,6 +120,26 @@ namespace DeckRogue.Engine.Generated
         public const string Event = "event";
     }
 
+    public static class GearRaritys
+    {
+        public const string Common = "common";
+        public const string Uncommon = "uncommon";
+        public const string Rare = "rare";
+    }
+
+    public static class GearFamilys
+    {
+        public const string General = "general";
+        public const string Interfere = "interfere";
+        public const string Cleanse = "cleanse";
+        public const string Field = "field";
+        public const string Morph = "morph";
+        public const string EnemyStatus = "enemy-status";
+        public const string Edged = "edged";
+        public const string Keep = "keep";
+        public const string Big = "big";
+    }
+
     public static class RunPhases
     {
         public const string Map = "map";
@@ -389,6 +409,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>バランス崩し: 直前の攻撃を完全に防がれた = 次の宣言は隙</summary>
         [JsonProperty("staggeredNext", NullValueHandling = NullValueHandling.Ignore)]
         public bool? StaggeredNext { get; init; }
+        /// <summary>ギア「楔」: 次の行動が打ち消される (実行時に消費)</summary>
+        [JsonProperty("actionNegated", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? ActionNegated { get; init; }
+        /// <summary>ギア「錆びた楔」: 次の召喚・分裂・孵化を1回止める (発火時に消費)</summary>
+        [JsonProperty("summonBlocked", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? SummonBlocked { get; init; }
+        /// <summary>ギア「鎮めの錘」: この戦闘中、割り込み (HP半分の豹変・被弾覚醒・仲間の死亡) が起きない</summary>
+        [JsonProperty("interruptBlocked", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? InterruptBlocked { get; init; }
         /// <summary>編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」)</summary>
         [JsonProperty("noReactTable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? NoReactTable { get; init; }
@@ -689,6 +718,18 @@ namespace DeckRogue.Engine.Generated
         /// <summary>C型: 烙印をプレイできる (青い蝋燭: 0E・HP-1・消滅)</summary>
         [JsonProperty("brandsPlayable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? BrandsPlayable { get; init; }
+        /// <summary>このターンに既にギアを組んだ (1ターン1個。自ターン開始で降りる)</summary>
+        [JsonProperty("gearUsedThisTurn", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? GearUsedThisTurn { get; init; }
+        /// <summary>挟み紙: このターンだけ手札を捨てない (自ターン開始で降りる)</summary>
+        [JsonProperty("retainHandThisTurn", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? RetainHandThisTurn { get; init; }
+        /// <summary>貯め置き: このターンだけ余ったエナジーを次のターンへ持ち越す (自ターン開始で降りる)</summary>
+        [JsonProperty("energyCarryThisTurn", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? EnergyCarryThisTurn { get; init; }
+        /// <summary>蘇りの発条: この戦闘中、致死を一度だけ耐えてHP1で立つ (使ったら降りる)</summary>
+        [JsonProperty("gearDeathSave", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? GearDeathSave { get; init; }
     }
 
     /// <summary>判別共用体 Command (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -1689,6 +1730,19 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_DeathSaved() { Type = TypeTag; }
         [JsonProperty("hp")]
         public int Hp { get; init; }
+        [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Source { get; init; }
+    }
+
+    /// <summary>GameEvent: type="GearUsed"</summary>
+    public sealed record GameEvent_GearUsed : GameEvent
+    {
+        public const string TypeTag = "GearUsed";
+        public GameEvent_GearUsed() { Type = TypeTag; }
+        [JsonProperty("gearId")]
+        public string GearId { get; init; } = default!;
+        [JsonProperty("name")]
+        public string Name { get; init; } = default!;
     }
 
     /// <summary>GameEvent: type="PlayerArtifactBlocked"</summary>
@@ -2592,9 +2646,62 @@ namespace DeckRogue.Engine.Generated
         public IReadOnlyList<DeckCardEntry> Cards { get; init; } = default!;
     }
 
+    /// <summary>GearDef</summary>
+    public sealed record GearDef
+    {
+        [JsonProperty("id")]
+        public string Id { get; init; } = default!;
+        [JsonProperty("name")]
+        public string Name { get; init; } = default!;
+        [JsonProperty("rarity")]
+        public string Rarity { get; init; } = default!;
+        [JsonProperty("family")]
+        public string Family { get; init; } = default!;
+        /// <summary>回数つき (「杖」)。省略=1回で壊れる</summary>
+        [JsonProperty("charges", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Charges { get; init; }
+        /// <summary>画面・ログに出す説明文 (効果は固定なので静的。数値のスケールは無い)</summary>
+        [JsonProperty("text")]
+        public string Text { get; init; } = default!;
+        /// <summary>単体対象を取る (敵が2体以上なら targetIndex 必須)</summary>
+        [JsonProperty("needsTarget", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? NeedsTarget { get; init; }
+        /// <summary>カードを1枚選ぶ (どの山から選ぶか)。'hand'=手札 / 'discard'=捨て札 / 'draw'=山札</summary>
+        [JsonProperty("needsCard", NullValueHandling = NullValueHandling.Ignore)]
+        public string? NeedsCard { get; init; }
+        /// <summary>効果の外にある特別な挙動。'flee'=戦闘から逃げる (run層) / 'nameless'=拾ったことのあるギアの効果を選ぶ</summary>
+        [JsonProperty("special", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Special { get; init; }
+        [JsonProperty("effects")]
+        public IReadOnlyList<DeclarativeEffect> Effects { get; init; } = default!;
+    }
+
+    /// <summary>持ち物の1個 (残り回数を持つ)</summary>
+    public sealed record GearInstance
+    {
+        [JsonProperty("uid")]
+        public string Uid { get; init; } = default!;
+        [JsonProperty("gearId")]
+        public string GearId { get; init; } = default!;
+        /// <summary>残り回数。0 になったら持ち物から消える</summary>
+        [JsonProperty("charges")]
+        public int Charges { get; init; }
+    }
+
     // ==== src/engine/run.ts ====
     /// <summary>ShopState.cards のインライン型</summary>
     public sealed record ShopStateCards
+    {
+        [JsonProperty("id")]
+        public string Id { get; init; } = default!;
+        [JsonProperty("price")]
+        public int Price { get; init; }
+        [JsonProperty("sold", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Sold { get; init; }
+    }
+
+    /// <summary>ShopState.gears のインライン型</summary>
+    public sealed record ShopStateGears
     {
         [JsonProperty("id")]
         public string Id { get; init; } = default!;
@@ -2614,6 +2721,12 @@ namespace DeckRogue.Engine.Generated
         public string? RelicId { get; init; }
         [JsonProperty("relicPrice")]
         public int RelicPrice { get; init; }
+        /// <summary>ギアの棚 (2026-09-17): 3枠。C40/U60/R90G 程度</summary>
+        [JsonProperty("gears", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<ShopStateGears>? Gears { get; init; }
+        /// <summary>魔素の値段 (1つぶん)。金余りのシンク</summary>
+        [JsonProperty("manaPrice", NullValueHandling = NullValueHandling.Ignore)]
+        public int? ManaPrice { get; init; }
     }
 
     /// <summary>RunState.unknownPity のインライン型</summary>
@@ -2769,6 +2882,21 @@ namespace DeckRogue.Engine.Generated
         /// <summary>この工房の訪問で合成した回数 (職人の手袋=2回まで。工房進入でリセット)</summary>
         [JsonProperty("workshopFusesUsed", NullValueHandling = NullValueHandling.Ignore)]
         public int? WorkshopFusesUsed { get; init; }
+        /// <summary>持ち物 (最大 GEAR_CARRY_MAX)。残り回数つき</summary>
+        [JsonProperty("gears", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<GearInstance>? Gears { get; init; }
+        /// <summary>魔素 (ギア専用の通貨。上限 MANA_MAX・開始0・ランを通して持ち越す)</summary>
+        [JsonProperty("mana", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Mana { get; init; }
+        /// <summary>ギアのドロップの累積確率 (整数パーセントポイント。外れるたび+10・当たると基礎値へ戻る。?マスと同じ形)</summary>
+        [JsonProperty("gearPity", NullValueHandling = NullValueHandling.Ignore)]
+        public int? GearPity { get; init; }
+        /// <summary>このランで拾ったことのあるギアID (無銘の部品の候補)</summary>
+        [JsonProperty("seenGearIds", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<string>? SeenGearIds { get; init; }
+        /// <summary>報酬フェーズで提示中のギア (札3枚とは別枠。null=この戦闘ではドロップしなかった)</summary>
+        [JsonProperty("gearOption", NullValueHandling = NullValueHandling.Ignore)]
+        public string? GearOption { get; init; }
     }
 
     /// <summary>判別共用体 RunCommand (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -2953,6 +3081,65 @@ namespace DeckRogue.Engine.Generated
         public int Index { get; init; }
         [JsonProperty("cardIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? CardIndex { get; init; }
+    }
+
+    /// <summary>RunCommand: type="UseGear"</summary>
+    public sealed record RunCommand_UseGear : RunCommand
+    {
+        public const string TypeTag = "UseGear";
+        public RunCommand_UseGear() { Type = TypeTag; }
+        [JsonProperty("index")]
+        public int Index { get; init; }
+        [JsonProperty("targetIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? TargetIndex { get; init; }
+        [JsonProperty("cardUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? CardUid { get; init; }
+        /// <summary>無銘の部品: 化ける先のギアID</summary>
+        [JsonProperty("asGearId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? AsGearId { get; init; }
+    }
+
+    /// <summary>RunCommand: type="TakeGear"</summary>
+    public sealed record RunCommand_TakeGear : RunCommand
+    {
+        public const string TypeTag = "TakeGear";
+        public RunCommand_TakeGear() { Type = TypeTag; }
+        [JsonProperty("discardIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? DiscardIndex { get; init; }
+    }
+
+    /// <summary>RunCommand: type="SkipGear"</summary>
+    public sealed record RunCommand_SkipGear : RunCommand
+    {
+        public const string TypeTag = "SkipGear";
+        public RunCommand_SkipGear() { Type = TypeTag; }
+    }
+
+    /// <summary>RunCommand: type="DiscardGear"</summary>
+    public sealed record RunCommand_DiscardGear : RunCommand
+    {
+        public const string TypeTag = "DiscardGear";
+        public RunCommand_DiscardGear() { Type = TypeTag; }
+        [JsonProperty("index")]
+        public int Index { get; init; }
+    }
+
+    /// <summary>RunCommand: type="ShopBuyGear"</summary>
+    public sealed record RunCommand_ShopBuyGear : RunCommand
+    {
+        public const string TypeTag = "ShopBuyGear";
+        public RunCommand_ShopBuyGear() { Type = TypeTag; }
+        [JsonProperty("index")]
+        public int Index { get; init; }
+        [JsonProperty("discardIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? DiscardIndex { get; init; }
+    }
+
+    /// <summary>RunCommand: type="ShopBuyMana"</summary>
+    public sealed record RunCommand_ShopBuyMana : RunCommand
+    {
+        public const string TypeTag = "ShopBuyMana";
+        public RunCommand_ShopBuyMana() { Type = TypeTag; }
     }
 
     /// <summary>ReplayOrigin.checkpoint のインライン型</summary>
