@@ -1,6 +1,6 @@
 import { relicRarityTag } from '../engine/summary.ts'
 import { actSummaries, battleMetrics, type BattleMetrics, type BattleRow } from '../engine/analysis.ts'
-import { allCards, allEnemies, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { allCards, allEnemies, allGears, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { graphFromLegacy } from '../engine/enemyGraph.ts'
 import type { LegacyEnemyDef } from '../engine/enemyGraph.ts'
 
@@ -923,6 +923,11 @@ export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunStat
   return { ...core, ctx: { hp: next.hp, maxHp: next.maxHp, deck: next.deck.length, gold: next.gold } }
 }
 
+/** ギアの名前 (未定義IDでも落ちない。データ変更後の古いセーブを読む時のため) */
+function gearName(id: string): string {
+  return allGears.find((g) => g.id === id)?.name ?? id
+}
+
 function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState): RunChoice | null {
   const at = `幕${next.act} 行${next.row + 1}`
   const names = (ids: readonly string[]) => ids.map(cardName).join('・')
@@ -944,6 +949,35 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
       const opts = prev.rewardOptions ?? []
       return { at, text: `報酬ピック: スキップ（候補: ${names(opts) || 'なし'}）` }
     }
+    // ---- ギア (2026-09-17)。ピック監査で「取ったか・組んだか・腐ったか」を追えるようにする ----
+    case 'TakeGear': {
+      const id = prev.gearOption
+      if (id == null) return null
+      const dropped = cmd.discardIndex !== undefined ? (prev.gears ?? [])[cmd.discardIndex] : undefined
+      return { at, text: `ギア取得: ${gearName(id)}${dropped ? `（${gearName(dropped.gearId)} と入れ替え）` : ''}` }
+    }
+    case 'SkipGear':
+      return prev.gearOption == null ? null : { at, text: `ギア見送り: ${gearName(prev.gearOption)}` }
+    case 'UseGear': {
+      const g = (prev.gears ?? [])[cmd.index]
+      if (g === undefined) return null
+      const as = cmd.asGearId !== undefined ? `（${gearName(cmd.asGearId)} として）` : ''
+      const left = (next.gears ?? []).find((x) => x.uid === g.uid)
+      return {
+        at,
+        text: `ギア使用: ${gearName(g.gearId)}${as}（魔素 ${prev.mana ?? 0}→${next.mana ?? 0}${left ? `・残${left.charges}回` : '・使い切り'}）`,
+      }
+    }
+    case 'DiscardGear': {
+      const g = (prev.gears ?? [])[cmd.index]
+      return g === undefined ? null : { at, text: `ギアを捨てた: ${gearName(g.gearId)}` }
+    }
+    case 'ShopBuyGear': {
+      const slot = (prev.shop?.gears ?? [])[cmd.index]
+      return slot === undefined ? null : { at, text: `ショップ: ギア ${gearName(slot.id)} を ${slot.price}G で購入` }
+    }
+    case 'ShopBuyMana':
+      return { at, text: `ショップ: 魔素を購入（${prev.mana ?? 0}→${next.mana ?? 0}・${prev.shop?.manaPrice ?? 0}G）` }
     case 'PickRelic': {
       const opts = prev.relicOptions ?? []
       const picked = opts[cmd.index]
