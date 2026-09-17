@@ -75,7 +75,7 @@
     "rarity": "uncommon",
     "family": "interfere",
     "needsTarget": true,
-    "text": "対象の召喚・分裂・孵化をこの戦闘で1回止める",
+    "text": "対象の召喚・分裂・孵化をこの戦闘で1回止める（再起動〔残機〕は止められない）",
     "effects": [{ "trigger": "onPlay", "effect": "blockEnemySummon" }]
   },
   {

@@ -269,8 +269,8 @@ namespace DeckRogue.Game
             catch (Exception ex) { startErr = ex.Message; }
             if (startErr != null) { Debug.LogError("[Autopilot] state: 開始に失敗 " + startErr); yield return Shot("state-error"); yield break; }
             if (g.Rs == null) { yield return Shot("state-no-run"); yield break; }
-            // ギア (2026-09-17): gears=<id,...> で持ち物を直接置く (チェックポイントの既定の抽選を上書き)・mana=<n> で魔素
-            if (Get("gears") != null || Get("mana") != null)
+            // ギア (2026-09-17): gears=<id,...> で持ち物を直接置く (チェックポイントの既定の抽選を上書き)。魔素 (mana=) は 2026-09-18 に撤去
+            if (Get("gears") != null)
             {
                 try
                 {
@@ -287,10 +287,9 @@ namespace DeckRogue.Game
                         }
                         rs0 = rs0 with { Gears = list, SeenGearIds = seen };
                     }
-                    if (Get("mana") != null) { int m; if (int.TryParse(Get("mana"), out m)) rs0 = rs0 with { Mana = Math.Max(0, Math.Min(Gears.MANA_MAX, m)) }; }
                     g.Rs = rs0;
                 }
-                catch (Exception ex) { Debug.LogError("[Autopilot] state: gears/mana " + ex.Message); }
+                catch (Exception ex) { Debug.LogError("[Autopilot] state: gears " + ex.Message); }
             }
 
             var rs = g.Rs;

@@ -1,6 +1,6 @@
 // engine/gears.ts — ギア (消耗品) の戦闘内解決
 // 確定済みルール表「部品（消耗品）」/ docs/parts-proposal-2026-09-17.md が一次資料。
-// 骨格: 拾って持ち歩き (10個)、自ターンに1個だけ「魔素」1で組む。カードではないので
+// 骨格: 拾って持ち歩き (10個)、自ターンに1個だけ組む (魔素は 2026-09-18 に撤去)。カードではないので
 // 虚弱 (カードのプレイで得るブロック-25%) も勢い (カードのプレイで与えるダメージ) も乗らない。
 // 成長は「与ダメ全てに乗る」既存則どおり乗る (置物トリガーと同じ扱い)。
 // 純ロジック: DOM/React・Date.now()・Math.random() を使わない (Unity 移植対象)。
@@ -16,19 +16,13 @@ import type { CardInstance, GameState, GearDef, GearInstance } from './types.ts'
 /** 持ち歩ける個数 (裁定 2026-09-17)。死蔵は腕なので絞らない */
 export const GEAR_CARRY_MAX = 10
 /**
- * 魔素の単位と上限 (2026-09-17 ユーザー裁定「単位を10倍にして排出を半分」)。
- * **1個を組む値段が10** なので、上限50＝ギア5個ぶん・勝利+5＝2戦に1個ぶん。
- *
- * 経緯: プレイテスト5本（J/M/L/J2/N）で魔素が一度も判断に触らなかった。
- * 上限を10→5に下げても財布は0回で、N は上限5で逆に「溢れるくらいなら組む」圧を作り、
- * ショップの魔素枠まで死に枠にした。算数は **入る 1.2/戦 対 出る 0.6/戦** で、
- * 1ターン1個が消費を抑えている限り上限をいくつにしても張り付く＝天井でなく**入りを半分にする**。
- * 単位を10倍にしたのは「勝利ごと半個ぶん」を整数で書けるようにするため（旧単位では 0.5 になる）。
- * ロールバック条件: これでも財布が理由の我慢が出なければ魔素を撤去し、制約は1ターン1個だけにする。
+ * 魔素 (ギア専用の通貨) は 2026-09-18 に撤去した (ユーザー裁定)。
+ * 経緯: プレイテスト6本 (J/M/L/J2/N/O) と人間ラン#13 のすべてで、魔素が判断に触ったのは幕1の序盤だけだった
+ * (#13: 「持ち物があるのに1個ぶん未満」の自ターンは 7/58・全部幕1行2〜4。#5 以降は一度も足りず、天井に3戦張り付いた)。
+ * 上限10→5・単位10倍で排出半分と2回動かしても同じ。効いていた制約は「1ターン1個」「一回きり」「持ち物10」だけで、
+ * シレンの道具の制約から「行動の消費」を抜いた形をそのまま認める＝通貨は帳簿の手間だけ増やしていた。
+ * ロールバック: 撤去後の人間ランで「死線に全部使って終わる (パズルが消える)」が2本一致したら、通貨でなく戦闘内の対価 (組むと手札1枚を捨てる等) を検討する。
  */
-export const MANA_MAX = 50
-/** 1個を組む値段 (一律)。魔素の単位＝この値が「1個ぶん」 */
-export const GEAR_MANA_COST = 10
 
 /** レア度の抽選比 (本家形 C65／U25／R10。裁定 2026-09-17) */
 export const GEAR_RARITY_WEIGHTS = { common: 65, uncommon: 25, rare: 10 } as const
@@ -52,12 +46,7 @@ export function gearNeeds(def: GearDef): {
 }
 
 /** この盤面でギアを組めるか。理由つき (null = 組める) */
-export function gearBlockedReason(
-  state: GameState | null,
-  mana: number,
-  gear: GearInstance,
-): string | null {
-  if (mana < GEAR_MANA_COST) return '魔素がない'
+export function gearBlockedReason(state: GameState | null, gear: GearInstance): string | null {
   if (gear.charges <= 0) return '使い切っている'
   if (state === null) return '戦闘中でない'
   if (state.phase !== 'player-turn') return '自分の番ではない'
@@ -112,11 +101,6 @@ export function gearLiveDamage(state: GameState, def: GearDef, targetIndex?: num
   return `実際に与える値: ${parts.join('、')}（${growth}急所・装甲・敵ブロック込み。勢いは乗らない）`
 }
 
-/** 魔素の表記「25/50（あと2個）」(単位が10になったので個数を添える。2026-09-17) */
-export function manaLabel(mana: number): string {
-  return `${mana}/${MANA_MAX}（あと${Math.floor(mana / GEAR_MANA_COST)}個）`
-}
-
 /**
  * このギアを組んでも何も起きない時の理由 (2026-09-17 ユーザー裁定「組めるままにし、画面に出すだけ」)。
  * プレイテスト O: 召喚しない敵に錆びた楔・豹変しない敵に鎮めの錘を組んで、ターンと魔素を捨てた実例が2件。
@@ -133,8 +117,11 @@ export function gearNoEffectReason(state: GameState, def: GearDef, targetIndex?:
       case 'blockEnemySummon': {
         if (e === undefined) return null // 対象未定 = 判定しない
         const d = getEnemyDef(e.enemyId)
-        const summons = d.splitInto !== undefined || d.hatchInto !== undefined || (d.moves ?? []).some((m) => m.kind === 'summon')
-        return summons ? null : 'この敵は召喚も分裂も孵化もしない'
+        // 残機 (count=1 の連鎖=再起動) は止められない (2026-09-18 裁定 A)。止まるのは召喚・分裂 (複数体)・孵化
+        const splits = d.splitInto !== undefined && d.splitInto.count > 1
+        const summons = splits || d.hatchInto !== undefined || (d.moves ?? []).some((m) => m.kind === 'summon')
+        if (summons) return null
+        return d.splitInto !== undefined ? 'この敵の残機（再起動）は止められない（止まるのは召喚・分裂・孵化）' : 'この敵は召喚も分裂も孵化もしない'
       }
       case 'blockEnemyInterrupt': {
         if (e === undefined) return null

@@ -651,7 +651,7 @@ namespace DeckRogue.Engine
                     string asText = ug.AsGearId != null ? "（" + GearName(ug.AsGearId) + " として）" : "";
                     GearInstance left = null;
                     foreach (var x in next.Gears ?? new List<GearInstance>()) if (x.Uid == gI.Uid) { left = x; break; }
-                    return Mk("ギア使用: " + GearName(gI.GearId) + asText + "（魔素 " + (prev.Mana ?? 0) + "→" + (next.Mana ?? 0) + (left != null ? "・残" + left.Charges + "回" : "・使い切り") + "）");
+                    return Mk("ギア使用: " + GearName(gI.GearId) + asText + "（" + (left != null ? "残" + left.Charges + "回" : "使い切り") + "）");
                 }
                 case RunCommand_DiscardGear dg:
                 {
@@ -665,8 +665,6 @@ namespace DeckRogue.Engine
                     var slot = shelf[sg.Index];
                     return Mk("ショップ: ギア " + GearName(slot.Id) + " を " + slot.Price + "G で購入");
                 }
-                case RunCommand_ShopBuyMana _:
-                    return Mk("ショップ: 魔素を購入（" + (prev.Mana ?? 0) + "→" + (next.Mana ?? 0) + "・" + (prev.Shop?.ManaPrice ?? 0) + "G）");
                 case RunCommand_PickRelic pr:
                 {
                     var opts = prev.RelicOptions ?? new List<string>();

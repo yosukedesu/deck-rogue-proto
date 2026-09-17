@@ -539,8 +539,10 @@ function processSplits(state: GameState): GameState {
     const def = getEnemyDef(e.enemyId)
     const splitInto = def.splitInto
     if (splitInto === undefined) continue
-    // ギア「錆びた楔」(2026-09-17): 分裂を1回止める (旗を消費して分裂済みの印だけ立てる)
-    if (e.summonBlocked === true) {
+    // ギア「錆びた楔」(2026-09-17): 分裂 (複数体) を1回止める (旗を消費して分裂済みの印だけ立てる)。
+    // 残機 (count=1 の連鎖=再起動) は止めない (2026-09-18 裁定 A。人間ラン#13: 錆びた楔1個で蘇る合成獣の二の相・三の相が消えた
+    // ＝残機は「合計HPを3回に分けて払わせる器」なので、消すのはHPを消すのと同じ)
+    if (e.summonBlocked === true && splitInto.count > 1) {
       s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, split: true, summonBlocked: false } : x)) }
       continue
     }

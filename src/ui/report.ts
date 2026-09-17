@@ -965,7 +965,7 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
       const left = (next.gears ?? []).find((x) => x.uid === g.uid)
       return {
         at,
-        text: `ギア使用: ${gearName(g.gearId)}${as}（魔素 ${prev.mana ?? 0}→${next.mana ?? 0}${left ? `・残${left.charges}回` : '・使い切り'}）`,
+        text: `ギア使用: ${gearName(g.gearId)}${as}（${left ? `残${left.charges}回` : '使い切り'}）`,
       }
     }
     case 'DiscardGear': {
@@ -976,8 +976,6 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
       const slot = (prev.shop?.gears ?? [])[cmd.index]
       return slot === undefined ? null : { at, text: `ショップ: ギア ${gearName(slot.id)} を ${slot.price}G で購入` }
     }
-    case 'ShopBuyMana':
-      return { at, text: `ショップ: 魔素を購入（${prev.mana ?? 0}→${next.mana ?? 0}・${prev.shop?.manaPrice ?? 0}G）` }
     case 'PickRelic': {
       const opts = prev.relicOptions ?? []
       const picked = opts[cmd.index]

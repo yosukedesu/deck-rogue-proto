@@ -17,15 +17,15 @@
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
 //            {"type":"CampfireRest"} / {"type":"CampfireRemove","index":0} / {"type":"CampfireUpgrade","index":0}  ← 焚き火
-//   ギア (消耗品 2026-09-17): {"type":"UseGear","index":0} (自ターンに1個・魔素1。対象を取るギアは "targetIndex"、
+//   ギア (消耗品 2026-09-17): {"type":"UseGear","index":0} (自ターンに1個。対象を取るギアは "targetIndex"、
 //            札を選ぶギアは "cardUid"、無銘の部品は "asGearId") / {"type":"TakeGear"} (報酬。満杯なら "discardIndex")
-//            / {"type":"SkipGear"} / {"type":"DiscardGear","index":0} / {"type":"ShopBuyGear","index":0} / {"type":"ShopBuyMana"}
+//            / {"type":"SkipGear"} / {"type":"DiscardGear","index":0} / {"type":"ShopBuyGear","index":0}
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
-import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
+import { GEAR_CARRY_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason } from '../engine/gears.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
 import { STATUS_JA, describeGraph } from '../engine/enemyGraph.ts'
@@ -41,7 +41,7 @@ function cname(cardId: string): string {
   }
 }
 import { cardNeedsTarget, damageBreakdown, displayedInflict, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -647,13 +647,13 @@ function gearLine(def: GearDef, charges?: number): string {
   return `${GEAR_RARITY_TAG[def.rarity]}${def.name}${ch ? `(残${charges ?? def.charges}回)` : ''}: ${def.text}`
 }
 
-/** 持ち物と魔素の帯 (どの画面でも出す = 「持っているのに忘れる」を作らない) */
+/** 持ち物の帯 (どの画面でも出す = 「持っているのに忘れる」を作らない) */
 function renderGearBar(run: RunState): string {
   const gears = gearsOf(run)
-  const L: string[] = [`⚙ 魔素 ${manaLabel(manaOf(run))} | ギア ${gears.length}/${GEAR_CARRY_MAX}`]
+  const L: string[] = [`⚙ ギア ${gears.length}/${GEAR_CARRY_MAX}（自ターンに1個）`]
   gears.forEach((g, i) => {
     const def = getGearDef(g.gearId)
-    const why = gearBlockedReason(run.phase === 'combat' ? run.combat : null, manaOf(run), g)
+    const why = gearBlockedReason(run.phase === 'combat' ? run.combat : null, g)
     const needs: string[] = []
     if (def.needsTarget === true) needs.push('targetIndex')
     if (def.needsCard !== undefined) needs.push('cardUid')
@@ -684,7 +684,7 @@ function renderGearBar(run: RunState): string {
     }
   })
   if (gears.length > 0 && run.phase === 'combat') {
-    L.push(`  → {"type":"UseGear","index":N}（魔素${GEAR_MANA_COST}＝1個ぶん・自ターンに1個。対象は "targetIndex"、札を選ぶギアは "cardUid"。名前指定も可: {"type":"UseGear","gear":"火薬"}）`)
+    L.push(`  → {"type":"UseGear","index":N}（自ターンに1個。対象は "targetIndex"、札を選ぶギアは "cardUid"。名前指定も可: {"type":"UseGear","gear":"火薬"}）`)
   }
   return L.join('\n')
 }
@@ -783,13 +783,10 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     }
     L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+25G)`)
     L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
-    // ギアの棚 (2026-09-17): 3枠 + 魔素
+    // ギアの棚 (2026-09-17): 3枠
     ;(run.shop.gears ?? []).forEach((item, i) =>
       L.push(item.sold === true ? ` ギア[${i}] 〔売切〕` : ` ギア[${i}] ${item.price}G: ${gearLine(getGearDef(item.id))}`),
     )
-    if (run.shop.manaPrice !== undefined) {
-      L.push(` 魔素 ${run.shop.manaPrice}G (いま ${manaOf(run)}/${MANA_MAX})`)
-    }
     L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopBuyGear","index":N}${gearFull(run) ? '(満杯なら "discardIndex" も)' : ''} / {"type":"ShopBuyMana"} / {"type":"ShopLeave"}`)
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
@@ -880,15 +877,14 @@ if (mode === 'new-run') {
   console.log(renderRun(run, 0))
 } else if (mode === 'new-checkpoint') {
   // チェックポイント開始 (2026-09-02): 幕2/3から代表デッキ+レリックで開始。UIの🚩と同じ createDebugCheckpointRun。
-  // 使い方: new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds(カンマ区切り)] [gearIds(カンマ区切り。'-'で持たない)] [mana]
-  const [leaderId, seed, file, act, deckId, hpRatio, gold, difficulty, relicCsv, gearCsv, mana] = args
+  // 使い方: new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds(カンマ区切り)] [gearIds(カンマ区切り。'-'で持たない)]
+  const [leaderId, seed, file, act, deckId, hpRatio, gold, difficulty, relicCsv, gearCsv] = args
   const checkpoint = {
     act: Number(act),
     deckId,
     ...(relicCsv && relicCsv !== '-' ? { relicIds: relicCsv.split(',').filter(Boolean) } : {}),
     // ギア (2026-09-17): 省略=幕なりの抽選 / '-'=持たない / カンマ区切りで狙ったギアを持たせる (大物の検証)
     ...(gearCsv ? { gearIds: gearCsv === '-' ? [] : gearCsv.split(',').filter(Boolean) } : {}),
-    ...(mana ? { mana: Number(mana) } : {}),
     ...(hpRatio ? { hpRatio: Number(hpRatio) } : {}),
     ...(gold ? { gold: Number(gold) } : {}),
     ...(difficulty ? { difficulty: Number(difficulty) } : {}),
@@ -950,7 +946,7 @@ if (mode === 'new-run') {
     const runCmd: RunCommand =
       ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'RelicChooseCards', 'CampfireDig', 'CampfireTrain', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
         'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip',
-        'UseGear', 'TakeGear', 'SkipGear', 'DiscardGear', 'ShopBuyGear', 'ShopBuyMana'].includes(cmd.type)
+        'UseGear', 'TakeGear', 'SkipGear', 'DiscardGear', 'ShopBuyGear'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
     let choiceLine: string | null = null
@@ -994,5 +990,5 @@ if (mode === 'new-run') {
       : renderBattle(sf.battle!, tail(sf.battle)),
   )
 } else {
-  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds] [gearIds] [mana] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
+  console.log('usage: play.ts new-run <leaderId> <seed> <file> [deckId] [difficulty] | new-checkpoint <leaderId> <seed> <file> <act> <deckId> [hpRatio] [gold] [difficulty] [relicIds] [gearIds] | new-battle <deckId> <enemyId> <seed> <file> | cmd <file> <json> | show <file> [full]')
 }

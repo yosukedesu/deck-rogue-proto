@@ -21,7 +21,7 @@ import {
   getRelicDef,
 } from './content.ts'
 import { createRng, nextInt, shuffle } from './rng.ts'
-import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, makeGear, resolveGear } from './gears.ts'
+import { GEAR_CARRY_MAX, gearBlockedReason, makeGear, resolveGear } from './gears.ts'
 import { applyCommand } from './state.ts'
 import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, EventDef, GameState, GearInstance, GearRarity, ReactionMode, RngState, RelicDef, RelicRarity } from './types.ts'
 
@@ -285,8 +285,6 @@ export interface ShopState {
   readonly relicPrice: number
   /** ギアの棚 (2026-09-17): 3枠。C40/U60/R90G 程度 */
   readonly gears?: readonly { readonly id: string; readonly price: number; readonly sold?: boolean }[]
-  /** 魔素の値段 (1つぶん)。金余りのシンク */
-  readonly manaPrice?: number
 }
 
 export interface RunState {
@@ -386,8 +384,6 @@ export interface RunState {
   // ---- ギア (消耗品 2026-09-17。docs/parts-proposal-2026-09-17.md)。旧セーブに無いので使用側は ?? ガード ----
   /** 持ち物 (最大 GEAR_CARRY_MAX)。残り回数つき */
   readonly gears?: readonly GearInstance[]
-  /** 魔素 (ギア専用の通貨。上限 MANA_MAX・開始0・ランを通して持ち越す) */
-  readonly mana?: number
   /** ギアのドロップの累積確率 (整数パーセントポイント。外れるたび+10・当たると基礎値へ戻る。?マスと同じ形) */
   readonly gearPity?: number
   /** このランで拾ったことのあるギアID (無銘の部品の候補) */
@@ -423,7 +419,7 @@ export type RunCommand =
   // ?マス (確定済みルール表「?マス（イベント）」)。removeCard/upgradeCard の選択肢は cardIndex で対象指定
   | { readonly type: 'EventChoice'; readonly index: number; readonly cardIndex?: number }
   // ギア (消耗品 2026-09-17)
-  /** 自ターンに持ち物のギアを1個組む (魔素1)。煙玉は戦闘から逃げる */
+  /** 自ターンに持ち物のギアを1個組む (1ターン1個。魔素は 2026-09-18 撤去)。煙玉は戦闘から逃げる */
   | {
       readonly type: 'UseGear'
       readonly index: number
@@ -439,7 +435,6 @@ export type RunCommand =
   /** 持ち物から1つ捨てる (枠の整理) */
   | { readonly type: 'DiscardGear'; readonly index: number }
   | { readonly type: 'ShopBuyGear'; readonly index: number; readonly discardIndex?: number }
-  | { readonly type: 'ShopBuyMana' }
 
 /** 現在いるノード (row=-1 の開始前は null) */
 export function currentNode(run: RunState): MapNode | null {
@@ -789,7 +784,6 @@ export function openShop(run: RunState): RunState { // export はテスト用 (�
     relicId,
     relicPrice: Math.floor(SHOP_RELIC_PRICE * shopPriceRatio(run)), // 会員証
     gears: gearShelf,
-    manaPrice: Math.floor(SHOP_MANA_PRICE * shopPriceRatio(run)),
   }
   // 行商の食券 (2026-09-12 本家 Meal Ticket): ショップに入るたびHP+N
   const heal = relicBonusSum(run, 'shopHeal')
@@ -1163,7 +1157,6 @@ export function createRun(
     seenEventIds: [],
     seenShrineIds: [],
     gears: [],
-    mana: 0,
     gearPity: GEAR_DROP_BASE,
     seenGearIds: [],
     gearOption: null,
@@ -1244,8 +1237,6 @@ export function createDebugCheckpointRun(
     readonly difficulty?: number
     /** ギアの持ち物 (省略=幕なりの数を抽選。[] を渡せば持たない) */
     readonly gearIds?: readonly string[]
-    /** 魔素 (省略=幕なりの残高) */
-    readonly mana?: number
   },
 ): RunState {
   const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY)
@@ -1268,8 +1259,8 @@ export function createDebugCheckpointRun(
     // チェックポイントは選択を挟まない (空の鳥籠・星読みの盤の保留は捨てる)
     if (run.pendingRelicChoice !== undefined) { const { pendingRelicChoice: _p, ...rest } = run; run = rest }
   }
-  // ギア (2026-09-17): 幕2/3のチェックポイントは「10戦勝ってきた」状態なので、持ち物と魔素も
-  // その幕なりに積んでおく (0個・0魔素で始めると死線の検証が本題にならない)。
+  // ギア (2026-09-17): 幕2/3のチェックポイントは「10戦勝ってきた」状態なので、持ち物も
+  // その幕なりに積んでおく (0個で始めると死線の検証が本題にならない)。
   // 明示指定があればそれを優先する (gearIds: [] で「持たない」も表現できる)
   if (opts.gearIds !== undefined) {
     for (const id of opts.gearIds) run = addGear(run, id, `cp_${id}`)
@@ -1283,8 +1274,6 @@ export function createDebugCheckpointRun(
       r = run.rng
     }
   }
-  // チェックポイントの既定は幕なりの残高 (幕3=満タン・幕2=3個ぶん)。opts.mana は「魔素の値」で渡す
-  run = { ...run, mana: Math.min(MANA_MAX, opts.mana ?? (act >= 3 ? MANA_MAX : act >= 2 ? GEAR_MANA_COST * 3 : 0)) }
   const ratio = Math.min(1, Math.max(0.05, opts.hpRatio ?? 1))
   return { ...run, hp: Math.max(1, Math.round(run.maxHp * ratio)) }
 }
@@ -1439,20 +1428,12 @@ function rollRewards(run: RunState): RunState {
 /** 通常戦のドロップ率 (整数パーセントポイント)。外れるたび +GEAR_DROP_PITY・当たると基礎値へ戻る */
 export const GEAR_DROP_BASE = 60
 export const GEAR_DROP_PITY = 10
-/** 魔素: 通常戦の勝利で+1、エリート・幕ボスで+2 */
-export const MANA_PER_WIN = 5 // 2026-09-17 裁定: 排出を半分 (1個ぶん=10 なので 2戦で1個)
-export const MANA_PER_ELITE_BOSS = 10 // 同上 (エリート/幕ボスは1個ぶん)
 /** ショップ: ギアの棚は3枠。値段はレア度で */
 export const SHOP_GEAR_SLOTS = 3
 export const SHOP_GEAR_PRICE: Readonly<Record<GearRarity, number>> = { common: 40, uncommon: 60, rare: 90 }
-/** ショップ: 魔素1つの値段 */
-export const SHOP_MANA_PRICE = 30
 
 export function gearsOf(run: RunState): readonly GearInstance[] {
   return run.gears ?? []
-}
-export function manaOf(run: RunState): number {
-  return run.mana ?? 0
 }
 export function gearFull(run: RunState): boolean {
   return gearsOf(run).length >= GEAR_CARRY_MAX
@@ -1476,7 +1457,7 @@ function addGear(run: RunState, gearId: string, uidHint: string): RunState {
   return { ...withSeen, gears: [...gearsOf(withSeen), makeGear(gearId, `gear_${uidHint}`)] }
 }
 
-/** ギアを1回ぶん使う: 魔素-1・残り回数-1 (0 になったら持ち物から消える) */
+/** ギアを1回ぶん使う: 残り回数-1 (0 になったら持ち物から消える) */
 function spendGear(run: RunState, index: number): RunState {
   const gears = gearsOf(run)
   const gear = gears[index]
@@ -1484,7 +1465,6 @@ function spendGear(run: RunState, index: number): RunState {
   const left = gear.charges - 1
   return {
     ...run,
-    mana: manaOf(run) - GEAR_MANA_COST,
     gears: left > 0 ? gears.map((g, i) => (i === index ? { ...g, charges: left } : g)) : gears.filter((_, i) => i !== index),
   }
 }
@@ -1561,8 +1541,6 @@ function afterVictory(run: RunState, combat: GameState): RunState {
     gold: Math.max(0, run.gold + gained),
     // 祈りの車輪 (2026-09-12 本家 Prayer Wheel): 通常戦だけカード報酬をもう1組
     rewardRoundsLeft: !run.currentElite && !isBoss ? relicBonusSum(run, 'extraRewardRounds') : 0,
-    // 魔素 (2026-09-17): 通常戦+1・エリート/幕ボス+2。上限 MANA_MAX
-    mana: Math.min(MANA_MAX, (run.mana ?? 0) + (run.currentElite || isBoss ? MANA_PER_ELITE_BOSS : MANA_PER_WIN)),
   }
   // 蜥蜴の尾 (2026-09-12): この戦闘で砕けたらランで使用済み
   if (combat.deathSaveUsed === true) next = withRelicState(next, 'lizardUsed', 1)
@@ -1729,7 +1707,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const gear = gears[command.index]
       if (gear === undefined) throw new Error(`不正なギア指定: ${command.index}`)
       const def = getGearDef(gear.gearId)
-      const blocked = gearBlockedReason(run.phase === 'combat' ? run.combat : null, manaOf(run), gear)
+      const blocked = gearBlockedReason(run.phase === 'combat' ? run.combat : null, gear)
       if (blocked !== null) throw new Error(`${def.name} は組めない: ${blocked}`)
       const combat = run.combat!
       // 煙玉 (2026-09-17 ユーザー裁定): 幕ボス以外から逃げる。報酬なし・HPはそのまま・節は踏んだ扱い
@@ -1792,14 +1770,6 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
           gears: (run.shop.gears ?? []).map((g, i) => (i === command.index ? { ...g, sold: true } : g)),
         },
       })
-    }
-    case 'ShopBuyMana': {
-      if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
-      const price = run.shop.manaPrice ?? SHOP_MANA_PRICE
-      if (run.gold < price) throw new Error('ゴールドが足りない')
-      if (manaOf(run) >= MANA_MAX) throw new Error('魔素は上限')
-      // 買えるのは「1個ぶん」(GEAR_MANA_COST)。上限を越えた分は切り捨てる
-      return breakMawBank({ ...run, gold: run.gold - price, mana: Math.min(MANA_MAX, manaOf(run) + GEAR_MANA_COST) })
     }
     case 'ChooseNode': {
       if (run.phase !== 'map') throw new Error('マップフェーズではない')

@@ -2724,9 +2724,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ギアの棚 (2026-09-17): 3枠。C40/U60/R90G 程度</summary>
         [JsonProperty("gears", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<ShopStateGears>? Gears { get; init; }
-        /// <summary>魔素の値段 (1つぶん)。金余りのシンク</summary>
-        [JsonProperty("manaPrice", NullValueHandling = NullValueHandling.Ignore)]
-        public int? ManaPrice { get; init; }
     }
 
     /// <summary>RunState.unknownPity のインライン型</summary>
@@ -2885,9 +2882,6 @@ namespace DeckRogue.Engine.Generated
         /// <summary>持ち物 (最大 GEAR_CARRY_MAX)。残り回数つき</summary>
         [JsonProperty("gears", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<GearInstance>? Gears { get; init; }
-        /// <summary>魔素 (ギア専用の通貨。上限 MANA_MAX・開始0・ランを通して持ち越す)</summary>
-        [JsonProperty("mana", NullValueHandling = NullValueHandling.Ignore)]
-        public int? Mana { get; init; }
         /// <summary>ギアのドロップの累積確率 (整数パーセントポイント。外れるたび+10・当たると基礎値へ戻る。?マスと同じ形)</summary>
         [JsonProperty("gearPity", NullValueHandling = NullValueHandling.Ignore)]
         public int? GearPity { get; init; }
@@ -3133,13 +3127,6 @@ namespace DeckRogue.Engine.Generated
         public int Index { get; init; }
         [JsonProperty("discardIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? DiscardIndex { get; init; }
-    }
-
-    /// <summary>RunCommand: type="ShopBuyMana"</summary>
-    public sealed record RunCommand_ShopBuyMana : RunCommand
-    {
-        public const string TypeTag = "ShopBuyMana";
-        public RunCommand_ShopBuyMana() { Type = TypeTag; }
     }
 
     /// <summary>ReplayOrigin.checkpoint のインライン型</summary>

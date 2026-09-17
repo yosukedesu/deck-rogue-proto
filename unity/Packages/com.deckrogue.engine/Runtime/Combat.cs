@@ -612,8 +612,8 @@ namespace DeckRogue.Engine
                 var def = Content.GetEnemyDef(e.EnemyId);
                 var splitInto = def.SplitInto;
                 if (splitInto == null) continue;
-                // ギア「錆びた楔」(2026-09-17): 分裂を1回止める (旗を消費して分裂済みの印だけ立てる)
-                if (e.SummonBlocked == true)
+                // ギア「錆びた楔」(2026-09-17): 分裂 (複数体) を1回止める。残機 (count=1 の連鎖=再起動) は止めない (2026-09-18 裁定 A)
+                if (e.SummonBlocked == true && splitInto.Count > 1)
                 {
                     s = WithEnemy(s, i, x => x with { Split = true, SummonBlocked = false });
                     continue;

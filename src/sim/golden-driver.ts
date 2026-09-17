@@ -31,7 +31,7 @@ export function botRunCandidates(run: RunState): readonly RunCommand[] {
     }
     case 'reward': {
       // ギア (2026-09-17): 提示があれば先に取る (満杯なら見送る)。組むのはボットの仕事にしない
-      // = 供給側 (抽選・魔素・pity) はゴールデンで固定し、使用の判断はテストと人間ランで見る
+      // = 供給側 (抽選・pity) はゴールデンで固定し、使用の判断はテストと人間ランで見る
       if (run.gearOption != null) {
         return gearFull(run) ? [{ type: 'SkipGear' }] : [{ type: 'TakeGear' }, { type: 'SkipGear' }]
       }
