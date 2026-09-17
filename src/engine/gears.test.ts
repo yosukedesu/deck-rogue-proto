@@ -5,10 +5,12 @@ import { describe, expect, it } from 'vitest'
 import { allGears, getGearDef } from './content.ts'
 import {
   GEAR_CARRY_MAX,
+  GEAR_MANA_COST,
   MANA_MAX,
   gearBlockedReason,
   gearCardChoices,
   gearLiveDamage,
+  gearNoEffectReason,
   makeGear,
   resolveGear,
 } from './gears.ts'
@@ -33,7 +35,7 @@ import type { GameState, GearInstance } from './types.ts'
 
 const gear = (id: string): GearInstance => makeGear(id, `t_${id}`)
 /** 戦闘状態に持ち物を持たせたランを作る (戦闘の中身だけを見たい時の足場) */
-function runWith(combat: GameState, gears: readonly string[], mana = 5): RunState {
+function runWith(combat: GameState, gears: readonly string[], mana = GEAR_MANA_COST * 5): RunState {
   const run = createRun(777, 'set-confirm', 'leader_green')
   return { ...run, phase: 'combat', combat, gears: gears.map((id) => gear(id)), mana, seenGearIds: [...gears] }
 }
@@ -72,29 +74,29 @@ describe('使う条件: 自ターンに1個・魔素1・敵ターンには使え
   it('魔素が無ければ組めない', () => {
     const s = freshCombat('set-confirm', 'enemy_probe')
     expect(gearBlockedReason(s, 0, gear('gear_spring'))).toBe('魔素がない')
-    expect(gearBlockedReason(s, 1, gear('gear_spring'))).toBeNull()
+    expect(gearBlockedReason(s, GEAR_MANA_COST, gear('gear_spring'))).toBeNull()
   })
 
   it('このターンに既に組んでいたら2個目は組めない', () => {
     const s = freshCombat('set-confirm', 'enemy_probe')
-    expect(gearBlockedReason({ ...s, gearUsedThisTurn: true }, 5, gear('gear_spring'))).toBe('このターンはもう組んだ')
+    expect(gearBlockedReason({ ...s, gearUsedThisTurn: true }, MANA_MAX, gear('gear_spring'))).toBe('このターンはもう組んだ')
   })
 
   it('敵の番には使えない (2026-09-17 裁定。後出しは罠の専売)', () => {
     const s = freshCombat('set-confirm', 'enemy_probe')
-    expect(gearBlockedReason({ ...s, enemyPhase: true }, 5, gear('gear_spring'))).toBe('敵の番には使えない')
+    expect(gearBlockedReason({ ...s, enemyPhase: true }, MANA_MAX, gear('gear_spring'))).toBe('敵の番には使えない')
   })
 
   it('組むと魔素が1減り、1ターン1個の旗が立つ', () => {
-    const run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'], 3)
+    const run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'], GEAR_MANA_COST * 3)
     const after = use(run, 0)
-    expect(manaOf(after)).toBe(2)
+    expect(manaOf(after)).toBe(GEAR_MANA_COST * 2) // 3個ぶん→2個ぶん
     expect(after.combat!.gearUsedThisTurn).toBe(true)
     expect(() => use(after, 0)).toThrow(/このターンはもう組んだ/)
   })
 
   it('次の自ターンになれば また1個組める', () => {
-    let run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'], 5)
+    let run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'])
     run = use(run, 0)
     const nextTurn = applyCommand(withIntent(run.combat!, attackIntent(1)), { type: 'EndTurn' })
     expect(nextTurn.gearUsedThisTurn).toBeUndefined()
@@ -103,7 +105,7 @@ describe('使う条件: 自ターンに1個・魔素1・敵ターンには使え
 
 describe('回数つき (杖): 使い切ると壊れる', () => {
   it('発条は2回使えて、2回目で持ち物から消える', () => {
-    let run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'], 5)
+    let run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_spring'])
     run = use(run, 0)
     expect(gearsOf(run)[0].charges).toBe(1)
     expect(run.combat!.player.block).toBe(10)
@@ -116,7 +118,7 @@ describe('回数つき (杖): 使い切ると壊れる', () => {
 
 describe('効果 (代表)', () => {
   it('火薬: 敵全体に10 (成長は乗る = 与ダメ全ての既存則)', () => {
-    const run = runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_powder'], 5)
+    const run = runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_powder'])
     const before = run.combat!.enemies.map((e) => e.hp)
     const after = use(run, 0)
     after.combat!.enemies.forEach((e, i) => expect(before[i] - e.hp).toBe(10))
@@ -124,7 +126,7 @@ describe('効果 (代表)', () => {
 
   it('楔: 対象の宣言済みの行動が打ち消される', () => {
     const base = withIntent(freshCombat('set-confirm', 'enemy_probe'), attackIntent(9))
-    const run = runWith(base, ['gear_wedge'], 5)
+    const run = runWith(base, ['gear_wedge'])
     const after = use(run, 0, { targetIndex: 0 })
     expect(after.combat!.enemies[0].actionNegated).toBe(true)
     const resolved = applyCommand(after.combat!, { type: 'EndTurn' })
@@ -135,14 +137,14 @@ describe('効果 (代表)', () => {
   it('清めの水: 自分の状態異常が全て消える', () => {
     const base = freshCombat('set-confirm', 'enemy_probe')
     const sick: GameState = { ...base, player: { ...base.player, weak: 3, vulnerable: 2, frail: 1, restrain: 2, mist: 1, slow: 1 } }
-    const after = use(runWith(sick, ['gear_cleansing_water'], 5), 0)
+    const after = use(runWith(sick, ['gear_cleansing_water']), 0)
     const p = after.combat!.player
     expect([p.weak, p.vulnerable, p.frail, p.restrain, p.mist ?? 0, p.slow ?? 0]).toEqual([0, 0, 0, 0, 0, 0])
   })
 
   it('灰落とし: 手札の負傷・がらくたが消滅置き場へ (黒の燃料になる)', () => {
     const base = withHand(freshCombat('set-confirm', 'enemy_probe'), ['status_wound', 'status_junk', 'green_strike'])
-    const after = use(runWith(base, ['gear_ash_remover'], 5), 0)
+    const after = use(runWith(base, ['gear_ash_remover']), 0)
     expect(after.combat!.player.hand.map((c) => c.def.id)).toEqual(['green_strike'])
     expect(after.combat!.player.exhaustPile.length).toBe(2)
   })
@@ -150,7 +152,7 @@ describe('効果 (代表)', () => {
   it('蘇りの発条: 致死を一度だけ耐えて HP1 で立つ', () => {
     const base = freshCombat('set-confirm', 'enemy_probe')
     const low: GameState = { ...base, player: { ...base.player, hp: 3 } }
-    const after = use(runWith(low, ['gear_revive_spring'], 5), 0)
+    const after = use(runWith(low, ['gear_revive_spring']), 0)
     expect(after.combat!.gearDeathSave).toBe(true)
     const hit = applyCommand(withIntent(after.combat!, attackIntent(50)), { type: 'EndTurn' })
     expect(hit.player.hp).toBe(1)
@@ -159,9 +161,9 @@ describe('効果 (代表)', () => {
   })
 
   it('締め紐: 対象の次の行動が隙になる / 時の歯車は全員', () => {
-    const one = use(runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_tie_cord'], 5), 0, { targetIndex: 1 })
+    const one = use(runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_tie_cord']), 0, { targetIndex: 1 })
     expect(one.combat!.enemies.map((e) => e.staggeredNext === true)).toEqual([false, true])
-    const all = use(runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_time_cog'], 5), 0)
+    const all = use(runWith(freshCombat('set-confirm', 'enc_probe_pair'), ['gear_time_cog']), 0)
     expect(all.combat!.enemies.every((e) => e.staggeredNext === true)).toBe(true)
   })
 
@@ -169,7 +171,7 @@ describe('効果 (代表)', () => {
     const base = withHand(freshCombat('set-confirm', 'enemy_probe'), ['green_strike'])
     const choices = gearCardChoices(base, getGearDef('gear_whetstone_oil'))
     expect(choices.length).toBe(1)
-    const after = use(runWith(base, ['gear_whetstone_oil'], 5), 0, { cardUid: choices[0].uid })
+    const after = use(runWith(base, ['gear_whetstone_oil']), 0, { cardUid: choices[0].uid })
     expect(after.combat!.player.hand[0].def.name).toContain('+')
   })
 
@@ -177,13 +179,13 @@ describe('効果 (代表)', () => {
     const base = freshCombat('set-confirm', 'enemy_probe')
     const moved: GameState = { ...base, player: { ...base.player, discardPile: [base.player.drawPile[0]], drawPile: base.player.drawPile.slice(1) } }
     const target = moved.player.discardPile[0]
-    const after = use(runWith(moved, ['gear_dig_out'], 5), 0, { cardUid: target.uid })
+    const after = use(runWith(moved, ['gear_dig_out']), 0, { cardUid: target.uid })
     expect(after.combat!.player.hand.some((c) => c.uid === target.uid)).toBe(true)
     expect(after.combat!.player.discardPile.length).toBe(0)
   })
 
   it('過負荷の歯車: 一時マナ+3 と引き換えに次のターンのドローが2枚減る (両刃)', () => {
-    const run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_overload_cog'], 5)
+    const run = runWith(freshCombat('set-confirm', 'enemy_probe'), ['gear_overload_cog'])
     const after = use(run, 0)
     expect(after.combat!.player.energy).toBe(run.combat!.player.energy + 3)
     expect(after.combat!.nextTurnDraw).toBe(-2)
@@ -191,7 +193,7 @@ describe('効果 (代表)', () => {
 
   it('無銘の部品: 拾ったことのあるギアにだけ化ける', () => {
     const base = freshCombat('set-confirm', 'enemy_probe')
-    const run = { ...runWith(base, ['gear_nameless'], 5), seenGearIds: ['gear_nameless', 'gear_spring'] }
+    const run = { ...runWith(base, ['gear_nameless']), seenGearIds: ['gear_nameless', 'gear_spring'] }
     expect(() => use(run, 0, { asGearId: 'gear_powder' })).toThrow(/拾ったことのない/)
     const after = use(run, 0, { asGearId: 'gear_spring' })
     expect(after.combat!.player.block).toBe(10)
@@ -211,9 +213,9 @@ describe('供給 (§4): 魔素・ドロップ・持ち歩き', () => {
     expect(run.gearPity).toBe(GEAR_DROP_BASE)
   })
 
-  it('通常戦の勝利で魔素+1 (エリート・幕ボスは+2)', () => {
-    expect(MANA_PER_WIN).toBe(1)
-    expect(MANA_PER_ELITE_BOSS).toBe(2)
+  it('通常戦の勝利で半個ぶん・エリート/幕ボスで1個ぶん (2026-09-17 裁定: 排出を半分)', () => {
+    expect(MANA_PER_WIN * 2).toBe(GEAR_MANA_COST) // 2戦で1個
+    expect(MANA_PER_ELITE_BOSS).toBe(GEAR_MANA_COST) // エリート・幕ボスは1戦で1個
     const run = createRunInBattle(2468, 'set-confirm', 'leader_green')
     expect(manaOf(run)).toBe(0)
     // 勝たせる: 敵のHPを0にした盤面を流し込んで決着させる
@@ -228,7 +230,10 @@ describe('供給 (§4): 魔素・ドロップ・持ち歩き', () => {
   it('魔素は上限10で止まる', () => {
     const run = { ...createRun(99, 'set-confirm', 'leader_green'), mana: MANA_MAX }
     expect(manaOf(run)).toBe(MANA_MAX)
-    expect(MANA_MAX).toBe(5) // 2026-09-17 裁定: 10→5 (5本中4本で判断に触っていなかった)
+    // 2026-09-17 裁定: 単位を10倍にして排出を半分 (上限50＝5個ぶん・勝利+5＝2戦で1個)
+    expect(MANA_MAX).toBe(50)
+    expect(GEAR_MANA_COST).toBe(10)
+    expect(MANA_PER_WIN * 2).toBe(GEAR_MANA_COST) // 2戦で1個ぶん
   })
 
   it('持ち歩きは10個まで。満杯で取るには入れ替えるギアを選ぶ', () => {
@@ -259,7 +264,7 @@ describe('供給 (§4): 魔素・ドロップ・持ち歩き', () => {
 describe('煙玉 (2026-09-17 ユーザー裁定: 幕ボス以外・エリート可・報酬なし)', () => {
   it('通常戦からは逃げられる (HPはそのまま・報酬は無し・マップへ戻る)', () => {
     const run0 = createRunInBattle(555, 'set-confirm', 'leader_green')
-    const run = { ...run0, gears: [gear('gear_smoke')], mana: 3, seenGearIds: ['gear_smoke'] }
+    const run = { ...run0, gears: [gear('gear_smoke')], mana: GEAR_MANA_COST * 3, seenGearIds: ['gear_smoke'] }
     const hp = run.combat!.player.hp
     const after = use(run, 0)
     expect(after.phase).toBe('map')
@@ -267,7 +272,7 @@ describe('煙玉 (2026-09-17 ユーザー裁定: 幕ボス以外・エリート�
     expect(after.hp).toBe(hp)
     expect(after.battlesWon).toBe(run.battlesWon)
     expect(gearsOf(after).length).toBe(0)
-    expect(manaOf(after)).toBe(2)
+    expect(manaOf(after)).toBe(GEAR_MANA_COST * 2)
   })
 })
 
@@ -293,7 +298,7 @@ describe('ショップ (3枠 + 魔素)', () => {
     }
     const after = applyRunCommand(run, { type: 'ShopBuyMana' })
     expect(after.gold).toBe(470)
-    expect(manaOf(after)).toBe(1)
+    expect(manaOf(after)).toBe(GEAR_MANA_COST) // 買えるのは1個ぶん
     const bought = applyRunCommand(after, { type: 'ShopBuyGear', index: 0 })
     expect(bought.gold).toBe(430)
     expect(gearsOf(bought).map((g) => g.gearId)).toEqual(['gear_powder'])
@@ -391,5 +396,36 @@ describe('ギアの表示が嘘をつかない', () => {
     expect(after.enemies[0].actionNegated).toBe(true)
     expect(incomingTotal(after)).toBe(0)
     expect(intentModifierNotes(after, 0, after.enemies[0].intent!)).toContain('打ち消し済み＝この行動は起きない')
+  })
+})
+
+// 2026-09-17 ユーザー裁定「組めるままにし、画面に出すだけ」(O: 召喚しない敵に錆びた楔・
+// 豹変しない敵に鎮めの錘を組んでターンと魔素を捨てた実例が2件)。弾かず、理由を表示する。
+describe('空振りの予告', () => {
+  const solo = (id: string): GameState => freshCombat('set-confirm', id)
+
+  it('召喚も分裂も孵化もしない敵には「何も起きない」と出る', () => {
+    expect(gearNoEffectReason(solo('enemy_probe'), getGearDef('gear_rusty_wedge'))).toContain('召喚')
+    // 分裂持ちには出ない
+    expect(gearNoEffectReason(solo('enemy_big_slime'), getGearDef('gear_rusty_wedge'))).toBeNull()
+  })
+
+  it('割り込みを持たない敵には鎮めの錘が空振りだと出る', () => {
+    expect(gearNoEffectReason(solo('enemy_probe'), getGearDef('gear_stilling_weight'))).toContain('割り込み')
+    expect(gearNoEffectReason(solo('enemy_brute'), getGearDef('gear_stilling_weight'))).toBeNull()
+  })
+
+  it('状態異常を受けていなければ清めの水、満タンなら修理油が空振り', () => {
+    const s = solo('enemy_probe')
+    expect(gearNoEffectReason(s, getGearDef('gear_cleansing_water'))).toContain('状態異常')
+    expect(gearNoEffectReason(s, getGearDef('gear_repair_oil'))).toContain('満タン')
+    const hurt: GameState = { ...s, player: { ...s.player, hp: 10, weak: 2 } }
+    expect(gearNoEffectReason(hurt, getGearDef('gear_cleansing_water'))).toBeNull()
+    expect(gearNoEffectReason(hurt, getGearDef('gear_repair_oil'))).toBeNull()
+  })
+
+  it('弾きはしない（組めば魔素は減る）＝表示だけの裁定', () => {
+    const s = solo('enemy_probe')
+    expect(gearBlockedReason(s, MANA_MAX, gear('gear_rusty_wedge'))).toBeNull()
   })
 })

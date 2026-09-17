@@ -25,7 +25,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
-import { GEAR_CARRY_MAX, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage } from '../engine/gears.ts'
+import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
 import { STATUS_JA, describeGraph } from '../engine/enemyGraph.ts'
@@ -262,6 +262,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'BurrowBroken') L.push(' 🪺潜伏の殻が割れた! 次の行動は噛みつきに差し替わる')
       else if (e.type === 'DeckShuffled') L.push(' 🔀山札を切り直した')
       else if (e.type === 'EnemyDied') L.push(` ☠敵${e.enemyIndex}を倒した`) // CLI の敵番号は0始まり (Opusラン Y2: 盤面と1ズレ)
+      else if (e.type === 'GearUsed') L.push(` ⚙ ${e.name} を組んだ`)
       else if (e.type === 'DeathSaved') L.push(e.source === 'gear' ? ` ⚙蘇りの発条がはじけてHP${e.hp}で踏みとどまった (この戦闘で1度きり)` : ` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
@@ -649,7 +650,7 @@ function gearLine(def: GearDef, charges?: number): string {
 /** 持ち物と魔素の帯 (どの画面でも出す = 「持っているのに忘れる」を作らない) */
 function renderGearBar(run: RunState): string {
   const gears = gearsOf(run)
-  const L: string[] = [`⚙ 魔素 ${manaOf(run)}/${MANA_MAX} | ギア ${gears.length}/${GEAR_CARRY_MAX}`]
+  const L: string[] = [`⚙ 魔素 ${manaLabel(manaOf(run))} | ギア ${gears.length}/${GEAR_CARRY_MAX}`]
   gears.forEach((g, i) => {
     const def = getGearDef(g.gearId)
     const why = gearBlockedReason(run.phase === 'combat' ? run.combat : null, manaOf(run), g)
@@ -664,6 +665,9 @@ function renderGearBar(run: RunState): string {
     if (run.phase === 'combat' && run.combat !== null) {
       const live = gearLiveDamage(run.combat, def)
       if (live !== null) L.push(`       ${live}`)
+      // 空振りの予告 (2026-09-17 O: 召喚しない敵に錆びた楔を組んで魔素を捨てた)。弾きはしない
+      const noEffect = gearNoEffectReason(run.combat, def)
+      if (noEffect !== null) L.push(`       ⚠ いま組んでも何も起きない: ${noEffect}`)
     }
     // 札を選ぶギア (掘り出し・目当ての品・砥ぎ油・写し・化けの粉) は候補の uid を並べる
     if (def.needsCard !== undefined && run.phase === 'combat' && run.combat !== null && why === null) {
@@ -680,7 +684,7 @@ function renderGearBar(run: RunState): string {
     }
   })
   if (gears.length > 0 && run.phase === 'combat') {
-    L.push('  → {"type":"UseGear","index":N}（魔素1・自ターンに1個。対象は "targetIndex"、札を選ぶギアは "cardUid"）')
+    L.push(`  → {"type":"UseGear","index":N}（魔素${GEAR_MANA_COST}＝1個ぶん・自ターンに1個。対象は "targetIndex"、札を選ぶギアは "cardUid"。名前指定も可: {"type":"UseGear","gear":"火薬"}）`)
   }
   return L.join('\n')
 }

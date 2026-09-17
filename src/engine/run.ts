@@ -1283,7 +1283,8 @@ export function createDebugCheckpointRun(
       r = run.rng
     }
   }
-  run = { ...run, mana: Math.min(MANA_MAX, opts.mana ?? (act >= 3 ? MANA_MAX : act >= 2 ? 6 : 0)) }
+  // チェックポイントの既定は幕なりの残高 (幕3=満タン・幕2=3個ぶん)。opts.mana は「魔素の値」で渡す
+  run = { ...run, mana: Math.min(MANA_MAX, opts.mana ?? (act >= 3 ? MANA_MAX : act >= 2 ? GEAR_MANA_COST * 3 : 0)) }
   const ratio = Math.min(1, Math.max(0.05, opts.hpRatio ?? 1))
   return { ...run, hp: Math.max(1, Math.round(run.maxHp * ratio)) }
 }
@@ -1439,8 +1440,8 @@ function rollRewards(run: RunState): RunState {
 export const GEAR_DROP_BASE = 60
 export const GEAR_DROP_PITY = 10
 /** 魔素: 通常戦の勝利で+1、エリート・幕ボスで+2 */
-export const MANA_PER_WIN = 1
-export const MANA_PER_ELITE_BOSS = 2
+export const MANA_PER_WIN = 5 // 2026-09-17 裁定: 排出を半分 (1個ぶん=10 なので 2戦で1個)
+export const MANA_PER_ELITE_BOSS = 10 // 同上 (エリート/幕ボスは1個ぶん)
 /** ショップ: ギアの棚は3枠。値段はレア度で */
 export const SHOP_GEAR_SLOTS = 3
 export const SHOP_GEAR_PRICE: Readonly<Record<GearRarity, number>> = { common: 40, uncommon: 60, rare: 90 }
@@ -1797,7 +1798,8 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const price = run.shop.manaPrice ?? SHOP_MANA_PRICE
       if (run.gold < price) throw new Error('ゴールドが足りない')
       if (manaOf(run) >= MANA_MAX) throw new Error('魔素は上限')
-      return breakMawBank({ ...run, gold: run.gold - price, mana: manaOf(run) + 1 })
+      // 買えるのは「1個ぶん」(GEAR_MANA_COST)。上限を越えた分は切り捨てる
+      return breakMawBank({ ...run, gold: run.gold - price, mana: Math.min(MANA_MAX, manaOf(run) + GEAR_MANA_COST) })
     }
     case 'ChooseNode': {
       if (run.phase !== 'map') throw new Error('マップフェーズではない')

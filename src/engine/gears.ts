@@ -7,6 +7,8 @@
 import { checkCombatEnd } from './combat.ts'
 import { allCards, getCardDef, getGearDef } from './content.ts'
 import { damageBreakdown, playerDamageAfterModifiers, resolveEffectTargeted } from './effects.ts'
+import { emit } from './events.ts'
+import { getEnemyDef } from './content.ts'
 import { nextInt } from './rng.ts'
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import type { CardInstance, GameState, GearDef, GearInstance } from './types.ts'
@@ -14,16 +16,19 @@ import type { CardInstance, GameState, GearDef, GearInstance } from './types.ts'
 /** 持ち歩ける個数 (裁定 2026-09-17)。死蔵は腕なので絞らない */
 export const GEAR_CARRY_MAX = 10
 /**
- * 魔素の上限 (裁定 2026-09-17)。開始時 0。
- * **10→5 (2026-09-17 ユーザー裁定)**: プレイテスト5本中4本で魔素が一度も判断に触らなかった
- * (J 財布0／M 37ターン中0・最大6／L 14回組んで常に2以上／J2 影響0・最大7)。
- * 供給 (勝利+1・エリート/ボス+2) に対し消費が1ターン1個なので構造的に余っていた。
- * 撤去でなく上限だけを絞って「足りない瞬間」が出るかを次のランで見る。
- * ロールバック条件: 5でも財布が理由の我慢が出なければ撤去を再検討する。
+ * 魔素の単位と上限 (2026-09-17 ユーザー裁定「単位を10倍にして排出を半分」)。
+ * **1個を組む値段が10** なので、上限50＝ギア5個ぶん・勝利+5＝2戦に1個ぶん。
+ *
+ * 経緯: プレイテスト5本（J/M/L/J2/N）で魔素が一度も判断に触らなかった。
+ * 上限を10→5に下げても財布は0回で、N は上限5で逆に「溢れるくらいなら組む」圧を作り、
+ * ショップの魔素枠まで死に枠にした。算数は **入る 1.2/戦 対 出る 0.6/戦** で、
+ * 1ターン1個が消費を抑えている限り上限をいくつにしても張り付く＝天井でなく**入りを半分にする**。
+ * 単位を10倍にしたのは「勝利ごと半個ぶん」を整数で書けるようにするため（旧単位では 0.5 になる）。
+ * ロールバック条件: これでも財布が理由の我慢が出なければ魔素を撤去し、制約は1ターン1個だけにする。
  */
-export const MANA_MAX = 5
-/** 1個を組む値段 (一律) */
-export const GEAR_MANA_COST = 1
+export const MANA_MAX = 50
+/** 1個を組む値段 (一律)。魔素の単位＝この値が「1個ぶん」 */
+export const GEAR_MANA_COST = 10
 
 /** レア度の抽選比 (本家形 C65／U25／R10。裁定 2026-09-17) */
 export const GEAR_RARITY_WEIGHTS = { common: 65, uncommon: 25, rare: 10 } as const
@@ -107,6 +112,64 @@ export function gearLiveDamage(state: GameState, def: GearDef, targetIndex?: num
   return `実際に与える値: ${parts.join('、')}（${growth}急所・装甲・敵ブロック込み。勢いは乗らない）`
 }
 
+/** 魔素の表記「25/50（あと2個）」(単位が10になったので個数を添える。2026-09-17) */
+export function manaLabel(mana: number): string {
+  return `${mana}/${MANA_MAX}（あと${Math.floor(mana / GEAR_MANA_COST)}個）`
+}
+
+/**
+ * このギアを組んでも何も起きない時の理由 (2026-09-17 ユーザー裁定「組めるままにし、画面に出すだけ」)。
+ * プレイテスト O: 召喚しない敵に錆びた楔・豹変しない敵に鎮めの錘を組んで、ターンと魔素を捨てた実例が2件。
+ * 伏せ札と違いギアは空振りを止めないので、**組む前に画面で分かるようにする**（弾きはしない）。
+ * null = 効く見込みがある。表示専用の純関数。
+ */
+export function gearNoEffectReason(state: GameState, def: GearDef, targetIndex?: number): string | null {
+  const alive = state.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
+  const target = targetIndex !== undefined ? targetIndex : alive.length === 1 ? alive[0] : -1
+  const e = target >= 0 ? state.enemies[target] : undefined
+  const p = state.player
+  for (const eff of def.effects) {
+    switch (eff.effect) {
+      case 'blockEnemySummon': {
+        if (e === undefined) return null // 対象未定 = 判定しない
+        const d = getEnemyDef(e.enemyId)
+        const summons = d.splitInto !== undefined || d.hatchInto !== undefined || (d.moves ?? []).some((m) => m.kind === 'summon')
+        return summons ? null : 'この敵は召喚も分裂も孵化もしない'
+      }
+      case 'blockEnemyInterrupt': {
+        if (e === undefined) return null
+        const d = getEnemyDef(e.enemyId)
+        const left = (d.interrupts ?? []).filter((_x, i) => !(e.firedInterrupts ?? []).includes(i))
+        return left.length > 0 ? null : 'この敵には残っている割り込み（豹変・目覚め）が無い'
+      }
+      case 'clearEnemyStrength':
+        if (e === undefined) return null
+        return e.strength > 0 ? null : 'この敵の筋力は0以下（マイナスは戻さない）'
+      case 'shatterBlock':
+        if (e === undefined) return null
+        return e.block > 0 || e.burrowActive === true ? null : 'この敵はブロックも殻も持っていない'
+      case 'cleanseStatuses':
+        return p.weak === 0 && p.vulnerable === 0 && p.frail === 0 && p.restrain === 0 && (p.mist ?? 0) === 0 && (p.slow ?? 0) === 0
+          ? '消せる状態異常を受けていない'
+          : null
+      case 'purgeHandStatus': {
+        const ids = new Set(['status_wound', 'status_scald', 'status_junk', 'status_brand', 'status_guilt'])
+        return p.hand.some((c) => ids.has(c.def.id)) ? null : '手札に負傷・火傷・がらくた・烙印が無い'
+      }
+      case 'gainHpRatio':
+      case 'gainHp':
+        return p.hp >= p.maxHp ? 'HPは満タン' : null
+      case 'retrieveFromDiscard':
+        return p.discardPile.length === 0 ? '捨て札が無い' : null
+      case 'searchDeck':
+        return p.drawPile.length === 0 ? '山札が空' : null
+      default:
+        break
+    }
+  }
+  return null
+}
+
 export interface UseGearOptions {
   readonly targetIndex?: number
   /** 選んだカードの uid (needsCard の時) */
@@ -122,6 +185,9 @@ export interface UseGearOptions {
  * 'flee' (煙玉) はここでは何もしない = run 層が戦闘を離脱させる
  */
 export function resolveGear(state: GameState, def: GearDef, opts: UseGearOptions = {}): GameState {
+  // 組んだ事実をログに残す (2026-09-17 O: 締め紐・時の歯車・鎮めの錘は組んでも
+  // ログ行も敵の印も出ず、魔素が1減るだけで効いたのか分からなかった)
+  state = emit(state, { type: 'GearUsed', gearId: def.id, name: def.name })
   if (def.special === 'flee') return state
   if (def.special === 'nameless') {
     // 無銘の部品 (白紙の巻物): このランで拾ったことのあるギアのどれかになる

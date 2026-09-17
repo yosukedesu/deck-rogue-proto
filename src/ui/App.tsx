@@ -67,7 +67,7 @@ import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effe
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
-import { GEAR_CARRY_MAX, MANA_MAX, gearBlockedReason, gearCardChoices } from '../engine/gears.ts'
+import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -2919,6 +2919,13 @@ function GearBar({
             </span>
           </div>
           <div>{openDef.text}</div>
+          {/* 実際に与える値 (2026-09-17 J2 の死因) と空振りの予告 (同 O)。弾きはせず画面に出すだけ */}
+          {run.combat !== null && gearLiveDamage(run.combat, openDef) !== null && (
+            <div className="hint">{gearLiveDamage(run.combat, openDef)}</div>
+          )}
+          {run.combat !== null && gearNoEffectReason(run.combat, openDef) !== null && (
+            <div style={{ color: '#e6b422' }}>⚠ いま組んでも何も起きない: {gearNoEffectReason(run.combat, openDef)}</div>
+          )}
           {openDef.special === 'nameless' && (
             <div className="gear-choices">
               {seen.length === 0 ? (
@@ -2972,7 +2979,7 @@ function GearBar({
           )}
           <div className="gear-window-foot">
             <span className="hint">
-              ⚙ 魔素 {mana} → {Math.max(0, mana - 1)}
+              ⚙ 魔素 {mana} → {Math.max(0, mana - GEAR_MANA_COST)}
               {inCombat && run.combat?.gearUsedThisTurn !== true && ' ・このターンはあと1個'}
             </span>{' '}
             <button
@@ -4797,7 +4804,7 @@ function RunScreen({
         )}
         <div className="panel">
           <div className="setup-section-title">
-            ⚙ ギア（自ターンに魔素1で組む。持ち物 {gearsOf(run).length}/{GEAR_CARRY_MAX}・魔素 {manaOf(run)}/{MANA_MAX}）
+            ⚙ ギア（自ターンに1個・魔素を払って組む。持ち物 {gearsOf(run).length}/{GEAR_CARRY_MAX}・魔素 {manaLabel(manaOf(run))}）
           </div>
           <div className="gear-shelf">
             {(run.shop.gears ?? []).map((item, i) => {
@@ -4825,7 +4832,7 @@ function RunScreen({
             {run.shop.manaPrice !== undefined && (
               <div className="gear-shelf-item">
                 <b>⚙ 魔素</b>
-                <div className="choice-desc">ギアを組む動力（上限 {MANA_MAX}）</div>
+                <div className="choice-desc">ギアを組む動力（1個ぶん。上限 {MANA_MAX}）</div>
                 <button
                   className="btn btn-primary"
                   disabled={run.gold < run.shop.manaPrice || manaOf(run) >= MANA_MAX}
@@ -5209,7 +5216,7 @@ function RunScreen({
           </div>
         )}
         <div className="panel" style={{ marginTop: 8 }}>
-          <span className="chip">⚙ 魔素 {manaOf(run)}/{MANA_MAX}</span>
+          <span className="chip">⚙ 魔素 {manaLabel(manaOf(run))}</span>
           <GearBar run={run} inCombat={false} />
         </div>
         <button className="btn" data-hotkey="skip" onClick={() => dispatch({ type: 'SkipReward' })}>
