@@ -269,6 +269,29 @@ namespace DeckRogue.Game
             catch (Exception ex) { startErr = ex.Message; }
             if (startErr != null) { Debug.LogError("[Autopilot] state: 開始に失敗 " + startErr); yield return Shot("state-error"); yield break; }
             if (g.Rs == null) { yield return Shot("state-no-run"); yield break; }
+            // ギア (2026-09-17): gears=<id,...> で持ち物を直接置く (チェックポイントの既定の抽選を上書き)・mana=<n> で魔素
+            if (Get("gears") != null || Get("mana") != null)
+            {
+                try
+                {
+                    var rs0 = g.Rs;
+                    if (Get("gears") != null)
+                    {
+                        var list = new List<GearInstance>();
+                        var seen = new List<string>(rs0.SeenGearIds ?? new List<string>());
+                        int gn = 0;
+                        foreach (var id in Get("gears").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0 && x != "-"))
+                        {
+                            list.Add(Gears.MakeGear(id, "dbg" + (gn++) + "_" + id));
+                            if (!seen.Contains(id)) seen.Add(id);
+                        }
+                        rs0 = rs0 with { Gears = list, SeenGearIds = seen };
+                    }
+                    if (Get("mana") != null) { int m; if (int.TryParse(Get("mana"), out m)) rs0 = rs0 with { Mana = Math.Max(0, Math.Min(Gears.MANA_MAX, m)) }; }
+                    g.Rs = rs0;
+                }
+                catch (Exception ex) { Debug.LogError("[Autopilot] state: gears/mana " + ex.Message); }
+            }
 
             var rs = g.Rs;
             try
@@ -291,7 +314,11 @@ namespace DeckRogue.Game
                             g.Do(new RunCommand_ChooseNode { Col = col });
                         }
                         break;
-                    case "reward": g.Rs = DeckRogue.Engine.Run.DebugRollRewards(rs); break;
+                    case "reward":
+                        g.Rs = DeckRogue.Engine.Run.DebugRollRewards(rs);
+                        if (Get("gearopt") != null) g.Rs = g.Rs with { GearOption = Get("gearopt") == "none" ? null : Get("gearopt") };   // 報酬のギア枠 (2026-09-17)。gearopt=none で枠なし
+                        if (Get("cardsdone") == "1") g.Rs = g.Rs with { RewardOptions = null };   // 札を先に取った後の局面 (ギアだけ残る)
+                        break;
                     case "relic": g.Rs = DeckRogue.Engine.Run.DebugOpenTreasure(rs); break;
                     case "shop": g.Rs = DeckRogue.Engine.Run.OpenShop(rs); g.ShopMode = Get("shopmode"); break;
                     case "event": g.Rs = DeckRogue.Engine.Run.DebugOpenEvent(rs, Get("event")); break;
@@ -410,6 +437,8 @@ namespace DeckRogue.Game
             if (Get("upgraded") == "1") g.ShowUpgraded = true;   // 一覧の「鍛えた後を見る」(2026-09-16)
             if (Get("gridpick") != null) { var gp = Get("gridpick").Split(':'); int gi; if (gp.Length == 2 && int.TryParse(gp[1], out gi)) g.SetGridPick(gp[0], gi); }   // gridpick=forge:2 = 押した札
             if (Get("log") == "1") g.ShowLog = true;
+            if (Get("gearwin") != null) { int gi; if (int.TryParse(Get("gearwin"), out gi)) g.GearPending = new PendingGear { Index = gi }; }   // ギアのトークンを押した状態 = 窓 (2026-09-17)
+            if (Get("gearswap") == "1") g.GearSwap = g.Rs != null && g.Rs.Phase == RunPhases.Shop ? "shop:0" : "reward";   // 満杯の入れ替え窓
             if (Get("menu") == "1") g.MenuOpen = true;   // スマホの ≡ (2026-09-14)
             // フィードバックの画面 (2026-09-14): rating=won|lost で評価ダイアログ (最後の戦闘を仮に積む)、memo=1 でメモの窓
             if (Get("rating") != null && g.Rs != null)
@@ -482,6 +511,34 @@ namespace DeckRogue.Game
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
                 Time.captureFramerate = 0;
                 yield return WaitPresentation();
+            }
+            // usegear=<持ち物index>[:<敵index>]: そのギアを組んで (対象は指定か最初の生存敵)、「組んだ」の演出をコマ送りで撮る (2026-09-17)。playshots/playevery を共用。
+            // 札を選ぶギアは選ぶ窓が開いた所で止まる (窓の確認)
+            if (Get("usegear") != null && g.Rs != null && g.Rs.Combat != null)
+            {
+                var gspec = Get("usegear").Split(':');
+                int gIdx; int gTgt = -1;
+                if (int.TryParse(gspec[0], out gIdx) && gIdx >= 0 && gIdx < DeckRogue.Engine.Run.GearsOf(g.Rs).Count)
+                {
+                    if (gspec.Length > 1) int.TryParse(gspec[1], out gTgt);
+                    Debug.Log("[Autopilot] usegear " + gIdx);
+                    Time.captureFramerate = 60;
+                    Presenter.MarkSeen(g.Rs.Combat);
+                    g.GearPending = new PendingGear { Index = gIdx, TargetIndex = gTgt >= 0 ? gTgt : (int?)null };
+                    GearUi.Submit(g);
+                    yield return null;
+                    if (g.GearPending != null && g.GearPending.Stage == "target" && g.Rs.Combat != null)
+                    {
+                        int tgt = -1;
+                        for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) if (g.Rs.Combat.Enemies[i].Hp > 0) { tgt = i; break; }
+                        if (tgt >= 0) g.OnEnemyClicked(tgt);
+                    }
+                    int shotsN = 6; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 6;
+                    int every = 5; int.TryParse(Get("playevery") ?? "", out every); if (every <= 0) every = 5;
+                    for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("gear-" + i, 1); }
+                    Time.captureFramerate = 0;
+                    yield return WaitPresentation();
+                }
             }
             // endplay=1: 手番を終えて敵フェーズを演出付き (Do 経由 = 順送り) で走らせ、コマ送りで撮る (2026-09-17 敵の行動の演出)。endshots=枚数・endevery=Nフレームごと
             if (Get("endplay") == "1" && g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.PlayerTurn)
@@ -692,7 +749,12 @@ namespace DeckRogue.Game
                 }
                 switch (ph)
                 {
-                    case RunPhases.Reward: g.Do(new RunCommand_PickReward { Index = 0 }); break;
+                    case RunPhases.Reward:
+                        // ギア (2026-09-17): 提示があれば先に取る (満杯なら見送る)。札は残っていれば1枚目、無ければ見送る
+                        if (g.Rs.GearOption != null) g.Do(DeckRogue.Engine.Run.GearFull(g.Rs) ? (RunCommand)new RunCommand_SkipGear() : new RunCommand_TakeGear());
+                        else if (g.Rs.RewardOptions != null && g.Rs.RewardOptions.Count > 0) g.Do(new RunCommand_PickReward { Index = 0 });
+                        else g.Do(new RunCommand_SkipReward());
+                        break;
                     case RunPhases.RelicReward: g.Do(new RunCommand_PickRelic { Index = 0 }); break;
                     case RunPhases.RelicChoose: g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>() }); break;
                     case RunPhases.Campfire: g.Do(new RunCommand_CampfireRest()); break;
@@ -809,7 +871,7 @@ namespace DeckRogue.Game
                     case RunPhases.Workshop: cmd = new RunCommand_WorkshopSkip(); break;
                     case RunPhases.RelicReward: cmd = new RunCommand_SkipRelic(); break;
                     case RunPhases.RelicChoose: cmd = new RunCommand_RelicChooseCards { Indices = new List<int>() }; break;
-                    case RunPhases.Reward: cmd = new RunCommand_SkipReward(); break;
+                    case RunPhases.Reward: cmd = rs.GearOption != null ? (RunCommand)new RunCommand_SkipGear() : new RunCommand_SkipReward(); break;   // ギアが残っていれば先に片付ける (2026-09-17)
                 }
                 if (cmd == null) break;
                 g.Do(cmd);

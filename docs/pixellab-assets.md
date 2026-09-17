@@ -318,3 +318,48 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 `scripts/art-b7d18.py orders` は `b7d18-*.json` を上書きするので発注書は別名で自前生成し、`node scripts/pixellab.mjs gen` → `art-b7d18.py sheet <scratch> <out> relics` → 判定 → `art-b7d18.py apply` の順。
 判定は63/63採用（B=seed41 を選んだのは15: 増幅の薬・連節棍・鍛冶の火種・融合の鎚・角の留め具・大きな果実・大口の貯金箱・行商の食券・苔むした卵・安らぎの煙管・祈りの車輪・蛇の頭骨・石の暦・頑丈な留め具・旅の蝋燭）。
 教訓: 「hand」「mask」は人型を呼ぶので negative に `person, arm, body`（干からびた手は seed41 が腕、赤面の面は両シードとも面だけで可）。「bank」は豚でなく蛙の口で指定した（B が口を開けた蛙で本家 Maw の意図に近い）。
+
+## ギア（gears/ 32×32・2026-09-17）
+
+消耗品「ギア」33種の挿絵。置き場は `unity/Assets/Resources/Art/gears/<id>.png`（32×32・Point・PPU 100・非圧縮＝レリックと同じインポート規約）。
+無い間はコード生成の歯車 `ThemeFx.GearGlyph(id, family)`（id から決まる歯数 6〜9・軸穴。干渉系だけ青緑、他は真鍮）が出る。
+使われる場所: 戦闘の自分の札のトークン（PC 62×62・スマホ 64×66 の中に 40〜48px）／報酬・店の札（64px）／上部バーの魔素の札のアイコン（18px＝`gears/mana.png` があればそれ）／組んだ演出の幽霊。
+絵柄の指針: からくりの匣の中身＝真鍮と黒鉄の小さな部品（歯車・発条・楔・小瓶）。世界観では「実物にするのは からくりの匣・置物・レリック・素材・ゴールドだけ」＝ギアは実物なので**物として描く**（札の抽象ではない）。
+干渉系（楔・錆びた楔・鎮めの錘）は脈の青緑の光を帯びる。両刃（過負荷の歯車・火薬樽・血の発条）は朱の差し色。大物（蘇りの発条・時の歯車・無銘の部品・煙玉）はレア＝蜂蜜の縁が付くので絵は控えめでよい。
+
+| id | 名前 | レア度 | 系統 | 効果（文面） |
+|---|---|---|---|---|
+| `gear_spring` | 発条 | common | 汎用 | ブロック10 |
+| `gear_cog` | 歯車 | common | 汎用 | 一時マナ+2 |
+| `gear_oilcan` | 油差し | common | 汎用 | 3ドロー |
+| `gear_powder` | 火薬 | common | 汎用 | 敵全体に10ダメージ |
+| `gear_repair_oil` | 修理油 | common | 汎用 | 最大HPの20%回復 |
+| `gear_brand_iron` | 焼き鏝 | uncommon | 汎用 | 対象に急所3 |
+| `gear_rust_powder` | 錆粉 | uncommon | 汎用 | 対象に威圧3 |
+| `gear_wedge` | 楔 | uncommon | 干渉（青緑） | 対象のいま宣言されている行動を打ち消す |
+| `gear_rusty_wedge` | 錆びた楔 | uncommon | 干渉（青緑） | 対象の召喚・分裂・孵化をこの戦闘で1回止める |
+| `gear_stilling_weight` | 鎮めの錘 | rare | 干渉（青緑） | 対象の割り込み（HP半分の豹変・目覚め）をこの戦闘中起こさない |
+| `gear_cleansing_water` | 清めの水 | uncommon | 清め | 自分の弱体・脆弱・虚弱・拘束・霞み・重りを全て消す |
+| `gear_ash_remover` | 灰落とし | common | 清め | 手札の負傷・火傷・がらくた・烙印を全て消滅させる |
+| `gear_ward_charm` | 厄除けの符 | uncommon | 清め | 次に受ける状態異常を1回弾く |
+| `gear_dig_out` | 掘り出し | common | 場の操作 | 捨て札から1枚を手札へ |
+| `gear_wanted_item` | 目当ての品 | uncommon | 場の操作 | 山札から1枚を選んで手札へ |
+| `gear_redraw` | 引き直し | uncommon | 場の操作 | 手札を全て捨て、同じ枚数を引く |
+| `gear_next_prep` | 次の備え | common | 場の操作 | 次のターンのドロー+3 |
+| `gear_whetstone_oil` | 砥ぎ油 | common | 札の一時変化 | 手札1枚をこの戦闘中鍛える |
+| `gear_copy` | 写し | uncommon | 札の一時変化 | 手札1枚のコピーを手札に加える（この戦闘限り） |
+| `gear_shift_powder` | 化けの粉 | rare | 札の一時変化 | 手札1枚を同じレア度の別の札に変える（この戦闘限り） |
+| `gear_bewilder` | 惑わし | common | 敵の状態操作 | 対象に混乱3 |
+| `gear_rust_stop` | 錆止め | uncommon | 敵の状態操作 | 対象の筋力を0に戻す（マイナスの筋力は戻さない） |
+| `gear_hammer` | 金槌 | common | 敵の状態操作 | 対象のブロックと殻を砕く |
+| `gear_tie_cord` | 締め紐 | common | 敵の状態操作 | 対象の次のターンの行動を隙にする（いま宣言されている行動は止まらない） |
+| `gear_overload_cog` | 過負荷の歯車 | uncommon | 両刃 | 一時マナ+3・次のターンのドロー−2 |
+| `gear_powder_keg` | 火薬樽 | uncommon | 両刃 | 敵全体に16ダメージ・自分もHP−4 |
+| `gear_blood_spring` | 血の発条 | uncommon | 両刃 | ブロック20・HP−4 |
+| `gear_paper_slip` | 挟み紙 | common | 保持・持ち越し | このターンは手札を捨てない |
+| `gear_stockpile` | 貯め置き | uncommon | 保持・持ち越し | 余ったエナジーを次のターンへ持ち越す |
+| `gear_revive_spring` | 蘇りの発条 | rare | 大物 | この戦闘中、致死ダメージを一度耐えてHP1で立つ |
+| `gear_time_cog` | 時の歯車 | rare | 大物 | 敵全員の次のターンの行動が隙になる（いま宣言されている行動は止まらない） |
+| `gear_nameless` | 無銘の部品 | rare | 大物 | このランで拾ったことのあるギアのどれかになる |
+| `gear_smoke` | 煙玉 | rare | 大物 | この戦闘から逃げる（幕ボス以外。報酬は得られない） |
+| `mana` | 魔素（アイコン） | — | 干渉（青緑） | 上部バーと店の魔素の札に使う青緑の歯車。無ければ `GearGlyph("mana","interfere")` |

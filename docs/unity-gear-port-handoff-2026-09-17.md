@@ -7,6 +7,13 @@
 
 ## 0. このセッションで済ませたこと／済ませていないこと
 
+> **2026-09-17 夜（ローカルの WSL＋Windows Unity）: §2 と §3 を全部実装した。** 完了の定義 §4 の 1〜3 を満たす:
+> `dotnet run -- verify` 13本全手一致／`roundtrip` 13本一致／`port-parity` 緑／`unity:sync check` 差分0／`unity-win.sh compile` 0エラー／
+> `verify`（Unity 内）8/8（チェックポイント5本は Unity の検証器が origin.kind=checkpoint 未対応＝従来どおり）／`play` スモーク通過／
+> `shots state` で 戦闘（PC の窓・スマホの窓・組んだ演出のコマ送り・札を選ぶ窓）・報酬（ギア枠・札を先に取った後・満杯の入れ替え）・店（ギアの棚 PC/スマホ）を確認。
+> 新しいファイル: `Runtime/Gears.cs`・`Assets/Game/GearUi.cs`。§3.6 の撮影キーに `usegear=<idx[:敵]>`・`cardsdone=1`・`gearswap=1` を足した。
+> §4 の 4（Android 実機）と 5 の CLAUDE.md 更新のうち、CLAUDE.md は済・Android は次の APK で確認。§3.7 の絵は未発注（`docs/pixellab-assets.md` に33行を足した）。
+
 済:
 - `npm run gen:csharp` を実行して `unity/Packages/com.deckrogue.engine/Runtime/Generated/Types.g.cs` を再生成した（GearDef・GearInstance・ShopStateGears・
   RunState の gears/mana/gearPity/seenGearIds/gearOption・GameState の gearUsedThisTurn/retainHandThisTurn/energyCarryThisTurn/gearDeathSave・

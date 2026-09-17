@@ -27,6 +27,7 @@ namespace DeckRogue.Game
             int rmPrice = DeckRogue.Engine.Run.ShopRemovalPrice(run);
             int upPrice = DeckRogue.Engine.Run.ShopUpgradePrice(run);
 
+            if (g.ShopMode == "gears") { BuildGears(g, root, run, shop); return; }   // ギアの棚 (2026-09-17 裁定2: サービス欄のボタン→専用画面)
             if (g.ShopMode != null)
             {
                 bool removing = g.ShopMode == "remove";
@@ -129,6 +130,8 @@ namespace DeckRogue.Game
             }
             ServiceBtn(side.transform, "カード除去  " + rmPrice + "G", run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); });
             ServiceBtn(side.transform, "鍛える  " + upPrice + "G", run.Gold >= upPrice, delegate { g.ShopMode = "upgrade"; g.Rebuild(); });
+            int shelfN = shop.Gears != null ? shop.Gears.Count : 0;
+            ServiceBtn(side.transform, "ギアの棚  " + shelfN + "枠 ／ 魔素 " + (shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE) + "G", true, delegate { g.ShopMode = "gears"; g.Rebuild(); });
             if (!ph)
             {
                 var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
@@ -136,6 +139,104 @@ namespace DeckRogue.Game
             }
 
             RunUi.BottomButton(root, "店を出る", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, ph ? -300f : -100f, ph ? 24f : 40f);
+        }
+
+        /// <summary>
+        /// ギアの棚 (2026-09-17 ユーザー裁定2): 除去/鍛えると同じ下位モードの専用画面。3枠の棚＋魔素の購入＋持ち物の整理 (捨てる／満杯なら入れ替え)。PC/スマホ共通
+        /// </summary>
+        static void BuildGears(GameRoot g, RectTransform root, RunState run, ShopState shop)
+        {
+            bool ph = UiKit.Phone;
+            var cs = BattleScreen.CanvasSize(root);
+            var gears = DeckRogue.Engine.Run.GearsOf(run);
+            int mana = DeckRogue.Engine.Run.ManaOf(run);
+            RunUi.Heading(root, "ギアの棚", "自ターンに1個・魔素を払って組む。持ち物 " + gears.Count + "/" + Gears.GEAR_CARRY_MAX + "・魔素 " + Gears.ManaLabel(mana) + "・所持金 " + run.Gold + "G");
+            var shelf = shop.Gears ?? new List<ShopStateGears>();
+            int manaPrice = shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE;
+            float scale = ph ? 0.8f : 1f;
+            float cw = 200f * scale, chh = 272f * scale, gap = 40f, btnH = 70f;
+            int n = shelf.Count + 1;   // 3枠 + 魔素の札
+            float totalW = n * cw + (n - 1) * gap;
+            float top = ph ? RunUi.TopH + 20f : RunUi.TopH + 120f;   // 棚の上端 (キャンバス上から)
+            var shelfRt = UiKit.NewRect("gear-shelf", root);
+            UiKit.Anchor(shelfRt, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-totalW / 2f, -top - chh - btnH), new Vector2(totalW / 2f, -top));
+            for (int i = 0; i < shelf.Count; i++)
+            {
+                int idx = i;
+                var item = shelf[i];
+                var def = GearUi.DefOf(item.Id);
+                bool sold = item.Sold == true;
+                bool canBuy = !sold && run.Gold >= item.Price;
+                var cell = UiKit.NewRect("gshop" + i, shelfRt);
+                UiKit.Anchor(cell, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(i * (cw + gap), 0f), new Vector2(i * (cw + gap) + cw, 0f));
+                var card = GearUi.Card(cell, def, item.Id, 200f, 272f, null, scale);
+                card.anchorMin = card.anchorMax = new Vector2(0.5f, 1f); card.pivot = new Vector2(0.5f, 1f); card.anchoredPosition = Vector2.zero;
+                if (sold)
+                {
+                    var cover = UiKit.Pan(card, new Color(0f, 0f, 0f, 0.6f), "sold");
+                    UiKit.Stretch(cover.rectTransform, 0f, 0f, 0f, 0f);
+                    var st = UiKit.Txt(cover.transform, "売切", 40, UiKit.ColBad, TextAnchor.MiddleCenter, true);
+                    UiKit.Stretch(st.rectTransform, 0f, 0f, 0f, 0f);
+                }
+                var tag = UiKit.NewRect("pricewrap", cell);
+                UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f, 0f), new Vector2(cw / 2f, btnH));
+                PriceTag(tag, item.Price, sold ? "売切" : null, canBuy);
+                var b = UiKit.Btn(cell, sold ? "売切" : "買う", delegate
+                {
+                    Audio.Ui("buy");
+                    if (DeckRogue.Engine.Run.GearFull(g.Rs)) { g.GearSwap = "shop:" + idx; g.Rebuild(); }
+                    else g.Do(new RunCommand_ShopBuyGear { Index = idx });
+                }, 15, canBuy, PaperFx.BrassLight);
+                var le = b.GetComponent<LayoutElement>();
+                if (le != null) UnityEngine.Object.Destroy(le);
+                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f + 10f, 40f), new Vector2(cw / 2f - 10f, btnH + 14f));
+            }
+            {   // 魔素の札: ギアを組む動力 (1個ぶん。上限50)
+                int i = shelf.Count;
+                var cell = UiKit.NewRect("gshop-mana", shelfRt);
+                UiKit.Anchor(cell, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(i * (cw + gap), 0f), new Vector2(i * (cw + gap) + cw, 0f));
+                // 魔素の札はギアの札と同じ器 (GearUi.Card) に仮の定義を流し込む = 大きさと位置が棚と揃う
+                var manaDef = new GearDef { Id = "mana", Name = "魔素", Rarity = "common", Family = "interfere", Text = "ギアを組む動力。組むたび " + Gears.GEAR_MANA_COST + " 使う", Effects = new List<DeclarativeEffect>() };
+                var card = GearUi.Card(cell, manaDef, "mana", 200f, 272f, null, scale, "1個ぶん（" + Gears.GEAR_MANA_COST + "）", "上限 " + Gears.MANA_MAX + "\nいま " + Gears.ManaLabel(mana), PaperFx.Mana);
+                card.anchorMin = card.anchorMax = new Vector2(0.5f, 1f); card.pivot = new Vector2(0.5f, 1f); card.anchoredPosition = Vector2.zero;
+                bool full = mana >= Gears.MANA_MAX;
+                bool canBuy = !full && run.Gold >= manaPrice;
+                var tag = UiKit.NewRect("pricewrap", cell);
+                UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f, 0f), new Vector2(cw / 2f, btnH));
+                PriceTag(tag, manaPrice, full ? "上限" : null, canBuy);
+                var b = UiKit.Btn(cell, full ? "魔素は上限" : "買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyMana()); }, 15, canBuy, PaperFx.BrassLight);
+                var le = b.GetComponent<LayoutElement>();
+                if (le != null) UnityEngine.Object.Destroy(le);
+                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f + 10f, 40f), new Vector2(cw / 2f - 10f, btnH + 14f));
+            }
+            // 持ち物の整理: トークンの列＋「捨てる」
+            float invTop = top + chh + btnH + 18f;
+            float tw = 64f, th = 66f;
+            float invW = Math.Max(420f, gears.Count * (tw + 14f));
+            var inv = UiKit.NewRect("gear-inv", root);
+            UiKit.Anchor(inv, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-invW / 2f, -invTop - 130f), new Vector2(invW / 2f, -invTop));
+            var lbl = UiKit.Txt(inv, "持ち物 " + gears.Count + " / " + Gears.GEAR_CARRY_MAX + (gears.Count == 0 ? "（まだ持っていない）" : "　「捨てる」で枠を整理する（戻せない）"), 15, UiKit.ColText, TextAnchor.MiddleLeft);
+            lbl.outlineWidth = 0.2f; lbl.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+            UiKit.Anchor(lbl.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -24f), new Vector2(0f, 0f));
+            for (int i = 0; i < gears.Count; i++)
+            {
+                int idx = i;
+                var cell = UiKit.NewRect("inv" + i, inv);
+                UiKit.Anchor(cell, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(i * (tw + 14f), -30f - th - 32f), new Vector2(i * (tw + 14f) + tw, -30f));
+                var tok = GearUi.Token(g, cell, run, null, -1, gears[i], tw, th, true, false);
+                UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -th), new Vector2(tw, 0f));
+                var b = UiKit.Btn(cell, "捨てる", delegate { Audio.Ui("remove"); g.Do(new RunCommand_DiscardGear { Index = idx }); }, 12);
+                var le = b.GetComponent<LayoutElement>();
+                if (le != null) UnityEngine.Object.Destroy(le);
+                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 30f));
+            }
+            RunUi.BackButton(root, "戻る", delegate { g.ShopMode = null; g.GearSwap = null; g.Rebuild(); });
+            if (g.GearSwap != null && g.GearSwap.StartsWith("shop:"))
+            {
+                int si; if (int.TryParse(g.GearSwap.Substring(5), out si) && si >= 0 && si < shelf.Count)
+                    GearUi.BuildSwapPicker(g, root, run, shelf[si].Id, delegate (int idx) { g.GearSwap = null; Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyGear { Index = si, DiscardIndex = idx }); });
+                else g.GearSwap = null;
+            }
         }
 
         static void ServiceBtn(Transform parent, string label, bool enabled, Action onClick)

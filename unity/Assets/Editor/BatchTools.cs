@@ -213,7 +213,7 @@ namespace DeckRogue.EditorTools
                             case RunPhases.Campfire: cmd = new RunCommand_CampfireRest(); break;
                             case RunPhases.Workshop: cmd = new RunCommand_WorkshopSkip(); break;
                             case RunPhases.RelicReward: cmd = new RunCommand_SkipRelic(); break;
-                            case RunPhases.Reward: cmd = new RunCommand_SkipReward(); break;
+                            case RunPhases.Reward: cmd = rs.GearOption != null ? (RunCommand)new RunCommand_SkipGear() : new RunCommand_SkipReward(); break;   // ギア (2026-09-17): 残っていれば先に片付ける
                             default: Finish(1, "想定外のフェーズ: " + rs.Phase); return;
                         }
                         g.Do(cmd);

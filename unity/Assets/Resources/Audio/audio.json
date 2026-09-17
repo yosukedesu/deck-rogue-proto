@@ -327,6 +327,17 @@
       "volume": 0.9,
       "jitter": 0.0
     },
+    "GearUsed": {
+      "sfx": "trap_fire",
+      "volume": 0.8,
+      "jitter": 0.02,
+      "_note": "ギアを組んだ (2026-09-17 裁定: からくりと同じ音)"
+    },
+    "DeathSaved": {
+      "sfx": "heal",
+      "volume": 0.9,
+      "_note": "蘇りの発条 (ギア)・蜥蜴の尾で致死を耐えた"
+    },
     "DamageDealt.blocked": {
       "sfx": "block",
       "volume": 0.8,

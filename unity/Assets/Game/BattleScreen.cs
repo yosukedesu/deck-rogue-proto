@@ -58,6 +58,7 @@ namespace DeckRogue.Game
                 else if (need != null) BuildPicker(g, ui, st, need);
             }
             else if (g.ModeChoiceUid != null) BuildModeChooser(g, ui, st);
+            else if (g.GearPending != null) GearUi.BuildPending(g, ui, run, st);   // ギア (2026-09-17): 窓／札を選ぶ／対象の帯
         }
 
         // ---- 背景 ----
@@ -127,6 +128,7 @@ namespace DeckRogue.Game
             UiKit.Le(gt, -1f, 28f, -1f, 28f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 28f, -1f, 28f);
+            GearUi.ManaTag(g, bar, run, UiKit.Phone);   // 魔素 (ギアの動力。2026-09-17)。演出の的 "mana"
 
             for (int i = 0; i < run.Relics.Count && i < 8; i++)
             {
@@ -988,8 +990,10 @@ namespace DeckRogue.Game
         {
             var p = st.Player;
             float ax = area.offsetMin.x;   // area の左端 (キャンバス x)。札はキャンバス x=40 から
-            float secA = 300f, secB = p.SetSlots * (PhoneTokenW + 10f) + 24f, secC = 236f;
-            float w = secA + secB + secC, h = StripH;
+            var gearList = DeckRogue.Engine.Run.GearsOf(g.Rs);
+            // C: ギア (2026-09-17 案A「匣の帯」): 62×62 のトークンを実際の個数ぶんだけ (空きは詰める。0 個でも見出しの幅は残す)
+            float secA = 300f, secB = p.SetSlots * (PhoneTokenW + 10f) + 24f, secG = Math.Max(1, gearList.Count) * (GearUi.TokenW + 8f) + 24f, secC = 236f;
+            float w = secA + secB + secG + secC, h = StripH;
             var strip = UiKit.NewRect("hpwrap", area);
             UiKit.Anchor(strip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(40f - ax, 0f), new Vector2(40f - ax + w, h));
             var paper = PaperFx.Sheet(strip, PaperFx.Tag2, "paper");
@@ -1043,8 +1047,34 @@ namespace DeckRogue.Game
                     pocket.raycastTarget = false;
                 }
             }
-            // C: 置物 = 付箋 (挿絵 + 名前) を2行。3つ目からは「+N …」
-            float cx0 = secA + secB;
+            // C: ギア = 持ち物のトークン (押すと窓。敵の番・札の選択中は押せない)
+            float gx0 = secA + secB;
+            var divG = UiKit.Pan(strip, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.35f), "div");
+            UiKit.Anchor(divG.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(gx0, 12f), new Vector2(gx0 + 1f, -12f));
+            divG.raycastTarget = false;
+            var gearArea = UiKit.NewRect("gearzone", strip);
+            UiKit.Anchor(gearArea, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(gx0 + 14f, 0f), new Vector2(gx0 + secG, 0f));
+            g.RegisterAnchor("gearzone", gearArea);
+            var gearLabel = UiKit.Txt(gearArea, "ギア " + gearList.Count + " / " + Gears.GEAR_CARRY_MAX, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Anchor(gearLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -30f), new Vector2(0f, -10f));
+            gearLabel.textWrappingMode = TextWrappingModes.NoWrap;
+            bool canUseGear = st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
+            for (int i = 0; i < gearList.Count; i++)
+            {
+                var tok = GearUi.Token(g, gearArea, g.Rs, st, i, gearList[i], GearUi.TokenW, GearUi.TokenH, false, canUseGear);
+                UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(i * (GearUi.TokenW + 8f), -34f - GearUi.TokenH), new Vector2(i * (GearUi.TokenW + 8f) + GearUi.TokenW, -34f));
+            }
+            if (gearList.Count == 0)
+            {   // 空の匣: 点線のポケット (まだ持っていない)
+                var pocket = UiKit.NewRect("pocket", gearArea);
+                UiKit.Anchor(pocket, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -34f - GearUi.TokenH), new Vector2(GearUi.TokenW, -34f));
+                var pImg = PaperFx.Sheet(pocket, PaperFx.Tag, "pocket", new Color(0.55f, 0.5f, 0.45f, 0.35f));
+                UiKit.Stretch(pImg.rectTransform, 0f, 0f, 0f, 0f);
+                pImg.raycastTarget = true;
+                Tooltip.Attach(pocket.gameObject, delegate { return "<b>ギア</b>\n戦闘の報酬や店で拾う消耗品。自ターンに魔素1で組む (1ターン1個)"; });
+            }
+            // D: 置物 = 付箋 (挿絵 + 名前) を2行。3つ目からは「+N …」
+            float cx0 = secA + secB + secG;
             var divB = UiKit.Pan(strip, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.35f), "div");
             UiKit.Anchor(divB.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(cx0, 12f), new Vector2(cx0 + 1f, -12f));
             divB.raycastTarget = false;
@@ -1143,14 +1173,44 @@ namespace DeckRogue.Game
                 }
             }
 
-            // 同じ帯の右: 置物 = 付箋 (挿絵 + 名前) を2列×2行 (狭いキャンバスは1列)。超えたら「+N …」。リーダーの頭 (y≈200) より上なので絵と重ならない
+            // 同じ帯のからくりの右: ギア (2026-09-17 案A「匣の帯」) = 64×66 のトークンを最大 6 (幅 1300 未満は 4)。溢れは「+N」(タップで一覧)
+            var gearList = DeckRogue.Engine.Run.GearsOf(g.Rs);
+            float gearW = 0f;
+            if (gearList.Count > 0)
+            {
+                int gearMax = cs.x >= 1300f ? 6 : 4;
+                int gearShown = gearList.Count <= gearMax ? gearList.Count : gearMax - 1;
+                bool more = gearShown < gearList.Count;
+                gearW = gearShown * (GearUi.PhoneTokenW + 8f) + (more ? 44f + 8f : 0f);
+                var gearArea = UiKit.NewRect("gearzone", area);
+                place(gearArea, left + setW + 14f, bandTop, gearW, 22f + GearUi.PhoneTokenH);
+                g.RegisterAnchor("gearzone", gearArea);
+                var gearLabel = PaperFx.NightNote(gearArea, "ギア " + gearList.Count + " / " + Gears.GEAR_CARRY_MAX, 14, 160f);
+                gearLabel.anchorMin = gearLabel.anchorMax = new Vector2(0f, 1f); gearLabel.pivot = new Vector2(0f, 1f);
+                gearLabel.anchoredPosition = new Vector2(-4f, 2f);
+                bool canUseGear = st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
+                for (int i = 0; i < gearShown; i++)
+                {
+                    var tok = GearUi.Token(g, gearArea, g.Rs, st, i, gearList[i], GearUi.PhoneTokenW, GearUi.PhoneTokenH, true, canUseGear);
+                    UiKit.Anchor(tok, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * (GearUi.PhoneTokenW + 8f), 0f), new Vector2(i * (GearUi.PhoneTokenW + 8f) + GearUi.PhoneTokenW, GearUi.PhoneTokenH));
+                }
+                if (more)
+                {
+                    var rest = new List<GearInstance>();
+                    for (int i = gearShown; i < gearList.Count; i++) rest.Add(gearList[i]);
+                    var chip = GearUi.MoreChip(gearArea, rest, 44f, GearUi.PhoneTokenH);
+                    UiKit.Anchor(chip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(gearShown * (GearUi.PhoneTokenW + 8f), 0f), new Vector2(gearShown * (GearUi.PhoneTokenW + 8f) + 44f, GearUi.PhoneTokenH));
+                }
+                gearW += 14f;
+            }
+            // その右: 置物 = 付箋 (挿絵 + 名前) を2列×2行 (狭いキャンバスは1列)。超えたら「+N …」。リーダーの頭 (y≈200) より上なので絵と重ならない
             var perms = new List<CardInstance>();
             for (int i = 0; i < p.Permanents.Count; i++) if (p.Permanents[i].Innate != true) perms.Add(p.Permanents[i]);
             if (perms.Count > 0)
             {
                 int cols = cs.x >= 1400f ? 2 : 1;
                 var permRow = UiKit.NewRect("perms", area);
-                place(permRow, left + setW + 14f, bandTop, cols * (PhoneChipW + 8f), 22f + 2f * (PhoneChipH + 6f));
+                place(permRow, left + setW + 14f + gearW, bandTop, cols * (PhoneChipW + 8f), 22f + 2f * (PhoneChipH + 6f));
                 var permLabel = PaperFx.NightNote(permRow, "置物 " + perms.Count, 14, 120f);
                 permLabel.anchorMin = permLabel.anchorMax = new Vector2(0f, 1f); permLabel.pivot = new Vector2(0f, 1f);
                 permLabel.anchoredPosition = new Vector2(-4f, 2f);

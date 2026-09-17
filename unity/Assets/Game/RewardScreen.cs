@@ -16,16 +16,55 @@ namespace DeckRogue.Game
         {
             var run = g.Rs;
             Backdrop(g, root, "報酬");
-            RunUi.Heading(root, "カード報酬", "1枚選んでデッキに加える。見送ってもよい (デッキを薄く保つのも戦略)");
-
             var opts = run.RewardOptions;
             int n = opts != null ? opts.Count : 0;
+            // ギア (2026-09-17): 札3枚とは別枠で1つ。札とギアは独立 (どちらを先に片付けてもよい = FinishReward)
+            string gearId = run.GearOption;
+            GearDef gdef = gearId != null ? GearUi.DefOf(gearId) : null;
+            bool hasGear = gearId != null;
+            string manaNote = "魔素 " + Gears.ManaLabel(DeckRogue.Engine.Run.ManaOf(run));
+            if (opts == null && hasGear) RunUi.Heading(root, "ギア報酬", "札とは別枠。取っても見送ってもよい。" + manaNote);
+            else RunUi.Heading(root, "カード報酬", "1枚選んでデッキに加える。見送ってもよい (デッキを薄く保つのも戦略)" + (hasGear ? "。右のギアは別枠で両方取れる。" + manaNote : ""));
+
             float scale = UiKit.Phone ? 1.05f : 1.25f;   // スマホは高さ 675 に見出し・札・見送るを収める (2026-09-14)
             float cardW = CardView.W * scale, cardH = CardView.H * scale;
             float gap = 60f;
-            float totalW = n * cardW + Math.Max(0, n - 1) * gap;
+            float gearW = hasGear ? 200f * scale : 0f, gearGap = hasGear && n > 0 ? 100f : 0f;   // 札とギアの間は少し広く (別枠が読める)
+            float totalW = n * cardW + Math.Max(0, n - 1) * gap + gearGap + gearW;
             float x0 = -totalW / 2f + cardW / 2f;
-            if (n == 0)
+            if (hasGear)
+            {
+                float gx = -totalW / 2f + n * cardW + Math.Max(0, n - 1) * gap + gearGap + gearW / 2f;
+                var gcell = UiKit.NewRect("reward-gear", root);
+                gcell.anchorMin = gcell.anchorMax = new Vector2(0.5f, 0.5f);
+                gcell.sizeDelta = new Vector2(gearW, 272f * scale + 70f);
+                gcell.anchoredPosition = new Vector2(gx, UiKit.Phone ? -26f : 10f);
+                var gcard = GearUi.Card(gcell, gdef, gearId, 200f, 272f, null, scale);
+                gcard.anchorMin = gcard.anchorMax = new Vector2(0.5f, 1f);
+                gcard.pivot = new Vector2(0.5f, 1f);
+                gcard.anchoredPosition = Vector2.zero;
+                bool full = DeckRogue.Engine.Run.GearFull(run);
+                int have = DeckRogue.Engine.Run.GearsOf(run).Count;
+                var tb = UiKit.Btn(gcell, full ? "取る（入れ替え）" : "取る（" + (have + 1) + "/" + Gears.GEAR_CARRY_MAX + "）", delegate
+                {
+                    Audio.Ui("pick_relic");
+                    if (DeckRogue.Engine.Run.GearFull(g.Rs)) { g.GearSwap = "reward"; g.Rebuild(); }
+                    else g.Do(new RunCommand_TakeGear());
+                }, 16, true, PaperFx.BrassLight);
+                var tle = tb.GetComponent<LayoutElement>();
+                if (tle != null) UnityEngine.Object.Destroy(tle);
+                UiKit.Anchor(tb.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-gearW / 2f, 0f), new Vector2(gearW / 2f, 48f));
+                if (opts != null)
+                {   // 札の列が残っている間は、ギアだけを見送る小さなボタンを札の下に (札の見送りは下の大きなボタン)
+                    var sb = UiKit.Btn(gcell, "ギアを見送る", delegate { g.Do(new RunCommand_SkipGear()); }, 13);
+                    var sle = sb.GetComponent<LayoutElement>();
+                    if (sle != null) UnityEngine.Object.Destroy(sle);
+                    UiKit.Anchor(sb.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-gearW / 2f + 10f, -44f), new Vector2(gearW / 2f - 10f, -8f));
+                }
+                gcell.localScale = Vector3.one * 0.85f;
+                Tween.Scale(gcell, Vector3.one, 0.35f + n * 0.08f);
+            }
+            if (n == 0 && !hasGear)
             {
                 var none = UiKit.Txt(root, "候補がありません", 22, UiKit.ColDim, TextAnchor.MiddleCenter);
                 UiKit.Anchor(none.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, -30f), new Vector2(0f, 30f));
@@ -55,7 +94,11 @@ namespace DeckRogue.Game
                 Tween.Scale(cell, Vector3.one, 0.35f + i * 0.08f);
             }
 
-            RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipReward()); }, 18, 260f, 52f);
+            if (opts != null) RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipReward()); }, 18, 260f, 52f);
+            else RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipGear()); }, 18, 260f, 52f);   // 札を先に取った後: 残るのはギアだけ
+            // 満杯の入れ替えの窓は最後に組む (札の上に重ねる)
+            if (hasGear && g.GearSwap == "reward")
+                GearUi.BuildSwapPicker(g, root, run, gearId, delegate (int idx) { g.GearSwap = null; Audio.Ui("pick_relic"); g.Do(new RunCommand_TakeGear { DiscardIndex = idx }); });
         }
 
         public static void Relic(GameRoot g, RectTransform root)

@@ -797,7 +797,96 @@ namespace DeckRogue.Game
                 case GameEvent_ReactionWhiffed _:
                     Tween.Float(fx, stampPos, "空振り", PaperFx.PaperDim, 20, 26f, 0.7f);
                     break;
+                case GameEvent_GearUsed gu:
+                {
+                    // ギアを組んだ (2026-09-17 裁定4: からくりと同じ): 匣の蓋が開いて閃き、トークンが跳ねて対象へ飛び、着弾で青緑の輪と星。枠の側に「組んだ」の判
+                    Audio.Key("GearUsed");
+                    GearDef gdef = null;
+                    try { gdef = Content.GetGearDef(gu.GearId); } catch (Exception) { }
+                    // 的: 同じギアのトークン (回数が残っていれば持ち物にある) → 無ければ持ち物の欄 → 自分
+                    RectTransform from = null;
+                    if (g.Rs != null) foreach (var gi in DeckRogue.Engine.Run.GearsOf(g.Rs)) if (gi.GearId == gu.GearId) { from = g.Anchor("gear:" + gi.Uid); if (from != null) break; }
+                    if (from == null) from = g.Anchor("gearzone");
+                    var pSpr0 = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    if (from == null) from = pSpr0 ?? playerRt;
+                    Vector2 fromPos = from != null ? Tween.CenterIn(from, fx) : Vector2.zero;
+                    Vector2 gStamp = fromPos + new Vector2(0f, fromPos.y > 0f ? -74f : 74f);
+                    // 行き先: 敵に働く効果 (対象・全体) は敵の意図の札、それ以外は自分
+                    bool toEnemy = false;
+                    if (gdef != null)
+                        foreach (var e in gdef.Effects)
+                        {
+                            string ef = e.Effect ?? "";
+                            if (ef == "negateEnemyAction" || ef == "blockEnemySummon" || ef == "blockEnemyInterrupt" || ef == "staggerEnemy" || ef == "confuse" || ef == "clearEnemyStrength" || ef == "shatterBlock" || ef == "exposeEnemy" || ef == "weakenEnemy" || ef.StartsWith("dealDamage")) toEnemy = true;
+                        }
+                    if (toEnemy && enemyPan == null)
+                    {   // 対象が引けなかった全体効果など: 生きている最初の敵
+                        var cur = g.Rs != null ? g.Rs.Combat : null;
+                        if (cur != null) for (int k = 0; k < cur.Enemies.Count && enemyPan == null; k++) if (cur.Enemies[k].Hp > 0) { enemyPan = g.Anchor("enemy" + k); intentTag = enemyPan != null ? enemyPan.Find("intent-tag") as RectTransform : null; }
+                    }
+                    RectTransform dest = toEnemy ? (intentTag ?? enemyPan) : null;
+                    if (dest == null) dest = pSpr0 ?? playerRt;
+                    Vector2 to = dest != null ? Tween.CenterIn(dest, fx) + (dest == intentTag ? Vector2.zero : new Vector2(0f, 40f)) : fromPos + new Vector2(0f, 120f);
+                    Tween.Stamp(fx, gStamp, "組んだ", PaperFx.BrassLight, PaperFx.Ink, PaperFx.Brass);
+                    Tween.RingBurst(fx, fromPos, PaperFx.Mana, 140f, 0.4f);
+                    // 舞台の匣: 蓋が開いて閃く。仕込み札が無ければ 0.6 秒後に閉じる (SyncField と同じ呼び方)
+                    try
+                    {
+                        Stage.SetKarakuriBox(1, true);
+                        Tween.After(0.6f, () => { var cur2 = g.Rs != null ? g.Rs.Combat : null; if (cur2 != null) Stage.SetKarakuriBox(cur2.Player.SetCards.Count, false); });
+                    }
+                    catch (Exception) { }
+                    var ghost = GearGhost(fx, fromPos, gu.GearId, gdef);
+                    Tween.Run(0.14f, k => { if (ghost != null) ghost.localScale = Vector3.one * (1f + 0.35f * Mathf.Sin(k * Mathf.PI)); }, Ease.Linear, () =>
+                    {
+                        if (ghost == null) return;
+                        Tween.Move(ghost, to, 0.3f, Ease.InOutQuad, () =>
+                        {
+                            if (ghost == null) return;
+                            Tween.RingBurst(fx, to, PaperFx.Mana, 150f, 0.35f);
+                            Tween.IconBurst(fx, to, "set", new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f), 96f);
+                            var cg = ghost.GetComponent<CanvasGroup>() ?? ghost.gameObject.AddComponent<CanvasGroup>();
+                            var gh = ghost;
+                            Tween.Run(0.18f, k => { if (gh != null) { cg.alpha = 1f - k; gh.localScale = Vector3.one * (1f + 0.4f * k); } }, Ease.Linear, () => { if (gh != null) UnityEngine.Object.Destroy(gh.gameObject); });
+                        });
+                    });
+                    break;
+                }
+                case GameEvent_DeathSaved ds:
+                {
+                    // 致死を耐えた (蘇りの発条＝ギア／蜥蜴の尾＝レリック): 薔薇と真鍮の輪、胸元に判、HP の一言
+                    Audio.Key("DeathSaved");
+                    var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    var prt = playerRt;
+                    if (pSpr == null && prt == null) return;
+                    Vector2 pos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(prt, fx);
+                    Stage.Flash("player");
+                    Tween.RingBurst(fx, pos, PaperFx.Rose, 260f, 0.5f);
+                    Tween.RingBurst(fx, pos, PaperFx.BrassLight, 170f, 0.35f);
+                    Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.14f), 0.3f);
+                    Tween.Stamp(fx, pos + new Vector2(0f, 30f), ds.Source == "gear" ? "蘇りの発条がはじけた!" : "蜥蜴の尾が砕けた!", PaperFx.Paper2, PaperFx.BadInk, PaperFx.Rose, 22, 0.9f, -6f);
+                    Tween.After(0.3f, () => Tween.Float(fx, pos + new Vector2(0f, 96f), "HP " + ds.Hp + " で踏みとどまった", PaperFx.BrassLight, 24, 30f, 1.2f));
+                    break;
+                }
             }
+        }
+
+        /// <summary>ギアのトークンの幽霊 (62×62・レア度の縁・歯車の絵)。飛ばす素材</summary>
+        static RectTransform GearGhost(RectTransform fx, Vector2 pos, string gearId, GearDef def)
+        {
+            var rt = UiKit.NewRect("ghost-gear", fx);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(GearUi.TokenW, GearUi.TokenH);
+            rt.anchoredPosition = pos;
+            var edge = PaperFx.Sheet(rt, PaperFx.Tag, "edge", PaperFx.Mana);
+            UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f); edge.raycastTarget = false;
+            var paper = PaperFx.Sheet(rt, PaperFx.Tag2, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f); paper.raycastTarget = false;
+            var pic = UiKit.NewRect("pic", rt);
+            UiKit.Anchor(pic, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-22f, -22f), new Vector2(22f, 22f));
+            var pimg = pic.gameObject.AddComponent<Image>();
+            pimg.sprite = ThemeFx.GearGlyph(gearId, def != null ? def.Family : "general"); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            return rt;
         }
 
         /// <summary>仕込み札の幽霊 (68×74 のトークンの写し): 紙の縁に挿絵。飛ばす・落とす・砕くの素材</summary>
@@ -903,7 +992,8 @@ namespace DeckRogue.Game
         /// <summary>からくり (仕込み札) の出来事: 発動・温存・期限切れ・壊し・空振り・打ち消し。絵と音を Show で (2026-09-17 リアクション発動の演出)</summary>
         static bool IsTrapEvent(GameEvent ev)
         {
-            return ev is GameEvent_ReactionTriggered || ev is GameEvent_ReactionHeld || ev is GameEvent_SetCardExpired || ev is GameEvent_SetCardDestroyed || ev is GameEvent_ReactionWhiffed || ev is GameEvent_ActionNegated;
+            return ev is GameEvent_ReactionTriggered || ev is GameEvent_ReactionHeld || ev is GameEvent_SetCardExpired || ev is GameEvent_SetCardDestroyed || ev is GameEvent_ReactionWhiffed || ev is GameEvent_ActionNegated
+                || ev is GameEvent_GearUsed || ev is GameEvent_DeathSaved;   // ギア (2026-09-17 裁定4: からくりと同じ演出) と致死を耐えた判
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
@@ -922,6 +1012,20 @@ namespace DeckRogue.Game
             var ev = log[i];
             string cardId = (ev as GameEvent_ReactionTriggered)?.CardId ?? (ev as GameEvent_SetCardExpired)?.CardId ?? (ev as GameEvent_SetCardDestroyed)?.CardId ?? (ev as GameEvent_ReactionWhiffed)?.CardId;
             var ctx = new ReactionCtx { Prev = visible };
+            if (ev is GameEvent_GearUsed)
+            {   // ギア: 対象の敵はイベントに無いので、直後の敵側の出来事 (急所・威圧・打撃・体勢崩し・粉砕) から引く。無ければ -1 (自分へ飛ぶ)
+                for (int k = i + 1; k < log.Count && k <= i + 10 && ctx.EnemyIndex < 0; k++)
+                {
+                    var n = log[k];
+                    if (n is GameEvent_DamageDealt dd && dd.Source == "player") ctx.EnemyIndex = dd.EnemyIndex ?? -1;
+                    else if (n is GameEvent_ExposedApplied ea) ctx.EnemyIndex = ea.EnemyIndex;
+                    else if (n is GameEvent_EnemyWeakened ew) ctx.EnemyIndex = ew.EnemyIndex;
+                    else if (n is GameEvent_EnemyStaggered es) ctx.EnemyIndex = es.EnemyIndex;
+                    else if (n is GameEvent_BlockShattered bs) ctx.EnemyIndex = bs.EnemyIndex;
+                    else if (n is GameEvent_GearUsed || n is GameEvent_CardPlayed || n is GameEvent_TurnEnded) break;
+                }
+                return ctx;
+            }
             if (ev is GameEvent_BlockGained bg0 && bg0.Target != "player")
             {   // 敵の防御: イベントに敵の番号が無いので、直前に実行した敵
                 for (int k = i - 1; k >= 0 && k >= i - 12 && ctx.EnemyIndex < 0; k--) { if (log[k] is GameEvent_EnemyActionExecuting ex) ctx.EnemyIndex = ex.EnemyIndex; else if (log[k] is GameEvent_TurnEnded) break; }

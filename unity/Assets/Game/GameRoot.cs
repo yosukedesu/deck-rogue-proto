@@ -120,6 +120,10 @@ namespace DeckRogue.Game
         public string SubMode;
         /// <summary>確認ダイアログ (2026-09-15 セーブ): ランの放棄・進行中のランを捨てて新しく始める・別のデータ版のセーブ。null = 出していない</summary>
         public ConfirmBox Confirm;
+        /// <summary>ギア (2026-09-17): 組む途中 (窓を開いている／札や対象を選んでいる)。手が通ると捨てる</summary>
+        public PendingGear GearPending;
+        /// <summary>ギアの持ち物が満杯で入れ替え中: "reward" (報酬のギア) / "shop:&lt;棚の添字&gt;"。手が通ると捨てる</summary>
+        public string GearSwap;
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
         public BattleView Battle;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
@@ -267,6 +271,8 @@ namespace DeckRogue.Game
             Feedback.MemoOpen = false;
             MenuOpen = false;
             Confirm = null;
+            GearPending = null;
+            GearSwap = null;
             // 自動保存 (2026-09-15 本家形): 成功した手のたびに save/run.json を書く (別スレッド)。走破/敗北で終わったランは消す
             if (Rs != null && !ReferenceEquals(Rs, prevRs))
             {
@@ -589,6 +595,13 @@ namespace DeckRogue.Game
             {
                 Pending.TargetIndex = index;
                 SubmitIfReady();
+                return;
+            }
+            // ギアの対象 (2026-09-17): 「組む」の後に敵を選ぶ段なら、その敵へ組む
+            if (GearPending != null && GearPending.Stage == "target")
+            {
+                GearPending.TargetIndex = index;
+                GearUi.Submit(this);
                 return;
             }
             PreferredTarget = index;

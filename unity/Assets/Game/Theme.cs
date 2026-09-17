@@ -959,6 +959,69 @@ namespace DeckRogue.Game
             return MakeSprite(px, w, h, "true:" + a.name);
         }
 
+        // ---- ギアの絵 (2026-09-17 消耗品): PixelLab の挿絵 (Art/gears/<id>.png) が来るまでのコード生成の歯車 ----
+
+        /// <summary>
+        /// ギアの絵。`Assets/Resources/Art/gears/&lt;id&gt;.png` (32×32) があればそれ、無ければ id から決まる歯車 (歯数 6〜9・軸穴の大きさが id で変わる)。
+        /// 干渉系 (family=interfere) だけ青緑 (からくりと同じ脈の色)、他は墨と真鍮。決定的・キャッシュ
+        /// </summary>
+        public static Sprite GearGlyph(string gearId, string family)
+        {
+            string key = "gearglyph:" + gearId;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            s = Theme.Art("gears", gearId);
+            if (s == null)
+            {
+                const int n = 20;
+                uint hh = 2166136261u;
+                foreach (var ch in gearId) { hh ^= ch; hh *= 16777619u; }
+                var rng = new System.Random((int)(hh & 0x7fffffff));
+                int teeth = 6 + rng.Next(0, 4);           // 6〜9 枚
+                float hub = 0.16f + 0.10f * (float)rng.NextDouble();   // 軸穴の半径 (中心から)
+                float phase = (float)rng.NextDouble() * Mathf.PI * 2f;
+                bool teal = family == "interfere";
+                Color body = teal ? UiKit.Hex("#3aa79b") : UiKit.Hex("#c99a3a");     // 脈の青緑 ／ 真鍮
+                Color light = teal ? UiKit.Hex("#b5ddd6") : UiKit.Hex("#ead08a");
+                Color dark = teal ? UiKit.Hex("#155650") : UiKit.Hex("#634410");
+                Color edge = UiKit.Hex("#2f2e35");                                   // 墨の外線
+                var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[n * n];
+                float c = (n - 1) / 2f;
+                bool In(int x, int y)
+                {
+                    if (x < 0 || y < 0 || x >= n || y >= n) return false;
+                    float dx = x - c, dy = y - c;
+                    float r = Mathf.Sqrt(dx * dx + dy * dy) / (n / 2f);
+                    if (r < hub) return false;                       // 軸穴
+                    float a = Mathf.Atan2(dy, dx) + phase;
+                    float tooth = 0.5f + 0.5f * Mathf.Cos(a * teeth); // 歯: 角度で外周が波打つ
+                    float outer = 0.72f + 0.22f * (tooth > 0.55f ? 1f : 0f);
+                    return r <= outer;
+                }
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        Color col = new Color(0f, 0f, 0f, 0f);
+                        if (In(x, y))
+                        {
+                            bool e = !In(x - 1, y) || !In(x + 1, y) || !In(x, y - 1) || !In(x, y + 1);
+                            float dx = x - c, dy = y - c;
+                            col = e ? dark : ((dx - dy) > 2f ? light : body);   // 右上が明るい (舞台の月光と同じ向き)
+                        }
+                        else if (In(x - 1, y) || In(x + 1, y) || In(x, y - 1) || In(x, y + 1)) col = edge;
+                        px[y * n + x] = col;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache[key] = s;
+            return s;
+        }
+
         public static Sprite CardArt(string cardId, Color tint)
         {
             string key = "cardart:" + cardId;
