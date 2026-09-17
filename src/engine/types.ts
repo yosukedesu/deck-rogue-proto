@@ -631,7 +631,7 @@ export type GameEvent =
   | { readonly type: 'EnemyPhaseEnded'; readonly turn: number } // 空振り計上などのフック点
   | { readonly type: 'DeckShuffled' } // 山札の切り直し (onShuffle の発火点 2026-09-12)
   | { readonly type: 'EnemyDied'; readonly enemyIndex: number } // 敵が倒れた (onEnemyDied の発火点。分裂・残機は倒れた後に別個体として出る)
-  | { readonly type: 'DeathSaved'; readonly hp: number } // 蜥蜴の尾: 致死を1度だけ耐えた
+  | { readonly type: 'DeathSaved'; readonly hp: number; readonly source?: 'gear' | 'relic' } // 致死を1度だけ耐えた (省略=レリック)
   | { readonly type: 'PlayerArtifactBlocked'; readonly status: string } // 時計仕掛けの土産: プレイヤー側のアーティファクトが状態異常を1回弾いた
   | { readonly type: 'CombatEnded'; readonly result: 'won' | 'lost' }
 

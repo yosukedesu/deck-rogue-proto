@@ -182,7 +182,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'EnemyPhaseEnded': return null
     case 'DeckShuffled': return { text: '山札を切り直した', cls: 'log-line' }
     case 'EnemyDied': return { text: `敵${e.enemyIndex + 1}を倒した`, cls: 'log-good' }
-    case 'DeathSaved': return { text: `蜥蜴の尾が砕け、HP${e.hp}で踏みとどまった`, cls: 'log-good' }
+    case 'DeathSaved': return { text: e.source === 'gear' ? `蘇りの発条がはじけ、HP${e.hp}で踏みとどまった` : `蜥蜴の尾が砕け、HP${e.hp}で踏みとどまった`, cls: 'log-good' }
     case 'PlayerArtifactBlocked': return { text: `時計仕掛けの土産が状態異常 (${e.status}) を弾いた`, cls: 'log-good' }
     case 'CombatEnded':
       return e.result === 'won' ? { text: '=== 勝利 ===', cls: 'log-good' } : { text: '=== 敗北 ===', cls: 'log-bad' }

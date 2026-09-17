@@ -663,10 +663,10 @@ export function checkCombatEnd(state: GameState): GameState {
     // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
     if (state.gearDeathSave === true) {
       // 蘇りの発条 (ギア 2026-09-17): この戦闘中、致死を一度だけ耐えて HP1 で立つ (全快でなく1 = 糸は続く)
-      state = emit({ ...state, gearDeathSave: false, player: { ...state.player, hp: 1 } }, { type: 'DeathSaved', hp: 1 })
+      state = emit({ ...state, gearDeathSave: false, player: { ...state.player, hp: 1 } }, { type: 'DeathSaved', hp: 1, source: 'gear' })
     } else if (state.deathSave === true && state.deathSaveUsed !== true) {
       const hp = Math.max(1, Math.floor(state.player.maxHp / 2))
-      state = emit({ ...state, deathSaveUsed: true, player: { ...state.player, hp } }, { type: 'DeathSaved', hp })
+      state = emit({ ...state, deathSaveUsed: true, player: { ...state.player, hp } }, { type: 'DeathSaved', hp, source: 'relic' })
     } else {
       return emit({ ...state, phase: 'lost' }, { type: 'CombatEnded', result: 'lost' })
     }

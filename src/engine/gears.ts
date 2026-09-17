@@ -4,6 +4,7 @@
 // 虚弱 (カードのプレイで得るブロック-25%) も勢い (カードのプレイで与えるダメージ) も乗らない。
 // 成長は「与ダメ全てに乗る」既存則どおり乗る (置物トリガーと同じ扱い)。
 // 純ロジック: DOM/React・Date.now()・Math.random() を使わない (Unity 移植対象)。
+import { checkCombatEnd } from './combat.ts'
 import { allCards, getCardDef, getGearDef } from './content.ts'
 import { resolveEffectTargeted } from './effects.ts'
 import { nextInt } from './rng.ts'
@@ -133,7 +134,9 @@ export function resolveGear(state: GameState, def: GearDef, opts: UseGearOptions
         s = resolveEffectTargeted(s, effect, target)
     }
   }
-  return s
+  // ギアで敵が倒れうる (火薬・火薬樽)。カードのプレイと同じく決着処理を通す
+  // = 勝利判定・分裂・弔い・仲間の死亡割り込み・連携の引き直しがその場で起きる
+  return checkCombatEnd(s)
 }
 
 /** 掘り出し (捨て札から) / 目当ての品 (山札から): 選んだ1枚を手札へ */

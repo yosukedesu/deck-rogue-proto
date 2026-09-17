@@ -298,3 +298,39 @@ describe('ショップ (3枠 + 魔素)', () => {
     expect(() => applyRunCommand(bought, { type: 'ShopBuyGear', index: 0 })).toThrow()
   })
 })
+
+// 2026-09-17 の是正: ギアの解決も「決着処理」を通る (旧実装は resolveEffectTargeted を直に呼ぶだけで
+// checkCombatEnd を通らず、火薬で最後の1体を倒しても勝利にならず、分裂の子もその場で出なかった)。
+describe('ギアの決着処理', () => {
+  it('火薬で最後の敵を倒すと、その場で勝利になる', () => {
+    const base = freshCombat('set-confirm', 'enemy_probe')
+    const combat: GameState = { ...base, enemies: base.enemies.map((e) => ({ ...e, hp: 6 })) }
+    const after = use(runWith(combat, ['gear_powder']), 0)
+    // ラン層は勝利を受けて報酬フェーズへ進む = 戦闘が宙に浮かない
+    expect(after.phase === 'reward' || after.combat?.phase === 'won').toBe(true)
+  })
+
+  it('火薬で分裂持ちを倒すと、子がその場で出る', () => {
+    const base = freshCombat('set-confirm', 'enemy_big_slime')
+    const combat: GameState = { ...base, enemies: base.enemies.map((e) => ({ ...e, hp: 6 })) }
+    const after = use(runWith(combat, ['gear_powder']), 0)
+    const alive = after.combat?.enemies.filter((e) => e.hp > 0) ?? []
+    expect(alive.length).toBe(2) // 苔スライム×2 が即出現 = まだ戦闘は続く
+    expect(after.combat?.phase).toBe('player-turn')
+  })
+})
+
+describe('蘇りの発条とレリックの取り違え', () => {
+  it('ギアで耐えた時は蜥蜴の尾を消費しない・出どころがイベントに載る', () => {
+    const base = freshCombat('set-confirm', 'enemy_probe')
+    const combat: GameState = withIntent({ ...base, player: { ...base.player, hp: 5 } }, attackIntent(40))
+    const run = use(runWith(combat, ['gear_revive_spring']), 0)
+    const ended = applyRunCommand(run, { type: 'Combat', command: { type: 'EndTurn' } })
+    const c = ended.combat!
+    expect(c.player.hp).toBe(1) // 致死を耐えた
+    expect(c.deathSaveUsed).not.toBe(true) // レリック側は無傷
+    const saved = c.eventLog.filter((e) => e.type === 'DeathSaved')
+    expect(saved.length).toBe(1)
+    expect((saved[0] as { source?: string }).source).toBe('gear')
+  })
+})

@@ -262,7 +262,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'BurrowBroken') L.push(' 🪺潜伏の殻が割れた! 次の行動は噛みつきに差し替わる')
       else if (e.type === 'DeckShuffled') L.push(' 🔀山札を切り直した')
       else if (e.type === 'EnemyDied') L.push(` ☠敵${e.enemyIndex}を倒した`) // CLI の敵番号は0始まり (Opusラン Y2: 盤面と1ズレ)
-      else if (e.type === 'DeathSaved') L.push(` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
+      else if (e.type === 'DeathSaved') L.push(e.source === 'gear' ? ` ⚙蘇りの発条がはじけてHP${e.hp}で踏みとどまった (この戦闘で1度きり)` : ` 🦎蜥蜴の尾が砕けてHP${e.hp}で踏みとどまった (ランで1度きり)`)
       else if (e.type === 'PlayerArtifactBlocked') L.push(` 🔮時計仕掛けの土産が状態異常(${e.status})を弾いた`)
       else if (e.type === 'EnemyStaggered') L.push(' 🌀完全に防いだ! 敵は体勢を崩し、次の行動は隙になる')
       else if (e.type === 'EnemyInterrupted') L.push(` ${e.trigger === 'damageTaken' ? '👁️目を覚ました!' : e.trigger === 'hpBelowHalf' ? '😾HPが半分を切った!' : e.trigger === 'alone' ? '😤仲間が全滅した!' : '😤仲間が倒れた!'} ${e.replaced ? `行動が変わった${e.before && e.after ? `: ${branchText(s, e.enemyIndex, e.before)} → ${branchText(s, e.enemyIndex, e.after)}` : ''}` : '次のターンから行動が変わる'}`)
