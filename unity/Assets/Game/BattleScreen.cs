@@ -386,6 +386,10 @@ namespace DeckRogue.Game
             var bar = strip.Find("hpbar") as RectTransform;
             if (bar != null && shieldW > 0f) { bar.offsetMin = new Vector2(bar.offsetMin.x + shieldW, bar.offsetMin.y); bar.offsetMax = new Vector2(bar.offsetMax.x + shieldW, bar.offsetMax.y); }
             if (alive && e.Block > 0) BlockShield(strip, pad - 2f, h - barTop - barH - 4f, barH + 8f, e.Block, ph);
+            // 盾の置き場 (順送りの途中でブロックが増減した時に SetEnemyBlockBadge が同じ場所へ出し入れする。2026-09-17)
+            var slot = strip.gameObject.AddComponent<BlockSlot>();
+            slot.X = pad - 2f; slot.Y = h - barTop - barH - 4f; slot.Size = barH + 8f; slot.Ph = ph;
+            slot.ShieldW = ph ? 22f : 26f; slot.XHalf0 = w / 2f - pad; slot.Shifted = shieldW > 0f; slot.Alive = alive;
             if (!alive) return;
             // 3段目 (予告がある時だけ): 「HP90以下で 攻撃8〜10×2」= 目盛りと同じ札に (2026-09-16 案A。PC は分岐の注記も)
             if (forecast != null)
@@ -452,6 +456,83 @@ namespace DeckRogue.Game
             UiKit.Le(t, 10f, size - 4f, -1f, size - 4f);
             t.textWrappingMode = TextWrappingModes.NoWrap;
             Tooltip.Attach(disc.gameObject, delegate { return ChipTip("ブロック " + block); });
+        }
+
+        /// <summary>帳面の盾の置き場 (LedgerStrip が載せる)。順送りの途中でブロックが増減した時に同じ場所へ盾を出し入れする</summary>
+        public class BlockSlot : MonoBehaviour { public float X, Y, Size, ShieldW, XHalf0; public bool Ph, Shifted, Alive; }
+
+        /// <summary>敵の帳面の盾を今の値に (順送りの敵フェーズ: 防御で得た／攻撃で削れた／敵フェーズの始まりで失効。2026-09-17)。0 なら消し、HP バーの幅も戻す</summary>
+        public static void SetEnemyBlockBadge(RectTransform pan, int block)
+        {
+            if (pan == null) return;
+            var strip = pan.Find("strip") as RectTransform;
+            var slot = strip != null ? strip.GetComponent<BlockSlot>() : null;
+            if (slot == null || !slot.Alive) return;
+            var old = strip.Find("block");
+            if (old != null) { old.SetParent(null, false); UnityEngine.Object.Destroy(old.gameObject); }
+            var bar = strip.Find("hpbar") as RectTransform;
+            if (block > 0)
+            {
+                if (bar != null && !slot.Shifted)
+                {   // 盾の分だけバーを右から始める (組み立てと同じ式)
+                    float xHalf = slot.XHalf0 - slot.ShieldW / 2f;
+                    bar.offsetMin = new Vector2(-xHalf + slot.ShieldW, bar.offsetMin.y); bar.offsetMax = new Vector2(xHalf + slot.ShieldW, bar.offsetMax.y);
+                    slot.Shifted = true;
+                }
+                BlockShield(strip, slot.X, slot.Y, slot.Size, block, slot.Ph);
+                var disc = strip.Find("block") as RectTransform;
+                if (disc != null) Tween.Punch(disc, 0.22f);
+            }
+            else if (bar != null && slot.Shifted)
+            {
+                bar.offsetMin = new Vector2(-slot.XHalf0, bar.offsetMin.y); bar.offsetMax = new Vector2(slot.XHalf0, bar.offsetMax.y);
+                slot.Shifted = false;
+            }
+        }
+
+        /// <summary>自分の札の盾 (HP バーの左の空色の札) を今の値に。0 なら消す (2026-09-17)</summary>
+        public static void SetPlayerBlockBadge(RectTransform area, int block)
+        {
+            if (area == null) return;
+            var info = area.GetComponentInChildren<HpBarInfo>();
+            if (info == null) return;
+            var bar = info.transform as RectTransform;
+            var old = bar.Find("block");
+            if (old != null) { old.SetParent(null, false); UnityEngine.Object.Destroy(old.gameObject); }
+            if (block <= 0) return;
+            var b = PlayerBlockBadge(bar, block);
+            Tween.Punch(b, 0.22f);
+        }
+
+        /// <summary>自分の札の氷壁の文字を今の値に (順送りの途中。無ければ作らない＝組み直しで出る)</summary>
+        public static void SetPlayerIceText(RectTransform area, int ice)
+        {
+            if (area == null) return;
+            var wrap = area.Find("hpwrap");
+            var t = wrap != null ? wrap.Find("ice") : null;
+            var txt = t != null ? t.GetComponent<TMP_Text>() : null;
+            if (txt == null) return;
+            if (ice <= 0) { t.SetParent(null, false); UnityEngine.Object.Destroy(t.gameObject); return; }
+            txt.text = "氷壁 " + ice;
+            Tween.Punch(txt.rectTransform, 0.2f);
+        }
+
+        /// <summary>HP バーの左に添える自分のブロックの札 (空色のにじみに盾の絵と数字)</summary>
+        static RectTransform PlayerBlockBadge(RectTransform bar, int block)
+        {
+            var b = UiKit.NewRect("block", bar);
+            UiKit.Anchor(b, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(-54f, -18f), new Vector2(-8f, 18f));
+            var blob = PaperFx.BlobImage(b, PaperFx.Sky);
+            UiKit.Stretch(blob.rectTransform, 0f, 0f, 0f, 0f);
+            var row = UiKit.NewRect("row", b);
+            UiKit.Stretch(row, 0f, 0f, 0f, 0f);
+            var hg = UiKit.Horz(row, 2, 0);
+            hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            var ic = UiKit.Icon(row, "shield", 14f, PaperFx.Ink);
+            UiKit.Le(ic, 14f, 14f, 14f, 14f);
+            var bt = UiKit.Txt(row, block.ToString(), 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+            UiKit.Le(bt, 12f, 20f, -1f, 20f);
+            return b;
         }
 
         /// <summary>
@@ -755,21 +836,7 @@ namespace DeckRogue.Game
                 var ci = core.gameObject.AddComponent<Image>(); ci.color = PaperFx.Brass; ci.raycastTarget = false;
                 mark.SetSiblingIndex(t.transform.GetSiblingIndex());   // 数字 (紙の縁取り) は目盛りの上に
             }
-            if (block > 0)
-            {
-                var b = UiKit.NewRect("block", bar);
-                UiKit.Anchor(b, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(-54f, -18f), new Vector2(-8f, 18f));
-                var blob = PaperFx.BlobImage(b, PaperFx.Sky);
-                UiKit.Stretch(blob.rectTransform, 0f, 0f, 0f, 0f);
-                var row = UiKit.NewRect("row", b);
-                UiKit.Stretch(row, 0f, 0f, 0f, 0f);
-                var hg = UiKit.Horz(row, 2, 0);
-                hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
-                var ic = UiKit.Icon(row, "shield", 14f, PaperFx.Ink);
-                UiKit.Le(ic, 14f, 14f, 14f, 14f);
-                var bt = UiKit.Txt(row, block.ToString(), 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
-                UiKit.Le(bt, 12f, 20f, -1f, 20f);
-            }
+            if (block > 0) PlayerBlockBadge(bar, block);
         }
 
         /// <summary>頭上の短縮表示に無い情報 (分岐・付与・攻防一体・応援など) がある時だけ詳細行を出す</summary>
@@ -879,19 +946,41 @@ namespace DeckRogue.Game
             var p = st.Player;
             int incoming = 0;
             try { incoming = Effects.IncomingTotal(st); } catch (Exception) { }
-            int left = Math.Max(0, incoming - p.Block);
-            bool lethal = incoming > 0 && p.Hp - left <= 0;
-            string s;
-            string br = twoLines ? "\n" : " ";
-            if (st.HideIntents == true) s = "被ダメ ？（ルーンの円蓋）";
-            else if (incoming <= 0) s = "被ダメ <b>0</b>" + br + "（この番は攻撃されない）";
-            else s = "被ダメ <b><color=#9c3a2a>" + incoming + "</color></b> − 盾 " + p.Block + " ＝" + br + "<b>HP −" + left + " → " + Math.Max(0, p.Hp - left) + "</b>" + (lethal ? " <color=#9c3a2a><b>致死</b></color>" : "");
-            var t = UiKit.Txt(parent, s, size, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var t = UiKit.Txt(parent, IncomingText(incoming, p.Block, p.Hp, twoLines, st.HideIntents == true), size, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            t.name = "incoming";
             t.textWrappingMode = TextWrappingModes.NoWrap;
             t.lineSpacing = -6f;
             Tooltip.Attach(t.gameObject, delegate { return "<b>被ダメ予測</b>\n全ての敵の攻撃 (実値×ヒット数) の合計から今のブロックを引いた、この敵の番で失う HP の見込み。威圧・脆弱・重りは込み"; });
             t.raycastTarget = true;
+            // 順送りの途中で盾の数字が動いた時に同じ式で引き直せるよう、見積りの元を持つ (2026-09-17)
+            var info = t.gameObject.AddComponent<IncomingInfo>();
+            info.Incoming = incoming; info.TwoLines = twoLines; info.Hidden = st.HideIntents == true;
             return t;
+        }
+
+        /// <summary>被ダメ予測の元 (順送りの途中で盾の数字と一緒に引き直す)</summary>
+        public class IncomingInfo : MonoBehaviour { public int Incoming; public bool TwoLines, Hidden; }
+
+        static string IncomingText(int incoming, int block, int hp, bool twoLines, bool hidden)
+        {
+            int left = Math.Max(0, incoming - block);
+            bool lethal = incoming > 0 && hp - left <= 0;
+            string br = twoLines ? "\n" : " ";
+            if (hidden) return "被ダメ ？（ルーンの円蓋）";
+            if (incoming <= 0) return "被ダメ <b>0</b>" + br + "（この番は攻撃されない）";
+            return "被ダメ <b><color=#9c3a2a>" + incoming + "</color></b> − 盾 " + block + " ＝" + br + "<b>HP −" + left + " → " + Math.Max(0, hp - left) + "</b>" + (lethal ? " <color=#9c3a2a><b>致死</b></color>" : "");
+        }
+
+        /// <summary>自分の札の被ダメ予測を、今見えている盾と HP で引き直す (順送りの途中。無ければ何もしない)</summary>
+        public static void RefreshIncomingLine(RectTransform area, int block, int hp)
+        {
+            if (area == null) return;
+            var wrap = area.Find("hpwrap");
+            var t = wrap != null ? wrap.Find("incoming") : null;
+            var info = t != null ? t.GetComponent<IncomingInfo>() : null;
+            var txt = t != null ? t.GetComponent<TMP_Text>() : null;
+            if (info == null || txt == null) return;
+            txt.text = IncomingText(info.Incoming, block, hp, info.TwoLines, info.Hidden);
         }
 
         /// <summary>PC の自分の札 (帳面の左端・幅は仕込み枠の数で伸びる): HP＋ブロック／被ダメ／資源｜からくり (トークン 68×74)｜置物 (付箋 200×40 を2行・超えたら +N)</summary>
@@ -914,6 +1003,7 @@ namespace DeckRogue.Game
             if (p.IceBlock > 0)
             {
                 var ice = UiKit.Txt(strip, "氷壁 " + p.IceBlock, 14, PaperFx.SkyInk, TextAnchor.MiddleLeft, true);
+                ice.name = "ice";
                 UiKit.Anchor(ice.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(secA - 12f - 70f, -36f), new Vector2(secA - 12f, -14f));
                 ice.alignment = TextAlignmentOptions.MidlineRight;
             }
@@ -1084,6 +1174,7 @@ namespace DeckRogue.Game
             if (p.IceBlock > 0)
             {
                 var ice = UiKit.Txt(strip, "氷壁 " + p.IceBlock, 13, PaperFx.SkyInk, TextAnchor.MiddleRight, true);
+                ice.name = "ice";
                 UiKit.Anchor(ice.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-80f, -66f), new Vector2(-8f, -30f));
             }
             var inc = IncomingLine(strip, st, 13, true);

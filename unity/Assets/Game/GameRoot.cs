@@ -274,6 +274,8 @@ namespace DeckRogue.Game
                 else SaveGame.Write(this, Rs);
             }
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
+            // 確認の窓 (発動/温存) から進んだ手: 順送りで古い盤面を見せる前に窓と暗がりだけ先に畳む (2026-09-17)
+            bool fromWindow = wasCombat && prevRs != null && prevRs.Combat != null && prevRs.Combat.Phase == CombatPhases.AwaitingReaction && Rs != null && !ReferenceEquals(Rs, prevRs);
             int prevAct = _lastAct;
             if (Rs != null) _lastAct = Rs.Act;
             // 幕の切り替わり (2026-09-14 ユーザー「ステージ切り替わり時に SE が必要」): 幕ボス撃破後の次の幕へ / ランの開始
@@ -286,6 +288,7 @@ namespace DeckRogue.Game
             {
                 var finalSnapshot = Rs.Combat;
                 var endedRs = Rs;
+                if (fromWindow && Battle != null) Battle.CloseReactionWindow();
                 Presenter.PlaySequenced(this, finalSnapshot, delegate
                 {
                     // 決着の余韻 (2026-09-17 ⑧): 勝利の帯と戦いの記録／敗北の暗転 (音もそこで鳴る)。終わってから報酬/敗北の画面へ組み直す
@@ -310,6 +313,7 @@ namespace DeckRogue.Game
             if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasEnemyPhase(Rs.Combat))
             {
                 var snapshot = Rs.Combat;
+                if (fromWindow && Battle != null) Battle.CloseReactionWindow();
                 Presenter.PlaySequenced(this, snapshot, delegate { if (Rs != null && ReferenceEquals(Rs.Combat, snapshot)) Rebuild(); });
                 return;
             }

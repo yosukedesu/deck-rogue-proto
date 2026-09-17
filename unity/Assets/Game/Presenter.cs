@@ -71,6 +71,10 @@ namespace DeckRogue.Game
         {
             if (combat == null) return false;
             var log = combat.EventLog;
+            // 確認の窓 (発動/温存) の続きも敵フェーズ (2026-09-17 ユーザー「置物の誘発とかで得たブロックがキャラの表記に更新されなくない？」):
+            // 旧実装は TurnEnded だけを見ていたので、発動の後の敵の攻撃〜ターン開始が「即組み直し」で新しい盤面 (ブロックは次のターンで 0) の上に浮き文字だけ出ていた
+            var prev = _seenCombat as GameState;
+            if (prev != null && prev.Phase == CombatPhases.AwaitingReaction && log.Count >= _seen && log.Count > 0 && log[0] is GameEvent_CombatStarted) return true;
             for (int i = Math.Min(_seen, log.Count); i < log.Count; i++) if (log[i] is GameEvent_TurnEnded) return true;
             return false;
         }
@@ -101,7 +105,7 @@ namespace DeckRogue.Game
                 if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = visibleBoard }; try { Show(g, fx, cp, true, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
                 if (ev is GameEvent_DamageDealt) gap = 0.4f;
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
-                else if (ev is GameEvent_BlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
+                else if (ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
                 else if (IsStatusEvent(ev)) gap = 0.3f;
                 else if (ev is GameEvent_ReactionTriggered) gap = 0.55f;   // 札が飛んで着弾するまで待ってから返しのダメージ (2026-09-17)
                 else if (IsTrapEvent(ev)) gap = 0.3f;
@@ -159,7 +163,7 @@ namespace DeckRogue.Game
             {
                 var ev = log[i];
                 if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = prevBoard }; try { Show(g, fx, cp, false, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
-                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null)) continue;
+                if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
                 if (i == finishing) ctx.FinishingBlow = true;
@@ -181,7 +185,7 @@ namespace DeckRogue.Game
         /// 呪い＝藤の玉が自分へ飛ぶ。回復＝苔の玉が味方へ。盗み＝金の玉が G の札へ。山札喰い＝闇の玉が山札へ。逃走＝走り去る (BattleView)。隙＝「隙」とうつむく。
         /// 意図の札は実行の瞬間に一度跳ねる (どの札が動いたか)
         /// </summary>
-        static void ShowEnemyAct(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx)
+        static void ShowEnemyAct(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx, bool live)
         {
             switch (ev)
             {
@@ -300,7 +304,7 @@ namespace DeckRogue.Game
                     var pos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(prt, fx);
                     Tween.HitFx(fx, pos, "claw", new Color(1f, 0.62f, 0.5f, 0.9f), false);
                     Tween.Float(fx, pos + new Vector2(40f, 40f), "とげ −" + tr.HpLoss, UiKit.ColBad, 28, 36f, 0.9f);
-                    if (tr.HpLoss > 0) { Stage.Flash("player"); if (g.Battle != null) g.Battle.NudgePlayerHp(-tr.HpLoss); }
+                    if (tr.HpLoss > 0) { Stage.Flash("player"); if (live && g.Battle != null) g.Battle.NudgePlayerHp(-tr.HpLoss); }
                     break;
                 }
                 case GameEvent_BurnTick bt:
@@ -311,7 +315,7 @@ namespace DeckRogue.Game
                     var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
                     Tween.IconBurst(fx, pos, "burn", new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.9f), 120f);
                     Tween.Float(fx, pos + new Vector2(0f, 40f), bt.Amount.ToString(), PaperFx.Ember, 34, 44f, 0.9f);
-                    if (g.Battle != null) g.Battle.NudgeEnemyHp(bt.EnemyIndex, -bt.Amount);
+                    if (live && g.Battle != null) g.Battle.NudgeEnemyHp(bt.EnemyIndex, -bt.Amount);
                     break;
                 }
                 case GameEvent_RegenTicked rg:
@@ -334,6 +338,7 @@ namespace DeckRogue.Game
                     Tween.RingBurst(fx, pos, PaperFx.SkyLight, 180f, 0.35f);
                     Tween.Float(fx, pos + new Vector2(0f, 50f), "盾を砕いた " + bs.Amount, PaperFx.SkyLight, 26, 36f, 0.9f);
                     Stage.Shake(5f, 0.2f);
+                    if (live && g.Battle != null) g.Battle.SetEnemyBlock(bs.EnemyIndex, 0);
                     break;
                 }
                 case GameEvent_EnemyInterrupted ei:
@@ -842,7 +847,7 @@ namespace DeckRogue.Game
         static string TableSound(GameEvent ev)
         {
             if (ev == null) return null;
-            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev)) return null;
+            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev)) return null;
             // 絵の側 (BattleView) が札の飛び・撃破の消えに合わせて鳴らすイベントは、ここでは二重に鳴らさない
             if (ev is GameEvent_CardSet || ev is GameEvent_CardsDrawn || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled) return null;
             var n = ev.GetType().Name;
@@ -973,7 +978,7 @@ namespace DeckRogue.Game
             var key = TableSound(ev);
             if (key != null) { Audio.Key(key); return; }
             if (IsTrapEvent(ev)) { ShowTrap(g, fx, ev, ctx ?? new ReactionCtx()); return; }
-            if (IsEnemyActEvent(ev)) { ShowEnemyAct(g, fx, ev, ctx ?? new ReactionCtx()); return; }
+            if (IsEnemyActEvent(ev)) { ShowEnemyAct(g, fx, ev, ctx ?? new ReactionCtx(), nudgeHp); return; }
             switch (ev)
             {
                 case GameEvent_DamageDealt d:
@@ -1039,6 +1044,7 @@ namespace DeckRogue.Game
                         }
                         if (d.Amount > 0) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f) * (crit ? 1.4f : 1f));
                         if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(ei, -d.HpLoss);
+                        if (nudgeHp && g.Battle != null && blocked > 0) g.Battle.NudgeEnemyBlock(ei, -blocked);   // 帳面の盾の数字もその場で減る (殻も同じ器。2026-09-17)
                     }
                     else
                     {
@@ -1095,6 +1101,7 @@ namespace DeckRogue.Game
                             }
                             if (dd.Amount > 0) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f));
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
+                            if (nudge && g.Battle != null && blockedP > 0) g.Battle.AbsorbPlayerBlock(blockedP);   // 自分の札の盾の数字も吸われた分だけ減る (通常→氷壁の順。2026-09-17)
                         });
                     }
                     break;
@@ -1111,6 +1118,7 @@ namespace DeckRogue.Game
                         var at = espr != null ? Tween.CenterIn(espr, fx) : Tween.CenterIn(ert, fx);
                         Tween.IconBurst(fx, at + new Vector2(0f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.9f), 110f);
                         Tween.Float(fx, at + new Vector2(60f, 30f), "+" + b.Amount, PaperFx.SkyLight, 28, 36f, 0.7f);
+                        if (nudgeHp && g.Battle != null) g.Battle.NudgeEnemyBlock(ei, b.Amount);   // 順送りの途中は帳面の盾をその場で出す (2026-09-17)
                         return;
                     }
                     var rt = g.Anchor("player");
@@ -1119,11 +1127,31 @@ namespace DeckRogue.Game
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
+                    // 置物・レリック・仕込み札で敵の番に得たブロックは、自分の札の盾の数字にその場で足す (2026-09-17 ユーザー「置物の誘発とかで得たブロックがキャラの表記に更新されなくない？」)
+                    if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerBlock(b.Amount);
+                    break;
+                }
+                case GameEvent_IceBlockGained ib:
+                {
+                    var rt = g.Anchor("player");
+                    if (rt == null) return;
+                    Audio.Key("BlockGained");
+                    var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
+                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f);
+                    if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerIce(ib.Amount);
                     break;
                 }
                 case GameEvent_TurnStarted ts:
                     Audio.Key("TurnStarted");
                     Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", UiKit.ColAccent);
+                    // 自ターンの始まりで通常ブロックは消える (留め具 blockKeep なら N まで残る)。順送りの途中の盾の数字もここで揃える。この後の置物の分は BlockGained が足す
+                    if (nudgeHp && g.Battle != null)
+                    {
+                        var cur = g.Rs != null ? g.Rs.Combat : null;
+                        int keep = cur != null && cur.BlockKeep.HasValue ? Math.Min(g.Battle.ShownPlayerBlock, cur.BlockKeep.Value) : 0;
+                        g.Battle.SetPlayerBlock(keep);
+                    }
                     // 罠が生きた瞬間 (準備ターン明け) を伏せ場の上に浮かせる (2026-09-14 ユーザー「伏せが有効になることを GUI で分かりやすく」)
                     {
                         var st = g.Rs != null ? g.Rs.Combat : null;
@@ -1139,6 +1167,8 @@ namespace DeckRogue.Game
                 case GameEvent_TurnEnded _:
                     Audio.Key("TurnEnded");
                     Banner(fx, "敵の番", PaperFx.Rose);
+                    // 敵フェーズの始まりで敵のブロックは失効 (潜伏の殻は残る)。帳面の盾もここで消す
+                    if (nudgeHp && g.Battle != null) g.Battle.ResetEnemyBlocks(ctx != null ? ctx.Prev : null);
                     break;
                 case GameEvent_CardPlayed cp:
                 {

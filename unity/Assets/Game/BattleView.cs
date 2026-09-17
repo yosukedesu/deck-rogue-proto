@@ -26,6 +26,10 @@ namespace DeckRogue.Game
         float[] _enemyGaps = new float[0];   // 隣の敵との間隔 (帳面の一行の幅を絞る。確認の窓も同じ幅を読む)
         int[] _shownEnemyHp = new int[0];
         int _shownPlayerHp = -1;
+        // 帳面の盾の数字の「今見えている値」(順送りの敵フェーズで得た/減ったブロックをその場で動かす。2026-09-17 ユーザー「置物の誘発とかで得たブロックがキャラの表記に更新されなくない？」)
+        int[] _shownEnemyBlock = new int[0];
+        int _shownPlayerBlock = 0;
+        int _shownPlayerIce = 0;
         int _bgAct = -1;
 
         public class HandCard
@@ -128,7 +132,9 @@ namespace DeckRogue.Game
                 }
                 _shownEnemyHp = new int[st.Enemies.Count];
                 for (int i = 0; i < st.Enemies.Count; i++) _shownEnemyHp[i] = st.Enemies[i].Hp;
+                _shownEnemyBlock = new int[st.Enemies.Count];
             }
+            if (_shownEnemyBlock.Length != st.Enemies.Count) _shownEnemyBlock = new int[st.Enemies.Count];
             // 座席: 舞台 (HD-2D) が決める。手前左から奥右へ斜めに並び、足元 (パネル下端+130) がその座席の地面に来る。奥の敵ほど先に描く
             // 名前札・HPバー・チップは全員同じ線 (入れ物の下端 = StatusLineY・手札の上)。足元だけ座席の高さへ
             var slots = Stage.EnemySlots(st.Enemies.Count);
@@ -163,6 +169,7 @@ namespace DeckRogue.Game
                 bool dyingNow = wasAlive && !alive && !_died.Contains(i);
                 BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
+                _shownEnemyBlock[i] = st.Enemies[i].Block;
                 if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => KillEnemy(g, ci, fled)); }
                 else if (prevCount > 0 && i >= prevCount && alive)
                 {   // 登場 (召喚・分裂・孵化の子。2026-09-17): 小さく現れて弾んで等身大に、足元に青緑の輪
@@ -192,6 +199,8 @@ namespace DeckRogue.Game
             g.RegisterAnchor("player", _playerArea);
             BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp);
             _shownPlayerHp = st.Player.Hp;
+            _shownPlayerBlock = st.Player.Block;
+            _shownPlayerIce = st.Player.IceBlock;
             // からくりの匣 (2026-09-10 世界観「からくりだけ実物」): 舞台のリーダーの足元。仕込み札があれば蓋が開き、動かした (ReactionTriggered) 直後は閃く
             bool fired = false;
             for (int i = _boxLogSeen; i < st.EventLog.Count; i++) if (st.EventLog[i] is GameEvent_ReactionTriggered) fired = true;
@@ -242,6 +251,95 @@ namespace DeckRogue.Game
             if (_playerArea == null) return;
             _shownPlayerHp = Math.Max(0, _shownPlayerHp + delta);
             BattleScreen.TweenHpBar(_playerArea, _shownPlayerHp);
+            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerHp);
+        }
+
+        // ---- ブロックの数字を演出の途中で動かす (2026-09-17) ----
+        // 順送りの敵フェーズは古い盤面の上で見せるので、置物・レリック・仕込み札で得たブロックと敵の攻撃が削った分を
+        // 帳面の盾の数字にその場で反映する (HP バーの Nudge と同じ考え)。組み直しの時に実値へ揃う
+
+        /// <summary>今見えている自分のブロック (順送りの途中の値)</summary>
+        public int ShownPlayerBlock { get { return _shownPlayerBlock; } }
+
+        public void NudgePlayerBlock(int delta)
+        {
+            SetPlayerBlock(_shownPlayerBlock + delta);
+        }
+
+        public void SetPlayerBlock(int value)
+        {
+            if (_playerArea == null) return;
+            value = Math.Max(0, value);
+            bool changed = value != _shownPlayerBlock;
+            _shownPlayerBlock = value;
+            if (changed) { BattleScreen.SetPlayerBlockBadge(_playerArea, value); BattleScreen.RefreshIncomingLine(_playerArea, value, _shownPlayerHp); }
+        }
+
+        /// <summary>敵の攻撃が吸われた量を「通常ブロック→氷壁」の順で差し引く (エンジンの消費順と同じ)</summary>
+        public void AbsorbPlayerBlock(int blockedTotal)
+        {
+            if (blockedTotal <= 0) return;
+            int fromBlock = Math.Min(blockedTotal, _shownPlayerBlock);
+            int fromIce = Math.Min(blockedTotal - fromBlock, _shownPlayerIce);
+            if (fromBlock > 0) NudgePlayerBlock(-fromBlock);
+            if (fromIce > 0) NudgePlayerIce(-fromIce);
+        }
+
+        public void NudgePlayerIce(int delta)
+        {
+            if (_playerArea == null) return;
+            _shownPlayerIce = Math.Max(0, _shownPlayerIce + delta);
+            BattleScreen.SetPlayerIceText(_playerArea, _shownPlayerIce);
+        }
+
+        public void NudgeEnemyBlock(int index, int delta)
+        {
+            if (index < 0 || index >= _shownEnemyBlock.Length) return;
+            SetEnemyBlock(index, _shownEnemyBlock[index] + delta);
+        }
+
+        public void SetEnemyBlock(int index, int value)
+        {
+            if (index < 0 || index >= _enemyPanels.Count || index >= _shownEnemyBlock.Length || _enemyPanels[index] == null) return;
+            value = Math.Max(0, value);
+            bool changed = value != _shownEnemyBlock[index];
+            _shownEnemyBlock[index] = value;
+            if (changed) BattleScreen.SetEnemyBlockBadge(_enemyPanels[index], value);
+        }
+
+        /// <summary>敵フェーズの始まりで敵のブロックは失効する (潜伏の殻は残る)。順送りの TurnEnded で呼ぶ</summary>
+        public void ResetEnemyBlocks(GameState visible)
+        {
+            for (int i = 0; i < _shownEnemyBlock.Length; i++)
+            {
+                bool shell = visible != null && i < visible.Enemies.Count && visible.Enemies[i].BurrowActive == true;
+                if (!shell) SetEnemyBlock(i, 0);
+            }
+        }
+
+        /// <summary>確認の窓 (発動/温存) を閉じる: 順送りの続き (発動の後の敵の行動) を古い盤面の上で見せる前に、窓と暗がりだけ先に畳む (2026-09-17)</summary>
+        public void CloseReactionWindow()
+        {
+            if (UiLayer == null) return;
+            for (int i = UiLayer.childCount - 1; i >= 0; i--)
+            {
+                var ch = UiLayer.GetChild(i) as RectTransform;
+                if (ch == null) continue;
+                if (ch.name == "reaction")
+                {
+                    var cg = ch.gameObject.GetComponent<CanvasGroup>() ?? ch.gameObject.AddComponent<CanvasGroup>();
+                    cg.blocksRaycasts = false; cg.interactable = false;
+                    var rt = ch; var g0 = cg;
+                    Tween.Run(0.16f, k => { if (rt == null) return; float sc = 1f - 0.12f * k; rt.localScale = new Vector3(sc, sc, 1f); if (g0 != null) g0.alpha = 1f - k; }, Ease.OutCubic, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+                }
+                else if (ch.name == "dim")
+                {
+                    var img = ch.GetComponent<Image>();
+                    if (img != null) img.raycastTarget = false;
+                    var rt = ch; var im = img; float a0 = img != null ? img.color.a : 0f;
+                    Tween.Run(0.16f, k => { if (im != null) { var c = im.color; c.a = a0 * (1f - k); im.color = c; } }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+                }
+            }
         }
 
         // ---- 手札 ----
