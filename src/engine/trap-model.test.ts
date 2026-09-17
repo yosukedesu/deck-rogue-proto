@@ -404,19 +404,18 @@ describe('発火の形 (数値据え置き・副次効果を1つ)', () => {
     expect(leaked.player.hand).toHaveLength(5)
   })
 
-  it('先制の蔦槍: 16貫通。倒せなければその敵に急所2、倒せば付かず攻撃も来ない', () => {
+  it('先制の蔦槍: 12貫通＋ブロック6 (2026-09-18 品質パス第3弾)。倒せなければ盾で受ける、倒せば攻撃も来ない', () => {
     const arm = () => setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), ['green_reaction_preempt']), 't0_green_reaction_preempt')
     let s = arm()
     const hp0 = s.enemies[0].hp
     s = attackAndFire(s, 10)
-    expect(hp0 - s.enemies[0].hp).toBe(16)
-    expect(s.enemies[0].exposed).toBe(2)
-    expect(s.player.hp).toBe(s.player.maxHp - 10)
+    expect(hp0 - s.enemies[0].hp).toBe(12)
+    expect(s.enemies[0].exposed ?? 0).toBe(0) // 急所2 は撤去
+    expect(s.player.hp).toBe(s.player.maxHp - 4) // 攻撃10をブロック6で受ける
     let k = arm()
     k = { ...k, enemies: k.enemies.map((e) => ({ ...e, hp: 5 })) }
     k = attackAndFire(k, 10)
     expect(k.phase).toBe('won')
-    expect(k.enemies[0].exposed ?? 0).toBe(0)
     expect(k.player.hp).toBe(k.player.maxHp)
   })
 
@@ -438,8 +437,8 @@ describe('伏せ札の実値表示 (2026-09-14 Opus AB3「先制の蔦槍 ダメ
     s = { ...s, player: { ...s.player, momentum: 7, growth: 0 }, enemies: s.enemies.map((e) => ({ ...e, block: 0, exposed: 0 })) }
     const def = getCardDef('green_reaction_preempt')
     const text = setCardLiveDamage(s, def, 0)
-    // 先制の蔦槍 16貫通: 勢い7を足すと 23 になるが、鳴る時の実処理は 16
-    expect(text ?? '').not.toContain('23')
-    expect(text ?? '').toContain('16')
+    // 先制の蔦槍 12貫通 (2026-09-18): 勢い7を足すと 19 になるが、鳴る時の実処理は 12
+    expect(text ?? '').not.toContain('19')
+    expect(text ?? '').toContain('12')
   })
 })

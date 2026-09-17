@@ -97,11 +97,12 @@ describe('④伏せ札群', () => {
     expect(card.def.effects.some((e) => e.effect === 'negate')).toBe(true)
     expect(card.def.effects.find((e) => e.effect === 'addGrowth')?.amount).toBe(3)
   })
-  it('弾け実の罠=返し10／破壊時全体14、先制の蔦槍=被攻撃前16貫通', () => {
+  it('弾け実の罠=返し10／破壊時全体14、先制の蔦槍=被攻撃前12貫通＋ブロック6 (2026-09-18 品質パス第3弾で 16→12・急所2→盾6)', () => {
     const pod = getCardDef('green_reaction_powder_pod')
     expect(pod.effects.find((e) => e.trigger === 'onAttacked')?.amount).toBe(10)
     expect(pod.effects.find((e) => e.trigger === 'onSetDestroyed')).toMatchObject({ effect: 'dealDamage', amount: 14, target: 'all' })
-    expect(getCardDef('green_reaction_preempt').effects[0]).toMatchObject({ trigger: 'onAttackIncoming', effect: 'dealDamage', amount: 16, pierce: true })
+    expect(getCardDef('green_reaction_preempt').effects[0]).toMatchObject({ trigger: 'onAttackIncoming', effect: 'dealDamage', amount: 12, pierce: true })
+    expect(getCardDef('green_reaction_preempt').effects[1]).toMatchObject({ trigger: 'onAttackIncoming', effect: 'gainBlock', amount: 6 })
   })
 })
 

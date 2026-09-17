@@ -446,11 +446,11 @@ describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Hea
     expect(up.def.effects.find((e) => e.effect === 'exposeEnemy')?.amount).toBe(3)
   })
 
-  it('大牙+ は成長×3→×4 (素の8は据え置き=本家 Heavy Blade と同型)', () => {
+  it('大牙+ は成長×3→×4 (素の7は据え置き=本家 Heavy Blade と同型。2026-09-18 に 1E・7)', () => {
     const up = upgradeCard({ uid: 't', def: getCardDef('green_harvest_strike') }) // 大牙 (id は旧名の名残)
     const d = up.def.effects.find((e) => e.effect === 'dealDamage')!
     expect(d.growthMultiplier).toBe(4)
-    expect(d.amount).toBe(8)
+    expect(d.amount).toBe(7)
   })
 })
 

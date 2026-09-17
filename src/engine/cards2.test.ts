@@ -98,7 +98,7 @@ describe('キル連鎖 (玉突き)', () => {
 })
 
 describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手の炎を緑へ移管)', () => {
-  it('pre窓で16貫通ダメージ (2026-09-07 12→16)。攻撃自体はそのまま受ける (倒せなければ)', () => {
+  it('pre窓で12貫通ダメージ＋ブロック6 (2026-09-18 品質パス第3弾: 16貫通+急所2 → 12貫通+盾6=1枠に2つの仕事)。攻撃は盾で受ける (倒せなければ)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter'), [
       'green_reaction_preempt',
     ])
@@ -109,8 +109,8 @@ describe('先制の蔦槍 (被攻撃前の先制ダメージ。2026-08-30 先手
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction') // pre窓
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.enemies[0].hp).toBe(enemyHp - 16) // 先制の蔦槍 (2026-09-07 ピック監査で16貫通)
-    expect(s.player.hp).toBe(playerHp - 10) // 威嚇は撤去済み: 素の10を受ける
+    expect(s.enemies[0].hp).toBe(enemyHp - 12) // 先制の蔦槍 12貫通 (2026-09-18)
+    expect(s.player.hp).toBe(playerHp - 4) // 攻撃10をブロック6で受ける = HP-4
   })
 
   it('先制の蔦槍で敵を倒せば、その攻撃は発生しない (焼き切り)', () => {

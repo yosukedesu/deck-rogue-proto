@@ -656,7 +656,7 @@
   {
     "id": "green_snare_root",
     "name": "絡め捕る根",
-    "cost": 2,
+    "cost": 1,
     "type": "physical",
     "effects": [
       {
@@ -667,7 +667,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 12
+        "amount": 7
       }
     ],
     "rarity": "uncommon"
@@ -721,12 +721,11 @@
     "cost": 1,
     "type": "spell",
     "color": "green",
-    "exhaust": true,
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "addMomentum",
-        "amount": 2
+        "amount": 3
       },
       {
         "trigger": "onPlay",
@@ -1063,16 +1062,13 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "dealDamage",
-        "amount": 16,
+        "amount": 12,
         "pierce": true
       },
       {
         "trigger": "onAttackIncoming",
-        "effect": "exposeEnemy",
-        "amount": 2,
-        "condition": {
-          "targetAlive": true
-        }
+        "effect": "gainBlock",
+        "amount": 6
       }
     ]
   },
@@ -1099,14 +1095,14 @@
   {
     "id": "green_harvest_strike",
     "name": "大牙",
-    "cost": 2,
+    "cost": 1,
     "type": "physical",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 8,
+        "amount": 7,
         "growthMultiplier": 3
       }
     ]

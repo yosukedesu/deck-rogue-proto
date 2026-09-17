@@ -42,16 +42,17 @@ describe('トランプルの網', () => {
   })
 
 
-  it('昂ぶる角笛: 勢い+2してから2倍・消滅 (2026-08-29 検証ランで空振り腐りが出たため+2を前置)', () => {
+  it('昂ぶる角笛: 勢い+3してから2倍・消滅なし (2026-09-18 品質パス第3弾: U の号砲に数字で負けていた R。勢いは毎ターン消えるので倍化の使い回しは安全)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_flare'])
     s = { ...s, player: { ...s.player, momentum: 5 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_flare' })
-    expect(s.player.momentum).toBe((5 + 2) * 2)
-    expect(s.player.exhaustPile.map((c) => c.def.id)).toContain('green_horn_flare')
-    // 勢い0で引いても最低4が立つ = 空振りしない
+    expect(s.player.momentum).toBe((5 + 3) * 2)
+    expect(s.player.exhaustPile.map((c) => c.def.id)).not.toContain('green_horn_flare')
+    expect(s.player.discardPile.map((c) => c.def.id)).toContain('green_horn_flare')
+    // 勢い0で引いても最低6が立つ = 空振りしない
     let s2 = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_horn_flare'])
     s2 = applyCommand(s2, { type: 'PlayCard', cardUid: 't0_green_horn_flare' })
-    expect(s2.player.momentum).toBe(4)
+    expect(s2.player.momentum).toBe(6)
   })
 
   it('荒角の構え: ブロック6+勢い+3 (トランプルの受け=守りが攻めの準備になる)', () => {
@@ -332,12 +333,12 @@ describe('参照シナジー (2026-09-03 本家6型。docs/green-synergy-proposa
     t = applyCommand(t, { type: 'PlayCard', cardUid: 't0_green_twin_fang_vine', targetIndex: 0 })
     expect(t.eventLog.filter((e) => e.type === 'DamageDealt' && e.source === 'player').length).toBe(2)
   })
-  it('大牙: 成長が3倍で乗る (成長2 → 8+6=14)。放出しない', () => {
+  it('大牙: 成長が3倍で乗る (成長2 → 7+6=13。2026-09-18 品質パス第3弾で 2E 8 → 1E 7)。放出しない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_harvest_strike'])
     s = { ...s, player: { ...s.player, growth: 2 } }
     const hp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_harvest_strike', targetIndex: 0 })
-    expect(hp - s.enemies[0].hp).toBe(14)
+    expect(hp - s.enemies[0].hp).toBe(13)
     expect(s.player.growth).toBe(2)
   })
   it('根張り: 攻撃を完全に凌ぐたび成長+2。被弾したら乗らない', () => {

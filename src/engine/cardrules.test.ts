@@ -132,14 +132,12 @@ describe('カードデータの不変条件', () => {
     expect(bad.map((c) => c.name)).toEqual([])
   })
 
-  it('倍化 (doubleGrowth / doubleMomentum) を持つ札は消滅する (倍加は1回きりの決断)', () => {
+  it('成長の倍化 (doubleGrowth) を持つ札は消滅する (倍加は1回きりの決断)。勢いの倍化は対象外', () => {
     // 2026-08-25 裁定「倍加の使い回しが成長97%の主犯」を機械判定に昇格 (2026-08-29 倍化増刷+4と同時)。
-    // それまで設計裁定だけで機械固定されていなかった穴
-    const bad = allCards.filter(
-      (c) =>
-        c.effects.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleMomentum') &&
-        c.exhaust !== true,
-    )
+    // それまで設計裁定だけで機械固定されていなかった穴。
+    // 2026-09-18 品質パス第3弾: 勢いは自ターン終了で消えるので、倍化を使い回しても雪だるまにならない
+    // (成長は永続なので雪だるまになる) = doubleMomentum は規約から外す (昂ぶる角笛 R が消滅なしに)
+    const bad = allCards.filter((c) => c.effects.some((e) => e.effect === 'doubleGrowth') && c.exhaust !== true)
     expect(bad.map((c) => c.name)).toEqual([])
   })
 })
