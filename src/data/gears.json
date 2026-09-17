@@ -66,7 +66,7 @@
     "rarity": "uncommon",
     "family": "interfere",
     "needsTarget": true,
-    "text": "対象の次の行動を打ち消す",
+    "text": "対象のいま宣言されている行動を打ち消す",
     "effects": [{ "trigger": "onPlay", "effect": "negateEnemyAction" }]
   },
   {
@@ -191,7 +191,7 @@
     "rarity": "uncommon",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象の筋力を0に戻す",
+    "text": "対象の筋力を0に戻す（マイナスの筋力は戻さない）",
     "effects": [{ "trigger": "onPlay", "effect": "clearEnemyStrength" }]
   },
   {
@@ -209,7 +209,7 @@
     "rarity": "common",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象の次の行動を隙にする",
+    "text": "対象の次のターンの行動を隙にする（いま宣言されている行動は止まらない）",
     "effects": [{ "trigger": "onPlay", "effect": "staggerEnemy" }]
   },
 
@@ -277,7 +277,7 @@
     "name": "時の歯車",
     "rarity": "rare",
     "family": "big",
-    "text": "敵全員の次の行動が隙になる",
+    "text": "敵全員の次のターンの行動が隙になる（いま宣言されている行動は止まらない）",
     "effects": [{ "trigger": "onPlay", "effect": "staggerEnemy", "target": "all" }]
   },
   {

@@ -6,7 +6,7 @@
 // 純ロジック: DOM/React・Date.now()・Math.random() を使わない (Unity 移植対象)。
 import { checkCombatEnd } from './combat.ts'
 import { allCards, getCardDef, getGearDef } from './content.ts'
-import { resolveEffectTargeted } from './effects.ts'
+import { damageBreakdown, playerDamageAfterModifiers, resolveEffectTargeted } from './effects.ts'
 import { nextInt } from './rng.ts'
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import type { CardInstance, GameState, GearDef, GearInstance } from './types.ts'
@@ -70,6 +70,34 @@ export function gearCardChoices(state: GameState, def: GearDef): readonly CardIn
     default:
       return []
   }
+}
+
+/**
+ * ギアのダメージの「実際に与える値」(2026-09-17 プレイテスト J2 の直接の死因への処方)。
+ * カードには実値表示があるのにギアは台帳の文面 (「敵全体に10ダメージ」) しか出しておらず、
+ * 実際には**成長が乗り・敵ブロックに吸われる**ことが画面から分からなかった
+ * (火薬11が敵ブロック12に丸ごと吸われ、敵HP3を残して敗北した)。
+ * カードの setCardLiveDamage と同じく engine の純関数にして Web/CLI/Unity が共有する。
+ * 全体ダメージは生存する敵ごとに並べる。変化が無ければ null (素の文面で足りる)。
+ */
+export function gearLiveDamage(state: GameState, def: GearDef, targetIndex?: number): string | null {
+  const alive = state.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
+  const parts: string[] = []
+  for (const e of def.effects) {
+    if (e.effect !== 'dealDamage' || e.amount === undefined) continue
+    const live = playerDamageAfterModifiers(state, e.amount)
+    const targets = e.target === 'all' ? alive : targetIndex !== undefined ? [targetIndex] : alive.slice(0, 1)
+    const each = targets
+      .map((i) => {
+        const bd = damageBreakdown(state, i, e.amount!, e.pierce === true, true, false)
+        return bd ? `敵${i}:${bd.hpLoss}` : `敵${i}:${live}`
+      })
+      .join(' / ')
+    parts.push(`${e.amount}→${each}`)
+  }
+  if (parts.length === 0) return null
+  const growth = state.player.growth > 0 ? `成長+${state.player.growth}・` : ''
+  return `実際に与える値: ${parts.join('、')}（${growth}急所・装甲・敵ブロック込み。勢いは乗らない）`
 }
 
 export interface UseGearOptions {

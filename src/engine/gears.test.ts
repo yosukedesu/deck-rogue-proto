@@ -8,9 +8,11 @@ import {
   MANA_MAX,
   gearBlockedReason,
   gearCardChoices,
+  gearLiveDamage,
   makeGear,
   resolveGear,
 } from './gears.ts'
+import { incomingTotal, intentModifierNotes } from './summary.ts'
 import {
   GEAR_DROP_BASE,
   MANA_PER_ELITE_BOSS,
@@ -363,5 +365,31 @@ describe('報酬のギアと札は順番に依存しない', () => {
     const skipped = applyRunCommand(rewardRun(), { type: 'SkipReward' })
     expect(skipped.phase).toBe('reward')
     expect(applyRunCommand(skipped, { type: 'SkipGear' }).phase).toBe('map')
+  })
+})
+
+// 2026-09-17 表示の穴の是正（M・L・J2 の報告）
+describe('ギアの表示が嘘をつかない', () => {
+  it('ギアのダメージは成長と敵ブロック込みの実値を出す', () => {
+    const base = freshCombat('set-confirm', 'enemy_probe')
+    const combat: GameState = {
+      ...base,
+      player: { ...base.player, growth: 1 },
+      enemies: base.enemies.map((e) => ({ ...e, block: 12 })),
+    }
+    const line = gearLiveDamage(combat, getGearDef('gear_powder'))
+    expect(line).not.toBeNull()
+    expect(line).toContain('成長+1') // 素の10でなく11として読める
+    expect(line).toContain('敵0:0') // ブロック12に丸ごと吸われる = J2 の死因が画面に出る
+  })
+
+  it('楔で打ち消した敵は被ダメ予測から外れ、意図に「打ち消し済み」が出る', () => {
+    const base = freshCombat('set-confirm', 'enemy_probe')
+    const combat = withIntent({ ...base }, attackIntent(23))
+    expect(incomingTotal(combat)).toBeGreaterThan(0)
+    const after = use(runWith(combat, ['gear_wedge']), 0, { targetIndex: 0 }).combat!
+    expect(after.enemies[0].actionNegated).toBe(true)
+    expect(incomingTotal(after)).toBe(0)
+    expect(intentModifierNotes(after, 0, after.enemies[0].intent!)).toContain('打ち消し済み＝この行動は起きない')
   })
 })

@@ -150,6 +150,7 @@ export function intentModifierNotes(s: GameState, enemyIndex: number, it: EnemyI
   if (it.kind !== 'attack') return []
   const e = s.enemies[enemyIndex]
   const notes: string[] = []
+  if (e?.actionNegated === true) notes.push('打ち消し済み＝この行動は起きない')
   if ((e?.weak ?? 0) > 0) notes.push('威圧で-25%')
   if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) notes.push(`鈴で-${s.setDamageReduction}`)
   if (s.player.vulnerable > 0) notes.push('脆弱で+50%')
@@ -166,6 +167,9 @@ export function intentHits(s: GameState, it: EnemyIntent | EnemyIntentBranch): n
 export function incomingFrom(s: GameState, enemyIndex: number): number {
   const e = s.enemies[enemyIndex]
   if (!e || e.hp <= 0 || e.confusion > 0) return 0
+  // ギア「楔」で打ち消し済みの敵は殴ってこない (2026-09-17 M・L: 打ち消しても予測が「致死」のままで、
+  // ランで一番大きな決断が効いたかどうか画面から分からなかった)
+  if (e.actionNegated === true) return 0
   const it = effectiveIntent(s, enemyIndex)
   if (it?.kind !== 'attack') return 0
   return modifiedHit(s, enemyIndex, it.actual) * intentHits(s, it)

@@ -25,7 +25,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
-import { GEAR_CARRY_MAX, MANA_MAX, gearBlockedReason, gearCardChoices } from '../engine/gears.ts'
+import { GEAR_CARRY_MAX, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage } from '../engine/gears.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
 import { STATUS_JA, describeGraph } from '../engine/enemyGraph.ts'
@@ -660,6 +660,11 @@ function renderGearBar(run: RunState): string {
     L.push(
       `  [${i}] ${gearLine(def, g.charges)}${needs.length > 0 ? ` 〔要: ${needs.join('・')}〕` : ''}${why !== null ? ` 〔いまは組めない: ${why}〕` : ''}`,
     )
+    // ダメージの実値 (2026-09-17 J2: 火薬11が敵ブロック12に吸われたのが画面から読めず敗北した)
+    if (run.phase === 'combat' && run.combat !== null) {
+      const live = gearLiveDamage(run.combat, def)
+      if (live !== null) L.push(`       ${live}`)
+    }
     // 札を選ぶギア (掘り出し・目当ての品・砥ぎ油・写し・化けの粉) は候補の uid を並べる
     if (def.needsCard !== undefined && run.phase === 'combat' && run.combat !== null && why === null) {
       const choices = gearCardChoices(run.combat, def)
@@ -927,6 +932,16 @@ if (mode === 'new-run') {
     process.exit(0)
   }
   if (sf.kind === 'run') {
+    // ギアは名前でも指定できる (2026-09-17 M: 使い切ったギアで一覧の添字が詰まり、
+    // 致死ターンに「修理油」のつもりで別のギアを組んだ。1ターン1個なので訂正もできなかった)
+    if (cmd.type === 'UseGear' || cmd.type === 'DiscardGear') {
+      const named = (cmd as { gear?: string }).gear
+      if (typeof named === 'string') {
+        const i = gearsOf(sf.run!).findIndex((g) => getGearDef(g.gearId).name === named)
+        if (i < 0) throw new Error(`持っていないギア: ${named}（持ち物: ${gearsOf(sf.run!).map((g) => getGearDef(g.gearId).name).join('・') || 'なし'}）`)
+        ;(cmd as { index?: number }).index = i
+      }
+    }
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
       ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'RelicChooseCards', 'CampfireDig', 'CampfireTrain', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
