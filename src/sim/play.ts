@@ -690,7 +690,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   L.push(renderGearBar(run))
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
-  } else if (run.phase === 'reward' && run.rewardOptions) {
+  } else if (run.phase === 'reward') {
     if (run.combat?.phase === 'won') L.push('🏆 戦闘に勝利 (残りの手札は打てない)')
     {
       // 逃走した盗人の持ち逃げ額 (2026-09-03 Opusラン K: 「56G盗まれた→55G」の並びが取り返せたように見えた)
@@ -698,16 +698,19 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       if (lost > 0) L.push(`💸 逃走した盗人に ${lost}G 持ち逃げされた (所持金から精算済み。逃げる前に倒せば戻っていた)`)
     }
     if (run.combat?.phase === 'won') L.push(`⚔️ 戦いの記録: ${summaryLine(battleSummary(run.combat.eventLog))}`)
-    L.push('報酬ピック (1枚選ぶ or スキップ):')
-    if (run.currentElite && run.combat?.enemies.some((e) => e.fled === true)) {
-      L.push('⚠ 逃走されたため、エリートのレア確定枠を失った (レリック3択は残る)')
+    // 札とギアは別枠で、どちらを先に片付けてもよい (2026-09-17 是正)。片方だけ残る局面がある
+    if (run.rewardOptions) {
+      L.push('報酬ピック (1枚選ぶ or スキップ):')
+      if (run.currentElite && run.combat?.enemies.some((e) => e.fled === true)) {
+        L.push('⚠ 逃走されたため、エリートのレア確定枠を失った (レリック3択は残る)')
+      }
+      const RARITY_TAG: Record<string, string> = { common: '', uncommon: '◆', rare: '★レア ' }
+      run.rewardOptions.forEach((id, i) => {
+        const def = getCardDef(id)
+        L.push(` [${i}] ${RARITY_TAG[def.rarity ?? 'common']}${cardLine(def)}`)
+      })
+      L.push('→ {"type":"PickReward","index":N} か {"type":"SkipReward"}')
     }
-    const RARITY_TAG: Record<string, string> = { common: '', uncommon: '◆', rare: '★レア ' }
-    run.rewardOptions.forEach((id, i) => {
-      const def = getCardDef(id)
-      L.push(` [${i}] ${RARITY_TAG[def.rarity ?? 'common']}${cardLine(def)}`)
-    })
-    L.push('→ {"type":"PickReward","index":N} か {"type":"SkipReward"}')
     if (run.gearOption != null) {
       const g = getGearDef(run.gearOption)
       L.push(`⚙ ギア報酬 (札とは別枠): ${gearLine(g)}`)

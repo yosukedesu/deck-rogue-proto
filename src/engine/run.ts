@@ -1584,6 +1584,18 @@ function afterVictory(run: RunState, combat: GameState): RunState {
 }
 
 /** 幕ボスのカード報酬を受け取った後、次の幕へ進む (新しいマップを生成して行0の選択から) */
+/**
+ * 報酬ノードは「札の選択」と「ギアの取得」の**両方**が片付いてから閉じる (2026-09-17 是正)。
+ * 旧実装は PickReward/SkipReward が即 advanceActIfBossCleared を呼んでフェーズを進めていたため、
+ * 札を先に選ぶと phase が 'reward' でなくなり、残っていた gearOption を TakeGear できずに黙って消えた
+ * (提案書§4「カードのピックと独立に両方取れる」が順番依存で壊れていた)。
+ */
+function finishReward(run: RunState): RunState {
+  if (run.gearOption != null) return run // ギアが残っている
+  if (run.rewardOptions !== null) return run // 札の選択が残っている
+  return advanceActIfBossCleared(run)
+}
+
 function advanceActIfBossCleared(run: RunState): RunState {
   if (currentNode(run)?.type !== 'boss' || run.act >= ACT_COUNT) {
     return { ...run, phase: 'map' }
@@ -1689,16 +1701,26 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const picked = addCardsToRunDeck({ ...run, picks: [...run.picks, cardId], rewardOptions: null }, [card]) // 卵 (2026-09-12) はここで乗る
       // 祈りの車輪 (2026-09-12): 通常戦の報酬をもう1組
       if (round > 0) return rollRewards({ ...picked, rewardRoundsLeft: round - 1 })
-      return advanceActIfBossCleared(picked)
+      return finishReward(picked)
     }
     case 'SkipReward': {
       if (run.phase !== 'reward') throw new Error('報酬フェーズではない')
       // 鳴り鉢 (2026-09-12 本家 Singing Bowl): 見送るたび最大HP+N
       const bowl = relicBonusSum(run, 'skipRewardMaxHp')
-      const skipped: RunState = { ...run, rewardOptions: null, maxHp: run.maxHp + bowl, hp: run.hp + bowl }
+      // 札が既に片付いていれば、残るのはギアだけ = この「見送る」はギアを見送る意味になる。
+      // 札がまだ出ている間は札だけを見送り、ギアの提示は残す (2026-09-17: 札を見送るとギアも
+      // 黙って消えていた旧実装の裏返しを作らないため)
+      const leaving = run.rewardOptions === null && run.gearOption != null
+      const skipped: RunState = {
+        ...run,
+        rewardOptions: null,
+        maxHp: run.maxHp + bowl,
+        hp: run.hp + bowl,
+        ...(leaving ? { gearOption: null } : {}),
+      }
       const round = run.rewardRoundsLeft ?? 0
       if (round > 0) return rollRewards({ ...skipped, rewardRoundsLeft: round - 1 })
-      return advanceActIfBossCleared(skipped)
+      return finishReward(skipped)
     }
     // ---- ギア (2026-09-17) ----
     case 'UseGear': {
@@ -1742,11 +1764,11 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         if (command.discardIndex === undefined) throw new Error('持ち物が満杯 = 入れ替えるギアを選ぶ')
         base = discardGearAt(base, command.discardIndex)
       }
-      return { ...addGear(base, id, `a${run.act}_r${run.row}_${id}`), gearOption: null }
+      return finishReward({ ...addGear(base, id, `a${run.act}_r${run.row}_${id}`), gearOption: null })
     }
     case 'SkipGear': {
       if (run.phase !== 'reward') throw new Error('報酬フェーズではない')
-      return { ...run, gearOption: null }
+      return finishReward({ ...run, gearOption: null })
     }
     case 'DiscardGear':
       return discardGearAt(run, command.index)

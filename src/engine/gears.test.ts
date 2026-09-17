@@ -334,3 +334,34 @@ describe('蘇りの発条とレリックの取り違え', () => {
     expect((saved[0] as { source?: string }).source).toBe('gear')
   })
 })
+
+// 2026-09-17 の是正（J の報告）: 報酬で札を先に選ぶとギアが黙って消えていた。
+// 原因は PickReward が即フェーズを進め、TakeGear が phase==='reward' を要求していたこと。
+describe('報酬のギアと札は順番に依存しない', () => {
+  const rewardRun = (): RunState => {
+    const run = createRun(4242, 'set-confirm', 'leader_green')
+    return { ...run, phase: 'reward', rewardOptions: ['green_strike'], gearOption: 'gear_powder', row: 0 }
+  }
+
+  it('札を先に選んでも、あとからギアを取れる', () => {
+    const afterCard = applyRunCommand(rewardRun(), { type: 'PickReward', index: 0 })
+    expect(afterCard.phase).toBe('reward') // ギアが残っている間は報酬ノードを閉じない
+    const afterGear = applyRunCommand(afterCard, { type: 'TakeGear' })
+    expect(gearsOf(afterGear).map((g) => g.gearId)).toContain('gear_powder')
+    expect(afterGear.phase).toBe('map') // 両方片付いたので閉じる
+  })
+
+  it('ギアを先に取っても、あとから札を選べる（従来の順番）', () => {
+    const afterGear = applyRunCommand(rewardRun(), { type: 'TakeGear' })
+    expect(afterGear.phase).toBe('reward')
+    const afterCard = applyRunCommand(afterGear, { type: 'PickReward', index: 0 })
+    expect(afterCard.phase).toBe('map')
+    expect(gearsOf(afterCard).map((g) => g.gearId)).toContain('gear_powder')
+  })
+
+  it('札を見送ってもギアは残る', () => {
+    const skipped = applyRunCommand(rewardRun(), { type: 'SkipReward' })
+    expect(skipped.phase).toBe('reward')
+    expect(applyRunCommand(skipped, { type: 'SkipGear' }).phase).toBe('map')
+  })
+})

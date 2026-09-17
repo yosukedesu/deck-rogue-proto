@@ -140,7 +140,10 @@ describe('報酬ピック', () => {
     expect(run.rewardOptions).not.toContain('green_guard')
     const picked = run.rewardOptions![0]
     run = applyRunCommand(run, { type: 'PickReward', index: 0 })
-    expect(run.phase).toBe('map') // ピック後はマップで次のノードを選ぶ
+    // ギアの提示 (2026-09-17) が残っている間は報酬ノードを閉じない = 札とギアは別枠
+    expect(run.phase).toBe('reward')
+    run = applyRunCommand(run, { type: 'SkipGear' })
+    expect(run.phase).toBe('map') // 両方片付けてマップで次のノードを選ぶ
     expect(run.deck).toHaveLength(11)
     expect(run.picks).toEqual([picked])
     expect(run.battlesWon).toBe(1)
@@ -159,6 +162,7 @@ describe('報酬ピック', () => {
     let run = intoFirstBattle(createRun(11, 'set-confirm'))
     run = forceWin(run)
     run = applyRunCommand(run, { type: 'SkipReward' })
+    if (run.gearOption != null) run = applyRunCommand(run, { type: 'SkipGear' })
     expect(run.phase).toBe('map')
     expect(run.deck).toHaveLength(10)
   })
@@ -281,6 +285,7 @@ describe('ラン走破 (3幕構成)', () => {
     run = applyRunCommand(run, { type: 'SkipRelic' })
     expect(run.phase).toBe('reward')
     run = applyRunCommand(run, { type: 'SkipReward' })
+    if (run.gearOption != null) run = applyRunCommand(run, { type: 'SkipGear' })
     expect(run.act).toBe(2) // 次の幕へ
     expect(run.phase).toBe('map')
     expect(run.row).toBe(-1)
@@ -302,6 +307,7 @@ describe('ラン走破 (3幕構成)', () => {
       if (act < ACT_COUNT) {
         if (run.phase === 'relic-reward') run = applyRunCommand(run, { type: 'SkipRelic' })
         if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
+        if (run.gearOption != null) run = applyRunCommand(run, { type: 'SkipGear' })
       }
     }
     expect(run.phase).toBe('won')

@@ -278,6 +278,7 @@ describe('報酬・マップ・経済', () => {
     expect(run.phase).toBe('reward') // 2組目
     expect(run.maxHp).toBe(maxHp + 2)
     run = applyRunCommand(run, { type: 'PickReward', index: 0 })
+    if (run.gearOption != null) run = applyRunCommand(run, { type: 'SkipGear' })
     expect(run.phase).toBe('map')
   })
 

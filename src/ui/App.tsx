@@ -5144,7 +5144,7 @@ function RunScreen({
             ⚠ 逃走されたため、エリートのレア確定枠を失いました（レリック3択は残ります）
           </div>
         )}
-        <div className="hand-cards" style={{ margin: '12px 0' }}>
+        <div className="hand-cards" style={{ margin: '12px 0', display: run.rewardOptions ? undefined : 'none' }}>
           {(run.rewardOptions ?? []).map((cardId, i) => {
             const inst = { uid: `opt${i}`, def: getCardDef(cardId) }
             const upgradable = canUpgradeCard(inst)
