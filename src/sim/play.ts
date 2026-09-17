@@ -17,11 +17,15 @@
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
 //            {"type":"CampfireRest"} / {"type":"CampfireRemove","index":0} / {"type":"CampfireUpgrade","index":0}  ← 焚き火
+//   ギア (消耗品 2026-09-17): {"type":"UseGear","index":0} (自ターンに1個・魔素1。対象を取るギアは "targetIndex"、
+//            札を選ぶギアは "cardUid"、無銘の部品は "asGearId") / {"type":"TakeGear"} (報酬。満杯なら "discardIndex")
+//            / {"type":"SkipGear"} / {"type":"DiscardGear","index":0} / {"type":"ShopBuyGear","index":0} / {"type":"ShopBuyMana"}
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { encounterName, getCardDef, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
+import { GEAR_CARRY_MAX, MANA_MAX, gearBlockedReason, gearCardChoices } from '../engine/gears.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
 import { STATUS_JA, describeGraph } from '../engine/enemyGraph.ts'
@@ -37,11 +41,11 @@ function cname(cardId: string): string {
   }
 }
 import { cardNeedsTarget, damageBreakdown, displayedInflict, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
-import type { CardDef, Command, DeclarativeEffect, EnemyIntent, EnemyIntentBranch, GameState } from '../engine/types.ts'
+import type { GearDef, CardDef, Command, DeclarativeEffect, EnemyIntent, EnemyIntentBranch, GameState } from '../engine/types.ts'
 import type { RunCommand, RunJournal, RunState } from '../engine/run.ts'
 
 interface SaveFile {
@@ -634,6 +638,48 @@ function renderMap(run: RunState): string {
   return L.join('\n')
 }
 
+const GEAR_RARITY_TAG: Record<string, string> = { common: '', uncommon: '◆', rare: '★' }
+
+/** ギア1個の1行表記 (名前・レア度・回数・説明文) */
+function gearLine(def: GearDef, charges?: number): string {
+  const ch = (def.charges ?? 1) > 1 || (charges !== undefined && charges > 1)
+  return `${GEAR_RARITY_TAG[def.rarity]}${def.name}${ch ? `(残${charges ?? def.charges}回)` : ''}: ${def.text}`
+}
+
+/** 持ち物と魔素の帯 (どの画面でも出す = 「持っているのに忘れる」を作らない) */
+function renderGearBar(run: RunState): string {
+  const gears = gearsOf(run)
+  const L: string[] = [`⚙ 魔素 ${manaOf(run)}/${MANA_MAX} | ギア ${gears.length}/${GEAR_CARRY_MAX}`]
+  gears.forEach((g, i) => {
+    const def = getGearDef(g.gearId)
+    const why = gearBlockedReason(run.phase === 'combat' ? run.combat : null, manaOf(run), g)
+    const needs: string[] = []
+    if (def.needsTarget === true) needs.push('targetIndex')
+    if (def.needsCard !== undefined) needs.push('cardUid')
+    if (def.special === 'nameless') needs.push('asGearId')
+    L.push(
+      `  [${i}] ${gearLine(def, g.charges)}${needs.length > 0 ? ` 〔要: ${needs.join('・')}〕` : ''}${why !== null ? ` 〔いまは組めない: ${why}〕` : ''}`,
+    )
+    // 札を選ぶギア (掘り出し・目当ての品・砥ぎ油・写し・化けの粉) は候補の uid を並べる
+    if (def.needsCard !== undefined && run.phase === 'combat' && run.combat !== null && why === null) {
+      const choices = gearCardChoices(run.combat, def)
+      L.push(
+        choices.length === 0
+          ? `       候補なし (${def.needsCard === 'hand' ? '手札' : def.needsCard === 'discard' ? '捨て札' : '山札'})`
+          : `       候補: ${choices.map((c) => `${c.def.name}(${c.uid})`).join(' / ')}`,
+      )
+    }
+    if (def.special === 'nameless') {
+      const seen = (run.seenGearIds ?? []).filter((id) => id !== 'gear_nameless')
+      L.push(seen.length === 0 ? '       化ける先なし (まだ他のギアを拾っていない)' : `       化ける先: ${seen.map((id) => `${getGearDef(id).name}(${id})`).join(' / ')}`)
+    }
+  })
+  if (gears.length > 0 && run.phase === 'combat') {
+    L.push('  → {"type":"UseGear","index":N}（魔素1・自ターンに1個。対象は "targetIndex"、札を選ぶギアは "cardUid"）')
+  }
+  return L.join('\n')
+}
+
 function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   const L: string[] = []
   const leader = getLeaderDef(run.leaderId)
@@ -641,6 +687,7 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
   // 倒した盗人 (逃走前) の抱えた金は勝利時に戻るので「盗まれ中」に数えない (2026-08-31 再検証ラン指摘①)
   const stolenNow = run.phase === 'combat' ? (run.combat?.enemies.reduce((a, e) => a + (e.hp > 0 || e.fled === true ? (e.stolenGold ?? 0) : 0), 0) ?? 0) : 0 // 精算後の残留表示を防ぐ (2026-08-31 白ラン指摘)
   L.push(`=== ラン: ${leader.name}${run.setAnyCards === true ? ' | 🃏全カード伏せ可(実験)' : ''} | 難易度${run.difficulty ?? 3} | 幕${run.act}/3 ${run.row < 0 ? '開始前' : `行${run.row + 1}/${run.map.length}`} | 戦闘${run.battlesWon}勝 | HP持ち越し${run.hp} | 💰${run.gold}G${stolenNow > 0 ? `(うち${stolenNow}G盗まれ中・実損は所持${run.gold}Gが上限)` : ''} | フェーズ:${run.phase} | レリック:${run.relics.map((r) => getRelicDef(r).name).join('、') || 'なし'} ===`)
+  L.push(renderGearBar(run))
   if (run.phase === 'combat' && run.combat) {
     L.push(renderBattle(run.combat, logFrom))
   } else if (run.phase === 'reward' && run.rewardOptions) {
@@ -661,6 +708,15 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
       L.push(` [${i}] ${RARITY_TAG[def.rarity ?? 'common']}${cardLine(def)}`)
     })
     L.push('→ {"type":"PickReward","index":N} か {"type":"SkipReward"}')
+    if (run.gearOption != null) {
+      const g = getGearDef(run.gearOption)
+      L.push(`⚙ ギア報酬 (札とは別枠): ${gearLine(g)}`)
+      L.push(
+        gearFull(run)
+          ? '→ {"type":"TakeGear","discardIndex":N}（持ち物が満杯 = 入れ替え）か {"type":"SkipGear"}'
+          : '→ {"type":"TakeGear"} か {"type":"SkipGear"}',
+      )
+    }
   } else if (run.phase === 'map') {
     L.push(fullMap ? renderMap(run) : renderMapBrief(run))
   } else if (run.phase === 'campfire') {
@@ -715,7 +771,14 @@ function renderRun(run: RunState, logFrom: number, fullMap = false): string {
     }
     L.push(` カード除去サービス ${shopRemovalPrice(run)}G (回数無制限・使うたび+25G)`)
     L.push(` カード強化サービス ${shopUpgradePrice(run)}G (回数無制限・使うたび+50G。焚き火の「鍛える」と同じ)`)
-    L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopLeave"}`)
+    // ギアの棚 (2026-09-17): 3枠 + 魔素
+    ;(run.shop.gears ?? []).forEach((item, i) =>
+      L.push(item.sold === true ? ` ギア[${i}] 〔売切〕` : ` ギア[${i}] ${item.price}G: ${gearLine(getGearDef(item.id))}`),
+    )
+    if (run.shop.manaPrice !== undefined) {
+      L.push(` 魔素 ${run.shop.manaPrice}G (いま ${manaOf(run)}/${MANA_MAX})`)
+    }
+    L.push(`→ {"type":"ShopBuyCard","index":N} / {"type":"ShopBuyRelic"} / {"type":"ShopRemove","index":N}(デッキ番号) / {"type":"ShopUpgrade","index":N}(デッキ番号) / {"type":"ShopBuyGear","index":N}${gearFull(run) ? '(満杯なら "discardIndex" も)' : ''} / {"type":"ShopBuyMana"} / {"type":"ShopLeave"}`)
     L.push('   デッキ:')
     run.deck.forEach((c, i) => L.push(`   [${i}] ${cardLine(c.def)}`))
   } else if (run.phase === 'event') {
@@ -861,7 +924,8 @@ if (mode === 'new-run') {
     // 戦闘コマンドは自動で Combat に包む (エルゴノミクス)
     const runCmd: RunCommand =
       ['PickReward', 'SkipReward', 'ChooseNode', 'PickRelic', 'SkipRelic', 'RelicChooseCards', 'CampfireDig', 'CampfireTrain', 'StartRun', 'ShopBuyCard', 'ShopBuyRelic', 'ShopRemove', 'ShopUpgrade', 'ShopLeave', 'EventChoice',
-        'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip'].includes(cmd.type)
+        'CampfireRest', 'CampfireRemove', 'CampfireUpgrade', 'WorkshopFuse', 'WorkshopSkip',
+        'UseGear', 'TakeGear', 'SkipGear', 'DiscardGear', 'ShopBuyGear', 'ShopBuyMana'].includes(cmd.type)
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
     let choiceLine: string | null = null

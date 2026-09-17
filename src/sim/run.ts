@@ -17,7 +17,7 @@ import { allDecks, allEnemies, allLeaders, getCardDef, getEnemyDef } from '../en
 import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, createRun, defaultEventChoice, isUpgraded, nextChoices } from '../engine/run.ts'
+import { applyRunCommand, createRun, defaultEventChoice, gearFull, isUpgraded, nextChoices } from '../engine/run.ts'
 import { BOSS_ROW } from '../engine/map.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
@@ -619,6 +619,11 @@ function simulateRuns(count: number, baseSeed: number): void {
           continue
         }
         if (run.phase === 'reward') {
+          // ギア (2026-09-17): 提示があれば先に取る (満杯なら見送る)。組むのはボットの仕事にしない
+          if (run.gearOption != null) {
+            run = applyRunCommand(run, gearFull(run) ? { type: 'SkipGear' } : { type: 'TakeGear' })
+            continue
+          }
           run = applyRunCommand(run, { type: 'PickReward', index: chooseReward(run) })
           continue
         }

@@ -1,0 +1,301 @@
+[
+  {
+    "id": "gear_spring",
+    "name": "発条",
+    "rarity": "common",
+    "family": "general",
+    "charges": 2,
+    "text": "ブロック10",
+    "effects": [{ "trigger": "onPlay", "effect": "gainBlock", "amount": 10 }]
+  },
+  {
+    "id": "gear_cog",
+    "name": "歯車",
+    "rarity": "common",
+    "family": "general",
+    "charges": 2,
+    "text": "一時マナ+2",
+    "effects": [{ "trigger": "onPlay", "effect": "gainEnergy", "amount": 2 }]
+  },
+  {
+    "id": "gear_oilcan",
+    "name": "油差し",
+    "rarity": "common",
+    "family": "general",
+    "text": "3ドロー",
+    "effects": [{ "trigger": "onPlay", "effect": "drawCards", "amount": 3 }]
+  },
+  {
+    "id": "gear_powder",
+    "name": "火薬",
+    "rarity": "common",
+    "family": "general",
+    "text": "敵全体に10ダメージ",
+    "effects": [{ "trigger": "onPlay", "effect": "dealDamage", "amount": 10, "target": "all" }]
+  },
+  {
+    "id": "gear_repair_oil",
+    "name": "修理油",
+    "rarity": "common",
+    "family": "general",
+    "text": "最大HPの20%回復",
+    "effects": [{ "trigger": "onPlay", "effect": "gainHpRatio", "amount": 20 }]
+  },
+  {
+    "id": "gear_brand_iron",
+    "name": "焼き鏝",
+    "rarity": "uncommon",
+    "family": "general",
+    "needsTarget": true,
+    "text": "対象に急所3",
+    "effects": [{ "trigger": "onPlay", "effect": "exposeEnemy", "amount": 3 }]
+  },
+  {
+    "id": "gear_rust_powder",
+    "name": "錆粉",
+    "rarity": "uncommon",
+    "family": "general",
+    "needsTarget": true,
+    "text": "対象に威圧3",
+    "effects": [{ "trigger": "onPlay", "effect": "weakenEnemy", "amount": 3 }]
+  },
+
+  {
+    "id": "gear_wedge",
+    "name": "楔",
+    "rarity": "uncommon",
+    "family": "interfere",
+    "needsTarget": true,
+    "text": "対象の次の行動を打ち消す",
+    "effects": [{ "trigger": "onPlay", "effect": "negateEnemyAction" }]
+  },
+  {
+    "id": "gear_rusty_wedge",
+    "name": "錆びた楔",
+    "rarity": "uncommon",
+    "family": "interfere",
+    "needsTarget": true,
+    "text": "対象の召喚・分裂・孵化をこの戦闘で1回止める",
+    "effects": [{ "trigger": "onPlay", "effect": "blockEnemySummon" }]
+  },
+  {
+    "id": "gear_stilling_weight",
+    "name": "鎮めの錘",
+    "rarity": "rare",
+    "family": "interfere",
+    "needsTarget": true,
+    "text": "対象の割り込み（HP半分の豹変・目覚め）をこの戦闘中起こさない",
+    "effects": [{ "trigger": "onPlay", "effect": "blockEnemyInterrupt" }]
+  },
+
+  {
+    "id": "gear_cleansing_water",
+    "name": "清めの水",
+    "rarity": "uncommon",
+    "family": "cleanse",
+    "text": "自分の弱体・脆弱・虚弱・拘束・霞み・重りを全て消す",
+    "effects": [{ "trigger": "onPlay", "effect": "cleanseStatuses" }]
+  },
+  {
+    "id": "gear_ash_remover",
+    "name": "灰落とし",
+    "rarity": "common",
+    "family": "cleanse",
+    "text": "手札の負傷・火傷・がらくた・烙印を全て消滅させる",
+    "effects": [{ "trigger": "onPlay", "effect": "purgeHandStatus" }]
+  },
+  {
+    "id": "gear_ward_charm",
+    "name": "厄除けの符",
+    "rarity": "uncommon",
+    "family": "cleanse",
+    "text": "次に受ける状態異常を1回弾く",
+    "effects": [{ "trigger": "onPlay", "effect": "gainArtifact", "amount": 1 }]
+  },
+
+  {
+    "id": "gear_dig_out",
+    "name": "掘り出し",
+    "rarity": "common",
+    "family": "field",
+    "needsCard": "discard",
+    "text": "捨て札から1枚を手札へ",
+    "effects": [{ "trigger": "onPlay", "effect": "retrieveFromDiscard", "amount": 1 }]
+  },
+  {
+    "id": "gear_wanted_item",
+    "name": "目当ての品",
+    "rarity": "uncommon",
+    "family": "field",
+    "needsCard": "draw",
+    "text": "山札から1枚を選んで手札へ",
+    "effects": [{ "trigger": "onPlay", "effect": "searchDeck", "amount": 1 }]
+  },
+  {
+    "id": "gear_redraw",
+    "name": "引き直し",
+    "rarity": "uncommon",
+    "family": "field",
+    "text": "手札を全て捨て、同じ枚数を引く",
+    "effects": [{ "trigger": "onPlay", "effect": "redrawHand" }]
+  },
+  {
+    "id": "gear_next_prep",
+    "name": "次の備え",
+    "rarity": "common",
+    "family": "field",
+    "text": "次のターンのドロー+3",
+    "effects": [{ "trigger": "onPlay", "effect": "drawCardsNextTurn", "amount": 3 }]
+  },
+
+  {
+    "id": "gear_whetstone_oil",
+    "name": "砥ぎ油",
+    "rarity": "common",
+    "family": "morph",
+    "needsCard": "hand",
+    "text": "手札1枚をこの戦闘中鍛える",
+    "effects": [{ "trigger": "onPlay", "effect": "upgradeInHand", "amount": 1 }]
+  },
+  {
+    "id": "gear_copy",
+    "name": "写し",
+    "rarity": "uncommon",
+    "family": "morph",
+    "needsCard": "hand",
+    "text": "手札1枚のコピーを手札に加える（この戦闘限り）",
+    "effects": [{ "trigger": "onPlay", "effect": "copyCardInHand", "amount": 1 }]
+  },
+  {
+    "id": "gear_shift_powder",
+    "name": "化けの粉",
+    "rarity": "rare",
+    "family": "morph",
+    "needsCard": "hand",
+    "text": "手札1枚を同じレア度の別の札に変える（この戦闘限り）",
+    "effects": [{ "trigger": "onPlay", "effect": "transformInHand", "amount": 1 }]
+  },
+
+  {
+    "id": "gear_bewilder",
+    "name": "惑わし",
+    "rarity": "common",
+    "family": "enemy-status",
+    "needsTarget": true,
+    "text": "対象に混乱3",
+    "effects": [{ "trigger": "onPlay", "effect": "confuse", "amount": 3 }]
+  },
+  {
+    "id": "gear_rust_stop",
+    "name": "錆止め",
+    "rarity": "uncommon",
+    "family": "enemy-status",
+    "needsTarget": true,
+    "text": "対象の筋力を0に戻す",
+    "effects": [{ "trigger": "onPlay", "effect": "clearEnemyStrength" }]
+  },
+  {
+    "id": "gear_hammer",
+    "name": "金槌",
+    "rarity": "common",
+    "family": "enemy-status",
+    "needsTarget": true,
+    "text": "対象のブロックと殻を砕く",
+    "effects": [{ "trigger": "onPlay", "effect": "shatterBlock" }]
+  },
+  {
+    "id": "gear_tie_cord",
+    "name": "締め紐",
+    "rarity": "common",
+    "family": "enemy-status",
+    "needsTarget": true,
+    "text": "対象の次の行動を隙にする",
+    "effects": [{ "trigger": "onPlay", "effect": "staggerEnemy" }]
+  },
+
+  {
+    "id": "gear_overload_cog",
+    "name": "過負荷の歯車",
+    "rarity": "uncommon",
+    "family": "edged",
+    "text": "一時マナ+3・次のターンのドロー−2",
+    "effects": [
+      { "trigger": "onPlay", "effect": "gainEnergy", "amount": 3 },
+      { "trigger": "onPlay", "effect": "drawCardsNextTurn", "amount": -2 }
+    ]
+  },
+  {
+    "id": "gear_powder_keg",
+    "name": "火薬樽",
+    "rarity": "uncommon",
+    "family": "edged",
+    "text": "敵全体に16ダメージ・自分もHP−4",
+    "effects": [
+      { "trigger": "onPlay", "effect": "dealDamage", "amount": 16, "target": "all" },
+      { "trigger": "onPlay", "effect": "loseHp", "amount": 4 }
+    ]
+  },
+  {
+    "id": "gear_blood_spring",
+    "name": "血の発条",
+    "rarity": "uncommon",
+    "family": "edged",
+    "text": "ブロック20・HP−4",
+    "effects": [
+      { "trigger": "onPlay", "effect": "gainBlock", "amount": 20 },
+      { "trigger": "onPlay", "effect": "loseHp", "amount": 4 }
+    ]
+  },
+
+  {
+    "id": "gear_paper_slip",
+    "name": "挟み紙",
+    "rarity": "common",
+    "family": "keep",
+    "text": "このターンは手札を捨てない",
+    "effects": [{ "trigger": "onPlay", "effect": "retainHandOnce" }]
+  },
+  {
+    "id": "gear_stockpile",
+    "name": "貯め置き",
+    "rarity": "uncommon",
+    "family": "keep",
+    "text": "余ったエナジーを次のターンへ持ち越す",
+    "effects": [{ "trigger": "onPlay", "effect": "energyCarryOnce" }]
+  },
+
+  {
+    "id": "gear_revive_spring",
+    "name": "蘇りの発条",
+    "rarity": "rare",
+    "family": "big",
+    "text": "この戦闘中、致死ダメージを一度耐えてHP1で立つ",
+    "effects": [{ "trigger": "onPlay", "effect": "gainDeathSaveOne" }]
+  },
+  {
+    "id": "gear_time_cog",
+    "name": "時の歯車",
+    "rarity": "rare",
+    "family": "big",
+    "text": "敵全員の次の行動が隙になる",
+    "effects": [{ "trigger": "onPlay", "effect": "staggerEnemy", "target": "all" }]
+  },
+  {
+    "id": "gear_nameless",
+    "name": "無銘の部品",
+    "rarity": "rare",
+    "family": "big",
+    "special": "nameless",
+    "text": "このランで拾ったことのあるギアのどれかになる",
+    "effects": []
+  },
+  {
+    "id": "gear_smoke",
+    "name": "煙玉",
+    "rarity": "rare",
+    "family": "big",
+    "special": "flee",
+    "text": "この戦闘から逃げる（幕ボス以外。報酬は得られない）",
+    "effects": []
+  }
+]

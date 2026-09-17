@@ -477,7 +477,7 @@ function buildIntent(
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
 function startPlayerTurn(state: GameState, turn: number): GameState {
   // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す。enemyPhase の旗もここで降りる
-  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, ...rest } = state
+  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, ...rest } = state
   let s: GameState = {
     ...rest,
     turn,
@@ -489,7 +489,8 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       // 頑丈な留め具 (blockKeep): ブロックをN持ち越す
       block: state.blockKeep !== undefined ? Math.min(state.player.block, state.blockKeep) : 0,
       // 溶けない氷菓 (energyCarry): 余ったエナジーを持ち越す (T1 は素の値)
-      energy: state.player.energyMax + (state.energyCarry === true && turn > 1 ? state.player.energy : 0) + (nextTurnEnergy ?? 0),
+      // 貯め置き (energyCarryThisTurn) はギアの1回版。どちらかが立っていれば持ち越す
+      energy: state.player.energyMax + ((state.energyCarry === true || carryOnce === true) && turn > 1 ? state.player.energy : 0) + (nextTurnEnergy ?? 0),
       energyMaxAtTurnStart: state.player.energyMax + (state.energyMaxRefBonus ?? 0), // 大樹の心: 上限参照札が読む値に+N
       cardsPlayedThisTurn: 0,
       setsThisTurn: 0,
@@ -513,7 +514,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
   // 泉 (onTurnStart ドロー) 等は順序が変わっても合計枚数は同じ = 既存挙動と等価
   // 霞み (2026-09-02): ドロー-2・最低3枚 (完全ゼロ化はしない = 全捨てルールと衝突するため)
-  s = drawCards(s, ((s.player.mist ?? 0) > 0 ? Math.max(3, s.player.drawPerTurn - 2) : s.player.drawPerTurn) + (nextTurnDraw ?? 0))
+  s = drawCards(s, Math.max(0, ((s.player.mist ?? 0) > 0 ? Math.max(3, s.player.drawPerTurn - 2) : s.player.drawPerTurn) + (nextTurnDraw ?? 0)))
   // 自ら固まる粘土 (gainBlockNextTurn): 前のターンに積んだブロックを得る (ブロック獲得の誘発は通す)
   if ((nextTurnBlock ?? 0) > 0) s = gainPlayerBlock(s, nextTurnBlock ?? 0, Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
@@ -538,6 +539,11 @@ function processSplits(state: GameState): GameState {
     const def = getEnemyDef(e.enemyId)
     const splitInto = def.splitInto
     if (splitInto === undefined) continue
+    // ギア「錆びた楔」(2026-09-17): 分裂を1回止める (旗を消費して分裂済みの印だけ立てる)
+    if (e.summonBlocked === true) {
+      s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, split: true, summonBlocked: false } : x)) }
+      continue
+    }
     s = { ...s, enemies: s.enemies.map((x, j) => (j === i ? { ...x, split: true } : x)) }
     s = emit(s, { type: 'EnemySplit', enemyIndex: i, into: splitInto.enemyId, count: splitInto.count })
     // 分裂は上限を見ない (親が消えた席に出る)
@@ -655,7 +661,10 @@ export function checkCombatEnd(state: GameState): GameState {
   state = refreshIntentValues(state)
   if (state.player.hp <= 0) {
     // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
-    if (state.deathSave === true && state.deathSaveUsed !== true) {
+    if (state.gearDeathSave === true) {
+      // 蘇りの発条 (ギア 2026-09-17): この戦闘中、致死を一度だけ耐えて HP1 で立つ (全快でなく1 = 糸は続く)
+      state = emit({ ...state, gearDeathSave: false, player: { ...state.player, hp: 1 } }, { type: 'DeathSaved', hp: 1 })
+    } else if (state.deathSave === true && state.deathSaveUsed !== true) {
       const hp = Math.max(1, Math.floor(state.player.maxHp / 2))
       state = emit({ ...state, deathSaveUsed: true, player: { ...state.player, hp } }, { type: 'DeathSaved', hp })
     } else {
@@ -1655,6 +1664,14 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
   // 窓の敵が行動前に倒れた (pre 窓の根の紡ぎ→成長→棘葉の全体ダメで死亡) 時、打ち消しの旗はその行動に使い切る
   // (2026-09-14 Opus AB #10: 未消費のまま次の敵の行動に飛んでいた)
   if (enemy.hp <= 0 || enemy.intent === null) return state.negateNextAction ? { ...state, negateNextAction: false } : state
+  // ギア「楔」(2026-09-17): この敵にだけ立つ打ち消し。全体の negateNextAction と同じ配管へ落とす
+  if (enemy.actionNegated === true) {
+    state = {
+      ...state,
+      negateNextAction: true,
+      enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, actionNegated: false } : e)),
+    }
+  }
   if (state.negateNextAction) {
     // 打ち消しの成功に反応する置物 (青: 還流の水鏡)。negate / negateConvertIce の両方がここを通る
     let base = { ...state, negateNextAction: false }
@@ -1889,6 +1906,13 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       const def = getEnemyDef(enemy.enemyId)
       const into = def.hatchInto
       if (into === undefined) return markResolved(state, 0)
+      // ギア「錆びた楔」: 孵化を1回止める
+      if (enemy.summonBlocked === true) {
+        return markResolved(
+          { ...state, enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, summonBlocked: false } : e)) },
+          0,
+        )
+      }
       const newDef = getEnemyDef(into.enemyId)
       // HPスケール継承 (分裂体と同じ裁定 2026-09-02): 卵の実効倍率を孵化後にも掛ける
       const hatchRatio = def.maxHp > 0 ? enemy.maxHp / def.maxHp : 1
@@ -1927,6 +1951,13 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       const move = def.moves.find((m) => m.id === enemy.intentMoveId) ?? def.moves.find((m) => m.kind === 'summon')
       const spawn = move?.summon
       if (spawn === undefined) return markResolved(state, 0)
+      // ギア「錆びた楔」(2026-09-17): 召喚を1回止める (旗を消費して no-op)
+      if (enemy.summonBlocked === true) {
+        return markResolved(
+          { ...state, enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, summonBlocked: false } : e)) },
+          0,
+        )
+      }
       const before = state.enemies.length
       let s = spawnEnemies(state, enemyIndex, spawn, MAX_ENEMIES_ON_FIELD)
       s = emit(s, { type: 'EnemySummoned', enemyIndex, into: spawn.enemyId, count: s.enemies.length - before })
@@ -2127,7 +2158,7 @@ function finishEnemyPhase(state: GameState): GameState {
   const keeps = (c: CardInstance): boolean =>
     (c.def.id === SCALD_DEF.id && c.scaldFresh === true) ||
     c.def.retain === true ||
-    (s.retainHand === true && c.def.id !== SCALD_DEF.id) ||
+    ((s.retainHand === true || s.retainHandThisTurn === true) && c.def.id !== SCALD_DEF.id) ||
     !handBeforeExpire.has(c.uid) // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
   s = {
     ...s,

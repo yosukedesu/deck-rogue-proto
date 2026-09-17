@@ -873,6 +873,8 @@ export function bindRedeclare(fn: (state: GameState, enemyIndex: number) => Game
 export function applyInterrupts(state: GameState, enemyIndex: number, only?: readonly EnemyInterruptTrigger[]): GameState {
   const e = state.enemies[enemyIndex]
   if (!e || e.hp <= 0) return state
+  // ギア「鎮めの錘」(2026-09-17): この敵の割り込みはこの戦闘中起きない
+  if (e.interruptBlocked === true) return state
   // 自ターン中は宣言済み (未実行) の意図の節も「いる場所」に数える (敵フェーズ中は実行済み/実行中なので数えない)
   const inPlayerTurn = state.phase === 'player-turn' && state.enemyPhase !== true
   const r = applyInterruptsTo(state, enemyIndex, e.node, e.firedInterrupts ?? [], only, inPlayerTurn ? e.intentNode : undefined)
@@ -1213,8 +1215,94 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         enemies: state.enemies.map((e, i) => (i === enemyIndex && e.hp > 0 ? { ...e, staggeredNext: true } : e)),
       }
     case 'drawCardsNextTurn':
-      // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。startPlayerTurn が読んで消す
+      // 次の自ターン開始時に積む (百年の謎かけ・懐中時計)。startPlayerTurn が読んで消す。
+      // ギアの両刃 (過負荷の歯車) は負の量で「次のターンのドロー-2」を積む (startPlayerTurn が 0 で下げ止める)
       return { ...state, nextTurnDraw: (state.nextTurnDraw ?? 0) + (effect.amount ?? 0) }
+    // ---- ギア専用の効果 (2026-09-17)。カードには付けない ----
+    case 'gainHpRatio':
+      // 修理油: 最大HPの amount % を回復 (切り捨て・最低1)。リーダーで最大HPが違うので割合で持つ
+      return healPlayer(state, Math.max(1, Math.floor((state.player.maxHp * (effect.amount ?? 0)) / 100)), enemyIndex)
+    case 'negateEnemyAction':
+      // 楔: 対象の敵の次の行動を打ち消す (executeEnemyAction が実行時に消費)
+      return {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === enemyIndex && e.hp > 0 ? { ...e, actionNegated: true } : e)),
+      }
+    case 'blockEnemySummon':
+      // 錆びた楔: 対象の召喚・分裂・孵化を1回止める (発火時に消費)
+      return {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === enemyIndex && e.hp > 0 ? { ...e, summonBlocked: true } : e)),
+      }
+    case 'blockEnemyInterrupt':
+      // 鎮めの錘: 対象の割り込み (HP半分の豹変・被弾覚醒・仲間の死亡) をこの戦闘中起こさない
+      return {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === enemyIndex && e.hp > 0 ? { ...e, interruptBlocked: true } : e)),
+      }
+    case 'cleanseStatuses': {
+      // 清めの水: 自分の状態異常を全て消す (札の負傷・火傷・がらくたは別。灰落としの担当)
+      const p = state.player
+      if (p.weak === 0 && p.vulnerable === 0 && p.frail === 0 && p.restrain === 0 && (p.mist ?? 0) === 0 && (p.slow ?? 0) === 0) return state
+      return {
+        ...state,
+        player: { ...p, weak: 0, vulnerable: 0, frail: 0, restrain: 0, mist: 0, slow: 0 },
+      }
+    }
+    case 'purgeHandStatus': {
+      // 灰落とし: 手札の負傷・火傷・がらくた・烙印を消滅置き場へ (onCardExhausted・亡骸は発火する = 黒の燃料になる)
+      const ids = new Set(['status_wound', 'status_scald', 'status_junk', 'status_brand', 'status_guilt'])
+      const purged = state.player.hand.filter((c) => ids.has(c.def.id))
+      if (purged.length === 0) return state
+      const s: GameState = {
+        ...state,
+        player: {
+          ...state.player,
+          hand: state.player.hand.filter((c) => !ids.has(c.def.id)),
+          exhaustPile: [...state.player.exhaustPile, ...purged],
+        },
+      }
+      return fireExhaustTriggers(s, purged.length, enemyIndex)
+    }
+    case 'gainArtifact':
+      // 厄除けの符: 状態異常の付与を N 回弾く (時計仕掛けの土産と同じ器)
+      return { ...state, player: { ...state.player, artifact: (state.player.artifact ?? 0) + (effect.amount ?? 0) } }
+    case 'redrawHand': {
+      // 引き直し: 手札を全て捨て、同じ枚数を引く (衝動の札も捨てる = 失効の扱いは endTurn と同じでよい)
+      const n = state.player.hand.length
+      if (n === 0) return state
+      const s: GameState = {
+        ...state,
+        player: {
+          ...state.player,
+          hand: [],
+          discardPile: [...state.player.discardPile, ...state.player.hand],
+          impulseUids: [],
+        },
+      }
+      return drawCards(s, n)
+    }
+    case 'clearEnemyStrength':
+      // 錆止め: 筋力を0に戻す (マイナスには下げない)。宣言済みの攻撃の実値も引き直す
+      return refreshIntentValues({
+        ...state,
+        enemies: state.enemies.map((e, i) =>
+          i === enemyIndex && e.hp > 0 && e.strength > 0 ? { ...e, strength: 0 } : e,
+        ),
+      })
+    case 'retainHandOnce':
+      // 挟み紙: このターンだけ手札を捨てない (火傷の1回きり・衝動の失効は従来どおり)
+      return { ...state, retainHandThisTurn: true }
+    case 'energyCarryOnce':
+      // 貯め置き: このターンだけ余ったエナジーを次のターンへ持ち越す
+      return { ...state, energyCarryThisTurn: true }
+    case 'gainDeathSaveOne':
+      // 蘇りの発条: この戦闘中、致死を一度だけ耐えて HP1 で立つ
+      return { ...state, gearDeathSave: true }
+    case 'copyCardInHand':
+    case 'transformInHand':
+      // 写し・化けの粉: 対象の手札は gears.ts が選んで解決する (ここへは来ない)
+      return state
     case 'gainEnergyNextTurn':
       return { ...state, nextTurnEnergy: (state.nextTurnEnergy ?? 0) + (effect.amount ?? 0) }
     case 'gainBlockNextTurn':

@@ -191,6 +191,12 @@ export interface EnemyState extends CombatantState {
   readonly biteNext?: boolean
   /** バランス崩し: 直前の攻撃を完全に防がれた = 次の宣言は隙 */
   readonly staggeredNext?: boolean
+  /** ギア「楔」: 次の行動が打ち消される (実行時に消費) */
+  readonly actionNegated?: boolean
+  /** ギア「錆びた楔」: 次の召喚・分裂・孵化を1回止める (発火時に消費) */
+  readonly summonBlocked?: boolean
+  /** ギア「鎮めの錘」: この戦闘中、割り込み (HP半分の豹変・被弾覚醒・仲間の死亡) が起きない */
+  readonly interruptBlocked?: boolean
   /** 編成で反応テーブルを無効化された個体 (確定済みルール表「編成の反応テーブル」) */
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
@@ -428,6 +434,15 @@ export interface GameState {
   readonly hideIntents?: boolean
   /** C型: 烙印をプレイできる (青い蝋燭: 0E・HP-1・消滅) */
   readonly brandsPlayable?: boolean
+  // ---- ギア (2026-09-17)。すべて optional = 旧セーブと互換 ----
+  /** このターンに既にギアを組んだ (1ターン1個。自ターン開始で降りる) */
+  readonly gearUsedThisTurn?: boolean
+  /** 挟み紙: このターンだけ手札を捨てない (自ターン開始で降りる) */
+  readonly retainHandThisTurn?: boolean
+  /** 貯め置き: このターンだけ余ったエナジーを次のターンへ持ち越す (自ターン開始で降りる) */
+  readonly energyCarryThisTurn?: boolean
+  /** 蘇りの発条: この戦闘中、致死を一度だけ耐えてHP1で立つ (使ったら降りる) */
+  readonly gearDeathSave?: boolean
 }
 
 // ============================================================
@@ -797,6 +812,21 @@ export interface DeclarativeEffect {
     | 'gainBlockNextTurn' // 次の自ターンの開始時にブロック+X (自ら固まる粘土)
     | 'gainBlockPerHandCard' // 手札の枚数×X のブロック (外套の留め金=本家 Cloak Clasp)
     | 'staggerEnemy' // 体勢を崩す (蔦の陣 2026-09-13): 対象の敵の次の宣言が隙 (バランス崩しと同じ staggeredNext)
+    // ---- ギア (消耗品 2026-09-17 docs/parts-proposal-2026-09-17.md)。カードには付けない (ギア専用の器) ----
+    | 'gainHpRatio' // 最大HPの amount % を回復 (修理油。リーダーで最大HPが違うので固定値にしない)
+    | 'negateEnemyAction' // 対象の敵の次の行動を打ち消す (楔。自ターンに使う = 宣言済みの意図を消す)
+    | 'blockEnemySummon' // 対象の召喚・分裂・孵化をこの戦闘で1回止める (錆びた楔)
+    | 'blockEnemyInterrupt' // 対象の割り込み (HP半分の豹変・被弾覚醒・仲間の死亡) をこの戦闘中起こさない (鎮めの錘)
+    | 'cleanseStatuses' // 自分の弱体・脆弱・虚弱・拘束・霞み・重りを全て消す (清めの水)
+    | 'purgeHandStatus' // 手札の負傷・火傷・がらくた・烙印を全て消滅させる (灰落とし)
+    | 'gainArtifact' // 自分のアーティファクト+N = 状態異常の付与をN回弾く (厄除けの符。土産レリックと同じ器)
+    | 'redrawHand' // 手札を全て捨て、同じ枚数を引く (引き直し)
+    | 'copyCardInHand' // 手札1枚のコピーを手札に加える (写し。この戦闘限りのトークン)
+    | 'transformInHand' // 手札1枚を同レア度の別の札に変える (化けの粉。この戦闘限り)
+    | 'clearEnemyStrength' // 対象の筋力を0に戻す (錆止め。マイナスには下げない)
+    | 'retainHandOnce' // このターンは手札を捨てない (挟み紙。ルーンの角錐の1回版)
+    | 'energyCarryOnce' // 余ったエナジーを次のターンへ持ち越す (貯め置き。溶けない氷菓の1回版)
+    | 'gainDeathSaveOne' // この戦闘中、致死ダメージを一度耐えてHP1で立つ (蘇りの発条)
     | 'drawCards'
     | 'script'
   readonly amount?: number
@@ -1522,4 +1552,50 @@ export interface DeckDef {
   /** デッキの色 (UI表示・ランの色対応に使う) */
   readonly color: CardColor
   readonly cards: readonly DeckCardEntry[]
+}
+
+// ============================================================
+// ギア (消耗品 2026-09-17。docs/parts-proposal-2026-09-17.md が一次資料)
+// 拾って持ち歩き、自ターンに1個だけ「魔素」1で組む。カードではないので虚弱・勢いは乗らない
+// (成長は与ダメ全てに乗る既存則どおり)。幕で数値は伸びない (固定)
+// ============================================================
+
+export type GearRarity = 'common' | 'uncommon' | 'rare'
+
+/** 効果の系統 (台帳の見出し。UI のグループ分けと監査用) */
+export type GearFamily =
+  | 'general' // 汎用の固定効果
+  | 'interfere' // 敵の機構への干渉
+  | 'cleanse' // 清め
+  | 'field' // 場の操作
+  | 'morph' // 札の一時変化
+  | 'enemy-status' // 敵の状態操作
+  | 'edged' // 両刃 (戦闘内の対価つき)
+  | 'keep' // 保持・持ち越し
+  | 'big' // 大物
+
+export interface GearDef {
+  readonly id: string
+  readonly name: string
+  readonly rarity: GearRarity
+  readonly family: GearFamily
+  /** 回数つき (「杖」)。省略=1回で壊れる */
+  readonly charges?: number
+  /** 画面・ログに出す説明文 (効果は固定なので静的。数値のスケールは無い) */
+  readonly text: string
+  /** 単体対象を取る (敵が2体以上なら targetIndex 必須) */
+  readonly needsTarget?: boolean
+  /** カードを1枚選ぶ (どの山から選ぶか)。'hand'=手札 / 'discard'=捨て札 / 'draw'=山札 */
+  readonly needsCard?: 'hand' | 'discard' | 'draw'
+  /** 効果の外にある特別な挙動。'flee'=戦闘から逃げる (run層) / 'nameless'=拾ったことのあるギアの効果を選ぶ */
+  readonly special?: 'flee' | 'nameless'
+  readonly effects: readonly DeclarativeEffect[]
+}
+
+/** 持ち物の1個 (残り回数を持つ) */
+export interface GearInstance {
+  readonly uid: string
+  readonly gearId: string
+  /** 残り回数。0 になったら持ち物から消える */
+  readonly charges: number
 }

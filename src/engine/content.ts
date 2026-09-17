@@ -13,6 +13,7 @@ import { bindEnemyDefLookup, normalizeEnemyDef } from './enemyGraph.ts'
 import type { LegacyEnemyDef } from './enemyGraph.ts'
 import leadersJson from '../data/leaders.json' with { type: 'json' }
 import relicsJson from '../data/relics.json' with { type: 'json' }
+import gearsJson from '../data/gears.json' with { type: 'json' }
 import eventsJson from '../data/events.json' with { type: 'json' }
 import type {
   CardColor,
@@ -25,6 +26,7 @@ import type {
   LeaderDef,
   RelicDef,
   EventDef,
+  GearDef,
 } from './types.ts'
 
 // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
@@ -63,6 +65,14 @@ export function encounterName(id: string): string {
 export const allDecks = decksJson as readonly DeckDef[]
 export const allLeaders = leadersJson as readonly LeaderDef[]
 export const allRelics = relicsJson as readonly RelicDef[]
+/** ギア (消耗品 2026-09-17)。data/gears.json が一次資料 */
+export const allGears = gearsJson as unknown as readonly GearDef[]
+
+export function getGearDef(id: string): GearDef {
+  const g = allGears.find((x) => x.id === id)
+  if (!g) throw new Error(`未定義のギア: ${id}`)
+  return g
+}
 
 export const allEvents = eventsJson as readonly EventDef[]
 

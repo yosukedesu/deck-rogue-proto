@@ -380,6 +380,35 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
         : `${trigger}🛡️ 手札の枚数×${e.amount}のブロック`
     case 'staggerEnemy':
       return `${trigger}🌀 対象の体勢を崩す（次の行動が隙になる）`
+    // ---- ギア専用の効果 (2026-09-17)。カードには付かないので文面はギアの説明文が主。ここは保険 ----
+    case 'gainHpRatio':
+      return `${trigger}最大HPの${e.amount}%回復`
+    case 'negateEnemyAction':
+      return `${trigger}対象の次の行動を打ち消す`
+    case 'blockEnemySummon':
+      return `${trigger}対象の召喚・分裂・孵化を1回止める`
+    case 'blockEnemyInterrupt':
+      return `${trigger}対象の割り込みをこの戦闘中起こさない`
+    case 'cleanseStatuses':
+      return `${trigger}自分の状態異常を全て消す`
+    case 'purgeHandStatus':
+      return `${trigger}手札の負傷・火傷・がらくた・烙印を全て消滅させる`
+    case 'gainArtifact':
+      return `${trigger}次に受ける状態異常を${e.amount}回弾く`
+    case 'redrawHand':
+      return `${trigger}手札を全て捨て、同じ枚数を引く`
+    case 'copyCardInHand':
+      return `${trigger}手札1枚のコピーを手札に加える`
+    case 'transformInHand':
+      return `${trigger}手札1枚を同じレア度の別の札に変える`
+    case 'clearEnemyStrength':
+      return `${trigger}対象の筋力を0に戻す`
+    case 'retainHandOnce':
+      return `${trigger}このターンは手札を捨てない`
+    case 'energyCarryOnce':
+      return `${trigger}余ったエナジーを次のターンへ持ち越す`
+    case 'gainDeathSaveOne':
+      return `${trigger}この戦闘中、致死ダメージを一度耐えてHP1で立つ`
     case 'drawCardsNextTurn':
       return `${trigger}次のターンの開始時に${e.amount}枚多くドロー`
     case 'gainEnergyNextTurn':
