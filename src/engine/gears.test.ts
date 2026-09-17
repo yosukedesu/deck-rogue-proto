@@ -228,7 +228,7 @@ describe('供給 (§4): 魔素・ドロップ・持ち歩き', () => {
   it('魔素は上限10で止まる', () => {
     const run = { ...createRun(99, 'set-confirm', 'leader_green'), mana: MANA_MAX }
     expect(manaOf(run)).toBe(MANA_MAX)
-    expect(MANA_MAX).toBe(10)
+    expect(MANA_MAX).toBe(5) // 2026-09-17 裁定: 10→5 (5本中4本で判断に触っていなかった)
   })
 
   it('持ち歩きは10個まで。満杯で取るには入れ替えるギアを選ぶ', () => {
