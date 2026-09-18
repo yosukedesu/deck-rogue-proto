@@ -1299,6 +1299,29 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'gainDeathSaveOne':
       // 蘇りの発条: この戦闘中、致死を一度だけ耐えて HP1 で立つ
       return { ...state, gearDeathSave: true }
+    case 'stripRider':
+      // 蝋の栓 (2026-09-18): 対象のいま宣言している行動の付随物 (状態異常の付与・同時強化・同時防御・からくり壊し) を消す。攻撃そのものは通る
+      return {
+        ...state,
+        enemies: state.enemies.map((e, i) => {
+          if (i !== enemyIndex || e.hp <= 0 || e.intent === undefined || e.intent === null) return e
+          const { inflict: _i, alsoBuff: _b, alsoDefend: _d, alsoDestroySet: _s, ...rest } = e.intent
+          return { ...e, intent: rest }
+        }),
+      }
+    case 'singleHit':
+      // 錆びた鎖 (2026-09-18): 対象のいま宣言している攻撃の連撃を1回に (物真似の鏡も1回)
+      return {
+        ...state,
+        enemies: state.enemies.map((e, i) => {
+          if (i !== enemyIndex || e.hp <= 0 || e.intent === undefined || e.intent === null) return e
+          const { hits: _h, mirrorHits: _m, ...rest } = e.intent
+          return { ...e, intent: rest }
+        }),
+      }
+    case 'nullifyNextEnemyAttack':
+      // 身代わりの符 (2026-09-18): このターン、最初に受ける敵の攻撃1回のHP損失を0に (完全に防いだ扱い = バランス崩し・根張りは鳴る)
+      return { ...state, nullifyNextAttack: true }
     case 'copyCardInHand':
     case 'transformInHand':
       // 写し・化けの粉: 対象の手札は gears.ts が選んで解決する (ここへは来ない)

@@ -736,6 +736,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>蘇りの発条: この戦闘中、致死を一度だけ耐えてHP1で立つ (使ったら降りる)</summary>
         [JsonProperty("gearDeathSave", NullValueHandling = NullValueHandling.Ignore)]
         public bool? GearDeathSave { get; init; }
+        /// <summary>身代わりの符 (ギア 2026-09-18): このターン、最初に受ける敵の攻撃1回のHP損失を0にする (ブロックは消費しない・完全に防いだ扱い)。使うか自ターン開始で降りる</summary>
+        [JsonProperty("nullifyNextAttack", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? NullifyNextAttack { get; init; }
     }
 
     /// <summary>判別共用体 Command (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>

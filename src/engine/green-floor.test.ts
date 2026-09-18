@@ -21,16 +21,17 @@ const play = (s: GameState, uid: string, extra: Record<string, unknown> = {}) =>
 const withEnergy = (s: GameState, energy: number): GameState => ({ ...s, player: { ...s.player, energy } })
 
 describe('成長しきい値 (condition.minGrowth)', () => {
-  it('深緑の刻: 成長5未満は6ダメのみ、5以上なら2発目も解決する', () => {
+  it('深緑の刻 (2026-09-18 品質パス第3弾: 成長+1・5ダメ・成長3以上でさらに6): 成長0からは +1→5+1=6 だけ。成長5からは +1→(5+6)+(6+6)=23', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 1), [idOf('深緑の刻')])
     const h0 = hp(s)
     s = play(s, `t0_${idOf('深緑の刻')}`)
     expect(h0 - hp(s)).toBe(6)
+    expect(s.player.growth).toBe(1) // 自分で条件を満たしにいける (3回目で2発目が出る)
     let t = withHand(freshCombat('set-confirm', 'enemy_probe', 1), [idOf('深緑の刻')])
     t = { ...t, player: { ...t.player, growth: 5 } }
     const h1 = hp(t)
     t = play(t, `t0_${idOf('深緑の刻')}`)
-    expect(h1 - hp(t)).toBe((6 + 5) * 2)
+    expect(h1 - hp(t)).toBe((5 + 6) + (6 + 6))
   })
 })
 

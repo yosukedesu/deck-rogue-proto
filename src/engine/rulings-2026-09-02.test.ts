@@ -72,8 +72,8 @@ describe('データ裁定 (撤去5・レア化・作り直し・締切)', () => 
     s = play(s, 't0_green_trample_charge') // 勢い3 → (2+3)×2 = 10
     expect(h0 - s.enemies[0].hp).toBe(10)
     const h1 = s.enemies[0].hp
-    s = play(s, 't1_green_sig_trample') // 勢い3+5=8 → 18+8 = 26 (貫通。2026-09-07 勢い+5・18貫通)
-    expect(h1 - s.enemies[0].hp).toBe(26)
+    s = play(s, 't1_green_sig_trample') // 勢い3+4=7 → (8+7)×2 = 30 (貫通。2026-09-18 勢い+4・8貫通×2)
+    expect(h1 - s.enemies[0].hp).toBe(30)
     const trample = getCardDef('green_sig_trample')
     expect(trample.effects[0].effect).toBe('addMomentum')
   })

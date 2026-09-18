@@ -145,6 +145,20 @@ export function gearNoEffectReason(state: GameState, def: GearDef, targetIndex?:
         const left = (d.interrupts ?? []).filter((_x, i) => !(e.firedInterrupts ?? []).includes(i))
         return left.length > 0 ? null : 'この敵には残っている割り込み（豹変・目覚め）が無い'
       }
+      case 'stripRider': {
+        if (e === undefined) return null
+        const it = e.intent
+        return it !== undefined && it !== null && (it.inflict !== undefined || it.alsoBuff !== undefined || it.alsoDefend !== undefined || it.alsoDestroySet === true)
+          ? null
+          : 'この敵のいまの行動に付随物（状態異常・同時強化・同時防御・からくり壊し）は無い'
+      }
+      case 'singleHit': {
+        if (e === undefined) return null
+        const it = e.intent
+        return it !== undefined && it !== null && it.kind === 'attack' && ((it.hits ?? 1) > 1 || it.mirrorHits === true) ? null : 'この敵のいまの行動は連撃ではない'
+      }
+      case 'nullifyNextEnemyAttack':
+        return state.enemies.some((x) => x.hp > 0 && x.intent?.kind === 'attack') ? null : 'いま攻撃を宣言している敵がいない'
       case 'clearEnemyStrength':
         if (e === undefined) return null
         return e.strength > 0 ? null : 'この敵の筋力は0以下（マイナスは戻さない）'

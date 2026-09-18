@@ -56,11 +56,16 @@ describe('カードデータの不変条件', () => {
     // 「正味の値段が0以下」かつ「手札を補充する」= 撃っても資源も手札も減らない = 循環が閉じる。
     // 旧ルールは cost===0 しか見ておらず、割引で実質0マナになる集中を取り逃していた。
     // 逆に補充を伴わない0マナ札 (火花) は撃つたび手札が1枚減るので必ず停止する。
+    // 2026-09-18 品質パス第3弾 (落ち葉の刃 0E・捨て1・6ダメ+1ドロー): 追加コストで手札を捨てる/消滅させる札は、
+    // 補充が捨てた枚数以下なら撃つたび手札が減る (プレイ-1・捨て-1・ドロー+1 = -1) = 循環が閉じない
+    const handCost = (c: CardDef) => (c.discardCost ?? 0) + (c.exhaustCost ?? 0)
+    const refill = (c: CardDef) => allEffects(c).filter((e) => REFILL_EFFECTS.includes(e.effect)).reduce((a, e) => a + (e.amount ?? 1), 0)
     const bad = allCards.filter(
       (c) =>
         netEnergy(c) >= 0 &&
         c.exhaust !== true &&
-        allEffects(c).some((e) => REFILL_EFFECTS.includes(e.effect)),
+        allEffects(c).some((e) => REFILL_EFFECTS.includes(e.effect)) &&
+        !(handCost(c) > 0 && refill(c) <= handCost(c)),
     )
     expect(bad.map((c) => `${c.name}(正味${netEnergy(c)})`)).toEqual([])
   })

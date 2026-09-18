@@ -300,5 +300,39 @@
     "special": "flee",
     "text": "この戦闘から逃げる（幕ボス以外。報酬は得られない）",
     "effects": []
+  },
+  {
+    "id": "gear_wax_plug",
+    "name": "蝋の栓",
+    "rarity": "common",
+    "family": "enemy-status",
+    "needsTarget": true,
+    "text": "対象のいま宣言している行動の付随物（状態異常の付与・同時強化・同時防御・からくり壊し）を消す。攻撃そのものは通る",
+    "effects": [{ "trigger": "onPlay", "effect": "stripRider" }]
+  },
+  {
+    "id": "gear_rusty_chain",
+    "name": "錆びた鎖",
+    "rarity": "uncommon",
+    "family": "enemy-status",
+    "needsTarget": true,
+    "text": "対象のいま宣言している攻撃の連撃を1回にする（手数の鏡も1回）",
+    "effects": [{ "trigger": "onPlay", "effect": "singleHit" }]
+  },
+  {
+    "id": "gear_decoy_charm",
+    "name": "身代わりの符",
+    "rarity": "uncommon",
+    "family": "general",
+    "text": "このターン、最初に受ける敵の攻撃1回のHP損失を0にする（完全に防いだ扱い）",
+    "effects": [{ "trigger": "onPlay", "effect": "nullifyNextEnemyAttack" }]
+  },
+  {
+    "id": "gear_spring_cog",
+    "name": "湧き水の歯車",
+    "rarity": "rare",
+    "family": "big",
+    "text": "この戦闘中、エナジー上限+1（次のターンから）",
+    "effects": [{ "trigger": "onPlay", "effect": "gainEnergyMax", "amount": 1 }]
   }
 ]

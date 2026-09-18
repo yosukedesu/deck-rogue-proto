@@ -88,6 +88,9 @@ namespace DeckRogue.Game
             { "gainIceBlockPerHandCard", "手札数×N氷壁" },
             { "gainBlockPerHandCard", "手札数×Nブロック" },
             { "staggerEnemy", "対象の体勢を崩す（次の行動が隙になる）" },
+            { "stripRider", "対象のいまの行動の付随物（状態異常・同時強化・同時防御）を消す" },   // ギア 蝋の栓 (2026-09-18)
+            { "singleHit", "対象のいまの攻撃の連撃を1回にする" },   // ギア 錆びた鎖
+            { "nullifyNextEnemyAttack", "このターン最初に受ける攻撃1回のHP損失を0にする" },   // ギア 身代わりの符
             { "drawCardsNextTurn", "次のターンの開始時にN枚多くドロー" },
             { "gainEnergyNextTurn", "次のターンの開始時に一時マナ+N" },
             { "gainBlockNextTurn", "次のターンの開始時にブロック+N" },

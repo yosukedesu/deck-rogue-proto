@@ -37,10 +37,10 @@ describe('①勢い: 値を参照してバフ (非消費) と生成の床', () =
     expect(hp0 - s.enemies[0].hp).toBe(10)
     expect(s.player.momentum).toBe(3)
   })
-  it('踏み荒らし: 勢い+5してから18貫通 (=23)。角の一突き・嵐の角・風の壁・根付く勢いに放出効果は残っていない', () => {
+  it('踏み荒らし: 勢い+4してから8貫通×2 (2026-09-18 品質パス第3弾。旧 勢い+5→18)。角の一突き・嵐の角・風の壁・根付く勢いに放出効果は残っていない', () => {
     const t = getCardDef('green_sig_trample')
-    expect(t.effects[0]).toEqual({ trigger: 'onPlay', effect: 'addMomentum', amount: 5 })
-    expect(t.effects[1].amount).toBe(18)
+    expect(t.effects[0]).toEqual({ trigger: 'onPlay', effect: 'addMomentum', amount: 4 })
+    expect(t.effects.filter((e) => e.effect === 'dealDamage').map((e) => e.amount)).toEqual([8, 8])
     for (const id of ['green_horn_thrust', 'green_horn_storm', 'green_wind_wall', 'green_rooting_rush', 'green_horn_volley']) {
       expect(getCardDef(id).effects.some((e) => e.effect.startsWith('dischargeMomentum')), id).toBe(false)
     }
@@ -107,10 +107,10 @@ describe('④伏せ札群', () => {
 })
 
 describe('⑤床の数値と研ぎ澄まし', () => {
-  it('双牙4×2(急所で3発目4)・急所突き8・落ち葉の刃9・増える蔦6', () => {
+  it('双牙4×2(急所で3発目4)・急所突き8・落ち葉の刃6+1ドロー (2026-09-18)・増える蔦6', () => {
     expect(getCardDef('green_twin_fang_vine').effects.map((e) => e.amount)).toEqual([4, 4, 4])
     expect(getCardDef('green_weak_point').effects[0].amount).toBe(8)
-    expect(getCardDef('green_leaf_blade').effects[0].amount).toBe(9)
+    expect(getCardDef('green_leaf_blade').effects.map((e) => [e.effect, e.amount])).toEqual([['dealDamage', 6], ['drawCards', 1]])
     expect(getCardDef('green_spreading_vine').effects[0].amount).toBe(6)
   })
   it('研ぎ澄まし: ブロック5＋手札の全てをこの戦闘中鍛える (自身・レア・工房産は除く。選択不要)', () => {

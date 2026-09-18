@@ -12,30 +12,30 @@ const withMomentum = (s: ReturnType<typeof freshCombat>, momentum: number, growt
 })
 
 describe('勢いの網 (緑) — 2026-09-07 ピック監査で放出(消費)を「値を参照してバフ」(非消費) に統一', () => {
-  it('角の一突き: 8貫通・勢いが×2で乗る (勢い4 → 8+4+4=16)。勢いは失わない', () => {
+  it('角の一突き: 勢い+3してから7貫通・勢いが×2で乗る (勢い4 → 7+(4+3)×2=21。2026-09-18 品質パス第3弾)。勢いは失わない', () => {
     let s = withMomentum(withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_horn_thrust']), 4)
     const hp0 = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_thrust', targetIndex: 0 })
-    expect(hp0 - s.enemies[0].hp).toBe(16)
-    expect(s.player.momentum).toBe(4)
+    expect(hp0 - s.enemies[0].hp).toBe(21)
+    expect(s.player.momentum).toBe(7)
     expect(s.eventLog.some((e) => e.type === 'MomentumDischarged')).toBe(false)
   })
 
-  it('勢い0で角の一突きを撃てば8貫通だけ', () => {
+  it('勢い0で角の一突きを撃てば自分の勢い+3が乗って 7+6=13貫通', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_horn_thrust'])
     const hp0 = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_thrust', targetIndex: 0 })
-    expect(hp0 - s.enemies[0].hp).toBe(8)
+    expect(hp0 - s.enemies[0].hp).toBe(13)
   })
 
-  it('嵐の角 (全体): 生存全体に 5+勢い×2 (勢い3 → 11ずつ)。勢いは残る', () => {
+  it('嵐の角 (全体): 生存全体に 3貫通×2 (勢いが2回乗る。勢い3 → 6+6=12ずつ。2026-09-18)。勢いは残る', () => {
     const enc = allEncounters.find((e) => e.members.length === 2)
     if (!enc) throw new Error('2体編成が無い')
     let s = withMomentum(withHand(freshCombat('set-confirm', enc.id, 42), ['green_horn_storm']), 3)
     const hp = s.enemies.map((e) => e.hp)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_horn_storm' })
     for (let i = 0; i < 2; i++) {
-      expect(hp[i] - s.enemies[i].hp, `敵${i}`).toBe(11)
+      expect(hp[i] - s.enemies[i].hp, `敵${i}`).toBe(12)
     }
     expect(s.player.momentum).toBe(3)
   })
@@ -49,10 +49,10 @@ describe('勢いの網 (緑) — 2026-09-07 ピック監査で放出(消費)を�
     expect(s.player.growth).toBe(2)
   })
 
-  it('風の壁: ブロック5＋勢い×1のブロック (勢い4 → 9)。勢いは失わない', () => {
+  it('風の壁: ブロック4＋勢い×2のブロック (勢い4 → 12。2026-09-18)。勢いは失わない', () => {
     let s = withMomentum(withHand(freshCombat('set-confirm', 'enemy_probe', 42), ['green_wind_wall']), 4)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_wind_wall' })
-    expect(s.player.block).toBe(9)
+    expect(s.player.block).toBe(12)
     expect(s.player.momentum).toBe(4)
   })
 

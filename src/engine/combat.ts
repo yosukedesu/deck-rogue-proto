@@ -480,7 +480,7 @@ function buildIntent(
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
 function startPlayerTurn(state: GameState, turn: number): GameState {
   // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す。enemyPhase の旗もここで降りる
-  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, maxHpLossFiredThisTurn: _cap, ...rest } = state
+  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, maxHpLossFiredThisTurn: _cap, nullifyNextAttack: _nn, ...rest } = state
   let s: GameState = {
     ...rest,
     turn,
@@ -1751,6 +1751,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       let hpLoss = 0
       let blockedTotal = 0 // ブロック＋氷壁が吸った合計 (演出用 2026-09-17)
       let capFired = false // 脈打つ欠片の上限がこの行動で働いた (2026-09-18)
+      // 身代わりの符 (ギア 2026-09-18): この攻撃のHP損失を0に。ブロックは消費しない・全ヒットが吸われた扱い (完全に防いだ = バランス崩し・根張りが鳴る)
+      const nullify = state.nullifyNextAttack === true
       for (let h = 0; h < hits; h++) {
         // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
         let v = intent.actual
@@ -1768,6 +1770,10 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           v = Math.floor(v * (1 + 0.1 * (state.player.playsThisTurn ?? 0)))
         }
         dealtTotal += v
+        if (nullify) {
+          blockedTotal += v
+          continue
+        }
         const blocked = Math.min(block, v)
         block -= blocked
         const remaining = v - blocked
@@ -1804,6 +1810,10 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           attacksReceivedThisPhase: (state.player.attacksReceivedThisPhase ?? 0) + 1,
           hpLostThisTurn: (state.player.hpLostThisTurn ?? 0) + hpLoss,
         },
+      }
+      if (nullify) {
+        const { nullifyNextAttack: _n, ...used } = s // 1回きり: 使ったら降ろす
+        s = used
       }
       s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}) })
       if (capCharge) s = emit(s, { type: 'HpLossCapped', left: s.maxHpLossCharges ?? 0 })

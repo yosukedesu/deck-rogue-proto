@@ -153,6 +153,24 @@ namespace DeckRogue.Engine
                         for (int i = 0; i < ints.Count; i++) if (!fired.Contains(i)) left++;
                         return left > 0 ? null : "この敵には残っている割り込み（豹変・目覚め）が無い";
                     }
+                    case "stripRider":
+                    {
+                        if (e == null) return null;
+                        var it = e.Intent;
+                        return it != null && (it.Inflict != null || it.AlsoBuff != null || it.AlsoDefend != null || it.AlsoDestroySet == true) ? null : "この敵のいまの行動に付随物（状態異常・同時強化・同時防御・からくり壊し）は無い";
+                    }
+                    case "singleHit":
+                    {
+                        if (e == null) return null;
+                        var it = e.Intent;
+                        return it != null && it.Kind == "attack" && ((it.Hits ?? 1) > 1 || it.MirrorHits == true) ? null : "この敵のいまの行動は連撃ではない";
+                    }
+                    case "nullifyNextEnemyAttack":
+                    {
+                        bool anyAttack = false;
+                        foreach (var x in state.Enemies) if (x.Hp > 0 && x.Intent?.Kind == "attack") anyAttack = true;
+                        return anyAttack ? null : "いま攻撃を宣言している敵がいない";
+                    }
                     case "clearEnemyStrength":
                         if (e == null) return null;
                         return e.Strength > 0 ? null : "この敵の筋力は0以下（マイナスは戻さない）";

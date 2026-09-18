@@ -418,12 +418,18 @@
       {
         "trigger": "onPlay",
         "effect": "addMomentum",
-        "amount": 5
+        "amount": 4
       },
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 18,
+        "amount": 8,
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8,
         "pierce": true
       }
     ],
@@ -850,7 +856,13 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 6,
+        "amount": 5,
+        "xHits": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1,
         "xHits": true
       }
     ]
@@ -983,13 +995,13 @@
     "effects": [
       {
         "trigger": "onCardSet",
-        "effect": "addGrowth",
+        "effect": "drawCards",
         "amount": 1
       },
       {
-        "trigger": "onCardSet",
-        "effect": "drawCards",
-        "amount": 1
+        "trigger": "onReactionFired",
+        "effect": "addGrowth",
+        "amount": 3
       }
     ]
   },
@@ -1152,7 +1164,7 @@
         "effect": "addGrowth",
         "amount": 1,
         "condition": {
-          "enemyIntentNot": "attack"
+          "enemyIntent": "attack"
         }
       }
     ]
@@ -1221,7 +1233,12 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 9
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
       }
     ]
   },
@@ -1478,8 +1495,13 @@
     "effects": [
       {
         "trigger": "onPlay",
+        "effect": "addGrowth",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 6
+        "amount": 5
       },
       {
         "trigger": "onPlay",
@@ -1612,8 +1634,13 @@
     "effects": [
       {
         "trigger": "onPlay",
+        "effect": "addMomentum",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 8,
+        "amount": 7,
         "pierce": true,
         "momentumMultiplier": 2
       }
@@ -1630,10 +1657,16 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 5,
+        "amount": 3,
         "target": "all",
-        "pierce": true,
-        "momentumMultiplier": 2
+        "pierce": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3,
+        "target": "all",
+        "pierce": true
       }
     ]
   },
@@ -1651,12 +1684,12 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 5
+        "amount": 4
       },
       {
         "trigger": "onPlay",
         "effect": "gainBlockPerMomentum",
-        "amount": 1
+        "amount": 2
       }
     ]
   },

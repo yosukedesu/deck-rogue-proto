@@ -447,6 +447,8 @@ export interface GameState {
   readonly energyCarryThisTurn?: boolean
   /** 蘇りの発条: この戦闘中、致死を一度だけ耐えてHP1で立つ (使ったら降りる) */
   readonly gearDeathSave?: boolean
+  /** 身代わりの符 (ギア 2026-09-18): このターン、最初に受ける敵の攻撃1回のHP損失を0にする (ブロックは消費しない・完全に防いだ扱い)。使うか自ターン開始で降りる */
+  readonly nullifyNextAttack?: boolean
 }
 
 // ============================================================
@@ -833,6 +835,9 @@ export interface DeclarativeEffect {
     | 'retainHandOnce' // このターンは手札を捨てない (挟み紙。ルーンの角錐の1回版)
     | 'energyCarryOnce' // 余ったエナジーを次のターンへ持ち越す (貯め置き。溶けない氷菓の1回版)
     | 'gainDeathSaveOne' // この戦闘中、致死ダメージを一度耐えてHP1で立つ (蘇りの発条)
+    | 'stripRider' // 蝋の栓 (2026-09-18): 対象のいま宣言している行動の付随物 (状態異常の付与・同時強化・同時防御・からくり壊し) を消す。攻撃そのものは通る
+    | 'singleHit' // 錆びた鎖 (2026-09-18): 対象のいま宣言している攻撃の連撃を1回に (物真似の鏡も1回)
+    | 'nullifyNextEnemyAttack' // 身代わりの符 (2026-09-18): このターン、最初に受ける敵の攻撃1回のHP損失を0に (完全に防いだ扱い)
     | 'drawCards'
     | 'script'
   readonly amount?: number

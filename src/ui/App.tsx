@@ -387,6 +387,12 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}最大HPの${e.amount}%回復`
     case 'negateEnemyAction':
       return `${trigger}対象の次の行動を打ち消す`
+    case 'stripRider':
+      return `${trigger}対象のいまの行動の付随物（状態異常・同時強化・同時防御）を消す`
+    case 'singleHit':
+      return `${trigger}対象のいまの攻撃の連撃を1回にする`
+    case 'nullifyNextEnemyAttack':
+      return `${trigger}このターン最初に受ける攻撃1回のHP損失を0にする`
     case 'blockEnemySummon':
       return `${trigger}対象の召喚・分裂・孵化を1回止める`
     case 'blockEnemyInterrupt':

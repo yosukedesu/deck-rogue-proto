@@ -817,7 +817,7 @@ namespace DeckRogue.Game
                         foreach (var e in gdef.Effects)
                         {
                             string ef = e.Effect ?? "";
-                            if (ef == "negateEnemyAction" || ef == "blockEnemySummon" || ef == "blockEnemyInterrupt" || ef == "staggerEnemy" || ef == "confuse" || ef == "clearEnemyStrength" || ef == "shatterBlock" || ef == "exposeEnemy" || ef == "weakenEnemy" || ef.StartsWith("dealDamage")) toEnemy = true;
+                            if (ef == "negateEnemyAction" || ef == "blockEnemySummon" || ef == "blockEnemyInterrupt" || ef == "staggerEnemy" || ef == "stripRider" || ef == "singleHit" || ef == "confuse" || ef == "clearEnemyStrength" || ef == "shatterBlock" || ef == "exposeEnemy" || ef == "weakenEnemy" || ef.StartsWith("dealDamage")) toEnemy = true;
                         }
                     if (toEnemy && enemyPan == null)
                     {   // 対象が引けなかった全体効果など: 生きている最初の敵

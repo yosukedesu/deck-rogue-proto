@@ -147,12 +147,13 @@ describe('Xコスト増刷 (2026-08-29 ユーザー指示「ランプの攻撃�
     expect(s.enemies[0].hp).toBe(hpBefore - (5 + 1) * 3)
   })
 
-  it('樹皮の重鎧: ブロック6×X (ランプ中の無防備への吐き先)', () => {
+  it('樹皮の重鎧: ブロック5×X・成長+X (2026-09-18 品質パス第3弾: 守りながら育つXの吐き先)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_x_bark_armor'])
     s = { ...s, player: { ...s.player, energy: 4 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_x_bark_armor' })
     expect(s.player.energy).toBe(0)
-    expect(s.player.block).toBe(6 * 4)
+    expect(s.player.block).toBe(5 * 4)
+    expect(s.player.growth).toBe(4)
   })
 
   it('森羅の大嵐: 敵全体に4ダメ×Xヒット (全体×多段×ランプの派手枠。本家形の全体単価≈80%)', () => {
@@ -287,24 +288,25 @@ describe('赤からの移管: 被弾の換金と粉砕', () => {
 })
 
 describe('参照シナジー (2026-09-03 本家6型。docs/green-synergy-proposal.md)', () => {
-  it('見切り撃ち (2026-09-04 反転): 対象の意図が攻撃以外なら+1ドロー+成長+1、攻撃なら5貫通だけ', () => {
+  it('見切り撃ち (2026-09-18 品質パス第3弾: 条件が門でなく分岐): 対象の意図が攻撃なら成長+1、攻撃以外なら1ドロー。6貫通はどちらでも', () => {
     let d = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), defendIntent(5))
     const hand0 = d.player.hand.length
     d = applyCommand(d, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
-    expect(d.player.growth).toBe(1)
+    expect(d.player.growth).toBe(0)
     expect(d.player.hand.length).toBe(hand0) // 1枚減って1枚引く
     let s = withIntent(withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_leaf_strike']), attackIntent(8))
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_leaf_strike', targetIndex: 0 })
-    expect(s.player.growth).toBe(0)
+    expect(s.player.growth).toBe(1)
     expect(s.player.hand.length).toBe(0)
   })
-  it('狩人の眼光 (2026-09-04・2026-09-07 +1ドロー): 伏せるたび成長+1と1ドロー (伏せる理由を作る)。大牙・深緑の刻はアンコモン', () => {
+  it('狩人の眼光 (2026-09-18 品質パス第3弾): 仕込むたび1ドロー・仕込み札が発動するたび成長+3 (2つの仕事)。大牙・深緑の刻はアンコモン', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_probe', 1), ['green_perm_hunters_gaze', 'green_reaction_thorns'])
     s = { ...s, player: { ...s.player, energy: 5, drawPile: [{ uid: 'd0', def: getCardDef('green_strike') }] } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_perm_hunters_gaze' })
     s = applyCommand(s, { type: 'SetCard', cardUid: 't1_green_reaction_thorns' })
-    expect(s.player.growth).toBe(1)
+    expect(s.player.growth).toBe(0) // 仕込みでは成長しない (発動で+3)
     expect(s.player.hand.map((c) => c.uid)).toContain('d0')
+    expect(getCardDef('green_perm_hunters_gaze').effects.find((e) => e.trigger === 'onReactionFired')).toMatchObject({ effect: 'addGrowth', amount: 3 })
     expect(getCardDef('green_harvest_strike').rarity).toBe('uncommon')
     expect(getCardDef('green_verdant_hour').rarity).toBe('uncommon')
   })

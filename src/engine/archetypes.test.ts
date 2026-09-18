@@ -39,7 +39,7 @@ describe('シグネチャー効果', () => {
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, block: 14 })) }
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_sig_trample' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 23) // ブロック14を無視して素通し (2026-09-07 勢い+5を先出し: 18+5=23)
+    expect(s.enemies[0].hp).toBe(hpBefore - 24) // ブロック14を無視して素通し (2026-09-18 勢い+4を先出し: (8+4)×2=24)
     expect(s.enemies[0].block).toBe(14) // ブロックは削れもしない
   })
 

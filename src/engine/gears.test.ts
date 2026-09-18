@@ -43,19 +43,19 @@ function runWith(combat: GameState, gears: readonly string[], mana = GEAR_MANA_C
 const use = (run: RunState, index: number, extra: Record<string, unknown> = {}): RunState =>
   applyRunCommand(run, { type: 'UseGear', index, ...extra } as never)
 
-describe('台帳 (裁定 2026-09-17: 33種・C13/U14/R6・数値は本家の瓶並み。2026-09-18: 2本続けて0回の3種を抽選から外して30種)', () => {
-  it('定義は33種で id と名前が一意。抽選に載るのは30種 (retired 3 = 厄除けの符・挟み紙・引き直し)', () => {
-    expect(allGears.length).toBe(33)
-    expect(new Set(allGears.map((g) => g.id)).size).toBe(33)
-    expect(new Set(allGears.map((g) => g.name)).size).toBe(33)
-    expect(poolGears.length).toBe(30)
+describe('台帳 (裁定 2026-09-17: 33種・C13/U14/R6・数値は本家の瓶並み。2026-09-18: 2本続けて0回の3種を抽選から外し、別案4種〔蝋の栓・錆びた鎖・身代わりの符・湧き水の歯車〕を足して抽選34種)', () => {
+  it('定義は37種で id と名前が一意。抽選に載るのは34種 (retired 3 = 厄除けの符・挟み紙・引き直し)', () => {
+    expect(allGears.length).toBe(37)
+    expect(new Set(allGears.map((g) => g.id)).size).toBe(37)
+    expect(new Set(allGears.map((g) => g.name)).size).toBe(37)
+    expect(poolGears.length).toBe(34)
     expect(allGears.filter((g) => g.retired === true).map((g) => g.id).sort()).toEqual(['gear_paper_slip', 'gear_redraw', 'gear_ward_charm'])
     expect(getGearDef('gear_redraw').name).toBe('引き直し') // 旧セーブの持ち物としては読める
   })
 
-  it('抽選に載るレア度の内訳は C12 / U12 / R6', () => {
+  it('抽選に載るレア度の内訳は C13 / U14 / R7', () => {
     const by = (r: string) => poolGears.filter((g) => g.rarity === r).length
-    expect([by('common'), by('uncommon'), by('rare')]).toEqual([12, 12, 6])
+    expect([by('common'), by('uncommon'), by('rare')]).toEqual([13, 14, 7])
   })
 
   it('報酬・店・チェックポイントの抽選は retired を引かない', () => {
@@ -135,6 +135,49 @@ describe('効果 (代表)', () => {
     const before = run.combat!.enemies.map((e) => e.hp)
     const after = use(run, 0)
     after.combat!.enemies.forEach((e, i) => expect(before[i] - e.hp).toBe(10))
+  })
+
+  it('蝋の栓 (2026-09-18): 対象のいま宣言している行動の付随物 (状態異常・同時強化・同時防御) だけを消す。攻撃は通る。付随物が無ければ理由が出る', () => {
+    const base = withIntent(freshCombat('set-confirm', 'enemy_probe'), { ...attackIntent(9), inflict: { status: 'weak', amount: 2 }, alsoBuff: 1, alsoDefend: 5 })
+    const after = use(runWith(base, ['gear_wax_plug']), 0, { targetIndex: 0 })
+    const it0 = after.combat!.enemies[0].intent!
+    expect(it0.inflict).toBeUndefined()
+    expect(it0.alsoBuff).toBeUndefined()
+    expect(it0.alsoDefend).toBeUndefined()
+    expect(it0.actual).toBe(9)
+    const resolved = applyCommand(after.combat!, { type: 'EndTurn' })
+    expect(resolved.player.weak).toBe(0)
+    expect(resolved.enemies[0].strength).toBe(0)
+    expect(base.player.hp - resolved.player.hp).toBe(9)
+    expect(gearNoEffectReason(withIntent(freshCombat('set-confirm', 'enemy_probe'), attackIntent(9)), getGearDef('gear_wax_plug'), 0)).not.toBeNull()
+  })
+
+  it('錆びた鎖 (2026-09-18): 連撃を1回に。単発には理由が出る', () => {
+    const base = withIntent(freshCombat('set-confirm', 'enemy_probe'), { ...attackIntent(6), hits: 3 })
+    const after = use(runWith(base, ['gear_rusty_chain']), 0, { targetIndex: 0 })
+    expect(after.combat!.enemies[0].intent!.hits).toBeUndefined()
+    const resolved = applyCommand(after.combat!, { type: 'EndTurn' })
+    expect(base.player.hp - resolved.player.hp).toBe(6)
+    expect(gearNoEffectReason(withIntent(freshCombat('set-confirm', 'enemy_probe'), attackIntent(6)), getGearDef('gear_rusty_chain'), 0)).not.toBeNull()
+  })
+
+  it('身代わりの符 (2026-09-18): このターン最初に受ける攻撃1回のHP損失が0 (全ヒットが吸われた扱い=完全に防いだ)。次のターンには残らない', () => {
+    const base = withIntent(freshCombat('set-confirm', 'enemy_probe'), attackIntent(7))
+    const after = use(runWith(base, ['gear_decoy_charm']), 0)
+    expect(after.combat!.nullifyNextAttack).toBe(true)
+    let s = applyCommand(after.combat!, { type: 'EndTurn' })
+    expect(s.player.hp).toBe(base.player.hp)
+    expect(s.eventLog.some((e) => e.type === 'DamageDealt' && e.source === 'enemy' && e.hpLoss === 0 && (e.blocked ?? 0) === 7)).toBe(true)
+    expect(s.nullifyNextAttack).toBeUndefined()
+    s = applyCommand(withIntent(s, attackIntent(7)), { type: 'EndTurn' })
+    expect(base.player.hp - s.player.hp).toBe(7)
+  })
+
+  it('湧き水の歯車 (2026-09-18): この戦闘中エナジー上限+1 (次のターンから)', () => {
+    const base = freshCombat('set-confirm', 'enemy_probe')
+    const after = use(runWith(base, ['gear_spring_cog']), 0)
+    expect(after.combat!.player.energyMax).toBe(base.player.energyMax + 1)
+    expect(after.combat!.player.energy).toBe(base.player.energy)
   })
 
   it('楔: 対象の宣言済みの行動が打ち消される', () => {

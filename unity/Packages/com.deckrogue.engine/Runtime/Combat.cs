@@ -564,6 +564,7 @@ namespace DeckRogue.Engine
                 GearUsedThisTurn = null,
                 RetainHandThisTurn = null,
                 EnergyCarryThisTurn = null,
+                NullifyNextAttack = null,   // 身代わりの符 (ギア 2026-09-18) は自ターン開始で降りる
                 MaxHpLossFiredThisTurn = null,   // 脈打つ欠片: 同じターンの2発目以降は回数を使わない旗 (2026-09-18)
                 NextTurnEnergy = null,
                 NextTurnBlock = null,
@@ -1871,6 +1872,8 @@ namespace DeckRogue.Engine
                     int hpLoss = 0;
                     int blockedTotal = 0;   // ブロック＋氷壁が吸った合計 (演出用 2026-09-17)
                     bool capFired = false;  // 脈打つ欠片の上限がこの行動で働いた (2026-09-18)
+                    // 身代わりの符 (ギア 2026-09-18): この攻撃のHP損失を0に。ブロックは消費しない・全ヒットが吸われた扱い (完全に防いだ)
+                    bool nullify = state.NullifyNextAttack == true;
                     for (int h = 0; h < hits; h++)
                     {
                         int v = intent.Actual;
@@ -1889,6 +1892,7 @@ namespace DeckRogue.Engine
                             v = (int)Math.Floor(v * (1 + 0.1 * (state.Player.PlaysThisTurn ?? 0)));
                         }
                         dealtTotal += v;
+                        if (nullify) { blockedTotal += v; continue; }
                         int blocked = Math.Min(block, v);
                         block -= blocked;
                         int remaining = v - blocked;
@@ -1916,6 +1920,7 @@ namespace DeckRogue.Engine
                     {
                         MaxHpLossCharges = capCharge ? state.MaxHpLossCharges!.Value - 1 : state.MaxHpLossCharges,
                         MaxHpLossFiredThisTurn = capFired ? true : state.MaxHpLossFiredThisTurn,
+                        NullifyNextAttack = nullify ? null : state.NullifyNextAttack,   // 1回きり: 使ったら降ろす
                         Player = state.Player with
                         {
                             Block = block,
