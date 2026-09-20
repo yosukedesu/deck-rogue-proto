@@ -114,12 +114,15 @@ namespace DeckRogue.Game
             if (blockCg != null) blockCg.blocksRaycasts = true;
             float delay = 0f;
             int finishing = FinishingBlowIndex(log, Math.Min(_seen, log.Count), combat);
+            var batchAt = new Dictionary<int, DollBatch>(); var batchLast = new HashSet<int>();
+            PlanDollBatches(log, Math.Min(_seen, log.Count), batchAt, batchLast);   // 人形の粒を束ねる (2026-09-21)
             for (int i = Math.Min(_seen, log.Count); i < log.Count; i++)
             {
                 var ev = log[i];
                 float gap;
                 if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = visibleBoard }; try { Show(g, fx, cp, true, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
-                if (ev is GameEvent_DamageDealt) gap = 0.4f;
+                if (batchAt.ContainsKey(i)) gap = batchLast.Contains(i) ? 0.3f : 0.04f;   // 束ねた粒は 0.04 秒刻み。最後の1つで合計の数字を出すので少し置く
+                else if (ev is GameEvent_DamageDealt) gap = 0.4f;
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
                 else if (IsStatusEvent(ev)) gap = 0.3f;
@@ -132,6 +135,7 @@ namespace DeckRogue.Game
                 else continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, visibleBoard);
+                if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (i == finishing) { ctx.FinishingBlow = true; gap += 0.35f; }   // とどめはヒットストップぶん長く見せる
                 Tween.After(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
@@ -168,6 +172,8 @@ namespace DeckRogue.Game
                 try { delay += ShowEntrance(g, fx, combat); } catch (Exception e) { Debug.LogWarning("[Presenter] entrance " + e.Message); }
             }
             int finishing = FinishingBlowIndex(log, _seen, combat);
+            var batchAt = new Dictionary<int, DollBatch>(); var batchLast = new HashSet<int>();
+            PlanDollBatches(log, _seen, batchAt, batchLast);   // 人形の粒を束ねる (2026-09-21)
             // 差し替えられた意図の札は、組み直しで既に新しい札になっている。豹変の瞬間 (ShowEnemyAct) に跳ねて出すまで隠す (2026-09-17 ④)
             for (int i = _seen; i < log.Count; i++)
                 if (log[i] is GameEvent_EnemyInterrupted ei && ei.Replaced)
@@ -183,10 +189,11 @@ namespace DeckRogue.Game
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
+                if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (i == finishing) ctx.FinishingBlow = true;
-                // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)
+                // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
-                delay += ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
+                delay += ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
             }
             HoldLightIfAny(log, _seen, delay);
             _seen = log.Count;
@@ -970,6 +977,42 @@ namespace DeckRogue.Game
                     if (uid != null) g.Battle.KillDoll(g, uid, true);
                     break;
                 }
+                case GameEvent_RetainerExpired re:
+                {   // 灯りが尽きた (2026-09-21 人形の灯り): 人形壊しと同じく頭から崩れる。判は灰の「灯が尽きた」
+                    Audio.Key("RetainerExpired");
+                    if (g.Battle == null) return;
+                    g.Battle.KillDoll(g, re.Uid, false, "灯が尽きた");
+                    break;
+                }
+                case GameEvent_RetainerCopied rc:
+                {   // 写し灯・鏡の灯籠・二重の点灯 (2026-09-21): 元の人形から新しい座席へ光の玉が飛ぶ。登場の弾みは組み直しの EnterDoll が出す
+                    Audio.Key("RetainerCopied");
+                    if (g.Battle == null) return;
+                    var fromSpr = g.Battle.DollSprite(rc.FromUid);
+                    var toPan = g.Battle.DollPanel(rc.Uid);
+                    var toSpr = toPan != null ? toPan.Find("sprite") as RectTransform : null;
+                    Vector2 from = fromSpr != null ? Tween.CenterIn(fromSpr, fx) : (playerRt != null ? Tween.CenterIn(playerRt, fx) : Vector2.zero);
+                    Vector2 to = toSpr != null ? Tween.CenterIn(toSpr, fx) : from + new Vector2(60f, 0f);
+                    if (fromSpr != null) Tween.Punch(fromSpr, 0.1f, 0.25f, true);
+                    Tween.Projectile(fx, from, to, PaperFx.BrassLight, 40f, 0.26f, 40f, () =>
+                    {
+                        Tween.RingBurst(fx, to, PaperFx.BrassLight, 110f, 0.3f);
+                        Tween.Stamp(fx, to + new Vector2(0f, (toSpr != null ? toSpr.rect.height * 0.55f : 40f) + 14f), "写し", PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 16, 0.6f, -6f);
+                    });
+                    break;
+                }
+                case GameEvent_RetainerLifeExtended rl:
+                {   // 継ぎ火 (+Nターン)・永遠の灯 (尽きない): その人形の頭上に真鍮の判
+                    Audio.Key("RetainerLifeExtended");
+                    if (g.Battle == null) return;
+                    var dSpr = g.Battle.DollSprite(rl.Uid);
+                    if (dSpr == null) return;
+                    Vector2 dp = Tween.CenterIn(dSpr, fx);
+                    Tween.Punch(dSpr, 0.12f, 0.3f, true);
+                    Tween.RingBurst(fx, dp + new Vector2(0f, -dSpr.rect.height * 0.4f), new Color(1f, 0.85f, 0.55f, 0.9f), 130f, 0.35f);
+                    Tween.Stamp(fx, dp + new Vector2(0f, dSpr.rect.height * 0.55f + 14f), rl.Persist == true ? "尽きない" : "+" + rl.Amount + "ターン", PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 17, 0.7f, -6f);
+                    break;
+                }
             }
         }
 
@@ -1097,11 +1140,97 @@ namespace DeckRogue.Game
             return ev is GameEvent_ReactionTriggered || ev is GameEvent_ReactionHeld || ev is GameEvent_SetCardExpired || ev is GameEvent_SetCardDestroyed || ev is GameEvent_ReactionWhiffed || ev is GameEvent_ActionNegated
                 || ev is GameEvent_GearUsed || ev is GameEvent_DeathSaved   // ギア (2026-09-17 裁定4: からくりと同じ演出) と致死を耐えた判
                 || ev is GameEvent_RetainerRushed   // 駆けつけの判 (2026-09-19)
-                || ev is GameEvent_TokenDestroyed || ev is GameEvent_RetainerSacrificed;   // 人形が崩れる (人形の盤面表示 2026-09-19)
+                || ev is GameEvent_TokenDestroyed || ev is GameEvent_RetainerSacrificed   // 人形が崩れる (人形の盤面表示 2026-09-19)
+                || ev is GameEvent_RetainerExpired || ev is GameEvent_RetainerCopied || ev is GameEvent_RetainerLifeExtended;   // 人形の灯り (2026-09-21): 尽きた・写した・継いだ
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; }   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public DollBatch Batch; public bool BatchLast; }   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+
+        /// <summary>
+        /// 人形の粒を束ねる (2026-09-21 【E】人間ラン#15「号令1回＝10〜16行の1〜4ダメの粒が 0.12 秒刻み」): 連続する人形由来 (SourceUid つき) の
+        /// DamageDealt / BlockGained / HpHealed を1つの浮き数字「人形×N: 合計」にする。各人形の踏み込みは並行に鳴らし、HP・ブロックの Nudge は合計で1回
+        /// </summary>
+        sealed class DollBatch
+        {
+            public readonly Dictionary<int, int> Dmg = new Dictionary<int, int>();
+            public readonly Dictionary<int, int> Cnt = new Dictionary<int, int>();
+            public readonly Dictionary<int, int> HpLoss = new Dictionary<int, int>();
+            public readonly Dictionary<int, int> Blocked = new Dictionary<int, int>();
+            public int Block, BlockN, Heal, HealN;
+            public bool SoundHit, SoundBlock, SoundHeal;
+        }
+
+        /// <summary>人形由来の出来事 (束ねる対象)</summary>
+        static bool IsDollEvent(GameEvent ev)
+        {
+            if (ev is GameEvent_DamageDealt dd) return dd.Source == "player" && dd.SourceUid != null;
+            if (ev is GameEvent_BlockGained b) return b.Target == "player" && b.SourceUid != null;
+            if (ev is GameEvent_HpHealed h) return h.SourceUid != null;
+            return false;
+        }
+
+        /// <summary>Play / PlaySequenced が演出に変える出来事か (束ねの区切りの判定に使う。間に挟まる見せない出来事は区切らない)</summary>
+        static bool IsShownEvent(GameEvent ev)
+        {
+            return ev is GameEvent_CardPlayed || ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed
+                || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null;
+        }
+
+        /// <summary>from 以降の出来事を走査し、2つ以上続く人形の粒の並びごとに DollBatch を割り当てる (最後の添字を last に)</summary>
+        static void PlanDollBatches(IReadOnlyList<GameEvent> log, int from, Dictionary<int, DollBatch> batchAt, HashSet<int> last)
+        {
+            int i = Math.Max(0, from);
+            while (i < log.Count)
+            {
+                if (!IsDollEvent(log[i])) { i++; continue; }
+                var members = new List<int> { i };
+                int j = i + 1;
+                for (; j < log.Count; j++)
+                {
+                    if (IsDollEvent(log[j])) { members.Add(j); continue; }
+                    if (IsShownEvent(log[j])) break;   // 見せる出来事が挟まれば区切る (見せない出来事は跨ぐ)
+                }
+                if (members.Count >= 2)
+                {
+                    var b = new DollBatch();
+                    foreach (var m in members) batchAt[m] = b;
+                    last.Add(members[members.Count - 1]);
+                }
+                i = j;
+            }
+        }
+
+        /// <summary>束ねた粒の最後: 敵ごとの「人形×N: 合計」、自分の「人形×N: ブロック+合計／回復+合計」を1回ずつ出し、Nudge も合計で</summary>
+        static void FlushDollBatch(GameRoot g, RectTransform fx, DollBatch b, bool nudge)
+        {
+            foreach (var kv in b.Dmg)
+            {
+                int ei = kv.Key;
+                var rt = g.Anchor("enemy" + ei);
+                if (rt == null) continue;
+                int sum = kv.Value, cnt = b.Cnt.ContainsKey(ei) ? b.Cnt[ei] : 1;
+                int hpLoss = b.HpLoss.ContainsKey(ei) ? b.HpLoss[ei] : 0, blocked = b.Blocked.ContainsKey(ei) ? b.Blocked[ei] : 0;
+                var pos = Tween.CenterIn(rt, fx) + new Vector2(0f, 20f);
+                Color numColor = sum <= 0 ? UiKit.ColDim : (hpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
+                Tween.Float(fx, pos, (cnt > 1 ? "人形×" + cnt + ": " : "") + sum, numColor, sum >= 15 ? 40 : 32, 60f, 1.0f);
+                if (blocked > 0) Tween.After(0.06f, () => Tween.Float(fx, pos + new Vector2(0f, -34f), "ブロックで −" + blocked, PaperFx.SkyLight, 20, 34f, 1.0f));
+                if (sum >= 15) Stage.Shake(Mathf.Min(10f, sum * 0.3f), 0.2f);
+                if (nudge && g.Battle != null && hpLoss > 0) g.Battle.NudgeEnemyHp(ei, -hpLoss);
+                if (nudge && g.Battle != null && blocked > 0) g.Battle.NudgeEnemyBlock(ei, -blocked);
+            }
+            var prt = g.Anchor("player");
+            if (prt != null)
+            {
+                if (b.BlockN > 0)
+                {
+                    Tween.Float(fx, Tween.CenterIn(prt, fx) + new Vector2(80f, 10f), (b.BlockN > 1 ? "人形×" + b.BlockN + ": " : "") + "ブロック+" + b.Block, UiKit.ColBlock, 26, 40f, 0.9f);
+                    if (nudge && g.Battle != null) g.Battle.NudgePlayerBlock(b.Block);
+                }
+                if (b.HealN > 0)
+                    Tween.Float(fx, Tween.CenterIn(prt, fx) + new Vector2(-80f, 10f + (b.BlockN > 0 ? 30f : 0f)), (b.HealN > 1 ? "人形×" + b.HealN + ": " : "") + "回復+" + b.Heal, UiKit.ColAccent, 26, 40f, 0.9f);
+            }
+        }
 
         /// <summary>とどめの一撃 (2026-09-17 ⑫): 新しい出来事の中で、最後に敵を倒したプレイヤーの打撃。戦闘が決着 (全滅・逃走) した時だけ。無ければ -1</summary>
         static int FinishingBlowIndex(IReadOnlyList<GameEvent> log, int from, GameState combat)
@@ -1218,6 +1347,25 @@ namespace DeckRogue.Game
                         int ei = d.EnemyIndex ?? 0;
                         var rt = g.Anchor("enemy" + ei);
                         if (rt == null) return;
+                        if (ctx != null && ctx.Batch != null)
+                        {   // 束ねた人形の粒 (2026-09-21): 踏み込みと閃きだけ出して合計に足し、最後の1つで「人形×N: 合計」
+                            var bt = ctx.Batch;
+                            var bSpr = g.Battle != null ? g.Battle.EnemySprite(ei) : null;
+                            var bDollSpr = g.Battle != null ? g.Battle.DollSprite(d.SourceUid) : null;
+                            if (bDollSpr != null && bSpr != null)
+                            {
+                                Vector2 dp0 = Tween.CenterIn(bDollSpr, fx), hp0 = Tween.CenterIn(bSpr, fx);
+                                Tween.Lunge(bDollSpr, (hp0 - dp0).normalized * (UiKit.Phone ? 22f : 36f) + new Vector2(0f, 4f), 0.22f);
+                            }
+                            Stage.Flash("enemy" + ei, 0.08f);
+                            if (!bt.SoundHit) { bt.SoundHit = true; Audio.Key("DamageDealt.player"); }
+                            bt.Dmg[ei] = (bt.Dmg.ContainsKey(ei) ? bt.Dmg[ei] : 0) + d.Amount;
+                            bt.Cnt[ei] = (bt.Cnt.ContainsKey(ei) ? bt.Cnt[ei] : 0) + 1;
+                            bt.HpLoss[ei] = (bt.HpLoss.ContainsKey(ei) ? bt.HpLoss[ei] : 0) + Math.Max(0, d.HpLoss);
+                            bt.Blocked[ei] = (bt.Blocked.ContainsKey(ei) ? bt.Blocked[ei] : 0) + (d.Blocked ?? 0);
+                            if (ctx.BatchLast) FlushDollBatch(g, fx, bt, nudgeHp);
+                            return;
+                        }
                         var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-30f, 30f), 20f);
                         // ⑥ ダメージの質 (2026-09-17): 急所・貫通・盾が吸った・装甲/ターン装甲/殻/無形の頭打ち を数字の脇で見分ける (イベントの値＝実処理と同じ)
                         bool crit = d.Exposed == true, pierced = d.Pierced == true;
@@ -1366,6 +1514,16 @@ namespace DeckRogue.Game
                     }
                     var rt = g.Anchor("player");
                     if (rt == null) return;
+                    if (ctx != null && ctx.Batch != null)
+                    {   // 束ねた人形の粒 (2026-09-21): 盾の人形が跳ねて小さな盾。数字は最後にまとめて
+                        var bt = ctx.Batch;
+                        var bd = b.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(b.SourceUid) : null;
+                        if (bd != null) { Tween.Punch(bd, 0.12f, 0.3f, true); Tween.IconBurst(fx, Tween.CenterIn(bd, fx) + new Vector2(0f, 10f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 60f); }
+                        if (!bt.SoundBlock) { bt.SoundBlock = true; Audio.Key("BlockGained"); }
+                        bt.Block += b.Amount; bt.BlockN++;
+                        if (ctx.BatchLast) FlushDollBatch(g, fx, bt, nudgeHp);
+                        return;
+                    }
                     Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
@@ -1629,6 +1787,16 @@ namespace DeckRogue.Game
                 {
                     var rt = g.Anchor("player");
                     if (rt == null) return;
+                    if (ctx != null && ctx.Batch != null)
+                    {   // 束ねた人形の粒 (2026-09-21): 癒しの人形が跳ねて心の絵。数字は最後にまとめて
+                        var bt = ctx.Batch;
+                        var hd = h.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(h.SourceUid) : null;
+                        if (hd != null) { Tween.Punch(hd, 0.12f, 0.3f, true); Tween.IconBurst(fx, Tween.CenterIn(hd, fx) + new Vector2(0f, 10f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 60f); }
+                        if (!bt.SoundHeal) { bt.SoundHeal = true; Audio.Key("HpHealed"); }
+                        bt.Heal += h.Amount; bt.HealN++;
+                        if (ctx.BatchLast) FlushDollBatch(g, fx, bt, nudgeHp);
+                        return;
+                    }
                     Audio.Key("HpHealed");
                     var hs = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (hs != null) Tween.IconBurst(fx, Tween.CenterIn(hs, fx) + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f);

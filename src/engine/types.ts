@@ -385,6 +385,15 @@ export interface GameState {
   readonly resolvingGainTrigger?: boolean
   /** 号令・大行列で人形を動かしている間は灯を産まない (白 2026-09-20 ユーザー裁定。灯芯の人形が大行列の中で鳴って「全て放出」の直後に灯が戻る、の是正) */
   readonly suppressLightGain?: boolean
+  /** 二重の点灯 (2026-09-21): 次に出る人形 N 体がそれぞれ2体になる (ターンをまたいで持ち越す。割引と同じ持続) */
+  readonly nextRetainerTwin?: number
+  /**
+   * 召喚トークンの uid の通し番号 (2026-09-21)。旧「置物数ベース」は寿命切れ・人形壊し・灯の捧げで場を離れると衝突した
+   * (T3 に出た summon_p6 が消えた後、T4 のコピーも summon_p6 になり EnteredTurn が古い方に付く)。undefined は 0 から
+   */
+  readonly summonSeq?: number
+  /** 「人形1体を選ぶ」札 (写し灯・継ぎ火・永遠の灯) のプレイ中だけ立つ: PlayCard.permanentUid で選んだ人形 (効果の解決が読む) */
+  readonly chosenPermanentUid?: string
   /** 灯の火床 (2026-09-20 夜): この EndTurn で灯を火種に変える枚数 (コマンドの hearthSparks。onTurnEnd の間だけ立つ) */
   readonly hearthSparks?: number
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
@@ -508,7 +517,7 @@ export type Command =
       readonly handUids?: readonly string[]
       /** Xコスト札用 (2026-09-03): 支払うX (1〜現在のエナジー)。省略時は全部払う */
       readonly xAmount?: number
-      /** sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid */
+      /** sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid。copyRetainer・extendRetainerLife・persistRetainer (2026-09-21) も同じ欄で選ぶ */
       readonly permanentUid?: string
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
@@ -620,6 +629,9 @@ export type GameEvent =
   | { readonly type: 'RetainerSacrificed'; readonly cardId: string; readonly uid?: string } // 殉教の誓い (白 2026-09-06): 自分で従者を1体破壊
   | { readonly type: 'RetainersDuplicated'; readonly count: number } // 分列の奇跡 (白 2026-09-06)
   | { readonly type: 'RetainersTriggered'; readonly count: number } // 進軍の号令 (白 2026-09-06)
+  | { readonly type: 'RetainerExpired'; readonly cardId: string; readonly uid: string } // 人形の灯りが尽きた (2026-09-21): 寿命の最後の敵フェーズの終わりに場から消えた
+  | { readonly type: 'RetainerCopied'; readonly cardId: string; readonly uid: string; readonly fromUid: string } // 人形をコピーした (写し灯・鏡の灯籠・二重の点灯 2026-09-21)。uid=新しい人形
+  | { readonly type: 'RetainerLifeExtended'; readonly cardId: string; readonly uid: string; readonly amount: number; readonly persist?: boolean } // 継ぎ火 (+N)・永遠の灯 (persist)
   | { readonly type: 'RetainerRushed'; readonly cardId: string } // 駆けつけ (ひなた 2026-09-06): 場に出た従者が即1回動いた
   | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
   | { readonly type: 'GoldStolen'; readonly enemyIndex: number; readonly amount: number } // 盗み (精算は勝利時)
@@ -829,6 +841,11 @@ export interface DeclarativeEffect {
     | 'summonPermanent' // 召喚 (白): summonId の置物トークンを amount 体場に出す (従者の横並び=トークン再現)
     | 'duplicateRetainers' // 分列の奇跡 (白 2026-09-06): 場の従者1体につき同じ従者を1体召喚 (解決開始時のスナップショット=複製は複製を産まない。登場誘発は全部起きる)
     | 'sacrificeRetainer' // 殉教の誓い (白 2026-09-06): PlayCard.permanentUid で選んだ従者1体を破壊 (combat.ts の playCard が解決。自分の従者狩り=罠壊しの罰は発火しない)
+    | 'copyRetainer' // 写し灯 (白 2026-09-21): PlayCard.permanentUid で選んだ人形を amount 体コピーして出す (残り寿命を写す・点灯する)
+    | 'copyLastRetainer' // 鏡の灯籠 (白 2026-09-21): 最後に点灯した (場に出た順で最後の) 人形を amount 体コピーして出す (残り寿命を写す)
+    | 'twinNextRetainer' // 二重の点灯 (白 2026-09-21): 次に出る人形 amount 体がそれぞれ2体になる (GameState.nextRetainerTwin。持ち越す)
+    | 'extendRetainerLife' // 継ぎ火 (白 2026-09-21): 選んだ人形の灯りを amount ターン継ぐ (CardInstance.lifeBonus)
+    | 'persistRetainer' // 永遠の灯 (白 2026-09-21): 選んだ人形の灯りが尽きなくなる (CardInstance.lifePersist)
     | 'triggerRetainersNow' // 進軍の号令 (白 2026-09-06): 従者 (innate除く) のターン開始効果を今すぐ1回解決 (アンセム込み)
     | 'activateEnteredRetainer' // 駆けつけ (ひなたのパッシブ 2026-09-06): 場に出た従者のターン開始効果を登場時に1回解決 (onPermanentEntered 専用。従者以外の置物では何もしない)
     | 'dischargeBurn' // 爆熱 (赤): 対象の延焼×amount のダメージを与え、延焼を全て失わせる (DoT+焼き切りを手放す緊張)
@@ -1045,6 +1062,13 @@ export interface CardDef {
   readonly lightCost?: number
   /** 従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」) */
   readonly retainer?: boolean
+  /**
+   * 灯り＝人形の寿命 (2026-09-21。人間ラン#15「毎戦同じ」への再設計): 点灯したターンを1と数え、この数のターンの敵フェーズが
+   * 終わると消える (罠の「準備＋2窓」と同じ数え方)。小さな人形2／1Eの人形3／灯コストつき4。retainer の札は life か lifePersist を持つ (cardrules)
+   */
+  readonly life?: number
+  /** 灯りが尽きない人形 (篝火 R)。永遠の灯で後から付く方は CardInstance.lifePersist */
+  readonly lifePersist?: boolean
   /** 骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札 */
   readonly shivToken?: boolean
   /** 火種 (白 2026-09-20 夜): 0E・消滅・1ドロー・灯+1 のトークン札。撃つたび sparksPlayedThisCombat+1・onSparkPlayed が鳴る */
@@ -1099,6 +1123,15 @@ export interface CardInstance {
   readonly innate?: boolean
   /** every/once の誘発カウンタ (戦闘内累計。キーは効果の添字。置物インスタンスだけが持つ 2026-09-12) */
   readonly triggerCounts?: Readonly<Record<string, number>>
+  /**
+   * 人形の灯り (2026-09-21): 場に出た時の state.turn。齢 (turn − enteredTurn) が「火勢」(ダメージ・ブロック+齢) と残り寿命を決める。
+   * コピー (写し灯・鏡の灯籠・二重の点灯・分列) は元の値を写す＝残り寿命を引き継ぐ
+   */
+  readonly enteredTurn?: number
+  /** 継ぎ火で継いだぶん (寿命に加算) */
+  readonly lifeBonus?: number
+  /** 永遠の灯で尽きなくなった (def.lifePersist と同じ扱い) */
+  readonly lifePersist?: boolean
   /** every/once の誘発カウンタ (ターン内。自ターン開始でリセット) */
   readonly turnTriggerCounts?: Readonly<Record<string, number>>
 }

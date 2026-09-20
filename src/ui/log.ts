@@ -162,6 +162,9 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'RetainersDuplicated': return { text: `🏳️ 分列: 従者${e.count}体が複製された`, cls: 'log-line' }
     case 'RetainersTriggered': return { text: `📯 号令: 人形${e.count}体がトリガーを問わず今1回ずつ動いた`, cls: 'log-line' }
     case 'RetainerRushed': return { text: `🕯 点灯: ${cardName(e.cardId)}が出た瞬間に1回動いた`, cls: 'log-line' }
+    case 'RetainerExpired': return { text: `🕯 灯が尽きた: ${cardName(e.cardId)}が消えた`, cls: 'log-line' }
+    case 'RetainerCopied': return { text: `🪞 写し: ${cardName(e.cardId)}をコピーした（残りの灯りを写す）`, cls: 'log-line' }
+    case 'RetainerLifeExtended': return { text: e.persist === true ? `✨ 永遠の灯: ${cardName(e.cardId)}の灯りは尽きなくなった` : `🔥 継ぎ火: ${cardName(e.cardId)}の灯りを${e.amount}ターン継いだ`, cls: 'log-line' }
     case 'ThornsReflected': return { text: `🦔 とげ反射: ${e.amount}（HP-${e.hpLoss}）`, cls: 'log-damage' }
     case 'GoldStolen': return { text: `💰 盗みを宣言して${e.amount}Gを先取りされた（宣言と同時に成立する。逃がす前に倒せば取り返せる）`, cls: 'log-damage' }
     case 'EnemyFled': return { text: '🏃 敵が逃走した', cls: 'log-line' }

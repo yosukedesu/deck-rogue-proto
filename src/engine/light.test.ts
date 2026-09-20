@@ -48,7 +48,7 @@ describe('灯の供給 (回復するたび・人形が場に出るたび・ひ�
     s = play(s, 't2_white_perm_chalice') // 道具
     expect(s.player.light).toBe(0)
     expect(gained(s, 'retainer')).toBe(0)
-    expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(3) // 点灯 (1回動く) はそのまま
+    expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(4) // 点灯 (1回動く) はそのまま
   })
 
   it('戦闘開始時から場にあるリーダーパッシブ・レリック (innate) は「登場」ではない = 灯は溜まらない', () => {
@@ -68,7 +68,7 @@ describe('点灯の定義 (白共通ルール: 人形は場に出た瞬間に1�
     let s = energy(fresh(['white_perm_squire', 'white_perm_band']), 9)
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_perm_squire')
-    expect(hp0 - s.enemies[0].hp).toBe(2)
+    expect(hp0 - s.enemies[0].hp).toBe(3)
     expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(1)
     const hand0 = s.player.hand.length
     s = light(s, 2) // 鐘の人形は 1E・灯2 (2026-09-20 灯と人形の結び)
@@ -173,7 +173,7 @@ describe('しきい値 (minLight) と灯を得るたびの誘発', () => {
     s = play(s, 't1_white_heal') // 回復の灯+1 → 弩1、明示の灯+1 → 弩1
     expect(hp0 - s.enemies[0].hp).toBe(2)
     s = play(s, 't2_white_perm_squire') // 登場では灯は増えない (弩は鳴らない)、点灯で剣の人形2
-    expect(hp0 - s.enemies[0].hp).toBe(2 + 2)
+    expect(hp0 - s.enemies[0].hp).toBe(2 + 3)
   })
 })
 
@@ -191,7 +191,7 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
     const e0 = s.player.energy
     s = play(s, 't3_white_march_order')
     // 2026-09-20 裁定: 合図は小さな人形1体を点灯 (1ダメ) してから号令 = 剣2 + 犬2 + 小さな人形1。鐘 (登場ごと) は鳴らない
-    expect(hp0 - s.enemies[0].hp).toBe(1 + 2 + 2 + 1)
+    expect(hp0 - s.enemies[0].hp).toBe(2 + 3 + 2 + 2)
     expect(s.player.hand.length).toBe(hand0 - 1 + 1) // 合図の小さな人形の登場で鐘が1ドロー (登場ごと)
     expect(s.player.light).toBe(3 - 2) // 小さな人形の登場で灯は戻らない (2026-09-20 夜 廃止) = 合図の正味は灯2
     expect(s.player.energy).toBe(e0 - 1)
@@ -210,8 +210,8 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
     const hp0 = s.enemies[0].hp
     const b0 = s.player.block
     s = play(s, 't2_white_grand_charge')
-    expect(hp0 - s.enemies[0].hp).toBe(2 * 3)
-    expect(s.player.block - b0).toBe(2 * 3)
+    expect(hp0 - s.enemies[0].hp).toBe(3 * 3)
+    expect(s.player.block - b0).toBe(3 * 3)
     expect(s.player.light).toBe(0)
     expect(getCardDef('white_grand_charge').requiresRetainer).toBe(true)
   })
@@ -236,7 +236,7 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
     s = play(s, 't1_white_perm_squire')
     s = play(s, 't2_white_perm_squire')
     const lost = s.enemies.map((e, i) => hp[i] - e.hp)
-    expect(lost[0] + lost[1]).toBe(6)
+    expect(lost[0] + lost[1]).toBe(9)
     expect(s.rng).not.toEqual(rng0)
     // 同じシード・同じ手順なら同じ配分 (決定性)
     let t = energy(fresh(['white_perm_squire', 'white_perm_squire', 'white_perm_squire'], 'enc_probe_pair'), 9)
@@ -286,7 +286,7 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     expect(getCardDef('white_perm_bonfire')).toMatchObject({ cost: 2, lightCost: 4, retainer: true, rarity: 'rare' })
     expect(REWARD_EXCLUDED.has('white_perm_lantern')).toBe(false)
     expect(REWARD_EXCLUDED.has('white_perm_bonfire')).toBe(false)
-    expect(allCards.filter((c) => c.color === 'white').length).toBe(91) // 82 −撤去10 +火種10+トークン1 +放出8 (2026-09-20 夜)
+    expect(allCards.filter((c) => c.color === 'white').length).toBe(96) // 82 −撤去10 +火種10+トークン1 +放出8 (2026-09-20 夜)
     // 灯コストを持つ人形は5体だけ (コモンの人形・灯芯は据え置き)
     expect(allCards.filter((c) => c.retainer === true && (c.lightCost ?? 0) > 0).map((c) => c.id).sort()).toEqual(
       ['white_perm_band', 'white_perm_bandleader', 'white_perm_bonfire', 'white_perm_choir', 'white_perm_lantern'],
@@ -357,7 +357,7 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     s = { ...s, player: { ...s.player, hand: [{ uid: 'f0', def: t }] } }
     const hp0 = s.enemies[0].hp
     s = play(s, 'f0')
-    expect(hp0 - s.enemies[0].hp).toBe(4) // 点灯: 毎T4ダメが1回 (onPlay のブロックは2回にならない)
+    expect(hp0 - s.enemies[0].hp).toBe(6) // 点灯: 毎T4ダメが1回 (onPlay のブロックは2回にならない)
     expect(s.player.block).toBe(2)
     // 灯篭 × コモンの人形: 灯参照は置物のまま残る
     const g = fuseCards(inst('white_perm_lantern'), inst('white_perm_squire'))
@@ -371,7 +371,7 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     s = play(s, 't0_white_perm_warcry')
     const hp0 = s.enemies[0].hp
     s = play(s, 't1_white_perm_squire')
-    expect(hp0 - s.enemies[0].hp).toBe(3) // 2+1
+    expect(hp0 - s.enemies[0].hp).toBe(4) // 3+1
     const l0 = s.player.light ?? 0
     s = play(s, 't2_white_perm_wick')
     expect(s.player.light).toBe(l0 + 1) // 灯+1 (+1は乗らない)
@@ -391,9 +391,9 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     s = play(s, 't1_white_perm_squire')
     s = play(s, 't2_white_perm_shieldmaiden')
     s = play(s, 't3_white_perm_lantern') // 灯4→2
-    const rp0 = rallyPreview(s, 0) // 大行列 (灯0で動く): 剣3・盾3・灯篭0
-    expect(rp0).toEqual({ count: 3, damage: 3, block: 3, heal: 0 })
-    const rp6 = rallyPreview(s, 6, ['white_perm_page']) // 合図: 灯6で灯篭は 3×2体、小さな人形 (1+1) 込み
-    expect(rp6).toEqual({ count: 4, damage: 3 + 3 * 2 + 2, block: 3, heal: 0 })
+    const rp0 = rallyPreview(s, 0) // 大行列 (灯0で動く): 剣3+1・盾3+1・灯篭0
+    expect(rp0).toEqual({ count: 3, damage: 4, block: 4, heal: 0 })
+    const rp6 = rallyPreview(s, 6, ['white_perm_page']) // 合図: 灯6で灯篭は 3×2体、小さな人形 (2+1) 込み (これから出るので育ちは0)
+    expect(rp6).toEqual({ count: 4, damage: 4 + 3 * 2 + 3, block: 4, heal: 0 })
   })
 })

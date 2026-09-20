@@ -649,6 +649,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>号令・大行列で人形を動かしている間は灯を産まない (白 2026-09-20 ユーザー裁定。灯芯の人形が大行列の中で鳴って「全て放出」の直後に灯が戻る、の是正)</summary>
         [JsonProperty("suppressLightGain", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SuppressLightGain { get; init; }
+        /// <summary>二重の点灯 (2026-09-21): 次に出る人形 N 体がそれぞれ2体になる (ターンをまたいで持ち越す。割引と同じ持続)</summary>
+        [JsonProperty("nextRetainerTwin", NullValueHandling = NullValueHandling.Ignore)]
+        public int? NextRetainerTwin { get; init; }
+        /// <summary>召喚トークンの uid の通し番号 (2026-09-21)。旧「置物数ベース」は寿命切れ・人形壊し・灯の捧げで場を離れると衝突した (T3 に出た summon_p6 が消えた後、T4 のコピーも summon_p6 になり EnteredTurn が古い方に付く)。undefined は 0 から</summary>
+        [JsonProperty("summonSeq", NullValueHandling = NullValueHandling.Ignore)]
+        public int? SummonSeq { get; init; }
+        /// <summary>「人形1体を選ぶ」札 (写し灯・継ぎ火・永遠の灯) のプレイ中だけ立つ: PlayCard.permanentUid で選んだ人形 (効果の解決が読む)</summary>
+        [JsonProperty("chosenPermanentUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? ChosenPermanentUid { get; init; }
         /// <summary>灯の火床 (2026-09-20 夜): この EndTurn で灯を火種に変える枚数 (コマンドの hearthSparks。onTurnEnd の間だけ立つ)</summary>
         [JsonProperty("hearthSparks", NullValueHandling = NullValueHandling.Ignore)]
         public int? HearthSparks { get; init; }
@@ -821,7 +830,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>Xコスト札用 (2026-09-03): 支払うX (1〜現在のエナジー)。省略時は全部払う</summary>
         [JsonProperty("xAmount", NullValueHandling = NullValueHandling.Ignore)]
         public int? XAmount { get; init; }
-        /// <summary>sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid</summary>
+        /// <summary>sacrificeRetainer (殉教の誓い 2026-09-06) 用: 破壊する場の従者の uid。copyRetainer・extendRetainerLife・persistRetainer (2026-09-21) も同じ欄で選ぶ</summary>
         [JsonProperty("permanentUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? PermanentUid { get; init; }
     }
@@ -1502,6 +1511,45 @@ namespace DeckRogue.Engine.Generated
         public int Count { get; init; }
     }
 
+    /// <summary>GameEvent: type="RetainerExpired"</summary>
+    public sealed record GameEvent_RetainerExpired : GameEvent
+    {
+        public const string TypeTag = "RetainerExpired";
+        public GameEvent_RetainerExpired() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("uid")]
+        public string Uid { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="RetainerCopied"</summary>
+    public sealed record GameEvent_RetainerCopied : GameEvent
+    {
+        public const string TypeTag = "RetainerCopied";
+        public GameEvent_RetainerCopied() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("uid")]
+        public string Uid { get; init; } = default!;
+        [JsonProperty("fromUid")]
+        public string FromUid { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="RetainerLifeExtended"</summary>
+    public sealed record GameEvent_RetainerLifeExtended : GameEvent
+    {
+        public const string TypeTag = "RetainerLifeExtended";
+        public GameEvent_RetainerLifeExtended() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("uid")]
+        public string Uid { get; init; } = default!;
+        [JsonProperty("amount")]
+        public int Amount { get; init; }
+        [JsonProperty("persist", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Persist { get; init; }
+    }
+
     /// <summary>GameEvent: type="RetainerRushed"</summary>
     public sealed record GameEvent_RetainerRushed : GameEvent
     {
@@ -2098,6 +2146,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」)</summary>
         [JsonProperty("retainer", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Retainer { get; init; }
+        /// <summary>灯り＝人形の寿命 (2026-09-21。人間ラン#15「毎戦同じ」への再設計): 点灯したターンを1と数え、この数のターンの敵フェーズが 終わると消える (罠の「準備＋2窓」と同じ数え方)。小さな人形2／1Eの人形3／灯コストつき4。retainer の札は life か lifePersist を持つ (cardrules)</summary>
+        [JsonProperty("life", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Life { get; init; }
+        /// <summary>灯りが尽きない人形 (篝火 R)。永遠の灯で後から付く方は CardInstance.lifePersist</summary>
+        [JsonProperty("lifePersist", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? LifePersist { get; init; }
         /// <summary>骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札</summary>
         [JsonProperty("shivToken", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ShivToken { get; init; }
@@ -2143,6 +2197,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>every/once の誘発カウンタ (戦闘内累計。キーは効果の添字。置物インスタンスだけが持つ 2026-09-12)</summary>
         [JsonProperty("triggerCounts", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, int>? TriggerCounts { get; init; }
+        /// <summary>人形の灯り (2026-09-21): 場に出た時の state.turn。齢 (turn − enteredTurn) が「火勢」(ダメージ・ブロック+齢) と残り寿命を決める。 コピー (写し灯・鏡の灯籠・二重の点灯・分列) は元の値を写す＝残り寿命を引き継ぐ</summary>
+        [JsonProperty("enteredTurn", NullValueHandling = NullValueHandling.Ignore)]
+        public int? EnteredTurn { get; init; }
+        /// <summary>継ぎ火で継いだぶん (寿命に加算)</summary>
+        [JsonProperty("lifeBonus", NullValueHandling = NullValueHandling.Ignore)]
+        public int? LifeBonus { get; init; }
+        /// <summary>永遠の灯で尽きなくなった (def.lifePersist と同じ扱い)</summary>
+        [JsonProperty("lifePersist", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? LifePersist { get; init; }
         /// <summary>every/once の誘発カウンタ (ターン内。自ターン開始でリセット)</summary>
         [JsonProperty("turnTriggerCounts", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, int>? TurnTriggerCounts { get; init; }

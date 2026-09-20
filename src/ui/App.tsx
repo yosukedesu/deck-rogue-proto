@@ -1,6 +1,6 @@
 // ui/ は状態を読んでコマンドを投げるだけの薄い層。ゲームロジックを書かない (CLAUDE.md)。
 // 見た目は静的なゲーム風UI (StS風配置・ダーク)。動く演出はやらない (CLAUDE.md「UIの見た目の方針」)。
-import { deckChooseKindOf } from '../engine/combat.ts'
+import { cardChoosesDoll, deckChooseKindOf } from '../engine/combat.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
 import { canSetCard } from '../engine/reactions/set-base.ts'
@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
@@ -522,6 +522,16 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}📯 号令: 場の人形の効果をトリガーを問わず今すぐ1回ずつ解決する（登場ごとは除く。アンセム込み） [人形${(ctx.retainers ?? 0) + 1}体（小さな人形込み）${ctx.rallyCall ? `≈与ダメ${ctx.rallyCall.damage}・ブロック${ctx.rallyCall.block}・回復${ctx.rallyCall.heal}（概算）` : ''}]`
         : `${trigger}📯 号令: 場の人形の効果をトリガーを問わず今すぐ1回ずつ解決する（登場ごとは除く。アンセム込み）`
+    case 'copyRetainer':
+      return `${trigger}🪞 人形1体を選び、同じ人形を${e.amount ?? 1}体場に出す（残りの灯りを写す・点灯する）`
+    case 'copyLastRetainer':
+      return `${trigger}🪞 最後に点灯した人形と同じ人形を${e.amount ?? 1}体場に出す（残りの灯りを写す）`
+    case 'twinNextRetainer':
+      return `${trigger}🕯️🕯️ 次に出す人形${(e.amount ?? 1) > 1 ? `${e.amount}体` : ''}が2体になる（ターンをまたいで持ち越す）`
+    case 'extendRetainerLife':
+      return `${trigger}🔥 人形1体を選び、灯りを${e.amount ?? 1}ターン継ぐ`
+    case 'persistRetainer':
+      return `${trigger}✨ 人形1体を選び、灯りが尽きなくなる`
     case 'activateEnteredRetainer':
       return `${trigger}🏇 場に出た従者はすぐに1回動く（その従者の効果＝毎ターン開始時・攻撃ごと、を登場時に1回解決。登場ごとの効果はもとから鳴る。従者以外の置物では何も起きない）`
     case 'addCardToHand':
@@ -719,6 +729,8 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.freeIfHandAll === 'spell') lines.push('手札の他の札がすべて呪文ならコスト0')
   if (def.freeIfHandAll === 'nonphysical') lines.push('手札の他の札に物理が無ければコスト0（置物・リアクション・呪文は可）')
   if (def.requiresRetainer === true) lines.push('プレイ条件: 場に従者が1体以上')
+  // 人形の灯り (2026-09-21): 寿命と火勢
+  if (def.retainer === true) lines.push(def.lifePersist === true ? '🕯️ 灯りは尽きない。火勢: 点灯してから1ターンごとにダメージとブロック+1' : `🕯️ 灯り: ${def.life ?? 3}ターン（点灯したターンを含む）。火勢: 点灯してから1ターンごとにダメージとブロック+1`)
   if (def.freeIfMomentumAtLeast !== undefined) lines.push(`勢いが${def.freeIfMomentumAtLeast}以上ならコスト0`)
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
   // 合成の触媒 / 反復内蔵 (2026-09-12)
@@ -1751,7 +1763,8 @@ function BattleScreen({
       return
     }
     // 殉教の誓い (白 2026-09-06): 破壊する従者を場から選ばせる (従者がいなければ engine が拒否する = ボタン側で先に畳む)
-    if (card.def.effects.some((e) => e.effect === 'sacrificeRetainer')) {
+    // 写し灯・継ぎ火・永遠の灯 (2026-09-21) も同じ「人形を1体選ぶ」配管 (permanentUid)
+    if (card.def.effects.some((e) => e.effect === 'sacrificeRetainer') || cardChoosesDoll(card.def)) {
       setPendingSacrifice({ cardUid, modeIndex })
       return
     }
@@ -2039,6 +2052,12 @@ function BattleScreen({
               {player.permanents.map((c) => (
                 <div key={c.uid} className={`permanent${activeSacrifice && c.def.retainer === true && c.innate !== true ? ' permanent-selectable' : ''}`}>
                   <b>{c.def.name}</b>
+                  {isDoll(c) && (
+                    <span style={{ marginLeft: 6, color: 'var(--muted)', fontSize: 11 }}>
+                      🕯 {dollLifeLeft(s, c) === null ? '灯りは尽きない' : `あと${dollLifeLeft(s, c)}ターン`}
+                      {dollGrowth(s, c) > 0 ? `・火勢+${dollGrowth(s, c)}` : ''}
+                    </span>
+                  )}
                   {activeSacrifice && c.def.retainer === true && c.innate !== true && (
                     <div style={{ marginTop: 4 }}>
                       <button

@@ -227,6 +227,7 @@ namespace DeckRogue.Engine
         {
             "searchDeck", "retrieveFromDiscard", "upgradeInHand", "upgradeAllInHand", "gainMaxHp", "addCopyToDiscard", "exhaustFromDeckChoose",
             "retrieveFromExhaust", "playFromExhaust", "gainSetSlot", "sacrificeRetainer", "duplicateRetainers", "triggerRetainersNow",
+            "copyRetainer", "extendRetainerLife", "persistRetainer", "twinNextRetainer", "copyLastRetainer", // 人形の灯り (2026-09-21)
         };
 
         private static readonly HashSet<string> DIES_IN_WINDOW = new HashSet<string>
@@ -762,6 +763,11 @@ namespace DeckRogue.Engine
                     : (int?)null, // 灯コストは合算 (捨て・消滅コストと同じ。白 2026-09-20)
                 // 人形は溶かしても人形 (2026-09-20 灯と人形の結び): 素材のどちらかが人形で結果が置物なら retainer を継承。TS と同形
                 Retainer = ((a.Def.Retainer == true || b.Def.Retainer == true) && resultType == "permanent") ? true : (bool?)null,
+                // 灯り (2026-09-21): 人形×人形は長い方の寿命・どちらかが期限なしなら期限なし。人形×道具は人形側の寿命。TS と同形
+                LifePersist = ((a.Def.Retainer == true || b.Def.Retainer == true) && resultType == "permanent" && (a.Def.LifePersist == true || b.Def.LifePersist == true)) ? true : (bool?)null,
+                Life = ((a.Def.Retainer == true || b.Def.Retainer == true) && resultType == "permanent" && !(a.Def.LifePersist == true || b.Def.LifePersist == true))
+                    ? Math.Max(a.Def.Retainer == true ? (a.Def.Life ?? 3) : 0, b.Def.Retainer == true ? (b.Def.Life ?? 3) : 0)
+                    : (int?)null,
                 NecroCost = necroCost,
                 FreeIfHandAllPhysical = freeIfPhysical ? true : (bool?)null,
                 FreeIfHandAll = freeIfHandAll,

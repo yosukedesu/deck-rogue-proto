@@ -24,6 +24,8 @@ namespace DeckRogue.Game
         public int HandNeed;
         public bool NeedRetrieve;
         public bool NeedSacrifice;
+        /// <summary>「人形を1体選ぶ」札 (写し灯・継ぎ火・永遠の灯 2026-09-21): 殉教と同じ配管 (permanentUid)</summary>
+        public bool NeedDoll;
         public bool NeedsTarget;
         public string DeckKind;
 
@@ -43,7 +45,7 @@ namespace DeckRogue.Game
             if (NeedRetrieve && RetrieveUid == null) return "retrieve";
             if (DeckSel.Count < DeckNeed) return "deck";
             if (HandSel.Count < HandNeed) return "hand";
-            if (NeedSacrifice && PermanentUid == null) return "permanent";
+            if ((NeedSacrifice || NeedDoll) && PermanentUid == null) return "permanent";
             if (NeedsTarget && !TargetIndex.HasValue) return "target";
             return null;
         }
@@ -338,6 +340,24 @@ namespace DeckRogue.Game
             Do(new RunCommand_Combat { Command = cmd });
         }
 
+        /// <summary>火種を全部撃つ (2026-09-21 【G】): 手札の火種 (0E・消滅・1ドロー・灯+1) を1枚ずつプレイする。引いた火種も続けて撃つ (手札に火種が無くなるまで。上限12枚)。自動プレイではない (押した時だけ)</summary>
+        public void PlayAllSparks()
+        {
+            var st = Rs != null ? Rs.Combat : null;
+            if (st == null || st.Phase != CombatPhases.PlayerTurn || Pending != null) return;
+            for (int guard = 0; guard < 12; guard++)
+            {
+                st = Rs != null ? Rs.Combat : null;
+                if (st == null || st.Phase != CombatPhases.PlayerTurn) return;
+                CardInstance spark = null;
+                foreach (var c in st.Player.Hand) if (c.Def.SparkToken == true) { spark = c; break; }
+                if (spark == null) return;
+                if (Battle != null) { Battle.LastPlayedUid = spark.Uid; Battle.LastPlayedTarget = PreferredTarget; }
+                DoCombat(new Command_PlayCard { CardUid = spark.Uid });
+                if (Error != null) return;
+            }
+        }
+
         public void StartRun()
         {
             Doodles = new Dictionary<int, List<DoodleStroke>>(); DoodleMode = false; DoodlePen = 0;   // 落書きは新しいランで白紙 (ランの間は保持)
@@ -531,6 +551,7 @@ namespace DeckRogue.Game
                 if (e.Effect == "retrieveFromExhaust" || e.Effect == "playFromExhaust") p.NeedRetrieve = true;
                 if (e.Effect == "sacrificeRetainer" && e.Trigger == "onPlay") p.NeedSacrifice = true;
             }
+            if (DollUi.CardChoosesDoll(card.Def)) p.NeedDoll = true;   // 写し灯・継ぎ火・永遠の灯 (2026-09-21)
 
             p.DeckKind = Combat.DeckChooseKindOf(card.Def);
             if (p.DeckKind != null)
@@ -619,6 +640,14 @@ namespace DeckRogue.Game
         {
             if (Pending != null && Pending.NextNeed() == "permanent")
             {
+                // 期限なしの人形に継ぎ火・永遠の灯は選べない (2026-09-21 人形の灯り): 押しても何も起きない (足元の輪も出ない)
+                var st = Rs != null ? Rs.Combat : null;
+                if (st != null && Pending.Card != null)
+                {
+                    CardInstance target = null;
+                    foreach (var p in st.Player.Permanents) if (p.Uid == uid) { target = p; break; }
+                    if (target != null && !DollUi.Eligible(st, Pending.Card.Def, target)) { Notice = "灯りが尽きない人形には使えない"; Rebuild(); return; }
+                }
                 Pending.PermanentUid = uid;
                 SubmitIfReady();
                 return;

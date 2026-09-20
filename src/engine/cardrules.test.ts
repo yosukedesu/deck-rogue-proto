@@ -152,6 +152,19 @@ describe('カードデータの不変条件', () => {
     const bad = allCards.filter((c) => (c.lightCost ?? 0) > 0 && c.color !== 'white')
     expect(bad.map((c) => c.name)).toEqual([])
   })
+
+  it('人形 (retainer) は灯り (life 1以上) か期限なし (lifePersist) を持つ (2026-09-21 人形の灯り)。人形でない札は持たない', () => {
+    const noLife = allCards.filter((c) => c.retainer === true && !(c.lifePersist === true || (c.life ?? 0) >= 1))
+    expect(noLife.map((c) => c.name)).toEqual([])
+    const stray = allCards.filter((c) => c.retainer !== true && (c.life !== undefined || c.lifePersist !== undefined))
+    expect(stray.map((c) => c.name)).toEqual([])
+    // 段: 小さな人形2・1E の人形3・灯コストつき4・篝火は期限なし (提案書 §3-1)
+    const life = (id: string) => allCards.find((c) => c.id === id)?.life
+    expect(life('white_perm_page')).toBe(2)
+    expect(life('white_perm_squire')).toBe(3)
+    expect(life('white_perm_choir')).toBe(4)
+    expect(allCards.find((c) => c.id === 'white_perm_bonfire')?.lifePersist).toBe(true)
+  })
 })
 
 describe('基本札の上位互換サイクル (2026-08-27。確定済みルール表「報酬プールの下限」)', () => {

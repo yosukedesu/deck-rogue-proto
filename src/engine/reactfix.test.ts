@@ -87,8 +87,8 @@ describe('弱体の下限 (チップダメージが消えない)', () => {
     const hpBefore = s.enemies[0].hp
     s = withIntent(s, { kind: 'attack', actual: 3 })
     s = applyCommand(s, { type: 'EndTurn' })
-    // 従者の2ダメは floor(2*0.75)=1 に減るが 0 にはならない
-    expect(s.enemies[0].hp).toBe(hpBefore - 1)
+    // 従者の4ダメ (剣3+育ち1) は floor(4*0.75)=3 に減る (1ダメの下限は別テスト)
+    expect(s.enemies[0].hp).toBe(hpBefore - 3)
   })
 })
 

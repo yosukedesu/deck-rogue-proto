@@ -1046,6 +1046,15 @@ namespace DeckRogue.Engine
                 sacrificed = t;
             }
 
+            // 「人形1体を選ぶ」札 (写し灯・継ぎ火・永遠の灯 2026-09-21): 同じ欄 (permanentUid) で選ぶ。効果の解決は ChosenPermanentUid を読む
+            bool choosesDoll = CardChoosesDoll(card.Def);
+            if (choosesDoll)
+            {
+                if (permanentUid == null) throw new InvalidOperationException($"{card.Def.Name} は人形 (permanentUid) の指定が必要");
+                var t = state.Player.Permanents.FirstOrDefault(p => p.Uid == permanentUid);
+                if (t == null || !Effects.IsDoll(t)) throw new InvalidOperationException($"人形ではない、または場に無い置物: {permanentUid}");
+            }
+
             // StS式ターゲティング: 生存2体以上で単体対象カードは targetIndex 必須。生存1体なら自動
             int aliveCount = state.Enemies.Count(e => e.Hp > 0);
             if (targetIndex != null)
@@ -1210,6 +1219,7 @@ namespace DeckRogue.Engine
             }
             // 反復内蔵 (反復の触媒の合成札 2026-09-12): 反復トークンとは加算 (両方なら3回)
             int echoPasses = 1 + (echoed ? 1 : 0) + (card.Def.Echo == true ? 1 : 0);
+            if (choosesDoll) s = s with { ChosenPermanentUid = permanentUid };
             for (int echoPass = 0; echoPass < echoPasses; echoPass++)
             {
                 if (chosenMode != null)
@@ -1233,6 +1243,7 @@ namespace DeckRogue.Engine
                     s = Effects.ResolveOnPlayEffects(s, effCard, enemyIndex);
                 }
             }
+            if (choosesDoll) s = s with { ChosenPermanentUid = null };
             // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
             var resolvedEffects = new List<DeclarativeEffect>();
             for (int i = 0; i < effCard.Def.Effects.Count; i++) if (effCard.Def.Effects[i].Trigger == "onPlay") resolvedEffects.Add(effCard.Def.Effects[i]);
@@ -2178,6 +2189,14 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>罠モデル (2026-09-13): 期限切れ (齢3以上・期限なしの札は除く) の罠を伏せ場から外す</summary>
+        /// <summary>「人形1体を選ぶ」札 (2026-09-21): PlayCard.permanentUid が要る onPlay 効果 (殉教の誓いは別配管)。TS DOLL_CHOICE_EFFECTS / cardChoosesDoll</summary>
+        public static readonly HashSet<string> DOLL_CHOICE_EFFECTS = new HashSet<string> { "copyRetainer", "extendRetainerLife", "persistRetainer" };
+        public static bool CardChoosesDoll(CardDef def)
+        {
+            foreach (var e in def.Effects) if (e.Trigger == "onPlay" && DOLL_CHOICE_EFFECTS.Contains(e.Effect)) return true;
+            return false;
+        }
+
         private static GameState ExpireTraps(GameState state)
         {
             var expired = state.Player.SetCards
@@ -2244,6 +2263,8 @@ namespace DeckRogue.Engine
             var handBeforeExpire = new HashSet<string>(s.Player.Hand.Select(c => c.Uid));
             s = ExpireTraps(s);
             if (s.Phase == CombatPhases.Won || s.Phase == CombatPhases.Lost) return s;
+            // 人形の灯り (2026-09-21): 寿命の最後のターンの敵フェーズが終わると人形が消える (罠と同じ数え方)
+            s = Effects.ExpireRetainers(s);
             // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る。
             // ただしこのフェーズに付与された分は減らさない (justAppliedガード)
             s = s with

@@ -12,11 +12,11 @@ describe('トークン破壊 (敵メカニクス第1号)', () => {
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_muster' })
-    expect(s.player.permanents.filter((p) => p.token)).toHaveLength(2)
+    expect(s.player.permanents.filter((p) => p.token)).toHaveLength(3)
     // トークン破壊の意図を細工して実行
     s = withIntent(s, { kind: 'destroy-token', actual: 0 })
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.player.permanents.filter((p) => p.token)).toHaveLength(1) // 1体破壊された
+    expect(s.player.permanents.filter((p) => p.token)).toHaveLength(2) // 3体のうち1体破壊された
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(true)
   })
 

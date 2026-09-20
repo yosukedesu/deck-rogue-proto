@@ -418,7 +418,10 @@ namespace DeckRogue.Game
         public class DollInfo : MonoBehaviour { public string CardId; public int Order; }
 
         /// <summary>灯が消える (人形壊し・灯の捧げ): 光が抜けて灰になり、頭から崩れる (倒れた敵と同じ _Dissolve)。以後の組み直しでは描かない</summary>
-        public void KillDoll(GameRoot g, string uid, bool sacrificed)
+        public void KillDoll(GameRoot g, string uid, bool sacrificed) { KillDoll(g, uid, sacrificed, null); }
+
+        /// <summary>stamp=判の文言を差し替える (灯りが尽きた「灯が尽きた」2026-09-21。null なら壊し/捧げの既定)</summary>
+        public void KillDoll(GameRoot g, string uid, bool sacrificed, string stamp)
         {
             if (uid == null || _dollGone.Contains(uid)) return;
             _dollGone.Add(uid);
@@ -439,7 +442,7 @@ namespace DeckRogue.Game
             if (fx != null)
             {
                 var c = Tween.CenterIn(srt, fx); float hh = srt.rect.height;
-                Tween.Stamp(fx, c + new Vector2(0f, hh * 0.55f + 14f), sacrificed ? "捧げた" : "灯が消えた", sacrificed ? PaperFx.BrassLight : new Color(0.85f, 0.83f, 0.8f, 1f), sacrificed ? PaperFx.BrassInk : PaperFx.InkSoft, sacrificed ? PaperFx.Brass : new Color(0.54f, 0.53f, 0.5f, 1f), 16, 0.7f, -6f);
+                Tween.Stamp(fx, c + new Vector2(0f, hh * 0.55f + 14f), stamp ?? (sacrificed ? "捧げた" : "灯が消えた"), sacrificed ? PaperFx.BrassLight : new Color(0.85f, 0.83f, 0.8f, 1f), sacrificed ? PaperFx.BrassInk : PaperFx.InkSoft, sacrificed ? PaperFx.Brass : new Color(0.54f, 0.53f, 0.5f, 1f), 16, 0.7f, -6f);
             }
             Tween.After(0.1f, () =>
             {

@@ -222,7 +222,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     resultType === 'reaction'
       ? (domi.def.effects.find((e) => REACTION_WINDOWS.has(e.trigger))?.trigger ?? 'onAttacked')
       : 'onPlay'
-  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'upgradeAllInHand', 'gainMaxHp', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow'])
+  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'upgradeAllInHand', 'gainMaxHp', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow', 'copyRetainer', 'extendRetainerLife', 'persistRetainer', 'twinNextRetainer', 'copyLastRetainer'])
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
   const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn', 'dischargeLight', 'dischargeLightRally', 'doubleLight'])
   // 落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)
@@ -471,6 +471,12 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     // 人形は溶かしても人形 (2026-09-20 灯と人形の結び): 素材のどちらかが人形で結果が置物なら retainer を継承する
     // (点灯・号令・従者狩りの対象のまま。旧: 真・剣の人形が道具になり、灯コストだけ払って点灯しない置物ができていた)
     ...((a.def.retainer === true || b.def.retainer === true) && resultType === 'permanent' ? { retainer: true } : {}),
+    // 灯り (2026-09-21): 人形×人形は長い方の寿命・どちらかが期限なしなら期限なし。人形×道具は人形側の寿命
+    ...((a.def.retainer === true || b.def.retainer === true) && resultType === 'permanent'
+      ? a.def.lifePersist === true || b.def.lifePersist === true
+        ? { lifePersist: true }
+        : { life: Math.max(a.def.retainer === true ? (a.def.life ?? 3) : 0, b.def.retainer === true ? (b.def.life ?? 3) : 0) }
+      : {}),
     ...(necroCost !== undefined ? { necroCost } : {}),
     ...(freeIfPhysical ? { freeIfHandAllPhysical: true } : {}),
     ...(freeIfHandAll !== undefined ? { freeIfHandAll } : {}),

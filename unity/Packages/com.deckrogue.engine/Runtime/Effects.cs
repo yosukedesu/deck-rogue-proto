@@ -307,6 +307,111 @@ namespace DeckRogue.Engine
         /// <summary>アンセム (blessRetainers) が底上げする従者の効果 = ダメージ・ブロック・回復の量だけ (2026-09-20 夜 裁定)。TS ANTHEM_EFFECTS</summary>
         public static readonly HashSet<string> ANTHEM_EFFECTS = new HashSet<string> { "dealDamage", "dealDamageRandom", "dealDamageCleave", "dealDamageDrain", "gainBlock", "gainIceBlock", "gainHp" };
 
+        /// <summary>人形の灯り＝寿命と育ち (2026-09-21)。育ちが乗るのは人形のダメージとブロックの量だけ (回復・灯・率・ドローは育たない)。TS DOLL_GROWTH_EFFECTS</summary>
+        public static readonly HashSet<string> DOLL_GROWTH_EFFECTS = new HashSet<string> { "dealDamage", "dealDamageRandom", "dealDamageCleave", "gainBlock" };
+        /// <summary>人形 = 従者 (retainer) で生得 (innate) でない置物。TS isDoll</summary>
+        public static bool IsDoll(CardInstance p) => p.Def.Retainer == true && p.Innate != true;
+        /// <summary>齢 = 場に出てから経ったターン数 (点灯したターンは0)。enteredTurn が無い人形は0。TS dollAge</summary>
+        public static int DollAge(GameState state, CardInstance p) => p.EnteredTurn == null ? 0 : Math.Max(0, state.Turn - p.EnteredTurn.Value);
+        /// <summary>寿命の合計 (life+継ぎ火)。期限なしは null。life 未指定の人形は3。TS dollLifeTotal</summary>
+        public static int? DollLifeTotal(CardInstance p)
+        {
+            if (p.LifePersist == true || p.Def.LifePersist == true) return null;
+            return (p.Def.Life ?? 3) + (p.LifeBonus ?? 0);
+        }
+        /// <summary>残りのターン数 (今のターンを含む)。期限なしは null。TS dollLifeLeft</summary>
+        public static int? DollLifeLeft(GameState state, CardInstance p)
+        {
+            var total = DollLifeTotal(p);
+            return total == null ? (int?)null : Math.Max(0, total.Value - DollAge(state, p));
+        }
+        /// <summary>育ち = 人形なら齢ぶん。TS dollGrowth</summary>
+        public static int DollGrowth(GameState state, CardInstance p) => IsDoll(p) ? DollAge(state, p) : 0;
+        /// <summary>人形の効果の「いまの量」= 素の量 + アンセム + 育ち。TS dollEffectAmount</summary>
+        public static int? DollEffectAmount(GameState state, CardInstance p, DeclarativeEffect e, int anthem)
+        {
+            if (e.Amount == null) return null;
+            if (p.Def.Retainer != true) return e.Amount;
+            int a = anthem > 0 && ANTHEM_EFFECTS.Contains(e.Effect) ? anthem : 0;
+            int g = DOLL_GROWTH_EFFECTS.Contains(e.Effect) ? DollGrowth(state, p) : 0;
+            return e.Amount.Value + a + g;
+        }
+        /// <summary>場のアンセム (blessRetainers) の合計。TS anthemTotal</summary>
+        public static int AnthemTotal(GameState state)
+        {
+            int n = 0;
+            foreach (var p in state.Player.Permanents) foreach (var e in p.Def.Effects) if (e.Effect == "blessRetainers") n += e.Amount ?? 0;
+            return n;
+        }
+        /// <summary>
+        /// 号令・大行列の予告 (表示専用の純関数。TS rallyPreview と同形): 場の人形 (齢ぶん育ち込み) と extraIds (これから出る=育ち0) が1回ずつ動いた時の与ダメ・ブロック・回復。
+        /// </summary>
+        public static (int Count, int Damage, int Block, int Heal) RallyPreview(GameState state, int lightAfter, IReadOnlyList<string>? extraIds = null)
+        {
+            int anthem = AnthemTotal(state);
+            var dolls = new List<CardInstance>();
+            foreach (var p in state.Player.Permanents) if (IsDoll(p)) dolls.Add(p);
+            if (extraIds != null) for (int i = 0; i < extraIds.Count; i++) dolls.Add(new CardInstance { Uid = $"preview_{i}", Def = Content.GetCardDef(extraIds[i]), Token = true, EnteredTurn = state.Turn });
+            int damage = 0, block = 0, heal = 0;
+            int alive = Math.Max(1, state.Enemies.Count(e => e.Hp > 0));
+            foreach (var p in dolls)
+            {
+                foreach (var e in p.Def.Effects)
+                {
+                    if (e.Trigger == "onPermanentEntered" || e.Trigger == "onPlay") continue;
+                    int amount = DollEffectAmount(state, p, e, anthem) ?? 0;
+                    int aoe = e.Target == "all" ? alive : 1;
+                    if (e.Effect == "dealDamage") damage += PlayerDamageAfterModifiers(state, amount) * aoe;
+                    else if (e.Effect == "dealDamagePerLight")
+                    {
+                        int lit = (Math.Max(0, lightAfter) / 2) * (e.Amount ?? 1);
+                        if (lit > 0) damage += PlayerDamageAfterModifiers(state, lit) * aoe;
+                    }
+                    else if (e.Effect == "gainBlock") block += amount;
+                    else if (e.Effect == "gainHp") heal += amount;
+                }
+            }
+            return (dolls.Count, damage, block, heal);
+        }
+        /// <summary>召喚トークンの uid (2026-09-21): 通し番号 (GameState.summonSeq)。場を離れる置物があっても衝突しない。TS newSummonUid</summary>
+        public static (GameState State, string Uid) NewSummonUid(GameState state, string id)
+        {
+            int n = state.SummonSeq ?? 0;
+            return (state with { SummonSeq = n + 1 }, $"summon_s{n}_{id}");
+        }
+        /// <summary>人形のコピーを1体場に出す (写し灯・鏡の灯籠・二重の点灯 2026-09-21): 残り寿命を写し、点灯する。TS copyDoll</summary>
+        private static GameState CopyDoll(GameState state0, CardInstance src, int enemyIndex, bool noTwin)
+        {
+            var (state, uid) = NewSummonUid(state0, src.Def.Id);
+            var token = new CardInstance
+            {
+                Uid = uid,
+                Def = src.Def,
+                Token = true,
+                EnteredTurn = src.EnteredTurn,
+                LifeBonus = src.LifeBonus,
+                LifePersist = src.LifePersist == true ? true : (bool?)null,
+            };
+            GameState s = state with { Player = state.Player with { Permanents = state.Player.Permanents.Concat(new[] { token }).ToList() } };
+            s = Events.Emit(s, new GameEvent_RetainerCopied { CardId = src.Def.Id, Uid = token.Uid, FromUid = src.Uid });
+            return EnterPermanent(s, token.Uid, enemyIndex, null, noTwin);
+        }
+        /// <summary>灯りが尽きた人形を場から外す (2026-09-21): 敵フェーズ終端に 齢 ≥ 寿命−1 の人形が消える。人形壊しの誘発は鳴らない。TS expireRetainers</summary>
+        public static GameState ExpireRetainers(GameState state)
+        {
+            var gone = new List<CardInstance>();
+            foreach (var p in state.Player.Permanents)
+            {
+                if (!IsDoll(p)) continue;
+                var total = DollLifeTotal(p);
+                if (total != null && DollAge(state, p) >= total.Value - 1) gone.Add(p);
+            }
+            if (gone.Count == 0) return state;
+            GameState s = state with { Player = state.Player with { Permanents = state.Player.Permanents.Where(p => !gone.Contains(p)).ToList() } };
+            foreach (var p in gone) s = Events.Emit(s, new GameEvent_RetainerExpired { CardId = p.Def.Id, Uid = p.Uid });
+            return s;
+        }
+
         public static GameState RunPermanentTriggers(
             GameState state,
             string trigger,
@@ -356,10 +461,9 @@ namespace DeckRogue.Engine
                             if (!fires) continue;
                         }
                         // アンセムが乗るのはダメージ・ブロック・回復の量だけ (2026-09-20 夜 裁定。TS ANTHEM_EFFECTS と同形)
-                        var boosted =
-                            anthem > 0 && permanent.Def.Retainer == true && effect.Amount != null && ANTHEM_EFFECTS.Contains(effect.Effect)
-                                ? effect with { Amount = effect.Amount + anthem }
-                                : effect;
+                        // 育ち (2026-09-21): 人形のダメージ・ブロックは齢ぶん増える (DOLL_GROWTH_EFFECTS)。TS と同形 (state で齢を読む)
+                        int? liveAmount = DollEffectAmount(state, permanent, effect, anthem);
+                        var boosted = liveAmount != null && liveAmount != effect.Amount ? effect with { Amount = liveAmount } : effect;
                         // innate置物 (リーダーパッシブ・レリック) の解決中は鬼軍曹の怒りを立てない (2026-08-31)
                         bool isInnate = permanent.Innate == true;
                         // 誰の誘発かを出来事に載せる (人形の盤面表示 2026-09-19: DamageDealt/BlockGained/HpHealed の sourceUid)。ルールは読まない
@@ -435,11 +539,19 @@ namespace DeckRogue.Engine
         /// 人形 (retainer・innate除く) なら点灯の定義 (白共通ルール 2026-09-20。旧・ひなたの駆けつけの格上げ):
         /// ①灯+1 ②その人形の効果 (登場ごとを除く全トリガー) をすぐに1回ずつ解決。1登場=1回。TS enterPermanent と同形
         /// </summary>
-        public static GameState EnterPermanent(GameState state, string uid, int enemyIndex, Func<CardInstance, bool>? only = null)
+        public static GameState EnterPermanent(GameState state, string uid, int enemyIndex, Func<CardInstance, bool>? only = null, bool noTwin = false)
         {
-            CardInstance? entered = state.Player.Permanents.FirstOrDefault(p => p.Uid == uid);
-            if (entered == null) return state;
+            CardInstance? entered0 = state.Player.Permanents.FirstOrDefault(p => p.Uid == uid);
+            if (entered0 == null) return state;
             GameState s = state with { LastEnteredPermanentUid = uid };
+            // 灯り (2026-09-21): 人形は場に出たターンを覚える。コピーは元の値を持って入るので上書きしない
+            if (IsDoll(entered0) && entered0.EnteredTurn == null)
+            {
+                var perms = new List<CardInstance>(s.Player.Permanents.Count);
+                foreach (var p in s.Player.Permanents) perms.Add(p.Uid == uid ? p with { EnteredTurn = state.Turn } : p);
+                s = s with { Player = s.Player with { Permanents = perms } };
+            }
+            CardInstance entered = s.Player.Permanents.FirstOrDefault(p => p.Uid == uid) ?? entered0;
             s = Events.Emit(s, new GameEvent_PermanentPlayed { CardId = entered.Def.Id });
             s = RunPermanentTriggers(s, "onPermanentEntered", enemyIndex, only);
             if (entered.Def.Retainer != true || entered.Innate == true) return s;
@@ -447,9 +559,20 @@ namespace DeckRogue.Engine
             var triggers = new List<string>();
             // onPlay は PlayCard が解決済み (工房産の人形が持ちうる) = 点灯では回さない
             foreach (var e in entered.Def.Effects) if (e.Trigger != "onPermanentEntered" && e.Trigger != "onPlay" && !triggers.Contains(e.Trigger)) triggers.Add(e.Trigger);
-            if (triggers.Count == 0) return s; // 登場ごとの効果しか持たない人形 (鐘・大鐘) は二重にしない
-            foreach (var tr in triggers) s = RunPermanentTriggers(s, tr, enemyIndex, p => p.Uid == uid);
-            return Events.Emit(s, new GameEvent_RetainerRushed { CardId = entered.Def.Id });
+            if (triggers.Count > 0)
+            {
+                // 登場ごとの効果しか持たない人形 (鐘・大鐘) は二重にしない
+                foreach (var tr in triggers) s = RunPermanentTriggers(s, tr, enemyIndex, p => p.Uid == uid);
+                s = Events.Emit(s, new GameEvent_RetainerRushed { CardId = entered.Def.Id });
+            }
+            // 二重の点灯 (2026-09-21): 次に出る人形が2体になる。片割れは同じ残り寿命で出て点灯する (片割れはもう倍にしない)
+            if (!noTwin && (s.NextRetainerTwin ?? 0) > 0)
+            {
+                s = s with { NextRetainerTwin = (s.NextRetainerTwin ?? 0) - 1 };
+                var src = s.Player.Permanents.FirstOrDefault(p => p.Uid == uid);
+                if (src != null) s = CopyDoll(s, src, enemyIndex, true);
+            }
+            return s;
         }
 
         /// <summary>号令 (白 2026-09-20): 場の人形の効果をトリガーを問わず (登場ごとを除く) 今すぐ1回ずつ解決。TS rallyRetainers と同形</summary>
@@ -1748,11 +1871,17 @@ namespace DeckRogue.Engine
                     var batch = new HashSet<string>();
                     foreach (var src in snapshot)
                     {
+                        // 残り寿命を写す (2026-09-21 灯り): 早く撃つほど得
+                        var (s2, uid) = NewSummonUid(s, src.Def.Id);
+                        s = s2;
                         var token = new CardInstance
                         {
-                            Uid = $"summon_p{s.Player.Permanents.Count}_{src.Def.Id}",
+                            Uid = uid,
                             Def = src.Def,
                             Token = true,
+                            EnteredTurn = src.EnteredTurn,
+                            LifeBonus = src.LifeBonus,
+                            LifePersist = src.LifePersist == true ? true : (bool?)null,
                         };
                         batch.Add(token.Uid);
                         s = s with { Player = s.Player with { Permanents = s.Player.Permanents.Concat(new[] { token }).ToList() } };
@@ -1772,6 +1901,49 @@ namespace DeckRogue.Engine
                     // この効果は旧セーブ (ひなたのパッシブに残る) との互換のための no-op。TS effects.ts と同じ
                     return state;
                 }
+                case "copyRetainer":
+                {
+                    // 写し灯 (白 2026-09-21): PlayCard.permanentUid で選んだ人形 (ChosenPermanentUid) を amount 体コピー。残り寿命を写す
+                    var src = state.Player.Permanents.FirstOrDefault(p => p.Uid == state.ChosenPermanentUid && IsDoll(p));
+                    if (src == null) return state;
+                    GameState s = state;
+                    for (int i = 0; i < (effect.Amount ?? 1); i++) s = CopyDoll(s, src, enemyIndex, false);
+                    return s;
+                }
+                case "copyLastRetainer":
+                {
+                    // 鏡の灯籠 (白 2026-09-21): 最後に点灯した (場に出た順で最後の) 人形を amount 体コピー
+                    CardInstance? src = null;
+                    foreach (var p in state.Player.Permanents) if (IsDoll(p)) src = p;
+                    if (src == null) return state;
+                    GameState s = state;
+                    for (int i = 0; i < (effect.Amount ?? 1); i++) s = CopyDoll(s, src, enemyIndex, false);
+                    return s;
+                }
+                case "twinNextRetainer":
+                    // 二重の点灯 (白 2026-09-21): 次に出る人形 amount 体がそれぞれ2体になる (持ち越す)
+                    return state with { NextRetainerTwin = (state.NextRetainerTwin ?? 0) + (effect.Amount ?? 1) };
+                case "extendRetainerLife":
+                {
+                    // 継ぎ火 (白 2026-09-21): 選んだ人形の灯りを amount ターン継ぐ。期限なしの人形には何も起きない
+                    var src = state.Player.Permanents.FirstOrDefault(p => p.Uid == state.ChosenPermanentUid && IsDoll(p));
+                    if (src == null || DollLifeTotal(src) == null) return state;
+                    int n = effect.Amount ?? 1;
+                    var perms = new List<CardInstance>(state.Player.Permanents.Count);
+                    foreach (var p in state.Player.Permanents) perms.Add(p.Uid == src.Uid ? p with { LifeBonus = (p.LifeBonus ?? 0) + n } : p);
+                    GameState s = state with { Player = state.Player with { Permanents = perms } };
+                    return Events.Emit(s, new GameEvent_RetainerLifeExtended { CardId = src.Def.Id, Uid = src.Uid, Amount = n });
+                }
+                case "persistRetainer":
+                {
+                    // 永遠の灯 (白 2026-09-21): 選んだ人形の灯りが尽きなくなる (育ちは続く)
+                    var src = state.Player.Permanents.FirstOrDefault(p => p.Uid == state.ChosenPermanentUid && IsDoll(p));
+                    if (src == null || DollLifeTotal(src) == null) return state;
+                    var perms = new List<CardInstance>(state.Player.Permanents.Count);
+                    foreach (var p in state.Player.Permanents) perms.Add(p.Uid == src.Uid ? p with { LifePersist = true } : p);
+                    GameState s = state with { Player = state.Player with { Permanents = perms } };
+                    return Events.Emit(s, new GameEvent_RetainerLifeExtended { CardId = src.Def.Id, Uid = src.Uid, Amount = 0, Persist = true });
+                }
                 case "triggerRetainersNow":
                 {
                     // 点灯の合図 (2026-09-20 白の再設計で号令の中核 C1E・灯2): 人形の効果をトリガーを問わず (登場ごとを除く) 今すぐ1回ずつ
@@ -1786,10 +1958,12 @@ namespace DeckRogue.Engine
                     GameState s = state;
                     for (int i = 0; i < (effect.Amount ?? 1); i++)
                     {
-                        // token: true = 敵の「トークン破壊」の対象になる
+                        // token: true = 敵の「トークン破壊」の対象になる。uid は通し番号 (2026-09-21 summonSeq)
+                        var (s2, uid) = NewSummonUid(s, def.Id);
+                        s = s2;
                         var token = new CardInstance
                         {
-                            Uid = $"summon_p{s.Player.Permanents.Count}_{def.Id}",
+                            Uid = uid,
                             Def = def,
                             Token = true,
                         };

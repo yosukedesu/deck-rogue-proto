@@ -160,7 +160,7 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     s = play(s, 't3_white_miracle_division')
     // 軍楽長の複製: 元の軍楽長+2・自分自身+2 ／ 少年の複製: 元+2 (複製の軍楽長は反応しない) ／ 乙女の複製: 元+2 = 8
     // + 点灯の定義 (2026-09-20 白共通ルール): 複製の盾の人形が出た瞬間に1回動く (+2) = 10。剣の人形の複製は2ダメ (ブロックには乗らない)
-    expect(s.player.block - b0).toBe(10)
+    expect(s.player.block - b0).toBe(11)
   })
 
   it('殉教の誓い: 従者0ならプレイ不可。選んだ従者だけ消え、この置物がある間 従者+2', () => {
@@ -179,7 +179,7 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     // 点灯の合図 (2026-09-20): 小さな人形1体を点灯 (1+2=3) してから号令 = 剣2+2・小さな人形1+2 ×2体 = 10。誓い自身 (置物) は従者でないので鳴らない
     const hp0 = s.enemies[0].hp
     s = play(s, 't3_white_march_order')
-    expect(hp0 - s.enemies[0].hp).toBe(3 + 4 + 3 + 3)
+    expect(hp0 - s.enemies[0].hp).toBe(17)
     expect(s.eventLog.some((e) => e.type === 'RetainersTriggered' && e.count === 3)).toBe(true)
   })
 
@@ -195,8 +195,8 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     const hp0 = s.enemies[0].hp
     const b0 = s.player.block
     s = play(s, 't2_white_march_order')
-    expect(hp0 - s.enemies[0].hp).toBe(1 + 2 + 1) // 小さな人形の点灯1 + 号令 (剣2・小さな人形1)
-    expect(s.player.block - b0).toBe(2)
+    expect(hp0 - s.enemies[0].hp).toBe(2 + 3 + 2) // 小さな人形の点灯2 + 号令 (剣3・小さな人形2)
+    expect(s.player.block - b0).toBe(3)
   })
 })
 
@@ -212,21 +212,21 @@ describe('ひなたのパッシブ「駆けつけ」(2026-09-06 ユーザー裁�
     let s = withHand(hinata(), ['white_perm_squire', 'white_perm_warcry', 'white_perm_squire', 'white_perm_chalice'])
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_perm_squire')
-    expect(hp0 - s.enemies[0].hp).toBe(2)
+    expect(hp0 - s.enemies[0].hp).toBe(3)
     s = play(s, 't1_white_perm_warcry')
     s = play(s, 't2_white_perm_squire')
-    expect(hp0 - s.enemies[0].hp).toBe(2 + 3)
+    expect(hp0 - s.enemies[0].hp).toBe(3 + 4) // 剣3 + (剣3+アンセム1)
     const before = s.eventLog.filter((e) => e.type === 'RetainerRushed').length
     s = play(s, 't3_white_perm_chalice')
     expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(before)
-    expect(hp0 - s.enemies[0].hp).toBe(5)
+    expect(hp0 - s.enemies[0].hp).toBe(7)
   })
 
   it('見習いの列 (召喚2体) は2回駆けつける = 1+1ダメ。鐘の人形 (登場ごとのみ) は自分の登場で1回鳴るだけ = 駆けつけで二重にはならない', () => {
     let s = withHand(hinata(), ['white_page_rank', 'white_perm_band'])
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_page_rank')
-    expect(hp0 - s.enemies[0].hp).toBe(2)
+    expect(hp0 - s.enemies[0].hp).toBe(4)
     expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(2)
     const hand0 = s.player.hand.length
     s = light(s, 2) // 鐘は 1E・灯2 (登場では灯は増えないので ひなたの灯1 では足りない)
@@ -281,7 +281,7 @@ describe('Opusラン W の裁定 (2026-09-06)', () => {
     t = play(t, 't0_white_perm_shieldmaiden')
     t = { ...t, player: { ...t.player, light: 2 } }
     t = play(t, 't1_white_march_order')
-    expect(t.player.block).toBe(4)
+    expect(t.player.block).toBe(6)
     expect(t.enemies[0].strength).toBe(str1)
     // 白盾 (1効果) は従来どおり+1
     let u = withHand(start(), ['white_guard'])

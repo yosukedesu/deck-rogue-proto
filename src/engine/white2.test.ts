@@ -13,10 +13,10 @@ describe('召喚 (トークン再現)', () => {
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_muster' })
-    expect(s.player.permanents).toHaveLength(2)
+    expect(s.player.permanents).toHaveLength(3)
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_rally' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 8) // 置物2×4
+    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 置物3×4
   })
 
   it('召喚された従者は毎ターン開始時に自動攻撃する (本体と同じ挙動)', () => {
@@ -28,7 +28,7 @@ describe('召喚 (トークン再現)', () => {
     s = withIntent(s, attackIntent(3))
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 4) // 従者2体×2ダメ
+    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 従者3体×(3+育ち1)
   })
 })
 
@@ -62,7 +62,7 @@ describe('置物登場の誘発 (白の接着剤)', () => {
     // 人形の打点はランダムな生存敵へ (同日裁定) = 合計12で、各敵は軍旗の4以上
     const lost0 = hp0 - s.enemies[0].hp
     const lost1 = hp1 - s.enemies[1].hp
-    expect(lost0 + lost1).toBe(12)
+    expect(lost0 + lost1).toBe(21)
     expect(lost0).toBeGreaterThanOrEqual(4)
     expect(lost1).toBeGreaterThanOrEqual(4)
     expect(s.player.light ?? 0).toBe(0) // 人形の登場では灯は増えない (2026-09-20 夜 廃止)
@@ -96,7 +96,7 @@ describe('灯り溜め (白の再設計 2026-09-20: 守りが準備)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_perm_shieldmaiden' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_light_hoard' })
-    expect(s.player.block).toBe(2 + 5) // 盾の人形の点灯2 + 灯り溜め5
+    expect(s.player.block).toBe(3 + 5) // 盾の人形の点灯3 + 灯り溜め5
     expect(s.player.light).toBe(2) // 灯り溜めの+2だけ (人形の登場では灯は増えない 2026-09-20 夜)
   })
 })

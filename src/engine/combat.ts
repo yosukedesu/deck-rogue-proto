@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyDamageInterrupts, cardNeedsTarget, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
+import { applyDamageInterrupts, cardNeedsTarget, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
@@ -924,6 +924,13 @@ export function playCard(
     if (!t || t.def.retainer !== true || t.innate === true) throw new Error(`従者ではない、または場に無い置物: ${permanentUid}`)
     sacrificed = t
   }
+  // 「人形1体を選ぶ」札 (写し灯・継ぎ火・永遠の灯 2026-09-21): 同じ欄 (permanentUid) で選ぶ。効果の解決は chosenPermanentUid を読む
+  const choosesDoll = cardChoosesDoll(card.def)
+  if (choosesDoll) {
+    if (permanentUid === undefined) throw new Error(`${card.def.name} は人形 (permanentUid) の指定が必要`)
+    const t = state.player.permanents.find((p) => p.uid === permanentUid)
+    if (!t || !isDoll(t)) throw new Error(`人形ではない、または場に無い置物: ${permanentUid}`)
+  }
 
   // StS式ターゲティング (確定済みルール表「ターゲティング」):
   // 生存2体以上で単体対象カードは targetIndex 必須。生存1体なら自動。対象不要カードは無視
@@ -1089,6 +1096,7 @@ export function playCard(
   }
   // 反復内蔵 (反復の触媒の合成札 2026-09-12): 反復トークンとは加算 (両方なら3回)
   const echoPasses = 1 + (echoed ? 1 : 0) + (card.def.echo === true ? 1 : 0)
+  if (choosesDoll) s = { ...s, chosenPermanentUid: permanentUid }
   for (let echoPass = 0; echoPass < echoPasses; echoPass++) {
     if (chosenMode) {
       // 虚弱の判定用フラグ (resolveOnPlayEffects と同じ扱い。モード効果もカードのプレイ)
@@ -1105,6 +1113,10 @@ export function playCard(
     } else {
       s = resolveOnPlayEffects(s, effCard, enemyIndex)
     }
+  }
+  if (choosesDoll) {
+    const { chosenPermanentUid: _c, ...rest } = s
+    s = rest
   }
   // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
   const resolvedEffects = chosenMode ? [...effCard.def.effects.filter((e) => e.trigger === 'onPlay'), ...chosenMode.effects] : effCard.def.effects.filter((e) => e.trigger === 'onPlay')
@@ -2076,6 +2088,12 @@ function destroySetCards(state: GameState, enemyIndex: number): GameState {
   return s
 }
 
+/** 「人形1体を選ぶ」札 (2026-09-21): PlayCard.permanentUid が要る onPlay 効果を持つ (殉教の誓いは別配管 sacrificeRetainer) */
+export const DOLL_CHOICE_EFFECTS: ReadonlySet<string> = new Set(['copyRetainer', 'extendRetainerLife', 'persistRetainer'])
+export function cardChoosesDoll(def: CardDef): boolean {
+  return def.effects.some((e) => e.trigger === 'onPlay' && DOLL_CHOICE_EFFECTS.has(e.effect))
+}
+
 /**
  * 罠モデル (2026-09-13): 期限切れの罠を伏せ場から外す。
  * 敵フェーズ終端 (finishEnemyPhase) は state.turn がまだ進んでいないので、2窓目 = 齢2 の終端で「残っていれば」期限切れになる
@@ -2137,6 +2155,8 @@ function finishEnemyPhase(state: GameState): GameState {
   const handBeforeExpire = new Set(s.player.hand.map((c) => c.uid))
   s = expireTraps(s)
   if (s.phase === 'won' || s.phase === 'lost') return s
+  // 人形の灯り (2026-09-21): 寿命の最後のターンの敵フェーズが終わると人形が消える (罠と同じ数え方)
+  s = expireRetainers(s)
   // 脆弱は作用するフェーズ (敵フェーズ) の終了時に1減る (確定済みルール表「状態異常」)。
   // ただしこのフェーズに付与された分は減らさない (justAppliedガード 2026-09-02 —
   // 旧実装は「付与→同フェーズ末に即-1」で脆弱2が実効1になっていた)

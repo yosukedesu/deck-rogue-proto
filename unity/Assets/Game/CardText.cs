@@ -159,6 +159,11 @@ namespace DeckRogue.Game
             { "addCardToHand", "トークンN枚を手札へ" },
             { "duplicateRetainers", "場の従者を1体ずつ複製" },
             { "sacrificeRetainer", "従者1体を選んで破壊" },
+            { "copyRetainer", "人形1体を選び同じ人形をN体出す（残りの灯りを写す）" },
+            { "copyLastRetainer", "最後に点灯した人形と同じ人形をN体出す（残りの灯りを写す）" },
+            { "twinNextRetainer", "次に出す人形N体が2体になる（持ち越す）" },
+            { "extendRetainerLife", "人形1体を選び灯りをNターン継ぐ" },
+            { "persistRetainer", "人形1体を選び灯りが尽きなくなる" },
             { "triggerRetainersNow", "号令: 場の人形の効果を今すぐ1回ずつ解決 (登場ごとは除く)" },
             { "activateEnteredRetainer", "場に出た従者が即1回動く" },
             { "blessRetainers", "【常在】人形のダメージ・ブロック・回復+N" },
@@ -473,7 +478,11 @@ namespace DeckRogue.Game
             else if (def.FusionCatalyst == "retain") n.Add("触媒: 素材にすると結果が保持");
             else if (def.FusionCatalyst == "aoe") n.Add("触媒: 素材にすると結果のダメージが全体に");
             if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
-            if (def.Retainer == true) n.Add("人形"); // 白の語彙 (2026-09-18 従者→人形)。灯コストの人形は点灯で灯を吸う (2026-09-20)
+            if (def.Retainer == true)
+            {   // 白の語彙 (2026-09-18 従者→人形)。灯り＝寿命と火勢 (2026-09-21): 点灯したターンを1と数え、尽きると消える。点灯してから1ターンごとにダメージとブロック+1
+                n.Add("人形");
+                n.Add(def.LifePersist == true ? "灯りは尽きない（点灯してから1ターンごとにダメージとブロック+1）" : "灯り: " + (def.Life ?? 3) + "ターン（点灯したターンを含む。1ターンごとにダメージとブロック+1）");
+            }
             if (def.ShivToken == true) n.Add("骨のナイフ");
             return n;
         }

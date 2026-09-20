@@ -199,6 +199,21 @@
       "sfx": "death",
       "volume": 0.6
     },
+    "RetainerExpired": {
+      "sfx": "death",
+      "volume": 0.35,
+      "_note": "人形の灯りが尽きた (2026-09-21)。壊しより静かに"
+    },
+    "RetainerCopied": {
+      "sfx": "rush",
+      "volume": 0.4,
+      "_note": "写し灯・鏡の灯籠・二重の点灯 (2026-09-21)。人形が動く金属の機構"
+    },
+    "RetainerLifeExtended": {
+      "sfx": "heal",
+      "volume": 0.45,
+      "_note": "継ぎ火・永遠の灯 (2026-09-21)"
+    },
     "CombatEnded": {
       "sfx": null
     },

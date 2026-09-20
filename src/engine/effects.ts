@@ -233,6 +233,77 @@ export function hearthSparkMax(state: GameState): number {
   return Math.floor((state.player.light ?? 0) / per)
 }
 
+/**
+ * 人形の灯り＝寿命と火勢 (2026-09-21。人間ラン#15「毎戦同じ」への再設計。docs/white-doll-life-proposal-2026-09-21.md)。
+ * 火勢が乗るのは人形のダメージとブロックの量だけ (回復は §73「殴った分だけ」= 増えない。灯・率・ドローも増えない)
+ */
+export const DOLL_GROWTH_EFFECTS: ReadonlySet<string> = new Set(['dealDamage', 'dealDamageRandom', 'dealDamageCleave', 'gainBlock'])
+/** 人形 = 従者 (retainer) で生得 (innate) でない置物 */
+export function isDoll(p: CardInstance): boolean {
+  return p.def.retainer === true && p.innate !== true
+}
+/** 齢 = 場に出てから経ったターン数 (点灯したターンは0)。旧セーブなど enteredTurn が無い人形は0 */
+export function dollAge(state: GameState, p: CardInstance): number {
+  return p.enteredTurn === undefined ? 0 : Math.max(0, state.turn - p.enteredTurn)
+}
+/** 寿命の合計 (life+継ぎ火)。期限なし (篝火・永遠の灯) は null。life 未指定の人形 (工房産など) は3 */
+export function dollLifeTotal(p: CardInstance): number | null {
+  if (p.lifePersist === true || p.def.lifePersist === true) return null
+  return (p.def.life ?? 3) + (p.lifeBonus ?? 0)
+}
+/** 残りのターン数 (今のターンを含む。1=このターンの敵フェーズが終わると消える)。期限なしは null */
+export function dollLifeLeft(state: GameState, p: CardInstance): number | null {
+  const total = dollLifeTotal(p)
+  return total === null ? null : Math.max(0, total - dollAge(state, p))
+}
+/** 火勢 = 人形なら齢ぶん (ダメージ・ブロックの量に加算)。人形でなければ0 */
+export function dollGrowth(state: GameState, p: CardInstance): number {
+  return isDoll(p) ? dollAge(state, p) : 0
+}
+/** 人形の効果の「いまの量」= 素の量 + アンセム (ANTHEM_EFFECTS) + 火勢 (DOLL_GROWTH_EFFECTS)。表示と実処理が同じ式を読む */
+export function dollEffectAmount(state: GameState, p: CardInstance, e: DeclarativeEffect, anthem: number): number | undefined {
+  if (e.amount === undefined) return undefined
+  if (p.def.retainer !== true) return e.amount
+  const a = anthem > 0 && ANTHEM_EFFECTS.has(e.effect) ? anthem : 0
+  const g = DOLL_GROWTH_EFFECTS.has(e.effect) ? dollGrowth(state, p) : 0
+  return e.amount + a + g
+}
+/** 人形のコピーを1体場に出す (写し灯・鏡の灯籠・二重の点灯 2026-09-21): 残り寿命 (enteredTurn・lifeBonus・lifePersist) を写し、点灯する */
+/** 召喚トークンの uid (2026-09-21): 通し番号 (GameState.summonSeq)。場を離れる置物 (寿命切れ・人形壊し) があっても衝突しない */
+export function newSummonUid(state: GameState, id: string): [GameState, string] {
+  const n = state.summonSeq ?? 0
+  return [{ ...state, summonSeq: n + 1 }, `summon_s${n}_${id}`]
+}
+function copyDoll(state0: GameState, src: CardInstance, enemyIndex: number, noTwin: boolean): GameState {
+  const [state, uid] = newSummonUid(state0, src.def.id)
+  const token: CardInstance = {
+    uid,
+    def: src.def,
+    token: true,
+    ...(src.enteredTurn !== undefined ? { enteredTurn: src.enteredTurn } : {}),
+    ...(src.lifeBonus !== undefined ? { lifeBonus: src.lifeBonus } : {}),
+    ...(src.lifePersist === true ? { lifePersist: true } : {}),
+  }
+  let s: GameState = { ...state, player: { ...state.player, permanents: [...state.player.permanents, token] } }
+  s = emit(s, { type: 'RetainerCopied', cardId: src.def.id, uid: token.uid, fromUid: src.uid })
+  return enterPermanent(s, token.uid, enemyIndex, undefined, noTwin)
+}
+/**
+ * 灯りが尽きた人形を場から外す (2026-09-21): 敵フェーズ終端 (turn が進む前) に「残り1」= 齢 ≥ 寿命−1 の人形が消える
+ * (罠の expireTraps と同じ数え方)。壊されたのではなく尽きたので人形壊しの誘発は鳴らない。ダメージは出ないので決着判定は要らない
+ */
+export function expireRetainers(state: GameState): GameState {
+  const gone = state.player.permanents.filter((p) => {
+    if (!isDoll(p)) return false
+    const total = dollLifeTotal(p)
+    return total !== null && dollAge(state, p) >= total - 1
+  })
+  if (gone.length === 0) return state
+  let s: GameState = { ...state, player: { ...state.player, permanents: state.player.permanents.filter((p) => !gone.includes(p)) } }
+  for (const p of gone) s = emit(s, { type: 'RetainerExpired', cardId: p.def.id, uid: p.uid })
+  return s
+}
+
 /** 場のアンセム (blessRetainers) の合計 */
 export function anthemTotal(state: GameState): number {
   return state.player.permanents.reduce(
@@ -253,18 +324,20 @@ export function rallyPreview(
   extraIds: readonly string[] = [],
 ): { count: number; damage: number; block: number; heal: number } {
   const anthem = anthemTotal(state)
-  const defs = [
-    ...state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).map((p) => p.def),
-    ...extraIds.map((id) => getCardDef(id)),
+  // 火勢 (2026-09-21): 場の人形は齢ぶん、これから出る人形 (extraIds) は0
+  const dolls: CardInstance[] = [
+    ...state.player.permanents.filter(isDoll),
+    ...extraIds.map((id, i): CardInstance => ({ uid: `preview_${i}`, def: getCardDef(id), token: true, enteredTurn: state.turn })),
   ]
   let damage = 0
   let block = 0
   let heal = 0
   const alive = Math.max(1, state.enemies.filter((e) => e.hp > 0).length)
-  for (const def of defs) {
+  for (const p of dolls) {
+    const def = p.def
     for (const e of def.effects) {
       if (e.trigger === 'onPermanentEntered' || e.trigger === 'onPlay') continue
-      const amount = (e.amount ?? 0) + (ANTHEM_EFFECTS.has(e.effect) && e.amount !== undefined ? anthem : 0)
+      const amount = dollEffectAmount(state, p, e, anthem) ?? 0
       const aoe = e.target === 'all' ? alive : 1
       if (e.effect === 'dealDamage') damage += playerDamageAfterModifiers(state, amount) * aoe
       else if (e.effect === 'dealDamagePerLight') {
@@ -274,7 +347,7 @@ export function rallyPreview(
       else if (e.effect === 'gainHp') heal += amount
     }
   }
-  return { count: defs.length, damage, block, heal }
+  return { count: dolls.length, damage, block, heal }
 }
 
 export function runPermanentTriggers(
@@ -331,10 +404,9 @@ export function runPermanentTriggers(
         }
         // アンセムが乗るのはダメージ・ブロック・回復の量だけ (2026-09-20 夜 ユーザー裁定。Opus 灯と人形 A/B: 灯芯の「灯+1」が+3、
         // 灯篭の「灯2につき1」が「灯2につき3」、鐘の「1ドロー」が3ドローに化けていた = 率・灯・ドローは対象外)
-        const boosted =
-          anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined && ANTHEM_EFFECTS.has(effect.effect)
-            ? { ...effect, amount: effect.amount + anthem }
-            : effect
+        // 火勢 (2026-09-21): 人形のダメージ・ブロックは齢ぶん増える (DOLL_GROWTH_EFFECTS。号令・点灯・自分のトリガーで同じ値)
+        const liveAmount = dollEffectAmount(state, permanent, effect, anthem)
+        const boosted = liveAmount !== undefined && liveAmount !== effect.amount ? { ...effect, amount: liveAmount } : effect
         // innate置物 (リーダーパッシブ・レリック) の解決中は鬼軍曹の怒りを立てない
         // (2026-08-31 焚べ型ラン: みぞれの自動氷壁が止められない怒り=「みぞれは戦うな」に
         // なっていた。怒りはプレイヤーが選んだカード由来の守りにだけ反応する)
@@ -425,10 +497,17 @@ export function enterPermanent(
   uid: string,
   enemyIndex: number,
   only?: (permanent: CardInstance) => boolean,
+  /** 二重の点灯の片割れとして出た (もう一度は倍にしない) */
+  noTwin = false,
 ): GameState {
-  const entered = state.player.permanents.find((p) => p.uid === uid)
-  if (!entered) return state
+  const entered0 = state.player.permanents.find((p) => p.uid === uid)
+  if (!entered0) return state
   let s: GameState = { ...state, lastEnteredPermanentUid: uid }
+  // 灯り (2026-09-21): 人形は場に出たターンを覚える (齢＝火勢と残り寿命の基準)。コピーは元の値を持って入るので上書きしない
+  if (isDoll(entered0) && entered0.enteredTurn === undefined) {
+    s = { ...s, player: { ...s.player, permanents: s.player.permanents.map((p) => (p.uid === uid ? { ...p, enteredTurn: state.turn } : p)) } }
+  }
+  const entered = s.player.permanents.find((p) => p.uid === uid) ?? entered0
   s = emit(s, { type: 'PermanentPlayed', cardId: entered.def.id })
   s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex, only)
   if (entered.def.retainer !== true || entered.innate === true) return s
@@ -436,9 +515,18 @@ export function enterPermanent(
   // 輪で「列1枚で灯2が戻る」= 灯2が天秤に載らない)。人形は灯を使う側で、灯を灯すのは灯芯・燭・癒し・手当て (回復) の人形だけ
   // onPlay は playCard が解決済み (工房産の人形が持ちうる。2026-09-20) = 点灯では回さない
   const triggers = [...new Set(entered.def.effects.map((e) => e.trigger).filter((tr) => tr !== 'onPermanentEntered' && tr !== 'onPlay'))]
-  if (triggers.length === 0) return s // 登場ごとの効果しか持たない人形 (鐘・大鐘) は自分の登場でもとから鳴る = 二重にしない
-  for (const tr of triggers) s = runPermanentTriggers(s, tr, enemyIndex, (p) => p.uid === uid)
-  return emit(s, { type: 'RetainerRushed', cardId: entered.def.id })
+  if (triggers.length > 0) {
+    // 登場ごとの効果しか持たない人形 (鐘・大鐘) は自分の登場でもとから鳴る = 二重にしない
+    for (const tr of triggers) s = runPermanentTriggers(s, tr, enemyIndex, (p) => p.uid === uid)
+    s = emit(s, { type: 'RetainerRushed', cardId: entered.def.id })
+  }
+  // 二重の点灯 (2026-09-21): 次に出る人形が2体になる。片割れは元と同じ残り寿命で出て点灯する (片割れはもう倍にしない)
+  if (!noTwin && (s.nextRetainerTwin ?? 0) > 0) {
+    s = { ...s, nextRetainerTwin: (s.nextRetainerTwin ?? 0) - 1 }
+    const src = s.player.permanents.find((p) => p.uid === uid)
+    if (src !== undefined) s = copyDoll(s, src, enemyIndex, true)
+  }
+  return s
 }
 
 /**
@@ -1686,7 +1774,17 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 1枚でブロック+84 の二次関数)。元からいた置物と自分自身の登場には反応する = 線形
       const batch = new Set<string>()
       for (const src of snapshot) {
-        const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${src.def.id}`, def: src.def, token: true }
+        // 残り寿命を写す (2026-09-21 灯り): 早く撃つほど得
+        const [s2, uid] = newSummonUid(s, src.def.id)
+        s = s2
+        const token: CardInstance = {
+          uid,
+          def: src.def,
+          token: true,
+          ...(src.enteredTurn !== undefined ? { enteredTurn: src.enteredTurn } : {}),
+          ...(src.lifeBonus !== undefined ? { lifeBonus: src.lifeBonus } : {}),
+          ...(src.lifePersist === true ? { lifePersist: true } : {}),
+        }
         batch.add(token.uid)
         s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
         s = enterPermanent(s, token.uid, enemyIndex, (p) => p.uid === token.uid || !batch.has(p.uid))
@@ -1707,6 +1805,48 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // この効果は旧セーブ (ひなたのパッシブに残る) との互換のための no-op。二重に動かさない
       return state
     }
+    case 'copyRetainer': {
+      // 写し灯 (白 2026-09-21): PlayCard.permanentUid で選んだ人形 (combat.ts が chosenPermanentUid に置く) を amount 体コピー。
+      // 残り寿命を写す＝点灯直後を写せば得。置物・リアクション経路 (chosenPermanentUid が無い) では何もしない
+      const src = state.player.permanents.find((p) => p.uid === state.chosenPermanentUid && isDoll(p))
+      if (src === undefined) return state
+      let s = state
+      for (let i = 0; i < (effect.amount ?? 1); i++) s = copyDoll(s, src, enemyIndex, false)
+      return s
+    }
+    case 'copyLastRetainer': {
+      // 鏡の灯籠 (白 2026-09-21): 最後に点灯した (場に出た順で最後の) 人形を amount 体コピー。人形が居なければ何もしない
+      const dolls = state.player.permanents.filter(isDoll)
+      const src = dolls[dolls.length - 1]
+      if (src === undefined) return state
+      let s = state
+      for (let i = 0; i < (effect.amount ?? 1); i++) s = copyDoll(s, src, enemyIndex, false)
+      return s
+    }
+    case 'twinNextRetainer':
+      // 二重の点灯 (白 2026-09-21): 次に出る人形 amount 体がそれぞれ2体になる (ターンをまたいで持ち越す = 割引と同じ持続)
+      return { ...state, nextRetainerTwin: (state.nextRetainerTwin ?? 0) + (effect.amount ?? 1) }
+    case 'extendRetainerLife': {
+      // 継ぎ火 (白 2026-09-21): 選んだ人形の灯りを amount ターン継ぐ。期限なしの人形には何も起きない
+      const src = state.player.permanents.find((p) => p.uid === state.chosenPermanentUid && isDoll(p))
+      if (src === undefined || dollLifeTotal(src) === null) return state
+      const n = effect.amount ?? 1
+      const s: GameState = {
+        ...state,
+        player: { ...state.player, permanents: state.player.permanents.map((p) => (p.uid === src.uid ? { ...p, lifeBonus: (p.lifeBonus ?? 0) + n } : p)) },
+      }
+      return emit(s, { type: 'RetainerLifeExtended', cardId: src.def.id, uid: src.uid, amount: n })
+    }
+    case 'persistRetainer': {
+      // 永遠の灯 (白 2026-09-21): 選んだ人形の灯りが尽きなくなる (火勢は続く)
+      const src = state.player.permanents.find((p) => p.uid === state.chosenPermanentUid && isDoll(p))
+      if (src === undefined || dollLifeTotal(src) === null) return state
+      const s: GameState = {
+        ...state,
+        player: { ...state.player, permanents: state.player.permanents.map((p) => (p.uid === src.uid ? { ...p, lifePersist: true } : p)) },
+      }
+      return emit(s, { type: 'RetainerLifeExtended', cardId: src.def.id, uid: src.uid, amount: 0, persist: true })
+    }
     case 'triggerRetainersNow': {
       // 点灯の合図 (白 2026-09-06 本家 Multi-Cast → 2026-09-20 白の再設計で号令の中核 C1E・灯2):
       // 人形 (innate除く) の効果をトリガーを問わず (登場ごとを除く) 今すぐ1回ずつ解決 (アンセム込み)。旧はターン開始効果だけだった
@@ -1716,13 +1856,15 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     }
     case 'summonPermanent': {
       // 召喚 (白): summonId の置物トークンを amount 体場に出す (確定済みルール表「召喚」)。
-      // uid は置物数ベース (置物は場を離れないため単調増加 = 衝突しない)
+      // uid は通し番号 (2026-09-21 summonSeq。旧・置物数ベースは寿命切れ・人形壊しで場を離れると衝突した)
       const def = getCardDef(effect.summonId ?? '')
       let s = state
       for (let i = 0; i < (effect.amount ?? 1); i++) {
         // token: true = 敵の「トークン破壊」の対象になる (確定済みルール表「トークン破壊」)
+        const [s2, uid] = newSummonUid(s, def.id)
+        s = s2
         const token: CardInstance = {
-          uid: `summon_p${s.player.permanents.length}_${def.id}`,
+          uid,
           def,
           token: true,
         }

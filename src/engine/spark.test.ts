@@ -103,7 +103,7 @@ describe('火種 (トークン札)', () => {
     }
     // 火種3枚: 火の粉 1×3 が両方に、剣の人形 2×3 が片方に (ランダム対象) = 合計 6+6
     const lost = s.enemies.map((e, i) => hp[i] - e.hp)
-    expect(lost[0] + lost[1]).toBe(3 * 2 + 3 * 2)
+    expect(lost[0] + lost[1]).toBe(3 * 2 + 3 * 3)
     expect(lost[0]).toBeGreaterThanOrEqual(3)
     expect(lost[1]).toBeGreaterThanOrEqual(3)
     expect(s.player.light).toBe(l0 + 3) // 火種の灯+1×3 だけ (継ぎ手で動いた人形は灯を産まない)
@@ -194,8 +194,8 @@ describe('放出の軸 (灯の使い道を4形に)', () => {
     const removed = ['white_menace', 'white_light_arrow', 'white_reaction_holy_wall', 'white_verdict_hammer', 'white_rampart_riposte', 'white_fortress', 'white_gate_close', 'white_mercy_staff', 'white_reaction_martyr', 'white_reaction_sanctuary']
     for (const id of removed) expect(allCards.some((c) => c.id === id), id).toBe(false)
     const white = allCards.filter((c) => c.color === 'white')
-    expect(white.length).toBe(91)
-    expect(white.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(83)
+    expect(white.length).toBe(96)
+    expect(white.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(88)
   })
 })
 

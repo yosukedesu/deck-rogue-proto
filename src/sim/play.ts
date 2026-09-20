@@ -41,7 +41,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, displayedInflict, effectiveCost, effectiveIntent, hearthSparkMax, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, displayedInflict, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -98,7 +98,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)${xHitsSuffix(e)}`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚${e.condition?.targetDead === true ? '(戦闘が続いていれば。最後の1体では無駄)' : ''}`,
-    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '号令: 場の人形の効果をトリガーを問わず(登場ごとを除く)今すぐ1回ずつ解決(アンセム込み)', activateEnteredRetainer: '(旧・駆けつけ。2026-09-20 に白共通ルール「点灯」へ格上げ=この効果は何もしない)',
+    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', copyRetainer: `人形1体を選び同じ人形を${a}体出す(残りの灯りを写す。要permanentUid)`, copyLastRetainer: `最後に点灯した人形と同じ人形を${a}体出す(残りの灯りを写す)`, twinNextRetainer: `次に出す人形${a}体が2体になる(持ち越す)`, extendRetainerLife: `人形1体を選び灯りを${a}ターン継ぐ(要permanentUid)`, persistRetainer: '人形1体を選び灯りが尽きなくなる(要permanentUid)', triggerRetainersNow: '号令: 場の人形の効果をトリガーを問わず(登場ごとを除く)今すぐ1回ずつ解決(アンセム込み)', activateEnteredRetainer: '(旧・駆けつけ。2026-09-20 に白共通ルール「点灯」へ格上げ=この効果は何もしない)',
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
@@ -130,7 +130,7 @@ function cardLine(def: CardDef): string {
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
     def.lightCost ? `灯コスト${def.lightCost}(エナジーと別に払う。足りなければプレイ不可)` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
-    def.retainer ? '従者' : '',
+    def.retainer ? `従者。灯り${def.lifePersist === true ? 'は尽きない' : `${def.life ?? 3}ターン(点灯したターンを含む)`}。火勢: 点灯してから1ターンごとにダメージとブロック+1` : '',
     def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ', aoe: '単体ダメージが全体に' } as Record<string, string>)[def.fusionCatalyst]}` : '',
     def.echo === true ? '🔁反復内蔵(効果を2回解決)' : '',
   ].filter(Boolean).join('・')
@@ -251,6 +251,9 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'RetainersDuplicated') L.push(` 🏳️分列: 従者${e.count}体が複製された`)
       else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 人形の効果を延べ${e.count}回解決した（トリガーを問わず）`) // count は延べ回数 (Opus 火種C「人形27体」)
       else if (e.type === 'RetainerRushed') L.push(` 🕯️点灯: ${cname(e.cardId)}が出た瞬間に1回動いた`)
+      else if (e.type === 'RetainerExpired') L.push(` 🕯️灯が尽きた: ${cname(e.cardId)}が消えた`)
+      else if (e.type === 'RetainerCopied') L.push(` 🪞写し: ${cname(e.cardId)}をコピーした(残りの灯りを写す)`)
+      else if (e.type === 'RetainerLifeExtended') L.push(e.persist === true ? ` ✨永遠の灯: ${cname(e.cardId)}の灯りは尽きなくなった` : ` 🔥継ぎ火: ${cname(e.cardId)}の灯りを${e.amount}ターン継いだ`)
       else if (e.type === 'LightGained') L.push(` 🕯️灯+${e.amount}（${({ heal: '回復', retainer: '人形の登場', passive: '灯匠', card: 'カード', carry: '残り火' } as Record<string, string>)[e.source] ?? e.source}）`)
       else if (e.type === 'LightDischarged') L.push(` 🕯️灯${e.spent}を放出`) // 火床は払った分だけ (Opus 火種B「全て」が嘘)
       else if (e.type === 'LightSpent') L.push(` 🕯️灯-${e.amount}（${cname(e.cardId)}）`)
@@ -366,7 +369,15 @@ function renderBattle(s: GameState, logFrom: number): string {
       const parts = [...(v.length > 0 ? [`いま誘発したら${v.join('・')}ダメ=成長込み・勢いは乗らない`] : []), ...lit]
       return parts.length > 0 ? `【${parts.join('・')}】` : ''
     }
-    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=ダメージ・ブロック・回復の量に加算】` : ''}${live(c)}`).join(' / ')}`)
+    // 人形の灯り (2026-09-21): 残りターン (今のターンを含む) と火勢 (齢=ダメージ・ブロックに加算)
+    const lifeTag = (c: (typeof p.permanents)[number]): string => {
+      if (!isDoll(c)) return ''
+      const left = dollLifeLeft(s, c)
+      const g = dollGrowth(s, c)
+      return `【灯り${left === null ? '尽きない' : `あと${left}`}${g > 0 ? `・火勢+${g}` : ''}】`
+    }
+    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${lifeTag(c)}${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=ダメージ・ブロック・回復の量に加算】` : ''}${live(c)}`).join(' / ')}`)
+    if ((s.nextRetainerTwin ?? 0) > 0) L.push(`🕯️🕯️二重の点灯: 次に出す人形${s.nextRetainerTwin}体が2体になる`)
     if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者のダメージ・ブロック・回復の量に加算。灯・率・ドローには乗らない)`)
     // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了時に何枚火種にするかは EndTurn のパラメータ
     if (hearthSparkMax(s) > 0) L.push(`🔥火床: ターン終了時に灯3につき火種1を山札へ。枚数は {"type":"EndTurn","hearthSparks":N} で指定 (0〜${hearthSparkMax(s)}。省略=0=変えない)`)

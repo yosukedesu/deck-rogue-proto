@@ -171,11 +171,12 @@
       {
         "trigger": "onTurnStart",
         "effect": "dealDamage",
-        "amount": 2
+        "amount": 3
       }
     ],
     "retainer": true,
-    "rarity": "common"
+    "rarity": "common",
+    "life": 3
   },
   {
     "id": "white_perm_shieldmaiden",
@@ -186,11 +187,12 @@
       {
         "trigger": "onTurnStart",
         "effect": "gainBlock",
-        "amount": 2
+        "amount": 3
       }
     ],
     "retainer": true,
-    "rarity": "common"
+    "rarity": "common",
+    "life": 3
   },
   {
     "id": "white_perm_choir",
@@ -206,7 +208,8 @@
     ],
     "retainer": true,
     "rarity": "uncommon",
-    "lightCost": 2
+    "lightCost": 2,
+    "life": 4
   },
   {
     "id": "white_perm_banneret",
@@ -221,7 +224,8 @@
       }
     ],
     "retainer": true,
-    "rarity": "common"
+    "rarity": "common",
+    "life": 3
   },
   {
     "id": "white_rally",
@@ -328,7 +332,7 @@
         "trigger": "onPlay",
         "effect": "summonPermanent",
         "summonId": "white_perm_squire",
-        "amount": 2
+        "amount": 3
       }
     ],
     "rarity": "uncommon"
@@ -367,7 +371,8 @@
     ],
     "retainer": true,
     "rarity": "uncommon",
-    "lightCost": 2
+    "lightCost": 2,
+    "life": 4
   },
   {
     "id": "white_perm_banner",
@@ -412,7 +417,8 @@
       }
     ],
     "retainer": true,
-    "rarity": "common"
+    "rarity": "common",
+    "life": 3
   },
   {
     "id": "white_service",
@@ -590,7 +596,8 @@
         "amount": 1,
         "target": "all"
       }
-    ]
+    ],
+    "life": 3
   },
   {
     "id": "white_perm_monk",
@@ -605,7 +612,8 @@
         "effect": "gainHp",
         "amount": 1
       }
-    ]
+    ],
+    "life": 3
   },
   {
     "id": "white_calling",
@@ -677,7 +685,8 @@
         "effect": "gainHp",
         "amount": 1
       }
-    ]
+    ],
+    "life": 3
   },
   {
     "id": "white_hymn_wall",
@@ -752,7 +761,8 @@
         "amount": 2
       }
     ],
-    "lightCost": 2
+    "lightCost": 2,
+    "life": 4
   },
   {
     "id": "white_maiden_prayer",
@@ -849,7 +859,7 @@
       {
         "trigger": "onPlay",
         "effect": "summonPermanent",
-        "amount": 3,
+        "amount": 4,
         "summonId": "white_perm_squire"
       }
     ]
@@ -900,9 +910,10 @@
       {
         "trigger": "onTurnStart",
         "effect": "dealDamage",
-        "amount": 1
+        "amount": 2
       }
-    ]
+    ],
+    "life": 2
   },
   {
     "id": "white_page_rank",
@@ -1152,7 +1163,8 @@
         "effect": "addLight",
         "amount": 1
       }
-    ]
+    ],
+    "life": 3
   },
   {
     "id": "white_perm_lantern",
@@ -1169,7 +1181,8 @@
         "amount": 1,
         "target": "all"
       }
-    ]
+    ],
+    "life": 4
   },
   {
     "id": "white_perm_bonfire",
@@ -1190,6 +1203,82 @@
         "trigger": "onTurnStart",
         "effect": "gainBlock",
         "amount": 3
+      }
+    ],
+    "lifePersist": true
+  },
+  {
+    "id": "white_copy_light",
+    "name": "写し灯",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "requiresRetainer": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "copyRetainer",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_twin_light",
+    "name": "二重の点灯",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "twinNextRetainer",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_perm_mirror_lantern",
+    "name": "鏡の灯籠",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "copyLastRetainer",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_relight",
+    "name": "継ぎ火",
+    "cost": 1,
+    "lightCost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "requiresRetainer": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "extendRetainerLife",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_eternal_light",
+    "name": "永遠の灯",
+    "cost": 1,
+    "lightCost": 3,
+    "type": "spell",
+    "rarity": "rare",
+    "exhaust": true,
+    "requiresRetainer": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "persistRetainer"
       }
     ]
   },

@@ -312,7 +312,7 @@ describe('虚弱 (カードのプレイで得るブロック25%減。2026-09-01 
     s = withIntent(s, attackIntent(1))
     s = applyCommand(s, { type: 'EndTurn' })
     // 次ターン開始時の盾の乙女 (毎ターンブロック2) は素通し
-    expect(s.player.block).toBe(2)
+    expect(s.player.block).toBe(3)
   })
 
   it('虚弱は自ターン終了時に1減る (弱体と同じ対称則)', () => {

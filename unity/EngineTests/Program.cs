@@ -23,6 +23,28 @@ if (args.Length > 0 && args[0] == "roundtrip")
 {
     return SaveRoundtrip(args.Skip(1).ToArray());
 }
+if (args.Length > 0 && args[0] == "battle")
+{
+    // 単発戦闘の照合 (2026-09-21 人形の灯り): dotnet run -- battle <cards:id,id,...> <enemyId> <seed> <cmds.json> [--data dir]
+    // TS (scratch の battle-trace.ts) と同じ形で、各手の後に turn・ハッシュ・人形の並び (uid/enteredTurn/残り/育ち)・出来事の末尾を出す
+    var dataDir = "../../src/data";
+    var rest = new List<string>();
+    for (int i = 1; i < args.Length; i++) { if (args[i] == "--data" && i + 1 < args.Length) { dataDir = args[++i]; continue; } rest.Add(args[i]); }
+    Content.Load(dataDir);
+    var cardIds = rest[0].StartsWith("cards:") ? rest[0].Substring(6).Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).ToList() : null;
+    var st = Combat.StartCombat(int.Parse(rest[2]), "set-confirm", rest[1], cardIds == null ? rest[0] : "starter", null, cardIds);
+    var cmds = JsonConvert.DeserializeObject<List<Command>>(File.ReadAllText(rest[3]), JsonUnions.Settings)!;
+    void Dump(GameState g, string label)
+    {
+        var dolls = g.Player.Permanents.Where(Effects.IsDoll).Select(p => $"{p.Uid}@{p.EnteredTurn?.ToString() ?? "-"}/{Effects.DollLifeLeft(g, p)?.ToString() ?? "inf"}/+{Effects.DollGrowth(g, p)}");
+        var tail = g.EventLog.Skip(Math.Max(0, g.EventLog.Count - 12)).Select(e => e.Type);
+        Console.WriteLine($"{label} T{g.Turn} hp={g.Enemies[0].Hp} blk={g.Player.Block} twin={g.NextRetainerTwin ?? 0} hash={Golden.Fnv1a32(Golden.CombatDigest(g)):x8} dolls=[{string.Join(" ", dolls)}] ev=[{string.Join(",", tail)}]");
+    }
+    Dump(st, "start");
+    int k = 0;
+    foreach (var c in cmds) { st = State.ApplyCommand(st, c); Dump(st, $"#{k++}"); }
+    return 0;
+}
 if (args.Length > 0 && args[0] == "fuse")
 {
     // 合成の照合 (2026-09-14): dotnet run -- fuse <cardIdA> <cardIdB> [--data dir] → 結果の CardDef を JSON で出す (TS の fuseCards と突き合わせる)

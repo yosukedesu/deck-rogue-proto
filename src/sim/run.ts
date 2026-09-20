@@ -14,7 +14,8 @@
 
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { allDecks, allEnemies, allLeaders, getCardDef, getEnemyDef } from '../engine/content.ts'
-import { effectiveCost, hearthSparkMax, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
+import { dollGrowth, dollLifeLeft, effectiveCost, hearthSparkMax, isBlazing, isDamageEffect, isDoll, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
+import { cardChoosesDoll } from '../engine/combat.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, defaultEventChoice, gearFull, isUpgraded, nextChoices } from '../engine/run.ts'
@@ -373,6 +374,16 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
       .filter((p) => p.def.retainer === true && p.innate !== true)
       .sort((a, b) => a.def.cost - b.def.cost || (a.token === true ? -1 : 0) - (b.token === true ? -1 : 0))
     permanentUid = rets[0]?.uid
+  }
+  // 写し灯・継ぎ火・永遠の灯 (2026-09-21): いちばん値打ちのある人形 (量の合計が大きく、残り寿命がある) を選ぶ。
+  // 継ぎ火・永遠の灯は期限なしの人形を選ばない (無駄撃ち)
+  if (cardChoosesDoll(card.def)) {
+    const finiteOnly = card.def.effects.some((e) => e.effect === 'extendRetainerLife' || e.effect === 'persistRetainer')
+    const worth = (p: CardInstance) => p.def.effects.reduce((a, e) => a + (e.amount ?? 0), 0) + dollGrowth(state, p) + p.def.cost
+    const dolls = state.player.permanents
+      .filter((p) => isDoll(p) && (!finiteOnly || dollLifeLeft(state, p) !== null) && (dollLifeLeft(state, p) ?? 99) >= 2)
+      .sort((a, b) => worth(b) - worth(a))
+    permanentUid = dolls[0]?.uid ?? state.player.permanents.find(isDoll)?.uid
   }
   return { type: 'PlayCard', cardUid: card.uid, modeIndex, discardUids, exhaustUids, retrieveUid, deckUids, handUids, targetIndex, permanentUid }
 }

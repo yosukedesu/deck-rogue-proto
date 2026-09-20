@@ -22,7 +22,7 @@ describe('アンセム (blessRetainers)', () => {
     s = withIntent(s, attackIntent(0))
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'EndTurn' }) // 次ターン開始: 少年の自動攻撃
-    expect(hpBefore - s.enemies[0].hp).toBe(2 + 1)
+    expect(hpBefore - s.enemies[0].hp).toBe(3 + 1 + 1) // 剣3+アンセム1+育ち1 (次ターン)
   })
 
   it('アンセムは重ね掛けできる (号令+頌歌=+3) が、従者でない置物には乗らない', () => {
@@ -43,7 +43,7 @@ describe('アンセム (blessRetainers)', () => {
     const hpBefore = s.enemies[0].hp
     const iceBefore = s.player.iceBlock
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(hpBefore - s.enemies[0].hp).toBe(2 + 3) // 少年2+アンセム3
+    expect(hpBefore - s.enemies[0].hp).toBe(3 + 3) // 剣3+アンセム3
     expect(s.player.iceBlock - iceBefore).toBe(4) // 霜の鎧はretainerでないので素の4
   })
 })
@@ -83,7 +83,7 @@ describe('回復の換金 (onHealed網)', () => {
     s = withHand(s, ['white_perm_squire'])
     const hp0 = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
-    expect(hp0 - s.enemies[0].hp).toBe(2)
+    expect(hp0 - s.enemies[0].hp).toBe(3)
     expect(s.eventLog.some((e) => e.type === 'RetainerRushed')).toBe(true)
   })
 })

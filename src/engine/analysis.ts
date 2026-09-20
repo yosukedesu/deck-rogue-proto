@@ -1,6 +1,7 @@
 // engine/analysis.ts — 戦闘ログとラン履歴の計測 (純関数)。プレイレポートの「機械可読ブロック」と scripts/analyze-run.ts が使う。
 // 2026-09-03 ユーザー質問「md はあなたが分析しやすい形式か」→ 集計値を書き出し時に同梱し、レポートごとに regex で再導出しない。
-import type { GameEvent } from './types.ts'
+import type { CardDef, GameEvent } from './types.ts'
+import { getCardDef } from './content.ts'
 import { currentNode, replayStates, type RunJournal, type RunState } from './run.ts'
 
 export interface TurnMetrics {
@@ -17,6 +18,10 @@ export interface TurnMetrics {
   readonly holds: number
   /** 罠モデル (2026-09-13): 2窓で鳴らずに期限切れの札の枚数 (旧ログは undefined) */
   readonly expires?: number
+  /** 人形の灯り (2026-09-21): このターンに点灯した人形の数 (RetainerRushed)・灯が尽きた数 (RetainerExpired)・号令の回数 (RetainersTriggered) */
+  readonly dolls?: number
+  readonly dollsGone?: number
+  readonly rallies?: number
   /** ターン開始時の手札 (保持で残った札+ドロー。2026-09-05 ログ拡充。旧ログは undefined) */
   readonly hand?: readonly string[]
   /** ターン終了時に手札に残った札 = 使わなかった札 */
@@ -35,17 +40,22 @@ export interface BattleMetrics {
   readonly holds: number
   /** 期限切れの罠の枚数 (2026-09-13) */
   readonly expires?: number
+  /** 人形の灯り (2026-09-21): 点灯した人形の数・灯が尽きた数・号令の回数・最初の3ターンのうち「プレイが全部人形だった」ターン数 (#15 の「並べるだけの序盤」) */
+  readonly dolls?: number
+  readonly dollsGone?: number
+  readonly rallies?: number
+  readonly dollOnlyOpening?: number
   readonly perTurn: readonly TurnMetrics[]
 }
 
 export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
-  const turns = new Map<number, { dealt: number; counter: number; taken: number; plays: number; sets: number; fires: number; holds: number; expires: number; hand?: string[]; unplayed?: string[] }>()
+  const turns = new Map<number, { dealt: number; counter: number; taken: number; plays: number; sets: number; fires: number; holds: number; expires: number; dolls: number; dollsGone: number; rallies: number; nonDollPlays: number; hand?: string[]; unplayed?: string[] }>()
   let cur = 0
   let enemyPhase = false
   let awaitingDraw = false
   const at = (t: number) => {
     let m = turns.get(t)
-    if (!m) turns.set(t, (m = { dealt: 0, counter: 0, taken: 0, plays: 0, sets: 0, fires: 0, holds: 0, expires: 0 }))
+    if (!m) turns.set(t, (m = { dealt: 0, counter: 0, taken: 0, plays: 0, sets: 0, fires: 0, holds: 0, expires: 0, dolls: 0, dollsGone: 0, rallies: 0, nonDollPlays: 0 }))
     return m
   }
   for (const e of log) {
@@ -71,7 +81,15 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
           else at(cur).dealt += e.hpLoss
         } else at(cur).taken += e.hpLoss
         break
-      case 'CardPlayed': at(cur).plays++; break
+      case 'CardPlayed': {
+        at(cur).plays++
+        // 「人形を並べる札」= 人形そのもの・召喚 (点灯・一斉点灯…)・コピー系。それ以外のプレイを数え、0 のターンが「並べるだけ」
+        if (!isDollCardId(e.cardId)) at(cur).nonDollPlays++
+        break
+      }
+      case 'RetainerRushed': at(cur).dolls++; break
+      case 'RetainerExpired': at(cur).dollsGone++; break
+      case 'RetainersTriggered': at(cur).rallies++; break
       case 'CardSet': at(cur).sets++; break
       case 'ReactionTriggered': at(cur).fires++; break
       case 'ReactionHeld': at(cur).holds++; break
@@ -79,8 +97,13 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
       default: break
     }
   }
-  const perTurn: TurnMetrics[] = [...turns.entries()].sort((a, b) => a[0] - b[0]).map(([turn, m]) => ({ turn, ...m }))
-  const sum = (k: 'dealt' | 'counter' | 'taken' | 'plays' | 'sets' | 'fires' | 'holds' | 'expires') => perTurn.reduce((a, m) => a + (m[k] ?? 0), 0)
+  const sorted = [...turns.entries()].sort((a, b) => a[0] - b[0])
+  const perTurn: TurnMetrics[] = sorted.map(([turn, m]) => {
+    const { nonDollPlays: _n, ...rest } = m
+    return { turn, ...rest }
+  })
+  const sum = (k: 'dealt' | 'counter' | 'taken' | 'plays' | 'sets' | 'fires' | 'holds' | 'expires' | 'dolls' | 'dollsGone' | 'rallies') => perTurn.reduce((a, m) => a + (m[k] ?? 0), 0)
+  const dollOnlyOpening = sorted.slice(0, 3).filter(([, m]) => m.plays > 0 && m.nonDollPlays === 0).length
   return {
     turns: perTurn.length,
     t1Damage: perTurn[0]?.dealt ?? 0,
@@ -91,8 +114,25 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
     fires: sum('fires'),
     holds: sum('holds'),
     expires: sum('expires'),
+    dolls: sum('dolls'),
+    dollsGone: sum('dollsGone'),
+    rallies: sum('rallies'),
+    dollOnlyOpening,
     perTurn,
   }
+}
+
+/** 人形を並べる札か (人形の灯り 2026-09-21 の計測用): 人形そのもの・召喚 (summonPermanent)・コピー系。定義が無い id (工房産など) は名前で読まない=false */
+function isDollCardId(cardId: string): boolean {
+  let def: CardDef | undefined
+  try {
+    def = getCardDef(cardId)
+  } catch {
+    return false
+  }
+  if (def.retainer === true) return true
+  const all = [...def.effects, ...(def.modes ?? []).flatMap((m) => m.effects)]
+  return all.some((e) => e.effect === 'summonPermanent' || e.effect === 'copyRetainer' || e.effect === 'copyLastRetainer' || e.effect === 'twinNextRetainer')
 }
 
 export interface BattleRow {

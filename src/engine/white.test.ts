@@ -96,7 +96,7 @@ describe('従者ホード (置物数参照)', () => {
     // 敵が防御するとブロックに止められるため攻撃意図で検証
     s = withIntent(s, attackIntent(3))
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 2) // 次ターン開始時に従者が殴る
+    expect(s.enemies[0].hp).toBe(hpBefore - 4) // 次ターン開始時に従者が殴る (剣3+育ち1)
   })
 })
 

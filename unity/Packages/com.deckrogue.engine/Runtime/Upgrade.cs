@@ -174,6 +174,7 @@ namespace DeckRogue.Engine
             "drawCards", "impulseDraw", "addGrowth", "addMomentum", "addAether", "addLight", "addCasts", "gainEnergy",
             "exposeEnemy", "weakenEnemy", "summonPermanent", "upgradeInHand", "addCardToHand", "empowerShivs", "exhaustFromDeck",
             "addCardToDraw", "triggerRandomRetainer", // 火種 (2026-09-20 夜)
+            "copyRetainer", "twinNextRetainer", "extendRetainerLife", // 人形の灯り (2026-09-21)
         };
 
         private static readonly HashSet<string> AMOUNT_V2 = BuildAmountV2();
@@ -196,7 +197,7 @@ namespace DeckRogue.Engine
         private static bool IsGreenRule(CardDef def) =>
             def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color));
         /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
-        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string> { "white_perm_band", "white_perm_apostle" };
+        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string> { "white_perm_band", "white_perm_apostle", "white_perm_mirror_lantern" }; // 鏡の灯籠 (2026-09-21): 1E
 
         /// <summary>効果列1つぶんの本家形ティア (モードごとにも使う)</summary>
         private static string TierV2(IReadOnlyList<DeclarativeEffect> effects, CardDef? def = null)

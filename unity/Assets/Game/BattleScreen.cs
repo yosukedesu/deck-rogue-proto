@@ -955,8 +955,9 @@ namespace DeckRogue.Game
                     case "weakenEnemy": icon = "exposed"; break;
                     default: icon = "crest_permanent"; break;
                 }
-                int amount = e.Amount.Value + bless;
-                boosted = bless > 0;
+                // いまの量 = 素の量＋アンセム＋育ち (2026-09-21 人形の灯り。DollUi.EffectAmount = 実処理と同じ式)。育ちかアンセムが乗れば真鍮の数字
+                int amount = DollUi.EffectAmount(st, d, e, bless) ?? (e.Amount.Value + bless);
+                boosted = amount != e.Amount.Value;
                 text = amount + (e.Target == "all" ? "全" : "");
                 return true;
             }
@@ -977,7 +978,7 @@ namespace DeckRogue.Game
             Stage.BindUnit(key, spr, img, art);
             bool ph = UiKit.Phone;
             // 「人形を1体選ぶ」札の候補・選択中は足元に輪 (敵の対象と同じ作法)
-            bool choosing = g.Pending != null && g.Pending.NextNeed() == "permanent";
+            bool choosing = g.Pending != null && g.Pending.NextNeed() == "permanent" && (g.Pending.Card == null || DollUi.Eligible(st, g.Pending.Card.Def, d));   // 期限なしの人形に継ぎ火は選べない (2026-09-21)
             bool chosen = g.Pending != null && g.Pending.PermanentUid == d.Uid;
             if (choosing || chosen)
             {
@@ -999,8 +1000,12 @@ namespace DeckRogue.Game
             string icon, text; bool boosted;
             bool has = DollTag(st, d, out icon, out text, out boosted);
             if (overflow > 0) text = (has ? text + " " : "") + "+" + overflow;
-            if (!has && overflow <= 0) return;
-            float tw = (ph ? 38f : 48f) + (overflow > 0 ? (ph ? 22f : 28f) : 0f) + (text.Length > 2 ? (ph ? 8f : 10f) : 0f), th = ph ? 18f : 24f;
+            // 残りの灯り (2026-09-21 人形の灯り): 「あとN」を小さく右に。期限なしは灯りの印だけ。残り1は朱
+            var lifeLeft = DollUi.LifeLeft(st, d);
+            string lifeText = (has ? "・" : "") + (lifeLeft == null ? "∞" : "あと" + lifeLeft.Value);
+            bool lastTurn = lifeLeft != null && lifeLeft.Value <= 1;
+            if (!has && overflow <= 0) { text = ""; }
+            float tw = (ph ? 38f : 48f) + (overflow > 0 ? (ph ? 22f : 28f) : 0f) + (text.Length > 2 ? (ph ? 8f : 10f) : 0f) + (lifeLeft == null ? (ph ? 14f : 18f) : (ph ? 30f : 40f)), th = ph ? 18f : 24f;
             var tag = UiKit.NewRect("tag", pan);
             UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, feetY - th - 2f), new Vector2(tw / 2f, feetY - 2f));
             var tImg = tag.gameObject.AddComponent<Image>();
@@ -1011,9 +1016,17 @@ namespace DeckRogue.Game
             var ic = UiKit.Icon(tag, icon, isz);
             UiKit.Le(ic, isz, isz, isz, isz);
             var numColor = boosted ? PaperFx.BrassInk : icon == "shield" ? PaperFx.SkyInk : icon == "heart" ? UiKit.Hex("#276a34") : PaperFx.Ink;
-            var t = UiKit.Deco(tag, text, ph ? 12 : 15, numColor, TextAnchor.MiddleCenter);
-            t.textWrappingMode = TextWrappingModes.NoWrap;
-            UiKit.Le(t, 10f, th - 4f, -1f, th - 4f);
+            if (text.Length > 0)
+            {
+                var t = UiKit.Deco(tag, text, ph ? 12 : 15, numColor, TextAnchor.MiddleCenter);
+                t.textWrappingMode = TextWrappingModes.NoWrap;
+                UiKit.Le(t, 10f, th - 4f, -1f, th - 4f);
+            }
+            else { ic.gameObject.SetActive(false); }
+            // 残りの灯り: 小さく。残り1 (このターンの敵フェーズが終わると消える) は朱の墨
+            var lt = UiKit.Deco(tag, lifeText, ph ? 10 : 12, lastTurn ? UiKit.Hex("#a33a30") : PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            lt.textWrappingMode = TextWrappingModes.NoWrap;
+            UiKit.Le(lt, 8f, th - 4f, -1f, th - 4f);
         }
 
         /// <summary>人形の説明 (タップ／ホバー): 名前・本文・いまの値 (輝き増し込み)・壊れる条件</summary>
@@ -1028,8 +1041,17 @@ namespace DeckRogue.Game
             sb.Append("<b>").Append(d.Def.Name).Append("</b>  <size=80%>人形 (置物)</size>\n").Append(CardText.Body(d.Def));
             int bless = RetainerBless(cur);
             if (bless > 0) sb.Append("\n<color=#634410>輝き増しで +").Append(bless).Append("</color>");
+            // 灯り (2026-09-21): 残りと育ち
+            var left = DollUi.LifeLeft(cur, d);
+            int grow = DollUi.Growth(cur, d);
+            sb.Append("\n<color=#634410>灯り: ").Append(left == null ? "尽きない" : "あと" + left.Value + "ターン（点灯したターンを含む）").Append("</color>");
+            sb.Append("\n<color=#4e4c55>点灯してから1ターンごとにダメージとブロック+1（いま火勢+").Append(grow).Append("）。写し灯などで写すと残りの灯りを写す</color>");
             sb.Append("\n<color=#4e4c55>敵の「人形壊し」で壊れる。灯の捧げの対価に選べる</color>");
-            if (g.Pending != null && g.Pending.NextNeed() == "permanent") sb.Append("\n<b>押すとこの人形を選ぶ</b>");
+            if (g.Pending != null && g.Pending.NextNeed() == "permanent")
+            {
+                bool ok = g.Pending.Card == null || DollUi.Eligible(cur, g.Pending.Card.Def, d);
+                sb.Append(ok ? "\n<b>押すとこの人形を選ぶ</b>" : "\n<color=#9c3a2a>灯りが尽きない人形には使えない</color>");
+            }
             return sb.ToString();
         }
 
@@ -1230,11 +1252,11 @@ namespace DeckRogue.Game
             UiKit.Anchor(permRow, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(cx0 + 14f, 0f), new Vector2(cx0 + secC - 8f, 0f));
             var permLabel = UiKit.Txt(permRow, "置物 " + perms.Count, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Anchor(permLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -30f), new Vector2(0f, -10f));
-            PermChips(permRow, perms, 1, 200f, 34f);
+            PermChips(permRow, perms, 1, 200f, 34f, st);
         }
 
         /// <summary>置物の付箋を並べる (cols 列・2行)。行に収まらない分は「+N …」(タップで名前の一覧)。上端 top から下へ</summary>
-        static void PermChips(RectTransform permRow, List<CardInstance> perms, int cols, float chipW, float top)
+        static void PermChips(RectTransform permRow, List<CardInstance> perms, int cols, float chipW, float top, GameState st = null)
         {
             int cells = cols * 2;
             int show = perms.Count <= cells ? perms.Count : cells - 1;
@@ -1243,7 +1265,7 @@ namespace DeckRogue.Game
                 var chip = UiKit.NewRect("perm", permRow);
                 int cx = i % cols, cy = i / cols;
                 UiKit.Anchor(chip, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(cx * (chipW + 8f), -top - cy * (PhoneChipH + 6f) - PhoneChipH), new Vector2(cx * (chipW + 8f) + chipW, -top - cy * (PhoneChipH + 6f)));
-                PhonePermChip(chip, perms[i]);
+                PhonePermChip(chip, perms[i], st);
             }
             if (show < perms.Count)
             {   // 残りは「+N …」(タップで名前の一覧)
@@ -1371,7 +1393,7 @@ namespace DeckRogue.Game
                 var permLabel = PaperFx.NightNote(permRow, "置物 " + perms.Count, 14, 120f);
                 permLabel.anchorMin = permLabel.anchorMax = new Vector2(0f, 1f); permLabel.pivot = new Vector2(0f, 1f);
                 permLabel.anchoredPosition = new Vector2(-4f, 2f);
-                PermChips(permRow, perms, cols, PhoneChipW, 22f);
+                PermChips(permRow, perms, cols, PhoneChipW, 22f, st);
             }
 
             // 自分の札 (下端は帳面の線): HP＋ブロック／被ダメ予測 (2行)／資源 (1行に2つ・3つ目からは2行目)
@@ -1463,7 +1485,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>置物の付箋 (168×40): 挿絵 48×29 + 名前 (長い名前は…)。タップで本文</summary>
-        static void PhonePermChip(RectTransform chip, CardInstance q)
+        static void PhonePermChip(RectTransform chip, CardInstance q, GameState st = null)
         {
             var img = PaperFx.Sheet(chip, PaperFx.Tag2, "paper");
             UiKit.Stretch(img.rectTransform, 0f, 0f, 0f, 0f);
@@ -1480,6 +1502,15 @@ namespace DeckRogue.Game
             nt.textWrappingMode = TextWrappingModes.NoWrap;
             nt.overflowMode = TextOverflowModes.Ellipsis;
             string ptip = "<b>" + q.Def.Name + "</b>\n" + CardText.Body(q.Def);
+            // 人形の付箋には残りの灯り (2026-09-21): 右端に小さく「あとN」(残り1は朱)
+            if (DollUi.IsDoll(q) && st != null)
+            {
+                var left = DollUi.LifeLeft(st, q);
+                var lt = UiKit.Deco(chip, left == null ? "∞" : "あと" + left.Value, 11, left != null && left.Value <= 1 ? UiKit.Hex("#a33a30") : PaperFx.InkSoft, TextAnchor.MiddleRight);
+                UiKit.Anchor(lt.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-48f, 0f), new Vector2(-6f, 0f));
+                lt.textWrappingMode = TextWrappingModes.NoWrap;
+                ptip += "\n灯り: " + (left == null ? "尽きない" : "あと" + left.Value + "ターン") + "・火勢+" + DollUi.Growth(st, q);
+            }
             Tooltip.Attach(chip.gameObject, delegate { return ptip; });
         }
 
@@ -1791,6 +1822,18 @@ namespace DeckRogue.Game
             var hint = PaperFx.NightNote(root, "手札 " + st.Player.Hand.Count + " · からくり " + st.Player.SetCards.Count + "/" + st.Player.SetSlots, 13, 240f);
             hint.anchorMin = hint.anchorMax = new Vector2(1f, 0f); hint.pivot = new Vector2(1f, 0f);
             hint.anchoredPosition = new Vector2(-40f, 216f);
+            // 火種を全部撃つ (2026-09-21 【G】人間ラン#15「火種のクリック89回」): 手札に火種が2枚以上ある時だけ、ターン終了の左に。自動プレイはしない (灯火の炉などのために持つ選択を残す)
+            int sparks = 0;
+            foreach (var hc in st.Player.Hand) if (hc.Def.SparkToken == true) sparks++;
+            if (sparks >= 2)
+            {
+                var sb = UiKit.Btn(root, "火種を全部撃つ (" + sparks + ")", delegate { g.PlayAllSparks(); }, 17, myTurn, myTurn ? PaperFx.BrassLight : Color.white);
+                var sle = sb.GetComponent<LayoutElement>();
+                if (sle != null) UnityEngine.Object.Destroy(sle);
+                var srt = sb.GetComponent<RectTransform>();
+                UiKit.Anchor(srt, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-500f, 152f), new Vector2(-286f, 204f));
+                srt.localRotation = Quaternion.Euler(0f, 0f, -1f);
+            }
 
             // 灯の器 (2026-09-20 灯の表示・案B「真鍮のランタン」): 白の色を持つリーダーは常に、他は灯1以上で。
             // スマホは手札が 251px から始まり輪の右に 27px しか無いので、灯籠を出す時だけ輪を左 (16〜144) へ寄せて右に灯籠 (2.5px/ドット＝80×120)。

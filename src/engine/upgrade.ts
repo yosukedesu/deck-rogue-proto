@@ -139,6 +139,7 @@ const UNIT_EFFECTS_V2 = new Set([
   'drawCards', 'impulseDraw', 'addGrowth', 'addMomentum', 'addAether', 'addLight', 'addCasts', 'gainEnergy',
   'exposeEnemy', 'weakenEnemy', 'summonPermanent', 'upgradeInHand', 'addCardToHand', 'empowerShivs', 'exhaustFromDeck',
   'addCardToDraw', 'triggerRandomRetainer', // 火種 (2026-09-20 夜): 生成枚数+1 (骨刃と同じ単位)
+  'copyRetainer', 'twinNextRetainer', 'extendRetainerLife', // 人形の灯り (2026-09-21): 写し灯+=2体・二重の点灯+=次の2体・継ぎ火は灯コスト持ちなので light ティア
 ])
 const AMOUNT_V2 = new Set([...UPGRADABLE_EFFECTS, 'growSelf'])
 const hasMult = (e: DeclarativeEffect) =>
@@ -152,7 +153,7 @@ const isGreenRule = (def: CardDef) => def.id.startsWith('green_') || V2_COLORS.h
  * 単位+1 で「誘発ごと2ドロー」になり、見習いの列1枚 (2体登場) で4ドロー・燭光の従者+使徒で攻撃1枚ごと2ドロー = 青のドローの定価を越える。
  * 年輪の大樹 (旧3段) と同じく「軽くなって置きやすい」が正しい伸び方
  */
-const V2_COST_ONLY = new Set(['white_perm_band', 'white_perm_apostle'])
+const V2_COST_ONLY = new Set(['white_perm_band', 'white_perm_apostle', 'white_perm_mirror_lantern']) // 鏡の灯籠 (2026-09-21): 単位+1 だと毎T2体コピー=設置速度が倍 → 1E
 
 /** 効果列1つぶんの本家形ティア (モードごとにも使う) */
 function tierV2(effects: readonly DeclarativeEffect[], def?: CardDef): 'mult' | 'unit' | 'threshold' | 'amount' | 'none' {
