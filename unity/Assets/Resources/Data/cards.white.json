@@ -176,7 +176,7 @@
     ],
     "retainer": true,
     "rarity": "common",
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_perm_shieldmaiden",
@@ -192,7 +192,7 @@
     ],
     "retainer": true,
     "rarity": "common",
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_perm_choir",
@@ -209,7 +209,7 @@
     "retainer": true,
     "rarity": "uncommon",
     "lightCost": 2,
-    "life": 4
+    "life": 5
   },
   {
     "id": "white_perm_banneret",
@@ -225,7 +225,7 @@
     ],
     "retainer": true,
     "rarity": "common",
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_rally",
@@ -372,7 +372,7 @@
     "retainer": true,
     "rarity": "uncommon",
     "lightCost": 2,
-    "life": 4
+    "life": 5
   },
   {
     "id": "white_perm_banner",
@@ -418,7 +418,7 @@
     ],
     "retainer": true,
     "rarity": "common",
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_service",
@@ -597,7 +597,7 @@
         "target": "all"
       }
     ],
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_perm_monk",
@@ -613,7 +613,7 @@
         "amount": 1
       }
     ],
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_calling",
@@ -686,7 +686,7 @@
         "amount": 1
       }
     ],
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_hymn_wall",
@@ -762,7 +762,7 @@
       }
     ],
     "lightCost": 2,
-    "life": 4
+    "life": 5
   },
   {
     "id": "white_maiden_prayer",
@@ -913,7 +913,7 @@
         "amount": 2
       }
     ],
-    "life": 2
+    "life": 3
   },
   {
     "id": "white_page_rank",
@@ -1164,7 +1164,7 @@
         "amount": 1
       }
     ],
-    "life": 3
+    "life": 4
   },
   {
     "id": "white_perm_lantern",
@@ -1182,7 +1182,7 @@
         "target": "all"
       }
     ],
-    "life": 4
+    "life": 5
   },
   {
     "id": "white_perm_bonfire",
@@ -1270,7 +1270,7 @@
     "id": "white_eternal_light",
     "name": "永遠の灯",
     "cost": 1,
-    "lightCost": 3,
+    "lightCost": 2,
     "type": "spell",
     "rarity": "rare",
     "exhaust": true,

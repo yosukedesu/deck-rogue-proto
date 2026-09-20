@@ -443,3 +443,19 @@ describe('脈打つ欠片は3回で砕ける (2026-09-18 人間ラン#14「強�
     expect(relicStateOf(r2, 'remnantUsed')).toBe(3)
   })
 })
+
+describe('干からびた手 (2026-09-21 人間ラン#16: 人形1E→次のカード-1→人形0E→… の無限の割引)', () => {
+  it('置物を場に出すたびの割引は1ターンに1回。2体目の人形では割引が付かない', () => {
+    let s = energize(withHand(combatWith(['relic_mummified_hand']), ['white_perm_squire', 'white_perm_squire', 'white_perm_squire']), 3)
+    s = play(s, 't0_white_perm_squire')
+    expect(s.player.nextCardDiscount).toBe(1)
+    expect(s.player.energy).toBe(2)
+    s = play(s, 't1_white_perm_squire') // 割引で0E。2体目の登場では割引が付かない (once: 'turn')
+    expect(s.player.energy).toBe(2)
+    expect(s.player.nextCardDiscount).toBe(0)
+    s = play(s, 't2_white_perm_squire')
+    expect(s.player.energy).toBe(1)
+    expect(s.player.nextCardDiscount).toBe(0)
+    expect(getRelicDef('relic_mummified_hand').effects[0].once).toBe('turn')
+  })
+})

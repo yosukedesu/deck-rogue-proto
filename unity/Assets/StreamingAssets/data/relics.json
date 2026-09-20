@@ -782,13 +782,14 @@
     "id": "relic_mummified_hand",
     "name": "干からびた手",
     "sprite": "✋",
-    "description": "置物を場に出すたび、次のカード-1",
+    "description": "置物を場に出すたび、次のカード-1（1ターンに1回）",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPermanentEntered",
         "effect": "discountNext",
-        "amount": 1
+        "amount": 1,
+        "once": "turn"
       }
     ]
   },

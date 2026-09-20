@@ -20,34 +20,37 @@ const dolls = (s: GameState): CardInstance[] => s.player.permanents.filter((p) =
 const inst = (id: string): CardInstance => ({ uid: `x_${id}`, def: getCardDef(id) })
 
 describe('灯り (寿命): 点灯したターンを1と数え、最後のターンの敵フェーズが終わると消える', () => {
-  it('剣の人形 (寿命3): T1 に出すと あと3→2→1、T3 の敵フェーズの終わりに消える (RetainerExpired)。T2/T3 の開始に動く', () => {
+  it('剣の人形 (寿命4): T1 に出すと あと4→3→2→1、T4 の敵フェーズの終わりに消える (RetainerExpired)。T2〜T4 の開始に動く', () => {
     let s = energy(fresh(['white_perm_squire']), 9)
     s = play(s, 't0_white_perm_squire')
-    expect(dollLifeLeft(s, dolls(s)[0])).toBe(3)
+    expect(dollLifeLeft(s, dolls(s)[0])).toBe(4)
     expect(dolls(s)[0].enteredTurn).toBe(1)
     s = nextTurn(s) // T2
-    expect(dollLifeLeft(s, dolls(s)[0])).toBe(2)
+    expect(dollLifeLeft(s, dolls(s)[0])).toBe(3)
     s = nextTurn(s) // T3
+    expect(dollLifeLeft(s, dolls(s)[0])).toBe(2)
+    s = nextTurn(s) // T4
     expect(dollLifeLeft(s, dolls(s)[0])).toBe(1)
     expect(s.eventLog.filter((e) => e.type === 'RetainerExpired').length).toBe(0)
-    s = nextTurn(s) // T3 の敵フェーズが終わる → 消える
+    s = nextTurn(s) // T4 の敵フェーズが終わる → 消える
     expect(dolls(s)).toHaveLength(0)
     expect(s.eventLog.filter((e) => e.type === 'RetainerExpired')).toEqual([{ type: 'RetainerExpired', cardId: 'white_perm_squire', uid: 't0_white_perm_squire' }])
     // 人形壊しの誘発 (TokenDestroyed) ではない
     expect(s.eventLog.some((e) => e.type === 'TokenDestroyed')).toBe(false)
   })
 
-  it('段: 小さな人形2・灯コストつき (癒し) 4・篝火は期限なし (null)', () => {
+  it('段: 小さな人形3・灯コストつき (癒し) 5・篝火は期限なし (null)', () => {
     let s = light(energy(fresh(['white_perm_page', 'white_perm_choir', 'white_perm_bonfire']), 9), 9)
     s = play(s, 't0_white_perm_page')
     s = play(s, 't1_white_perm_choir')
     s = play(s, 't2_white_perm_bonfire')
     const [page, choir, bonfire] = dolls(s)
-    expect(dollLifeLeft(s, page)).toBe(2)
-    expect(dollLifeLeft(s, choir)).toBe(4)
+    expect(dollLifeLeft(s, page)).toBe(3)
+    expect(dollLifeLeft(s, choir)).toBe(5)
     expect(dollLifeLeft(s, bonfire)).toBeNull()
     s = nextTurn(s)
-    s = nextTurn(s) // T2 の終わりで小さな人形が消える
+    s = nextTurn(s)
+    s = nextTurn(s) // T3 の終わりで小さな人形が消える
     expect(dolls(s).map((p) => p.def.id)).toEqual(['white_perm_choir', 'white_perm_bonfire'])
     for (let i = 0; i < 6; i++) s = nextTurn(s)
     expect(dolls(s).map((p) => p.def.id)).toEqual(['white_perm_bonfire']) // 篝火は消えない
@@ -73,7 +76,7 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(rallyPreview(s, 0).damage).toBe(4 + 2)
   })
 
-  it('コピー (写し灯) は残りの灯りを写す: T2 に T1 の人形を写すと あと2 で出て、元と同じターンに消える。点灯で1回動く (火勢込み)', () => {
+  it('コピー (写し灯) は残りの灯りを写す: T2 に T1 の人形を写すと あと3 で出て、元と同じターンに消える。点灯で1回動く (火勢込み)', () => {
     let s = energy(fresh(['white_perm_squire', 'white_copy_light']), 9)
     s = play(s, 't0_white_perm_squire')
     s = energy(withHand(nextTurn(s), ['white_copy_light']), 9)
@@ -81,9 +84,10 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     s = play(s, 't0_white_copy_light', { permanentUid: 't0_white_perm_squire' })
     expect(dolls(s)).toHaveLength(2)
     expect(dolls(s)[1].enteredTurn).toBe(1)
-    expect(dollLifeLeft(s, dolls(s)[1])).toBe(2)
+    expect(dollLifeLeft(s, dolls(s)[1])).toBe(3)
     expect(hp0 - s.enemies[0].hp).toBe(4) // 点灯: 3+火勢1
     expect(s.eventLog.some((e) => e.type === 'RetainerCopied' && e.fromUid === 't0_white_perm_squire')).toBe(true)
+    s = nextTurn(s)
     s = nextTurn(s)
     s = nextTurn(s)
     expect(dolls(s)).toHaveLength(0)
@@ -98,16 +102,16 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     for (const id of ['white_copy_light', 'white_relight', 'white_eternal_light']) expect(getCardDef(id).requiresRetainer).toBe(true)
   })
 
-  it('継ぎ火 (1E・灯1): 灯りを2ターン継ぐ。永遠の灯 (1E・灯3・消滅): 尽きなくなる。期限なしの人形に継ぎ火は何も起きない', () => {
+  it('継ぎ火 (1E・灯1): 灯りを2ターン継ぐ。永遠の灯 (1E・灯2・消滅): 尽きなくなる。期限なしの人形に継ぎ火は何も起きない', () => {
     let s = light(energy(fresh(['white_perm_squire', 'white_relight', 'white_eternal_light', 'white_relight']), 9), 9)
     s = play(s, 't0_white_perm_squire')
     s = play(s, 't1_white_relight', { permanentUid: 't0_white_perm_squire' })
-    expect(dollLifeLeft(s, dolls(s)[0])).toBe(5)
+    expect(dollLifeLeft(s, dolls(s)[0])).toBe(6)
     expect(s.player.light).toBe(8)
     expect(s.eventLog.some((e) => e.type === 'RetainerLifeExtended' && e.amount === 2)).toBe(true)
     s = play(s, 't2_white_eternal_light', { permanentUid: 't0_white_perm_squire' })
     expect(dollLifeLeft(s, dolls(s)[0])).toBeNull()
-    expect(s.player.light).toBe(5)
+    expect(s.player.light).toBe(6)
     expect(s.player.exhaustPile.some((c) => c.def.id === 'white_eternal_light')).toBe(true)
     s = play(s, 't3_white_relight', { permanentUid: 't0_white_perm_squire' })
     expect(dolls(s)[0].lifeBonus).toBe(2) // 変わらない
@@ -126,7 +130,7 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(dolls(s)).toHaveLength(2)
     expect(s.nextRetainerTwin).toBe(0)
     expect(hp0 - s.enemies[0].hp).toBe(3 + 3) // 両方が点灯
-    expect(dollLifeLeft(s, dolls(s)[1])).toBe(3)
+    expect(dollLifeLeft(s, dolls(s)[1])).toBe(4)
     s = play(s, 't1_white_perm_squire')
     expect(dolls(s)).toHaveLength(3) // 2枚目は1体
   })
@@ -148,7 +152,7 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     s = play(s, 't0_white_perm_squire')
     s = energy(withHand(nextTurn(s), ['white_miracle_division']), 9)
     s = play(s, 't0_white_miracle_division')
-    expect(dolls(s).map((p) => dollLifeLeft(s, p))).toEqual([2, 2])
+    expect(dolls(s).map((p) => dollLifeLeft(s, p))).toEqual([3, 3])
   })
 
   it('出力: 剣3・盾3・小さな人形2・一斉点灯3体・大点灯4体。灯コストつきの人形と篝火は据え置き', () => {
@@ -161,23 +165,23 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(getCardDef('white_perm_bonfire').effects[0].amount).toBe(3)
   })
 
-  it('鍛え: 写し灯+=2体・二重の点灯+=次の2体・継ぎ火+=灯0・永遠の灯+=灯2・鏡の灯籠+=1E', () => {
+  it('鍛え: 写し灯+=2体・二重の点灯+=次の2体・継ぎ火+=灯0・永遠の灯+=灯1・鏡の灯籠+=1E', () => {
     const up = (id: string) => upgradeCard(inst(id)).def
     expect(up('white_copy_light').effects[0].amount).toBe(2)
     expect(up('white_twin_light').effects[0].amount).toBe(2)
     expect(up('white_relight').lightCost).toBe(0)
-    expect(up('white_eternal_light').lightCost).toBe(2)
+    expect(up('white_eternal_light').lightCost).toBe(1)
     expect(up('white_perm_mirror_lantern').cost).toBe(1)
   })
 
   it('合成: 人形×人形は長い方の寿命、篝火が混ざれば期限なし。人形×道具は人形の寿命', () => {
     const a = fuseCards(inst('white_perm_squire'), inst('white_perm_choir'))
-    expect(a?.life).toBe(4)
+    expect(a?.life).toBe(5)
     const b = fuseCards(inst('white_perm_squire'), inst('white_perm_bonfire'))
     expect(b?.lifePersist).toBe(true)
     const c = fuseCards(inst('white_perm_squire'), inst('white_perm_chalice'))
     expect(c?.retainer).toBe(true)
-    expect(c?.life).toBe(3)
+    expect(c?.life).toBe(4)
   })
 
   it('白は 96種 (報酬88): 新規5枚は報酬プール', () => {

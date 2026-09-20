@@ -756,6 +756,10 @@ namespace DeckRogue.Game
             var d3 = ev as GameEvent_GearUsed; if (d3 != null) return "ギア「" + d3.Name + "」を組んだ";   // ⚙ は Unity のフォントに無い   // ギア (2026-09-17)
             var e3 = ev as GameEvent_DeathSaved; if (e3 != null) return e3.Source == "gear" ? "蘇りの発条がはじけ、HP" + e3.Hp + "で踏みとどまった" : "蜥蜴の尾が砕け、HP" + e3.Hp + "で踏みとどまった";
             var g3 = ev as GameEvent_RetainerRushed; if (g3 != null) return "点灯: " + CardName(g3.CardId) + "が出た瞬間に1回動いた";   // ひなたのパッシブ (2026-09-19 log に出ていなかった)
+            // 人形の灯り (2026-09-21): 尽きた・写した・継いだ (人間ラン#16 のレポートに行が無かった)
+            var gx = ev as GameEvent_RetainerExpired; if (gx != null) return "灯が尽きた: " + CardName(gx.CardId) + "が消えた";
+            var gc = ev as GameEvent_RetainerCopied; if (gc != null) return "写し: " + CardName(gc.CardId) + "をコピーした（残りの灯りを写す）";
+            var gl = ev as GameEvent_RetainerLifeExtended; if (gl != null) return gl.Persist == true ? "永遠の灯: " + CardName(gl.CardId) + "の灯りは尽きなくなった" : "継ぎ火: " + CardName(gl.CardId) + "の灯りを" + gl.Amount + "ターン継いだ";
             var h3 = ev as GameEvent_RetainersTriggered; if (h3 != null) return "号令: 人形" + h3.Count + "体がトリガーを問わず今1回ずつ動いた";
             var i4 = ev as GameEvent_RetainersDuplicated; if (i4 != null) return "分列: 従者" + i4.Count + "体が複製された";
             var f3 = ev as GameEvent_HpLossCapped; if (f3 != null) return f3.Left > 0 ? "脈打つ欠片がHPの損失を20で止めた（あと" + f3.Left + "回）" : "脈打つ欠片がHPの損失を20で止めた（これで最後。戦いの後に砕ける）";   // 2026-09-18

@@ -268,8 +268,9 @@ describe('鍛える・合成・供給', () => {
     expect(p.effects.some((e) => e.effect === 'dischargeLight')).toBe(false)
   })
 
-  it('灯の矢はスターター専用 (報酬プール外)、光壁砕きは報酬プールへ。灯コスト持ちは白だけ', () => {
-    expect(REWARD_EXCLUDED.has('white_light_bolt')).toBe(true)
+  it('継ぎ火がスターター専用 (報酬プール外)、灯の矢・光壁砕きは報酬プールへ (2026-09-21)。灯コスト持ちは白だけ', () => {
+    expect(REWARD_EXCLUDED.has('white_light_bolt')).toBe(false) // 2026-09-21: 灯の矢は報酬プールへ、継ぎ火が初期デッキの灯の教材に
+    expect(REWARD_EXCLUDED.has('white_relight')).toBe(true)
     expect(REWARD_EXCLUDED.has('white_bodyslam')).toBe(false)
     expect(allCards.filter((c) => (c.lightCost ?? 0) > 0).every((c) => c.color === 'white')).toBe(true)
     const removed = ['white_holy_oil', 'white_healing_verse', 'white_perm_spring', 'white_perm_bell', 'white_wall_jab', 'white_shield_bash', 'white_perm_ballista', 'white_decree', 'white_cowering_light', 'white_seal_light', 'white_glory_chain', 'white_perm_pavilion', 'white_rank_shield']
