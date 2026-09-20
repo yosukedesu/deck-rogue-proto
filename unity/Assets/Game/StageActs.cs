@@ -121,6 +121,7 @@ namespace DeckRogue.Game
             var mWood = Wood(A, new Color(0.72f, 0.66f, 0.62f));
             var mPlank = Tex(A, "plank", null) != null ? Lit(Tex(A, "plank", null)) : mWood; if (mPlank != mWood) mPlank.SetColor("_BaseColor", new Color(0.7f, 0.64f, 0.6f));
             var mIron = Lit(Px.Solid(UiKit.Hex("#2c2a30")));
+            _decalTint = new Color(0.78f, 0.78f, 0.86f);   // 敷物 = 道の色
 
             // ---- 壁と天井
             const float WallS = 11.4f, WallH = 6.2f;
@@ -136,7 +137,7 @@ namespace DeckRogue.Game
                 var tm = PropTexRaw(A, "tunnel_mouth", null);
                 if (tm != null)
                 {
-                    var w = OnPath(15f, WallS - 0.06f); var g = Plane("tunnel_mouth", tm, new Vector3(w.x, y2, w.z), 5.4f, 0.5f, false);
+                    var w = OnPath(19.5f, WallS - 0.06f); var g = Plane("tunnel_mouth", tm, new Vector3(w.x, y2, w.z), 5.4f, 0.5f, false);   // 屋台B・道具掛け・巻き上げ機の間 (t=15 は屋台の真後ろだった = レビュー)
                     g.transform.rotation = Quaternion.Euler(0f, PathYaw, 0f); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.5f);
                     // 口の中: 真っ黒の板と奥へ小さくなる提灯の点
                     var dark = Prop("tunnel-dark", Px.Solid(new Color(0.02f, 0.015f, 0.03f)), new Vector3(w.x, y2 + 0.2f, w.z) + Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(0f, 0f, 0.4f), 3.6f, 0.1f, 2.4f);
@@ -145,7 +146,7 @@ namespace DeckRogue.Game
                     PointLight("tunnel-light", new Vector3(w.x, y2 + 1.2f, w.z), warm, 0.5f, 3f);
                 }
                 var ts = PropTexRaw(A, "tunnel_side", null);
-                if (ts != null) { var w = OnPath(21.5f, WallS - 0.06f); var g = Plane("tunnel_side", ts, new Vector3(w.x, y2, w.z), 4f, 0.5f, false); g.transform.rotation = Quaternion.Euler(0f, PathYaw, 0f); g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.4f); }
+                if (ts != null) { var w = OnPath(27f, WallS - 0.06f); var g = Plane("tunnel_side", ts, new Vector3(w.x, y2, w.z), 4f, 0.5f, false); g.transform.rotation = Quaternion.Euler(0f, PathYaw, 0f); g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.4f); }
                 var cb = PropTexRaw(A, "crystal_big", Px.Crystal(veinC, rng));
                 {
                     var w = OnPath(-1f, WallS - 0.4f); var g = Prop("crystal-big", cb, new Vector3(w.x, y2, w.z), 4.4f, 0.5f); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
@@ -172,7 +173,7 @@ namespace DeckRogue.Game
                 Put(A, "gear_big", -5.5f, 10.9f, 1.5f, 0.8f); Put(A, "gear_big", 19f, 10.8f, 1.5f, 0.8f, true);
                 Put(A, "gear_pile", -5.3f, 10.0f, 1.0f, 0.9f); Put(A, "gear_pile", 12.5f, 10.6f, 1.0f, 0.9f, true);
                 Put(A, "wreck", -8f, 9.6f, 2.6f, 0.9f, false, 0f, 0.7f);
-                Put(A, "winch", 24f, 9.2f, 2.4f, 0.9f);
+                Put(A, "winch", 25.5f, 9.4f, 2.4f, 0.9f);
                 Hang(A, "pulley", 20f, 8.8f, WallH, 3.0f);
             }
             // ---- 歩廊 (壁の手前 s 10.05〜11.15・床板 y 3.6): 結晶で途切れる。手すりは一枚絵
@@ -223,7 +224,7 @@ namespace DeckRogue.Game
                 {
                     mb.Box(6f, 0.28f, 5.0f, 36f, 0.32f, 0.3f);
                     for (float t = -12f; t < 24f; t += 2.2f + (float)rng.NextDouble() * 0.9f) mb.Box(t, 0f, 4.85f, 0.16f, 0.75f, 0.16f);
-                    mb.Box(2f, 0f, -3.3f, 28f, 0.15f, 0.25f);   // 溝の縁石
+
                 });
                 var stepTex2 = Tex(A, "stone_c", null) ?? Tex(A, "stone", Px.Stone(p, rng)); var mStep2 = Lit(stepTex2); mStep2.SetColor("_BaseColor", new Color(0.5f, 0.52f, 0.6f));
                 PathBoxes("stone-steps", mStep2, mb => { mb.Box(-1.4f, 0f, 4.55f, 2.0f, 0.28f, 0.45f); mb.Box(-1.4f, 0.28f, 4.85f, 2.0f, 0.27f, 0.35f); });
@@ -235,7 +236,7 @@ namespace DeckRogue.Game
                 for (int i = 0; i < tt.Length; i++) { float t = tt[i] + ((float)rng.NextDouble() - 0.5f) * 0.6f; mb.Box(t, 0.55f, 6.6f, 0.5f, 3.75f, 0.5f); mb.Box(t, 4.3f, 4.4f, 0.42f, 0.42f, 4.4f); mb.Box(t, 3.4f, 5.7f, 0.3f, 0.3f, 1.8f); }
             });
             { var g = Put(A, "post_brace", -7.6f, -6.2f, 4.6f, 0.5f); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, 2f); }
-            { var g = Put(A, "post_brace", 5.5f, -5.6f, 4.6f, 0.5f, true); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, -2f); }
+            { var g = Put(A, "post_brace", 9.5f, -7.4f, 4.6f, 0.5f, true); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, -2f); }   // 右の額縁は敵③④の手前に掛からない所へ (レビュー)
             // ---- 一段目 (宿場)
             {
                 var h = Put(A, "hearth", -7.5f, 6.8f, 3.0f, 0.9f, false, 0f, 1f, 0f);
@@ -246,15 +247,15 @@ namespace DeckRogue.Game
                 _emberPos = new Vector3(hw.x, hw.y + 1.2f, hw.z);
                 var soot = PatchSet(A, "m_soot", false, 64, 44, 80, 56);
                 if (soot.Count > 0) GroundDecal("soot", Pick(soot, rng), hw.x, hw.z - 0.5f, 1.3f, 0f, 0.014f);
-                Put(A, "stall_a", 2.5f, 7.0f, 2.9f, 0.9f); Put(A, "stall_b", 11f, 7.3f, 2.6f, 0.9f, true);
+                Put(A, "stall_a", 2.5f, 7.0f, 2.9f, 0.9f); Put(A, "stall_b", 15.2f, 7.3f, 2.6f, 0.9f, true);   // 敵①〜④の頭 (t 1.6〜11.2) の真後ろに背の高い物を置かない (レビュー)
                 Put(A, "shelter", -3.2f, 7.6f, 2.4f, 0.9f);
-                Put(A, "toolrack", 6.2f, 7.9f, 2.0f, 0.8f); Put(A, "toolrack", 15.5f, 7.8f, 2.0f, 0.8f, true);
+                Put(A, "toolrack", -0.8f, 8.0f, 2.0f, 0.8f); Put(A, "toolrack", 19.2f, 7.6f, 2.0f, 0.8f, true);
                 Put(A, "lumber", 8.2f, 6.1f, 1.2f, 0.9f); Put(A, "lumber", 19f, 9.0f, 1.2f, 0.9f);
                 Put(A, "bell_post", -0.8f, 5.5f, 2.3f, 0.5f);
-                foreach (var pt in new[] { new Vector2(-5.4f, 5.9f), new Vector2(0.6f, 7.9f), new Vector2(13.2f, 6.3f), new Vector2(17.5f, 6.9f), new Vector2(-6.9f, -6.0f), new Vector2(6.4f, -6.3f) }) Put(A, "barrel", pt.x, pt.y, 1.1f, 0.9f, rng.NextDouble() < 0.5);
+                foreach (var pt in new[] { new Vector2(-5.4f, 5.9f), new Vector2(0.6f, 7.9f), new Vector2(13.2f, 6.3f), new Vector2(17.5f, 6.9f), new Vector2(-7.9f, -6.6f), new Vector2(10.6f, -7.0f) }) Put(A, "barrel", pt.x, pt.y, 1.1f, 0.9f, rng.NextDouble() < 0.5);
                 Put(A, "barrel_stack", -9.0f, 5.8f, 1.8f, 0.9f); Put(A, "barrel_stack", 17f, 6.8f, 1.8f, 0.9f, true);
                 foreach (var pt in new[] { new Vector2(-1.6f, 8.0f), new Vector2(4.4f, 6.2f), new Vector2(9.8f, 8.1f), new Vector2(14f, 5.8f), new Vector2(21f, 9.3f) }) Put(A, "crate", pt.x, pt.y, 1.0f, 0.9f, rng.NextDouble() < 0.5);
-                Put(A, "crate_stack", 12.6f, 7.9f, 1.9f, 0.9f); Put(A, "crate_stack", 5.2f, -5.9f, 1.9f, 0.9f, true);
+                Put(A, "crate_stack", 12.6f, 7.9f, 1.9f, 0.9f); Put(A, "crate_stack", 11.5f, -7.6f, 1.9f, 0.9f, true);
                 Put(A, "crate_open", 3.4f, 8.7f, 0.9f, 0.9f); Put(A, "crate_open", 10.2f, 6.3f, 0.9f, 0.9f, true);
                 foreach (var pt in new[] { new Vector2(1.0f, 7.8f), new Vector2(-4.6f, 7.9f), new Vector2(18.2f, 6.0f) }) Put(A, "sacks", pt.x, pt.y, 1.0f, 0.9f, rng.NextDouble() < 0.5);
                 Put(A, "trough", -5.6f, 7.9f, 0.8f, 0.9f);
@@ -270,7 +271,7 @@ namespace DeckRogue.Game
             // ---- 提灯の柱 (一段目の段鼻 s=5.4 と近景の額縁の柱の内側)
             {
                 var lanternTex = PropTexRaw(A, "lantern_post", null);
-                float[] lt = { -8.4f, -2.6f, 3.8f, 10.4f, 17.2f, -6.6f, 4.6f }; float[] ls = { 5.4f, 5.4f, 5.4f, 5.4f, 5.4f, -5.4f, -5.2f };
+                float[] lt = { -8.4f, -2.6f, 3.8f, 10.4f, 17.2f, -7.4f }; float[] ls = { 5.4f, 5.4f, 5.4f, 5.4f, 5.4f, -5.6f };   // 近景の柱は左の 1 本だけ (右は敵の手前に掛かる)
                 for (int i = 0; i < lt.Length; i++)
                 {
                     var w = OnPath(lt[i], ls[i]);
@@ -314,6 +315,17 @@ namespace DeckRogue.Game
                 float[] rt = { -6f, 6f, 14f }; float[] rs = { 6.5f, 9f, 6f };
                 for (int i = 0; i < rt.Length; i++) if (Hang(A, "roots_hang", rt[i], rs[i], WallH, 2.2f + (float)rng.NextDouble() * 0.6f, i % 2 == 1) == null) Hang(A, "roots", rt[i], rs[i], WallH, 2.8f);
             }
+            // ---- 手前の道 (溝は撤去): 濡れた染みと瓦礫の敷物で床の情報密度を足す (レビュー「床が 1 枚のタイルの繰り返し」)
+            {
+                var rub = PatchSet(A, "m_rubble", false, 40, 28, 56, 40); var mossF = PatchSet(A, "m_moss", false, 40, 28);
+                for (int i = 0; i < 10 && rub.Count > 0; i++) { var w = OnPath(-10f + (float)rng.NextDouble() * 24f, -7.5f + (float)rng.NextDouble() * 3.4f); GroundDecal("rubble", Pick(rub, rng), w.x, w.z, 0.9f, (float)rng.NextDouble() * 360f, 0.014f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 6 && mossF.Count > 0; i++) { var w = OnPath(-10f + (float)rng.NextDouble() * 24f, -7f + (float)rng.NextDouble() * 2.6f); GroundDecal("moss", Pick(mossF, rng), w.x, w.z, 0.9f, (float)rng.NextDouble() * 360f, 0.016f, rng.NextDouble() < 0.5); }
+            }
+            // ---- 天井の下の暗がり: 壁の上端 1.6 unit を沈める帯 (洞窟が「閉じる」= レビュー)
+            {
+                var shade = Glow("wall-shade", Px.Gradient(new Color(0.02f, 0.02f, 0.05f, 0f), new Color(0.02f, 0.02f, 0.05f, 0.75f)), Vector3.zero, WallH * 0.32f, 52f);
+                var w = OnPath(10f, WallS - 0.1f); shade.transform.position = new Vector3(w.x, WallH * 0.68f, w.z); shade.transform.rotation = Quaternion.Euler(0f, PathYaw, 0f);
+            }
             // ---- 風穴の冷たい光の筋 1 本 (屋台の右) と足元の光溜まり
             {
                 var w = OnPath(6f, 7.4f);
@@ -341,6 +353,7 @@ namespace DeckRogue.Game
             RenderSettings.fogStartDistance = 14f; RenderSettings.fogEndDistance = 56f;
             mFloor.SetFloat("_Smoothness", 0.28f); mCliff.SetFloat("_Smoothness", 0.2f);
             var mDark = Lit(Tex(A, "stone", Px.Stone(p, rng))); mDark.SetColor("_BaseColor", new Color(0.2f, 0.22f, 0.3f));
+            _decalTint = mFloor.GetColor("_BaseColor");   // 敷物 = 床の色
             var stepTex = Tex(A, "stone_a", null) ?? Tex(A, "stone", Px.Stone(p, rng));
             var mStep = Lit(stepTex); mStep.SetColor("_BaseColor", new Color(0.4f, 0.44f, 0.52f)); mStep.SetFloat("_Smoothness", 0.25f);
 
@@ -348,7 +361,7 @@ namespace DeckRogue.Game
             PathBoxes("bridge", mStep, mb => { mb.Box(3.0f, -0.35f, 7.2f, 5.2f, 0.4f, 3.4f); });
             PathBoxes("stairs-1", mStep, mb => { for (int k = 0; k < 3; k++) mb.Box(3.0f, k * 0.37f, 10.6f + k * 0.27f, 5.2f, 0.37f, 0.5f); });
             PathBoxes("stairs-2", mStep, mb => { for (int k = 0; k < 5; k++) mb.Box(3.0f, 1.1f + k * 0.22f, 15.0f + k * 0.24f, 11f, 0.22f, 0.45f); });
-            WallTiles("back-wall", -20f, 44f, 2.2f, 11f, 27f, mCliff, cliffVariants);
+            WallTiles("back-wall", -20f, 44f, 2.2f, 4.0f, 27f, mCliff, cliffVariants);   // 低い胸壁 (旧 11 は遠景を丸ごと隠した = レビュー)
             // 段の根元の影の帯 (段鼻の下)
             foreach (float sv in new[] { 5.8f, 10.8f, 15.6f })
             {
@@ -387,11 +400,11 @@ namespace DeckRogue.Game
                 var beam = Px.Beam(new Color(0.6f, 1.15f, 1.05f));
                 foreach (var pt in new[] { new Vector4(-4f, 10.6f, 52f, -8f), new Vector4(16f, 10.4f, 60f, -6f) })
                 {
-                    if (fis != null) { var g = Plane("fissure", fis, new Vector3(pt.x, pt.y - 1.8f, pt.z), 1.8f, 0.5f, false); g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off; g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.4f); }
-                    var b = Glow("vein-beam", beam, new Vector3(pt.x - 8f, 0.3f, pt.z - 36f), 24f, pt.x < 0f ? 5.5f : 6.5f); b.transform.rotation = Quaternion.Euler(0f, 0f, pt.w);
+                    if (fis != null) { var g = Plane("fissure", fis, new Vector3(pt.x, pt.y + 0.4f, pt.z), 1.8f, 0.5f, false); /* 上端に半分掛かる高さ (浮いた板に見せない) */ g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off; g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.4f); }
+                    var b = Glow("vein-beam", beam, new Vector3(pt.x - 8f, 0.3f, pt.z - 36f), 10f, pt.x < 0f ? 5.5f : 6.5f); b.transform.rotation = Quaternion.Euler(0f, 0f, pt.w);   // 短い筋 = 映る帯が濃い (高さ 24 では α 0.12 = レビュー)
                     b.GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1f, 1f, 1f, pt.x < 0f ? 0.9f : 0.7f);
                 }
-                { var w = OnPath(-9.5f, 15.5f); var b = Glow("vein-beam", beam, new Vector3(w.x, w.y, w.z), 20f, 4.5f); b.transform.rotation = Quaternion.Euler(0f, 0f, -6f); b.GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1f, 1f, 1f, 0.7f); }
+                { var w = OnPath(-9.5f, 15.5f); var b = Glow("vein-beam", beam, new Vector3(w.x, w.y, w.z), 9f, 4.5f); b.transform.rotation = Quaternion.Euler(0f, 0f, -6f); b.GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1f, 1f, 1f, 0.7f); }
                 for (int i = 0; i < 16; i++) { float wx = -34f + (float)rng.NextDouble() * 70f, wy = 0.8f + (float)rng.NextDouble() * 6f, wz = 44f + (float)rng.NextDouble() * 16f; Glow("city-window", Px.Glow(new Color(0.4f, 0.9f, 0.85f, 0.3f)), new Vector3(wx, wy, wz), 1f + (float)rng.NextDouble() * 1.2f, 1f + (float)rng.NextDouble() * 1.2f); }
             }
             // ---- 額縁: 天井の房 (上の両隅)・ケーブル・鎖
@@ -408,10 +421,11 @@ namespace DeckRogue.Game
                 var gw = OnPath(3f, 21.5f);
                 var gate = Prop("great-arch", gt ?? PropTexRaw(A, "gate", Px.Arch(p, veinC)), new Vector3(gw.x, gw.y - 0.1f, gw.z), gt != null ? 5.6f : 6.6f, 0.4f);
                 gate.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); gate.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.35f);
-                Halo("arch-glow", new Vector3(gw.x, gw.y + 3.2f, gw.z - 0.3f), 5.5f, new Color(veinC.r * 1.4f, veinC.g * 1.4f, veinC.b * 1.4f, 0.4f));
+                gate.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_BaseColor", new Color(0.82f, 0.86f, 0.86f));   // 開口の絵が白すぎて画面で最も明るい穴になる (レビュー)
+                Halo("arch-glow", new Vector3(gw.x, gw.y + 3.2f, gw.z - 0.3f), 5.5f, new Color(veinC.r * 1.2f, veinC.g * 1.2f, veinC.b * 1.2f, 0.3f));
                 PointLight("gate-light", new Vector3(gw.x, gw.y + 2.4f, gw.z - 1f), veinC, 1.2f, 8f);
                 Pool("gate-pool", OnPath(3f, 19.5f), new Color(veinC.r, veinC.g, veinC.b, 0.3f), 6f, 3f);
-                Put(A, "wall_ruin", -8f, 18f, 4.5f, 0.9f, false, 0f, 0.6f); Put(A, "wall_ruin", 13f, 19f, 4.5f, 0.9f, true, 0f, 0.6f); Put(A, "wall_ruin", 24f, 20f, 4.5f, 0.9f, false, 0f, 0.55f);
+                Put(A, "wall_ruin", -8f, 18f, 4.5f, 0.9f, false, 0f, 0.6f); Put(A, "wall_ruin", 13f, 19f, 4.5f, 0.9f, true, 0f, 0.6f); Put(A, "wall_ruin", 25f, 21.5f, 3.6f, 0.9f, false, 0f, 0.5f);   // 3 枚目は小さく遠く (同じ絵が同じ大きさで並ばない)
                 Put(A, "pillar_tall", -6f, 12.6f, 6.4f, 0.32f); Put(A, "pillar_tall", -2f, 12.3f, 6.4f, 0.32f, true);
                 Put(A, "pillar_broken", -9.3f, 13.2f, 4.6f, 0.4f); Put(A, "pillar_broken", -7f, 18.4f, 4.6f, 0.4f, false, 0f, 0.65f);
                 Put(A, "arch_ruin", -9.5f, 10.6f, 6f, 0.4f);
@@ -472,7 +486,8 @@ namespace DeckRogue.Game
                 {
                     var c = OnPath(ct[i], cs[i]); if (cs[i] < 8.6f && cs[i] > 5.8f) c.y = -0.95f;   // 水際: 足が水に入る
                     var g = Prop("crystal", cl, c, ch[i], 0.5f); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
-                    Halo("crystal-halo", c + new Vector3(0f, ch[i] * 0.45f, -0.2f), ch[i] * 2f, new Color(veinC.r, veinC.g, veinC.b, 0.35f));
+                    if (i % 2 == 1) g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f);   // 同形が並ばない (レビュー)
+                    Halo("crystal-halo", c + new Vector3(0f, ch[i] * 0.45f, -0.2f), ch[i] * 1.6f, new Color(veinC.r, veinC.g, veinC.b, 0.2f));   // 座席の帯に並ぶのでキャラより明るくしない (レビュー)
                 }
                 var vw = PropTexRaw(A, "vein_wall", null);
                 if (vw != null) foreach (float t in new[] { -3f, 16.5f, 22f }) { var wv = OnPath(t, 8.62f); var g = Plane("vein-wall", vw, new Vector3(wv.x, -0.9f, wv.z), 1.0f, 0.5f, false); g.transform.rotation = Quaternion.Euler(0f, PathYaw, 0f); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off; Halo("vein-halo", new Vector3(wv.x, -0.4f, wv.z - 0.2f), 1.6f, new Color(veinC.r, veinC.g, veinC.b, 0.3f)); }

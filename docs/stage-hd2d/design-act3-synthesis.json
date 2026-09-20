@@ -1,0 +1,610 @@
+{
+ "composition": "【骨格＝案A「神殿の前庭」。案Bの段丘の幾何と3色の光、案Cの水路と灯柱を接ぎ木。幾何の物差し（PC 1080p・terrain 冒頭）で「見える場所」だけに主役を置く】\n\n■遠景（z 44〜70・霧0.5〜0.8・画面83〜100%）: 暗い岩天井の板の前に「脈の地平」の明るい帯（HDR）を敷き、その手前に街の輪郭 skyline_a/b を左右にずらして2層、水道橋2、右奥に回り続ける櫓（コードの滑車）を黒く抜く。上辺の天井は1系統＝天井の房 ceiling_fringe を左右の隅に2枚（中央は門と櫓のために空ける）＋遠景の天井から鍾乳石の束3。天井の裂け目 ceiling_fissure 2本が光り、そこから光の筋2本が門の軸と右手へ降りる。\n\n■中景（段丘・画面55〜83%）: 場のすぐ後ろ（s5.8〜8.6）は静かな帯＝古代の水路。黒い止水が遠岸の灯柱・門の紋・壁の脈を映す（幕3の反射はここ。3%の細い帯だが左半分と敵の隙間で確実に見える）。門の軸 t0.4〜5.6 に低い石の橋→遠岸→T1へ3段→T1（+1.1）→幅広の5段→T2（+2.2）の大門（画面x31〜43%・y75〜97%＝リーダーと敵①の間の空白に収まる）。**T1は左に密・右は低く**: 左（画面0〜30%）に折れ柱・枯れた噴水・跪く像・歯車形の石碑を挟む2本の柱＝リーダーの左後ろの祭壇。右（敵の背後）は欄干の欠片・瓦礫・低い結晶だけ。T2の右（意図の札より上・霧0.4）に「機械の庭」＝掘削の腕（核が脈動）・歯車の壁（歯車が回る）・ボイラーと配管・横倒しの鉱車。主役の大結晶は右端 t27（画面95〜99%・敵④の右）に1本だけ明るく、左奥 t−10 の対は霧の中で暗い。館の壁 wall_ruin 3枚の窓に淡い灯、城壁の向こうに facade_far 2枚が地平の光を背に黒く立つ。\n\n■近景（画面30〜55%＝戦闘の場）: 磨いた大石板の大通りだけ。物は置かない。敷物は縁だけ（水路の縁のひび・塵・濡れ、リーダーの左の地衣）。中央 t−3〜13・s−2〜3 は8割を素のまま。\n\n■額縁: 上の両隅は天井の房、左端は崩れた半アーチの脚（t−9.5 の遠岸、脚が画面の縁）、右上はケーブルの束と鎖、下辺の左右の隅（手札の外に覗く）は水没した街路の黒い水と半ば沈んだ倒柱・結晶（水面は水路と同じ y−0.55 で1枚の反射に収まる）。灯柱は場の外だけ（遠岸 t−8.5／t23.5・T1 の階段脇 t−0.6）。\n\n■地面の材質: 場と近岸（s−3.6〜5.8）＝大石板 stone a〜d／遠岸・段の上（s≥8.6）と手前の縁＝不揃いの敷石 dirt a〜d／段の面・水路の壁・台座＝壁 cliff a〜d（正面・タイル単位で象限を選ぶ）／水路と手前の池の底＝bed。敷物: m_crack は水路の縁と柱の足元、m_lichen は水際と壁の根元、m_wet は橋の両端と階段の下、m_dust は段の隅、m_crust と m_shards は結晶の足元だけ、m_mosaic は噴水の周りだけ不定形に、m_vein は輝度でくり抜いた Glow として場の縁に細く。\n\n■光の階層: 主光＝門の紋＋右の大結晶（HDR・bloom はこの2つと地平・灯の炎だけ）。従＝古代の灯の青白 (0.55,0.75,1.0)（灯柱3・吊り灯2・篝火2）。脈の青緑は壁の脈・小結晶・床の毛細で細く暗く。暖色はリーダーのランタンだけ。空気＝霧を背景より明るい青緑にして遠くほど光に溶かす、低い霞が水路の上に溜まる、上る脈の粒・筋の中の塵・鍾乳石の雫と水面の輪。\n\n■HD-2Dの検収6点（この幕の受け入れ条件）: ①手前ボケ／座席鮮明／遠景ボケ＋霧 ②段の縁と柱の角の淡いハイライト（縁石＋青白の灯） ③発光点（窓・脈・結晶・灯）の散らしと bloom ④床の情報密度（継ぎ目・瓦礫・塵・濡れ） ⑤空気（筋・粒・霞） ⑥水面の反射（水路と手前の池）。",
+ "tiles": [
+  {
+   "id": "act3_stone_a",
+   "role": "floor variant（場と近岸の大通りの大石板・基本相。Ground(3,\"stone\") 象限0・重み45%。96×96で作り中央64を切る。方向のある柄は禁止＝タイル単位で回すため）",
+   "description": "flat seamless repeating texture of large rectangular paving slabs of dark slate-grey polished basalt, tight thin joints, faint pale mineral speckle, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, cracks, stripes, band"
+  },
+  {
+   "id": "act3_stone_b",
+   "role": "floor variant（大石板・欠けと塵。象限1・重み25%）",
+   "description": "flat seamless repeating texture of large rectangular paving slabs of dark slate-grey basalt with a few small chipped corners and thin pale dust settled in the joints, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, long crack, stripes, band"
+  },
+  {
+   "id": "act3_stone_c",
+   "role": "floor variant（大石板・一枚が沈んで暗い。象限2・重み20%）",
+   "description": "flat seamless repeating texture of large rectangular paving slabs of dark slate-grey basalt, one slab slightly sunken and a little darker than the others, joints filled with pale grit, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, hole, crack, stripes"
+  },
+  {
+   "id": "act3_stone_d",
+   "role": "floor variant（大石板・磨り減って静か。象限3・重み10%。艶は材質の Smoothness で出す＝絵に描かない）",
+   "description": "flat seamless repeating texture of smooth worn large paving slabs of dark slate-grey basalt, very low relief, subtle tonal variation only, softly rounded worn edges, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, puddle, water surface, reflection, wet sheen, cracks"
+  },
+  {
+   "id": "act3_dirt_a",
+   "role": "path variant（遠岸・段の上・手前の縁の不揃いの敷石・基本相。Ground(3,\"dirt\")＝幕3の DirtAt を「s≥8.6 または s<−3.6」に。象限0・重み45%）",
+   "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt in different sizes and shapes, worn rounded edges, thin pale dust in the joints, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, stripes"
+  },
+  {
+   "id": "act3_dirt_b",
+   "role": "path variant（敷石に石屑。象限1・重み25%）",
+   "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt with small chips of broken stone and grey grit scattered unevenly over them, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, pebbles in rows, evenly spaced"
+  },
+  {
+   "id": "act3_dirt_c",
+   "role": "path variant（敷石が2〜3枚抜けて瓦礫。象限2・重み20%。穴が並んだ結果は捨てる）",
+   "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt where two or three stones are missing at random places, dark packed rubble and grit showing in the gaps, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, holes in a row, evenly spaced gaps"
+  },
+  {
+   "id": "act3_dirt_d",
+   "role": "path variant（薄い塵をかぶった敷石。象限3・重み10%）",
+   "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt under a thin soft drift of pale grey stone dust, joints half hidden, very low contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, snow, sand, footprints"
+  },
+  {
+   "id": "act3_cliff_a",
+   "role": "wall face（段の面・水路の壁・橋の側面・台座。view=side・2px/ドット。Ground(3,\"cliff\") の4種アトラスを壁用の quad ループでタイル単位に象限を選ぶ。壁は回さない＝左右反転だけ。基本相・重み50%）",
+   "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of blocks of different lengths, tight pale mortar lines, weathered chipped edges, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, ivy, vines, roots, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, red bricks, perfect regular grid, identical bricks, near-black, pitch black"
+  },
+  {
+   "id": "act3_cliff_b",
+   "role": "wall face（欠けと地衣。重み25%。水際と壁の根元の段に多く）",
+   "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, one chipped corner, a few patches of pale grey-green lichen crust on the block faces, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, moss carpet, ivy, vines, leaves, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, bright green, brown, wood, perfect regular grid, identical bricks, near-black, pitch black"
+  },
+  {
+   "id": "act3_cliff_c",
+   "role": "wall face（一つ抜けた穴と斜めのひび。重み15%）",
+   "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, one block missing leaving a single dark hole, a diagonal hairline crack across two blocks, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, ivy, vines, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, holes in a row, many holes, perfect regular grid, identical bricks, near-black, pitch black"
+  },
+  {
+   "id": "act3_cliff_d",
+   "role": "wall face（濡れて滴の跡。水路の壁と階段の脇。重み10%。壁は回さないので縦の筋でよい）",
+   "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, wet with dark vertical damp streaks running down from the joints and a faint sheen, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, waterfall, running water, ivy, vines, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, perfect regular grid, identical bricks, near-black, pitch black"
+  },
+  {
+   "id": "act3_bed",
+   "role": "water bed（水路と手前の池の底。上に半透明の水の板 y−0.55。見えるのは水際だけ）",
+   "description": "flat seamless repeating texture of dark silt and scattered broken fragments of pale stone tile lying under shallow clear still water, seen from directly above, dark grey-teal, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "waves, sea, ocean, shore, foam, fish, plants, reflection of sky, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black, pitch black"
+  },
+  {
+   "id": "act3_m_rubble",
+   "role": "patch material（石屑と粉。PatchSet で不定形にくり抜く。段の縁・柱の足元・壁の根元・機械の庭）",
+   "description": "flat seamless repeating texture of crushed dark slate-grey stone chips and pale grey dust, uneven sizes, irregular scatter, a few larger angular pieces, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "regular pattern, evenly spaced dots, pebbles in rows, rounded pebbles, beach, sand, trees, scene, border, vignette, frame, bevel, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+  },
+  {
+   "id": "act3_m_dust",
+   "role": "patch material（薄い石の粉の吹き溜まり。段の隅・壁際・階段の下。艶消し Smoothness 0.05）",
+   "description": "flat seamless repeating texture of fine pale grey stone dust settled thinly over dark stone in soft uneven drifts with faint streaks and thin ridges, no speckles, very low contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "snow, sand dunes, footprints, speckles, dots, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, near-black"
+  },
+  {
+   "id": "act3_m_lichen",
+   "role": "patch material（淡い灰緑の地衣の皮。水際・壁の根元・像の足元。BaseColor 1.1倍で唯一少し明るい床）",
+   "description": "flat seamless repeating texture of pale grey-green lichen crust spreading in irregular blotches with soft edges over dark slate-grey basalt, dry and flat, medium contrast, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "grass, moss carpet, leaves, flowers, mushrooms, circles in a grid, dots in rows, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, bright green, brown soil, wood, near-black"
+  },
+  {
+   "id": "act3_m_crack",
+   "role": "patch material（暗いひび。光らない。水路の縁・手前の縁・柱の足元）",
+   "description": "flat seamless repeating texture of dark slate-grey basalt floor split by fine branching dark fissures with slightly shifted fragments, few and irregular, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "glow, lava, light, dry mud, grid, regular pattern, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+  },
+  {
+   "id": "act3_m_vein",
+   "role": "patch material（光る脈の割れ目。唯一光ってよいタイル。くり抜いた後に暗部を輝度でキーアウトし Glow（加算・HDR 1.3・α0.5）の板として敷く＝床の毛細な光。場の縁 s−2.6/4.6 の外側 0.3〜1.2 に 10〜14 枚・水路の壁の根元 4 枚）",
+   "description": "flat seamless repeating texture of black basalt split by thin branching hairline fissures glowing soft pale teal from deep inside, luminous cracks on dark stone, most of the area plain dark stone, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "lava, fire, orange, red, neon green, thick glowing bands, grid, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, warm light, green grass, brown soil, wood"
+  },
+  {
+   "id": "act3_m_wet",
+   "role": "patch material（濡れて暗い斑。橋の両端・階段の下・滴の下。この敷物の材質だけ Smoothness 0.7＝灯のハイライトが縦に伸びる）",
+   "description": "flat seamless repeating texture of dark slate-grey basalt stone with darker damp soaked patches and a soft glossy sheen, irregular blotches, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "puddle with edges, water surface, waves, ripples, reflection of sky, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+  },
+  {
+   "id": "act3_m_shards",
+   "role": "patch material（結晶の欠片。結晶の足元だけに少量。等間隔にならないよう sparse）",
+   "description": "flat seamless repeating texture of dark grit with a sparse irregular scatter of a few small pale teal crystal shards of different sizes, most of the area plain dark grit, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "dense crystals, evenly spaced, grid, gems in rows, glow, light rays, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+  },
+  {
+   "id": "act3_m_crust",
+   "role": "patch material（骨白色の鉱の皮膜＝石灰華。大結晶と壁の脈の根元。案Cから）",
+   "description": "flat seamless repeating texture of bone-white and pale mint mineral crust like dried calcite creeping in irregular blotches with crisp edges over dark slate-grey stone, mostly pale, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "glowing, neon, dots, bubbles, circles, snow, ice, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+  },
+  {
+   "id": "act3_m_mosaic",
+   "role": "patch material（砕けたモザイクの名残。T1 の噴水の周りだけ不定形に2〜3枚。格子に見えた結果は捨てる）",
+   "description": "flat seamless repeating texture of the broken remains of an ancient mosaic floor, irregular fragments of pale bone and slate-blue tile set in dark mortar forming a broken abstract pattern of bands and arcs, many pieces missing, no regular grid, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+   "negative": "regular grid, checkerboard, perfect squares, picture, figure, face, letters, runes, readable symbols, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+  }
+ ],
+ "props": [
+  {
+   "id": "act3_gate_great",
+   "size": [
+    160,
+    176
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a monumental ancient gate of huge fitted dark slate-grey basalt blocks, a tall stepped corbelled archway with a dark empty opening, two massive square piers, one horizontal band of shallow abstract geometric carving across the lintel glowing softly pale teal, cracked and weathered, pale bone-white light on the block edges, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, torch, letters, readable symbols, runes, wooden doors, castle with towers, outer glow, halo, light rays, near-black",
+   "worldHeight": 5.6,
+   "layer": "mid",
+   "count": 1,
+   "placement": "T2（+2.2）の OnPath(3, 21.5)・足元を 0.1 沈める。s21.5 なら上端 y7.8 は画面上端（この深度で y≈8.4）に収まる（現 great-arch の s19・高さ6.6 は段に載せると切れる）。画面では x31〜43%・y75〜97%＝リーダー（22%）と敵①（56%）の間の空白。_SunAmount 0・_Fog 0.35。紋の帯だけ輝度でキーアウトした Glow（HDR 1.4・α0.5）を重ね bloom が拾う主光。開口の中に暗い MB の壁と縦の Glow（teal α0.2）と点光源 (0.42,0.95,0.86) range 8 intensity 1.2"
+  },
+  {
+   "id": "act3_pillar_tall",
+   "size": [
+    64,
+    176
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall ancient column of stacked dark slate-grey basalt drums with a plain heavy square capital, hairline cracks, weathered chipped edges, pale bone-white light catching the left edge, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, ionic scrolls, ornate capital, base plinth, outer glow, near-black",
+   "worldHeight": 6.4,
+   "layer": "mid",
+   "count": 2,
+   "placement": "T1 の左だけ＝リーダーの左後ろの祭壇の柱: OnPath(-6, 12.6) と OnPath(-2, 12.3) flip（画面 x≈16% と 29%＝リーダーの頭の両脇・門の左の縁 31% の外）。右（敵の背後 t6〜22）には立てない＝隊列の直後の帯を空ける。足元にコードの台座 1.2×1.2×0.25（cliff 材）・blobK 0.32・影を落とす。SpriteH で 6.0/6.4 に揺らす"
+  },
+  {
+   "id": "act3_pillar_broken",
+   "size": [
+    64,
+    128
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a broken ancient column of stacked dark slate-grey basalt drums snapped off at the top with a jagged fractured end, cracks down the shaft, pale bone-white light on the left edge, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, base plinth, outer glow, near-black",
+   "worldHeight": 4.6,
+   "layer": "mid",
+   "count": 2,
+   "placement": "T1 の左端 OnPath(-9.3, 13.2)（画面の左縁で半分切れる）と T2 の左 OnPath(-7, 18.4)（_Fog 0.35）。足元に m_rubble と rubble_pile"
+  },
+  {
+   "id": "act3_pillar_fallen",
+   "size": [
+    160,
+    64
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a fallen ancient column of dark slate-grey basalt lying on its side, broken into three drums that have rolled slightly apart, cracked fractured ends, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, standing column, near-black",
+   "worldHeight": 2.2,
+   "layer": "near",
+   "count": 2,
+   "placement": "手前の池 OnPath(-5.5, -6.0) の底 y−0.95 に寝かせ胴の半分が水面 −0.55 から出る（PathYaw に回す・反射に映る主役・手札の左外に覗きボケる）と T1 の左 OnPath(-8, 14.8)（噴水の脇）。既存 act3_pillar_fallen (64×32) を置換"
+  },
+  {
+   "id": "act3_arch_ruin",
+   "size": [
+    128,
+    160
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a ruined half arch of fitted dark slate-grey basalt blocks, one tall pier standing on the left with the broken springing of the arch curving up to the right and ending in mid-air, cracked blocks, pale bone-white light on the edges, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, readable symbols, runes, complete arch, bridge, gate with doors, near-black",
+   "worldHeight": 6,
+   "layer": "frame",
+   "count": 1,
+   "placement": "左の額縁: 遠岸 OnPath(-9.5, 10.6)（脚が画面の左縁 x≈1%・折れたアーチが内側 12% へ伸びる）。手前の左右（t<−20 / t>22）は画角の外なので置かない（案Aの額縁の脚は見えない）。座席の深度に近いので鮮明だが端なので邪魔しない"
+  },
+  {
+   "id": "act3_wall_ruin",
+   "size": [
+    160,
+    112
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single wide ruined wall fragment of an ancient house built of fitted dark slate-grey basalt blocks, two dark empty window openings and one dark empty doorway, the top edge collapsed unevenly, a pile of fallen blocks at one end, seen straight on, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, lit window, glass, roof, whole house, street, city, letters, runes, near-black",
+   "worldHeight": 4.5,
+   "layer": "mid",
+   "count": 3,
+   "placement": "T2: OnPath(-8, 18)（画面 x≈9%）・OnPath(13, 19) flip（x≈61%・敵①②の意図の札より上に上半分が出る）・OnPath(24, 20)（x≈79%・機械の庭の背）。窓と戸口の位置に Glow（teal α0.3・0.5×0.7）を絵の手前 0.05 に重ねる＝誰もいないのに灯る窓（窓は透明にならず暗く塗られるので手前に置く）。_Fog 0.35〜0.45・影なし"
+  },
+  {
+   "id": "act3_facade_far",
+   "size": [
+    200,
+    128
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, the front of a single large ancient building of dark slate-grey basalt, a row of tall narrow dark openings, a broken upper storey, one collapsed corner, flat frontal view, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, lit windows, street, city skyline, letters, runes, near-black",
+   "worldHeight": 8,
+   "layer": "far",
+   "count": 2,
+   "placement": "城壁の向こう s25（y 2.2 の上）t=−4（画面 x≈20%）と t=18（x≈64%・敵の札より上 75〜100%）。0.0625 unit/ドット（遠景なので粗くてよい）。_Fog 0.5・影なし。脈の地平の光を背に黒く立つ。開口に小さな Glow を 2〜3（等間隔にしない）。館と館の隙間の後ろは塞がない＝地平の光帯が漏れる"
+  },
+  {
+   "id": "act3_skyline_a",
+   "size": [
+    200,
+    96
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long strip of distant ruined tower and dome silhouettes of an ancient stone city, flat dark slate-blue silhouette shapes only with a few tiny pale teal window dots, uneven heights, one leaning broken tower, transparent above and below the strip, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, sky, moon, stars, clouds, ground plane, water, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, detailed windows in rows, modern buildings",
+   "worldHeight": 11,
+   "layer": "far",
+   "count": 2,
+   "placement": "街の輪郭（Px.Skyline の city-far/city-near を置換）: (2, 1.4, 58) 幅170 と (-14, 1.0, 46) 幅120。_Fog 0.55/0.4・影なし。画面 77〜100% の帯を埋め、skyline_b と交互に重ねて一本の帯に見せない。窓明かりの Glow はこの板の手前 z44〜56 に 16 個（不揃い・小さめ）"
+  },
+  {
+   "id": "act3_skyline_b",
+   "size": [
+    200,
+    80
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long strip of distant ruined city silhouettes of an ancient stone city, flat dark slate-blue shapes only, a collapsed great dome on the left, a cluster of broken square towers on the right, low ruined walls between, a few tiny pale teal window dots, transparent above and below the strip, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, sky, moon, stars, clouds, ground plane, water, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, detailed windows in rows, modern buildings",
+   "worldHeight": 9,
+   "layer": "far",
+   "count": 2,
+   "placement": "(28, 1.2, 52) 幅110 flip と (-36, 1.6, 55) 幅100（左右の端を埋める）。_Fog 0.5〜0.6"
+  },
+  {
+   "id": "act3_rig_far",
+   "size": [
+    96,
+    192
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall skeletal mining headframe tower of blackened iron beams with cross bracing, a large spoked wheel mounted at the top, a cable hanging down the middle, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, robot, humanoid, windmill, crane arm, wood, brass, copper",
+   "worldHeight": 14,
+   "layer": "far",
+   "count": 1,
+   "placement": "街の向こう (18, 0.6, 50)（既存 rig の位置・Px.Headframe を置換）。_Fog 0.5・影なし。コードの rig-wheel（Px.Wheel）を絵の輪の中心に重ねて回し続ける（中心座標は出来た絵を測って合わせる）"
+  },
+  {
+   "id": "act3_aqueduct_far",
+   "size": [
+    200,
+    80
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient aqueduct of dark slate-grey basalt, a row of five tall round arches on square piers, worn pale edges, a thin channel along the top, flat side view, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, water, river, hills, bridge over water, near-black",
+   "worldHeight": 5,
+   "layer": "far",
+   "count": 2,
+   "placement": "大門の両脇の奥（y 2.8）: (gate.x−16, 2.8, gate.z+7)（画面 x≈7%）と (gate.x+22, 2.8, gate.z+9)（x≈80%）。案Aの gate.x−20 は画角の外に出るので −16 に。_Fog 0.5。既存 act3_aqueduct (128×48) を置換"
+  },
+  {
+   "id": "act3_stalactite_cluster",
+   "size": [
+    96,
+    160
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of three stalactites of dark grey cave rock hanging point downward, one long and two shorter, layered and dripping shapes, a few thin teal mineral veins near the base, the base cut off flat at the top edge of the frame, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, cave interior, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, icicle, ice, tree, stalagmite pointing up",
+   "worldHeight": 6,
+   "layer": "far",
+   "count": 3,
+   "placement": "遠景の天井 y=11（天井の板の下面）から垂らす: (x,z)={(-22,34),(8,42),(28,38)}。この深度なら画面 85〜100% の帯に見える（下端 y5 が 85%）。_Fog 0.55・影なし。上端は画面の上辺で切れてよい。しずくの粒子 (drips) の湧き口を真下に。上辺の天井はこれと ceiling_fringe の2つだけ＝巨大鍾乳石・房4枚・ケーブル束の重ね置きはしない"
+  },
+  {
+   "id": "act3_ceiling_fringe",
+   "size": [
+    200,
+    96
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, the underside of a cave ceiling seen from below, a wide ragged fringe of dark rock with many small stalactites of different lengths hanging down, a few small teal crystal points among them, rock filling the top of the frame and hanging shapes ending in mid-air, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, floor, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, icicles in a row, evenly spaced, teeth",
+   "worldHeight": 2.8,
+   "layer": "frame",
+   "count": 2,
+   "placement": "上辺の額縁: z=−1.5 の面で画面の上端は y≈5.9・見える半幅は 8.8 units なので、幕1の canopy の x=±13.5 は画角の外。板の上端 y6.6・高さ2.8（下端 y3.8＝画面 82%）を x=−7.5 と x=+7.5 flip に置く＝左右の 1/3 ずつを覆い中央 1/3 は門と櫓のために空ける。_BaseColor (0.5,0.56,0.62)・影なし・DoF でぼける"
+  },
+  {
+   "id": "act3_cable_hang",
+   "size": [
+    64,
+    160
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a bundle of old frayed blackened iron cables and a thin chain hanging straight down from above and ending in mid-air, dark tarnished metal with pale highlights, a few loose loops, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, hook mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, rope, vines, roots, snake, brass, copper",
+   "worldHeight": 5,
+   "layer": "frame",
+   "count": 1,
+   "placement": "右上から垂らす: OnPath(17, 9) の上 y 4.0〜9.0（画面 x≈85%・下端 82%＝敵③の意図の札の上）。影なし。左上は ceiling_fringe と arch_ruin で足りるので1本だけ"
+  },
+  {
+   "id": "act3_chain_hang",
+   "size": [
+    32,
+    160
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single heavy blackened iron chain hanging straight down and ending in a large hook, dark tarnished links with pale edge highlights, vertical, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, rope, two chains, brass",
+   "worldHeight": 5.2,
+   "layer": "mid",
+   "count": 2,
+   "placement": "遠岸の上 y 3.0〜8.2: OnPath(-4.5, 9.4)（画面 x≈24%）と OnPath(12.5, 9.0)（x≈75%）。影なし。既存 act3_chain (24×96) を置換。吊り灯とは別の位置（同じ点に2本を重ねない）"
+  },
+  {
+   "id": "act3_lamp_hang",
+   "size": [
+    48,
+    128
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient hanging lantern of blackened iron, a tall caged lamp holding a small pale blue-white cold crystal light, hanging from a short length of chain that ends in mid-air at the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, candle, paper lantern, outer glow, halo, light rays, brass",
+   "worldHeight": 4.4,
+   "layer": "mid",
+   "count": 2,
+   "placement": "水路の上空 y 4.6: OnPath(2, 7.5)（画面 x≈47%・y≈85%＝門の右上、橋の真上）と OnPath(-8, 6.2)（x≈6%）。灯は青白 (0.55,0.75,1.0) range 4 intensity 0.8＋Halo（α0.5・1.2）。_SunAmount 0・影なし。灯の真下の水面に鏡像の Halo（スマホ用）"
+  },
+  {
+   "id": "act3_lamp_post",
+   "size": [
+    48,
+    104
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient street lamp standard, a slender square post of dark slate-grey basalt with a blackened iron cage on top cradling a small pale blue-white glowing crystal, the base a small square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, candle, modern streetlight, glass globe, outer glow, halo, light rays, brass",
+   "worldHeight": 4.2,
+   "layer": "mid",
+   "count": 3,
+   "placement": "場の外だけ（案Cの「灯柱は結晶の籠」＝火の出所の無い冷たい炎をやめる）: 遠岸 OnPath(-8.5, 9.6)（画面 x≈5%）・OnPath(23.5, 9.7)（x≈97%・敵④の右）・T1 の階段の脇 OnPath(-0.6, 12.1)（x≈34%＝リーダーと敵①の隙間・門の階段を照らす）。各: 点光源 (0.55,0.75,1.0) range 5.5 intensity 1.1・足元に光溜まり（Radial 青白 α0.28・3.6×3.2）。遠岸の2本は水面に映る＝反射の主役"
+  },
+  {
+   "id": "act3_brazier_cold",
+   "size": [
+    48,
+    56
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wide ancient stone brazier bowl on a short square pedestal of dark slate-grey basalt, a low pale blue-white cold flame burning inside, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, smoke, outer glow, halo, light rays, tripod legs, brass",
+   "worldHeight": 1.8,
+   "layer": "mid",
+   "count": 2,
+   "placement": "橋の手前の両端 s5.3: OnPath(-0.8, 5.3)（画面 x≈35%）と OnPath(21.5, 5.3)（x≈97%）。場の楕円 s4.6 の外。点光源 (0.55,0.75,1.0) range 4.5 intensity 0.9。既存 act3_brazier (32×48) を置換（旧・場の中の篝火4つは撤去＝床の空白を守る）"
+  },
+  {
+   "id": "act3_crystal_spire_big",
+   "size": [
+    128,
+    184
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a giant pale teal mana crystal spire, one main tapering faceted blade with two smaller blades leaning from its base, lit softly from within, hard flat facets, translucent desaturated pale tones, its base gripped by a ring of black rock and bone-white mineral crust, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, rainbow, purple, pink, daylight, people, character, face, animal, warm orange light, fire, tower, building, castle, windows, cluster of many small crystals, outer glow, halo, light rays, lens flare, ice, brass",
+   "worldHeight": 8.5,
+   "layer": "mid",
+   "count": 2,
+   "placement": "主役は1本だけ: 右端 T1 OnPath(27, 12.5) h8.5（画面 x≈95〜99%・y70%から上端を抜ける＝敵④の右）。点光源 (0.42,0.95,0.86) range 16 intensity 2.0（±8% を 3.1/4.7 秒の正弦で呼吸）・Halo α0.4・h×2.4・HDR。対は左奥 T2 OnPath(-10, 19) h6.0（x≈3%）で _Fog 0.45・intensity 1.0 range 10・Halo α0.25＝暗い対。案Aの t±26 は画角の外なので置かない。_SunAmount 0。足元に m_crust と m_shards。既存 act3_spire (48×96) を置換"
+  },
+  {
+   "id": "act3_crystal_cluster",
+   "size": [
+    96,
+    80
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of five pale teal mana crystal blades of different heights growing out of a lump of black rock, hard flat facets, lit softly from within, translucent desaturated pale tones, leaning in different directions, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, rainbow, purple, pink, daylight, people, character, face, animal, warm orange light, fire, outer glow, halo, light rays, lens flare, ice, evenly spaced, symmetrical",
+   "worldHeight": 2.2,
+   "layer": "near",
+   "count": 8,
+   "placement": "SpriteH 0.9〜2.2 で大小。水路の遠岸の壁の根元（足が水に入る・s8.55・y−0.95）t={-7.5, 15, 19.5}＝水面に映る／T1 の面の根元 t={-8.8, 20}／手前の池 OnPath(-7, -5.5)・OnPath(1.5, -8)（手札の左右の外に覗く）／T2 の機械の庭の脇 OnPath(22, 18)。場の楕円と遠岸の橋の両脇には置かない。Halo（α0.35・h×2）・点光源は水際の3つだけ range 2.5 intensity 0.7。足元に m_shards（少量）"
+  },
+  {
+   "id": "act3_vein_wall",
+   "size": [
+    64,
+    56
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a jagged seam of pale teal mana crystal erupting sideways from a slab of black rock, the rock cracked open around the seam, the crystal lit softly from within, seen straight on, low and wide, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, daylight, people, character, face, animal, warm orange light, fire, outer glow, halo, light rays, lens flare, ice, waterfall, lava, tall spire",
+   "worldHeight": 1,
+   "layer": "mid",
+   "count": 3,
+   "placement": "壁の面に貼る（面に平行・0.05 手前・高さ 1.0＝2px/ドットの粒を保つため小さい絵）: 水路の遠岸の壁 OnPath(-3, 8.62)（画面 x≈28%・橋の左＝真下の水面に映る主役。点光源 (0.42,0.95,0.86) range 5 intensity 0.8）／T1 の面 OnPath(-7.5, 10.82)／T2 の面 OnPath(10, 15.62)（敵①の札の後ろ・Halo α0.25 で暗く）。案Bの「細い Glow 10 本」（wall-vein）は据え置きで併用。壁の脈は細く暗く＝主光を門と大結晶に絞る"
+  },
+  {
+   "id": "act3_statue_kneel",
+   "size": [
+    64,
+    96
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a weathered stone statue of a kneeling hooded robed figure with the hood hiding the face completely, both hands cradling a shallow stone bowl in which a small pale teal crystal glows softly, worn robes, pale grey-blue stone with dark cracks and chipped edges, on a low square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, living character, visible face, eyes, fingers, animal, warm orange light, fire, letters, runes, weapon, angel wings, outer glow, halo",
+   "worldHeight": 3.6,
+   "layer": "mid",
+   "count": 1,
+   "placement": "T1 の左 OnPath(-7.5, 12.2)（画面 x≈10%・リーダーの左）。椀の結晶に小さな点光源 range 3 intensity 0.6 (0.42,0.95,0.86)＝像が自分で灯る（案Cから）。足元に m_lichen。既存 act3_statue (48×80) を置換"
+  },
+  {
+   "id": "act3_statue_headless",
+   "size": [
+    64,
+    112
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a weathered headless stone statue of a standing robed figure, the neck broken off, one arm missing, deep folds of stone cloth, pale grey-blue stone with dark cracks, standing on a square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, living character, face, head, eyes, animal, warm orange light, fire, letters, runes, weapon, wings, outer glow",
+   "worldHeight": 4.2,
+   "layer": "mid",
+   "count": 2,
+   "placement": "T2 の幅広の階段の両脇 OnPath(-1.5, 16.8)（画面 x≈28%）と OnPath(7.5, 16.8) flip（x≈51%・3体以上の戦闘では敵①の札の後ろに隠れる＝対称の対価として受容）。右の1体はコードで −8° 傾ける（傾いた石像）。_Fog 0.3"
+  },
+  {
+   "id": "act3_monument_disc",
+   "size": [
+    128,
+    144
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a monumental carved stone disc shaped like a giant gear standing upright on a stepped stone base, blunt teeth around the rim, a single ring groove glowing faintly pale teal, cracked and half sunk, weathered dark slate-grey basalt, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, clock, numbers, letters, runes, readable symbols, metal gear, brass, outer glow, halo",
+   "worldHeight": 4.6,
+   "layer": "mid",
+   "count": 1,
+   "placement": "T1 の左 OnPath(-4.5, 14.2)（画面 x≈20%＝2本の柱 16%/29% の間・リーダーの頭の上）＝古機を作った者たちの紋（案Bから。この街の主が機械の民だと絵で言う）。輪の溝に小さな点光源 range 4 intensity 0.7。_SunAmount 0.6"
+  },
+  {
+   "id": "act3_stele",
+   "size": [
+    48,
+    112
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall narrow ancient stone stele of dark slate-grey basalt tapering to a chipped top, one face carved with a vertical band of abstract geometric grooves and gear-like circles glowing faintly pale teal, on a small plinth, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, readable symbols, alphabet, writing, outer glow, halo",
+   "worldHeight": 3.6,
+   "layer": "mid",
+   "count": 2,
+   "placement": "T2 の幅広の階段の足元 T1 OnPath(-3.2, 14.6)（画面 x≈26%）と OnPath(9, 14.6) flip（x≈55%）＝門への道標。彫りの光は Halo 1.0（α0.3）だけ・点光源なし。_SunAmount 0.6"
+  },
+  {
+   "id": "act3_fountain_dry",
+   "size": [
+    128,
+    96
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a broken ancient fountain of dark slate-grey basalt, a wide low octagonal basin with one side cracked and collapsed, a short central column with a small upper bowl, dry and empty, seen from slightly above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, statue figure, animal, warm orange light, fire, letters, runes, water jet, splashing water, plants, near-black",
+   "worldHeight": 3.2,
+   "layer": "mid",
+   "count": 1,
+   "placement": "T1 の左端 OnPath(-9.2, 14.0)（画面 x≈5%・半分切れる）。受け皿の中は反射カメラの面（y−0.55）と高さが違うので水にしない＝黒い艶の板（Lit・BaseColor 0.06・Smoothness 0.95＝灯のハイライトだけ映る）＋淡い teal の Glow。周りに m_mosaic を不定形に 2〜3 枚"
+  },
+  {
+   "id": "act3_balustrade",
+   "size": [
+    128,
+    40
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a short section of ruined stone balustrade, a low flat rail on thick square balusters of dark slate-grey basalt, several balusters missing and the rail broken at one end, chipped, seen straight on, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, vase shaped balusters, near-black",
+   "worldHeight": 1,
+   "layer": "mid",
+   "count": 6,
+   "placement": "段の縁が「建築」に読める手すり（案Bから）: 水路の近岸の縁 s5.5 に t={-7, 19}（場の楕円の外・橋の両脇は空ける）／遠岸の縁 s8.4 に t={-9, -4, 15, 21}（橋 t0.4〜5.6 は空ける）。欠けの向きを flip で散らす・板は PathYaw に回して縁に沿わせる。途切れに rubble_pile"
+  },
+  {
+   "id": "act3_rubble_pile",
+   "size": [
+    112,
+    64
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a heap of broken dark slate-grey masonry blocks, split slabs and grey dust, one carved fragment sticking out of the pile, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black",
+   "worldHeight": 1.6,
+   "layer": "mid",
+   "count": 4,
+   "placement": "折れ柱の足元 OnPath(-9.3, 12.6)・館の壁の端 OnPath(-6.5, 17.6)・欄干の途切れ OnPath(-5.5, 8.2)・機械の庭 OnPath(21, 18.2)。blobK 0.9・足元に m_rubble。場と道（t−13〜17・s−2.6〜4.6）には置かない"
+  },
+  {
+   "id": "act3_block",
+   "size": [
+    48,
+    40
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single large cut stone block of dark slate-grey basalt toppled onto its corner, chipped edges, one face paler and worn, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black",
+   "worldHeight": 1,
+   "layer": "near",
+   "count": 5,
+   "placement": "手前の池に2つ（y−0.95 の底から頭だけ水面に出す＝反射のアクセント）OnPath(-3, -7)・OnPath(3.5, -8.4)／遠岸の欄干の途切れ OnPath(-9.5, 9.4)／T1 の隅 OnPath(-8.6, 15.4)／機械の庭 OnPath(28, 19)"
+  },
+  {
+   "id": "act3_urn",
+   "size": [
+    32,
+    40
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cracked ancient stone urn of dark slate-grey basalt with two small handles, tipped slightly, a pale worn band around the middle, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, plants, flowers, near-black",
+   "worldHeight": 1.1,
+   "layer": "mid",
+   "count": 3,
+   "placement": "噴水の脇 OnPath(-8.2, 13.3)・T2 の階段脇 OnPath(-3.6, 15.3)・T1 の階段の右 OnPath(6.4, 11.9)。0.9〜1.1 倍"
+  },
+  {
+   "id": "act3_drill_rig",
+   "size": [
+    176,
+    160
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient mining machine, a huge angled drilling arm of blackened riveted iron and dull pewter, a long boom tilted upward to the right ending in a large conical spiral drill bit, mounted on a heavy riveted iron pivot base with a round core in the middle of the base glowing softly pale teal, hard metallic highlights, industrial, no limbs, no face, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, legs, arms of a figure, animal, fur, moss, wood, warm orange light, fire, sparks, brass, copper, gold, letters, runes, crane hook, vehicle wheels",
+   "worldHeight": 6.5,
+   "layer": "mid",
+   "count": 1,
+   "placement": "機械の庭＝T2 の右 OnPath(19, 19.5)（画面 x≈68%・y75〜97%＝敵②③の意図の札より上の帯・霧の中のシルエット）。_Fog 0.4・_SunAmount 0.5。核に脈動する点光源 (0.42,0.95,0.86) intensity 1.2↔1.8 を 2.4 秒（StageDriver）・StageDriver で腕を ±1.5° ゆっくり揺らす＝止まらない機械。足元に m_rubble・m_wet。案Bの excavator と案Aの drill_arm を統合"
+  },
+  {
+   "id": "act3_gear_wall",
+   "size": [
+    160,
+    144
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wall-sized ancient mechanism of blackened iron, several large interlocking cog wheels of different sizes mounted on a riveted iron frame and a slab of dark stone, one large empty round axle mount in the middle, pale worn highlights on the teeth, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, animal, wood, warm orange light, fire, brass, copper, gold, clock face, numbers, letters, runes",
+   "worldHeight": 5.5,
+   "layer": "mid",
+   "count": 1,
+   "placement": "T2 の右 OnPath(26, 21)（画面 x≈82%・霧 0.45）。中央の空いた軸受けにコードの歯車（Px.Wheel を暗い鉄色で・_quadCentered）を重ね StageDriver が毎秒 8° 回す＝回り続ける機械（中心は出来た絵を測る）。影なし"
+  },
+  {
+   "id": "act3_boiler_pipes",
+   "size": [
+    128,
+    160
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient industrial boiler, a tall riveted cylinder of blackened iron on a stone base with a bundle of thick iron pipes and elbow joints rising beside it, a round valve wheel, one seam leaking a faint pale teal glow, corroded dark metal with pale highlights, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, animal, wood, warm orange light, fire, smoke, steam clouds, brass, copper, gold, letters, runes, gauges with numbers",
+   "worldHeight": 6,
+   "layer": "mid",
+   "count": 1,
+   "placement": "T2 の右端 OnPath(31, 20)（画面 x≈90%・霧 0.45＝右上の隅を機械で閉じる）。漏れの霧は StageFx の wisps を 1 本ここへ。影なし"
+  },
+  {
+   "id": "act3_ore_cart",
+   "size": [
+    96,
+    64
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient heavy blackened iron ore wagon on four small wheels tipped over on its side, spilled lumps of raw pale teal crystal ore beside it glowing faintly, dented and corroded dark metal, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, wood, warm orange light, fire, brass, copper, gold, letters, runes, rails, tracks",
+   "worldHeight": 1.6,
+   "layer": "mid",
+   "count": 1,
+   "placement": "機械の庭の足元 T2 OnPath(23, 18)（画面 x≈78%）。鉱の上に細長い Glow（α0.3）・点光源なし。既存 act2_minecart は幕2のもので流用しない"
+  },
+  {
+   "id": "act3_frieze",
+   "size": [
+    128,
+    24
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long horizontal strip of shallow carved abstract geometric grooves and stepped notches on dark slate-grey basalt, eroded and broken at both ends, seen straight on, only the carved band, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "letters, runes, readable symbols, alphabet, writing, faces, figures, scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, animal, warm orange light, fire, near-black",
+   "worldHeight": 0.45,
+   "layer": "mid",
+   "count": 3,
+   "placement": "刻印の帯は敷石タイルに焼き込まず壁に貼るデカール（審査⑧「帯はデカールで」）: T2 の面（s15.62・y 1.55）に OnPath(-6, 15.62)〜幅2.4 と OnPath(11, 15.62)、T1 の面（s10.82・y 0.45）に OnPath(-7, 10.82)。面に平行・0.04 手前。溝だけを輝度でキーアウトした Glow（α0.25）を重ねてよい（弱く）"
+  },
+  {
+   "id": "act3_ceiling_fissure",
+   "size": [
+    160,
+    48
+   ],
+   "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long jagged fissure in dark grey cave rock glowing pale teal from inside, a soft glow spilling onto the rock edges, horizontal, seen straight on, only the crack and the rock right around it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, daylight, people, character, face, animal, warm orange light, fire, lava, lightning, letters, runes",
+   "worldHeight": 1.8,
+   "layer": "far",
+   "count": 2,
+   "placement": "遠景の天井の下面に貼る: (x -4, y 10.6, z 52)（画面 x≈40%・上端の帯 92〜96%）と (x 16, y 10.4, z 60)（x≈78%）。_Fog 0.4・HDR 1.2。ここから Px.Beam を 2 本（幅 5〜6.5・高さ 24・−8° 傾け・HDR tint (0.6,1.15,1.05)）門の軸と機械の庭へ落とす（筋の上端は画面外でよい）＝案Cから。案Bの「床の裂け目から立つ筋」は T1 左奥 OnPath(-9.5, 15.5) に1本（霧の中・α0.7）"
+  }
+ ],
+ "terrain": "■見え方の物差し（PC 1920×1080・Fov36・Pitch12・GroundLineRatio 0.45。Stage.cs の LayoutCamera から計算。カメラ (0, 3.98, −16.15)）: 地面の線（y0 の原点）＝画面 45%・地平（地面の消失線）＝83%・その上 17% が天井の帯。画面下 30% は手札と帳面（UI）。地面で見えるのは y0 の s≈−4.2（UI の上端）から地平まで。左端は t≈−9.5（s0）〜−11（s20）、右端は t≈14（s0）〜36（s20）＝視野は右奥へ開く台形。リーダー (t−5,s0.9)＝x22%・足43%・頭67%。敵①〜④＝x56/69/84/91%・足50%・頭74%（ボス80%）・意図の札 75〜85%。水路 s5.8〜8.6＝y54〜59%（左から右へ 49%→61% の斜めの帯）。遠岸 s8.6〜10.8＝59〜62%。T1（+1.1）の床線＝66%。T2（+2.2）の床線＝74〜75.5%（s16〜26 がこの 2% に畳まれる＝T2 は「背景の舞台」）。z−1.5 の面で画面の上端は y5.9・見える半幅 8.8。s20 の面で上端 y≈8.3、s21.5 で 8.4（大門 5.6＋2.2＝7.8 が収まる）。この表で「主役はどこに置けば見えるか」を決めた（大結晶 t±26・手前の街路 s−5〜−8.5・幕1流の額縁 x±13.5 は画角の外か UI の下）。\n\n■高さ場: 幕3は _flat をやめ act3 専用の段関数 H3(t,s)（ノイズ無し・BuildTerrace）。\n- 手前の池: s<−3.6 かつ t∈[−12, 8] → −0.95（水面 y−0.55）。それ以外の s<−3.6 → 0（UI の下）。\n- 場と近岸: −3.6≤s<5.8 → 0（ArenaMask の楕円は今までどおり平ら）。\n- 水路: 5.8≤s<8.6 → −0.95（底＝bed。水面 y−0.55・深さ 0.4）。橋 t∈[0.4,5.6] は別の MB の板（y −0.35〜+0.05・幅 5.2×奥行 3.4・側面は cliff 材）を水路の上に渡す＝水は下を通る。\n- 遠岸の歩廊: 8.6≤s<10.8 → 0。\n- T1: 10.8≤s<15.6 → +1.1。T2: 15.6≤s<27 → +2.2。奥の閉じ: s≥27 に MB の黒い壁（高さ 9・cliff 材・BaseColor 0.18）。館の後ろは塞ぎ、館と館の隙間の後ろは塞がない。\n- 境界の s は Vnoise(t×0.35)×0.45 で揺らしセル 0.64 に量子化＝崩れた縁（案B）。T1 の縁 t≈−8 と t≈17 に 1〜2 セルの欠け（段が 0 へ落ちる崩落の穴・瓦礫を置く）。\n- 段の立ち上がり: CornerH の平均をやめ、隣接セルの高さが違う境界に垂直の面を張る（act3 だけ。幕1の見え方は触らない）。面はタイル列（1.28）ごとの quad で、Ground(3,\"cliff\") の 4 種アトラスから Hash01 で象限を選び左右反転だけ（回さない）。V は上端から 高さ/1.28（1.1→55/64・0.95→48/64）＝目地の段を伸ばさない。カメラに向く −z / ±x の面と、手前の池の s−3.6 の面（+z 向き）を張る。天端に 0.06 の縁石（薄い MB・stone 材・BaseColor 少し明るく）＝段の輪郭が線で読み青白の灯を拾う（HD-2D ②）。壁の根元に影の帯（幅 0.55・α0.38）。\n- 階段（MB.Box・stone 材・踏面の奥に 0.12 の影の帯）: 遠岸→T1 は t∈[0.4,5.6]・s 10.6→11.4 に 3 段（0.37 ずつ）／T1→T2 は t∈[−2.5,8.5]・s 15.0→16.2 に 5 段（0.22 ずつ・幅 11）＝門の軸に一本の線（橋→階段→階段→門）。既存 great-stairs を置換。\n- 水: 水没区（手前の池 t∈[−12,8]・s∈[−9,−3.6]）と水路（s5.8〜8.6・t∈[−30,40]）の全セルを bed にし、水面は 1 枚の板 y=−0.55 を WaterMaterial(tint (0.03,0.07,0.09,0.88), reflect 0.55, sparkle 0.3) で両方に敷く（反射カメラは 1 面＝高さを揃える。噴水の受け皿は水にしない）。EnsureReflection(−0.55)。水際 1.0 unit の敷石は stone アトラスの別インスタンス（Smoothness 0.7）。\n- 材質の割り当て（幕3の DirtAt3）: s∈[−3.6,5.8]＝stone（大石板）／s≥8.6 と s<−3.6 の乾いた縁＝dirt（不揃いの敷石）／水の下＝bed／段の面・水路の壁・橋の側面・台座＝cliff。天面は BuildTerrain の既存の「タイル単位で象限と向きを選ぶ」機構をそのまま使う（段の天面も高さ場から出るので atlas が効く。案Aの MB.Box で段を組む案は連続 UV になり 4 種が効かないので採らない）。\n- 台座: 柱の足元に MB 1.2×1.2×0.25（cliff 材）。橋の欄干は balustrade の板。\n- 座席（LeaderSlot/EnemySlots）は y0 のまま。段の上の小物は GroundY で段の高さに乗る。天井: 岩天井の MB（幕2と同じ y 6.2 の裏返しの床）を z≥4 に（手前は ceiling_fringe の板）。\n\n■岩天井と遠景: sky 板（既存 Gradient #08181c→#02070a）の前に vein-horizon の Glow 2 枚（既存・HDR 1.3 に）。遠景の天井の下面 y11 に stalactite_cluster と ceiling_fissure を貼る（z 34〜62）。",
+ "lighting": "■方向光（脈の照り返し）: Euler(50,−35,0) は全幕共通のまま。色 (0.62,0.86,0.86)・強さ 1.45・ソフトシャドウ 0.6（光る空気＝拡散が多いので影は幕1より薄い）。環境光 Flat (0.18,0.26,0.30)（現 (0.26,0.36,0.42) より暗く＝光溜まりと AO が読める）。\n■霧（空気）: 色 (0.26,0.46,0.48)＝背景板 #08181c より明るい青緑にして遠くほど光に溶かす（「空気が光って見える」の正体）。線形 start 14 / end 56。sky 板と地平の光帯は _Fog 0。案Bの (0.35,0.62,0.62) は bloom と重なり一様な青緑の霞になる（審査①の懸念）ので一段落とす。\n■ポスト（幕3だけ差し替え）: Filter (0.92,0.97,1.06)（現行）・postExposure 0.12・contrast 20（幕1と共通）・saturation −4・lift の青緑 +0.02。Bloom は intensity 1.5・scatter 0.7・threshold 0.95（現行）＝HDR（>1.0）を持つのは 主光と地平と灯の炎だけ に絞り、それ以外の Glow は α で調整して bloom を拾わせない。DoF は現行のティルトシフト（Bokeh 90mm f/4.5・焦点 _dist+1）＝場は鮮明・遠岸から先はだんだん柔らかく・手前の池はぼける。\n■3色の階層（審査⑧）: ①主光＝門の紋の帯（HDR 1.4）と右の大結晶（点光源 2.0・Halo HDR）。②従＝古代の灯の青白 (0.55,0.75,1.0)＝灯柱3・吊り灯2・篝火2（現 brazier の色をそのまま。脈の青緑と色相を分ける）。③脈の青緑 (0.42,0.95,0.86)/#3aa79b は壁の脈・小結晶・床の毛細・窓明かり・左の対の結晶に「細く暗く」（Halo α0.25〜0.35・HDR なし）。④暖色はリーダーのランタン (1,0.72,0.4)・強さ 3.6・range 7 だけ（現行）。\n■点光源の予算: PC 14 個＝主結晶 (0.42,0.95,0.86) 2.0 range 16（±8% を 3.1/4.7 秒の 2 つの正弦で呼吸）／左の対の結晶 1.0 range 10／門の開口 1.2 range 8／灯柱×3 (0.55,0.75,1.0) 1.1 range 5.5 y3.6／吊り灯×2 0.8 range 4／篝火×2 0.9 range 4.5／水路の壁の脈 0.8 range 5／掘削の腕の核 1.2↔1.8 range 7（2.4 秒で脈動）／跪く像の椀 0.6 range 3／リーダーの灯。スマホ（DoF と反射なし）は 8 個＝主結晶・門・灯柱3・核・リーダー・水路の脈。\n■暈（Glow 加算）: 主結晶＝Halo 高さ×2.4・α0.4・HDR 1.3／対の結晶＝×2.2・α0.25／小結晶＝×2.0・α0.35／青白の灯＝1.2・α0.5・HDR 1.2（炎の中心だけ）／窓＝1.0〜2.2 の不揃い・α0.3（16 個）／門の紋＝輝度キーアウトの Glow HDR 1.4・α0.5・開口に縦の Glow α0.2。\n■光の筋（Px.Beam・HDR tint (0.6,1.15,1.05)）: 天井の裂け目 ceiling_fissure から降りる 2 本（幅 5.5/6.5・高さ 24・傾き −8°/−6°・α 0.9/0.7）を門の軸（画面 x≈40%）と機械の庭（x≈80%）へ。床の裂け目から立つ 1 本を T1 左奥 OnPath(−9.5, 15.5)（α0.7・霧の中）。筋の中に beam-dust（Box を筋に沿って回転・HDR 白緑・0.05〜0.1・16 個/本・上昇 0.15）＝筋が「空気の光」になる。旧・床の割れ目からの 3 本と aurora 2 本は撤去（上辺の過密を避ける）。\n■光溜まり（Radial・地面の 0.035 上）: 灯柱の足元 (0.55,0.75,1.0,0.28) 3.6×3.2／篝火 α0.22 2.8×2.4／主結晶の足元（脈色 α0.35）高さ×0.9 の円／門の開口の前（α0.3）6×3／リーダーの足元＝現 mote-pool 5×4.4 暖色。光溜まりの中に敷物（m_dust・m_lichen）を置くと「光が物に当たった」に読める。\n■床の毛細な光: m_vein を輝度キーアウトして Glow（HDR 1.3・α0.5）で敷く: 場の縁（s−2.6 / 4.6 の線の外側 0.3〜1.2）に 10〜14 枚・水路の壁の根元に 4 枚・T1 の面の帯に横長 3 枚。旧 floor-rune（Px.Radial の細い線 24 本）と vein-on-floor（4.5×3 の暈 15 枚）は撤去して置換＝場の中央は暗く保つ。\n■SSAO: レンダラーの 1.4 / 半径 0.7 は据え置き。環境光を下げるので AO が今より読める。足りない所は絵で足す＝全ての立ち板に Blob（柱 0.32・像/瓦礫 0.9）、段の壁の根元に影の帯（幅 0.55・α0.38）、館の根元に帯（幅 0.8）、階段の踏面の奥に 0.12 の帯。\n■反射: 水面 1 枚 y=−0.55・reflect 0.55・distort 0.010・speed (0.012,0.02)（底に風は無い＝ほぼ止水）。鏡像カメラは半解像度・ポスト処理なし（現 Reflection）。映る主役＝遠岸の灯柱 2 本の青白・水路の壁の脈（t−3・橋の左）・門の紋の光の縦の筋・館の窓の暈・手前の池では半ば沈んだ倒柱と結晶。反射は暗い水に沈む（tint α0.88・reflect 0.55）ので下辺が青緑に染まらない（審査①の「鏡像で下辺がさらに青緑」への処方）。スマホは水の色＋鏡像の Halo（灯柱の真下に 2 つ・吊り灯の真下に 1 つ）で代替。\n■材質の光の受け方（URP Lit。Lit() の Smoothness 0 を材質ごとに上書き）: stone アトラス＝BaseColor (0.44,0.48,0.56)・Smoothness 0.28・Metallic 0・NormalFromLuma 1.3（act1 は 0.9）→ 目地の溝が点光源のスペキュラを拾い光溜まりの縁に細い光の線。水際の別インスタンス＝(0.32,0.36,0.42)・Smoothness 0.7 → 灯のハイライトが縦に伸びる。dirt（不揃いの敷石）＝(0.42,0.44,0.48)・Smoothness 0.1・ノーマル 1.5（光らない）。cliff（壁）＝(0.38,0.42,0.48)・Smoothness 0.2・ノーマル 1.4。bed＝(0.24,0.30,0.34)・Smoothness 0.5。敷物（Cutout）はノーマル無し・Smoothness 0.05（m_dust・m_rubble）/ 0.3（m_mosaic）/ 0.7（m_wet）。一枚絵の _SunAmount: 石 1.0・結晶/大門/灯 0・機械 0.5〜0.6・碑と像 0.6。タイルは「dark slate-grey・medium contrast」で描かせ、暗さは BaseColor で付ける（近黒で描くと沈んで潰れる＝審査⑧）。\n■粒子: vein-motes 100 個・HDR (0.5,1.4,1.3)・湧き口を場の縁の m_vein と水路の壁の脈に絞る（Box 2 つ）・上昇 0.08〜0.2。beam-dust（上記）。drips を幕3にも（鍾乳石の束の真下 3 か所と天井の房の下 2 か所・落下 −5・水路の水面に落ちたら ring の Glow を 1.4 秒で 0.3→1.6 に広げて消す＝水面の輪・同時 3 つまで）。dustfall 50 個・α0.3（「灰」でなく石の粉＝幕3に火は無い）。wisps 4 個（1 本はボイラーの漏れへ）。mist-low＝水路と手前の池の上 y 0.1〜0.5 に低い霞（Box 40×0.4×3・色 (0.5,0.9,0.85,0.06)・14 個・ほぼ静止）＝光る空気が水の上にたまる（HD-2D ⑤）。掘削の腕のドラムから teal の小さな火花（1 個/秒・寿命 0.6・放物線・HDR）。\n■時間変化: 主結晶の呼吸・核の脈動・青白の灯 ±5%・リーダーの灯の揺らぎ（現行）・rig-wheel と gear_wall の歯車は回り続ける・掘削の腕は ±1.5°。",
+ "risks": "・タイルが近黒で潰れる: 全 22 枚を \"dark slate-grey basalt, medium contrast\" で頼み、negative に near-black / pitch black。取り込み後の暗さは BaseColor で付ける。NormalFromLuma は輝度差が無いと法線が立たないので、平坦な結果（stone_d・dirt_d）は 1 段コントラストを上げて撮り直す。\n・敷石が均等な格子・同じ煉瓦の繰り返しになる（pixflux の癖）: \"offset courses of blocks of different lengths / irregular fitted flagstones in different sizes\" を positive・perfect regular grid / checkerboard / identical bricks を negative。壁（cliff）にも同じ negative（案Aは壁に無かった）。丸い塊（lumps）は \"low relief, flat\"＋bulging lumps の negative。\n・a〜d に方向のある柄（帯・長い割れ・滴・艶）を焼き込むと、タイル単位で 90° 回すので向きがばらけ 1.28 ごとの尻尾になる: 床は無方向の揺らぎだけに絞り、帯は frieze のデカール・割れは m_crack/m_vein の敷物・艶は材質（Smoothness）で出す。壁は回さないので cliff_d の縦の滴だけ許す。\n・m_crack・m_vein・m_shards・m_dust が等間隔の粒や斑（集合体）になる: \"few and irregular / sparse irregular scatter / most of the area plain / no speckles\" を positive、evenly spaced / dots in rows / grid を negative。等間隔に出た絵は捨てて数を減らして撮り直す（ユーザー却下の前例）。m_mosaic は格子に見えたら捨てる。\n・窓・開口を橙で灯す癖: negative に warm orange light / fire / lit window、positive に \"dark empty window opening\"。灯りは絵に描かせずコードの Glow を絵の手前に置く（絵の窓は透明にならない）。それでも橙が出たら色相を回す後処理を許容。\n・碑・帯・門の紋が読める文字（ルーン）になる: letters / runes / readable symbols / alphabet / writing を negative、\"abstract geometric grooves\" を positive。読める記号が出たら別シードで 2 枚撮り直す。monument_disc は時計の文字盤になりやすい＝clock / numbers を negative。\n・像の顔・指: hood は \"hiding the face completely\"、手は椀を抱えさせる（指が崩れたら fingers を negative に足す）。headless は head / eyes を negative。\n・機械がロボット・人型・スチームパンクの真鍮に化ける: robot / humanoid / legs / eyes / brass / copper / gold / warm を negative、\"blackened riveted iron, dull pewter, no limbs, no face\" を positive。暖色の金属が出た絵は捨てる（舞台は冷たく＝黒鉄と真鍮は UI の色）。歯車の壁は回す歯車をコードで重ねるので、絵の軸受けは \"empty round axle mount\" と明記。\n・結晶がネオン・虹色・氷に化ける: \"translucent desaturated pale tones, hard flat facets\" を positive、neon / rainbow / purple / pink / ice を negative。暗すぎたら Glow の暈で足す（絵は明るくしない）。\n・大きな一枚絵（gate 160×176・facade_far 200×128・drill_rig 176×160・gear_wall 160×144・crystal_spire_big 128×184）に風景や地面の帯が付く: 全て 30,000px 以下に収めた上で \"the bottom edge cut off flat\" を入れ、下端 4〜6 ドットが地面色ならコードで切る。それでも風景が出る絵は 144×160 に落として撮り直す。\n・skyline が風景の一枚絵になる: \"flat silhouette shapes only, transparent above and below the strip\"・sky / moon / stars を negative。窓はコードの Glow。\n・地面に寝かせた物（敷物・水たまり）は頼めない（浮島・皿になる）: 敷物は材質タイルをコードでくり抜く。水面は WaterMaterial の板。噴水の受け皿はコードの艶の板。\n・幾何の罠（Stage.cs で確かめた）: ①大門は s21.5・高さ 5.6 でないと上端で切れる（この深度の上端 y≈8.4） ②手前の街路（s−5〜−8.5）は画面の 12〜30%＝手札と帳面の下なので反射の主役にしない（水路へ移した。手前の池は隅に覗くだけ） ③案Aの額縁の脚（t<−20 / t>22・s−5）・大結晶 t±26・幕1流の canopy x±13.5 は画角の外＝置いても見えない ④T1（+1.1）の物は画面 66% から立ち上がり敵の頭 74% に重なる＝右半分（t6〜22）には低い物だけ ⑤水路は 3% の帯＝反射は「灯と脈の縦の筋」として見える程度（期待値を上げすぎない）。\n・BuildTerrain の CornerH は 4 セル平均なので段の垂直面が出ない・MB.Box の面は連続 UV で 4 種アトラスが効かない: act3 だけ BuildTerrace に分岐して天面は既存の atlas 機構、面はタイル列ごとの quad で象限を選ぶ。幕1の地形コードは触らない。\n・Ground()/Tex() の口: 床は act3_stone_*（Ground(3,\"stone\")）・段の上は act3_dirt_*（DirtAt3 で s の帯を返す）・壁は act3_cliff_*（Tex(3,\"cliff\") 1 種の呼び出しを Ground(3,\"cliff\") に差し替え）。id をこの名に合わせたので Paint の kind 名は変えない。\n・光の予算: 点光源 14・Glow 板 80 前後・粒子 6 系統・反射カメラ。PC は Forward+ で描けるが、スマホは DoF と反射を切っている前提で点光源 8。bloom は HDR を持つ 3 系統（門の紋・主結晶・地平・灯の炎）だけが拾うよう他の Glow は α≤1.0 に留める（一様な青緑の霞を避ける）。\n・座席と札: 灯柱 t23.5（97%）・吊り灯 t2（85%）・ケーブル t17（85%）が敵④の帳面（86〜97%）や意図の札（75〜85%）に掛からないか `shots battle <seed> 3` の 1〜4 体で確認。T2 の右の機械の庭は 3〜4 体戦では札の下に隠れる（1 体戦で見える）＝意図した「札の下の背景」。\n・反射カメラは 1 面だけ: 水は水路と手前の池を同じ y−0.55 に揃える。段の上には水を置かない。近い水面はティルトシフトでぼける（反射は柔らかく＝狙いどおり）。\n・世界観のずれ: 「灰」「垂れ幕」「炎」は使わない（幕3に火と布は無い）＝塵・石の粉・結晶の灯に言い換えた。"
+}

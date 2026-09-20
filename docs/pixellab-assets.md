@@ -449,3 +449,12 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 | `Art/ui/lantern.png`（点灯）／`Art/ui/lantern_dark.png`（消灯・省略可） | 32×48・正面・原点は台座の下端の中央 | **硝子の窓 x 7〜24・y 14〜35（上が 0）は暗いまま空けておく**（炎と数字はコードがその上に描く）。黒鉄の枠と真鍮の飾り＝ひなたの竿の灯籠と同じ意匠。PixelLab に頼むなら「brass and black-iron lantern, front view, empty dark glass window, pedestal base, no flame」 |
 | `Art/fx/flame.png` | 12×16・原点は根元の中央 | 白い芯 → 真鍮の紙 → 真鍮（延焼の橙は使わない） |
 | `Art/fx/light_streak.png` | 96×24 | 放出の光の筋（斬撃の筋の暖色版） |
+
+
+## 舞台の HD-2D 化（2026-09-21）
+
+一次資料 `docs/stage-hd2d-2026-09-21.md`。発注書 `docs/pixellab/stage-act{1,2,3}-hd2d.json`（幕1は redo/redo2/redo3 も）。
+- **地面のタイル** `Art/tiles/act<N>_{grass,dirt,stone,cliff,bed}_{a,b,c,d}.png`（64×64＝2px/ドット。96 で作り中央 64 を切る）。`Stage.Ground` が 4 種を 2×2 のアトラスに束ねる（1 種なら Repeat）。幕2の土 `act2_dirt_a` はコード生成（pixflux の土は泡になる）。幕3の土 b/d は a の派生
+- **敷物の材質** `Art/tiles/act<N>_m_<name>.png`（落ち葉・苔・砂利・ひび・泥・小枝・小花・クローバー／幕2 バラスト・鉱の粉・煤・おがくず・瓦礫・苔／幕3 瓦礫・ひび・濡れ・脈・モザイク）。`Stage.PatchSet` がコードで不定形にくり抜く。捨てた＝m_straw・m_crust・m_dust・m_shards・m_lichen（等間隔の粒・縞）
+- **一枚絵** `Art/props/act1_*`（tree_oak/oak2/pine/pine2/birch/willow/dead/giant・treeline・canopy・bush2/3・stump・rock_big1/2・rock_small・log2・tallgrass1・tuft・fern2・shroom2）／`act2_*`（設計の統合案の 38 種＝坑口・結晶・歩廊の手すり・梯子・残骸・巻き上げ機・トロッコ・炉・屋台・差し掛け・樽・木箱・袋・提灯・鍾乳石・垂れ根・滑車・柱）／`act3_*`（36 種＝大門・柱・館・街の輪郭・水道橋・櫓・鍾乳石・天井の房・鎖・灯・結晶・像・碑・噴水・欄干・瓦礫・機械の庭）。捨てた＝act1_bush_flower（等間隔の花）・act1_d_puddle（皿）・act3_cable_hang（縄の輪）
+- 寸法は `SpriteH` の世界の高さで置く（絵のドット数と実物の大きさは揃わない）

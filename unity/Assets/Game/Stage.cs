@@ -309,9 +309,7 @@ namespace DeckRogue.Game
         static float H2(float t, float s)
         {
             s += BandWobble(t, 1f);
-            if (s < -4.9f) return 0.25f;
-            if (s < -3.3f) return -0.35f;   // 溝 (幅 1.6 = 2〜3 セル)
-            if (s < 5.0f) return 0f;
+            if (s < 5.0f) return 0f;        // 手前は平らな道 (溝と近景の段は「黒い穴・浮いた丸太」に見えたので撤去 = レビュー 2026-09-21)
             if (s < 8.2f) return 0.55f;
             return 1.1f;
         }
@@ -332,14 +330,14 @@ namespace DeckRogue.Game
             if (act == 2)
             {
                 s += BandWobble(t, 1f);
-                if (s < -4.9f) return 1; if (s < -3.3f) return 2; if (s < 5.0f) return 1; if (s < 8.2f) return 0; return 1;
+                if (s < 5.0f) return 1; if (s < 8.2f) return 0; return 1;
             }
             s += BandWobble(t, 2f);
             if (s < -3.6f) return (t > -12f && t < 8f) ? 2 : 1;
             if (s < 5.8f) return 0; if (s < 8.6f) return 2; return 1;
         }
         static bool Stepped { get { return _paintedAct != 1; } }
-        static float WaterY { get { return _paintedAct == 2 ? -0.2f : -0.55f; } }
+        static float WaterY { get { return _paintedAct == 2 ? -0.08f : -0.55f; } }
 
         static float RawHeight(float x, float z)
         {
@@ -511,7 +509,7 @@ namespace DeckRogue.Game
             Solid("terrain-litter", litter, mLitter);
             Solid("terrain-dirt", dirtTop, mDirt);
             var mBed = HasTile(_paintedAct, "bed") ? Lit(Tex(_paintedAct, "bed", null)) : Lit(Tex(_paintedAct, "dirt", Px.Dirt(_pal, new System.Random(5))));
-            mBed.SetColor("_BaseColor", HasTile(_paintedAct, "bed") ? (Stepped ? new Color(0.3f, 0.36f, 0.4f) : new Color(0.55f, 0.6f, 0.66f)) : new Color(0.36f, 0.34f, 0.32f));   // 川床 = 暗い湿った土
+            mBed.SetColor("_BaseColor", HasTile(_paintedAct, "bed") ? (Stepped ? new Color(0.3f, 0.36f, 0.4f) : new Color(0.36f, 0.42f, 0.48f)) : new Color(0.36f, 0.34f, 0.32f));   // 川床 = 暗い湿った土 (座席の高さで最も明るい帯にしない = レビュー)
             Solid("terrain-bed", bed, mBed);
             if (Stepped)
             {
@@ -522,7 +520,7 @@ namespace DeckRogue.Game
                 var wgo2 = new GameObject("water"); wgo2.transform.SetParent(_world, false); wgo2.layer = 4;
                 wgo2.AddComponent<MeshFilter>().sharedMesh = water2.Build();
                 var wmr2 = wgo2.AddComponent<MeshRenderer>();
-                wmr2.sharedMaterial = WaterMaterial(_paintedAct == 2 ? new Color(0.08f, 0.1f, 0.15f, 0.8f) : new Color(0.04f, 0.08f, 0.1f, 0.85f), 0.65f, _paintedAct == 2 ? 0.4f : 0.3f);
+                wmr2.sharedMaterial = WaterMaterial(_paintedAct == 2 ? new Color(0.12f, 0.14f, 0.2f, 0.75f) : new Color(0.05f, 0.09f, 0.12f, 0.8f), 0.85f, _paintedAct == 2 ? 0.4f : 0.3f);
                 wmr2.shadowCastingMode = ShadowCastingMode.Off; wmr2.receiveShadows = false;
                 EnsureReflection(wy);
                 return;
@@ -1107,7 +1105,7 @@ namespace DeckRogue.Game
                 p.StoneA = UiKit.Hex("#66717a"); p.StoneB = UiKit.Hex("#4c565c");
                 p.CliffA = UiKit.Hex("#3f484c"); p.CliffB = UiKit.Hex("#2e3538");
                 p.LeafA = UiKit.Hex("#25564c"); p.LeafB = UiKit.Hex("#1a3f38"); p.LeafC = UiKit.Hex("#3f7a66"); p.Trunk = UiKit.Hex("#3c3a38");
-                p.Ambient = new Color(0.18f, 0.26f, 0.30f); p.Sun = new Color(0.62f, 0.86f, 0.86f); p.Lantern = new Color(0.55f, 0.95f, 1f);   // 2026-09-21 HD-2D: 環境光を落として光溜まりと AO が読める余地
+                p.Ambient = new Color(0.2f, 0.25f, 0.28f); p.Sun = new Color(0.7f, 0.84f, 0.84f); p.Lantern = new Color(1f, 0.72f, 0.4f);   // 2026-09-21 HD-2D: 環境光を落として光溜まりと AO が読める余地。リーダーのランタンは暖色 (青緑だとキャラが環境光と同じ色に沈む = レビュー)
                 p.Fog = new Color(0.26f, 0.46f, 0.48f);   // 霧は背景より明るい青緑 = 遠くほど光に溶ける (「空気が光って見える」)
                 p.Filter = new Color(0.92f, 0.97f, 1.06f); p.UnitAmbient = new Color(0.8f, 0.84f, 0.96f);   // 銀の月光 (キャラを緑に染めない)
             }
@@ -1163,8 +1161,8 @@ namespace DeckRogue.Game
             RenderSettings.fog = true;
             RenderSettings.fogMode = FogMode.Linear;
             RenderSettings.fogColor = p.Fog;                  // 空気遠近: 遠くほど白く薄く。最上段はここで薄れて終わる
-            RenderSettings.fogStartDistance = act == 1 ? 16f : 20f;
-            RenderSettings.fogEndDistance = act == 1 ? 56f : 62f;
+            RenderSettings.fogStartDistance = act == 1 ? 12f : 20f;
+            RenderSettings.fogEndDistance = act == 1 ? 46f : 62f;   // 幕1: 遠い芝を霧に沈める (窓を開けた奥が明るい芝生に見えない)
             _sun.color = p.Sun; _sun.intensity = p.SunIntensity;
             _lantern.color = p.Lantern; _lantern.intensity = p.LampIntensity;
             if (_color != null) { _color.colorFilter.value = p.Filter; _color.postExposure.value = 0.12f; }
@@ -1173,19 +1171,19 @@ namespace DeckRogue.Game
             var grass = Px.Grass(p, rng); var dirt = Px.Dirt(p, rng); var stone = Px.Stone(p, rng); var cliff = Px.Cliff(p, rng);
             var mGrass = Ground(act, "grass", grass, out grassVariants); var mDirt = Ground(act, "dirt", dirt, out dirtVariants); var mStone = Lit(Tex(act, "stone", stone)); var mCliff = Ground(act, "cliff", cliff, out cliffVariants);
             bedVariants = 0;
-            if (cliffVariants > 0) mCliff.SetColor("_BaseColor", act == 2 ? new Color(0.62f, 0.62f, 0.7f) : new Color(0.5f, 0.54f, 0.62f));
+            if (cliffVariants > 0) mCliff.SetColor("_BaseColor", act == 2 ? new Color(0.62f, 0.62f, 0.7f) : new Color(0.36f, 0.4f, 0.48f));
             // PixelLab のタイルは昼の色で描かれるので、取り込んだ時だけ幕の夜のパレットへ寄せる (仮のタイルは元から夜の色)。4 種のアトラス (夜の色で発注) は薄く
-            if (grassVariants > 0) mGrass.SetColor("_BaseColor", new Color(0.5f, 0.58f, 0.6f));   // 月夜の草地 = 青緑に沈める (昼の緑のまま出すと芝生になる)
+            if (grassVariants > 0) mGrass.SetColor("_BaseColor", new Color(0.44f, 0.52f, 0.55f));   // 月夜の草地 = 青緑に沈める (昼の緑のまま出すと芝生になる)
             else if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.46f, 0.6f, 0.58f));   // 森の床は暗め
-            if (dirtVariants > 0) mDirt.SetColor("_BaseColor", act == 1 ? new Color(0.66f, 0.62f, 0.6f) : act == 2 ? new Color(0.78f, 0.78f, 0.86f) : new Color(0.56f, 0.58f, 0.64f));
-            else if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", act == 2 ? new Color(0.78f, 0.78f, 0.86f) : new Color(0.66f, 0.6f, 0.56f));    // 土=灰茶 (月明かりの空き地。影が読める明るさ)。暖色は街灯の範囲だけ
+            if (dirtVariants > 0) mDirt.SetColor("_BaseColor", act == 1 ? new Color(0.58f, 0.55f, 0.54f) : act == 2 ? new Color(0.78f, 0.78f, 0.86f) : new Color(0.56f, 0.58f, 0.64f));
+            else if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", act == 2 ? new Color(0.8f, 0.8f, 0.84f) : new Color(0.66f, 0.6f, 0.56f));    // 土=灰茶 (月明かりの空き地。影が読める明るさ)。暖色は街灯の範囲だけ
             if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.56f, 0.62f, 0.76f)); // 石=青灰
             if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.52f, 0.48f));  // 崖=土色
             if (act != 1)
             {
                 // 幕2/3: 坑の中。床は石 (幕2=暖かい灰茶・幕3=冷たい黒石)
                 var mFloor = Ground(act, "stone", stone, out grassVariants);   // 幕2/3 の床 = 石 (4 種のアトラスがあればそれ。BuildTerrain は grassVariants を床の種の数として読む)
-                mFloor.SetColor("_BaseColor", grassVariants > 0 ? (act == 2 ? new Color(0.72f, 0.74f, 0.84f) : new Color(0.56f, 0.6f, 0.7f)) : act == 2 ? new Color(0.5f, 0.42f, 0.38f) : new Color(0.3f, 0.33f, 0.44f));
+                mFloor.SetColor("_BaseColor", grassVariants > 0 ? (act == 2 ? new Color(0.72f, 0.74f, 0.84f) : new Color(0.58f, 0.6f, 0.66f)) : act == 2 ? new Color(0.5f, 0.42f, 0.38f) : new Color(0.3f, 0.33f, 0.44f));   // 幕3 は青一色にしない (灰の石)
                 if (_color != null) _color.postExposure.value = act == 2 ? 0.32f : 0.22f;   // 坑の中は光源が点なので半段明るく (幕1 は 0.12)
                 BuildTerrain(mFloor, mDirt, mCliff);
                 if (act == 2) PaintMarket2(p, rng, mFloor, mCliff); else PaintCorridor2(p, rng, mFloor, mCliff);
@@ -1199,8 +1197,8 @@ namespace DeckRogue.Game
             var mBite = Cutout(Px.Patch(p.GrassA, p.GrassB, rng));
             var mSpill = Cutout(Px.Patch(p.DirtA, p.DirtB, rng));
             var edges = DirtEdgeCells();
-            var edgeDecals = PatchSet(act, "grass_a", true, 40, 26, 32, 22, 48, 28);
-            edgeDecals.AddRange(PatchSet(act, "grass_b", true, 40, 26));
+            var edgeDecals = PatchSet(act, "grass_a", true, 40, 26, 32, 22, 48, 28);   // grass_b (クローバー) は等間隔の粒なので舌にも使わない
+            _decalTint = mGrass.GetColor("_BaseColor");
             if (edgeDecals.Count > 0)
             {
                 // 境界のセルごとに、草側の隣へ向けて「草の舌」を寝かせる = セル単位の段が消え、道の縁が不定形になる (2026-09-21)
@@ -1246,8 +1244,10 @@ namespace DeckRogue.Game
                 var w = OnPath(t, sv);
                 if (IsDirt(w.x, w.z))
                 {
+                    _decalTint = mDirt.GetColor("_BaseColor");
                     if (pebbleDecals.Count > 0) { if (rng.NextDouble() < 0.7) GroundDecal("pebbles", Pick(pebbleDecals, rng), w.x, w.z, 0.8f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.016f, rng.NextDouble() < 0.5); }
                     else if (rng.NextDouble() < 0.5) Decal("pebble", mPebble, w.x, w.z, 0.36f + (float)rng.NextDouble() * 0.16f, 0.24f, (float)rng.NextDouble() * 360f);
+                    _decalTint = mGrass.GetColor("_BaseColor");
                     continue;
                 }
                 if (rng.NextDouble() < 0.15) Plane("flower", flower, w, 0.46f, 0.5f, false);
@@ -1267,12 +1267,13 @@ namespace DeckRogue.Game
                     return w;
                 };
                 // 草地: 落ち葉 (奥と縁に多い)・苔・クローバー・花・小枝
-                for (int i = 0; i < 60 && leaves.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("leaves", Pick(leaves, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.6f, (float)rng.NextDouble() * 360f, 0.018f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 40 && leaves.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("leaves", Pick(leaves, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.6f, (float)rng.NextDouble() * 360f, 0.018f, rng.NextDouble() < 0.5); }
                 for (int i = 0; i < 30 && moss.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("moss", Pick(moss, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.7f, (float)rng.NextDouble() * 360f, 0.014f, rng.NextDouble() < 0.5); }
                 for (int i = 0; i < 10 && clover.Count > 0; i++) { var w = spot(-24f, 30f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("clover", Pick(clover, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.02f, rng.NextDouble() < 0.5); }
                 for (int i = 0; i < 8 && flowers.Count > 0; i++) { var w = spot(-24f, 30f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("flowers", Pick(flowers, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.4f, (float)rng.NextDouble() * 360f, 0.024f, rng.NextDouble() < 0.5); }
                 for (int i = 0; i < 18 && twigs.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null) continue; GroundDecal("twigs", Pick(twigs, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.026f, rng.NextDouble() < 0.5); }
                 // 土: 小石は上で撒いた。ひび・泥・水たまり
+                _decalTint = mDirt.GetColor("_BaseColor");
                 for (int i = 0; i < 5 && cracks.Count > 0; i++) { var w = spot(-22f, 28f); if (w == null || !IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("crack", Pick(cracks, rng), w.Value.x, w.Value.z, 0.9f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.013f, rng.NextDouble() < 0.5); }
                 for (int i = 0; i < 5 && mud.Count > 0; i++) { var w = spot(-22f, 28f); if (w == null || !IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("mud", Pick(mud, rng), w.Value.x, w.Value.z, 0.9f + (float)rng.NextDouble() * 0.6f, (float)rng.NextDouble() * 360f, 0.015f, rng.NextDouble() < 0.5); }
                 {
@@ -1289,6 +1290,7 @@ namespace DeckRogue.Game
                     }
                 }
                 _rootDecals = roots;   // 根は木の足元に (木を置く時に)
+                _decalTint = mGrass.GetColor("_BaseColor");
             }
             // 夜の花と水たまり (道の脇・空き地の縁)
             var flower2 = PropTex(act, "flower", null); var puddle = PropTex(act, "puddle", null);
@@ -1358,11 +1360,11 @@ namespace DeckRogue.Game
             }
             // 月光の筋: 右上 (月光の向き) から差す淡い光の帯を木立の間に (中景〜遠景)
             var beam = Px.Beam();
-            float[] bx = { -9f, 0f, 9f, 17f, -18f, 25f, 4.5f }; float[] bz = { 9f, 11f, 8f, 10f, 12f, 7f, 16f }; float[] bw = { 4.6f, 6.4f, 5.4f, 4.8f, 4.2f, 5.0f, 7.0f };
+            float[] bx = { -5.5f, 0.5f, 4.5f, 8.5f, 13f, -18f, 25f }; float[] bz = { 10f, 11f, 13f, 10f, 14f, 12f, 7f }; float[] bw = { 2.8f, 3.4f, 2.6f, 3.2f, 2.4f, 4.2f, 5.0f };   // 短い筋 = 映る帯の α が濃い (高さ 22 では α 0.13 で読めなかった = レビュー)
             var moonPool = PropTexRaw(act, "d_moonlight", null);
             for (int i = 0; i < bx.Length; i++)
             {
-                var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), 22f, bw[i]);
+                var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), i < 5 ? 9f : 22f, bw[i]);
                 b.transform.rotation = Quaternion.Euler(0f, 0f, -14f);
                 b.GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1f, 1f, 1f, i < 4 ? 1f : 0.7f);
                 // 筋の足元: 木漏れ日の光溜まり (2026-09-21 HD-2D)。筋は -14° に傾いているので足元は少し右 (+x) へ
@@ -1437,7 +1439,7 @@ namespace DeckRogue.Game
                 if (ss < -2.6f && ss > -9f && tt > -12f && tt < 18f) continue;       // 場の手前 (キャラを隠さない)
                 if (IsDirt(x, z)) continue;                                          // 道の上には生えない
                 if (tt > 13f && tt < 26f && ss > 3f && ss < 13f && rng.NextDouble() < 0.7) continue;   // 道の先 = 塔が見える切れ目
-                if (x > 7f && x < 24f && z > 16f && z < 52f && rng.NextDouble() < 0.75) continue;       // 月と坑口が見える切れ目 (右奥。梢が月を隠さない。2026-09-21: 芝の空白が浮くので少し木を戻す)
+                if (x > -1f && x < 30f && z > 13f && (z < 30f || rng.NextDouble() < 0.7)) continue;     // 月と坑口が見える切れ目 (右奥。上辺が梢で塞がっていた = レビュー 2026-09-21)。遠い影絵 (z>30) は 3 割残す
                 float h = GroundY(x, z);
                 float sc = 4.6f * (0.7f + (float)rng.NextDouble() * 0.9f) * (species.Count > 0 ? 1.35f : 1f);
                 if (ss < -2.6f) sc *= 1.25f;                                         // 手前の木は大きい
@@ -1447,15 +1449,15 @@ namespace DeckRogue.Game
             }
             // 額縁と場の背後の大木 (近いので大きい = 森に囲まれている)
             tree(OnPath(-15.5f, 4.6f), 8.5f, 1); tree(OnPath(-12f, 10.4f), 7.0f, 0); tree(OnPath(15.5f, -4.6f), 7.6f, 2);
-            tree(OnPath(-13.5f, -5.4f), 9.5f, 0); tree(OnPath(19.5f, 3.6f), 8.2f, 1); tree(OnPath(-4f, 9.2f), 7.8f, 0);
-            tree(OnPath(7f, 10.2f), 7.4f, 2); tree(OnPath(12.5f, 4.6f), 7.9f, 0); tree(OnPath(1.5f, 11.4f), 8.8f, 1);
+            tree(OnPath(-13.5f, -5.4f), 9.5f, 0); tree(OnPath(19.5f, 3.6f), 8.2f, 1); tree(OnPath(-1f, 10.2f), 7.8f, 0);   // リーダーの真後ろ (t=-4) から右へ (幹がリーダーに重なっていた = レビュー)
+            tree(OnPath(19f, 5f), 7.5f, 1); tree(OnPath(1.5f, 11.4f), 8.8f, 1);   // (7,10.2)・(12.5,4.6) は窓を塞いでいたので削除
             // 大樹 (2026-09-21): 場の背後の左に一本、根が場まで張る (画面の左上を埋める額縁)
             if (giantTree != null) { var gp = OnPath(-9f, 8.6f); Sprite("tree-giant", giantTree, gp, 1.15f, 0.34f); treeSpots.Add(gp); }
             // 月の映り込み: 川筋に沿って淡い銀の光の帯を寝かせる (面の反射はしない。遠目に「水が月を映している」だけ伝わればよい)
             for (float tt2 = -24f; tt2 <= 28f; tt2 += 2.6f)
             {
                 var c = OnPath(tt2, StreamCenter(tt2));
-                var g = Glow("moon-on-water", Px.Radial(new Color(0.75f, 0.85f, 1f, 0.36f)), new Vector3(c.x, c.y + 0.06f, c.z), 1f, 1f);
+                var g = Glow("moon-on-water", Px.Radial(new Color(0.75f, 0.85f, 1f, 0.2f)), new Vector3(c.x, c.y + 0.06f, c.z), 1f, 1f);   // 川の光の帯を弱く (座席の胴の高さで最も鮮鋭だった = レビュー)
                 g.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
                 g.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
                 g.transform.localScale = new Vector3(3.6f, 1.9f, 1f);
@@ -1572,7 +1574,7 @@ namespace DeckRogue.Game
 
             // 光の粒の足元: 群れの下に暖色の光溜まり (粒そのものは StageFx の Motes)。装置 (街灯) は置かない
             var lampBase = new Vector3(_lampPos.x, 0f, _lampPos.z);
-            var pool = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.3f)), lampBase, 1f, 1f);
+            var pool = Glow("mote-pool", Px.Radial(new Color(1f, 0.78f, 0.46f, 0.18f)), lampBase, 1f, 1f);
             pool.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
             pool.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             pool.transform.position = lampBase + new Vector3(0f, 0.035f, 0f);
@@ -1588,12 +1590,12 @@ namespace DeckRogue.Game
             var stars = Prop("stars", Px.Stars(rng), new Vector3(0f, 6f, 88f), 14f, 0.3f, 150f);
             stars.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             stars.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(12f, 14.2f, 88f), 3.0f, 0.4f);   // 幕1は小さな月。遠く高く (仰角 5°) = どの梢よりも上に出る。空の板 (z90) の手前
+            var moon = Prop("moon", Px.Disc(new Color(2.4f, 2.2f, 1.7f)), new Vector3(36f, 10.5f, 87.5f), 3.0f, 0.4f);   // 上端から 25px 下 = 円盤が全部見える (レビュー)。x36 = 場の背後の大木 (1.5,11.4) の梢 (画面 1120〜1500) の右・櫓の真上   // 幕1は小さな月。遠く高く (仰角 5°) = どの梢よりも上に出る。空の板 (z90) の手前
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
             moon.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Ambient", Color.white);
             moon.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.5f)), new Vector3(12f, 14.2f, 88.5f), 11f, 11f);   // 月の暈 = 月明かりが強い夜
+            Glow("moon-halo", Px.Glow(new Color(0.8f, 0.86f, 1f, 0.5f)), new Vector3(36f, 6.5f, 88.5f), 11f, 11f);   // 月の暈 = 月明かりが強い夜 (中心 = 月の中心)
             var mts = Prop("mountains", Px.Mountains(p, rng, 0.55f), new Vector3(4f, 2.6f, 58f), 6.5f, 0.4f, 200f);
             mts.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var mts2 = Prop("mountains2", Px.Mountains(p, rng, 0.35f), new Vector3(-10f, 2.9f, 48f), 4.5f, 0.4f, 150f);
@@ -1604,19 +1606,20 @@ namespace DeckRogue.Game
             if (treeline != null)
             {
                 // 遠い森の梢 (2026-09-21): 木々の後ろ・山の手前に霧の中の稜線を2枚 (ずらして重ねる = 一本の帯に見えない)。霧を半分受ける
-                float tw = treeline.width * Dot * 1.6f, th = treeline.height * Dot * 1.6f;
-                var tl1 = Prop("treeline", treeline, new Vector3(-6f, 1.4f, 40f), th, 0.4f, tw); tl1.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.75f); tl1.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-                var tl2 = Prop("treeline", treeline, new Vector3(30f, 1.0f, 44f), th * 0.9f, 0.4f, tw * 0.9f); tl2.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.85f); tl2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                float tw = treeline.width * Dot * 2.6f, th = treeline.height * Dot * 2.6f;   // 遠い森の梢は近く大きく (窓を開けた芝の空白を梢で閉じる)
+                var tl1 = Prop("treeline", treeline, new Vector3(-2f, 1.0f, 33f), th, 0.4f, tw); tl1.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.7f); tl1.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                var tl2 = Prop("treeline", treeline, new Vector3(34f, 0.6f, 37f), th * 0.9f, 0.4f, tw * 0.9f); tl2.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.8f); tl2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 tl2.transform.localScale = new Vector3(-tl2.transform.localScale.x, tl2.transform.localScale.y, 1f);
-                var tl3 = Prop("treeline", treeline, new Vector3(-40f, 1.2f, 42f), th * 0.95f, 0.4f, tw * 0.95f); tl3.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.8f); tl3.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                var tl3 = Prop("treeline", treeline, new Vector3(-40f, 1.2f, 36f), th * 0.95f, 0.4f, tw * 0.95f); tl3.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.75f); tl3.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                foreach (var tl in new[] { tl1, tl2, tl3 }) tl.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_BaseColor", new Color(0.22f, 0.3f, 0.36f));   // 影絵 = 暗く青く (絵は昼の青緑)
             }
             // 坑口: 道の先 (奥右) に立つ木組みの櫓と、その足元の竪坑。世界観「マナ脈の坑を降りる」(2026-09-10 改稿。旧・古の塔を置換)。
             // 霧は半分だけ受けて山より暗く残す = 「これから降りる場所」が遠景の主役になる
-            var pithead = Prop("pithead", Px.Headframe(p, rng), new Vector3(22f, 0.2f, 46f), 13f, 0.4f);
+            var pithead = Prop("pithead", Px.Headframe(p, rng), new Vector3(22f, 0.2f, 46f), 9.5f, 0.4f);   // 13 では頂上が上端の外だった (レビュー)
             pithead.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f);
             pithead.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             {   // 滑車は別の板にして回す (StageDriver が "rig-wheel" を回す)。櫓の絵の輪の位置 (128×176 の 64,163) に重ねる
-                var wheel = Prop("rig-wheel", Px.Wheel(Color.Lerp(p.SkyTop, Color.black, 0.55f), 32), new Vector3(22f, 0.2f + 13f * 163f / 176f, 45.9f), 2.1f, 0.4f);
+                var wheel = Prop("rig-wheel", Px.Wheel(Color.Lerp(p.SkyTop, Color.black, 0.55f), 32), new Vector3(22f, 0.2f + 9.5f * 163f / 176f, 45.9f), 1.55f, 0.4f);
                 wheel.GetComponent<MeshFilter>().sharedMesh = _quadCentered; wheel.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.45f); wheel.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             }
         }
@@ -2205,12 +2208,13 @@ namespace DeckRogue.Game
             Blob("shadow-pillar", _world, new Vector3(x, y, z), w * 1.6f);
         }
 
-        static readonly Dictionary<Texture2D, Material> _cutoutCache = new Dictionary<Texture2D, Material>();
+        static readonly Dictionary<string, Material> _cutoutCache = new Dictionary<string, Material>();
+        static Color _decalTint = Color.white;   // 敷物の色 = 下の地面の _BaseColor に結ぶ (敷物が地面の 2 倍明るい白斑にならない = レビュー 2026-09-21)
         static Material CutoutCached(Texture2D tex)
         {
-            Material m;
-            if (_cutoutCache.TryGetValue(tex, out m) && m != null) return m;
-            m = Cutout(tex); _cutoutCache[tex] = m; return m;
+            Material m; string key = tex.name + "#" + tex.GetHashCode() + ":" + _decalTint;
+            if (_cutoutCache.TryGetValue(key, out m) && m != null) return m;
+            m = Cutout(tex); m.SetColor("_BaseColor", _decalTint); _cutoutCache[key] = m; return m;
         }
 
         /// <summary>地面の敷物 (2026-09-21 HD-2D): PixelLab の抜き板 (落ち葉・苔・根・小石・花・水たまり) を地面の粒 (1ドット=2px) で寝かせる。
@@ -2250,9 +2254,9 @@ namespace DeckRogue.Game
                 for (int x = 0; x < w; x++)
                 {
                     var c = src[((y + oy) % th) * tw + (x + ox) % tw];
-                    {   // 夜の色に寄せる: 彩度 -30%・明るさ -12% (PixelLab の材質は昼の色で来る)
-                        float g = c.r * 0.3f + c.g * 0.59f + c.b * 0.11f;
-                        c = new Color32((byte)((g + (c.r - g) * 0.7f) * 0.88f), (byte)((g + (c.g - g) * 0.7f) * 0.88f), (byte)((g + (c.b - g) * 0.7f) * 0.9f), c.a);
+                    {   // 夜の色に寄せる: 彩度 -30%・明るさ -12% (PixelLab の材質は昼の色で来る)。幕2/3 の床は暗いので敷物はさらに沈める (床の 2 倍明るい白斑にしない = レビュー)
+                        float g = c.r * 0.3f + c.g * 0.59f + c.b * 0.11f; float k = 0.9f;   // 明るさは材質の _BaseColor (= 地面の色 _decalTint) が担う
+                        c = new Color32((byte)((g + (c.r - g) * 0.7f) * k), (byte)((g + (c.g - g) * 0.7f) * k), (byte)((g + (c.b - g) * 0.7f) * (k + 0.02f)), c.a);
                     }
                     float fx = (x + 0.5f) / w * 2f - 1f, fy = (y + 0.5f) / h * 2f - 1f;
                     float m;

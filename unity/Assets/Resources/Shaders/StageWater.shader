@@ -54,6 +54,7 @@ Shader "DeckRogue/StageWater"
                 half n2 = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv * 1.7 - _Speed.yx * t * 0.8).r;
                 half n = (n1 + n2) * 0.5;
                 float2 suv = i.screenPos.xy / max(0.0001, i.screenPos.w);
+                suv.x = 1.0 - suv.x;   // 鏡像カメラは回転で作る (行列式 +1) ので、真の鏡像に対して左右が反転している = ここで戻す
                 suv += (n - 0.5) * _Distort;
                 half3 refl = SAMPLE_TEXTURE2D(_ReflectionTex, sampler_ReflectionTex, suv).rgb;
                 half3 water = _BaseColor.rgb;
