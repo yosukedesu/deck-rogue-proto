@@ -456,6 +456,7 @@ namespace DeckRogue.Game
             if (Get("gearmore") == "1") g.GearMore = true;   // ギアの「+N」を押した状態 = 持ち物の一覧 (2026-09-18)
             if (Get("gearswap") == "1") g.GearSwap = g.Rs != null && g.Rs.Phase == RunPhases.Shop ? "shop:0" : "reward";   // 満杯の入れ替え窓
             if (Get("menu") == "1") g.MenuOpen = true;   // スマホの ≡ (2026-09-14)
+            if (Get("settings") == "1") g.SettingsOpen = true;   // 設定の窓 (2026-09-21)
             // フィードバックの画面 (2026-09-14): rating=won|lost で評価ダイアログ (最後の戦闘を仮に積む)、memo=1 でメモの窓
             if (Get("rating") != null && g.Rs != null)
             {

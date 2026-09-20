@@ -113,6 +113,8 @@ namespace DeckRogue.Game
         public bool ViewMap;
         /// <summary>スマホの「≡」メニューを開いているか (2026-09-14)</summary>
         public bool MenuOpen;
+        /// <summary>設定の窓 (2026-09-21): 画面・音量。タイトルと ≡ から</summary>
+        public bool SettingsOpen;
         /// <summary>マップへの落書き (2026-09-12。StS2 の移植): 幕ごとの線の列。ランの間保持し、新しいランで白紙。UI 層の状態でエンジンには無い</summary>
         public Dictionary<int, List<DoodleStroke>> Doodles = new Dictionary<int, List<DoodleStroke>>();
         public bool DoodleMode;      // ペンボタンが押されている (左ドラッグ・指でも描ける)
@@ -166,6 +168,7 @@ namespace DeckRogue.Game
         void Awake()
         {
             I = this;
+            Video.ApplySaved();   // 保存した解像度・フルスクリーンを戻す (2026-09-21 設定の窓)
             Seed = UnityEngine.Random.Range(1, 99999);
 
             // Canvas
@@ -686,6 +689,18 @@ namespace DeckRogue.Game
         void Update()
         {
             if (UiKit.Phone) Tooltip.Tick();   // タップで開いた説明を、外を触ったら閉じる (2026-09-14)
+            // フルスクリーンの切替 (2026-09-21 設定の窓): F11 か Alt+Enter
+            if (!Application.isMobilePlatform && (Input.GetKeyDown(KeyCode.F11) || (Input.GetKeyDown(KeyCode.Return) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)))))
+            {
+                Video.ToggleFullscreen();
+                if (SettingsOpen) StartCoroutine(RebuildAfterFrames(2));
+            }
+        }
+
+        System.Collections.IEnumerator RebuildAfterFrames(int n)
+        {
+            for (int i = 0; i < n; i++) yield return null;
+            Rebuild();
         }
 
         // ---- 落ちても失わない (2026-09-14): バックグラウンドへ回る/終了する時に自動保存 ----
@@ -756,12 +771,13 @@ namespace DeckRogue.Game
                 else if (ViewDeck) RunUi.DeckViewer(this, over);   // ≡ の「デッキ一覧」(2026-09-16)。他の画面と同じく地図が優先
                 if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, over);
                 if (MenuOpen) RunUi.Menu(this, over);
+                if (SettingsOpen) SettingsUi.Build(this, over);
                 if (Confirm != null) RunUi.ConfirmDialog(this, over);
                 return;
             }
             // タイトルとマップも新画面 (M3)
-            if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
-            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
             if (Content.IsLoaded)
             {
                 bool built = true;
@@ -786,6 +802,7 @@ namespace DeckRogue.Game
                     if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);   // 戦闘直後の評価 (1回だけ聞く)
                     if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot);
                     if (MenuOpen) RunUi.Menu(this, ScreenRoot);
+                    if (SettingsOpen) SettingsUi.Build(this, ScreenRoot);
                     if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot);
                     return;
                 }

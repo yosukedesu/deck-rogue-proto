@@ -84,6 +84,13 @@ namespace DeckRogue.Game
 
             var ver = UiKit.Txt(root, "set-confirm / seed " + g.Seed + " / 難易度 " + g.Difficulty, 13, UiKit.ColDim, TextAnchor.MiddleLeft);
             UiKit.Anchor(ver.rectTransform, new Vector2(0f, 0f), new Vector2(0.6f, 0f), new Vector2(64f, 20f), new Vector2(0f, 48f));
+            // 設定 (2026-09-21): 画面 (解像度・フルスクリーン) と音量
+            {
+                var sb = UiKit.Btn(root, "設定", delegate { g.SettingsOpen = true; g.Rebuild(); }, 14);
+                var sle = sb.GetComponent<LayoutElement>();
+                if (sle != null) UnityEngine.Object.Destroy(sle);
+                UiKit.Anchor(sb.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(64f, 14f), new Vector2(300f, 54f));
+            }
             // 前回のランのデータ回収 (2026-09-14): 落ちた/閉じたランも autosave から書き出せる
             if (Feedback.HasAutosave)
             {
@@ -95,7 +102,7 @@ namespace DeckRogue.Game
                 }, 14);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
-                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(360f, 14f), new Vector2(700f, 54f));
+                UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(320f, 14f), new Vector2(700f, 54f));
                 Tooltip.Attach(b.gameObject, delegate { return "置き場: " + Feedback.ReportsDir; });
             }
         }

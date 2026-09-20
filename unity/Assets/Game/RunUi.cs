@@ -120,6 +120,7 @@ namespace DeckRogue.Game
             if (combat) items.Add(new KeyValuePair<string, Action>(g.ShowLog ? "ログを閉じる" : "戦闘ログ", delegate { g.MenuOpen = false; g.ShowLog = !g.ShowLog; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>(Feedback.Notes.Count > 0 ? "メモを書く（" + Feedback.Notes.Count + "件）" : "メモを書く", delegate { g.MenuOpen = false; Feedback.MemoOpen = true; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>("レポートを書き出す", delegate { g.MenuOpen = false; FeedbackUi.ExportNow(g); }));
+            items.Add(new KeyValuePair<string, Action>("設定（画面・音量）", delegate { g.MenuOpen = false; g.SettingsOpen = true; g.Rebuild(); }));   // 2026-09-21
             // セーブ (2026-09-15 本家形): 自動保存なので「セーブする」は無い。終了と放棄だけ
             bool ended = g.Rs != null && (g.Rs.Phase == RunPhases.Won || g.Rs.Phase == RunPhases.Lost);
             int saveFrom = items.Count;
