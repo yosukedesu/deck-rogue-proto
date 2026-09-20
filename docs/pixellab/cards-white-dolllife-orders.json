@@ -1,0 +1,88 @@
+{
+ "_note": "白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py (5 札 × 2 シード 11,37。scripts/card-art.py orders が cards-white-descriptions.json から生成)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "white_copy_light__1401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_copy_light__1401.png",
+   "seed": 1401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small white iron knight doll standing before a tall polished brass mirror on a dark workshop floor, and an identical second knight doll stepping out of the mirror surface with ripples of warm amber light around the frame (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_copy_light__1417",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_copy_light__1417.png",
+   "seed": 1417,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small white iron knight doll standing before a tall polished brass mirror on a dark workshop floor, and an identical second knight doll stepping out of the mirror surface with ripples of warm amber light around the frame (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_twin_light__1429",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_twin_light__1429.png",
+   "seed": 1429,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, two identical square brass lanterns side by side on a stone shelf in a dark mine tunnel, a single flame splitting into two and lighting both wicks at the same instant, twin warm amber glows, motes drifting, close-up, no figure",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_twin_light__1447",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_twin_light__1447.png",
+   "seed": 1447,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, two identical square brass lanterns side by side on a stone shelf in a dark mine tunnel, a single flame splitting into two and lighting both wicks at the same instant, twin warm amber glows, motes drifting, close-up, no figure",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_perm_mirror_lantern__1459",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_perm_mirror_lantern__1459.png",
+   "seed": 1459,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a tall hanging lantern whose four panes are polished brass mirrors, standing on a dark stone floor, its warm light projecting a glowing ghostly image of small white iron knight dolls onto the floor beside it, dark workshop, close-up, no figure",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_perm_mirror_lantern__1477",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_perm_mirror_lantern__1477.png",
+   "seed": 1477,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a tall hanging lantern whose four panes are polished brass mirrors, standing on a dark stone floor, its warm light projecting a glowing ghostly image of small white iron knight dolls onto the floor beside it, dark workshop, close-up, no figure",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_relight__1489",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_relight__1489.png",
+   "seed": 1489,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a long brass lighting rod with a small flame at its tip by itself, touching the dying wick of a square brass lantern on a stone shelf so the flame flares back to full brightness, warm amber light, dark mine tunnel, close-up, nobody holding it, no hands",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_relight__1507",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_relight__1507.png",
+   "seed": 1507,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a long brass lighting rod with a small flame at its tip by itself, touching the dying wick of a square brass lantern on a stone shelf so the flame flares back to full brightness, warm amber light, dark mine tunnel, close-up, nobody holding it, no hands",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_eternal_light__1519",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_eternal_light__1519.png",
+   "seed": 1519,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large ornate square brass lantern on a stone pedestal in a dark stone hall, inside it a small blazing star-like white-gold flame that never goes out, rays of steady warm light filling the hall, motes frozen in the air, close-up, no figure",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_eternal_light__1537",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/ca37154c-99a4-4758-ac5d-e5180d5c11bb/scratchpad/dolllife-art/gen/white_eternal_light__1537.png",
+   "seed": 1537,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large ornate square brass lantern on a stone pedestal in a dark stone hall, inside it a small blazing star-like white-gold flame that never goes out, rays of steady warm light filling the hall, motes frozen in the air, close-up, no figure",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  }
+ ]
+}

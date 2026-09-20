@@ -1295,6 +1295,61 @@
     1319,
     1337
    ]
+  },
+  {
+   "id": "white_copy_light",
+   "name": "写し灯",
+   "ja": "鏡に映った人形がもう一体になって出てくる（人形1体をコピー）",
+   "description": "{style}, a small white iron knight doll standing before a tall polished brass mirror on a dark workshop floor, and an identical second knight doll stepping out of the mirror surface with ripples of warm amber light around the frame (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    1401,
+    1417
+   ]
+  },
+  {
+   "id": "white_twin_light",
+   "name": "二重の点灯",
+   "ja": "一つの火から二つのランタンに同時に火が入る",
+   "description": "{style}, two identical square brass lanterns side by side on a stone shelf in a dark mine tunnel, a single flame splitting into two and lighting both wicks at the same instant, twin warm amber glows, motes drifting, close-up, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1429,
+    1447
+   ]
+  },
+  {
+   "id": "white_perm_mirror_lantern",
+   "name": "鏡の灯籠",
+   "ja": "鏡張りの灯籠が映した人形の像を床に投げる（置物）",
+   "description": "{style}, a tall hanging lantern whose four panes are polished brass mirrors, standing on a dark stone floor, its warm light projecting a glowing ghostly image of small white iron knight dolls onto the floor beside it, dark workshop, close-up, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1459,
+    1477
+   ]
+  },
+  {
+   "id": "white_relight",
+   "name": "継ぎ火",
+   "ja": "灯から灯へ火を移す真鍮の点火棒",
+   "description": "{style}, a long brass lighting rod with a small flame at its tip by itself, touching the dying wick of a square brass lantern on a stone shelf so the flame flares back to full brightness, warm amber light, dark mine tunnel, close-up, nobody holding it, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1489,
+    1507
+   ]
+  },
+  {
+   "id": "white_eternal_light",
+   "name": "永遠の灯",
+   "ja": "消えない大きな灯。ランタンの中に星のような白金の火",
+   "description": "{style}, a large ornate square brass lantern on a stone pedestal in a dark stone hall, inside it a small blazing star-like white-gold flame that never goes out, rays of steady warm light filling the hall, motes frozen in the air, close-up, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1519,
+    1537
+   ]
   }
  ]
 }

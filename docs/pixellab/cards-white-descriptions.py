@@ -185,6 +185,13 @@ addl('white_light_maul', '灯の大槌', '灯を仕込んだ大槌が振り下�
 addl('white_perm_fire_dish', '灯の火皿', '油の火皿と、めくれ上がる紙', "a shallow brass oil dish with a single flame on a stone shelf, a loose sheet of paper beside it lifting into the air on the heat, dark workshop, close-up, no hands", [1319, 1337], neg=NOBODY)
 
 
+# ---- 人形の灯り＝寿命と火勢 (2026-09-21。docs/white-doll-life-proposal-2026-09-21.md) 新規5 ----
+addl('white_copy_light', '写し灯', '鏡に映った人形がもう一体になって出てくる（人形1体をコピー）', KD + " standing before a tall polished brass mirror on a dark workshop floor, and an identical second knight doll stepping out of the mirror surface with ripples of warm amber light around the frame" + BODY + ", close-up", [1401, 1417], doll=True)
+addl('white_twin_light', '二重の点灯', '一つの火から二つのランタンに同時に火が入る', "two identical square brass lanterns side by side on a stone shelf in a dark mine tunnel, a single flame splitting into two and lighting both wicks at the same instant, twin warm amber glows, motes drifting, close-up, no figure", [1429, 1447], neg=NOBODY)
+addl('white_perm_mirror_lantern', '鏡の灯籠', '鏡張りの灯籠が映した人形の像を床に投げる（置物）', "a tall hanging lantern whose four panes are polished brass mirrors, standing on a dark stone floor, its warm light projecting a glowing ghostly image of " + KDS + " onto the floor beside it, dark workshop, close-up, no figure", [1459, 1477], neg=NOBODY)
+addl('white_relight', '継ぎ火', '灯から灯へ火を移す真鍮の点火棒', "a long brass lighting rod with a small flame at its tip by itself, touching the dying wick of a square brass lantern on a stone shelf so the flame flares back to full brightness, warm amber light, dark mine tunnel, close-up, nobody holding it, no hands", [1489, 1507], neg=NOBODY)
+addl('white_eternal_light', '永遠の灯', '消えない大きな灯。ランタンの中に星のような白金の火', "a large ornate square brass lantern on a stone pedestal in a dark stone hall, inside it a small blazing star-like white-gold flame that never goes out, rays of steady warm light filling the hall, motes frozen in the air, close-up, no figure", [1519, 1537], neg=NOBODY)
+
 spec = {
  '_note': '白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py',
  'color': 'white', 'style': STYLE, 'doll': KD + BODY,

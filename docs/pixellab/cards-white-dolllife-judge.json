@@ -1,0 +1,7 @@
+[
+ {"id": "white_copy_light", "pick": "A", "passed": true, "problem": "B は赤い外套の人物が出た"},
+ {"id": "white_twin_light", "pick": "A", "passed": true, "problem": ""},
+ {"id": "white_perm_mirror_lantern", "pick": "A", "passed": true, "problem": ""},
+ {"id": "white_relight", "pick": "A", "passed": true, "problem": "B は点火棒が出ずランタンだけ"},
+ {"id": "white_eternal_light", "pick": "A", "passed": true, "problem": ""}
+]

@@ -429,6 +429,10 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 - **舞台の人形（dolls/ 32×32・south-east・low top-down）**: `dolls-stage.json` に2体を追加（13体）。灯篭＝1931/1941 は人の顔が出て **1951**（顔なし・琥珀の目・竿の灯篭を右へ）。篝火＝**1932** 一発（背中の篝火・赤い目・右向き）。どちらも右を向いて出たので反転なし。
 - 教訓の再確認: 「holding up a lantern」系は2回に1回フードの奥に人の顔（肌色）が出る＝必ず拡大して顔を見る。
 
+## 人形の灯り＝寿命と火勢の挿絵（cards/ 80×48・2026-09-21 **作成・適用済み 5/5**。`card-power.md` §76）
+
+発注文は `cards-white-descriptions.py` 末尾（seeds 1401〜1537・2シードの A/B）→ `card-art.py orders --only … --out cards-white-dolllife-orders.json` → 判定 `cards-white-dolllife-judge.json`（5枚とも A）→ apply。写し灯＝鏡から二体目の人形が出る／二重の点灯＝一つの火から二つのランタン／鏡の灯籠＝鏡張りの灯籠が人形の像を床に投げる／継ぎ火＝点火棒が消えかけの芯に火を継ぐ／永遠の灯＝台座の大きな灯籠に星のような白金の火。B は写し灯に赤い外套の人物、継ぎ火に点火棒なし。
+
 ## 火種と放出の軸の挿絵（cards/ 80×48・2026-09-20 夜 **作成・適用済み 19/19＋トークン**。`card-power.md` §75）
 
 発注文は `cards-white-descriptions.py` 末尾（seeds 743〜1337）→ `card-art.py orders --only … --out cards-white-spark-orders.json`（38件）→ 2シードの A/B → 判定 `cards-white-spark-judge.json` → apply。意匠＝「燠の種（ember seed）」＝豆粒ほどの暖色の光。
