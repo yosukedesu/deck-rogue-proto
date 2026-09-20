@@ -1,0 +1,23 @@
+{
+  "id": "act3_chain_hang",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single heavy blackened iron chain hanging straight down and ending in a large hook, dark tarnished links with pale edge highlights, vertical, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, rope, two chains, brass",
+    "image_size": {
+      "width": 32,
+      "height": 160
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:09:48.046Z"
+}

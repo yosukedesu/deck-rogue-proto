@@ -1,0 +1,23 @@
+{
+  "id": "act3_rubble_pile",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a heap of broken dark slate-grey masonry blocks, split slabs and grey dust, one carved fragment sticking out of the pile, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black",
+    "image_size": {
+      "width": 112,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:11:41.334Z"
+}

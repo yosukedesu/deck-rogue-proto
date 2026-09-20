@@ -1,0 +1,693 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 8
+  },
+  "items": [
+    {
+      "id": "act3_stone_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_stone_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of large rectangular paving slabs of dark slate-grey polished basalt, tight thin joints, faint pale mineral speckle, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, cracks, stripes, band"
+    },
+    {
+      "id": "act3_stone_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_stone_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of large rectangular paving slabs of dark slate-grey basalt with a few small chipped corners and thin pale dust settled in the joints, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, long crack, stripes, band"
+    },
+    {
+      "id": "act3_stone_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_stone_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of large rectangular paving slabs of dark slate-grey basalt, one slab slightly sunken and a little darker than the others, joints filled with pale grit, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, hole, crack, stripes"
+    },
+    {
+      "id": "act3_stone_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_stone_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of smooth worn large paving slabs of dark slate-grey basalt, very low relief, subtle tonal variation only, softly rounded worn edges, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, puddle, water surface, reflection, wet sheen, cracks"
+    },
+    {
+      "id": "act3_dirt_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_dirt_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt in different sizes and shapes, worn rounded edges, thin pale dust in the joints, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, stripes"
+    },
+    {
+      "id": "act3_dirt_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_dirt_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt with small chips of broken stone and grey grit scattered unevenly over them, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, pebbles in rows, evenly spaced"
+    },
+    {
+      "id": "act3_dirt_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_dirt_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt where two or three stones are missing at random places, dark packed rubble and grit showing in the gaps, medium contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, holes in a row, evenly spaced gaps"
+    },
+    {
+      "id": "act3_dirt_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_dirt_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of irregular fitted flagstones of dark slate-grey basalt under a thin soft drift of pale grey stone dust, joints half hidden, very low contrast, low relief, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green grass, leaves, flowers, brown soil, wood, bulging lumps, perfect regular grid, checkerboard, dots in rows, near-black, pitch black, snow, sand, footprints"
+    },
+    {
+      "id": "act3_cliff_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_cliff_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of blocks of different lengths, tight pale mortar lines, weathered chipped edges, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, ivy, vines, roots, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, red bricks, perfect regular grid, identical bricks, near-black, pitch black"
+    },
+    {
+      "id": "act3_cliff_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_cliff_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, one chipped corner, a few patches of pale grey-green lichen crust on the block faces, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, moss carpet, ivy, vines, leaves, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, bright green, brown, wood, perfect regular grid, identical bricks, near-black, pitch black"
+    },
+    {
+      "id": "act3_cliff_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_cliff_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, one block missing leaving a single dark hole, a diagonal hairline crack across two blocks, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, ivy, vines, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, holes in a row, many holes, perfect regular grid, identical bricks, near-black, pitch black"
+    },
+    {
+      "id": "act3_cliff_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_cliff_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, wet with dark vertical damp streaks running down from the joints and a faint sheen, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "seen from above, top-down, floor, pavement, perspective, window, door, arch, waterfall, running water, ivy, vines, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, perfect regular grid, identical bricks, near-black, pitch black"
+    },
+    {
+      "id": "act3_bed",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_bed.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark silt and scattered broken fragments of pale stone tile lying under shallow clear still water, seen from directly above, dark grey-teal, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "waves, sea, ocean, shore, foam, fish, plants, reflection of sky, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black, pitch black"
+    },
+    {
+      "id": "act3_m_rubble",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_rubble.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of crushed dark slate-grey stone chips and pale grey dust, uneven sizes, irregular scatter, a few larger angular pieces, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "regular pattern, evenly spaced dots, pebbles in rows, rounded pebbles, beach, sand, trees, scene, border, vignette, frame, bevel, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_m_dust",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_dust.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of fine pale grey stone dust settled thinly over dark stone in soft uneven drifts with faint streaks and thin ridges, no speckles, very low contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "snow, sand dunes, footprints, speckles, dots, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, near-black"
+    },
+    {
+      "id": "act3_m_lichen",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_lichen.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of pale grey-green lichen crust spreading in irregular blotches with soft edges over dark slate-grey basalt, dry and flat, medium contrast, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "grass, moss carpet, leaves, flowers, mushrooms, circles in a grid, dots in rows, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, bright green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_m_crack",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_crack.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark slate-grey basalt floor split by fine branching dark fissures with slightly shifted fragments, few and irregular, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "glow, lava, light, dry mud, grid, regular pattern, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_m_vein",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_vein.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of black basalt split by thin branching hairline fissures glowing soft pale teal from deep inside, luminous cracks on dark stone, most of the area plain dark stone, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "lava, fire, orange, red, neon green, thick glowing bands, grid, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, warm light, green grass, brown soil, wood"
+    },
+    {
+      "id": "act3_m_wet",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_wet.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark slate-grey basalt stone with darker damp soaked patches and a soft glossy sheen, irregular blotches, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "puddle with edges, water surface, waves, ripples, reflection of sky, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_m_shards",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_shards.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark grit with a sparse irregular scatter of a few small pale teal crystal shards of different sizes, most of the area plain dark grit, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "dense crystals, evenly spaced, grid, gems in rows, glow, light rays, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_m_crust",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_crust.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of bone-white and pale mint mineral crust like dried calcite creeping in irregular blotches with crisp edges over dark slate-grey stone, mostly pale, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "glowing, neon, dots, bubbles, circles, snow, ice, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_m_mosaic",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act3/act3_m_mosaic.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of the broken remains of an ancient mosaic floor, irregular fragments of pale bone and slate-blue tile set in dark mortar forming a broken abstract pattern of bands and arcs, many pieces missing, no regular grid, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+      "negative": "regular grid, checkerboard, perfect squares, picture, figure, face, letters, runes, readable symbols, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown soil, wood, near-black"
+    },
+    {
+      "id": "act3_gate_great",
+      "out": "unity/Assets/Resources/Art/props/act3_gate_great.png",
+      "size": [
+        160,
+        176
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a monumental ancient gate of huge fitted dark slate-grey basalt blocks, a tall stepped corbelled archway with a dark empty opening, two massive square piers, one horizontal band of shallow abstract geometric carving across the lintel glowing softly pale teal, cracked and weathered, pale bone-white light on the block edges, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, torch, letters, readable symbols, runes, wooden doors, castle with towers, outer glow, halo, light rays, near-black"
+    },
+    {
+      "id": "act3_pillar_tall",
+      "out": "unity/Assets/Resources/Art/props/act3_pillar_tall.png",
+      "size": [
+        64,
+        176
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall ancient column of stacked dark slate-grey basalt drums with a plain heavy square capital, hairline cracks, weathered chipped edges, pale bone-white light catching the left edge, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, ionic scrolls, ornate capital, base plinth, outer glow, near-black"
+    },
+    {
+      "id": "act3_pillar_broken",
+      "out": "unity/Assets/Resources/Art/props/act3_pillar_broken.png",
+      "size": [
+        64,
+        128
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a broken ancient column of stacked dark slate-grey basalt drums snapped off at the top with a jagged fractured end, cracks down the shaft, pale bone-white light on the left edge, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, base plinth, outer glow, near-black"
+    },
+    {
+      "id": "act3_pillar_fallen",
+      "out": "unity/Assets/Resources/Art/props/act3_pillar_fallen.png",
+      "size": [
+        160,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a fallen ancient column of dark slate-grey basalt lying on its side, broken into three drums that have rolled slightly apart, cracked fractured ends, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, standing column, near-black"
+    },
+    {
+      "id": "act3_arch_ruin",
+      "out": "unity/Assets/Resources/Art/props/act3_arch_ruin.png",
+      "size": [
+        128,
+        160
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a ruined half arch of fitted dark slate-grey basalt blocks, one tall pier standing on the left with the broken springing of the arch curving up to the right and ending in mid-air, cracked blocks, pale bone-white light on the edges, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, readable symbols, runes, complete arch, bridge, gate with doors, near-black"
+    },
+    {
+      "id": "act3_wall_ruin",
+      "out": "unity/Assets/Resources/Art/props/act3_wall_ruin.png",
+      "size": [
+        160,
+        112
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single wide ruined wall fragment of an ancient house built of fitted dark slate-grey basalt blocks, two dark empty window openings and one dark empty doorway, the top edge collapsed unevenly, a pile of fallen blocks at one end, seen straight on, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, lit window, glass, roof, whole house, street, city, letters, runes, near-black"
+    },
+    {
+      "id": "act3_facade_far",
+      "out": "unity/Assets/Resources/Art/props/act3_facade_far.png",
+      "size": [
+        200,
+        128
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, the front of a single large ancient building of dark slate-grey basalt, a row of tall narrow dark openings, a broken upper storey, one collapsed corner, flat frontal view, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, lit windows, street, city skyline, letters, runes, near-black"
+    },
+    {
+      "id": "act3_skyline_a",
+      "out": "unity/Assets/Resources/Art/props/act3_skyline_a.png",
+      "size": [
+        200,
+        96
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long strip of distant ruined tower and dome silhouettes of an ancient stone city, flat dark slate-blue silhouette shapes only with a few tiny pale teal window dots, uneven heights, one leaning broken tower, transparent above and below the strip, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, sky, moon, stars, clouds, ground plane, water, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, detailed windows in rows, modern buildings"
+    },
+    {
+      "id": "act3_skyline_b",
+      "out": "unity/Assets/Resources/Art/props/act3_skyline_b.png",
+      "size": [
+        200,
+        80
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long strip of distant ruined city silhouettes of an ancient stone city, flat dark slate-blue shapes only, a collapsed great dome on the left, a cluster of broken square towers on the right, low ruined walls between, a few tiny pale teal window dots, transparent above and below the strip, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, sky, moon, stars, clouds, ground plane, water, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, detailed windows in rows, modern buildings"
+    },
+    {
+      "id": "act3_rig_far",
+      "out": "unity/Assets/Resources/Art/props/act3_rig_far.png",
+      "size": [
+        96,
+        192
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall skeletal mining headframe tower of blackened iron beams with cross bracing, a large spoked wheel mounted at the top, a cable hanging down the middle, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, robot, humanoid, windmill, crane arm, wood, brass, copper"
+    },
+    {
+      "id": "act3_aqueduct_far",
+      "out": "unity/Assets/Resources/Art/props/act3_aqueduct_far.png",
+      "size": [
+        200,
+        80
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient aqueduct of dark slate-grey basalt, a row of five tall round arches on square piers, worn pale edges, a thin channel along the top, flat side view, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, water, river, hills, bridge over water, near-black"
+    },
+    {
+      "id": "act3_stalactite_cluster",
+      "out": "unity/Assets/Resources/Art/props/act3_stalactite_cluster.png",
+      "size": [
+        96,
+        160
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of three stalactites of dark grey cave rock hanging point downward, one long and two shorter, layered and dripping shapes, a few thin teal mineral veins near the base, the base cut off flat at the top edge of the frame, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, cave interior, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, icicle, ice, tree, stalagmite pointing up"
+    },
+    {
+      "id": "act3_ceiling_fringe",
+      "out": "unity/Assets/Resources/Art/props/act3_ceiling_fringe.png",
+      "size": [
+        200,
+        96
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, the underside of a cave ceiling seen from below, a wide ragged fringe of dark rock with many small stalactites of different lengths hanging down, a few small teal crystal points among them, rock filling the top of the frame and hanging shapes ending in mid-air, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, floor, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, icicles in a row, evenly spaced, teeth"
+    },
+    {
+      "id": "act3_cable_hang",
+      "out": "unity/Assets/Resources/Art/props/act3_cable_hang.png",
+      "size": [
+        64,
+        160
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a bundle of old frayed blackened iron cables and a thin chain hanging straight down from above and ending in mid-air, dark tarnished metal with pale highlights, a few loose loops, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, hook mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, rope, vines, roots, snake, brass, copper"
+    },
+    {
+      "id": "act3_chain_hang",
+      "out": "unity/Assets/Resources/Art/props/act3_chain_hang.png",
+      "size": [
+        32,
+        160
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single heavy blackened iron chain hanging straight down and ending in a large hook, dark tarnished links with pale edge highlights, vertical, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, rope, two chains, brass"
+    },
+    {
+      "id": "act3_lamp_hang",
+      "out": "unity/Assets/Resources/Art/props/act3_lamp_hang.png",
+      "size": [
+        48,
+        128
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient hanging lantern of blackened iron, a tall caged lamp holding a small pale blue-white cold crystal light, hanging from a short length of chain that ends in mid-air at the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, candle, paper lantern, outer glow, halo, light rays, brass"
+    },
+    {
+      "id": "act3_lamp_post",
+      "out": "unity/Assets/Resources/Art/props/act3_lamp_post.png",
+      "size": [
+        48,
+        104
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient street lamp standard, a slender square post of dark slate-grey basalt with a blackened iron cage on top cradling a small pale blue-white glowing crystal, the base a small square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, candle, modern streetlight, glass globe, outer glow, halo, light rays, brass"
+    },
+    {
+      "id": "act3_brazier_cold",
+      "out": "unity/Assets/Resources/Art/props/act3_brazier_cold.png",
+      "size": [
+        48,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wide ancient stone brazier bowl on a short square pedestal of dark slate-grey basalt, a low pale blue-white cold flame burning inside, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, smoke, outer glow, halo, light rays, tripod legs, brass"
+    },
+    {
+      "id": "act3_crystal_spire_big",
+      "out": "unity/Assets/Resources/Art/props/act3_crystal_spire_big.png",
+      "size": [
+        128,
+        184
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a giant pale teal mana crystal spire, one main tapering faceted blade with two smaller blades leaning from its base, lit softly from within, hard flat facets, translucent desaturated pale tones, its base gripped by a ring of black rock and bone-white mineral crust, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, rainbow, purple, pink, daylight, people, character, face, animal, warm orange light, fire, tower, building, castle, windows, cluster of many small crystals, outer glow, halo, light rays, lens flare, ice, brass"
+    },
+    {
+      "id": "act3_crystal_cluster",
+      "out": "unity/Assets/Resources/Art/props/act3_crystal_cluster.png",
+      "size": [
+        96,
+        80
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of five pale teal mana crystal blades of different heights growing out of a lump of black rock, hard flat facets, lit softly from within, translucent desaturated pale tones, leaning in different directions, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, rainbow, purple, pink, daylight, people, character, face, animal, warm orange light, fire, outer glow, halo, light rays, lens flare, ice, evenly spaced, symmetrical"
+    },
+    {
+      "id": "act3_vein_wall",
+      "out": "unity/Assets/Resources/Art/props/act3_vein_wall.png",
+      "size": [
+        64,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a jagged seam of pale teal mana crystal erupting sideways from a slab of black rock, the rock cracked open around the seam, the crystal lit softly from within, seen straight on, low and wide, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, daylight, people, character, face, animal, warm orange light, fire, outer glow, halo, light rays, lens flare, ice, waterfall, lava, tall spire"
+    },
+    {
+      "id": "act3_statue_kneel",
+      "out": "unity/Assets/Resources/Art/props/act3_statue_kneel.png",
+      "size": [
+        64,
+        96
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a weathered stone statue of a kneeling hooded robed figure with the hood hiding the face completely, both hands cradling a shallow stone bowl in which a small pale teal crystal glows softly, worn robes, pale grey-blue stone with dark cracks and chipped edges, on a low square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, living character, visible face, eyes, fingers, animal, warm orange light, fire, letters, runes, weapon, angel wings, outer glow, halo"
+    },
+    {
+      "id": "act3_statue_headless",
+      "out": "unity/Assets/Resources/Art/props/act3_statue_headless.png",
+      "size": [
+        64,
+        112
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a weathered headless stone statue of a standing robed figure, the neck broken off, one arm missing, deep folds of stone cloth, pale grey-blue stone with dark cracks, standing on a square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, living character, face, head, eyes, animal, warm orange light, fire, letters, runes, weapon, wings, outer glow"
+    },
+    {
+      "id": "act3_monument_disc",
+      "out": "unity/Assets/Resources/Art/props/act3_monument_disc.png",
+      "size": [
+        128,
+        144
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a monumental carved stone disc shaped like a giant gear standing upright on a stepped stone base, blunt teeth around the rim, a single ring groove glowing faintly pale teal, cracked and half sunk, weathered dark slate-grey basalt, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, clock, numbers, letters, runes, readable symbols, metal gear, brass, outer glow, halo"
+    },
+    {
+      "id": "act3_stele",
+      "out": "unity/Assets/Resources/Art/props/act3_stele.png",
+      "size": [
+        48,
+        112
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall narrow ancient stone stele of dark slate-grey basalt tapering to a chipped top, one face carved with a vertical band of abstract geometric grooves and gear-like circles glowing faintly pale teal, on a small plinth, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, readable symbols, alphabet, writing, outer glow, halo"
+    },
+    {
+      "id": "act3_fountain_dry",
+      "out": "unity/Assets/Resources/Art/props/act3_fountain_dry.png",
+      "size": [
+        128,
+        96
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a broken ancient fountain of dark slate-grey basalt, a wide low octagonal basin with one side cracked and collapsed, a short central column with a small upper bowl, dry and empty, seen from slightly above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, statue figure, animal, warm orange light, fire, letters, runes, water jet, splashing water, plants, near-black"
+    },
+    {
+      "id": "act3_balustrade",
+      "out": "unity/Assets/Resources/Art/props/act3_balustrade.png",
+      "size": [
+        128,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a short section of ruined stone balustrade, a low flat rail on thick square balusters of dark slate-grey basalt, several balusters missing and the rail broken at one end, chipped, seen straight on, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, vase shaped balusters, near-black"
+    },
+    {
+      "id": "act3_rubble_pile",
+      "out": "unity/Assets/Resources/Art/props/act3_rubble_pile.png",
+      "size": [
+        112,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a heap of broken dark slate-grey masonry blocks, split slabs and grey dust, one carved fragment sticking out of the pile, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black"
+    },
+    {
+      "id": "act3_block",
+      "out": "unity/Assets/Resources/Art/props/act3_block.png",
+      "size": [
+        48,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single large cut stone block of dark slate-grey basalt toppled onto its corner, chipped edges, one face paler and worn, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black"
+    },
+    {
+      "id": "act3_urn",
+      "out": "unity/Assets/Resources/Art/props/act3_urn.png",
+      "size": [
+        32,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cracked ancient stone urn of dark slate-grey basalt with two small handles, tipped slightly, a pale worn band around the middle, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, plants, flowers, near-black"
+    },
+    {
+      "id": "act3_drill_rig",
+      "out": "unity/Assets/Resources/Art/props/act3_drill_rig.png",
+      "size": [
+        176,
+        160
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient mining machine, a huge angled drilling arm of blackened riveted iron and dull pewter, a long boom tilted upward to the right ending in a large conical spiral drill bit, mounted on a heavy riveted iron pivot base with a round core in the middle of the base glowing softly pale teal, hard metallic highlights, industrial, no limbs, no face, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, legs, arms of a figure, animal, fur, moss, wood, warm orange light, fire, sparks, brass, copper, gold, letters, runes, crane hook, vehicle wheels"
+    },
+    {
+      "id": "act3_gear_wall",
+      "out": "unity/Assets/Resources/Art/props/act3_gear_wall.png",
+      "size": [
+        160,
+        144
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wall-sized ancient mechanism of blackened iron, several large interlocking cog wheels of different sizes mounted on a riveted iron frame and a slab of dark stone, one large empty round axle mount in the middle, pale worn highlights on the teeth, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, animal, wood, warm orange light, fire, brass, copper, gold, clock face, numbers, letters, runes"
+    },
+    {
+      "id": "act3_boiler_pipes",
+      "out": "unity/Assets/Resources/Art/props/act3_boiler_pipes.png",
+      "size": [
+        128,
+        160
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient industrial boiler, a tall riveted cylinder of blackened iron on a stone base with a bundle of thick iron pipes and elbow joints rising beside it, a round valve wheel, one seam leaking a faint pale teal glow, corroded dark metal with pale highlights, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, animal, wood, warm orange light, fire, smoke, steam clouds, brass, copper, gold, letters, runes, gauges with numbers"
+    },
+    {
+      "id": "act3_ore_cart",
+      "out": "unity/Assets/Resources/Art/props/act3_ore_cart.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient heavy blackened iron ore wagon on four small wheels tipped over on its side, spilled lumps of raw pale teal crystal ore beside it glowing faintly, dented and corroded dark metal, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, wood, warm orange light, fire, brass, copper, gold, letters, runes, rails, tracks"
+    },
+    {
+      "id": "act3_frieze",
+      "out": "unity/Assets/Resources/Art/props/act3_frieze.png",
+      "size": [
+        128,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long horizontal strip of shallow carved abstract geometric grooves and stepped notches on dark slate-grey basalt, eroded and broken at both ends, seen straight on, only the carved band, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "letters, runes, readable symbols, alphabet, writing, faces, figures, scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, animal, warm orange light, fire, near-black"
+    },
+    {
+      "id": "act3_ceiling_fissure",
+      "out": "unity/Assets/Resources/Art/props/act3_ceiling_fissure.png",
+      "size": [
+        160,
+        48
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long jagged fissure in dark grey cave rock glowing pale teal from inside, a soft glow spilling onto the rock edges, horizontal, seen straight on, only the crack and the rock right around it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, neon, daylight, people, character, face, animal, warm orange light, fire, lava, lightning, letters, runes"
+    }
+  ]
+}

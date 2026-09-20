@@ -1,0 +1,23 @@
+{
+  "id": "act3_lamp_hang",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient hanging lantern of blackened iron, a tall caged lamp holding a small pale blue-white cold crystal light, hanging from a short length of chain that ends in mid-air at the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, floor, ceiling, mount, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, orange fire, candle, paper lantern, outer glow, halo, light rays, brass",
+    "image_size": {
+      "width": 48,
+      "height": 128
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:09:45.766Z"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "act3_ore_cart",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient heavy blackened iron ore wagon on four small wheels tipped over on its side, spilled lumps of raw pale teal crystal ore beside it glowing faintly, dented and corroded dark metal, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, wood, warm orange light, fire, brass, copper, gold, letters, runes, rails, tracks",
+    "image_size": {
+      "width": 96,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:12:19.364Z"
+}

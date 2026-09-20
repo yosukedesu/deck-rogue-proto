@@ -1,0 +1,23 @@
+{
+  "id": "act2_stone_b",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of old worn flagstone paving, small irregular fitted stones of different sizes, one stone cracked through and a chipped corner, thin low-contrast dark seams, cool blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+    "negative_description": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:52:34.683Z"
+}

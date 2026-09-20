@@ -1,0 +1,23 @@
+{
+  "id": "act3_rig_far",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall skeletal mining headframe tower of blackened iron beams with cross bracing, a large spoked wheel mounted at the top, a cable hanging down the middle, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, letters, runes, robot, humanoid, windmill, crane arm, wood, brass, copper",
+    "image_size": {
+      "width": 96,
+      "height": 192
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:08:14.315Z"
+}

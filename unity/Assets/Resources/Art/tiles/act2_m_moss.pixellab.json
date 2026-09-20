@@ -1,0 +1,23 @@
+{
+  "id": "act2_m_moss",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of thin dark damp moss and slime clinging to wet rock, very low contrast, dark blue-green, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark blue-green, dark slate, cool blue-grey, grey-brown), no text",
+    "negative_description": "grass, flowers, plants, trees, leaves, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, bright green, daylight, gradient, grid, polka dots, evenly spaced dots, water surface",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:54:55.603Z"
+}

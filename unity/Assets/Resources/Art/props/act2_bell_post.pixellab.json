@@ -1,0 +1,23 @@
+{
+  "id": "act2_bell_post",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a short wooden post with a small bronze hand bell hanging from a curved iron bracket at the top, a frayed pull rope dangling from the bell, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, dull weathered bronze, iron grey, cool blue-grey shadow, pale straw highlights), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, church bell tower, signpost, lantern",
+    "image_size": {
+      "width": 32,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:00:03.215Z"
+}

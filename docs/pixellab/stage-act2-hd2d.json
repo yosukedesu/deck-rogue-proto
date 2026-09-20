@@ -1,0 +1,702 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 8
+  },
+  "items": [
+    {
+      "id": "act2_dirt_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_dirt_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of trodden mine floor earth, smooth hard-packed cool dark grey-brown soil with faint marks and fine rock dust, dull and low contrast, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, boulders, lumps, holes, flowers, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, grid, polka dots, evenly spaced dots, tunnel, rails, tracks, minecart, green, grass, moss, leaves, plants, cliff, terrace, water, puddle, bright blue, wood, planks"
+    },
+    {
+      "id": "act2_dirt_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_dirt_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of hard-packed cool dark grey-brown mine floor earth with a few scattered small angular rock chips of mixed sizes lying at random, dull and low contrast, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, boulders, lumps, holes, flowers, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, grid, polka dots, evenly spaced dots, tunnel, rails, tracks, minecart, green, grass, moss, leaves, plants, cliff, terrace, water, puddle, bright blue, wood, planks, uniform round pebbles, gravel bed"
+    },
+    {
+      "id": "act2_dirt_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_dirt_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of hard-packed cool dark grey-brown mine floor earth, pitted and scuffed with shallow irregular dents of different sizes, dull and low contrast, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, boulders, lumps, holes, flowers, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, grid, polka dots, evenly spaced dots, tunnel, rails, tracks, minecart, green, grass, moss, leaves, plants, cliff, terrace, water, puddle, bright blue, wood, planks, footprints, ruts, lines, wheel tracks"
+    },
+    {
+      "id": "act2_dirt_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_dirt_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of damp hard-packed dark grey-brown mine floor earth, slightly darker with a faint wet sheen and a few irregular dark stains, dull and low contrast, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, boulders, lumps, holes, flowers, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, grid, polka dots, evenly spaced dots, tunnel, rails, tracks, minecart, green, grass, moss, leaves, plants, cliff, terrace, water, puddle, bright blue, wood, planks, water surface, reflection, puddle with reflection"
+    },
+    {
+      "id": "act2_stone_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_stone_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of old worn flagstone paving, small irregular fitted stones of different sizes and shapes, not a grid, thin low-contrast dark seams, cool blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots"
+    },
+    {
+      "id": "act2_stone_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_stone_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of old worn flagstone paving, small irregular fitted stones of different sizes, one stone cracked through and a chipped corner, thin low-contrast dark seams, cool blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots"
+    },
+    {
+      "id": "act2_stone_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_stone_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of old worn flagstone paving, small irregular fitted stones of different sizes with grit and dust settled into the seams, thin low-contrast dark seams, cool blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots"
+    },
+    {
+      "id": "act2_stone_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_stone_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of old worn flagstone paving, small irregular fitted stones of different sizes with a dark damp stain spreading across part of it, thin low-contrast dark seams, cool blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots, puddle with reflection, water surface"
+    },
+    {
+      "id": "act2_cliff_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_cliff_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a rough hewn mine rock face with hard angular chisel and pick marks, layered dark blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, scene, border, vignette, frame, bevel, objects, bricks, blocks in a grid, masonry, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, round boulders, glowing veins, crystals, stripes, rows, polka dots"
+    },
+    {
+      "id": "act2_cliff_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_cliff_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a rough hewn mine rock face with a few darker cracks and thin pale mineral streaks, layered dark blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, scene, border, vignette, frame, bevel, objects, bricks, blocks in a grid, masonry, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, round boulders, glowing veins, crystals, stripes, rows, polka dots"
+    },
+    {
+      "id": "act2_cliff_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_cliff_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a rough hewn mine rock face with a coarser flaky layer and a slightly darker band, layered dark blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, scene, border, vignette, frame, bevel, objects, bricks, blocks in a grid, masonry, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, round boulders, glowing veins, crystals, stripes, rows, polka dots"
+    },
+    {
+      "id": "act2_cliff_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_cliff_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "side",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a rough hewn mine rock face, damp, with a dark seep stain running down part of it, layered dark blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, scene, border, vignette, frame, bevel, objects, bricks, blocks in a grid, masonry, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, round boulders, glowing veins, crystals, stripes, rows, polka dots, water surface, waterfall"
+    },
+    {
+      "id": "act2_wood",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_wood.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of rough sawn dark aged timber with long straight wood grain running left to right and a few knots, weathered grey-brown wood, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "green, grass, moss, plants, trees, leaves, scene, border, vignette, frame, bevel, objects, nails, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, orange, glossy varnish, polka dots, boards with gaps, planks side by side"
+    },
+    {
+      "id": "act2_plank",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_plank.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of weathered rough timber floor boards laid side by side running left to right, dark aged grey-brown wood grain, narrow dark gaps between the boards, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "green, grass, moss, plants, trees, leaves, scene, border, vignette, frame, bevel, objects, nails, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, orange, glossy varnish, polka dots, nails in a grid"
+    },
+    {
+      "id": "act2_m_ballast",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_ballast.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of crushed angular grey stone gravel of mixed sizes tightly packed together, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, uniform round pebbles, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots"
+    },
+    {
+      "id": "act2_m_oredust",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_oredust.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark grey ore dust and fine black grit, plain and even, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots, specks, dots, glowing dots, crystals, sparkles"
+    },
+    {
+      "id": "act2_m_soot",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_soot.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of black soot and grey ash smeared on dark stone with a few small dark cinders, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots, fire, flames, glowing embers, smoke"
+    },
+    {
+      "id": "act2_m_sawdust",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_sawdust.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of pale wood shavings and sawdust scattered unevenly on dark packed ground, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "green, grass, moss, plants, trees, leaves, scene, border, vignette, frame, bevel, objects, nails, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, orange, glossy varnish, polka dots, logs, planks, boards"
+    },
+    {
+      "id": "act2_m_rubble",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_rubble.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of small broken rock fragments and stone chips of mixed sizes lying on dark earth, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "green, grass, moss, plants, trees, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, grid, square tiles of equal size, checkerboard, round cobblestones, bricks in rows, stripes, wide gaps, polka dots, evenly spaced dots, uniform round pebbles, boulders"
+    },
+    {
+      "id": "act2_m_moss",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_moss.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of thin dark damp moss and slime clinging to wet rock, very low contrast, dark blue-green, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark blue-green, dark slate, cool blue-grey, grey-brown), no text",
+      "negative": "grass, flowers, plants, trees, leaves, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, bright green, daylight, gradient, grid, polka dots, evenly spaced dots, water surface"
+    },
+    {
+      "id": "act2_m_straw",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96_act2/act2_m_straw.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of loose dry straw strewn in tangled irregular clumps on dark packed ground, dull pale straw, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "green, grass, moss, plants, trees, leaves, scene, border, vignette, frame, bevel, objects, nails, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, orange, glossy varnish, polka dots, bale, parallel straight lines, neat rows, hay stack"
+    },
+    {
+      "id": "act2_tunnel_mouth",
+      "out": "unity/Assets/Resources/Art/props/act2_tunnel_mouth.png",
+      "size": [
+        128,
+        144
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall old mine tunnel entrance built of heavy dark timber, two thick posts, a lintel beam and diagonal braces with iron bands, the opening inside is completely pitch black, a little loose rubble at the foot of the posts, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, cave interior visible, rails inside, lit interior, lamp inside, glowing interior, light rays, stone arch, bricks"
+    },
+    {
+      "id": "act2_tunnel_side",
+      "out": "unity/Assets/Resources/Art/props/act2_tunnel_side.png",
+      "size": [
+        80,
+        104
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small side gallery entrance framed by two rough timber posts and a sagging lintel beam, the opening inside is completely pitch black, one post slightly leaning, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, cave interior visible, rails inside, lit interior, lamp inside, glowing interior, stone arch, bricks"
+    },
+    {
+      "id": "act2_crystal_big",
+      "out": "unity/Assets/Resources/Art/props/act2_crystal_big.png",
+      "size": [
+        80,
+        112
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a large cluster of four or five raw crystal spires of different heights and angles growing out of a chunk of dark rock, pale teal translucent crystal glowing softly from within, hard faceted edges, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate rock, cool blue-grey, pale teal crystal, soft pale teal glow only inside the crystal), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, light rays, glow halo around it, lens flare, many identical spikes, evenly spaced spikes, gems, jewelry"
+    },
+    {
+      "id": "act2_crystal",
+      "out": "unity/Assets/Resources/Art/props/act2_crystal.png",
+      "size": [
+        40,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small cluster of three raw crystal shards of different heights leaning at different angles on a bit of dark rock, pale teal translucent crystal glowing softly from within, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate rock, cool blue-grey, pale teal crystal, soft pale teal glow only inside the crystal), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, light rays, glow halo around it, lens flare, many identical spikes, evenly spaced spikes, gems"
+    },
+    {
+      "id": "act2_rail_a",
+      "out": "unity/Assets/Resources/Art/props/act2_rail_a.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, one short section of an old wooden walkway railing: two upright posts with two horizontal rails between them, rough dark timber, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, deck, floor boards, stairs, fence in perspective, vanishing point"
+    },
+    {
+      "id": "act2_rail_b",
+      "out": "unity/Assets/Resources/Art/props/act2_rail_b.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, one short section of an old wooden walkway railing with the top rail snapped and hanging down and a coil of rope tied to a post, rough dark timber, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, deck, floor boards, stairs, fence in perspective, vanishing point"
+    },
+    {
+      "id": "act2_ladder",
+      "out": "unity/Assets/Resources/Art/props/act2_ladder.png",
+      "size": [
+        32,
+        80
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall old wooden ladder with worn rungs and one cracked rung, standing upright, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, stairs, rope ladder, wall behind"
+    },
+    {
+      "id": "act2_wreck",
+      "out": "unity/Assets/Resources/Art/props/act2_wreck.png",
+      "size": [
+        96,
+        72
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, the dismantled hulk of an ancient mining machine lying on its side, a dented tarnished metal body with plates missing, exposed brass cogs and a broken drill arm, a snapped cable, no face and no eyes, long abandoned and dusty, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (tarnished pale metal, weathered brass, iron grey, dark slate rock, cool blue-grey shadow), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, face, eyes, lens, glowing eye, robot standing, legs, arms raised, treasure"
+    },
+    {
+      "id": "act2_winch",
+      "out": "unity/Assets/Resources/Art/props/act2_winch.png",
+      "size": [
+        72,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a large old hoisting winch: a wide wooden cable drum wound with rope on a heavy timber frame with an iron crank handle and a ratchet wheel, a length of rope trailing off one side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, wheel of a cart, well, bucket"
+    },
+    {
+      "id": "act2_gear_big",
+      "out": "unity/Assets/Resources/Art/props/act2_gear_big.png",
+      "size": [
+        40,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single large rusted iron cogwheel with a few broken teeth leaning upright at a slight tilt, a smaller brass cog hooked on it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (rusted iron grey-brown, weathered brass, dark slate, cool blue-grey shadow), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, clock face, numbers, perfectly even teeth all around, shiny chrome"
+    },
+    {
+      "id": "act2_gear_pile",
+      "out": "unity/Assets/Resources/Art/props/act2_gear_pile.png",
+      "size": [
+        64,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a low heap of broken machine parts: rusted cogs of different sizes, a bent brass rod, a cracked metal plate and a length of chain tangled together, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (rusted iron grey-brown, weathered brass, dark slate, cool blue-grey shadow), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, robot, treasure, gold coins, neat stack"
+    },
+    {
+      "id": "act2_minecart",
+      "out": "unity/Assets/Resources/Art/props/act2_minecart.png",
+      "size": [
+        64,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an old iron ore cart with riveted dark metal sides on four small wheels, heaped with dark rock and two or three irregular chunks of pale teal ore glowing softly, seen from the side slightly from above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (iron grey, dark slate rock, dark aged timber grey-brown, cool blue-grey shadow, soft pale teal glow only inside the ore), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, rails, track, light rays, glow halo around it, many glowing dots, evenly spaced dots, wagon with horse"
+    },
+    {
+      "id": "act2_minecart_tipped",
+      "out": "unity/Assets/Resources/Art/props/act2_minecart_tipped.png",
+      "size": [
+        64,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an old empty iron ore cart tipped over on its side with two wheels in the air, dented and rusted, one wheel missing, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (iron grey, rusted grey-brown, dark aged timber grey-brown, cool blue-grey shadow), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, rails, track, ore inside, glowing dots, wagon with horse"
+    },
+    {
+      "id": "act2_ore_pile",
+      "out": "unity/Assets/Resources/Art/props/act2_ore_pile.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small heap of dark broken ore rock with two irregular chunks of pale teal ore glowing softly near the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate rock, cool blue-grey, soft pale teal glow only inside the ore), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, light rays, glow halo around it, many glowing dots, evenly spaced dots, gold, treasure, gems"
+    },
+    {
+      "id": "act2_stalactite_a",
+      "out": "unity/Assets/Resources/Art/props/act2_stalactite_a.png",
+      "size": [
+        32,
+        80
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single long thin stalactite of dark wet rock hanging point down, uneven and slightly bent, a drop of water at the tip, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, ceiling visible, cave visible, icicle, ice, snow, many stalactites, evenly spaced"
+    },
+    {
+      "id": "act2_stalactite_b",
+      "out": "unity/Assets/Resources/Art/props/act2_stalactite_b.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of three short stalactites of different lengths hanging point down from a shared knob of dark wet rock, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, ceiling visible, cave visible, icicle, ice, snow, evenly spaced, identical spikes"
+    },
+    {
+      "id": "act2_roots_hang",
+      "out": "unity/Assets/Resources/Art/props/act2_roots_hang.png",
+      "size": [
+        48,
+        72
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tangle of thin dry tree roots hanging down from above, splitting into finer strands toward the bottom, dusty grey-brown, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, tree, trunk, leaves, vines with leaves, green, ceiling visible, rope"
+    },
+    {
+      "id": "act2_pulley",
+      "out": "unity/Assets/Resources/Art/props/act2_pulley.png",
+      "size": [
+        40,
+        80
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an old iron hoisting pulley block on a short chain hanging straight down, a heavy rope passing over the wheel and trailing below, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, crane, ceiling visible, bucket, bell"
+    },
+    {
+      "id": "act2_hearth",
+      "out": "unity/Assets/Resources/Art/props/act2_hearth.png",
+      "size": [
+        80,
+        80
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a squat stone hearth furnace built of fitted dark stones with an iron hood and a bent stovepipe chimney rising from it, a small dim amber ember glow deep inside its low mouth, a leather bellows and a soot-black iron kettle beside it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark grey stone, iron grey, dark aged timber grey-brown, cool blue-grey shadow, a small dull amber glow only inside the hearth mouth), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, big fire, tall flames, smoke cloud, light rays, glow halo around it, lens flare, fireplace in a room, chimney on a roof"
+    },
+    {
+      "id": "act2_stall_a",
+      "out": "unity/Assets/Resources/Art/props/act2_stall_a.png",
+      "size": [
+        96,
+        72
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an empty peddler's stall: a rough timber counter under a tattered faded cloth awning on two poles, small leather pouches, stoppered bottles and a coil of rope hanging from the awning bar, a few brass tools and a small unlit oil lamp on the counter, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, faded dusty red-brown cloth, iron grey, weathered brass, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, signboard, merchant, vendor, food, fruit, vegetables, bright red awning, striped awning"
+    },
+    {
+      "id": "act2_stall_b",
+      "out": "unity/Assets/Resources/Art/props/act2_stall_b.png",
+      "size": [
+        80,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a closed peddler's stall with its wooden shutters down, a slanted roof of rough planks, two crates and a sack stacked in front of it, a small brass bell hanging from the eave, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, signboard, merchant, vendor, food, open shop, lit window"
+    },
+    {
+      "id": "act2_shelter",
+      "out": "unity/Assets/Resources/Art/props/act2_shelter.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a low lean-to sleeping shelter: a patched canvas tarp stretched over a simple timber frame, a rolled straw bedroll and a folded grey blanket under it, an iron hook on the front post, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, faded grey-brown canvas, iron grey, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, sleeping person, tent with a door, campfire, flag"
+    },
+    {
+      "id": "act2_toolrack",
+      "out": "unity/Assets/Resources/Art/props/act2_toolrack.png",
+      "size": [
+        48,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wooden tool rack holding two pickaxes, a shovel and a heavy hammer leaning on it, worn iron heads and dark wooden handles, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, weapons rack, swords, shields"
+    },
+    {
+      "id": "act2_lumber",
+      "out": "unity/Assets/Resources/Art/props/act2_lumber.png",
+      "size": [
+        80,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a low stack of rough cut timber beams and logs lying horizontally, pale cut ends facing the viewer, one beam slid off crooked, a few wood chips on top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, tree, branches, leaves, firewood neatly stacked"
+    },
+    {
+      "id": "act2_bell_post",
+      "out": "unity/Assets/Resources/Art/props/act2_bell_post.png",
+      "size": [
+        32,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a short wooden post with a small bronze hand bell hanging from a curved iron bracket at the top, a frayed pull rope dangling from the bell, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, dull weathered bronze, iron grey, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, church bell tower, signpost, lantern"
+    },
+    {
+      "id": "act2_barrel",
+      "out": "unity/Assets/Resources/Art/props/act2_barrel.png",
+      "size": [
+        32,
+        36
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single old wooden barrel with two dark iron hoops, staves slightly warped, a wooden bung on the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, open lid, liquid, label"
+    },
+    {
+      "id": "act2_barrel_stack",
+      "out": "unity/Assets/Resources/Art/props/act2_barrel_stack.png",
+      "size": [
+        48,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, three old wooden barrels stacked in a pyramid, two below and one on top, dark iron hoops, one barrel lid missing, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, liquid, label"
+    },
+    {
+      "id": "act2_crate",
+      "out": "unity/Assets/Resources/Art/props/act2_crate.png",
+      "size": [
+        32,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single rough wooden crate with plank sides, a nailed lid and one corner chipped, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, stencil marks, open lid, treasure chest"
+    },
+    {
+      "id": "act2_crate_stack",
+      "out": "unity/Assets/Resources/Art/props/act2_crate_stack.png",
+      "size": [
+        48,
+        52
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, two rough wooden crates stacked with the top one set crooked, a lumpy tied sack resting on top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, stencil marks, treasure chest"
+    },
+    {
+      "id": "act2_crate_open",
+      "out": "unity/Assets/Resources/Art/props/act2_crate_open.png",
+      "size": [
+        40,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an open wooden crate with its lid leaning against the side, a few dark ore chunks and an old iron chisel spilling out of it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, glowing dots, gold coins, treasure, gems"
+    },
+    {
+      "id": "act2_sacks",
+      "out": "unity/Assets/Resources/Art/props/act2_sacks.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a pile of three lumpy grain sacks tied at the neck, slumped against each other, coarse faded cloth, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (faded grey-brown sackcloth, dusty ochre, dark aged timber grey-brown, cool blue-grey shadow), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, money bags, coins, label"
+    },
+    {
+      "id": "act2_trough",
+      "out": "unity/Assets/Resources/Art/props/act2_trough.png",
+      "size": [
+        72,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long low wooden water trough on two short legs, filled with dark still water, a wooden bucket with a rope handle hanging on one end, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, very dark blue-grey water, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, horse, fish, splashing water, fountain"
+    },
+    {
+      "id": "act2_rope_coil",
+      "out": "unity/Assets/Resources/Art/props/act2_rope_coil.png",
+      "size": [
+        40,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a coil of thick hemp rope lying flat with the loose end trailing out, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (pale straw rope, dusty ochre, dark aged timber grey-brown, cool blue-grey shadow), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, snake, wheel, ring"
+    },
+    {
+      "id": "act2_lantern_post",
+      "out": "unity/Assets/Resources/Art/props/act2_lantern_post.png",
+      "size": [
+        40,
+        88
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tall slender iron lamp post with a small square base plate and a curved hooked arm at the top, a plain undecorated paper lantern hanging from the hook lit with a dull warm amber glow only on the paper, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (iron grey, dark aged timber grey-brown, cool blue-grey shadow, pale straw paper, a small dull amber glow only inside the lantern), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, writing on the paper, symbols, light rays, glow halo around it, lens flare, fire, flames, street with buildings"
+    },
+    {
+      "id": "act2_lantern_hang",
+      "out": "unity/Assets/Resources/Art/props/act2_lantern_hang.png",
+      "size": [
+        32,
+        40
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single tall oval paper lantern hanging from a short cord, plain undecorated pale paper with thin dark ribs, lit with a dull warm amber glow only on the paper, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (pale straw paper, dark aged timber grey-brown ribs, cool blue-grey shadow, a small dull amber glow only inside the lantern), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, writing on the paper, symbols, light rays, glow halo around it, lens flare, fire, flames, pole, post, string of many lanterns"
+    },
+    {
+      "id": "act2_lantern_hang_b",
+      "out": "unity/Assets/Resources/Art/props/act2_lantern_hang_b.png",
+      "size": [
+        32,
+        32
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single squat round paper lantern hanging from a short cord, plain undecorated pale paper slightly dented on one side, lit with a dull warm amber glow only on the paper, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (pale straw paper, dark aged timber grey-brown ribs, cool blue-grey shadow, a small dull amber glow only inside the lantern), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, writing on the paper, symbols, light rays, glow halo around it, lens flare, fire, flames, pole, post, string of many lanterns"
+    },
+    {
+      "id": "act2_post_brace",
+      "out": "unity/Assets/Resources/Art/props/act2_post_brace.png",
+      "size": [
+        40,
+        120
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single thick old mine support post of dark timber with a rusted iron band near the top and a short diagonal brace stub, chipped and weathered, standing upright, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, doorway, gate, two posts, beam across, wall behind"
+    },
+    {
+      "id": "act2_rubble_rock",
+      "out": "unity/Assets/Resources/Art/props/act2_rubble_rock.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a chunk of fallen dark rock broken into two or three angular pieces lying together, dusty, seen slightly from above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, boulder on grass, round pebbles, crystals, gems"
+    }
+  ]
+}

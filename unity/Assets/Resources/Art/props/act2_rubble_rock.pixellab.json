@@ -1,0 +1,23 @@
+{
+  "id": "act2_rubble_rock",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a chunk of fallen dark rock broken into two or three angular pieces lying together, dusty, seen slightly from above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, boulder on grass, round pebbles, crystals, gems",
+    "image_size": {
+      "width": 48,
+      "height": 32
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:02:36.749Z"
+}

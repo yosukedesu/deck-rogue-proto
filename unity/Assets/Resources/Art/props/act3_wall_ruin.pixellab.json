@@ -1,0 +1,23 @@
+{
+  "id": "act3_wall_ruin",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single wide ruined wall fragment of an ancient house built of fitted dark slate-grey basalt blocks, two dark empty window openings and one dark empty doorway, the top edge collapsed unevenly, a pile of fallen blocks at one end, seen straight on, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, lit window, glass, roof, whole house, street, city, letters, runes, near-black",
+    "image_size": {
+      "width": 160,
+      "height": 112
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:07:15.692Z"
+}

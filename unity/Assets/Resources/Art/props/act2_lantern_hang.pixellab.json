@@ -1,0 +1,23 @@
+{
+  "id": "act2_lantern_hang",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single tall oval paper lantern hanging from a short cord, plain undecorated pale paper with thin dark ribs, lit with a dull warm amber glow only on the paper, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (pale straw paper, dark aged timber grey-brown ribs, cool blue-grey shadow, a small dull amber glow only inside the lantern), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, writing on the paper, symbols, light rays, glow halo around it, lens flare, fire, flames, pole, post, string of many lanterns",
+    "image_size": {
+      "width": 32,
+      "height": 40
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:01:49.841Z"
+}

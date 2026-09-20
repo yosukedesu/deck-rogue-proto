@@ -1,0 +1,23 @@
+{
+  "id": "act2_roots_hang",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a tangle of thin dry tree roots hanging down from above, splitting into finer strands toward the bottom, dusty grey-brown, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, tree, trunk, leaves, vines with leaves, green, ceiling visible, rope",
+    "image_size": {
+      "width": 48,
+      "height": 72
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:58:30.647Z"
+}

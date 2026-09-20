@@ -1,0 +1,23 @@
+{
+  "id": "act2_hearth",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a squat stone hearth furnace built of fitted dark stones with an iron hood and a bent stovepipe chimney rising from it, a small dim amber ember glow deep inside its low mouth, a leather bellows and a soot-black iron kettle beside it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark grey stone, iron grey, dark aged timber grey-brown, cool blue-grey shadow, a small dull amber glow only inside the hearth mouth), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, big fire, tall flames, smoke cloud, light rays, glow halo around it, lens flare, fireplace in a room, chimney on a roof",
+    "image_size": {
+      "width": 80,
+      "height": 80
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:59:00.348Z"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "act3_stalactite_cluster",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of three stalactites of dark grey cave rock hanging point downward, one long and two shorter, layered and dripping shapes, a few thin teal mineral veins near the base, the base cut off flat at the top edge of the frame, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, cave interior, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, icicle, ice, tree, stalagmite pointing up",
+    "image_size": {
+      "width": 96,
+      "height": 160
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:08:47.837Z"
+}

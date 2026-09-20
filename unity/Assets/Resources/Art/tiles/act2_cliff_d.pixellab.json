@@ -1,0 +1,23 @@
+{
+  "id": "act2_cliff_d",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of a rough hewn mine rock face, damp, with a dark seep stain running down part of it, layered dark blue-grey stone, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate, cool blue-grey, grey-brown, pale silver highlights), no text",
+    "negative_description": "green, grass, moss, plants, trees, scene, border, vignette, frame, bevel, objects, bricks, blocks in a grid, masonry, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, round boulders, glowing veins, crystals, stripes, rows, polka dots, water surface, waterfall",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:53:37.502Z"
+}

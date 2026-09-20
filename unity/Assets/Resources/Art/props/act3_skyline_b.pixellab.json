@@ -1,0 +1,23 @@
+{
+  "id": "act3_skyline_b",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long strip of distant ruined city silhouettes of an ancient stone city, flat dark slate-blue shapes only, a collapsed great dome on the left, a cluster of broken square towers on the right, low ruined walls between, a few tiny pale teal window dots, transparent above and below the strip, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, forest, sky, moon, stars, clouds, ground plane, water, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, detailed windows in rows, modern buildings",
+    "image_size": {
+      "width": 200,
+      "height": 80
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:08:14.904Z"
+}

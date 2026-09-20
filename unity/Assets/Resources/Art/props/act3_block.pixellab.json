@@ -1,0 +1,23 @@
+{
+  "id": "act3_block",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single large cut stone block of dark slate-grey basalt toppled onto its corner, chipped edges, one face paler and worn, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black",
+    "image_size": {
+      "width": 48,
+      "height": 40
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:25:52.970Z"
+}

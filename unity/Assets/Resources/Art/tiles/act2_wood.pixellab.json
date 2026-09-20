@@ -1,0 +1,23 @@
+{
+  "id": "act2_wood",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of rough sawn dark aged timber with long straight wood grain running left to right and a few knots, weathered grey-brown wood, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+    "negative_description": "green, grass, moss, plants, trees, leaves, scene, border, vignette, frame, bevel, objects, nails, isometric, island, sky, moon, character, animal, people, text, watermark, blurry, bright saturated colors, daylight, gradient, orange, glossy varnish, polka dots, boards with gaps, planks side by side",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:53:38.049Z"
+}

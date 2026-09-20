@@ -1,0 +1,23 @@
+{
+  "id": "act3_ceiling_fringe",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, the underside of a cave ceiling seen from below, a wide ragged fringe of dark rock with many small stalactites of different lengths hanging down, a few small teal crystal points among them, rock filling the top of the frame and hanging shapes ending in mid-air, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, floor, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, warm orange light, fire, icicles in a row, evenly spaced, teeth",
+    "image_size": {
+      "width": 200,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:09:20.924Z"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "act3_m_vein",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of black basalt split by thin branching hairline fissures glowing soft pale teal from deep inside, luminous cracks on dark stone, most of the area plain dark stone, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+    "negative_description": "lava, fire, orange, red, neon green, thick glowing bands, grid, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, warm light, green grass, brown soil, wood",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:05:06.436Z"
+}

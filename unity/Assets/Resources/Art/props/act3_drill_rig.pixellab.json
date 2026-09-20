@@ -1,0 +1,23 @@
+{
+  "id": "act3_drill_rig",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient mining machine, a huge angled drilling arm of blackened riveted iron and dull pewter, a long boom tilted upward to the right ending in a large conical spiral drill bit, mounted on a heavy riveted iron pivot base with a round core in the middle of the base glowing softly pale teal, hard metallic highlights, industrial, no limbs, no face, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, legs, arms of a figure, animal, fur, moss, wood, warm orange light, fire, sparks, brass, copper, gold, letters, runes, crane hook, vehicle wheels",
+    "image_size": {
+      "width": 176,
+      "height": 160
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:26:43.128Z"
+}

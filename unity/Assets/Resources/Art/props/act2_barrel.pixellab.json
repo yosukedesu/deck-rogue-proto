@@ -2,11 +2,11 @@
   "id": "act2_barrel",
   "engine": "pixflux",
   "request": {
-    "description": "an old wooden barrel with iron bands, muted brown, dim warm lantern light, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
-    "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face",
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a single old wooden barrel with two dark iron hoops, staves slightly warped, a wooden bung on the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, iron grey, dark slate, cool blue-grey shadow, pale straw highlights), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, open lid, liquid, label",
     "image_size": {
       "width": 32,
-      "height": 40
+      "height": 36
     },
     "text_guidance_scale": 8,
     "no_background": true,
@@ -19,5 +19,5 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T14:03:09.854Z"
+  "at": "2026-09-20T21:00:09.980Z"
 }

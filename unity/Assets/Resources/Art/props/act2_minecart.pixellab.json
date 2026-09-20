@@ -1,30 +1,23 @@
 {
- "id": "act2_minecart__41",
- "engine": "pixflux",
- "request": {
-  "description": "an old iron mine cart on small wheels, rusted dark steel with tarnished brass rivets, heaped with ore lumps faintly tinted teal, isolated pixel art game sprite of a single object, centered, nothing else, empty transparent background, no scenery, HD-2D Octopath Traveler style, no text, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
-  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, rails, track, tunnel, horse, outer glow, hands",
-  "image_size": {
-   "width": 48,
-   "height": 32
+  "id": "act2_minecart",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an old iron ore cart with riveted dark metal sides on four small wheels, heaped with dark rock and two or three irregular chunks of pale teal ore glowing softly, seen from the side slightly from above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (iron grey, dark slate rock, dark aged timber grey-brown, cool blue-grey shadow, soft pale teal glow only inside the ore), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, rails, track, light rays, glow halo around it, many glowing dots, evenly spaced dots, wagon with horse",
+    "image_size": {
+      "width": 64,
+      "height": 40
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
   },
-  "text_guidance_scale": 8,
-  "no_background": true,
-  "outline": "selective outline",
-  "shading": "detailed shading",
-  "detail": "highly detailed",
-  "view": "low top-down",
-  "seed": 41
- },
- "usage": {
-  "type": "generations",
-  "generations": 1
- },
- "at": "2026-09-11T05:43:09.074Z",
- "judge": {
-  "pick": "B",
-  "seed": 41,
-  "at": "2026-09-11",
-  "note": "錆びた鉄と光る鉱"
- }
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:57:06.468Z"
 }

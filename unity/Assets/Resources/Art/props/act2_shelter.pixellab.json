@@ -1,0 +1,23 @@
+{
+  "id": "act2_shelter",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a low lean-to sleeping shelter: a patched canvas tarp stretched over a simple timber frame, a rolled straw bedroll and a folded grey blanket under it, an iron hook on the front post, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, faded grey-brown canvas, iron grey, cool blue-grey shadow, pale straw highlights), no text",
+    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, sleeping person, tent with a door, campfire, flag",
+    "image_size": {
+      "width": 96,
+      "height": 64
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T20:59:25.225Z"
+}

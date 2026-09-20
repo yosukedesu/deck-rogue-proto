@@ -1,0 +1,23 @@
+{
+  "id": "act3_cliff_d",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of a wall of fitted dark slate-grey basalt blocks seen straight on, offset courses of different lengths, wet with dark vertical damp streaks running down from the joints and a faint sheen, medium contrast, flat, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white highlights, faint teal tint), no text",
+    "negative_description": "seen from above, top-down, floor, pavement, perspective, window, door, arch, waterfall, running water, ivy, vines, trees, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, neon, daylight, gradient, warm light, orange, green, brown, wood, perfect regular grid, identical bricks, near-black, pitch black",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:04:01.167Z"
+}

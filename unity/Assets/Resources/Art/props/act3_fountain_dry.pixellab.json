@@ -1,0 +1,23 @@
+{
+  "id": "act3_fountain_dry",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a broken ancient fountain of dark slate-grey basalt, a wide low octagonal basin with one side cracked and collapsed, a short central column with a small upper bowl, dry and empty, seen from slightly above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, statue figure, animal, warm orange light, fire, letters, runes, water jet, splashing water, plants, near-black",
+    "image_size": {
+      "width": 128,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T21:11:17.807Z"
+}
