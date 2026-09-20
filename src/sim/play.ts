@@ -247,7 +247,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'NecroPlayed') L.push(` 💀亡骸プレイ:${cname(e.cardId)}(ゲームから消えた)`)
       else if (e.type === 'SpellEchoed') L.push(` 🔁反復:${cname(e.cardId)}の効果が2回解決`)
       else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${cname(e.cardId)}が倒された`)
-      else if (e.type === 'RetainerSacrificed') L.push(` 🕯️殉教: ${cname(e.cardId)}を自ら失った`)
+      else if (e.type === 'RetainerSacrificed') L.push(` 🕯️灯の捧げ: ${cname(e.cardId)}を捧げた`)
       else if (e.type === 'RetainersDuplicated') L.push(` 🏳️分列: 従者${e.count}体が複製された`)
       else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 人形の効果を延べ${e.count}回解決した（トリガーを問わず）`) // count は延べ回数 (Opus 火種C「人形27体」)
       else if (e.type === 'RetainerRushed') L.push(` 🕯️点灯: ${cname(e.cardId)}が出た瞬間に1回動いた`)
@@ -345,7 +345,15 @@ function renderBattle(s: GameState, logFrom: number): string {
   // 緑のカード操作 (2026-09-02): 回収=捨て札から / サーチ=山札から / 手札で鍛える=自身以外の鍛えられる手札
   if (hasFx('retrieveFromDiscard')) L.push(`回収の選択候補(deckUids・捨て札): ${discList().join(' ') || 'なし'}`)
   if (hasFx('searchDeck')) L.push(`サーチの選択候補(deckUids・山札): ${drawList().join(' ') || 'なし'} ※名前順表示`)
-  if (hasFx('sacrificeRetainer')) L.push(`殉教の対象候補(permanentUid・場の従者): ${p.permanents.filter((c) => c.def.retainer === true && c.innate !== true).map((c) => `[${c.uid}] ${c.def.name}`).join(' ') || 'なし(従者がいないとプレイ不可)'}`)
+  if (hasFx('sacrificeRetainer')) L.push(`灯の捧げの対象候補(permanentUid・場の人形): ${p.permanents.filter(isDoll).map((c) => `[${c.uid}] ${c.def.name}`).join(' ') || 'なし(人形がいないとプレイ不可)'}`)
+  // 人形の灯り (2026-09-21): 写し灯・継ぎ火・永遠の灯も同じ欄で人形を選ぶ (Opus C「候補が出ず撃てない」の是正)。残りの灯りと火勢を添える
+  if (hasFx('copyRetainer') || hasFx('extendRetainerLife') || hasFx('persistRetainer')) {
+    const cands = p.permanents.filter(isDoll).map((c) => {
+      const left = dollLifeLeft(s, c)
+      return `[${c.uid}] ${c.def.name}(灯り${left === null ? '尽きない' : `あと${left}`}${dollGrowth(s, c) > 0 ? `・火勢+${dollGrowth(s, c)}` : ''})`
+    })
+    L.push(`人形を選ぶ札の対象候補(permanentUid): ${cands.join(' ') || 'なし(人形がいないとプレイ不可)'} ※継ぎ火・永遠の灯は期限なしの人形には効かない`)
+  }
   if (hasFx('upgradeInHand')) {
     const src = p.hand.filter((c) => c.def.effects.some((e) => e.effect === 'upgradeInHand')).map((c) => c.uid)
     const cands = p.hand.filter((c) => !src.includes(c.uid) && canUpgradeInHand(c)).map((c) => `[${c.uid}]${c.def.name}`)
