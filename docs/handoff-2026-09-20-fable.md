@@ -7,7 +7,13 @@
 - テスト: vitest 1040 緑・ゴールデン 13/13（TS・C#）・Unity build エラー0。
 - デザインカンバス「灯の表示」: https://claude.ai/code/artifact/8ed359bb-52e0-4875-9506-961428065721（裁定＝案B 真鍮のランタン。実装済み）。
 
-## 次の仕事＝人間ラン#15 の裁定と実装
+## 追記（2026-09-21・Fable）: #15 の裁定は実装済み
+
+- 裁定＝**生存期間（寿命）＋火勢**（ユーザー案。座席上限・頭数比例は退けた）→ コミット 6806c79（engine/データ/C#/Unity/Web/CLI）・1c19499（挿絵5枚）。一次資料 `docs/white-doll-life-proposal-2026-09-21.md`・`card-power.md` §76・CLAUDE.md「従者（置物数参照）」行。
+- 配布物: Windows exe `D:\deck-rogue\DeckRogue-win`（1c19499）、APK は Drive `DeckRogue/DeckRogue-1c19499.apk`（実機未確認。`DeckRogue-86f94d2.apk` を残し、1d9cf02 を消した）。
+- 次＝**難易度5の人間ラン**で、場の人形の平均体数（狙い5前後）・与ダメの出所の偏り・幕3ボス入場HP・回復の回し（号令×燭）・延命とコピーの札のピック率を見る（`npm run analyze` に dolls/dollsGone/rallies/dollOnlyOpening を足した）。ロールバック条件は提案書 §5。
+
+## 次の仕事＝人間ラン#15 の裁定と実装（→ 上の追記のとおり済み。以下は裁定前の記録）
 
 ユーザーの言葉: **「毎戦同じようなプレイパターンで退屈」**（ひなた・難易度3・25勝・91分。面白さ 3.0／3.14／3.33）。
 診断（詳細は notes §2〜4）:
