@@ -287,8 +287,7 @@ describe('敵は伏せを見ない: 残るのは罠壊し・道化の破壊分�
     ])
     const joker = getEnemyDef('enemy_joker')
     expect(joker.movesVsSet!.map((a) => [a.to, kindOf(joker, a.to), a.weight])).toEqual([
-      ['cautious_jab', 'attack', 2],
-      ['call_bluff', 'attack', 1],
+      ['call_bluff', 'attack', 1], // 2026-09-18: 用心の一撃 (非破壊の攻撃分岐) を撤去=壊しだけ
     ])
     expect(allEnemies.some((d) => 'setAlt' in d || d.moves.some((m) => 'setAlt' in m))).toBe(false)
     expect(allEnemies.some((d) => 'vsSetIgnoreFreshness' in d)).toBe(false)
@@ -428,6 +427,55 @@ describe('発火の形 (数値据え置き・副次効果を1つ)', () => {
     const leaked = attackAndFire(arm(), 15)
     expect(leaked.player.hp).toBe(leaked.player.maxHp - 5)
     expect(leaked.enemies[0].intent?.kind).not.toBe('rest')
+  })
+})
+
+describe('白の罠の形 (2026-09-18 白の仕上げ・docs/white-finish-proposal-2026-09-18.md §3。数値据え置き)', () => {
+  it('護りの聖印: ブロック12。完全に防ぎ切ったらその敵に威圧1 (漏れたら付かない)', () => {
+    const arm = () => setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_reaction_ward']), 't0_white_reaction_ward')
+    const perfect = attackAndFire(arm(), 12)
+    expect(perfect.player.hp).toBe(perfect.player.maxHp)
+    expect(perfect.enemies[0].weak ?? 0).toBe(1)
+    const leaked = attackAndFire(arm(), 13)
+    expect(leaked.player.hp).toBe(leaked.player.maxHp - 1)
+    expect(leaked.enemies[0].weak ?? 0).toBe(0)
+  })
+
+  it('白光の壁: ブロック12+回復4。完全に防ぎ切ったら従者の少年を1体召喚 (敵フェーズ終端)', () => {
+    const arm = () => setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_reaction_bright_wall']), 't0_white_reaction_bright_wall')
+    const perfect = attackAndFire(arm(), 10)
+    expect(perfect.player.permanents.filter((p) => p.def.id === 'white_perm_squire')).toHaveLength(1)
+    const leaked = attackAndFire(arm(), 15)
+    expect(leaked.player.permanents.filter((p) => p.def.id === 'white_perm_squire')).toHaveLength(0)
+  })
+
+  it('誓いの盾: ブロック8+灯+1。受けた攻撃の実値が10以上ならさらに灯+2 (添え物の回復は灯に = 回し封じ 2026-09-20)', () => {
+    const arm = () => {
+      const s = setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_oath_shield']), 't0_white_oath_shield')
+      return { ...s, player: { ...s.player, hp: 50, light: 0 } }
+    }
+    const small = attackAndFire(arm(), 8) // 完全に防ぐ・灯+1
+    expect(small.player.hp).toBe(50)
+    expect(small.player.light).toBe(1)
+    const big = attackAndFire(arm(), 10) // 2漏れる・灯+1+2
+    expect(big.player.hp).toBe(50 - 2)
+    expect(big.player.light).toBe(3)
+  })
+
+  it('灯りの壁: 被攻撃前ブロック6 + 被攻撃後回復8・消滅 (1枠に2つの仕事。回復が主役なので一度きり = 回し封じ 2026-09-20)', () => {
+    let s = setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_hymn_wall']), 't0_white_hymn_wall')
+    s = { ...s, player: { ...s.player, hp: 50 } }
+    s = attackAndFire(s, 10) // 6で受けて4漏れ、その後8回復
+    expect(s.player.hp).toBe(50 - 4 + 8)
+    expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['white_hymn_wall'])
+  })
+
+  it('大樹の守り手 (trapPersist) は期限が来ない = 置いておける (白の灯りの庭は 2026-09-20 夜に撤去)', () => {
+    expect(getCardDef('green_reaction_tree_warden').trapPersist).toBe(true)
+    let s = setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['green_reaction_tree_warden']), 't0_green_reaction_tree_warden')
+    for (let i = 0; i < 4; i++) s = passTurn(s)
+    expect(s.player.setCards.map((c) => c.def.id)).toEqual(['green_reaction_tree_warden'])
+    expect(count(s.eventLog, 'SetCardExpired')).toBe(0)
   })
 })
 

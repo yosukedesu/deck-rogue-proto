@@ -81,6 +81,7 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
 /** 手札を補充する効果 (0E+補充=消滅必須、の規約判定。cardrules.test.ts と同じ定義) */
 const REFILL_FOR_UPGRADE = new Set([
   'addCardToHand', // トークン生成も手札の補充 (0E化の無限ループ規約対象)
+  'drawCardsPerLight', // 灯の手帳 (2026-09-20 夜)
   'drawCards',
   'drawCardsPerCardPlayed',
   'dischargeAetherDraw',
@@ -113,7 +114,7 @@ function costCutViolates(def: CardDef): boolean {
  * 「量を強化しない」形で維持)。現行データでは全カードがいずれかのティアに落ちる
  * (テストで機械固定)。'none' は将来のデータ追加への防衛用に残す
  */
-export type UpgradeTier = 'amount' | 'cost' | 'unit' | 'bonus' | 'none' | 'mult' | 'threshold'
+export type UpgradeTier = 'amount' | 'cost' | 'unit' | 'bonus' | 'none' | 'mult' | 'threshold' | 'light'
 
 /**
  * 本家形の鍛える (2026-09-04 ユーザー裁定「ok」。StS2 507枚の OnUpgrade 集計: 量+1が最多185・ダメ102・
@@ -130,16 +131,28 @@ const MULT_EFFECTS = new Set([
   'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumVolley',
   'gainBlockPerMomentum', 'addGrowthPerMomentum',
   'dealDamagePerCardPlayed', 'dealDamagePerExhaust', 'dealDamageDrainPerExhaust', 'gainBlockPerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerHeal',
+  'dischargeLight', // 灯の放出 (白 2026-09-20): 倍率+1 (灯の矢 ×2→×3・光の奔流 ×3→×4)。大行列 (dischargeLightRally) はコスト-1 側
+  'dealDamagePerLight', // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は light ティア (灯-1) が先に取る
+  'dealDamagePerSpark', 'gainBlockPerLight', 'drawCardsPerLight', 'dischargeLightWeaken', // 火種の嵐・灯の壁・灯の手帳・眩む閃光 (2026-09-20 夜): 参照倍率+1
 ])
 const UNIT_EFFECTS_V2 = new Set([
-  'drawCards', 'impulseDraw', 'addGrowth', 'addMomentum', 'addAether', 'addCasts', 'gainEnergy',
+  'drawCards', 'impulseDraw', 'addGrowth', 'addMomentum', 'addAether', 'addLight', 'addCasts', 'gainEnergy',
   'exposeEnemy', 'weakenEnemy', 'summonPermanent', 'upgradeInHand', 'addCardToHand', 'empowerShivs', 'exhaustFromDeck',
+  'addCardToDraw', 'triggerRandomRetainer', // 火種 (2026-09-20 夜): 生成枚数+1 (骨刃と同じ単位)
 ])
 const AMOUNT_V2 = new Set([...UPGRADABLE_EFFECTS, 'growSelf'])
 const hasMult = (e: DeclarativeEffect) =>
   (MULT_EFFECTS.has(e.effect) && e.amount !== undefined) || e.growthMultiplier !== undefined || e.momentumMultiplier !== undefined
-const hasThreshold = (e: DeclarativeEffect) => e.condition?.minGrowth !== undefined || e.condition?.minMomentum !== undefined
-const isGreenRule = (def: CardDef) => def.id.startsWith('green_') || def.color === 'green' // 工房産 (fused_*) も色で判定
+const hasThreshold = (e: DeclarativeEffect) => e.condition?.minGrowth !== undefined || e.condition?.minMomentum !== undefined || e.condition?.minLight !== undefined
+/** 本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ。青・赤・黒は解凍時に足す)。工房産 (fused_*) も色で判定 */
+const V2_COLORS = new Set(['green', 'white'])
+const isGreenRule = (def: CardDef) => def.id.startsWith('green_') || V2_COLORS.has(def.color)
+/**
+ * 本家形の例外 = 名指しでコスト-1 (2026-09-18 白の仕上げ・ユーザー裁定): 誘発ごとにドローする置物 (軍楽隊=登場ごと・恵光の使徒=回復ごと) は
+ * 単位+1 で「誘発ごと2ドロー」になり、見習いの列1枚 (2体登場) で4ドロー・燭光の従者+使徒で攻撃1枚ごと2ドロー = 青のドローの定価を越える。
+ * 年輪の大樹 (旧3段) と同じく「軽くなって置きやすい」が正しい伸び方
+ */
+const V2_COST_ONLY = new Set(['white_perm_band', 'white_perm_apostle'])
 
 /** 効果列1つぶんの本家形ティア (モードごとにも使う) */
 function tierV2(effects: readonly DeclarativeEffect[], def?: CardDef): 'mult' | 'unit' | 'threshold' | 'amount' | 'none' {
@@ -186,13 +199,14 @@ function applyV2(effects: readonly DeclarativeEffect[], def: CardDef): readonly 
     return effects.map((e) => {
       const c = e.condition
       const n =
-        c !== undefined && (c.minGrowth !== undefined || c.minMomentum !== undefined)
+        c !== undefined && (c.minGrowth !== undefined || c.minMomentum !== undefined || c.minLight !== undefined)
           ? {
               ...e,
               condition: {
                 ...c,
                 ...(c.minGrowth !== undefined ? { minGrowth: Math.max(1, c.minGrowth - 1) } : {}),
                 ...(c.minMomentum !== undefined ? { minMomentum: Math.max(1, c.minMomentum - 1) } : {}),
+                ...(c.minLight !== undefined ? { minLight: Math.max(1, c.minLight - 1) } : {}),
               },
             }
           : e
@@ -219,6 +233,9 @@ export function upgradeTier(def: CardDef): UpgradeTier {
   if (isGreenRule(def)) {
     // 上限ランプはコスト-1が正史 (複利安全弁: gainEnergyMax の量は増えない)
     if (eff.some((e) => e.effect === 'gainEnergyMax') && def.cost >= 1 && !costCutViolates(def)) return 'cost'
+    if (V2_COST_ONLY.has(def.id) && def.cost >= 1 && !costCutViolates(def)) return 'cost'
+    // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1 (1E・灯1)。エナジーは触らない
+    if ((def.lightCost ?? 0) >= 1) return 'light'
     const t = tierV2(eff, def)
     if (t !== 'none') return t
     if (def.cost >= 1 && !costCutViolates(def)) return 'cost'
@@ -275,7 +292,7 @@ export function canUpgradeCard(card: CardInstance): boolean {
  */
 export function upgradeCard(card: CardInstance): CardInstance {
   const tier = upgradeTier(card.def)
-  if (isGreenRule(card.def) && tier !== 'cost' && tier !== 'bonus' && tier !== 'none') {
+  if (isGreenRule(card.def) && tier !== 'cost' && tier !== 'bonus' && tier !== 'none' && tier !== 'light') {
     const base = card.def
     let def: CardDef = {
       ...base,
@@ -311,6 +328,8 @@ export function upgradeCard(card: CardInstance): CardInstance {
       ? mapEffects(boostAmount)
       : tier === 'cost'
         ? { cost: card.def.cost - 1 }
+        : tier === 'light'
+          ? { lightCost: Math.max(0, (card.def.lightCost ?? 0) - 1) }
         : tier === 'unit'
           ? mapEffects(boostUnit)
           : tier === 'bonus'
@@ -365,6 +384,7 @@ function legalizeUpgrade(def0: CardDef): CardDef {
   // 合成 (fusion.ts) と同じ処方 = 違反したら消滅を自動付与して合法化する
   const REFILL_FOR_LEGALITY = [
     'drawCards',
+    'drawCardsPerLight', // 灯の手帳 (2026-09-20 夜)
     'drawCardsPerCardPlayed',
     'dischargeAetherDraw',
     'impulseDraw',

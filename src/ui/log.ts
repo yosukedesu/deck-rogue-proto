@@ -106,6 +106,12 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'NecroFired': return { text: `💀 亡骸: ${cardName(e.cardId)} が消滅して効果が発火`, cls: 'log-good' }
     case 'NecroPlayed': return { text: `💀 亡骸プレイ: ${cardName(e.cardId)} (ゲームから取り除かれた)`, cls: 'log-line' }
     case 'AetherDischarged': return { text: `霊気${e.spent}を全て放出！`, cls: 'log-good' }
+    case 'LightGained': {
+      const SRC: Record<string, string> = { heal: '回復', retainer: '人形', passive: '灯匠', card: 'カード', carry: '残り火' }
+      return { text: `🕯 灯+${e.amount}（${SRC[e.source] ?? e.source}）`, cls: 'log-good' }
+    }
+    case 'LightDischarged': return { text: `🕯 灯${e.spent}を放出！`, cls: 'log-good' }
+    case 'LightSpent': return { text: `🕯 灯-${e.amount}（${cardName(e.cardId)}）`, cls: 'log-line' }
     case 'DiscountGained': return { text: `次にプレイするカードのコスト-${e.amount}`, cls: 'log-line' }
     case 'BurnApplied': return { text: `敵に延焼+${e.amount}`, cls: 'log-good' }
     case 'BurnTick': return { text: `延焼で敵に${e.amount}ダメージ`, cls: 'log-good' }
@@ -148,13 +154,14 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'PermanentPlayed': return { text: `置物を設置: ${cardName(e.cardId)}`, cls: 'log-good' }
     case 'CardExhausted': return { text: `消滅: ${cardName(e.cardId)}（この戦闘から除外）`, cls: 'log-line' }
     case 'CardsAddedToHand': return { text: `🗡️ ${cardName(e.cardId)}を${e.count}枚手札に加えた`, cls: 'log-good' }
+    case 'CardsAddedToDraw': return { text: `🔥 ${cardName(e.cardId)}を${e.count}枚山札に混ぜた`, cls: 'log-good' }
     case 'ExhaustRecycled': return { text: `♻️ 輪廻: 消滅置き場${e.count}枚が山札へ還った`, cls: 'log-good' }
     case 'BurnDischarged': return { text: `爆熱: 延焼${e.amount}を全て解き放った`, cls: 'log-line' }
     case 'TokenDestroyed': return { text: `従者狩り: ${cardName(e.cardId)}が倒された`, cls: 'log-line' }
     case 'RetainerSacrificed': return { text: `🕯️ 殉教: ${cardName(e.cardId)}を自ら失った`, cls: 'log-line' }
     case 'RetainersDuplicated': return { text: `🏳️ 分列: 従者${e.count}体が複製された`, cls: 'log-line' }
-    case 'RetainersTriggered': return { text: `📯 号令: 従者${e.count}体のターン開始効果を今すぐ解決`, cls: 'log-line' }
-    case 'RetainerRushed': return { text: `🏇 駆けつけ: ${cardName(e.cardId)}が登場してすぐに動いた`, cls: 'log-line' }
+    case 'RetainersTriggered': return { text: `📯 号令: 人形${e.count}体がトリガーを問わず今1回ずつ動いた`, cls: 'log-line' }
+    case 'RetainerRushed': return { text: `🕯 点灯: ${cardName(e.cardId)}が出た瞬間に1回動いた`, cls: 'log-line' }
     case 'ThornsReflected': return { text: `🦔 とげ反射: ${e.amount}（HP-${e.hpLoss}）`, cls: 'log-damage' }
     case 'GoldStolen': return { text: `💰 盗みを宣言して${e.amount}Gを先取りされた（宣言と同時に成立する。逃がす前に倒せば取り返せる）`, cls: 'log-damage' }
     case 'EnemyFled': return { text: '🏃 敵が逃走した', cls: 'log-line' }

@@ -1,0 +1,114 @@
+[
+ {
+  "slug": "MAGIC_SPELLS/MAGIC_SPELL_Soft_Slow_Bright_mono.wav#trim1.4",
+  "name": "MAGIC_SPELL_Soft_Slow_Bright（先頭1.4秒に切って減衰）",
+  "note": "柔らかく明るい魔法の膨らみ",
+  "dur": 1.4,
+  "mp3": "magic_spell_soft_slow_bright_mono_trim14.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "MAGIC_SPELLS/MAGIC_SPELL_Slow_Fade_In_Bright_Pad_mono.wav#trim1.4",
+  "name": "MAGIC_SPELL_Slow_Fade_In_Bright_Pad（先頭1.4秒に切って減衰）",
+  "note": "明るいパッドがゆっくり立ち上がる",
+  "dur": 1.4,
+  "mp3": "magic_spell_slow_fade_in_bright_pad_mono_trim14.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "MAGIC_SPELLS/MAGIC_SPELL_Attacking_Climbing_Bells_mono.wav#trim1.5",
+  "name": "MAGIC_SPELL_Attacking_Climbing_Bells（先頭1.5秒に切って減衰）",
+  "note": "鈴が駆け上がる",
+  "dur": 1.5,
+  "mp3": "magic_spell_attacking_climbing_bells_mono_trim15.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "CHARGE_UPS_DOWNS/CHARGE_Complex_Wet_12_Semi_Up_500ms_mono.wav",
+  "name": "CHARGE_Complex_Wet_12_Semi_Up_500ms",
+  "note": "0.5秒で上がるチャージ（光が満ちる）",
+  "dur": 0.5,
+  "mp3": "charge_complex_wet_12_semi_up_500ms_mono.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_Warm_Synth/MUSIC_EFFECT_Solo_Warm_Synth_Positive_07_stereo.wav",
+  "name": "MUSIC_EFFECT_Solo_Warm_Synth_Positive_07",
+  "note": "温かいシンセの短句",
+  "dur": 1.37,
+  "mp3": "music_effect_solo_warm_synth_positive_07_stereo.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_EPiano/MUSIC_EFFECT_Solo_EPiano_Positive_01_stereo.wav",
+  "name": "MUSIC_EFFECT_Solo_EPiano_Positive_01",
+  "note": "エレピの短句",
+  "dur": 2.33,
+  "mp3": "music_effect_solo_epiano_positive_01_stereo.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_01_stereo.wav",
+  "name": "MUSIC_EFFECT_Bell_Voice_Positive_01",
+  "note": "鈴の声の短句 01",
+  "dur": 1.96,
+  "mp3": "music_effect_bell_voice_positive_01_stereo.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_06_stereo.wav",
+  "name": "MUSIC_EFFECT_Solo_Harp_Positive_06",
+  "note": "ハープの短句 06",
+  "dur": 1.68,
+  "mp3": "music_effect_solo_harp_positive_06_stereo.mp3",
+  "group": "Universal Sound FX"
+ },
+ {
+  "slug": "__syn__/syn_heal_sparkle_up.wav",
+  "name": "syn_heal_sparkle_up",
+  "note": "上昇のきらめき（鈴5音のペンタトニック＋薄いシマー）",
+  "dur": 1.33,
+  "mp3": "syn_heal_sparkle_up.mp3",
+  "group": "自作（docs/design/audio/heal-synth.py）"
+ },
+ {
+  "slug": "__syn__/syn_heal_warm_chord.wav",
+  "name": "syn_heal_warm_chord",
+  "note": "温かい和音の膨らみ（Cmaj9 がふわっと膨らんで消える）",
+  "dur": 1.28,
+  "mp3": "syn_heal_warm_chord.mp3",
+  "group": "自作（docs/design/audio/heal-synth.py）"
+ },
+ {
+  "slug": "__syn__/syn_heal_bell_glow.wav",
+  "name": "syn_heal_bell_glow",
+  "note": "鈴の余韻（鈴1音の下で光が膨らむ）",
+  "dur": 1.23,
+  "mp3": "syn_heal_bell_glow.mp3",
+  "group": "自作（docs/design/audio/heal-synth.py）"
+ },
+ {
+  "slug": "__syn__/syn_heal_rain_of_light.wav",
+  "name": "syn_heal_rain_of_light",
+  "note": "光の粒（高い粒12個が降りながら消える）",
+  "dur": 1.2,
+  "mp3": "syn_heal_rain_of_light.mp3",
+  "group": "自作（docs/design/audio/heal-synth.py）"
+ },
+ {
+  "slug": "__syn__/syn_heal_harp_gliss.wav",
+  "name": "syn_heal_harp_gliss",
+  "note": "ハープのグリッサンド（8音駆け上がり）",
+  "dur": 1.33,
+  "mp3": "syn_heal_harp_gliss.mp3",
+  "group": "自作（docs/design/audio/heal-synth.py）"
+ },
+ {
+  "slug": "__syn__/syn_heal_breath_chime.wav",
+  "name": "syn_heal_breath_chime",
+  "note": "息を吸って光る（風の上昇→鈴2音）",
+  "dur": 1.28,
+  "mp3": "syn_heal_breath_chime.mp3",
+  "group": "自作（docs/design/audio/heal-synth.py）"
+ }
+]

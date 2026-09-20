@@ -285,6 +285,16 @@ describe('赤からの移管: 被弾の換金と粉砕', () => {
     expect(s.enemies[0].block).toBe(0)
     expect(s.enemies[0].hp).toBe(hpBefore - 18 /* 2026-09-02 +5→+8 */) // 破壊値10 + 基礎5
   })
+
+  it('根喰らいの蔓: 割るブロックが無ければ換金の一撃は出ない (2026-09-18: 旧実装は 0+成長 の幽霊ヒットを打ち、表示 8 に対し実処理が 8+成長×2 だった)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['green_devour_vine'])
+    s = withIntent(s, attackIntent(5))
+    s = { ...s, player: { ...s.player, energy: 9, growth: 4 } }
+    const hpBefore = s.enemies[0].hp
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_green_devour_vine' })
+    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 8 + 成長4 の1ヒットだけ (幽霊ヒットの +4 は無い)
+    expect(s.eventLog.filter((e) => e.type === 'DamageDealt')).toHaveLength(1)
+  })
 })
 
 describe('参照シナジー (2026-09-03 本家6型。docs/green-synergy-proposal.md)', () => {

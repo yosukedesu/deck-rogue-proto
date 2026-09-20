@@ -1,0 +1,77 @@
+{
+ "_note": "ギアの作り直し (2026-09-18): 発条=小さすぎ・締め紐=結び目が読めない。seed 7/99",
+ "items": [
+  {
+   "id": "gear_spring__7",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears-redo/gears/gear_spring__7.png",
+   "seed": 7,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a large flat brass clock mainspring coiled in a tight spiral of five turns that fills the whole frame, a small black-iron pin at its center, the outer end of the coil curling loose, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock face, numbers",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_spring__99",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears-redo/gears/gear_spring__99.png",
+   "seed": 99,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a large flat brass clock mainspring coiled in a tight spiral of five turns that fills the whole frame, a small black-iron pin at its center, the outer end of the coil curling loose, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock face, numbers",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_tie_cord__7",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears-redo/gears/gear_tie_cord__7.png",
+   "seed": 7,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a thick dark waxed cord wound into a fat round coil and cinched tight with a big knot in the middle, the coil filling the frame, one loose end trailing off the bottom, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, rope ladder, noose, whip",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_tie_cord__99",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears-redo/gears/gear_tie_cord__99.png",
+   "seed": 99,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a thick dark waxed cord wound into a fat round coil and cinched tight with a big knot in the middle, the coil filling the frame, one loose end trailing off the bottom, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, rope ladder, noose, whip",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  }
+ ]
+}

@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
 
 import { applyCommand } from './state.ts'
-import { createRunInBattle, attackIntent, freshCombat, setAndArm, withHand, withIntent } from './test-helpers.ts'
+import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
 
 describe('白のカラーパイ', () => {
   it('白のカードとデッキが揃っている', () => {
     expect(allCards.filter((c) => c.color === 'white').length).toBeGreaterThanOrEqual(19)
-    for (const id of ['starter_white', 'deck_horde', 'deck_fortress', 'run_basic_white']) {
+    for (const id of ['starter_white', 'deck_horde', 'deck_spark', 'run_basic_white']) {
       expect(buildDeck(id).length).toBeGreaterThan(0)
       expect(getDeckDef(id).color).toBe('white')
     }
@@ -45,30 +45,30 @@ describe('回復 (白の専売)', () => {
 
 describe('威圧 (敵弱体化)', () => {
   it('威圧の聖印 (2026-09-03 本家 Weak 化): 威圧2=次の2回の攻撃行動が-25%。筋力は触らない', () => {
+    // 眩ます灯印は 2026-09-20 夜に撤去 = 灯の岐路の「眩ます」(5ダメ+威圧1) で同じ機構を固定
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
-      'white_menace',
+      'white_mode_crossroad',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     const str0 = s.enemies[0].strength
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_menace' })
-    expect(s.enemies[0].weak).toBe(2)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_mode_crossroad', modeIndex: 0, targetIndex: 0 })
+    expect(s.enemies[0].weak).toBe(1)
     expect(s.enemies[0].strength).toBe(str0)
-    expect(s.player.block).toBe(6) // 2026-08-27 4→6
   })
 })
 
 describe('要塞型 (ブロック変換)', () => {
   it('城壁砕き: 自前のブロック3を先に得てから、現在のブロック×1のダメージ', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
-      'white_fortress',
+      'white_spark_shield',
       'white_bodyslam',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_fortress' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_spark_shield' }) // 火守りの盾 ブロック7 (大光壁は 2026-09-20 夜に撤去)
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_bodyslam' })
     // 2026-08-26: 効果順を [ブロック3 → ダメージ] にしたので自前のブロックも自分に乗る
-    expect(s.enemies[0].hp).toBe(hpBefore - 17) // (大城壁14 + 自前3) × 1 (2026-09-06 白の解凍: 大城壁は U・14・手札が呪文だけなら0E)
+    expect(s.enemies[0].hp).toBe(hpBefore - 10) // (火守りの盾7 + 自前3) × 1
   })
 })
 
@@ -100,19 +100,3 @@ describe('従者ホード (置物数参照)', () => {
   })
 })
 
-describe('護りのリアクション', () => {
-  it('聖域: HP半分以下でのみ発動でき、ブロック20+回復5', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
-      'white_reaction_sanctuary',
-    ])
-    s = setAndArm(s, 't0_white_reaction_sanctuary')
-    s = { ...s, player: { ...s.player, hp: Math.floor(s.player.maxHp * 0.4) } }
-    s = withIntent(s, attackIntent(10))
-    const hpBefore = s.player.hp
-    s = applyCommand(s, { type: 'EndTurn' })
-    expect(s.phase).toBe('awaiting-reaction') // pre窓 (被攻撃前)
-    s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    // ブロック16で攻撃10を完封し、回復4 (2026-08-26 pre窓軽減の上限是正)
-    expect(s.player.hp).toBe(hpBefore + 4)
-  })
-})

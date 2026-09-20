@@ -739,7 +739,7 @@
     "id": "starter_white",
     "name": "白スターター",
     "color": "white",
-    "description": "防御・回復・従者・威圧の白基本セット",
+    "description": "防御・回復・人形・火種の白基本セット (2026-09-20 夜: 灯りの杖→火守りの盾・眩ます灯印→灯の岐路・大光壁→火種撒き)",
     "cards": [
       {
         "cardId": "white_strike",
@@ -754,7 +754,7 @@
         "count": 1
       },
       {
-        "cardId": "white_mercy_staff",
+        "cardId": "white_spark_shield",
         "count": 1
       },
       {
@@ -762,11 +762,11 @@
         "count": 1
       },
       {
-        "cardId": "white_menace",
+        "cardId": "white_mode_crossroad",
         "count": 1
       },
       {
-        "cardId": "white_decree",
+        "cardId": "white_light_strike",
         "count": 1
       },
       {
@@ -774,7 +774,7 @@
         "count": 1
       },
       {
-        "cardId": "white_fortress",
+        "cardId": "white_spark_scatter",
         "count": 1
       },
       {
@@ -805,7 +805,7 @@
   },
   {
     "id": "deck_horde",
-    "name": "従者ホード",
+    "name": "人形ホード",
     "color": "white",
     "description": "従者を並べて「集結」で刈り取る横並びの理想形（2026-08-26: 前半に攻撃札が皆無だったため白盾×2を聖光の一撃×2へ）",
     "cards": [
@@ -852,45 +852,45 @@
     ]
   },
   {
-    "id": "deck_fortress",
-    "name": "白亜の要塞",
+    "id": "deck_spark",
+    "name": "火種の嵐",
     "color": "white",
-    "description": "要塞理想形。ブロックを攻撃に変換する。城壁の弩で「守るたび殴る」時計が回る",
+    "description": "火種 (本家 Soul の白版) の理想形 (2026-09-20 夜): 火種を撒いて撃ち、灯を火種に変え、火種の嵐・火の粉で刈り取る。sim の壊れ検知用",
     "cards": [
       {
-        "cardId": "white_fortress",
-        "count": 3
+        "cardId": "white_spark_scatter",
+        "count": 2
       },
       {
-        "cardId": "white_bodyslam",
-        "count": 3
+        "cardId": "white_spark_shield",
+        "count": 2
       },
       {
-        "cardId": "white_shield_bash",
+        "cardId": "white_spark_burst",
         "count": 1
       },
       {
-        "cardId": "white_gate_close",
+        "cardId": "white_spark_kindle",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_spark_furnace",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_embers",
+        "count": 1
+      },
+      {
+        "cardId": "white_spark_storm",
+        "count": 1
+      },
+      {
+        "cardId": "white_light_bolt",
         "count": 1
       },
       {
         "cardId": "white_guard",
-        "count": 1
-      },
-      {
-        "cardId": "white_perm_ballista",
-        "count": 1
-      },
-      {
-        "cardId": "white_perm_shieldmaiden",
-        "count": 2
-      },
-      {
-        "cardId": "white_perm_bell",
-        "count": 1
-      },
-      {
-        "cardId": "white_mending",
         "count": 1
       },
       {
@@ -903,38 +903,30 @@
     "id": "run_basic_white",
     "name": "白の初期デッキ",
     "color": "white",
-    "description": "白のドラフト連戦の出発点。聖光の一撃×2・白盾×2・聖盾の一撃・城壁砕き(派生攻撃)・従者の少年・奉仕の心・リアクション2(護りの聖印・報復の光)の10枚",
+    "description": "白の初期デッキ。緑と同じ形 (2026-09-20): 灯火の一撃3・灯盾の一撃 (打ち据え枠=殴りながら守る)・白盾3・灯の岐路 (モード=決断の教材。5ダメ+威圧1 or ブロック7)・灯の矢 (派生=灯の教材。灯×2ダメ・放出)・護りの灯印 (からくりの教材)。白の再設計 (同日) で光壁砕きは報酬プールへ",
     "cards": [
       {
         "cardId": "white_strike",
-        "count": 2
-      },
-      {
-        "cardId": "white_guard",
-        "count": 2
+        "count": 3
       },
       {
         "cardId": "white_shield_strike",
         "count": 1
       },
       {
-        "cardId": "white_perm_squire",
+        "cardId": "white_guard",
+        "count": 3
+      },
+      {
+        "cardId": "white_mode_crossroad",
         "count": 1
       },
       {
-        "cardId": "white_service",
+        "cardId": "white_light_bolt",
         "count": 1
       },
       {
         "cardId": "white_reaction_ward",
-        "count": 1
-      },
-      {
-        "cardId": "white_reaction_retribution",
-        "count": 1
-      },
-      {
-        "cardId": "white_bodyslam",
         "count": 1
       }
     ]
@@ -1211,7 +1203,7 @@
     "id": "deck_legion",
     "name": "白銀の大隊",
     "color": "white",
-    "description": "従者を並べて軍旗と軍楽隊で加速し、聖騎士団の突撃で轢き潰す横並びの理想形",
+    "description": "従者を並べて軍旗と軍楽隊で加速し、号令 (点灯の合図) と聖騎士団の突撃で轢き潰す横並びの理想形",
     "cards": [
       {
         "cardId": "white_perm_band",
@@ -1246,7 +1238,7 @@
         "count": 1
       },
       {
-        "cardId": "white_rank_shield",
+        "cardId": "white_march_order",
         "count": 2
       },
       {
@@ -1490,7 +1482,7 @@
         "count": 1
       },
       {
-        "cardId": "white_reaction_martyr",
+        "cardId": "white_reaction_ward",
         "count": 1
       },
       {
@@ -1509,7 +1501,7 @@
   },
   {
     "id": "deck_horde_v2",
-    "name": "従者ホード（解凍版）",
+    "name": "人形ホード（解凍版）",
     "color": "white",
     "description": "白の解凍（2026-09-06）の検証用: ばらまき・倍加・対価・号令と本家型の条件札を揃えた幕2開始のチェックポイント用デッキ",
     "cards": [
@@ -1539,7 +1531,7 @@
       },
       {
         "cardId": "white_march_order",
-        "count": 1
+        "count": 2
       },
       {
         "cardId": "white_miracle_division",
@@ -1566,11 +1558,11 @@
         "count": 1
       },
       {
-        "cardId": "white_fortress",
+        "cardId": "white_spark_shield",
         "count": 1
       },
       {
-        "cardId": "white_light_arrow",
+        "cardId": "white_light_ledger",
         "count": 1
       },
       {
@@ -1587,6 +1579,62 @@
       },
       {
         "cardId": "white_perm_band",
+        "count": 1
+      },
+      {
+        "cardId": "white_grand_charge",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "deck_lantern",
+    "name": "灯の奔流",
+    "color": "white",
+    "description": "白の再設計 (2026-09-20) の放出型の理想形: 回復と人形で灯を溜め、光の奔流・灼く光で放出する。sim の壊れ検知用",
+    "cards": [
+      {
+        "cardId": "white_light_strike",
+        "count": 2
+      },
+      {
+        "cardId": "white_light_hoard",
+        "count": 2
+      },
+      {
+        "cardId": "white_service",
+        "count": 2
+      },
+      {
+        "cardId": "white_perm_monk",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_wick",
+        "count": 1
+      },
+      {
+        "cardId": "white_light_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "white_light_torrent",
+        "count": 2
+      },
+      {
+        "cardId": "white_judgment",
+        "count": 1
+      },
+      {
+        "cardId": "white_light_double",
+        "count": 1
+      },
+      {
+        "cardId": "white_perm_cathedral",
+        "count": 1
+      },
+      {
+        "cardId": "white_reaction_ward",
         "count": 1
       }
     ]

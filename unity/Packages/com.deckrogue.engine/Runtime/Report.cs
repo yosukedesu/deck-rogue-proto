@@ -205,7 +205,7 @@ namespace DeckRogue.Engine
                 Result = combat.Phase == CombatPhases.Won ? "won" : "lost",
                 Turns = combat.Turn,
                 HpBefore = hpBefore,
-                HpAfter = combat.Player.Hp,
+                HpAfter = Math.Max(0, combat.Player.Hp), // 敗北は致死ぶん負に沈む = 0 で止める (TS analysis.ts と同形)
                 DeckSize = deckSize,
                 Lines = all.Count > ARCHIVE_LINES_CAP ? all.Skip(all.Count - ARCHIVE_LINES_CAP).ToList() : all,
             };

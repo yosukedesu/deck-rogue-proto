@@ -88,6 +88,12 @@ export interface PlayerState extends CombatantState {
   readonly cardsPlayedTotal: number
   /** 霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する */
   readonly aether: number
+  /**
+   * 灯 (白 2026-09-20 白の再設計): 回復するたび+1・人形 (retainer) が場に出るたび+1・ひなたのパッシブで毎ターン+1 で溜まる
+   * 戦闘内持続の蓄積。号令 (CardDef.lightCost) と放出 (dischargeLight) で吐く。純粋な電池 (持っている間は何もしない)。
+   * 旧セーブは欠落 → 0 と読む
+   */
+  readonly light?: number
   /** この戦闘で回復した回数 (過剰回復も数える = onHealed と同じ回数論。滾る血汐の参照) */
   readonly healsThisCombat: number
   /** このターンにカードのプレイで回復した回数 (過剰回復も数える・置物やパッシブの自動回復は数えない。自ターン開始でリセット。白の回復参照 healedThisTurn 2026-09-06) */
@@ -134,6 +140,8 @@ export interface PlayerState extends CombatantState {
   readonly selfHpLost: number
   /** この戦闘でプレイしたランダム火力の枚数 (カオスの刈り取りの参照値。2026-08-30) */
   readonly randomPlayedThisCombat: number
+  /** 火種 (白 2026-09-20 夜。本家 Soul の白版): この戦闘で撃った火種 (sparkToken) の枚数。火種の嵐が参照 */
+  readonly sparksPlayedThisCombat?: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
   readonly damageTakenLastEnemyPhase: number
   /** この敵フェーズ中に付与された弱体の量 (2026-09-04 Opusラン N: 同じ攻撃で付いた弱体が被攻撃後の返しを食っていた)。敵フェーズ中の返しはこの分を差し引き、次の自ターンから全量が効く */
@@ -296,6 +304,8 @@ export interface EffectCondition {
    */
   readonly minGrowth?: number
   readonly minMomentum?: number // 勢いしきい値 (緑 勢いの網 2026-09-04。解決時の勢いがN以上)
+  /** 灯しきい値 (白 2026-09-20 白の再設計: 灼く光・光の裁き。解決時の灯がN以上なら。自分で満たしにいける条件) */
+  readonly minLight?: number
   /**
    * ターン開始時のエナジー上限がN以上なら (緑 上限参照のしきい値化 2026-09-07 ピック監査: 若幹の一撃・大地の唸り。
    * 「上限×2」は人間に読まれないので「上限5以上ならさらに」の形に。ランプ即時利用の廃止と同じくターン開始スナップショットを読む)
@@ -323,6 +333,11 @@ export interface EffectCondition {
    * 「強化・応援だけを打ち消す1E」= 根の紡ぎ2Eの限定ラダー。条件付きリアクションの罠を避けるため、通常戦の4割で満たす種別に限る)
    */
   readonly actionKinds?: readonly EnemyActionKind[]
+  /**
+   * リアクション窓専用: 敵の行動の種別がこの中に無い時だけ発動できる (白 聖罰の障壁 2026-09-18 ユーザー裁定「攻撃以外で鳴るようにして」:
+   * 旧 onEnemyBuffed は純粋な強化・応援の技〔85体中17〕にしか開かず、9/14 に配った守り＋筋力+1 や攻撃と同時の強化には鳴らなかった)
+   */
+  readonly actionKindsNot?: readonly EnemyActionKind[]
   /** 直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り) */
   readonly lastActionNoHpLoss?: boolean
   /**
@@ -368,6 +383,10 @@ export interface GameState {
   readonly resolvingCardPlay?: boolean
   /** 成長/勢いの獲得誘発 (onGrowthGained/onMomentumGained) を解決中フラグ (2026-09-02)。誘発の中の加算は再誘発しない = 1段で止める */
   readonly resolvingGainTrigger?: boolean
+  /** 号令・大行列で人形を動かしている間は灯を産まない (白 2026-09-20 ユーザー裁定。灯芯の人形が大行列の中で鳴って「全て放出」の直後に灯が戻る、の是正) */
+  readonly suppressLightGain?: boolean
+  /** 灯の火床 (2026-09-20 夜): この EndTurn で灯を火種に変える枚数 (コマンドの hearthSparks。onTurnEnd の間だけ立つ) */
+  readonly hearthSparks?: number
   /** 次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス) */
   readonly negateNextAction: boolean
   /**
@@ -390,6 +409,8 @@ export interface GameState {
   readonly angerFiredThisPlay?: boolean
   /** 直前に場に出た置物の uid (駆けつけ=ひなた 2026-09-06: onPermanentEntered の解決中に「誰が出たか」を読む) */
   readonly lastEnteredPermanentUid?: string
+  /** いま効果を解決している置物の uid (runPermanentTriggers の間だけ立つ。演出用: 人形の盤面表示 2026-09-19 = DamageDealt/BlockGained/HpHealed の sourceUid の元。ルールは読まない) */
+  readonly resolvingPermanentUid?: string
   /** 発生済みイベントログ (リプレイ・シミュレーション統計の材料) */
   readonly eventLog: readonly GameEvent[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional */
@@ -500,7 +521,7 @@ export type Command =
       /** 伏せ2枚 (かすみ) 用: 発動する伏せ札の uid。窓に合致する伏せが複数ある時に指定。省略時は先頭の合致札 */
       readonly cardUid?: string
     }
-  | { readonly type: 'EndTurn' }
+  | { readonly type: 'EndTurn'; readonly hearthSparks?: number } // hearthSparks: 灯の火床 (白 R 置物) で灯を火種に変える枚数 (0〜灯÷3。省略=0。2026-09-20 夜 ユーザー裁定「枚数を選ぶ」)
 
 // ============================================================
 // イベント (戦闘内の出来事はすべてイベント。効果はフックとして実装)
@@ -555,14 +576,19 @@ export type GameEvent =
       readonly pierced?: boolean
       /** ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略 */
       readonly blocked?: number
+      /** 置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略 */
+      readonly sourceUid?: string
     }
-  | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number }
+  | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number; readonly sourceUid?: string }
   | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
   | { readonly type: 'SpellEchoed'; readonly cardId: string } // 反復 (青): 呪文の効果が2回解決された
   | { readonly type: 'NecroFired'; readonly cardId: string } // 亡骸効果 (黒): 消滅した札の亡骸効果が発火した
   | { readonly type: 'NecroPlayed'; readonly cardId: string } // 亡骸プレイ (黒): 消滅置き場からプレイされ、ゲームから取り除かれた
   | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
+  | { readonly type: 'LightGained'; readonly amount: number; readonly source: 'heal' | 'retainer' | 'passive' | 'card' | 'carry'; readonly sourceUid?: string } // 灯 (白 2026-09-20): 回復・人形の登場・パッシブ・明示の札・残り火 (carry)。sourceUid=灯を灯した置物 (灯芯の人形・リーダーのパッシブ。演出用 2026-09-20 灯籠)
+  | { readonly type: 'LightDischarged'; readonly spent: number } // 灯の放出 (白): 灯×N のダメージ or 灯1につき全人形が動く
+  | { readonly type: 'LightSpent'; readonly amount: number; readonly cardId: string } // 灯コストの支払い (白 2026-09-20 夜。Opus 3本「支払いがログに出ない」): 号令・灯コストの人形
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
@@ -587,10 +613,11 @@ export type GameEvent =
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
   | { readonly type: 'CardsAddedToHand'; readonly cardId: string; readonly count: number } // 骨刃などのトークン生成
+  | { readonly type: 'CardsAddedToDraw'; readonly cardId: string; readonly count: number } // 火種 (白 2026-09-20 夜): トークンを山札のランダムな位置へ
   | { readonly type: 'ExhaustRecycled'; readonly count: number } // 輪廻: 消滅置き場を山札へ還した
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
-  | { readonly type: 'TokenDestroyed'; readonly cardId: string } // トークン破壊 (敵メカニクス)
-  | { readonly type: 'RetainerSacrificed'; readonly cardId: string } // 殉教の誓い (白 2026-09-06): 自分で従者を1体破壊
+  | { readonly type: 'TokenDestroyed'; readonly cardId: string; readonly uid?: string } // トークン破壊 (敵メカニクス)。uid=壊れた置物 (人形の盤面表示 2026-09-19: どの人形が崩れるか)
+  | { readonly type: 'RetainerSacrificed'; readonly cardId: string; readonly uid?: string } // 殉教の誓い (白 2026-09-06): 自分で従者を1体破壊
   | { readonly type: 'RetainersDuplicated'; readonly count: number } // 分列の奇跡 (白 2026-09-06)
   | { readonly type: 'RetainersTriggered'; readonly count: number } // 進軍の号令 (白 2026-09-06)
   | { readonly type: 'RetainerRushed'; readonly cardId: string } // 駆けつけ (ひなた 2026-09-06): 場に出た従者が即1回動いた
@@ -611,7 +638,7 @@ export type GameEvent =
   | { readonly type: 'CardUpgradedInHand'; readonly cardId: string } // 手札で鍛える
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
   | { readonly type: 'MomentumDischarged'; readonly spent: number } // 勢い放出 (角の一突き・根付く勢い。緑 2026-09-04)
-  | { readonly type: 'HpHealed'; readonly amount: number } // 回復 (白)
+  | { readonly type: 'HpHealed'; readonly amount: number; readonly sourceUid?: string } // 回復 (白)。sourceUid=置物の誘発なら誰が (人形の盤面表示 2026-09-19)
   | { readonly type: 'CardsMilled'; readonly count: number; readonly cardIds?: readonly string[] } // 忘却=山札からの消滅 (黒)。cardIds=何が墓地へ行ったか (2026-08-31 可視化)
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
@@ -682,6 +709,7 @@ export interface DeclarativeEffect {
     | 'onAttackIncoming'
     | 'onAttacked'
     | 'onEnemyAction'
+    | 'onEnemyActed' // 置物: 敵の行動が解決した後 (どの種別でも。条件 actionKinds/actionKindsNot で絞る。白 眩みの障壁 2026-09-18)
     | 'onEnemyBuffed'
     | 'onEnemyDefended'
     | 'onTurnStart'
@@ -709,6 +737,9 @@ export interface DeclarativeEffect {
     | 'onShuffle' // 山札を切り直すたび (日時計・算盤。DeckShuffled の発火点)
     | 'onEnemyDied' // 敵が倒れるたび (小鬼の角笛。プレイヤーの与ダメ・延焼ティックのどちらでも。逃走は倒れていない)
     | 'onDamageTaken' // 敵の攻撃でHPを失った後 (百年の謎かけ・自ら固まる粘土・ルーンの立方体。HP損失0なら発火しない = onAttacked との差)
+    | 'onLightGained' // 灯を得るたび (白の接着剤 2026-09-20: 灯の弩。addLight/doubleLight/回復/パッシブの加算のたび。再入は1段で止める = onGrowthGained と同型)
+    | 'onLightDischarged' // 灯を放出するたび (白 2026-09-20 夜: 灯の火皿。dischargeLight/Rally/Weaken の後に1回)
+    | 'onSparkPlayed' // 火種 (sparkToken) をプレイするたび (白 2026-09-20 夜: 火の粉・灯の継ぎ手。本家 Forgotten Soul 型)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   /**
@@ -738,6 +769,20 @@ export interface DeclarativeEffect {
     | 'drawCardsPerCardPlayed' // ストームドロー: 詠唱数 × amount 枚ドロー (青)
     | 'addAether' // 霊気+X: 妨害・リアクション成功の蓄積 (青)
     | 'dischargeAether' // 霊気放出: 霊気×amount のダメージを与え、霊気を全消費 (青)
+    | 'addLight' // 灯+X (白 2026-09-20 白の再設計): 明示の蓄積。回復・人形の登場・パッシブの加算は engine の規則
+    | 'dischargeLight' // 灯の放出 (白): 灯×amount のダメージを与え、灯を0に (target:'all' は生存全体へ一括)。灯0なら不発 (消費しない)
+    | 'dischargeLightRally' // 灯火の大行列 (白 R): 灯を全て放出し、灯1につき全人形が amount 回動く (放出を人形に流す総攻撃)
+    | 'dischargeLightWeaken' // 眩む閃光 (白 U 2026-09-20 夜): 灯を全て放出し、灯3につき敵全体に威圧 amount (放出の第2の形)
+    | 'consumeLight' // 灯の鍛冶 (白 U): 灯を全て失う (ダメージ無しの放出。放出の誘発は鳴らない)
+    | 'gainBlockPerLight' // 灯の壁 (白 U): 灯2につき amount ブロック (灯は失わない)
+    | 'drawCardsPerLight' // 灯の手帳 (白 C): 灯2につき amount ドロー (上限 amountMax。灯は失わない)
+    | 'lightCarryHalf' // 残り火 (白 R 置物): この置物がある間、灯を放出しても半分 (切り捨て) が残る (疾風の王型の常在の印)
+    | 'addCardToDraw' // 火種撒き (白 2026-09-20 夜): summonId のトークン札 amount 枚を山札のランダムな位置へ (本家 Reave 型)
+    | 'lightToSparks' // 灯の火床 (白 R 置物): ターン終了時に選んだ枚数 (EndTurn.hearthSparks・上限 灯÷amount) だけ灯 amount につき火種1を山札へ (払った灯だけ失う)
+    | 'dealDamagePerSpark' // 火種の嵐 (白 R): この戦闘で撃った火種×amount のダメージ (本家 Soul Storm 型)
+    | 'triggerRandomRetainer' // 灯の継ぎ手 (白 U 置物): 場の人形1体 (ランダム) の効果を今1回解決 (号令の小型。灯は産まない)
+    | 'dealDamagePerLight' // 灯篭の人形 (白 R 2026-09-20 灯と人形の結び): 灯2につき amount ダメージ (切り捨て。灯は消費しない=放出すると暗くなる)
+    | 'doubleLight' // 灯の倍化 (白 R・消滅必須): 現在の灯を2倍にする
     | 'discountNext' // マナ軽減: 次にプレイするカードのコスト-X
     | 'applyBurn' // 延焼+X: 敵への継続ダメージ (赤)
     | 'shatterBlock' // 粉砕: 敵のブロックを全て破壊する (赤)
@@ -991,10 +1036,19 @@ export interface CardDef {
   readonly discardCost?: number
   /** 追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる) */
   readonly exhaustCost?: number
+  /**
+   * 追加コスト: 灯を N 払う (白 2026-09-20 白の再設計。号令=点灯の合図)。エナジーと別に払い、足りなければプレイ不可
+   * (エナジー不足と同じ playability)。割引の対象外。伏せるコストには掛からない (白のリアクションは持たない)。
+   * 人形にも付く (同日夜 灯と人形の結び: 癒し・鐘・大鐘=1E・灯2、灯篭=U1E・灯2、篝火=R2E・灯4)。
+   * 人形の登場は灯を産まない (同日夜 ユーザー裁定「登場の灯+1は廃止」= 人形は灯を使う側。灯を灯すのは灯芯・回復系の人形)
+   */
+  readonly lightCost?: number
   /** 従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」) */
   readonly retainer?: boolean
   /** 骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札 */
   readonly shivToken?: boolean
+  /** 火種 (白 2026-09-20 夜): 0E・消滅・1ドロー・灯+1 のトークン札。撃つたび sparksPlayedThisCombat+1・onSparkPlayed が鳴る */
+  readonly sparkToken?: boolean
   /**
    * 合成の触媒 (2026-09-12 ユーザー案「素材にするとリターンが大きい札」): 工房の素材にすると結果にこの恩恵が乗る。
    * cheaper=結果のコストがさらに−1 (合計−1の上から。0Eまで。0E規約の消滅は歯止めが自動で付ける) /

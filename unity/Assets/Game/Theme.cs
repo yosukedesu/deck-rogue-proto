@@ -379,8 +379,86 @@ namespace DeckRogue.Game
             Sprite s;
             if (_cache.TryGetValue(key, out s)) return s;
             s = Theme.Art(category, id);
-            if (s == null) s = Generate(id, friendly, size);
+            if (s == null) s = category == "dolls" ? Doll(id, size) : Generate(id, friendly, size);
             _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>人形 (白の従者) の仮の絵 (2026-09-19 人形の盤面表示): 白鉄のフードの小さな騎士 = 暗い顔の空洞に琥珀の目2つ・真鍮の帯。
+        /// 持ち物は id から (剣・盾・弩・鐘・蝋燭・旗・犬)。本番は PixelLab の Art/dolls/<id>.png (docs/pixellab/dolls-stage.json) が差し替える</summary>
+        static Sprite Doll(string id, int size)
+        {
+            int n = Mathf.Max(16, size);
+            float u = n / 32f;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            var clear = new Color(0f, 0f, 0f, 0f);
+            for (int i = 0; i < px.Length; i++) px[i] = clear;
+            Color white = UiKit.Hex("#e9e6df"), whiteShade = UiKit.Hex("#b9b6b0"), whiteDark = UiKit.Hex("#8a8884"), ink = UiKit.Hex("#2f2e35");
+            Color brass = UiKit.Hex("#c99a3a"), brassDark = UiKit.Hex("#8a6520"), hollow = UiKit.Hex("#1a1620"), amber = UiKit.Hex("#ffc45a");
+            bool hound = id.Contains("hound");
+            void Put(int x, int y, Color c) { if (x >= 0 && y >= 0 && x < n && y < n) px[y * n + x] = c; }
+            int X(float v) { return Mathf.RoundToInt(v * u); }
+            if (!hound)
+            {
+                // 胴 (下すぼまりの板) と脚
+                for (int y = X(3); y <= X(15); y++)
+                {
+                    float t = (y - X(3)) / (float)Mathf.Max(1, X(15) - X(3));
+                    int half = Mathf.RoundToInt(Mathf.Lerp(4f, 6f, t) * u);
+                    for (int x = X(15) - half; x <= X(16) + half; x++) Put(x, y, x < X(15) ? whiteShade : white);
+                }
+                for (int y = X(1); y < X(4); y++) { for (int x = X(11); x <= X(13); x++) Put(x, y, whiteDark); for (int x = X(18); x <= X(20); x++) Put(x, y, whiteDark); }
+                // 真鍮の帯 (腰) と鋲
+                for (int x = X(10); x <= X(21); x++) Put(x, X(8), brass);
+                Put(X(12), X(12), brass); Put(X(19), X(12), brass); Put(X(15), X(5), brassDark);
+                // フード (丸い頭・とがった先端) と暗い顔の空洞・琥珀の目
+                for (int y = X(15); y <= X(27); y++)
+                {
+                    float t = (y - X(15)) / (float)Mathf.Max(1, X(27) - X(15));
+                    int half = Mathf.RoundToInt((t < 0.75f ? 6.5f : Mathf.Lerp(6.5f, 1.5f, (t - 0.75f) / 0.25f)) * u);
+                    for (int x = X(15) - half; x <= X(16) + half; x++) Put(x, y, x < X(14) ? whiteShade : white);
+                }
+                Put(X(16), X(28), white); Put(X(17), X(29), whiteShade);
+                for (int y = X(18); y <= X(23); y++) for (int x = X(13); x <= X(20); x++) Put(x, y, hollow);
+                Put(X(14), X(21), amber); Put(X(15), X(21), amber); Put(X(18), X(21), amber); Put(X(19), X(21), amber);
+                // 背中のランタン (左肩の後ろに小さな真鍮)
+                Put(X(9), X(13), brassDark); Put(X(9), X(14), brass); Put(X(9), X(12), brassDark);
+                // 持ち物 (id から)
+                if (id.Contains("squire") || id.Contains("page")) { for (int y = X(9); y <= X(24); y++) Put(X(24), y, y > X(11) ? brass : brassDark); Put(X(23), X(11), brassDark); Put(X(25), X(11), brassDark); }
+                else if (id.Contains("shield")) { for (int y = X(6); y <= X(16); y++) for (int x = X(5); x <= X(11); x++) { float dx = x - X(8), dy = y - X(11); if (dx * dx / (9f * u * u) + dy * dy / (25f * u * u) <= 1f) Put(x, y, (Mathf.Abs(dx) > 2.2f * u || Mathf.Abs(dy) > 4f * u) ? brass : white); } }
+                else if (id.Contains("archer")) { for (int x = X(20); x <= X(27); x++) Put(x, X(12), brassDark); for (int y = X(9); y <= X(15); y++) Put(X(25), y, brass); }
+                else if (id.Contains("band")) { for (int y = X(12); y <= X(17); y++) for (int x = X(23); x <= X(27); x++) Put(x, y, y == X(12) ? brassDark : brass); Put(X(25), X(18), brassDark); }
+                else if (id.Contains("candle")) { for (int y = X(10); y <= X(18); y++) Put(X(24), y, white); Put(X(24), X(19), amber); Put(X(24), X(20), amber); Put(X(24), X(9), brass); }
+                else if (id.Contains("banneret")) { for (int y = X(4); y <= X(30); y++) Put(X(25), y, brassDark); for (int y = X(20); y <= X(29); y++) for (int x = X(26); x <= X(31); x++) Put(x, y, (x + y) % 3 == 0 ? whiteShade : white); }
+                else if (id.Contains("choir") || id.Contains("monk")) { for (int x = X(21); x <= X(26); x++) Put(x, X(13), brass); for (int x = X(22); x <= X(25); x++) { Put(x, X(14), amber); Put(x, X(12), brassDark); } }
+            }
+            else
+            {
+                // 四つ足の白鉄の犬: 胴は横長・頭は右 (敵の方)
+                for (int y = X(6); y <= X(14); y++) for (int x = X(6); x <= X(24); x++) Put(x, y, y < X(9) ? whiteShade : white);
+                for (int x = X(8); x <= X(22); x += X(4)) for (int y = X(1); y < X(6); y++) { Put(x, y, whiteDark); Put(x + 1, y, whiteDark); }
+                for (int y = X(10); y <= X(19); y++) for (int x = X(21); x <= X(29); x++) Put(x, y, white);
+                for (int y = X(12); y <= X(16); y++) for (int x = X(23); x <= X(28); x++) Put(x, y, hollow);
+                Put(X(25), X(14), amber); Put(X(27), X(14), amber);
+                for (int x = X(8); x <= X(22); x++) Put(x, X(10), brass);
+                Put(X(5), X(13), whiteShade); Put(X(4), X(14), whiteShade); Put(X(3), X(15), whiteDark);
+                Put(X(14), X(15), brassDark); Put(X(14), X(16), brass);
+            }
+            // 輪郭 (選択的アウトライン): 絵の外側に接する画素を墨に
+            var src = (Color[])px.Clone();
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    if (src[y * n + x].a > 0f) continue;
+                    bool near = (x > 0 && src[y * n + x - 1].a > 0f) || (x + 1 < n && src[y * n + x + 1].a > 0f) || (y > 0 && src[(y - 1) * n + x].a > 0f) || (y + 1 < n && src[(y + 1) * n + x].a > 0f);
+                    if (near) px[y * n + x] = ink;
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            var s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "doll:" + id;
             return s;
         }
 
@@ -746,6 +824,41 @@ namespace DeckRogue.Game
             return s;
         }
 
+        /// <summary>灯の筋 (2026-09-20 灯籠の放出): 斬撃の筋と同じ形で、縁が真鍮の紙・光が真鍮＝暖色の光線。差し替えは Art/fx/light_streak.png</summary>
+        public static Sprite LightStreak()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("light_streak", out s)) return s;
+            s = Theme.Art("fx", "light_streak");
+            if (s == null)
+            {
+                const int w = 96, h = 24;
+                var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[w * h];
+                var core = UiKit.Hex("#fff6d2"); var edge = UiKit.Hex("#ead08a"); var glow = new Color(0.79f, 0.6f, 0.23f, 0.45f);
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float t = (x + 0.5f) / w;
+                        float thick = 1f + 8.5f * Mathf.Pow(Mathf.Sin(t * Mathf.PI), 0.7f);
+                        float dy = Mathf.Abs(y + 0.5f - h / 2f);
+                        Color c;
+                        if (dy < thick * 0.35f) c = core;
+                        else if (dy < thick * 0.75f) c = edge;
+                        else if (dy < thick * 1.05f) c = glow;
+                        else continue;
+                        px[y * w + x] = c;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["light_streak"] = s;
+            return s;
+        }
+
         /// <summary>光の玉 (64×64。中心が白く縁へ薄れる円)。差し替えは Art/fx/glow.png</summary>
         public static Sprite Glow()
         {
@@ -1019,6 +1132,85 @@ namespace DeckRogue.Game
                 s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
             }
             _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>
+        /// 真鍮のランタン (2026-09-20 灯の表示・案B): 32×48 ドットの正面図＝吊り輪・笠・黒鉄の枠・硝子の窓 (x 7〜24・y 14〜35＝暗いまま。炎と数字は LightUi が上に描く)・台座。
+        /// 差し替えは Art/ui/lantern.png (同じ寸法・硝子は暗く空けておく)。lit=false は消灯の色 (黒鉄も真鍮も沈む)
+        /// </summary>
+        public static Sprite Lantern(bool lit)
+        {
+            string key = lit ? "lantern" : "lantern-dark";
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            s = Theme.Art("ui", lit ? "lantern" : "lantern_dark");
+            if (s == null && !lit) s = Theme.Art("ui", "lantern");   // 消灯の絵が無ければ点灯の絵を暗く (LightUi が色を落とす)
+            if (s == null)
+            {
+                const int W = 32, H = 48;
+                Color iron = lit ? UiKit.Hex("#2f2e35") : UiKit.Hex("#26252c"), ironHi = lit ? UiKit.Hex("#4e4c55") : UiKit.Hex("#3a393f");
+                Color brass = lit ? UiKit.Hex("#c99a3a") : UiKit.Hex("#8a6d33"), brassHi = lit ? UiKit.Hex("#ead08a") : UiKit.Hex("#a58a52"), brassLo = lit ? UiKit.Hex("#634410") : UiKit.Hex("#4a3410");
+                Color glass = UiKit.Hex("#20233a");
+                var tex = new Texture2D(W, H, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[W * H];
+                // 上が y=0 の設計図をそのまま書く (Texture2D は下が 0 なので反転)
+                void R(int x0, int y0, int w0, int h0, Color c)
+                {
+                    for (int y = y0; y < y0 + h0; y++) for (int x = x0; x < x0 + w0; x++)
+                        if (x >= 0 && x < W && y >= 0 && y < H) px[(H - 1 - y) * W + x] = c;
+                }
+                R(14, 0, 4, 1, brassLo); R(13, 1, 1, 3, brass); R(18, 1, 1, 3, brass); R(14, 3, 4, 1, brassHi);        // 吊り輪
+                int[] capX = { 13, 11, 9, 7, 6 }, capW = { 6, 10, 14, 18, 20 };
+                for (int i = 0; i < 5; i++) R(capX[i], 4 + i, capW[i], 1, i < 2 ? brassHi : brass);                    // 笠
+                R(6, 9, 20, 1, brassLo);
+                R(4, 10, 24, 2, brass); R(4, 10, 24, 1, brassHi);                                                       // 上の板
+                R(4, 12, 24, 26, iron); R(5, 12, 1, 26, ironHi); R(4, 12, 24, 1, ironHi);                              // 胴の枠
+                R(7, 14, 18, 22, glass);                                                                                // 硝子 (暗い)
+                R(15, 14, 2, 22, new Color(0.184f, 0.18f, 0.208f, 1f));                                                 // 桟
+                R(5, 13, 1, 1, brassHi); R(26, 13, 1, 1, brassHi); R(5, 36, 1, 1, brassHi); R(26, 36, 1, 1, brassHi);    // 鋲
+                R(4, 38, 24, 2, brass); R(4, 39, 24, 1, brassLo);                                                       // 下の板
+                R(13, 40, 6, 3, iron); R(13, 40, 1, 3, ironHi);                                                         // 台座
+                R(10, 43, 12, 2, brass); R(8, 45, 16, 2, brass); R(8, 45, 16, 1, brassHi); R(7, 47, 18, 1, brassLo);
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>炎 (12×16 ドット・真鍮の系: 白い芯 → 真鍮の紙 → 真鍮)。差し替えは Art/fx/flame.png。原点は根元の中央</summary>
+        public static Sprite Flame()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("flame", out s)) return s;
+            s = Theme.Art("fx", "flame");
+            if (s == null)
+            {
+                const int W = 12, H = 16;
+                var tex = new Texture2D(W, H, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[W * H];
+                Color core = UiKit.Hex("#fff6d2"), mid = UiKit.Hex("#ead08a"), edge = UiKit.Hex("#c99a3a");
+                for (int y = 0; y < H; y++)
+                    for (int x = 0; x < W; x++)
+                    {
+                        // 涙の形: 下が丸く上が尖る。t=0 根元・1 先端
+                        float t = (y + 0.5f) / H;
+                        float half = t < 0.35f ? Mathf.Lerp(3.2f, 5.6f, t / 0.35f) : Mathf.Lerp(5.6f, 0.6f, (t - 0.35f) / 0.65f);
+                        float dx = Mathf.Abs(x + 0.5f - W / 2f);
+                        if (dx > half) continue;
+                        float inner = dx / Mathf.Max(0.5f, half);
+                        Color c = t < 0.55f && inner < 0.45f ? core : (inner < 0.75f ? mid : edge);
+                        px[y * W + x] = c;
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache["flame"] = s;
             return s;
         }
 

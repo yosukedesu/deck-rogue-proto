@@ -170,6 +170,7 @@ namespace DeckRogue.Engine
                     WeakFreshThisPhase = 0,
                     CardsPlayedTotal = 0,
                     Aether = 0,
+                    Light = 0, // 灯 (白 2026-09-20) は戦闘内持続
                     HealsThisCombat = 0,
                     NextCardDiscount = 0,
                     ImpulseUids = new List<string>(),
@@ -408,8 +409,11 @@ namespace DeckRogue.Engine
                 var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent, IntentMoveId = null, IntentNode = null } : e);
                 return Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent });
             }
-            // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす
-            var jumped = EnemyGraph.ApplyInterruptsTo(s, i, enemy.Node, enemy.FiredInterrupts);
+            // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
+            // ギア「鎮めの錘」(InterruptBlocked) はこの経路でも止める (2026-09-20 Opus 火種C)。TS と同形
+            var jumped = enemy.InterruptBlocked == true
+                ? new EnemyGraph.InterruptResult(enemy.Node, enemy.FiredInterrupts ?? new List<int>(), new List<int>())
+                : EnemyGraph.ApplyInterruptsTo(s, i, enemy.Node, enemy.FiredInterrupts);
             // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する。
             // 優先度は 伏せ反応 > 従者反応。編成で無効化された個体は分岐を持たない
             var vsSet = (enemy.NoReactTable != true && def.MovesVsSet != null && def.MovesVsSet.Count > 0) ? def.MovesVsSet : null;
@@ -815,6 +819,9 @@ namespace DeckRogue.Engine
                 card.Def.XCost != true &&
                 card.FreeThisCombat != true;
             if (cost > state.Player.Energy) throw new InvalidOperationException($"エナジー不足: {card.Def.Name}");
+            // 灯コスト (白 2026-09-20 号令): エナジーと別に払う。足りなければプレイ不可 (割引の対象外)
+            int lightCost = card.Def.LightCost ?? 0;
+            if (lightCost > (state.Player.Light ?? 0)) throw new InvalidOperationException($"灯が足りない: {card.Def.Name} (灯{lightCost}が要る)");
             // Xコスト: 払う量は 1〜現在のエナジーから選ぶ (省略=全部)
             int xCap = state.Player.Energy;
             if (card.Def.XCost == true && xAmount != null)
@@ -1100,6 +1107,7 @@ namespace DeckRogue.Engine
                 Player = state.Player with
                 {
                     Energy = state.Player.Energy - (card.Def.XCost == true ? paidX : cost),
+                    Light = (state.Player.Light ?? 0) - lightCost, // 灯コスト (白 2026-09-20 号令)
                     NextCardDiscount = consumesDiscount ? 0 : state.Player.NextCardDiscount,
                     Hand = state.Player.Hand.Where(c => !removed.Contains(c.Uid)).ToList(),
                     // プレイ中のカードはまだ捨て札に置かない (limbo)。火傷は捨て札に入らない
@@ -1114,6 +1122,8 @@ namespace DeckRogue.Engine
                 s = Events.Emit(s, new GameEvent_CardsDiscarded { CardIds = discardedCards.Select(c => c.Def.Id).ToList() });
             }
             s = Events.Emit(s, new GameEvent_CardPlayed { CardId = card.Def.Id });
+            // 灯コストの支払いをログに残す (2026-09-20 夜。TS と同形)
+            if (lightCost > 0) s = Events.Emit(s, new GameEvent_LightSpent { Amount = lightCost, CardId = card.Def.Id });
             if (redirectedFrom != null)
             {
                 // 庇う: 発生を必ずログに残す
@@ -1121,17 +1131,15 @@ namespace DeckRogue.Engine
             }
             if (isPermanent)
             {
-                s = s with { LastEnteredPermanentUid = card.Uid }; // 駆けつけ (ひなた) が「誰が出たか」を読む
-                s = Events.Emit(s, new GameEvent_PermanentPlayed { CardId = card.Def.Id });
-                // 置物登場の誘発 (白の接着剤)。自身の登場にも誘発する
-                s = Effects.RunPermanentTriggers(s, "onPermanentEntered", enemyIndex);
+                // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
+                s = Effects.EnterPermanent(s, card.Uid, enemyIndex);
             }
             if (sacrificed != null)
             {
                 // 殉教: 選んだ従者を場から除く。置物が出た直後・効果解決の前に行う
                 var gone = sacrificed;
                 s = s with { Player = s.Player with { Permanents = s.Player.Permanents.Where(p => p.Uid != gone.Uid).ToList() } };
-                s = Events.Emit(s, new GameEvent_RetainerSacrificed { CardId = gone.Def.Id });
+                s = Events.Emit(s, new GameEvent_RetainerSacrificed { CardId = gone.Def.Id, Uid = gone.Uid });
             }
             // 消滅コストの支払い: 支払い専用誘発 → 消滅誘発 の順で1枚ごとに発火
             foreach (var paid in exhaustedCards)
@@ -1168,7 +1176,8 @@ namespace DeckRogue.Engine
                 s = s with { Player = s.Player with { Hand = s.Player.Hand.Select(c => set.Contains(c.Uid) ? Upgrade.UpgradeCard(c) : c).ToList() } };
                 foreach (var c in s.Player.Hand.Where(c => set.Contains(c.Uid)).ToList()) s = Events.Emit(s, new GameEvent_CardUpgradedInHand { CardId = c.Def.Id });
             }
-            if (card.Def.Effects.Any(e => e.Effect == "upgradeAllInHand" && e.Trigger == "onPlay"))
+            // 灯の鍛冶 (白 2026-09-20 夜): 条件 (灯4以上) は解決時に判定。TS と同形
+            if (card.Def.Effects.Any(e => e.Effect == "upgradeAllInHand" && e.Trigger == "onPlay" && Effects.BlazeConditionMet(s, e, enemyIndex)))
             {
                 // 研ぎ澄まし (2026-09-07 本家 Armaments+): 自身以外の鍛えられる手札を全部、この戦闘中鍛える (選択なし)
                 var all = new HashSet<string>(s.Player.Hand.Where(c => c.Uid != card.Uid && Upgrade.CanUpgradeInHand(c)).Select(c => c.Uid));
@@ -1253,6 +1262,12 @@ namespace DeckRogue.Engine
             {
                 s = s with { Player = s.Player with { RandomPlayedThisCombat = s.Player.RandomPlayedThisCombat + 1 } };
                 s = Effects.RunPermanentTriggers(s, "onRandomPlayed", enemyIndex);
+            }
+            // 火種 (白 2026-09-20 夜): 撃った枚数を数え、「火種を撃つたび」を鳴らす。TS と同形
+            if (card.Def.SparkToken == true)
+            {
+                s = s with { Player = s.Player with { SparksPlayedThisCombat = (s.Player.SparksPlayedThisCombat ?? 0) + 1 } };
+                s = Effects.RunPermanentTriggers(s, "onSparkPlayed", enemyIndex);
             }
             // 詠唱数は効果解決の後に加算する = そのカード自身は数えない
             s = s with
@@ -1343,10 +1358,8 @@ namespace DeckRogue.Engine
                                 ExhaustPile = s.Player.ExhaustPile.Where(c => c.Uid != retrieveUid).ToList(),
                                 Permanents = Append(s.Player.Permanents, chosen),
                             },
-                            LastEnteredPermanentUid = chosen.Uid,
                         };
-                        s = Events.Emit(s, new GameEvent_PermanentPlayed { CardId = chosen.Def.Id });
-                        s = Effects.RunPermanentTriggers(s, "onPermanentEntered", enemyIndex);
+                        s = Effects.EnterPermanent(s, chosen.Uid, enemyIndex); // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
                     }
                     s = Events.Emit(s, new GameEvent_CardPlayed { CardId = chosen.Def.Id });
                     s = Effects.ResolveOnPlayEffects(s, chosen, enemyIndex);
@@ -1441,14 +1454,17 @@ namespace DeckRogue.Engine
         // ==== ターン終了と敵フェーズ ====
 
         /// <summary>EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する</summary>
-        public static GameState EndTurn(GameState state)
+        public static GameState EndTurn(GameState state, int? hearthSparks = null)
         {
             if (state.Phase != CombatPhases.PlayerTurn) throw new InvalidOperationException("自ターン以外はターン終了できない");
-            // 敵フェーズ中の旗 (2026-09-14): 割り込みの即時差し替え・出現した敵の宣言・潜伏の差し替えは自ターン中だけ
-            var s = Events.Emit(state with { EnemyPhase = true }, new GameEvent_TurnEnded { Turn = state.Turn, Unplayed = state.Player.Hand.Select(c => c.Def.Name).ToList() });
+            if (hearthSparks != null && hearthSparks.Value < 0) throw new InvalidOperationException($"hearthSparks は 0 以上の整数 (hearthSparks={hearthSparks})");
+            // 敵フェーズ中の旗 (2026-09-14): 割り込みの即時差し替え・出現した敵の宣言・潜伏の差し替えは自ターン中だけ。
+            // 灯の火床 (2026-09-20 夜): この EndTurn で灯を火種に変える枚数。onTurnEnd の間だけ立てて消す。TS と同形
+            var s = Events.Emit(state with { EnemyPhase = true, HearthSparks = hearthSparks ?? 0 }, new GameEvent_TurnEnded { Turn = state.Turn, Unplayed = state.Player.Hand.Select(c => c.Def.Name).ToList() });
             // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
             // 勢いのリセット・弱体の減衰より前 = このターンの盤面を読む
             s = Effects.RunPermanentTriggers(s, "onTurnEnd", FirstAliveOrZero(s));
+            s = s with { HearthSparks = null };
             s = CheckCombatEnd(s); // 石の暦 (7ターン目の終了時に全体52) で全滅しうる
             if (IsOver(s)) return s;
             // 勢いは自ターン終了時にリセット。弱体・虚弱もここで1減る。
@@ -2116,7 +2132,7 @@ namespace DeckRogue.Engine
                         Rng = rng,
                         Player = state.Player with { Permanents = state.Player.Permanents.Where(p => p.Uid != target.Uid).ToList() },
                     };
-                    s = Events.Emit(s, new GameEvent_TokenDestroyed { CardId = target.Def.Id });
+                    s = Events.Emit(s, new GameEvent_TokenDestroyed { CardId = target.Def.Id, Uid = target.Uid });
                     return markResolved(s, 0);
                 }
                 case EnemyActionKinds.DestroySet:

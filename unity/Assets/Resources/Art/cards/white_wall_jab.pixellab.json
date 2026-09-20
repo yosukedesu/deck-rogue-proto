@@ -1,0 +1,30 @@
+{
+ "id": "white_wall_jab",
+ "engine": "pixflux",
+ "request": {
+  "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, simple soft dark indigo-gray background with a subtle vignette, painterly detailed shading, muted palette with warm amber lantern light as the one accent color, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no landscape, no sky, a translucent pane of warm amber light standing upright like a wall, a single sharp spike of solid light thrusting out of it toward the right, cracks of light around the base of the spike, motion",
+  "negative_description": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, landscape, scenery, path, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow",
+  "image_size": {
+   "width": 80,
+   "height": 48
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 37
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-18T16:24:34.382Z",
+ "judge": {
+  "pick": "B",
+  "seed": 37,
+  "at": "2026-09-19",
+  "note": "第1稿の B を採用 (第2稿はアーチの光で他と同じ絵)"
+ }
+}

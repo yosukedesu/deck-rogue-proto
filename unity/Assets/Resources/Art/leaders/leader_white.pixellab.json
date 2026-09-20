@@ -1,0 +1,13 @@
+{
+ "id": "leader_white",
+ "engine": "pixellab web create-from-reference (mannequin, 112x64, 8 directions, low top-down)",
+ "source": "docs/pixellab/hinata-v2/rotations/leader_white_south.png",
+ "direction": "south",
+ "note": "2026-09-19 ユーザー「向きは south を使うべき」: アニメ3本 (idle/attack/block) が south で出ているので一枚絵とアイコンも south に揃えた (旧 south-east は横顔でフードに顔が隠れていた)。ランタンの竿は右 (敵の方) へ伸びる。アイコンは (40,6)-(72,38)",
+ "icon_crop": [
+  40,
+  6,
+  72,
+  38
+ ]
+}

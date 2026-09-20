@@ -59,6 +59,8 @@ namespace DeckRogue.Game
             }
             else if (g.ModeChoiceUid != null) BuildModeChooser(g, ui, st);
             else if (g.GearPending != null) GearUi.BuildPending(g, ui, run, st);   // ギア (2026-09-17): 窓／札を選ぶ／対象の帯
+            else if (g.GearMore) GearUi.BuildMore(g, ui, run, st);   // ギアの「+N」= 持ち物の一覧 (2026-09-18)
+            else if (g.HearthChoice) BuildHearthChooser(g, ui, st);   // 灯の火床: 火種にする枚数 (2026-09-20 夜)
         }
 
         // ---- 背景 ----
@@ -357,7 +359,7 @@ namespace DeckRogue.Game
                 if (e.Exposed > 0) chips.Add(new KeyValuePair<string, string>("exposed", "急所" + e.Exposed));
                 if (e.Confusion > 0) chips.Add(new KeyValuePair<string, string>("exposed", "混乱" + e.Confusion));
                 if ((e.Weak ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("shield", "威圧" + e.Weak.Value));
-                if ((e.Artifact ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("set", "AF" + e.Artifact.Value));
+                if ((e.Artifact ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("set", "アーティファクト" + e.Artifact.Value));   // 旧「AF1」は略語で読めなかった (2026-09-20)
                 if (e.BurrowActive == true) chips.Add(new KeyValuePair<string, string>("shield", "潜伏"));
                 for (int i = 0; i < chips.Count; i++)
                 {
@@ -846,7 +848,7 @@ namespace DeckRogue.Game
         static string IntentDetail(GameState st, int index, EnemyIntent it)
         {
             string full = CardText.IntentText(st, index);
-            string[] marks = { "【", "※", "からくり", "従者", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ
+            string[] marks = { "【", "※", "からくり", "人形", "従者", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ
             for (int i = 0; i < marks.Length; i++) if (full.Contains(marks[i])) return full;
             return "";
         }
@@ -915,6 +917,122 @@ namespace DeckRogue.Game
         // ---- リーダー・伏せ場・置物 ----
 
         /// <summary>リーダー欄の中身 (入れ物 area は BattleView が持ち越す)</summary>
+        // ---- 人形 (白の従者) の舞台の入れ物 (2026-09-19 人形の盤面表示・案A「灯りの列」) ----
+
+        /// <summary>輝き増し・灯り増しの合計 (従者の量つき効果に乗る。Effects.RunPermanentTriggers と同じ式)</summary>
+        public static int RetainerBless(GameState st)
+        {
+            int n = 0;
+            foreach (var p in st.Player.Permanents) foreach (var e in p.Def.Effects) if (e.Effect == "blessRetainers") n += e.Amount ?? 0;
+            return n;
+        }
+
+        /// <summary>足元の札の中身: 最初の量つき効果の絵と数字 (「何が出るか」だけ。いつ出るかはタップの説明)。boosted=輝き増しが乗っている</summary>
+        public static bool DollTag(GameState st, CardInstance d, out string icon, out string text, out bool boosted)
+        {
+            icon = "crest_permanent"; text = ""; boosted = false;
+            int bless = RetainerBless(st);
+            foreach (var e in d.Def.Effects)
+            {
+                if (e.Amount == null) continue;
+                switch (e.Effect)
+                {
+                    case "dealDamage": case "dealDamageCleave": case "dealDamageRandom": icon = "sword"; break;
+                    case "dealDamagePerLight":
+                    {
+                        // 灯篭の人形 (2026-09-20 灯と人形の結び): 灯2につきN。いまの灯で読んだ実値 (Effects.cs と同じ式)。灯が足りなければ 0
+                        icon = "sword";
+                        int lit = (int)System.Math.Floor((st.Player.Light ?? 0) / 2.0) * e.Amount.Value;
+                        int litAmount = lit > 0 ? lit + bless : 0;
+                        boosted = lit > 0 && bless > 0;
+                        text = litAmount + (e.Target == "all" ? "全" : "");
+                        return true;
+                    }
+                    case "gainBlock": case "gainIceBlock": icon = "shield"; break;
+                    case "gainHp": icon = "heart"; break;
+                    case "drawCards": icon = "draw"; break;
+                    case "exposeEnemy": icon = "exposed"; break;
+                    case "weakenEnemy": icon = "exposed"; break;
+                    default: icon = "crest_permanent"; break;
+                }
+                int amount = e.Amount.Value + bless;
+                boosted = bless > 0;
+                text = amount + (e.Target == "all" ? "全" : "");
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>人形の入れ物の中身: 絵 (舞台のビルボード) と足元の札。overflow=上限を超えて立てなかった数 (最後の人形の札に「+N」)</summary>
+        public static void FillDollPanel(GameRoot g, RectTransform pan, GameState st, CardInstance d, int overflow)
+        {
+            string key = "doll:" + d.Uid;
+            var art = Creature.Get("dolls", d.Def.Id, true, 32);
+            float artTarget = 32f * 4f * ArtScale;   // 32 ドット×4px (スマホは 0.6) = ひなたの半分の背丈
+            float feetY = Stage.FeetOffset(key, 130f);
+            var spr = UiKit.NewRect("sprite", pan);
+            PaperFx.FitPixel(spr, art, 0f, feetY, artTarget);
+            var img = spr.gameObject.AddComponent<Image>();
+            img.sprite = art; img.preserveAspect = true; img.raycastTarget = false; img.color = Color.white;
+            Stage.BindUnit(key, spr, img, art);
+            bool ph = UiKit.Phone;
+            // 「人形を1体選ぶ」札の候補・選択中は足元に輪 (敵の対象と同じ作法)
+            bool choosing = g.Pending != null && g.Pending.NextNeed() == "permanent";
+            bool chosen = g.Pending != null && g.Pending.PermanentUid == d.Uid;
+            if (choosing || chosen)
+            {
+                var ring = UiKit.NewRect("ring", pan);
+                float rw = ph ? 40f : 64f;
+                UiKit.Anchor(ring, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-rw, feetY - (ph ? 8f : 12f)), new Vector2(rw, feetY + (ph ? 8f : 12f)));
+                var rImg = ring.gameObject.AddComponent<Image>();
+                rImg.sprite = PaperFx.Ring(chosen ? 6 : 5); rImg.color = chosen ? PaperFx.BrassLight : new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.6f); rImg.raycastTarget = false; rImg.preserveAspect = false;
+            }
+            FillDollTag(pan, st, d, overflow);
+        }
+
+        /// <summary>足元の札 (紙(濃)): 絵＋数字。輝き増しが乗っていれば真鍮の数字。上限を超えた分 (overflow) は「+N」</summary>
+        public static void FillDollTag(RectTransform pan, GameState st, CardInstance d, int overflow)
+        {
+            string key = "doll:" + d.Uid;
+            float feetY = Stage.FeetOffset(key, 130f);
+            bool ph = UiKit.Phone;
+            string icon, text; bool boosted;
+            bool has = DollTag(st, d, out icon, out text, out boosted);
+            if (overflow > 0) text = (has ? text + " " : "") + "+" + overflow;
+            if (!has && overflow <= 0) return;
+            float tw = (ph ? 38f : 48f) + (overflow > 0 ? (ph ? 22f : 28f) : 0f) + (text.Length > 2 ? (ph ? 8f : 10f) : 0f), th = ph ? 18f : 24f;
+            var tag = UiKit.NewRect("tag", pan);
+            UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, feetY - th - 2f), new Vector2(tw / 2f, feetY - 2f));
+            var tImg = tag.gameObject.AddComponent<Image>();
+            tImg.sprite = PaperFx.Tag2; tImg.type = Image.Type.Sliced; tImg.pixelsPerUnitMultiplier = 1f; tImg.color = Color.white; tImg.raycastTarget = false;
+            var hg = UiKit.Horz(tag, 1, 2);
+            hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            float isz = ph ? 12f : 16f;
+            var ic = UiKit.Icon(tag, icon, isz);
+            UiKit.Le(ic, isz, isz, isz, isz);
+            var numColor = boosted ? PaperFx.BrassInk : icon == "shield" ? PaperFx.SkyInk : icon == "heart" ? UiKit.Hex("#276a34") : PaperFx.Ink;
+            var t = UiKit.Deco(tag, text, ph ? 12 : 15, numColor, TextAnchor.MiddleCenter);
+            t.textWrappingMode = TextWrappingModes.NoWrap;
+            UiKit.Le(t, 10f, th - 4f, -1f, th - 4f);
+        }
+
+        /// <summary>人形の説明 (タップ／ホバー): 名前・本文・いまの値 (輝き増し込み)・壊れる条件</summary>
+        public static string DollTip(GameRoot g, string uid)
+        {
+            var cur = g.Rs != null ? g.Rs.Combat : null;
+            if (cur == null) return null;
+            CardInstance d = null;
+            foreach (var p in cur.Player.Permanents) if (p.Uid == uid) { d = p; break; }
+            if (d == null) return null;
+            var sb = new System.Text.StringBuilder();
+            sb.Append("<b>").Append(d.Def.Name).Append("</b>  <size=80%>人形 (置物)</size>\n").Append(CardText.Body(d.Def));
+            int bless = RetainerBless(cur);
+            if (bless > 0) sb.Append("\n<color=#634410>輝き増しで +").Append(bless).Append("</color>");
+            sb.Append("\n<color=#4e4c55>敵の「人形壊し」で壊れる。灯の捧げの対価に選べる</color>");
+            if (g.Pending != null && g.Pending.NextNeed() == "permanent") sb.Append("\n<b>押すとこの人形を選ぶ</b>");
+            return sb.ToString();
+        }
+
         public static void FillPlayerPanel(GameRoot g, RectTransform area, GameState st, int shownHp)
         {
             var p = st.Player;
@@ -992,8 +1110,24 @@ namespace DeckRogue.Game
             var p = st.Player;
             float ax = area.offsetMin.x;   // area の左端 (キャンバス x)。札はキャンバス x=40 から
             var gearList = DeckRogue.Engine.Run.GearsOf(g.Rs);
-            // C: ギア (2026-09-17 案A「匣の帯」): 62×62 のトークンを実際の個数ぶんだけ (空きは詰める。0 個でも見出しの幅は残す)
-            float secA = 300f, secB = p.SetSlots * (PhoneTokenW + 10f) + 24f, secG = Math.Max(1, gearList.Count) * (GearUi.TokenW + 8f) + 24f, secC = 236f;
+            float secA = 300f, secB = p.SetSlots * (PhoneTokenW + 10f) + 24f, secC = 236f;
+            // C: ギア (2026-09-17 案A「匣の帯」): トークンを実際の個数ぶんだけ (空きは詰める。0 個でも見出しの幅は残す)。
+            // 札はいちばん左の敵の帳面より左で止める (2026-09-18 ユーザー「ギアが集まると枠が左の敵のステータス表示と重なり何も見えない」):
+            // 62 の1段で収まるならそのまま、収まらなければ 48 の2段 (10個で 5列)、それでも溢れれば最後の枡を「+N」(押すと一覧から選べる) に
+            float zoneRight = BattleView.SelfZoneRight > 0f ? BattleView.SelfZoneRight - 8f : CanvasSize(area).x - 420f;
+            float budget = zoneRight - 40f - (secA + secB + secC);   // C 区画に使える幅 (左右の余白 24 込み)
+            int gearN = gearList.Count;
+            float tokW = GearUi.TokenW, pitch = GearUi.TokenW + 8f; int gearCols = 1, gearRows = 1, gearShown = gearN;
+            if (gearN > 0 && gearN * pitch + 16f > budget)
+            {
+                tokW = 48f; pitch = 56f; gearRows = 2;
+                int fitCols = Math.Max(1, (int)((budget - 16f + 8f) / pitch));
+                gearCols = Math.Min(fitCols, (gearN + 1) / 2);
+                int cells = gearCols * 2;
+                gearShown = gearN <= cells ? gearN : cells - 1;
+            }
+            else gearCols = Math.Max(1, gearN);
+            float secG = gearCols * pitch + 16f;
             float w = secA + secB + secG + secC, h = StripH;
             var strip = UiKit.NewRect("hpwrap", area);
             UiKit.Anchor(strip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(40f - ax, 0f), new Vector2(40f - ax + w, h));
@@ -1014,7 +1148,7 @@ namespace DeckRogue.Game
             }
             var inc = IncomingLine(strip, st, 14);
             UiKit.Anchor(inc.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -62f), new Vector2(secA - 8f, -40f));
-            var res = ResourceChips(p);
+            var res = ResourceChips(p, st);
             if (res.Count > 0)
             {   // 資源・状態の札 (1行に3つ。4つ目からは2行目)
                 for (int r = 0; r < 2; r++)
@@ -1060,10 +1194,21 @@ namespace DeckRogue.Game
             UiKit.Anchor(gearLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -30f), new Vector2(0f, -10f));
             gearLabel.textWrappingMode = TextWrappingModes.NoWrap;
             bool canUseGear = st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
-            for (int i = 0; i < gearList.Count; i++)
+            float rowPitch = gearRows > 1 ? tokW + 8f : 0f;   // 2段は 34+48+8+48 = 138 ≤ StripH 140
+            for (int i = 0; i < gearShown; i++)
             {
-                var tok = GearUi.Token(g, gearArea, g.Rs, st, i, gearList[i], GearUi.TokenW, GearUi.TokenH, false, canUseGear);
-                UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(i * (GearUi.TokenW + 8f), -34f - GearUi.TokenH), new Vector2(i * (GearUi.TokenW + 8f) + GearUi.TokenW, -34f));
+                var tok = GearUi.Token(g, gearArea, g.Rs, st, i, gearList[i], tokW, tokW, false, canUseGear);
+                int cx = i % gearCols, cy = i / gearCols;
+                UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(cx * pitch, -34f - cy * rowPitch - tokW), new Vector2(cx * pitch + tokW, -34f - cy * rowPitch));
+            }
+            if (gearShown < gearN)
+            {   // 溢れた分は最後の枡に「+N」(押すと持ち物の一覧。窓を開いている札が隠れていれば真鍮の縁)
+                var rest = new List<GearInstance>();
+                for (int i = gearShown; i < gearN; i++) rest.Add(gearList[i]);
+                bool openHidden = g.GearPending != null && g.GearPending.Index >= gearShown;
+                var chip = GearUi.MoreChip(g, gearArea, rest, tokW, tokW, openHidden);
+                int cx = gearShown % gearCols, cy = gearShown / gearCols;
+                UiKit.Anchor(chip, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(cx * pitch, -34f - cy * rowPitch - tokW), new Vector2(cx * pitch + tokW, -34f - cy * rowPitch));
             }
             if (gearList.Count == 0)
             {   // 空の匣: 点線のポケット (まだ持っていない)
@@ -1118,12 +1263,16 @@ namespace DeckRogue.Game
         }
 
         /// <summary>資源・状態の札の一覧 (アイコン名, 文言)</summary>
-        static List<KeyValuePair<string, string>> ResourceChips(PlayerState p)
+        static List<KeyValuePair<string, string>> ResourceChips(PlayerState p, GameState st = null)
         {
             var res = new List<KeyValuePair<string, string>>();
+            // 天鵞絨の首輪 (2026-09-18 Opus 白C): 残り枚数を事前に出す (7枚目で初めてエラー、は読めない)
+            if (st != null && st.PlayCap != null) res.Add(new KeyValuePair<string, string>("set", "首輪 あと" + Math.Max(0, st.PlayCap.Value - (p.PlaysThisTurn ?? 0)) + "枚"));
             if (p.Growth > 0) res.Add(new KeyValuePair<string, string>("growth", "成長 " + p.Growth));
             if (p.Momentum > 0) res.Add(new KeyValuePair<string, string>("momentum", "勢い " + p.Momentum));
             if (p.Aether > 0) res.Add(new KeyValuePair<string, string>("energy", "霊気 " + p.Aether));
+            // 灯は資源の札に出さない (2026-09-20 灯の表示: エナジーの輪の隣の灯籠 LightUi が担う。同じ物を2か所に描かない)
+            if ((p.SparksPlayedThisCombat ?? 0) > 0) res.Add(new KeyValuePair<string, string>("draw", "火種 " + p.SparksPlayedThisCombat.Value + "枚")); // 撃った火種 (2026-09-20 夜。火種の嵐の参照値)
             if (p.NextCardDiscount > 0) res.Add(new KeyValuePair<string, string>("energy", "次のカード -" + p.NextCardDiscount));
             if (p.SpellEchoes > 0) res.Add(new KeyValuePair<string, string>("draw", "反復 " + p.SpellEchoes));
             // 状態異常は「名前 残りNT」で、数字がターンだと一目で読めるように (2026-09-09「デバフ表示が分かりにくすぎる」)
@@ -1174,15 +1323,22 @@ namespace DeckRogue.Game
                 }
             }
 
-            // 同じ帯のからくりの右: ギア (2026-09-17 案A「匣の帯」) = 64×66 のトークンを最大 6 (幅 1300 未満は 4)。溢れは「+N」(タップで一覧)
+            // 同じ帯のからくりの右: ギア (2026-09-17 案A「匣の帯」) = 64×66 のトークン。溢れは「+N」(押すと持ち物の一覧から選べる)。
+            // 帯はいちばん左の敵の意図の札より左で止める (2026-09-18 ユーザー「ギアが集まると枠が左の敵のステータス表示と重なり何も見えない」):
+            // 置物に最低1列を残した幅にトークンが収まるだけ並べ、収まらなければ最後を「+N」に。旧・固定の上限 6 (幅 1300 未満は 4) は敵の位置を見ていなかった
             var gearList = DeckRogue.Engine.Run.GearsOf(g.Rs);
+            var perms = new List<CardInstance>();
+            for (int i = 0; i < p.Permanents.Count; i++) if (p.Permanents[i].Innate != true) perms.Add(p.Permanents[i]);
+            float zoneRight = BattleView.SelfZoneRight > 0f ? BattleView.SelfZoneRight - 8f : cs.x - 300f;
             float gearW = 0f;
             if (gearList.Count > 0)
             {
-                int gearMax = cs.x >= 1300f ? 6 : 4;
-                int gearShown = gearList.Count <= gearMax ? gearList.Count : gearMax - 1;
+                float gearPitch = GearUi.PhoneTokenW + 8f, chipW = 44f;
+                float avail = zoneRight - (left + setW + 14f) - (perms.Count > 0 ? PhoneChipW + 8f + 14f : 0f);
+                int fitAll = (int)((avail + 8f) / gearPitch);
+                int gearShown = gearList.Count <= fitAll ? gearList.Count : Math.Max(1, (int)((avail - chipW - 8f + 8f) / gearPitch));
                 bool more = gearShown < gearList.Count;
-                gearW = gearShown * (GearUi.PhoneTokenW + 8f) + (more ? 44f + 8f : 0f);
+                gearW = gearShown * gearPitch + (more ? chipW + 8f : 0f);
                 var gearArea = UiKit.NewRect("gearzone", area);
                 place(gearArea, left + setW + 14f, bandTop, gearW, 22f + GearUi.PhoneTokenH);
                 g.RegisterAnchor("gearzone", gearArea);
@@ -1199,19 +1355,19 @@ namespace DeckRogue.Game
                 {
                     var rest = new List<GearInstance>();
                     for (int i = gearShown; i < gearList.Count; i++) rest.Add(gearList[i]);
-                    var chip = GearUi.MoreChip(gearArea, rest, 44f, GearUi.PhoneTokenH);
-                    UiKit.Anchor(chip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(gearShown * (GearUi.PhoneTokenW + 8f), 0f), new Vector2(gearShown * (GearUi.PhoneTokenW + 8f) + 44f, GearUi.PhoneTokenH));
+                    bool openHidden = g.GearPending != null && g.GearPending.Index >= gearShown;
+                    var chip = GearUi.MoreChip(g, gearArea, rest, chipW, GearUi.PhoneTokenH, openHidden);
+                    UiKit.Anchor(chip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(gearShown * gearPitch, 0f), new Vector2(gearShown * gearPitch + chipW, GearUi.PhoneTokenH));
                 }
                 gearW += 14f;
             }
-            // その右: 置物 = 付箋 (挿絵 + 名前) を2列×2行 (狭いキャンバスは1列)。超えたら「+N …」。リーダーの頭 (y≈200) より上なので絵と重ならない
-            var perms = new List<CardInstance>();
-            for (int i = 0; i < p.Permanents.Count; i++) if (p.Permanents[i].Innate != true) perms.Add(p.Permanents[i]);
+            // その右: 置物 = 付箋 (挿絵 + 名前) を2列×2行 (狭いキャンバスと、2列が敵の表示に掛かる時は1列)。超えたら「+N …」。リーダーの頭 (y≈200) より上なので絵と重ならない
             if (perms.Count > 0)
             {
-                int cols = cs.x >= 1400f ? 2 : 1;
+                float permX = left + setW + 14f + gearW;
+                int cols = cs.x >= 1400f && permX + 2f * (PhoneChipW + 8f) - 8f <= zoneRight ? 2 : 1;
                 var permRow = UiKit.NewRect("perms", area);
-                place(permRow, left + setW + 14f + gearW, bandTop, cols * (PhoneChipW + 8f), 22f + 2f * (PhoneChipH + 6f));
+                place(permRow, permX, bandTop, cols * (PhoneChipW + 8f), 22f + 2f * (PhoneChipH + 6f));
                 var permLabel = PaperFx.NightNote(permRow, "置物 " + perms.Count, 14, 120f);
                 permLabel.anchorMin = permLabel.anchorMax = new Vector2(0f, 1f); permLabel.pivot = new Vector2(0f, 1f);
                 permLabel.anchoredPosition = new Vector2(-4f, 2f);
@@ -1219,7 +1375,7 @@ namespace DeckRogue.Game
             }
 
             // 自分の札 (下端は帳面の線): HP＋ブロック／被ダメ予測 (2行)／資源 (1行に2つ・3つ目からは2行目)
-            var res = ResourceChips(p);
+            var res = ResourceChips(p, st);
             int resRows = res.Count > 2 ? 2 : (res.Count > 0 ? 1 : 0);
             float stripW = 224f, stripH = 70f + resRows * 30f;
             float stripTop = cs.y - ay - stripH;
@@ -1336,9 +1492,10 @@ namespace DeckRogue.Game
             var fx = g.FxLayer;
             if (st == null || st.Phase != CombatPhases.PlayerTurn || g.Pending != null || hc.Rt == null) return;
             int cost = c.Def.Cost; try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
-            string why = null; bool energy = false;
+            string why = null; bool energy = false, light = false;
             if (!Effects.IsPlayableFromHand(c)) why = "仕込む札 (プレイできない)";
             else if (cost > st.Player.Energy) { why = "エナジー不足"; energy = true; }
+            else if ((c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) { why = "灯が足りない (あと" + (c.Def.LightCost.Value - (st.Player.Light ?? 0)) + ")"; light = true; } // 号令 (白 2026-09-20)
             else if (!Effects.RetainerRequirementMet(st, c)) why = "場に従者がいない";
             else why = "いまは出せない";
             Tween.Shake(hc.Rt, 7f, 0.25f);
@@ -1354,6 +1511,7 @@ namespace DeckRogue.Game
                     if (oi != null) Tween.Flash(oi, PaperFx.Rose, 0.4f);
                 }
             }
+            if (light) LightUi.Insufficient();   // 灯籠も首を振って硝子が朱に光る (エナジー不足の輪と対。2026-09-20)
         }
 
         /// <summary>カードの吹き出し: 本文は見えているので用語解説だけ (無ければ出さない)</summary>
@@ -1383,6 +1541,7 @@ namespace DeckRogue.Game
                 rt.SetAsLastSibling();
                 rt.localRotation = Quaternion.identity;
                 rt.localScale = Vector3.one * 0.8f;
+                try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に「−2 → 4」などの予告 (2026-09-20)
             });
             et.triggers.Add(beginDrag);
             var drag = new EventTrigger.Entry { eventID = EventTriggerType.Drag };
@@ -1406,6 +1565,7 @@ namespace DeckRogue.Game
             {
                 if (!_dragging) return;
                 _dragging = false;
+                LightUi.HidePreview();
                 var pd = d as PointerEventData;
                 int enemyIdx = pd != null ? EnemyUnderPointer(pd) : -1;
                 bool overField = pd != null && pd.position.y > Screen.height * 0.36f;
@@ -1436,12 +1596,14 @@ namespace DeckRogue.Game
                 Tween.Scale(rt, Vector3.one * 1.18f, 0.12f, Ease.OutQuad);
                 Tween.Move(rt, hc.BasePos + new Vector2(0f, 70f), 0.12f, Ease.OutQuad);
                 rt.localRotation = Quaternion.identity;
+                try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に予告 (PC のホバー。2026-09-20)
             });
             et.triggers.Add(enter);
             var exit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
             exit.callback.AddListener(delegate
             {
                 if (_dragging) return;
+                LightUi.HidePreview();
                 Tween.Scale(rt, Vector3.one * CardScale, 0.12f, Ease.OutQuad);
                 Tween.Move(rt, hc.BasePos, 0.12f, Ease.OutQuad);
                 rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
@@ -1613,7 +1775,12 @@ namespace DeckRogue.Game
         static void BuildEndTurn(GameRoot g, RectTransform root, GameState st)
         {
             bool myTurn = st.Phase == CombatPhases.PlayerTurn && g.Pending == null;
-            var b = UiKit.Btn(root, "ターン終了", delegate { g.DoCombat(new Command_EndTurn()); }, 21, myTurn, myTurn ? PaperFx.BrassLight : Color.white);
+            // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): 火床が場にあり灯3以上なら、ターン終了の前に何枚火種にするかの窓を挟む
+            var b = UiKit.Btn(root, "ターン終了", delegate
+            {
+                if (g.Rs != null && g.Rs.Combat != null && Effects.HearthSparkMax(g.Rs.Combat) > 0) { g.HearthChoice = true; g.Rebuild(); }
+                else g.DoCombat(new Command_EndTurn());
+            }, 21, myTurn, myTurn ? PaperFx.BrassLight : Color.white);
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             var brt = b.GetComponent<RectTransform>();
@@ -1625,9 +1792,14 @@ namespace DeckRogue.Game
             hint.anchorMin = hint.anchorMax = new Vector2(1f, 0f); hint.pivot = new Vector2(1f, 0f);
             hint.anchoredPosition = new Vector2(-40f, 216f);
 
+            // 灯の器 (2026-09-20 灯の表示・案B「真鍮のランタン」): 白の色を持つリーダーは常に、他は灯1以上で。
+            // スマホは手札が 251px から始まり輪の右に 27px しか無いので、灯籠を出す時だけ輪を左 (16〜144) へ寄せて右に灯籠 (2.5px/ドット＝80×120)。
+            // PC は輪 (96〜224) の右に 3px/ドット＝96×144。どちらも台座の下端を輪の下端 (116) に揃える
+            bool lantern = LightUi.ShouldShow(g.Rs, st);
+            float orbX = UiKit.Phone && lantern ? 16f : 96f;
             // エナジーの輪 (紙の円盤に真鍮の弧)
             var sun = UiKit.NewRect("energyOrb", root);
-            UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(96f, 116f), new Vector2(224f, 244f));
+            UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(orbX, 116f), new Vector2(orbX + 128f, 244f));
             sun.localRotation = Quaternion.Euler(0f, 0f, -3f);
             var disc = UiKit.NewRect("disc", sun);
             UiKit.Stretch(disc, 6f, 6f, 6f, 6f);
@@ -1648,6 +1820,7 @@ namespace DeckRogue.Game
             el.characterSpacing = 2f;
             UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 20f), new Vector2(0f, 38f));
             g.RegisterAnchor("energy", sun);
+            if (lantern) LightUi.Build(g, root, st, UiKit.Phone ? 196f : 300f, 116f, UiKit.Phone ? 2.5f : 3f);
         }
 
         // ---- ログの引き出し ----
@@ -1679,6 +1852,24 @@ namespace DeckRogue.Game
         }
 
         // ---- モーダル: 確認ウィンドウ (set-confirm) ----
+
+        /// <summary>灯の火床の窓 (2026-09-20 夜): ターン終了時に灯3につき火種1を山札へ。0〜最大枚数のボタンで選んでターンを終える</summary>
+        static void BuildHearthChooser(GameRoot g, RectTransform root, GameState st)
+        {
+            int max = Effects.HearthSparkMax(st);
+            var inner = Modal(root, 560f, 120f + 62f * (max + 1), "hearth");
+            UiKit.Txt(inner, "灯の火床: 灯を火種に変える枚数 (灯3につき火種1。払った灯だけ失う。いま灯 " + (st.Player.Light ?? 0) + ")", 16, PaperFx.Ink);
+            for (int n = 0; n <= max; n++)
+            {
+                int nn = n;
+                CenteredButton(inner, nn == 0 ? "変えない (灯を残す)" : nn + "枚 (灯" + (nn * 3) + "を火種に)", delegate
+                {
+                    g.HearthChoice = false;
+                    g.DoCombat(new Command_EndTurn { HearthSparks = nn > 0 ? nn : (int?)null });
+                }, 17, 360f, 50f, nn == 0 ? (Color?)null : PaperFx.BrassLight);
+            }
+            CenteredButton(inner, "戻る", delegate { g.HearthChoice = false; g.Rebuild(); }, 15, 200f, 44f);
+        }
 
         public static RectTransform Modal(RectTransform root, float w, float h, string name)
         {
@@ -1922,7 +2113,7 @@ namespace DeckRogue.Game
             UiKit.Le(title, 100f, -1f, 160f, -1f);
             int cost = card.Def.Cost;
             try { cost = Effects.EffectiveCost(st, card); } catch (Exception) { }
-            bool playable = st.Phase == CombatPhases.PlayerTurn && Effects.IsPlayableFromHand(card) && cost <= st.Player.Energy && Effects.RetainerRequirementMet(st, card);
+            bool playable = st.Phase == CombatPhases.PlayerTurn && Effects.IsPlayableFromHand(card) && cost <= st.Player.Energy && (card.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, card);
             if (card.Def.Modes != null)
             {
                 for (int m = 0; m < card.Def.Modes.Count; m++)

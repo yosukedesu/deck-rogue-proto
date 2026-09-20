@@ -124,6 +124,10 @@ namespace DeckRogue.Game
         public PendingGear GearPending;
         /// <summary>ギアの持ち物が満杯で入れ替え中: "reward" (報酬のギア) / "shop:&lt;棚の添字&gt;"。手が通ると捨てる</summary>
         public string GearSwap;
+        /// <summary>戦闘のギアの「+N」を押して持ち物の一覧を開いている (2026-09-18)。手が通ると捨てる</summary>
+        public bool GearMore;
+        /// <summary>灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了を押した時に火種にする枚数を選ぶ窓を開いている</summary>
+        public bool HearthChoice;
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
         public BattleView Battle;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
@@ -273,6 +277,8 @@ namespace DeckRogue.Game
             Confirm = null;
             GearPending = null;
             GearSwap = null;
+            GearMore = false;
+            HearthChoice = false;
             // 自動保存 (2026-09-15 本家形): 成功した手のたびに save/run.json を書く (別スレッド)。走破/敗北で終わったランは消す
             if (Rs != null && !ReferenceEquals(Rs, prevRs))
             {
@@ -606,6 +612,18 @@ namespace DeckRogue.Game
             }
             PreferredTarget = index;
             Rebuild();
+        }
+
+        /// <summary>舞台の人形を押した (2026-09-19 人形の盤面表示): 「人形を1体選ぶ」札 (灯の捧げ) の段ならその人形を選ぶ。それ以外は説明 (スマホは固定パネル)</summary>
+        public void OnDollClicked(string uid)
+        {
+            if (Pending != null && Pending.NextNeed() == "permanent")
+            {
+                Pending.PermanentUid = uid;
+                SubmitIfReady();
+                return;
+            }
+            // それ以外は Tooltip.Attach (PC はホバー・スマホはタップで固定パネル) が説明を出す
         }
 
         /// <summary>場面に合わせて BGM を切り替える (同じ名前なら何もしない)。素材は Resources/Audio/bgm/<name>、無ければ合成</summary>

@@ -23,6 +23,8 @@ export const setAutoSystem: ReactionSystem = {
     switch (event.type) {
       case 'EnemyActionExecuting': {
         if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
+        // 打ち消し済み (楔 actionNegated・全体の negateNextAction) の行動には窓を開かない (2026-09-20 Opus 火種A: 起きない行動に護りの灯印を切らせていた)
+        if (state.enemies[event.enemyIndex]?.actionNegated === true || state.negateNextAction === true) return state
         const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
         const win = { stage: 'pre', kind: event.kind, actual } as const
         const card = usableSetCards(state, win)[0]

@@ -96,6 +96,7 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> REFILL_FOR_UPGRADE = new HashSet<string>
         {
             "addCardToHand", // トークン生成も手札の補充 (0E化の無限ループ規約対象)
+            "drawCardsPerLight", // 灯の手帳 (2026-09-20 夜)
             "drawCards",
             "drawCardsPerCardPlayed",
             "dischargeAetherDraw",
@@ -144,6 +145,7 @@ namespace DeckRogue.Engine
             public const string None = "none";
             public const string Mult = "mult";
             public const string Threshold = "threshold";
+            public const string Light = "light"; // 灯コスト-1 (白 2026-09-20 点灯の合図+)
         }
 
         /// <summary>
@@ -162,12 +164,16 @@ namespace DeckRogue.Engine
             "dischargeGrowth", "dischargeGrowthBlock", "dischargeMomentumDamage", "dischargeMomentumBlock", "dischargeMomentumBurn", "dischargeMomentumVolley",
             "gainBlockPerMomentum", "addGrowthPerMomentum",
             "dealDamagePerCardPlayed", "dealDamagePerExhaust", "dealDamageDrainPerExhaust", "gainBlockPerExhaust", "dealDamagePerSelfHpLost", "dealDamagePerHeal",
+            "dischargeLight", // 灯の放出 (白 2026-09-20): 倍率+1
+            "dealDamagePerLight", // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は Light ティア (灯-1) が先に取る
+            "dealDamagePerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜
         };
 
         private static readonly HashSet<string> UNIT_EFFECTS_V2 = new HashSet<string>
         {
-            "drawCards", "impulseDraw", "addGrowth", "addMomentum", "addAether", "addCasts", "gainEnergy",
+            "drawCards", "impulseDraw", "addGrowth", "addMomentum", "addAether", "addLight", "addCasts", "gainEnergy",
             "exposeEnemy", "weakenEnemy", "summonPermanent", "upgradeInHand", "addCardToHand", "empowerShivs", "exhaustFromDeck",
+            "addCardToDraw", "triggerRandomRetainer", // 火種 (2026-09-20 夜)
         };
 
         private static readonly HashSet<string> AMOUNT_V2 = BuildAmountV2();
@@ -183,10 +189,14 @@ namespace DeckRogue.Engine
             (MULT_EFFECTS.Contains(e.Effect) && e.Amount != null) || e.GrowthMultiplier != null || e.MomentumMultiplier != null;
 
         private static bool HasThreshold(DeclarativeEffect e) =>
-            e.Condition?.MinGrowth != null || e.Condition?.MinMomentum != null;
+            e.Condition?.MinGrowth != null || e.Condition?.MinMomentum != null || e.Condition?.MinLight != null;
 
+        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ)。工房産 (fused_*) も色で判定</summary>
+        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white" };
         private static bool IsGreenRule(CardDef def) =>
-            def.Id.StartsWith("green_", StringComparison.Ordinal) || def.Color == "green"; // 工房産 (fused_*) も色で判定
+            def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color));
+        /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
+        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string> { "white_perm_band", "white_perm_apostle" };
 
         /// <summary>効果列1つぶんの本家形ティア (モードごとにも使う)</summary>
         private static string TierV2(IReadOnlyList<DeclarativeEffect> effects, CardDef? def = null)
@@ -253,11 +263,12 @@ namespace DeckRogue.Engine
                 {
                     var c = e.Condition;
                     var n = e;
-                    if (c != null && (c.MinGrowth != null || c.MinMomentum != null))
+                    if (c != null && (c.MinGrowth != null || c.MinMomentum != null || c.MinLight != null))
                     {
                         var nc = c;
                         if (c.MinGrowth != null) nc = nc with { MinGrowth = Math.Max(1, (c.MinGrowth ?? 0) - 1) };
                         if (c.MinMomentum != null) nc = nc with { MinMomentum = Math.Max(1, (c.MinMomentum ?? 0) - 1) };
+                        if (c.MinLight != null) nc = nc with { MinLight = Math.Max(1, (c.MinLight ?? 0) - 1) };
                         n = e with { Condition = nc };
                     }
                     outList.Add(Boost50(n, 1));
@@ -287,6 +298,9 @@ namespace DeckRogue.Engine
             {
                 // 上限ランプはコスト-1が正史 (複利安全弁: gainEnergyMax の量は増えない)
                 if (eff.Any(e => e.Effect == "gainEnergyMax") && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
+                if (V2_COST_ONLY.Contains(def.Id) && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
+                // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1。エナジーは触らない
+                if ((def.LightCost ?? 0) >= 1) return UpgradeTiers.Light;
                 var t = TierV2(eff, def);
                 if (t != UpgradeTiers.None) return t;
                 if (def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
@@ -345,7 +359,7 @@ namespace DeckRogue.Engine
         public static CardInstance UpgradeCard(CardInstance card)
         {
             string tier = UpgradeTier(card.Def);
-            if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None)
+            if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None && tier != UpgradeTiers.Light)
             {
                 var baseDef = card.Def;
                 CardDef greenDef = baseDef with
@@ -393,6 +407,10 @@ namespace DeckRogue.Engine
             else if (tier == UpgradeTiers.Cost)
             {
                 def = def with { Cost = card.Def.Cost - 1 };
+            }
+            else if (tier == UpgradeTiers.Light)
+            {
+                def = def with { LightCost = Math.Max(0, (card.Def.LightCost ?? 0) - 1) }; // 点灯の合図+ = 1E・灯1
             }
             else if (tier == UpgradeTiers.Bonus)
             {
@@ -455,6 +473,7 @@ namespace DeckRogue.Engine
             var REFILL_FOR_LEGALITY = new[]
             {
                 "drawCards",
+                "drawCardsPerLight", // 灯の手帳 (2026-09-20 夜)
                 "drawCardsPerCardPlayed",
                 "dischargeAetherDraw",
                 "impulseDraw",

@@ -31,6 +31,7 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> REFILL = new HashSet<string>
         {
             "drawCards",
+            "drawCardsPerLight", // 灯の手帳 (2026-09-20 夜)
             "drawCardsPerCardPlayed",
             "dischargeAetherDraw",
             "impulseDraw",
@@ -96,13 +97,18 @@ namespace DeckRogue.Engine
                 },
                 ["white"] = new[]
                 {
+                    ("dischargeLight", "灯"),
+                    ("dealDamagePerLight", "篭"),
+                    ("dealDamagePerSpark", "火"),
+                    ("addCardToDraw", "種"),
+                    ("addLight", "灯"),
                     ("summonPermanent", "旗"),
                     ("dealDamagePerPermanent", "列"),
                     ("gainHp", "光"),
                     ("weakenEnemy", "威"),
                     ("dealDamagePerBlock", "壁"),
                     ("gainBlock", "盾"),
-                    ("dealDamage", "聖"),
+                    ("dealDamage", "輝"), // 旧「聖」は 2026-09-18 のリネーム漏れ
                     ("drawCards", "典"),
                 },
             };
@@ -233,6 +239,7 @@ namespace DeckRogue.Engine
             "negate", "growSelf", "momentumCarryHalf", "doubleGrowth", "doubleMomentum", "dischargeGrowth",
             "dischargeGrowthBlock", "dischargeMomentumDamage", "dischargeMomentumBlock", "dischargeMomentumBurn",
             "dischargeMomentumGrowth", "dischargeMomentumVolley", "dischargeAether", "dischargeAetherDraw", "dischargeBurn",
+            "dischargeLight", "dischargeLightRally", "doubleLight", // 灯 (白 2026-09-20)
         };
 
         /// <summary>落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)</summary>
@@ -268,6 +275,8 @@ namespace DeckRogue.Engine
             ["burn"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "applyBurn", Amount = 2 },
             ["ice"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "gainIceBlock", Amount = 2 },
             ["aether"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "addAether", Amount = 1 },
+            ["light"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "addLight", Amount = 1 }, // 灯 (白 2026-09-20)
+            ["spark"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "addCardToHand", SummonId = "white_spark_token", Amount = 1 }, // 火種 (白 2026-09-20 夜)
             ["storm"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "addCasts", Amount = 1 },
             ["heal"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "gainHp", Amount = 2 },
             ["fortress"] = new DeclarativeEffect { Trigger = "onPlay", Effect = "gainBlock", Amount = 3 },
@@ -453,7 +462,8 @@ namespace DeckRogue.Engine
             // --- 合体: 列は素材の内部順序を保ち、ブロック単位で並べる。「準備 (成長・勢い・急所等) だけの札」を先に置く
             //     (S2: id順で勢いがダメージ行の後ろに落ち、素材より弱い合成品が183件) ---
             var blocks = new List<List<DeclarativeEffect>> { ConvertAll(domi), ConvertAll(sub) };
-            bool HasDamage(IReadOnlyList<DeclarativeEffect> list) => list.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay");
+            // 放出もダメージ行 (2026-09-20 Opus 火種B)。TS と同形
+            bool HasDamage(IReadOnlyList<DeclarativeEffect> list) => list.Any(e => e.Trigger == "onPlay" && (e.Effect == "dealDamage" || e.Effect.StartsWith("discharge") || e.Effect.StartsWith("dealDamage")));
             var ordered = (blocks[1].Count > 0 && !HasDamage(blocks[1]) && HasDamage(blocks[0]))
                 ? new List<List<DeclarativeEffect>> { blocks[1], blocks[0] }
                 : blocks;
@@ -685,7 +695,7 @@ namespace DeckRogue.Engine
                 ? Math.Min(a.Def.NecroCost ?? 99, b.Def.NecroCost ?? 99)
                 : (int?)null;
             if (necroCost != null) exhaust = true;
-            if (all.Any(e => e.Effect == "doubleGrowth" || e.Effect == "doubleMomentum")) exhaust = true;
+            if (all.Any(e => e.Effect == "doubleGrowth" || e.Effect == "doubleMomentum" || e.Effect == "doubleLight")) exhaust = true;
             if (effects.Any(e => e.Effect == "gainEnergyMax")) exhaust = true;
             if (all.Where(e => e.Effect == "impulseDraw").Aggregate(0, (acc, e) => acc + (e.Amount ?? 0)) >= 4) exhaust = true;
             int net = all.Where(e => e.Effect == "gainEnergy" || e.Effect == "discountNext").Aggregate(0, (acc, e) => acc + (e.Amount ?? 0));
@@ -747,6 +757,11 @@ namespace DeckRogue.Engine
                 ExhaustCost = ((a.Def.ExhaustCost ?? 0) != 0 || (b.Def.ExhaustCost ?? 0) != 0)
                     ? (a.Def.ExhaustCost ?? 0) + (b.Def.ExhaustCost ?? 0)
                     : (int?)null,
+                LightCost = ((a.Def.LightCost ?? 0) != 0 || (b.Def.LightCost ?? 0) != 0)
+                    ? (a.Def.LightCost ?? 0) + (b.Def.LightCost ?? 0)
+                    : (int?)null, // 灯コストは合算 (捨て・消滅コストと同じ。白 2026-09-20)
+                // 人形は溶かしても人形 (2026-09-20 灯と人形の結び): 素材のどちらかが人形で結果が置物なら retainer を継承。TS と同形
+                Retainer = ((a.Def.Retainer == true || b.Def.Retainer == true) && resultType == "permanent") ? true : (bool?)null,
                 NecroCost = necroCost,
                 FreeIfHandAllPhysical = freeIfPhysical ? true : (bool?)null,
                 FreeIfHandAll = freeIfHandAll,
@@ -849,14 +864,14 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> AOE_CATALYST_OK = new HashSet<string>
         {
             "dealDamage", "dealDamageRandom", "dealDamageDrain", "dealDamageExecute", "dealDamagePerMomentum", "dealDamagePerEnergyMax",
-            "dealDamagePerAttackPlayed", "dealDamagePerHandCard", "dealDamagePerExhaust", "dealDamagePerSelfHpLost", "dealDamagePerPermanent",
+            "dealDamagePerAttackPlayed", "dealDamagePerHandCard", "dealDamagePerExhaust", "dealDamagePerSelfHpLost", "dealDamagePerPermanent", "dealDamagePerLight", "dealDamagePerSpark",
             "dealDamagePerHeal", "dealDamagePerWeak", "dealDamagePerCardPlayed", "dealDamagePerCardPlayedTotal", "dealDamagePerRandomPlayed",
         };
 
         private static readonly Dictionary<string, string> AXIS_JA = new Dictionary<string, string>
         {
             ["growth"] = "成長+1", ["trample"] = "勢い+2", ["ramp"] = "次のカード-1", ["burn"] = "延焼+2",
-            ["ice"] = "氷壁+2", ["aether"] = "霊気+1", ["storm"] = "詠唱+1", ["heal"] = "回復+2",
+            ["ice"] = "氷壁+2", ["aether"] = "霊気+1", ["light"] = "灯+1", ["spark"] = "火種1", ["storm"] = "詠唱+1", ["heal"] = "回復+2",
             ["fortress"] = "ブロック+3", ["retinue"] = "ブロック+2", ["graveyard"] = "ミル1",
         };
 

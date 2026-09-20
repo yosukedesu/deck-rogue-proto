@@ -86,33 +86,94 @@ namespace DeckRogue.Game
             return Run(dur, k => { if (cg != null) cg.alpha = Mathf.Lerp(from, to, k); }, ease, onDone);
         }
 
-        /// <summary>被弾の揺れ (減衰する左右振動)。終わったら元の位置に戻る</summary>
+        // ---- 基準の状態 (2026-09-18 ユーザー「敵に攻撃をずっとしていると敵がどんどん地面に埋まっていく」) ----
+        // Punch/Shake/Squash/Puff/Lunge は矩形の位置・拡大・回転を動かして終わりに戻す。旧実装は各演出が「始まった瞬間の値」を戻り先に取っていたので、
+        // 同じ矩形に重なって始まる (多段ヒット・連続の攻撃) と、2つ目が「1つ目で膨らんだ途中の値」を戻り先に取り、終わりにそこへ戻す＝ずれが残って積み上がっていた。
+        // 敵の入れ物は組み直しでも作り直されないので、拡大が残るほど中心を軸に伸びた下端＝足元が座席より下へ沈んでいった。
+        // 同じ矩形に重なる演出は基準を共有し、最後の1つが終わった時にだけ基準へ戻す。演出の外 (組み直しの再配置など) で値が変わった時は、それを新しい基準として取り込む
+        class BaseState
+        {
+            public int Refs;
+            public bool HasPos, HasScale, HasRot;                       // この性質を誰かが動かしている (終わりに戻す)
+            public Vector2 Pos, LastPos; public Vector3 Scale, LastScale; public Quaternion Rot, LastRot;   // 基準と、演出が最後に書いた値
+        }
+        static readonly Dictionary<RectTransform, BaseState> _bases = new Dictionary<RectTransform, BaseState>();
+
+        static BaseState Acquire(RectTransform rt, bool pos, bool scale, bool rot)
+        {
+            BaseState b;
+            if (!_bases.TryGetValue(rt, out b)) { b = new BaseState(); _bases[rt] = b; }
+            b.Refs++;
+            if (pos && !b.HasPos) { b.HasPos = true; b.Pos = b.LastPos = rt.anchoredPosition; }
+            if (scale && !b.HasScale) { b.HasScale = true; b.Scale = b.LastScale = rt.localScale; }
+            if (rot && !b.HasRot) { b.HasRot = true; b.Rot = b.LastRot = rt.localRotation; }
+            return b;
+        }
+
+        /// <summary>演出の外で動かされていたら (組み直しの再配置・別の演出系) それを基準に取り込む。毎フレーム書く前に呼ぶ</summary>
+        static void Sync(RectTransform rt, BaseState b)
+        {
+            if (b.HasPos && rt.anchoredPosition != b.LastPos) b.Pos = b.LastPos = rt.anchoredPosition;
+            if (b.HasScale && rt.localScale != b.LastScale) b.Scale = b.LastScale = rt.localScale;
+            if (b.HasRot && rt.localRotation != b.LastRot) b.Rot = b.LastRot = rt.localRotation;
+        }
+
+        static void WritePos(RectTransform rt, BaseState b, Vector2 v) { rt.anchoredPosition = v; b.LastPos = rt.anchoredPosition; }
+        static void WriteScale(RectTransform rt, BaseState b, Vector3 v) { rt.localScale = v; b.LastScale = rt.localScale; }
+        static void WriteRot(RectTransform rt, BaseState b, Quaternion q) { rt.localRotation = q; b.LastRot = rt.localRotation; }
+
+        static void Release(RectTransform rt, BaseState b)
+        {
+            b.Refs--;
+            if (b.Refs > 0) return;
+            if (rt != null)
+            {
+                Sync(rt, b);
+                if (b.HasPos) rt.anchoredPosition = b.Pos;
+                if (b.HasScale) rt.localScale = b.Scale;
+                if (b.HasRot) rt.localRotation = b.Rot;
+                _bases.Remove(rt);
+            }
+            else
+            {   // 矩形が捨てられた (組み直し): 死んだ鍵を掃く
+                var dead = new List<RectTransform>();
+                foreach (var kv in _bases) if (kv.Key == null) dead.Add(kv.Key);
+                foreach (var k in dead) _bases.Remove(k);
+            }
+        }
+
+        /// <summary>被弾の揺れ (減衰する左右振動)。終わったら基準の位置に戻る (重なって始まっても基準は共有)</summary>
         public static Coroutine Shake(RectTransform rt, float amp = 12f, float dur = 0.35f)
         {
             if (rt == null) return null;
-            var origin = rt.anchoredPosition;
+            var b = Acquire(rt, true, false, false);
             return Run(dur, k =>
             {
                 if (rt == null) return;
+                Sync(rt, b);
                 float decay = 1f - k;
-                rt.anchoredPosition = origin + new Vector2(Mathf.Sin(k * 40f) * amp * decay, Mathf.Cos(k * 33f) * amp * 0.35f * decay);
-            }, Ease.Linear, () => { if (rt != null) rt.anchoredPosition = origin; });
+                WritePos(rt, b, b.Pos + new Vector2(Mathf.Sin(k * 40f) * amp * decay, Mathf.Cos(k * 33f) * amp * 0.35f * decay));
+            }, Ease.Linear, () => Release(rt, b));
         }
 
-        /// <summary>被弾のパンチ (拡縮＋小さな傾き)。LayoutGroup の子でも位置を汚さない (anchoredPosition はレイアウトが管理するため触らない)</summary>
-        public static Coroutine Punch(RectTransform rt, float amount = 0.06f, float dur = 0.3f)
+        /// <summary>被弾のパンチ (拡縮＋小さな傾き)。LayoutGroup の子でも位置を汚さない (anchoredPosition はレイアウトが管理するため触らない)。
+        /// keepBottom=true は足元 (下端) を留めて膨らむ＝舞台の板 (敵・リーダー) の入れ物は中心が軸なので、そのままだと膨らむぶん足元が地面に沈む (2026-09-18)</summary>
+        public static Coroutine Punch(RectTransform rt, float amount = 0.06f, float dur = 0.3f, bool keepBottom = false)
         {
             if (rt == null) return null;
-            var s0 = rt.localScale;
-            var r0 = rt.localRotation;
+            var b = Acquire(rt, keepBottom, true, true);
+            float h = rt.rect.height, pivotY = rt.pivot.y;
             return Run(dur, k =>
             {
                 if (rt == null) return;
+                Sync(rt, b);
                 float decay = 1f - k;
                 float w = Mathf.Sin(k * 18f) * decay;
-                rt.localScale = s0 * (1f + amount * decay * (1f - k * 0.5f));
-                rt.localRotation = r0 * Quaternion.Euler(0f, 0f, w * 2.5f);
-            }, Ease.Linear, () => { if (rt != null) { rt.localScale = s0; rt.localRotation = r0; } });
+                float sc = 1f + amount * decay * (1f - k * 0.5f);
+                WriteScale(rt, b, b.Scale * sc);
+                WriteRot(rt, b, b.Rot * Quaternion.Euler(0f, 0f, w * 2.5f));
+                if (keepBottom) WritePos(rt, b, b.Pos + new Vector2(0f, h * pivotY * (sc - 1f)));   // 下端を留める
+            }, Ease.Linear, () => Release(rt, b));
         }
 
         /// <summary>delay 秒後に action (演出のずらし用)</summary>
@@ -502,30 +563,32 @@ namespace DeckRogue.Game
         public static void Squash(RectTransform rt, float dur = 0.24f, float sx = 1.12f, float sy = 0.86f)
         {
             if (rt == null) return;
-            var origin = rt.anchoredPosition; float h = rt.rect.height; float pivotY = rt.pivot.y;
+            var b = Acquire(rt, true, true, false); float h = rt.rect.height; float pivotY = rt.pivot.y;
             Run(dur, k =>
             {
                 if (rt == null) return;
+                Sync(rt, b);
                 float a = k < 0.45f ? Apply(Ease.OutQuad, k / 0.45f) : 1f - Apply(Ease.OutBack, (k - 0.45f) / 0.55f);
                 float x = 1f + (sx - 1f) * a, y = 1f + (sy - 1f) * a;
-                rt.localScale = new Vector3(x, y, 1f);
-                rt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - y));   // 下端を留める
-            }, Ease.Linear, () => { if (rt != null) { rt.localScale = Vector3.one; rt.anchoredPosition = origin; } });
+                WriteScale(rt, b, new Vector3(b.Scale.x * x, b.Scale.y * y, b.Scale.z));
+                WritePos(rt, b, b.Pos + new Vector2(0f, -h * pivotY * (1f - y)));   // 下端を留める
+            }, Ease.Linear, () => Release(rt, b));
         }
 
         /// <summary>膨らむ (筋力上げ・応援): 中心から 1.15 倍まで膨らんで戻る。足元は留める</summary>
         public static void Puff(RectTransform rt, float dur = 0.36f, float amount = 1.15f)
         {
             if (rt == null) return;
-            var origin = rt.anchoredPosition; float h = rt.rect.height; float pivotY = rt.pivot.y;
+            var b = Acquire(rt, true, true, false); float h = rt.rect.height; float pivotY = rt.pivot.y;
             Run(dur, k =>
             {
                 if (rt == null) return;
+                Sync(rt, b);
                 float a = Mathf.Sin(k * Mathf.PI);
                 float sc = 1f + (amount - 1f) * a;
-                rt.localScale = new Vector3(sc, sc, 1f);
-                rt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - sc));
-            }, Ease.Linear, () => { if (rt != null) { rt.localScale = Vector3.one; rt.anchoredPosition = origin; } });
+                WriteScale(rt, b, new Vector3(b.Scale.x * sc, b.Scale.y * sc, b.Scale.z));
+                WritePos(rt, b, b.Pos + new Vector2(0f, -h * pivotY * (1f - sc)));
+            }, Ease.Linear, () => Release(rt, b));
         }
 
         /// <summary>飛び道具: 光の玉が from から to へ山なりに飛ぶ (尾を引く)。着いたら onArrive</summary>
@@ -559,7 +622,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>光線: from から to へ一直線の筋 (白い芯＋色の縁) が一瞬走って消える</summary>
-        public static void BeamFx(RectTransform layer, Vector2 from, Vector2 to, Color color, float dur = 0.28f, float thick = 1f)
+        public static void BeamFx(RectTransform layer, Vector2 from, Vector2 to, Color color, float dur = 0.28f, float thick = 1f, Sprite streak = null)
         {
             if (layer == null) return;
             var d = to - from; float len = d.magnitude; float ang = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
@@ -569,7 +632,7 @@ namespace DeckRogue.Game
             rt.sizeDelta = new Vector2(len, 28f * thick); rt.anchoredPosition = from;
             rt.localRotation = Quaternion.Euler(0f, 0f, ang);
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = ThemeFx.SlashStreak(); img.color = color; img.raycastTarget = false;
+            img.sprite = streak ?? ThemeFx.SlashStreak(); img.color = color; img.raycastTarget = false;   // streak＝灯の筋 (暖色) など差し替え (2026-09-20)
             rt.localScale = new Vector3(0f, 1f, 1f);
             Run(dur, k =>
             {
@@ -657,12 +720,18 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>踏み込み: 前へ出て戻る (敵の攻撃・自分の攻撃)</summary>
+        /// <summary>踏み込み: 前へ出て戻る (敵の攻撃・自分の攻撃)。前半 35% で出て後半 65% で基準へ戻る (重なって始まっても基準は共有)</summary>
         public static void Lunge(RectTransform rt, Vector2 dir, float dur = 0.28f)
         {
             if (rt == null) return;
-            var origin = rt.anchoredPosition;
-            Move(rt, origin + dir, dur * 0.35f, Ease.OutQuad, () => { if (rt != null) Move(rt, origin, dur * 0.65f, Ease.OutCubic); });
+            var b = Acquire(rt, true, false, false);
+            Run(dur, k =>
+            {
+                if (rt == null) return;
+                Sync(rt, b);
+                float a = k < 0.35f ? Apply(Ease.OutQuad, k / 0.35f) : 1f - Apply(Ease.OutCubic, (k - 0.35f) / 0.65f);
+                WritePos(rt, b, b.Pos + dir * a);
+            }, Ease.Linear, () => Release(rt, b));
         }
 
         /// <summary>他の RectTransform の中心を、fx レイヤーの座標系 (anchor 中央) へ変換する</summary>

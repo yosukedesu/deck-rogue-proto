@@ -3,7 +3,7 @@
   python3 scripts/art-b7d18.py orders <descriptions.json> <scratch_dir>   # 発注書 docs/pixellab/b7d18-<cat>.json を書く (2シード)
   python3 scripts/art-b7d18.py sheet <scratch_dir> <out_dir>              # 判定用の比較シート (A/B)
   python3 scripts/art-b7d18.py apply <judge.json> <scratch_dir> [--dry]   # 採用した絵を Art/<種別>/ へ (UI 部品は後処理つき)
-descriptions.json: {relics:[{id,description,negative}], icons:[...], env:[...]} (workflow art-b7-d18-descriptions の出力)。
+descriptions.json: {relics:[{id,description,negative}], icons:[...], env:[...], gears:[...] (2026-09-18。_base の定型を {base} で参照・発注書は docs/pixellab/gears-<_date>.json), "ui": true (UI 部品を発注する時だけ)} (workflow art-b7-d18-descriptions の出力)。
 判定 judge.json: [{id, pick: A|B|none, passed, problem, fix_hint}] (A=seed 23, B=seed 41)"""
 import sys, json, os, shutil
 from PIL import Image, ImageDraw, ImageFont
@@ -40,6 +40,12 @@ def table():
     t['cost_orb'] = ('ui', 'cost_orb', (32, 32), 'ui')
     for r in ('common', 'uncommon', 'rare'): t['gem_' + r] = ('ui', 'gem_' + r, (32, 32), 'ui')
     t['slash'] = ('fx', 'slash', (64, 16), 'fx')
+    # ギア (2026-09-18): 台帳 src/data/gears.json の id (抽選外 retired も表には載せる) ＋ 魔素のアイコン。レリックと同じ定型 (32×32・物)
+    try:
+        for g in json.load(open('src/data/gears.json', encoding='utf-8')): t[g['id']] = ('gears', g['id'], (32, 32), 'relic')
+    except FileNotFoundError:
+        pass
+    t['mana'] = ('gears', 'mana', (32, 32), 'relic')
     return t
 
 DEFAULTS = {
@@ -68,8 +74,16 @@ def norm_id(raw, t):
 def cmd_orders(desc_path, scratch):
     d = json.load(open(desc_path, encoding='utf-8'))
     t = table()
-    orders = {'relics': [], 'icons': [], 'env': [], 'ui': []}
+    orders = {'relics': [], 'icons': [], 'env': [], 'ui': [], 'gears': []}
     seen = set()
+    # ギア (descriptions の "gears"。{base} は "_base" の定型に置換)
+    base = d.get('_base', '')
+    for it in d.get('gears', []):
+        rid = it['id']; seen.add(rid)
+        desc = it['description'].replace('{base}', base).rstrip('.')
+        for sd in SEEDS:
+            orders['gears'].append(dict(id=f'{rid}__{sd}', out=f'{scratch}/gears/{rid}__{sd}.png', seed=sd, size=[32, 32],
+                                        description=desc + TAIL_OBJ, negative=(NEG_OBJ + ', ' + it.get('negative', '')).rstrip(', '), **DEFAULTS['relic']))
     # レリック
     for it in d.get('relics', []):
         rid = it['id']; seen.add(rid)
@@ -102,10 +116,15 @@ def cmd_orders(desc_path, scratch):
         cat, name, size, _ = t[rid]
         for sd in SEEDS:
             orders['ui'].append(dict(id=f'{rid}__{sd}', out=f'{scratch}/{cat}/{name}__{sd}.png', seed=sd, size=list(size), description=desc + (TAIL_OBJ if dk == 'ui' else ', pixel art game effect sprite, completely empty transparent background, no text'), negative=NEG_OBJ, **DEFAULTS[dk]))
-    missing = [k for k in t if k not in seen and k not in UI]
+    # 説明が無い id は、descriptions に載っている群だけ検査する (ギアだけの発注書で他の全部が「無い」と出ないように)
+    present = {'relics': 'relics' in d, 'gears': 'gears' in d, 'icons': 'icons' in d, 'map': 'icons' in d,
+               'tiles': 'env' in d, 'props': 'env' in d, 'bg': 'env' in d, 'scenes': 'env' in d, 'ui': 'ui' in d, 'fx': 'ui' in d}
+    missing = [k for k in t if k not in seen and k not in UI and present.get(t[k][0], False)]
     if missing: print('説明が無い id:', missing)
+    if 'ui' not in d: orders['ui'] = []   # UI 部品は descriptions に "ui": true がある時だけ発注する (2026-09-18)
     for grp, items in orders.items():
-        p = f'docs/pixellab/b7d18-{grp}.json'
+        if not items: continue   # 空の群は書かない (既存の発注書を空で上書きしない)
+        p = f'docs/pixellab/gears-{d.get("_date", "2026-09-18")}.json' if grp == 'gears' else f'docs/pixellab/b7d18-{grp}.json'
         json.dump({'_note': f'B7–D18 の発注書 ({grp})。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す', 'items': items}, open(p, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         print(p, len(items))
 
@@ -121,7 +140,7 @@ def cmd_sheet(scratch, out, only=None):
     os.makedirs(out, exist_ok=True)
     t = table(); f = font()
     groups = {}
-    for cat in ('relics', 'icons', 'map', 'tiles', 'props', 'bg', 'scenes', 'ui', 'fx'):
+    for cat in ('relics', 'gears', 'icons', 'map', 'tiles', 'props', 'bg', 'scenes', 'ui', 'fx', 'enemies'):
         if only and cat not in only: continue
         d = f'{scratch}/{cat}'
         if not os.path.isdir(d): continue
@@ -129,7 +148,7 @@ def cmd_sheet(scratch, out, only=None):
         groups[cat] = names
     for cat, names in groups.items():
         # 1 シートに最大 12 項目 (A/B 並び)。倍率は寸法で決める
-        per = 12 if cat in ('relics', 'icons', 'map', 'tiles', 'ui', 'fx') else (6 if cat == 'props' else 3)
+        per = 12 if cat in ('relics', 'gears', 'icons', 'map', 'tiles', 'ui', 'fx') else (6 if cat in ('props', 'enemies') else 3)
         for pg in range(0, len(names), per):
             chunk = names[pg:pg + per]
             cells = []
@@ -183,12 +202,13 @@ def cmd_apply(judge_path, scratch, dry):
     rows = json.load(open(judge_path, encoding='utf-8'))
     t = table(); ok, ng = [], []
     for r in rows:
-        rid = r['id'] if r['id'].startswith('relic_') else norm_id(r['id'], t)
+        rid = r['id'] if (r['id'].startswith('relic_') or r['id'].startswith('gear_') or r['id'] == 'mana') else norm_id(r['id'], t)
         if rid is None: ng.append({**r, 'problem': 'unknown id'}); continue
         if r.get('pick', 'none') == 'none' or not r.get('passed', False): ng.append(r); continue
         sd = r.get('seed') or (SEEDS[0] if r['pick'] == 'A' else SEEDS[1])   # 作り直しは seed と dir を行に書く
         base = r.get('dir') or scratch
         if rid.startswith('relic_'): cat, name = 'relics', rid
+        elif rid.startswith('gear_') or rid == 'mana': cat, name = 'gears', rid
         else: cat, name, _, _ = t[rid]
         src = f'{base}/{cat}/{name}__{sd}.png'; meta = f'{base}/{cat}/{name}__{sd}.pixellab.json'
         if not os.path.exists(src): ng.append({**r, 'problem': 'file missing'}); continue
@@ -200,7 +220,7 @@ def cmd_apply(judge_path, scratch, dry):
             elif name.startswith('gem_'): im = fit_square(im, 12)   # 12 ドット×2 = 帯の宝石 24px
             im.save(dst)
             if os.path.exists(meta):
-                m = json.load(open(meta, encoding='utf-8')); m['judge'] = {'pick': r['pick'], 'seed': sd, 'at': '2026-09-11', 'note': r.get('problem', '')}
+                m = json.load(open(meta, encoding='utf-8')); m['judge'] = {'pick': r['pick'], 'seed': sd, 'at': __import__('datetime').date.today().isoformat(), 'note': r.get('problem', '')}
                 json.dump(m, open(f'{ART}/{cat}/{name}.pixellab.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         ok.append((name, sd))
     print(f'applied {len(ok)}, rejected {len(ng)}' + (' (dry)' if dry else ''))

@@ -33,6 +33,7 @@ namespace DeckRogue.Game
             { "onEnemyAction", "敵行動時" },
             { "onEnemyBuffed", "敵強化時" },
             { "onEnemyDefended", "敵防御時" },
+            { "onEnemyActed", "敵の行動後" },
             { "onTurnStart", "毎T開始時" },
             { "onCombatStart", "戦闘開始時" },
             { "onAttackPlayed", "攻撃プレイ後" },
@@ -51,6 +52,9 @@ namespace DeckRogue.Game
             { "onSelfExhausted", "亡骸" },
             { "onGrowthGained", "成長を得るたび" },
             { "onMomentumGained", "勢いを得るたび" },
+            { "onLightGained", "灯を得るたび" },
+            { "onLightDischarged", "灯を放出するたび" },
+            { "onSparkPlayed", "火種を撃つたび" },
             { "onTurnEnd", "ターン終了時" },
             { "onShuffle", "山札を切り直すたび" },
             { "onEnemyDied", "敵を倒すたび" },
@@ -123,6 +127,21 @@ namespace DeckRogue.Game
             { "addAether", "霊気+N" },
             { "dischargeAether", "霊気放出(×Nダメ・全消費)" },
             { "dischargeAetherDraw", "霊気×Nドロー(全消費)" },
+            { "addLight", "灯+N" },
+            { "dischargeLight", "灯を全て放出し、灯1につきNダメージ(灯の数だけヒット。全体は灯×N)" },
+            { "dischargeLightRally", "灯を全て放出し、灯1につき全ての人形がN回動く" },
+            { "dealDamagePerLight", "灯2につきNダメージ(切り捨て。灯は失わない)" }, // 灯篭の人形 (2026-09-20 灯と人形の結び)
+            // 火種・放出の軸 (2026-09-20 夜。本家 Soul の白版)
+            { "addCardToDraw", "火種N枚を山札のランダムな位置に混ぜる(この戦闘限り)" },
+            { "lightToSparks", "灯Nにつき火種1枚を山札へ(払った灯だけ失う)" },
+            { "dealDamagePerSpark", "この戦闘で撃った火種×Nダメージ" },
+            { "triggerRandomRetainer", "場の人形1体(ランダム)の効果を今1回解決(灯は産まない)" },
+            { "dischargeLightWeaken", "灯を全て放出し、灯3につき敵全体に威圧N(灯3未満なら不発)" },
+            { "consumeLight", "灯を全て失う" },
+            { "gainBlockPerLight", "灯2につきNブロック(灯は失わない)" },
+            { "drawCardsPerLight", "灯2につきNドロー(上限あり。灯は失わない)" },
+            { "lightCarryHalf", "【常在】灯を放出しても半分(切り捨て)が残る" },
+            { "doubleLight", "灯を2倍にする" },
             { "addCasts", "詠唱数+N" },
             { "addSpellEcho", "反復+N(次の呪文2回解決)" },
             { "confuse", "混乱+N" },
@@ -140,9 +159,9 @@ namespace DeckRogue.Game
             { "addCardToHand", "トークンN枚を手札へ" },
             { "duplicateRetainers", "場の従者を1体ずつ複製" },
             { "sacrificeRetainer", "従者1体を選んで破壊" },
-            { "triggerRetainersNow", "従者のターン開始効果を今すぐ解決" },
+            { "triggerRetainersNow", "号令: 場の人形の効果を今すぐ1回ずつ解決 (登場ごとは除く)" },
             { "activateEnteredRetainer", "場に出た従者が即1回動く" },
-            { "blessRetainers", "【常在】従者の効果+N" },
+            { "blessRetainers", "【常在】人形のダメージ・ブロック・回復+N" },
             { "empowerShivs", "【常在】ナイフ与ダメ+N" },
             { "gainSetSlot", "仕込み枠+N(この戦闘中)" },
             { "retrieveFromDiscard", "捨て札からN枚を手札へ(選ぶ)" },
@@ -242,6 +261,7 @@ namespace DeckRogue.Game
             if (c.Blaze == true) parts.Add("猛り火(延焼合計8以上)");
             if (c.MinGrowth.HasValue) parts.Add("成長" + c.MinGrowth.Value + "以上");
             if (c.MinMomentum.HasValue) parts.Add("勢い" + c.MinMomentum.Value + "以上");
+            if (c.MinLight.HasValue) parts.Add("灯" + c.MinLight.Value + "以上");
             if (c.EnemyIntent != null) parts.Add("対象の意図が" + KindJa(c.EnemyIntent));
             if (c.EnemyIntentNot != null) parts.Add("対象の意図が" + KindJa(c.EnemyIntentNot) + "以外");
             if (c.EnemyExposed == true) parts.Add("対象が急所持ち");
@@ -263,6 +283,12 @@ namespace DeckRogue.Game
                 var ks = new List<string>();
                 for (int i = 0; i < c.ActionKinds.Count; i++) ks.Add(KindJa(c.ActionKinds[i]));
                 parts.Add("敵の行動が" + string.Join("・", ks.ToArray()) + "の時");
+            }
+            if (c.ActionKindsNot != null && c.ActionKindsNot.Count > 0)
+            {
+                var ks = new List<string>();
+                for (int i = 0; i < c.ActionKindsNot.Count; i++) ks.Add(KindJa(c.ActionKindsNot[i]));
+                parts.Add("敵の行動が" + string.Join("・", ks.ToArray()) + "以外の時");
             }
             if (parts.Count == 0) return "";
             return "[" + string.Join("かつ", parts.ToArray()) + "] ";
@@ -424,6 +450,7 @@ namespace DeckRogue.Game
             if (def.XCost == true) n.Add((def.XBonus ?? 0) > 0 ? "X: エナジーを全て払う (払った量+" + def.XBonus.Value + "として解決)" : "X: エナジーを全て払う");
             if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.DiscardCost.Value + "枚を捨てる");
             if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.ExhaustCost.Value + "枚を消滅");
+            if ((def.LightCost.HasValue ? def.LightCost.Value : 0) > 0) n.Add("追加コスト: 灯を" + def.LightCost.Value + "払う");
             if (def.NecroCost.HasValue) n.Add("亡骸プレイ " + def.NecroCost.Value + "E");
             if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけなら0E");
             if (def.FreeIfHandAll != null) n.Add("手札が" + TypeJa(def.FreeIfHandAll) + "だけなら0E");
@@ -446,7 +473,7 @@ namespace DeckRogue.Game
             else if (def.FusionCatalyst == "retain") n.Add("触媒: 素材にすると結果が保持");
             else if (def.FusionCatalyst == "aoe") n.Add("触媒: 素材にすると結果のダメージが全体に");
             if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
-            if (def.Retainer == true) n.Add("従者");
+            if (def.Retainer == true) n.Add("人形"); // 白の語彙 (2026-09-18 従者→人形)。灯コストの人形は点灯で灯を吸う (2026-09-20)
             if (def.ShivToken == true) n.Add("骨のナイフ");
             return n;
         }
@@ -455,6 +482,18 @@ namespace DeckRogue.Game
 
         /// <summary>状態異常の表示名 (吹き出しの札用)</summary>
         public static string StatusName(string status) { string ja; return StatusJa.TryGetValue(status, out ja) ? ja : status; }
+
+        /// <summary>アーティファクトが弾くデバフ効果の名前 (weakenEnemy=威圧・exposeEnemy=急所・confuse=混乱)。TS ui/log.ts と同じ表</summary>
+        public static string DebuffName(string effect)
+        {
+            switch (effect)
+            {
+                case "weakenEnemy": return "威圧";
+                case "exposeEnemy": return "急所";
+                case "confuse": return "混乱";
+                default: return effect ?? "";
+            }
+        }
 
         public static string InflictSuffix(StatusInflict inf)
         {
@@ -525,7 +564,7 @@ namespace DeckRogue.Game
             {
                 // EffectiveIntent は条件を満たさない時だけ raw をそのまま返す (参照が同じ)
                 bool altActive = !object.ReferenceEquals(eff, raw);
-                string what = raw.ConditionalOn == "set" ? "動かせるからくり" : "従者";
+                string what = raw.ConditionalOn == "set" ? "動かせるからくり" : "人形";
                 s += "  【" + what + (altActive ? "あり" : "なし") + "分岐】";
                 if (!altActive) s += " ※" + what + "があると: " + LiveIntentLine(st, enemyIndex, BranchToIntent(raw.Alt));
             }
@@ -691,6 +730,10 @@ namespace DeckRogue.Game
             var r2 = ev as GameEvent_MomentumDischarged; if (r2 != null) return "勢い" + r2.Spent + "を全て放出!";
             var s2 = ev as GameEvent_AetherGained; if (s2 != null) return "霊気+" + s2.Amount;
             var t3 = ev as GameEvent_AetherDischarged; if (t3 != null) return "霊気" + t3.Spent + "を全て放出!";
+            var lg = ev as GameEvent_LightGained; if (lg != null) return "灯+" + lg.Amount + " (" + (lg.Source == "heal" ? "回復" : lg.Source == "retainer" ? "人形" : lg.Source == "passive" ? "灯匠" : lg.Source == "carry" ? "残り火" : "カード") + ")";
+            var ld = ev as GameEvent_LightDischarged; if (ld != null) return "灯" + ld.Spent + "を放出!";
+            var ls = ev as GameEvent_LightSpent; if (ls != null) return "灯-" + ls.Amount + " (" + CardName(ls.CardId) + ")"; // 2026-09-20 夜
+            var cad = ev as GameEvent_CardsAddedToDraw; if (cad != null) return CardName(cad.CardId) + cad.Count + "枚を山札に混ぜた";
             var u2 = ev as GameEvent_EnemySplit; if (u2 != null) return u2.Count == 1 ? "再起動! 倒した敵が次の姿で立ち上がった" : "分裂! 倒した敵から" + u2.Count + "体が現れた";
             var v2 = ev as GameEvent_EnemyHatched; if (v2 != null) return "孵化した!";
             var w2 = ev as GameEvent_GuardianRedirected; if (w2 != null) return "庇われた! 単体対象は護衛に向かった";
@@ -698,11 +741,14 @@ namespace DeckRogue.Game
             var y2 = ev as GameEvent_EnemyStaggered; if (y2 != null) return "完全に防いだ! 敵は体勢を崩し、次の行動は隙";
             var zs = ev as GameEvent_EnemySummoned; if (zs != null) return zs.Count > 0 ? "召喚! " + zs.Count + "体が現れた" : "召喚したが場が満杯で出なかった";
             var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました! 眠りが終わった" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を切った!" : z2.Trigger == EnemyInterruptTriggers.Alone ? "仲間が全滅した!" : "仲間が倒れた!") + (z2.Replaced ? " 行動が変わった" + (z2.Before != null && z2.After != null ? ": " + IntentLine(z2.Before) + " → " + IntentLine(z2.After) : "") : " 次のターンから行動が変わる");
-            var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが弾いた (" + a3.Effect + ")";
+            var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが" + DebuffName(a3.Effect) + "を弾いた（この効果は消えた）";
             var b3 = ev as GameEvent_ScaldTick; if (b3 != null) return "火傷・烙印" + b3.Count + "枚が疼いた (HP-" + b3.Amount + ")";
             var c3 = ev as GameEvent_CombatEnded; if (c3 != null) return c3.Result == "won" ? "=== 勝利 ===" : "=== 敗北 ===";
             var d3 = ev as GameEvent_GearUsed; if (d3 != null) return "ギア「" + d3.Name + "」を組んだ";   // ⚙ は Unity のフォントに無い   // ギア (2026-09-17)
             var e3 = ev as GameEvent_DeathSaved; if (e3 != null) return e3.Source == "gear" ? "蘇りの発条がはじけ、HP" + e3.Hp + "で踏みとどまった" : "蜥蜴の尾が砕け、HP" + e3.Hp + "で踏みとどまった";
+            var g3 = ev as GameEvent_RetainerRushed; if (g3 != null) return "点灯: " + CardName(g3.CardId) + "が出た瞬間に1回動いた";   // ひなたのパッシブ (2026-09-19 log に出ていなかった)
+            var h3 = ev as GameEvent_RetainersTriggered; if (h3 != null) return "号令: 人形" + h3.Count + "体がトリガーを問わず今1回ずつ動いた";
+            var i4 = ev as GameEvent_RetainersDuplicated; if (i4 != null) return "分列: 従者" + i4.Count + "体が複製された";
             var f3 = ev as GameEvent_HpLossCapped; if (f3 != null) return f3.Left > 0 ? "脈打つ欠片がHPの損失を20で止めた（あと" + f3.Left + "回）" : "脈打つ欠片がHPの損失を20で止めた（これで最後。戦いの後に砕ける）";   // 2026-09-18
             // 表示しないもの
             if (ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyActionResolved || ev is GameEvent_EnemyPhaseEnded) return null;

@@ -1,0 +1,100 @@
+[
+ {
+  "slug": "PUZZLES/PUZZLE_Success_Harp_Two_Note_Fast_Wet_stereo.wav",
+  "name": "PUZZLE_Success_Harp_Two_Note_Fast_Wet",
+  "note": "ハープ2音・速い（短い。回復ごとに鳴っても邪魔にならない）",
+  "dur": 0.67,
+  "mp3": "puzzle_success_harp_two_note_fast_wet_stereo.mp3"
+ },
+ {
+  "slug": "PUZZLES/PUZZLE_Success_Harp_Three_Note_Fast_Wet_stereo.wav",
+  "name": "PUZZLE_Success_Harp_Three_Note_Fast_Wet",
+  "note": "ハープ3音の上昇・速い",
+  "dur": 1.39,
+  "mp3": "puzzle_success_harp_three_note_fast_wet_stereo.mp3"
+ },
+ {
+  "slug": "PUZZLES/PUZZLE_Success_Harp_Three_Note_Bright_Wet_stereo.wav",
+  "name": "PUZZLE_Success_Harp_Three_Note_Bright_Wet",
+  "note": "ハープ3音・明るい（少し長い）",
+  "dur": 1.94,
+  "mp3": "puzzle_success_harp_three_note_bright_wet_stereo.mp3"
+ },
+ {
+  "slug": "PUZZLES/PUZZLE_Success_Harp_Two_Note_Deep_Wet_stereo.wav",
+  "name": "PUZZLE_Success_Harp_Two_Note_Deep_Wet",
+  "note": "ハープ2音・深い（少し長い）",
+  "dur": 1.97,
+  "mp3": "puzzle_success_harp_two_note_deep_wet_stereo.mp3"
+ },
+ {
+  "slug": "PUZZLES/PUZZLE_Success_Bell_Voice_Three_Note_Climb_Wet_stereo.wav",
+  "name": "PUZZLE_Success_Bell_Voice_Three_Note_Climb_Wet",
+  "note": "鈴の声3音の上昇",
+  "dur": 1.6,
+  "mp3": "puzzle_success_bell_voice_three_note_climb_wet_stereo.mp3"
+ },
+ {
+  "slug": "PUZZLES/PUZZLE_Success_Bright_Voice_Two_Note_Fast_Delay_stereo.wav",
+  "name": "PUZZLE_Success_Bright_Voice_Two_Note_Fast_Delay",
+  "note": "明るい声2音・速い",
+  "dur": 0.83,
+  "mp3": "puzzle_success_bright_voice_two_note_fast_delay_stereo.mp3"
+ },
+ {
+  "slug": "USER_INTERFACES/Notifications/UI_Notification_Double_Tap_Soft_Bells_01_stereo.wav",
+  "name": "UI_Notification_Double_Tap_Soft_Bells_01",
+  "note": "柔らかい鈴を2回",
+  "dur": 1.01,
+  "mp3": "ui_notification_double_tap_soft_bells_01_stereo.mp3"
+ },
+ {
+  "slug": "USER_INTERFACES/Notifications/UI_Notification_3x_Soft_Bells_01_mono.wav",
+  "name": "UI_Notification_3x_Soft_Bells_01",
+  "note": "柔らかい鈴を3回",
+  "dur": 1.27,
+  "mp3": "ui_notification_3x_soft_bells_01_mono.mp3"
+ },
+ {
+  "slug": "USER_INTERFACES/Notifications/UI_Notification_Soft_Chord_01_stereo.wav",
+  "name": "UI_Notification_Soft_Chord_01",
+  "note": "柔らかい和音",
+  "dur": 0.97,
+  "mp3": "ui_notification_soft_chord_01_stereo.mp3"
+ },
+ {
+  "slug": "MAGIC_SPELLS/MAGIC_SPELL_Morphing_Synth_Harp_Scales_Subtle_mono.wav",
+  "name": "MAGIC_SPELL_Morphing_Synth_Harp_Scales_Subtle",
+  "note": "ハープの音階（魔法寄り）",
+  "dur": 1.13,
+  "mp3": "magic_spell_morphing_synth_harp_scales_subtle_mono.mp3"
+ },
+ {
+  "slug": "MAGIC_SPELLS/MAGIC_SPELL_Metallic_Rain_Up_Subtle_mono.wav",
+  "name": "MAGIC_SPELL_Metallic_Rain_Up_Subtle",
+  "note": "金属の粒が上へ（光の粒が立ちのぼる）",
+  "dur": 1.58,
+  "mp3": "magic_spell_metallic_rain_up_subtle_mono.mp3"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_04_stereo.wav",
+  "name": "MUSIC_EFFECT_Solo_Harp_Positive_04",
+  "note": "ハープの短句（休むの 07 の兄弟）",
+  "dur": 1.59,
+  "mp3": "music_effect_solo_harp_positive_04_stereo.mp3"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_Solo_Bell_Voice/MUSIC_EFFECT_Bell_Voice_Positive_06_stereo.wav",
+  "name": "MUSIC_EFFECT_Bell_Voice_Positive_06",
+  "note": "鈴の声の短句",
+  "dur": 1.62,
+  "mp3": "music_effect_bell_voice_positive_06_stereo.mp3"
+ },
+ {
+  "slug": "MUSIC_EFFECTS/Solo_Xylophone/MUSIC_EFFECT_Solo_Xylophone_Positive_04_stereo.wav",
+  "name": "MUSIC_EFFECT_Solo_Xylophone_Positive_04",
+  "note": "木琴の短句",
+  "dur": 0.94,
+  "mp3": "music_effect_solo_xylophone_positive_04_stereo.mp3"
+ }
+]

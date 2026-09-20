@@ -1,0 +1,497 @@
+[
+ {
+  "id": "white_strike",
+  "pick": "B",
+  "passed": true,
+  "redo": "A は月・B は人物 (旧版は竿だけで衝撃が無い)",
+  "seed": 457,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_shield_strike",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_wall_jab",
+  "pick": "old",
+  "passed": true,
+  "note": "新A/B は光のアーチになり 白光の壁・眩みの障壁・大光壁 と同じ絵。旧版 (光の棘の接写) を残す"
+ },
+ {
+  "id": "white_guard",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_bodyslam",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_fortress",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_rampart_riposte",
+  "pick": "B",
+  "passed": true,
+  "redo": "A/B とも人物 (旧版は光壁の一突きと同じ絵)",
+  "seed": 457,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_shield_bash",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_gate_close",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_rank_shield",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_shield_prayer",
+  "pick": "old",
+  "passed": true,
+  "note": "A/B とも盾が出ず祠になった",
+  "redo3": "3回とも盾が出ず祠や石碑になる (旧版=盾に灯)"
+ },
+ {
+  "id": "white_shield_verse",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_catalyst_retain",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_oath_shield",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_menace",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_seal_light",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_reaction_ward",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_decree",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_cowering_light",
+  "pick": "B",
+  "passed": true,
+  "redo": "A/B とも人物 (旧版は廊下のランタンだけ)",
+  "seed": 457,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_reaction_holy_wall",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_judgment",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_light_arrow",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_glory_chain",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_verdict_hammer",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_holy_maul",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_reaction_retribution",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_reaction_chant",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_reaction_bright_wall",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_hymn_wall",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_pavilion",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_ballista",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_warcry",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_anthem",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_heal",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_mass_heal",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_service",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_healing_verse",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_holy_oil",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_prayer_verse",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_miracle_light",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_mercy_staff",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_blade_prayer",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_spring",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_mending",
+  "pick": "B",
+  "passed": true,
+  "note": "A/B とも胸当てが出ず白い布",
+  "seed": 457,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_perm_chalice",
+  "pick": "A",
+  "passed": true,
+  "note": "A/B とも火鉢に見える",
+  "seed": 401,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_perm_apostle",
+  "pick": "A",
+  "passed": true,
+  "note": "A/B とも月",
+  "seed": 401,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_perm_bell",
+  "pick": "A",
+  "passed": true,
+  "note": "A/B とも空と月",
+  "seed": 401,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_perm_cathedral",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_reaction_martyr",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_catalyst_echo",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_reaction_sanctuary",
+  "pick": "A",
+  "passed": true,
+  "note": "A/B とも空",
+  "seed": 401,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_calling",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_muster",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_grand_rally",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_shield_call",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_maiden_prayer",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_hound_whistle",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_march_order",
+  "pick": "A",
+  "passed": true,
+  "redo": "A は雲・B は月 (旧版で可だが場が無地)",
+  "seed": 401,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_holy_procession",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_miracle_division",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_martyr_vow",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_rally",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_page_signal",
+  "pick": "B",
+  "passed": true,
+  "seed": 457,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_rank_thrust",
+  "pick": "A",
+  "passed": true,
+  "seed": 401,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_praise_chorus",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_grand_charge",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_banner",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_war_banner",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_war_horn",
+  "pick": "old",
+  "passed": true,
+  "note": "A/B とも月",
+  "redo3": "3回とも月 (旧版を残す)"
+ },
+ {
+  "id": "white_perm_squire",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_shieldmaiden",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_choir",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_banneret",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_band",
+  "pick": "C",
+  "passed": true,
+  "note": "A は背面が人間の騎士に見える・B は小さすぎ",
+  "seed": 483,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "white_perm_bandleader",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_perm_hound",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_archer",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_monk",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_candle",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_perm_page",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "white_page_rank",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "white_knight_charge",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "fusion_holy_stance",
+  "pick": "B",
+  "passed": true,
+  "note": "A/B とも光の半球が出ず街灯になった (旧版は竿と盾)",
+  "seed": 457,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5",
+  "redo3": "3シード 401/457/483 で作り直し (cards-white-orders-redo.json)"
+ },
+ {
+  "id": "fusion_pray_or_guard",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "fusion_page_ambush",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "fusion_archer_horn",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "fusion_retribution_blade",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "fusion_chant_altar",
+  "pick": "A",
+  "passed": true
+ }
+]

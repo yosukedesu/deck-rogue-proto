@@ -1,0 +1,30 @@
+{
+ "id": "gear_tie_cord__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "a thick dark waxed cord wound into a fat round coil and cinched tight with a big knot in the middle, the coil filling the frame, one loose end trailing off the bottom, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, rope ladder, noose, whip",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-18T06:08:52.963Z",
+ "judge": {
+  "pick": "A",
+  "seed": 7,
+  "at": "2026-09-18",
+  "note": "初回は結び目が読めない (振り子に見えた) → 太い紐の巻きで作り直し"
+ }
+}

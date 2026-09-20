@@ -202,15 +202,13 @@ describe('挑発 (嘲る道化)', () => {
     expect(s.enemies[0].intent!.actual).toBeGreaterThanOrEqual(15)
   })
 
-  it('伏せがあると別の行動になる (2026-09-03 賭け型化。2026-09-04 嘲り防御を撤去=弱腰の取りこぼし是正・用心の一撃13-17)', () => {
+  it('伏せがあると見破り (壊し) だけになる (2026-09-18 ユーザー裁定: 罠モデル「敵は伏せを見ない。例外はからくり壊しだけ」の取りこぼし=用心の一撃を撤去。Opus 白A/C「仕込むと殴られ、置かなければ守る=仕込むと損」)', () => {
     const def = getEnemyDef('enemy_joker')
     expect(def.movesVsSet).toBeDefined()
     const vsMoves = def.movesVsSet!.map((a) => def.moves.find((m) => m.id === a.to)!)
-    expect(vsMoves.some((m) => m.id === 'wild_swing')).toBe(false) // 大振り(15-19+脆弱2)は無い
-    const jab = vsMoves.find((m) => m.id === 'cautious_jab')!
-    expect([jab.min, jab.max]).toEqual([13, 17])
+    expect(vsMoves.map((m) => m.id)).toEqual(['call_bluff'])
+    expect(vsMoves[0].alsoDestroySet).toBe(true)
     expect(vsMoves.some((m) => m.kind === 'defend')).toBe(false) // 嘲り防御=1Eで大技を消すスイッチだった (Opusラン M)
-    expect(jab.inflict).toEqual({ status: 'vulnerable', amount: 1 }) // 旧7-10=「1Eで押せるスイッチ」の是正
   })
 
   it('ただし、はったりを見破る手段を持つ (伏せっぱなしで完封できない)', () => {

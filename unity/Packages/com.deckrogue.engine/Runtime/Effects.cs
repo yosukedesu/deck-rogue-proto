@@ -186,9 +186,12 @@ namespace DeckRogue.Engine
             "dealDamagePerAttackPlayed",
             "dealDamagePerWeak",
             "dealDamagePerMomentum",
+            "dealDamagePerLight",
+            "dealDamagePerSpark",
             "dealDamagePerHeal",
             "recycleExhaust",
             "dischargeAether",
+            "dischargeLight",
             "dischargeGrowth",
             "dealDamageCleave",
             "dealDamagePerBlock",
@@ -220,7 +223,10 @@ namespace DeckRogue.Engine
             "dealDamagePerCardPlayedTotal",
             "dealDamagePerEnergyMax",
             "dealDamagePerMomentum",
+            "dealDamagePerLight",
+            "dealDamagePerSpark",
             "dischargeAether",
+            "dischargeLight",
             "applyBurn",
             "shatterBlock",
             "confuse",
@@ -274,6 +280,33 @@ namespace DeckRogue.Engine
         /// 置物は判断を挟まず自動で発火する (発動/温存の確認があるのは伏せカードのみ)。
         /// </summary>
         /// <param name="only">誘発させる置物を絞る (進軍の号令=従者だけ。null=全置物)</param>
+        /// <summary>灯の火床 (2026-09-20 夜): このターン終了時に灯を火種に変えられる最大枚数 (火床が無ければ 0)。TS hearthSparkMax と同形</summary>
+        public static int HearthSparkMax(GameState state)
+        {
+            DeclarativeEffect hearth = null;
+            foreach (var p in state.Player.Permanents) foreach (var e in p.Def.Effects) if (hearth == null && e.Trigger == "onTurnEnd" && e.Effect == "lightToSparks") hearth = e;
+            if (hearth == null) return 0;
+            int per = Math.Max(1, hearth.Amount ?? 3);
+            return (state.Player.Light ?? 0) / per;
+        }
+
+        /// <summary>放出の後処理 (白 2026-09-20 夜): 残り火 (lightCarryHalf) があれば半分が残り、onLightDischarged を1回鳴らす。TS afterLightDischarge と同形</summary>
+        private static GameState AfterLightDischarge(GameState state, int spent, int enemyIndex)
+        {
+            bool carry = state.Player.Permanents.Any(p => p.Def.Effects.Any(e => e.Effect == "lightCarryHalf"));
+            GameState s = state;
+            if (carry && spent >= 2)
+            {
+                int kept = spent / 2;
+                s = s with { Player = s.Player with { Light = (s.Player.Light ?? 0) + kept } };
+                s = Events.Emit(s, new GameEvent_LightGained { Amount = kept, Source = "carry" });
+            }
+            return RunPermanentTriggers(s, "onLightDischarged", enemyIndex);
+        }
+
+        /// <summary>アンセム (blessRetainers) が底上げする従者の効果 = ダメージ・ブロック・回復の量だけ (2026-09-20 夜 裁定)。TS ANTHEM_EFFECTS</summary>
+        public static readonly HashSet<string> ANTHEM_EFFECTS = new HashSet<string> { "dealDamage", "dealDamageRandom", "dealDamageCleave", "dealDamageDrain", "gainBlock", "gainIceBlock", "gainHp" };
+
         public static GameState RunPermanentTriggers(
             GameState state,
             string trigger,
@@ -286,8 +319,9 @@ namespace DeckRogue.Engine
             // カードのプレイ中に誘発した置物の効果は「カードのプレイ」ではない:
             // 虚弱の25%減も勢いの加算も受けない (2026-09-05)
             bool prevCardPlay = state.ResolvingCardPlay == true;
+            string? prevPermanentUid = state.ResolvingPermanentUid;
             GameState s = state with { ResolvingCardPlay = false };
-            // アンセム (白 2026-08-31): blessRetainers 持ち置物の合計ぶん、従者の量つき効果を底上げする
+            // アンセム (白 2026-08-31): blessRetainers 持ち置物の合計ぶん、従者のダメージ・ブロック・回復の量を底上げする
             int anthem = 0;
             foreach (var p in state.Player.Permanents)
                 foreach (var e in p.Def.Effects)
@@ -321,26 +355,42 @@ namespace DeckRogue.Engine
                             bool fires = effect.Once != null ? n == 1 : n % (effect.Every ?? 1) == 0;
                             if (!fires) continue;
                         }
+                        // アンセムが乗るのはダメージ・ブロック・回復の量だけ (2026-09-20 夜 裁定。TS ANTHEM_EFFECTS と同形)
                         var boosted =
-                            anthem > 0 && permanent.Def.Retainer == true && effect.Amount != null
+                            anthem > 0 && permanent.Def.Retainer == true && effect.Amount != null && ANTHEM_EFFECTS.Contains(effect.Effect)
                                 ? effect with { Amount = effect.Amount + anthem }
                                 : effect;
                         // innate置物 (リーダーパッシブ・レリック) の解決中は鬼軍曹の怒りを立てない (2026-08-31)
                         bool isInnate = permanent.Innate == true;
+                        // 誰の誘発かを出来事に載せる (人形の盤面表示 2026-09-19: DamageDealt/BlockGained/HpHealed の sourceUid)。ルールは読まない
+                        s = s with { ResolvingPermanentUid = permanent.Uid };
+                        // 人形 (retainer・innate除く) の単体ダメージはランダムな生存敵へ (白 2026-09-20 裁定)。生存2体以上の時だけ RNG を1回消費。TS と同形
+                        int target = alive;
+                        if (permanent.Def.Retainer == true && permanent.Innate != true && IsDamageEffect(boosted) && boosted.Target != "all")
+                        {
+                            var aliveIdx = new List<int>();
+                            for (int i = 0; i < s.Enemies.Count; i++) if (s.Enemies[i].Hp > 0) aliveIdx.Add(i);
+                            if (aliveIdx.Count > 1)
+                            {
+                                var (k, rng) = Rng.NextInt(s.Rng, 0, aliveIdx.Count - 1);
+                                s = s with { Rng = rng };
+                                target = aliveIdx[k];
+                            }
+                        }
                         // 反復内蔵の置物 (反復の触媒 2026-09-12): 誘発ごとに効果を2回解決
                         for (int rep = 0; rep < (permanent.Def.Echo == true ? 2 : 1); rep++)
                         {
                             GameState next = ResolveEffectTargeted(
                                 isInnate ? s with { InnateResolving = true } : s,
                                 boosted,
-                                alive);
+                                target);
                             if (isInnate) next = next with { InnateResolving = false };
                             s = next;
                         }
                     }
                 }
             }
-            return s with { ResolvingCardPlay = prevCardPlay };
+            return s with { ResolvingCardPlay = prevCardPlay, ResolvingPermanentUid = prevPermanentUid };
         }
 
         /// <summary>
@@ -361,8 +411,61 @@ namespace DeckRogue.Engine
                     HealsThisTurn = (state.Player.HealsThisTurn ?? 0) + (state.ResolvingCardPlay == true ? 1 : 0),
                 },
             };
-            s = Events.Emit(s, new GameEvent_HpHealed { Amount = healed });
-            return RunPermanentTriggers(s, "onHealed", enemyIndex);
+            s = Events.Emit(s, new GameEvent_HpHealed { Amount = healed, SourceUid = state.ResolvingPermanentUid });
+            s = RunPermanentTriggers(s, "onHealed", enemyIndex);
+            // 灯 (白 2026-09-20 白の再設計): 回復するたび灯+1。過剰回復でも溜まる (onHealed と同じ回数論)
+            return GainLight(s, 1, "heal", enemyIndex);
+        }
+
+        /// <summary>
+        /// 灯+N (白 2026-09-20 白の再設計)。回復・人形の登場・ひなたのパッシブ・明示の札 (addLight/doubleLight) の全経路がここを通る。
+        /// 獲得の誘発 (onLightGained=灯の弩) は1段 (onGrowthGained と同型)。TS effects.ts gainLight と同形
+        /// </summary>
+        public static GameState GainLight(GameState state, int amount, string source, int enemyIndex)
+        {
+            if (amount <= 0) return state;
+            if (state.SuppressLightGain == true) return state; // 号令・大行列の中では灯を産まない (2026-09-20 裁定)
+            GameState s = state with { Player = state.Player with { Light = (state.Player.Light ?? 0) + amount } };
+            s = Events.Emit(s, new GameEvent_LightGained { Amount = amount, Source = source, SourceUid = state.ResolvingPermanentUid }); // sourceUid=灯を灯した置物 (演出用 2026-09-20 灯籠)
+            return FireGainTrigger(s, "onLightGained", enemyIndex);
+        }
+
+        /// <summary>
+        /// 置物が場に出た (プレイ・点灯=召喚・分列・直接プレイの全経路)。登場誘発 (onPermanentEntered) を回し、
+        /// 人形 (retainer・innate除く) なら点灯の定義 (白共通ルール 2026-09-20。旧・ひなたの駆けつけの格上げ):
+        /// ①灯+1 ②その人形の効果 (登場ごとを除く全トリガー) をすぐに1回ずつ解決。1登場=1回。TS enterPermanent と同形
+        /// </summary>
+        public static GameState EnterPermanent(GameState state, string uid, int enemyIndex, Func<CardInstance, bool>? only = null)
+        {
+            CardInstance? entered = state.Player.Permanents.FirstOrDefault(p => p.Uid == uid);
+            if (entered == null) return state;
+            GameState s = state with { LastEnteredPermanentUid = uid };
+            s = Events.Emit(s, new GameEvent_PermanentPlayed { CardId = entered.Def.Id });
+            s = RunPermanentTriggers(s, "onPermanentEntered", enemyIndex, only);
+            if (entered.Def.Retainer != true || entered.Innate == true) return s;
+            // 登場の灯+1 (旧・供給③) は廃止 (2026-09-20 夜 ユーザー裁定。人形は灯を使う側。TS enterPermanent と同形)
+            var triggers = new List<string>();
+            // onPlay は PlayCard が解決済み (工房産の人形が持ちうる) = 点灯では回さない
+            foreach (var e in entered.Def.Effects) if (e.Trigger != "onPermanentEntered" && e.Trigger != "onPlay" && !triggers.Contains(e.Trigger)) triggers.Add(e.Trigger);
+            if (triggers.Count == 0) return s; // 登場ごとの効果しか持たない人形 (鐘・大鐘) は二重にしない
+            foreach (var tr in triggers) s = RunPermanentTriggers(s, tr, enemyIndex, p => p.Uid == uid);
+            return Events.Emit(s, new GameEvent_RetainerRushed { CardId = entered.Def.Id });
+        }
+
+        /// <summary>号令 (白 2026-09-20): 場の人形の効果をトリガーを問わず (登場ごとを除く) 今すぐ1回ずつ解決。TS rallyRetainers と同形</summary>
+        private static GameState RallyRetainers(GameState state, int enemyIndex)
+        {
+            Func<CardInstance, bool> isRetainer = p => p.Def.Retainer == true && p.Innate != true;
+            var triggers = new List<string>();
+            foreach (var p in state.Player.Permanents)
+            {
+                if (!isRetainer(p)) continue;
+                foreach (var e in p.Def.Effects) if (e.Trigger != "onPermanentEntered" && e.Trigger != "onPlay" && !triggers.Contains(e.Trigger)) triggers.Add(e.Trigger); // onPlay (工房産の人形) はプレイ時に解決済み
+            }
+            bool prev = state.SuppressLightGain == true;
+            GameState s = state with { SuppressLightGain = true }; // 号令の中では灯を産まない (2026-09-20 裁定)
+            foreach (var tr in triggers) s = RunPermanentTriggers(s, tr, enemyIndex, isRetainer);
+            return s with { SuppressLightGain = prev };
         }
 
         /// <summary>
@@ -401,7 +504,7 @@ namespace DeckRogue.Engine
                 amount = Math.Max(1, (int)Math.Floor(amount * 0.75));
             }
             GameState s = state with { Player = state.Player with { Block = state.Player.Block + amount } };
-            s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = amount });
+            s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = amount, SourceUid = state.ResolvingPermanentUid });
             s = AngerGuardWatchers(s);
             return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
         }
@@ -530,9 +633,12 @@ namespace DeckRogue.Engine
                 if (c.Blaze == true && !IsBlazing(state)) continue;
                 if (c.MinGrowth != null && state.Player.Growth < c.MinGrowth.Value) continue;
                 if (c.MinMomentum != null && state.Player.Momentum < c.MinMomentum.Value) continue;
+                if (c.MinLight != null && (state.Player.Light ?? 0) < c.MinLight.Value) continue;
                 if (c.MinEnergyMax != null && state.Player.EnergyMaxAtTurnStart < c.MinEnergyMax.Value) continue;
                 // 行動種別の条件 (共鳴する茨 2026-09-07): 強化・応援だけを打ち消す限定リアクション
                 if (c.ActionKinds != null && !c.ActionKinds.Contains(win.Kind)) continue;
+                // 行動種別の除外 (聖罰の障壁 2026-09-18): 攻撃以外の行動で鳴る
+                if (c.ActionKindsNot != null && c.ActionKindsNot.Contains(win.Kind)) continue;
                 if (c.HealedThisTurn == true && (state.Player.HealsThisTurn ?? 0) <= 0) continue;
                 return true;
             }
@@ -790,12 +896,27 @@ namespace DeckRogue.Engine
         public static string SetCardLiveDamage(GameState state, CardDef def, int? enemyIndex = null)
         {
             var vals = new List<string>();
+            // 確認の窓では効果ごとの窓条件を実処理と同じに読む (2026-09-18 Opus 白C: 報復の光の条件つき+10 が不成立でも満額で出ていた)
+            var win = enemyIndex.HasValue ? WindowFromPending(state) : null;
             if (def.Effects != null)
             {
                 for (int i = 0; i < def.Effects.Count; i++)
                 {
                     var e = def.Effects[i];
                     if ((e.Effect != "dealDamage" && e.Effect != "counter") || !e.Amount.HasValue) continue;
+                    var c = e.Condition;
+                    if (win != null && c != null)
+                    {
+                        if (c.MinActionValue != null && win.Actual < c.MinActionValue.Value) continue;
+                        if (c.MaxActionValue != null && win.Actual > c.MaxActionValue.Value) continue;
+                        if (c.LastActionNoHpLoss == true && (win.Stage != "post" || win.HpLoss > 0)) continue;
+                        if (c.MinDamageTaken != null && (win.Stage != "post" || win.HpLoss < c.MinDamageTaken.Value)) continue;
+                        if (c.PerfectBlockThisPhase == true)
+                        {
+                            vals.Add((e.Effect == "counter" ? "返し" : "ダメージ") + PlayerDamageAfterModifiers(state, e.Amount.Value) + "（この敵フェーズを完全に凌いだら）");
+                            continue;
+                        }
+                    }
                     int live = PlayerDamageAfterModifiers(state, e.Amount.Value);
                     // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3)
                     var bd = enemyIndex.HasValue ? DamageBreakdownOf(state, enemyIndex.Value, e.Amount.Value, e.Pierce == true, true, false) : null; // 勢いはリアクションに乗らない (2026-09-14 Opus AB3)
@@ -1000,8 +1121,16 @@ namespace DeckRogue.Engine
         /// <summary>全敵の合計 (被ダメ予測の分子。TS summary.ts incomingTotal)</summary>
         public static int IncomingTotal(GameState s)
         {
+            // 敵フェーズの途中は行動を終えた敵 (窓の敵より前) を数えない・身代わりの符は最初の攻撃1回ぶんを0に (2026-09-20 Opus 火種A/B/C)。TS summary.incomingTotal と同形
+            int from = (s.EnemyPhase == true && s.PendingWindow != null) ? s.PendingWindow.EnemyIndex : 0;
+            bool nullify = s.NullifyNextAttack == true;
             int sum = 0;
-            for (int i = 0; i < s.Enemies.Count; i++) sum += IncomingFrom(s, i);
+            for (int i = from; i < s.Enemies.Count; i++)
+            {
+                int v = IncomingFrom(s, i);
+                if (v > 0 && nullify) { nullify = false; continue; }
+                sum += v;
+            }
             return sum;
         }
 
@@ -1205,6 +1334,7 @@ namespace DeckRogue.Engine
                     Exposed = exposed ? true : (bool?)null,
                     Pierced = pierce && !shellUp && enemy.Block > 0 ? true : (bool?)null,
                     Blocked = blocked > 0 ? blocked : (int?)null,
+                    SourceUid = state.ResolvingPermanentUid,
                 });
             s = ApplyDamageInterrupts(s, enemyIndex);
             s = BreakBurrowIfCracked(s, enemyIndex);
@@ -1228,9 +1358,10 @@ namespace DeckRogue.Engine
                     }
                 }
             }
-            // とげ (敵の報復): 攻撃ヒットごとにNダメ反射。そのヒットで倒れたら反射しない
+            // とげ (敵の報復): カードのプレイによる攻撃ヒットごとにNダメ反射。そのヒットで倒れたら反射しない。
+            // 人形・置物の誘発・仕込み札の返し・パッシブ・ギアのダメージには反射しない (2026-09-20。勢い・虚弱と同じ線 ResolvingCardPlay)
             var struck = s.Enemies[enemyIndex];
-            if ((struck.Thorns ?? 0) > 0 && struck.Hp > 0)
+            if ((struck.Thorns ?? 0) > 0 && struck.Hp > 0 && s.ResolvingCardPlay == true)
             {
                 int reflect = struck.Thorns!.Value;
                 int pBlocked = Math.Min(s.Player.Block, reflect);
@@ -1490,6 +1621,15 @@ namespace DeckRogue.Engine
                     s = Events.Emit(s, new GameEvent_AetherGained { Amount = amount });
                     return RunPermanentTriggers(s, "onAetherGained", enemyIndex);
                 }
+                case "addLight":
+                    // 灯+N (白 2026-09-20)。リーダーパッシブ (innate 置物) の解決中なら出どころは「灯匠」
+                    return GainLight(state, effect.Amount ?? 0, state.ResolvingPermanentUid != null && state.ResolvingPermanentUid.StartsWith("leader_", StringComparison.Ordinal) ? "passive" : "card", enemyIndex);
+                case "doubleLight":
+                {
+                    // 灯の倍化 (白 R・消滅必須): 現在の灯ぶんを加算する = 獲得の誘発が乗る
+                    int cur = state.Player.Light ?? 0;
+                    return cur > 0 ? GainLight(state, cur, "card", enemyIndex) : state;
+                }
                 case "applyBurn":
                 {
                     // 延焼 (赤): 敵に蓄積する継続ダメージ
@@ -1569,6 +1709,12 @@ namespace DeckRogue.Engine
                 case "dealDamagePerPermanent":
                     // 集結 (白): 置物の数×X (リーダーパッシブ・レリックは数えない)
                     return DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * CountedPermanents(state), effect.Pierce == true);
+                case "dealDamagePerLight":
+                {
+                    // 灯篭の人形 (白 R 2026-09-20 灯と人形の結び): 灯2につき amount (切り捨て)。灯は消費しない。0なら打たない。TS と同形
+                    int lit = (int)Math.Floor((state.Player.Light ?? 0) / 2.0) * (effect.Amount ?? 1);
+                    return lit <= 0 ? state : DealDamageToEnemy(state, enemyIndex, lit, effect.Pierce == true);
+                }
                 case "dealDamageDrain":
                 {
                     // ドレイン (黒の専売): Xダメージ + floor(X/2)回復
@@ -1609,13 +1755,8 @@ namespace DeckRogue.Engine
                             Token = true,
                         };
                         batch.Add(token.Uid);
-                        s = s with
-                        {
-                            Player = s.Player with { Permanents = s.Player.Permanents.Concat(new[] { token }).ToList() },
-                            LastEnteredPermanentUid = token.Uid,
-                        };
-                        s = Events.Emit(s, new GameEvent_PermanentPlayed { CardId = src.Def.Id });
-                        s = RunPermanentTriggers(s, "onPermanentEntered", enemyIndex, p => p.Uid == token.Uid || !batch.Contains(p.Uid));
+                        s = s with { Player = s.Player with { Permanents = s.Player.Permanents.Concat(new[] { token }).ToList() } };
+                        s = EnterPermanent(s, token.Uid, enemyIndex, p => p.Uid == token.Uid || !batch.Contains(p.Uid));
                     }
                     return Events.Emit(s, new GameEvent_RetainersDuplicated { Count = snapshot.Count });
                 }
@@ -1624,20 +1765,18 @@ namespace DeckRogue.Engine
                     return state;
                 case "activateEnteredRetainer":
                 {
-                    // 駆けつけ (ひなたのパッシブ 2026-09-06): 場に出た従者のターン開始効果を登場時に1回解決
-                    var uid = state.LastEnteredPermanentUid;
-                    CardInstance? entered = uid != null ? state.Player.Permanents.FirstOrDefault(p => p.Uid == uid) : null;
-                    if (entered == null || entered.Def.Retainer != true || entered.Innate == true) return state;
-                    if (!entered.Def.Effects.Any(e => e.Trigger == "onTurnStart")) return state;
-                    var s = RunPermanentTriggers(state, "onTurnStart", enemyIndex, p => p.Uid == entered.Uid);
-                    return Events.Emit(s, new GameEvent_RetainerRushed { CardId = entered.Def.Id });
+                    // 駆けつけ (ひなたのパッシブ 2026-09-06): 場に出た従者の効果を登場時に1回解決。
+                    // 2026-09-19: 毎ターン開始時だけでなく攻撃ごと (旗・犬・燭) などトリガーを問わず1回ずつ。登場ごと (onPermanentEntered) だけは
+                    // 対象外 (鐘・大鐘は自分の登場でもとから鳴る = 二重にしない)。TS effects.ts と同じ順 (効果の並び順で最初に現れたトリガーから)
+                    // 2026-09-20 白の再設計: 点灯の定義 (白共通ルール) へ格上げ = EnterPermanent が全リーダーで解決する。
+                    // この効果は旧セーブ (ひなたのパッシブに残る) との互換のための no-op。TS effects.ts と同じ
+                    return state;
                 }
                 case "triggerRetainersNow":
                 {
-                    // 進軍の号令 (白 2026-09-06 本家 Multi-Cast): 従者のターン開始効果を今すぐ1回解決
-                    Func<CardInstance, bool> isRetainer = p => p.Def.Retainer == true && p.Innate != true;
-                    int n = state.Player.Permanents.Count(p => isRetainer(p));
-                    var s = RunPermanentTriggers(state, "onTurnStart", enemyIndex, isRetainer);
+                    // 点灯の合図 (2026-09-20 白の再設計で号令の中核 C1E・灯2): 人形の効果をトリガーを問わず (登場ごとを除く) 今すぐ1回ずつ
+                    int n = state.Player.Permanents.Count(p => p.Def.Retainer == true && p.Innate != true);
+                    var s = RallyRetainers(state, enemyIndex);
                     return Events.Emit(s, new GameEvent_RetainersTriggered { Count = n });
                 }
                 case "summonPermanent":
@@ -1654,13 +1793,8 @@ namespace DeckRogue.Engine
                             Def = def,
                             Token = true,
                         };
-                        s = s with
-                        {
-                            Player = s.Player with { Permanents = s.Player.Permanents.Concat(new[] { token }).ToList() },
-                            LastEnteredPermanentUid = token.Uid,
-                        };
-                        s = Events.Emit(s, new GameEvent_PermanentPlayed { CardId = def.Id });
-                        s = RunPermanentTriggers(s, "onPermanentEntered", enemyIndex);
+                        s = s with { Player = s.Player with { Permanents = s.Player.Permanents.Concat(new[] { token }).ToList() } };
+                        s = EnterPermanent(s, token.Uid, enemyIndex); // 登場誘発 + 点灯の定義 (灯+1・すぐに1回動く)
                     }
                     return s;
                 }
@@ -1689,7 +1823,9 @@ namespace DeckRogue.Engine
                     if (enemy == null || enemy.Hp <= 0) return state;
                     int shattered = enemy.Block;
                     GameState s = state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e with { Block = 0 }) };
-                    if (shattered > 0) s = Events.Emit(s, new GameEvent_BlockShattered { EnemyIndex = enemyIndex, Amount = shattered });
+                    // 割るブロックが無ければ打たない (2026-09-18: 0 を渡すと成長だけの幽霊ヒットが出ていた。TS と同じ)
+                    if (shattered <= 0) return s;
+                    s = Events.Emit(s, new GameEvent_BlockShattered { EnemyIndex = enemyIndex, Amount = shattered });
                     return DealDamageToEnemy(s, enemyIndex, shattered, effect.Pierce == true);
                 }
                 case "dealDamageExecute":
@@ -1765,7 +1901,7 @@ namespace DeckRogue.Engine
                     int block = state.Player.Momentum * (effect.Amount ?? 0);
                     if (block <= 0) return state;
                     GameState s = state with { Player = state.Player with { Block = state.Player.Block + block } };
-                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block });
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid });
                     return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
                 }
                 case "addGrowthPerMomentum":
@@ -1874,7 +2010,7 @@ namespace DeckRogue.Engine
                     {
                         Player = state.Player with { Momentum = 0, Block = state.Player.Block + block },
                     };
-                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block });
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid });
                     return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
                 }
                 case "dischargeMomentumDamage":
@@ -2001,6 +2137,143 @@ namespace DeckRogue.Engine
                     s = Events.Emit(s, new GameEvent_AetherDischarged { Spent = spent });
                     return DealDamageToEnemy(s, enemyIndex, spent * (effect.Amount ?? 0), effect.Pierce == true);
                 }
+                case "dischargeLight":
+                {
+                    // 灯の放出 (白 2026-09-20): 灯×amount のダメージを与えて灯を0に。灯0なら不発 (消費しない)。
+                    // target:'all' は最初の解決で生存全体へ一括 (外側の敵ループの2体目以降は灯0で no-op)。対象が倒れていれば消費しない。TS と同形
+                    int spent = state.Player.Light ?? 0;
+                    if (spent <= 0) return state;
+                    bool anyTarget = effect.Target == "all"
+                        ? state.Enemies.Any(e => e.Hp > 0)
+                        : (enemyIndex >= 0 && enemyIndex < state.Enemies.Count && state.Enemies[enemyIndex].Hp > 0);
+                    if (!anyTarget) return state;
+                    GameState s = state with { Player = state.Player with { Light = 0 } };
+                    s = Events.Emit(s, new GameEvent_LightDischarged { Spent = spent });
+                    if (effect.Target == "all")
+                    {
+                        // 全体は灯×amount を一括
+                        int dmg = spent * (effect.Amount ?? 0);
+                        for (int i = 0; i < s.Enemies.Count; i++)
+                        {
+                            if (s.Enemies[i].Hp > 0) s = DealDamageToEnemy(s, i, dmg, effect.Pierce == true);
+                        }
+                        return AfterLightDischarge(s, spent, enemyIndex);
+                    }
+                    // 単体は灯1につき1ヒット (2026-09-20 裁定: 装甲の1ヒット上限を分けて越える)。TS と同形
+                    for (int h = 0; h < spent; h++)
+                    {
+                        var en = EnemyAt(s, enemyIndex);
+                        if (en == null || en.Hp <= 0) break;
+                        s = DealDamageToEnemy(s, enemyIndex, effect.Amount ?? 0, effect.Pierce == true);
+                    }
+                    return AfterLightDischarge(s, spent, enemyIndex);
+                }
+                case "dischargeLightRally":
+                {
+                    // 灯火の大行列 (白 R 2026-09-20): 灯を全て放出し、灯1につき全人形が amount 回動く。人形0なら不発 (消費しない)
+                    int spent = state.Player.Light ?? 0;
+                    if (spent <= 0) return state;
+                    int n = state.Player.Permanents.Count(p => p.Def.Retainer == true && p.Innate != true);
+                    if (n == 0) return state;
+                    GameState s = state with { Player = state.Player with { Light = 0 } };
+                    s = Events.Emit(s, new GameEvent_LightDischarged { Spent = spent });
+                    int times = spent * (effect.Amount ?? 1);
+                    for (int i = 0; i < times; i++) s = RallyRetainers(s, enemyIndex);
+                    s = Events.Emit(s, new GameEvent_RetainersTriggered { Count = n * times });
+                    return AfterLightDischarge(s, spent, enemyIndex);
+                }
+                case "dischargeLightWeaken":
+                {
+                    // 眩む閃光 (白 U 2026-09-20 夜): 灯を全て放出し、灯3につき敵全体に威圧 amount。灯3未満なら不発。TS と同形
+                    int spent = state.Player.Light ?? 0;
+                    int stacks = (spent / 3) * (effect.Amount ?? 1);
+                    if (spent <= 0 || stacks <= 0) return state;
+                    GameState s = state with { Player = state.Player with { Light = 0 } };
+                    s = Events.Emit(s, new GameEvent_LightDischarged { Spent = spent });
+                    for (int i = 0; i < s.Enemies.Count; i++)
+                    {
+                        if (s.Enemies[i].Hp > 0) s = ResolveEffect(s, new DeclarativeEffect { Trigger = effect.Trigger, Effect = "weakenEnemy", Amount = stacks }, i);
+                    }
+                    return AfterLightDischarge(s, spent, enemyIndex);
+                }
+                case "consumeLight":
+                {
+                    // 灯の鍛冶 (白 U): 灯を全て失う (ダメージ無しの放出。残り火・放出の誘発は鳴らない)
+                    int spent = state.Player.Light ?? 0;
+                    if (spent <= 0) return state;
+                    return Events.Emit(state with { Player = state.Player with { Light = 0 } }, new GameEvent_LightDischarged { Spent = spent });
+                }
+                case "gainBlockPerLight":
+                {
+                    // 灯の壁 (白 U): 灯2につき amount ブロック (灯は失わない)
+                    int block = ((state.Player.Light ?? 0) / 2) * (effect.Amount ?? 0);
+                    if (block <= 0) return state;
+                    GameState s = state with { Player = state.Player with { Block = state.Player.Block + block } };
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid });
+                    return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
+                }
+                case "drawCardsPerLight":
+                {
+                    // 灯の手帳 (白 C): 灯2につき amount ドロー (上限 amountMax)
+                    int n = Math.Min(effect.AmountMax ?? 99, ((state.Player.Light ?? 0) / 2) * (effect.Amount ?? 1));
+                    return n > 0 ? DrawCards(state, n) : state;
+                }
+                case "lightCarryHalf":
+                    // 残り火 (白 R 置物): 常在の印。AfterLightDischarge が場の有無を読む
+                    return state;
+                case "addCardToDraw":
+                {
+                    // 火種撒き (白 2026-09-20 夜): summonId のトークン札を山札のランダムな位置へ (がらくたと同じ差し込み)。TS と同形
+                    var def = Content.GetCardDef(effect.SummonId ?? "");
+                    int n = effect.Amount ?? 1;
+                    var drawPile = state.Player.DrawPile.ToList();
+                    var rng = state.Rng;
+                    for (int i = 0; i < n; i++)
+                    {
+                        var (pos, nextRng) = Rng.NextInt(rng, 0, drawPile.Count);
+                        rng = nextRng;
+                        drawPile.Insert(pos, new CardInstance { Uid = $"tok_{state.EventLog.Count}_{i}_{def.Id}", Def = def, Token = true });
+                    }
+                    GameState s = state with { Rng = rng, Player = state.Player with { DrawPile = drawPile } };
+                    return Events.Emit(s, new GameEvent_CardsAddedToDraw { CardId = def.Id, Count = n });
+                }
+                case "lightToSparks":
+                {
+                    // 灯の火床 (白 R 置物): ターン終了時に選んだ枚数 (EndTurn.HearthSparks) だけ灯 amount につき火種1を山札へ。TS と同形
+                    int per = Math.Max(1, effect.Amount ?? 3);
+                    int n = Math.Min(state.HearthSparks ?? 0, (state.Player.Light ?? 0) / per);
+                    if (n <= 0) return state;
+                    GameState s = state with { Player = state.Player with { Light = (state.Player.Light ?? 0) - n * per } };
+                    s = Events.Emit(s, new GameEvent_LightDischarged { Spent = n * per });
+                    return ResolveEffect(s, new DeclarativeEffect { Trigger = effect.Trigger, Effect = "addCardToDraw", SummonId = effect.SummonId ?? "white_spark_token", Amount = n }, enemyIndex);
+                }
+                case "dealDamagePerSpark":
+                    // 火種の嵐 (白 R): この戦闘で撃った火種×amount
+                    return (state.Player.SparksPlayedThisCombat ?? 0) <= 0
+                        ? state
+                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.SparksPlayedThisCombat ?? 0), effect.Pierce == true);
+                case "triggerRandomRetainer":
+                {
+                    // 灯の継ぎ手 (白 U 置物): 場の人形1体 (ランダム=ランRNG) の効果を今1回解決 (号令の小型。灯は産まない)。TS と同形
+                    var retainers = state.Player.Permanents.Where(p => p.Def.Retainer == true && p.Innate != true).ToList();
+                    if (retainers.Count == 0) return state;
+                    var rng = state.Rng;
+                    int pick = 0;
+                    if (retainers.Count > 1)
+                    {
+                        var (r, nextRng) = Rng.NextInt(rng, 0, retainers.Count - 1);
+                        rng = nextRng;
+                        pick = r;
+                    }
+                    var target = retainers[pick];
+                    var triggers = new List<string>();
+                    foreach (var e in target.Def.Effects) if (e.Trigger != "onPermanentEntered" && e.Trigger != "onPlay" && !triggers.Contains(e.Trigger)) triggers.Add(e.Trigger);
+                    bool prev = state.SuppressLightGain == true;
+                    GameState s = state with { Rng = rng, SuppressLightGain = true };
+                    foreach (var tr in triggers) s = RunPermanentTriggers(s, tr, enemyIndex, p => p.Uid == target.Uid);
+                    s = s with { SuppressLightGain = prev };
+                    return Events.Emit(s, new GameEvent_RetainersTriggered { Count = 1 });
+                }
                 case "gainEnergyMax":
                 {
                     // 緑の柱①ランプ: 上限のみ増える。恩恵は次の自ターンから
@@ -2086,6 +2359,14 @@ namespace DeckRogue.Engine
             var c = effect.Condition;
             if (c != null)
             {
+                // 敵の行動後の置物 (onEnemyActed): 行動の種別は LastAction.Kind で判定 (白 眩みの障壁 2026-09-18)
+                if (effect.Trigger == "onEnemyActed" && (c.ActionKinds != null || c.ActionKindsNot != null))
+                {
+                    var k = state.LastAction?.Kind;
+                    if (k == null) return false;
+                    if (c.ActionKinds != null && !c.ActionKinds.Contains(k)) return false;
+                    if (c.ActionKindsNot != null && c.ActionKindsNot.Contains(k)) return false;
+                }
                 // 参照シナジー (緑 2026-09-03 本家6型): 意図・急所・守り成功・とどめ・完全に凌いだ
                 EnemyState? e = enemyIndex != null ? EnemyAt(state, enemyIndex.Value) : null;
                 if (c.EnemyIntent != null || c.EnemyIntentNot != null)
@@ -2121,6 +2402,8 @@ namespace DeckRogue.Engine
             // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
             if (effect.Condition?.MinGrowth != null && state.Player.Growth < effect.Condition.MinGrowth.Value) return false;
             if (effect.Condition?.MinMomentum != null && state.Player.Momentum < effect.Condition.MinMomentum.Value) return false;
+            // 灯しきい値 (白 2026-09-20 灼く光・光の裁き): 解決の時点の灯
+            if (effect.Condition?.MinLight != null && (state.Player.Light ?? 0) < effect.Condition.MinLight.Value) return false;
             // 上限しきい値 (緑 2026-09-07 若幹の一撃・大地の唸り): ターン開始時の上限を読む
             if (effect.Condition?.MinEnergyMax != null && state.Player.EnergyMaxAtTurnStart < effect.Condition.MinEnergyMax.Value) return false;
             // 回復参照 (白 2026-09-06 修繕の祈り): このターンに1回でも回復していたら (過剰回復も数える)

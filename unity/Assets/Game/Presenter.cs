@@ -56,6 +56,22 @@ namespace DeckRogue.Game
         }
 
         /// <summary>直前に見た位置より後に新しいイベントがあるか (決着の最後の打撃を見せ切るための判定 2026-09-14)</summary>
+        /// <summary>まだ演出していない灯の出来事 (LightGained/LightSpent/LightDischarged) を逆にたどった「その前の灯」(2026-09-20 灯籠。組み直しの初期値)。未演出が無ければ今の灯</summary>
+        public static int LightBefore(GameState combat)
+        {
+            if (combat == null) return 0;
+            int v = combat.Player.Light ?? 0;
+            if (!HasNewEvents(combat)) return v;
+            var log = combat.EventLog;
+            for (int i = log.Count - 1; i >= _seen && i >= 0; i--)
+            {
+                if (log[i] is GameEvent_LightGained lg) v -= lg.Amount;
+                else if (log[i] is GameEvent_LightSpent ls) v += ls.Amount;
+                else if (log[i] is GameEvent_LightDischarged ld) v = ld.Spent;
+            }
+            return Math.Max(0, v);
+        }
+
         public static bool HasNewEvents(GameState combat)
         {
             if (combat == null) return false;
@@ -120,6 +136,7 @@ namespace DeckRogue.Game
                 Tween.After(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
             }
+            HoldLightIfAny(log, _seen, Mathf.Min(delay, 6f));
             _seen = log.Count;
             _seenCombat = combat;
             Tween.After(Mathf.Min(delay, 6f), () =>
@@ -171,8 +188,16 @@ namespace DeckRogue.Game
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
             }
+            HoldLightIfAny(log, _seen, delay);
             _seen = log.Count;
             _seenCombat = combat;
+        }
+
+        /// <summary>灯の出来事が未演出にあれば、粒が届くまで灯籠の見せている値を組み直しに保たせる (2026-09-20 灯籠)</summary>
+        static void HoldLightIfAny(IReadOnlyList<GameEvent> log, int from, float delay)
+        {
+            for (int i = Math.Max(0, from); i < log.Count; i++)
+                if (log[i] is GameEvent_LightGained || log[i] is GameEvent_LightSpent || log[i] is GameEvent_LightDischarged) { LightUi.HoldFor(delay + 1.2f); return; }
         }
 
         // ---- からくり (仕込み札) の演出 (2026-09-17 ユーザー「戦闘の演出で足りていないもの」→ ⑤ リアクション発動から) ----
@@ -414,6 +439,43 @@ namespace DeckRogue.Game
                     break;
                 }
             }
+        }
+
+        /// <summary>灯の出どころ (2026-09-20 灯籠): 人形ならその人形、リーダーのパッシブならひなたの竿の灯籠 (絵の右上)、回復・札ならひなたの胸</summary>
+        static Vector2 LightSourcePos(GameRoot g, RectTransform fx, GameEvent_LightGained lg, ReactionCtx ctx)
+        {
+            var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
+            Vector2 body = ps != null ? Tween.CenterIn(ps, fx) : (g.Anchor("player") != null ? Tween.CenterIn(g.Anchor("player"), fx) : Vector2.zero);
+            string uid = lg.SourceUid;
+            if (uid != null && g.Battle != null)
+            {
+                var ds = g.Battle.DollSprite(uid);
+                if (ds != null) return Tween.CenterIn(ds, fx);
+            }
+            if (lg.Source == "passive" || (uid != null && uid.StartsWith("leader_")))
+            {   // 竿の先の灯籠: 絵の右上 (幅の 0.35・高さの 0.15)
+                if (ps != null) return body + new Vector2(ps.rect.width * 0.35f, ps.rect.height * 0.15f);
+                return body + new Vector2(60f, 40f);
+            }
+            return body + new Vector2(0f, ps != null ? ps.rect.height * 0.1f : 20f);
+        }
+
+        /// <summary>舞台の人形の中心 (号令・大行列の的)。見えている盤面の人形を点灯した順に</summary>
+        static List<Vector2> DollTargets(GameRoot g, RectTransform fx, ReactionCtx ctx)
+        {
+            var list = new List<Vector2>();
+            var board = ctx != null && ctx.Prev != null ? ctx.Prev : (g.Rs != null ? g.Rs.Combat : null);
+            if (board == null || g.Battle == null) return list;
+            try
+            {
+                foreach (var d in g.Battle.StageDolls(board))
+                {
+                    var spr = g.Battle.DollSprite(d.Uid);
+                    if (spr != null) list.Add(Tween.CenterIn(spr, fx));
+                }
+            }
+            catch (Exception) { }
+            return list;
         }
 
         /// <summary>エナジーを払った演出 (2026-09-17 ⑦): 輪が跳ねる。X の札は払った量 (コマンド前後のエナジーの差) ぶんの真鍮の玉が輪から行き先へ飛び、「X = N」の判</summary>
@@ -868,6 +930,46 @@ namespace DeckRogue.Game
                     Tween.After(0.3f, () => Tween.Float(fx, pos + new Vector2(0f, 96f), "HP " + ds.Hp + " で踏みとどまった", PaperFx.BrassLight, 24, 30f, 1.2f));
                     break;
                 }
+                case GameEvent_RetainerRushed rr:
+                {
+                    // 駆けつけ (ひなたのパッシブ): 従者が出た瞬間にそのターン開始効果が1回解決する。効果の絵 (ダメージの数字・盾・回復) は
+                    // 続く出来事が出すが、回復が満タンで空振る時などは何も見えないので、リーダーの胸元に判を押して「鳴った」を見せる (2026-09-19
+                    // ユーザー「ひなたのパッシブが従者がでても誘発してない」= 誘発はしていたが判と log の行が無く、満タンの回復では見えなかった)
+                    Audio.Key("RetainerRushed");
+                    // 人形が舞台に立っていれば (2026-09-19 人形の盤面表示) その人形の頭上に判。無ければ従来どおりリーダーの胸元
+                    var dollPan = g.Battle != null ? g.Battle.LastDollPanel(g.Rs != null ? g.Rs.Combat : null, rr.CardId) : null;
+                    var dollSpr = dollPan != null ? dollPan.Find("sprite") as RectTransform : null;
+                    if (dollSpr != null)
+                    {
+                        Vector2 dp = Tween.CenterIn(dollSpr, fx);
+                        Tween.RingBurst(fx, dp + new Vector2(0f, -dollSpr.rect.height * 0.4f), PaperFx.BrassLight, 120f, 0.3f);
+                        Tween.Stamp(fx, dp + new Vector2(0f, dollSpr.rect.height * 0.55f + 14f), "点灯", PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 17, 0.6f, -6f);
+                        break;
+                    }
+                    var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    var prt = playerRt;
+                    if (pSpr == null && prt == null) return;
+                    Vector2 pos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(prt, fx);
+                    Tween.RingBurst(fx, pos, PaperFx.BrassLight, 150f, 0.3f);
+                    Tween.Stamp(fx, pos + new Vector2(0f, 40f), "点灯 " + CardText.CardName(rr.CardId), PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 20, 0.6f, -6f);
+                    break;
+                }
+                case GameEvent_TokenDestroyed td:
+                {   // 灯が消える (敵の人形壊し。2026-09-19 人形の盤面表示): その人形が灰になって崩れる。uid が無い古いログは同じ札の最後の人形
+                    Audio.Key("TokenDestroyed");
+                    if (g.Battle == null) return;
+                    string uid = td.Uid ?? g.Battle.DollUidByCard(td.CardId);
+                    if (uid != null) g.Battle.KillDoll(g, uid, false);
+                    break;
+                }
+                case GameEvent_RetainerSacrificed rs:
+                {   // 灯の捧げ (自分で消す): 真鍮の「捧げた」
+                    Audio.Key("TokenDestroyed");
+                    if (g.Battle == null) return;
+                    string uid = rs.Uid ?? g.Battle.DollUidByCard(rs.CardId);
+                    if (uid != null) g.Battle.KillDoll(g, uid, true);
+                    break;
+                }
             }
         }
 
@@ -993,11 +1095,13 @@ namespace DeckRogue.Game
         static bool IsTrapEvent(GameEvent ev)
         {
             return ev is GameEvent_ReactionTriggered || ev is GameEvent_ReactionHeld || ev is GameEvent_SetCardExpired || ev is GameEvent_SetCardDestroyed || ev is GameEvent_ReactionWhiffed || ev is GameEvent_ActionNegated
-                || ev is GameEvent_GearUsed || ev is GameEvent_DeathSaved;   // ギア (2026-09-17 裁定4: からくりと同じ演出) と致死を耐えた判
+                || ev is GameEvent_GearUsed || ev is GameEvent_DeathSaved   // ギア (2026-09-17 裁定4: からくりと同じ演出) と致死を耐えた判
+                || ev is GameEvent_RetainerRushed   // 駆けつけの判 (2026-09-19)
+                || ev is GameEvent_TokenDestroyed || ev is GameEvent_RetainerSacrificed;   // 人形が崩れる (人形の盤面表示 2026-09-19)
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; }
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; }   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)
 
         /// <summary>とどめの一撃 (2026-09-17 ⑫): 新しい出来事の中で、最後に敵を倒したプレイヤーの打撃。戦闘が決着 (全滅・逃走) した時だけ。無ければ -1</summary>
         static int FinishingBlowIndex(IReadOnlyList<GameEvent> log, int from, GameState combat)
@@ -1024,6 +1128,25 @@ namespace DeckRogue.Game
                     else if (n is GameEvent_BlockShattered bs) ctx.EnemyIndex = bs.EnemyIndex;
                     else if (n is GameEvent_GearUsed || n is GameEvent_CardPlayed || n is GameEvent_TurnEnded) break;
                 }
+                return ctx;
+            }
+            if (ev is GameEvent_LightDischarged)
+            {   // 灯の放出 (2026-09-20 灯籠): 対象はイベントに無いので直後の打撃から引く。2体以上に当たれば全体、人形の仕事 (sourceUid つき) が先に来れば大行列＝人形へ
+                var seen = new HashSet<int>();
+                for (int k = i + 1; k < log.Count && k <= i + 24; k++)
+                {
+                    var n = log[k];
+                    if (n is GameEvent_DamageDealt dd && dd.Source == "player")
+                    {
+                        if (dd.SourceUid != null && seen.Count == 0) { ctx.ToDolls = true; break; }
+                        int ei = dd.EnemyIndex ?? -1;
+                        if (ei >= 0) { if (ctx.EnemyIndex < 0) ctx.EnemyIndex = ei; seen.Add(ei); }
+                    }
+                    else if (n is GameEvent_EnemyWeakened ew) { ctx.AllEnemies = true; if (ctx.EnemyIndex < 0) ctx.EnemyIndex = ew.EnemyIndex; }
+                    else if ((n is GameEvent_BlockGained || n is GameEvent_HpHealed) && seen.Count == 0) { ctx.ToDolls = true; break; }
+                    else if (n is GameEvent_CardPlayed || n is GameEvent_TurnEnded || n is GameEvent_LightDischarged) break;
+                }
+                if (seen.Count >= 2) ctx.AllEnemies = true;
                 return ctx;
             }
             if (ev is GameEvent_BlockGained bg0 && bg0.Target != "player")
@@ -1064,7 +1187,9 @@ namespace DeckRogue.Game
 
         static bool IsStatusEvent(GameEvent ev)
         {
-            return ev is GameEvent_StatusInflicted || ev is GameEvent_ExposedApplied || ev is GameEvent_EnemyWeakened || ev is GameEvent_BurnApplied || ev is GameEvent_StrengthGained || ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded;
+            return ev is GameEvent_StatusInflicted || ev is GameEvent_ExposedApplied || ev is GameEvent_EnemyWeakened || ev is GameEvent_BurnApplied || ev is GameEvent_StrengthGained || ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded
+                || ev is GameEvent_LightGained || ev is GameEvent_LightDischarged || ev is GameEvent_LightSpent // 灯 (白 2026-09-20)
+                || ev is GameEvent_ArtifactBlocked || ev is GameEvent_PlayerArtifactBlocked; // アーティファクトが弾いた (2026-09-20 ユーザー「威圧がそのターンの攻撃に反映されない」= 黙って弾かれていた)
         }
 
         static string StatusJa(string status)
@@ -1103,6 +1228,14 @@ namespace DeckRogue.Game
                         // 斬撃の筋と白い点滅、大きいほど画面も揺れる。急所は真鍮の筋＋星、盾に全部吸われた時は鋼青の輪 (金属の当たり)、頭打ちは鈍い輪
                         var spr = g.Battle != null ? g.Battle.EnemySprite(ei) : null;
                         Vector2 hit = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(rt, fx);
+                        // 人形の誘発 (2026-09-19 人形の盤面表示): その人形が敵へ半歩踏み込む = 誰の仕事かが絵で読める
+                        var dollSpr = d.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(d.SourceUid) : null;
+                        if (dollSpr != null)
+                        {
+                            Vector2 dp = Tween.CenterIn(dollSpr, fx);
+                            var dir = (hit - dp).normalized * (UiKit.Phone ? 22f : 36f);
+                            Tween.Lunge(dollSpr, dir + new Vector2(0f, 4f), 0.22f);
+                        }
                         Color streak = crit ? new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 1f) : capped ? new Color(0.78f, 0.8f, 0.86f, 0.9f) : new Color(1f, 0.98f, 0.9f, 0.95f);   // 頭打ちは鈍い筋 (刃が通らない)
                         // 敵のブロックが全部吸った (殻は別) = 敵が盾で受け止める (2026-09-17): 斬撃の筋は出さず、敵の正面に空色の盾の面。白い点滅も無し
                         bool guardedE = blocked > 0 && d.HpLoss <= 0 && !shell;
@@ -1149,7 +1282,7 @@ namespace DeckRogue.Game
                             var note = notes[n]; float dy = -34f - 26f * n; float dl = 0.06f * (n + 1);
                             Tween.After(dl, () => Tween.Float(fx, pos + new Vector2(0f, dy), note.Key, note.Value, note.Key.EndsWith("!") ? 26 : 20, 34f, 1.0f));
                         }
-                        if (d.Amount > 0 && !guardedE) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f) * (crit ? 1.4f : 1f));
+                        if (d.Amount > 0 && !guardedE) Tween.Punch(rt, Mathf.Min(0.12f, 0.03f + d.Amount * 0.004f) * (crit ? 1.4f : 1f), keepBottom: true);   // 入れ物は中心が軸: 足元を留めて膨らむ (2026-09-18 沈む不具合)
                         if (nudgeHp && g.Battle != null && d.HpLoss > 0) g.Battle.NudgeEnemyHp(ei, -d.HpLoss);
                         if (nudgeHp && g.Battle != null && blocked > 0) g.Battle.NudgeEnemyBlock(ei, -blocked);   // 帳面の盾の数字もその場で減る (殻も同じ器。2026-09-17)
                     }
@@ -1209,7 +1342,7 @@ namespace DeckRogue.Game
                                 if (!guarded) Tween.IconBurst(fx, hitPos + new Vector2(-16f, 0f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, dd.HpLoss > 0 ? 0.7f : 0.95f), dd.HpLoss > 0 ? 100f : 140f);
                                 Tween.After(0.08f, () => Tween.Float(fx, pos + new Vector2(0f, -36f), "ブロックで −" + blockedP, PaperFx.SkyLight, 22, 34f, 1.0f));
                             }
-                            if (dd.Amount > 0 && !guarded) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f));
+                            if (dd.Amount > 0 && !guarded) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f), keepBottom: true);
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
                             if (nudge && g.Battle != null && blockedP > 0) g.Battle.AbsorbPlayerBlock(blockedP);   // 自分の札の盾の数字も吸われた分だけ減る (通常→氷壁の順。2026-09-17)
                         });
@@ -1237,6 +1370,9 @@ namespace DeckRogue.Game
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
+                    // 人形の誘発 (2026-09-19): 盾の人形が小さく跳ねて盾の絵を出す = 守りの出どころ
+                    var bDoll = b.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(b.SourceUid) : null;
+                    if (bDoll != null) { Tween.Punch(bDoll, 0.12f, 0.3f, true); Tween.IconBurst(fx, Tween.CenterIn(bDoll, fx) + new Vector2(0f, 10f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 60f); }
                     // 置物・レリック・仕込み札で敵の番に得たブロックは、自分の札の盾の数字にその場で足す (2026-09-17 ユーザー「置物の誘発とかで得たブロックがキャラの表記に更新されなくない？」)
                     if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerBlock(b.Amount);
                     break;
@@ -1332,6 +1468,32 @@ namespace DeckRogue.Game
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "威圧 +" + ew.Amount, PaperFx.Sky, 28, 40f, 1.0f);
                     break;
                 }
+                case GameEvent_ArtifactBlocked ab:
+                {
+                    // アーティファクトがデバフ (威圧・急所・混乱) を弾いた: 黙って消えると「効いていない不具合」に見える (2026-09-20 ユーザー報告)。
+                    // 敵の上に藤の文字と輪、帳面のアーティファクトの札が跳ねる
+                    var rt = g.Anchor("enemy" + ab.EnemyIndex);
+                    if (rt == null) return;
+                    var c = Tween.CenterIn(rt, fx) + new Vector2(0f, 60f);
+                    Tween.RingBurst(fx, c, PaperFx.Plum, 120f, 0.35f);
+                    // 判 (紙の帯) にする: 浮き文字 (幅 240) では折り返してダメージの数字と重なる。着弾の数字 (+60) より上に、少し遅らせて
+                    string what = "アーティファクトが" + CardText.DebuffName(ab.Effect) + "を弾いた";
+                    // 意図の札 (頭上) と着弾の数字 (胸) を避けて、胴の下 (帳面の上) に
+                    Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, -100f), what, new Color(0.93f, 0.86f, 0.97f, 1f), PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
+                    Audio.Play("block", 0.6f);
+                    break;
+                }
+                case GameEvent_PlayerArtifactBlocked pab:
+                {
+                    var rt = g.Anchor("player");
+                    if (rt == null) return;
+                    var c = Tween.CenterIn(rt, fx) + new Vector2(0f, 70f);
+                    Tween.RingBurst(fx, c, PaperFx.Plum, 120f, 0.35f);
+                    string what = "時計仕掛けの土産が" + StatusJa(pab.Status) + "を弾いた";
+                    Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, 60f), what, new Color(0.93f, 0.86f, 0.97f, 1f), PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
+                    Audio.Play("block", 0.6f);
+                    break;
+                }
                 case GameEvent_BurnApplied ba:
                 {
                     var rt = g.Anchor("enemy" + ba.EnemyIndex);
@@ -1360,6 +1522,109 @@ namespace DeckRogue.Game
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(60f, 60f), "勢い +" + ma.Amount, PaperFx.Honey, 26, 36f, 0.9f);
                     break;
                 }
+                case GameEvent_LightGained lg:
+                {
+                    // 灯 (2026-09-20 灯の表示・案B): 真鍮の粒が出どころ (回復＝ひなたの胸・人形＝その人形・灯匠＝ひなたの竿の灯籠) から灯籠へ飛び込み、
+                    // 着いた瞬間に炎がひと膨らみして数字が増え、上に「灯 +N」(真鍮)。器が無い (白以外で初めて灯が付く前) なら自分の上に浮き文字だけ
+                    if (lg.Amount <= 0) return;
+                    if (!LightUi.Exists)
+                    {
+                        var rt0 = g.Anchor("player");
+                        if (rt0 != null) Tween.Float(fx, Tween.CenterIn(rt0, fx) + new Vector2(0f, 70f), "灯 +" + lg.Amount, PaperFx.Brass, 24, 34f, 0.8f);
+                        return;
+                    }
+                    int amt = lg.Amount;
+                    Vector2 to = LightUi.GlassCenter(fx);
+                    if (lg.Source == "carry")
+                    {   // 残り火: 放出の後に半分が灯籠の中で戻る＝飛ばさずその場で灯る
+                        LightUi.HoldFor(1.0f);
+                        Tween.After(0.45f, () => { LightUi.Add(amt, true); Audio.Key("LightGained"); Tween.Float(fx, LightUi.TopCenter(fx) + new Vector2(0f, 26f), "残り火 +" + amt, PaperFx.Brass, 22, 30f, 0.8f); });
+                        return;
+                    }
+                    Vector2 from = LightSourcePos(g, fx, lg, ctx);
+                    bool arrived = false;
+                    Action onArrive = () =>
+                    {
+                        if (arrived) return; arrived = true;
+                        LightUi.Add(amt, true);
+                        Audio.Key("LightGained");
+                        Tween.Float(fx, LightUi.TopCenter(fx) + new Vector2(0f, 26f), "灯 +" + amt, PaperFx.Brass, 24, 34f, 0.8f);
+                    };
+                    int n = Math.Min(amt, 6);
+                    LightUi.HoldFor(0.6f);
+                    for (int i = 0; i < n; i++)
+                    {
+                        int ii = i;
+                        Tween.After(0.05f * i, () => Tween.Projectile(fx, from, to, PaperFx.BrassLight, 24f, 0.3f, 36f + 16f * (ii % 3), ii == 0 ? onArrive : null));
+                    }
+                    break;
+                }
+                case GameEvent_LightSpent lsp:
+                {
+                    // 灯コストの支払い (号令・灯コストの人形): 払った数だけ真鍮の粒が灯籠から舞台の人形へ飛び (灯で人形を動かす)、炎が一段小さくなり「灯 −N」(中墨)
+                    if (lsp.Amount <= 0) return;
+                    if (!LightUi.Exists)
+                    {
+                        var rt0 = g.Anchor("player");
+                        if (rt0 != null) Tween.Float(fx, Tween.CenterIn(rt0, fx) + new Vector2(0f, 70f), "灯 -" + lsp.Amount, PaperFx.InkSoft, 24, 34f, 0.8f);
+                        return;
+                    }
+                    int amt = lsp.Amount;
+                    Vector2 from = LightUi.GlassCenter(fx);
+                    var targets = DollTargets(g, fx, ctx);
+                    if (targets.Count == 0) { var ps = g.Battle != null ? g.Battle.PlayerSprite() : null; targets.Add(ps != null ? Tween.CenterIn(ps, fx) : from + new Vector2(0f, 160f)); }
+                    Audio.Key("LightSpent");
+                    LightUi.Add(-amt, true);
+                    Tween.Float(fx, LightUi.TopCenter(fx) + new Vector2(0f, 26f), "灯 -" + amt, PaperFx.InkSoft, 24, 34f, 0.8f);
+                    for (int i = 0; i < Math.Min(amt, 8); i++)
+                    {
+                        Vector2 to = targets[i % targets.Count];
+                        Tween.After(0.05f * i, () => Tween.Projectile(fx, from, to, PaperFx.Brass, 22f, 0.28f, 50f, () => Tween.RingBurst(fx, to, PaperFx.BrassLight, 70f, 0.22f)));
+                    }
+                    break;
+                }
+                case GameEvent_LightDischarged ld:
+                {
+                    // 放出: 炎が硝子から抜けて光の筋になり、対象 (単体は狙った敵・全体は全員・号令の大行列は人形) へ飛ぶ。灯籠は暗くなり数字が 0 へ減る。判「放出 N」
+                    if (ld.Spent <= 0) return;
+                    if (!LightUi.Exists)
+                    {
+                        var rt0 = g.Anchor("player");
+                        if (rt0 != null) Tween.Float(fx, Tween.CenterIn(rt0, fx) + new Vector2(0f, 90f), "灯" + ld.Spent + " 放出!", PaperFx.Brass, 30, 40f, 1.0f);
+                        return;
+                    }
+                    Vector2 from = LightUi.GlassCenter(fx);
+                    var targets = new List<Vector2>();
+                    var board = ctx != null && ctx.Prev != null ? ctx.Prev : (g.Rs != null ? g.Rs.Combat : null);
+                    if (ctx != null && ctx.ToDolls) targets = DollTargets(g, fx, ctx);
+                    else if (ctx != null && ctx.AllEnemies && board != null)
+                    {
+                        for (int i = 0; i < board.Enemies.Count; i++)
+                        {
+                            if (board.Enemies[i].Hp <= 0) continue;
+                            var spr = g.Battle != null ? g.Battle.EnemySprite(i) : null; var pan = g.Anchor("enemy" + i);
+                            if (spr != null) targets.Add(Tween.CenterIn(spr, fx)); else if (pan != null) targets.Add(Tween.CenterIn(pan, fx) + new Vector2(0f, 60f));
+                        }
+                    }
+                    else if (ctx != null && ctx.EnemyIndex >= 0)
+                    {
+                        var spr = g.Battle != null ? g.Battle.EnemySprite(ctx.EnemyIndex) : null; var pan = g.Anchor("enemy" + ctx.EnemyIndex);
+                        if (spr != null) targets.Add(Tween.CenterIn(spr, fx)); else if (pan != null) targets.Add(Tween.CenterIn(pan, fx) + new Vector2(0f, 60f));
+                    }
+                    if (targets.Count == 0) { var ps = g.Battle != null ? g.Battle.PlayerSprite() : null; targets.Add(ps != null ? Tween.CenterIn(ps, fx) + new Vector2(0f, 40f) : from + new Vector2(0f, 200f)); }
+                    Audio.Key("LightDischarged");
+                    foreach (var t in targets)
+                    {
+                        var tt = t;
+                        Tween.BeamFx(fx, from, tt, Color.white, 0.34f, 1.3f, ThemeFx.LightStreak());
+                        // 筋に沿って光の粒
+                        for (int k = 0; k < 4; k++) { float kk = 0.2f + 0.2f * k; Tween.After(0.02f * k, () => Tween.Projectile(fx, from, tt, UiKit.Hex("#fff6d2"), 18f, 0.22f, 10f)); }
+                    }
+                    LightUi.HoldFor(0.6f);
+                    LightUi.Drain(ld.Spent);
+                    Tween.Stamp(fx, LightUi.TopCenter(fx) + new Vector2(70f, 36f), "放出 " + ld.Spent, PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 20, 0.6f, -6f);
+                    break;
+                }
                 case GameEvent_HpHealed h:
                 {
                     var rt = g.Anchor("player");
@@ -1368,6 +1633,9 @@ namespace DeckRogue.Game
                     var hs = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (hs != null) Tween.IconBurst(fx, Tween.CenterIn(hs, fx) + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f);
                     Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(-80f, 10f), "+" + h.Amount, UiKit.ColAccent, 30, 40f, 0.7f);
+                    // 人形の誘発 (2026-09-19): 癒しの人形が小さく跳ねて心の絵を出す
+                    var hDoll = h.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(h.SourceUid) : null;
+                    if (hDoll != null) { Tween.Punch(hDoll, 0.12f, 0.3f, true); Tween.IconBurst(fx, Tween.CenterIn(hDoll, fx) + new Vector2(0f, 10f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 60f); }
                     break;
                 }
             }

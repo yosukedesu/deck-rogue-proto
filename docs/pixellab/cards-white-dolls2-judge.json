@@ -1,0 +1,4 @@
+[
+ {"id": "white_perm_lantern", "pick": "A", "seed": 733, "passed": true, "problem": "677=赤い目の騎士・691=人形が小さく灯篭を掲げていない → 733/757 で作り直し。733=白鉄の人形が琥珀の目で灯篭を頭上に掲げる"},
+ {"id": "white_perm_bonfire", "pick": "B", "passed": true, "problem": "703=フードの奥に人の顔（肌色）が出た。727=顔なしの空洞・背中の篝火の籠と炎"}
+]

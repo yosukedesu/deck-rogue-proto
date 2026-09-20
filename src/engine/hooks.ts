@@ -22,6 +22,10 @@ export function dispatchHooks(state: GameState, event: GameEvent): GameState {
     // 被攻撃後 (返し系) の置物: 茨の茂みなど
     s = runPermanentTriggers(s, 'onAttacked', event.enemyIndex)
   }
+  if (event.type === 'EnemyActionResolved') {
+    // 敵の行動後 (種別を問わない) の置物: 眩みの障壁 (白 2026-09-18 ユーザー裁定「抑えて置物にする」)。条件 actionKindsNot は lastAction.kind を読む
+    s = runPermanentTriggers(s, 'onEnemyActed', event.enemyIndex)
+  }
   if (event.type === 'EnemyActionExecuting' || event.type === 'EnemyActionResolved') {
     // 置物の返しで敵が倒れたらリアクション確認はもう不要。
     // プレイヤーのHPが0以下でも post窓は開く — 回復付きの返し札 (怨嗟・死中の活) で

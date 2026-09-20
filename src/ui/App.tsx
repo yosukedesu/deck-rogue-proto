@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, effectiveCost, effectiveIntent, isDamageEffect, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
@@ -114,7 +114,7 @@ const ARCHETYPE_LABEL: Record<EnemyArchetype, string> = {
   taunter: '挑発型（伏せ札が無いと大振り）',
   enrager: '激昂型（毎ターン筋力+）',
   support: '応援型（味方全体の筋力+）',
-  thorned: 'とげ型（攻撃ヒットごとに反射）',
+  thorned: 'とげ型（カードの攻撃ヒットごとに反射）',
   thief: '盗人型（盗んで逃げる）',
   bomber: '爆弾型（三拍子の大爆発）',
   healer: '回復役型（味方を癒す）',
@@ -202,6 +202,15 @@ interface EffectCtx {
   energyMax: number
   cardsPlayed: number
   aether: number
+  /** 灯 (白 2026-09-20)。放出の実値と号令の可否の表示に使う。省略=0 */
+  light?: number
+  /** 場の人形 (retainer・innate除く) の数。号令・大行列の「いま動く体数」の表示に使う。省略=0 */
+  retainers?: number
+  /** 号令の1周の概算 (engine rallyPreview。2026-09-20 夜): 灯0で動いた時 (大行列) と 灯コスト2を払った後 (合図=小さな人形込み) */
+  rallyZero?: { damage: number; block: number; heal: number }
+  rallyCall?: { damage: number; block: number; heal: number }
+  /** この戦闘で撃った火種の数 (白 2026-09-20 夜。火種の嵐の実値) */
+  sparks?: number
   exhausted: number
   selfHpLost: number
   permanents: number
@@ -213,6 +222,9 @@ interface EffectCtx {
 
 const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onPlay: '',
+  onLightGained: '灯を得るたび: ',
+  onLightDischarged: '灯を放出するたび: ',
+  onSparkPlayed: '火種を撃つたび: ',
   onAttackIncoming: '被攻撃前: ',
   onAttacked: '被攻撃後: ',
   onCardPlayed: 'カードをプレイするたび: ',
@@ -221,6 +233,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onEnemyAction: '敵行動時: ',
   onEnemyBuffed: '敵強化時: ',
   onEnemyDefended: '敵防御時: ',
+  onEnemyActed: '敵の行動後: ',
   onTurnStart: '毎ターン開始時: ',
   onCombatStart: '戦闘開始時: ',
   onAttackPlayed: '攻撃プレイ後: ',
@@ -260,6 +273,7 @@ function conditionLabel(e: DeclarativeEffect): string {
   if (c.minMomentum !== undefined) parts.push(`💨勢い${c.minMomentum}以上`)
   if (c.minEnergyMax !== undefined) parts.push(`⚡ターン開始時の上限${c.minEnergyMax}以上`)
   if (c.actionKinds !== undefined) parts.push(`敵の行動が${c.actionKinds.map((k) => INTENT_KIND_JA_COND[k] ?? k).join('/')}`)
+  if (c.actionKindsNot !== undefined) parts.push(`敵の行動が${c.actionKindsNot.map((k) => INTENT_KIND_JA_COND[k] ?? k).join('/')}以外`)
   if (c.enemyIntent !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntent] ?? c.enemyIntent}`)
   if (c.enemyIntentNot !== undefined) parts.push(`👁対象の意図が${INTENT_KIND_JA_COND[c.enemyIntentNot] ?? c.enemyIntentNot}以外`)
   if (c.enemyExposed === true) parts.push('🎯対象が急所持ち')
@@ -428,9 +442,20 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'addCasts':
       return `${trigger}🌀 詠唱数+${e.amount}（激昂タイマーには数えない）`
     case 'blessRetainers':
-      return `${trigger}✨ 【常在】従者の効果+${e.amount}`
+      return `${trigger}✨ 【常在】従者のダメージ・ブロック・回復+${e.amount}（灯・率・ドローには乗らない）`
     case 'addAether':
       return `${trigger}霊気+${e.amount}`
+    case 'addLight':
+      return `${trigger}🕯 灯+${e.amount}`
+    case 'doubleLight':
+      return ctx ? `${trigger}🕯 灯を2倍にする [現在${ctx.light ?? 0}→${(ctx.light ?? 0) * 2}]` : `${trigger}🕯 灯を2倍にする`
+    case 'dischargeLightRally': {
+      const passes = (ctx?.light ?? 0) * (e.amount ?? 1)
+      const rz = ctx?.rallyZero
+      return ctx
+        ? `${trigger}🕯 灯を全て放出し、灯1につき全ての人形が${e.amount ?? 1}回動く [現在 灯${ctx.light ?? 0}×人形${ctx.retainers ?? 0}体${rz && passes > 0 ? `≈与ダメ${rz.damage * passes}・ブロック${rz.block * passes}・回復${rz.heal * passes}（概算）` : ''}]`
+        : `${trigger}🕯 灯を全て放出し、灯1につき全ての人形が${e.amount ?? 1}回動く`
+    }
     case 'discountNext':
       return `${trigger}次にプレイするカードのコスト-${e.amount}`
     case 'applyBurn':
@@ -494,9 +519,11 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'sacrificeRetainer':
       return `${trigger}🕯️ 場の従者1体を選んで破壊する`
     case 'triggerRetainersNow':
-      return `${trigger}📯 従者すべてのターン開始効果を今すぐ解決する（アンセム込み。リーダーパッシブ・レリックは対象外）`
+      return ctx
+        ? `${trigger}📯 号令: 場の人形の効果をトリガーを問わず今すぐ1回ずつ解決する（登場ごとは除く。アンセム込み） [人形${(ctx.retainers ?? 0) + 1}体（小さな人形込み）${ctx.rallyCall ? `≈与ダメ${ctx.rallyCall.damage}・ブロック${ctx.rallyCall.block}・回復${ctx.rallyCall.heal}（概算）` : ''}]`
+        : `${trigger}📯 号令: 場の人形の効果をトリガーを問わず今すぐ1回ずつ解決する（登場ごとは除く。アンセム込み）`
     case 'activateEnteredRetainer':
-      return `${trigger}🏇 場に出た従者はすぐに1回動く（その従者のターン開始効果を登場時に解決。従者以外の置物では何も起きない）`
+      return `${trigger}🏇 場に出た従者はすぐに1回動く（その従者の効果＝毎ターン開始時・攻撃ごと、を登場時に1回解決。登場ごとの効果はもとから鳴る。従者以外の置物では何も起きない）`
     case 'addCardToHand':
       return `${trigger}🗡️ ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚手札に加える（この戦闘限り）`
     case 'empowerShivs':
@@ -549,6 +576,32 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}⚔️ 置物の数×${e.amount}ダメージ${pierce}`
         : `${trigger}⚔️ 置物の数×${e.amount}ダメージ${pierce}`
+    case 'dealDamagePerLight': {
+      // 灯篭の人形 (白 R 2026-09-20): 灯2につきNダメ。灯は消費しない=放出すると暗くなる
+      const lit = Math.floor((ctx?.light ?? 0) / 2) * (e.amount ?? 1)
+      return `${trigger}${aoe}🕯 灯2につき${e.amount ?? 1}ダメージ（切り捨て。灯は失わない）${pierce}${ctx ? ` [現在 灯${ctx.light ?? 0}→${lit > 0 ? lit + atkBonus : 0}]` : ''}`
+    }
+    // 火種・放出の軸 (白 2026-09-20 夜。本家 Soul の白版)
+    case 'addCardToDraw':
+      return `${trigger}🔥 ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚山札のランダムな位置に混ぜる（この戦闘限り）`
+    case 'lightToSparks':
+      return `${trigger}🔥 灯${e.amount ?? 3}につき${cardName(e.summonId ?? 'white_spark_token')}1枚を山札へ（払った灯だけ失う）${ctx ? ` [現在 灯${ctx.light ?? 0}→${Math.floor((ctx.light ?? 0) / Math.max(1, e.amount ?? 3))}枚]` : ''}`
+    case 'dealDamagePerSpark':
+      return `${trigger}⚔️ この戦闘で撃った火種×${e.amount}ダメージ${pierce}${ctx && ctx.sparks !== undefined ? ` [現在 火種${ctx.sparks}→${ctx.sparks * (e.amount ?? 0) + (ctx.sparks > 0 ? atkBonus : 0)}]` : ''}`
+    case 'triggerRandomRetainer':
+      return `${trigger}📯 場の人形1体（ランダム）の効果を今1回解決する（登場ごとは除く。灯は産まない）`
+    case 'dischargeLightWeaken': {
+      const stacks = Math.floor((ctx?.light ?? 0) / 3) * (e.amount ?? 1)
+      return `${trigger}🕯 灯を全て放出し、灯3につき敵全体に威圧${e.amount ?? 1}（灯3未満なら不発）${ctx ? ` [現在 灯${ctx.light ?? 0}→威圧${stacks}]` : ''}`
+    }
+    case 'consumeLight':
+      return `${trigger}🕯 灯を全て失う`
+    case 'gainBlockPerLight':
+      return `${trigger}🛡️ 灯2につき${e.amount}ブロック（灯は失わない）${ctx ? ` [現在 灯${ctx.light ?? 0}→${Math.floor((ctx.light ?? 0) / 2) * (e.amount ?? 0)}]` : ''}`
+    case 'drawCardsPerLight':
+      return `${trigger}📖 灯2につき${e.amount ?? 1}ドロー（上限${e.amountMax ?? 99}・灯は失わない）${ctx ? ` [現在 灯${ctx.light ?? 0}→${Math.min(e.amountMax ?? 99, Math.floor((ctx.light ?? 0) / 2) * (e.amount ?? 1))}枚]` : ''}`
+    case 'lightCarryHalf':
+      return 'この置物がある間、灯を放出しても半分（切り捨て）が残る'
     case 'dischargeGrowth':
       return ctx && ctx.growth > 0
         ? `${trigger}⚔️ 成長×${e.amount}ダメージを与え、成長を全て失う [現在${ctx.growth * (e.amount ?? 0) + ctx.growth}]`
@@ -585,6 +638,16 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return ctx
         ? `${trigger}${aoe}霊気×${e.amount}ダメージを与え、霊気を全て放出する [現在${(e.amount ?? 0) * ctx.aether + atkBonus}]`
         : `${trigger}${aoe}霊気×${e.amount}ダメージを与え、霊気を全て放出する`
+    case 'dischargeLight':
+      if (e.target === 'all') {
+        return ctx
+          ? `${trigger}${aoe}🕯 灯×${e.amount}ダメージを与え、灯を全て放出する [現在 灯${ctx.light ?? 0}→${(e.amount ?? 0) * (ctx.light ?? 0) + ((ctx.light ?? 0) > 0 ? atkBonus : 0)}]`
+          : `${trigger}${aoe}🕯 灯×${e.amount}ダメージを与え、灯を全て放出する`
+      }
+      // 単体は灯1につき1ヒット (2026-09-20 裁定: 装甲を分けて越える。成長はヒットごと)
+      return ctx
+        ? `${trigger}🕯 灯を全て放出し、灯1につき${e.amount}ダメージ [現在 灯${ctx.light ?? 0}→${(e.amount ?? 0) + atkBonus}×${ctx.light ?? 0}回=${((e.amount ?? 0) + atkBonus) * (ctx.light ?? 0)}]`
+        : `${trigger}🕯 灯を全て放出し、灯1につき${e.amount}ダメージ（灯の数だけヒット）`
     case 'gainEnergy':
       return `${trigger}このターン、エナジー+${e.amount}`
     case 'gainEnergyMax':
@@ -642,6 +705,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
   if ((def.exhaustCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.exhaustCost}枚を消滅させる`)
+  if ((def.lightCost ?? 0) > 0) lines.push(`追加コスト: 🕯 灯を${def.lightCost}払う${ctx ? `（現在 灯${ctx.light ?? 0}）` : ''}`)
   if (def.modes && def.modes.length > 0) {
     // 共通部 (工房「効果の合体」で相手の効果が入る場所) はモードを問わず解決される = モードの前に出す (2026-09-05 Opusラン R)
     if (def.effects.length > 0) lines.push(...effectItems(def.effects, ctx, def.type))
@@ -1525,6 +1589,10 @@ function BattleScreen({
         case 'ThornsReflected':
           if (e.hpLoss > 0) push('player', `🦔-${e.hpLoss}`, 'float-dmg')
           break
+        case 'ArtifactBlocked':
+          // 黙って弾かれると「威圧が効いていない不具合」に見える (2026-09-20 ユーザー報告)
+          push(e.enemyIndex, `🔮${({ weakenEnemy: '威圧', exposeEnemy: '急所', confuse: '混乱' } as Record<string, string>)[e.effect] ?? e.effect}を弾いた`, 'float-miss')
+          break
       }
     }
     if (add.length > 0) {
@@ -1695,7 +1763,9 @@ function BattleScreen({
   const [pileView, setPileView] = useState<'draw' | 'discard' | 'exhaust' | 'deck' | 'map' | null>(
     null,
   )
-  const pileCtx: EffectCtx = { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }
+  // 灯の火床 (2026-09-20 夜): ターン終了時に火種にする枚数 (0=変えない)
+  const [hearthSparks, setHearthSparks] = useState(0)
+  const pileCtx: EffectCtx = { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }
 
   return (
     <div className="app battle">
@@ -1989,7 +2059,7 @@ function BattleScreen({
                   )}
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                   />
                 </div>
               ))}
@@ -2033,7 +2103,7 @@ function BattleScreen({
                             randomPlayed: player.randomPlayedThisCombat,
                             iceBlock: player.iceBlock,
                             cardsPlayed: player.cardsPlayedThisTurn,
-                            aether: player.aether,
+                            aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0,
                             energy: player.energy, handCards: Math.max(0, player.hand.length - 1),
                           }),
                         )}
@@ -2080,7 +2150,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({cardCostLabel(c.def)}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) })}
                     </button>
                   ))}
                   <button
@@ -2172,6 +2242,9 @@ function BattleScreen({
             {player.aether > 0 && (
               <span className="chip chip-aether">⚡ {kw('霊気')} {player.aether}</span>
             )}
+            {((player.light ?? 0) > 0 || player.permanents.some((pp) => pp.innate === true && pp.def.effects.some((e) => e.effect === 'addLight'))) && (
+              <span className="chip chip-aether">🕯 {kw('灯')} {player.light}</span>
+            )}
             {player.spellEchoes > 0 && (
               <span className="chip chip-aether">🔁 {kw('反復')} {player.spellEchoes}</span>
             )}
@@ -2185,7 +2258,7 @@ function BattleScreen({
                 0,
               )
               return anthem > 0 ? (
-                <span className="chip chip-aether">✨ アンセム+{anthem}（従者の量つき効果に加算）</span>
+                <span className="chip chip-aether">✨ アンセム+{anthem}（従者のダメージ・ブロック・回復に加算）</span>
               ) : null
             })()}
             {player.nextCardDiscount > 0 && (
@@ -2205,6 +2278,9 @@ function BattleScreen({
             )}
             {(player.slow ?? 0) > 0 && (
               <span className="chip chip-strength">⚓ {kw('重り')} {player.slow}（今+{(player.playsThisTurn ?? 0) * 10}%）</span>
+            )}
+            {s.playCap !== undefined && (
+              <span className="chip chip-strength">📿 首輪 このターンあと{Math.max(0, s.playCap - (player.playsThisTurn ?? 0))}枚</span>
             )}
             {player.restrain > 0 && (
               <span className="chip chip-strength">⛓️ {kw('拘束')} {player.restrain}{(player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP ? '（このターンはもう出せない）' : `（あと${RESTRAIN_PLAY_CAP - (player.playsThisTurn ?? 0)}枚）`}</span>
@@ -2276,9 +2352,22 @@ function BattleScreen({
         </div>
         <div className="turn-controls">
           {s.phase === 'player-turn' ? (
-            <button className="btn btn-primary btn-endturn" data-hotkey="end-turn" onClick={() => dispatch({ type: 'EndTurn' })}>
-              ターン終了 ▶<span className="keycap">E</span>
-            </button>
+            <>
+              {hearthSparkMax(s) > 0 && (
+                // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了時に灯3につき火種1。何枚にするかをここで選ぶ (省略=0)
+                <label className="chip chip-aether" title="灯の火床: ターン終了時に灯3につき火種1を山札へ (払った灯だけ失う)">
+                  🔥火床 火種にする枚数
+                  <select value={hearthSparks} onChange={(ev) => setHearthSparks(Number(ev.target.value))} style={{ marginLeft: 4 }}>
+                    {Array.from({ length: hearthSparkMax(s) + 1 }, (_, n) => (
+                      <option key={n} value={n}>{n}枚（灯{n * 3}）</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              <button className="btn btn-primary btn-endturn" data-hotkey="end-turn" onClick={() => dispatch(hearthSparkMax(s) > 0 && hearthSparks > 0 ? { type: 'EndTurn', hearthSparks: Math.min(hearthSparks, hearthSparkMax(s)) } : { type: 'EndTurn' })}>
+                ターン終了 ▶<span className="keycap">E</span>
+              </button>
+            </>
           ) : s.phase === 'awaiting-reaction' ? (
             <span className="pile-info">敵の行動に割り込み中…（上のパネルで選択）</span>
           ) : null}
@@ -2325,7 +2414,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                     dim={!eligible}
                     hint={eligible ? undefined : directPlay ? '直接プレイ不可' : undefined}
                     actions={
@@ -2517,6 +2606,7 @@ function BattleScreen({
                   retainerRequirementMet(s, c) && // 殉教の誓い: 従者がいなければプレイ不可 (白 2026-09-06)
                   !(player.restrain > 0 && (player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) &&
                   effCost <= player.energy &&
+                  (c.def.lightCost ?? 0) <= (player.light ?? 0) && // 灯コスト (白 2026-09-20 号令)
                   player.hand.length - 1 >= discardCost &&
                   player.hand.length - 1 >= exhaustCostN &&
                   pileOk
@@ -2533,7 +2623,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                       dim={isSource || isChosen}
                       hint={isSource ? 'プレイするカード' : isChosen ? '消滅予定' : undefined}
                       actions={
@@ -2575,7 +2665,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -2616,7 +2706,7 @@ function BattleScreen({
                   )}
                   <CardFrame
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                     displayCost={effCost}
                     hotkey={handIdx < 9 && !activeTarget && s.phase === 'player-turn' ? String(handIdx + 1) : undefined}
                     dim={!canPlay && !canSet && !heldReaction}
@@ -3805,6 +3895,7 @@ const EFFECT_JA: Record<string, string> = {
   dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)', gainBlockPerMomentum: '勢い×Nブロック(失わない)', addGrowthPerMomentum: '勢い2につき成長+N(失わない)', gainMaxHp: '最大HP+N(戦闘後も残る)', upgradeAllInHand: '手札の全てをこの戦闘中鍛える',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
+  addLight: '灯+N', dischargeLight: '灯の放出(×Nダメ全消費)', dischargeLightRally: '灯を全て放出し灯1につき全人形がN回動く', doubleLight: '灯2倍', dealDamagePerLight: '灯2につきNダメ(非消費)', addCardToDraw: 'トークンN枚を山札へ', lightToSparks: '灯Nにつき火種1を山札へ', dealDamagePerSpark: '撃った火種×Nダメ', triggerRandomRetainer: '人形1体が今1回動く', dischargeLightWeaken: '灯を放出し灯3につき全体威圧N', consumeLight: '灯を全て失う', gainBlockPerLight: '灯2につきNブロック', drawCardsPerLight: '灯2につきNドロー', lightCarryHalf: '放出しても灯の半分が残る',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
   shatterBlock: '粉砕(敵ブロック全壊)', shatterBlockConvert: '粉砕+破壊値ダメ',
   exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
@@ -3830,6 +3921,7 @@ const COND_JA: Record<string, string> = {
   minMomentum: '勢いが値以上',
   minEnergyMax: 'ターン開始時のエナジー上限が値以上',
   actionKinds: '敵の行動が指定の種別の時(リアクション窓)',
+  actionKindsNot: '敵の行動が指定の種別以外の時(リアクション窓)',
   enemyIntent: '対象の意図が値の種別',
   enemyIntentNot: '対象の意図が値の種別以外',
   enemyExposed: '対象が急所持ち',
@@ -3873,6 +3965,7 @@ function defToDraft(def: CardDef): CardDraft {
     ...(typeof def.exhaustCost === 'number' ? { exhaustCost: def.exhaustCost } : {}),
     ...(typeof def.discardCost === 'number' ? { discardCost: def.discardCost } : {}),
     ...(typeof def.necroCost === 'number' ? { necroCost: def.necroCost } : {}),
+    ...(typeof def.lightCost === 'number' ? { lightCost: def.lightCost } : {}),
     effects: def.effects.map((e) => {
       const [ck, cv] = Object.entries(e.condition ?? {})[0] ?? []
       return {
@@ -4472,8 +4565,8 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 if (typeof cv === 'number') numFields.push({ key: `e${i}.cond.${ck}`, label: `条件〔${condJa(ck)}〕`, cur: cv })
               }
             })
-            const COST_LABELS: Record<string, string> = { exhaustCost: '消滅コスト', discardCost: '捨てコスト', necroCost: '亡骸コスト' }
-            for (const ck of ['exhaustCost', 'discardCost', 'necroCost'] as const) {
+            const COST_LABELS: Record<string, string> = { exhaustCost: '消滅コスト', discardCost: '捨てコスト', necroCost: '亡骸コスト', lightCost: '灯コスト' }
+            for (const ck of ['exhaustCost', 'discardCost', 'necroCost', 'lightCost'] as const) {
               const cv = def[ck]
               if (typeof cv === 'number') numFields.push({ key: ck, label: COST_LABELS[ck], cur: cv })
             }

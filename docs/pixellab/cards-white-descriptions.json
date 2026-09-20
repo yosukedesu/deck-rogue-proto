@@ -1,0 +1,1300 @@
+{
+ "_note": "白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py",
+ "color": "white",
+ "style": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky",
+ "doll": "a small white iron knight doll (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow",
+ "negative_doll": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow",
+ "items": [
+  {
+   "id": "white_strike",
+   "name": "灯火の一撃",
+   "ja": "竿のランタンを岩に振り下ろす（接写・作り直し）",
+   "description": "{style}, a heavy square brass lantern on the end of a long dark iron pole smashing down onto a cracked boulder, close-up on the impact, the boulder splitting with a burst of amber light, sparks and stone chips flying, rough mine tunnel wall behind, the pole enters the frame from the top left, no one holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky",
+   "seeds": [
+    101,
+    137
+   ]
+  },
+  {
+   "id": "white_shield_strike",
+   "name": "灯盾の一撃",
+   "ja": "盾の灯から光の一撃（石壁）",
+   "description": "{style}, a round white shield with a brass rim seen at a slight angle against a dark stone wall of a mine tunnel, a short thick beam of warm amber light bursting straight out of its central brass lantern boss toward the right, bright impact sparks at the end of the beam, close-up on the shield, nobody holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    103,
+    139
+   ]
+  },
+  {
+   "id": "white_wall_jab",
+   "name": "光壁の一突き",
+   "ja": "光の壁から棘（坑道）",
+   "description": "{style}, a translucent pane of warm amber light standing upright like a wall in a mine tunnel with timber supports, a single sharp spike of solid light thrusting out of it toward the right, cracks of light around the base of the spike, motion",
+   "seeds": [
+    105,
+    141
+   ]
+  },
+  {
+   "id": "white_guard",
+   "name": "白盾",
+   "ja": "工房の壁の白い盾",
+   "description": "{style}, a round white-lacquered shield with a brass rim, brass rivets and a small unlit brass lantern boss at its center, hanging on a wooden workshop wall beside brass tools on hooks, straight on, close-up",
+   "seeds": [
+    107,
+    143
+   ]
+  },
+  {
+   "id": "white_bodyslam",
+   "name": "光壁砕き",
+   "ja": "光の壁が突進して砕ける",
+   "description": "{style}, a thick slab of solid warm amber light wall ramming forward to the right and shattering at its leading edge into flying shards of light against a brick wall, impact, motion",
+   "seeds": [
+    109,
+    145
+   ]
+  },
+  {
+   "id": "white_mode_crossroad",
+   "name": "灯の岐路",
+   "ja": "二股の坑道と分かれ道のランタン（初期デッキのモード札 2026-09-20）",
+   "description": "{style}, a forked mine tunnel splitting into two passages at a brass lantern on a short post standing at the fork, the left passage flooded by a harsh dazzling white-amber flash with jagged rays, the right passage sealed by a calm translucent wall of warm amber light, timber supports and rough rock, a choice at a crossroads",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    111,
+    147
+   ]
+  },
+  {
+   "id": "white_fortress",
+   "name": "大光壁",
+   "ja": "真鍮の柱の間の巨大な光の壁",
+   "description": "{style}, a towering wall of translucent warm amber light panes held between tall brass pillars in a great stone hall, seen from below, imposing, warm glow",
+   "seeds": [
+    113,
+    149
+   ]
+  },
+  {
+   "id": "white_rampart_riposte",
+   "name": "光壁の反撃",
+   "ja": "光の胸壁から光の矢が飛ぶ（作り直し）",
+   "description": "{style}, a battlement of glowing amber light panes built along the top of a low stone wall, seen from the side at an angle, dozens of small darts of light flicking out from its top edge toward the right like arrows, chipped stone, mine tunnel behind, nobody present",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    115,
+    151
+   ]
+  },
+  {
+   "id": "white_shield_bash",
+   "name": "大盾の反撃",
+   "ja": "大盾の突進と衝撃波（石畳）",
+   "description": "{style}, a huge white tower shield with a brass rim slamming forward across a flagstone floor, a shockwave of warm light bursting from its face, impact, motion",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    117,
+    153
+   ]
+  },
+  {
+   "id": "white_gate_close",
+   "name": "光門閉鎖",
+   "ja": "真鍮の大扉が閉まり光が隙間を塞ぐ",
+   "description": "{style}, massive brass double doors slamming shut, a sheet of warm amber light sealing the gap between them, dust and sparks, straight on",
+   "seeds": [
+    119,
+    155
+   ]
+  },
+  {
+   "id": "white_rank_shield",
+   "name": "灯列の盾",
+   "ja": "灯の列が光の柵になる",
+   "description": "{style}, a row of small square brass lanterns on short brass posts standing in a line on a flagstone floor, each throwing a translucent pane of warm light that overlaps with the next into a low glowing fence, seen straight on",
+   "seeds": [
+    121,
+    157
+   ]
+  },
+  {
+   "id": "white_shield_prayer",
+   "name": "大盾の灯",
+   "ja": "石段の上の灯つき大盾（作り直し）",
+   "description": "{style}, a large white tower shield with a brass rim standing upright at the top of a short flight of stone steps, a square brass lantern set into its center glowing warm amber, vines on the steps, close-up",
+   "seeds": [
+    123,
+    159
+   ]
+  },
+  {
+   "id": "white_shield_verse",
+   "name": "盾持ちの灯",
+   "ja": "籠手に掛けた灯と白紙の手帳（ドロー）",
+   "description": "{style}, a small square brass lantern hooked onto the cuff of a white iron gauntlet resting on a wooden workbench, the lantern's warm light falling across a small open notebook with blank pages, close-up",
+   "negative_extra": "letters, runes, glyphs, writing, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    125,
+    161
+   ]
+  },
+  {
+   "id": "white_catalyst_retain",
+   "name": "不動の誓い",
+   "ja": "床に留めた鉄床と灯（炉）",
+   "description": "{style}, a heavy black iron anvil bolted to a stone floor with thick brass bolts and short chains, a small square brass lantern standing on it glowing steadily, forge glow in the background, close-up",
+   "seeds": [
+    127,
+    163
+   ]
+  },
+  {
+   "id": "white_oath_shield",
+   "name": "誓いの盾",
+   "ja": "リボンを結んだ盾（作業台の白い布）",
+   "description": "{style}, a round white shield with a white ribbon tied around it and a glowing warm amber mark at its center, resting on a white cloth on a wooden workbench, steady light, close-up",
+   "seeds": [
+    129,
+    165
+   ]
+  },
+  {
+   "id": "white_menace",
+   "name": "眩ます灯印",
+   "ja": "灯印を石に押す（眩む）",
+   "description": "{style}, a brass seal stamp pressing a glowing circular mark of warm light onto a dark cobblestone floor, the mark flaring with harsh glare rays, close-up",
+   "negative_extra": "letters, runes, glyphs, writing",
+   "seeds": [
+    131,
+    167
+   ]
+  },
+  {
+   "id": "white_seal_light",
+   "name": "灯印の光",
+   "ja": "巻物に押した光る蝋の封",
+   "description": "{style}, a rolled scroll tied with cord lying on a wooden desk, sealed with a blob of glowing amber wax stamped with a circular mark, the seal's light spilling over the desk, a brass stamp beside it, close-up",
+   "negative_extra": "letters, runes, glyphs, writing",
+   "seeds": [
+    133,
+    169
+   ]
+  },
+  {
+   "id": "white_reaction_ward",
+   "name": "護りの灯印",
+   "ja": "鉄の扉に焼き付いた護りの印",
+   "description": "{style}, a heavy dark iron door set in a stone wall with a circular ward-mark of glowing amber light burned into its center, light seeping from the mark's lines, calm, seen straight on",
+   "negative_extra": "letters, runes, glyphs, writing",
+   "seeds": [
+    135,
+    171
+   ]
+  },
+  {
+   "id": "white_decree",
+   "name": "眩む光",
+   "ja": "全体を眩ませる白金の閃光",
+   "description": "{style}, a small square brass lantern on a stone floor exploding into a huge blinding burst of white-gold light, long radial glare rays filling the entire frame, the surrounding stone washed out white, close-up",
+   "seeds": [
+    137,
+    173
+   ]
+  },
+  {
+   "id": "white_cowering_light",
+   "name": "萎縮の光",
+   "ja": "坑道の隅で影が縮む（接写・作り直し）",
+   "description": "{style}, extreme close-up of a dark corner of a mine tunnel where a harsh cone of warm lantern light from the left hits the wall, the black shadows on the wall recoiling and shrinking into the corner as if alive, dust in the beam, a timber support at the edge, no figures",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    139,
+    175
+   ]
+  },
+  {
+   "id": "white_reaction_holy_wall",
+   "name": "眩みの障壁",
+   "ja": "石のアーチに嵌まる眩しい光の板",
+   "description": "{style}, an upright pane of dazzling white-gold light set in a stone archway with a thin brass frame, glaring rays shooting outward from its surface, close-up",
+   "seeds": [
+    141,
+    177
+   ]
+  },
+  {
+   "id": "white_judgment",
+   "name": "灼く光",
+   "ja": "レンズを通した光線が石を灼く",
+   "description": "{style}, a large brass magnifying lens mounted on a brass stand, a narrow white-gold beam passing through the lens and burning a glowing molten line into the dark stone floor, smoke curling up, close-up on the lens and the burn, nobody present",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    143,
+    179
+   ]
+  },
+  {
+   "id": "white_light_arrow",
+   "name": "白光の矢",
+   "ja": "光の矢が坑道を飛ぶ",
+   "description": "{style}, extreme close-up of a single arrow made entirely of white-gold light flying by itself down a dark mine tunnel from left to right, a long bright trail behind its fletching, sparks, no bow, no archer",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    145,
+    181
+   ]
+  },
+  {
+   "id": "white_glory_chain",
+   "name": "眩光の鎖",
+   "ja": "石壁の環から光の鎖",
+   "description": "{style}, a heavy chain made of links of blinding white-gold light coiling across the frame in the dark, one end anchored to a brass ring set into a stone wall, the links glaring, nobody holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    147,
+    183
+   ]
+  },
+  {
+   "id": "white_verdict_hammer",
+   "name": "眩みの槌",
+   "ja": "ランタン頭の槌の閃光（鍛冶場）",
+   "description": "{style}, a heavy brass war hammer with a blazing lantern set into its head slamming down onto the stone floor of a forge, a blinding flash of glare rays and cracks of light at the impact, motion",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    149,
+    185
+   ]
+  },
+  {
+   "id": "white_holy_maul",
+   "name": "灯火の大槌",
+   "ja": "大槌が石を割り光のひび",
+   "description": "{style}, a huge two-handed brass maul with a glowing lantern in its head crashing down onto dark stone, cracks of warm light spreading from the impact, motion",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    151,
+    187
+   ]
+  },
+  {
+   "id": "white_reaction_retribution",
+   "name": "報復の光",
+   "ja": "反射鏡が光を跳ね返す（坑道）",
+   "description": "{style}, a polished brass parabolic reflector dish bolted to the stone wall of a mine tunnel, a harsh beam of light coming in from the right and bouncing straight back toward the right in a sharp flare, nobody present, close-up",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    153,
+    189
+   ]
+  },
+  {
+   "id": "white_reaction_chant",
+   "name": "光盾の点灯",
+   "ja": "本の上のランプから光のドーム（呪文で鳴る）",
+   "description": "{style}, a small brass oil lamp standing on a closed old leather book on a workbench, its flame flaring up and a translucent dome of warm light rising over the lamp and hardening into a shell, close-up",
+   "negative_extra": "letters, runes, glyphs, writing",
+   "seeds": [
+    155,
+    191
+   ]
+  },
+  {
+   "id": "white_reaction_bright_wall",
+   "name": "白光の壁",
+   "ja": "床のランプから立つ白光の壁",
+   "description": "{style}, a blinding wall of white-gold light rising from a row of small lamps set into a flagstone floor, the wall filling the frame, a stone corridor washed out white behind it",
+   "seeds": [
+    157,
+    193
+   ]
+  },
+  {
+   "id": "white_hymn_wall",
+   "name": "灯りの壁",
+   "ja": "石の回廊に吊るしたランタンの壁",
+   "description": "{style}, a wall made of many hanging square brass lanterns on chains filling a stone corridor, their combined warm light forming a barrier, straight on, close-up",
+   "seeds": [
+    159,
+    195
+   ]
+  },
+  {
+   "id": "white_perm_pavilion",
+   "name": "光の天幕",
+   "ja": "洞窟の床の光の布の天幕",
+   "description": "{style}, a small tent canopy made of glowing warm amber light cloth held up by brass poles on a rocky cavern floor, sheltering the ground beneath, close-up",
+   "seeds": [
+    161,
+    197
+   ]
+  },
+  {
+   "id": "white_perm_ballista",
+   "name": "光壁の弩",
+   "ja": "光の壁の上の弩",
+   "description": "{style}, a brass ballista mounted on top of a wall of glowing warm amber light, firing a bolt of solid light to the right, close-up",
+   "seeds": [
+    163,
+    199
+   ]
+  },
+  {
+   "id": "white_perm_warcry",
+   "name": "灯り増し",
+   "ja": "作業台の油ランプの芯を上げる",
+   "description": "{style}, a brass oil lamp on a wooden workbench among brass tools with its wick wheel being turned up, the flame growing tall and the warm glow doubling in size, close-up",
+   "negative_extra": "hands",
+   "seeds": [
+    165,
+    201
+   ]
+  },
+  {
+   "id": "white_perm_anthem",
+   "name": "輝き増し",
+   "ja": "大広間のシャンデリアの全灯",
+   "description": "{style}, a great brass chandelier of many small lanterns hanging in a great stone hall, all blazing brighter at once, rays of warm light filling the frame, close-up",
+   "seeds": [
+    167,
+    203
+   ]
+  },
+  {
+   "id": "white_heal",
+   "name": "癒しの光",
+   "ja": "光の粒が白い花に降る",
+   "description": "{style}, a soft rain of warm amber light motes falling from a small hanging brass lantern onto a cluster of pale white flowers that glow as the light touches them, close-up",
+   "seeds": [
+    169,
+    205
+   ]
+  },
+  {
+   "id": "white_mass_heal",
+   "name": "大いなる癒し",
+   "ja": "天井のランタンから光の洪水",
+   "description": "{style}, a huge brass ceiling lantern opened wide, a flood of warm amber light pouring straight down and filling the whole frame, drifting motes, rays",
+   "seeds": [
+    171,
+    207
+   ]
+  },
+  {
+   "id": "white_service",
+   "name": "灯り継ぎ",
+   "ja": "宿場の棚で蝋燭から蝋燭へ火を継ぐ",
+   "description": "{style}, two brass candlesticks on a wooden shelf of an inn, a small flame being passed from the lit one to the unlit one, the new wick just catching light, close-up",
+   "negative_extra": "hands",
+   "seeds": [
+    173,
+    209
+   ]
+  },
+  {
+   "id": "white_healing_verse",
+   "name": "癒しの灯",
+   "ja": "作業台の白紙の手帳とランプ（ドロー）",
+   "description": "{style}, an open lamp-keeper's notebook with blank pages lying on a wooden workbench, a small brass lamp set on the page corner, warm light and rising motes, a pressed white flower on the page, close-up",
+   "negative_extra": "letters, runes, glyphs, writing",
+   "seeds": [
+    175,
+    211
+   ]
+  },
+  {
+   "id": "white_holy_oil",
+   "name": "灯の油",
+   "ja": "光る油をランタンに注ぐ（作業台）",
+   "description": "{style}, a small glass vial of glowing golden lamp oil tipped in midair by itself above the open door of a square brass lantern on a workbench, a thin stream of glowing oil pouring into the lantern, drops of light, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    177,
+    213
+   ]
+  },
+  {
+   "id": "white_prayer_verse",
+   "name": "灯りの一節",
+   "ja": "石の棚の短い蝋燭ひとつ",
+   "description": "{style}, a single short white candle stub with a small steady warm flame on a brass dish, standing on a stone ledge in a dark tunnel, close-up, quiet",
+   "seeds": [
+    179,
+    215
+   ]
+  },
+  {
+   "id": "white_miracle_light",
+   "name": "輝きの光",
+   "ja": "洞窟に吊るしたランタンの中で星が弾ける",
+   "description": "{style}, a blinding star of white-gold light bursting inside a square brass lantern hanging in a dark cave, rays escaping through its glass panes, close-up",
+   "seeds": [
+    181,
+    217
+   ]
+  },
+  {
+   "id": "white_mercy_staff",
+   "name": "灯りの杖",
+   "ja": "鉤に小さなランタンの杖",
+   "description": "{style}, a white staff with a brass hook at its top and a small square lantern hanging from the hook glowing warm amber, leaning against dark stone, close-up",
+   "negative_extra": "hands",
+   "seeds": [
+    183,
+    219
+   ]
+  },
+  {
+   "id": "white_blade_prayer",
+   "name": "灯りの刃",
+   "ja": "光の刃の短剣",
+   "description": "{style}, a short sword whose blade is made of solid glowing amber light, brass hilt, laid on white cloth, gentle motes rising, close-up",
+   "seeds": [
+    185,
+    221
+   ]
+  },
+  {
+   "id": "white_perm_spring",
+   "name": "灯りの泉",
+   "ja": "光の水の泉",
+   "description": "{style}, a small round stone basin fountain in a wall niche filled with liquid warm amber light instead of water, glowing light trickling from a brass spout, ferns around it, close-up",
+   "seeds": [
+    187,
+    223
+   ]
+  },
+  {
+   "id": "white_mending",
+   "name": "修繕の灯",
+   "ja": "作業台の胸当てが繕われる（作り直し）",
+   "description": "{style}, a dented white iron breastplate (chest armor) lying on a wooden workbench, a small brass repair lamp beside it shining on the dent, the dent sealing itself with a glowing seam of warm light, brass tools around, close-up",
+   "negative_extra": "mannequin, torso, cloth, paper, sheet",
+   "seeds": [
+    189,
+    225
+   ]
+  },
+  {
+   "id": "white_perm_chalice",
+   "name": "光の器",
+   "ja": "祭壇の光が溢れる器（作り直し）",
+   "description": "{style}, a wide shallow brass bowl on a stone altar in a wall niche, filled to the brim with glowing liquid amber light that spills over its rim and runs down the altar in glowing streams, no fire, no flames, close-up",
+   "negative_extra": "fire, flames, brazier, burning",
+   "seeds": [
+    191,
+    227
+   ]
+  },
+  {
+   "id": "white_perm_apostle",
+   "name": "恵光の灯籠",
+   "ja": "地下の苔の庭の灯籠と光の蛾（作り直し）",
+   "description": "{style}, a tall standing brass lantern with paper panes glowing warm amber in a mossy underground garden, small moths of light circling it, rock ceiling above, no sky, no moon",
+   "negative_extra": "moon, sky, circle, orb in the sky",
+   "seeds": [
+    193,
+    229
+   ]
+  },
+  {
+   "id": "white_perm_bell",
+   "name": "灯の鐘",
+   "ja": "鐘楼の部屋の中の鐘（作り直し）",
+   "description": "{style}, a large brass bell hanging from a wooden beam inside a dark bell tower room with stone walls all around, a small warm lantern flame glowing inside the bell where the clapper would be, soft light spilling from its mouth, no window, no sky",
+   "negative_extra": "sky, moon, window, clouds",
+   "seeds": [
+    195,
+    231
+   ]
+  },
+  {
+   "id": "white_perm_cathedral",
+   "name": "大灯台",
+   "ja": "洞窟の底の灯台",
+   "description": "{style}, a great brass lighthouse tower standing on a rock inside a huge dark underground cavern, rough stone cave ceiling with hanging stalactites above it, its lamp room blazing and a wide beam sweeping through the darkness, no sky, no clouds, no moon",
+   "seeds": [
+    197,
+    233
+   ]
+  },
+  {
+   "id": "white_reaction_martyr",
+   "name": "灯の身代わり",
+   "ja": "ランタンが身代わりに砕けて癒しの光",
+   "description": "{style}, a square brass lantern on a stone ledge shattering as it takes an unseen blow, its glass panes bursting outward and a soft flood of warm healing light pouring out of the broken lantern, mine tunnel behind, close-up",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    199,
+    235
+   ]
+  },
+  {
+   "id": "white_catalyst_echo",
+   "name": "重ねる灯",
+   "ja": "宿場の台に重なる二つの灯",
+   "description": "{style}, two identical square brass lanterns overlapping each other on the wooden counter of an inn, their warm lights merging with faint echo rings rippling out, close-up",
+   "seeds": [
+    201,
+    237
+   ]
+  },
+  {
+   "id": "white_reaction_sanctuary",
+   "name": "灯りの庭",
+   "ja": "岩天井の下の囲われた庭（作り直し）",
+   "description": "{style}, a small walled stone garden enclosed on all sides by high stone walls under a rock ceiling, lit by many hanging brass lanterns, white flowers glowing in pools of warm light, peaceful, no sky",
+   "negative_extra": "sky, clouds, house, village, moon",
+   "seeds": [
+    203,
+    239
+   ]
+  },
+  {
+   "id": "white_page_signal",
+   "name": "小人形の点灯",
+   "ja": "火花が小さなランプの芯に飛ぶ（作り直し）",
+   "description": "{style}, close-up of a tiny candle-sized brass lamp on a dark workbench, a single spark jumping from a small brass flint-and-steel striker device lying beside it into the lamp's wick, the first tiny flame catching, no hands, no window",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, window, moon",
+   "seeds": [
+    205,
+    241
+   ]
+  },
+  {
+   "id": "white_calling",
+   "name": "点灯",
+   "ja": "鍵を巻いてランタンに灯が入る",
+   "description": "{style}, a brass wind-up key turning in the base of a square brass lantern on a workbench, the lantern's flame just catching and its light spreading over the tools around it, close-up, no hands",
+   "negative_extra": "hands",
+   "seeds": [
+    207,
+    243
+   ]
+  },
+  {
+   "id": "white_muster",
+   "name": "一斉点灯",
+   "ja": "二つのランタンが同時に点く",
+   "description": "{style}, two square brass lanterns hanging side by side on a brass rail against a stone wall, both flaring on at the same instant from one spark, rays of warm light",
+   "seeds": [
+    209,
+    245
+   ]
+  },
+  {
+   "id": "white_grand_rally",
+   "name": "大点灯",
+   "ja": "坑道の大ランプ三つが一斉に点く",
+   "description": "{style}, three big brass lamps in a row along a mine tunnel all blazing on at once in a huge burst of warm light, the whole tunnel lit, rays",
+   "seeds": [
+    211,
+    247
+   ]
+  },
+  {
+   "id": "white_shield_call",
+   "name": "盾人形の点灯",
+   "ja": "光の板の奥でランタンが点く",
+   "description": "{style}, a square brass lantern igniting behind a translucent pane of warm light standing upright on stone steps, the pane brightening as the lantern lights, close-up",
+   "seeds": [
+    213,
+    249
+   ]
+  },
+  {
+   "id": "white_maiden_prayer",
+   "name": "盾人形と灯り",
+   "ja": "人形大の盾がランタンに寄りかかる",
+   "description": "{style}, a doll-sized round white shield with a brass rim propped against a glowing square brass lantern set on flagstones, both lit warm, quiet, close-up",
+   "seeds": [
+    215,
+    251
+   ]
+  },
+  {
+   "id": "white_hound_whistle",
+   "name": "犬人形の点灯",
+   "ja": "犬笛と首輪のランプが点く",
+   "description": "{style}, a brass dog collar with a small lantern on it lying on a wooden floor beside a brass whistle on a cord, the collar lantern flaring on with a puff of warm light, close-up",
+   "seeds": [
+    217,
+    253
+   ]
+  },
+  {
+   "id": "white_march_order",
+   "name": "点灯の合図",
+   "ja": "見張り台の合図のランタン（作り直し）",
+   "description": "{style}, a brass signal lantern raised high on a wooden pole on a lookout post built of timber deep inside a dark cavern, flashing a bright burst of warm light with rays fanning out into the dark, rock ceiling above, no sky, no moon",
+   "negative_extra": "moon, sky, clouds",
+   "seeds": [
+    219,
+    255
+   ]
+  },
+  {
+   "id": "white_holy_procession",
+   "name": "灯りの行列",
+   "ja": "石段を下るランタンの列",
+   "description": "{style}, a line of square brass lanterns hanging from hooks along a descending stone staircase, lit one after another down into the dark, warm light on the steps",
+   "seeds": [
+    221,
+    257
+   ]
+  },
+  {
+   "id": "white_rank_thrust",
+   "name": "灯列の突き",
+   "ja": "ランタンを付けた槍が突く（作り直し）",
+   "description": "{style}, three brass spearheads with small square lanterns tied under them thrusting into the frame from the left edge toward the right in unison, motion lines, the lanterns blazing, dark mine tunnel behind, nobody holding them",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, lamp post, street lamp, row of lamps",
+   "seeds": [
+    223,
+    259
+   ]
+  },
+  {
+   "id": "white_miracle_division",
+   "name": "人形の分列",
+   "ja": "一つの炎が二つに分かれる",
+   "description": "{style}, one lantern flame splitting into two identical flames inside a pair of matching square brass lanterns standing side by side on a workbench, a seam of bright light between them, close-up",
+   "seeds": [
+    225,
+    261
+   ]
+  },
+  {
+   "id": "white_perm_martyr_vow",
+   "name": "灯の捧げ",
+   "ja": "ランタンを炉にくべて大ランプが輝く",
+   "description": "{style}, a small square brass lantern being fed into the open mouth of a brass furnace, its flame flowing out as a stream of warm light into a big lamp above the furnace, the big lamp blazing brighter, forge glow",
+   "negative_extra": "hands",
+   "seeds": [
+    227,
+    263
+   ]
+  },
+  {
+   "id": "white_rally",
+   "name": "灯の集い",
+   "ja": "ランタンの輪の光が集まる",
+   "description": "{style}, a ring of many small square brass lanterns set on dark stone, all lit at once, their warm light beams converging into one bright point in the middle, close-up",
+   "seeds": [
+    229,
+    265
+   ]
+  },
+  {
+   "id": "white_praise_chorus",
+   "name": "灯の輪",
+   "ja": "床の光の輪とランタン",
+   "description": "{style}, a glowing ring of warm light drawn on the dark stone floor with small brass lanterns set at its points, light rising from the ring, seen from above at an angle",
+   "seeds": [
+    231,
+    267
+   ]
+  },
+  {
+   "id": "white_grand_charge",
+   "name": "灯火の大行列",
+   "ja": "ランタンの列が坑道に続く",
+   "description": "{style}, a long line of lit square brass lanterns on tall brass poles receding into a dark mine tunnel, a river of warm amber light, no people visible",
+   "seeds": [
+    233,
+    269
+   ]
+  },
+  {
+   "id": "white_perm_banner",
+   "name": "白銀の旗",
+   "ja": "洞窟の岩に立つ白銀の旗",
+   "description": "{style}, a tall silver-white banner on a brass pole planted on a rocky outcrop in a cavern, its edges glowing warm amber, fluttering, close-up",
+   "seeds": [
+    235,
+    271
+   ]
+  },
+  {
+   "id": "white_perm_war_banner",
+   "name": "灯火の旗印",
+   "ja": "坑口の旗とランタン",
+   "description": "{style}, a war banner on a brass pole with a square brass lantern hung from its crossbar, planted at the mouth of a mine tunnel, glowing warm, fluttering, close-up",
+   "seeds": [
+    237,
+    273
+   ]
+  },
+  {
+   "id": "white_war_horn",
+   "name": "灯火の号砲",
+   "ja": "見張り塔の胸壁の角笛（作り直し）",
+   "description": "{style}, a curved brass war horn with a small lantern set in its bell resting on a stone parapet of a mine watchtower, blasting out rings of warm light, dark rock behind, no sky, no moon",
+   "negative_extra": "moon, sky, hands",
+   "seeds": [
+    239,
+    275
+   ]
+  },
+  {
+   "id": "white_perm_squire",
+   "name": "剣の人形",
+   "ja": "剣を掲げて坑道を駆ける",
+   "description": "{style}, a small white iron knight doll charging forward to the right down a mine tunnel with timber supports, gripping a brass short sword raised in both hands (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), motion, close-up",
+   "doll": true,
+   "seeds": [
+    241,
+    277
+   ]
+  },
+  {
+   "id": "white_perm_shieldmaiden",
+   "name": "盾の人形",
+   "ja": "石段で片膝をつき盾を構える",
+   "description": "{style}, a small white iron knight doll kneeling on one knee on stone steps, bracing a round white shield with a brass rim in both hands in front of its body (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    243,
+    279
+   ]
+  },
+  {
+   "id": "white_perm_choir",
+   "name": "癒しの人形",
+   "ja": "庭で光の器を掲げる",
+   "description": "{style}, a small white iron knight doll kneeling in a small garden of white flowers, holding up a brass bowl brimming with warm healing light in both hands, motes rising (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    245,
+    281
+   ]
+  },
+  {
+   "id": "white_perm_banneret",
+   "name": "旗の人形",
+   "ja": "岩の上で大きな旗を掲げる",
+   "description": "{style}, a small white iron knight doll standing on a rock, holding a huge white banner on a brass pole taller than the frame in both hands, the banner streaming in the wind (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    247,
+    283
+   ]
+  },
+  {
+   "id": "white_perm_band",
+   "name": "鐘の人形",
+   "ja": "鐘を鳴らす人形（正面・作り直し）",
+   "description": "{style}, a small white iron knight doll ringing a brass hand bell held up high in both hands, rings of warm light spreading through a stone corridor, three-quarter front view (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    249,
+    285
+   ]
+  },
+  {
+   "id": "white_perm_bandleader",
+   "name": "大鐘の人形",
+   "ja": "自分より大きな鐘を橇で引く",
+   "description": "{style}, a small white iron knight doll pulling a brass bell twice its own size on a small wooden sled with a rope in both hands, the bell glowing warm amber, minecart rails on the ground (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    251,
+    287
+   ]
+  },
+  {
+   "id": "white_perm_hound",
+   "name": "犬の人形",
+   "ja": "からくり犬が軌道を走る",
+   "description": "{style}, a small white iron armored hound doll, a four-legged clockwork dog (matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, no snout, a small brass lantern strapped on its back) running along minecart rails in a tunnel, motion streaks, close-up",
+   "doll": true,
+   "negative_extra": "cat, fox, wolf, fur, real dog",
+   "seeds": [
+    253,
+    289
+   ]
+  },
+  {
+   "id": "white_perm_archer",
+   "name": "弩の人形",
+   "ja": "木箱の上で弩を構える",
+   "description": "{style}, a small white iron knight doll crouching on top of a wooden crate, aiming a small brass crossbow loaded with a bolt of light held in both hands (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    255,
+    291
+   ]
+  },
+  {
+   "id": "white_perm_monk",
+   "name": "手当ての人形",
+   "ja": "割れたランタンに包帯を巻く",
+   "description": "{style}, a small white iron knight doll kneeling beside a cracked square lantern on a workshop floor, wrapping it in white bandage held in both hands, a small brass medicine bag open beside it (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    257,
+    293
+   ]
+  },
+  {
+   "id": "white_perm_candle",
+   "name": "燭の人形",
+   "ja": "蝋燭ひとつで暗い坑道を歩く",
+   "description": "{style}, a small white iron knight doll walking through a dark mine tunnel with a tall white candle in a brass holder carried in both hands, the candle flame the only light (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    259,
+    295
+   ]
+  },
+  {
+   "id": "white_perm_page",
+   "name": "小さな人形",
+   "ja": "作業台の上の手のひらサイズの人形（俯瞰）",
+   "description": "{style}, a tiny white iron knight doll the size of a cup seen from above, sitting on a wooden workbench among brass screws, a cog and a screwdriver (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), its back lantern glowing softly, close-up",
+   "doll": true,
+   "seeds": [
+    261,
+    297
+   ]
+  },
+  {
+   "id": "white_page_rank",
+   "name": "小人形の列",
+   "ja": "梁の上を一列に歩く小さな人形二体",
+   "description": "{style}, two tiny small white iron knight dolls marching in single file along a wooden beam above a dark drop (two heads tall each, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helms, no faces: only empty dark hollows with two small warm amber glowing eyes, small brass lanterns strapped on their backs), close-up",
+   "doll": true,
+   "seeds": [
+    263,
+    299
+   ]
+  },
+  {
+   "id": "white_knight_charge",
+   "name": "人形の総突撃",
+   "ja": "人形の群れの突撃（低いアングル）",
+   "description": "{style}, a crowd of small white iron knight dolls seen from a low angle charging forward to the right down a tunnel with tiny brass swords raised (two heads tall each, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helms, no faces: only empty dark hollows with two small warm amber glowing eyes, small brass lanterns strapped on their backs), back lanterns blazing, dust and motion streaks, close-up",
+   "doll": true,
+   "seeds": [
+    265,
+    301
+   ]
+  },
+  {
+   "id": "fusion_holy_stance",
+   "name": "灯火の構え",
+   "ja": "立てた竿の灯が光の半球を張る（作り直し）",
+   "description": "{style}, a long dark iron lantern pole planted upright on flagstones with a square brass lantern at its top, the lantern's light spreading forward into a translucent half-dome barrier of warm light in front of the pole, a stone corridor behind, close-up, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, street lamp, lamp post",
+   "seeds": [
+    267,
+    303
+   ]
+  },
+  {
+   "id": "fusion_pray_or_guard",
+   "name": "灯すか守るか",
+   "ja": "坑道の分かれ道: 光の道か門の道か",
+   "description": "{style}, a fork in a mine tunnel with a single square brass lantern on the ground between the two passages, the left passage bathed in soft warm light and the right passage barred by a heavy brass gate, close-up",
+   "seeds": [
+    269,
+    305
+   ]
+  },
+  {
+   "id": "fusion_page_ambush",
+   "name": "小人形の伏兵",
+   "ja": "木箱の陰から覗く小さな人形",
+   "description": "{style}, a tiny white iron knight doll peeking out from behind a wooden crate stacked in a dark tunnel, ready to leap (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), its back lantern dimmed, close-up",
+   "doll": true,
+   "seeds": [
+    271,
+    307
+   ]
+  },
+  {
+   "id": "fusion_archer_horn",
+   "name": "弩人形の号砲",
+   "ja": "石壁の上の弩の人形と角笛",
+   "description": "{style}, a small white iron knight doll standing on top of a low stone wall, holding a small brass crossbow in both hands while a brass horn mounted beside it blasts rings of warm light, a spray of tiny bolts of light flying to the right (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    273,
+    309
+   ]
+  },
+  {
+   "id": "fusion_retribution_blade",
+   "name": "報復の刃",
+   "ja": "床に立つ光の刃が光を跳ね返す",
+   "description": "{style}, a short sword with a blade of solid amber light standing upright point-down in a stone floor by itself, a harsh beam of light striking the blade and reflecting back as a sharp flash, sparks, close-up, nobody holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    275,
+    311
+   ]
+  },
+  {
+   "id": "fusion_chant_altar",
+   "name": "点灯の台座",
+   "ja": "台座の上に光の盾",
+   "description": "{style}, a brass pedestal altar with a square lantern set on top, a round shield of warm light hovering above it, motes rising, close-up",
+   "seeds": [
+    277,
+    313
+   ]
+  },
+  {
+   "id": "white_light_bolt",
+   "name": "灯の矢",
+   "ja": "ランタンの光が矢になって飛ぶ（灯の放出・初期デッキ）",
+   "description": "{style}, a square brass lantern on a short post in a dark mine tunnel, a single long arrow made of solid warm amber light shooting out of its open door toward the right, trailing sparks, by itself, nobody holding it, no bow, no archer, motion",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    211,
+    233
+   ]
+  },
+  {
+   "id": "white_light_strike",
+   "name": "灯集めの一撃",
+   "ja": "竿で打った衝撃で散った光の粒がランタンへ吸い戻される",
+   "description": "{style}, the square brass lantern at the tip of a long dark iron pole striking a mossy rock, and dozens of small motes of warm amber light streaming back into the lantern's open door like sparks drawn to it, close-up, motion, nobody holding the pole",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    307,
+    331
+   ]
+  },
+  {
+   "id": "white_light_hoard",
+   "name": "灯り溜め",
+   "ja": "光の壁の内側でランタンが光を溜める",
+   "description": "{style}, a small square brass lantern sitting on a flagstone floor inside a low curved wall of translucent warm amber light panes, the lantern's flame swelling and overflowing with layered warm glow, seen straight on, close-up, steady",
+   "seeds": [
+    353,
+    379
+   ]
+  },
+  {
+   "id": "white_perm_wick",
+   "name": "灯芯の人形",
+   "ja": "芯を掲げて灯を分ける小さな人形（従者）",
+   "description": "{style}, {doll} holding up a long brass wick-trimmer with a tiny burning wick in both hands, lighting a small square brass lantern on a stone shelf in a mine tunnel, warm light spreading from the wick",
+   "doll": true,
+   "seeds": [
+    401,
+    427
+   ]
+  },
+  {
+   "id": "white_light_torrent",
+   "name": "光の奔流",
+   "ja": "ランタンから溢れた光が奔流になって右へ",
+   "description": "{style}, a square brass lantern on a stone ledge with its door burst open, a wide roaring torrent of warm amber light pouring out of it and rushing to the right like a flood through a dark mine tunnel, motion, by itself",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    449,
+    467
+   ]
+  },
+  {
+   "id": "white_light_verdict",
+   "name": "光の裁き",
+   "ja": "頭上から一条の強い光が石床を射る（眩む）",
+   "description": "{style}, a single thick vertical shaft of harsh white-gold light striking down from above onto a dark cobblestone floor in a stone hall, the floor glowing and cracking under the beam, dust lit in the beam, seen from the side, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    491,
+    509
+   ]
+  },
+  {
+   "id": "white_reaction_light_wall",
+   "name": "灯守りの壁",
+   "ja": "光の壁が受け止め、こぼれた光がランタンへ戻る",
+   "description": "{style}, a translucent pane of warm amber light standing upright as a wall in a mine tunnel, a dark spiked iron club striking it and stopping with a burst of sparks, while small motes of light run down the wall into a square brass lantern at its foot, motion, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    523,
+    547
+   ]
+  },
+  {
+   "id": "white_perm_light_ballista",
+   "name": "灯の弩",
+   "ja": "真鍮の弩が灯の粒を全方位へ放つ（置物）",
+   "description": "{style}, a squat brass ballista mounted on a stone pedestal with a small square lantern set at its center, spraying dozens of tiny darts of warm amber light in every direction, seen from the side at an angle, by itself, no crew",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    563,
+    587
+   ]
+  },
+  {
+   "id": "white_light_double",
+   "name": "灯の倍化",
+   "ja": "鏡でランタンの光が二つに",
+   "description": "{style}, a square brass lantern standing before a tall polished brass mirror on a wooden workshop table, its warm flame and its reflection both blazing so the light doubles and fills the frame, close-up, steady",
+   "seeds": [
+    601,
+    617
+   ]
+  },
+  {
+   "id": "white_light_burst",
+   "name": "眩光の大放出",
+   "ja": "ランタンが割れるほどの光が画面全体へ",
+   "description": "{style}, a square brass lantern at the center of a dark stone hall bursting apart, its glass panes shattering outward, an enormous flood of warm amber light exploding to fill the whole frame, shards and sparks flying, motion, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    641,
+    659
+   ]
+  },
+  {
+   "id": "white_perm_lantern",
+   "name": "灯篭の人形",
+   "ja": "大きな吊り灯篭を竿で掲げ、光が四方へ広がる（灯参照の人形）",
+   "description": "{style}, a small white iron knight doll standing at the center of a dark stone hall, hoisting a big square brass hanging lantern twice its own size on a short pole held up in both hands, the lantern blazing so bright that rays of warm amber light fan out to every side of the frame (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    677,
+    691
+   ]
+  },
+  {
+   "id": "white_perm_bonfire",
+   "name": "篝火の人形",
+   "ja": "背中に篝火の籠を背負い炎が噴き上がる（固定の大出力の人形）",
+   "description": "{style}, a small white iron knight doll marching forward to the right through a dark mine tunnel, carrying a big iron fire basket full of roaring warm amber flames strapped on its back instead of a lantern, both hands gripping the basket's brass chains, embers and sparks streaming behind it (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), motion, close-up",
+   "doll": true,
+   "seeds": [
+    703,
+    727
+   ]
+  },
+  {
+   "id": "white_spark_token",
+   "name": "火種",
+   "ja": "作業台の上に浮かぶ小さな燠の種（トークン）",
+   "description": "{style}, a single tiny glowing ember seed the size of a bean floating above a dark wooden workbench, warm amber light with a soft halo, a few drifting sparks, close-up, macro, nothing else",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    743,
+    757
+   ]
+  },
+  {
+   "id": "white_spark_scatter",
+   "name": "火種撒き",
+   "ja": "竿で床を打ち、燠の種が散る",
+   "description": "{style}, the brass-shod butt of a long dark iron pole striking a stone tunnel floor, a spray of dozens of tiny glowing ember seeds scattering across the floor to the right, motion, nobody holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    769,
+    787
+   ]
+  },
+  {
+   "id": "white_spark_shield",
+   "name": "火守りの盾",
+   "ja": "盾の中心で燠の種を守る",
+   "description": "{style}, a round white shield with a brass rim leaning against a mine timber, a small glowing ember seed cradled at its center boss, a few sparks drifting, dark tunnel behind, close-up, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    803,
+    821
+   ]
+  },
+  {
+   "id": "white_spark_burst",
+   "name": "火花散らし",
+   "ja": "金床の火打ちから火花が散る",
+   "description": "{style}, a brass flint striker on a small workshop anvil throwing a burst of bright sparks to the right, several ember seeds tumbling through the air, dark workshop, close-up, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    839,
+    853
+   ]
+  },
+  {
+   "id": "white_spark_kindling",
+   "name": "大焚き付け",
+   "ja": "焚き付けの山から燠の種が立ちのぼる",
+   "description": "{style}, a heap of dry kindling twigs under a brass brazier catching fire, a rushing column of glowing ember seeds rising up and filling the upper frame, dark cellar, close-up",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    871,
+    887
+   ]
+  },
+  {
+   "id": "white_perm_spark_furnace",
+   "name": "灯火の炉",
+   "ja": "小さな真鍮の炉から燠の種がひとつ出てくる",
+   "description": "{style}, a small squat brass furnace on a stone floor with its little door open, a single glowing ember seed floating out of the door, warm glow inside, dark workshop, close-up",
+   "seeds": [
+    901,
+    919
+   ]
+  },
+  {
+   "id": "white_spark_kindle",
+   "name": "火起こし",
+   "ja": "ランタンの炎を藁に移し、種がふたつ立つ",
+   "description": "{style}, a square brass lantern tilted so its flame touches a nest of dry straw on a stone floor, two glowing ember seeds rising from the straw, dark tunnel, close-up, nobody holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    937,
+    953
+   ]
+  },
+  {
+   "id": "white_perm_spark_hearth",
+   "name": "灯の火床",
+   "ja": "炭の火床から燠が暗い穴へ落ちる",
+   "description": "{style}, a stone hearth bed full of glowing coals under a brass grate, glowing ember seeds dripping from it down into a dark pit below, mine tunnel, close-up",
+   "seeds": [
+    971,
+    989
+   ]
+  },
+  {
+   "id": "white_spark_storm",
+   "name": "火種の嵐",
+   "ja": "燠の嵐（作り直し2: 洞窟の絵は人物を呼ぶので接写に）",
+   "description": "{style}, extreme close-up of a square brass lantern on a dark wooden workbench, its flame erupting upward into a spiraling storm of thousands of glowing ember seeds that fills the whole frame, embers streaking in curves, dark background, macro, nothing else",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, man, woman, cloak, cape, hood, traveler, wanderer, back view, standing figure, cave, cavern, tunnel",
+   "seeds": [
+    1441,
+    1463
+   ]
+  },
+  {
+   "id": "white_perm_embers",
+   "name": "火の粉",
+   "ja": "灯から散った火の粉が岩に着く",
+   "description": "{style}, a square brass lantern on a rock ledge with its door open, small embers drifting down and landing on dark rocks where tiny flames catch, mine tunnel, close-up",
+   "seeds": [
+    1039,
+    1051
+   ]
+  },
+  {
+   "id": "white_perm_spark_relay",
+   "name": "灯の継ぎ手",
+   "ja": "小さな灯の連なりが人形へ火を渡す",
+   "description": "{style}, a wire strung with a row of tiny brass lanterns lighting one after another, the last one passing its flame to a small white iron knight doll standing at the end with a small brass torch raised in both hands (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "doll": true,
+   "seeds": [
+    1069,
+    1087
+   ]
+  },
+  {
+   "id": "white_light_wall",
+   "name": "灯の壁",
+   "ja": "灯の列から光の壁が立ち上がる",
+   "description": "{style}, a row of small square brass lanterns on a stone floor, a tall translucent wall of warm amber light rising from them, dark tunnel behind, close-up, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1103,
+    1117
+   ]
+  },
+  {
+   "id": "white_light_flash",
+   "name": "眩む閃光",
+   "ja": "閃光が石の広間を白く染める",
+   "description": "{style}, a square brass lantern at the center of a dark stone hall releasing a blinding white-gold flash, rays whiting out the pillars, dust lit up, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1129,
+    1147
+   ]
+  },
+  {
+   "id": "white_light_forge",
+   "name": "灯の鍛冶",
+   "ja": "灯の下で真鍮の槌が板を打つ",
+   "description": "{style}, a brass hammer resting on a small anvil beside a card-shaped white metal plate glowing at the edges, a square lantern above casting warm light, sparks, dark workshop, close-up, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1163,
+    1181
+   ]
+  },
+  {
+   "id": "white_light_ledger",
+   "name": "灯の手帳",
+   "ja": "灯に照らされた真鍮綴じの手帳",
+   "description": "{style}, an open small notebook bound in brass on a wooden table, its pages fanning up as if turning by themselves, a square lantern beside it casting warm light, dark workshop, close-up, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1193,
+    1211
+   ]
+  },
+  {
+   "id": "white_perm_embers_last",
+   "name": "残り火",
+   "ja": "炎の消えたランタンの底に残る燠",
+   "description": "{style}, a square brass lantern with its flame gone out, only a few embers glowing red-amber at its bottom, thin smoke rising, dark workshop, close-up",
+   "seeds": [
+    1229,
+    1247
+   ]
+  },
+  {
+   "id": "white_perm_great_furnace",
+   "name": "灯の大炉",
+   "ja": "大炉から多くのランタンに火が入る",
+   "description": "{style}, a huge brass furnace with its door blazing, a dozen small square lanterns arranged before it each catching a warm flame, dark foundry, close-up, no figure",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1259,
+    1277
+   ]
+  },
+  {
+   "id": "white_light_maul",
+   "name": "灯の大槌",
+   "ja": "灯を仕込んだ大槌が振り下ろされる",
+   "description": "{style}, a huge brass-headed maul with a small square lantern set into its head crashing down onto cracked stone, a burst of warm light and stone chips, motion, nobody holding it",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1291,
+    1303
+   ]
+  },
+  {
+   "id": "white_perm_fire_dish",
+   "name": "灯の火皿",
+   "ja": "油の火皿と、めくれ上がる紙",
+   "description": "{style}, a shallow brass oil dish with a single flame on a stone shelf, a loose sheet of paper beside it lifting into the air on the heat, dark workshop, close-up, no hands",
+   "negative_extra": "figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+   "seeds": [
+    1319,
+    1337
+   ]
+  }
+ ]
+}

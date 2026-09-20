@@ -82,6 +82,8 @@ namespace DeckRogue.Engine
                 case GameEvent_EnemyActionExecuting e:
                 {
                     if (state.ReactionUsedThisAction) return state; // 敵の1行動につき1回まで
+                    // 打ち消し済み (楔 ActionNegated・全体の NegateNextAction) の行動には窓を開かない (2026-09-20 Opus 火種A)。TS と同形
+                    if ((e.EnemyIndex < state.Enemies.Count && state.Enemies[e.EnemyIndex].ActionNegated == true) || state.NegateNextAction) return state;
                     if (e.Kind == EnemyActionKinds.Rest) return state; // 隙 (何もしない) に確認を挟まない
                     var intent = Effects.EffectiveIntent(state, e.EnemyIndex);
                     int actual = intent != null ? intent.Actual : 0;

@@ -149,11 +149,15 @@ namespace DeckRogue.Game
         }
 
         /// <summary>効果音。pitchJitter で毎回少し音程を揺らす (同じ音の連打が機械的にならない)</summary>
+        /// <summary>鳴らした音を Debug.Log に残す (自動操縦の検証用。2026-09-19「回復音ならない」の切り分け)</summary>
+        public static bool Verbose;
+
         public static void Play(string name, float volume = 1f, float pitchJitter = 0.06f)
         {
             if (!Application.isPlaying) return;
             var a = I;
             var clip = Pick(name);
+            if (Verbose) Debug.Log("[Audio] play " + name + " clip=" + (clip == null ? "null" : clip.name + " " + clip.length.ToString("F2") + "s " + clip.loadState) + " vol=" + (volume * SfxVol * Master).ToString("F2"));
             if (clip == null) return;
             AudioSource src = null;
             for (int i = 0; i < a._pool.Count; i++) if (!a._pool[i].isPlaying) { src = a._pool[i]; break; }

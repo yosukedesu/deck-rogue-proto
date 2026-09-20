@@ -33,6 +33,31 @@ describe('とげ (敵の報復。針毛の栗鼠)', () => {
     expect(s.player.hp).toBe(hpBefore) // 反射なし
   })
 
+  it('人形 (置物の誘発) の攻撃には反射しない (2026-09-20 ユーザー「人形の攻撃で棘が反応するのはおかしい」)', () => {
+    // 剣の人形 (毎ターン開始時に2ダメ) を場に置いてターンを回す: ターン開始の誘発で栗鼠を殴っても、とげは反射しない
+    let s = withHand(freshCombat('set-confirm', 'enemy_thorn_squirrel', 42), ['white_perm_squire'])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
+    expect(s.eventLog.some((e) => e.type === 'ThornsReflected')).toBe(false) // 点灯 (登場の1回) でも反射しない
+    s = withIntent(s, intent({ kind: 'defend', actual: 5 }))
+    const hpBefore = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.enemies[0].hp).toBeLessThan(getEnemyDef('enemy_thorn_squirrel').maxHp) // 人形は殴っている
+    expect(s.eventLog.some((e) => e.type === 'ThornsReflected')).toBe(false)
+    expect(s.player.hp).toBe(hpBefore)
+  })
+
+  it('仕込み札の返し・ギアのダメージにも反射しない (カードのプレイで与えるダメージだけ = 勢い・虚弱と同じ線)', () => {
+    let s = withHand(freshCombat('set-confirm', 'enemy_thorn_squirrel', 42), ['green_reaction_thorns'])
+    s = setAndArm(s, 't0_green_reaction_thorns')
+    s = withIntent(s, intent({ kind: 'attack', actual: 3 }))
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.phase).toBe('awaiting-reaction')
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true, cardUid: 't0_green_reaction_thorns' })
+    expect(s.eventLog.some((e) => e.type === 'DamageDealt' && e.source === 'player')).toBe(true) // 返しは撃った
+    expect(s.eventLog.some((e) => e.type === 'ThornsReflected')).toBe(false)
+  })
+
   it('反射はプレイヤーのブロックで防げる', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_thorn_squirrel', 42), ['green_strike'])
     s = { ...s, player: { ...s.player, block: 5 } }

@@ -272,6 +272,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>霊気 (青): 妨害・リアクションの成功で溜まるエネルギー (戦闘内持続)。霊気放出で全消費する</summary>
         [JsonProperty("aether")]
         public int Aether { get; init; }
+        /// <summary>灯 (白 2026-09-20 白の再設計): 回復するたび+1・人形 (retainer) が場に出るたび+1・ひなたのパッシブで毎ターン+1 で溜まる 戦闘内持続の蓄積。号令 (CardDef.lightCost) と放出 (dischargeLight) で吐く。純粋な電池 (持っている間は何もしない)。 旧セーブは欠落 → 0 と読む</summary>
+        [JsonProperty("light", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Light { get; init; }
         /// <summary>この戦闘で回復した回数 (過剰回復も数える = onHealed と同じ回数論。滾る血汐の参照)</summary>
         [JsonProperty("healsThisCombat")]
         public int HealsThisCombat { get; init; }
@@ -316,6 +319,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>この戦闘でプレイしたランダム火力の枚数 (カオスの刈り取りの参照値。2026-08-30)</summary>
         [JsonProperty("randomPlayedThisCombat")]
         public int RandomPlayedThisCombat { get; init; }
+        /// <summary>火種 (白 2026-09-20 夜。本家 Soul の白版): この戦闘で撃った火種 (sparkToken) の枚数。火種の嵐が参照</summary>
+        [JsonProperty("sparksPlayedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
+        public int? SparksPlayedThisCombat { get; init; }
         /// <summary>直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット)</summary>
         [JsonProperty("damageTakenLastEnemyPhase")]
         public int DamageTakenLastEnemyPhase { get; init; }
@@ -525,6 +531,9 @@ namespace DeckRogue.Engine.Generated
         public int? MinGrowth { get; init; }
         [JsonProperty("minMomentum", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinMomentum { get; init; }
+        /// <summary>灯しきい値 (白 2026-09-20 白の再設計: 灼く光・光の裁き。解決時の灯がN以上なら。自分で満たしにいける条件)</summary>
+        [JsonProperty("minLight", NullValueHandling = NullValueHandling.Ignore)]
+        public int? MinLight { get; init; }
         /// <summary>ターン開始時のエナジー上限がN以上なら (緑 上限参照のしきい値化 2026-09-07 ピック監査: 若幹の一撃・大地の唸り。 「上限×2」は人間に読まれないので「上限5以上ならさらに」の形に。ランプ即時利用の廃止と同じくターン開始スナップショットを読む)</summary>
         [JsonProperty("minEnergyMax", NullValueHandling = NullValueHandling.Ignore)]
         public int? MinEnergyMax { get; init; }
@@ -549,6 +558,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>リアクション窓専用: 敵の行動の種別がこの中にある時だけ発動できる (緑 共鳴する茨 2026-09-07 ピック監査: 「強化・応援だけを打ち消す1E」= 根の紡ぎ2Eの限定ラダー。条件付きリアクションの罠を避けるため、通常戦の4割で満たす種別に限る)</summary>
         [JsonProperty("actionKinds", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? ActionKinds { get; init; }
+        /// <summary>リアクション窓専用: 敵の行動の種別がこの中に無い時だけ発動できる (白 聖罰の障壁 2026-09-18 ユーザー裁定「攻撃以外で鳴るようにして」: 旧 onEnemyBuffed は純粋な強化・応援の技〔85体中17〕にしか開かず、9/14 に配った守り＋筋力+1 や攻撃と同時の強化には鳴らなかった)</summary>
+        [JsonProperty("actionKindsNot", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<string>? ActionKindsNot { get; init; }
         /// <summary>直前に解決された敵の攻撃でHP損失が0だったら (被攻撃後の置物/リアクション用。根張り)</summary>
         [JsonProperty("lastActionNoHpLoss", NullValueHandling = NullValueHandling.Ignore)]
         public bool? LastActionNoHpLoss { get; init; }
@@ -634,6 +646,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>成長/勢いの獲得誘発 (onGrowthGained/onMomentumGained) を解決中フラグ (2026-09-02)。誘発の中の加算は再誘発しない = 1段で止める</summary>
         [JsonProperty("resolvingGainTrigger", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ResolvingGainTrigger { get; init; }
+        /// <summary>号令・大行列で人形を動かしている間は灯を産まない (白 2026-09-20 ユーザー裁定。灯芯の人形が大行列の中で鳴って「全て放出」の直後に灯が戻る、の是正)</summary>
+        [JsonProperty("suppressLightGain", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? SuppressLightGain { get; init; }
+        /// <summary>灯の火床 (2026-09-20 夜): この EndTurn で灯を火種に変える枚数 (コマンドの hearthSparks。onTurnEnd の間だけ立つ)</summary>
+        [JsonProperty("hearthSparks", NullValueHandling = NullValueHandling.Ignore)]
+        public int? HearthSparks { get; init; }
         /// <summary>次の敵行動を無効化 (打ち消し効果が立てる。方式非依存の汎用メカニクス)</summary>
         [JsonProperty("negateNextAction")]
         public bool NegateNextAction { get; init; }
@@ -652,6 +670,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>直前に場に出た置物の uid (駆けつけ=ひなた 2026-09-06: onPermanentEntered の解決中に「誰が出たか」を読む)</summary>
         [JsonProperty("lastEnteredPermanentUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? LastEnteredPermanentUid { get; init; }
+        /// <summary>いま効果を解決している置物の uid (runPermanentTriggers の間だけ立つ。演出用: 人形の盤面表示 2026-09-19 = DamageDealt/BlockGained/HpHealed の sourceUid の元。ルールは読まない)</summary>
+        [JsonProperty("resolvingPermanentUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? ResolvingPermanentUid { get; init; }
         /// <summary>発生済みイベントログ (リプレイ・シミュレーション統計の材料)</summary>
         [JsonProperty("eventLog")]
         public IReadOnlyList<GameEvent> EventLog { get; init; } = default!;
@@ -860,6 +881,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "EndTurn";
         public Command_EndTurn() { Type = TypeTag; }
+        [JsonProperty("hearthSparks", NullValueHandling = NullValueHandling.Ignore)]
+        public int? HearthSparks { get; init; }
     }
 
     /// <summary>判別共用体 GameEvent (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -1045,6 +1068,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略</summary>
         [JsonProperty("blocked", NullValueHandling = NullValueHandling.Ignore)]
         public int? Blocked { get; init; }
+        /// <summary>置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略</summary>
+        [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? SourceUid { get; init; }
     }
 
     /// <summary>GameEvent: type="BlockGained"</summary>
@@ -1056,6 +1082,8 @@ namespace DeckRogue.Engine.Generated
         public string Target { get; init; } = default!;
         [JsonProperty("amount")]
         public int Amount { get; init; }
+        [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? SourceUid { get; init; }
     }
 
     /// <summary>GameEvent: type="IceBlockGained"</summary>
@@ -1110,6 +1138,39 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_AetherDischarged() { Type = TypeTag; }
         [JsonProperty("spent")]
         public int Spent { get; init; }
+    }
+
+    /// <summary>GameEvent: type="LightGained"</summary>
+    public sealed record GameEvent_LightGained : GameEvent
+    {
+        public const string TypeTag = "LightGained";
+        public GameEvent_LightGained() { Type = TypeTag; }
+        [JsonProperty("amount")]
+        public int Amount { get; init; }
+        [JsonProperty("source")]
+        public string Source { get; init; } = default!;
+        [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? SourceUid { get; init; }
+    }
+
+    /// <summary>GameEvent: type="LightDischarged"</summary>
+    public sealed record GameEvent_LightDischarged : GameEvent
+    {
+        public const string TypeTag = "LightDischarged";
+        public GameEvent_LightDischarged() { Type = TypeTag; }
+        [JsonProperty("spent")]
+        public int Spent { get; init; }
+    }
+
+    /// <summary>GameEvent: type="LightSpent"</summary>
+    public sealed record GameEvent_LightSpent : GameEvent
+    {
+        public const string TypeTag = "LightSpent";
+        public GameEvent_LightSpent() { Type = TypeTag; }
+        [JsonProperty("amount")]
+        public int Amount { get; init; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
     }
 
     /// <summary>GameEvent: type="DiscountGained"</summary>
@@ -1370,6 +1431,17 @@ namespace DeckRogue.Engine.Generated
         public int Count { get; init; }
     }
 
+    /// <summary>GameEvent: type="CardsAddedToDraw"</summary>
+    public sealed record GameEvent_CardsAddedToDraw : GameEvent
+    {
+        public const string TypeTag = "CardsAddedToDraw";
+        public GameEvent_CardsAddedToDraw() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
     /// <summary>GameEvent: type="ExhaustRecycled"</summary>
     public sealed record GameEvent_ExhaustRecycled : GameEvent
     {
@@ -1397,6 +1469,8 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_TokenDestroyed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
+        [JsonProperty("uid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Uid { get; init; }
     }
 
     /// <summary>GameEvent: type="RetainerSacrificed"</summary>
@@ -1406,6 +1480,8 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_RetainerSacrificed() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
+        [JsonProperty("uid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Uid { get; init; }
     }
 
     /// <summary>GameEvent: type="RetainersDuplicated"</summary>
@@ -1611,6 +1687,8 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_HpHealed() { Type = TypeTag; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
+        [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? SourceUid { get; init; }
     }
 
     /// <summary>GameEvent: type="CardsMilled"</summary>
@@ -2014,12 +2092,18 @@ namespace DeckRogue.Engine.Generated
         /// <summary>追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる)</summary>
         [JsonProperty("exhaustCost", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExhaustCost { get; init; }
+        /// <summary>追加コスト: 灯を N 払う (白 2026-09-20 白の再設計。号令=点灯の合図)。エナジーと別に払い、足りなければプレイ不可 (エナジー不足と同じ playability)。割引の対象外。伏せるコストには掛からない (白のリアクションは持たない)。 人形にも付く (同日夜 灯と人形の結び: 癒し・鐘・大鐘=1E・灯2、灯篭=U1E・灯2、篝火=R2E・灯4)。 人形の登場は灯を産まない (同日夜 ユーザー裁定「登場の灯+1は廃止」= 人形は灯を使う側。灯を灯すのは灯芯・回復系の人形)</summary>
+        [JsonProperty("lightCost", NullValueHandling = NullValueHandling.Ignore)]
+        public int? LightCost { get; init; }
         /// <summary>従者 (生き物の置物): 敵の「従者狩り」で破壊されうる。道具・オーラ系置物は対象外 (確定済みルール表「トークン破壊」)</summary>
         [JsonProperty("retainer", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Retainer { get; init; }
         /// <summary>骨のナイフ (黒 2026-09-01): empowerShivs の強化対象。addCardToHand で生成されるトークン札</summary>
         [JsonProperty("shivToken", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ShivToken { get; init; }
+        /// <summary>火種 (白 2026-09-20 夜): 0E・消滅・1ドロー・灯+1 のトークン札。撃つたび sparksPlayedThisCombat+1・onSparkPlayed が鳴る</summary>
+        [JsonProperty("sparkToken", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? SparkToken { get; init; }
         /// <summary>合成の触媒 (2026-09-12 ユーザー案「素材にするとリターンが大きい札」): 工房の素材にすると結果にこの恩恵が乗る。 cheaper=結果のコストがさらに−1 (合計−1の上から。0Eまで。0E規約の消滅は歯止めが自動で付ける) / echo=結果のプレイ時効果を2回解決 (X・置物も対象。リアクションには付かない) / retain=結果が保持を持つ。 触媒自身は基本札並みの弱い札 = 「工房を踏めるか」の賭けとして拾う (供給は1ピックの選択肢に1枚まで)</summary>
         [JsonProperty("fusionCatalyst", NullValueHandling = NullValueHandling.Ignore)]
         public string? FusionCatalyst { get; init; }

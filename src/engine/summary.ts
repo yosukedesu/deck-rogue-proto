@@ -109,7 +109,9 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
   if (e.xHits !== true) return ''
   return e.effect !== undefined && e.effect.startsWith('dealDamage')
     ? '×Xヒット(各ヒットに成長・勢いが乗る)'
-    : '×Xヒット'
+    : e.effect === 'addCardToHand' || e.effect === 'addCardToDraw'
+      ? '×X回(=X枚)' // 大焚き付け (Opus 火種C: 文面に X が出ず見送りの一因)
+      : '×Xヒット'
 }
 
 
@@ -175,9 +177,25 @@ export function incomingFrom(s: GameState, enemyIndex: number): number {
   return modifiedHit(s, enemyIndex, it.actual) * intentHits(s, it)
 }
 
-/** 全敵の合計 (被ダメ予測の分子) */
+/**
+ * 全敵の合計 (被ダメ予測の分子)。
+ * ・敵フェーズの途中 (確認ウィンドウ) では、行動を終えて宣言し直した敵 (窓の敵より前) は数えない
+ *   (2026-09-20 Opus 火種A: 解決済みの敵1が宣言し直した次ターンの攻撃5を足していた)
+ * ・身代わりの符 (nullifyNextAttack) が立っていれば、最初に来る攻撃1回ぶんは 0 (2026-09-20 Opus 火種B/C: 組んでも予測が変わらなかった)
+ */
 export function incomingTotal(s: GameState): number {
-  return s.enemies.reduce((sum, _e, i) => sum + incomingFrom(s, i), 0)
+  const from = s.enemyPhase === true && s.pendingWindow ? s.pendingWindow.enemyIndex : 0
+  let nullify = s.nullifyNextAttack === true
+  let sum = 0
+  for (let i = from; i < s.enemies.length; i++) {
+    const v = incomingFrom(s, i)
+    if (v > 0 && nullify) {
+      nullify = false
+      continue
+    }
+    sum += v
+  }
+  return sum
 }
 
 /** 技の短い表記「⚔️7〜9×2」「🛡️12〜17」「💪+2」(予告チップ・図鑑向け。技の幅に strength を足せる) */

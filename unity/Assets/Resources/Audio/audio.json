@@ -70,8 +70,14 @@
       "volume": 0.8
     },
     "RetainersTriggered": {
-      "sfx": "buff",
-      "volume": 0.4
+      "sfx": "rush",
+      "volume": 0.5,
+      "_note": "進軍の号令。2026-09-19 buff (Kenney の鈴) が不快 → 金属の機構 (USFX MECHANICS_Metal_Mechanism_07)"
+    },
+    "RetainerRushed": {
+      "sfx": "rush",
+      "volume": 0.45,
+      "_note": "駆けつけ (ひなたのパッシブ。2026-09-19 判と一緒に)。人形が動く金属の機構"
     },
     "EnemyIntentDeclared": {
       "sfx": null
@@ -90,8 +96,9 @@
       "volume": 0.6
     },
     "EnemyHatched": {
-      "sfx": "buff",
-      "volume": 0.7
+      "sfx": "wake",
+      "volume": 0.7,
+      "_note": "孵化。2026-09-19 buff → 暗い脈動 (USFX MAGIC_SPELL_Dark_Pulse_Echo_Subtle)"
     },
     "EnemyHealed": {
       "sfx": "heal",
@@ -102,8 +109,9 @@
       "volume": 0.6
     },
     "EnemyWoken": {
-      "sfx": "buff",
-      "volume": 0.7
+      "sfx": "wake",
+      "volume": 0.7,
+      "_note": "覚醒 (鉄卵)。2026-09-19 buff → 暗い脈動"
     },
     "EnemyInterrupted": {
       "sfx": "hit_big",
@@ -298,7 +306,8 @@
     },
     "HpHealed": {
       "sfx": "heal",
-      "volume": 0.7
+      "volume": 0.9,
+      "_note": "2026-09-19 ユーザー「回復音ならない」: 竪琴は BGM と同じ高さに沈んでいた (RMS -14dB×0.7) → 音源を -10.6dB に圧縮し 0.7→0.9"
     },
     "StatusInflicted": {
       "sfx": "debuff",
@@ -342,6 +351,22 @@
       "sfx": "block",
       "volume": 0.8,
       "_note": "敵の攻撃を完全に防いだ (HP損失0) 時の盾の音"
+    },
+    "LightGained": {
+      "sfx": "light_gain",
+      "volume": 0.55,
+      "jitter": 0.03,
+      "_note": "灯を得た (2026-09-20 灯籠): 真鍮の粒が灯籠に着いた瞬間の小さな鈴 (素材が無いので Synth)"
+    },
+    "LightSpent": {
+      "sfx": "energy",
+      "volume": 0.5,
+      "_note": "号令 (灯コスト): 真鍮の粒が灯籠から人形へ飛ぶ (エナジーの X の玉と同じ音)"
+    },
+    "LightDischarged": {
+      "sfx": "light_burst",
+      "volume": 0.7,
+      "_note": "放出: 炎が硝子から抜けて光の筋になる吹き音 (Synth)。着弾は攻撃の当たり (既存)"
     }
   },
   "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"

@@ -1,0 +1,165 @@
+{
+  "group_id": "5db33ec9-967a-443c-886d-47bd5fe906da",
+  "states": [
+    {
+      "character": {
+        "id": "e8b375e4-d4e8-401d-945a-13f73db184d4",
+        "name": "Idle",
+        "prompt": "Chibi 3 heads tall pixel art sprite in Nippon Ichi Disgaea style, bold black outline, flat colors with two-step cel shading. A young lamp-keeper apprentice girl with a timid but gentle look, a slightly troubled smile with raised inner eyebrows, faint pink blush marks. Large round sky-blue eyes with two white highlights, small closed smile.\nLong blonde hair in one thick braid hanging over her left shoulder, soft bangs. She wears the white hood of her robe up over her head, edged with a thin brass trim; the bangs and the braid come out from under the hood and her whole face is visible.\nDesign language: black iron, polished brass, brown leather, white cloth.\nOutfit: an ankle-length white hooded robe with wide sleeves and a short white shoulder cape with a thin brass trim, a large round polished brass clasp at the center of the chest. A wide brown leather belt with a square brass buckle, a small brown leather tool pouch on her left hip holding a brass oil can and a few brass screws, a brass wind-up key and a small key hanging on her right hip. Black leather bands on both wrists. Black iron boots showing under the hem.\nProp: a long thin dark iron pole much taller than her, held diagonally in both hands and raised forward, with a large brass and black iron lantern with glass panes hanging from a chain at the tip, glowing with warm orange-amber light. The lantern is on her right side, forward, lighting the path ahead.",
+        "size": {
+          "width": 112,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-09-18T14:52:28.621692+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "Attack": {
+            "south": [
+              "Idle/animations/Attack/south/frame_000.png",
+              "Idle/animations/Attack/south/frame_001.png",
+              "Idle/animations/Attack/south/frame_002.png",
+              "Idle/animations/Attack/south/frame_003.png",
+              "Idle/animations/Attack/south/frame_004.png",
+              "Idle/animations/Attack/south/frame_005.png",
+              "Idle/animations/Attack/south/frame_006.png",
+              "Idle/animations/Attack/south/frame_007.png",
+              "Idle/animations/Attack/south/frame_008.png"
+            ]
+          },
+          "She_takes_a_big_wind-up_raising_the_long_lantern_p": {
+            "south": [
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_000.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_001.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_002.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_003.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_004.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_005.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_006.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_007.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p/south/frame_008.png"
+            ]
+          },
+          "She_swings_the_long_lantern_pole_in_a_wide_arc_and": {
+            "south": [
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_000.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_001.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_002.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_003.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_004.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_005.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_006.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_007.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and/south/frame_008.png"
+            ]
+          },
+          "Block": {
+            "south": [
+              "Idle/animations/Block/south/frame_000.png",
+              "Idle/animations/Block/south/frame_001.png",
+              "Idle/animations/Block/south/frame_002.png",
+              "Idle/animations/Block/south/frame_003.png",
+              "Idle/animations/Block/south/frame_004.png",
+              "Idle/animations/Block/south/frame_005.png",
+              "Idle/animations/Block/south/frame_006.png",
+              "Idle/animations/Block/south/frame_007.png",
+              "Idle/animations/Block/south/frame_008.png"
+            ]
+          },
+          "She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d": {
+            "south": [
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_000.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_001.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_002.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_003.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_004.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_005.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_006.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5b28ab9d/south/frame_007.png"
+            ]
+          },
+          "She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3": {
+            "south": [
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_000.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_001.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_002.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_003.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_004.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_005.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_006.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_007.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-5f24a9c3/south/frame_008.png"
+            ]
+          },
+          "Idle": {
+            "south": [
+              "Idle/animations/Idle/south/frame_000.png",
+              "Idle/animations/Idle/south/frame_001.png",
+              "Idle/animations/Idle/south/frame_002.png",
+              "Idle/animations/Idle/south/frame_003.png",
+              "Idle/animations/Idle/south/frame_004.png",
+              "Idle/animations/Idle/south/frame_005.png",
+              "Idle/animations/Idle/south/frame_006.png",
+              "Idle/animations/Idle/south/frame_007.png"
+            ]
+          },
+          "She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61": {
+            "south": [
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_000.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_001.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_002.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_003.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_004.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_005.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_006.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_007.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-c534fc61/south/frame_008.png"
+            ]
+          },
+          "She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d": {
+            "south": [
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_000.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_001.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_002.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_003.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_004.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_005.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_006.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_007.png",
+              "Idle/animations/She_takes_a_big_wind-up_raising_the_long_lantern_p-d1796c8d/south/frame_008.png"
+            ]
+          },
+          "She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55": {
+            "south": [
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_000.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_001.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_002.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_003.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_004.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_005.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_006.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_007.png",
+              "Idle/animations/She_swings_the_long_lantern_pole_in_a_wide_arc_and-e4ea5b55/south/frame_008.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-09-18T16:02:48.505486"
+}

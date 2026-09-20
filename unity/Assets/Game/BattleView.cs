@@ -31,6 +31,12 @@ namespace DeckRogue.Game
         int _shownPlayerBlock = 0;
         int _shownPlayerIce = 0;
         int _bgAct = -1;
+        // 人形 (白の従者) の入れ物 (2026-09-19 人形の盤面表示): uid ごとに持ち越し、中身だけ組み直す。崩した (灯が消えた) 人形は組み直しでも描かない
+        RectTransform _dollsArea;
+        readonly Dictionary<string, RectTransform> _dollPanels = new Dictionary<string, RectTransform>();
+        readonly HashSet<string> _dollGone = new HashSet<string>();
+        /// <summary>舞台に立てる人形の上限 (前列5＋後列4)。超えた分は最後の札に「+N」</summary>
+        public const int DollCap = 9;
 
         public class HandCard
         {
@@ -78,6 +84,11 @@ namespace DeckRogue.Game
             _hand.Clear();
             _enemyPanels.Clear();
             _enemyHits.Clear();
+            _dollPanels.Clear();
+            _dollGone.Clear();
+            _dollSeat.Clear();
+            _dollDying.Clear();
+            _dollsArea = null;
         }
 
         int _boxLogSeen;   // 匣の閃きに使った EventLog の読み位置
@@ -148,6 +159,21 @@ namespace DeckRogue.Game
                 _enemyPanels[i].SetSiblingIndex(st.Enemies.Count - 1 - i);
                 centers[i] = feet.x;
             }
+            // 隣の敵との間隔 (スマホで3体以上の吹き出しが重ならないよう、吹き出しの幅を間隔で絞る。2026-09-14) と、
+            // 自分の欄が伸びてよい右端 (2026-09-18 ユーザー「ギアが集まると枠が左の敵のステータス表示と重なる」):
+            // いちばん左の敵の表示 (PC は足元の帳面の左端・スマホは頭上の意図の札の左端) より左で止める。倒れた敵の座席も数える (戦闘中に欄が伸び縮みしない)
+            if (_enemyGaps.Length != st.Enemies.Count) _enemyGaps = new float[st.Enemies.Count];
+            float zoneRight = float.MaxValue;
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                float gap = float.MaxValue;
+                if (i > 0) gap = Mathf.Min(gap, Mathf.Abs(centers[i] - centers[i - 1]));
+                if (i + 1 < centers.Length) gap = Mathf.Min(gap, Mathf.Abs(centers[i + 1] - centers[i]));
+                _enemyGaps[i] = gap;
+                float half = UiKit.Phone ? 112f : BattleScreen.StripW(gap, st.Enemies.Count == 1) / 2f;   // 意図の札は最大 ≈220 幅で頭の真上に中央揃え
+                zoneRight = Mathf.Min(zoneRight, centers[i] - half);
+            }
+            SelfZoneRight = st.Enemies.Count > 0 ? zoneRight : -1f;
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 var pan = _enemyPanels[i];
@@ -157,12 +183,7 @@ namespace DeckRogue.Game
                 for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
                 g.RegisterAnchor("enemy" + i, pan);
                 bool wasAlive = _shownEnemyHp[i] > 0;
-                // 隣の敵との間隔 (スマホで3体以上の吹き出しが重ならないよう、吹き出しの幅を間隔で絞る。2026-09-14)
-                float gap = float.MaxValue;
-                if (i > 0) gap = Mathf.Min(gap, Mathf.Abs(centers[i] - centers[i - 1]));
-                if (i + 1 < centers.Length) gap = Mathf.Min(gap, Mathf.Abs(centers[i + 1] - centers[i]));
-                if (_enemyGaps.Length != st.Enemies.Count) _enemyGaps = new float[st.Enemies.Count];
-                _enemyGaps[i] = gap;
+                float gap = _enemyGaps[i];
                 // 倒れた瞬間 (2026-09-17): 絵と帳面を生前の姿で描いておき、EnemyDied/EnemyFled の出来事 (Presenter → KillEnemy) が着弾の後に崩す。
                 // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
                 if (alive) _died.Remove(i);
@@ -201,6 +222,8 @@ namespace DeckRogue.Game
             _shownPlayerHp = st.Player.Hp;
             _shownPlayerBlock = st.Player.Block;
             _shownPlayerIce = st.Player.IceBlock;
+            // 人形 (白の従者) は舞台に立つ (2026-09-19)
+            SyncDolls(g, st);
             // からくりの匣 (2026-09-10 世界観「からくりだけ実物」): 舞台のリーダーの足元。仕込み札があれば蓋が開き、動かした (ReactionTriggered) 直後は閃く
             bool fired = false;
             for (int i = _boxLogSeen; i < st.EventLog.Count; i++) if (st.EventLog[i] is GameEvent_ReactionTriggered) fired = true;
@@ -208,6 +231,9 @@ namespace DeckRogue.Game
             Stage.SetKarakuriBox(st.Player.SetCards.Count, fired);
             SyncDanger(st);
         }
+
+        /// <summary>自分の欄 (からくり・ギア・置物) が伸びてよい右端 (キャンバス x)。いちばん左の敵の表示の左端。敵がいなければ -1 (2026-09-18)</summary>
+        public static float SelfZoneRight = -1f;
 
         /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上。スマホは等倍の札の上端 (14+290) に合わせる</summary>
         public static float StatusLineY { get { return UiKit.Phone ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 6f : 300f; } }
@@ -236,6 +262,207 @@ namespace DeckRogue.Game
         public RectTransform PlayerSprite()
         {
             return _playerArea != null ? _playerArea.Find("sprite") as RectTransform : null;
+        }
+
+        // ---- 人形 (白の従者) の舞台の座席 (2026-09-19 ユーザー「人形は戦場の盤面にも表示するようにしたい」→ デザインカンバス「人形の盤面表示」案A「灯りの列」) ----
+        // 人形 (retainer:true の置物。リーダーパッシブ=innate は除く) は、点灯した順にひなたの前の道に一体ずつ立つ (Stage.DollSlots)。
+        // 絵は敵と同じ器 (座席→ProjectFeet→BindUnit・接地影・呼吸・崩れ)。足元に「何が出るか」の小さな札 (絵＋数字。輝き増し込み)。
+        // 付箋 (紙の帯) にも残す (ユーザー裁定)。壊された/捧げた人形は Presenter の KillDoll で崩れ、以後は描かない
+
+        /// <summary>舞台に立っている人形 (状態の順・上限まで・崩した人形は除く)</summary>
+        public List<CardInstance> StageDolls(GameState st)
+        {
+            var list = new List<CardInstance>();
+            foreach (var p in st.Player.Permanents) if (p.Def.Retainer == true && p.Innate != true && !_dollGone.Contains(p.Uid)) list.Add(p);
+            return list;
+        }
+
+        void SyncDolls(GameRoot g, GameState st)
+        {
+            bool first = _dollsArea == null;   // 戦闘の最初の組み直し (続きから・デバッグの perms=): 立っている人形は点灯の演出なし
+            if (_dollsArea == null)
+            {
+                _dollsArea = UiKit.NewRect("dolls", FieldLayer);
+                UiKit.Stretch(_dollsArea, 0f, 0f, 0f, 0f);
+                // 敵の入れ物の次 (自分の欄の紙より下) に描く。絵は舞台のビルボードなので UI の順は札とタップの的だけに効く
+                if (_enemiesArea != null) _dollsArea.SetSiblingIndex(_enemiesArea.GetSiblingIndex() + 1);
+            }
+            var dolls = StageDolls(st);
+            var alive = new HashSet<string>();
+            foreach (var d in dolls) alive.Add(d.Uid);
+            // 状態から消えた人形 (壊された・捧げた) の入れ物は残しておき、出来事 (TokenDestroyed/RetainerSacrificed → KillDoll) が崩す。
+            // 出来事が来ない経路の保険は 0.6 秒後に崩す。崩れるまで座席は空けない (倒れた敵と同じ = 座席は詰めない)
+            foreach (var kv in _dollPanels)
+            {
+                if (alive.Contains(kv.Key) || _dollGone.Contains(kv.Key) || kv.Value == null) continue;
+                string uidC = kv.Key;
+                if (_dollDying.Add(uidC)) Tween.After(0.6f, () => KillDoll(g, uidC, false));
+            }
+            // 座席: 立っている人形は今の座席を保ち、新しい人形は空いている最も前の座席へ (上限 DollCap)
+            var used = new HashSet<int>();
+            foreach (var kv in _dollSeat) if (_dollPanels.ContainsKey(kv.Key)) used.Add(kv.Value);   // 崩れかけの人形の座席も塞いだまま
+            var stale = new List<string>();
+            foreach (var kv in _dollSeat) if (!_dollPanels.ContainsKey(kv.Key)) stale.Add(kv.Key);
+            foreach (var k in stale) _dollSeat.Remove(k);
+            int overflow = 0; string lastShownUid = null; int lastSeat = -1;
+            var slots = Stage.DollSlots(DollCap);
+            float w = UiKit.Phone ? 110f : 170f, h = 360f;
+            foreach (var d in dolls)
+            {
+                int seat;
+                if (!_dollSeat.TryGetValue(d.Uid, out seat))
+                {
+                    seat = -1;
+                    for (int i = 0; i < DollCap; i++) if (!used.Contains(i)) { seat = i; break; }
+                    if (seat < 0) { overflow++; continue; }
+                    _dollSeat[d.Uid] = seat;
+                }
+                used.Add(seat);
+                string key = "doll:" + d.Uid;
+                RectTransform pan; bool fresh = false;
+                if (!_dollPanels.TryGetValue(d.Uid, out pan) || pan == null)
+                {
+                    pan = UiKit.NewRect(key, _dollsArea);
+                    var hit = pan.gameObject.AddComponent<Image>();
+                    hit.color = new Color(0f, 0f, 0f, 0f);
+                    var btn = pan.gameObject.AddComponent<Button>();
+                    btn.targetGraphic = hit; btn.transition = Selectable.Transition.None;
+                    string uidC = d.Uid;
+                    btn.onClick.AddListener(delegate { g.OnDollClicked(uidC); });
+                    Tooltip.Attach(pan.gameObject, delegate { return BattleScreen.DollTip(g, uidC); });
+                    var infoC = pan.gameObject.AddComponent<DollInfo>(); infoC.CardId = d.Def.Id;
+                    _dollPanels[d.Uid] = pan;
+                    fresh = true;
+                }
+                { var info = pan.GetComponent<DollInfo>(); if (info != null) info.Order = seat; }
+                var feet = Stage.ProjectFeet(key, slots[seat]);
+                UiKit.Anchor(pan, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, StatusLineY), new Vector2(feet.x + w / 2f, StatusLineY + h));
+                Stage.SetFeetOffset(key, feet.y - StatusLineY);
+                pan.SetSiblingIndex(Math.Max(0, DollCap - 1 - seat));   // 奥 (後列・右) ほど先に描く
+                for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
+                g.RegisterAnchor(key, pan);
+                BattleScreen.FillDollPanel(g, pan, st, d, 0);
+                if (seat > lastSeat) { lastSeat = seat; lastShownUid = d.Uid; }
+                if (fresh && !first) EnterDoll(g, pan);   // 点灯 (登場): 小さく現れて弾む＋暖色の光＋判
+            }
+            // 上限を超えた分は、いちばん奥の人形の札に「+N」
+            if (overflow > 0 && lastShownUid != null)
+            {
+                RectTransform lp; CardInstance ld = null;
+                foreach (var d in dolls) if (d.Uid == lastShownUid) { ld = d; break; }
+                if (ld != null && _dollPanels.TryGetValue(lastShownUid, out lp) && lp != null)
+                {
+                    var tagOld = lp.Find("tag"); if (tagOld != null) { tagOld.SetParent(null, false); UnityEngine.Object.Destroy(tagOld.gameObject); }
+                    BattleScreen.FillDollTag(lp, st, ld, overflow);
+                }
+            }
+        }
+        readonly Dictionary<string, int> _dollSeat = new Dictionary<string, int>();   // uid → 座席 (崩れるまで保つ)
+        readonly HashSet<string> _dollDying = new HashSet<string>();               // 状態から消えたが、まだ崩していない
+
+        /// <summary>点灯 (登場): 暗い人形が座席に置かれ、灯りが点って等身大に弾む。足元に暖色の光の輪と判「点灯」</summary>
+        void EnterDoll(GameRoot g, RectTransform pan)
+        {
+            var sprRt = pan.Find("sprite") as RectTransform;
+            if (sprRt == null) return;
+            var origin = sprRt.anchoredPosition; float h = sprRt.rect.height; float pivotY = sprRt.pivot.y;
+            var srt = sprRt;
+            Tween.Run(0.45f, k => { if (srt == null) return; float sc = 0.2f + 0.8f * Tween.Apply(Ease.OutBack, k); srt.localScale = new Vector3(sc, sc, 1f); srt.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - sc)); }, Ease.Linear, () => { if (srt != null) { srt.localScale = Vector3.one; srt.anchoredPosition = origin; } });
+            if (g.FxLayer != null)
+            {
+                var at = Tween.CenterIn(sprRt, g.FxLayer);
+                Tween.RingBurst(g.FxLayer, at + new Vector2(0f, -h * 0.4f), PaperFx.BrassLight, 160f, 0.45f);
+                Tween.Stamp(g.FxLayer, at + new Vector2(0f, h * 0.55f + 14f), "点灯", PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 17, 0.55f, -6f);
+            }
+            Audio.Key("PermanentPlayed");
+        }
+
+        public RectTransform DollPanel(string uid)
+        {
+            RectTransform pan;
+            return uid != null && _dollPanels.TryGetValue(uid, out pan) ? pan : null;
+        }
+
+        public RectTransform DollSprite(string uid)
+        {
+            var pan = DollPanel(uid);
+            return pan != null ? pan.Find("sprite") as RectTransform : null;
+        }
+
+        /// <summary>同じ札の人形のうち、いちばん新しく立った (状態の末尾) もの。uid が分からない出来事 (駆けつけ) の的</summary>
+        public RectTransform LastDollPanel(GameState st, string cardId)
+        {
+            if (st == null) return null;
+            for (int i = st.Player.Permanents.Count - 1; i >= 0; i--)
+            {
+                var p = st.Player.Permanents[i];
+                if (p.Def.Id == cardId && p.Def.Retainer == true && p.Innate != true) { var pan = DollPanel(p.Uid); if (pan != null) return pan; }
+            }
+            return null;
+        }
+
+        /// <summary>同じ札の人形のうち、舞台に立っている最後の1体の uid (uid を持たない古いログの保険)</summary>
+        public string DollUidByCard(string cardId)
+        {
+            string found = null; int best = -1;
+            foreach (var kv in _dollPanels)
+            {
+                if (kv.Value == null) continue;
+                var info = kv.Value.GetComponent<DollInfo>();
+                if (info != null && info.CardId == cardId && info.Order > best) { best = info.Order; found = kv.Key; }
+            }
+            return found;
+        }
+
+        /// <summary>入れ物に札の id を持たせる (DollUidByCard の索引)</summary>
+        public class DollInfo : MonoBehaviour { public string CardId; public int Order; }
+
+        /// <summary>灯が消える (人形壊し・灯の捧げ): 光が抜けて灰になり、頭から崩れる (倒れた敵と同じ _Dissolve)。以後の組み直しでは描かない</summary>
+        public void KillDoll(GameRoot g, string uid, bool sacrificed)
+        {
+            if (uid == null || _dollGone.Contains(uid)) return;
+            _dollGone.Add(uid);
+            _dollDying.Remove(uid);
+            RectTransform pan;
+            if (!_dollPanels.TryGetValue(uid, out pan) || pan == null) { _dollPanels.Remove(uid); _dollSeat.Remove(uid); return; }
+            _dollPanels.Remove(uid);
+            var hit = pan.GetComponent<Image>(); if (hit != null) hit.raycastTarget = false;
+            var btn = pan.GetComponent<Button>(); if (btn != null) btn.interactable = false;
+            var tagRt = pan.Find("tag") as RectTransform;
+            if (tagRt != null) UnityEngine.Object.Destroy(tagRt.gameObject);
+            var srt = pan.Find("sprite") as RectTransform;
+            string key = "doll:" + uid;
+            var fx = g.FxLayer;
+            var panC = pan;
+            if (srt == null) { pan.SetParent(null, false); UnityEngine.Object.Destroy(pan.gameObject); return; }
+            Stage.Flash(key, 0.18f);
+            if (fx != null)
+            {
+                var c = Tween.CenterIn(srt, fx); float hh = srt.rect.height;
+                Tween.Stamp(fx, c + new Vector2(0f, hh * 0.55f + 14f), sacrificed ? "捧げた" : "灯が消えた", sacrificed ? PaperFx.BrassLight : new Color(0.85f, 0.83f, 0.8f, 1f), sacrificed ? PaperFx.BrassInk : PaperFx.InkSoft, sacrificed ? PaperFx.Brass : new Color(0.54f, 0.53f, 0.5f, 1f), 16, 0.7f, -6f);
+            }
+            Tween.After(0.1f, () =>
+            {
+                if (srt == null) return;
+                var origin = srt.anchoredPosition;
+                Tween.Run(0.5f, k =>
+                {
+                    if (srt == null) return;
+                    Stage.Dissolve(key, k);
+                    srt.anchoredPosition = origin + new Vector2(0f, -6f * k);
+                }, Ease.Linear, () => { _dollSeat.Remove(uid); if (panC != null) { panC.SetParent(null, false); UnityEngine.Object.Destroy(panC.gameObject); } });
+                if (fx != null)
+                {
+                    var c = Tween.CenterIn(srt, fx); float w = srt.rect.width * 0.35f, hh = srt.rect.height * 0.45f;
+                    for (int m = 0; m < 7; m++)
+                    {
+                        float dl = 0.4f * (m / 7f);
+                        var p0 = c + new Vector2(UnityEngine.Random.Range(-w, w), UnityEngine.Random.Range(-hh, hh));
+                        bool brass = m % 3 == 0;
+                        Tween.After(dl, () => Mote(fx, p0, brass ? PaperFx.BrassLight : PaperFx.Paper));
+                    }
+                }
+            });
         }
 
         /// <summary>演出の途中で HP バーだけ先に動かす (順送りの敵フェーズ: 被弾のたびに減る)</summary>
@@ -413,7 +640,7 @@ namespace DeckRogue.Game
                 var c = hand[i];
                 int cost = c.Def.Cost;
                 try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
-                bool playable = myTurn && g.Pending == null && Effects.IsPlayableFromHand(c) && cost <= st.Player.Energy && Effects.RetainerRequirementMet(st, c);
+                bool playable = myTurn && g.Pending == null && Effects.IsPlayableFromHand(c) && cost <= st.Player.Energy && (c.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, c); // 灯コスト (白 2026-09-20)
                 bool settable = myTurn && g.Pending == null && SetBase.CanSetCard(st, c.Uid);
                 HandCard hc;
                 bool fresh = !_hand.TryGetValue(c.Uid, out hc);

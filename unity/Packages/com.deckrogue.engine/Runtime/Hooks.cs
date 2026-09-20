@@ -25,6 +25,11 @@ namespace DeckRogue.Engine
                 // 被攻撃後 (返し系) の置物: 茨の茂みなど
                 s = Effects.RunPermanentTriggers(s, "onAttacked", res1.EnemyIndex);
             }
+            if (ev is GameEvent_EnemyActionResolved resAny)
+            {
+                // 敵の行動後 (種別を問わない) の置物: 眩みの障壁 (白 2026-09-18)
+                s = Effects.RunPermanentTriggers(s, "onEnemyActed", resAny.EnemyIndex);
+            }
             if (ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyActionResolved)
             {
                 // 置物の返しで敵が倒れたらリアクション確認はもう不要。

@@ -321,6 +321,8 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 
 ## ギア（gears/ 32×32・2026-09-17）
 
+**済 35/35（2026-09-18）**: 抽選外の3種を除く34＋魔素。発注文 `docs/pixellab/gears-2026-09-18-descriptions.json`（`_base` の定型＝"a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette"）→ `python3 scripts/art-b7d18.py orders <descriptions> <scratch>`（`gears` 群を追加。発注書は `gears-<_date>.json`）→ `node scripts/pixellab.mjs gen` → `art-b7d18.py sheet <scratch> <out> gears` → 判定 `gears-2026-09-18-judge.json` → `art-b7d18.py apply`（`gear_` と `mana` は `Art/gears/` へ）。発条（渦が小さすぎ）と締め紐（結び目が振り子に見えた）は seed 7/99 で作り直し（`gears-2026-09-18-redo.json`。判定行に `seed`/`dir`）。教訓: 32 ドットの物は「fills the frame」を書かないと小さく出る／flame は negative に書いても焼き鏝・火薬樽には出る（見た目は許容）。
+
 消耗品「ギア」33種の挿絵。置き場は `unity/Assets/Resources/Art/gears/<id>.png`（32×32・Point・PPU 100・非圧縮＝レリックと同じインポート規約）。
 無い間はコード生成の歯車 `ThemeFx.GearGlyph(id, family)`（id から決まる歯数 6〜9・軸穴。干渉系だけ青緑、他は真鍮）が出る。
 使われる場所: 戦闘の自分の札のトークン（PC 62×62・スマホ 64×66 の中に 40〜48px）／報酬・店の札（64px）／上部バーの魔素の札のアイコン（18px＝`gears/mana.png` があればそれ）／組んだ演出の幽霊。
@@ -367,3 +369,79 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 | `gear_nameless` | 無銘の部品 | rare | 大物 | このランで拾ったことのあるギアのどれかになる |
 | `gear_smoke` | 煙玉 | rare | 大物 | この戦闘から逃げる（幕ボス以外。報酬は得られない） |
 | `mana` | 魔素（アイコン） | — | 干渉（青緑） | 上部バーと店の魔素の札に使う青緑の歯車。無ければ `GearGlyph("mana","interfere")` |
+
+## 白のカード（cards/ 80×48・2026-09-19 作成。88/88）
+
+- **+1（2026-09-20）**: 灯の岐路（`white_mode_crossroad`・初期デッキのモード札）。同じ工程を1札だけ手で回した（発注文は `cards-white-descriptions.py` に追記済み・4シード 11/37/101/457 から **37**＝二股の坑道の分かれ道に真鍮のランタン、左は眩む閃光・右は琥珀の光の壁。記録は `Art/cards/white_mode_crossroad.pixellab.json`）。白 89/89。
+
+白82種（トークン見習い1含む）＋白のレシピ産6（灯火の構え・灯すか守るか・小人形の伏兵・弩人形の号砲・報復の刃・点灯の台座）＝**88枚を 2026-09-19 に作成・適用**。
+絵柄は緑の札と同じ規約（80×48・ドット・紙の面に2倍）。**白の意匠＝灯火の工房**: 真鍮のランタン・暖色の光（差し色はこれ1つ。青緑は使わない）・光の壁（半透明の琥珀色の板）・灯印（光る丸い印）・眩み（白金の閃光）・白い盾と真鍮の縁・白鉄の小さな騎士（人形）。
+
+- **工程（緑と同じ・道具は `scripts/card-art.py`）**: 発注文の生成器 `docs/pixellab/cards-white-descriptions.py` → `cards-white-descriptions.json`（id/name/ja/description/negative_extra/doll/seeds）→ `card-art.py orders` が2シードの発注書 `cards-white-orders.json` → `node scripts/pixellab.mjs gen` → `card-art.py sheet [--with-current]`（8札/1シートの old|A|B）→ 判定 `cards-white-judge.json`（`{id, pick: A|B|old|none, passed, problem, seed?, dir?}`）→ `card-art.py apply` が `Art/cards/<id>.png` と `.pixellab.json`（judge を追記）へ。
+- **第1稿の失敗（同日朝）**: 全札を「群青の無地＋琥珀の光」で揃えたら、盾12・据え置きのランタン20超・光の円盤5・同じ白騎士の立ち姿28 に集中し、ユーザー「同じような見た目のカードが多すぎる」。→ ask_user 3件の裁定: **主題はランタン中心のまま構図と場を札ごとに変える／人形が主題でない札は人形を出さない／札ごとに場を変える＋盾が主題の札を減らし、効果と名前を絵に出す**。
+- **第2稿の規約（生成器の冒頭に同文）**: ①場を札ごとに変える（工房の作業台・坑道の支保工・石段・鉄の扉・炉・庭・宿場・軌道・洞窟・見張り台） ②効果と名前が絵に出る（一撃＝衝撃、壁＝壁、点灯＝芯に火が入る瞬間、ドロー＝白紙の手帳、召喚＝灯が点く、捧げ＝炉にくべる） ③盾が主題の札は5枚まで（白盾・灯盾の一撃・大盾の反撃・大盾の灯・誓いの盾）。他の「ブロック」は光の壁・板・天幕・籠手・鉄床・反射鏡で ④人形（白鉄の小さな騎士）は従者11札＋人形が主題の4札（小人形の列・人形の総突撃・小人形の伏兵・弩人形の号砲）だけ。点灯・合図・行列・捧げ・分列・身代わり・白光の壁は道具と光だけ ⑤seed は札ごとに変える。
+- **人形（従者）の裁定（同日 ask_user 2ラウンド。第1稿「真鍮のからくり人形（丸い頭・レンズの目・胸の灯）」は金ピカのロボットに寄った）**: **白鉄と真鍮のからくり／顔なし（フードの奥に暖色の光が2つ）／ランタンは背中に背負う／犬は同じ意匠の四足**。体型は4案（ずんぐり・2.5頭身の布フード・小さな騎士の板金・卵型）のシートから **V3「小さな騎士」**（重なる白い板金＋真鍮の鋲と縁・フード型の白鉄の兜）。関節や歯車は足さない。
+  - **文の型の教訓**: 体の記述（長い）を先頭に置くと**全札が同じ絵に潰れて役割の道具（剣・盾・旗）が消える**（同じ seed×似た文）。**道具と動きを文頭に、体の記述は後ろの括弧に、seed を札ごとに変える**と道具が出る。「ランタンを背負う」は手に提げた絵に流れやすい＝「in both hands」で両手を道具で塞ぐ。
+- **人物が出る型**: 「光線・矢・鎖・鏡が跳ね返す・振る・注ぐ」は negative に person/hands があっても**持ち手の人物**（カウボーイ・外套の男）が出る。処方＝主語を物にして「by itself / nobody holding it / no bow, no archer / no hands」を positive に、negative に figure, character, cloak, hat, wielder。「灯台」は洞窟と書いても空と月が出る（「rough stone cave ceiling with stalactites above it」で1/3が洞窟に）。「月」は banner・chain・sanctuary・小人形の列にも紛れ込むので採用時に見る。
+- **第2稿の結果**: 88札を2シードで生成し old|A|B で判定＝新版 71・旧版据え置き 17 → 旧版のうち15札を3シード（401/457/483・`--force-seeds`）で作り直して13札が通った（灯火の一撃＝ランタンが岩を割る／光壁の反撃／萎縮の光／小人形の点灯／灯列の突き／点灯の合図／鐘の人形／修繕の灯／光の器／恵光の灯籠／灯の鐘／灯りの庭／灯火の構え）。最後まで旧版が残ったのは4札（光壁の一突き＝新版が光のアーチで他と同じ絵・大盾の灯＝3回とも盾が出ず祠になる・灯火の号砲＝3回とも月・白盾の第1稿系は据え置き）。判定の記録は `cards-white-judge.json`（picks・作り直しの seed/dir・不合格の理由）。
+- **道具の追補（同日）**: `card-art.py sheet --with-current`（左に現行版を並べる）／`orders --force-seeds`（札ごとの seeds を無視して3シード）／`pixellab.mjs` は 5xx を3回まで待って再送（1回の 502 で45枚の作り直しが止まった）。
+- 青・赤・黒（計244枚）も同じ道具で作る（発注文を色ごとに書き、**最初から場と構図を散らし、効果と名前を絵に出す**）。
+
+## 人形（舞台）（dolls/ 32×32・2026-09-19 作成 11/11）
+
+人形の盤面表示（デザインカンバス「人形の盤面表示」案A「灯りの列」→ ユーザー裁定「A だが B との中間の位置」）で、白の従者11体がひなたの前の道に立つ。
+**絵は新規に PixelLab で作る（2026-09-19 ユーザー指示「盤面の人形のイラストは新規で pixellab で作成すること」）**＝カードの挿絵の切り出しは使わない。
+発注書 `docs/pixellab/dolls-stage.json`（11体・pixflux・**32×32**〔4px/ドット＝128px・ひなた 224px の半分強〕・**south-east**〔右＝敵の方〕・**low top-down**〔舞台の見下ろし〕・背景なし・selective outline・detailed shading・medium detail）。
+人形の定義は白のカード挿絵と同じ（白鉄と真鍮のからくり／顔なし＝フードの奥の暗い空洞に琥珀の目2つ／ランタンは背中／犬は四足）。道具と動きを文頭に、体の記述は後ろの括弧に（白のカードの教訓）。
+`node scripts/pixellab.mjs gen docs/pixellab/dolls-stage.json` で `unity/Assets/Resources/Art/dolls/<id>.png` に入り、`Creature.Get("dolls", id)` が拾う（無い間はコード生成のフードの小さな騎士 `Creature.Doll`）。
+**`pixellab.mjs balance` の 0 USD は買い足しのクレジットで、月の生成枠（Tier 2・5,000枚）はそれとは別に残っている（2026-09-19 ユーザー「いやまだのこってるよ」）＝枠があれば balance 0 でも作れる**。11体を seed 1901〜1911 で一発生成し、小さな人形だけ盾を持ってしまったので 1921（手ぶら・ずんぐり）に差し替え（手当て・鐘の別シードは人の顔や桃色の鎧が出て不採用）。舞台で確認済み（`shots state` の `perms=`）。悪い札は `--only <id> --seed N --force` で作り直す。**左を向いて出た6体（剣・旗・鐘・犬・弩・小さな）は PNG を左右反転して右向き＝敵の方に揃えた（同日ユーザー指示。盾は一度反転したら左向きに見えたので生成時のまま＝ユーザー「盾だけ再度反転」。`<id>.pixellab.json` に flipped を記録。作り直したらもう一度向きを見る）**。
+
+## ひなた v2（2026-09-18〜19。白の解凍・`docs/world.md`「ひなたの核」）
+
+- 工程はこのは v2 と同じ: Gemini の設定画（`docs/pixellab/hinata-v2/reference-gemini.png`・プロンプトは `gemini-prompt.md`）→ 顎から下を**縦 0.55** に詰めた参考画（`reference-chibi.png`。設定画が既に4頭身だったので 0.6 でなく 0.55 でこのはの 2.7 頭身に揃えた）→ PixelLab Create from Reference（mannequin・**100×64**〔PixelLab が幅100で出した。画面は絵の幅×4px なので可〕・8方向・low top-down。発注書 `order.md`）→ ~~south-east を採用（右向きの検算済み）~~ **→ south を採用（2026-09-19 ユーザー「ひなたの向きは south を使うべきじゃない？」）**: アニメ3本（待機・攻撃・防御）は書き出しどおり **south**（正面寄りの3/4＝顔が全部見える）のコマで、一枚絵とアイコンだけ south-east（横顔でフードに顔が隠れる）だった。戦闘では待機コマが一枚絵を即座に置き換えるので、タイトル・マップの駒・上部バーのアイコンだけが横顔になっていた＝一枚絵とアイコンも south に揃えた。「リーダーは右向き（敵へ）」の規約はランタンの竿が右へ伸びることで満たす（攻撃の振りも右へ）。**south の各コマと一枚絵は足元の x 範囲が同じ（28〜93）なので配置は不変**。
+- 配置: `Art/leaders/leader_white.png`（112×64・south）・`leader_white_icon.png`（32×32＝顔の切り出し (40,6)-(72,38)。旧 (44,6) はランタン込みの横顔）。記録 `leader_white.pixellab.json`。8方向と metadata は `docs/pixellab/hinata-v2/rotations/`。舞台ではランタンの暖色がブルームに乗る（`shots state` で確認済み）。
+- **アニメ済み（2026-09-19）**: PixelLab の書き出しはキャラが **112×64** で作り直されていた（一枚絵とアイコンも同じ書き出しに差し替え）。~~方向の欄は「south」だが絵は south-east（右向き）~~ **訂正（2026-09-19）: コマは本当に south**（正面寄りの3/4）。一枚絵も同日 south に揃えた（上の行）。攻撃9コマ（大振り・柔らかい閃き＝ユーザー指示3件で文を練った）から **[2,4,7,8]**（振り上げ／振り下ろし／着弾の閃き／戻し）、防御9コマから **[2,4,6,8]**（竿を横に→金色の輪）、待機はテンプレ8コマ全部。コマの高さは 104（攻撃・待機）と 64（防御）で、**足元より下の透明行を一枚絵と同じにして下端を揃えた**（攻撃・待機は 112×84。`StageUnit.Apply` が枠を texture 比で拡大するのでドットの粒は変わらない）。`Art/leaders/anim/leader_white_{attack,block,idle}_N.png`・記録 `leader_white_anim.pixellab.json`・原本 `docs/pixellab/hinata-v2/animations/`。`shots state ... play=attack` で振りの途中を確認済み。hurt は作らない。
+
+## 白の再設計「灯」の挿絵（cards/ 80×48・2026-09-20 **作成・適用済み 10/10**。発注文は `cards-white-descriptions.py` 末尾・発注書 `cards-white-light-orders.json`・2シードの A/B から判定）
+
+白の再設計（`docs/white-redesign-proposal-2026-09-20.md`）で新規10枚。意匠は「白のカード」節と同じ（灯火の工房・白鉄と真鍮の人形・暖色のランタン）。灯＝ランタンの中のマナの光（暖色）を主役に。
+
+| id | 名前 | 絵の要点 |
+|---|---|---|
+| white_light_bolt | 灯の矢 | ランタンから暖色の光が矢になって飛ぶ |
+| white_light_strike | 灯集めの一撃 | 竿で打ちながら散った光の粒がランタンへ戻る |
+| white_light_hoard | 灯り溜め | 光の壁の内側でランタンに光を溜める |
+| white_perm_wick | 灯芯の人形 | 小さな人形が芯を掲げて灯を分ける |
+| white_light_torrent | 光の奔流 | ランタンから溢れた光が奔流になって敵へ |
+| white_light_verdict | 光の裁き | 頭上から一条の強い光が敵を射る（眩む） |
+| white_reaction_light_wall | 灯守りの壁 | 光の壁が攻撃を受け止め、こぼれた光がランタンへ |
+| white_perm_light_ballista | 灯の弩 | 真鍮の弩が灯の粒を全方位へ放つ |
+| white_light_double | 灯の倍化 | 鏡でランタンの光が二つに |
+| white_light_burst | 眩光の大放出 | ランタンが割れるほどの光が画面全体へ |
+
+作り直し7枚（点灯の合図・灯火の大行列・大灯台・灼く光・灯の輪・大いなる癒し・光壁砕き）は挿絵を流用。撤去13枚の挿絵は `Art/cards/` に残置（無害）。
+
+## 灯と人形の結び（2026-09-20 夜・`card-power.md` §74）: 新規の人形2体の挿絵と舞台の絵
+
+- **挿絵（cards/ 80×48）**: 発注文は `cards-white-descriptions.py` 末尾（seeds 677/691・703/727）→ `card-art.py orders --only … --out cards-white-dolls2-orders.json` → 2シードの A/B → 判定 `cards-white-dolls2-judge.json` → apply。
+  - 灯篭の人形（`white_perm_lantern`）: 677＝赤い目の騎士・691＝人形が小さく灯篭を掲げていない → 733/757（`--force-seeds`・`cards-white-dolls2-orders-redo.json`）で作り直し、**733**＝白鉄の人形が琥珀の目で灯篭を頭上に掲げる。
+  - 篝火の人形（`white_perm_bonfire`）: 703＝フードの奥に人の顔（肌色）が出た → **727**＝顔なしの空洞・背中の篝火の籠と炎・埋み火。
+- **舞台の人形（dolls/ 32×32・south-east・low top-down）**: `dolls-stage.json` に2体を追加（13体）。灯篭＝1931/1941 は人の顔が出て **1951**（顔なし・琥珀の目・竿の灯篭を右へ）。篝火＝**1932** 一発（背中の篝火・赤い目・右向き）。どちらも右を向いて出たので反転なし。
+- 教訓の再確認: 「holding up a lantern」系は2回に1回フードの奥に人の顔（肌色）が出る＝必ず拡大して顔を見る。
+
+## 火種と放出の軸の挿絵（cards/ 80×48・2026-09-20 夜 **作成・適用済み 19/19＋トークン**。`card-power.md` §75）
+
+発注文は `cards-white-descriptions.py` 末尾（seeds 743〜1337）→ `card-art.py orders --only … --out cards-white-spark-orders.json`（38件）→ 2シードの A/B → 判定 `cards-white-spark-judge.json` → apply。意匠＝「燠の種（ember seed）」＝豆粒ほどの暖色の光。
+- 一発で通ったもの18: 火種（作業台の小さな火）・火種撒き（廊下に散る小さな火）・火守りの盾・火花散らし（金床の火花）・大焚き付け（火柱）・灯火の炉（扉の開いたストーブ）・火起こし（傾いたランタン→藁）・灯の火床・火の粉・灯の継ぎ手（灯の連なり→人形の松明）・灯の壁・眩む閃光・灯の鍛冶・灯の手帳・残り火・灯の大炉・灯の大槌・灯の火皿。
+- **火種の嵐は4回外れた**（1003/1021/1401/1423＝「洞窟に燠の嵐」は必ず外套の人物の後ろ姿を呼ぶ。negative に man/woman/cloak/cape/hood/traveler/back view を足しても出る）→ 舞台を捨てて**接写**（作業台のランタンから噴き上がる燠の嵐）にして 1441 で通った。教訓: 「洞窟＋嵐／光」は人物の署名。人物を消したい時は舞台を消して接写にする。
+- 舞台の人形は増えない（新規の人形は無し。灯の継ぎ手・火の粉などは道具の置物）。
+
+## 灯の器＝真鍮のランタン（ui/ 32×48・2026-09-20・デザインカンバス `docs/design/light-gauge/`。**未発注＝コード生成の絵で稼働中**）
+
+ひなたの戦闘画面の灯（白の蓄積）をエナジーの輪と釣り合う器にした（案B。`unity/Assets/Game/LightUi.cs`）。いまの絵は `ThemeFx.Lantern`（コードで描いた 32×48 の正面図＝吊り輪・笠・黒鉄の枠・暗い硝子・台座）と `ThemeFx.Flame`（12×16 の炎）で、差し替え口は次の3つ:
+
+| 置き場 | 寸法 | 条件 |
+|---|---|---|
+| `Art/ui/lantern.png`（点灯）／`Art/ui/lantern_dark.png`（消灯・省略可） | 32×48・正面・原点は台座の下端の中央 | **硝子の窓 x 7〜24・y 14〜35（上が 0）は暗いまま空けておく**（炎と数字はコードがその上に描く）。黒鉄の枠と真鍮の飾り＝ひなたの竿の灯籠と同じ意匠。PixelLab に頼むなら「brass and black-iron lantern, front view, empty dark glass window, pedestal base, no flame」 |
+| `Art/fx/flame.png` | 12×16・原点は根元の中央 | 白い芯 → 真鍮の紙 → 真鍮（延焼の橙は使わない） |
+| `Art/fx/light_streak.png` | 96×24 | 放出の光の筋（斬撃の筋の暖色版） |

@@ -210,6 +210,7 @@ namespace DeckRogue.Game
             if (p.Growth > 0) line1.Add("成長 " + p.Growth);
             if (p.Momentum > 0) line1.Add("勢い " + p.Momentum);
             if (p.Aether > 0) line1.Add("霊気 " + p.Aether);
+            if ((p.Light ?? 0) > 0) line1.Add("灯 " + p.Light.Value);
             if (p.NextCardDiscount > 0) line1.Add("割引 -" + p.NextCardDiscount);
             if (p.SpellEchoes > 0) line1.Add("反復 " + p.SpellEchoes);
             line1.Add("詠唱 " + p.CardsPlayedThisTurn);

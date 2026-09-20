@@ -19,6 +19,7 @@ function allEffects(def: CardDef) {
  */
 const REFILL_EFFECTS = [
   'addCardToHand', // トークン生成も手札の補充 (骨刃 2026-09-01)
+  'drawCardsPerLight', // 灯の手帳 (白 2026-09-20 夜)
   'drawCards',
   'drawCardsPerCardPlayed',
   'dischargeAetherDraw',
@@ -142,7 +143,13 @@ describe('カードデータの不変条件', () => {
     // それまで設計裁定だけで機械固定されていなかった穴。
     // 2026-09-18 品質パス第3弾: 勢いは自ターン終了で消えるので、倍化を使い回しても雪だるまにならない
     // (成長は永続なので雪だるまになる) = doubleMomentum は規約から外す (昂ぶる角笛 R が消滅なしに)
-    const bad = allCards.filter((c) => c.effects.some((e) => e.effect === 'doubleGrowth') && c.exhaust !== true)
+    // 2026-09-20 白の再設計: 灯 (doubleLight) も戦闘内持続なので成長と同じ規約 (灯の倍化 R は消滅)
+    const bad = allCards.filter((c) => c.effects.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleLight') && c.exhaust !== true)
+    expect(bad.map((c) => c.name)).toEqual([])
+  })
+
+  it('灯コスト (lightCost) を持つ札は白だけ (灯は白の蓄積。2026-09-20 白の再設計)', () => {
+    const bad = allCards.filter((c) => (c.lightCost ?? 0) > 0 && c.color !== 'white')
     expect(bad.map((c) => c.name)).toEqual([])
   })
 })

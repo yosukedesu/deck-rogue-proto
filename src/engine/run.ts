@@ -28,6 +28,7 @@ import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, EventDe
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 export const REWARD_EXCLUDED = new Set([
   'black_shiv_token', // 骨のナイフ: 生成トークン (この戦闘限り) = 報酬・ショップに出さない
+  'white_spark_token', // 火種 (白 2026-09-20 夜): 生成トークン = 報酬・ショップに出さない
   'white_perm_page', // 見習い (白 2026-09-06): 見習いの列が召喚する従者トークン = 報酬・ショップに出さない
   'green_strike',
   'green_guard',
@@ -50,16 +51,16 @@ export const REWARD_EXCLUDED = new Set([
   'red_ignite',
   'red_perm_flarecoat',
   'red_perm_thorn_flame',
-  'white_shield_strike',
-  'white_perm_squire',
-  'white_service',
-  'white_bodyslam',
+  'white_shield_strike', // 灯盾の一撃 (白の打ち据え枠=殴りながら守る)
+  'white_light_bolt', // 灯の矢 (白の派生=灯の教材。2026-09-20 白の再設計: 光壁砕きは報酬プールのコモンへ)
+  // 2026-09-20 白の初期デッキを緑と同じ形に: 灯の岐路 (モード=決断の教材) を追加し、
+  // 剣の人形・灯り継ぎ・報復の光は報酬プールへ戻した (緑の二連の蔦打ち・守りの蔓・茨の返しと同じ扱い)
+  'white_mode_crossroad',
   'black_dark_pact',
   'black_drain',
   'black_bursting_corpse',
   'black_shadow_blade',
-  'white_reaction_ward', // 白スターターのリアクション2枚 (解凍時の追随漏れを同時に是正)
-  'white_reaction_retribution',
+  'white_reaction_ward', // 護りの灯印 (白スターターのからくりの教材=pre窓。報復の光は 2026-09-20 に報酬プールへ)
   'black_reaction_curse', // 黒スターターのリアクション2枚
   'black_reaction_grudge',
   'red_strike',
@@ -1414,6 +1415,9 @@ const EFFECT_AXIS: Record<string, string> = {
   dischargeMomentumBurn: 'burn', dischargeMomentumBlock: 'trample', gainBlockPerMomentum: 'trample', addGrowthPerMomentum: 'trample',
   applyBurn: 'burn', dischargeBurn: 'burn',
   addAether: 'aether', dischargeAether: 'aether', dischargeAetherDraw: 'aether',
+  addLight: 'light', dischargeLight: 'light', dischargeLightRally: 'light', doubleLight: 'light', dealDamagePerLight: 'light', // 灯 (白 2026-09-20)
+  dischargeLightWeaken: 'light', consumeLight: 'light', gainBlockPerLight: 'light', drawCardsPerLight: 'light', lightCarryHalf: 'light', // 放出の軸 (2026-09-20 夜)
+  addCardToDraw: 'spark', lightToSparks: 'spark', dealDamagePerSpark: 'spark', triggerRandomRetainer: 'spark', // 火種 (白 2026-09-20 夜。本家 Soul)
   gainIceBlock: 'ice', dealDamagePerIceBlock: 'ice', gainIceBlockPerCardPlayed: 'ice',
   negate: 'permission', negateConvertIce: 'permission',
   summonPermanent: 'retinue', dealDamagePerPermanent: 'retinue', gainBlockPerPermanent: 'retinue',
@@ -1442,6 +1446,9 @@ const TRIGGER_AXIS: Record<string, string> = {
   onHealed: 'heal',
   onHpLost: 'selfharm',
   onAetherGained: 'aether',
+  onLightGained: 'light', // 灯の弩 (白 2026-09-20)
+  onLightDischarged: 'light', // 灯の火皿 (2026-09-20 夜)
+  onSparkPlayed: 'spark', // 火の粉・灯の継ぎ手 (2026-09-20 夜)
   onImpulsePlayed: 'impulse',
   onRandomPlayed: 'chaos',
   onSpellPlayed: 'storm',

@@ -1,0 +1,30 @@
+{
+ "id": "white_perm_monk",
+ "engine": "pixflux",
+ "request": {
+  "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small white iron knight doll kneeling beside a cracked square lantern on a workshop floor, wrapping it in white bandage held in both hands, a small brass medicine bag open beside it (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+  "negative_description": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow",
+  "image_size": {
+   "width": 80,
+   "height": 48
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 255
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-18T18:37:52.731Z",
+ "judge": {
+  "pick": "A",
+  "seed": 255,
+  "at": "2026-09-19",
+  "note": ""
+ }
+}

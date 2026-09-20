@@ -14,7 +14,7 @@
 
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { allDecks, allEnemies, allLeaders, getCardDef, getEnemyDef } from '../engine/content.ts'
-import { effectiveCost, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
+import { effectiveCost, hearthSparkMax, isBlazing, isDamageEffect, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, defaultEventChoice, gearFull, isUpgraded, nextChoices } from '../engine/run.ts'
@@ -40,6 +40,8 @@ function botRole(def: CardDef): BotRole {
   if (has('dealDamagePerBlock')) return 'payoff'
   // 従者の倍加・即時誘発 (白 2026-09-06): 従者を並べてから撃つ = 置物の後・攻撃の前
   if (has('duplicateRetainers', 'triggerRetainersNow')) return 'payoff'
+  // 灯の放出・大行列 (白 2026-09-20): 溜めてから吐く = 回復・人形の後に回す。眩む閃光・灯の鍛冶・火種の嵐 (2026-09-20 夜) も同じ
+  if (has('dischargeLight', 'dischargeLightRally', 'dischargeLightWeaken', 'consumeLight', 'dealDamagePerSpark')) return 'payoff'
   // 勢いの放出 (緑 2026-09-04・赤の変換器): 積んでから吐く = 他の攻撃・防御の後に回す
   if (has('dischargeMomentumDamage', 'dischargeMomentumGrowth', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumVolley')) return 'payoff'
   // 抱え込み (青 2026-08-31): 手札参照は「手札が厚いうちに」= ドローの直後・手札を減らす前に撃つ
@@ -55,8 +57,8 @@ function botRole(def: CardDef): BotRole {
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
-  // 骨刃の生成 (黒 2026-09-01): ナイフを撒いてから殴る = ドロー枠で早めに
-  if (has('addCardToHand')) return 'draw'
+  // 骨刃の生成 (黒 2026-09-01): ナイフを撒いてから殴る = ドロー枠で早めに。火種 (白 2026-09-20 夜) も同じ
+  if (has('addCardToHand', 'addCardToDraw', 'drawCardsPerLight')) return 'draw'
   if (has('gainBlock', 'gainIceBlock', 'gainIceBlockPerCardPlayed', 'gainBlockPerEnergyMax', 'gainBlockPerExhaust', 'gainHp', 'weakenEnemy')) return 'defend'
   return 'other'
 }
@@ -203,6 +205,15 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'dischargeAether') && state.player.aether < 2) {
     return false
   }
+  // 灯 (白 2026-09-20): 灯コストは払えなければプレイ不可。放出は灯3以上・大行列は灯2以上かつ人形1体以上でないと薄い
+  const light = state.player.light ?? 0
+  const retainers = state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length
+  if ((card.def.lightCost ?? 0) > light) return false
+  if (card.def.effects.some((e) => e.effect === 'dischargeLight') && light < 3) return false
+  if (card.def.effects.some((e) => e.effect === 'dischargeLightWeaken') && light < 3) return false // 眩む閃光は灯3未満で不発
+  if (card.def.effects.some((e) => e.effect === 'consumeLight') && light < 4) return false // 灯の鍛冶は灯4未満なら鍛えない
+  if (card.def.effects.some((e) => e.effect === 'dischargeLightRally') && (light < 2 || retainers < 1)) return false
+  if (card.def.effects.some((e) => e.effect === 'triggerRetainersNow') && retainers < 1) return false
   // 反復 (青): 手札に他のダメージ呪文がないとトークンが腐る (ターン終了で消えるため)
   if (
     card.def.effects.some((e) => e.effect === 'addSpellEcho') &&
@@ -476,7 +487,10 @@ export function chooseCommand(s: GameState): Command {
     return { type: 'PlayNecro', cardUid: necro.uid, targetIndex: target }
   }
   } // 拘束ガード終わり
-  return { type: 'EndTurn' }
+  // 灯の火床 (2026-09-20 夜): ボットは灯6を残して超過分を火種に (放出の閾値を殺さない床値)
+  const hearthMax = hearthSparkMax(s)
+  const hearthSparks = hearthMax > 0 ? Math.max(0, Math.floor(((s.player.light ?? 0) - 6) / 3)) : 0
+  return hearthSparks > 0 ? { type: 'EndTurn', hearthSparks: Math.min(hearthMax, hearthSparks) } : { type: 'EndTurn' }
 }
 
 interface BattleResult {

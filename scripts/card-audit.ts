@@ -27,6 +27,15 @@ const VP_PER: Record<string, number> = {
   dealDamagePerIceBlock: 1.0 * 10,
   dischargeAether: 2.5, // 霊気典型2.5 × 倍率amount (全消費の手放し対価込み)
   dischargeAetherDraw: 3.0 * 2.5,
+  // 灯 (白 2026-09-20 白の再設計。card-power.md §72): 灯+1=1.2VP (毎ターン湧くので霊気より安い)。放出は典型灯6 × 倍率amount
+  addLight: 1.2,
+  dischargeLight: 6,
+  doubleLight: 6 * 1.2, // 典型灯6を倍にする = 灯+6
+  dischargeLightRally: 6 * 3 * 2, // 典型灯6 × 人形3体 × 1回の出力2 (R2E の派手枠。装甲・ターン装甲が受ける)
+  dealDamagePerLight: 1.0 * 3, // 灯篭の人形 (2026-09-20 灯と人形の結び): 典型灯6 ÷ 2 = 3 × amount (灯は消費しない。置物レンズ×3で読む)
+  // 火種・放出の軸 (2026-09-20 夜。本家 Soul の白版): 火種1枚 = 0E で 1ドロー(3)+灯1(1.2) = 4.2VP。山札行きは引くまでの遅延で ×0.8
+  addCardToDraw: 4.2 * 0.8, lightToSparks: 4.2, dealDamagePerSpark: 1.0 * 5, triggerRandomRetainer: 3.0,
+  dischargeLightWeaken: 5.0 * 2 * 2, consumeLight: 0, gainBlockPerLight: 1.0 * 3, drawCardsPerLight: 3.0 * 3, lightCarryHalf: 6 * 0.5 * 1.2,
   dealDamagePerHandCard: 1.0 * 5,
   // 緑のカード操作 (2026-09-02 床パッケージ)。本家アンカー: Headbutt/Armaments/Anger/Rampage を緑レートに直した典型値
   retrieveFromDiscard: 4.0, // 選べるドロー1枚 = ドロー3 + 選択の精度1
@@ -91,7 +100,8 @@ export function assess(def: CardDef): { vp: number; pct: number; computable: boo
   // これまで捨て/消滅コストは査定で罰にも旨味にも数えていなかった。
   // 捨て1枚 = 手札の機会費用 −1.5VP。消滅1枚 = −2VP (この戦闘で二度と使えない) だが、
   // 墓地燃料 (刻・亡骸・per-Exhaust の的) として +0.6VP 戻る = 正味 −1.4VP
-  const vp = vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4
+  // 灯コスト (白 2026-09-20): 灯1 = 1.2VP (addLight と同じ物差し)。号令・灯コストの人形 (癒し・鐘・大鐘・灯篭・篝火) の追加コスト
+  const vp = vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4 - (def.lightCost ?? 0) * 1.2
   // 猛り火の軽減は「そのぶん安く撃てる」= 実効コストが下がる。期待値ぶんだけ帯を絞る
   const cost = (def.xCost === true ? 3 : def.cost) - (def.blazeDiscount ?? 0) * 0.6
   return { vp, pct: (vp / ALLOW(Math.max(0.5, cost))) * 100, computable }

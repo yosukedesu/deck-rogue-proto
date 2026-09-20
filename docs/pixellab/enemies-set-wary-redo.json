@@ -1,0 +1,143 @@
+{
+ "_note": "用心深い影 (enemy_set_wary) の作り直し (2026-09-18 人間ラン#14「見た目がうんこすぎる」＝旧・靄が桶に隠れる絵は黒い塊に見えた)。名前の生き物そのものの形へ: A=桶を殻に被るヤドカリ／B=岩の陰から覗くイタチ／C=半分丸まったアルマジロ。幕1の獣の style (水彩絵本×淡い光) で各2シード、シートからユーザーが選ぶ。 第2ラウンド (A〜C が兎・鼠に流れた): D=黒猫 (negative の cat を外す)／E=ヤモリ／L=翼で身を包む蝙蝠。negative に rabbit ears・grass を足す。",
+ "style": "pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "low top-down",
+  "direction": "south-west",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 9,
+  "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+ },
+ "items": [
+  {
+   "id": "enemy_set_wary_A_bucket__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_A_bucket__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shy HERMIT-CRAB-like creature that lives inside an upturned rusted iron ore bucket carried on its back like a shell, only two small bead eyes and two small pale claws peeking out from under the rim of the bucket, the bucket tilted as if the creature is about to duck back inside, {style}"
+  },
+  {
+   "id": "enemy_set_wary_A_bucket__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_A_bucket__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shy HERMIT-CRAB-like creature that lives inside an upturned rusted iron ore bucket carried on its back like a shell, only two small bead eyes and two small pale claws peeking out from under the rim of the bucket, the bucket tilted as if the creature is about to duck back inside, {style}"
+  },
+  {
+   "id": "enemy_set_wary_B_weasel__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_B_weasel__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a long low WEASEL-like beast of soft dark smoke-grey moss fur crouching flat behind a small rock, only its head and shoulders and long tail showing over the rock, two pale bead eyes peeking, ears folded back, hesitant, {style}"
+  },
+  {
+   "id": "enemy_set_wary_B_weasel__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_B_weasel__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a long low WEASEL-like beast of soft dark smoke-grey moss fur crouching flat behind a small rock, only its head and shoulders and long tail showing over the rock, two pale bead eyes peeking, ears folded back, hesitant, {style}"
+  },
+  {
+   "id": "enemy_set_wary_C_armadillo__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_C_armadillo__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small ARMADILLO-like creature of dark slate-grey banded shell half curled into a ball, its small pale face and two bead eyes peeking out from the gap in the shell, tiny paws tucked in, wary and about to close up, {style}"
+  },
+  {
+   "id": "enemy_set_wary_C_armadillo__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_C_armadillo__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small ARMADILLO-like creature of dark slate-grey banded shell half curled into a ball, its small pale face and two bead eyes peeking out from the gap in the shell, tiny paws tucked in, wary and about to close up, {style}"
+  },
+  {
+   "id": "enemy_set_wary_D_blackcat__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_D_blackcat__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small BLACK CAT of dark smoke-grey fur crouching low with its back arched and tail wrapped around its paws, ears flat, two pale round bead eyes, tense and watchful, no grass, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, rabbit ears, long ears, bunny, mouse, rosy cheeks, grass, ground"
+  },
+  {
+   "id": "enemy_set_wary_D_blackcat__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_D_blackcat__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small BLACK CAT of dark smoke-grey fur crouching low with its back arched and tail wrapped around its paws, ears flat, two pale round bead eyes, tense and watchful, no grass, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, rabbit ears, long ears, bunny, mouse, rosy cheeks, grass, ground"
+  },
+  {
+   "id": "enemy_set_wary_E_gecko__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_E_gecko__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small dark slate-grey GECKO lizard flattened low against the bare ground, long tail curled to one side, toes spread, two pale round bead eyes looking up, no grass, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, rabbit ears, long ears, bunny, mouse, rosy cheeks, grass, ground"
+  },
+  {
+   "id": "enemy_set_wary_E_gecko__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_E_gecko__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small dark slate-grey GECKO lizard flattened low against the bare ground, long tail curled to one side, toes spread, two pale round bead eyes looking up, no grass, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, rabbit ears, long ears, bunny, mouse, rosy cheeks, grass, ground"
+  },
+  {
+   "id": "enemy_set_wary_L_bat__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_L_bat__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small dark grey BAT crouched on the bare ground with its leathery wings wrapped tightly around its body like a cloak, only its small head with two pale round bead eyes and two pointed ears showing above the wings, no grass, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, rabbit ears, long ears, bunny, mouse, rosy cheeks, grass, ground"
+  },
+  {
+   "id": "enemy_set_wary_L_bat__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary/enemies/enemy_set_wary_L_bat__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a small dark grey BAT crouched on the bare ground with its leathery wings wrapped tightly around its body like a cloak, only its small head with two pale round bead eyes and two pointed ears showing above the wings, no grass, {style}",
+   "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, rabbit ears, long ears, bunny, mouse, rosy cheeks, grass, ground"
+  }
+ ]
+}

@@ -1,0 +1,1265 @@
+{
+ "_note": "B7–D18 の発注書 (gears)。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す",
+ "items": [
+  {
+   "id": "gear_spring__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_spring__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a tightly wound flat brass mainspring coiled in a spiral, a small black-iron pin at its center, the outer end of the coil curling loose, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock face, numbers",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_spring__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_spring__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a tightly wound flat brass mainspring coiled in a spiral, a small black-iron pin at its center, the outer end of the coil curling loose, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock face, numbers",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_cog__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_cog__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single brass cog wheel with eight blunt teeth and a square axle hole, tilted slightly toward the viewer, fine scratches on its face, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, second cog",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_cog__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_cog__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single brass cog wheel with eight blunt teeth and a square axle hole, tilted slightly toward the viewer, fine scratches on its face, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, second cog",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_oilcan__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_oilcan__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small dented tin oil can with a long thin curved spout and a thumb pump on top, one drop of amber oil hanging from the tip of the spout, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, fire",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_oilcan__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_oilcan__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small dented tin oil can with a long thin curved spout and a thumb pump on top, one drop of amber oil hanging from the tip of the spout, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, fire",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_powder__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_powder__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small charge of black powder wrapped in cream paper and tied with twine, a short fuse sticking out of the top, a few dark grains spilling from the fold, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, fire, explosion, skull",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_powder__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_powder__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small charge of black powder wrapped in cream paper and tied with twine, a short fuse sticking out of the top, a few dark grains spilling from the fold, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, fire, explosion, skull",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_repair_oil__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_repair_oil__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round-bottomed glass vial of warm amber machine oil with a cork and a thin brass collar, a soft golden glow inside the glass, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, red liquid",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_repair_oil__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_repair_oil__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round-bottomed glass vial of warm amber machine oil with a cork and a thin brass collar, a soft golden glow inside the glass, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, red liquid",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_brand_iron__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_brand_iron__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short branding iron with a dark wooden handle and a square black-iron shaft, its flat tip glowing red hot with a small spiral mark, a wisp of smoke, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, fire flames, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_brand_iron__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_brand_iron__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short branding iron with a dark wooden handle and a square black-iron shaft, its flat tip glowing red hot with a small spiral mark, a wisp of smoke, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, fire flames, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rust_powder__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rust_powder__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small open paper sachet of dull orange-brown rust powder, a pinch of powder spilling out over the edge in a little heap, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, food, spice",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rust_powder__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rust_powder__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small open paper sachet of dull orange-brown rust powder, a pinch of powder spilling out over the edge in a little heap, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, food, spice",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_wedge__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_wedge__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a thick black-iron splitting wedge standing point down, its hammered top mushroomed and dented, thin teal light glowing along cracks in its sides, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, wood log, axe, rust",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_wedge__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_wedge__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a thick black-iron splitting wedge standing point down, its hammered top mushroomed and dented, thin teal light glowing along cracks in its sides, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, wood log, axe, rust",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rusty_wedge__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rusty_wedge__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an old rusted iron wedge pitted with orange-brown rust and split by one deep crack, faint teal light seeping out of the crack, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, wood log, axe, clean metal",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rusty_wedge__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rusty_wedge__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an old rusted iron wedge pitted with orange-brown rust and split by one deep crack, faint teal light seeping out of the crack, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, wood log, axe, clean metal",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_stilling_weight__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_stilling_weight__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a heavy round black-iron plumb weight hanging from a short chain, a thin ring of teal light around its middle, still and motionless, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock, pendulum clock, numbers",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_stilling_weight__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_stilling_weight__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a heavy round black-iron plumb weight hanging from a short chain, a thin ring of teal light around its middle, still and motionless, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock, pendulum clock, numbers",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_cleansing_water__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_cleansing_water__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round clear glass flask of pale spring water with a cork stopper, a few silver bubbles rising inside, a faint blue-white glow, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, amber liquid, red liquid",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_cleansing_water__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_cleansing_water__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round clear glass flask of pale spring water with a cork stopper, a few silver bubbles rising inside, a faint blue-white glow, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, amber liquid, red liquid",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_ash_remover__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_ash_remover__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small stiff-bristled hand brush with a short dark wooden handle, a puff of grey ash dust rising from the bristles, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, broom, paintbrush, fire",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_ash_remover__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_ash_remover__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small stiff-bristled hand brush with a short dark wooden handle, a puff of grey ash dust rising from the bristles, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, broom, paintbrush, fire",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_dig_out__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_dig_out__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small black-iron hand trowel with a worn wooden grip, a scoop of dark earth on the blade with one glinting chip of ore in it, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, shovel, pickaxe, plant",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_dig_out__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_dig_out__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small black-iron hand trowel with a worn wooden grip, a scoop of dark earth on the blade with one glinting chip of ore in it, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, shovel, pickaxe, plant",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_wanted_item__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_wanted_item__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass jeweler's loupe with a round pale teal lens and a short leather strap, the lens catching one bright highlight, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, eyeglasses, pair of glasses, monocle chain, face",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_wanted_item__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_wanted_item__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass jeweler's loupe with a round pale teal lens and a short leather strap, the lens catching one bright highlight, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, eyeglasses, pair of glasses, monocle chain, face",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_next_prep__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_next_prep__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass ratchet wheel with a black-iron pawl resting against its teeth and a coiled spring behind it, wound and ready to turn, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, clock face, second wheel",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_next_prep__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_next_prep__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass ratchet wheel with a black-iron pawl resting against its teeth and a coiled spring behind it, wound and ready to turn, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, clock face, second wheel",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_whetstone_oil__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_whetstone_oil__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small flat grey whetstone with a thin trickle of amber honing oil pooled on top and one drop running down its side, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, knife, blade, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_whetstone_oil__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_whetstone_oil__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small flat grey whetstone with a thin trickle of amber honing oil pooled on top and one drop running down its side, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, knife, blade, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_copy__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_copy__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass seal stamp with a round wooden knob handle, its inked face down beside a fresh dark ink imprint of a simple cog mark on a scrap of cream paper, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, numbers, wax seal, envelope",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_copy__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_copy__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass seal stamp with a round wooden knob handle, its inked face down beside a fresh dark ink imprint of a simple cog mark on a scrap of cream paper, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, numbers, wax seal, envelope",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_shift_powder__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_shift_powder__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small twisted paper packet spilling shimmering violet and teal powder, the grains sparkling with tiny points of light, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, food, candy",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_shift_powder__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_shift_powder__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small twisted paper packet spilling shimmering violet and teal powder, the grains sparkling with tiny points of light, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, food, candy",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_bewilder__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_bewilder__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass spinning top tilted mid-spin, a swirling pale spiral pattern painted on its body, a faint blur ring around it, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, toy dice, face",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_bewilder__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_bewilder__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small brass spinning top tilted mid-spin, a swirling pale spiral pattern painted on its body, a faint blur ring around it, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, toy dice, face",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rust_stop__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rust_stop__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small squat tin of thick grey anti-rust paste with its lid set half off and a flat wooden spatula stuck in the paste, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, food, candle",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rust_stop__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rust_stop__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small squat tin of thick grey anti-rust paste with its lid set half off and a flat wooden spatula stuck in the paste, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, label, food, candle",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_hammer__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_hammer__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small stubby black-iron hammer with a square head and a short dark wooden handle, resting at an angle, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, mallet, war hammer, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_hammer__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_hammer__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small stubby black-iron hammer with a square head and a short dark wooden handle, resting at an angle, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, mallet, war hammer, sword",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_tie_cord__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_tie_cord__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a coil of thick dark waxed cord pulled into a tight knot around a small brass ring, the loose end trailing, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, rope ladder, noose, whip",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_tie_cord__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_tie_cord__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a coil of thick dark waxed cord pulled into a tight knot around a small brass ring, the loose end trailing, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, rope ladder, noose, whip",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_overload_cog__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_overload_cog__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a brass cog wheel whose teeth glow red hot, a hairline crack across its face and a few tiny orange sparks flying off, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, fire flames, explosion",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_overload_cog__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_overload_cog__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a brass cog wheel whose teeth glow red hot, a hairline crack across its face and a few tiny orange sparks flying off, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, fire flames, explosion",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_powder_keg__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_powder_keg__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round wooden powder keg with two black-iron hoops and a red painted band, a short lit fuse sparking at the bung on top, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, skull, explosion, fire flames",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_powder_keg__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_powder_keg__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round wooden powder keg with two black-iron hoops and a red painted band, a short lit fuse sparking at the bung on top, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, skull, explosion, fire flames",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_blood_spring__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_blood_spring__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a coiled steel compression spring standing upright, its coils stained dark red, one drop of red running down from the top coil, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, syringe, needle, knife",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_blood_spring__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_blood_spring__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a coiled steel compression spring standing upright, its coils stained dark red, one drop of red running down from the top coil, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, syringe, needle, knife",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_stockpile__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_stockpile__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small squat glass jar with brass caps on both ends and a tiny round gauge dial on the side, a swirl of warm gold light stored inside, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, battery, lightbulb",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_stockpile__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_stockpile__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small squat glass jar with brass caps on both ends and a tiny round gauge dial on the side, a swirl of warm gold light stored inside, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, battery, lightbulb",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_revive_spring__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_revive_spring__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a large silver-white coil spring standing upright inside a small brass cup, a soft warm gold glow rising from its center, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, heart shape, angel, flame",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_revive_spring__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_revive_spring__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a large silver-white coil spring standing upright inside a small brass cup, a soft warm gold glow rising from its center, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, heart shape, angel, flame",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_time_cog__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_time_cog__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ornate brass escapement wheel with fine pointed teeth and a curved black-iron anchor lever resting on it, thin teal light tracing between the teeth, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, clock face, hands of a clock",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_time_cog__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_time_cog__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "an ornate brass escapement wheel with fine pointed teeth and a curved black-iron anchor lever resting on it, thin teal light tracing between the teeth, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, clock face, hands of a clock",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_nameless__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_nameless__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small blank matte brass disc with no teeth and no markings, an unfinished part with soft rounded edges and one small center hole, plain and quiet, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, coin, cog teeth, shine",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_nameless__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_nameless__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small blank matte brass disc with no teeth and no markings, an unfinished part with soft rounded edges and one small center hole, plain and quiet, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, coin, cog teeth, shine",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_smoke__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_smoke__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round dark clay ball with a short fuse and a seam around its middle, a puff of grey smoke leaking from the seam, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, fire flames, explosion, skull, bomb with lit flame",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_smoke__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_smoke__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round dark clay ball with a short fuse and a seam around its middle, a puff of grey smoke leaking from the seam, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, fire flames, explosion, skull, bomb with lit flame",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_wax_plug__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_wax_plug__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small cork-shaped stopper of pale cream wax with a soft melted drip down one side and a faint thumbprint on top, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, candle, flame, wick",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_wax_plug__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_wax_plug__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small cork-shaped stopper of pale cream wax with a soft melted drip down one side and a faint thumbprint on top, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, candle, flame, wick",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rusty_chain__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rusty_chain__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short length of rusted iron chain with five heavy links, one link bent open and the rest pitted with orange-brown rust, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, padlock, necklace, clean metal",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_rusty_chain__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_rusty_chain__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a short length of rusted iron chain with five heavy links, one link bent open and the rest pitted with orange-brown rust, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, padlock, necklace, clean metal",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_decoy_charm__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_decoy_charm__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small flat wooden charm tag shaped like a rounded shield with one brass rivet and a red cord loop, a faint crack across the wood, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, writing, paper doll, face, figure",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_decoy_charm__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_decoy_charm__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small flat wooden charm tag shaped like a rounded shield with one brass rivet and a red cord loop, a faint crack across the wood, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, letters, writing, paper doll, face, figure",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_spring_cog__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_spring_cog__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a brass cog wheel lying almost flat with clear water welling up through its axle hole and spilling over the teeth in droplets, a faint blue-white glow, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, fountain, waterfall",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_spring_cog__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/gear_spring_cog__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a brass cog wheel lying almost flat with clear water welling up through its axle hole and spilling over the teeth in droplets, a faint blue-white glow, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, fountain, waterfall",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "mana__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/mana__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single brass cog wheel with six teeth, the whole cog glowing teal from within with a soft teal haze of light around it, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, second cog",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "mana__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears/gears/mana__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a single brass cog wheel with six teeth, the whole cog glowing teal from within with a soft teal haze of light around it, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, numbers, second cog",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  }
+ ]
+}

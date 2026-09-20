@@ -147,21 +147,90 @@ namespace DeckRogue.Game
             return sb.ToString();
         }
 
-        /// <summary>「+N …」(溢れたトークン。タップで名前と本文の一覧)</summary>
-        public static RectTransform MoreChip(Transform parent, IReadOnlyList<GearInstance> rest, float w, float h)
+        /// <summary>
+        /// 「+N」(溢れたトークン): 押すと持ち物の一覧 (BuildMore) が開き、隠れているギアもそこから組める (2026-09-18。旧は名前の説明が出るだけで組めなかった)。
+        /// 窓を開いている札がこの中に隠れていれば真鍮の縁
+        /// </summary>
+        public static RectTransform MoreChip(GameRoot g, Transform parent, IReadOnlyList<GearInstance> rest, float w, float h, bool open)
         {
             var more = UiKit.NewRect("gear-more", parent);
             more.sizeDelta = new Vector2(w, h);
+            var edge = PaperFx.Sheet(more, PaperFx.Tag, "edge", open ? PaperFx.Brass : PaperFx.Ink);
+            UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+            edge.raycastTarget = false;
             var mImg = PaperFx.Sheet(more, PaperFx.Tag2, "paper");
             UiKit.Stretch(mImg.rectTransform, 0f, 0f, 0f, 0f);
             mImg.raycastTarget = true;
-            var mt = UiKit.Txt(more, "+" + rest.Count, 16, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+            var mt = UiKit.Txt(more, "+" + rest.Count, w < 48f ? 15 : 16, PaperFx.Ink, TextAnchor.MiddleCenter, true);
             UiKit.Stretch(mt.rectTransform, 2f, 2f, 0f, 0f);
             var sb = new System.Text.StringBuilder();
-            foreach (var gi in rest) { var d = DefOf(gi.GearId); if (sb.Length > 0) sb.Append("\n"); sb.Append("<b>").Append(d != null ? d.Name : gi.GearId).Append("</b>（残").Append(gi.Charges).Append("回） ").Append(d != null ? d.Text : ""); }
+            sb.Append("<b>あと").Append(rest.Count).Append("個</b> (押すと一覧)");
+            foreach (var gi in rest) { var d = DefOf(gi.GearId); sb.Append("\n<b>").Append(d != null ? d.Name : gi.GearId).Append("</b>（残").Append(gi.Charges).Append("回）"); }
             string tip = sb.ToString();
-            Tooltip.Attach(more.gameObject, delegate { return tip; });
+            if (!UiKit.Phone) Tooltip.Attach(more.gameObject, delegate { return tip; });   // スマホはタップで一覧が開くので説明パネルは重ねない
+            OnClick(mImg.gameObject, delegate { Audio.Ui("click"); g.GearMore = !g.GearMore; g.Rebuild(); });
             return more;
+        }
+
+        /// <summary>
+        /// 持ち物の一覧の窓 (「+N」を押した時。2026-09-18): 全部のギアを名前つきのトークンで並べ、押すとその札の窓 (BuildWindow) に替わる。
+        /// 置き場はギアの窓と同じ (PC は自分の札の上・スマホは手札の上)
+        /// </summary>
+        public static void BuildMore(GameRoot g, RectTransform root, RunState run, GameState st)
+        {
+            bool ph = UiKit.Phone;
+            var cs = BattleScreen.CanvasSize(root);
+            var gears = DeckRogue.Engine.Run.GearsOf(run);
+            if (gears.Count == 0) { g.GearMore = false; return; }
+            float tw = PhoneTokenW, th = PhoneTokenH, pitch = PhoneTokenW + 8f, rowH = PhoneTokenH + 8f;
+            float W = ph ? Mathf.Min(560f, cs.x - 272f) : 560f;
+            int perRow = Mathf.Max(1, (int)((W - 40f + 8f) / pitch));
+            int rows = Mathf.CeilToInt(gears.Count / (float)perRow);
+            float H = 28f + 30f + 6f + rows * rowH + 6f + 48f + 34f;
+            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : 448f);
+            if (H > maxH) H = maxH;
+            float x = ph ? 260f : 40f + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;
+            if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
+            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;
+            var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-more-window");
+            UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
+            panel.raycastTarget = true;
+            PaperFx.GrainOver(panel.transform, 0.6f);
+            var inner = UiKit.NewRect("inner", panel.transform);
+            UiKit.Stretch(inner, 20f, 20f, 14f, 14f);
+            inner.gameObject.AddComponent<RectMask2D>();
+            var vg = UiKit.Vert(inner, 6, 0);
+            vg.childForceExpandHeight = false;
+            var head = UiKit.NewRect("head", inner);
+            UiKit.Le(head, -1f, 30f, -1f, 30f);
+            var hg = UiKit.Horz(head, 10, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            var name = UiKit.Deco(head, "ギアの持ち物 " + gears.Count + " / " + Gears.GEAR_CARRY_MAX, ph ? 17 : 19, PaperFx.Ink, TextAnchor.MiddleLeft);
+            UiKit.Le(name, -1f, 30f, -1f, 30f);
+            bool canUse = st != null && st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
+            var sub = UiKit.Txt(head, canUse ? "押すと窓が開く" : "いまは組めない (敵の番)", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(sub, -1f, 30f, -1f, 30f);
+            for (int r = 0; r < rows; r++)
+            {
+                var row = UiKit.NewRect("row" + r, inner);
+                UiKit.Le(row, -1f, rowH, -1f, rowH);
+                for (int i = r * perRow; i < gears.Count && i < (r + 1) * perRow; i++)
+                {
+                    int idx = i;
+                    var tok = Token(g, row, run, st, i, gears[i], tw, th, true, false);
+                    int c = i - r * perRow;
+                    UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(c * pitch, -4f - th), new Vector2(c * pitch + tw, -4f));
+                    var paper = tok.Find("paper");
+                    if (paper != null && canUse) OnClick(paper.gameObject, delegate { Audio.Ui("click"); g.GearMore = false; g.GearPending = new PendingGear { Index = idx }; g.Rebuild(); });
+                }
+            }
+            var sp = UiKit.NewRect("sp", inner); UiKit.Le(sp, -1f, 2f, -1f, 2f, -1f, 1f);
+            var btns = UiKit.NewRect("btns", inner);
+            UiKit.Le(btns, -1f, 48f, -1f, 48f);
+            var bg = UiKit.Horz(btns, 10, 0);
+            bg.childAlignment = TextAnchor.MiddleRight; bg.childForceExpandWidth = false; bg.childForceExpandHeight = false;
+            var close = UiKit.Btn(btns, "閉じる", delegate { g.GearMore = false; g.Rebuild(); }, 16);
+            BattleScreen.SetSize(close, 120f, 46f);
         }
 
         // ---- 上部バーの魔素の札 ----

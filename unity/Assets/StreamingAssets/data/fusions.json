@@ -5,7 +5,7 @@
     "result": {
       "id": "fusion_vine_wheel",
       "name": "蔦車輪",
-      "cost": 2,
+      "cost": 1,
       "type": "physical",
       "color": "green",
       "effects": [
@@ -17,14 +17,25 @@
         {
           "trigger": "onPlay",
           "effect": "dealDamage",
-          "amount": 4
+          "amount": 5
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1
         },
         {
           "trigger": "onPlay",
           "effect": "dealDamage",
-          "amount": 4
+          "amount": 5
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1
         }
-      ]
+      ],
+      "freeIfHandAllPhysical": true
     }
   },
   {
@@ -44,8 +55,8 @@
         },
         {
           "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
+          "effect": "addGrowth",
+          "amount": 1
         },
         {
           "trigger": "onPlay",
@@ -54,13 +65,38 @@
         },
         {
           "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 3
+          "effect": "addGrowth",
+          "amount": 1
         },
         {
           "trigger": "onPlay",
           "effect": "dealDamage",
           "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1
         },
         {
           "trigger": "onPlay",
@@ -105,16 +141,29 @@
       "effects": [
         {
           "trigger": "onPlay",
+          "effect": "addMomentum",
+          "amount": 4
+        },
+        {
+          "trigger": "onPlay",
           "effect": "dealDamage",
           "amount": 8,
           "pierce": true
         },
         {
           "trigger": "onPlay",
-          "effect": "addMomentum",
-          "amount": 3
+          "effect": "dealDamage",
+          "amount": 2,
+          "pierce": true
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 2,
+          "pierce": true
         }
-      ]
+      ],
+      "freeIfMomentumAtLeast": 5
     }
   },
   {
@@ -131,14 +180,15 @@
         {
           "trigger": "onPlay",
           "effect": "dealDamage",
-          "amount": 32
+          "amount": 36
         },
         {
           "trigger": "onPlay",
           "effect": "gainEnergyMax",
           "amount": 1
         }
-      ]
+      ],
+      "retain": true
     }
   },
   {
@@ -170,7 +220,7 @@
     "result": {
       "id": "fusion_red_flame_fang",
       "name": "炎蛇の牙",
-      "cost": 2,
+      "cost": 1,
       "type": "spell",
       "color": "red",
       "rarity": "uncommon",
@@ -315,7 +365,8 @@
             }
           ]
         }
-      ]
+      ],
+      "freeIfHandAllPhysical": true
     }
   },
   {
@@ -550,7 +601,7 @@
         {
           "trigger": "onPlay",
           "effect": "dealDamage",
-          "amount": 6
+          "amount": 8
         },
         {
           "trigger": "onPlay",
@@ -558,6 +609,14 @@
           "amount": 8,
           "condition": {
             "enemyIntent": "defend"
+          }
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "addGrowth",
+          "amount": 1,
+          "condition": {
+            "enemyIntentNot": "defend"
           }
         }
       ]
@@ -635,16 +694,22 @@
       "cost": 1,
       "type": "spell",
       "color": "red",
-      "effects": [],
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "applyBurn",
+          "amount": 2
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "gainBlock",
+          "amount": 4
+        }
+      ],
       "modes": [
         {
           "name": "盾へ移す",
           "effects": [
-            {
-              "trigger": "onPlay",
-              "effect": "gainBlock",
-              "amount": 4
-            },
             {
               "trigger": "onPlay",
               "effect": "dischargeMomentumBlock",
@@ -655,11 +720,6 @@
         {
           "name": "火へ移す",
           "effects": [
-            {
-              "trigger": "onPlay",
-              "effect": "applyBurn",
-              "amount": 2
-            },
             {
               "trigger": "onPlay",
               "effect": "dischargeMomentumBurn",
@@ -717,6 +777,165 @@
           ]
         }
       ]
+    }
+  },
+  {
+    "a": "white_strike",
+    "b": "white_guard",
+    "result": {
+      "id": "fusion_holy_stance",
+      "name": "灯火の構え",
+      "cost": 1,
+      "type": "physical",
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 5
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "gainBlock",
+          "amount": 5
+        }
+      ],
+      "freeIfHandAll": "nonphysical",
+      "color": "white"
+    }
+  },
+  {
+    "a": "white_heal",
+    "b": "white_guard",
+    "result": {
+      "id": "fusion_pray_or_guard",
+      "name": "灯すか守るか",
+      "cost": 1,
+      "type": "spell",
+      "effects": [],
+      "modes": [
+        {
+          "name": "灯す",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainHp",
+              "amount": 8
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "addLight",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "name": "守る",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 10
+            }
+          ]
+        }
+      ],
+      "color": "white",
+      "exhaust": true
+    }
+  },
+  {
+    "a": "white_reaction_ward",
+    "b": "white_page_rank",
+    "result": {
+      "id": "fusion_page_ambush",
+      "name": "小人形の伏兵",
+      "cost": 2,
+      "type": "permanent",
+      "effects": [
+        {
+          "trigger": "onAttackIncoming",
+          "effect": "gainBlock",
+          "amount": 4
+        },
+        {
+          "trigger": "onTurnStart",
+          "effect": "summonPermanent",
+          "amount": 1,
+          "summonId": "white_perm_page",
+          "condition": {
+            "perfectBlockLastPhase": true
+          }
+        }
+      ],
+      "color": "white"
+    }
+  },
+  {
+    "a": "white_war_horn",
+    "b": "white_perm_archer",
+    "result": {
+      "id": "fusion_archer_horn",
+      "name": "弩人形の号砲",
+      "cost": 1,
+      "type": "permanent",
+      "effects": [
+        {
+          "trigger": "onAttackPlayed",
+          "effect": "dealDamage",
+          "amount": 1,
+          "target": "all"
+        }
+      ],
+      "color": "white"
+    }
+  },
+  {
+    "a": "white_strike",
+    "b": "white_reaction_retribution",
+    "result": {
+      "id": "fusion_retribution_blade",
+      "name": "報復の刃",
+      "cost": 1,
+      "type": "physical",
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 5
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamage",
+          "amount": 10,
+          "condition": {
+            "perfectBlockLastPhase": true
+          }
+        }
+      ],
+      "color": "white"
+    }
+  },
+  {
+    "a": "white_reaction_chant",
+    "b": "white_service",
+    "result": {
+      "id": "fusion_chant_altar",
+      "name": "点灯の台座",
+      "cost": 1,
+      "type": "permanent",
+      "effects": [
+        {
+          "trigger": "onSpellPlayed",
+          "effect": "gainBlock",
+          "amount": 3
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "gainHp",
+          "amount": 4
+        }
+      ],
+      "color": "white"
     }
   }
 ]

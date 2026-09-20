@@ -1,0 +1,333 @@
+{
+ "_note": "白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py (15 札 × 3 シード 401,457,483。scripts/card-art.py orders が cards-white-descriptions.json から生成)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "white_strike__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_strike__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a heavy square brass lantern on the end of a long dark iron pole smashing down onto a cracked boulder, close-up on the impact, the boulder splitting with a burst of amber light, sparks and stone chips flying, rough mine tunnel wall behind, the pole enters the frame from the top left, no one holding it",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  },
+  {
+   "id": "white_strike__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_strike__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a heavy square brass lantern on the end of a long dark iron pole smashing down onto a cracked boulder, close-up on the impact, the boulder splitting with a burst of amber light, sparks and stone chips flying, rough mine tunnel wall behind, the pole enters the frame from the top left, no one holding it",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  },
+  {
+   "id": "white_strike__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_strike__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a heavy square brass lantern on the end of a long dark iron pole smashing down onto a cracked boulder, close-up on the impact, the boulder splitting with a burst of amber light, sparks and stone chips flying, rough mine tunnel wall behind, the pole enters the frame from the top left, no one holding it",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  },
+  {
+   "id": "white_rampart_riposte__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_rampart_riposte__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a battlement of glowing amber light panes built along the top of a low stone wall, seen from the side at an angle, dozens of small darts of light flicking out from its top edge toward the right like arrows, chipped stone, mine tunnel behind, nobody present",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_rampart_riposte__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_rampart_riposte__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a battlement of glowing amber light panes built along the top of a low stone wall, seen from the side at an angle, dozens of small darts of light flicking out from its top edge toward the right like arrows, chipped stone, mine tunnel behind, nobody present",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_rampart_riposte__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_rampart_riposte__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a battlement of glowing amber light panes built along the top of a low stone wall, seen from the side at an angle, dozens of small darts of light flicking out from its top edge toward the right like arrows, chipped stone, mine tunnel behind, nobody present",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_shield_prayer__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_shield_prayer__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white tower shield with a brass rim standing upright at the top of a short flight of stone steps, a square brass lantern set into its center glowing warm amber, vines on the steps, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_shield_prayer__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_shield_prayer__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white tower shield with a brass rim standing upright at the top of a short flight of stone steps, a square brass lantern set into its center glowing warm amber, vines on the steps, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_shield_prayer__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_shield_prayer__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white tower shield with a brass rim standing upright at the top of a short flight of stone steps, a square brass lantern set into its center glowing warm amber, vines on the steps, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_cowering_light__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_cowering_light__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, extreme close-up of a dark corner of a mine tunnel where a harsh cone of warm lantern light from the left hits the wall, the black shadows on the wall recoiling and shrinking into the corner as if alive, dust in the beam, a timber support at the edge, no figures",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_cowering_light__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_cowering_light__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, extreme close-up of a dark corner of a mine tunnel where a harsh cone of warm lantern light from the left hits the wall, the black shadows on the wall recoiling and shrinking into the corner as if alive, dust in the beam, a timber support at the edge, no figures",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_cowering_light__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_cowering_light__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, extreme close-up of a dark corner of a mine tunnel where a harsh cone of warm lantern light from the left hits the wall, the black shadows on the wall recoiling and shrinking into the corner as if alive, dust in the beam, a timber support at the edge, no figures",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it"
+  },
+  {
+   "id": "white_mending__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_mending__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a dented white iron breastplate (chest armor) lying on a wooden workbench, a small brass repair lamp beside it shining on the dent, the dent sealing itself with a glowing seam of warm light, brass tools around, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, mannequin, torso, cloth, paper, sheet"
+  },
+  {
+   "id": "white_mending__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_mending__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a dented white iron breastplate (chest armor) lying on a wooden workbench, a small brass repair lamp beside it shining on the dent, the dent sealing itself with a glowing seam of warm light, brass tools around, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, mannequin, torso, cloth, paper, sheet"
+  },
+  {
+   "id": "white_mending__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_mending__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a dented white iron breastplate (chest armor) lying on a wooden workbench, a small brass repair lamp beside it shining on the dent, the dent sealing itself with a glowing seam of warm light, brass tools around, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, mannequin, torso, cloth, paper, sheet"
+  },
+  {
+   "id": "white_perm_chalice__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_chalice__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a wide shallow brass bowl on a stone altar in a wall niche, filled to the brim with glowing liquid amber light that spills over its rim and runs down the altar in glowing streams, no fire, no flames, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, fire, flames, brazier, burning"
+  },
+  {
+   "id": "white_perm_chalice__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_chalice__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a wide shallow brass bowl on a stone altar in a wall niche, filled to the brim with glowing liquid amber light that spills over its rim and runs down the altar in glowing streams, no fire, no flames, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, fire, flames, brazier, burning"
+  },
+  {
+   "id": "white_perm_chalice__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_chalice__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a wide shallow brass bowl on a stone altar in a wall niche, filled to the brim with glowing liquid amber light that spills over its rim and runs down the altar in glowing streams, no fire, no flames, close-up",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, fire, flames, brazier, burning"
+  },
+  {
+   "id": "white_perm_apostle__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_apostle__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a tall standing brass lantern with paper panes glowing warm amber in a mossy underground garden, small moths of light circling it, rock ceiling above, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, circle, orb in the sky"
+  },
+  {
+   "id": "white_perm_apostle__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_apostle__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a tall standing brass lantern with paper panes glowing warm amber in a mossy underground garden, small moths of light circling it, rock ceiling above, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, circle, orb in the sky"
+  },
+  {
+   "id": "white_perm_apostle__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_apostle__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a tall standing brass lantern with paper panes glowing warm amber in a mossy underground garden, small moths of light circling it, rock ceiling above, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, circle, orb in the sky"
+  },
+  {
+   "id": "white_perm_bell__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_bell__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large brass bell hanging from a wooden beam inside a dark bell tower room with stone walls all around, a small warm lantern flame glowing inside the bell where the clapper would be, soft light spilling from its mouth, no window, no sky",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, sky, moon, window, clouds"
+  },
+  {
+   "id": "white_perm_bell__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_bell__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large brass bell hanging from a wooden beam inside a dark bell tower room with stone walls all around, a small warm lantern flame glowing inside the bell where the clapper would be, soft light spilling from its mouth, no window, no sky",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, sky, moon, window, clouds"
+  },
+  {
+   "id": "white_perm_bell__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_bell__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large brass bell hanging from a wooden beam inside a dark bell tower room with stone walls all around, a small warm lantern flame glowing inside the bell where the clapper would be, soft light spilling from its mouth, no window, no sky",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, sky, moon, window, clouds"
+  },
+  {
+   "id": "white_reaction_sanctuary__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_reaction_sanctuary__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small walled stone garden enclosed on all sides by high stone walls under a rock ceiling, lit by many hanging brass lanterns, white flowers glowing in pools of warm light, peaceful, no sky",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, sky, clouds, house, village, moon"
+  },
+  {
+   "id": "white_reaction_sanctuary__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_reaction_sanctuary__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small walled stone garden enclosed on all sides by high stone walls under a rock ceiling, lit by many hanging brass lanterns, white flowers glowing in pools of warm light, peaceful, no sky",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, sky, clouds, house, village, moon"
+  },
+  {
+   "id": "white_reaction_sanctuary__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_reaction_sanctuary__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small walled stone garden enclosed on all sides by high stone walls under a rock ceiling, lit by many hanging brass lanterns, white flowers glowing in pools of warm light, peaceful, no sky",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, sky, clouds, house, village, moon"
+  },
+  {
+   "id": "white_page_signal__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_page_signal__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, close-up of a tiny candle-sized brass lamp on a dark workbench, a single spark jumping from a small brass flint-and-steel striker device lying beside it into the lamp's wick, the first tiny flame catching, no hands, no window",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, window, moon"
+  },
+  {
+   "id": "white_page_signal__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_page_signal__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, close-up of a tiny candle-sized brass lamp on a dark workbench, a single spark jumping from a small brass flint-and-steel striker device lying beside it into the lamp's wick, the first tiny flame catching, no hands, no window",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, window, moon"
+  },
+  {
+   "id": "white_page_signal__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_page_signal__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, close-up of a tiny candle-sized brass lamp on a dark workbench, a single spark jumping from a small brass flint-and-steel striker device lying beside it into the lamp's wick, the first tiny flame catching, no hands, no window",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, window, moon"
+  },
+  {
+   "id": "white_march_order__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_march_order__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a brass signal lantern raised high on a wooden pole on a lookout post built of timber deep inside a dark cavern, flashing a bright burst of warm light with rays fanning out into the dark, rock ceiling above, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, clouds"
+  },
+  {
+   "id": "white_march_order__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_march_order__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a brass signal lantern raised high on a wooden pole on a lookout post built of timber deep inside a dark cavern, flashing a bright burst of warm light with rays fanning out into the dark, rock ceiling above, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, clouds"
+  },
+  {
+   "id": "white_march_order__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_march_order__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a brass signal lantern raised high on a wooden pole on a lookout post built of timber deep inside a dark cavern, flashing a bright burst of warm light with rays fanning out into the dark, rock ceiling above, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, clouds"
+  },
+  {
+   "id": "white_rank_thrust__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_rank_thrust__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, three brass spearheads with small square lanterns tied under them thrusting into the frame from the left edge toward the right in unison, motion lines, the lanterns blazing, dark mine tunnel behind, nobody holding them",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, lamp post, street lamp, row of lamps"
+  },
+  {
+   "id": "white_rank_thrust__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_rank_thrust__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, three brass spearheads with small square lanterns tied under them thrusting into the frame from the left edge toward the right in unison, motion lines, the lanterns blazing, dark mine tunnel behind, nobody holding them",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, lamp post, street lamp, row of lamps"
+  },
+  {
+   "id": "white_rank_thrust__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_rank_thrust__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, three brass spearheads with small square lanterns tied under them thrusting into the frame from the left edge toward the right in unison, motion lines, the lanterns blazing, dark mine tunnel behind, nobody holding them",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, lamp post, street lamp, row of lamps"
+  },
+  {
+   "id": "white_war_horn__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_war_horn__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a curved brass war horn with a small lantern set in its bell resting on a stone parapet of a mine watchtower, blasting out rings of warm light, dark rock behind, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, hands"
+  },
+  {
+   "id": "white_war_horn__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_war_horn__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a curved brass war horn with a small lantern set in its bell resting on a stone parapet of a mine watchtower, blasting out rings of warm light, dark rock behind, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, hands"
+  },
+  {
+   "id": "white_war_horn__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_war_horn__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a curved brass war horn with a small lantern set in its bell resting on a stone parapet of a mine watchtower, blasting out rings of warm light, dark rock behind, no sky, no moon",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, moon, sky, hands"
+  },
+  {
+   "id": "white_perm_band__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_band__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small white iron knight doll ringing a brass hand bell held up high in both hands, rings of warm light spreading through a stone corridor, three-quarter front view (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_perm_band__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_band__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small white iron knight doll ringing a brass hand bell held up high in both hands, rings of warm light spreading through a stone corridor, three-quarter front view (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "white_perm_band__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/white_perm_band__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a small white iron knight doll ringing a brass hand bell held up high in both hands, rings of warm light spreading through a stone corridor, three-quarter front view (two heads tall, matte white enameled iron armor plates with brass rivets, hood-shaped white iron helm, no face: only an empty dark hollow with two small warm amber glowing eyes, a small brass lantern strapped on its back), close-up",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow"
+  },
+  {
+   "id": "fusion_holy_stance__401",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/fusion_holy_stance__401.png",
+   "seed": 401,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a long dark iron lantern pole planted upright on flagstones with a square brass lantern at its top, the lantern's light spreading forward into a translucent half-dome barrier of warm light in front of the pole, a stone corridor behind, close-up, no hands",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, street lamp, lamp post"
+  },
+  {
+   "id": "fusion_holy_stance__457",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/fusion_holy_stance__457.png",
+   "seed": 457,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a long dark iron lantern pole planted upright on flagstones with a square brass lantern at its top, the lantern's light spreading forward into a translucent half-dome barrier of warm light in front of the pole, a stone corridor behind, close-up, no hands",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, street lamp, lamp post"
+  },
+  {
+   "id": "fusion_holy_stance__483",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/de5a42b7-9825-4cce-9c98-cf8682f3f0fb/scratchpad/px/white/gen5/fusion_holy_stance__483.png",
+   "seed": 483,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a long dark iron lantern pole planted upright on flagstones with a square brass lantern at its top, the lantern's light spreading forward into a translucent half-dome barrier of warm light in front of the pole, a stone corridor behind, close-up, no hands",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, street lamp, lamp post"
+  }
+ ]
+}

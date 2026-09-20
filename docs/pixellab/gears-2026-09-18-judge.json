@@ -1,0 +1,183 @@
+[
+ {
+  "id": "gear_ash_remover",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_bewilder",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_blood_spring",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_brand_iron",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "gear_cleansing_water",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "gear_cog",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_copy",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "gear_decoy_charm",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_dig_out",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "gear_hammer",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_nameless",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_next_prep",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_oilcan",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_overload_cog",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_powder",
+  "pick": "B",
+  "passed": true
+ },
+ {
+  "id": "gear_powder_keg",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_repair_oil",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_revive_spring",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_rust_powder",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_rust_stop",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_rusty_chain",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_rusty_wedge",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_shift_powder",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_smoke",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_spring_cog",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_stilling_weight",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_stockpile",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_time_cog",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_wanted_item",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_wax_plug",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_wedge",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_whetstone_oil",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "mana",
+  "pick": "A",
+  "passed": true
+ },
+ {
+  "id": "gear_spring",
+  "pick": "A",
+  "passed": true,
+  "seed": 7,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears-redo",
+  "problem": "初回 (23/41) は渦が小さすぎ → 枠いっぱいの渦で作り直し"
+ },
+ {
+  "id": "gear_tie_cord",
+  "pick": "A",
+  "passed": true,
+  "seed": 7,
+  "dir": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/gears-redo",
+  "problem": "初回は結び目が読めない (振り子に見えた) → 太い紐の巻きで作り直し"
+ }
+]

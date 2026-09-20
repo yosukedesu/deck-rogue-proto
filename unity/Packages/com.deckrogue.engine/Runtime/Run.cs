@@ -73,6 +73,7 @@ namespace DeckRogue.Engine
         public static readonly HashSet<string> REWARD_EXCLUDED = new HashSet<string>
         {
             "black_shiv_token",  // 骨のナイフ: 生成トークン (この戦闘限り)
+            "white_spark_token", // 火種 (白 2026-09-20 夜): 生成トークン
             "white_perm_page",   // 見習い: 見習いの列が召喚する従者トークン
             "green_strike",
             "green_guard",
@@ -94,15 +95,13 @@ namespace DeckRogue.Engine
             "red_perm_flarecoat",
             "red_perm_thorn_flame",
             "white_shield_strike",
-            "white_perm_squire",
-            "white_service",
-            "white_bodyslam",
+            "white_light_bolt", // 灯の矢 (白の派生=灯の教材。2026-09-20 白の再設計: 光壁砕きは報酬プールへ)
+            "white_mode_crossroad", // 灯の岐路 (2026-09-20 白の初期デッキを緑の形に。剣の人形・灯り継ぎ・報復の光は報酬プールへ)
             "black_dark_pact",
             "black_drain",
             "black_bursting_corpse",
             "black_shadow_blade",
             "white_reaction_ward",
-            "white_reaction_retribution",
             "black_reaction_curse",
             "black_reaction_grudge",
             "red_strike",
@@ -1451,6 +1450,9 @@ namespace DeckRogue.Engine
             { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" }, { "gainBlockPerMomentum", "trample" }, { "addGrowthPerMomentum", "trample" },
             { "applyBurn", "burn" }, { "dischargeBurn", "burn" },
             { "addAether", "aether" }, { "dischargeAether", "aether" }, { "dischargeAetherDraw", "aether" },
+            { "addLight", "light" }, { "dischargeLight", "light" }, { "dischargeLightRally", "light" }, { "doubleLight", "light" }, { "dealDamagePerLight", "light" }, // 灯
+            { "dischargeLightWeaken", "light" }, { "consumeLight", "light" }, { "gainBlockPerLight", "light" }, { "drawCardsPerLight", "light" }, { "lightCarryHalf", "light" }, // 放出の軸 (2026-09-20 夜)
+            { "addCardToDraw", "spark" }, { "lightToSparks", "spark" }, { "dealDamagePerSpark", "spark" }, { "triggerRandomRetainer", "spark" }, // 火種 (白 2026-09-20)
             { "gainIceBlock", "ice" }, { "dealDamagePerIceBlock", "ice" }, { "gainIceBlockPerCardPlayed", "ice" },
             { "negate", "permission" }, { "negateConvertIce", "permission" },
             { "summonPermanent", "retinue" }, { "dealDamagePerPermanent", "retinue" }, { "gainBlockPerPermanent", "retinue" },
@@ -1480,6 +1482,8 @@ namespace DeckRogue.Engine
             { "onHealed", "heal" },
             { "onHpLost", "selfharm" },
             { "onAetherGained", "aether" },
+            { "onLightGained", "light" }, // 灯の弩 (白 2026-09-20)
+            { "onLightDischarged", "light" }, { "onSparkPlayed", "spark" }, // 2026-09-20 夜
             { "onImpulsePlayed", "impulse" },
             { "onRandomPlayed", "chaos" },
             { "onSpellPlayed", "storm" },

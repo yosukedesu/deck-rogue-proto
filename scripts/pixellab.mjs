@@ -46,14 +46,22 @@ function token() {
 }
 
 async function call(pathname, body, method = 'POST') {
-  const res = await fetch(API + pathname, {
-    method,
-    headers: { Authorization: 'Bearer ' + token(), 'Content-Type': 'application/json' },
-    body: method === 'POST' ? JSON.stringify(body) : undefined,
-  })
-  const text = await res.text()
-  if (!res.ok) throw new Error(`${method} ${pathname} → HTTP ${res.status}: ${text.slice(0, 400)}`)
-  return JSON.parse(text)
+  // 5xx (502 Bad Gateway 等) は一時的なので 3 回まで待って再送する (2026-09-19 白の作り直しが 1 回の 502 で止まった)
+  for (let attempt = 1; ; attempt++) {
+    const res = await fetch(API + pathname, {
+      method,
+      headers: { Authorization: 'Bearer ' + token(), 'Content-Type': 'application/json' },
+      body: method === 'POST' ? JSON.stringify(body) : undefined,
+    })
+    const text = await res.text()
+    if (res.ok) return JSON.parse(text)
+    if (res.status >= 500 && attempt < 4) {
+      console.error(`  ${method} ${pathname} → HTTP ${res.status} (retry ${attempt}/3 in ${attempt * 10}s)`)
+      await new Promise((r) => setTimeout(r, attempt * 10000))
+      continue
+    }
+    throw new Error(`${method} ${pathname} → HTTP ${res.status}: ${text.slice(0, 400)}`)
+  }
 }
 
 function b64ToPng(b64) {

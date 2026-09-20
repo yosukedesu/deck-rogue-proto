@@ -129,7 +129,8 @@ MONSTERS_CREATURES／MONEY／ELEMENTS/Fire（Campfire loop）／HUMAN/Footsteps�
 | 休む ui.rest | MUSIC_EFFECT_Solo_Harp_Positive_07 |
 | 進む ui.node | FOOTSTEP_Dirt_Run_01 RR14/03/07/11 |
 | ボタン ui.click | BUTTON_Clean_Tap |
-| 据え置き（Kenney） | ドロー・回復・状態異常・hit_big・slash・lunge・energy・hover・enemy_turn |
+| 回復 HpHealed（再生・最大HP増・致死を耐えた、も同じ音） | **MUSIC_EFFECT_Solo_Harp_Positive_06**（2026-09-19 ユーザー「回復音をもっと回復らしく」。第1の候補14 `se-sheet-heal.html`〔ハープ・鈴の短句。仮採用はハープ2音〕→「別の候補ほしい」→ 第2 `se-sheet-heal-2.html`＝魔法の膨らみ系8（USFX を先頭1.4秒に切って減衰）＋自作の合成音6（`heal-synth.py`）。**ユーザーが Solo_Harp_Positive_06 を選択**＝休むの 07 の兄弟。合成音の器は次に使える） |
+| 据え置き（Kenney） | ドロー・状態異常・hit_big・slash・lunge・energy・hover・enemy_turn |
 | 鳴らさない | 勝敗ジングル（ユーザー「いらない」） |
 
 出典は `unity/Assets/Resources/Audio/sfx/CREDITS-usfx.md`。次＝実機で1ラン通して音量バランス（`audio.json` の volume）を詰める。

@@ -1,0 +1,32 @@
+{
+ "_note": "白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py (1 札 × 2 シード 11,37。scripts/card-art.py orders が cards-white-descriptions.json から生成)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "white_spark_storm__1441",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/09e2790f-b016-4795-bd89-3b45710d22a1/scratchpad/px/spark/white_spark_storm__1441.png",
+   "seed": 1441,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, extreme close-up of a square brass lantern on a dark wooden workbench, its flame erupting upward into a spiraling storm of thousands of glowing ember seeds that fills the whole frame, embers streaking in curves, dark background, macro, nothing else",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, man, woman, cloak, cape, hood, traveler, wanderer, back view, standing figure, cave, cavern, tunnel"
+  },
+  {
+   "id": "white_spark_storm__1463",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/09e2790f-b016-4795-bd89-3b45710d22a1/scratchpad/px/spark/white_spark_storm__1463.png",
+   "seed": 1463,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, extreme close-up of a square brass lantern on a dark wooden workbench, its flame erupting upward into a spiraling storm of thousands of glowing ember seeds that fills the whole frame, embers streaking in curves, dark background, macro, nothing else",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, man, woman, cloak, cape, hood, traveler, wanderer, back view, standing figure, cave, cavern, tunnel"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "id": "white_cowering_light",
+ "engine": "pixflux",
+ "request": {
+  "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, extreme close-up of a dark corner of a mine tunnel where a harsh cone of warm lantern light from the left hits the wall, the black shadows on the wall recoiling and shrinking into the corner as if alive, dust in the beam, a timber support at the edge, no figures",
+  "negative_description": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it",
+  "image_size": {
+   "width": 80,
+   "height": 48
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 457
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-18T18:59:26.279Z",
+ "judge": {
+  "pick": "B",
+  "seed": 457,
+  "at": "2026-09-19",
+  "note": ""
+ }
+}

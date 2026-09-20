@@ -1,0 +1,52 @@
+{
+ "engine": "pixellab web animate (idle=template breathing-idle, attack/block=v3 custom text)",
+ "base": "export/Idle/rotations/south.png 112x64 (2026-09-19 south-east から差し替え。コマは元から south)",
+ "anims": {
+  "attack": {
+   "source": "Idle/animations/Attack/south",
+   "picked_frames": [
+    2,
+    4,
+    7,
+    8
+   ],
+   "canvas": [
+    112,
+    84
+   ],
+   "note": "足元より下の透明行を一枚絵 (112×64) と同じにして下端を揃える。足元中央は一枚絵と同じ"
+  },
+  "block": {
+   "source": "Idle/animations/Block/south",
+   "picked_frames": [
+    2,
+    4,
+    6,
+    8
+   ],
+   "canvas": [
+    112,
+    64
+   ],
+   "note": "足元より下の透明行を一枚絵 (112×64) と同じにして下端を揃える。足元中央は一枚絵と同じ"
+  },
+  "idle": {
+   "source": "Idle/animations/Idle/south",
+   "picked_frames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "canvas": [
+    112,
+    84
+   ],
+   "note": "足元より下の透明行を一枚絵 (112×64) と同じにして下端を揃える。足元中央は一枚絵と同じ"
+  }
+ }
+}

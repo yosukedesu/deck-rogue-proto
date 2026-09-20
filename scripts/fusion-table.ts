@@ -1,6 +1,8 @@
 // scripts/fusion-table.ts — 工房の机上検証用テーブル (2026-09-05)。
-// 使い方: npx tsx scripts/fusion-table.ts --color green [--same] [--sample N --seed S] [--deck deckId] [--pairs a,b;c,d]
+// 使い方: npx tsx scripts/fusion-table.ts --color green [--same] [--sample N --seed S] [--deck deckId] [--pairs a,b;c,d] [--recipes]
+// --recipes: 手書きレシピ24件を「同じ素材の計算合成（レシピを外した時の結果）」と並べる (2026-09-18 レシピ見直し。レシピが計算に負けていないかの机上検査)
 // 合成結果 (名前/コスト/タイプ/効果) を md 表で出す。Opus に「ランで工房を踏む」代わりに表を読ませる = 1ランの1/10のコストで数百ペアを検分できる
+import fusionsJson from '../src/data/fusions.json'
 import { allCards, allDecks, getCardDef } from '../src/engine/content.ts'
 import { fuseBlockReason, fuseCards } from '../src/engine/fusion.ts'
 import type { CardDef, DeclarativeEffect } from '../src/engine/types.ts'
@@ -56,6 +58,16 @@ if (sample > 0) {
     if (a.id === b.id) continue
     const key = [a.id, b.id].sort().join('|'); if (seen.has(key)) continue; seen.add(key)
     out.push(row(a, b))
+  }
+}
+if (flag('--recipes')) {
+  out.push('\n## 手書きレシピ vs 計算合成 (同じ素材でレシピを外した時の結果)'); out.push('| 素材A × 素材B | ⭐レシピ | 計算合成 |'); out.push('|---|---|---|')
+  // id を変えた写しを渡すとレシピ表に当たらない = 計算合成だけを引ける (fuseCards はレシピを id で引く)
+  const bypass = (d: CardDef): CardDef => ({ ...d, id: `${d.id}__norecipe` })
+  for (const r of fusionsJson as { a: string; b: string; result: CardDef }[]) {
+    const a = getCardDef(r.a), b = getCardDef(r.b)
+    const calc = fuseCards({ uid: 'a', def: bypass(a) }, { uid: 'b', def: bypass(b) })
+    out.push(`| ${a.name}(${a.xCost ? 'X' : a.cost}E${T(a)}) × ${b.name}(${b.xCost ? 'X' : b.cost}E${T(b)}) | **${r.result.name}** ${r.result.xCost ? 'X' : r.result.cost}E${T(r.result)}: ${desc(r.result)} | ${calc.name} ${calc.xCost ? 'X' : calc.cost}E${T(calc)}: ${desc(calc)} |`)
   }
 }
 const pairs = opt('--pairs')

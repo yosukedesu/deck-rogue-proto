@@ -44,9 +44,9 @@ describe('威圧 (敵版弱体)', () => {
     expect(after).toBe(Math.max(1, Math.floor(before * 0.75)))
   })
   it('アーティファクト持ちには弾かれる', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), ['white_menace'])
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), ['white_mode_crossroad']) // 灯の岐路「眩ます」= 5ダメ+威圧1 (眩ます灯印は 2026-09-20 夜に撤去)
     s = { ...s, player: { ...s.player, energy: 9 }, enemies: s.enemies.map((e) => ({ ...e, artifact: 1 })) }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_menace' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_mode_crossroad', modeIndex: 0, targetIndex: 0 })
     expect(s.enemies[0].weak ?? 0).toBe(0)
     expect(s.enemies[0].artifact).toBe(0)
   })

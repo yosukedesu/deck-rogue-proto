@@ -31,5 +31,8 @@ Asset Store 標準 EULA: ゲームへの組み込みは可・素材そのもの�
 | combat_start.ogg | IMPACTS/Medieval_Armor/IMPACT_Medieval_Armor_Hit_01（戦闘の始まり） |
 | win.ogg | USER_INTERFACES/Notifications/UI_Notification_Soft_Chime_01（戦闘終了） |
 | rest.ogg | MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_07 |
+| heal.ogg | MUSIC_EFFECTS/Solo_Harp/MUSIC_EFFECT_Solo_Harp_Positive_06（回復。2026-09-19 ユーザー「回復音をもっと回復らしく」→ 第2の試聴シートからユーザーが選択。休むの Positive_07 の兄弟。以前は Kenney） |
+| rush.ogg | MECHANICS/MECHANICS_Metal_Mechanism_07（駆けつけ・進軍の号令＝人形が動く金属の機構。2026-09-19 ユーザー「差し替え前の回復の音 (Kenney の鈴) が他でも鳴っていて不快」→ buff.ogg を撤去して差し替え） |
+| wake.ogg | MAGIC_SPELLS/MAGIC_SPELL_Dark_Pulse_Echo_Subtle（孵化・覚醒＝暗い脈動。同上） |
 
-据え置き（Kenney）: card_draw（ドロー）・heal（回復）・hit_big・slash・lunge・energy・hover・enemy_turn。勝利は戦闘終了音 win（Soft_Chime）、敗北は無し。未選定: burn（延焼ティック＝合成音のまま）。
+据え置き（Kenney）: card_draw（ドロー）・hit_big・slash・lunge・energy・hover・enemy_turn（buff は 2026-09-19 に撤去＝rush/wake へ）。heal.ogg は同日「回復音ならない」で圧縮して RMS -14→-10.6dB（BGM と同じ高さに沈んでいた）。勝利は戦闘終了音 win（Soft_Chime）、敗北は無し。未選定: burn（延焼ティック＝合成音のまま）。

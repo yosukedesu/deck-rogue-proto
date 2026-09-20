@@ -1,0 +1,30 @@
+{
+ "id": "white_mode_crossroad",
+ "engine": "pixflux",
+ "request": {
+  "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a forked mine tunnel splitting into two passages at a brass lantern on a short post standing at the fork, the left passage flooded by a harsh dazzling white-amber flash with jagged rays, the right passage sealed by a calm translucent wall of warm amber light, timber supports and rough rock, a choice at a crossroads",
+  "negative_description": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow",
+  "image_size": {
+   "width": 80,
+   "height": 48
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 37
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-19T15:37:40.866029Z",
+ "judge": {
+  "pick": "B",
+  "seed": 37,
+  "at": "2026-09-20",
+  "note": "4シード (11/37/101/457) から。二股の坑道と真鍮のランタンの分かれ道が読める唯一の版"
+ }
+}

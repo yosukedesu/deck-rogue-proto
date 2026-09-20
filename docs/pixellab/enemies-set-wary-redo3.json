@@ -1,0 +1,81 @@
+{
+ "_note": "用心深い影の作り直し・第3ラウンド (2026-09-18 ユーザー「影っぽい見た目」)。体そのものを影 (墨黒の半透明の輪郭・煙の縁・淡い目2つだけ) で描く専用 style。S1=うずくまる猫の影／S2=四つ足の獣の影／S3=地面から起き上がる影。各2シード。",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "low top-down",
+  "direction": "south-west",
+  "outline": "selective outline",
+  "shading": "medium shading",
+  "detail": "highly detailed",
+  "no_background": true,
+  "guidance": 9
+ },
+ "items": [
+  {
+   "id": "enemy_set_wary_S1_shadowcat__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary3/enemies/enemy_set_wary_S1_shadowcat__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shadow shaped like a small crouching CAT with its back arched and a long tail curling up, hunched low as if about to bolt, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+   "negative": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile"
+  },
+  {
+   "id": "enemy_set_wary_S1_shadowcat__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary3/enemies/enemy_set_wary_S1_shadowcat__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shadow shaped like a small crouching CAT with its back arched and a long tail curling up, hunched low as if about to bolt, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+   "negative": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile"
+  },
+  {
+   "id": "enemy_set_wary_S2_shadowbeast__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary3/enemies/enemy_set_wary_S2_shadowbeast__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shadow shaped like a low hunched four-legged BEAST with a long body and pointed ears folded back, one forepaw lifted mid-step, creeping and hesitant, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+   "negative": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile"
+  },
+  {
+   "id": "enemy_set_wary_S2_shadowbeast__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary3/enemies/enemy_set_wary_S2_shadowbeast__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shadow shaped like a low hunched four-legged BEAST with a long body and pointed ears folded back, one forepaw lifted mid-step, creeping and hesitant, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+   "negative": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile"
+  },
+  {
+   "id": "enemy_set_wary_S3_rising__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary3/enemies/enemy_set_wary_S3_rising__23.png",
+   "seed": 23,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shadow peeling up off the bare ground: a dark pool that lifts into a rounded hunched creature shape with two pointed ears, its lower half still spread flat like a puddle with wisps trailing, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+   "negative": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile"
+  },
+  {
+   "id": "enemy_set_wary_S3_rising__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/7547d823-1e6a-4738-8b03-63f68fdea146/scratchpad/wary3/enemies/enemy_set_wary_S3_rising__41.png",
+   "seed": 41,
+   "size": [
+    64,
+    64
+   ],
+   "description": "a shadow peeling up off the bare ground: a dark pool that lifts into a rounded hunched creature shape with two pointed ears, its lower half still spread flat like a puddle with wisps trailing, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+   "negative": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile"
+  }
+ ]
+}

@@ -16,7 +16,7 @@ export function applyCommand(state: GameState, command: Command): GameState {
     case 'PlayCard':
       return playCard(state, command.cardUid, command.modeIndex, command.discardUids, command.targetIndex, command.exhaustUids, command.retrieveUid, command.deckUids, command.handUids, command.xAmount, command.permanentUid)
     case 'EndTurn':
-      return endTurn(state)
+      return endTurn(state, command.hearthSparks)
     case 'RetrieveSetCard':
       return retrieveSetCard(state, command.cardUid)
     case 'PlayNecro':

@@ -1,0 +1,80 @@
+{
+ "artboards": [
+  {
+   "file": "Current.dc.html",
+   "x": 0,
+   "y": 0,
+   "w": 1462,
+   "h": 675,
+   "title": "現状 付箋 (舞台に人形がいない)"
+  },
+  {
+   "file": "Main.dc.html",
+   "x": 1560,
+   "y": 0,
+   "w": 1462,
+   "h": 675,
+   "title": "案A 灯りの列 (推奨)"
+  },
+  {
+   "file": "APair.dc.html",
+   "x": 1560,
+   "y": 800,
+   "w": 1462,
+   "h": 675,
+   "title": "案A 敵2体"
+  },
+  {
+   "file": "APC.dc.html",
+   "x": 3120,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "案A PC"
+  },
+  {
+   "file": "B.dc.html",
+   "x": 0,
+   "y": 800,
+   "w": 1462,
+   "h": 675,
+   "title": "案B 足元の従者"
+  },
+  {
+   "file": "C.dc.html",
+   "x": 0,
+   "y": 1600,
+   "w": 1462,
+   "h": 675,
+   "title": "案C 役割で前後"
+  },
+  {
+   "file": "Moments.dc.html",
+   "x": 1560,
+   "y": 1600,
+   "w": 1462,
+   "h": 1110,
+   "title": "演出と情報 (案A の上で)"
+  },
+  {
+   "file": "Compare.dc.html",
+   "x": 3120,
+   "y": 1200,
+   "w": 1120,
+   "h": 960,
+   "title": "比較と原則"
+  }
+ ],
+ "annotations": [
+  {
+   "id": "brief",
+   "x": 0,
+   "y": -150,
+   "w": 1100,
+   "text": "人形の盤面表示 (2026-09-19 ユーザー「人形は戦場の盤面にも表示するようにしたい」)\nひなたの人形 (白の従者＝置物トークン) を舞台 (HD-2D ジオラマ) に立たせる置き場を3案。下地は実機のスクショ (ひなた・人形6体＋灯り増し・探り屋の三人組)、人形の絵は仮 (挿絵の切り出し)。\n決めること: ①置き場 (A 前の列／B 後ろと足元／C 役割で前後) ②同じ人形は一体ずつか ×N か ③足元の札 (絵＋数字) を出すか ④付箋からは消すか。\n裁定 (ask_user 4件・2026-09-19): ①A だが「B との中間」(ひなたのすぐ前 t=-4.1 から) ②一体ずつ (上限9・超えたら「+N」) ③足元の札を出す ④付箋にも残す → 同日 Unity に実装 (Stage.DollSlots・BattleView.SyncDolls/KillDoll・BattleScreen.FillDollPanel/DollTip・engine の sourceUid)。絵は新規に PixelLab (docs/pixellab/dolls-stage.json・残高待ち)。"
+  }
+ ],
+ "launch": {
+  "view": "canvas"
+ }
+}

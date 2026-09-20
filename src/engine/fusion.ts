@@ -17,6 +17,7 @@ const RECIPES = fusionsJson as readonly FusionRecipe[]
 
 const REFILL = new Set([
   'drawCards',
+  'drawCardsPerLight', // 灯の手帳 (2026-09-20 夜)
   'drawCardsPerCardPlayed',
   'dischargeAetherDraw',
   'impulseDraw',
@@ -74,13 +75,18 @@ const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
     ['dealDamage', '火'],
   ],
   white: [
+    ['dischargeLight', '灯'],
+    ['dealDamagePerLight', '篭'],
+    ['dealDamagePerSpark', '火'],
+    ['addCardToDraw', '種'],
+    ['addLight', '灯'],
     ['summonPermanent', '旗'],
     ['dealDamagePerPermanent', '列'],
     ['gainHp', '光'],
     ['weakenEnemy', '威'],
     ['dealDamagePerBlock', '壁'],
     ['gainBlock', '盾'],
-    ['dealDamage', '聖'],
+    ['dealDamage', '輝'], // 旧「聖」は 2026-09-18 のリネーム漏れ (Opus 火種A)
     ['drawCards', '典'],
   ],
 }
@@ -98,7 +104,7 @@ function wordOf(def: CardDef): string {
 /** 全体の触媒で全体化してよいダメージ効果 (状態を消費せず、敵ごとに独立して解決できるもの) */
 const AOE_CATALYST_OK = new Set([
   'dealDamage', 'dealDamageRandom', 'dealDamageDrain', 'dealDamageExecute', 'dealDamagePerMomentum', 'dealDamagePerEnergyMax',
-  'dealDamagePerAttackPlayed', 'dealDamagePerHandCard', 'dealDamagePerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerPermanent',
+  'dealDamagePerAttackPlayed', 'dealDamagePerHandCard', 'dealDamagePerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerPermanent', 'dealDamagePerLight', 'dealDamagePerSpark',
   'dealDamagePerHeal', 'dealDamagePerWeak', 'dealDamagePerCardPlayed', 'dealDamagePerCardPlayedTotal', 'dealDamagePerRandomPlayed',
 ])
 
@@ -218,7 +224,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       : 'onPlay'
   const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'upgradeAllInHand', 'gainMaxHp', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow'])
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
-  const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn'])
+  const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn', 'dischargeLight', 'dischargeLightRally', 'doubleLight'])
   // 落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)
   const DROP_VP: Record<string, number> = { gainEnergy: 5, drawCards: 3, impulseDraw: 2, addCasts: 2.5, negate: 12, doubleGrowth: 8, doubleMomentum: 6, growSelf: 4, searchDeck: 6, retrieveFromDiscard: 5, upgradeInHand: 6, upgradeAllInHand: 9, gainMaxHp: 6, addCopyToDiscard: 3, exhaustFromDeckChoose: 3, retrieveFromExhaust: 5, playFromExhaust: 8, gainSetSlot: 6, momentumCarryHalf: 8 }
   let droppedVp = 0
@@ -274,7 +280,8 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   // --- 合体: 列は素材の内部順序を保ち、ブロック単位で並べる。「準備 (成長・勢い・急所等) だけの札」を先に置く
   //     (S2: id順で勢いがダメージ行の後ろに落ち、素材より弱い合成品が183件) ---
   const blocks = [convertAll(domi), convertAll(sub)]
-  const hasDamage = (list: readonly DeclarativeEffect[]) => list.some((e) => e.effect === 'dealDamage' && e.trigger === 'onPlay')
+  // 放出 (dischargeLight/Growth/…) もダメージ行 (Opus 火種B: 灼く光+×灯の矢で放出が「準備」に分類され、放出→閾値の順で閾値が必ず落ちていた)
+  const hasDamage = (list: readonly DeclarativeEffect[]) => list.some((e) => e.trigger === 'onPlay' && (e.effect === 'dealDamage' || e.effect.startsWith('discharge') || e.effect.startsWith('dealDamage')))
   const ordered = blocks[1].length > 0 && !hasDamage(blocks[1]) && hasDamage(blocks[0]) ? [blocks[1], blocks[0]] : blocks
   const merged: DeclarativeEffect[] = []
   const ownerOf: number[] = []
@@ -331,6 +338,8 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     burn: { trigger: 'onPlay', effect: 'applyBurn', amount: 2 },
     ice: { trigger: 'onPlay', effect: 'gainIceBlock', amount: 2 },
     aether: { trigger: 'onPlay', effect: 'addAether', amount: 1 },
+    light: { trigger: 'onPlay', effect: 'addLight', amount: 1 }, // 灯 (白 2026-09-20)
+    spark: { trigger: 'onPlay', effect: 'addCardToHand', summonId: 'white_spark_token', amount: 1 }, // 火種 (白 2026-09-20 夜)
     storm: { trigger: 'onPlay', effect: 'addCasts', amount: 1 },
     heal: { trigger: 'onPlay', effect: 'gainHp', amount: 2 },
     fortress: { trigger: 'onPlay', effect: 'gainBlock', amount: 3 },
@@ -414,7 +423,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   let exhaust = (a.def.exhaust === true && contributed(a)) || (b.def.exhaust === true && contributed(b))
   const necroCost = a.def.necroCost !== undefined || b.def.necroCost !== undefined ? Math.min(a.def.necroCost ?? 99, b.def.necroCost ?? 99) : undefined
   if (necroCost !== undefined) exhaust = true
-  if (all.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleMomentum')) exhaust = true
+  if (all.some((e) => e.effect === 'doubleGrowth' || e.effect === 'doubleMomentum' || e.effect === 'doubleLight')) exhaust = true
   if (effects.some((e) => e.effect === 'gainEnergyMax')) exhaust = true
   if (all.filter((e) => e.effect === 'impulseDraw').reduce((acc, e) => acc + (e.amount ?? 0), 0) >= 4) exhaust = true
   const net = all.filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext').reduce((acc, e) => acc + (e.amount ?? 0), 0)
@@ -458,6 +467,10 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     ...((a.def.echo === true || b.def.echo === true || catalysts.includes('echo')) && resultType !== 'reaction' ? { echo: true } : {}),
     ...(a.def.discardCost || b.def.discardCost ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) } : {}),
     ...(a.def.exhaustCost || b.def.exhaustCost ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) } : {}),
+    ...(a.def.lightCost || b.def.lightCost ? { lightCost: (a.def.lightCost ?? 0) + (b.def.lightCost ?? 0) } : {}), // 灯コストは合算 (捨て・消滅コストと同じ)
+    // 人形は溶かしても人形 (2026-09-20 灯と人形の結び): 素材のどちらかが人形で結果が置物なら retainer を継承する
+    // (点灯・号令・従者狩りの対象のまま。旧: 真・剣の人形が道具になり、灯コストだけ払って点灯しない置物ができていた)
+    ...((a.def.retainer === true || b.def.retainer === true) && resultType === 'permanent' ? { retainer: true } : {}),
     ...(necroCost !== undefined ? { necroCost } : {}),
     ...(freeIfPhysical ? { freeIfHandAllPhysical: true } : {}),
     ...(freeIfHandAll !== undefined ? { freeIfHandAll } : {}),
@@ -507,7 +520,7 @@ export function fusionNotes(a: CardInstance, b: CardInstance): string[] {
   const notes: string[] = []
   if (recipeFor(a.def, b.def)) notes.push('⭐レシピ: 手書きの一品')
   const shared = axesOf(a.def).find((ax) => axesOf(b.def).includes(ax))
-  const AXIS_JA: Record<string, string> = { growth: '成長+1', trample: '勢い+2', ramp: '次のカード-1', burn: '延焼+2', ice: '氷壁+2', aether: '霊気+1', storm: '詠唱+1', heal: '回復+2', fortress: 'ブロック+3', retinue: 'ブロック+2', graveyard: 'ミル1' }
+  const AXIS_JA: Record<string, string> = { growth: '成長+1', trample: '勢い+2', ramp: '次のカード-1', burn: '延焼+2', ice: '氷壁+2', aether: '霊気+1', light: '灯+1', spark: '火種1', storm: '詠唱+1', heal: '回復+2', fortress: 'ブロック+3', retinue: 'ブロック+2', graveyard: 'ミル1' }
   if (shared && AXIS_JA[shared]) notes.push(`軸一致 (${shared}): ${AXIS_JA[shared]} のおまけ`)
   if (isUpgraded(a) || isUpgraded(b)) notes.push('鍛えの引き継ぎ: 鍛えていない側の素材も鍛えてから合体 (結果は+)')
   const CATALYST_JA: Record<string, string> = { cheaper: '軽くなる触媒: 結果のコストがさらに−1 (0Eまで)', echo: '反復の触媒: 結果のプレイ時効果を2回解決 (X・置物も。リアクションには付かない)', retain: '保持の触媒: 結果が保持を持つ (置物には付かない)', aoe: '全体の触媒: 結果の単体ダメージが全体になる (放出・キル連鎖・ブロック変換は据え置き)' }

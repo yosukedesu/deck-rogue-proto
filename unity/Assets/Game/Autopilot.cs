@@ -227,11 +227,12 @@ namespace DeckRogue.Game
         ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
         ///   fire=1 (確認の窓で最初の候補を発動してコマ送り。fireshots=枚数・fireevery=Nフレームごと。2026-09-17)
         ///   endplay=1 (手番を終えて敵フェーズを演出付きでコマ送り。endshots=枚数・endevery=Nフレームごと。2026-09-17)
-        ///   viewmap=1  viewdeck=1  log=1  name=<shot名>
+        ///   viewmap=1  viewdeck=1  log=1  name=<shot名>  wait=<秒> (撮る前に待つ。ドローの演出を避ける。2026-09-19)
         /// act/deck/relics/hp/gold/difficulty のどれかがあればチェックポイント開始 (CreateDebugCheckpointRun)、無ければ通常開始
         /// </summary>
         IEnumerator StateJump(GameRoot g, string spec)
         {
+            Audio.Verbose = true;   // 鳴らした音をログに (2026-09-19)
             var kv = new Dictionary<string, string>();
             foreach (var part in spec.Split(';'))
             {
@@ -383,6 +384,20 @@ namespace DeckRogue.Game
                         int v; var st3 = g.Rs.Combat;
                         if (int.TryParse(Get("pblock"), out v)) g.Rs = g.Rs with { Combat = st3 with { Player = st3.Player with { Block = Math.Max(0, v) } } };
                     }
+                    if (Get("plight") != null)
+                    {   // 自分の灯 (放出・灯コスト・しきい値の確認。2026-09-20)
+                        int v; var st5 = g.Rs.Combat;
+                        if (int.TryParse(Get("plight"), out v)) g.Rs = g.Rs with { Combat = st5 with { Player = st5.Player with { Light = Math.Max(0, v) } } };
+                    }
+                    if (Get("eweak") != null)
+                    {   // 敵0の威圧 (意図の数字の -25% の確認。2026-09-20)
+                        int v; var st6 = g.Rs.Combat;
+                        if (int.TryParse(Get("eweak"), out v) && st6.Enemies.Count > 0)
+                        {
+                            var enemies = new List<EnemyState>(st6.Enemies); enemies[0] = enemies[0] with { Weak = Math.Max(0, v) };
+                            g.Rs = g.Rs with { Combat = st6 with { Enemies = enemies } };
+                        }
+                    }
                     if (Get("hand") != null)
                     {
                         var st2 = g.Rs.Combat;
@@ -438,6 +453,7 @@ namespace DeckRogue.Game
             if (Get("gridpick") != null) { var gp = Get("gridpick").Split(':'); int gi; if (gp.Length == 2 && int.TryParse(gp[1], out gi)) g.SetGridPick(gp[0], gi); }   // gridpick=forge:2 = 押した札
             if (Get("log") == "1") g.ShowLog = true;
             if (Get("gearwin") != null) { int gi; if (int.TryParse(Get("gearwin"), out gi)) g.GearPending = new PendingGear { Index = gi }; }   // ギアのトークンを押した状態 = 窓 (2026-09-17)
+            if (Get("gearmore") == "1") g.GearMore = true;   // ギアの「+N」を押した状態 = 持ち物の一覧 (2026-09-18)
             if (Get("gearswap") == "1") g.GearSwap = g.Rs != null && g.Rs.Phase == RunPhases.Shop ? "shop:0" : "reward";   // 満杯の入れ替え窓
             if (Get("menu") == "1") g.MenuOpen = true;   // スマホの ≡ (2026-09-14)
             // フィードバックの画面 (2026-09-14): rating=won|lost で評価ダイアログ (最後の戦闘を仮に積む)、memo=1 でメモの窓
@@ -498,12 +514,47 @@ namespace DeckRogue.Game
                 Debug.Log("[Autopilot] play " + playIdx + " " + pc.Def.Name);
                 Time.captureFramerate = 60;   // 決定的な時間刻み (1フレーム=1/60秒)。プレイの前から固定して演出の頭を撮り逃さない
                 Presenter.MarkSeen(g.Rs.Combat);   // 跳んだ直後は戦闘開始・ターン開始の演出が未消化で、プレイの演出がその後ろに並んでしまう
-                g.BeginPlay(pc, null);
+                int? modeIdx = null; int modeV;   // mode=<idx>: 選択式の札のモード (2026-09-20 威圧の不具合の再現に 灯の岐路「眩ます」)
+                if (int.TryParse(Get("mode") ?? "", out modeV) && pc.Def.Modes != null && modeV >= 0 && modeV < pc.Def.Modes.Count) modeIdx = modeV;
+                else if (pc.Def.Modes != null && pc.Def.Modes.Count > 0) modeIdx = 0;
+                if (Get("viaui") == "1" && g.Battle != null)
+                {
+                    // viaui=1: 人がマウスで押すのと同じ経路 (手札の札の PointerClick → モードの窓のボタン → 敵の札) を EventSystem で叩く
+                    var es = UnityEngine.EventSystems.EventSystem.current;
+                    var cardGo = g.Battle.HandLayer != null ? g.Battle.HandLayer.Find("hand" + playIdx) : null;
+                    if (cardGo != null)
+                    {
+                        var pdc = new UnityEngine.EventSystems.PointerEventData(es) { button = UnityEngine.EventSystems.PointerEventData.InputButton.Left };
+                        UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdc, UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+                        Debug.Log("[Autopilot] viaui click hand" + playIdx + " modeChoice=" + (g.ModeChoiceUid != null));
+                        yield return null;
+                        if (g.ModeChoiceUid != null && g.Battle.UiLayer != null)
+                        {
+                            string want = ((modeIdx ?? 0) + 1) + ":";
+                            foreach (var b in g.Battle.UiLayer.GetComponentsInChildren<Button>(true))
+                            {
+                                var tx = b.GetComponentInChildren<TMPro.TMP_Text>(true);
+                                if (tx != null && tx.text.StartsWith(want)) { Debug.Log("[Autopilot] viaui mode button " + tx.text); b.onClick.Invoke(); break; }
+                            }
+                            yield return null;
+                        }
+                    }
+                    else Debug.Log("[Autopilot] viaui: hand" + playIdx + " が見つからない");
+                }
+                else g.BeginPlay(pc, modeIdx);
                 yield return null;
+                // 「人形を1体選ぶ」札 (灯の捧げ) は舞台の最初の人形を押して選ぶ (2026-09-19 人形の盤面表示: 崩れる演出の確認)
+                if (g.Pending != null && g.Pending.NextNeed() == "permanent" && g.Battle != null)
+                {
+                    var dollsNow = g.Battle.StageDolls(g.Rs.Combat);
+                    if (dollsNow.Count > 0) g.OnDollClicked(dollsNow[0].Uid);
+                    yield return null;
+                }
                 if (g.Pending != null && g.Pending.NextNeed() == "target")
                 {
-                    int tgt = -1;
-                    for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) if (g.Rs.Combat.Enemies[i].Hp > 0) { tgt = i; break; }
+                    int tgt = -1; int want;   // target=<敵index> で狙いを指定 (省略は最初の生存敵)
+                    if (int.TryParse(Get("target") ?? "", out want) && want >= 0 && want < g.Rs.Combat.Enemies.Count && g.Rs.Combat.Enemies[want].Hp > 0) tgt = want;
+                    else for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) if (g.Rs.Combat.Enemies[i].Hp > 0) { tgt = i; break; }
                     if (tgt >= 0) g.OnEnemyClicked(tgt);
                 }
                 int shotsN = 4; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 4;   // playshots=N で枚数 (札が飛んで着弾するまで 0.3〜0.6 秒)
@@ -579,7 +630,7 @@ namespace DeckRogue.Game
                 if (g.Battle.HandLayer != null) g.Battle.HandLayer.gameObject.SetActive(false);
                 foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true))
                 {
-                    if (rt.parent == null || !(rt.parent.name.StartsWith("enemy") || rt.parent.name == "player")) continue;
+                    if (rt.parent == null || !(rt.parent.name.StartsWith("enemy") || rt.parent.name == "player" || rt.parent.name.StartsWith("doll:"))) continue;
                     if (rt.name == "sprite" || rt.name == "ring") continue;
                     rt.gameObject.SetActive(false);
                 }
@@ -612,6 +663,9 @@ namespace DeckRogue.Game
                 CardPopup.Open(g, g.Rs.Combat.Player.Hand[popupIdx], g.Rs.Combat);
                 yield return null;
             }
+            // wait=<秒>: 撮る前に待つ (ドローの札が飛んでいる途中を避けて、落ち着いた盤面を撮る。2026-09-19 人形の盤面表示の下地)
+            float waitS;
+            if (float.TryParse(Get("wait") ?? "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out waitS) && waitS > 0f) yield return new WaitForSeconds(waitS);
             yield return Shot(Get("name") ?? ("state-" + phase), 10);
             // closemap=1: 重ねた地図を「閉じる」と同じ手順で閉じてもう1枚 (2026-09-14 戦闘中に閉じない不具合の確認)
             if (Get("closemap") == "1")
@@ -819,7 +873,7 @@ namespace DeckRogue.Game
                         if (c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue) continue;
                         int cost = c.Def.Cost;
                         try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
-                        if (!Effects.IsPlayableFromHand(c) || cost > st.Player.Energy) continue;
+                        if (!Effects.IsPlayableFromHand(c) || cost > st.Player.Energy || (c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) continue; // 灯コスト (白 2026-09-20)
                         bool dmg = c.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay");
                         if (pick == null || (dmg && !pick.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay"))) pick = c;
                     }

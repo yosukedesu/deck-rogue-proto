@@ -438,6 +438,23 @@ namespace DeckRogue.Game
             return r;
         }
 
+        /// <summary>人形 (白の従者) の座席 (2026-09-19 人形の盤面表示・案A「灯りの列」→ ユーザー「B との中間」= ひなたのすぐ前から):
+        /// 点灯した順に、ひなた (t=-5) と敵① (t≥1.6) の間の道に並ぶ。前列5体 (t=-4.1…-0.7・0.85 刻み・奥と手前を交互に) ＋ 後列4体 (一歩奥・半歩右)。
+        /// 匣 (t=-3.7・s=-0.75 手前) より奥に立つので重ならない。上限9 = 超えた分は BattleView が最後の札に「+N」</summary>
+        public static Vector3[] DollSlots(int n)
+        {
+            n = Math.Max(0, Math.Min(n, 9));
+            var r = new Vector3[n];
+            float[] t = { -4.1f, -3.25f, -2.4f, -1.55f, -0.7f };   // 0.85 刻み (0.7 は PC で 128px の人形が 73px 間隔に詰まりすぎた)
+            for (int i = 0; i < n; i++)
+            {
+                int j = i % 5; bool back = i >= 5;
+                float s = (j % 2 == 0 ? 0.9f : 0.25f) + (back ? 1.15f : 0f);
+                r[i] = OnPath(t[j] + (back ? 0.15f : 0f), s);
+            }
+            return r;
+        }
+
         /// <summary>UI の入れ物の下端から足元までの高さ (敵ごとに違う。名前札や HP バーは入れ物の下端基準で同じ線に揃う)</summary>
         // ---- からくりの匣 (2026-09-10 世界観「からくりだけ実物」): リーダーの足元に置く小さな木の匣。仕込むと蓋が開き、動かすと閃く ----
         static GameObject _box; static Texture2D _boxClosed, _boxOpen; static int _boxShown = -1; static GameObject _boxGlow;

@@ -19,8 +19,8 @@ namespace DeckRogue.Engine
                     return Combat.StartCombat(c.Seed, state.ReactionMode, c.EnemyId, c.DeckId, c.LeaderId, c.CardIds);
                 case Command_PlayCard c:
                     return Combat.PlayCard(state, c.CardUid, c.ModeIndex, c.DiscardUids, c.TargetIndex, c.ExhaustUids, c.RetrieveUid, c.DeckUids, c.HandUids, c.XAmount, c.PermanentUid);
-                case Command_EndTurn:
-                    return Combat.EndTurn(state);
+                case Command_EndTurn et:
+                    return Combat.EndTurn(state, et.HearthSparks);
                 case Command_RetrieveSetCard c:
                     return SetBase.RetrieveSetCard(state, c.CardUid);
                 case Command_PlayNecro c:

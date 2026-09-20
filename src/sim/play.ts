@@ -12,7 +12,7 @@
 //
 // コマンドJSON例:
 //   {"type":"PlayCard","cardUid":"c12","targetIndex":0}
-//   {"type":"SetCard","cardUid":"c3"} (伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ・鳴らなければ捨て札) / {"type":"EndTurn"}
+//   {"type":"SetCard","cardUid":"c3"} (伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ・鳴らなければ捨て札) / {"type":"EndTurn"} ({"type":"EndTurn","hearthSparks":N}=灯の火床で灯を火種に変える枚数)
 //   {"type":"ConfirmReaction","fire":true,"cardUid":"c3"} / {"type":"ConfirmReaction","fire":false}
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
@@ -22,6 +22,7 @@
 //            / {"type":"SkipGear"} / {"type":"DiscardGear","index":0} / {"type":"ShopBuyGear","index":0} / {"type":"ShopBuyMana"}
 
 import { readFileSync, writeFileSync } from 'node:fs'
+import { playCapOf } from '../engine/combat.ts'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
@@ -40,7 +41,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, displayedInflict, effectiveCost, effectiveIntent, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, displayedInflict, effectiveCost, effectiveIntent, hearthSparkMax, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -70,6 +71,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     drawCards: `${a}ドロー`, gainEnergy: `一時マナ+${a}`, gainEnergyMax: `エナジー上限+${a}`,
     addGrowth: `成長+${a}`, doubleGrowth: '成長2倍', addMomentum: `勢い+${a}`,
     counter: `返し${a}`, negate: '打ち消し', addAether: `霊気+${a}`,
+    addLight: `灯+${a}`, dischargeLight: e.target === 'all' ? `敵全体に灯×${a}ダメ(全消費・灯0なら不発)` : `灯1につき${a}ダメを灯回(全消費・装甲は1ヒットごと・灯0なら不発)`, dischargeLightRally: `灯を全て放出し、灯1につき全ての人形が${a || 1}回動く`, doubleLight: '灯2倍',
     dischargeAether: `${all}霊気×${a}ダメ(全消費)`, dischargeGrowth: `成長×${a}ダメ(全消費)`, dischargeGrowthBlock: `成長×${a}ブロック(全消費)`, dischargeBurn: `延焼×${a}ダメ(全消費)`, dischargeMomentumBurn: `勢い×${a}延焼(全消費)`, dischargeMomentumBlock: `勢い×${a}ブロック(全消費)`, dischargeMomentumDamage: `${all}勢い×${a}ダメ(全消費)${e.pierce === true ? '(貫通)' : ''}`, dischargeMomentumGrowth: `勢いを全て失い1/${a}(切り上げ)を成長に`, dischargeMomentumVolley: `勢い×${a}ダメを${e.volleyHits ?? 3}回(全消費)${e.pierce === true ? '(貫通)' : ''}`, momentumCarryHalf: 'ターン終了時に勢いの半分を持ち越す(常在)',
     applyBurn: `${all}延焼+${a}`, shatterBlock: '敵ブロック全破壊', shatterBlockConvert: '敵ブロック全破壊+破壊値ダメ',
     dealDamageRandom: `${all}${a}〜${e.amountMax}ロールダメ`, dealDamageExecute: `${a}ダメ(敵HP25%以下なら${e.amountMax})`,
@@ -79,7 +81,9 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamageDrain: `${all}${a}ダメ+半分回復`, dealDamagePerCardPlayed: `${all}詠唱数×${a}ダメ`, dealDamagePerCardPlayedTotal: `${all}この戦闘の累計プレイ数×${a}ダメ`,
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     strengthenEnemy: `敵の筋力+${a}`, dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
-    dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍', gainBlockPerMomentum: `勢い×${a}ブロック(勢いは失わない)`, addGrowthPerMomentum: `勢い2につき成長+${a}(勢いは失わない)`, gainMaxHp: `最大HP+${a}(この戦闘後も残る)`, upgradeAllInHand: '手札の全て(自身・レア・工房産を除く)をこの戦闘中鍛える',
+    dealDamagePerLight: `${all}灯2につき${a}ダメ(切り捨て・灯は失わない)`,
+    addCardToDraw: `${cname(e.summonId ?? '')}${a}枚を山札のランダムな位置へ(この戦闘限り)`, lightToSparks: `灯${a}につき火種1を山札へ(払った灯だけ失う)`, dealDamagePerSpark: `${all}この戦闘で撃った火種×${a}ダメ`, triggerRandomRetainer: '場の人形1体(ランダム)が今1回動く(灯は産まない)',
+    dischargeLightWeaken: `灯を全て放出し灯3につき敵全体に威圧${a}(灯3未満なら不発)`, consumeLight: '灯を全て失う', gainBlockPerLight: `灯2につき${a}ブロック(灯は失わない)`, drawCardsPerLight: `灯2につき${a}ドロー(上限${e.amountMax ?? 99}・灯は失わない)`, lightCarryHalf: '【常在】灯を放出しても半分が残る', dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍', gainBlockPerMomentum: `勢い×${a}ブロック(勢いは失わない)`, addGrowthPerMomentum: `勢い2につき成長+${a}(勢いは失わない)`, gainMaxHp: `最大HP+${a}(この戦闘後も残る)`, upgradeAllInHand: '手札の全て(自身・レア・工房産を除く)をこの戦闘中鍛える',
     gainSetSlot: `伏せ枠+${a}(置物なら常在=この置物がある間)`, retrieveFromDiscard: `捨て札から${a}枚を選んで手札へ(要deckUids)`, searchDeck: `山札から${a}枚を選んで手札へ(要deckUids)`,
     addCopyToDiscard: `このカードのコピー${a}枚を捨て札へ`, growSelf: `プレイするたび、この札自身の与ダメ+${a}(この戦闘中。他の札には乗らない)`, upgradeInHand: `手札の${a}枚をこの戦闘中鍛える(要handUids)`,
     exhaustFromDeck: `山札の上${a}枚を消滅`, exhaustFromDeckChoose: `山札か捨て札から好きな${a}枚を選んで消滅(亡骸は発火。要deckUids)`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
@@ -90,24 +94,24 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`, gainBlockPerHandCard: `手札の枚数×${a}ブロック`,
     staggerEnemy: '対象の体勢を崩す(次の行動が隙)', drawCardsNextTurn: `次T開始時に${a}枚多くドロー`, gainEnergyNextTurn: `次T開始時に一時マナ+${a}`, gainBlockNextTurn: `次T開始時にブロック+${a}`,
-    addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者の効果+${a}`,
-    addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
+    addSpellEcho: `反復+${a}(次に唱える呪文の効果を2回解決。ターン終了時に消える。とげ反射も2回受ける)`, addCasts: `詠唱数+${a}(激昂タイマーには数えない)`, blessRetainers: `【常在】従者のダメージ・ブロック・回復+${a}`,
+    addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)${xHitsSuffix(e)}`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚${e.condition?.targetDead === true ? '(戦闘が続いていれば。最後の1体では無駄)' : ''}`,
-    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '従者のターン開始効果を今すぐ解決(アンセム込み)', activateEnteredRetainer: '場に出た従者はすぐに1回動く(駆けつけ。従者以外の置物では何も起きない)',
+    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', triggerRetainersNow: '号令: 場の人形の効果をトリガーを問わず(登場ごとを除く)今すぐ1回ずつ解決(アンセム込み)', activateEnteredRetainer: '(旧・駆けつけ。2026-09-20 に白共通ルール「点灯」へ格上げ=この効果は何もしない)',
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
     onPlay: holderType === 'permanent' ? '登場時:' : '', onAttackIncoming: '被攻撃前:', onAttacked: '被攻撃後:', onEnemyAction: '敵行動時:',
-    onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
+    onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onEnemyActed: '敵の行動後:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時/期限切れ時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
-    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onAetherGained: '霊気獲得ごと:',
+    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
     onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.actionKindsNot !== undefined ? `敵の行動が${e.condition.actionKindsNot.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}以外の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.minLight !== undefined ? `灯${e.condition.minLight}以上なら` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
     : ''
   const every = e.every !== undefined ? `(${e.everyScope === 'turn' ? '1ターンに' : ''}${e.every}回ごとに1回)` : e.once !== undefined ? '(初回だけ)' : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${every}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
@@ -124,6 +128,7 @@ function cardLine(def: CardDef): string {
     def.freeIfMomentumAtLeast !== undefined ? `勢い${def.freeIfMomentumAtLeast}以上なら0E` : '',
     def.discardCost ? `捨てコスト${def.discardCost}` : '',
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
+    def.lightCost ? `灯コスト${def.lightCost}(エナジーと別に払う。足りなければプレイ不可)` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
     def.retainer ? '従者' : '',
     def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ', aoe: '単体ダメージが全体に' } as Record<string, string>)[def.fusionCatalyst]}` : '',
@@ -244,8 +249,13 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'TokenDestroyed') L.push(` 従者狩り:${cname(e.cardId)}が倒された`)
       else if (e.type === 'RetainerSacrificed') L.push(` 🕯️殉教: ${cname(e.cardId)}を自ら失った`)
       else if (e.type === 'RetainersDuplicated') L.push(` 🏳️分列: 従者${e.count}体が複製された`)
-      else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 従者${e.count}体のターン開始効果を今すぐ解決`)
-      else if (e.type === 'RetainerRushed') L.push(` 🏇駆けつけ: ${cname(e.cardId)}が登場してすぐに動いた`)
+      else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 人形の効果を延べ${e.count}回解決した（トリガーを問わず）`) // count は延べ回数 (Opus 火種C「人形27体」)
+      else if (e.type === 'RetainerRushed') L.push(` 🕯️点灯: ${cname(e.cardId)}が出た瞬間に1回動いた`)
+      else if (e.type === 'LightGained') L.push(` 🕯️灯+${e.amount}（${({ heal: '回復', retainer: '人形の登場', passive: '灯匠', card: 'カード', carry: '残り火' } as Record<string, string>)[e.source] ?? e.source}）`)
+      else if (e.type === 'LightDischarged') L.push(` 🕯️灯${e.spent}を放出`) // 火床は払った分だけ (Opus 火種B「全て」が嘘)
+      else if (e.type === 'LightSpent') L.push(` 🕯️灯-${e.amount}（${cname(e.cardId)}）`)
+      else if (e.type === 'CardsDrawn' && !events.some((x) => x.type === 'TurnStarted')) L.push(` 📖${e.count}枚引いた${e.cards ? `: ${e.cards.join('・')}` : ''}`) // カード効果のドロー (Opus 火種B/C: 火種・手帳のドローがログに無い)
+      else if (e.type === 'CardsAddedToDraw') L.push(` 🔥${cname(e.cardId)}${e.count}枚を山札に混ぜた`)
       else if (e.type === 'SetCardDestroyed') L.push(` 伏せ破壊:${cname(e.cardId)}が壊された`)
       else if (e.type === 'TurnStarted') L.push(` === ターン${e.turn} ===`)
       else if (e.type === 'HpHealed') L.push(e.amount > 0 ? ` 回復${e.amount}` : ' 回復0(満タン。onHealedは誘発)')
@@ -278,7 +288,8 @@ function renderBattle(s: GameState, logFrom: number): string {
   const st = [
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
-    p.aether ? `霊気${p.aether}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
+    p.aether ? `霊気${p.aether}` : '', (p.light ?? 0) || p.permanents.some((x) => x.innate === true && x.def.effects.some((e) => e.effect === 'addLight')) ? `灯${p.light ?? 0}` : '', (p.sparksPlayedThisCombat ?? 0) ? `火種(撃った)${p.sparksPlayedThisCombat}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
+    s.playCap !== undefined ? `首輪: このターンあと${Math.max(0, (playCapOf(s) ?? 0) - (p.playsThisTurn ?? 0))}枚` : '', // 天鵞絨の首輪 (2026-09-18 Opus 白C: 7枚目で初めてエラーが出て事前に読めなかった)
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで・このターンあと${Math.max(0, 3 - (p.playsThisTurn ?? 0))}枚)` : '', (p.mist ?? 0) ? `霞み${p.mist}(ドロー-2)` : '', (p.slow ?? 0) ? `重り${p.slow}(被ダメ+10%×プレイ枚数。今+${(p.playsThisTurn ?? 0) * 10}%)` : '',
     p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
     // 運任せカウンタは参照札 (×N換金/onRandomPlayed) を持つデッキでだけ意味を持つ — ノイズ抑制
@@ -347,10 +358,19 @@ function renderBattle(s: GameState, logFrom: number): string {
     // 誘発ダメージの実値 (成長・勢い・弱体込み。2026-09-05 Opusラン U: 風の棘「2ダメ」が実測15〜17で強さが読めなかった)
     const live = (c: (typeof p.permanents)[number]): string => {
       const v = c.def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger !== 'onPlay' && e.amount !== undefined).map((e) => `${e.amount}→${playerDamageAfterModifiers(s, e.amount!)}`).filter((t) => !/^(\d+)→\1$/.test(t))
-      return v.length > 0 ? `【いま誘発したら${v.join('・')}ダメ=成長込み・勢いは乗らない】` : ''
+      // 灯篭の人形 (2026-09-20 夜): 灯2につきN = いまの灯で読んだ実値 (Opus 灯と人形 B「置物行に実値が無い」)
+      const lit = c.def.effects.filter((e) => e.effect === 'dealDamagePerLight' && e.amount !== undefined).map((e) => {
+        const base = Math.floor((p.light ?? 0) / 2) * (e.amount ?? 1)
+        return `いま灯${p.light ?? 0}=${base > 0 ? playerDamageAfterModifiers(s, base) : 0}${e.target === 'all' ? '全体' : ''}`
+      })
+      const parts = [...(v.length > 0 ? [`いま誘発したら${v.join('・')}ダメ=成長込み・勢いは乗らない`] : []), ...lit]
+      return parts.length > 0 ? `【${parts.join('・')}】` : ''
     }
-    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=量つき効果に加算】` : ''}${live(c)}`).join(' / ')}`)
-    if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者の量つき効果すべてに加算)`)
+    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=ダメージ・ブロック・回復の量に加算】` : ''}${live(c)}`).join(' / ')}`)
+    if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者のダメージ・ブロック・回復の量に加算。灯・率・ドローには乗らない)`)
+    // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了時に何枚火種にするかは EndTurn のパラメータ
+    if (hearthSparkMax(s) > 0) L.push(`🔥火床: ターン終了時に灯3につき火種1を山札へ。枚数は {"type":"EndTurn","hearthSparks":N} で指定 (0〜${hearthSparkMax(s)}。省略=0=変えない)`)
+    else if (p.permanents.some((c) => c.def.effects.some((e) => e.effect === 'lightToSparks'))) L.push('🔥火床: 灯が3未満なので今ターンは火種にできない')
   }
   if (s.phase === 'awaiting-reaction' && s.pendingWindow) {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]
@@ -387,7 +407,7 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push('手札:')
     for (const c of p.hand) {
       const cost = effectiveCost(s, c)
-      const playable = isPlayableFromHand(c) && cost <= p.energy && retainerRequirementMet(s, c) // 殉教の誓い・進軍の号令 (2026-09-06 Opusラン X: 表示だけ嘘だった)
+      const playable = isPlayableFromHand(c) && cost <= p.energy && retainerRequirementMet(s, c) && (c.def.lightCost ?? 0) <= (p.light ?? 0) // 殉教の誓い・進軍の号令 (2026-09-06 Opusラン X: 表示だけ嘘だった)。灯コスト (Opus 灯と人形 B: 灯不足でも〈プレイ可〉)
       const settable = c.def.type === 'reaction' || (s.setAnyCards === true && canSetAsNormal(c.def))
       const canSet = settable && canSetCard(s, c.uid)
       const marks = [
@@ -402,7 +422,11 @@ function renderBattle(s: GameState, logFrom: number): string {
             ? 'プレイ可'
             : c.def.type === 'reaction'
               ? ''
-              : 'エナジー不足',
+              : (c.def.lightCost ?? 0) > (p.light ?? 0)
+                ? `灯不足(灯${c.def.lightCost}が要る)`
+                : c.def.requiresRetainer === true && !p.permanents.some((x) => x.def.retainer === true && x.innate !== true)
+                  ? '場に人形がいない'
+                  : 'エナジー不足',
         c.def.exhaustCost ? '要exhaustUids' : '',
         c.def.discardCost ? '要discardUids' : '',
         c.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')
@@ -452,7 +476,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       const costNote =
         c.def.xCost === true || cost === c.def.cost || c.def.type === 'reaction' // 伏せるコストは割引の対象外 (Opus AB #3: リアクションに「割引/無料」の注記は嘘)
           ? ''
-          : ` ⚠実コスト${cost}E(印字${c.def.cost}E${cost > c.def.cost ? '・重圧' : '・割引/無料'})`
+          : ` ⚠実コスト${cost}E(印字${c.def.cost}E${cost > c.def.cost ? '・重圧' : '・割引/無料=次に出す1枚だけ'})`
       // 上限参照はターン開始時のスナップショットを読む (T1は素の上限)。その場の実値を出す (同ラン指摘②)
       const capEff = c.def.effects.filter((e) => e.effect === 'dealDamagePerEnergyMax' || e.effect === 'gainBlockPerEnergyMax')
       const capNow =
@@ -484,6 +508,10 @@ function renderBattle(s: GameState, logFrom: number): string {
         }
         return m
       }
+      // 庇う (Opus 灯と人形 C: CLI が庇われ中の敵を対象に受け付け、予告もその敵の実値を出していた=嘘): 護衛が生存中は
+      // 単体の予告を護衛の行だけにし、「単体対象は敵Gへ流れる」と書く (engine は対象ごと護衛へ流す)
+      const guardIdx = s.enemies.findIndex((en) => en.hp > 0 && getEnemyDef(en.enemyId).guardian === true)
+      const guardNote = (aoe: boolean): string => (!aoe && guardIdx >= 0 && s.enemies.filter((en) => en.hp > 0).length > 1 ? `（庇う: 単体対象は敵${guardIdx}へ流れる）` : '')
       const dmgNow = (() => {
         if (!plainDmg) return ''
         const idx = c.def.effects.indexOf(plainDmg)
@@ -498,6 +526,7 @@ function renderBattle(s: GameState, logFrom: number): string {
           // 粉砕を持つ札は自分の粉砕で敵ブロックが消えてからダメージが入る (2026-09-04 Opusラン M: 蔦の楔が常に0表示)
           .map((en, ei) => ({ en, ei, b: damageBreakdown(sm, ei, base, plainDmg.pierce === true || c.def.effects.some((e) => e.effect === 'shatterBlock')) }))
           .filter((x) => x.b !== null && x.b!.steps.length > 1)
+          .filter((x) => plainDmg.target === 'all' || guardIdx < 0 || x.ei === guardIdx)
           .map((x) => `敵${x.ei}:${x.b!.hpLoss}(${x.b!.steps.slice(1).map((st) => st.label).join('・')})`)
         // 放出分 (勢い×N・勢い加算は乗らない) を別立てで出す (P: 角の一突き 表示22/実際50)
         const dis = c.def.effects.find((e) => e.trigger === 'onPlay' && (e.effect === 'dischargeMomentumDamage' || e.effect === 'dischargeMomentumVolley'))
@@ -515,9 +544,77 @@ function renderBattle(s: GameState, logFrom: number): string {
           }
         }
         const selfNote = mom !== p.momentum ? `(この札の勢い加算込み=勢い${mom})` : ''
-        return (per.length > 0 ? ` ［実値: ${per.join(' / ')}${selfNote}${c.def.effects.filter((e) => e.effect === 'dealDamage').length > 1 ? '。先頭ヒット基準' : ''}］` : '') + disNote
+        // 灯 (白 2026-09-20): しきい値 (灯N以上) 付きの追加ヒットが今は入るかを併記 (Opus 白 B: 灼く光の2発目が実値に出ない)
+        const lightNow = p.light ?? 0
+        const condHits = c.def.effects.filter((e) => e !== plainDmg && e.effect === 'dealDamage' && e.condition?.minLight !== undefined)
+        const condNote = condHits.length > 0
+          ? condHits.map((e) => (lightNow >= (e.condition?.minLight ?? 0) ? `［灯${lightNow}≥${e.condition?.minLight}: 追加の${e.amount}ダメも入る］` : `［灯${lightNow}<${e.condition?.minLight}: 追加の${e.amount}ダメは入らない］`)).join('')
+          : ''
+        return (per.length > 0 ? ` ［実値: ${per.join(' / ')}${selfNote}${c.def.effects.filter((e) => e.effect === 'dealDamage').length > 1 ? '。先頭ヒット基準' : ''}${guardNote(plainDmg.target === 'all')}］` : '') + disNote + condNote
       })()
-      L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}${dmgNow}`)
+      // 灯の放出・号令の実値 (白 2026-09-20。Opus 白 A/B/C 3本一致「放出札に実値が無く毎ターン手で計算した」)
+      const lightNote = (() => {
+        const lightNow = p.light ?? 0
+        const retainers = p.permanents.filter((x) => x.def.retainer === true && x.innate !== true).length
+        const notes: string[] = []
+        for (const e of c.def.effects) {
+          if (e.trigger !== 'onPlay') continue
+          if (e.effect === 'dischargeLight') {
+            // 灯の輪 (回復6→放出) は回復の灯+1が先に乗る
+            const healsBefore = c.def.effects.slice(0, c.def.effects.indexOf(e)).filter((h) => h.effect === 'gainHp' && (h.amount ?? 0) > 0).length
+            const lt = lightNow + healsBefore
+            if (lt <= 0) { notes.push('［放出: 灯0=不発（灯は減らない）］'); continue }
+            const dd = lt * (e.amount ?? 0)
+            if (e.target === 'all') {
+              const perD = s.enemies
+                .map((_en, ei) => ({ ei, b: damageBreakdown(s, ei, dd, e.pierce === true) }))
+                .filter((x) => x.b !== null)
+                .map((x) => `敵${x.ei}:${x.b!.hpLoss}`)
+              notes.push(`［放出: 灯${lt}×${e.amount}=${dd}(全体・一括) → ${perD.join(' / ')}（成長・急所・装甲込み）］`)
+            } else {
+              // 単体は灯1につき1ヒット (2026-09-20 裁定)。ヒットごとに敵ブロックと急所を消費しながら灯回積む
+              // (Opus 火種A: 先頭ヒット基準だと敵ブロック8の前で ≈0 と出て、実際は残り4ヒット16が通っていた=嘘)
+              const perH = s.enemies
+                .map((en, ei) => {
+                  if (en.hp <= 0) return null
+                  let st: GameState = s
+                  let total = 0
+                  let first: number | null = null
+                  for (let h = 0; h < lt; h++) {
+                    const b = damageBreakdown(st, ei, e.amount ?? 0, e.pierce === true)
+                    if (b === null) break
+                    if (first === null) first = b.hpLoss
+                    total += b.hpLoss
+                    // 「敵ブロック-N」の段からこのヒットが吸わせたブロック N を読む (実処理と同じ順で減らす)
+                    const absorbedStep = b.steps.find((x) => x.label.startsWith('敵ブロック-'))
+                    const absorbed = absorbedStep ? Number(absorbedStep.label.slice('敵ブロック-'.length)) || 0 : 0
+                    st = { ...st, enemies: st.enemies.map((x, j) => (j === ei ? { ...x, block: Math.max(0, x.block - absorbed), exposed: Math.max(0, x.exposed - 1), hp: x.hp - b.hpLoss } : x)) }
+                    if (st.enemies[ei].hp <= 0) break
+                  }
+                  return { ei, total, first: first ?? 0 }
+                })
+                .filter((x): x is { ei: number; total: number; first: number } => x !== null)
+                .filter((x) => guardIdx < 0 || x.ei === guardIdx)
+                .map((x) => `敵${x.ei}:計${x.total}(先頭${x.first}〜)`)
+              notes.push(`［放出: ${e.amount}ダメ×灯${lt}回(装甲・成長はヒットごと・敵ブロックは順に削る) → ${perH.join(' / ')}${guardNote(false)}］`)
+            }
+          } else if (e.effect === 'dischargeLightRally') {
+            // 大行列は先に放出して灯0で動く (灯篭は暗い)。概算=1周×灯の回数 (Opus 灯と人形 B/C: 予告に合計が無い)
+            const rp = rallyPreview(s, 0)
+            const passes = lightNow * (e.amount ?? 1)
+            notes.push(lightNow <= 0 || retainers === 0 ? '［大行列: 灯0か人形0=不発］' : `［大行列: 灯${lightNow}×人形${retainers}体=各人形が${passes}回動く ≈与ダメ${rp.damage * passes}・ブロック${rp.block * passes}・回復${rp.heal * passes}（成長・アンセム込み。急所・装甲・ランダム対象は除く）］`)
+          } else if (e.effect === 'triggerRetainersNow') {
+            // 点灯の合図: 小さな人形を1体出してから号令 = 灯コストを払った後の灯で読む (灯篭はその灯を見る)
+            const summoned = c.def.effects.filter((x) => x.trigger === 'onPlay' && x.effect === 'summonPermanent').flatMap((x) => Array.from({ length: x.amount ?? 1 }, () => x.summonId ?? ''))
+            const rp = rallyPreview(s, lightNow - (c.def.lightCost ?? 0), summoned.filter((id) => id !== ''))
+            notes.push(`［号令: 人形${rp.count}体が今1回ずつ動く ≈与ダメ${rp.damage}・ブロック${rp.block}・回復${rp.heal}（成長・アンセム込み。急所・装甲・ランダム対象は除く）］`)
+          } else if (e.effect === 'doubleLight') {
+            notes.push(`［灯${lightNow}→${lightNow * 2}］`)
+          }
+        }
+        return notes.join('')
+      })()
+      L.push(` [${c.uid}] ${cardLine(c.def)}${costNote} 〈${marks || 'プレイ不可'}〉${xNow}${capNow}${dmgNow}${lightNote}`)
     }
   }
   if (s.phase === 'won') L.push(`★★ 勝利 ★★  ⚔️ 戦いの記録: ${summaryLine(battleSummary(s.eventLog))}`)
@@ -943,7 +1040,11 @@ if (mode === 'new-run') {
       const named = (cmd as { gear?: string }).gear
       if (typeof named === 'string') {
         const i = gearsOf(sf.run!).findIndex((g) => getGearDef(g.gearId).name === named)
-        if (i < 0) throw new Error(`持っていないギア: ${named}（持ち物: ${gearsOf(sf.run!).map((g) => getGearDef(g.gearId).name).join('・') || 'なし'}）`)
+        if (i < 0) {
+          // 他の不正なコマンドと同じ「エラー: 1行・exit 1」で返す (Opus 火種B: ここだけ生のスタックトレースだった)
+          console.log(`エラー: 持っていないギア: ${named}（持ち物: ${gearsOf(sf.run!).map((g) => getGearDef(g.gearId).name).join('・') || 'なし'}）`)
+          process.exit(1)
+        }
         ;(cmd as { index?: number }).index = i
       }
     }

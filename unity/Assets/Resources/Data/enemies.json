@@ -696,10 +696,6 @@
     "start": "wild_swing",
     "movesVsSet": [
       {
-        "to": "cautious_jab",
-        "weight": 2
-      },
-      {
         "to": "call_bluff",
         "weight": 1
       }

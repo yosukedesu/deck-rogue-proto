@@ -253,7 +253,7 @@ export function battleRowsFromJournal(journal: RunJournal): { rows: BattleRow[];
       boss: currentNode(prev)?.type === 'boss',
       result: c.phase === 'won' ? 'won' : 'lost',
       hpBefore: prev.hp,
-      hpAfter: c.player.hp,
+      hpAfter: Math.max(0, c.player.hp), // 敗北は致死ぶん負に沈む (Opus 灯と人形 B「12→-19」) = 0 で止める
       metrics: battleMetrics(c.eventLog),
     })
   }

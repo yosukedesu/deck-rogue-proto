@@ -184,8 +184,8 @@ describe('基礎体力の床 (docs/green-audit.md §5-3。カラーパイは本�
     expect(eligible.filter((c) => c.cost === 0 && c.xCost !== true).length).toBeGreaterThanOrEqual(3)
   })
 
-  it('他色: 現状の値を床として退行を防ぐ (キャントリップ/全体/0E。床の引き上げは各色の解凍時に)', () => {
-    const floors: Record<string, [number, number, number]> = { blue: [3, 4, 4], red: [4, 13, 5], white: [0, 2, 0], black: [1, 6, 5] }
+  it('他色: 現状の値を床として退行を防ぐ (キャントリップ/全体/0E。床の引き上げは各色の解凍時に。白は 2026-09-18 の仕上げで キャントリップ1・0E2)', () => {
+    const floors: Record<string, [number, number, number]> = { blue: [3, 4, 4], red: [4, 13, 5], white: [1, 2, 2], black: [1, 6, 5] }
     for (const [color, [cantrip, aoe, zero]] of Object.entries(floors)) {
       const p = pool(color)
       expect(p.filter(isCantrip).length, `${color} キャントリップ`).toBeGreaterThanOrEqual(cantrip)

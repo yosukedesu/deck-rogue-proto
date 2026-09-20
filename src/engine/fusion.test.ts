@@ -7,7 +7,7 @@ import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice
 import type { RunState } from './run.ts'
 import { applyCommand, createInitialState } from './state.ts'
 import { chooseToward, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
-import type { CardInstance, GameState } from './types.ts'
+import type { CardDef, CardInstance, DeclarativeEffect, GameState } from './types.ts'
 
 const inst = (id: string, uid = `t_${id}`): CardInstance => ({ uid, def: getCardDef(id) })
 
@@ -534,8 +534,8 @@ describe('合成の魅力の型 (2026-09-05 ユーザー裁定: 軸一致ボー�
 describe('手書きレシピの作り直し (2026-09-12 ユーザー裁定「上位15を全部採用」・docs/fusion-recipes-proposal.md)', () => {
   const recipes = fusionsJson as ReadonlyArray<{ a: string; b: string; result: { id: string; name: string; cost: number; type: string; effects: ReadonlyArray<{ effect: string }>; modes?: ReadonlyArray<unknown> } }>
 
-  it('レシピは24件 (既存9+新15)。素材は現行データに実在する = 死にレシピ (素材が撤去済み) を作らない', () => {
-    expect(recipes).toHaveLength(24)
+  it('レシピは30件 (既存9+新15+白6〔2026-09-18 白の仕上げ〕)。素材は現行データに実在する = 死にレシピ (素材が撤去済み) を作らない', () => {
+    expect(recipes).toHaveLength(30)
     const ids = new Set<string>()
     for (const r of recipes) {
       expect(() => getCardDef(r.a), `${r.result.name}: 素材 ${r.a}`).not.toThrow()
@@ -551,6 +551,70 @@ describe('手書きレシピの作り直し (2026-09-12 ユーザー裁定「上
       if (r.result.type === 'reaction') expect(r.result.cost).toBeLessThanOrEqual(2)
       expect(new Set(r.result.effects.map((e) => e.effect)).size, `${r.result.name}: 効果の種類は3まで (多段の行は同種)`).toBeLessThanOrEqual(3)
     }
+  })
+
+  it('レシピは同じ素材の計算合成に完全には負けない (2026-09-18 見直し: 旧9件がモデル変更前の値付けのままで、蔦車輪・暴走する荒角・炎蛇の牙は全項目で計算に劣っていた)', () => {
+    // 「完全に負ける」= コストが同じか高く、レシピの持つ量つき効果・0E条件・保持・非消滅を計算合成が全部同量以上で持つ。
+    // 形の対価 (選択式・置物化・守り成功参照) はここでは測れないので、机上の比較は `npm run fusion:table -- --recipes` で読む
+    type Bag = Map<string, number>
+    const bagOf = (d: CardDef, effects: readonly DeclarativeEffect[]): Bag => {
+      const bag: Bag = new Map()
+      const add = (k: string, v: number) => bag.set(k, (bag.get(k) ?? 0) + v)
+      let momentumSpent = false
+      for (const e of effects) {
+        // 放出は勢いを先に0にしてから解決 = 2つ目以降の放出は量0 (余勢の火移しの計算合成がこの形)
+        const discharge = e.effect.startsWith('dischargeMomentum')
+        const v = discharge && momentumSpent ? 0 : (e.amount ?? 1)
+        if (discharge) momentumSpent = true
+        add(`${e.trigger}:${e.effect}:${e.target ?? ''}:${JSON.stringify(e.condition ?? null)}`, v)
+      }
+      if (d.freeIfHandAllPhysical === true) add('free:physical', 1)
+      if (d.freeIfHandAll !== undefined) add(`free:${d.freeIfHandAll}`, 1) // 大城壁・聖光の構え (白) の条件0E
+      if (d.freeIfMomentumAtLeast !== undefined) add('free:momentum', 1)
+      if (d.retain === true) add('retain', 1)
+      if (d.xCost === true) add('x', 1)
+      if (d.exhaust !== true) add('noexhaust', 1)
+      return bag
+    }
+    const variants = (d: CardDef): Bag[] => (d.modes?.length ? d.modes.map((m) => bagOf(d, [...d.effects, ...m.effects])) : [bagOf(d, d.effects)])
+    const dominated = (r: Bag, c: Bag): boolean => [...r].every(([k, v]) => (c.get(k) ?? 0) >= v)
+    const bypass = (d: CardDef): CardInstance => ({ uid: `nr_${d.id}`, def: { ...d, id: `${d.id}__norecipe` } })
+    for (const r of fusionsJson as ReadonlyArray<{ a: string; b: string; result: CardDef }>) {
+      const calc = fuseCards(bypass(getCardDef(r.a)), bypass(getCardDef(r.b)))
+      const cost = (d: CardDef) => (d.xCost === true ? 3 : d.cost)
+      if (cost(calc) > cost(r.result)) continue
+      const rv = variants(r.result), cv = variants(calc)
+      const lose = rv.every((bag) => cv.some((cb) => dominated(bag, cb)))
+      expect(lose, `${r.result.name} (${r.a}×${r.b}) は計算合成 ${calc.name} に全項目で負けている`).toBe(false)
+    }
+  })
+
+  it('見直し8件の形 (2026-09-18): 蔦車輪は乱舞の型で0E条件つき／開花乱舞は2倍→(成長+1→3)×5／暴走する荒角は勢いを先に乗せて全ヒット貫通／若木の巨槌は保持／炎蛇の牙は1E／余勢の火移しは共通部に延焼2・ブロック4／見切りの楔は分岐／収穫の岐路は0E条件', () => {
+    const wheel = fuseCards(inst('green_growth_ring'), inst('green_double_lash'))
+    expect(wheel.cost).toBe(1)
+    expect(wheel.freeIfHandAllPhysical).toBe(true)
+    expect(wheel.effects.map((e) => `${e.effect}:${e.amount}`)).toEqual(['addGrowth:2', 'dealDamage:5', 'addGrowth:1', 'dealDamage:5', 'addGrowth:1'])
+    const dance = fuseCards(inst('green_sig_rite_of_bloom'), inst('green_sig_vine_dance'))
+    expect(dance.cost).toBe(3)
+    expect(dance.exhaust).toBe(true)
+    expect(dance.effects[0].effect).toBe('doubleGrowth')
+    expect(dance.effects.filter((e) => e.effect === 'addGrowth')).toHaveLength(5)
+    expect(dance.effects.filter((e) => e.effect === 'dealDamage').map((e) => e.amount)).toEqual([3, 3, 3, 3, 3])
+    const stampede = fuseCards(inst('green_trample_charge'), inst('green_tailwind'))
+    expect(stampede.freeIfMomentumAtLeast).toBe(5)
+    expect(stampede.effects[0]).toMatchObject({ effect: 'addMomentum', amount: 4 })
+    expect(stampede.effects.filter((e) => e.effect === 'dealDamage').every((e) => e.pierce === true)).toBe(true)
+    const maul = fuseCards(inst('green_ramp_sprout'), inst('green_finisher_stomp'))
+    expect(maul.retain).toBe(true)
+    expect(maul.effects[0]).toMatchObject({ effect: 'dealDamage', amount: 36 })
+    expect(fuseCards(inst('red_strike'), inst('red_ignite')).cost).toBe(1)
+    const shift = fuseCards(inst('red_fire_shift'), inst('red_ember_stance'))
+    expect(shift.effects.map((e) => `${e.effect}:${e.amount}`)).toEqual(['applyBurn:2', 'gainBlock:4'])
+    expect(shift.modes?.map((m) => m.effects.map((e) => e.effect).join())).toEqual(['dischargeMomentumBlock', 'dischargeMomentumBurn'])
+    const wedge = fuseCards(inst('green_vine_wedge'), inst('green_leaf_strike'))
+    expect(wedge.effects.find((e) => e.condition?.enemyIntent === 'defend')).toMatchObject({ effect: 'dealDamage', amount: 8 })
+    expect(wedge.effects.find((e) => e.condition?.enemyIntentNot === 'defend')).toMatchObject({ effect: 'addGrowth', amount: 1 })
+    expect(fuseCards(inst('green_growth_ring'), inst('green_bloom_lash')).freeIfHandAllPhysical).toBe(true)
   })
 
   it('スターター×スターター: 打撃×防御 → 素振り (1E・ブロック5・7ダメ・手札が全部物理なら0E)。鍛えた素材なら 素振り+ (8/11)', () => {

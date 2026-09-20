@@ -454,6 +454,28 @@ describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Hea
   })
 })
 
+describe('白も本家形で鍛える (2026-09-18 白の仕上げ・docs/white-finish-proposal-2026-09-18.md §2)', () => {
+  it('集結+ は置物×4→×5 (旧3段のおまけブロック4は使わない)', () => {
+    const up = upgradeCard({ uid: 't', def: getCardDef('white_rally') })
+    expect(up.def.effects.map((e) => [e.effect, e.amount])).toEqual([['dealDamagePerPermanent', 5]])
+    expect(up.def.cost).toBe(2)
+  })
+  it('呼び声+ は 1E のまま少年2体 (旧: 0E・1体)。光の裁き+ は威圧3+量+50% (単位+1と量+50%が同時。眩ます灯印は 2026-09-20 夜に撤去)', () => {
+    const call = upgradeCard({ uid: 't', def: getCardDef('white_calling') })
+    expect(call.def.cost).toBe(1)
+    expect(call.def.effects[0].amount).toBe(2)
+    const verdict = upgradeCard({ uid: 't', def: getCardDef('white_light_verdict') })
+    expect(verdict.def.effects.map((e) => e.amount)).toEqual([15, 3])
+  })
+  it('例外: 軍楽隊・恵光の使徒 (誘発ごとドローの置物) はコスト-1 (誘発ごと2ドローにしない)', () => {
+    for (const id of ['white_perm_band', 'white_perm_apostle']) {
+      const up = upgradeCard({ uid: 't', def: getCardDef(id) })
+      expect(up.def.cost, id).toBe(1)
+      expect(up.def.effects[0].amount, id).toBe(1)
+    }
+  })
+})
+
 describe('スターター札は報酬プールに出ない (2026-08-30 中立スターター化の追随)', () => {
   it('報酬候補にスターター4種 (打撃/打ち据え/防御/茨の返し) が出ない (守りの蔓は2026-09-03 本家形の初期デッキで報酬プールへ戻した)', () => {
     // 40戦ぶんの報酬を回して1枚も出ないことを確認する

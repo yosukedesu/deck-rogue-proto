@@ -9,7 +9,7 @@ import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } f
 import { resolveFusedDef } from './fusion.ts'
 import { applyDamageInterrupts, cardNeedsTarget, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
-import { applyDeathInterrupts, bindRedeclare, effectiveStrength, gainEnemyStrength, refreshIntentValues } from './effects.ts'
+import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -65,6 +65,7 @@ export function createInitialState(seed: number, reactionMode: ReactionMode): Ga
       weakFreshThisPhase: 0,
       cardsPlayedTotal: 0,
       aether: 0, // 霊気は戦闘内持続
+      light: 0, // 灯 (白 2026-09-20) は戦闘内持続
       healsThisCombat: 0,
       nextCardDiscount: 0,
       impulseUids: [],
@@ -346,8 +347,11 @@ function declareOne(state: GameState, i: number): GameState {
     return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
   }
   // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
-  // 被弾覚醒は被弾の瞬間にも判定している (effects.ts applyDamageInterrupts) = 旧 wakeOnDamage と同じ拍
-  const jumped = applyInterruptsTo(s, i, enemy.node, enemy.firedInterrupts ?? [])
+  // 被弾覚醒は被弾の瞬間にも判定している (effects.ts applyDamageInterrupts) = 旧 wakeOnDamage と同じ拍。
+  // ギア「鎮めの錘」(interruptBlocked) はこの経路でも止める (2026-09-20 Opus 火種C: 即時差し替えだけ止めて次の宣言で豹変していた)
+  const jumped = enemy.interruptBlocked === true
+    ? { cursor: enemy.node, fired: enemy.firedInterrupts ?? [], firedNow: [] as readonly number[] }
+    : applyInterruptsTo(s, i, enemy.node, enemy.firedInterrupts ?? [])
   // 反応テーブル (伏せ/従者) を持つ敵は、条件付き意図として両分岐を宣言時に確定する
   // (確定済みルール表「条件付き意図」。実行時の盤面で分岐 = プレイヤーが自ターン中に選べる)
   // 両テーブルを持つ敵 (罠壊し) は conditionalOn を1つしか持てないので、宣言時の盤面で片方を選ぶ。
@@ -728,6 +732,9 @@ export function playCard(
     card.def.xCost !== true &&
     card.freeThisCombat !== true // 屍集めの0E札は割引を消費しない (素の0Eと同じ扱い)
   if (cost > state.player.energy) throw new Error(`エナジー不足: ${card.def.name}`)
+  // 灯コスト (白 2026-09-20 号令): エナジーと別に払う。足りなければプレイ不可 (割引の対象外)
+  const lightCost = card.def.lightCost ?? 0
+  if (lightCost > (state.player.light ?? 0)) throw new Error(`灯が足りない: ${card.def.name} (灯${lightCost}が要る)`)
   // Xコスト: 支払った量を xHits 効果の繰り返し回数として展開する (多段ヒットと同じ解決)
   // Xコスト: 払う量は 1〜現在のエナジーから選ぶ (省略=全部。2026-09-03 上限4は同日撤廃=本家形で効率側を合わせた)
   const xCap = state.player.energy
@@ -969,6 +976,7 @@ export function playCard(
     player: {
       ...state.player,
       energy: state.player.energy - (card.def.xCost === true ? paidX : cost),
+      light: (state.player.light ?? 0) - lightCost, // 灯コスト (白 2026-09-20 号令)
       nextCardDiscount: consumesDiscount ? 0 : state.player.nextCardDiscount,
       hand: state.player.hand.filter((c) => !removed.has(c.uid)),
       // プレイ中のカードはまだ捨て札に置かない (limbo)。効果解決中のドローが捨て札を
@@ -990,22 +998,22 @@ export function playCard(
     s = emit(s, { type: 'CardsDiscarded', cardIds: discardedCards.map((c) => c.def.id) })
   }
   s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
+  // 灯コストの支払いをログに残す (2026-09-20 夜。Opus 灯と人形 A/B/C 3本一致「灯が黙って減る」)
+  if (lightCost > 0) s = emit(s, { type: 'LightSpent', amount: lightCost, cardId: card.def.id })
   if (redirectedFrom !== undefined) {
     // 庇う (2026-09-02 検証ラン「リダイレクトが無言で起きる」への処方): 発生を必ずログに残す
     s = emit(s, { type: 'GuardianRedirected', fromIndex: redirectedFrom, toIndex: enemyIndex })
   }
   if (isPermanent) {
-    s = { ...s, lastEnteredPermanentUid: card.uid } // 駆けつけ (ひなた) が「誰が出たか」を読む
-    s = emit(s, { type: 'PermanentPlayed', cardId: card.def.id })
-    // 置物登場の誘発 (白の接着剤)。自身の登場にも誘発する (確定済みルール表「消滅の誘発」系)
-    s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+    // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
+    s = enterPermanent(s, card.uid, enemyIndex)
   }
   if (sacrificed !== null) {
     // 殉教 (白 2026-09-06): 選んだ従者を場から除く。自分で壊す従者狩り = 敵の destroy-token と同じ結果で、
     // 伏せ破壊の罰系 (onSetDestroyed) とは無関係。置物が出た直後 (登場誘発の後)・効果解決の前に行う
     const gone = sacrificed
     s = { ...s, player: { ...s.player, permanents: s.player.permanents.filter((p) => p.uid !== gone.uid) } }
-    s = emit(s, { type: 'RetainerSacrificed', cardId: gone.def.id })
+    s = emit(s, { type: 'RetainerSacrificed', cardId: gone.def.id, uid: gone.uid })
   }
   // 消滅コストの支払い: 支払い専用誘発 (闇市の帳簿) → 消滅誘発 (亡者の合唱) の順で1枚ごとに発火
   for (const paid of exhaustedCards) {
@@ -1045,7 +1053,8 @@ export function playCard(
     }
     for (const c of s.player.hand.filter((c) => set.has(c.uid))) s = emit(s, { type: 'CardUpgradedInHand', cardId: c.def.id })
   }
-  if (card.def.effects.some((e) => e.effect === 'upgradeAllInHand' && e.trigger === 'onPlay')) {
+  // 灯の鍛冶 (白 2026-09-20 夜): 条件 (灯4以上) は解決時に判定 = 他の効果と同じ blazeConditionMet を読む
+  if (card.def.effects.some((e) => e.effect === 'upgradeAllInHand' && e.trigger === 'onPlay' && blazeConditionMet(s, e, enemyIndex))) {
     // 研ぎ澄まし (2026-09-07 ピック監査=本家 Armaments+): 自身以外の鍛えられる手札を全部、この戦闘中鍛える (選択なし)
     const targets = s.player.hand.filter((c) => c.uid !== card.uid && canUpgradeInHand(c))
     const all = new Set(targets.map((c) => c.uid))
@@ -1126,6 +1135,11 @@ export function playCard(
     }
     s = runPermanentTriggers(s, 'onRandomPlayed', enemyIndex)
   }
+  // 火種 (白 2026-09-20 夜。本家 Soul の白版): 撃った枚数を数え (火種の嵐が参照)、「火種を撃つたび」(火の粉・灯の継ぎ手) を鳴らす
+  if (card.def.sparkToken === true) {
+    s = { ...s, player: { ...s.player, sparksPlayedThisCombat: (s.player.sparksPlayedThisCombat ?? 0) + 1 } }
+    s = runPermanentTriggers(s, 'onSparkPlayed', enemyIndex)
+  }
   // 詠唱数 (ストーム参照) は効果解決の後に加算する = そのカード自身は数えない。
   // 直接プレイ (死者再生) より先に加算する = 直接プレイされるカードから見て再生自身は「先にプレイされた1枚」
   s = {
@@ -1203,10 +1217,8 @@ export function playCard(
             exhaustPile: s.player.exhaustPile.filter((c) => c.uid !== retrieveUid),
             permanents: [...s.player.permanents, chosen],
           },
-          lastEnteredPermanentUid: chosen.uid,
         }
-        s = emit(s, { type: 'PermanentPlayed', cardId: chosen.def.id })
-        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+        s = enterPermanent(s, chosen.uid, enemyIndex) // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
       }
       s = emit(s, { type: 'CardPlayed', cardId: chosen.def.id })
       s = resolveOnPlayEffects(s, chosen, enemyIndex)
@@ -1295,12 +1307,15 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
 }
 
 /** EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する */
-export function endTurn(state: GameState): GameState {
+export function endTurn(state: GameState, hearthSparks?: number): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
-  let s = emit({ ...state, enemyPhase: true as const }, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
+  if (hearthSparks !== undefined && (!Number.isInteger(hearthSparks) || hearthSparks < 0)) throw new Error(`hearthSparks は 0 以上の整数 (hearthSparks=${hearthSparks})`)
+  // 灯の火床 (2026-09-20 夜 ユーザー裁定「枚数を選ぶ」): この EndTurn で灯を火種に変える枚数。onTurnEnd の間だけ立てて消す
+  let s = emit({ ...state, enemyPhase: true as const, hearthSparks: hearthSparks ?? 0 }, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
   // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
   // 勢いのリセット・弱体の減衰より前 = このターンの盤面 (ブロック0・攻撃なし・プレイ枚数) を読む
   s = runPermanentTriggers(s, 'onTurnEnd', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  s = { ...s, hearthSparks: undefined }
   s = checkCombatEnd(s) // 石の暦 (7ターン目の終了時に全体52) で全滅しうる
   if (isOver(s)) return s
   // 勢いは自ターン終了時にリセット (確定済みルール表「勢い」)。
@@ -2020,7 +2035,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           permanents: state.player.permanents.filter((p) => p.uid !== target.uid),
         },
       }
-      s = emit(s, { type: 'TokenDestroyed', cardId: target.def.id })
+      s = emit(s, { type: 'TokenDestroyed', cardId: target.def.id, uid: target.uid })
       return markResolved(s, 0)
     }
     case 'destroy-set': {

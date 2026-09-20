@@ -1,0 +1,30 @@
+{
+ "id": "gear_spring__7",
+ "engine": "pixflux",
+ "request": {
+  "description": "a large flat brass clock mainspring coiled in a tight spiral of five turns that fills the whole frame, a small black-iron pin at its center, the outer end of the coil curling loose, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, clock face, numbers",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 7
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-18T06:08:07.857Z",
+ "judge": {
+  "pick": "A",
+  "seed": 7,
+  "at": "2026-09-18",
+  "note": "初回 (23/41) は渦が小さすぎ → 枠いっぱいの渦で作り直し"
+ }
+}

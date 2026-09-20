@@ -1,9 +1,9 @@
 {
- "id": "enemy_set_wary__41",
+ "id": "enemy_set_wary",
  "engine": "pixflux",
  "request": {
-  "description": "a small pale WISP of mist shaped like a rounded drop with soft dissolving edges, half hidden behind an upturned wooden ore bucket, only its top rising over the rim, leaning back as if hesitating, a rusted tin lantern with its shutter nearly closed set on the ground, a frayed rope coiled beside the bucket, no face, no limbs, pixel art in the style of a gentle watercolor picture book illustration of the faint remains of a miner who never came back: a small floating pale translucent wisp or shroud shape with soft dissolving edges, no face, no limbs, faintly glowing from within, carrying one small mining prop, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin soft outline, low contrast",
-  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, face, eyes, arms, legs, hands, body, torso, robe, cloak, figure, silhouette of a person, person hiding, child, face, eyes, mouth, arms, hands, legs, hooded figure, sheet ghost, shadow person, silhouette of a man",
+  "description": "a shadow shaped like a small crouching CAT with its back arched and a long tail curling up, hunched low as if about to bolt, pixel art in the style of a gentle watercolor picture book illustration of a living SHADOW: the whole body is a flat dark ink-black silhouette, semi-transparent with a faint dusty blue-violet tint, its edges dissolving into soft smoky wisps that trail off, no fur texture, no mouth, no nose, no cheeks, the only detail is two small pale round softly glowing eyes, quiet and watchful, palette of ink black, dusty blue-grey, faded violet and cream, thin soft outline, low contrast, transparent background",
+  "negative_description": "human, humanoid, person, child, doll, hair, hood, clothes, figure, silhouette of a person, solid animal, fur texture, fluffy, plush, rabbit, bunny, mouse, cat face, rosy cheeks, pink, mouth, teeth, fangs, claws, red eyes, glowing eyes, fire, smoke cloud only, grass, ground, floor, scene, background, gradient background, colorful, bright saturated colors, blurry, text, watermark, side profile",
   "image_size": {
    "width": 64,
    "height": 64
@@ -11,7 +11,7 @@
   "text_guidance_scale": 9,
   "no_background": true,
   "outline": "selective outline",
-  "shading": "basic shading",
+  "shading": "medium shading",
   "detail": "highly detailed",
   "view": "low top-down",
   "direction": "south-west",
@@ -21,10 +21,11 @@
   "type": "generations",
   "generations": 1
  },
- "at": "2026-09-10T20:21:57.921Z",
+ "at": "2026-09-18T05:46:23.876Z",
  "judge": {
   "pick": "B",
   "seed": 41,
-  "at": "2026-09-11"
+  "at": "2026-09-18",
+  "note": "2026-09-18 作り直し (人間ラン#14「見た目がうんこすぎる」)。第3ラウンド「影そのもの」S1 うずくまる影をユーザーが選択"
  }
 }

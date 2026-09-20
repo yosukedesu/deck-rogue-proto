@@ -1,0 +1,21 @@
+[
+ {"id": "white_spark_token", "pick": "A", "passed": true, "problem": "743=作業台の小さな火。757 は大きな炎"},
+ {"id": "white_spark_scatter", "pick": "B", "passed": true, "problem": "787=廊下に散った小さな火。769 は一塊の火"},
+ {"id": "white_spark_shield", "pick": "B", "passed": true, "problem": "821=盾の足元に小さな燠。中心の燠は出なかった"},
+ {"id": "white_spark_burst", "pick": "B", "passed": true, "problem": "853=金床から右へ火花。839 は炎"},
+ {"id": "white_spark_kindling", "pick": "B", "passed": true, "problem": "887=火皿から立ちのぼる火柱"},
+ {"id": "white_perm_spark_furnace", "pick": "B", "passed": true, "problem": "919=扉の開いた真鍮のストーブから燠がひとつ"},
+ {"id": "white_spark_kindle", "pick": "A", "passed": true, "problem": "937=傾いたランタンの火が藁に移る"},
+ {"id": "white_perm_spark_hearth", "pick": "B", "passed": true, "problem": "989=火床から燠が落ちる"},
+ {"id": "white_spark_storm", "pick": "A", "seed": 1441, "passed": true, "problem": "1003/1021/1401/1423 は洞窟に外套の人物が出た → 接写に変えて 1441=作業台で噴き上がる燠の嵐"},
+ {"id": "white_perm_embers", "pick": "B", "passed": true, "problem": "1051=岩に落ちた火の粉"},
+ {"id": "white_perm_spark_relay", "pick": "B", "passed": true, "problem": "1087=灯の連なりと松明を掲げる人形 (顔なし)"},
+ {"id": "white_light_wall", "pick": "A", "passed": true, "problem": "1103=灯の列から立つ光の壁"},
+ {"id": "white_light_flash", "pick": "B", "passed": true, "problem": "1147=ランタンの閃光の柱"},
+ {"id": "white_light_forge", "pick": "A", "passed": true, "problem": "1163=槌と札の板とランタン"},
+ {"id": "white_light_ledger", "pick": "A", "passed": true, "problem": "1193=真鍮綴じの手帳とランタン"},
+ {"id": "white_perm_embers_last", "pick": "A", "passed": true, "problem": "1229=消えかけのランタンの底の燠と煙"},
+ {"id": "white_perm_great_furnace", "pick": "B", "passed": true, "problem": "1277=大炉の前に並ぶ灯"},
+ {"id": "white_light_maul", "pick": "A", "passed": true, "problem": "1291=火花を散らす大槌"},
+ {"id": "white_perm_fire_dish", "pick": "B", "passed": true, "problem": "1337=火皿と浮く紙"}
+]

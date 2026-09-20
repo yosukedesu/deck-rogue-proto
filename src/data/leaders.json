@@ -97,13 +97,15 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_white",
     "sprite": "☀️",
-    "description": "光耀の聖歌士。光耀の里の工房の出。歌に呼ばれて従者が駆けつける。従者が場に出た時、その従者のターン開始効果をすぐに1回解決する",
+    "description": "光耀の灯匠。光耀の里の工房の出。毎ターン開始時に灯+1（灯は回復するたびにも溜まり、号令と放出で吐く白の蓄積。人形は灯を使う側＝灯を払って出し、灯で号令をかける）",
     "passive": [
       {
-        "trigger": "onPermanentEntered",
-        "effect": "activateEnteredRetainer"
+        "trigger": "onTurnStart",
+        "effect": "addLight",
+        "amount": 1
       }
-    ]
+    ],
+    "setSlots": 2
   },
   {
     "id": "leader_black",

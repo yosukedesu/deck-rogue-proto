@@ -158,6 +158,20 @@ namespace DeckRogue.Game
                     b = Buf(0.3f);
                     Tone(b, 0f, 700f, 1400f, 0.25f, "sine", 0.005f, 0.15f, 0.5f);
                     return Finish(name, b, 0.6f);
+                case "light_gain":
+                    // 灯を得た (2026-09-20 灯籠): 小さな鈴。heal の系より高く短い
+                    b = Buf(0.42f);
+                    Tone(b, 0f, 1760f, 1760f, 0.32f, "sine", 0.003f, 0.24f, 0.4f);
+                    Tone(b, 0f, 2637f, 2637f, 0.18f, "sine", 0.003f, 0.12f, 0.16f);
+                    Tone(b, 0.05f, 2217f, 2217f, 0.26f, "tri", 0.005f, 0.18f, 0.12f);
+                    return Finish(name, b, 0.55f);
+                case "light_burst":
+                    // 放出 (2026-09-20 灯籠): 炎が抜ける吹き音＝上へ抜けるノイズと鈴の残り
+                    b = Buf(0.5f);
+                    Noise(b, 0f, 0.42f, 0.01f, 0.3f, 0.35f, 0.7f, rng);
+                    Tone(b, 0f, 600f, 2400f, 0.3f, "sine", 0.005f, 0.2f, 0.35f);
+                    Tone(b, 0.1f, 1760f, 1760f, 0.3f, "sine", 0.005f, 0.22f, 0.2f);
+                    return Finish(name, b, 0.7f);
                 case "death":
                     b = Buf(0.7f);
                     Tone(b, 0f, 400f, 60f, 0.6f, "square", 0.005f, 0.4f, 0.5f);

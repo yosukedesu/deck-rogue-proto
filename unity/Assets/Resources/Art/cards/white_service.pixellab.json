@@ -1,0 +1,30 @@
+{
+ "id": "white_service",
+ "engine": "pixflux",
+ "request": {
+  "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, two brass candlesticks on a wooden shelf of an inn, a small flame being passed from the lit one to the unlit one, the new wick just catching light, close-up",
+  "negative_description": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, hands",
+  "image_size": {
+   "width": 80,
+   "height": 48
+  },
+  "text_guidance_scale": 8,
+  "no_background": false,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 207
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-18T18:12:03.295Z",
+ "judge": {
+  "pick": "B",
+  "seed": 207,
+  "at": "2026-09-19",
+  "note": ""
+ }
+}

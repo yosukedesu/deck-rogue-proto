@@ -120,9 +120,12 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerAttackPlayed',
     'dealDamagePerWeak',
     'dealDamagePerMomentum',
+    'dealDamagePerLight',
+    'dealDamagePerSpark',
     'dealDamagePerHeal',
     'recycleExhaust',
     'dischargeAether',
+    'dischargeLight',
     'dischargeGrowth',
     'dealDamageCleave',
     'dealDamagePerBlock',
@@ -152,7 +155,10 @@ const ENEMY_TARGETED = new Set([
   'dealDamagePerCardPlayedTotal',
   'dealDamagePerEnergyMax',
   'dealDamagePerMomentum',
+  'dealDamagePerLight',
+  'dealDamagePerSpark',
   'dischargeAether',
+  'dischargeLight',
   'applyBurn',
   'shatterBlock',
   'confuse',
@@ -198,6 +204,79 @@ export function cardNeedsTarget(card: CardInstance, modeIndex?: number): boolean
  * 置物は判断を挟まず自動で発火する (発動/温存の確認があるのは伏せカードのみ)。
  * hooks.ts から移設: 回復・HP損失・消滅の誘発 (黒の接着剤置物) を効果解決の内側から発火させるため。
  */
+/** アンセム (blessRetainers) が底上げする従者の効果 = ダメージ・ブロック・回復の量だけ (2026-09-20 夜 裁定) */
+export const ANTHEM_EFFECTS: ReadonlySet<string> = new Set(['dealDamage', 'dealDamageRandom', 'dealDamageCleave', 'dealDamageDrain', 'gainBlock', 'gainIceBlock', 'gainHp'])
+
+/**
+ * 放出の後処理 (白 2026-09-20 夜): 残り火 (lightCarryHalf) があれば放出した灯の半分 (切り捨て) が残り、
+ * 「灯を放出するたび」(onLightDischarged=灯の火皿) を1回鳴らす。dischargeLight/Rally/Weaken が共用。consumeLight は通らない
+ */
+function afterLightDischarge(state: GameState, spent: number, enemyIndex: number): GameState {
+  const carry = state.player.permanents.some((p) => p.def.effects.some((e) => e.effect === 'lightCarryHalf'))
+  let s: GameState = state
+  if (carry && spent >= 2) {
+    const kept = Math.floor(spent / 2)
+    s = { ...s, player: { ...s.player, light: (s.player.light ?? 0) + kept } }
+    s = emit(s, { type: 'LightGained', amount: kept, source: 'carry' })
+  }
+  return runPermanentTriggers(s, 'onLightDischarged', enemyIndex)
+}
+
+/**
+ * 灯の火床 (2026-09-20 夜「枚数を選ぶ」): このターン終了時に灯を火種に変えられる最大枚数 (火床が場に無ければ 0)。
+ * EndTurn.hearthSparks の上限 = UI/CLI/ボットが共有する
+ */
+export function hearthSparkMax(state: GameState): number {
+  const hearth = state.player.permanents.flatMap((p) => p.def.effects.filter((e) => e.trigger === 'onTurnEnd' && e.effect === 'lightToSparks'))
+  if (hearth.length === 0) return 0
+  const per = Math.max(1, hearth[0].amount ?? 3)
+  return Math.floor((state.player.light ?? 0) / per)
+}
+
+/** 場のアンセム (blessRetainers) の合計 */
+export function anthemTotal(state: GameState): number {
+  return state.player.permanents.reduce(
+    (a, p) => a + p.def.effects.filter((e) => e.effect === 'blessRetainers').reduce((x, e) => x + (e.amount ?? 0), 0),
+    0,
+  )
+}
+
+/**
+ * 号令・大行列の予告 (表示専用の純関数。2026-09-20 夜 Opus 灯と人形 B/C「号令の予告に与ダメ・ブロックの合計が無い」):
+ * 場の人形 (retainer・innate除く) が1回ずつ動いた時の与ダメ・ブロック・回復の概算。登場ごと・onPlay は動かない (rallyRetainers と同じ集合)。
+ * ダメージはアンセム＋成長込み (急所・装甲・敵ブロック・ランダム対象は見ない)。`lightAfter` は解決時の灯 (灯篭が読む)、
+ * `extraIds` は解決前に出る人形 (点灯の合図の小さな人形)。実処理と同じ式: ANTHEM_EFFECTS・playerDamageAfterModifiers・floor(灯/2)
+ */
+export function rallyPreview(
+  state: GameState,
+  lightAfter: number,
+  extraIds: readonly string[] = [],
+): { count: number; damage: number; block: number; heal: number } {
+  const anthem = anthemTotal(state)
+  const defs = [
+    ...state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).map((p) => p.def),
+    ...extraIds.map((id) => getCardDef(id)),
+  ]
+  let damage = 0
+  let block = 0
+  let heal = 0
+  const alive = Math.max(1, state.enemies.filter((e) => e.hp > 0).length)
+  for (const def of defs) {
+    for (const e of def.effects) {
+      if (e.trigger === 'onPermanentEntered' || e.trigger === 'onPlay') continue
+      const amount = (e.amount ?? 0) + (ANTHEM_EFFECTS.has(e.effect) && e.amount !== undefined ? anthem : 0)
+      const aoe = e.target === 'all' ? alive : 1
+      if (e.effect === 'dealDamage') damage += playerDamageAfterModifiers(state, amount) * aoe
+      else if (e.effect === 'dealDamagePerLight') {
+        const lit = Math.floor(Math.max(0, lightAfter) / 2) * (e.amount ?? 1)
+        if (lit > 0) damage += playerDamageAfterModifiers(state, lit) * aoe
+      } else if (e.effect === 'gainBlock') block += amount
+      else if (e.effect === 'gainHp') heal += amount
+    }
+  }
+  return { count: defs.length, damage, block, heal }
+}
+
 export function runPermanentTriggers(
   state: GameState,
   trigger: DeclarativeEffect['trigger'],
@@ -213,6 +292,7 @@ export function runPermanentTriggers(
   // カードのプレイ中に誘発した置物 (攻撃ごと・成長/勢いを得るたび…) の効果は「カードのプレイ」ではない:
   // 虚弱の25%減も勢いの加算も受けない (2026-09-05。旧実装は親のプレイのフラグが立ったままだった)
   const prevCardPlay = state.resolvingCardPlay === true
+  const prevPermanentUid = state.resolvingPermanentUid
   let s: GameState = { ...state, resolvingCardPlay: false }
   // アンセム (白 2026-08-31): blessRetainers 持ち置物の合計ぶん、従者 (retainer) の量つき効果を底上げする
   const anthem = state.player.permanents.reduce(
@@ -249,20 +329,35 @@ export function runPermanentTriggers(
           const fires = effect.once !== undefined ? n === 1 : n % (effect.every ?? 1) === 0
           if (!fires) continue
         }
+        // アンセムが乗るのはダメージ・ブロック・回復の量だけ (2026-09-20 夜 ユーザー裁定。Opus 灯と人形 A/B: 灯芯の「灯+1」が+3、
+        // 灯篭の「灯2につき1」が「灯2につき3」、鐘の「1ドロー」が3ドローに化けていた = 率・灯・ドローは対象外)
         const boosted =
-          anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined
+          anthem > 0 && permanent.def.retainer === true && effect.amount !== undefined && ANTHEM_EFFECTS.has(effect.effect)
             ? { ...effect, amount: effect.amount + anthem }
             : effect
         // innate置物 (リーダーパッシブ・レリック) の解決中は鬼軍曹の怒りを立てない
         // (2026-08-31 焚べ型ラン: みぞれの自動氷壁が止められない怒り=「みぞれは戦うな」に
         // なっていた。怒りはプレイヤーが選んだカード由来の守りにだけ反応する)
         const isInnate = permanent.innate === true
+        // 誰の誘発かを出来事に載せる (人形の盤面表示 2026-09-19: DamageDealt/BlockGained/HpHealed の sourceUid)。ルールは読まない
+        s = { ...s, resolvingPermanentUid: permanent.uid }
+        // 人形 (retainer・innate除く) の単体ダメージはランダムな生存敵へ (白 2026-09-20 ユーザー裁定「人形はランダム対象」。
+        // 旧: 生存先頭固定＝護衛や開幕ブロック持ちに丸ごと吸われていた)。生存2体以上の時だけ RNG を1回消費 (ソロ戦のゴールデン不変)
+        let target = alive
+        if (permanent.def.retainer === true && permanent.innate !== true && isDamageEffect(boosted) && boosted.target !== 'all') {
+          const aliveIdx = s.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
+          if (aliveIdx.length > 1) {
+            const [k, rng] = nextInt(s.rng, 0, aliveIdx.length - 1)
+            s = { ...s, rng }
+            target = aliveIdx[k]
+          }
+        }
         // 反復内蔵の置物 (反復の触媒 2026-09-12): 誘発ごとに効果を2回解決
         for (let rep = 0; rep < (permanent.def.echo === true ? 2 : 1); rep++) {
           let next = resolveEffectTargeted(
             isInnate ? { ...s, innateResolving: true } : s,
             boosted,
-            alive,
+            target,
           )
           if (isInnate) next = { ...next, innateResolving: false }
           s = next
@@ -270,7 +365,7 @@ export function runPermanentTriggers(
       }
     }
   }
-  return { ...s, resolvingCardPlay: prevCardPlay }
+  return { ...s, resolvingCardPlay: prevCardPlay, resolvingPermanentUid: prevPermanentUid }
 }
 
 /**
@@ -280,6 +375,11 @@ export function runPermanentTriggers(
  * 回復量0の効果 (ドレインの与ダメ0など) は「回復していない」ので誘発しない。
  * 誘発側の効果は回復を含まない前提 = 再帰しない (回復する onHealed 置物は設計禁止)。
  */
+/** 置物の誘発の中なら、その置物の uid を出来事に添える (人形の盤面表示 2026-09-19。ルールは読まない) */
+function sourceUidOf(state: GameState): { sourceUid?: string } {
+  return state.resolvingPermanentUid !== undefined ? { sourceUid: state.resolvingPermanentUid } : {}
+}
+
 export function healPlayer(state: GameState, amount: number, enemyIndex: number): GameState {
   if (amount <= 0) return state
   const healed = Math.min(amount, state.player.maxHp - state.player.hp)
@@ -294,8 +394,71 @@ export function healPlayer(state: GameState, amount: number, enemyIndex: number)
       healsThisTurn: (state.player.healsThisTurn ?? 0) + (state.resolvingCardPlay === true ? 1 : 0),
     },
   }
-  s = emit(s, { type: 'HpHealed', amount: healed })
-  return runPermanentTriggers(s, 'onHealed', enemyIndex)
+  s = emit(s, { type: 'HpHealed', amount: healed, ...sourceUidOf(state) })
+  s = runPermanentTriggers(s, 'onHealed', enemyIndex)
+  // 灯 (白 2026-09-20 白の再設計): 回復するたび灯+1。過剰回復でも溜まる (onHealed と同じ回数論) = 満タンで回復札が死なない
+  return gainLight(s, 1, 'heal', enemyIndex)
+}
+
+/**
+ * 灯+N (白 2026-09-20 白の再設計)。回復・人形の登場・ひなたのパッシブ・明示の札 (addLight/doubleLight) の全経路がここを通る。
+ * 獲得の誘発 (onLightGained=灯の弩) は1段 (onGrowthGained と同型)
+ */
+export function gainLight(state: GameState, amount: number, source: 'heal' | 'retainer' | 'passive' | 'card', enemyIndex: number): GameState {
+  if (amount <= 0) return state
+  // 号令・大行列で人形を動かしている間は灯を産まない (2026-09-20 ユーザー裁定。灯芯の人形が大行列の中で鳴り「全て放出」の直後に灯が戻っていた)
+  if (state.suppressLightGain === true) return state
+  let s: GameState = { ...state, player: { ...state.player, light: (state.player.light ?? 0) + amount } }
+  s = emit(s, { type: 'LightGained', amount, source, ...sourceUidOf(state) })
+  return fireGainTrigger(s, 'onLightGained', enemyIndex)
+}
+
+/**
+ * 置物が場に出た (プレイ・点灯=召喚・分列・直接プレイの全経路)。登場誘発 (onPermanentEntered) を回し、
+ * 人形 (retainer・innate除く) なら **点灯の定義** (白共通ルール 2026-09-20。旧・ひなたの駆けつけ 2026-09-06 を格上げ):
+ * その人形の効果 (登場ごとを除く全トリガー) をすぐに1回ずつ解決する。1登場=1回 (リニア)。登場で灯は増えない (2026-09-20 夜 廃止)。
+ * 鐘・大鐘の登場ごと効果は自分の登場でもとから鳴るので二重にしない。従者以外の置物 (道具・オーラ) は登場誘発だけ。
+ * `only` は登場誘発を絞る (分列の複製同士は互いの登場に反応しない)
+ */
+export function enterPermanent(
+  state: GameState,
+  uid: string,
+  enemyIndex: number,
+  only?: (permanent: CardInstance) => boolean,
+): GameState {
+  const entered = state.player.permanents.find((p) => p.uid === uid)
+  if (!entered) return state
+  let s: GameState = { ...state, lastEnteredPermanentUid: uid }
+  s = emit(s, { type: 'PermanentPlayed', cardId: entered.def.id })
+  s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex, only)
+  if (entered.def.retainer !== true || entered.innate === true) return s
+  // 登場の灯+1 (旧・供給③) は廃止 (2026-09-20 夜 ユーザー裁定。Opus 灯と人形 A/B/C: 灯→人形 (灯コスト) と 人形→灯 (登場+1) の
+  // 輪で「列1枚で灯2が戻る」= 灯2が天秤に載らない)。人形は灯を使う側で、灯を灯すのは灯芯・燭・癒し・手当て (回復) の人形だけ
+  // onPlay は playCard が解決済み (工房産の人形が持ちうる。2026-09-20) = 点灯では回さない
+  const triggers = [...new Set(entered.def.effects.map((e) => e.trigger).filter((tr) => tr !== 'onPermanentEntered' && tr !== 'onPlay'))]
+  if (triggers.length === 0) return s // 登場ごとの効果しか持たない人形 (鐘・大鐘) は自分の登場でもとから鳴る = 二重にしない
+  for (const tr of triggers) s = runPermanentTriggers(s, tr, enemyIndex, (p) => p.uid === uid)
+  return emit(s, { type: 'RetainerRushed', cardId: entered.def.id })
+}
+
+/**
+ * 号令 (白 2026-09-20): 場の人形 (retainer・innate除く) の効果を、トリガーを問わず (登場ごとを除く) 今すぐ1回ずつ解決する
+ * (点灯の定義と同じ集合。アンセム込み)。点灯の合図 (1E・灯2) と 灯火の大行列 (灯1につき1回) が使う
+ */
+function rallyRetainers(state: GameState, enemyIndex: number): GameState {
+  const isRetainer = (p: CardInstance): boolean => p.def.retainer === true && p.innate !== true
+  const triggers = [
+    ...new Set(
+      state.player.permanents
+        .filter(isRetainer)
+        .flatMap((p) => p.def.effects.map((e) => e.trigger))
+        .filter((tr) => tr !== 'onPermanentEntered' && tr !== 'onPlay'), // onPlay (工房産の人形) はプレイ時に解決済み
+    ),
+  ]
+  const prev = state.suppressLightGain === true
+  let s: GameState = { ...state, suppressLightGain: true } // 号令の中では灯を産まない (2026-09-20 裁定)
+  for (const tr of triggers) s = runPermanentTriggers(s, tr, enemyIndex, isRetainer)
+  return { ...s, suppressLightGain: prev }
 }
 
 /**
@@ -333,7 +496,7 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
     amount = Math.max(1, Math.floor(amount * 0.75))
   }
   let s: GameState = { ...state, player: { ...state.player, block: state.player.block + amount } }
-  s = emit(s, { type: 'BlockGained', target: 'player', amount })
+  s = emit(s, { type: 'BlockGained', target: 'player', amount, ...sourceUidOf(state) })
   s = angerGuardWatchers(s)
   return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
 }
@@ -483,9 +646,12 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     if (c.blaze === true && !isBlazing(state)) return false
     if (c.minGrowth !== undefined && state.player.growth < c.minGrowth) return false
     if (c.minMomentum !== undefined && state.player.momentum < c.minMomentum) return false
+    if (c.minLight !== undefined && (state.player.light ?? 0) < c.minLight) return false
     if (c.minEnergyMax !== undefined && (state.player.energyMaxAtTurnStart ?? state.player.energyMax) < c.minEnergyMax) return false
     // 行動種別の条件 (共鳴する茨 2026-09-07): 強化・応援だけを打ち消す限定リアクション
     if (c.actionKinds !== undefined && !c.actionKinds.includes(win.kind)) return false
+    // 行動種別の除外 (聖罰の障壁 2026-09-18): 攻撃以外の行動 (守り・強化・応援・回復・召喚・隙…) で鳴る
+    if (c.actionKindsNot !== undefined && c.actionKindsNot.includes(win.kind)) return false
     if (c.healedThisTurn === true && (state.player.healsThisTurn ?? 0) <= 0) return false
     return true
   })
@@ -701,8 +867,23 @@ export function playerDamageAfterModifiers(state: GameState, baseAmount: number)
  */
 export function setCardLiveDamage(state: GameState, def: CardDef, enemyIndex?: number): string | null {
   const vals: string[] = []
+  // 確認の窓では効果ごとの窓条件を実処理 (resolveReactionEffects) と同じに読む (2026-09-18 Opus 白C: 報復の光の「完全に凌いだ時+10」が
+  // 不成立でも窓に満額の20が出ていた=表示の嘘)。実値X以上/以下・完全に凌いだ時 (post の HP損失0) は今判定できる。
+  // 「この敵フェーズを完全に凌いだら」は敵フェーズ終端まで分からないので注記にする
+  const win = enemyIndex !== undefined ? windowFromPending(state) : null
   for (const e of def.effects) {
     if ((e.effect !== 'dealDamage' && e.effect !== 'counter') || e.amount === undefined) continue
+    const c = e.condition
+    if (win && c) {
+      if (c.minActionValue !== undefined && win.actual < c.minActionValue) continue
+      if (c.maxActionValue !== undefined && win.actual > c.maxActionValue) continue
+      if (c.lastActionNoHpLoss === true && (win.stage !== 'post' || win.hpLoss > 0)) continue
+      if (c.minDamageTaken !== undefined && (win.stage !== 'post' || win.hpLoss < c.minDamageTaken)) continue
+      if (c.perfectBlockThisPhase === true) {
+        vals.push(`${e.effect === 'counter' ? '返し' : 'ダメージ'}${playerDamageAfterModifiers(state, e.amount)}（この敵フェーズを完全に凌いだら）`)
+        continue
+      }
+    }
     const live = playerDamageAfterModifiers(state, e.amount)
     // 確認ウィンドウ (行動してきた敵が確定) では急所・装甲・敵ブロックまで掛けた HP減 を出す (Opus Z3: 「返し10」が実際は15)
     // 勢いはリアクションには乗らない (2026-09-05 裁定) = 内訳も勢い抜きで辿る (2026-09-14 Opus AB3: 疾風の王で持ち越した勢い7が「HP減27」に足されていた)
@@ -1005,6 +1186,7 @@ export function dealDamageToEnemy(
       ...(exposed ? { exposed: true } : {}),
       ...(pierce && !shellUp && enemy.block > 0 ? { pierced: true } : {}),
       ...(blocked > 0 ? { blocked } : {}),
+      ...sourceUidOf(state),
     },
   )
   s = applyDamageInterrupts(s, enemyIndex)
@@ -1028,10 +1210,12 @@ export function dealDamageToEnemy(
       }
     }
   }
-  // とげ (敵の報復): 攻撃ヒットごとにNダメ反射。そのヒットで倒れたら反射しない = 一撃で抜けば無傷。
-  // 敵フェーズの被弾ではないので憤怒 (damageTakenLastEnemyPhase) や onHpLost は積まない
+  // とげ (敵の報復): カードのプレイによる攻撃ヒットごとにNダメ反射。そのヒットで倒れたら反射しない = 一撃で抜けば無傷。
+  // 敵フェーズの被弾ではないので憤怒 (damageTakenLastEnemyPhase) や onHpLost は積まない。
+  // 反射するのは「カードのプレイで与えるダメージ」だけ (2026-09-20 ユーザー「人形の攻撃で棘が反応するのはおかしい」):
+  // 人形・置物の誘発・仕込み札の返し・パッシブ・ギアのダメージには反射しない = 勢い・虚弱と同じ線 (resolvingCardPlay)
   const struck = s.enemies[enemyIndex]
-  if ((struck.thorns ?? 0) > 0 && struck.hp > 0) {
+  if ((struck.thorns ?? 0) > 0 && struck.hp > 0 && s.resolvingCardPlay === true) {
     const reflect = struck.thorns!
     const pBlocked = Math.min(s.player.block, reflect)
     const pIceBlocked = Math.min(s.player.iceBlock, reflect - pBlocked)
@@ -1135,6 +1319,17 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         (effect.amount ?? 0) * state.player.momentum,
         effect.pierce,
       )
+    case 'dealDamagePerLight':
+      // 灯篭の人形 (白 R 2026-09-20 灯と人形の結び): 灯2につき amount ダメージ (切り捨て)。灯は消費しない
+      // = 灯を溜めるほど人形が明るく殴り、放出すると暗くなる (「溜める vs 吐く」を1枚に)。0なら打たない
+      return Math.floor((state.player.light ?? 0) / 2) * (effect.amount ?? 1) <= 0
+        ? state
+        : dealDamageToEnemy(
+            state,
+            enemyIndex,
+            Math.floor((state.player.light ?? 0) / 2) * (effect.amount ?? 1),
+            effect.pierce,
+          )
     case 'dealDamagePerEnergyMax':
       // ビッグマナのシグネチャー: エナジー上限 × amount のダメージ
       // ターン開始時の上限を読む (同ターンのランプは乗らない = ランプの対価を守る。2026-08-30)。
@@ -1361,6 +1556,14 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       s = emit(s, { type: 'AetherGained', amount })
       return runPermanentTriggers(s, 'onAetherGained', enemyIndex)
     }
+    case 'addLight':
+      // 灯+N (白 2026-09-20)。リーダーパッシブ (innate 置物) の解決中なら出どころは「灯匠」
+      return gainLight(state, effect.amount ?? 0, state.resolvingPermanentUid?.startsWith('leader_') === true ? 'passive' : 'card', enemyIndex)
+    case 'doubleLight': {
+      // 灯の倍化 (白 R・消滅必須 = doubleGrowth と同じ規約): 現在の灯ぶんを加算する = 獲得の誘発が乗る
+      const cur = state.player.light ?? 0
+      return cur > 0 ? gainLight(state, cur, 'card', enemyIndex) : state
+    }
     case 'applyBurn': {
       // 延焼 (赤): 敵に蓄積する継続ダメージ
       const amount = effect.amount ?? 0
@@ -1485,9 +1688,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       for (const src of snapshot) {
         const token: CardInstance = { uid: `summon_p${s.player.permanents.length}_${src.def.id}`, def: src.def, token: true }
         batch.add(token.uid)
-        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] }, lastEnteredPermanentUid: token.uid }
-        s = emit(s, { type: 'PermanentPlayed', cardId: src.def.id })
-        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex, (p) => p.uid === token.uid || !batch.has(p.uid))
+        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
+        s = enterPermanent(s, token.uid, enemyIndex, (p) => p.uid === token.uid || !batch.has(p.uid))
       }
       return emit(s, { type: 'RetainersDuplicated', count: snapshot.length })
     }
@@ -1496,21 +1698,20 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // (引導・回収と同じ「選択は playCard」の配管)。置物トリガー・工房産の他経路では何もしない
       return state
     case 'activateEnteredRetainer': {
-      // 駆けつけ (ひなたのパッシブ 2026-09-06 ユーザー裁定): 場に出た従者はすぐに1回動く = その従者のターン開始効果を
-      // 登場時に1回解決 (アンセム込み)。白ホードの「準備が長く爆発が遅い」(集結の平均発射5.4T) を構造で前に出す。
-      // 従者以外の置物 (道具・オーラ) が出た時は何もしない。1登場=1回 (リニア)
-      const uid = state.lastEnteredPermanentUid
-      const entered = uid !== undefined ? state.player.permanents.find((p) => p.uid === uid) : undefined
-      if (!entered || entered.def.retainer !== true || entered.innate === true) return state
-      if (!entered.def.effects.some((e) => e.trigger === 'onTurnStart')) return state
-      const s = runPermanentTriggers(state, 'onTurnStart', enemyIndex, (p) => p.uid === entered.uid)
-      return emit(s, { type: 'RetainerRushed', cardId: entered.def.id })
+      // 駆けつけ (ひなたのパッシブ 2026-09-06 ユーザー裁定): 場に出た従者はすぐに1回動く = その従者の効果を登場時に1回解決
+      // (アンセム込み)。白ホードの「準備が長く爆発が遅い」(集結の平均発射5.4T) を構造で前に出す。
+      // 2026-09-19 ユーザー「ターン開始時以外も誘発させないとだめ。従者の能力は全て出た時に誘発させるパッシブ」= 毎ターン開始時だけでなく
+      // 攻撃ごと (旗・犬・燭) などトリガーを問わず、その従者の効果を1回ずつ解決する。**登場ごと (onPermanentEntered) の効果だけは対象外**
+      // (鐘・大鐘は自分の登場でもとから鳴る = 二重にしない)。従者以外の置物 (道具・オーラ) が出た時は何もしない。1登場=1回 (リニア)
+      // **2026-09-20 白の再設計: 点灯の定義 (白共通ルール) へ格上げ = enterPermanent が全リーダーで解決する。**
+      // この効果は旧セーブ (ひなたのパッシブに残る) との互換のための no-op。二重に動かさない
+      return state
     }
     case 'triggerRetainersNow': {
-      // 進軍の号令 (白 2026-09-06 本家 Multi-Cast): 従者 (innate除く) のターン開始効果を今すぐ1回解決 (アンセム込み)
-      const isRetainer = (p: CardInstance): boolean => p.def.retainer === true && p.innate !== true
-      const n = state.player.permanents.filter(isRetainer).length
-      const s = runPermanentTriggers(state, 'onTurnStart', enemyIndex, isRetainer)
+      // 点灯の合図 (白 2026-09-06 本家 Multi-Cast → 2026-09-20 白の再設計で号令の中核 C1E・灯2):
+      // 人形 (innate除く) の効果をトリガーを問わず (登場ごとを除く) 今すぐ1回ずつ解決 (アンセム込み)。旧はターン開始効果だけだった
+      const n = state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length
+      const s = rallyRetainers(state, enemyIndex)
       return emit(s, { type: 'RetainersTriggered', count: n })
     }
     case 'summonPermanent': {
@@ -1525,9 +1726,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
           def,
           token: true,
         }
-        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] }, lastEnteredPermanentUid: token.uid }
-        s = emit(s, { type: 'PermanentPlayed', cardId: def.id })
-        s = runPermanentTriggers(s, 'onPermanentEntered', enemyIndex)
+        s = { ...s, player: { ...s.player, permanents: [...s.player.permanents, token] } }
+        s = enterPermanent(s, token.uid, enemyIndex) // 登場誘発 + 点灯の定義 (灯+1・すぐに1回動く)
       }
       return s
     }
@@ -1560,7 +1760,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         ...state,
         enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, block: 0 } : e)),
       }
-      if (shattered > 0) s = emit(s, { type: 'BlockShattered', enemyIndex, amount: shattered })
+      // 割るブロックが無ければ打たない (2026-09-18 レシピ見直しで発見: 0 を dealDamageToEnemy に渡すと成長だけが乗った
+      // 幽霊ヒットが出て、表示 (8ダメ) と実処理 (8+成長×2回) が食い違い、急所・とげも1回ぶん余計に鳴っていた)
+      if (shattered <= 0) return s
+      s = emit(s, { type: 'BlockShattered', enemyIndex, amount: shattered })
       return dealDamageToEnemy(s, enemyIndex, shattered, effect.pierce)
     }
     case 'dealDamageExecute': {
@@ -1644,7 +1847,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const block = state.player.momentum * (effect.amount ?? 0)
       if (block <= 0) return state
       let s: GameState = { ...state, player: { ...state.player, block: state.player.block + block } }
-      s = emit(s, { type: 'BlockGained', target: 'player', amount: block })
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state) })
       return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
     case 'addGrowthPerMomentum': {
@@ -1760,7 +1963,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         ...state,
         player: { ...state.player, momentum: 0, block: state.player.block + block },
       }
-      s = emit(s, { type: 'BlockGained', target: 'player', amount: block })
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state) })
       return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
     case 'dischargeMomentumDamage': {
@@ -1869,6 +2072,130 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       s = emit(s, { type: 'AetherDischarged', spent })
       return dealDamageToEnemy(s, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
     }
+    case 'dischargeLight': {
+      // 灯の放出 (白 2026-09-20 白の再設計): 灯×amount のダメージを与えて灯を0に。灯0なら不発 (消費しない)。
+      // 放出は「カードのプレイで与えるダメージ」なので成長・勢い・弱体・急所・装甲が普通に乗る (霊気放出と同じ)。
+      // target:'all' は最初の解決で生存全体へ一括 (外側の敵ループの2体目以降は灯0で no-op = 勢いの放出と同型)。
+      // 対象が既に倒れている (本体のヒットでオーバーキル) なら灯を消費しない
+      const spent = state.player.light ?? 0
+      if (spent <= 0) return state
+      const anyTarget = effect.target === 'all' ? state.enemies.some((e) => e.hp > 0) : (state.enemies[enemyIndex]?.hp ?? 0) > 0
+      if (!anyTarget) return state
+      let s: GameState = { ...state, player: { ...state.player, light: 0 } }
+      s = emit(s, { type: 'LightDischarged', spent })
+      if (effect.target === 'all') {
+        // 全体は灯×amount を一括 (多段×人数で重くならないよう分けない)
+        const dmg = spent * (effect.amount ?? 0)
+        for (let i = 0; i < s.enemies.length; i++) {
+          if (s.enemies[i].hp > 0) s = dealDamageToEnemy(s, i, dmg, effect.pierce)
+        }
+        return afterLightDischarge(s, spent, enemyIndex)
+      }
+      // 単体は灯1につき1ヒット (amount ずつ灯回。白の答え合わせ 2026-09-20 ユーザー裁定: 装甲25が放出を切り捨て「灯を溜める意味が消える」
+      // 3本一致への処方＝連なる角と同じく装甲の1ヒット上限を分けて越える。成長・急所・とげはヒットごと)
+      for (let h = 0; h < spent; h++) {
+        if ((s.enemies[enemyIndex]?.hp ?? 0) <= 0) break
+        s = dealDamageToEnemy(s, enemyIndex, effect.amount ?? 0, effect.pierce)
+      }
+      return afterLightDischarge(s, spent, enemyIndex)
+    }
+    case 'dischargeLightRally': {
+      // 灯火の大行列 (白 R 2026-09-20): 灯を全て放出し、灯1につき全人形が amount 回動く = 放出を人形に流す総攻撃。
+      // 人形がいなければ不発 (灯を消費しない)。動いた人形が灯を産んでも (灯芯の人形) 回数は放出時に確定 = 有限
+      const spent = state.player.light ?? 0
+      if (spent <= 0) return state
+      const isRetainer = (p: CardInstance): boolean => p.def.retainer === true && p.innate !== true
+      const n = state.player.permanents.filter(isRetainer).length
+      if (n === 0) return state
+      let s: GameState = { ...state, player: { ...state.player, light: 0 } }
+      s = emit(s, { type: 'LightDischarged', spent })
+      const times = spent * (effect.amount ?? 1)
+      for (let i = 0; i < times; i++) s = rallyRetainers(s, enemyIndex)
+      s = emit(s, { type: 'RetainersTriggered', count: n * times })
+      return afterLightDischarge(s, spent, enemyIndex)
+    }
+    case 'dischargeLightWeaken': {
+      // 眩む閃光 (白 U 2026-09-20 夜): 灯を全て放出し、灯3につき敵全体に威圧 amount (放出の第2の形)。灯3未満なら不発 (消費しない)
+      const spent = state.player.light ?? 0
+      const stacks = Math.floor(spent / 3) * (effect.amount ?? 1)
+      if (spent <= 0 || stacks <= 0) return state
+      let s: GameState = { ...state, player: { ...state.player, light: 0 } }
+      s = emit(s, { type: 'LightDischarged', spent })
+      for (let i = 0; i < s.enemies.length; i++) {
+        if (s.enemies[i].hp > 0) s = resolveEffect(s, { trigger: effect.trigger, effect: 'weakenEnemy', amount: stacks }, i)
+      }
+      return afterLightDischarge(s, spent, enemyIndex)
+    }
+    case 'consumeLight': {
+      // 灯の鍛冶 (白 U 2026-09-20 夜): 灯を全て失う (ダメージ無しの放出。残り火・放出の誘発は鳴らない)
+      const spent = state.player.light ?? 0
+      if (spent <= 0) return state
+      return emit({ ...state, player: { ...state.player, light: 0 } }, { type: 'LightDischarged', spent })
+    }
+    case 'gainBlockPerLight': {
+      // 灯の壁 (白 U 2026-09-20 夜): 灯2につき amount ブロック (灯は失わない。風の壁の灯版)
+      const block = Math.floor((state.player.light ?? 0) / 2) * (effect.amount ?? 0)
+      if (block <= 0) return state
+      let s: GameState = { ...state, player: { ...state.player, block: state.player.block + block } }
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state) })
+      return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
+    }
+    case 'drawCardsPerLight': {
+      // 灯の手帳 (白 C 2026-09-20 夜): 灯2につき amount ドロー (上限 amountMax。灯は失わない)
+      const n = Math.min(effect.amountMax ?? 99, Math.floor((state.player.light ?? 0) / 2) * (effect.amount ?? 1))
+      return n > 0 ? drawCards(state, n) : state
+    }
+    case 'lightCarryHalf':
+      // 残り火 (白 R 置物 2026-09-20 夜): 常在の印。放出の後処理 (afterLightDischarge) が場の有無を読む
+      return state
+    case 'addCardToDraw': {
+      // 火種撒き (白 2026-09-20 夜。本家 Reave 型): summonId のトークン札を山札のランダムな位置へ (がらくたと同じ差し込み・ランRNG)
+      const def = getCardDef(effect.summonId ?? '')
+      const n = effect.amount ?? 1
+      let drawPile = [...state.player.drawPile]
+      let rng = state.rng
+      for (let i = 0; i < n; i++) {
+        const [pos, nextRng] = nextInt(rng, 0, drawPile.length)
+        rng = nextRng
+        drawPile = [...drawPile.slice(0, pos), { uid: `tok_${state.eventLog.length}_${i}_${def.id}`, def, token: true }, ...drawPile.slice(pos)]
+      }
+      const s: GameState = { ...state, rng, player: { ...state.player, drawPile } }
+      return emit(s, { type: 'CardsAddedToDraw', cardId: def.id, count: n })
+    }
+    case 'lightToSparks': {
+      // 灯の火床 (白 R 置物 2026-09-20 夜): ターン終了時に選んだ枚数 (EndTurn.hearthSparks) だけ、灯 amount につき火種1を山札へ。
+      // 払った灯だけ失う。上限は 灯÷amount (ユーザー裁定「枚数を選ぶ」= 自動変換は篝火・灯篭・灼く光の閾値を殺していた〔Opus 火種B〕)
+      const per = Math.max(1, effect.amount ?? 3)
+      const n = Math.min(state.hearthSparks ?? 0, Math.floor((state.player.light ?? 0) / per))
+      if (n <= 0) return state
+      let s: GameState = { ...state, player: { ...state.player, light: (state.player.light ?? 0) - n * per } }
+      s = emit(s, { type: 'LightDischarged', spent: n * per })
+      return resolveEffect(s, { trigger: effect.trigger, effect: 'addCardToDraw', summonId: effect.summonId ?? 'white_spark_token', amount: n }, enemyIndex)
+    }
+    case 'dealDamagePerSpark':
+      // 火種の嵐 (白 R 2026-09-20 夜。本家 Soul Storm 型): この戦闘で撃った火種×amount
+      return (state.player.sparksPlayedThisCombat ?? 0) <= 0
+        ? state
+        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.sparksPlayedThisCombat ?? 0), effect.pierce)
+    case 'triggerRandomRetainer': {
+      // 灯の継ぎ手 (白 U 置物 2026-09-20 夜): 場の人形1体 (ランダム=ランRNG) の効果をトリガーを問わず今1回解決 (号令の小型。灯は産まない)
+      const retainers = state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true)
+      if (retainers.length === 0) return state
+      let rng = state.rng
+      let pick = 0
+      if (retainers.length > 1) {
+        const [r, nextRng] = nextInt(rng, 0, retainers.length - 1)
+        rng = nextRng
+        pick = r
+      }
+      const target = retainers[pick]
+      const triggers = [...new Set(target.def.effects.map((e) => e.trigger).filter((tr) => tr !== 'onPermanentEntered' && tr !== 'onPlay'))]
+      const prev = state.suppressLightGain === true
+      let s: GameState = { ...state, rng, suppressLightGain: true }
+      for (const tr of triggers) s = runPermanentTriggers(s, tr, enemyIndex, (p) => p.uid === target.uid)
+      s = { ...s, suppressLightGain: prev }
+      return emit(s, { type: 'RetainersTriggered', count: 1 })
+    }
     case 'gainEnergyMax': {
       // 緑の柱①ランプ: 上限のみ増える。恩恵は次の自ターンから
       // (即時利用は 2026-08-23 に廃止。プレイしたターンのテンポ損がランプの対価)
@@ -1943,6 +2270,13 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
   if (effect.condition?.blaze === true && !isBlazing(state)) return false
   const c = effect.condition
   if (c) {
+    // 敵の行動後の置物 (onEnemyActed): 行動の種別は直前に解決した行動 (lastAction) で判定。リアクション窓の actionKinds は reactionMatches が見る
+    if (effect.trigger === 'onEnemyActed' && (c.actionKinds !== undefined || c.actionKindsNot !== undefined)) {
+      const k = state.lastAction?.kind
+      if (k === undefined) return false
+      if (c.actionKinds !== undefined && !c.actionKinds.includes(k)) return false
+      if (c.actionKindsNot !== undefined && c.actionKindsNot.includes(k)) return false
+    }
     // 参照シナジー (緑 2026-09-03 本家6型): 意図・急所・守り成功・とどめ・完全に凌いだ
     const e = enemyIndex !== undefined ? state.enemies[enemyIndex] : undefined
     if (c.enemyIntent !== undefined || c.enemyIntentNot !== undefined) {
@@ -1967,6 +2301,8 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
   // 成長しきい値 (2026-09-02): 解決の時点の成長で判定 = 同じカードの前の効果で積んだ成長も乗る
   if (effect.condition?.minGrowth !== undefined && state.player.growth < effect.condition.minGrowth) return false
   if (effect.condition?.minMomentum !== undefined && state.player.momentum < effect.condition.minMomentum) return false
+  // 灯しきい値 (白 2026-09-20 灼く光・光の裁き): 解決の時点の灯 = 同じカードの前の効果 (回復) で溜めた灯も乗る
+  if (effect.condition?.minLight !== undefined && (state.player.light ?? 0) < effect.condition.minLight) return false
   // 上限しきい値 (緑 2026-09-07 若幹の一撃・大地の唸り): ターン開始時の上限を読む (ランプ即時利用の廃止と同じ則)
   if (effect.condition?.minEnergyMax !== undefined && (state.player.energyMaxAtTurnStart ?? state.player.energyMax) < effect.condition.minEnergyMax) return false
   // 回復参照 (白 2026-09-06 修繕の祈り): このターンに1回でも回復していたら (過剰回復も数える)
@@ -1985,7 +2321,7 @@ export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, e
  */
 function fireGainTrigger(
   state: GameState,
-  trigger: 'onGrowthGained' | 'onMomentumGained',
+  trigger: 'onGrowthGained' | 'onMomentumGained' | 'onLightGained',
   enemyIndex: number,
 ): GameState {
   if (state.resolvingGainTrigger === true) return state
