@@ -312,9 +312,9 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
   it('灯篭の人形: 毎ターン開始に敵全体へ灯2につき1ダメ (切り捨て・灯は失わない)。放出すると暗くなる', () => {
     let s = light(energy(fresh(['white_perm_lantern', 'white_light_bolt'], 'enc_probe_pair'), 9), 6)
     const hp = s.enemies.map((e) => e.hp)
-    s = play(s, 't0_white_perm_lantern') // 灯2を払って4 → 点灯: 4÷2=2 を全体に
+    s = play(s, 't0_white_perm_lantern') // 灯2を払って4。点灯だけは払う前の灯6で解決 (2026-09-21) → 6÷2=3 を全体に
     expect(s.player.light).toBe(4)
-    expect(s.enemies.map((e, i) => hp[i] - e.hp)).toEqual([2, 2])
+    expect(s.enemies.map((e, i) => hp[i] - e.hp)).toEqual([3, 3])
     expect(gained(s, 'retainer')).toBe(0)
     s = play(s, 't1_white_light_bolt') // 灯4を放出 → 灯0 = 暗い
     expect(s.player.light).toBe(0)
@@ -327,8 +327,8 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     // 灯を溜めれば明るく: 灯6 なら 3 を全体に
     let u = light(energy(fresh(['white_perm_lantern'], 'enc_probe_pair'), 9), 8)
     const h0 = u.enemies.map((e) => e.hp)
-    u = play(u, 't0_white_perm_lantern')
-    expect(u.enemies.map((e, i) => h0[i] - e.hp)).toEqual([3, 3])
+    u = play(u, 't0_white_perm_lantern') // 灯8 → 点灯は8÷2=4 (払った後は6)
+    expect(u.enemies.map((e, i) => h0[i] - e.hp)).toEqual([4, 4])
   })
 
   it('篝火の人形: 2E・灯4。毎ターン開始に敵全体3＋ブロック3 (点灯で出た瞬間にも)', () => {
@@ -378,8 +378,8 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     expect(s.player.light).toBe(l0 + 1) // 灯+1 (+1は乗らない)
     const hp1 = s.enemies[0].hp
     const lBefore = s.player.light ?? 0
-    s = play(s, 't3_white_perm_lantern') // 灯2を払う → floor((lBefore-2)/2)×1 (率は+1されない)
-    expect(hp1 - s.enemies[0].hp).toBe(Math.floor((lBefore - 2) / 2))
+    s = play(s, 't3_white_perm_lantern') // 点灯は払う前の灯で解決 (2026-09-21) → floor(lBefore/2)×1 (率は+1されない)
+    expect(hp1 - s.enemies[0].hp).toBe(Math.floor(lBefore / 2))
     const hand0 = s.player.hand.length
     s = { ...s, player: { ...s.player, light: 5 } }
     s = play(s, 't4_white_perm_band')

@@ -203,7 +203,9 @@ namespace DeckRogue.Engine
         private static string TierV2(IReadOnlyList<DeclarativeEffect> effects, CardDef? def = null)
         {
             if (effects.Any(HasMult)) return UpgradeTiers.Mult;
-            if (effects.Any(e => UNIT_EFFECTS_V2.Contains(e.Effect) && e.Amount != null)) return UpgradeTiers.Unit;
+            // 人形の「登場時 灯+1」は魂ではない (2026-09-21): 量つきの効果があれば addLight は単位ティアの候補から外す (TS と同形)
+            bool hasAmount = effects.Any(e => AMOUNT_V2.Contains(e.Effect) && e.Amount != null);
+            if (effects.Any(e => UNIT_EFFECTS_V2.Contains(e.Effect) && e.Amount != null && !(def?.Retainer == true && hasAmount && e.Effect == "addLight"))) return UpgradeTiers.Unit;
             if (effects.Any(HasThreshold) || def?.FreeIfMomentumAtLeast != null) return UpgradeTiers.Threshold;
             if (effects.Any(e => AMOUNT_V2.Contains(e.Effect) && e.Amount != null)) return UpgradeTiers.Amount;
             return UpgradeTiers.None;

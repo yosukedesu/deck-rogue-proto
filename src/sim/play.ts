@@ -385,7 +385,10 @@ function renderBattle(s: GameState, logFrom: number): string {
       const g = dollGrowth(s, c)
       return `【灯り${left === null ? '尽きない' : `あと${left}`}${g > 0 ? `・火勢+${g}` : ''}】`
     }
-    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${lifeTag(c)}${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=ダメージ・ブロック・回復の量に加算】` : ''}${live(c)}`).join(' / ')}`)
+    // 鏡の灯籠 (2026-09-21 Opus B「写す相手が居ないと黙って何も起きない」): 人形が0体なら注記
+    const mirrorNote = (c: (typeof p.permanents)[number]): string =>
+      c.def.effects.some((e) => e.effect === 'copyLastRetainer') && !p.permanents.some(isDoll) ? '【写す相手がいない（人形0体）】' : ''
+    L.push(`置物: ${p.permanents.map((c) => `${c.def.name}${c.token ? '(トークン)' : ''}(${c.def.effects.map((e) => fx(e, 'permanent')).join('、')})${lifeTag(c)}${mirrorNote(c)}${anthem > 0 && c.def.retainer === true ? `【アンセム+${anthem}=ダメージ・ブロック・回復の量に加算】` : ''}${live(c)}`).join(' / ')}`)
     if ((s.nextRetainerTwin ?? 0) > 0) L.push(`🕯️🕯️二重の点灯: 次に出す人形${s.nextRetainerTwin}体が2体になる`)
     if (anthem > 0) L.push(`✨アンセム合計+${anthem} (従者のダメージ・ブロック・回復の量に加算。灯・率・ドローには乗らない)`)
     // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了時に何枚火種にするかは EndTurn のパラメータ

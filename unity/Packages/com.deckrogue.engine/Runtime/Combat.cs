@@ -1141,7 +1141,10 @@ namespace DeckRogue.Engine
             if (isPermanent)
             {
                 // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
+                // 灯篭の人形 (2026-09-21): 点灯だけは灯コストを払う前の灯で解決 (TS と同形)
+                if (lightCost > 0) s = s with { Player = s.Player with { Light = (s.Player.Light ?? 0) + lightCost } };
                 s = Effects.EnterPermanent(s, card.Uid, enemyIndex);
+                if (lightCost > 0) s = s with { Player = s.Player with { Light = Math.Max(0, (s.Player.Light ?? 0) - lightCost) } };
             }
             if (sacrificed != null)
             {

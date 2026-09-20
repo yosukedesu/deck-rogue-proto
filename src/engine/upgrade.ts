@@ -158,7 +158,10 @@ const V2_COST_ONLY = new Set(['white_perm_band', 'white_perm_apostle', 'white_pe
 /** 効果列1つぶんの本家形ティア (モードごとにも使う) */
 function tierV2(effects: readonly DeclarativeEffect[], def?: CardDef): 'mult' | 'unit' | 'threshold' | 'amount' | 'none' {
   if (effects.some(hasMult)) return 'mult'
-  if (effects.some((e) => UNIT_EFFECTS_V2.has(e.effect) && e.amount !== undefined)) return 'unit'
+  // 人形 (retainer) の「登場時 灯+1」は魂ではない (2026-09-21 Opus B: 工房産の祭壇＝全体1・2ダメ・登場時灯+1 を鍛えると灯だけ伸びた):
+  // 量つきの効果があれば addLight は単位ティアの候補から外し、ダメージ・ブロックを伸ばす
+  const hasAmount = effects.some((e) => AMOUNT_V2.has(e.effect) && e.amount !== undefined)
+  if (effects.some((e) => UNIT_EFFECTS_V2.has(e.effect) && e.amount !== undefined && !(def?.retainer === true && hasAmount && e.effect === 'addLight'))) return 'unit'
   if (effects.some(hasThreshold) || def?.freeIfMomentumAtLeast !== undefined) return 'threshold'
   if (effects.some((e) => AMOUNT_V2.has(e.effect) && e.amount !== undefined)) return 'amount'
   return 'none'

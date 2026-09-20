@@ -456,6 +456,6 @@ describe('干からびた手 (2026-09-21 人間ラン#16: 人形1E→次のカ�
     s = play(s, 't2_white_perm_squire')
     expect(s.player.energy).toBe(1)
     expect(s.player.nextCardDiscount).toBe(0)
-    expect(getRelicDef('relic_mummified_hand').effects[0].once).toBe('turn')
+    expect(getRelicDef('relic_mummified_hand').effects?.[0]?.once).toBe('turn')
   })
 })

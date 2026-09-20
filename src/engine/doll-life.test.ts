@@ -192,3 +192,17 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     }
   })
 })
+
+describe('鍛え・是正 (2026-09-21 Opus A/B/C)', () => {
+  it('人形の鍛えは「登場時 灯+1」より量 (ダメージ・ブロック) を先に伸ばす (B: 工房産の祭壇が灯だけ伸びた)', () => {
+    const def = { ...getCardDef('white_perm_squire'), id: 'fused_test_doll', name: '試しの祭壇', effects: [
+      { trigger: 'onTurnStart', effect: 'dealDamage', amount: 2, target: 'all' },
+      { trigger: 'onPlay', effect: 'addLight', amount: 1 },
+    ] } as typeof getCardDef extends (id: string) => infer R ? R : never
+    const up = upgradeCard({ uid: 'x', def }).def
+    expect(up.effects[0].amount).toBe(3)
+    expect(up.effects[1].amount).toBe(1)
+    // 灯芯の人形 (灯+1 だけ) は従来どおり単位+1
+    expect(upgradeCard(inst('white_perm_wick')).def.effects[0].amount).toBe(2)
+  })
+})

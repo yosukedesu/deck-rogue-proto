@@ -2056,6 +2056,9 @@ function BattleScreen({
               {player.permanents.map((c) => (
                 <div key={c.uid} className={`permanent${activeSacrifice && c.def.retainer === true && c.innate !== true ? ' permanent-selectable' : ''}`}>
                   <b>{c.def.name}</b>
+                  {c.def.effects.some((e) => e.effect === 'copyLastRetainer') && !player.permanents.some(isDoll) && (
+                    <span style={{ marginLeft: 6, color: 'var(--bad, #c66)', fontSize: 11 }}>写す相手がいない（人形0体）</span>
+                  )}
                   {isDoll(c) && (
                     <span style={{ marginLeft: 6, color: 'var(--muted)', fontSize: 11 }}>
                       🕯 {dollLifeLeft(s, c) === null ? '灯りは尽きない' : `あと${dollLifeLeft(s, c)}ターン`}

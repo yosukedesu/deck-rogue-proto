@@ -1013,7 +1013,11 @@ export function playCard(
   }
   if (isPermanent) {
     // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
+    // 灯篭の人形 (2026-09-21 Opus B/C「出した瞬間いちばん暗い」): 点灯 (登場の1回) だけは灯コストを払う前の灯で解決する。
+    // 払った分を一時的に戻して点灯し、終わったら引く (灯芯の点灯の +1 はそのまま残る)
+    if (lightCost > 0) s = { ...s, player: { ...s.player, light: (s.player.light ?? 0) + lightCost } }
     s = enterPermanent(s, card.uid, enemyIndex)
+    if (lightCost > 0) s = { ...s, player: { ...s.player, light: Math.max(0, (s.player.light ?? 0) - lightCost) } }
   }
   if (sacrificed !== null) {
     // 殉教 (白 2026-09-06): 選んだ従者を場から除く。自分で壊す従者狩り = 敵の destroy-token と同じ結果で、
