@@ -1028,6 +1028,12 @@ if (mode === 'new-run') {
   const [file, json] = args
   const sf = load(file)
   const cmd = JSON.parse(json) as Command | RunCommand
+  // 入力ミスの案内 (Opus B 2026-09-21: `uid` と `cardUid` を取り違えて「手札にないカード: undefined」だけで2ターン失った)
+  const raw = cmd as unknown as Record<string, unknown>
+  if ((raw.type === 'PlayCard' || raw.type === 'SetCard') && raw.cardUid === undefined && raw.uid !== undefined) {
+    console.log(`${String(raw.type)} の札は "cardUid" で指定する ("uid" ではない)。例: {"type":"${String(raw.type)}","cardUid":"${String(raw.uid)}"}`)
+    process.exit(1)
+  }
   const logFrom = sf.logIndex
   // 合成プレビュー (ハーネス限定・状態は変更しない): 確定前にコスト・消滅・効果を確認できる
   if ((cmd as { type: string }).type === 'FusePreview' && sf.kind === 'run') {
